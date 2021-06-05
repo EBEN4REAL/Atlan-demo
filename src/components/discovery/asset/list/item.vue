@@ -1,6 +1,6 @@
 <template>
   <div
-    class="px-4 py-3 mb-2 bg-white border border-gray-100 rounded-md shadow-sm hover:bg-blue-50"
+    class="px-4 py-2 border-b border-gray-100 hover:bg-blue-50"
   >
     <div class="flex items-center justify-between align-middle">
       <div class="flex items-center mr-1 align-middle">
@@ -33,7 +33,7 @@
       </div>
       <img :src="logo(item)" class="w-auto h-5 mr-2" />
     </div>
-    <p class="mb-0 text-gray-500">{{ description(item) }}</p>
+    <p class="mb-0 text-gray-500 line-clamp-1">{{ description(item) }}</p>
     <RelationshipBadge :item="item" class="mt-2"></RelationshipBadge>
   </div>
 </template>

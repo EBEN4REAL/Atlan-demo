@@ -3,20 +3,20 @@
     :bordered="false"
     :class="$style.filter"
     :accordion="false"
-    class="bg-body"
+    class="bg-gray-100"
   >
-    <a-collapse-panel key="details" class="bg-white">
+    <a-collapse-panel key="details" class="bg-gray-100">
       <template #header>
-        <div class="flex justify-between items-center">
+        <div class="flex items-center justify-between">
           <div>Details</div>
           <a class="text-xs">edit</a>
         </div>
       </template>
       <Details :item="item"></Details>
     </a-collapse-panel>
-    <a-collapse-panel key="properties" class="bg-white">
+    <a-collapse-panel key="properties" class="bg-gray-100">
       <template #header>
-        <div class="flex justify-between items-center">
+        <div class="flex items-center justify-between">
           <div>Heirarchy</div>
         </div>
       </template>

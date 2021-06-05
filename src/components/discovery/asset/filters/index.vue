@@ -7,7 +7,6 @@
     :bordered="false"
     :class="$style.filter"
     :accordion="true"
-    class="bg-gray-50"
   >
     <a-collapse-panel
       v-for="item in List"

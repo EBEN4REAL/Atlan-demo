@@ -28,6 +28,7 @@ import {
   Slider,
   Result,
   Progress,
+  Table,
 } from "ant-design-vue";
 
 // https://github.com/antfu/vite-plugin-pwa#automatic-reload-when-new-content-available
@@ -58,6 +59,7 @@ export const install: UserModule = ({ app }) => {
   app.use(Slider);
   app.use(Progress);
   app.use(Result);
+  app.use(Table);
 
   app.config.globalProperties.$message = message;
   app.config.globalProperties.$error = Modal.error;

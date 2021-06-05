@@ -1,9 +1,7 @@
 <template>
-  <div class="grid grid-cols-12 h-full">
-    <AssetDiscovery @preview="handlePreview"></AssetDiscovery>
-    <div
-      class="col-span-3 h-full flex flex-col items-stretch bg-white border-left"
-    >
+  <div class="grid h-full grid-cols-12">
+    <AssetDiscovery @preview="handlePreview" class="shadow-sm"></AssetDiscovery>
+    <div class="flex flex-col items-stretch h-full col-span-3 border-l bg-gray-50">
       <AssetPreview :item="selected"></AssetPreview>
     </div>
   </div>

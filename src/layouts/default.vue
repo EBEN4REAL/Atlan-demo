@@ -16,13 +16,13 @@
       }"
     >
       <div class="flex flex-col h-full">
-        <div class="text-center py-3 border-b border-primary-500">
+        <div class="py-3 text-center border-b border-primary-500">
           <UserPersonalAvatar></UserPersonalAvatar>
         </div>
 
         <Sidebar class="flex-grow" />
         <a-button
-          class="mb-3 mx-1"
+          class="mx-1 mb-3"
           size="large"
           type="ghost"
           @click="handleNewPage"
@@ -31,12 +31,12 @@
       </div>
     </a-layout-sider>
     <a-layout :style="{ marginLeft: '60px', height: '100vh' }">
-      <a-layout-content>
+      <a-layout-content class="overflow-hidden">
         <router-view />
       </a-layout-content>
     </a-layout>
   </a-layout>
-  <!-- <div class="mt-5 mx-auto" @click="themeToggle">[Default Layout]</div> -->
+  <!-- <div class="mx-auto mt-5" @click="themeToggle">[Default Layout]</div> -->
 </template>
 
 <script lang="ts">

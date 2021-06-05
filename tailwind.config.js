@@ -4,7 +4,7 @@ module.exports = {
   jit: true,
   important: true,
   purge: {
-    enabled: true,
+    enabled: false,
     // classes that are generated dynamically, e.g. `rounded-${size}` and must
     // be kept
     safeList: [],

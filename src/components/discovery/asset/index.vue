@@ -2,7 +2,7 @@
 
 
 <template>
-  <div class="h-full col-span-2 pt-5 border-r bg-gray-50">
+  <div class="h-full col-span-2 pt-5 bg-white border-r border-gray-100">
     <p class="px-4 text-2xl font-medium tracking-tight">Assets</p>
     <div class="px-4">
       <p class="flex text-sm leading-none text-gray-500">
@@ -10,16 +10,16 @@
       </p>
     </div>
 
-    <AssetFilters @change="handleFilterChange" class="bg-gray-50"></AssetFilters>
+    <AssetFilters @change="handleFilterChange" class="bg-white"></AssetFilters>
   </div>
   <div
-    class="flex flex-col items-stretch h-full col-span-7 pt-5"
+    class="flex flex-col items-stretch h-full col-span-7 bg-white "
     style="overflow: hidden"
   >
-    <div class="flex px-6 mb-2">
-      <SearchBox @change="handleSearchChange"></SearchBox>
-      <div class="flex ml-3">
-        <a-dropdown>
+    <div class="flex items-center py-1 mb-2 border-b border-gray-100">
+      <SearchBox @change="handleSearchChange" size="large"></SearchBox>
+      <div class="flex mx-3">
+        <!-- <a-dropdown>
           <template #overlay>
             <a-menu>
               <a-menu-item key="1">1st item</a-menu-item>
@@ -27,9 +27,9 @@
               <a-menu-item key="3">3rd item</a-menu-item>
             </a-menu>
           </template>
-          <a-button> Actions <fa icon="fal -down" class="ml-1"></fa></a-button>
-        </a-dropdown>
-        <a-button> <fa icon="fal eye" class=""></fa></a-button>
+          <a-button> Sort <fa icon="fal -down" class="ml-1"></fa></a-button>
+        </a-dropdown> -->
+        <a-button type="link"> <fa icon="fal eye" class=""></fa></a-button>
       </div>
     </div>
     <div class="flex items-center px-6 mb-1" style="min-height: 17px">
@@ -46,7 +46,7 @@
       ></AssetPagination>
     </div>
 
-    <AssetList :items="list" @preview="handlePreview" class="px-6"> </AssetList>
+    <AssetList :items="list" @preview="handlePreview"> </AssetList>
     <div class="flex items-center px-6 mt-2 mb-2" style="min-height: 17px">
       <div class="flex items-center leading-none" v-if="loading">
         <a-spin size="small" class="mr-1 leading-none"></a-spin

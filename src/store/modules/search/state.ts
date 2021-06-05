@@ -23,7 +23,6 @@ export const state: State = {
     includeSubClassifications: true,
     includeSubTypes: true,
     limit: 50,
-    minScore: 100,
     offset: 0,
     entityFilters: {},
   },

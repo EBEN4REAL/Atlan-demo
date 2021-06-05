@@ -1,0 +1,70 @@
+<template>
+  <DynamicScroller
+    :items="items"
+    :keyField="keyField"
+    :minItemSize="minItemSize"
+    class="scroller"
+    :buffer="400"
+  >
+    <template v-slot="{ item, index, active }">
+      <DynamicScrollerItem :item="item" :active="active" :data-index="index">
+        <ListItem :item="item" @click="handlePreview(item)"></ListItem>
+      </DynamicScrollerItem>
+    </template>
+  </DynamicScroller>
+</template>
+    
+  <script lang="ts">
+import { defineComponent, PropType } from "vue";
+import { Components } from "~/api/atlas/client";
+import ListItem from "./item.vue";
+
+export default defineComponent({
+  components: {
+    ListItem,
+  },
+  props: {
+    items: {
+      type: Array as PropType<Components.Schemas.AtlasEntityHeader[]>,
+      required: false,
+      default() {
+        return [];
+      },
+    },
+    itemSize: {
+      type: Number,
+      required: false,
+      default() {
+        return null;
+      },
+    },
+    minItemSize: {
+      type: Number,
+      required: false,
+      default() {
+        return 75;
+      },
+    },
+    keyField: {
+      type: String,
+      required: false,
+      default() {
+        return "guid";
+      },
+    },
+  },
+  emits: ["preview"],
+  methods: {
+    handlePreview(item: Components.Schemas.AtlasEntityHeader) {
+      this.$emit("preview", item);
+    },
+  },
+});
+</script>
+    
+  <style scoped>
+.scroller {
+  height: 100%;
+  overflow-y: auto;
+}
+</style>

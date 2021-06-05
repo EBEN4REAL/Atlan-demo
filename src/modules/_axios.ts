@@ -1,0 +1,84 @@
+import { UserModule } from "~/types/vitessg";
+import { getEnv, getBasePath } from "~/modules/__env";
+import axios, { AxiosInstance, AxiosRequestConfig } from "axios";
+import VueAxios from "vue-axios";
+import { cacheAdapterEnhancer } from "axios-extensions";
+
+const authInterceptor = (app: any) => {
+  return (config: AxiosRequestConfig) => {
+    config.headers[
+      "Authorization"
+    ] = `Bearer ${app.config.globalProperties.$keycloak.token}`;
+    return config;
+  };
+};
+
+export let axiosClient: AxiosInstance = null;
+
+const errorInterceptor = (error: any) => {
+  // check if it's a server error
+  if (!error.response) {
+    return Promise.reject(error);
+  }
+  // all the other error responses
+  switch (error.response.status) {
+    case 400:
+      console.error(error.response.status, error.message);
+      break;
+    case 401: // authentication error, logout the user
+      localStorage.removeItem("token");
+      break;
+    default:
+      console.error(error.response.status, error.message);
+  }
+  return Promise.reject(error);
+};
+
+// Interceptor for responses
+const responseInterceptor = (response: any) => {
+  // switch (response.status) {
+  //   case 200:
+  //     // yay!
+  //     break;
+  //   // any other cases
+  //   default:
+  //   // default case
+  // }
+
+  return response;
+};
+
+// export function getBasePath() {
+//   const env = process.env.NODE_ENV;
+//   const devBaseUrl = getEnv().DEV_API_BASE_URL;
+//   switch (env) {
+//     case "production":
+//       return `${window.location.origin}/api`;
+//     case "staging":
+//       return `${devBaseUrl}/api`;
+//     default:
+//       return `${devBaseUrl}/api`;
+//   }
+// }
+
+// https://github.com/antfu/vite-plugin-pwa#automatic-reload-when-new-content-available
+export const install: UserModule = ({ app }) => {
+  const cacheConfig = {
+    enabledByDefault: false,
+    cacheFlag: "cache",
+  };
+  axiosClient = axios.create({
+    baseURL: `${getBasePath()}/api`,
+    timeout: getEnv().DEFAULT_REQUEST_TIMEOUT,
+    headers: {
+      "Content-Type": "application/json",
+    },
+    adapter: cacheAdapterEnhancer(axios.defaults.adapter, cacheConfig),
+  });
+  axiosClient.interceptors.request.use(authInterceptor(app));
+  axiosClient.interceptors.response.use(responseInterceptor, errorInterceptor);
+
+  app.config.globalProperties.$axios = axios;
+
+  app.use(VueAxios, axiosClient);
+};

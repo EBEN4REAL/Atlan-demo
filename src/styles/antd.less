@@ -1,0 +1,183 @@
+.ant-checkbox-wrapper+.ant-checkbox-wrapper {
+  margin-left: 0px !important;
+}
+
+@layer base {
+  @font-face {
+    font-family: Avenir;
+    font-weight: normal;
+    src: url('~/assets/fonts/avenir/avenir-roman.otf') format("opentype");
+  }
+}
+
+body {
+  font-family: "Avenir", sans-serif !important;
+  text-rendering: auto !important;
+  font-smooth: auto !important;
+  -webkit-font-smoothing: auto !important;
+  background: #f8f8fd !important;
+}
+
+.ant-layout {
+  @apply bg-body !important;
+}
+
+.ant-form-vertical .ant-form-item-label {
+  padding-bottom: 4px !important;
+}
+
+.ant-form-vertical .ant-form-item {
+  padding-bottom: 0px !important;
+}
+
+.svg-icon {
+  display: inline-flex;
+  align-self: center;
+
+  svg {
+    height: 1em;
+    width: 1em;
+    top: 0.125em;
+    position: relative;
+  }
+}
+
+.ant-input-prefix {
+  svg {
+    top: 0 !important;
+  }
+}
+
+.leading-none .svg-icon {
+  svg {
+    top: 0 !important;
+  }
+}
+
+.ant-tree {
+  .ant-tree-title {
+    display: table-cell;
+    vertical-align: middle;
+    @apply leading-none;
+  }
+
+  .ant-tree-node-content-wrapper {
+    padding-left: 4px !important;
+    padding-right: 4px !important;
+    padding-top: 4px !important;
+    padding-bottom: 4px !important;
+    @apply leading-none;
+
+    &.ant-tree-node-selected {
+      @apply bg-blue-100 !important;
+    }
+  }
+
+  .anticon {
+    vertical-align: 0px !important;
+  }
+
+  .ant-tree-switcher {
+    @apply text-gray-500 !important;
+    width: 18px !important;
+    height: 24px !important;
+    line-height: 24px !important;
+  }
+
+  .ant-tree-child-tree {
+    margin-top: 0px !important;
+  }
+
+  .emoji-mart-emoji {
+    max-height: 18px;
+    line-height: 18px;
+    padding-top: 0px !important;
+    padding-bottom: 0px !important;
+    padding-left: 0px !important;
+    padding-right: 4px !important;
+    display: inline-flex;
+    align-items: center;
+  }
+
+  li {
+    padding: 0px !important;
+    padding-top: 1px !important;
+    padding-bottom: 1px !important;
+  }
+
+  li ul {
+    padding-left: 8px !important;
+  }
+
+  .ant-tree-switcher-loading-icon {
+    height: 24px !important;
+    line-height: 24px;
+    width: 14px !important;
+  }
+}
+
+.ant-collapse-header {
+  @apply py-2 !important;
+}
+
+.ant-select-multiple .ant-select-selection-item-remove>.anticon {
+  vertical-align: 0.2em !important;
+}
+
+.anticon {
+  vertical-align: 0em !important;
+}
+
+// .vue__time-picker-dropdown {
+//   font-family: "Avenir", sans-serif !important;
+// }
+
+// .vue__time-picker .dropdown ul li {
+//   list-style: none;
+//   text-align: center;
+//   padding: 0.3em 0;
+//   color: #595c97;
+//   font-weight: 300;
+// }
+
+// .vue__time-picker input.vue__time-picker-input {
+//   width: 100%;
+//   height: 30px;
+//   padding: 0 11px;
+//   text-align: left;
+//   background-color: #fff;
+
+//   outline: 0;
+//   transition: all 0.3s linear;
+//   border-width: 0;
+// }
+
+// .vue__time-picker {
+//   border-radius: 2px;
+//   border-style: solid;
+//   border-color: #e5e7eb;
+//   border: 1px solid #d9d9d9;
+// }
+
+// .vue__time-picker-dropdown ul li:not(.hint):not([disabled]):focus,
+// .vue__time-picker-dropdown ul li:not(.hint):not([disabled]):hover,
+// .vue__time-picker .dropdown ul li:not(.hint):not([disabled]):focus,
+// .vue__time-picker .dropdown ul li:not(.hint):not([disabled]):hover {
+//   background: rgba(0, 0, 0, 0.08);
+//   color: #595c97;
+//   cursor: pointer;
+// }
+// .vue__time-picker-dropdown ul li:not([disabled]).active,
+// .vue__time-picker-dropdown ul li:not([disabled]).active:focus,
+// .vue__time-picker-dropdown ul li:not([disabled]).active:hover,
+// .vue__time-picker .dropdown ul li:not([disabled]).active,
+// .vue__time-picker .dropdown ul li:not([disabled]).active:focus,
+// .vue__time-picker .dropdown ul li:not([disabled]).active:hover {
+//   color: #595c97;
+//   font-weight: 600;
+//   background-color: #f0f3ff;
+// }
+
+// .vue__time-picker .dropdown {
+//   border-radius: 2px;
+// }

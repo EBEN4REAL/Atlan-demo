@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+  <defs>
+    <style>
+      .cls-1, .cls-4, .cls-5, .cls-6 {
+        fill: none;
+      }
+
+      .cls-2 {
+        fill: #c3efe6;
+      }
+
+      .cls-3 {
+        fill: #5accae;
+      }
+
+      .cls-4, .cls-5, .cls-6 {
+        stroke: #5accae;
+      }
+
+      .cls-4, .cls-5 {
+        stroke-linecap: round;
+      }
+
+      .cls-4 {
+        stroke-linejoin: round;
+      }
+
+      .cls-5, .cls-6 {
+        stroke-miterlimit: 10;
+      }
+    </style>
+  </defs>
+  <g id="Layer_2" data-name="Layer 2">
+    <g id="Layer_1-2" data-name="Layer 1">
+      <g id="Table">
+        <rect class="cls-1" width="20" height="20"/>
+        <g>
+          <path class="cls-2" d="M3.5,6.5V5A1.5,1.5,0,0,1,5,3.5H15A1.5,1.5,0,0,1,16.5,5V6.5Z"/>
+          <path class="cls-3" d="M15,4a1,1,0,0,1,1,1V6H4V5A1,1,0,0,1,5,4H15m0-1H5A2,2,0,0,0,3,5V7H17V5a2,2,0,0,0-2-2Z"/>
+        </g>
+        <path class="cls-4" d="M16.5,8.5v6a1.93,1.93,0,0,1-1.86,2H5.36a1.93,1.93,0,0,1-1.86-2v-6"/>
+        <line class="cls-5" x1="10" y1="8.5" x2="10" y2="16.25"/>
+        <line class="cls-6" x1="3.5" y1="11.5" x2="16.5" y2="11.5"/>
+      </g>
+    </g>
+  </g>
+</svg>

@@ -1,0 +1,46 @@
+<template>
+  <a-input
+    v-model:value="localSearchText"
+    :placeholder="placeholder"
+    allow-clear
+    :size="size"
+    @input="handleInputChange"
+  >
+    <template #prefix>
+      <fa icon="fal search"></fa>
+    </template>
+  </a-input>
+</template>
+  
+<script lang="ts">
+import { defineComponent } from "vue";
+export default defineComponent({
+  props: {
+    size: {
+      type: String,
+      required: false,
+      default() {
+        return "default";
+      },
+    },
+    placeholder: {
+      type: String,
+      required: false,
+      default() {
+        return "Search";
+      },
+    },
+  },
+  data() {
+    return {
+      localSearchText: "",
+    };
+  },
+  emits: ["change"],
+  methods: {
+    handleInputChange() {
+      this.$emit("change", this.localSearchText);
+    },
+  },
+});
+</script>

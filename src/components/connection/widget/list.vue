@@ -1,16 +1,23 @@
 <template>
-  <div class="border rounded px-4 py-3 bg-white">
-    <div class="d-flex mb-2">
+  <div class="">
+    <div class="mb-2 d-flex">
       <a-select placeholder="All Types" class="mr-2"></a-select>
       <a-select placeholder="All Connectors"></a-select>
     </div>
-    <template v-for="item in list" :key="item.metadata.uid">
-      <ItemView :item="item"></ItemView>
-    </template>
+    <table class="table w-full table-report">
+      <tbody>
+        <template v-for="item in list" :key="item.metadata.uid">
+          <ItemView :item="item"></ItemView>
+        </template>
+      </tbody>
+    </table>
+    <!-- <div class="flex flex-col space-y-2"> -->
+
+    <!-- </div> -->
   </div>
 </template>
           
-    <script lang="ts">
+<script lang="ts">
 import { defineComponent } from "vue";
 import { Workflows } from "~/api/argo/workflow";
 import ItemView from "./item.vue";
@@ -33,6 +40,7 @@ export default defineComponent({
       try {
         const response = await Workflows.List({
           "listOptions.limit": 10,
+          "listOptions.labelSelector": "bot-template-name=atlan-jdbc-crawler",
         });
         this.list = response.data.items;
         console.log(this.list);
@@ -43,3 +51,10 @@ export default defineComponent({
   },
 });
 </script>
+
+<style lang="less" scoped>
+.table-report {
+  border-spacing: 0 10px;
+  border-collapse: separate;
+}
+</style>

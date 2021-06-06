@@ -16,16 +16,11 @@ export const install: UserModule = async ({ app }) => {
   const defaultRealm = getEnv().DEFAULT_REALM;
   const clientId = getEnv().DEFAULT_CLIENT_ID;
 
-  console.error(devBaseUrl);
-  console.error(defaultRealm);
-  console.error(clientId);
-
-
   let initOptions = {
     url: `${devBaseUrl}/auth`,
     realm: defaultRealm,
     clientId: clientId,
-    onLoad: "login-required",
+    onLoad: "check-sso",
     silentCheckSsoRedirectUri: window.location.origin + '/public/check-sso.html'
   };
   let keycloak = Keycloak(initOptions);

@@ -5,51 +5,43 @@
         <p class="mb-0 text-2xl">Admin Centre</p>
       </div>
 
-        <div class="flex flex-grow w-full px-4 mb-2 overflow-y-auto">
+      <div class="flex flex-grow w-full px-4 mb-2 overflow-y-auto">
+        <a-menu mode="inline" :class="$style.sidebar" class="">
+          <a-menu-item-group class="mb-3" title="Workspace">
+            <a-menu-item key="general"> General </a-menu-item>
+            <!-- Image/Name/Preferences -->
 
-      <a-menu mode="inline" :class="$style.sidebar" class="">
-        <a-menu-item-group class="mb-3" title="Workspace"
-          >
-        <a-menu-item key="general"> General </a-menu-item>
-        <!-- Image/Name/Preferences -->
+            <a-menu-item key="members"> Members </a-menu-item>
+            <a-menu-item key="groups"> Groups </a-menu-item>
+            <a-menu-item key="apikeys"> API Keys </a-menu-item>
+            <a-menu-item key="integrations"> Integrations </a-menu-item>
+            <a-menu-item key="billing"> Billing & License </a-menu-item>
+            <!-- SSO/SMTP -->
+          </a-menu-item-group>
 
-        <a-menu-item key="members"> Members </a-menu-item>
-        <a-menu-item key="groups"> Groups </a-menu-item>
-        <a-menu-item key="apikeys"> API Keys </a-menu-item>
-        <a-menu-item key="integrations"> Integrations </a-menu-item>
-        <a-menu-item key="billing"> Billing & License </a-menu-item>
-        <!-- SSO/SMTP -->
-        </a-menu-item-group
-        >
-
-        <a-menu-item-group class="mb-3" title="Access Control"
-        >
-       
-        <a-menu-item key="classifications"> Classifications </a-menu-item>
-        <a-menu-item key="metadata polcies"> Metadata Policies </a-menu-item>
-        <a-menu-item key="data policies"> Data Policies </a-menu-item>
-        </a-menu-item-group
-        >
-        <a-menu-item-group class="mb-3"
-          title="Metadata Management">
-        <a-menu-item key="bm"> Business Metadata </a-menu-item>
-        <a-menu-item key="enum"> Enums </a-menu-item>
-        </a-menu-item-group
-        >
-        <a-menu-item-group class="mb-3" title="Cloud & Compliance"
-          >
-        <a-menu-item key="accesslogs"> Access Logs </a-menu-item>
-        <a-menu-item key="auditlogs"> Audit Logs </a-menu-item>
-        <a-menu-item key="releases"> Releases </a-menu-item>
-        <a-menu-item key="health"> Health Status </a-menu-item>
-        <a-menu-item key="observe"> Observability </a-menu-item>
-      </a-menu-item-group>
-        
-      </a-menu>
-    </div>
+          <a-menu-item-group class="mb-3" title="Access Control">
+            <a-menu-item key="classifications"> Classifications </a-menu-item>
+            <a-menu-item key="metadata polcies">
+              Metadata Policies
+            </a-menu-item>
+            <a-menu-item key="data policies"> Data Policies </a-menu-item>
+          </a-menu-item-group>
+          <a-menu-item-group class="mb-3" title="Metadata Management">
+            <a-menu-item key="bm"> Business Metadata </a-menu-item>
+            <a-menu-item key="enum"> Enums </a-menu-item>
+          </a-menu-item-group>
+          <a-menu-item-group class="mb-3" title="Cloud & Compliance">
+            <a-menu-item key="accesslogs"> Access Logs </a-menu-item>
+            <a-menu-item key="auditlogs"> Audit Logs </a-menu-item>
+            <a-menu-item key="releases"> Releases </a-menu-item>
+            <a-menu-item key="health"> Health Status </a-menu-item>
+            <a-menu-item key="observe"> Observability </a-menu-item>
+          </a-menu-item-group>
+        </a-menu>
+      </div>
     </div>
     <div class="w-3/4 p-6">
-    <router-view></router-view>
+      <router-view></router-view>
     </div>
   </div>
 </template>

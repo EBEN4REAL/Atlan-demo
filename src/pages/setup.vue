@@ -113,9 +113,9 @@
     </div>
   </div>
 </template>
-      
-      
-<script lang="ts">
+        
+        
+  <script lang="ts">
 import { defineComponent } from "vue";
 import CredentialView from "@/setup/credential/index.vue";
 import ConnectorList from "@/setup/connectors/list.vue";
@@ -202,10 +202,10 @@ export default defineComponent({
   },
 });
 </script>
-      
-          
-<route lang="yaml">
-meta:
-layout: default
-requiresAuth: true
-</route>
+        
+            
+  <route lang="yaml">
+  meta:
+  layout: default
+  requiresAuth: true
+  </route>

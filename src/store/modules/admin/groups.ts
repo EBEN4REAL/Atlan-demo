@@ -1,5 +1,4 @@
 import { GetterTree, MutationTree, ActionTree } from 'vuex'
-import { GroupApi } from "~/api/auth/group";
 import {
     GET_GROUP_LIST,
     SET_GROUP_LIST,
@@ -43,16 +42,12 @@ export const mutations: MutationTree<GroupState> = {
 }
 
 export const actions: ActionTree<GroupState, any> = {
-  [GET_GROUP_LIST]:({commit}, params) => {
-    //update the API params
-    commit(SET_GROUP_LIST_API_PARAMS, params)
-
-    console.log(state.groupListAPIParams)
-    //make API call to get new group list with new params   
-    const {data} = GroupApi.listGroup(state.groupListAPIParams, {});
-    commit(SET_GROUP_LIST, data);
+  [SET_GROUP_LIST]:({commit}, data) => {
+    commit(SET_GROUP_LIST, data)
   },
-
+  [SET_GROUP_LIST_API_PARAMS]:({commit}, params) => {
+    commit(SET_GROUP_LIST_API_PARAMS, params)
+  },
 }
 
 export const groups = {

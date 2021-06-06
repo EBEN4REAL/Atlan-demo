@@ -3,6 +3,7 @@
     <div class="flex w-1/2">
       <a-input-search
         placeholder="Search Groups"
+        allowClear="true"
         class="mr-1"
         v-model:value="searchText"
         @change="onSearch"
@@ -14,41 +15,47 @@
   <a-table
     :dataSource="groupList.data.records"
     :columns="columns"
+    :rowKey="groupList.data.records.id"
     v-if="groupList"
   />
 </template>
 <script lang="ts">
-import { ref, computed } from "vue";
-import { useStore } from "vuex";
-import { GET_GROUP_LIST } from "~/constant/store_types";
+import { ref, reactive, defineComponent } from "vue";
+import { GroupApi } from "~/api/auth/group";
 
-export default {
+export default defineComponent({
   setup(props, context) {
-    const store = useStore();
+    const groupListAPIParams = reactive({
+      limit: 6,
+      offset: 0,
+      sort: "-created_at",
+      filter: {},
+    });
 
-    //onLoad make the default API call to populate groupList
-    store.dispatch(GET_GROUP_LIST);
+    //Function to make API call
+    const { data: groupList, mutate: getGroupList } = GroupApi.listGroup(
+      groupListAPIParams,
+      {}
+    );
 
     //Logic for search input
     const searchText = ref<string>("");
     const onSearch = (searchValue: string) => {
-      store.dispatch(GET_GROUP_LIST, {
-        filter: searchText.value
-          ? {
-              $or: [
-                { name: { $ilike: `%${searchText.value}%` } },
-                { alias: { $ilike: `%${searchText.value}%` } },
-              ],
-            }
-          : {},
-      });
+      groupListAPIParams.filter = searchText.value
+        ? {
+            $or: [
+              { name: { $ilike: `%${searchText.value}%` } },
+              { alias: { $ilike: `%${searchText.value}%` } },
+            ],
+          }
+        : {};
+      getGroupList();
     };
 
     return {
       searchText,
       onSearch,
-      groupList: computed(() => store.state.groups.groupList),
-      groupListAPIParams: computed(() => store.state.groups.groupListAPIParams),
+      groupList,
     };
   },
   data() {
@@ -74,5 +81,5 @@ export default {
     };
   },
   methods: {},
-};
+});
 </script>

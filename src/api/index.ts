@@ -1,7 +1,6 @@
 import { getEnv } from "~/modules/__env";
 import { axiosClient } from "~/modules/_axios";
 
-
 export const getAPIPath = (serviceName: string, path = "") => {
   const realm = getEnv().DEFAULT_REALM;
   return `${serviceName}/tenants/${realm}${path}`;
@@ -10,6 +9,11 @@ export const getAPIPath = (serviceName: string, path = "") => {
 export const getAxiosClient = () => {
   return axiosClient;
 };
+
+export const fetcher = (url, params, ...options) => {
+  return getAxiosClient().get(url, {params,...options,});
+}
+
 
 // export const ServiceURLWithoutTenant = (serviceName, path = "") => {
 //   return `${getApiPath(serviceName)}${path}`;

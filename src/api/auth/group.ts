@@ -1,15 +1,20 @@
-import { getAPIPath, getAxiosClient } from "~/api";
+import { fetcher, getAPIPath, getAxiosClient } from "~/api";
 import { AxiosRequestConfig } from "axios";
+import useSWRV from "swrv";
+
 const serviceAlias = "auth";
 
-const ListV2 = (params?: any, options?: AxiosRequestConfig) => {
-  //   params.limit = QUERY_MAX_LIMIT;
-  return getAxiosClient().get(getAPIPath(serviceAlias, "/groups/v2"), {
-    params,
-    ...options,
-  });
+const listGroup = (params?: any, options?: AxiosRequestConfig) => {
+  console.log(params)
+  const { data, error } = useSWRV([getAPIPath(serviceAlias, "/groups/v2"), params, options], fetcher);
+  return {
+    data,
+    isLoading: !error && !data,
+    isError: error
+  }
+}
+
+export const GroupApi = {
+  listGroup
 };
 
-export const Group = {
-  ListV2,
-};

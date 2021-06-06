@@ -32,6 +32,7 @@
     "openapi-client-axios-ts": "^3.9.9",
     "qs": "^6.10.1",
     "splitpanes": "^3.0.4",
+    "swrv": "^1.0.0-beta.8",
     "vue": "^3.0.11",
     "vue-axios": "^3.2.4",
     "vue-i18n": "^9.1.6",

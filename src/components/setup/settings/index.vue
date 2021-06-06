@@ -8,13 +8,17 @@
     </a-form-item>
 
     <div class="grid grid-cols-12" v-if="job.scope === 'custom'">
-      <a-form-item label="Include" name="include" class="col-span-6">
+      <a-form-item label="Include Metadata" name="include" class="col-span-6">
         <ScopeSelector
           v-model:value="job.include"
           :credential="credential"
         ></ScopeSelector>
       </a-form-item>
-      <a-form-item label="Exclude" name="exclude" class="col-span-6 ml-3">
+      <a-form-item
+        label="Exclude Metadata"
+        name="exclude"
+        class="col-span-6 ml-3"
+      >
         <ScopeSelector
           v-model:value="job.exclude"
           :credential="credential"
@@ -23,18 +27,14 @@
     </div>
 
     <div class="flex space-x-4">
-      <a-form-item label="Refresh Frequency" name="cron">
+      <a-form-item label="Refresh Frequency" name="cron" class="mb-2">
         <a-radio-group v-model:value="job.cron" @change="hangeCronChange">
           <template v-for="cron in Cron" :key="cron.id">
             <a-radio-button :value="cron.id">{{ cron.label }}</a-radio-button>
           </template>
-
-          <!-- <a-radio-button value="daily">Daily</a-radio-button>
-          <a-radio-button value="weekly">Weekly</a-radio-button>
-          <a-radio-button value="advanced">Advanced</a-radio-button> -->
         </a-radio-group>
       </a-form-item>
-      <a-form-item label="Timezone" name="cronTimezone" class="flex-grow">
+      <a-form-item label="Timezone" name="cronTimezone" class="fle">
         <TimezoneSelector
           v-model="job.cronTimezone"
           @change="handleTimezoneChange"
@@ -114,30 +114,16 @@
         <p class="mb-2 text-sm font-normal text-gray-400">Advanced</p>
       </div>
       <div class="flex space-x-4">
-        <a-form-item label="SQL Query" name="name" help="">
-          <a-switch v-model:checked="job.allowQuery"></a-switch>
-        </a-form-item>
-        <a-form-item label="Data Preview(50 rows)" name="name" help="">
-          <a-switch v-model:checked="job.allowPreview"></a-switch>
-        </a-form-item>
+        <a-checkbox v-model:checked="job.allowQuery"
+          >Allow SQL Query</a-checkbox
+        >
+
+        <a-checkbox v-model:checked="job.allowPreview"
+          >Allow Data Preview</a-checkbox
+        >
       </div>
-      <div class="flex space-x-5">
-        <a-form-item name="name">
-          <template #label>
-            Credential
-            <!-- <a-tooltip
-              title="Default Credential will be used to query the source. The
-      credential should have enough permissions to query the tables/views. You
-      can create granular access control policies for user/group level access control."
-              ><fa icon="fal info-circle" class="ml-1"></fa
-            ></a-tooltip> -->
-          </template>
-          <a-radio-group v-model:value="job.credentialType">
-            <a-radio-button value="default">Default Credential</a-radio-button>
-            <a-radio-button value="user">User Credential</a-radio-button>
-          </a-radio-group>
-        </a-form-item>
-        <a-form-item name="name" class="flex-grow">
+      <div class="flex mt-3 space-x-5">
+        <a-form-item name="name" class="">
           <template #label>
             Row Limit
             <a-tooltip
@@ -150,53 +136,19 @@
             v-model:value="job.rowLimit"
           ></a-input-number>
         </a-form-item>
+        <a-form-item name="name">
+          <template #label> Credential </template>
+          <a-radio-group v-model:value="job.credentialType">
+            <a-radio-button value="default">Default Credential</a-radio-button>
+            <a-radio-button value="user">User Credential</a-radio-button>
+          </a-radio-group>
+        </a-form-item>
       </div>
     </div>
-
-    <!-- <a-form-item label="Activity zone" name="region">
-      <a-select
-        v-model:value="formState.region"
-        placeholder="please select your zone"
-      >
-        <a-select-option value="shanghai">Zone one</a-select-option>
-        <a-select-option value="beijing">Zone two</a-select-option>
-      </a-select>
-    </a-form-item> -->
-    <!-- <a-form-item label="Activity time" required name="date1">
-      <a-date-picker
-        v-model:value="formState.date1"
-        show-time
-        type="date"
-        placeholder="Pick a date"
-        style="width: 100%"
-      />
-    </a-form-item>
-    <a-form-item label="Instant delivery" name="delivery">
-      <a-switch v-model:checked="formState.delivery" />
-    </a-form-item> -->
-    <!-- <a-form-item label="Activity type" name="type">
-      <a-checkbox-group v-model:value="formState.type">
-        <a-checkbox value="1" name="type">Online</a-checkbox>
-        <a-checkbox value="2" name="type">Promotion</a-checkbox>
-        <a-checkbox value="3" name="type">Offline</a-checkbox>
-      </a-checkbox-group>
-    </a-form-item>
-    <a-form-item label="Resources" name="resource">
-      <a-radio-group v-model:value="formState.resource">
-        <a-radio value="1">Sponsor</a-radio>
-        <a-radio value="2">Venue</a-radio>
-      </a-radio-group>
-    </a-form-item>
-    <a-form-item label="Activity form" name="desc">
-      <a-textarea v-model:value="formState.desc" />
-    </a-form-item>
-    <a-form-item :wrapper-col="{ span: 14, offset: 4 }">
-      <a-button type="primary" @click="onSubmit">Create</a-button>
-      <a-button style="margin-left: 10px" @click="resetForm">Reset</a-button>
-    </a-form-item> -->
   </a-form>
 </template>
-  <script lang="ts">
+
+<script lang="ts">
 // import { ValidateErrorEntity } from "ant-design-vue/es/form/interface";
 import { defineComponent } from "vue";
 
@@ -207,16 +159,7 @@ import TimePicker from "@/common/timepicker/index.vue";
 
 import parser from "cron-parser";
 import { Cron } from "~/constant/cron";
-// interface FormState {
 
-//   name: string;
-//   region: string | undefined;
-//   date1: Moment | undefined;
-//   delivery: boolean;
-//   type: string[];
-//   resource: string;
-//   desc: string;
-// }
 export default defineComponent({
   components: {
     ScopeSelector,
@@ -243,11 +186,6 @@ export default defineComponent({
   data() {
     return {
       Cron,
-      marks: {
-        1000: "1000rows",
-        10000: "10000",
-        37: "37°C",
-      },
       evaluatedCron: [],
       isCronError: false,
       job: {
@@ -308,7 +246,6 @@ export default defineComponent({
     handleTimezoneChange() {
       this.updateCronEval();
     },
-
     handleCronStringChange(e) {
       try {
         const options = {
@@ -340,30 +277,28 @@ export default defineComponent({
       this.updateCronEval();
     },
     getJob() {
-      this.job.arguments["include-filter"] = this.handleScopeSelector(
-        "include"
-      );
-      this.job.arguments["exclude-filter"] = this.handleScopeSelector(
-        "exclude"
-      );
+      this.job.arguments["include-filter"] =
+        this.handleScopeSelector("include");
+      this.job.arguments["exclude-filter"] =
+        this.handleScopeSelector("exclude");
       return this.job;
     },
-    // updateCronEval() {
-    //   const options = {
-    //     tz: this.job.cronTimezone,
-    //   };
-    //   try {
-    //     this.evaluatedCron = [];
-    //     const interval = parser.parseExpression(this.job.cronString, options);
-    //     this.evaluatedCron.push(interval.next().toString());
-    //     this.evaluatedCron.push(interval.next().toString());
-    //   } catch (err) {
-    //     this.evaluatedCron.push("N/A");
-    //     this.evaluatedCron.push("N/A");
+    updateCronEval() {
+      const options = {
+        tz: this.job.cronTimezone,
+      };
+      try {
+        this.evaluatedCron = [];
+        const interval = parser.parseExpression(this.job.cronString, options);
+        this.evaluatedCron.push(interval.next().toString());
+        this.evaluatedCron.push(interval.next().toString());
+      } catch (err) {
+        this.evaluatedCron.push("N/A");
+        this.evaluatedCron.push("N/A");
 
-    //     console.log("Error: " + err.message);
-    //   }
-    // },
+        console.log("Error: " + err.message);
+      }
+    },
     handleTimeChange(time) {
       if (time.data.HH) {
         const options = {
@@ -405,8 +340,6 @@ export default defineComponent({
       const options = {
         tz: this.job.cronTimezone,
       };
-
-      console.log(this.job);
       try {
         this.evaluatedCron = [];
         const interval = parser.parseExpression(this.job.cronString, options);
@@ -415,91 +348,9 @@ export default defineComponent({
       } catch (err) {
         this.evaluatedCron.push("N/A");
         this.evaluatedCron.push("N/A");
-
         console.log("Error: " + err.message);
       }
     },
   },
-  //   setup() {
-  //     const formRef = ref();
-  //     const formState: UnwrapRef<FormState> = reactive({
-  //       name: "",
-  //       region: undefined,
-  //       date1: undefined,
-  //       delivery: false,
-  //       type: [],
-  //       resource: "",
-  //       desc: "",
-  //     });
-  //     const rules = {
-  //       name: [
-  //         {
-  //           required: true,
-  //           message: "Please input Activity name",
-  //           trigger: "blur",
-  //         },
-  //         { min: 3, max: 5, message: "Length should be 3 to 5", trigger: "blur" },
-  //       ],
-  //       region: [
-  //         {
-  //           required: true,
-  //           message: "Please select Activity zone",
-  //           trigger: "change",
-  //         },
-  //       ],
-  //       date1: [
-  //         {
-  //           required: true,
-  //           message: "Please pick a date",
-  //           trigger: "change",
-  //           type: "object",
-  //         },
-  //       ],
-  //       type: [
-  //         {
-  //           type: "array",
-  //           required: true,
-  //           message: "Please select at least one activity type",
-  //           trigger: "change",
-  //         },
-  //       ],
-  //       resource: [
-  //         {
-  //           required: true,
-  //           message: "Please select activity resource",
-  //           trigger: "change",
-  //         },
-  //       ],
-  //       desc: [
-  //         {
-  //           required: true,
-  //           message: "Please input activity form",
-  //           trigger: "blur",
-  //         },
-  //       ],
-  //     };
-  //     const onSubmit = () => {
-  //       formRef.value
-  //         .validate()
-  //         .then(() => {
-  //           console.log("values", formState, toRaw(formState));
-  //         })
-  //         .catch((error: ValidateErrorEntity<FormState>) => {
-  //           console.log("error", error);
-  //         });
-  //     };
-  //     const resetForm = () => {
-  //       formRef.value.resetFields();
-  //     };
-  //     return {
-  //       formRef,
-  //       labelCol: { span: 4 },
-  //       wrapperCol: { span: 14 },
-  //       other: "",
-  //       formState,
-  //       rules,
-  //       onSubmit,
-  //       resetForm,
-  //     };
 });
 </script>

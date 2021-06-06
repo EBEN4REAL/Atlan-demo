@@ -48,6 +48,7 @@ export const actions: ActionTree<State, RootState> & Actions = {
       });
       if (response) {
         const data: Components.Schemas.AtlasSearchResult = response.data;
+        console.log(data);
         commit(MutationTypes.CONNECTION_SET_LIST, data);
       }
     } catch (err) {

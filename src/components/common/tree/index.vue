@@ -10,16 +10,13 @@
     @select="handleNodeSelect"
     :disabled="disabled"
   >
-    <template #title="{ title, image, isLeaf }" class="flex">
-      <span v-if="!isLeaf"
-        ><img :src="image" class="h-4 w-auto float-left mr-1"
-      /></span>
-      <span class="text-dark-400 text-base leading-none" v-if="!isLeaf">{{
-        title
-      }}</span>
-      <span class="text-dark-400 text-sm leading-none" v-if="isLeaf">{{
-        title
-      }}</span>
+    <template #title="{ title, image, isLeaf }" class="">
+      <div class="flex align-center" v-if="!isLeaf">
+        <span><img :src="image" class="float-left w-auto h-4 mr-1" /></span>
+
+        <span class="tracking-wider text-gray-700">{{ title }}</span>
+      </div>
+      <span class="text-sm leading-none text-gray-600" v-else>{{ title }}</span>
     </template>
   </a-tree>
 </template>
@@ -83,59 +80,22 @@ export default defineComponent({
     },
     handleExpand(expanded, node) {
       if (expanded.includes("_node_select_")) {
-        console.log(expanded);
-        if (
-          this.selectedKeys.includes(node.node.eventKey) &&
-          !this.expandedKeys.includes(node.node.eventKey)
-        ) {
-          this.expandedKeys.push(node.node.eventKey);
+        const key = node.node.eventKey;
+        const isSelected = this.selectedKeys.includes(key);
+        const isExpanded = this.expandedKeys.includes(key);
+
+        if (isSelected && !isExpanded) {
+          this.expandedKeys.push(key);
           this.expandedKeys = [...this.expandedKeys];
-        } else if (
-          !this.selectedKeys.includes(node.node.eventKey) &&
-          this.expandedKeys.includes(node.node.eventKey)
-        ) {
-          const index = this.expandedKeys.indexOf(node.node.eventKey);
+        } else if (!isSelected && isExpanded) {
+          const index = this.expandedKeys.indexOf(key);
           this.expandedKeys.splice(index, 1);
-        }
-      }
-
-      //   if (
-      //     this.selectedKeys.includes(node.node.eventKey) &&
-      //     !this.expandedKeys.includes(node.node.eventKey)
-      //   ) {
-      //     this.expandedKeys.push(node.node.eventKey);
-      //     this.expandedKeys = [...this.expandedKeys];
-      //   } else if (
-      //     !this.selectedKeys.includes(node.node.eventKey) &&
-      //     this.expandedKeys.includes(node.node.eventKey)
-      //   ) {
-      //     const index = this.expandedKeys.indexOf(node.node.eventKey);
-      //     this.expandedKeys.splice(index, 1);
-      //   }
-      //     console.log("handleExpand", this.expandedKeys, node.node.eventKey);
-      //   console.log(expanded);
-
-      //   console.log(this.list);
-
-      //     const found = this.list.find((item) => expanded.includes(item.guid));
-
-      return;
-      //   //check if the expanded list contains any other glossary guid in case of a glossary node - accordion
-      //   if (node.node.dataRef.type === "glossary") {
-      //     const found = this.list.find((item) => expanded.includes(item.guid));
-      //     if (found) {
-      //       const index = this.expandedKeys.indexOf(found.guid);
-      //       this.expandedKeys.splice(index, 1);
-      //     }
-      //   }
-
-      //   this.expandedKeys.push(node.node.eventKey);
-      if (!this.expandedKeys.includes(node.node.eventKey)) {
-        this.expandedKeys.push(node.node.eventKey);
-      } else {
-        const index = this.expandedKeys.indexOf(node.node.eventKey);
-        if (index > -1) {
+        } else if (isSelected && isExpanded) {
+          const index = this.expandedKeys.indexOf(key);
           this.expandedKeys.splice(index, 1);
+        } else if (!isSelected && !isExpanded) {
+          this.expandedKeys.push(key);
+          this.expandedKeys = [...this.expandedKeys];
         }
       }
       return;

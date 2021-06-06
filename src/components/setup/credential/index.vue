@@ -7,6 +7,7 @@
       :rules="nameRules"
     >
       <a-input
+        autofocus
         v-model:value="credential.name"
         @input="credential.name = $event.target.value.toLowerCase().trim()"
       />
@@ -98,7 +99,7 @@
     </div>
 
     <div
-      class="grid grid-cols-12 px-3 pt-3 border border-gray-200 rounded flex-nowrap bg-gray-50"
+      class="grid grid-cols-12 px-3 pt-3 border border-gray-200 rounded  flex-nowrap bg-gray-50"
     >
       <div class="col-span-12">
         <p class="mb-2 text-sm font-normal text-gray-400">Advanced</p>
@@ -153,7 +154,8 @@
     </div>
   </a-form>
 </template>
-  <script lang="ts">
+
+<script lang="ts">
 // import { ValidateErrorEntity } from "ant-design-vue/es/form/interface";
 import { defineComponent } from "vue";
 
@@ -272,16 +274,16 @@ export default defineComponent({
     };
   },
   computed: {
-    hostLocal():any{
+    hostLocal(): any {
       return this.host(this.item);
     },
-    portLocal():any {
+    portLocal(): any {
       return this.port(this.item);
     },
-    extraAttributesLocal():any{
+    extraAttributesLocal(): any {
       return this.extraAttributes(this.item);
     },
-    authAttributesLocal():any {
+    authAttributesLocal(): any {
       return this.authAttributes(this.item, this.credential.auth_type);
     },
   },
@@ -290,6 +292,7 @@ export default defineComponent({
       try {
         await this.$refs.form.validate();
         const resp = await this.handleTest();
+        console.log(this.credential);
         if (resp) {
           return this.credential;
         }

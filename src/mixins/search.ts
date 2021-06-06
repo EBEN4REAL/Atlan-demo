@@ -7,7 +7,7 @@ import { Search } from "~/api/atlas/search";
 export default defineComponent({
     props: {},
     methods: {
-        async handleSearch(body: Components.Schemas.SearchParameters, options: any) {
+        async handleAsyncSearch(body?: Components.Schemas.SearchParameters, options?: any) {
             try {
                 const response = await Search.Basic(body, options);
                 return response;

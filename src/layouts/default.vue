@@ -26,8 +26,9 @@
           size="large"
           type="ghost"
           @click="handleNewPage"
-          ><fa icon="fal plus" class="text-white"></fa
-        ></a-button>
+        >
+          <fa icon="fal plug" class="text-white"></fa>
+        </a-button>
       </div>
     </a-layout-sider>
     <a-layout :style="{ marginLeft: '60px', height: '100vh' }">
@@ -45,6 +46,7 @@ import KeycloakMixin from "~/mixins/keycloak";
 import PageLoader from "@common/loaders/page.vue";
 import Sidebar from "./sidebar/index.vue";
 import UserPersonalAvatar from "~/components/common/avatar/me.vue";
+import { useStore } from "~/store";
 
 export default defineComponent({
   name: "HelloWorld",
@@ -62,7 +64,7 @@ export default defineComponent({
   mounted() {},
   methods: {
     handleNewPage() {
-      this.$router.push("/setup/new");
+      this.$router.push("/connections");
     },
   },
 

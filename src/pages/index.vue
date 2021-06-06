@@ -1,7 +1,7 @@
 <template>
-  <div class="grid grid-cols-7 h-full">
-    <div class="col-span-2 h-full bg-gray-50 shadow-inner">
-      <div class="px-5 text-center mt-4">
+  <div class="grid h-full grid-cols-12">
+    <div class="h-full col-span-3 shadow-inner bg-gray-50">
+      <div class="px-5 mt-4 text-center">
         <img :src="displayNameHTML" class="mr-0" />
       </div>
 
@@ -25,7 +25,7 @@
         </a-menu-item-group>
       </a-menu>
     </div>
-    <div class="col-span-5 bg-white">
+    <div class="col-span-9 bg-white">
       <SearchBox></SearchBox>
       <div class="text-base">Good Morning, Varun</div>
     </div>

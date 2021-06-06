@@ -14,6 +14,18 @@ const TestNetwork = (
   );
 };
 
+const Setup = (
+  body?: Components.Schemas.ConnectionSetup,
+  options?: AxiosRequestConfig
+) => {
+  return getAxiosClient().post(
+    getAPIPath(serviceAlias, `/connections`),
+    body,
+    options
+  );
+};
+
+
 // const Basic = (
 //   body?: Components.Schemas.SearchParameters,
 //   options?: AxiosRequestConfig
@@ -73,4 +85,5 @@ const TestNetwork = (
 
 export const Connection = {
   TestNetwork,
+  Setup
 };

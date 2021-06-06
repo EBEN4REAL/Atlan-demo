@@ -1,26 +1,40 @@
 <template>
-  <div class="text-center px-10">
+  <div class="px-10 text-center">
     <div class="mb-2">
+      <a-spin size="large" class="text-gray-500" v-if="status === 'loading'" />
       <fa
-        v-if="status === 'success'"
+        v-else-if="status === 'success'"
         icon="fas check-circle"
         class="text-green-400 text-7xl"
         :class="$style.animatedicon"
       ></fa>
-      <a-spin
-        size="large"
-        class="text-gray-500"
-        v-if="status === 'loading'"
-      /><span class="text-xl ml-3"></span>
+      <fa
+        v-else-if="status === 'error'"
+        icon="fas exclamation-circle"
+        class="text-red-400 text-7xl"
+        :class="$style.animatedicon"
+      ></fa>
     </div>
-    <div class="">
-      <p class="mb-0 text-gray-500">
-        Securely saving your credentials, setting up connectivity and starting
-        your metadata refresh
+    <div class="mt-3">
+      <p class="mb-0 text-base text-gray-500" v-if="status === 'loading'">
+        Securely saving your credentials, connecting to the source and starting
+        your metadata refresh.
       </p>
-
-      <div ref="animationPoint" class="flex items-center mb-3 mt-2">
-        <img :src="logo(item)" class="mr-2" alt="Image" />
+      <div v-if="status === 'success'">
+        <p class="mb-2 text-base text-gray-500">
+          Metadata refresh in progress. You can change the settings anytime in
+          future.
+        </p>
+        <a-button @click="handleProgress">Track Progress</a-button>
+      </div>
+      <div v-if="status === 'error'">
+        <p class="mb-2 text-base text-red-400">
+          {{ error }}
+        </p>
+        <a-button @click="handleBack">Go back</a-button>
+      </div>
+      <!-- <div ref="animationPoint" class="flex items-center mt-2 mb-3">
+        <img :src="logo(item)" class="w-auto h-10 mr-2" alt="Image" />
 
         <a-progress
           :stroke-color="{
@@ -32,12 +46,14 @@
           status="active"
         />
         <img class="ml-2" alt="Image" />
-      </div>
+      </div> -->
     </div>
   </div>
 </template>
-    <script lang="ts">
+
+<script lang="ts">
 import { defineComponent } from "vue";
+import { Connection } from "~/api/auth/connection";
 import ConnectorMixin from "~/mixins/connector";
 
 export default defineComponent({
@@ -51,25 +67,79 @@ export default defineComponent({
         return {};
       },
     },
-    status: {
-      type: String,
+    credential: {
+      type: Object,
       required: false,
       default(): any {
-        return "loading";
+        return {};
       },
     },
-    statusMessage: {
-      type: String,
+    job: {
+      type: Object,
       required: false,
       default(): any {
-        return "";
+        return {};
       },
     },
   },
   data() {
-    return {};
+    return {
+      status: "",
+      error: "",
+    };
   },
-  methods: {},
+  mounted() {
+    this.status = "loading";
+    console.log(this.credential);
+    this.handleConnectionSetup();
+  },
+  emits: ["back"],
+  methods: {
+    handleBack() {
+      this.$emit("back");
+    },
+    handleProgress() {
+      this.$router.push("/connections");
+    },
+    async handleConnectionSetup() {
+      try {
+        let resp = await Connection.Setup({
+          connection: {
+            name: this.credential.name,
+            host: this.credential.host,
+            port: this.credential.port,
+            allowQuery: this.job.allowQuery,
+            allowPreview: this.job.allowPreview,
+            extra: this.credential.extra,
+            previewConfig: {},
+            queryConfig: {},
+          },
+          credential: {
+            authType: this.credential.auth_type,
+            connType: this.credential.conn_type,
+            extra: this.credential.extra,
+            login: this.credential.login,
+            password: this.credential.password,
+          },
+          job: {
+            botQualifiedName: this.attributes(this.item).qualifiedName,
+            isCron: this.job.isCron,
+            triggerNow: this.job.triggerNow,
+            cronString: this.job.cronString,
+            cronTimezone: this.job.cronTimezone,
+          },
+        });
+        this.status = "success";
+      } catch (err) {
+        this.status = "error";
+        if (err?.response?.data) {
+          this.error = `${err?.response?.data?.error}(Code - ${err?.response?.data?.code})`;
+        } else {
+          this.error = err;
+        }
+      }
+    },
+  },
 });
 </script>
 

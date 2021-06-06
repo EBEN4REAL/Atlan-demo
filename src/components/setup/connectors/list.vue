@@ -1,16 +1,20 @@
 <template>
-  <div class="flex justify-between w-full mb-5">
+  <div class="flex justify-between w-full px-6 py-4 border-b bg-gray-50">
     <a-input-search
-    size="large"
-    class="mr-4"
-    placeholder="Search Connectors"
-    v-model:value="searchText"
-    @change="handleSearch"
-  ></a-input-search>
-    <CategorySelector style="min-width: 200px;" size="large" v-model:value="category"></CategorySelector>
-   
+      size="default"
+      placeholder="Search Connectors"
+      v-model:value="searchText"
+      @change="handleChangeSearchText"
+    ></a-input-search>
+    <!-- <CategorySelector style="min-width: 200px;" v-model:value="category"></CategorySelector> -->
   </div>
-  <div class="flex items-center space-x-2 align-middle">
+  <Loading v-if="loading"></Loading>
+  <ErrorView v-else-if="!loading && error" :error="error"></ErrorView>
+  <EmptyView
+    v-else-if="!loading && !error && list.length == 0"
+    empty="No connectors found"
+  ></EmptyView>
+  <div class="flex items-center px-6 py-4 space-x-3 align-middle" v-else>
     <template v-for="item in list" :key="item.guid">
       <ItemView :item="item" @click="handleSelect(item)"></ItemView>
     </template>
@@ -18,48 +22,91 @@
 </template>
             
 <script lang="ts">
-import { ActionTypes as ConnectorActionTypes } from "~/store/modules/connector/types-action";
 import { defineComponent } from "vue";
-import { useStore } from "~/store";
 import ItemView from "./item.vue";
-import CategorySelector  from "@common/selector/category/index.vue";
+import CategorySelector from "@common/selector/category/index.vue";
 
-import SearchMixin  from "~/mixins/search";
+import Loading from "@common/loaders/section.vue";
+import ErrorView from "@common/error/index.vue";
+import EmptyView from "@common/empty/index.vue";
+
+import { ConnectorAttributes } from "~/constant/projection";
+import { Search } from "~/api/atlas/search";
+import { Components } from "~/api/atlas/client";
 
 export default defineComponent({
-  mixins: [SearchMixin],
   components: {
     ItemView,
     CategorySelector,
+    Loading,
+    ErrorView,
+    EmptyView,
   },
   data() {
     return {
       searchText: "",
       category: "",
+      loading: false,
+      error: "",
       list: [],
-    }
-  },
-  computed: {
-    list() {
-      const store = useStore();
-      return store.getters.getConnectorList;
-    },
+      debounce: undefined as any,
+      cancelToken: undefined,
+    };
   },
   emits: ["select"],
   mounted() {
-    const store = useStore();
-    store.dispatch(ConnectorActionTypes.CONNECTOR_FETCH_LIST);
+    this.handleSearch();
   },
   methods: {
-    getFiltered() {
-
-    },
-    handleSelect(item) {
+    handleSelect(item: any) {
       this.$emit("select", item);
     },
-    handleSearch() {
-      console.log()
-    }
+    handleChangeSearchText() {
+      clearTimeout(this.debounce);
+      this.debounce = setTimeout(() => {
+        this.handleSearch();
+      }, 100);
+    },
+    async handleSearch() {
+      try {
+        if (this.loading && this.cancelToken) {
+          this.cancelToken?.cancel("CANCELLED");
+        } else {
+          this.loading = true;
+          this.error = "";
+          this.cancelToken = this.$axios.CancelToken.source();
+        }
+        let body: Components.Schemas.SearchParameters = {
+          typeName: "AtlanBot",
+          excludeDeletedEntities: true,
+          includeClassificationAttributes: true,
+          includeSubClassifications: true,
+          includeSubTypes: false,
+          limit: 50,
+          offset: 0,
+          query: this.searchText,
+          attributes: ConnectorAttributes,
+          entityFilters: {},
+        };
+        const res = await Search.Basic(body, {
+          cache: true,
+          cancelToken: this.cancelToken.token,
+        });
+        if (res?.data?.entities) {
+          this.list = res.data.entities;
+        } else {
+          this.list = [];
+        }
+        this.loading = false;
+      } catch (error) {
+        this.loading = false;
+        if (error?.message === "CANCELLED") {
+          this.error = "";
+        } else {
+          this.error = error;
+        }
+      }
+    },
   },
 });
 </script>

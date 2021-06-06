@@ -1,5 +1,6 @@
 import { defineComponent, getCurrentInstance, PropType } from "vue";
 import { Components } from "~/api/atlas/client";
+import { SourceList } from "~/constant/source";
 import { useStore } from "~/store";
 import { AtlanConnectionAttributes, AtlanTableAttributes } from "~/types/asset";
 
@@ -17,6 +18,12 @@ export default defineComponent({
     connectionList() {
       const store = useStore();
       return store.getters.getConnectionList || [];
+    },
+    logo(item) {
+      console.log(item);
+      let found = SourceList.find((src) => src.id == this.integrationName(item));
+      console.log(found);
+      return found?.image;
     },
     sourceList() {
       return [

@@ -6606,22 +6606,22 @@ declare namespace Components {
      * IN, LIKE, startsWith, endsWith, CONTAINS can only be used with strings or text
      */
     export type Operator =
-      | "LT"
-      | "GT"
-      | "LTE"
-      | "GTE"
-      | "EQ"
-      | "NEQ"
-      | "IN"
-      | "LIKE"
-      | "STARTS_WITH"
-      | "ENDS_WITH"
-      | "CONTAINS"
-      | "NOT_CONTAINS"
-      | "CONTAINS_ANY"
-      | "CONTAINS_ALL"
-      | "IS_NULL"
-      | "NOT_NULL";
+      | "lt"
+      | "gt"
+      | "lte"
+      | "gte"
+      | "eq"
+      | "neq"
+      | "in"
+      | "like"
+      | "starts_with"
+      | "ends_with"
+      | "contains"
+      | "not_contains"
+      | "contains_any"
+      | "contains_all"
+      | "is_null"
+      | "not_null";
     /**
      * PList
      * Paginated-list, for returning search results.
@@ -8384,7 +8384,7 @@ export interface OperationMethods {
   "executeSavedSearchByName"(
     parameters?: Parameters<
       Paths.ExecuteSavedSearchByName.PathParameters &
-        Paths.ExecuteSavedSearchByName.QueryParameters
+      Paths.ExecuteSavedSearchByName.QueryParameters
     > | null,
     data?: any,
     config?: AxiosRequestConfig
@@ -8501,7 +8501,7 @@ export interface OperationMethods {
   "getEntitiesByUniqueAttributes"(
     parameters?: Parameters<
       Paths.GetEntitiesByUniqueAttributes.PathParameters &
-        Paths.GetEntitiesByUniqueAttributes.QueryParameters
+      Paths.GetEntitiesByUniqueAttributes.QueryParameters
     > | null,
     data?: any,
     config?: AxiosRequestConfig
@@ -8549,7 +8549,7 @@ export interface OperationMethods {
   "partialUpdateEntityAttrByGuid"(
     parameters?: Parameters<
       Paths.PartialUpdateEntityAttrByGuid.PathParameters &
-        Paths.PartialUpdateEntityAttrByGuid.QueryParameters
+      Paths.PartialUpdateEntityAttrByGuid.QueryParameters
     > | null,
     data?: any,
     config?: AxiosRequestConfig
@@ -8570,7 +8570,7 @@ export interface OperationMethods {
   "addOrUpdateBusinessAttributes"(
     parameters?: Parameters<
       Paths.AddOrUpdateBusinessAttributes.PathParameters &
-        Paths.AddOrUpdateBusinessAttributes.QueryParameters
+      Paths.AddOrUpdateBusinessAttributes.QueryParameters
     > | null,
     data?: any,
     config?: AxiosRequestConfig
@@ -8617,7 +8617,7 @@ export interface OperationMethods {
   "deleteClassification"(
     parameters?: Parameters<
       Paths.DeleteClassification.PathParameters &
-        Paths.DeleteClassification.QueryParameters
+      Paths.DeleteClassification.QueryParameters
     > | null,
     data?: any,
     config?: AxiosRequestConfig
@@ -8710,7 +8710,7 @@ export interface OperationMethods {
   "getByUniqueAttributes"(
     parameters?: Parameters<
       Paths.GetByUniqueAttributes.PathParameters &
-        Paths.GetByUniqueAttributes.QueryParameters
+      Paths.GetByUniqueAttributes.QueryParameters
     > | null,
     data?: any,
     config?: AxiosRequestConfig
@@ -8929,7 +8929,7 @@ export interface OperationMethods {
   "getRelatedCategories"(
     parameters?: Parameters<
       Paths.GetRelatedCategories.PathParameters &
-        Paths.GetRelatedCategories.QueryParameters
+      Paths.GetRelatedCategories.QueryParameters
     > | null,
     data?: any,
     config?: AxiosRequestConfig
@@ -8942,7 +8942,7 @@ export interface OperationMethods {
   "getCategoryTerms"(
     parameters?: Parameters<
       Paths.GetCategoryTerms.PathParameters &
-        Paths.GetCategoryTerms.QueryParameters
+      Paths.GetCategoryTerms.QueryParameters
     > | null,
     data?: any,
     config?: AxiosRequestConfig
@@ -9035,7 +9035,7 @@ export interface OperationMethods {
   "getEntitiesAssignedWithTerm"(
     parameters?: Parameters<
       Paths.GetEntitiesAssignedWithTerm.PathParameters &
-        Paths.GetEntitiesAssignedWithTerm.QueryParameters
+      Paths.GetEntitiesAssignedWithTerm.QueryParameters
     > | null,
     data?: any,
     config?: AxiosRequestConfig
@@ -9078,7 +9078,7 @@ export interface OperationMethods {
   "getRelatedTerms"(
     parameters?: Parameters<
       Paths.GetRelatedTerms.PathParameters &
-        Paths.GetRelatedTerms.QueryParameters
+      Paths.GetRelatedTerms.QueryParameters
     > | null,
     data?: any,
     config?: AxiosRequestConfig
@@ -9121,7 +9121,7 @@ export interface OperationMethods {
   "getGlossaryCategories"(
     parameters?: Parameters<
       Paths.GetGlossaryCategories.PathParameters &
-        Paths.GetGlossaryCategories.QueryParameters
+      Paths.GetGlossaryCategories.QueryParameters
     > | null,
     data?: any,
     config?: AxiosRequestConfig
@@ -9134,7 +9134,7 @@ export interface OperationMethods {
   "getGlossaryCategoriesHeaders"(
     parameters?: Parameters<
       Paths.GetGlossaryCategoriesHeaders.PathParameters &
-        Paths.GetGlossaryCategoriesHeaders.QueryParameters
+      Paths.GetGlossaryCategoriesHeaders.QueryParameters
     > | null,
     data?: any,
     config?: AxiosRequestConfig
@@ -9167,7 +9167,7 @@ export interface OperationMethods {
   "getGlossaryTerms"(
     parameters?: Parameters<
       Paths.GetGlossaryTerms.PathParameters &
-        Paths.GetGlossaryTerms.QueryParameters
+      Paths.GetGlossaryTerms.QueryParameters
     > | null,
     data?: any,
     config?: AxiosRequestConfig
@@ -9180,7 +9180,7 @@ export interface OperationMethods {
   "getGlossaryTermHeaders"(
     parameters?: Parameters<
       Paths.GetGlossaryTermHeaders.PathParameters &
-        Paths.GetGlossaryTermHeaders.QueryParameters
+      Paths.GetGlossaryTermHeaders.QueryParameters
     > | null,
     data?: any,
     config?: AxiosRequestConfig
@@ -9199,7 +9199,7 @@ export interface OperationMethods {
   "getLineageByUniqueAttribute"(
     parameters?: Parameters<
       Paths.GetLineageByUniqueAttribute.PathParameters &
-        Paths.GetLineageByUniqueAttribute.QueryParameters
+      Paths.GetLineageByUniqueAttribute.QueryParameters
     > | null,
     data?: any,
     config?: AxiosRequestConfig
@@ -9212,7 +9212,7 @@ export interface OperationMethods {
   "getLineageGraph"(
     parameters?: Parameters<
       Paths.GetLineageGraph.PathParameters &
-        Paths.GetLineageGraph.QueryParameters
+      Paths.GetLineageGraph.QueryParameters
     > | null,
     data?: any,
     config?: AxiosRequestConfig
@@ -9600,7 +9600,7 @@ export interface PathsDictionary {
     "get"(
       parameters?: Parameters<
         Paths.ExecuteSavedSearchByName.PathParameters &
-          Paths.ExecuteSavedSearchByName.QueryParameters
+        Paths.ExecuteSavedSearchByName.QueryParameters
       > | null,
       data?: any,
       config?: AxiosRequestConfig
@@ -9623,7 +9623,7 @@ export interface PathsDictionary {
     "get"(
       parameters?: Parameters<
         Paths.GetSavedSearch.PathParameters &
-          Paths.GetSavedSearch.QueryParameters
+        Paths.GetSavedSearch.QueryParameters
       > | null,
       data?: any,
       config?: AxiosRequestConfig
@@ -9736,7 +9736,7 @@ export interface PathsDictionary {
     "get"(
       parameters?: Parameters<
         Paths.GetEntitiesByUniqueAttributes.PathParameters &
-          Paths.GetEntitiesByUniqueAttributes.QueryParameters
+        Paths.GetEntitiesByUniqueAttributes.QueryParameters
       > | null,
       data?: any,
       config?: AxiosRequestConfig
@@ -9800,7 +9800,7 @@ export interface PathsDictionary {
     "put"(
       parameters?: Parameters<
         Paths.PartialUpdateEntityAttrByGuid.PathParameters &
-          Paths.PartialUpdateEntityAttrByGuid.QueryParameters
+        Paths.PartialUpdateEntityAttrByGuid.QueryParameters
       > | null,
       data?: any,
       config?: AxiosRequestConfig
@@ -9821,7 +9821,7 @@ export interface PathsDictionary {
     "post"(
       parameters?: Parameters<
         Paths.AddOrUpdateBusinessAttributes.PathParameters &
-          Paths.AddOrUpdateBusinessAttributes.QueryParameters
+        Paths.AddOrUpdateBusinessAttributes.QueryParameters
       > | null,
       data?: any,
       config?: AxiosRequestConfig
@@ -9854,7 +9854,7 @@ export interface PathsDictionary {
     "delete"(
       parameters?: Parameters<
         Paths.DeleteClassification.PathParameters &
-          Paths.DeleteClassification.QueryParameters
+        Paths.DeleteClassification.QueryParameters
       > | null,
       data?: any,
       config?: AxiosRequestConfig
@@ -9985,7 +9985,7 @@ export interface PathsDictionary {
     "get"(
       parameters?: Parameters<
         Paths.GetByUniqueAttributes.PathParameters &
-          Paths.GetByUniqueAttributes.QueryParameters
+        Paths.GetByUniqueAttributes.QueryParameters
       > | null,
       data?: any,
       config?: AxiosRequestConfig
@@ -10102,7 +10102,7 @@ export interface PathsDictionary {
     "get"(
       parameters?: Parameters<
         Paths.GetAuditEvents.PathParameters &
-          Paths.GetAuditEvents.QueryParameters
+        Paths.GetAuditEvents.QueryParameters
       > | null,
       data?: any,
       config?: AxiosRequestConfig
@@ -10207,7 +10207,7 @@ export interface PathsDictionary {
     "get"(
       parameters?: Parameters<
         Paths.GetRelatedCategories.PathParameters &
-          Paths.GetRelatedCategories.QueryParameters
+        Paths.GetRelatedCategories.QueryParameters
       > | null,
       data?: any,
       config?: AxiosRequestConfig
@@ -10222,7 +10222,7 @@ export interface PathsDictionary {
     "get"(
       parameters?: Parameters<
         Paths.GetCategoryTerms.PathParameters &
-          Paths.GetCategoryTerms.QueryParameters
+        Paths.GetCategoryTerms.QueryParameters
       > | null,
       data?: any,
       config?: AxiosRequestConfig
@@ -10339,7 +10339,7 @@ export interface PathsDictionary {
     "get"(
       parameters?: Parameters<
         Paths.GetEntitiesAssignedWithTerm.PathParameters &
-          Paths.GetEntitiesAssignedWithTerm.QueryParameters
+        Paths.GetEntitiesAssignedWithTerm.QueryParameters
       > | null,
       data?: any,
       config?: AxiosRequestConfig
@@ -10374,7 +10374,7 @@ export interface PathsDictionary {
     "get"(
       parameters?: Parameters<
         Paths.GetRelatedTerms.PathParameters &
-          Paths.GetRelatedTerms.QueryParameters
+        Paths.GetRelatedTerms.QueryParameters
       > | null,
       data?: any,
       config?: AxiosRequestConfig
@@ -10421,7 +10421,7 @@ export interface PathsDictionary {
     "get"(
       parameters?: Parameters<
         Paths.GetGlossaryCategories.PathParameters &
-          Paths.GetGlossaryCategories.QueryParameters
+        Paths.GetGlossaryCategories.QueryParameters
       > | null,
       data?: any,
       config?: AxiosRequestConfig
@@ -10436,7 +10436,7 @@ export interface PathsDictionary {
     "get"(
       parameters?: Parameters<
         Paths.GetGlossaryCategoriesHeaders.PathParameters &
-          Paths.GetGlossaryCategoriesHeaders.QueryParameters
+        Paths.GetGlossaryCategoriesHeaders.QueryParameters
       > | null,
       data?: any,
       config?: AxiosRequestConfig
@@ -10475,7 +10475,7 @@ export interface PathsDictionary {
     "get"(
       parameters?: Parameters<
         Paths.GetGlossaryTerms.PathParameters &
-          Paths.GetGlossaryTerms.QueryParameters
+        Paths.GetGlossaryTerms.QueryParameters
       > | null,
       data?: any,
       config?: AxiosRequestConfig
@@ -10490,7 +10490,7 @@ export interface PathsDictionary {
     "get"(
       parameters?: Parameters<
         Paths.GetGlossaryTermHeaders.PathParameters &
-          Paths.GetGlossaryTermHeaders.QueryParameters
+        Paths.GetGlossaryTermHeaders.QueryParameters
       > | null,
       data?: any,
       config?: AxiosRequestConfig
@@ -10511,7 +10511,7 @@ export interface PathsDictionary {
     "get"(
       parameters?: Parameters<
         Paths.GetLineageByUniqueAttribute.PathParameters &
-          Paths.GetLineageByUniqueAttribute.QueryParameters
+        Paths.GetLineageByUniqueAttribute.QueryParameters
       > | null,
       data?: any,
       config?: AxiosRequestConfig
@@ -10526,7 +10526,7 @@ export interface PathsDictionary {
     "get"(
       parameters?: Parameters<
         Paths.GetLineageGraph.PathParameters &
-          Paths.GetLineageGraph.QueryParameters
+        Paths.GetLineageGraph.QueryParameters
       > | null,
       data?: any,
       config?: AxiosRequestConfig

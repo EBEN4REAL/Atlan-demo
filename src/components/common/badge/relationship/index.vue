@@ -1,6 +1,6 @@
 <template>
   <div class="flex flex-wrap items-center align-middle">
-    <div class="flex flex-wrap items-center text-gray-700">
+    <div class="flex flex-wrap items-center text-gray-500">
       <!-- <img
         :src="getConnectorImage(getConnectorName(item))"
         :class="$style.assetConnectionImage"
@@ -9,11 +9,13 @@
       <!-- <div>{{ relationshipList(item) }}</div> -->
 
       <template v-for="(part, index) in qArray" :key="part.id">
-        <div class="text-xs tracking-tight text-gray-600">
+        <div class="text-xs tracking-tight text-gray-500">
           <a-tooltip placement="bottom" :title="part.label">
-            <span :class="index == qArray.length - 1?'font-semibold' : ''">{{ part.value }}</span></a-tooltip
+            <span :class="index == qArray.length - 1 ? 'font-semibold' : ''">{{
+              part.value
+            }}</span></a-tooltip
           >
-          <span v-if="index !== qArray.length - 1" class="mx-1">
+          <span v-if="index !== qArray.length - 1" class="mx-1 text-gray-300">
             <fa icon="fal chevron-right"></fa>
           </span>
         </div>

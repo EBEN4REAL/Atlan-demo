@@ -18,11 +18,14 @@
         <ErrorView :error="error"></ErrorView>
       </div>
       <div class="mt-2" v-else>
-        <ConnectionTree :searchText="searchText"></ConnectionTree>
+        <ConnectionTree
+          :searchText="searchText"
+          @select="handleSelect"
+        ></ConnectionTree>
       </div>
     </pane>
     <pane size="74">
-      <router-view></router-view>
+      <router-view :selected="selected"> </router-view>
     </pane>
   </splitpanes>
 </template>
@@ -60,6 +63,10 @@ export default defineComponent({
   methods: {
     handleNewConnector() {
       this.$router.push("/setup");
+    },
+    handleSelect(item) {
+      console.log(item);
+      this.$router.push(`/connections/${item.key}`);
     },
   },
 });

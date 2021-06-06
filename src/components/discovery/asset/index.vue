@@ -5,20 +5,23 @@
   <div class="h-full col-span-2 pt-5 bg-white border-r border-gray-100">
     <p class="px-4 text-2xl font-medium tracking-tight">Assets</p>
     <div class="px-4">
-      <p class="flex text-sm leading-none text-gray-500">
-       Filters
-      </p>
+      <p class="flex text-sm leading-none text-gray-500">Filters</p>
     </div>
 
     <AssetFilters @change="handleFilterChange" class="bg-white"></AssetFilters>
   </div>
   <div
-    class="flex flex-col items-stretch h-full col-span-7 bg-white "
+    class="flex flex-col items-stretch h-full col-span-7 bg-white"
     style="overflow: hidden"
   >
-    <div class="flex items-center py-1 mb-2 border-b border-gray-100">
-      <SearchBox @change="handleSearchChange" size="large"></SearchBox>
-      <div class="flex mx-3">
+    <div class="flex items-center border-b border-gray-200">
+      <SearchBox
+        @change="handleSearchChange"
+        size="large"
+        class="px-4"
+      ></SearchBox>
+
+      <div class="flex px-1 border-dashed">
         <!-- <a-dropdown>
           <template #overlay>
             <a-menu>
@@ -32,7 +35,17 @@
         <a-button type="link"> <fa icon="fal eye" class=""></fa></a-button>
       </div>
     </div>
-    <div class="flex items-center px-6 mb-1" style="min-height: 17px">
+    <div class="flex w-full bg-gray-50">
+      <div class="flex border-r border-dashed">
+        <a-button type="link"> <fa icon="fal eye" class=""></fa></a-button>
+      </div>
+      <a-tabs class="w-full ml-2" :class="$style.assetbar">
+        <a-tab-pane key="1" tab="Tab 1"></a-tab-pane>
+        <a-tab-pane key="2" tab="Tab 2"></a-tab-pane>
+        <a-tab-pane key="3" tab="Tab 3"></a-tab-pane>
+      </a-tabs>
+    </div>
+    <!-- <div class="flex items-center px-6 mt-3 mb-1" style="min-height: 17px">
       <div class="flex items-center leading-none" v-if="loading">
         <a-spin size="small" class="mr-1 leading-none"></a-spin
         ><span>searching results</span>
@@ -44,7 +57,7 @@
         :totalCount="totalCount"
         :listCount="listCount"
       ></AssetPagination>
-    </div>
+    </div> -->
 
     <AssetList :items="list" @preview="handlePreview"> </AssetList>
     <div class="flex items-center px-6 mt-2 mb-2" style="min-height: 17px">
@@ -137,7 +150,7 @@ export default defineComponent({
       clearTimeout(this.debounce);
       this.debounce = setTimeout(() => {
         // store.commit(MutationTypes.SEARCH_SET_SEARCH, { query: `${value}*` });
-        this.fetchSearch({ query: `${value}*` });
+        this.fetchSearch({ query: `${value}` });
       }, 200);
     },
     getIsLoadMore(
@@ -162,5 +175,16 @@ export default defineComponent({
       
       
 <style lang="less" module>
+.assetbar {
+  :global(.ant-tabs-bar) {
+    margin-bottom: 0px;
+    border-color: #fff !important;
+  }
+
+  :global(.ant-tabs-tab) {
+    margin: 0 32px 0 0 !important;
+    padding: 6px 8px !important;
+  }
+}
 </style>
       

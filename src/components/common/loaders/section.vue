@@ -14,12 +14,12 @@ export default defineComponent({
       type: String,
       required: false,
       default() {
-        return "";
+        return "default";
       },
     },
   },
   computed: {},
-  mounted() { },
+  mounted() {},
   methods: {},
 });
 </script>

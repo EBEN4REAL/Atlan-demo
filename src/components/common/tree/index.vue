@@ -60,6 +60,7 @@ export default defineComponent({
       selectedKeys: [],
     };
   },
+  emits: ["select"],
   methods: {
     handleNodeSelect(selectedKeys, { selected, node }) {
       //   console.log("load select");
@@ -74,9 +75,9 @@ export default defineComponent({
       if (!node.isLeaf) {
         this.handleExpand(["_node_select_"], { node: node });
       }
-      //   if (selected) {
-      //     this.$emit("select", node.dataRef);
-      //   }
+      if (selected) {
+        this.$emit("select", node.dataRef);
+      }
     },
     handleExpand(expanded, node) {
       if (expanded.includes("_node_select_")) {

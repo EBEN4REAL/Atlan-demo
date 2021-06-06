@@ -4,12 +4,10 @@
     :placeholder="placeholder"
     allow-clear
     :size="size"
+    autofocus
     :class="$style.searchbox"
     @input="handleInputChange"
   >
-    <template #prefix>
-      <fa icon="fal search"></fa>
-    </template>
   </a-input>
 </template>
   
@@ -28,7 +26,7 @@ export default defineComponent({
       type: String,
       required: false,
       default() {
-        return "Search";
+        return "Search....";
       },
     },
   },
@@ -47,11 +45,10 @@ export default defineComponent({
 </script>
 
 <style lang="less" module>
-  .searchbox {
-    @apply border-none shadow-none !important;
-    &:global(.ant-input-affix-wrapper-focused) {
-      @apply border-none shadow-none;
-    }
+.searchbox {
+  @apply border-none shadow-none !important;
+  &:global(.ant-input-affix-wrapper-focused) {
+    @apply border-none shadow-none;
   }
-
+}
 </style>>

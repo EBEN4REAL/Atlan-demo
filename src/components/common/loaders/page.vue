@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen flex min-w-screen items-center justify-center">
+  <div class="flex items-center justify-center min-h-screen min-w-screen">
     <a-spin :size="size"></a-spin>
   </div>
 </template>
@@ -14,7 +14,7 @@ export default defineComponent({
       type: String,
       required: false,
       default() {
-        return "";
+        return "default";
       },
     },
   },

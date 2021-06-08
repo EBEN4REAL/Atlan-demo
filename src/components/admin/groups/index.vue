@@ -1,30 +1,48 @@
 <template>
-  <div class="flex justify-between my-3">
-    <div class="flex w-1/2">
-      <a-input-search
-        placeholder="Search Groups"
-        allowClear="true"
-        class="mr-1"
-        v-model:value="searchText"
-        @change="onSearch"
-      ></a-input-search>
-      <a-button>Filter</a-button>
+  <div>
+    <div class="flex justify-between my-3">
+      <div class="flex w-1/2">
+        <a-input-search
+          placeholder="Search Groups"
+          allowClear="true"
+          class="mr-1"
+          v-model:value="searchText"
+          @change="onSearch"
+        ></a-input-search>
+      </div>
+      <a-button @click="toggleAddGroupModal">New Group</a-button>
     </div>
-    <a-button>New Group</a-button>
+    <a-table
+      :dataSource="groupList.data.records"
+      :columns="columns"
+      :rowKey="groupList.data.records.id"
+      v-if="groupList"
+    />
+    <a-modal
+      v-model:visible="isAddGroupModalVisible"
+      class="addGroupModal"
+      title="Create New Group"
+      :footer="null"
+    >
+      <AddGroup />
+    </a-modal>
   </div>
-  <a-table
-    :dataSource="groupList.data.records"
-    :columns="columns"
-    :rowKey="groupList.data.records.id"
-    v-if="groupList"
-  />
 </template>
 <script lang="ts">
 import { ref, reactive, defineComponent } from "vue";
-import { GroupApi } from "~/api/auth/group";
+import useGroups from "./useGroups";
+import AddGroup from "./addGroupNew.vue";
 
 export default defineComponent({
+  components: {
+    AddGroup,
+  },
   setup(props, context) {
+    const isAddGroupModalVisible = ref(true);
+    const toggleAddGroupModal = () => {
+      isAddGroupModalVisible.value = !isAddGroupModalVisible.value;
+    };
+
     const groupListAPIParams = reactive({
       limit: 6,
       offset: 0,
@@ -32,11 +50,7 @@ export default defineComponent({
       filter: {},
     });
 
-    //Function to make API call
-    const { data: groupList, mutate: getGroupList } = GroupApi.listGroup(
-      groupListAPIParams,
-      {}
-    );
+    const { groupList, getGroupList } = useGroups(groupListAPIParams);
 
     //Logic for search input
     const searchText = ref<string>("");
@@ -53,6 +67,8 @@ export default defineComponent({
     };
 
     return {
+      isAddGroupModalVisible,
+      toggleAddGroupModal,
       searchText,
       onSearch,
       groupList,

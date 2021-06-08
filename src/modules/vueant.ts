@@ -60,6 +60,7 @@ export const install: UserModule = ({ app }) => {
   app.use(Progress);
   app.use(Result);
   app.use(Table);
+  app.use(Modal);
 
   app.config.globalProperties.$message = message;
   app.config.globalProperties.$error = Modal.error;

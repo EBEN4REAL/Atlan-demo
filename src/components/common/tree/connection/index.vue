@@ -27,41 +27,6 @@ export default defineComponent({
   watch: {
     searchText(value) {
       console.log("watch");
-
-      // console.log(value);
-      // const getParentKey = (
-      //   key: string,
-      //   tree: TreeDataItem[]
-      // ): string | number | undefined => {
-      //   let parentKey;
-      //   for (let i = 0; i < tree.length; i++) {
-      //     const node = tree[i];
-      //     if (node.children) {
-      //       if (node.children.some((item) => item.key === key)) {
-      //         parentKey = node.key;
-      //       } else if (getParentKey(key, node.children)) {
-      //         parentKey = getParentKey(key, node.children);
-      //       }
-      //     }
-      //   }
-      //   return parentKey;
-      // };
-
-      // const expanded = this.list
-      //   .map((item: TreeDataItem) => {
-      //     console.log(item);
-      //     if ((item.title as string).indexOf(value) > -1) {
-      //       return getParentKey(item.key as string, this.list);
-      //     }
-      //     return null;
-      //   })
-      //   .filter((item) => {
-      //     console.log(item);
-      //     return item && item.title.includes(value);
-      //   });
-
-      // console.log(expanded);
-      // this.expandedKeys = expanded as string[];
     },
   },
   methods: {
@@ -100,23 +65,6 @@ export default defineComponent({
           children: children,
         });
       });
-
-      //   this.sourceList().forEach((source) => {
-      //     let found = SourceList.find((src) => src.id);
-
-      //     let children = [];
-
-      //     this.connectionList()
-      //       .filter((item) => this.integrationName(item) === source)
-      //       .forEach((conn) => {});
-
-      //     data.push({
-      //       key: source,
-      //       title: source,
-      //       image: found.image,
-      //       children: [],
-      //     });
-      //   });
       return data;
     },
   },

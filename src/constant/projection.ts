@@ -13,6 +13,25 @@ export const ConnectionAttributes = [
   "integrationCredentialQualifiedName",
 ];
 
+
+export const BaseAttributes = [
+  "__timestamp",
+  "__modificationTimestamp",
+  "__modifiedBy",
+  "__createdBy",
+  "__state",
+  "__guid",
+  "__historicalGuids",
+  "__classificationsText",
+  "__classificationNames",
+  "__propagatedClassificationNames",
+  "__customAttributes",
+  "__labels"
+]
+
+export const GlossaryAttributes = [];
+
+
 export const ConnectorAttributes = [
   "category",
   "config",

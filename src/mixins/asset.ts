@@ -4,10 +4,12 @@ import { useStore } from "~/store";
 import { AtlanTableAttributes } from "~/types/asset";
 import dayjs from "dayjs";
 
+
 import relativeTime from "dayjs/plugin/relativeTime";
+dayjs.extend(relativeTime);
 import { SourceList } from "~/constant/source";
 import { AssetTypeList } from "~/constant/assetType";
-dayjs.extend(relativeTime);
+
 
 export default defineComponent({
   methods: {

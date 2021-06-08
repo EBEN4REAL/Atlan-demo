@@ -36,6 +36,7 @@ const errorInterceptor = (error: any) => {
 
 // Interceptor for responses
 const responseInterceptor = (response: any) => {
+
   // switch (response.status) {
   //   case 200:
   //     // yay!
@@ -45,8 +46,9 @@ const responseInterceptor = (response: any) => {
   //   // default case
   // }
 
-  return response;
+  return response.data;
 };
+
 
 // export function getBasePath() {
 //   const env = process.env.NODE_ENV;

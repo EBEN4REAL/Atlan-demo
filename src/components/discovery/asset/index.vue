@@ -87,6 +87,7 @@ import { useStore } from "~/store";
 import SearchBox from "@common/searchbox/searchlist.vue";
 import { Components } from "~/api/atlas/client";
 import { SearchParameters } from "~/store/modules/search/state";
+import { SEARCH_FETCH_LIST } from "~/constant/store_types";
 export default defineComponent({
   name: "HelloWorld",
   components: {
@@ -112,17 +113,17 @@ export default defineComponent({
       return store.getters.getSearchParams;
     },
     list(): Components.Schemas.AtlasEntityHeader[] {
-      return this.result.entities;
+      return this.result?.entities;
     },
     loading(): boolean {
       const store = useStore();
       return store.getters.getSearchLoading;
     },
     limit(): number {
-      return this.searchParams.limit;
+      return this.searchParams?.limit;
     },
     offset(): number {
-      return this.searchParams.offset;
+      return this.searchParams?.offset;
     },
     totalCount(): number {
       return this.result?.approximateCount;
@@ -144,7 +145,7 @@ export default defineComponent({
     },
     fetchSearch(params: SearchParameters) {
       const store = useStore();
-      store.dispatch(ActionTypes.SEARCH_FETCH_LIST, params);
+      store.dispatch(SEARCH_FETCH_LIST, params);
     },
     handleSearchChange(value: string) {
       clearTimeout(this.debounce);

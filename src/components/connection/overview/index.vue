@@ -3,21 +3,36 @@
 
 <template>
   <div class="p-6">
-    <DetailsView :item="item" :credential="credential" :bot="bot"></DetailsView>
+    <DetailsView
+      :item="item"
+      :credential="credential"
+      :bot="bot"
+      class="mb-3"
+    ></DetailsView>
+    <div class="flex justify-between">
+      <p class="mb-0 text-gray-400">Last 5 workflows</p>
+      <p class="mb-0 cursor-pointer text-primary-500">View All</p>
+    </div>
+    <RunsView :item="item" :credential="credential" :bot="bot"></RunsView>
+    <div class="flex justify-between mt-3">
+      <p class="mb-0 text-gray-400">Query Configuration</p>
+    </div>
+    <QueryView class="mt-3"></QueryView>
   </div>
 </template>
         
 <script lang="ts">
 import { defineComponent, PropType } from "vue";
-
+import RunsView from "@/connection/overview/runs/index.vue";
 import DetailsView from "@/connection/overview/details.vue";
+import QueryView from "@/connection/overview/query.vue";
 import { ConnectionType } from "~/types/atlas/connection";
 import { CredentialType } from "~/types/atlas/credential";
 import { BotsType } from "~/types/atlas/bots";
 
 export default defineComponent({
   name: "HelloWorld",
-  components: { DetailsView },
+  components: { DetailsView, QueryView, RunsView },
   props: {
     item: {
       type: Object as PropType<ConnectionType>,

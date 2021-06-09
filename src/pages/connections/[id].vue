@@ -1,9 +1,9 @@
 <template>
-  <div class="flex flex-col w-full h-full">
-    <Loader v-if="loading"></Loader>
-    <ErrorView v-else-if="!loading && error" :error="error"></ErrorView>
-    <div v-else class="h-full">
-      <div class="px-4 py-3 bg-white border-b">
+  <Loader v-if="loading"></Loader>
+  <ErrorView v-else-if="!loading && error" :error="error"></ErrorView>
+  <div class="flex flex-col w-full h-full" v-else>
+    <div class="px-4 pt-3 bg-white">
+      <div class="">
         <div class="flex items-center align-middle">
           <fa icon="fal chevron-left" class="mr-1" @click="handleBack"></fa>
           <img
@@ -13,10 +13,17 @@
           <div class="text-gray-900">{{ item?.attributes?.name }}</div>
         </div>
       </div>
-
       <div>
-        <Overview :item="item" :credential="credential" :bot="bot"></Overview>
+        <a-tabs :class="$style.topbar">
+          <a-tab-pane key="1" tab="Overview"></a-tab-pane>
+          <a-tab-pane key="2" tab="Jobs"></a-tab-pane>
+          <a-tab-pane key="3" tab="Assets"></a-tab-pane>
+          <a-tab-pane key="3" tab="Policies"></a-tab-pane>
+        </a-tabs>
       </div>
+    </div>
+    <div class="flex-grow overflow-auto">
+      <Overview :item="item" :credential="credential" :bot="bot"></Overview>
     </div>
   </div>
 </template>
@@ -125,6 +132,11 @@ export default defineComponent({
 </script>
     
 <style lang="less" module>
+.topbar {
+  :global(.ant-tabs-top-bar) {
+    @apply mb-0 !important;
+  }
+}
 </style>
         
     

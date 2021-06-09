@@ -27,6 +27,7 @@
     "cron-parser": "^3.5.0",
     "dayjs": "^1.10.5",
     "emoji-mart-vue-fast": "^10.0.1",
+    "event-source-polyfill": "^1.0.24",
     "keycloak-js": "^13.0.1",
     "less": "^4.1.1",
     "openapi-client-axios": "^3.14.0",

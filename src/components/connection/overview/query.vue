@@ -57,10 +57,7 @@
               <p class="mb-0 text-sm text-gray-400">
                 {{ extra.attributes.label }}
               </p>
-              <div
-                class="tracking-wider text-gray-900 uppercase"
-                v-if="item?.attributes?.extra"
-              >
+              <div class="tracking-wider text-gray-900 uppercase">
                 {{ item?.attributes?.extra[extra.attributes.id] }}
               </div>
             </div>

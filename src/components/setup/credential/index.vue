@@ -157,7 +157,7 @@
 
 <script lang="ts">
 // import { ValidateErrorEntity } from "ant-design-vue/es/form/interface";
-import { defineComponent } from "vue";
+import { computed, defineComponent, PropType } from "vue";
 
 import RadioButton from "@common/radio/button.vue";
 import DynamicInput from "@common/input/dynamic.vue";
@@ -171,18 +171,25 @@ import { Search } from "~/api/atlas/search";
 
 import { Credential as CredentialService } from "~/api/heka/credential";
 import { getEnv } from "~/modules/__env";
+import { BotsType } from "~/types/atlas/bots";
 
 export default defineComponent({
   components: { RadioButton, DynamicInput },
   mixins: [ConnectorMixin, KeycloakMixin],
   props: {
     item: {
-      type: Object,
+      type: Object as PropType<BotsType>,
       required: false,
       default(): any {
         return {};
       },
     },
+  },
+  setup(props) {
+    // const hostLocal = computed(() =);
+    // return {
+    //   hostLocal,
+    // };
   },
   data() {
     return {
@@ -273,7 +280,7 @@ export default defineComponent({
   },
   computed: {
     hostLocal(): any {
-      return this.host(this.item);
+      return this.item.attriibutes;
     },
     portLocal(): any {
       return this.port(this.item);

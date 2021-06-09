@@ -2,6 +2,8 @@ import { createStore, createLogger } from "vuex";
 import createPersistedState from "vuex-persistedstate";
 
 import { groups } from "~/store/modules/admin/groups"
+import { tenant } from "~/store/modules/admin/tenant"
+import { search } from "~/store/modules/search"
 // import { connection } from "~/store/modules/connection"
 
 // TODO: How to surpass cyclical dependency linting errors cleanly?
@@ -55,7 +57,7 @@ import { groups } from "~/store/modules/admin/groups"
 const plugins = true ? [createLogger({})] : [];
 
 // Plug in session storage based persistence
-// plugins.push(createPersistedState({ storage: window.localStorage }));
+plugins.push(createPersistedState({ storage: window.localStorage }));
 
 export const store = createStore({
   plugins,
@@ -64,7 +66,9 @@ export const store = createStore({
     // connectionmodule,
     // tenantmodule,
     // searchmodule,
+    search,
     groups,
+    tenant,
 
   },
 });

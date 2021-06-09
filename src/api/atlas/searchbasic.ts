@@ -21,8 +21,6 @@ const Basic = (
     body,
     options
   );
-
-
 };
 
 export const SearchBasic = {

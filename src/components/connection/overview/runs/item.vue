@@ -1,6 +1,6 @@
 <template>
   <tr class="mb-3 bg-white border rounded shadow-sm">
-    <td class="w-3 pr-2 rounded-tl-md rounded-bl-md">
+    <td class="w-3 rounded-tl-md rounded-bl-md">
       <fa
         icon="fas check-circle"
         class="text-xl text-green-500"
@@ -11,15 +11,13 @@
         class="text-xl text-red-500"
         v-else-if="status == 'Failed'"
       ></fa>
-      <a-spin v-else-if="status == 'Running'"></a-spin>
-
       <fa
         icon="fas exclamation-circle"
         class="text-xl text-yellow-500"
         v-else
       ></fa>
     </td>
-    <td class="pl-2">
+    <td>
       <div class="flex items-center align-middle">
         <img :src="sourceImage()" class="h-auto w-7" />
 
@@ -31,24 +29,11 @@
         </div>
       </div>
     </td>
-    <td class="text-gray-500 rounded-br-md rounded-tr-md">
-      {{ startedAt(item, true) }} ago
-    </td>
-    <td class="text-gray-500 rounded-br-md rounded-tr-md">
-      {{ finishedAt(item, true) }}
-      <span v-if="finishedAt(item, true)">ago</span>
-    </td>
     <td class="text-center text-gray-500">
       {{ duration(item) }}
-      <a-progress
-        :percent="progressPercent(item)"
-        size="small"
-        v-if="status == 'Running'"
-      >
-        <template #format="percent, successPercent">
-          {{ progress(item) }}
-        </template>
-      </a-progress>
+    </td>
+    <td class="text-gray-500 rounded-br-md rounded-tr-md">
+      {{ finishedAt(item, true) }} ago
     </td>
   </tr>
 </template>

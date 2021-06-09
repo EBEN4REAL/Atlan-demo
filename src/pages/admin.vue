@@ -9,14 +9,12 @@
         <a-menu mode="inline" :class="$style.sidebar" class="">
           <a-menu-item-group class="mb-3" title="Workspace">
             <a-menu-item key="general"> General </a-menu-item>
-            <!-- Image/Name/Preferences -->
 
             <a-menu-item key="members"> Members </a-menu-item>
             <a-menu-item key="groups"> Groups </a-menu-item>
             <a-menu-item key="apikeys"> API Keys </a-menu-item>
             <a-menu-item key="integrations"> Integrations </a-menu-item>
             <a-menu-item key="billing"> Billing & License </a-menu-item>
-            <!-- SSO/SMTP -->
           </a-menu-item-group>
 
           <a-menu-item-group class="mb-3" title="Access Control">
@@ -41,13 +39,13 @@
       </div>
     </div>
     <div class="w-3/4 p-6">
-      <router-view></router-view>
+      <!-- <router-view></router-view> -->
     </div>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, getCurrentInstance } from "vue";
+import { defineComponent } from "vue";
 export default defineComponent({});
 </script>
 
@@ -79,7 +77,7 @@ export default defineComponent({});
 
 
 <route lang="yaml">
-    meta:
-      layout: default
-      requiresAuth: true
+  meta:
+    layout: default
+    requiresAuth: true
 </route>

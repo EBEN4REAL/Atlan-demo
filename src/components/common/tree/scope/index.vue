@@ -11,12 +11,12 @@
   >
     <template #title="{ title, image, isLeaf }" class="flex">
       <span v-if="!isLeaf"
-        ><img :src="image" class="h-4 w-auto float-left mr-1"
+        ><img :src="image" class="float-left w-auto h-4 mr-1"
       /></span>
-      <span class="text-dark-400 text-base leading-none" v-if="!isLeaf">{{
+      <span class="text-base leading-none text-dark-400" v-if="!isLeaf">{{
         title
       }}</span>
-      <span class="text-dark-400 text-sm leading-none" v-if="isLeaf">{{
+      <span class="text-sm leading-none text-dark-400" v-if="isLeaf">{{
         title
       }}</span>
     </template>
@@ -209,7 +209,7 @@ export default defineComponent({
 <script>
 import { Metadata } from "~/services/query";
 
-import Images from "~/mixins/images";
+import Images from "~/mixins/source";
 
 export default {
   mixins: [Images],

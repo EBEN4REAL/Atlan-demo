@@ -12,10 +12,10 @@ import "~/styles/main.less";
 import "~/styles/antd.less";
 
 
-import { useStore } from "~/store";
+// import { useStore } from "~/store";
 
-import { ActionTypes as ConnectionActionTypes } from "~/store/modules/connection/types-action";
-import { ActionTypes as TenantActionTypes } from "~/store/modules/tenant/types-action";
+// import { ActionTypes as ConnectionActionTypes } from "~/store/modules/connection/types-action";
+// import { ActionTypes as TenantActionTypes } from "~/store/modules/tenant/types-action";
 
 const app = createApp(App)
 
@@ -52,9 +52,10 @@ router.beforeEach(async (to, from, next) => {
           ]);
         const auth = await timeout(fn(), 10000);
         if (auth) {
-          const store = useStore();
-          store.dispatch(ConnectionActionTypes.CONNECTION_FETCH_LIST);
-          store.dispatch(TenantActionTypes.TENANT_GET_TENANT);
+          console.log(auth);
+          // const store = useStore();
+          // store.dispatch(ConnectionActionTypes.CONNECTION_FETCH_LIST);
+          // store.dispatch(TenantActionTypes.TENANT_GET_TENANT);
           next();
         } else {
 

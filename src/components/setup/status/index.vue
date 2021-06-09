@@ -103,34 +103,39 @@ export default defineComponent({
     },
     async handleConnectionSetup() {
       try {
-        let resp = await Connection.Setup({
-          connection: {
-            name: this.credential.name,
-            host: this.credential.host,
-            port: this.credential.port,
-            allowQuery: this.job.allowQuery,
-            allowPreview: this.job.allowPreview,
-            extra: this.credential.extra,
-            previewConfig: {},
-            queryConfig: {},
-          },
-          credential: {
-            authType: this.credential.auth_type,
-            connType: this.credential.conn_type,
-            extra: this.credential.extra,
-            login: this.credential.login,
-            password: this.credential.password,
-          },
-          job: {
+        let resp = await Connection.Setup(
+          {
             botQualifiedName: this.attributes(this.item).qualifiedName,
-            isCron: this.job.isCron,
-            triggerNow: this.job.triggerNow,
-            cronString: this.job.cronString,
-            cronTimezone: this.job.cronTimezone,
+            connection: {
+              name: this.credential.name,
+              host: this.credential.host,
+              port: this.credential.port,
+              allowQuery: this.job.allowQuery,
+              allowPreview: this.job.allowPreview,
+              extra: this.credential.extra,
+              previewConfig: {},
+              queryConfig: {},
+            },
+            credential: {
+              authType: this.credential.auth_type,
+              connType: this.credential.conn_type,
+              extra: this.credential.extra,
+              login: this.credential.login,
+              password: this.credential.password,
+            },
+            job: {
+              isCron: this.job.isCron,
+              triggerNow: this.job.triggerNow,
+              cronString: this.job.cronString,
+              cronTimezone: this.job.cronTimezone,
+              arguments: {},
+            },
           },
-        });
+          { timeout: 10000 }
+        );
         this.status = "success";
       } catch (err) {
+        console.log(err);
         this.status = "error";
         if (err?.response?.data) {
           this.error = `${err?.response?.data?.error}(Code - ${err?.response?.data?.code})`;

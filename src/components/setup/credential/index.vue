@@ -17,10 +17,10 @@
       <div class="col-span-9">
         <a-form-item name="host" :has-feedback="true">
           <template #label>
-            <span>{{ hostLocal.label }}</span>
+            <span>{{ hostLocal?.label }}</span>
             <a-tooltip
-              v-if="hostLocal.info"
-              :title="hostLocal.info"
+              v-if="hostLocal?.info"
+              :title="hostLocal?.info"
               placement="right"
               ><span class="ml-1"><fa icon="fal info-circle"></fa></span
             ></a-tooltip>
@@ -28,21 +28,21 @@
           <DynamicInput
             v-model="credential.host"
             dataType="string"
-            :placeholder="hostLocal.placeholder"
-            :defaultValue="hostLocal.default"
-            :prefix="hostLocal.prefix"
-            :suffix="hostLocal.suffix"
+            :placeholder="hostLocal?.placeholder"
+            :defaultValue="hostLocal?.default"
+            :prefix="hostLocal?.prefix"
+            :suffix="hostLocal?.suffix"
           ></DynamicInput>
         </a-form-item>
       </div>
 
-      <div class="col-span-3" v-show="portLocal.isVisible">
+      <div class="col-span-3" v-show="portLocal?.isVisible">
         <a-form-item name="port" :has-feedback="true">
           <template #label>
-            <span>{{ portLocal.label }}</span>
+            <span>{{ portLocal?.label }}</span>
             <a-tooltip
-              v-if="portLocal.info"
-              :title="portLocal.info"
+              v-if="portLocal?.info"
+              :title="portLocal?.info"
               placement="right"
               ><span class="ml-1"><fa icon="fal info-circle"></fa></span
             ></a-tooltip>
@@ -50,10 +50,10 @@
           <DynamicInput
             v-model="credential.port"
             dataType="number"
-            :placeholder="portLocal.placeholder"
-            :defaultValue="portLocal.default"
-            :prefix="portLocal.prefix"
-            :suffix="portLocal.suffix"
+            :placeholder="portLocal?.placeholder"
+            :defaultValue="portLocal?.default"
+            :prefix="portLocal?.prefix"
+            :suffix="portLocal?.suffix"
           ></DynamicInput>
         </a-form-item>
       </div>
@@ -170,6 +170,7 @@ import { Connection } from "~/api/auth/connection";
 import { Search } from "~/api/atlas/search";
 
 import { Credential as CredentialService } from "~/api/heka/credential";
+import { getEnv } from "~/modules/__env";
 
 export default defineComponent({
   components: { RadioButton, DynamicInput },
@@ -214,23 +215,22 @@ export default defineComponent({
                 condition: "AND",
                 criterion: [],
               };
-              const qualifiedName = `${this.realm}/${this.integrationName(
-                this.item
-              )}/${this.credential.name}`;
-
+              const realm = getEnv().DEFAULT_REALM;
+              // const qualifiedName = `${realm}/${this.integrationName(
+              //   this.item
+              // )}/${this.credential.name}`;
               entityFilters.criterion.push({
                 attributeName: "qualifiedName",
-                attributeValue: qualifiedName,
+                attributeValue: "qualifiedName",
                 operator: "eq",
               });
-
               let options = {
                 cancelToken: this.cancelToken.token,
               };
               const response = await Search.Basic(
                 {
                   attributes: [],
-                  typeName: "AtlanConnection",
+                  typeName: "Connection",
                   limit: 1,
                   offset: 0,
                   excludeDeletedEntities: true,
@@ -241,10 +241,8 @@ export default defineComponent({
                 },
                 options
               );
-              console.log("search");
-              console.log(response);
-              if (response?.data?.entities) {
-                if (response.data.entities.length > 0) {
+              if (response?.entities) {
+                if (response.entities.length > 0) {
                   callback(
                     "There is an existing connection with the same name"
                   );
@@ -342,11 +340,6 @@ export default defineComponent({
         this.testCredMessage =
           "Authentication - something went wrong. Please try again.";
         return false;
-        // if (err.response?.data) {
-        //   this.testCredMessage = err.response.data.info;
-        // } else {
-        //   this.testCredMessage = "Something went wrong. Please try again.";
-        // }
       }
     },
     // async handleDuplicationCheck() {
@@ -376,7 +369,6 @@ export default defineComponent({
     },
     handleValidate() {
       console.log(this.credential.name);
-
       this.$refs.form
         .validate()
         .then(() => {

@@ -13,6 +13,10 @@ export const ConnectionAttributes = [
   "integrationCredentialQualifiedName",
 ];
 
+export const CredentialAttributes = [
+  "authType"
+];
+
 
 export const BaseAttributes = [
   "__timestamp",
@@ -32,7 +36,7 @@ export const BaseAttributes = [
 export const GlossaryAttributes = [];
 
 
-export const ConnectorAttributes = [
+export const BotsAttributes = [
   "category",
   "config",
   "description",

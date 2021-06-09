@@ -52,18 +52,22 @@ body {
 
 .ant-tree {
   .ant-tree-title {
-    display: table-cell;
+    display: block;
     vertical-align: middle;
-    @apply leading-none;
-  }
-
-  .ant-tree-node-content-wrapper {
+    @apply leading-none flex align-middle items-center;
     padding-left: 4px !important;
-    height: 28px !important;
     padding-right: 4px !important;
     padding-top: 6px !important;
     padding-bottom: 6px !important;
-    @apply leading-none;
+  }
+
+  .ant-tree-node-content-wrapper {
+
+    height: inherit !important;
+    padding-left: 0px !important;
+    padding-right: 0px !important;
+    padding-top: 0px !important;
+    padding-bottom: 0px !important;
 
     &.ant-tree-node-selected {
       @apply bg-blue-100 !important;

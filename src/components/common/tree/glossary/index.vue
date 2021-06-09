@@ -1,15 +1,15 @@
 <template>
-  <!-- {{ listCount }}
-  {{ list }}
-  {{ totalCount }} -->
-
-  <!-- {{ totalCount }}
-
-  {{ error }} -->
-
-  <a-tree :treeData="treeData" :load-data="onLoadData" :blockNode="true">
-    <template #title="{ title, type, isLeaf }" class="">
-      <div class="flex items-center align-middle">
+  <a-tree
+    :treeData="treeData"
+    :load-data="onLoadData"
+    :blockNode="true"
+    v-model:expandedKeys="expandedKeys"
+    v-model:value="selectedKeys"
+    @select="selectNode"
+    @expand="expandNode"
+  >
+    <template #title="{ title, type }" class="">
+      <div>
         <emoji
           :data="index"
           emoji="file_folder"
@@ -23,8 +23,8 @@
           :size="20"
           v-if="type === 'category'"
         />
-        <div class="text-sm leading-none text-gray-600">{{ title }}</div>
       </div>
+      <div class="text-sm leading-none text-gray-600">{{ title }}</div>
     </template>
   </a-tree>
 </template>
@@ -42,7 +42,15 @@ import handleTreeExpand from "~/composables/tree/handleTreeExpand";
 
 export default defineComponent({
   components: { Emoji },
-  props: {},
+  props: {
+    searchText: {
+      type: String,
+      required: false,
+      default() {
+        return "";
+      },
+    },
+  },
   data() {
     return {};
   },
@@ -68,46 +76,5 @@ export default defineComponent({
       selectNode,
     };
   },
-  // methods: {
-  //   handleNodeSelect(selectedKeys, { selected, node }) {
-  //     //   console.log("load select");
-  //     this.selectedKeys = selectedKeys;
-
-  //     if (this.selectedKeys.includes(selected)) {
-  //       this.selectedKeys = [];
-  //     } else {
-  //       this.selectedKeys = selectedKeys;
-  //     }
-
-  //     if (!node.isLeaf) {
-  //       this.handleExpand(["_node_select_"], { node: node });
-  //     }
-  //     if (selected) {
-  //       this.$emit("select", node.dataRef);
-  //     }
-  //   },
-  //   handleExpand(expanded, node) {
-  //     if (expanded.includes("_node_select_")) {
-  //       const key = node.node.eventKey;
-  //       const isSelected = this.selectedKeys.includes(key);
-  //       const isExpanded = this.expandedKeys.includes(key);
-
-  //       if (isSelected && !isExpanded) {
-  //         this.expandedKeys.push(key);
-  //         this.expandedKeys = [...this.expandedKeys];
-  //       } else if (!isSelected && isExpanded) {
-  //         const index = this.expandedKeys.indexOf(key);
-  //         this.expandedKeys.splice(index, 1);
-  //       } else if (isSelected && isExpanded) {
-  //         const index = this.expandedKeys.indexOf(key);
-  //         this.expandedKeys.splice(index, 1);
-  //       } else if (!isSelected && !isExpanded) {
-  //         this.expandedKeys.push(key);
-  //         this.expandedKeys = [...this.expandedKeys];
-  //       }
-  //     }
-  //     return;
-  //   },
-  // },
 });
 </script>

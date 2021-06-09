@@ -8,7 +8,7 @@ import { BaseAttributes, GlossaryAttributes } from '~/constant/projection';
 import { GlossaryType } from '~/types/atlas/glossary';
 
 
-export default function fetchGlossaryList(filters?: Components.Schemas.FilterCriteria, query?: string, limit?: number, offset?: number) {
+export default function fetchGlossaryList(query?: string, filters?: Components.Schemas.FilterCriteria, limit?: number, offset?: number) {
 
     const body: Components.Schemas.SearchParameters = {
         typeName: "AtlasGlossary",

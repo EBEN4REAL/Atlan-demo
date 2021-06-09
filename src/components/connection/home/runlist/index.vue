@@ -42,7 +42,7 @@ export default defineComponent({
           "listOptions.limit": 10,
           "listOptions.labelSelector": "bot-template-name=atlan-jdbc-crawler",
         });
-        this.list = response.data.items;
+        this.list = response.items;
         console.log(this.list);
       } catch (error) {
         console.log(error);

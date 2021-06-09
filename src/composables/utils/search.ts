@@ -5,6 +5,7 @@ import { BaseAttributes, ConnectionAttributes } from '~/constant/projection';
 import { ConnectionType } from '~/types/atlas/connection';
 import swrvState from '../utils/swrvState';
 import useSWRV from 'swrv';
+import LocalStorageCache from 'swrv/dist/cache/adapters/localStorage'
 
 export default function fetchSearchList(dependent: any, body: Ref<Components.Schemas.SearchParameters>) {
 
@@ -16,22 +17,11 @@ export default function fetchSearchList(dependent: any, body: Ref<Components.Sch
             return {}
         }
     }, {
+        cache: new LocalStorageCache(),
         revalidateOnFocus: false,
         dedupingInterval: 1,
     });
     const { state, STATES } = swrvState(data, error, isValidating);
-    const list: ComputedRef<ConnectionType[] | undefined> = computed(() => {
-        console.log(data);
-        return <ConnectionType[] | undefined>data.value?.entities;
-    });
-    const item: ComputedRef<ConnectionType | undefined> = computed(() => {
-        if (list.value) {
-            if (list.value.length > 0) {
-                return list.value[0];
-            }
-        }
-        return {} as ConnectionType;
-    });
     const totalCount = computed(() => {
         return data.value?.approximateCount;
     })
@@ -42,8 +32,6 @@ export default function fetchSearchList(dependent: any, body: Ref<Components.Sch
     return {
         data,
         body,
-        list,
-        item,
         totalCount,
         listCount,
         error,

@@ -22,11 +22,21 @@
     <div class="flex flex-col mt-6">
       <div class="flex space-x-5">
         <div class="">
-          <p class="mb-0 text-sm text-gray-400">Host</p>
+          <p class="mb-0 text-sm text-gray-400">
+            {{
+              bot?.attributes?.config?.attributes?.credential?.attributes.host
+                .attributes.label
+            }}
+          </p>
           <div class="text-gray-900">{{ item?.attributes?.host }}</div>
         </div>
         <div class="">
-          <p class="mb-0 text-sm text-gray-400">Port</p>
+          <p class="mb-0 text-sm text-gray-400">
+            {{
+              bot?.attributes?.config?.attributes?.credential?.attributes.port
+                .attributes.label
+            }}
+          </p>
           <div class="text-gray-900">{{ item?.attributes?.port }}</div>
         </div>
       </div>
@@ -37,9 +47,23 @@
         </div>
       </div>
       <div class="mt-4">
-        <p class="mb-0 text-sm text-gray-400">Extra</p>
+        <p class="mb-0 mb-3 text-sm text-gray-400">Advanced</p>
+        <div class="grid grid-cols-12 flex-nowrap">
+          <template
+            v-for="extra in bot?.attributes?.config?.attributes?.credential
+              ?.attributes?.extra"
+            :key="extra.id"
+          >
+            <div class="col-span-6" v-if="extra.attributes.isVisible">
+              <p class="mb-0 text-sm text-gray-400">
+                {{ extra.attributes.label }}
+              </p>
+              {{ item?.attributes?.extra[extra.attributes.id] }}
+            </div>
+          </template>
+        </div>
       </div>
-      <div>
+      <div class="mt-4">
         <a-button class="bg-green-500 border-green-500" type="primary">
           Test Authentication</a-button
         >
@@ -62,6 +86,8 @@ import SourceMixin from "~/mixins/source";
 import { Components } from "~/api/atlas/client";
 import fetchCredentialList from "~/composables/credential/fetchCredential";
 import { mutate } from "swrv";
+import { BotsType } from "~/types/atlas/bots";
+import { CredentialType } from "~/types/atlas/credential";
 
 export default defineComponent({
   mixins: [SourceMixin],
@@ -76,6 +102,13 @@ export default defineComponent({
     },
     credential: {
       type: Object as PropType<CredentialType>,
+      required: false,
+      default(): any {
+        return {};
+      },
+    },
+    bot: {
+      type: Object as PropType<BotsType>,
       required: false,
       default(): any {
         return {};

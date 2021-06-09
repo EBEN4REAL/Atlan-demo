@@ -4,6 +4,8 @@ import { BaseAttributes, ConnectionAttributes } from '~/constant/projection';
 import { SourceList } from '~/constant/source';
 import { TreeDataItem } from 'ant-design-vue/lib/tree/Tree';
 import fetchSearchList from '../utils/search';
+import { ConnectionType } from '~/types/atlas/connection';
+
 
 export default function fetchConnectionList(dependent: any, query?: string, filters?: Components.Schemas.FilterCriteria, limit?: number, offset?: number) {
 
@@ -21,14 +23,26 @@ export default function fetchConnectionList(dependent: any, query?: string, filt
     });
 
     const { data,
-        list,
-        item,
+
         totalCount,
         listCount,
         error,
         state,
         STATES,
         mutate } = fetchSearchList(dependent, body)
+
+    const list: any = computed(() => {
+        console.log(data);
+        return <ConnectionType[] | undefined>data.value?.entities;
+    });
+    const item: any = computed(() => {
+        if (list.value) {
+            if (list.value.length > 0) {
+                return list.value[0] as ConnectionType;
+            }
+        }
+        return {} as ConnectionType;
+    });
 
     let treeData = ref<TreeDataItem[]>([]);
     watch(list, () => {
@@ -77,6 +91,8 @@ export default function fetchConnectionList(dependent: any, query?: string, filt
         });
         return source;
     });
+
+
 
     return {
         data,

@@ -1,14 +1,10 @@
 import { computed, ComputedRef, Ref, ref } from 'vue';
 import { Components } from '~/api/atlas/client';
-import { Search } from '~/api/atlas/search';
-
 import { BaseAttributes, BotsAttributes } from '~/constant/projection';
 import { BotsType } from '~/types/atlas/bots';
-import swrvState from '../utils/swrvState';
+import fetchSearchList from '../utils/search';
 
-
-
-export default function fetchBotsList(filters?: Components.Schemas.FilterCriteria, limit?: number, offset?: number) {
+export default function fetchBotsList(dependent: any, query?: string, filters?: Components.Schemas.FilterCriteria, limit?: number, offset?: number) {
 
     const body: Ref<Components.Schemas.SearchParameters> = ref({
         typeName: "Bot",
@@ -19,28 +15,36 @@ export default function fetchBotsList(filters?: Components.Schemas.FilterCriteri
         limit: limit,
         offset: offset,
         attributes: [...BaseAttributes, ...BotsAttributes],
-        query: "",
+        query: query,
         entityFilters: filters,
     });
-    const { response, error, mutate, isValidating } = Search.BasicSearch(body.value, {}, {
-        revalidateOnFocus: false,
-        dedupingInterval: 1,
-    });
 
-    const { state, STATES } = swrvState(response, error, isValidating)
+    const { data,
+        totalCount,
+        listCount,
+        error,
+        state,
+        STATES,
+        mutate } = fetchSearchList(dependent, body)
 
     const list: ComputedRef<BotsType[] | undefined> = computed(() => {
-        return <BotsType[] | undefined>response.value?.entities;
+        console.log(data);
+        return <BotsType[] | undefined>data.value?.entities;
     });
-    const totalCount = computed(() => {
-        return response.value?.approximateCount;
-    })
-    const listCount = computed(() => {
-        return response?.value?.entities?.length;
+    const item: ComputedRef<BotsType | undefined> = computed(() => {
+        if (list.value) {
+            if (list.value.length > 0) {
+                return list.value[0];
+            }
+        }
+        return {} as BotsType;
     });
+
     return {
+        data,
         body,
         list,
+        item,
         totalCount,
         listCount,
         error,

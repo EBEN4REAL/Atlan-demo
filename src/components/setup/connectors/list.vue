@@ -50,8 +50,9 @@ export default defineComponent({
   },
   setup(props) {
     let searchText = ref("");
+    let now = ref(true);
     const { list, totalCount, listCount, mutate, body, state, STATES } =
-      fetchBotsList();
+      fetchBotsList(now, searchText.value);
 
     const handleChangeSearchText = debounce((input: any) => {
       body.value.query = input.target.value;

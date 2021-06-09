@@ -15,14 +15,14 @@
       </div>
 
       <div>
-        <Overview :item="item" :credential="credential"></Overview>
+        <Overview :item="item" :credential="credential" :bot="bot"></Overview>
       </div>
     </div>
   </div>
 </template>
     
 <script lang="ts">
-import { defineComponent, reactive, ref, watch } from "vue";
+import { defineComponent, ref, watch } from "vue";
 import { Components } from "~/api/atlas/client";
 
 import Loader from "@common/loaders/page.vue";
@@ -33,6 +33,7 @@ import Overview from "@/connection/overview/index.vue";
 import fetchConnectionList from "~/composables/connection/fetchConnectionList";
 import { useRoute } from "vue-router";
 import fetchCredentialList from "~/composables/credential/fetchCredential";
+import fetchBotsList from "~/composables/bots/fetchBotsList";
 
 export default defineComponent({
   name: "HelloWorld",
@@ -53,7 +54,11 @@ export default defineComponent({
       attributeName: "__guid",
       attributeValue: route.params.id as string,
     };
-    const { item, mutate, body } = fetchConnectionList(now, "", entityFilters);
+    const { item, mutate, body, state, STATES } = fetchConnectionList(
+      now,
+      "",
+      entityFilters
+    );
 
     let credentialNow = ref(false);
     const {
@@ -62,17 +67,31 @@ export default defineComponent({
       body: credentialBody,
     } = fetchCredentialList(credentialNow, "");
 
-    watch(item, () => {
-      console.log("watch");
-      credentialNow.value = true;
-      credentialBody.value.entityFilters = {
-        operator: <Components.Schemas.Operator>"eq",
-        attributeName: "qualifiedName",
-        attributeValue:
-          item.value?.attributes.integrationCredentialQualifiedName,
-      };
+    let botsNow = ref(false);
+    const {
+      item: bot,
+      mutate: botMutate,
+      body: botBody,
+    } = fetchBotsList(botsNow, "");
 
-      credentialMutate();
+    watch(item, () => {
+      if ([STATES.SUCCESS].includes(state.value)) {
+        credentialNow.value = true;
+        credentialBody.value.entityFilters = {
+          operator: <Components.Schemas.Operator>"eq",
+          attributeName: "qualifiedName",
+          attributeValue:
+            item.value?.attributes.integrationCredentialQualifiedName,
+        };
+        credentialMutate();
+        botsNow.value = true;
+        botBody.value.entityFilters = {
+          operator: <Components.Schemas.Operator>"eq",
+          attributeName: "qualifiedName",
+          attributeValue: item.value?.attributes.botQualifiedName,
+        };
+        botMutate();
+      }
     });
 
     watch(
@@ -89,6 +108,7 @@ export default defineComponent({
     );
 
     return {
+      bot,
       item,
       credential,
     };

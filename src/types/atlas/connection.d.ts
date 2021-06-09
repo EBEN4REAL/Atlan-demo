@@ -9,6 +9,7 @@ export interface ConnectionAttributes extends BaseAttributes {
     port?: string;
     extra?: { [key: string]: any },
     integrationCredentialQualifiedName?: string;
+    botQualifiedName?: string
     [key: string]: any
 }
 

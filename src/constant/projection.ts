@@ -6,6 +6,7 @@ export const ConnectionAttributes = [
   "category",
   "description",
   "host",
+  "extra",
   "port",
   "ownerUsers",
   "ownerGroups",

@@ -76,6 +76,7 @@
         </div>
       </div>
       <div class="flex-grow overflow-y-auto">
+        {{ data }} |||| {{ error?.response }}
         <keep-alive>
           <ConnectorList
             v-if="current === 0"
@@ -122,11 +123,17 @@ import ConnectorList from "@/setup/connectors/list.vue";
 import StatusView from "@/setup/status/index.vue";
 import Settings from "@/setup/settings/index.vue";
 import ConnectorMixin from "~/mixins/connector";
+import { useAPI } from "~/api/useAPI";
+import { LIST_USERS } from "~/api/keyMaps/auth/user";
 
 export default defineComponent({
   mixins: [ConnectorMixin],
   name: "HelloWorld",
   components: { ConnectorList, CredentialView, Settings, StatusView },
+  setup() {
+    const { data, error, isLoading } = useAPI(LIST_USERS, "GET", { cache: true });
+    return { data, error, isLoading };
+  },
   data() {
     return {
       current: 0,

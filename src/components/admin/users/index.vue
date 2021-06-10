@@ -10,10 +10,10 @@
     </div>
   </div>
   <a-table
-    :dataSource="userList.data.records"
+    :dataSource="userList?.records"
     :columns="columns"
     v-if="userList"
-    :rowKey="userList.data.records.id"
+    :rowKey="userList?.records.id"
   />
 </template>
 <script lang="ts">
@@ -34,7 +34,7 @@ export default defineComponent({
       [getAPIPath("auth", "/users/v2"), userListAPIParams, {}],
       fetcher
     );
-
+    
     const searchText = ref("");
     const handleSearch = (searchValue: string) => {
       userListAPIParams.filter = searchText.value

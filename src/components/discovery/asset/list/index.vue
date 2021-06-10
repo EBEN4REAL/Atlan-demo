@@ -1,6 +1,6 @@
 <template>
   <DynamicScroller
-    :items="items"
+    :items="list"
     :keyField="keyField"
     :minItemSize="minItemSize"
     class="scroller"
@@ -24,7 +24,7 @@ export default defineComponent({
     ListItem,
   },
   props: {
-    items: {
+    list: {
       type: Array as PropType<Components.Schemas.AtlasEntityHeader[]>,
       required: false,
       default() {

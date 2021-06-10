@@ -8,6 +8,7 @@ import {
     SEARCH_SET_SEARCH,
     SEARCH_SET_LIST,
     SEARCH_SET_STATUS,
+    SEARCH_GET_LIST,
 } from "~/constant/store_types";
 import { SearchParameters } from '~/types/atlas/attributes';
 import { Status } from '~/types/status';
@@ -38,12 +39,11 @@ export const state: State = {
         limit: 50,
         offset: 0,
         entityFilters: {},
-    },
-
+    }
 }
 
 export const getters: Getters = {
-    getSearchList: state => state.data.entities
+    [SEARCH_GET_LIST]: state => state.data.entities
 }
 
 export const mutations: MutationTree<State> = {
@@ -88,8 +88,11 @@ export const actions: ActionTree<State, any> = {
                 cache: true,
                 cancelToken: state.cancelToken.token,
             });
+
+            console.log(response);
+
             if (response) {
-                commit(SEARCH_SET_LIST, response.data);
+                commit(SEARCH_SET_LIST, response);
             }
         } catch (err) {
             if (err) {

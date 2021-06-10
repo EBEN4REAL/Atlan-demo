@@ -22,16 +22,6 @@
       ></SearchBox>
 
       <div class="flex px-1 border-dashed">
-        <!-- <a-dropdown>
-          <template #overlay>
-            <a-menu>
-              <a-menu-item key="1">1st item</a-menu-item>
-              <a-menu-item key="2">2nd item</a-menu-item>
-              <a-menu-item key="3">3rd item</a-menu-item>
-            </a-menu>
-          </template>
-          <a-button> Sort <fa icon="fal -down" class="ml-1"></fa></a-button>
-        </a-dropdown> -->
         <a-button type="link"> <fa icon="fal eye" class=""></fa></a-button>
       </div>
     </div>
@@ -45,21 +35,8 @@
         <a-tab-pane key="3" tab="Tab 3"></a-tab-pane>
       </a-tabs>
     </div>
-    <!-- <div class="flex items-center px-6 mt-3 mb-1" style="min-height: 17px">
-      <div class="flex items-center leading-none" v-if="loading">
-        <a-spin size="small" class="mr-1 leading-none"></a-spin
-        ><span>searching results</span>
-      </div>
-      <AssetPagination
-        v-else
-        :limit="limit"
-        :offset="offset"
-        :totalCount="totalCount"
-        :listCount="listCount"
-      ></AssetPagination>
-    </div> -->
 
-    <AssetList :items="list" @preview="handlePreview"> </AssetList>
+    <AssetList :list="list" @preview="handlePreview"> </AssetList>
     <div class="flex items-center px-6 mt-2 mb-2" style="min-height: 17px">
       <div class="flex items-center leading-none" v-if="loading">
         <a-spin size="small" class="mr-1 leading-none"></a-spin
@@ -82,12 +59,11 @@ import { defineComponent } from "vue";
 import AssetFilters from "@/discovery/asset/filters/index.vue";
 import AssetList from "@/discovery/asset/list/index.vue";
 import AssetPagination from "@common/pagination/index.vue";
-import { ActionTypes } from "~/store/modules/search/types-action";
 import { useStore } from "~/store";
 import SearchBox from "@common/searchbox/searchlist.vue";
 import { Components } from "~/api/atlas/client";
 import { SearchParameters } from "~/store/modules/search/state";
-import { SEARCH_FETCH_LIST } from "~/constant/store_types";
+import { SEARCH_FETCH_LIST, SEARCH_GET_LIST } from "~/constant/store_types";
 export default defineComponent({
   name: "HelloWorld",
   components: {
@@ -104,16 +80,13 @@ export default defineComponent({
     };
   },
   computed: {
-    result(): Components.Schemas.AtlasSearchResult {
-      const store = useStore();
-      return store.getters.getSearchResult;
-    },
     searchParams(): SearchParameters {
       const store = useStore();
       return store.getters.getSearchParams;
     },
     list(): Components.Schemas.AtlasEntityHeader[] {
-      return this.result?.entities;
+      const store = useStore();
+      return store.getters[SEARCH_GET_LIST];
     },
     loading(): boolean {
       const store = useStore();

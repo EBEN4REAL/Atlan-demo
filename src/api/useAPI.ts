@@ -15,12 +15,22 @@ interface useGetAPIParams {
     // axiosOptions?: AxiosRequestConfig
 }
 
+/***
+ * @param key - Used as an identifier for the cache when making requests with SWRV
+ * @param method - The HTTP reqeust method to use
+ * @param param - The query params to send while making a `GET` request
+ * @param body - The payload to send while making a `POST` request
+ * @param options - SWRV or Axios specefic configuration objects
+ */
 export const useAPI = <T>(key: string, method: 'GET' | 'POST', { cache = true, params, body, options }: useGetAPIParams) => {
     const url = keyMaps[key];
     console.log(url)
 
     if (cache) {
+    // If using cache, make a generic swrv request
+
         const { data, error, mutate } = useSWRV<T>(key, () => {
+            // Choose the fetcher function based on the method type
             switch (method) {
                 case 'GET':
                     return fetcher(url, params, options);
@@ -33,9 +43,11 @@ export const useAPI = <T>(key: string, method: 'GET' | 'POST', { cache = true, p
             }
         }, options);
 
-        const isLoading = !data && !error
+        const isLoading = !data && !error;
         return { data, error, isLoading, mutate };
     } else {
+        // If not using cache, use Axios
+        
         const response = reactive({
             data: null as T | null,
             error: null as any | null,

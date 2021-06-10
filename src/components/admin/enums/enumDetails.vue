@@ -50,15 +50,15 @@
       />
     </div>
     <div class="p-8">
-      <a-form ref="BMForm" :model="localEnum" layout="vertical">
-        <a-form-item label="Name" name="name" :wrapper-col="{ span: 12 }">
+      <a-form layout="vertical">
+        <a-form-item label="Name" :wrapper-col="{ span: 12 }">
           <a-input
             :disabled="!isNew"
             placeholder="Enumeration Name"
-            v-model="localEnum.name"
+            v-model:value="localEnum.name"
           />
         </a-form-item>
-        <a-form-item label="Values" name="elementDefs">
+        <a-form-item label="Values">
           <a-select
             mode="tags"
             placeholder="Enter enum values"

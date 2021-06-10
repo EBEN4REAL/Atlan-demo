@@ -39,7 +39,7 @@
       </div>
     </div>
     <div class="w-3/4 p-6">
-      <!-- <router-view></router-view> -->
+      <router-view></router-view>
     </div>
   </div>
 </template>

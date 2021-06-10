@@ -8,6 +8,7 @@ import { faSearch } from "@fortawesome/pro-light-svg-icons/faSearch";
 import { faUser } from "@fortawesome/pro-light-svg-icons/faUser";
 import { faUsers } from "@fortawesome/pro-light-svg-icons/faUsers";
 import { faCheckCircle } from "@fortawesome/pro-light-svg-icons/faCheckCircle";
+import { faCircleNotch } from "@fortawesome/pro-light-svg-icons/faCircleNotch";
 import { faCheck } from "@fortawesome/pro-light-svg-icons/faCheck";
 import { faTimes } from "@fortawesome/pro-light-svg-icons/faTimes";
 import { faTimesCircle } from "@fortawesome/pro-light-svg-icons/faTimesCircle";
@@ -50,6 +51,7 @@ library.add(
   faUsers,
   faCheckCircle,
   faCheck,
+  faCircleNotch,
   faTrash,
   faTimes,
   faSort,
@@ -124,5 +126,5 @@ import Icon from "~/components/common/icon/index.vue";
 // dom.watch();
 // // Register the component globally
 export const install: UserModule = ({ app }) => {
-  app.component("fa", Icon);
+  app.component("Fa", Icon);
 };

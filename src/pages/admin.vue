@@ -1,6 +1,6 @@
 <template>
   <div class="flex w-full h-full">
-    <div class="flex flex-col w-1/4 h-full overflow-hidden bg-white border-r">
+    <div class="flex flex-col w-1/5 h-full overflow-hidden bg-white border-r">
       <div class="px-4 py-4 pb-2">
         <p class="mb-0 text-2xl">Admin Centre</p>
       </div>
@@ -40,7 +40,7 @@
         </a-menu>
       </div>
     </div>
-    <div class="w-3/4 p-6">
+    <div class="w-4/5 p-10 flex items-center">
       <router-view></router-view>
     </div>
   </div>

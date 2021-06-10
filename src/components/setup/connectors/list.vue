@@ -8,13 +8,19 @@
     ></a-input-search>
     <!-- <CategorySelector style="min-width: 200px;" v-model:value="category"></CategorySelector> -->
   </div>
-  <Loading v-if="loading"></Loading>
-  <ErrorView v-else-if="!loading && error" :error="error"></ErrorView>
-  <EmptyView
-    v-else-if="!loading && !error && list.length == 0"
-    empty="No connectors found"
-  ></EmptyView>
-  <div class="flex items-center px-6 py-4 space-x-3 align-middle" v-else>
+  <ErrorView
+    v-if="[STATES.ERROR, STATES.STALE_IF_ERROR].includes(state)"
+  ></ErrorView>
+  <LoadingView
+    v-else-if="
+      [STATES.PENDING].includes(state) ||
+      (searchText && [STATES.VALIDATING].includes(state))
+    "
+  ></LoadingView>
+  <div
+    class="flex items-center px-6 py-4 space-x-3 align-middle"
+    v-else-if="[STATES.SUCCESS].includes(state)"
+  >
     <template v-for="item in list" :key="item.guid">
       <ItemView :item="item" @click="handleSelect(item)"></ItemView>
     </template>
@@ -22,90 +28,62 @@
 </template>
             
 <script lang="ts">
-import { defineComponent } from "vue";
+import { defineComponent, ref } from "vue";
 import ItemView from "./item.vue";
 import CategorySelector from "@common/selector/category/index.vue";
 
-import Loading from "@common/loaders/section.vue";
+import LoadingView from "@common/loaders/section.vue";
 import ErrorView from "@common/error/index.vue";
 import EmptyView from "@common/empty/index.vue";
 
-import { ConnectorAttributes } from "~/constant/projection";
-import { Search } from "~/api/atlas/search";
-import { Components } from "~/api/atlas/client";
+import fetchBotsList from "~/composables/bots/fetchBotsList";
+
+import { debounce } from "~/composables/utils/debounce";
 
 export default defineComponent({
   components: {
     ItemView,
     CategorySelector,
-    Loading,
+    LoadingView,
     ErrorView,
     EmptyView,
   },
+  setup(props) {
+    let searchText = ref("");
+    let now = ref(true);
+    const { list, totalCount, listCount, mutate, body, state, STATES } =
+      fetchBotsList(now, searchText.value);
+
+    const handleChangeSearchText = debounce((input: any) => {
+      body.value.query = input.target.value;
+      mutate();
+    }, 200);
+
+    return {
+      list,
+      state,
+      STATES,
+      searchText,
+      listCount,
+      totalCount,
+      handleChangeSearchText,
+    };
+  },
   data() {
     return {
-      searchText: "",
       category: "",
-      loading: false,
       error: "",
-      list: [],
       debounce: undefined as any,
       cancelToken: undefined,
     };
   },
   emits: ["select"],
   mounted() {
-    this.handleSearch();
+    // this.handleSearch();
   },
   methods: {
     handleSelect(item: any) {
       this.$emit("select", item);
-    },
-    handleChangeSearchText() {
-      clearTimeout(this.debounce);
-      this.debounce = setTimeout(() => {
-        this.handleSearch();
-      }, 100);
-    },
-    async handleSearch() {
-      try {
-        if (this.loading && this.cancelToken) {
-          this.cancelToken?.cancel("CANCELLED");
-        } else {
-          this.loading = true;
-          this.error = "";
-          this.cancelToken = this.$axios.CancelToken.source();
-        }
-        let body: Components.Schemas.SearchParameters = {
-          typeName: "AtlanBot",
-          excludeDeletedEntities: true,
-          includeClassificationAttributes: true,
-          includeSubClassifications: true,
-          includeSubTypes: false,
-          limit: 50,
-          offset: 0,
-          query: this.searchText,
-          attributes: ConnectorAttributes,
-          entityFilters: {},
-        };
-        const res = await Search.Basic(body, {
-          cache: true,
-          cancelToken: this.cancelToken.token,
-        });
-        if (res?.data?.entities) {
-          this.list = res.data.entities;
-        } else {
-          this.list = [];
-        }
-        this.loading = false;
-      } catch (error) {
-        this.loading = false;
-        if (error?.message === "CANCELLED") {
-          this.error = "";
-        } else {
-          this.error = error;
-        }
-      }
     },
   },
 });

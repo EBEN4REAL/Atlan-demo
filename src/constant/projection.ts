@@ -6,11 +6,16 @@ export const ConnectionAttributes = [
   "category",
   "description",
   "host",
+  "extra",
   "port",
   "ownerUsers",
   "ownerGroups",
   "integrationName",
   "integrationCredentialQualifiedName",
+];
+
+export const CredentialAttributes = [
+  "authType"
 ];
 
 
@@ -32,7 +37,7 @@ export const BaseAttributes = [
 export const GlossaryAttributes = [];
 
 
-export const ConnectorAttributes = [
+export const BotsAttributes = [
   "category",
   "config",
   "description",

@@ -1,48 +1,61 @@
+import { GetterTree, MutationTree, ActionTree } from 'vuex'
+import { Components } from '~/api/atlas/client';
 import {
-  Store as VuexStore,
-  CommitOptions,
-  DispatchOptions,
-  Module,
-} from "vuex";
+    CONNECTION_FETCH_LIST,
+    CONNECTION_SET_LIST,
+    CONNECTION_SET_STATUS,
+} from "~/constant/store_types";
+import { Status } from '~/types/status';
 
-// TODO: How to surpass cyclical dependency linting errors cleanly?
-// eslint-disable-next-line import/no-cycle
-import { RootState } from "~/store";
 
-import { state } from "./state";
-import { getters, Getters } from "./getters";
-import { mutations, Mutations } from "./mutations";
-// eslint-disable-next-line import/no-cycle
-import { actions, Actions } from "./actions";
+type Getters = GetterTree<State, any>
 
-import type { State } from "./state";
+export interface State extends Status {
+    data: Components.Schemas.AtlasSearchResult;
+    assetType: string;
+    limit: number;
+    offset: number;
+}
 
-export { State };
+export const state: State = {
+    data: {},
+    assetType: "AtlanConnection",
+    limit: 10000,
+    offset: 0,
+    loading: false,
+    error: undefined,
+}
 
-export type Store<S = State> = Omit<
-  VuexStore<S>,
-  "getters" | "commit" | "dispatch"
-> & {
-  commit<K extends keyof Mutations, P extends Parameters<Mutations[K]>[1]>(
-    key: K,
-    payload?: P,
-    options?: CommitOptions
-  ): ReturnType<Mutations[K]>;
-} & {
-  dispatch<K extends keyof Actions>(
-    key: K,
-    payload: Parameters<Actions[K]>[1],
-    options?: DispatchOptions
-  ): ReturnType<Actions[K]>;
-} & {
-  getters: {
-    [K in keyof Getters]: ReturnType<Getters[K]>;
-  };
-};
+export const getters: Getters = {
+    getConnectionList: state => state.data.entities
+}
 
-export const store: Module<State, RootState> = {
-  state,
-  getters,
-  mutations,
-  actions,
-};
+export const mutations: MutationTree<State> = {
+    [CONNECTION_SET_LIST]: (state: State,
+        data: Components.Schemas.AtlasSearchResult) => {
+        state.data = data;
+        state.loading = false;
+        state.error = undefined;
+    },
+    [CONNECTION_SET_STATUS]: (state: State, payload: Status) => {
+        state.loading = payload.loading;
+        state.error = payload.error;
+    }
+}
+
+export const actions: ActionTree<State, any> = {
+    [CONNECTION_FETCH_LIST]: ({ commit }, data) => {
+
+    },
+}
+
+export const connection = {
+    state,
+    getters,
+    mutations,
+    actions
+}
+
+
+
+

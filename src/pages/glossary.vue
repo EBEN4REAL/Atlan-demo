@@ -19,7 +19,7 @@ export default defineComponent({
 </script>
 
 <route lang="yaml">
-    meta:
-      layout: default
-      requiresAuth: true
+  meta:
+    layout: default
+    requiresAuth: true
 </route>

@@ -11,13 +11,7 @@
           <fa icon="fal plus"></fa>
         </a-button>
       </div>
-      <div class="mt-2" v-if="loading">
-        <Loading></Loading>
-      </div>
-      <div class="mt-2" v-else-if="!loading && error">
-        <ErrorView :error="error"></ErrorView>
-      </div>
-      <div class="mt-2" v-else>
+      <div class="mt-2">
         <ConnectionTree
           :searchText="searchText"
           @select="handleSelect"
@@ -25,7 +19,7 @@
       </div>
     </pane>
     <pane size="74">
-      <router-view :selected="selected"> </router-view>
+      <router-view></router-view>
     </pane>
   </splitpanes>
 </template>
@@ -33,16 +27,15 @@
       
 <script lang="ts">
 import { defineComponent } from "vue";
-import ConnectionTree from "@common/tree/connection/index.vue";
+import ConnectionTree from "@/connection/tree/index.vue";
 import Loading from "@common/loaders/section.vue";
 import ErrorView from "@common/error/index.vue";
 
-import RunList from "@/connection/widget/list.vue";
 import { useStore } from "~/store";
 
 export default defineComponent({
   name: "HelloWorld",
-  components: { ConnectionTree, RunList, Loading, ErrorView },
+  components: { ConnectionTree, Loading, ErrorView },
   data() {
     return {
       selected: {},
@@ -51,22 +44,21 @@ export default defineComponent({
   },
   mounted() {},
   computed: {
-    loading() {
-      const store = useStore();
-      return store.getters.getConnectionStatus.loading;
-    },
-    error() {
-      const store = useStore();
-      return store.getters.getConnectionStatus.error;
-    },
+    // loading() {
+    //   const store = useStore();
+    //   return store.getters.getConnectionStatus.loading;
+    // },
+    // error() {
+    //   const store = useStore();
+    //   return store.getters.getConnectionStatus.error;
+    // },
   },
   methods: {
     handleNewConnector() {
       this.$router.push("/setup");
     },
-    handleSelect(item) {
-      console.log(item);
-      this.$router.push(`/connections/${item.key}`);
+    handleSelect(key) {
+      this.$router.push(`/connections/${key}`);
     },
   },
 });

@@ -14,15 +14,16 @@ export default defineComponent({
     },
     name() {
       const app = getCurrentInstance();
+      console.log(app);
       if (app.appContext.config.globalProperties.$keycloak) {
-        return app.appContext.config.globalProperties.$keycloak.fullName;
+        return app.appContext.config.globalProperties.$keycloak.tokenParsed.name;
       }
       return "";
     },
     username() {
       const app = getCurrentInstance();
       if (app.appContext.config.globalProperties.$keycloak) {
-        return app.appContext.config.globalProperties.$keycloak.userName;
+        return app.appContext.config.globalProperties.$keycloak.tokenParsed.username;
       }
       return "";
     },

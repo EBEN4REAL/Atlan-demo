@@ -18,7 +18,8 @@ export default function useGlossaryTree(list: ComputedRef<GlossaryType[] | undef
             return {
                 key: item.guid,
                 title: item.attributes.name,
-                type: "glossary"
+                type: "glossary",
+                isRoot: true,
             };
         }) as TreeDataItem[];
     })
@@ -37,7 +38,7 @@ export default function useGlossaryTree(list: ComputedRef<GlossaryType[] | undef
                     }
                     if (!element.parentCategoryGuid) {
                         treeNode.dataRef.children.push(
-                            { title: element.displayText, key: element.categoryGuid, glossaryID: treeNode.dataRef.key, type: "category" }
+                            { title: element.displayText, key: element.categoryGuid, glossaryID: treeNode.dataRef.key, type: "category", isRoot: true }
                         )
                     };
                 });
@@ -63,7 +64,7 @@ export default function useGlossaryTree(list: ComputedRef<GlossaryType[] | undef
                     treeNode.dataRef.children = [];
                 }
                 treeNode.dataRef.children.push(
-                    { title: child.displayText, key: child.categoryGuid, glossaryID: treeNode.dataRef.glossaryID, categoryID: treeNode.dataRef.key, type: "category" }
+                    { title: child.displayText, key: child.categoryGuid, glossaryID: treeNode.dataRef.glossaryID, categoryID: treeNode.dataRef.key, type: "category", isRoot: true, }
                 )
             });
             try {

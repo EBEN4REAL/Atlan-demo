@@ -32,6 +32,7 @@ export default defineComponent({
     list: Array,
     selected: String,
   },
+  emits: ["update:selected"],
   setup(props, context) {
     function select(id: string) {
       context.emit("update:selected", id);

@@ -2,7 +2,7 @@
   <a-modal
     :width="'500px'"
     :visible="true"
-    :confirmLoading="loading"
+    :confirmLoading="isReady"
     okText="Save"
     title="Create Enumeration"
     @ok="handleOK"
@@ -19,11 +19,11 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, watch, onMounted } from "vue";
+import { defineComponent, ref, watch, DefineComponent } from "vue";
 import { message } from "ant-design-vue";
 
 import EnumDetails from "./enumDetails.vue";
-import addEnums from "./composables/addEnums";
+import useAddEnums from "./composables/addEnums";
 
 export default defineComponent({
   name: "addEnumModal",
@@ -32,7 +32,7 @@ export default defineComponent({
   // },
   components: { EnumDetails },
   setup(props, context) {
-    const enumDetailsComponent = ref<HTMLElement>();
+    const enumDetailsComponent = ref<DefineComponent>();
     const defaultEnum = {
       elementDefs: [],
       category: "ENUM",
@@ -40,22 +40,19 @@ export default defineComponent({
       name: "New ENUM",
     };
 
-    const {
-      error: updateError,
-      isReady,
-      state,
-      execute: handleOK,
-    } = addEnums(enumDetailsComponent?.value?.localEnum);
+    const { newEnum, addEnum } = useAddEnums();
+    const { error: updateError, isReady, state } = addEnum;
 
-    onMounted(() => {
-      console.log(enumDetailsComponent); // <div>This is a root element</div>
-    });
+    function handleOK() {
+      newEnum.value = enumDetailsComponent?.value?.localEnum;
+      addEnum.execute();
+    }
 
     watch([updateError, isReady], () => {
       if (isReady && state.value.enumDefs.length) {
         message.success("Enumeration added.");
         // context.emit("update:selectedEnum", state.value.enumDefs[0]);
-        context.emit("close");
+        // context.emit("close");
       }
       if (updateError.value) {
         message.error("Failed to add your enum.");
@@ -70,6 +67,7 @@ export default defineComponent({
       updateError,
       isReady,
       state,
+      newEnum,
     };
   },
 });

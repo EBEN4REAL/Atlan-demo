@@ -2,7 +2,6 @@
   <div class="flex flex-col h-screen p-4">
     <AddEnumModal
       v-if="addModalVisible"
-      @add="addToList"
       @close="() => (addModalVisible = false)"
     />
     <div class="mb-4">
@@ -32,7 +31,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, computed } from "vue";
+import { defineComponent, ref } from "vue";
 import useEnums from "@/admin/enums/composables/useEnums";
 import EnumList from "@/admin/enums/enumList.vue";
 import EnumDetails from "@/admin/enums/enumDetails.vue";
@@ -41,31 +40,20 @@ import AddEnumModal from "@/admin/enums/addEnumModal.vue";
 export default defineComponent({
   components: { EnumList, EnumDetails, AddEnumModal },
   setup(props, context) {
-    const { enumListData } = useEnums();
-    const currentEnumId = ref("");
+    const { enumListData, selectedId, selectedEnum } = useEnums();
     const addModalVisible = ref(false);
 
-    const selectedId = computed({
-      get: () => currentEnumId.value || enumListData.value?.[0]?.guid,
-      set: (val) => {
-        currentEnumId.value = val;
-      },
-    });
+    function toggleAddModal(state: boolean) {
+      addModalVisible.value = state;
+    }
 
-    const selectedEnum = computed({
-      get: () =>
-        enumListData.value?.find(
-          (enumObj) => enumObj.guid === selectedId.value
-        ),
-      set: (updatedEnum) => {
-        const idx = enumListData.value.findIndex(
-          (enumObj) => enumObj.guid === updatedEnum.guid
-        );
-        enumListData.value[idx] = updatedEnum;
-      },
-    });
-
-    return { enumListData, addModalVisible, selectedId, selectedEnum };
+    return {
+      enumListData,
+      addModalVisible,
+      selectedId,
+      selectedEnum,
+      toggleAddModal,
+    };
   },
 });
 </script>

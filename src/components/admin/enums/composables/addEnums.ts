@@ -1,15 +1,17 @@
 import { fetcherPost, getAPIPath } from "~/api";
 import { useAsyncState } from "@vueuse/core";
 import enumDef from "../enum.interface";
+import { ref } from "vue";
 
 const serviceAlias = "auth/atlas";
 const enumTypedef = "ENUM";
 
-export default function addEnums(newEnum: enumDef) {
-  return useAsyncState(
+export default function useAddEnums() {
+  const newEnum = ref<enumDef>();
+  const addEnum = useAsyncState(
     () => {
-      console.log("NEW ENUM", newEnum);
-      return Promise.resolve({ enumDefs: ["hi"] });
+      console.log("NEW ENUM", newEnum.value);
+      return Promise.reject({ enumDefs: ["hi"] });
       // fetcherPost(
       //   getAPIPath(serviceAlias, "/types/typedefs"),
       //   { enumDefs: [newEnum] },
@@ -19,4 +21,6 @@ export default function addEnums(newEnum: enumDef) {
     { enumDefs: [] },
     { immediate: false, resetOnExecute: true }
   );
+
+  return { newEnum, addEnum };
 }

@@ -24,7 +24,7 @@
       <div
         class="absolute flex items-center justify-center mb-8 bottom-0 w-full"
       >
-        <!-- <img class="w-5 mx-2" src="~/assets/images/source/grafana.png" /> -->
+        <img class="w-5 mx-2" :src="grafana"/>
         <span> Need to check logs?&nbsp; </span>
         <a class="text-center" href="/services/monitor">
           Go to grafana dashboard <Fa :icon="'fal chevron-right'"/>
@@ -36,6 +36,7 @@
 
 <script>
 import {useHealth} from "~/composables/health/useHealth";
+import grafana from "~/assets/images/source/grafana.png";
 
 
 export default {
@@ -56,7 +57,8 @@ export default {
     overallStatus,
     getOverallStatusIconClass,
     servicesNames:Object.keys(services),
-    getStatusClass
+    getStatusClass,
+    grafana
 
     }
   },

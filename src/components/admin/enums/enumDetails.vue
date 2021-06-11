@@ -71,7 +71,9 @@
             :disabled="!isEditing"
             @change="handleChange"
             :value="enumValues"
+            :open="false"
           />
+          <!-- TODO: Can this be done using computed and v-modal -->
         </a-form-item>
       </a-form>
     </div>
@@ -83,24 +85,25 @@ import { computed, defineComponent, reactive, ref, watch } from "vue";
 import { useTimeAgo } from "@vueuse/core";
 import { message } from "ant-design-vue";
 
-import { useUpdateEnums } from "./composables/addEnums";
+import { useUpdateEnums } from "./composables/useModifyEnums";
 
 export default defineComponent({
   props: {
+    // TODO: Let's define a dummy Enum object that can be used as placeholder
+    // We can do it for all other types of object
     selectedEnum: { type: Object, required: true },
     isNew: { type: Boolean, default: false },
   },
+  emits: ["update:selectedEnum"],
   setup(props, context) {
-    // Data
+    // Component state essentials
     const localEnum = reactive({ ...props.selectedEnum });
     const isEditing = ref(props.isNew || false);
 
-    // Computed
     const enumValues = computed((): string[] =>
       localEnum.elementDefs.map((e) => e.value)
     );
 
-    // Methods
     function timeAgo(time: string) {
       return useTimeAgo(time).value;
     }
@@ -117,13 +120,7 @@ export default defineComponent({
       }));
     }
 
-    // const {
-    //   error: updateError,
-    //   isReady,
-    //   state,
-    //   execute: saveChanges,
-    // } = updateEnums(localEnum);
-
+    // Enum Updation flow
     const { updateEnums, updatedEnumDef, reset } = useUpdateEnums();
     const { error: updateError, isReady, state } = updateEnums;
 
@@ -132,6 +129,7 @@ export default defineComponent({
       updateEnums.execute();
     }
 
+    // FIXME: May be simplified
     watch([updateError, isReady], () => {
       if (isReady && state.value.enumDefs.length) {
         message.success("Enumeration updated.");

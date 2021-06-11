@@ -58,16 +58,14 @@ export function useHealth() {
 
   const setServiceStatus = (service, status) => {
     if (service in services) {
-      const servicesCopy = { ...services };
-      servicesCopy[service] = status;
-      services = servicesCopy;
+      services[service] = status;
     } else console.warn("Cannot set non-existent service", service, status);
   };
 
   const responses = Object.values(healthPaths).map((path) => Health.ping(path));
-  const isTopServicesUp = responses.every((el) => el.data != undefined);
+  const areTopServicesUp = responses.every((el) => el.data != undefined);
 
-  if (isTopServicesUp) {
+  if (areTopServicesUp) {
     responses.forEach((e, index) => {
       setServiceStatus(Object.keys(healthPaths)[index], SERVICE_STATES.up);
     });
@@ -80,7 +78,7 @@ export function useHealth() {
   const refernceServices = responses[1].data;
 
   watch(refernceServices, () => {
-    if (refernceServices.value) {
+    if (areTopServicesUp && refernceServices.value) {
       const blocks = Object.keys(refernceServices.value);
       blocks.forEach((s) => {
         // Set the referenced services as up
@@ -92,6 +90,12 @@ export function useHealth() {
         );
       });
       console.log(services, "services");
+    } else if (!areTopServicesUp && !refernceServices.value) {
+      const blocks = Object.keys(refernceServices.value);
+      blocks.forEach((s) => {
+        // Set the referenced services as down
+        setServiceStatus(s, SERVICE_STATES.down);
+      });
     }
   });
 
@@ -118,6 +122,7 @@ export function useHealth() {
 
   const getStatusClass = (status) => {
     if (status === SERVICE_STATES.up) {
+      console.log(status, "status");
       return {
         icon: "fal check-circle",
         class: "animate-flipInX text-green-500",

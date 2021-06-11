@@ -9,21 +9,28 @@
       :bot="bot"
       class="mb-3"
     ></DetailsView>
-    <div class="flex justify-between">
-      <p class="mb-0 text-gray-400">Last 5 workflows</p>
+    <div class="flex justify-between mt-4">
+      <p class="mb-0 text-gray-400">Last 5 runs</p>
       <p class="mb-0 cursor-pointer text-primary-500">View All</p>
     </div>
+
     <RunsView :item="item" :credential="credential" :bot="bot"></RunsView>
     <div class="flex justify-between mt-3">
       <p class="mb-0 text-gray-400">Query Configuration</p>
     </div>
-    <QueryView class="mt-3"></QueryView>
+    <div class="grid grid-cols-12 mt-3">
+      <div class="col-span-6">
+        <QueryView class="" :item="item"></QueryView>
+      </div>
+    </div>
   </div>
 </template>
         
 <script lang="ts">
 import { defineComponent, PropType } from "vue";
-import RunsView from "@/connection/overview/runs/index.vue";
+
+import RunsView from "@common/list/runs/index.vue";
+
 import DetailsView from "@/connection/overview/details.vue";
 import QueryView from "@/connection/overview/query.vue";
 import { ConnectionType } from "~/types/atlas/connection";

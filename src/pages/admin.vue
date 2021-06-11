@@ -11,7 +11,9 @@
             <a-menu-item key="general"> General </a-menu-item>
 
             <a-menu-item key="members"> Members </a-menu-item>
-            <a-menu-item key="groups"> Groups </a-menu-item>
+            <a-menu-item key="groups">
+              <router-link to="/admin/groups">Groups </router-link></a-menu-item
+            >
             <a-menu-item key="apikeys"> API Keys </a-menu-item>
             <a-menu-item key="integrations"> Integrations </a-menu-item>
             <a-menu-item key="billing"> Billing & License </a-menu-item>
@@ -46,7 +48,9 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
-export default defineComponent({});
+export default defineComponent({
+  
+});
 </script>
 
 

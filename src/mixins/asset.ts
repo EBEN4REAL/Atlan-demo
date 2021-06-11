@@ -1,4 +1,4 @@
-import { defineComponent, getCurrentInstance, PropType } from "vue";
+import { defineComponent, PropType } from "vue";
 import { Components } from "~/api/atlas/client";
 import { useStore } from "~/store";
 import { AtlanTableAttributes } from "~/types/asset";

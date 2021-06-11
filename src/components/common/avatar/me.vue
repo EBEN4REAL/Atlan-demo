@@ -56,21 +56,19 @@
 
 
 <script lang="ts">
-import { defineComponent, getCurrentInstance } from "vue";
-import KeycloakMixin from "~/mixins/keycloak";
+import { defineComponent, inject } from "vue";
 
 export default defineComponent({
   name: "HelloWorld",
-  mixins: [KeycloakMixin],
   props: {},
   data() {
     return {};
   },
   setup() {
-    const app = getCurrentInstance();
+    const keycloak = inject("$keycloak");
     const handleLogout = () => {
       console.log(
-        app.appContext.config.globalProperties.$keycloak.keycloak.logout({
+        keycloak.logout({
           redirectUri: window.location.origin,
         })
       );

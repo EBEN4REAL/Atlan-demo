@@ -1,6 +1,7 @@
 <template>
   <a-form :model="credential" layout="vertical" ref="form">
     <a-form-item
+      v-if="!isEdit"
       label="Connection name"
       name="name"
       :has-feedback="true"
@@ -157,7 +158,7 @@
 
 <script lang="ts">
 // import { ValidateErrorEntity } from "ant-design-vue/es/form/interface";
-import { computed, defineComponent, PropType } from "vue";
+import { defineComponent, PropType } from "vue";
 
 import RadioButton from "@common/radio/button.vue";
 import DynamicInput from "@common/input/dynamic.vue";
@@ -184,12 +185,20 @@ export default defineComponent({
         return {};
       },
     },
-  },
-  setup(props) {
-    // const hostLocal = computed(() =);
-    // return {
-    //   hostLocal,
-    // };
+    isEdit: {
+      type: Boolean,
+      required: false,
+      default(): any {
+        return false;
+      },
+    },
+    defaultCredential: {
+      type: Object,
+      required: false,
+      default(): any {
+        return {};
+      },
+    },
   },
   data() {
     return {
@@ -280,7 +289,7 @@ export default defineComponent({
   },
   computed: {
     hostLocal(): any {
-      return this.item.attriibutes;
+      return this.host(this.item);
     },
     portLocal(): any {
       return this.port(this.item);
@@ -386,6 +395,13 @@ export default defineComponent({
         });
     },
   },
-  mounted() {},
+  mounted() {
+    if (this.isEdit) {
+      this.credential = {
+        ...this.credential,
+        ...this.defaultCredential,
+      };
+    }
+  },
 });
 </script>

@@ -75,8 +75,9 @@ export default defineComponent({
       const temp = [];
       try {
         const res = await Metadata.List({ ...this.credential });
-        if (res.data) {
-          const list = res.data.result.reduce((r, obj) => {
+        console.log(res);
+        if (res.result) {
+          const list = res.result.reduce((r, obj) => {
             const { TABLE_CATALOG, TABLE_SCHEM } = obj;
             r[TABLE_CATALOG] = [
               ...(r[TABLE_CATALOG] || []),

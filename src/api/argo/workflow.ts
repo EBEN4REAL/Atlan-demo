@@ -16,5 +16,6 @@ const List = (params?: any, options?: AxiosRequestConfig) => {
 };
 
 export const Workflows = {
+  URL,
   List,
 };

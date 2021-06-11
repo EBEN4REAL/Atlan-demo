@@ -36,7 +36,7 @@
       
 <script lang="ts">
 import { defineComponent } from "vue";
-import RunList from "@/connection/home/runlist/index.vue";
+import RunList from "@common/list/runs/index.vue";
 
 export default defineComponent({
   name: "HelloWorld",

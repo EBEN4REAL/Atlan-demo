@@ -1,80 +1,65 @@
 <template>
   <div class="p-6 bg-white rounded shadow-sm">
-    <div class="flex justify-between">
+    <div class="flex space-x-6">
       <div>
-        <div class="mb-1 text-sm tracking-wider text-gray-600 uppercase">
-          {{ label(item?.attributes?.integrationName) }}
-        </div>
-        <div class="flex items-center align-middle">
-          <img
-            :src="logo(item?.attributes?.integrationName)"
-            class="w-auto h-6 mr-1"
-          />
-
-          <div class="text-gray-900">{{ item?.attributes?.name }}</div>
+        <p class="mb-0 text-sm text-gray-400">Allow Query</p>
+        <div class="flex items-center mt-1 text-gray-900 align-middle">
+          <span
+            v-if="item?.attributes?.allowQuery"
+            class="inline-block leading-none"
+            ><fa
+              icon="fa check-circle"
+              class="mr-1 text-green-500"
+              style="display: inline-block; vertical-align: middle"
+            ></fa
+            >Enabled</span
+          >
+          <span v-else class="inline-block leading-none"
+            ><fa
+              icon="fa times-circle"
+              class="mr-1 text-red-500"
+              style="display: inline-block; vertical-align: middle"
+            ></fa
+            >Disabled</span
+          >
         </div>
       </div>
       <div>
-        <a-button>Edit</a-button>
+        <p class="mb-0 text-sm text-gray-400">Allow Preview</p>
+        <div class="flex items-center mt-1 text-gray-900 align-middle">
+          <span
+            v-if="item?.attributes?.allowPreview"
+            class="inline-block leading-none"
+            ><fa
+              icon="fa check-circle"
+              class="mr-1 text-green-500"
+              style="display: inline-block; vertical-align: middle"
+            ></fa
+            >Enabled</span
+          >
+          <span v-else class="inline-block leading-none"
+            ><fa
+              icon="fa times-circle"
+              class="mr-1 text-red-500"
+              style="display: inline-block; vertical-align: middle"
+            ></fa
+            >Disabled</span
+          >
+        </div>
       </div>
     </div>
-
-    <div class="flex flex-col mt-6">
-      <div class="flex space-x-5">
-        <div class="">
-          <p class="mb-0 text-sm text-gray-400">
-            {{
-              bot?.attributes?.config?.attributes?.credential?.attributes.host
-                .attributes.label
-            }}
-          </p>
-          <div class="text-gray-900">{{ item?.attributes?.host }}</div>
-        </div>
-        <div class="">
-          <p class="mb-0 text-sm text-gray-400">
-            {{
-              bot?.attributes?.config?.attributes?.credential?.attributes.port
-                .attributes.label
-            }}
-          </p>
-          <div class="text-gray-900">{{ item?.attributes?.port }}</div>
-        </div>
+    <div class="flex mt-4 space-x-6">
+      <div>
+        <p class="mb-0 text-sm text-gray-400">Row Limit</p>
+        <div class="text-gray-900">N/A</div>
       </div>
-      <div class="mt-4">
-        <p class="mb-0 text-sm text-gray-400">Authentication Type</p>
-        <div class="tracking-wider text-gray-900 uppercase">
-          {{ credential?.attributes?.authType }}
-        </div>
+      <div>
+        <p class="mb-0 text-sm text-gray-400">Authentication</p>
+        <div class="text-gray-900">N/A</div>
       </div>
-      <div class="mt-4">
-        <div class="grid grid-cols-12 flex-nowrap">
-          <template
-            v-for="extra in bot?.attributes?.config?.attributes?.credential
-              ?.attributes?.extra"
-            :key="extra.id"
-          >
-            <div class="col-span-6" v-if="extra.attributes.isVisible">
-              <p class="mb-0 text-sm text-gray-400">
-                {{ extra.attributes.label }}
-              </p>
-              <div class="tracking-wider text-gray-900 uppercase">
-                {{ item?.attributes?.extra[extra.attributes.id] }}
-              </div>
-            </div>
-          </template>
-        </div>
-      </div>
-      <div class="mt-4">
-        <a-button class="bg-green-500 border-green-500" type="primary">
-          Test Authentication</a-button
-        >
-      </div>
-
-      <div class="flex">
-        <div class="tracking-wider text-gray-900 uppercase">
-          {{ credential?.createTime }}
-        </div>
-      </div>
+    </div>
+    <div class="mt-6">
+      <a-button>Edit</a-button>
     </div>
   </div>
 </template>
@@ -84,9 +69,6 @@
 import { defineComponent, PropType } from "vue";
 import { ConnectionType } from "~/types/atlas/connection";
 import SourceMixin from "~/mixins/source";
-import { Components } from "~/api/atlas/client";
-import fetchCredentialList from "~/composables/credential/fetchCredential";
-import { mutate } from "swrv";
 import { BotsType } from "~/types/atlas/bots";
 import { CredentialType } from "~/types/atlas/credential";
 

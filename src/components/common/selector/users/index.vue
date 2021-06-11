@@ -34,14 +34,13 @@
 </template>
     
 <script lang="ts">
-import { defineComponent, getCurrentInstance } from "vue";
+import { defineComponent } from "vue";
 import Select from "@common/selector/index.vue";
 import qs from "qs";
 
 import { User } from "~/api/auth/user";
 import KeycloakMixin from "~/mixins/keycloak";
 import { SelectArray } from "~/types";
-import { getAxiosClient } from "~/api";
 
 export default defineComponent({
   name: "HelloWorld",

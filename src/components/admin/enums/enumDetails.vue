@@ -1,6 +1,12 @@
 <template>
   <div
-    class="h-full bg-white border border-gray-200 divide-y divide-gray-100 rounded "
+    class="
+      h-full
+      bg-white
+      border border-gray-200
+      divide-y divide-gray-100
+      rounded
+    "
   >
     <div class="flex flex-col pt-2" v-if="!isNew">
       <div class="flex items-center justify-between px-3">
@@ -46,7 +52,7 @@
       </div>
       <div
         class="w-full h-1"
-        :class="isUpdating ? 'animate-pulse bg-primary-400' : ''"
+        :class="!isReady ? 'animate-pulse bg-primary-400' : ''"
       />
     </div>
     <div class="p-8">
@@ -77,7 +83,7 @@ import { computed, defineComponent, reactive, ref, watch } from "vue";
 import { useTimeAgo } from "@vueuse/core";
 import { message } from "ant-design-vue";
 
-import updateEnums from "@/admin/enums/composables/updateEnums";
+import { useUpdateEnums } from "./composables/addEnums";
 
 export default defineComponent({
   props: {
@@ -87,7 +93,6 @@ export default defineComponent({
   setup(props, context) {
     // Data
     const localEnum = reactive({ ...props.selectedEnum });
-    const isUpdating = ref(false);
     const isEditing = ref(props.isNew || false);
 
     // Computed
@@ -112,12 +117,20 @@ export default defineComponent({
       }));
     }
 
-    const {
-      error: updateError,
-      isReady,
-      state,
-      execute: saveChanges,
-    } = updateEnums(localEnum);
+    // const {
+    //   error: updateError,
+    //   isReady,
+    //   state,
+    //   execute: saveChanges,
+    // } = updateEnums(localEnum);
+
+    const { updateEnums, updatedEnumDef, reset } = useUpdateEnums();
+    const { error: updateError, isReady, state } = updateEnums;
+
+    function saveChanges() {
+      updatedEnumDef.value = localEnum;
+      updateEnums.execute();
+    }
 
     watch([updateError, isReady], () => {
       if (isReady && state.value.enumDefs.length) {
@@ -128,12 +141,13 @@ export default defineComponent({
       if (updateError.value) {
         message.error("Failed to save your enum.");
         console.error(updateError.value);
+        reset();
       }
     });
 
     return {
       isEditing,
-      isUpdating,
+      isReady,
       localEnum,
       enumValues,
       timeAgo,

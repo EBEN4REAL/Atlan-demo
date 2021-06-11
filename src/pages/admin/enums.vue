@@ -2,16 +2,15 @@
   <div class="flex flex-col h-screen p-4">
     <AddEnumModal
       v-if="addModalVisible"
-      @close="() => (addModalVisible = false)"
+      @add="addToList"
+      @close="toggleAddModal(false)"
     />
     <div class="mb-4">
       <div class="text-xl">Enumerations</div>
     </div>
     <div class="flex items-center justify-between">
       <p>Search Enumerations</p>
-      <a-button @click="() => (addModalVisible = true)" type="primary">
-        + New
-      </a-button>
+      <a-button @click="toggleAddModal(true)" type="primary"> + New </a-button>
     </div>
 
     <div v-if="selectedId" class="flex flex-grow py-4 overflow-y-auto">
@@ -40,7 +39,7 @@ import AddEnumModal from "@/admin/enums/addEnumModal.vue";
 export default defineComponent({
   components: { EnumList, EnumDetails, AddEnumModal },
   setup(props, context) {
-    const { enumListData, selectedId, selectedEnum } = useEnums();
+    const { enumListData, selectedId, selectedEnum, addToList } = useEnums();
     const addModalVisible = ref(false);
 
     function toggleAddModal(state: boolean) {
@@ -53,6 +52,7 @@ export default defineComponent({
       selectedId,
       selectedEnum,
       toggleAddModal,
+      addToList,
     };
   },
 });

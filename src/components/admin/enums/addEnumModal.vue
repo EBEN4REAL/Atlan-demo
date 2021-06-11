@@ -2,7 +2,7 @@
   <a-modal
     :width="'500px'"
     :visible="true"
-    :confirmLoading="isReady"
+    :confirmLoading="!isReady"
     okText="Save"
     title="Create Enumeration"
     @ok="handleOK"
@@ -23,13 +23,10 @@ import { defineComponent, ref, watch, DefineComponent } from "vue";
 import { message } from "ant-design-vue";
 
 import EnumDetails from "./enumDetails.vue";
-import useAddEnums from "./composables/addEnums";
+import { useAddEnums } from "./composables/addEnums";
 
 export default defineComponent({
   name: "addEnumModal",
-  // props: {
-  //   visible: Boolean,
-  // },
   components: { EnumDetails },
   setup(props, context) {
     const enumDetailsComponent = ref<DefineComponent>();
@@ -40,7 +37,7 @@ export default defineComponent({
       name: "New ENUM",
     };
 
-    const { newEnum, addEnum } = useAddEnums();
+    const { newEnum, addEnum, reset } = useAddEnums();
     const { error: updateError, isReady, state } = addEnum;
 
     function handleOK() {
@@ -51,12 +48,13 @@ export default defineComponent({
     watch([updateError, isReady], () => {
       if (isReady && state.value.enumDefs.length) {
         message.success("Enumeration added.");
-        // context.emit("update:selectedEnum", state.value.enumDefs[0]);
-        // context.emit("close");
+        context.emit("add", state.value.enumDefs[0]);
+        context.emit("close");
       }
       if (updateError.value) {
         message.error("Failed to add your enum.");
         console.error(updateError.value);
+        reset();
       }
     });
 

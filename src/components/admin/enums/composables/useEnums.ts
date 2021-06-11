@@ -1,6 +1,7 @@
 import { fetcher, getAPIPath } from "~/api";
 import useSWRV from "swrv";
 import { computed, ref } from "vue";
+import enumDef from "../enum.interface";
 
 const serviceAlias = "auth/atlas";
 const enumTypedef = "ENUM";
@@ -14,9 +15,11 @@ export default function useEnums() {
 
   const currentEnumId = ref("");
 
-  const enumListData = computed(() => enumListResponse.value?.enumDefs || []);
+  const enumListData = computed<enumDef[]>(
+    () => enumListResponse.value?.enumDefs || []
+  );
 
-  const selectedId = computed({
+  const selectedId = computed<string>({
     get: () => currentEnumId.value || enumListData.value?.[0]?.guid,
     set: (val) => {
       currentEnumId.value = val;
@@ -27,17 +30,26 @@ export default function useEnums() {
     get: () =>
       enumListData.value?.find((enumObj) => enumObj.guid === selectedId.value),
     set: (updatedEnum) => {
-      const idx = enumListData.value.findIndex(
-        (enumObj) => enumObj.guid === updatedEnum.guid
-      );
-      enumListData.value[idx] = updatedEnum;
+      if (updatedEnum) {
+        const idx = enumListData.value.findIndex(
+          (enumObj) => enumObj.guid === updatedEnum.guid
+        );
+        enumListData.value[idx] = updatedEnum;
+      }
     },
   });
+
+  function addToList(newEnum: enumDef) {
+    const newEnumList = [newEnum, ...enumListData.value];
+    mutate(() => ({ enumDefs: newEnumList }));
+    selectedEnum.value = newEnum;
+  }
 
   return {
     selectedId,
     enumListData,
     selectedEnum,
     refetchEnumList: mutate,
+    addToList,
   };
 }

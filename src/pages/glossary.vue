@@ -9,7 +9,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, getCurrentInstance } from "vue";
+import { defineComponent } from "vue";
 
 import GlossaryTree from "@common/tree/glossary/index.vue";
 

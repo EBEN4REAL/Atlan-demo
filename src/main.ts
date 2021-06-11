@@ -1,15 +1,14 @@
 
-import { createApp } from 'vue'
+import Vue, {createApp} from 'vue'
 import { createRouter, createWebHistory } from 'vue-router'
 import generatedRoutes from 'virtual:generated-pages'
 import { setupLayouts } from 'virtual:generated-layouts'
+import { VueKeycloakInstance } from "@dsb-norge/vue-keycloak-js/dist/types";
 import App from './App.vue'
 
 
-import "~/styles/tailwind.css";
-import "ant-design-vue/dist/antd.less";
-import "~/styles/main.less";
-import "~/styles/antd.less";
+import "~/styles/index.less";
+
 import { TENANT_FETCH_DATA } from './constant/store_types'
 import { useStore } from '~/store'
 
@@ -19,9 +18,14 @@ const app = createApp(App)
 const routes = setupLayouts(generatedRoutes)
 const router = createRouter({ history: createWebHistory(), routes })
 
+//auto install all the plugins in modules/* folder
 Object.values(import.meta.globEager('./modules/*.ts')).map(i => i.install?.({ app, router, routes }))
 
 app.use(router).mount('#app');
+
+
+
+
 
 const fn = async () => {
   return await app.config.globalProperties.$keycloak.init({
@@ -40,10 +44,7 @@ router.beforeEach(async (to, from, next) => {
       try {
         // await setTimeout(() => {}, 200);
         const timeout = (prom: Promise<any>, time: number) =>
-          Promise.race([
-            prom,
-            new Promise((_r, rej) => setTimeout(rej, time)),
-          ]);
+          Promise.race([prom,new Promise((_r, rej) => setTimeout(rej, time)),]);
         const auth = await timeout(fn(), 10000);
         if (auth) {
           const store = useStore();

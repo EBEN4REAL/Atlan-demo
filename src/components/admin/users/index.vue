@@ -18,9 +18,7 @@
 </template>
 <script lang="ts">
 import { defineComponent, ref, reactive } from "vue";
-import useSWRV from "swrv";
-import { fetcher, getAPIPath } from "~/api";
-import { useStore } from "vuex";
+import { useAPI } from "~/api/useAPI";
 
 export default defineComponent({
   setup() {
@@ -30,10 +28,7 @@ export default defineComponent({
     });
 
     // Make an API
-    const { data: userList, mutate: getUserList } = useSWRV(
-      [getAPIPath("auth", "/users/v2"), userListAPIParams, {}],
-      fetcher
-    );
+    const { data: userList, mutate: getUserList } = useAPI('LIST_USERS', "GET", {cache: false});
     
     const searchText = ref("");
     const handleSearch = (searchValue: string) => {

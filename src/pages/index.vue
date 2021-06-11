@@ -10,9 +10,7 @@
 
         <div class="flex flex-col ml-2">
           <p class="mb-0 text-base">{{ name }}</p>
-          <p class="mb-0 text-sm text-gray-500">
-            {{ username }}
-          </p>
+          <p class="mb-0 text-sm text-gray-500">{{ username }}</p>
         </div>
       </div>
 
@@ -56,16 +54,14 @@
 
 
 <script lang="ts">
-import { defineComponent, getCurrentInstance } from "vue";
-
-import KeycloakMixin from "~/mixins/keycloak";
+import { defineComponent, inject, computed } from "vue";
+import { useStore } from "~/store";
 
 import PageLoader from "@common/loaders/page.vue";
 import SearchBox from "@common/searchbox/searchlist.vue";
 
 export default defineComponent({
   name: "HelloWorld",
-  mixins: [KeycloakMixin],
   components: {
     PageLoader,
     SearchBox,
@@ -80,8 +76,9 @@ export default defineComponent({
     console.log("mounted");
   },
   setup() {
-    const app = getCurrentInstance();
-    console.log(app.appContext.config.globalProperties.$keycloak);
+    const keycloak = inject("$keycloak");
+    const store = useStore();
+    //console.log(app.appContext.config.globalProperties.$keycloak);
     // const handleLogout = () => {
     //   console.log(
     //     app.appContext.config.globalProperties.$keycloak.keycloak.logout({
@@ -89,7 +86,13 @@ export default defineComponent({
     //     })
     //   );
     // };
-    return {};
+    return {
+      name: keycloak.tokenParsed.name || "",
+      username: keycloak.tokenParsed.username || "",
+      displayName: computed(() => store.getters.getDisplayName),
+      displayNameHTML: computed(() => store.getters.getDisplayNameHTML),
+      realm: computed(() => store.getters.getRealmName),
+    };
   },
 });
 </script>

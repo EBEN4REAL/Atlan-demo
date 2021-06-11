@@ -1,21 +1,16 @@
 
-import { createApp } from 'vue'
+import Vue, {createApp} from 'vue'
 import { createRouter, createWebHistory } from 'vue-router'
 import generatedRoutes from 'virtual:generated-pages'
 import { setupLayouts } from 'virtual:generated-layouts'
+import { VueKeycloakInstance } from "@dsb-norge/vue-keycloak-js/dist/types";
 import App from './App.vue'
 
 
-import "~/styles/tailwind.css";
-import "ant-design-vue/dist/antd.less";
-import "~/styles/main.less";
-import "~/styles/antd.less";
+import "~/styles/index.less";
 
-
-import { useStore } from "~/store";
-
-import { ActionTypes as ConnectionActionTypes } from "~/store/modules/connection/types-action";
-import { ActionTypes as TenantActionTypes } from "~/store/modules/tenant/types-action";
+import { TENANT_FETCH_DATA } from './constant/store_types'
+import { useStore } from '~/store'
 
 const app = createApp(App)
 
@@ -23,15 +18,18 @@ const app = createApp(App)
 const routes = setupLayouts(generatedRoutes)
 const router = createRouter({ history: createWebHistory(), routes })
 
+//auto install all the plugins in modules/* folder
 Object.values(import.meta.globEager('./modules/*.ts')).map(i => i.install?.({ app, router, routes }))
 
 app.use(router).mount('#app');
 
+
+
+
+
 const fn = async () => {
   return await app.config.globalProperties.$keycloak.init({
     pkceMethod: "S256",
-    // Use 'login-required' to always require authentication
-    // If using 'login-required', there is no need for the router guards in router.js
     onLoad: "check-sso",
     enableLogging: true,
     loginHint: "",
@@ -46,19 +44,13 @@ router.beforeEach(async (to, from, next) => {
       try {
         // await setTimeout(() => {}, 200);
         const timeout = (prom: Promise<any>, time: number) =>
-          Promise.race([
-            prom,
-            new Promise((_r, rej) => setTimeout(rej, time)),
-          ]);
+          Promise.race([prom,new Promise((_r, rej) => setTimeout(rej, time)),]);
         const auth = await timeout(fn(), 10000);
         if (auth) {
           const store = useStore();
-          store.dispatch(ConnectionActionTypes.CONNECTION_FETCH_LIST);
-          store.dispatch(TenantActionTypes.TENANT_GET_TENANT);
+          store.dispatch(TENANT_FETCH_DATA);
           next();
         } else {
-
-          console.log(app.config.globalProperties.$keycloak.createLoginUrl());
           window.location.replace(
             app.config.globalProperties.$keycloak.createLoginUrl()
           );
@@ -66,8 +58,7 @@ router.beforeEach(async (to, from, next) => {
       } catch (err) {
         console.log("error in init", err);
         app.config.globalProperties.$error(err);
-        window.location.replace("/not-found");
-        // next();
+        // window.location.replace("/not-found");
       }
     } else {
       if (app.config.globalProperties.$keycloak.authenticated) {

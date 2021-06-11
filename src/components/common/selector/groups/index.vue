@@ -32,7 +32,7 @@ import { defineComponent } from "vue";
 import Select from "@common/selector/index.vue";
 import qs from "qs";
 
-import { Group } from "~/api/auth/group";
+import { GroupApi } from "~/api/auth/group";
 import KeycloakMixin from "~/mixins/keycloak";
 import { SelectArray } from "~/types";
 
@@ -96,7 +96,7 @@ export default defineComponent({
             cancelToken: this.cancelToken.token,
           };
         }
-        const response = await Group.ListV2(params, options);
+        const response = await GroupApi.ListV2(params, options);
         if (response.data?.records) {
           response.data?.records.forEach((element: any) => {
             tempList.push({

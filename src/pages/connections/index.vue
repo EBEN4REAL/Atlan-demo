@@ -36,9 +36,7 @@
       
 <script lang="ts">
 import { defineComponent } from "vue";
-
-import RunList from "@/connection/widget/list.vue";
-import { useStore } from "~/store";
+import RunList from "@common/list/runs/index.vue";
 
 export default defineComponent({
   name: "HelloWorld",

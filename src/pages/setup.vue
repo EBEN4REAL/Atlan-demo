@@ -56,11 +56,11 @@
     <div class="flex flex-col w-full h-full shadow-md">
       <div class="px-6 py-4 border-b bg-gray-50" v-if="current !== 0">
         <div class="flex items-center justify-between align-middle">
-          <div class="flex items-center">
-            <div class="flex">
-              <a-button @click="handlePrevious" class="px-1 mr-3">
+          <div class="flex items-center align-middle">
+            <div class="flex items-center align-middle">
+              <p @click="handlePrevious" class="px-1 mb-0 mr-2 leading-none">
                 <fa icon="fal chevron-left"></fa>
-              </a-button>
+              </p>
               <img :src="logo(selectedConnector)" class="w-auto h-8 mr-2" />
             </div>
 
@@ -203,9 +203,9 @@ export default defineComponent({
 });
 </script>
         
-            
-  <route lang="yaml">
+              
+<route lang="yaml">
   meta:
-  layout: default
-  requiresAuth: true
-  </route>
+    layout: default
+    requiresAuth: true
+</route>

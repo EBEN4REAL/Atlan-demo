@@ -1,45 +1,42 @@
-import snowflake from "~/assets/images/source/snowflake.png";
-import tableau from "~/assets/images/assetType/tableau.png";
-
 export const AssetTypeList = [
   {
-    id: "AtlanConnection",
+    id: "Connection",
     label: "Connection",
     nameAttribute: "connectionName",
     qualifiedNameAttribute: "connectionQualifiedName",
     parents: [],
-    children: ["AtlanColumns"],
+    children: ["Columns"],
   },
   {
-    id: "AtlanDatabase",
+    id: "Database",
     label: "Database",
     nameAttribute: "databaseName",
     qualifiedNameAttribute: "databaseQualifiedName",
     parents: ["AtlanConnection"],
-    children: ["AtlanColumns"],
+    children: ["Columns"],
   },
   {
-    id: "AtlanSchema",
+    id: "Schema",
     label: "Schema",
     nameAttribute: "schemaName",
     qualifiedNameAttribute: "schemaQualifiedName",
     parents: ["AtlanConnection", "AtlanDatabase"],
-    children: ["AtlanColumns"],
+    children: ["Columns"],
   },
   {
-    id: "AtlanTable",
+    id: "Table",
     label: "Table",
     nameAttribute: "tableName",
     qualifiedNameAttribute: "tableQualifiedName",
-    parents: ["AtlanConnection", "AtlanDatabase", "AtlanSchema"],
-    children: ["AtlanColumns"],
+    parents: ["Connection", "Database", "Schema"],
+    children: ["Columns"],
   },
   {
-    id: "AtlanColumns",
+    id: "Columns",
     label: "Columns",
     nameAttributeattribute: "",
     qualifiedNameAttribute: "databaseQualifiedName",
-    parents: ["AtlanConnection", "AtlanDatabase", "AtlanSchema", "AtlanTable"],
-    children: ["AtlanColumns"],
+    parents: ["Connection", "Database", "Schema"],
+    children: ["Columns"],
   },
 ];

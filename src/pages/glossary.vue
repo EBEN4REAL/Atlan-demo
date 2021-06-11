@@ -9,7 +9,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, getCurrentInstance } from "vue";
+import { defineComponent } from "vue";
 
 import GlossaryTree from "@common/tree/glossary/index.vue";
 
@@ -19,7 +19,7 @@ export default defineComponent({
 </script>
 
 <route lang="yaml">
-    meta:
-      layout: default
-      requiresAuth: true
+  meta:
+    layout: default
+    requiresAuth: true
 </route>

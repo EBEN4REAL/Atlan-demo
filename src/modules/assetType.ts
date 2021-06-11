@@ -1,12 +1,16 @@
-import AtlanTable from "~/assets/images/assetType/AtlanTable.svg";
-import AtlanColumn from "~/assets/images/assetType/AtlanColumn.svg";
-import AtlanDatabase from "~/assets/images/assetType/AtlanDatabase.svg";
-import AtlanSchema from "~/assets/images/assetType/AtlanSchema.svg";
+import Table from "~/assets/images/assetType/Table.svg";
+import Column from "~/assets/images/assetType/Column.svg";
+import Database from "~/assets/images/assetType/Database.svg";
+import Schema from "~/assets/images/assetType/Schema.svg";
 import { UserModule } from "~/types/vitessg";
 
+import Snowflake from "~/assets/images/source/snowflake.png";
+import tableau from "~/assets/images/source/tableau.png";
+import redshift from "~/assets/images/source/redshift.png";
+
 export const install: UserModule = ({ app }) => {
-  app.component("AtlanTable", AtlanTable);
-  app.component("AtlanColumn", AtlanColumn);
-  app.component("AtlanDatabase", AtlanDatabase);
-  app.component("AtlanSchema", AtlanSchema);
+  app.component("Table", Table);
+  app.component("Column", Column);
+  app.component("Database", Database);
+  app.component("Schema", Schema);
 };

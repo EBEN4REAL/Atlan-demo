@@ -1,4 +1,4 @@
-import { defineComponent, getCurrentInstance, PropType } from "vue";
+import { defineComponent, PropType } from "vue";
 import { Components } from "~/api/atlas/client";
 import { useStore } from "~/store";
 import { AtlanTableAttributes } from "~/types/asset";
@@ -96,17 +96,22 @@ export default defineComponent({
     },
     relationshipList(item: any) {
       const found = AssetTypeList.find((a) => a.id == item.typeName);
-      const filtered = AssetTypeList.filter((a) =>
-        found.parents.includes(a.id)
-      );
+
       const temp = [];
-      filtered.forEach((f) => {
-        temp.push({
-          ...f,
-          qualifiedName: this.attributes(item)[f.qualifiedNameAttribute],
-          value: this.attributes(item)[f.nameAttribute],
+      if (found) {
+        const filtered = AssetTypeList.filter((a) =>
+          found.parents?.includes(a.id)
+        );
+
+        filtered.forEach((f) => {
+          temp.push({
+            ...f,
+            qualifiedName: this.attributes(item)[f.qualifiedNameAttribute],
+            value: this.attributes(item)[f.nameAttribute],
+          });
         });
-      });
+      }
+
       return temp;
     },
   },

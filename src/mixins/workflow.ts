@@ -1,7 +1,7 @@
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 dayjs.extend(relativeTime);
-import { defineComponent, getCurrentInstance, PropType } from "vue";
+import { defineComponent, PropType } from "vue";
 import { Components } from "~/api/atlas/client";
 import { useStore } from "~/store";
 import { AtlanTableAttributes } from "~/types/asset";
@@ -30,7 +30,9 @@ export default defineComponent({
     },
     finishedAt(item: any, relative: any) {
       if (relative) {
-        return dayjs().from(item.status?.finishedAt, true);
+        if (item.status?.finishedAt) {
+          return dayjs().from(item.status?.finishedAt, true);
+        }
       }
       return item.status?.finishedAt;
     },
@@ -67,6 +69,17 @@ export default defineComponent({
         return `${Math.floor(sec / 60)} mins, ${sec % 60} seconds`;
       }
       return "";
+    },
+    progress(item) {
+      return item.status.progress;
+    },
+    progressPercent(item) {
+      let split = item.status.progress.split("/");
+      let percentage = 100;
+      if (split.length == 2) {
+        percentage = (split[0] / split[1]) * 100;
+      }
+      return percentage;
     },
 
   },

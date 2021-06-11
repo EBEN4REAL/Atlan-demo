@@ -36,6 +36,7 @@ specifiers:
   emoji-mart-vue-fast: ^10.0.1
   eslint: ^7.27.0
   eslint-plugin-vue: ^7.10.0
+  event-source-polyfill: ^1.0.24
   https-localhost: ^4.6.5
   keycloak-js: ^13.0.1
   less: ^4.1.1
@@ -95,6 +96,7 @@ dependencies:
   cron-parser: 3.5.0
   dayjs: 1.10.5
   emoji-mart-vue-fast: 10.0.1_vue@3.0.11
+  event-source-polyfill: 1.0.24
   keycloak-js: 13.0.1
   less: 4.1.1
   openapi-client-axios: 3.14.0_axios@0.21.1
@@ -7680,6 +7682,10 @@ packages:
     resolution: {integrity: sha1-Qa4u62XvpiJorr/qg6x9eSmbCIc=}
     engines: {node: '>= 0.6'}
     dev: true
+
+  /event-source-polyfill/1.0.24:
+    resolution: {integrity: sha512-aEtMhrH5ww3X6RgbsNcwu0whw8zjOoeRnwPqRKqKuxWS5KlAZhCY+rTm6wMlHOXbxmLGn8lW6Xox7rfpBExzGA==}
+    dev: false
 
   /events/3.3.0:
     resolution: {integrity: sha512-mQw+2fkQbALzQ7V0MY0IqdnXNOeTtP4r0lN9z7AAawCXgqea7bDii20AYrIBrFd/Hx0M2Ocz6S111CaFkUcb0Q==}

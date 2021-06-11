@@ -39,6 +39,7 @@ import EmptyView from "@common/empty/index.vue";
 import fetchBotsList from "~/composables/bots/fetchBotsList";
 
 import { debounce } from "~/composables/utils/debounce";
+import { Components } from "~/api/atlas/client";
 
 export default defineComponent({
   components: {
@@ -51,8 +52,15 @@ export default defineComponent({
   setup(props) {
     let searchText = ref("");
     let now = ref(true);
+
+    const entityFilters = {
+      operator: <Components.Schemas.Operator>"eq",
+      attributeName: "category",
+      attributeValue: "crawler",
+    };
+
     const { list, totalCount, listCount, mutate, body, state, STATES } =
-      fetchBotsList(now, searchText.value);
+      fetchBotsList(now, searchText.value, entityFilters);
 
     const handleChangeSearchText = debounce((input: any) => {
       body.value.query = input.target.value;

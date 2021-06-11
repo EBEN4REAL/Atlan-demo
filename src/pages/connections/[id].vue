@@ -14,16 +14,22 @@
         </div>
       </div>
       <div>
-        <a-tabs :class="$style.topbar">
-          <a-tab-pane key="1" tab="Overview"></a-tab-pane>
-          <a-tab-pane key="2" tab="Jobs"></a-tab-pane>
+        <a-tabs :class="$style.topbar" v-model:activeKey="selectedTab">
+          <a-tab-pane key="overview" tab="Overview"></a-tab-pane>
+          <a-tab-pane key="workflows" tab="Workflows"></a-tab-pane>
           <a-tab-pane key="3" tab="Assets"></a-tab-pane>
           <a-tab-pane key="3" tab="Policies"></a-tab-pane>
         </a-tabs>
       </div>
     </div>
     <div class="flex-grow overflow-auto">
-      <Overview :item="item" :credential="credential" :bot="bot"></Overview>
+      <component
+        :is="selectedTab"
+        :item="item"
+        :credential="credential"
+        :bot="bot"
+      ></component>
+      <!-- <Overview :item="item" :credential="credential" :bot="bot"></Overview> -->
     </div>
   </div>
 </template>
@@ -37,6 +43,7 @@ import ErrorView from "@common/error/index.vue";
 import SourceMixin from "~/mixins/source";
 
 import Overview from "@/connection/overview/index.vue";
+import Workflows from "@/connection/workflows/index.vue";
 import fetchConnectionList from "~/composables/connection/fetchConnectionList";
 import { useRoute } from "vue-router";
 import fetchCredentialList from "~/composables/credential/fetchCredential";
@@ -45,11 +52,12 @@ import fetchBotsList from "~/composables/bots/fetchBotsList";
 export default defineComponent({
   name: "HelloWorld",
   mixins: [SourceMixin],
-  components: { Loader, ErrorView, Overview },
+  components: { Loader, ErrorView, Overview, Workflows },
   data() {
     return {
       loading: false,
       error: "",
+      selectedTab: "overview",
       cancelToken: null,
     };
   },

@@ -1,6 +1,6 @@
 <template>
-  <tr class="mb-3 bg-white border rounded shadow-sm">
-    <td class="w-3 pr-0 rounded-tl-md rounded-bl-md">
+  <tr class="bg-white">
+    <td class="w-3 pr-0">
       <fa
         icon="fas check-circle"
         class="text-xl text-green-500"
@@ -27,14 +27,17 @@
           <p class="mb-0 leading-none text-gray-700">
             {{ connectionName(item) }}
           </p>
-          <p class="mb-0 text-gray-400">{{ botName(item) }}</p>
+          <p class="mb-0 text-gray-400" v-if="botName(item)">
+            {{ botName(item) }}
+          </p>
+          <p class="mb-0 text-gray-400" v-else>{{ item.name }}</p>
         </div>
       </div>
     </td>
     <td class="text-gray-500 rounded-br-md rounded-tr-md">
       {{ startedAt(item, true) }} ago
     </td>
-    <td class="text-gray-500 rounded-br-md rounded-tr-md">
+    <td class="text-gray-500">
       {{ finishedAt(item, true) }}
       <span v-if="finishedAt(item, true)">ago</span>
     </td>
@@ -87,9 +90,7 @@ export default defineComponent({
       return title;
     },
     sourceImage() {
-      console.log(this.item);
       let integrationName = this.source(this.item);
-      console.log(integrationName);
       let found = SourceList.find((src) => src.id === integrationName);
       console.log(found);
       if (found) {

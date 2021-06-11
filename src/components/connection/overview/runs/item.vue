@@ -1,39 +1,48 @@
 <template>
   <tr class="mb-3 bg-white border rounded shadow-sm">
-    <td class="w-3 rounded-tl-md rounded-bl-md">
-      <fa
-        icon="fas check-circle"
-        class="text-xl text-green-500"
-        v-if="status == 'Succeeded'"
-      ></fa>
-      <fa
-        icon="fas exclamation-circle"
-        class="text-xl text-red-500"
-        v-else-if="status == 'Failed'"
-      ></fa>
-      <fa
-        icon="fas exclamation-circle"
-        class="text-xl text-yellow-500"
-        v-else
-      ></fa>
-    </td>
-    <td>
-      <div class="flex items-center align-middle">
-        <img :src="sourceImage()" class="h-auto w-7" />
-
-        <div class="flex flex-col ml-2">
-          <p class="mb-0 leading-none text-gray-700">
-            {{ connectionName(item) }}
-          </p>
-          <p class="mb-0 text-gray-400">{{ botName(item) }}</p>
-        </div>
+    <td class="w-3 pr-0 rounded-tl-md rounded-bl-md">
+      <div class="">
+        <fa
+          icon="fas check-circle"
+          style="display: inline-block; vertical-align: middle"
+          class="text-xl text-green-500"
+          v-if="status == 'Succeeded'"
+        ></fa>
+        <fa
+          icon="fas exclamation-circle"
+          class="inline-block text-xl text-red-500 align-middle"
+          v-else-if="status == 'Failed'"
+        ></fa>
+        <fa
+          icon="fas exclamation-circle"
+          class="inline-block text-xl text-yellow-500 align-middle"
+          v-else
+        ></fa>
       </div>
+    </td>
+    <td class="pl-2">
+      <div class="flex items-center align-middle">
+        <p class="mb-0 text-base text-gray-500">{{ botName(item) }}</p>
+      </div>
+    </td>
+    <td class="text-gray-500 rounded-br-md rounded-tr-md">
+      {{ startedAt(item, true) }} ago
+    </td>
+    <td class="text-gray-500 rounded-br-md rounded-tr-md">
+      {{ finishedAt(item, true) }}
+      <span v-if="finishedAt(item, true)">ago</span>
     </td>
     <td class="text-center text-gray-500">
       {{ duration(item) }}
-    </td>
-    <td class="text-gray-500 rounded-br-md rounded-tr-md">
-      {{ finishedAt(item, true) }} ago
+      <a-progress
+        :percent="progressPercent(item)"
+        size="small"
+        v-if="status == 'Running'"
+      >
+        <template #format="percent, successPercent">
+          {{ progress(item) }}
+        </template>
+      </a-progress>
     </td>
   </tr>
 </template>

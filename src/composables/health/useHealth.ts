@@ -1,4 +1,4 @@
-import { ref, computed, reactive, watch, toRefs } from "vue";
+import { computed, reactive, watch, toRefs } from "vue";
 import { Health } from "~/api/atlas/health";
 import { ServiceURLWithoutTenant } from "~/services";
 
@@ -44,8 +44,18 @@ export const MODULES = {
   email: { services: [SERVICES.smtp], displayName: "Email" },
 };
 
+interface Service {
+  user: string;
+  heka: string;
+  atlas: string;
+  authentication: string;
+  authorisation: string;
+  cache: string;
+  database: string;
+}
+
 export function useHealth() {
-  let services = reactive({
+  let services: Service = reactive({
     user: "loading",
     heka: "loading",
     atlas: "loading",
@@ -56,42 +66,39 @@ export function useHealth() {
     smtp: "loading",
   });
 
-  const setServiceStatus = (service, status) => {
+  const setServiceStatus = (service: string, status: string) => {
     if (service in services) {
       services[service] = status;
     } else console.warn("Cannot set non-existent service", service, status);
   };
 
   const responses = Object.values(healthPaths).map((path) => Health.ping(path));
-  const areTopServicesUp = responses.every((el) => el.data != undefined);
 
-  if (areTopServicesUp) {
-    responses.forEach((e, index) => {
-      setServiceStatus(Object.keys(healthPaths)[index], SERVICE_STATES.up);
-    });
-  } else {
-    responses.forEach((e, index) => {
-      setServiceStatus(Object.keys(healthPaths)[index], SERVICE_STATES.down);
-    });
-  }
+  const referenceServices = responses[1].data;
+  const topServices = responses[0].data;
 
-  const refernceServices = responses[1].data;
+  watch([referenceServices, topServices], () => {
+    if (topServices.value && referenceServices.value) {
+      responses.forEach((e, index) => {
+        setServiceStatus(Object.keys(healthPaths)[index], SERVICE_STATES.up);
+      });
 
-  watch(refernceServices, () => {
-    if (areTopServicesUp && refernceServices.value) {
-      const blocks = Object.keys(refernceServices.value);
+      const blocks = Object.keys(referenceServices.value);
       blocks.forEach((s) => {
         // Set the referenced services as up
         setServiceStatus(
           s,
-          refernceServices.value[s].status === "ok"
+          referenceServices.value[s].status === "ok"
             ? SERVICE_STATES.up
             : SERVICE_STATES.down
         );
       });
-      console.log(services, "services");
-    } else if (!areTopServicesUp && !refernceServices.value) {
-      const blocks = Object.keys(refernceServices.value);
+    } else if (responses[0].error.value) {
+      responses.forEach((e, index) => {
+        setServiceStatus(Object.keys(healthPaths)[index], SERVICE_STATES.down);
+      });
+
+      const blocks = Object.keys(referenceServices.value);
       blocks.forEach((s) => {
         // Set the referenced services as down
         setServiceStatus(s, SERVICE_STATES.down);
@@ -109,7 +116,6 @@ export function useHealth() {
   });
 
   const overallStatusText = computed(() => {
-    console.log(overallStatus.value, "overall");
     if (overallStatus.value === SERVICE_STATES.up) {
       return "Atlan is up and running";
     } else if (overallStatus.value === SERVICE_STATES.down) {
@@ -120,9 +126,8 @@ export function useHealth() {
     return "";
   });
 
-  const getStatusClass = (status) => {
+  const getStatusClass = (status: string) => {
     if (status === SERVICE_STATES.up) {
-      console.log(status, "status");
       return {
         icon: "fal check-circle",
         class: "animate-flipInX text-green-500",

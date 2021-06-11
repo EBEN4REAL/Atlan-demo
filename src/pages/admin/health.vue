@@ -2,7 +2,7 @@
   <div class="container mx-auto h-full health-container">
     <div class="bg-white rounded h-full w-full p-12 pt-16 relative shadow">
       <div class="flex flex-col items-center mb-6">
-        <Fa class="text-5xl mb-6" v-bind="getOverallStatusIconClass" />
+        <Fa class="text-5xl mb-6" v-bind="getOverallStatusIconClass" :key="overallStatus" />
         <span class="text-2xl font-bold text-gray-600">{{
           overallStatusText
         }}</span>
@@ -18,13 +18,13 @@
           class="flex flex-grow items-center justify-between"
         >
           <span class="text-xl text-gray-500 capitalize">{{service}}</span>
-          <Fa class="text-xl" v-bind="getStatusClass(services[service].value)" />
+          <Fa class="text-xl" v-bind="getStatusClass(services[service].value)" :key="service+services[service].value" />
         </div>
       </div>
       <div
         class="absolute flex items-center justify-center mb-8 bottom-0 w-full"
       >
-        <img class="w-5 mx-2" src="/assets/images/source/grafana.png" />
+        <!-- <img class="w-5 mx-2" src="~/assets/images/source/grafana.png" /> -->
         <span> Need to check logs?&nbsp; </span>
         <a class="text-center" href="/services/monitor">
           Go to grafana dashboard <Fa :icon="'fal chevron-right'"/>
@@ -35,7 +35,9 @@
 </template>
 
 <script>
-import {useHealth} from "~/composables/health/useHealth"
+import {useHealth} from "~/composables/health/useHealth";
+
+
 export default {
   name: "HealthStatus",
   setup(){
@@ -47,14 +49,13 @@ export default {
     getOverallStatusIconClass,
     getStatusClass
     } = useHealth();
-    const servicesNames = Object.keys(services)
 
     return {
     services,
     overallStatusText,
     overallStatus,
     getOverallStatusIconClass,
-    servicesNames,
+    servicesNames:Object.keys(services),
     getStatusClass
 
     }

@@ -42,6 +42,7 @@ import { faCertificate } from "@fortawesome/pro-light-svg-icons/faCertificate";
 import { faUserShield } from "@fortawesome/pro-light-svg-icons/faUserShield";
 import { faUserEdit } from "@fortawesome/pro-light-svg-icons/faUserEdit";
 import { faSync } from "@fortawesome/pro-light-svg-icons/faSync";
+import { faPen } from "@fortawesome/pro-light-svg-icons/faPen";
 
 library.add(
   faPlus,
@@ -84,7 +85,8 @@ library.add(
   faUserShield,
   faPlug,
   faUserEdit,
-  faSync
+  faSync,
+  faPen
 );
 
 // Solid Icons

@@ -20,7 +20,9 @@ export const fetcherPost = (url, body, ...options): Promise<AxiosResponse["data"
   return getAxiosClient().post(url, body, { ...options });
 }
 
-
+export const updater = (url, body, ...options): Promise<AxiosResponse["data"]> => {
+  return getAxiosClient().put(url, body, { ...options });
+}
 
 // export const ServiceURLWithoutTenant = (serviceName, path = "") => {
 //   return `${getApiPath(serviceName)}${path}`;

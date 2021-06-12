@@ -44,18 +44,18 @@ export const MODULES = {
   email: { services: [SERVICES.smtp], displayName: "Email" },
 };
 
-interface Service {
-  user: string;
-  heka: string;
-  atlas: string;
-  authentication: string;
-  authorisation: string;
-  cache: string;
-  database: string;
+function getServiceStatus(url: string) {
+  return Health.ping(url);
+}
+
+function getUserServicesNames(services: { [key: string]: string }): string[] {
+  return Object.keys(services);
 }
 
 export function useHealth() {
-  let services: Service = reactive({
+  let services: {
+    [k: string]: string;
+  } = reactive({
     user: "loading",
     heka: "loading",
     atlas: "loading",
@@ -66,41 +66,60 @@ export function useHealth() {
     smtp: "loading",
   });
 
-  const setServiceStatus = (service: string, status: string) => {
-    if (service in services) {
-      services[service] = status;
-    } else console.warn("Cannot set non-existent service", service, status);
+  const setServiceStatus = (serviceName: string, status: string) => {
+    if (serviceName in services) {
+      services[serviceName] = status;
+    } else console.warn("Cannot set non-existent service", serviceName, status);
   };
 
-  const responses = Object.values(healthPaths).map((path) => Health.ping(path));
+  const getStatusClass = (status: string) => {
+    if (status === SERVICE_STATES.up) {
+      return {
+        icon: "fal check-circle",
+        class: "animate-flipInX text-green-500",
+      };
+    } else if (status === SERVICE_STATES.down) {
+      return {
+        icon: "fal times-circle",
+        class: "animate-tada text-red-500",
+      };
+    } else if (status === SERVICE_STATES.loading) {
+      return {
+        icon: "fal circle-notch",
+        class: "animate-spin text-yellow-400",
+      };
+    }
+    return "";
+  };
 
-  const referenceServices = responses[1].data;
-  const topServices = responses[0].data;
+  const { heka, user } = healthPaths;
 
-  watch([referenceServices, topServices], () => {
-    if (topServices.value && referenceServices.value) {
-      responses.forEach((e, index) => {
-        setServiceStatus(Object.keys(healthPaths)[index], SERVICE_STATES.up);
-      });
+  const { data: hekaServiceData, error: hekaServiceError } = getServiceStatus(
+    heka
+  );
+  const { data: userServicesData, error: userServicesError } = getServiceStatus(
+    user
+  );
 
-      const blocks = Object.keys(referenceServices.value);
-      blocks.forEach((s) => {
-        // Set the referenced services as up
+  watch([userServicesData, hekaServiceData], () => {
+    if (hekaServiceData.value && userServicesData.value) {
+      setServiceStatus("heka", SERVICE_STATES.up);
+      setServiceStatus("user", SERVICE_STATES.up);
+
+      const userServicesNames = getUserServicesNames(userServicesData.value);
+      userServicesNames.forEach((serviceName) => {
         setServiceStatus(
-          s,
-          referenceServices.value[s].status === "ok"
+          serviceName,
+          userServicesData.value[serviceName].status === "ok"
             ? SERVICE_STATES.up
             : SERVICE_STATES.down
         );
       });
-    } else if (responses[0].error.value) {
-      responses.forEach((e, index) => {
-        setServiceStatus(Object.keys(healthPaths)[index], SERVICE_STATES.down);
-      });
-
-      const blocks = Object.keys(referenceServices.value);
-      blocks.forEach((s) => {
-        // Set the referenced services as down
+    } else if (hekaServiceError.value) {
+      setServiceStatus("heka", SERVICE_STATES.down);
+      setServiceStatus("user", SERVICE_STATES.down);
+      const userServicesNames = getUserServicesNames(userServicesData.value);
+      userServicesNames.forEach((s) => {
         setServiceStatus(s, SERVICE_STATES.down);
       });
     }
@@ -126,33 +145,14 @@ export function useHealth() {
     return "";
   });
 
-  const getStatusClass = (status: string) => {
-    if (status === SERVICE_STATES.up) {
-      return {
-        icon: "fal check-circle",
-        class: "animate-flipInX text-green-500",
-      };
-    } else if (status === SERVICE_STATES.down) {
-      return {
-        icon: "fal times-circle",
-        class: "animate-tada text-red-500",
-      };
-    } else if (status === SERVICE_STATES.loading) {
-      return {
-        icon: "fal circle-notch",
-        class: "animate-spin text-yellow-400",
-      };
-    }
-    return "";
-  };
-
   const getOverallStatusIconClass = computed(() =>
     getStatusClass(overallStatus.value)
   );
+
   return {
     services: toRefs(services),
-    overallStatusText: overallStatusText,
-    overallStatus: overallStatus,
+    overallStatusText,
+    overallStatus,
     getOverallStatusIconClass,
     getStatusClass,
   };

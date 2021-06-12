@@ -10,7 +10,7 @@
     :class="$style.sidebartab"
     @change="handleChange"
   ></SidebarTabs>
-</template>
+</template>E
   
 <script lang="ts">
 import { defineComponent } from "vue";

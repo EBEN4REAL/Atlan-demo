@@ -6,14 +6,12 @@
       </div>
 
       <div class="flex flex-grow w-full px-4 mb-2 overflow-y-auto">
-        <a-menu mode="inline" :class="$style.sidebar" class="">
+        <a-menu mode="inline" :class="$style.sidebar" @click="handleClick">
           <a-menu-item-group class="mb-3" title="Workspace">
             <a-menu-item key="general"> General </a-menu-item>
 
             <a-menu-item key="members"> Members </a-menu-item>
-            <a-menu-item key="groups">
-              <router-link to="/admin/groups">Groups </router-link></a-menu-item
-            >
+            <a-menu-item key="groups">Groups</a-menu-item>
             <a-menu-item key="apikeys"> API Keys </a-menu-item>
             <a-menu-item key="integrations"> Integrations </a-menu-item>
             <a-menu-item key="billing"> Billing & License </a-menu-item>
@@ -41,15 +39,96 @@
       </div>
     </div>
     <div class="w-3/4 p-6">
+      <input type="file" @change="loadTextFromFile" />
+      <a-upload
+        v-model:file-list="fileList"
+        name="file"
+        @change="handleFileUpload"
+      >
+        <a-button>
+          <upload-outlined></upload-outlined>
+          Click to Upload
+        </a-button>
+      </a-upload>
       <router-view></router-view>
     </div>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
+import { defineComponent, ref } from "vue";
+import { useRouter } from "vue-router";
+import xml2js from "~/cjs/xml2js.js";
+//import xml2js from "xml2js";
+const Xml2js = xml2js.default ? xml2js.default : xml2js;
+
+const reader = new FileReader();
+
+interface FileIte {
+  uid: string;
+  name?: string;
+  status?: string;
+  response?: string;
+  url?: string;
+}
+
+interface FileInfo {
+  file: FileItem;
+  fileList: FileItem[];
+}
+
 export default defineComponent({
-  
+  setup() {
+    const router = useRouter();
+    const handleClick = (e: Event) => {
+      router.push("/admin/" + e.key);
+    };
+
+    const fileList = ref([]);
+
+    const handleFileUploadSetup = (info: FileInfo) => {
+      console.log(info.file);
+
+      reader.readAsText(info.file);
+    };
+
+    return {
+      fileList,
+      handleClick,
+      handleFileUploadSetup,
+    };
+  },
+  methods: {
+    loadTextFromFile(ev) {
+      const file = ev.target.files[0];
+      const reader = new FileReader();
+
+      reader.onload = (e) => this.$emit("load", e.target.result);
+      reader.readAsText(file);
+
+      var parser = new Xml2js.Parser();
+      reader.addEventListener("load", (event) => {
+        const xml = event.target.result;
+        console.log("onFileUpload -> xml", xml);
+        parser.parseString(xml, (err, jsonResult) => {
+          console.dir(jsonResult);
+          //this.parseJSONFromUploadedXMLFile(jsonResult);
+        });
+      });
+    },
+    handleFileUpload(file) {
+      console.log(file.fileList);
+      reader.readAsText(file.file);
+      reader.addEventListener("load", (event) => {
+        const xml = event.target.result;
+        console.log("onFileUpload -> xml", xml);
+        // parseString(xml, (err, jsonResult) => {
+        //   console.dir(jsonResult);
+        //   //this.parseJSONFromUploadedXMLFile(jsonResult);
+        // });
+      });
+    },
+  },
 });
 </script>
 

@@ -4,6 +4,7 @@ import Vue from "@vitejs/plugin-vue";
 import Pages from "vite-plugin-pages";
 import Layouts from "vite-plugin-vue-layouts";
 import { resolve } from 'path'
+import commonjs from '@rollup/plugin-commonjs';
 
 import VueI18n from "@intlify/vite-plugin-vue-i18n";
 import styleImport from "vite-plugin-style-import";
@@ -41,8 +42,13 @@ export default defineConfig(({ mode }) => {
     },
     build: {
       sourcemap: false,
+      commonjsOptions: {
+        transformMixedEsModules: true,
+        defaultIsModuleExports: true
+      }
     },
     plugins: [
+      //commonjs({enforce: 'pre'}),
       visualizer(),
       Vue({
         include: [/\.vue$/],
@@ -67,7 +73,8 @@ export default defineConfig(({ mode }) => {
     ],
 
     optimizeDeps: {
-      include: ["vue", "vue-router", "@vueuse/core"],
+      include: ["vue", "vue-router", "@vueuse/core", ],
+      exclude: []
     },
   };
 });

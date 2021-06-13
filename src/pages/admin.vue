@@ -1,17 +1,17 @@
 <template>
   <div class="flex w-full h-full">
-    <div class="flex flex-col w-1/4 h-full overflow-hidden bg-white border-r">
+    <div class="flex flex-col w-1/5 h-full overflow-hidden bg-white border-r">
       <div class="px-4 py-4 pb-2">
         <p class="mb-0 text-2xl">Admin Centre</p>
       </div>
 
       <div class="flex flex-grow w-full px-4 mb-2 overflow-y-auto">
-        <a-menu mode="inline" :class="$style.sidebar" class="">
+        <a-menu mode="inline" :class="$style.sidebar" @click="handleClick">
           <a-menu-item-group class="mb-3" title="Workspace">
             <a-menu-item key="general"> General </a-menu-item>
 
             <a-menu-item key="members"> Members </a-menu-item>
-            <a-menu-item key="groups"> Groups </a-menu-item>
+            <a-menu-item key="groups">Groups</a-menu-item>
             <a-menu-item key="apikeys"> API Keys </a-menu-item>
             <a-menu-item key="integrations"> Integrations </a-menu-item>
             <a-menu-item key="billing"> Billing & License </a-menu-item>
@@ -39,14 +39,43 @@
       </div>
     </div>
     <div class="w-3/4 p-6">
-      <!-- <router-view></router-view> -->
+      <input type="file" @change="handleFileUpload" />
+      <router-view></router-view>
     </div>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
-export default defineComponent({});
+import { defineComponent, ref } from "vue";
+import { useRouter } from "vue-router";
+import xmlToJson from "~/utils/xmltojson";
+
+export default defineComponent({
+  setup() {
+    const router = useRouter();
+    const handleClick = (e: Event) => {
+      router.push("/admin/" + e.key);
+    };
+
+    const handleFileUpload = (ev) => {
+      const file = ev.target.files[0];
+      const reader = new FileReader();
+      reader.readAsText(file);
+      reader.addEventListener("load", (event) => {
+        let xml = event.target.result;
+        console.log("onFileUpload -> xml", xml);
+        let xmlDOM = new DOMParser().parseFromString(xml, "text/xml");
+        let finalJSON = xmlToJson(xmlDOM);
+        console.log(finalJSON);
+      });
+    };
+
+    return {
+      handleClick,
+      handleFileUpload,
+    };
+  },
+});
 </script>
 
 

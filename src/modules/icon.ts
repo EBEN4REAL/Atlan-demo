@@ -8,6 +8,7 @@ import { faSearch } from "@fortawesome/pro-light-svg-icons/faSearch";
 import { faUser } from "@fortawesome/pro-light-svg-icons/faUser";
 import { faUsers } from "@fortawesome/pro-light-svg-icons/faUsers";
 import { faCheckCircle } from "@fortawesome/pro-light-svg-icons/faCheckCircle";
+import { faCircleNotch } from "@fortawesome/pro-light-svg-icons/faCircleNotch";
 import { faCheck } from "@fortawesome/pro-light-svg-icons/faCheck";
 import { faTimes } from "@fortawesome/pro-light-svg-icons/faTimes";
 import { faTimesCircle } from "@fortawesome/pro-light-svg-icons/faTimesCircle";
@@ -42,12 +43,14 @@ import { faCertificate } from "@fortawesome/pro-light-svg-icons/faCertificate";
 import { faUserShield } from "@fortawesome/pro-light-svg-icons/faUserShield";
 import { faUserEdit } from "@fortawesome/pro-light-svg-icons/faUserEdit";
 import { faSync } from "@fortawesome/pro-light-svg-icons/faSync";
+
 import { faGlobe } from "@fortawesome/pro-light-svg-icons/faGlobe";
 import { faHistory } from "@fortawesome/pro-light-svg-icons/faHistory";
 import { faColumns } from "@fortawesome/pro-light-svg-icons/faColumns";
 import { faAnalytics } from "@fortawesome/pro-light-svg-icons/faAnalytics";
 import { faProjectDiagram } from "@fortawesome/pro-light-svg-icons/faProjectDiagram";
 import { faBolt } from "@fortawesome/pro-light-svg-icons/faBolt";
+import { faPen } from "@fortawesome/pro-light-svg-icons/faPen";
 
 
 library.add(
@@ -57,6 +60,7 @@ library.add(
   faUsers,
   faCheckCircle,
   faCheck,
+  faCircleNotch,
   faTrash,
   faTimes,
   faSort,
@@ -92,7 +96,8 @@ library.add(
   faPlug,
   faUserEdit,
   faSync,
-  faGlobe, faHistory, faColumns, faAnalytics, faProjectDiagram, faBolt
+  faGlobe, faHistory, faColumns, faAnalytics, faProjectDiagram, faBolt,
+  faPen,
 );
 
 // Solid Icons
@@ -132,5 +137,5 @@ import Icon from "~/components/common/icon/index.vue";
 // dom.watch();
 // // Register the component globally
 export const install: UserModule = ({ app }) => {
-  app.component("fa", Icon);
+  app.component("Fa", Icon);
 };

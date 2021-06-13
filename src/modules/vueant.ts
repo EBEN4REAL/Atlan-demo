@@ -1,3 +1,4 @@
+import { updater } from './../api/index';
 import { UserModule } from "~/types/vitessg";
 import {
   Button,
@@ -29,6 +30,7 @@ import {
   Result,
   Progress,
   Table,
+  Upload
 } from "ant-design-vue";
 
 // https://github.com/antfu/vite-plugin-pwa#automatic-reload-when-new-content-available
@@ -61,6 +63,7 @@ export const install: UserModule = ({ app }) => {
   app.use(Result);
   app.use(Table);
   app.use(Modal);
+  app.use(Upload);
 
   app.config.globalProperties.$message = message;
   app.config.globalProperties.$error = Modal.error;

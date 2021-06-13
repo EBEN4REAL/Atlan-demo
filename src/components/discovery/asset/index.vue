@@ -2,16 +2,18 @@
 
 
 <template>
-  <div class="h-full col-span-2 pt-5 bg-white border-r border-gray-100">
-    <p class="px-4 text-2xl font-medium tracking-tight">Assets</p>
+  <div class="h-full col-span-2 pt-5 border-r border-gray-100 bg-sidebar">
+    <div class="mb-4">
+      <ConnectorDropdown></ConnectorDropdown>
+    </div>
     <div class="px-4">
-      <p class="flex text-sm leading-none text-gray-500">Filters</p>
+      <p class="flex mb-1 text-sm leading-none text-gray-500">Filters</p>
     </div>
 
-    <AssetFilters @change="handleFilterChange" class="bg-white"></AssetFilters>
+    <AssetFilters @change="handleFilterChange"></AssetFilters>
   </div>
   <div
-    class="flex flex-col items-stretch h-full col-span-7 bg-white"
+    class="flex flex-col items-stretch h-full col-span-7 bg-white shadow-md"
     style="overflow: hidden"
   >
     <div class="flex items-center border-b border-gray-200">
@@ -64,6 +66,8 @@ import SearchBox from "@common/searchbox/searchlist.vue";
 import { Components } from "~/api/atlas/client";
 import { SearchParameters } from "~/store/modules/search/state";
 import { SEARCH_FETCH_LIST, SEARCH_GET_LIST } from "~/constant/store_types";
+import ConnectorDropdown from "@common/dropdown/connector/index.vue";
+
 export default defineComponent({
   name: "HelloWorld",
   components: {
@@ -71,6 +75,7 @@ export default defineComponent({
     SearchBox,
     AssetFilters,
     AssetPagination,
+    ConnectorDropdown,
   },
   props: {},
   data() {

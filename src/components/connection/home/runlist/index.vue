@@ -41,7 +41,7 @@ export default defineComponent({
     async fetchData() {
       try {
         const response = await Workflows.List({
-          "listOptions.limit": 10,
+          "listOptions.limit": 5,
           "listOptions.labelSelector": "bot-template-name=atlan-jdbc-crawler",
         });
         this.list = response.items;

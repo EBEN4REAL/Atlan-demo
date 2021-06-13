@@ -3,13 +3,11 @@ import { defineConfig } from "vite";
 import Vue from "@vitejs/plugin-vue";
 import Pages from "vite-plugin-pages";
 import Layouts from "vite-plugin-vue-layouts";
-import { resolve } from 'path'
 
 import VueI18n from "@intlify/vite-plugin-vue-i18n";
 import styleImport from "vite-plugin-style-import";
 import svgLoader from "vite-svg-loader";
 
-import replace from '@rollup/plugin-replace'
 
 import { visualizer } from 'rollup-plugin-visualizer'
 
@@ -65,7 +63,6 @@ export default defineConfig(({ mode }) => {
       }),
       svgLoader(),
     ],
-
     optimizeDeps: {
       include: ["vue", "vue-router", "@vueuse/core"],
     },

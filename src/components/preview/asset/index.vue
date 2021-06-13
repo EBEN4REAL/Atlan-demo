@@ -1,35 +1,32 @@
 <template>
   <div class="flex flex-col">
-    <div class="flex items-center align-middle px-4 py-3 border-b">
-      <div class="">
-        <component :is="item.typeName" class="h-6 w-6 mr-1"></component>
+    <div class="flex flex-col p-3">
+      <div class="flex items-center mb-1 align-middle">
+        <component :is="item.typeName" class="w-6 h-6 mr-1"></component>
+        <p
+          class="mb-0 text-sm font-semibold leading-none tracking-tight truncate  text-primary-400"
+        >
+          {{ title(item) }}
+        </p>
       </div>
-      <div class="flex flex-col w-full">
-        <div class="flex items-center mb-0 justify-between">
-          <p
-            class="mb-0 text-blue-600 font-semibold text-sm truncate leading-none"
-          >
-            {{ title(item) }}
-          </p>
-          <StatusBadge
-            :status="status(item)"
-            class="ml-1"
-            :key="item.guid"
-          ></StatusBadge>
-        </div>
-        <div class="flex items-center">
-          <div>
-            <!-- <StatusBadge
-              :status="status(item)"
-              class="ml-1"
-              :key="item.guid"
-            ></StatusBadge> -->
-          </div>
-        </div>
+      <div
+        class="flex items-center text-xs tracking-wider uppercase align-middle"
+      >
+        <img :src="logo(item)" class="w-auto h-4 mr-1" />{{
+          integrationName(item)
+        }}
       </div>
     </div>
     <div class="flex mx-4">
-      <PreviewTabs></PreviewTabs>
+      <a-tabs :class="$style.previewtab" v-model:activeKey="activeKey">
+        <a-tab-pane :key="item.id" v-for="item in filteredTabList">
+          <template #tab>
+            <a-tooltip :title="item.description" placement="right">
+              <p class="mb-0 text-center">
+                <fa :icon="item.icon" class="mr-1" />
+              </p> </a-tooltip
+          ></template> </a-tab-pane
+      ></a-tabs>
     </div>
     <div class="flex-grow mt-3">
       <Overview :item="item"></Overview>
@@ -37,18 +34,16 @@
   </div>
 </template>
         
-  <script lang="ts">
-import { defineComponent, PropType } from "vue";
+<script lang="ts">
+import { computed, defineComponent, ref } from "vue";
 import AssetMixin from "~/mixins/asset";
-
-import PreviewTabs from "./tabs/index.vue";
+// import PreviewTabs from "./tabs/index.vue";
 import Overview from "./tabs/overview/index.vue";
-import { Components } from "~/api/atlas/client";
+import { List } from "./list";
 
 export default defineComponent({
   mixins: [AssetMixin],
   components: {
-    PreviewTabs,
     Overview,
   },
   props: {
@@ -60,9 +55,28 @@ export default defineComponent({
       },
     },
   },
-  data() {
-    return {};
+  setup() {
+    const activeKey = ref("overview");
+    const filteredTabList = computed(() => {
+      return List;
+    });
+    return {
+      activeKey,
+      filteredTabList,
+    };
   },
-  methods: {},
 });
 </script>
+
+<style lang="less" module>
+.previewtab {
+  :global(.ant-tabs-tab) {
+    padding: 6px 8px !important;
+    max-width: 60px !important;
+    margin-right: 4px !important;
+  }
+  :global(.ant-tabs-bar) {
+    margin-bottom: 0px;
+  }
+}
+</style>

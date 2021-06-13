@@ -1,5 +1,6 @@
 <template>
   <div class="p-6">
+    <p>Workflows</p>
     <a-form :model="job" layout="vertical">
       <a-form-item label="Metadata Coverage" name="scope">
         <a-radio-group v-model:value="job.scope">

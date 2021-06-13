@@ -17,8 +17,8 @@
         <a-tabs :class="$style.topbar" v-model:activeKey="selectedTab">
           <a-tab-pane key="overview" tab="Overview"></a-tab-pane>
           <a-tab-pane key="workflows" tab="Workflows"></a-tab-pane>
-          <a-tab-pane key="3" tab="Assets"></a-tab-pane>
-          <a-tab-pane key="3" tab="Policies"></a-tab-pane>
+          <a-tab-pane key="assets" tab="Assets"></a-tab-pane>
+          <a-tab-pane key="policies" tab="Policies"></a-tab-pane>
         </a-tabs>
       </div>
     </div>
@@ -44,6 +44,9 @@ import SourceMixin from "~/mixins/source";
 
 import Overview from "@/connection/overview/index.vue";
 import Workflows from "@/connection/workflows/index.vue";
+import Assets from "@/connection/assets/index.vue";
+import Policies from "@/connection/policies/index.vue";
+
 import fetchConnectionList from "~/composables/connection/fetchConnectionList";
 import { useRoute } from "vue-router";
 import fetchCredentialList from "~/composables/credential/fetchCredential";
@@ -52,7 +55,7 @@ import fetchBotsList from "~/composables/bots/fetchBotsList";
 export default defineComponent({
   name: "HelloWorld",
   mixins: [SourceMixin],
-  components: { Loader, ErrorView, Overview, Workflows },
+  components: { Loader, ErrorView, Overview, Workflows, Assets, Policies },
   data() {
     return {
       loading: false,

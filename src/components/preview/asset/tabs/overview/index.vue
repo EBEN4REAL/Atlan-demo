@@ -3,18 +3,17 @@
     :bordered="false"
     :class="$style.filter"
     :accordion="false"
-    class="bg-gray-100"
+    class="bg-sidebar"
   >
-    <a-collapse-panel key="details" class="bg-gray-100">
+    <a-collapse-panel key="details" class="bg-sidebar">
       <template #header>
         <div class="flex items-center justify-between">
           <div>Details</div>
-          <a class="text-xs">edit</a>
         </div>
       </template>
       <Details :item="item"></Details>
     </a-collapse-panel>
-    <a-collapse-panel key="properties" class="bg-gray-100">
+    <a-collapse-panel key="properties" class="bg-sidebar">
       <template #header>
         <div class="flex items-center justify-between">
           <div>Heirarchy</div>
@@ -26,16 +25,13 @@
   </a-collapse>
 </template>
           
-    <script lang="ts">
+<script lang="ts">
 import { defineComponent, PropType } from "vue";
-import AssetMixin from "~/mixins/asset";
 import Details from "./details/index.vue";
 // import Properties from "./properties/index.vue";
-import { Components } from "~/api/atlas/client";
 import Heirarchy from "./heirarchy/index.vue";
 
 export default defineComponent({
-  mixins: [AssetMixin],
   components: { Details, Heirarchy },
   props: {
     item: {
@@ -46,10 +42,6 @@ export default defineComponent({
       },
     },
   },
-  data() {
-    return {};
-  },
-  methods: {},
 });
 </script>
 

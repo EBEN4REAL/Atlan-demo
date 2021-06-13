@@ -39,17 +39,7 @@
       </div>
     </div>
     <div class="w-3/4 p-6">
-      <input type="file" @change="loadTextFromFile" />
-      <a-upload
-        v-model:file-list="fileList"
-        name="file"
-        @change="handleFileUpload"
-      >
-        <a-button>
-          <upload-outlined></upload-outlined>
-          Click to Upload
-        </a-button>
-      </a-upload>
+      <input type="file" @change="handleFileUpload" />
       <router-view></router-view>
     </div>
   </div>
@@ -58,24 +48,7 @@
 <script lang="ts">
 import { defineComponent, ref } from "vue";
 import { useRouter } from "vue-router";
-import xml2js from "~/cjs/xml2js.js";
-//import xml2js from "xml2js";
-const Xml2js = xml2js.default ? xml2js.default : xml2js;
-
-const reader = new FileReader();
-
-interface FileIte {
-  uid: string;
-  name?: string;
-  status?: string;
-  response?: string;
-  url?: string;
-}
-
-interface FileInfo {
-  file: FileItem;
-  fileList: FileItem[];
-}
+import xmlToJson from "~/utils/xmltojson";
 
 export default defineComponent({
   setup() {
@@ -84,50 +57,23 @@ export default defineComponent({
       router.push("/admin/" + e.key);
     };
 
-    const fileList = ref([]);
-
-    const handleFileUploadSetup = (info: FileInfo) => {
-      console.log(info.file);
-
-      reader.readAsText(info.file);
+    const handleFileUpload = (ev) => {
+      const file = ev.target.files[0];
+      const reader = new FileReader();
+      reader.readAsText(file);
+      reader.addEventListener("load", (event) => {
+        let xml = event.target.result;
+        console.log("onFileUpload -> xml", xml);
+        let xmlDOM = new DOMParser().parseFromString(xml, "text/xml");
+        let finalJSON = xmlToJson(xmlDOM);
+        console.log(finalJSON);
+      });
     };
 
     return {
-      fileList,
       handleClick,
-      handleFileUploadSetup,
+      handleFileUpload,
     };
-  },
-  methods: {
-    loadTextFromFile(ev) {
-      const file = ev.target.files[0];
-      const reader = new FileReader();
-
-      reader.onload = (e) => this.$emit("load", e.target.result);
-      reader.readAsText(file);
-
-      var parser = new Xml2js.Parser();
-      reader.addEventListener("load", (event) => {
-        const xml = event.target.result;
-        console.log("onFileUpload -> xml", xml);
-        parser.parseString(xml, (err, jsonResult) => {
-          console.dir(jsonResult);
-          //this.parseJSONFromUploadedXMLFile(jsonResult);
-        });
-      });
-    },
-    handleFileUpload(file) {
-      console.log(file.fileList);
-      reader.readAsText(file.file);
-      reader.addEventListener("load", (event) => {
-        const xml = event.target.result;
-        console.log("onFileUpload -> xml", xml);
-        // parseString(xml, (err, jsonResult) => {
-        //   console.dir(jsonResult);
-        //   //this.parseJSONFromUploadedXMLFile(jsonResult);
-        // });
-      });
-    },
   },
 });
 </script>

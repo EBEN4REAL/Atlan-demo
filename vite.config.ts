@@ -43,8 +43,8 @@ export default defineConfig(({ mode }) => {
     build: {
       sourcemap: false,
       commonjsOptions: {
-        transformMixedEsModules: true,
-        defaultIsModuleExports: true
+        //transformMixedEsModules: true,
+        //defaultIsModuleExports: true
       }
     },
     plugins: [

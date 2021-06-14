@@ -28,16 +28,14 @@
       :model="ssoForm"
       :colon="false"
     >
-      <a-form-item>
+      <a-form-item class="mb-12">
         <template #label>
-          <div class="flex flex-col mb-2">
+          <div class="flex flex-col mb-2 h-36">
             <span class="mb-2 text-xl font-normal">Enabled:</span>
-            <span class="mb-1 leading-3 text-gray-400"
-              >This allows user to login with SSO</span
-            >
-            <span class="leading-3 text-gray-400"
-              >They will be able to login via email.</span
-            >
+            <span class="mb-1 text-gray-400"
+              >This allows user to login with SSO<br />
+              They will be able to login via email.
+            </span>
           </div>
         </template>
         <a-switch v-model:checked="ssoForm.enabled" />
@@ -45,19 +43,17 @@
 
       <a-form-item>
         <template #label>
-          <div class="flex flex-col mb-2">
-            <span class="mb-2 text-xl font-normal">Enforce SSO:</span>
-            <span class="mb-1 leading-3 text-gray-400"
-              >User will be automatically redirected to configured SSO</span
-            >
+          <div class="flex flex-col h-48 mb-2">
+            <div class="mb-2 text-xl font-normal">Enforce SSO:</div>
+            <div class="mb-4 text-gray-400">
+              User will be automatically redirected to configured SSO
+            </div>
           </div>
         </template>
         <a-switch v-model:checked="ssoForm.enforceSSO" />
       </a-form-item>
       <div class="flex justify-between mb-2 mt-14">
-        <a-button type="danger" ghost @click="showDeleteSSOModal"
-          >Delete</a-button
-        >
+        <a-button type="danger" @click="showDeleteSSOModal">Delete</a-button>
 
         <a-button
           class="block ml-auto"

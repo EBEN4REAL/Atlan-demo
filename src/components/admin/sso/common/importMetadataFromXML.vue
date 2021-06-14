@@ -9,7 +9,7 @@
     :showUploadList="false"
     @change="onFileUpload"
   >
-    <a-button> Import from XML </a-button>
+    <a-button type="dashed"> Import from XML </a-button>
   </a-upload>
 </template>
   <script lang="ts">

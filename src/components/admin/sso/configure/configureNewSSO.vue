@@ -5,7 +5,7 @@
         v-if="!provider.isCustomSaml"
         :src="provider.image"
         alt="provider"
-        class="w-8 mr-2"
+        class="w-6 mr-2"
       />
       <fa
         v-else
@@ -103,21 +103,21 @@
             >
               <div class="flex flex-row items-center">
                 <span class="mr-1">Download Metadata</span>
-                <fa icon="fal arrow-down" class="text-base"></fa>
+                <fa icon="fal arrow-down" class="text-sm"></fa>
               </div>
             </a-button>
           </a-form-item>
         </div>
-        <div class="flex items-center justify-between">
+        <div class="flex items-center justify-between mt-8">
           <span class="text-lg font-medium text-gray-600"
             >Identity provider metadata</span
           >
           <ImportMetadataFromXML @setSSODetails="setSSODetails" />
         </div>
-        <hr class="my-4" />
+        <hr class="my-4 mb-8" />
         <a-form-item>
           <template #label>
-            <div class="flex flex-col">
+            <div class="flex flex-col h-44">
               <strong class="mb-2 text-gray-600"> SAML SSO URL: </strong>
               <span class="mb-2 leading-3 text-gray-400"
                 >Enter your SAML 2.0 Endpoint.</span
@@ -131,7 +131,7 @@
         </a-form-item>
         <a-form-item>
           <template #label>
-            <span class="flex flex-col">
+            <span class="flex flex-col h-48">
               <strong class="mb-2 text-gray-600"> Public Certificate: </strong>
               <span class="leading-3 text-gray-400">x.509 Certificate</span>
               <span class="leading-3"
@@ -195,7 +195,7 @@
         </div>
         <div class="flex justify-end mt-3">
           <div>
-            <a-button class="mx-2" @click="showConfigScreen"> Cancel </a-button>
+            <a-button class="mx-5" @click="showConfigScreen"> Cancel </a-button>
           </div>
           <div>
             <a-button
@@ -519,7 +519,7 @@ export default defineComponent({
 
 .metadata-container {
   background-color: #f5f5f5;
-  padding: 1rem 1rem 0 1rem;
+  padding: 1.25rem 1rem 0.1rem 1rem;
   border-radius: 4px;
 }
 .metadata-input .ant-input-disabled {

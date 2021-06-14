@@ -9,22 +9,35 @@
     @expand="expandNode"
   >
     <template #title="{ title, type }" class="">
-      <div>
-        <emoji
-          :data="index"
-          emoji="file_folder"
-          set="twitter"
-          :size="20"
-          v-if="type === 'glossary'"
-        />
-        <emoji
-          :data="index"
-          emoji="file_folder"
-          :size="20"
-          v-if="type === 'category'"
-        />
-      </div>
-      <div class="text-sm leading-none text-gray-600">{{ title }}</div>
+
+      <a-dropdown :trigger="['contextmenu']">
+        <div>
+          <span>
+            <emoji
+              :data="index"
+              emoji="file_folder"
+              set="twitter"
+              :size="20"
+              v-if="type === 'glossary'"
+            />
+            <emoji
+              :data="index"
+              emoji="file_folder"
+              :size="20"
+              v-if="type === 'category'"
+            />
+          </span>
+          <span class="text-sm leading-none text-gray-600">{{ title }}</span>
+        </div>
+        <template #overlay>
+          <a-menu>
+            <a-menu-item  v-if="type === 'category' || type === 'glossary'" key="Term"> Add new term </a-menu-item>
+            <a-menu-item v-if="type === 'category' || type === 'glossary'"  key="Category"> Add new category </a-menu-item>
+            <a-menu-item key="Update"> Update {{ type }}</a-menu-item>
+            <a-menu-item key="Delete"> <span class="text-red-500">Delete {{ type }}</span></a-menu-item>
+          </a-menu>
+        </template>
+      </a-dropdown>
     </template>
   </a-tree>
 </template>

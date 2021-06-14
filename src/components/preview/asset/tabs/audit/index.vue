@@ -1,6 +1,6 @@
 
 <template>
-  Audits: {{ audit }} {{guid}}
+  Audits: {{ audits }} {{guid}}
 </template>
           
 <script lang="ts">
@@ -19,8 +19,8 @@ export default defineComponent({
   },
   setup(props: any) {
     const { guid } = toRefs(props);
-    const { audit, error, isLoading } = useAssetAudit(guid.value);
-    return { audit, guid, error, isLoading };
+    const { audits, error, isLoading } = useAssetAudit(guid.value);
+    return { audits, guid, error, isLoading };
   },
 });
 </script>

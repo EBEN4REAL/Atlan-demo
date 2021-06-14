@@ -1,10 +1,14 @@
 <template>
   <div class="grid h-full grid-cols-12">
-    <AssetDiscovery @preview="handlePreview" class="shadow-sm"></AssetDiscovery>
+    <AssetDiscovery @preview="handlePreview"></AssetDiscovery>
     <div
       class="flex flex-col items-stretch h-full col-span-3 border-l bg-sidebar"
     >
-      <AssetPreview :item="selected" v-if="selected?.guid"></AssetPreview>
+      <AssetPreview
+        :item="selected"
+        v-if="selected?.guid"
+        :key="selected?.guid"
+      ></AssetPreview>
     </div>
   </div>
 </template>

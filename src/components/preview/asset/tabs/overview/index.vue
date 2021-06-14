@@ -3,6 +3,7 @@
     :bordered="false"
     :class="$style.filter"
     :accordion="false"
+    activeKey="details"
     class="bg-sidebar"
   >
     <a-collapse-panel key="details" class="bg-sidebar">

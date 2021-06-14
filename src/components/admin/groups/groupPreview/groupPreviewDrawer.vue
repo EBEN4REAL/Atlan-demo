@@ -2,6 +2,7 @@
   <a-drawer
     :visible="showGroupPreview"
     :selectedGroup="selectedGroup"
+    :destroyOnClose="true"
     width="40%"
     placement="right"
     :body-style="{ height: '100%' }"

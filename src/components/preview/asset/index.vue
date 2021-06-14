@@ -30,6 +30,7 @@
     </div>
     <div class="flex-grow mt-3">
       <Overview :item="item"></Overview>
+      <Audits :guid="item.guid" />
     </div>
   </div>
 </template>
@@ -38,6 +39,7 @@
 import { computed, defineComponent, ref } from "vue";
 import AssetMixin from "~/mixins/asset";
 // import PreviewTabs from "./tabs/index.vue";
+import Audits from "./tabs/audit/index.vue";
 import Overview from "./tabs/overview/index.vue";
 import { List } from "./list";
 
@@ -45,6 +47,7 @@ export default defineComponent({
   mixins: [AssetMixin],
   components: {
     Overview,
+    Audits
   },
   props: {
     item: {

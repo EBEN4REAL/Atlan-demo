@@ -1,14 +1,14 @@
 <template>
-  <div class="px-4 py-3 border-b border-gray-50 hover:bg-gray-50">
+  <div class="px-4 py-3 border-b border-gray-100 hover:bg-gray-50">
     <div class="flex items-center justify-between mb-1 align-middle">
       <div class="flex items-center mr-1 align-middle">
         <div class="">
-          <component :is="item.typeName" class="w-6 h-6 mr-1"></component>
+          <component :is="item.typeName" class="w-auto h-5 mr-2"></component>
         </div>
         <div class="flex flex-col w-full">
           <div class="flex items-center justify-between mb-0">
             <p
-              class="mb-0 text-sm font-semibold leading-none tracking-wide truncate  text-primary-500 hover:underline"
+              class="mb-0 font-semibold leading-none tracking-wide truncate  text-primary-500 hover:underline"
             >
               {{ title(item) }}
             </p>
@@ -31,7 +31,7 @@
       </div>
       <img :src="logo(item)" class="w-auto h-5 mr-2" />
     </div>
-    <p class="mb-0 text-xs text-gray-400">
+    <p class="mb-0 text-xs text-gray-500">
       {{ description(item) }}
     </p>
     <RelationshipBadge :item="item" class="mt-1"></RelationshipBadge>

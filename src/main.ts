@@ -1,5 +1,5 @@
 
-import Vue, {createApp} from 'vue'
+import Vue, { createApp } from 'vue'
 import { createRouter, createWebHistory } from 'vue-router'
 import generatedRoutes from 'virtual:generated-pages'
 import { setupLayouts } from 'virtual:generated-layouts'
@@ -42,22 +42,25 @@ router.beforeEach(async (to, from, next) => {
   if (to.matched.some((record) => record.meta.requiresAuth)) {
     if (!from.name) {
       try {
-        // await setTimeout(() => {}, 200);
         const timeout = (prom: Promise<any>, time: number) =>
-          Promise.race([prom,new Promise((_r, rej) => setTimeout(rej, time)),]);
+          Promise.race([prom, new Promise((_r, rej) => setTimeout(rej, time)),]);
         const auth = await timeout(fn(), 10000);
         if (auth) {
           const store = useStore();
           store.dispatch(TENANT_FETCH_DATA);
           next();
         } else {
+          console.log("login");
           window.location.replace(
             app.config.globalProperties.$keycloak.createLoginUrl()
           );
+          return;
         }
       } catch (err) {
-        console.log("error in init", err);
+        console.log("login", err);
+        console.dir("error in init", err);
         app.config.globalProperties.$error(err);
+        return;
         // window.location.replace("/not-found");
       }
     } else {

@@ -1,6 +1,7 @@
 
 <template>
-  Audits: {{ audits }} {{guid}}
+  Audits: 
+  <!-- {{ audits }} -->
 </template>
           
 <script lang="ts">

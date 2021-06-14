@@ -44,6 +44,10 @@ import { faUserShield } from "@fortawesome/pro-light-svg-icons/faUserShield";
 import { faUserEdit } from "@fortawesome/pro-light-svg-icons/faUserEdit";
 import { faSync } from "@fortawesome/pro-light-svg-icons/faSync";
 import { faPen } from "@fortawesome/pro-light-svg-icons/faPen";
+import { faArrowCircleRight } from "@fortawesome/pro-light-svg-icons/faArrowCircleRight";
+import { faTrashAlt } from "@fortawesome/pro-light-svg-icons/faTrashAlt"
+import { faTabletAlt } from "@fortawesome/pro-light-svg-icons/faTabletAlt"
+import { faArrowDown } from "@fortawesome/pro-light-svg-icons/faArrowDown"
 
 library.add(
   faPlus,
@@ -88,7 +92,11 @@ library.add(
   faPlug,
   faUserEdit,
   faSync,
-  faPen
+  faPen,
+  faArrowCircleRight,
+  faTabletAlt,
+  faTrashAlt,
+  faArrowDown
 );
 
 // Solid Icons
@@ -99,6 +107,7 @@ import { faExclamationTriangle } from "@fortawesome/pro-solid-svg-icons/faExclam
 import { faExclamationCircle } from "@fortawesome/pro-solid-svg-icons/faExclamationCircle";
 import { faMinusCircle } from "@fortawesome/pro-solid-svg-icons/faMinusCircle";
 import { faCheckCircle as faSolidCheckCircle } from "@fortawesome/pro-solid-svg-icons/faCheckCircle";
+import { faKey } from "@fortawesome/pro-solid-svg-icons/faKey";
 
 library.add(
   faBadgeCheck,
@@ -107,7 +116,8 @@ library.add(
   faExclamationTriangle,
   faExclamationCircle,
   faMinusCircle,
-  faSolidCheckCircle
+  faSolidCheckCircle,
+  faKey
 );
 
 // import { far } from "@fortawesome/pro-regular-svg-icons";

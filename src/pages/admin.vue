@@ -23,6 +23,7 @@
               Metadata Policies
             </a-menu-item>
             <a-menu-item key="data policies"> Data Policies </a-menu-item>
+            <a-menu-item key="sso">SSO</a-menu-item>
           </a-menu-item-group>
           <a-menu-item-group class="mb-3" title="Metadata Management">
             <a-menu-item key="bm"> Business Metadata </a-menu-item>
@@ -38,17 +39,15 @@
         </a-menu>
       </div>
     </div>
-    <div class="w-3/4 p-6">
-      <input type="file" @change="handleFileUpload" />
+    <div class="w-4/5 max-h-screen p-6 overflow-y-auto">
       <router-view></router-view>
     </div>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from "vue";
+import { defineComponent } from "vue";
 import { useRouter } from "vue-router";
-import xmlToJson from "~/utils/xmltojson";
 
 export default defineComponent({
   setup() {
@@ -57,22 +56,8 @@ export default defineComponent({
       router.push("/admin/" + e.key);
     };
 
-    const handleFileUpload = (ev) => {
-      const file = ev.target.files[0];
-      const reader = new FileReader();
-      reader.readAsText(file);
-      reader.addEventListener("load", (event) => {
-        let xml = event.target.result;
-        console.log("onFileUpload -> xml", xml);
-        let xmlDOM = new DOMParser().parseFromString(xml, "text/xml");
-        let finalJSON = xmlToJson(xmlDOM);
-        console.log(finalJSON);
-      });
-    };
-
     return {
       handleClick,
-      handleFileUpload,
     };
   },
 });

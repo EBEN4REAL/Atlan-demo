@@ -53,7 +53,12 @@
         <a-switch v-model:checked="ssoForm.enforceSSO" />
       </a-form-item>
       <div class="flex justify-between mb-2 mt-14">
-        <a-button type="danger" @click="showDeleteSSOModal">Delete</a-button>
+        <a-button
+          type="link"
+          class="px-0 mx-0 text-red-500"
+          @click="showDeleteSSOModal"
+          >Delete</a-button
+        >
 
         <a-button
           class="block ml-auto"

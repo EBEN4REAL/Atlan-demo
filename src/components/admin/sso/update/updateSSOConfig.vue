@@ -6,7 +6,7 @@
           v-if="!provider.isCustomSaml"
           :src="provider.image"
           alt="provider"
-          class="w-8 mr-2"
+          class="w-6 mr-2"
         />
         <fa
           v-else
@@ -82,7 +82,7 @@
               >
                 <div class="flex flex-row items-center">
                   <span class="mr-1">Download Metadata</span>
-                  <fa icon="fal arrow-down" class="text-base"></fa>
+                  <fa icon="fal arrow-down" class="text-sm"></fa>
                 </div>
               </a-button>
             </a-form-item>
@@ -125,7 +125,7 @@
           </a-form-item>
           <div class="flex justify-end mt-10">
             <div>
-              <a-button class="mx-2" @click="showConfigScreen">
+              <a-button class="mx-5" @click="showConfigScreen">
                 Cancel
               </a-button>
             </div>
@@ -326,7 +326,7 @@ export default defineComponent({
   },
 });
 </script>
-  <style scoped>
+  <style lang="less" scoped>
 .copyBtn {
   pointer-events: all !important;
   cursor: pointer;
@@ -336,6 +336,7 @@ export default defineComponent({
   background-color: #f5f5f5;
   padding: 1.25rem 1rem 0.1rem 1rem;
   border-radius: 4px;
+  margin-top: 1.5rem;
 }
 .metadata-input .ant-input-disabled {
   background-color: white;

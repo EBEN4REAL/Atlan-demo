@@ -5,7 +5,7 @@
         v-if="!provider.isCustomSaml"
         :src="provider.image"
         alt="provider"
-        class="w-8 mr-2"
+        class="w-6 mr-2"
       />
       <fa
         v-else
@@ -103,7 +103,7 @@
             >
               <div class="flex flex-row items-center">
                 <span class="mr-1">Download Metadata</span>
-                <fa icon="fal arrow-down" class="text-base"></fa>
+                <fa icon="fal arrow-down" class="text-sm"></fa>
               </div>
             </a-button>
           </a-form-item>
@@ -195,7 +195,7 @@
         </div>
         <div class="flex justify-end mt-3">
           <div>
-            <a-button class="mx-2" @click="showConfigScreen"> Cancel </a-button>
+            <a-button class="mx-5" @click="showConfigScreen"> Cancel </a-button>
           </div>
           <div>
             <a-button

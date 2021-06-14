@@ -62,9 +62,9 @@ export default defineComponent({
       const reader = new FileReader();
       reader.readAsText(file);
       reader.addEventListener("load", (event) => {
-        let xml = event.target.result;
+        let xml = event.target?.result ?? '';
         console.log("onFileUpload -> xml", xml);
-        let xmlDOM = new DOMParser().parseFromString(xml, "text/xml");
+        let xmlDOM = new DOMParser().parseFromString(xml.toString(), "text/xml");
         let finalJSON = xmlToJson(xmlDOM);
         console.log(finalJSON);
       });

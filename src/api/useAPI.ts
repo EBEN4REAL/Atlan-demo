@@ -10,6 +10,7 @@ interface useGetAPIParams {
     cache?: boolean,
     params?: Record<string, any>,
     body?: Record<string, any>,
+    pathVariables?: Record<string, any>,
     options?: IConfig & AxiosRequestConfig,
     // swrOptions?: IConfig,
     // axiosOptions?: AxiosRequestConfig
@@ -22,9 +23,8 @@ interface useGetAPIParams {
  * @param body - The payload to send while making a `POST` request
  * @param options - SWRV or Axios specefic configuration objects
  */
-export const useAPI = <T>(key: string, method: 'GET' | 'POST', { cache = true, params, body, options }: useGetAPIParams) => {
-    const url = keyMaps[key];
-    console.log(url)
+export const useAPI = <T>(key: string, method: 'GET' | 'POST', { cache = true, params, body, pathVariables, options }: useGetAPIParams) => {
+    const url = keyMaps[key]({...pathVariables});
 
     if (cache) {
     // If using cache, make a generic swrv request

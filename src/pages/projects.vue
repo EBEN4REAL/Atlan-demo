@@ -1,57 +1,110 @@
 <template>
-<div class="flex flex-col h-full">
-<div class="flex px-3 py-2 bg-white border-b border-gray-100">
-<a-select
-  placeholder="Project"
-  style="width: 120px"
->
-  <a-select-option value="jack">Jack</a-select-option>
-  <a-select-option value="lucy">Lucy</a-select-option>
-  <a-select-option value="disabled" disabled>Disabled</a-select-option>
-  <a-select-option value="Yiminghe">yiminghe</a-select-option>
-</a-select>
-</div>
-<div class="flex-grow">
-  <splitpanes class="h-full default-theme">
-    <pane :size="25" class="px-3 bg-white"> 
-      <div class="flex mt-3 space-x-2">
-      <a-input-search></a-input-search>
-      <a-button type="primary"><fa icon="fal plus"></fa></a-button>
-    </div>
-      <a-tabs>
-        <a-tab-pane key="1" tab="Tab 1">Menu</a-tab-pane>
-        <a-tab-pane key="2" tab="Tab 2">Assets</a-tab-pane>
-      </a-tabs>
-
-    </pane>
-    <pane :size="75">
-      <Editor></Editor>
-
-    </pane>
-  </splitpanes>
-</div>
-
-</div>
- 
+  <a-layout class="min-h-screen">
+    <a-layout-header
+      theme="light"
+      class="flex items-center px-0 leading-none align-middle  text-primary-100 bg-primary-500"
+      style="height: 42px"
+    >
+      <div
+        class="flex items-center h-full px-4 mr-3 align-middle border-r  border-primary-400 hover:bg-primary-600"
+        @click="handleBack"
+      >
+        <fa icon="fal chevron-left" class="text-xl"></fa>
+      </div>
+      <p class="mb-0 leading-none tracking-wide">
+        Personal Workspace
+      </p></a-layout-header
+    >
+    <a-layout :hasSider="true">
+      <a-layout-sider
+        class="border-r bg-sidebar"
+        :collapsedWidth="48"
+        :collapsed="true"
+        :style="{
+          overflow: 'auto',
+        }"
+      >
+        <ProjectSidebar class="mt-3"></ProjectSidebar
+      ></a-layout-sider>
+      <a-layout-content>
+        <splitpanes class="bg-white default-theme">
+          <pane size="20" class="bg-sidebar">
+            <span>1</span>
+          </pane>
+          <pane size="80" class="shadow-md">
+            <div class="min-h-full p-4 m-6 bg-white border rounded">
+              <Editor></Editor>
+            </div>
+          </pane> </splitpanes
+      ></a-layout-content>
+    </a-layout>
+  </a-layout>
 </template>
 
 <script lang="ts">
-import { defineComponent, defineAsyncComponent } from "vue";
+import { defineComponent, ref } from "vue";
+import { useRouter } from "vue-router";
+import Editor from "@/editor/index.vue";
+import ProjectSidebar from "~/layouts/project/index.vue";
+// import EditorJS from "@editorjs/editorjs";
+// import Header from "@editorjs/header";
+// import List from "@editorjs/list";
 
+// import { SimpleImage } from "@/block/sql";
 
+// import SQLEditor from "@common/sqleditor/index.vue";
 
+// import CodeMirror from "codemirror";
+// import "codemirror/lib/codemirror.css";
+
+// import "codemirror/mode/sql/sql.js";
+
+// import { EditorView } from "@codemirror/next/view";
+
+// import { EditorState } from "@codemirror/next/state";
+// // import { history, historyKeymap } from "@codemirror/next/history";
+// // import { defaultKeymap } from "@codemirror/next/commands";
+// // import { defaultHighlightStyle } from "@codemirror/next/highlight";
+// import { sql, PostgreSQL } from "@codemirror/next/lang-sql";
+
+// // import { lineNumbers } from "@codemirror/next/gutter";
+
+// import { basicSetup } from "@codemirror/next/basic-setup";
+
+// import { highlightActiveLine } from "@codemirror/next/highlightActiveLine";
+
+// import base style
 
 export default defineComponent({
   components: {
-    Editor: defineAsyncComponent(() =>
-      import('@common/editor/index.vue')
-    )
-  }
+    ProjectSidebar,
+    Editor,
+  },
+  data() {
+    return {
+      editor: null,
+    };
+  },
+  setup() {
+    const router = useRouter();
+    const handleBack = () => {
+      router.push("assets");
+    };
+
+    return {
+      handleBack,
+    };
+  },
+  mounted() {},
 });
 </script>
 
+<style lang="less">
+</style>
+
 <route lang="yaml">
-    meta:
-      layout: default
-      requiresAuth: true
+  meta:
+    layout: project
+    requiresAuth: true
 </route>
+

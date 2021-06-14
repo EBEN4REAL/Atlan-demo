@@ -1,7 +1,7 @@
 <template>
   <div class="w-full">
     <div
-      class="flex justify-between w-full p-4  bg-gray-50 rounded-tl-md rounded-tr-md"
+      class="flex justify-between w-full px-4 py-3  bg-gray-50 rounded-tl-md rounded-tr-md"
     >
       <div class="flex space-x-3">
         <Runstatus
@@ -94,7 +94,7 @@ export default defineComponent({
     let phase = ref("");
 
     params.value = {
-      "listOptions.limit": 100,
+      "listOptions.limit": 5,
     };
 
     const { data, mutate, state, STATES } = fetchWorkflowList(now, params);

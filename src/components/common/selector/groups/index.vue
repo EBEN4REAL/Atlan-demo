@@ -1,126 +1,109 @@
-
-
-
 <template>
-  <Select
-    :loading="loading"
-    :list="list"
-    mode="multiple"
-    class="w-full"
-    placeholder="Search Groups"
-    optionLabelProp="id"
-    :filter-option="false"
-    :maxTagTextLength="15"
-    :listAsync="handleSearch"
+  <a-select
+    :value="modelValue"
+    :show-search="true"
+    :filterOption="true"
+    style="width: 100%"
+    :allowClear="true"
     @change="handleChange"
+    @search="handleSearch"
   >
-    <template v-slot:default="slotProps">
-      <template v-for="item in slotProps.list" :key="item.id">
-        <a-select-option :value="item.id">
-          <div class="flex flex-col">
-            <div>{{ item.label }}</div>
-            <div class="text-xs text-gray-500">{{ item.id }}</div>
+    <template v-for="options in list" :key="options.name">
+      <a-select-option :value="options.name">
+        <div class="flex flex-col">
+          <div>
+            {{ options.name }}
+            <span v-if="options.user_count">({{ options.user_count }})</span>
           </div>
-        </a-select-option>
-      </template>
+        </div>
+      </a-select-option>
     </template>
-  </Select>
+  </a-select>
 </template>
-    
+      
 <script lang="ts">
-import { defineComponent } from "vue";
-import Select from "@common/selector/index.vue";
-import qs from "qs";
-
-import { GroupApi } from "~/api/auth/group";
-import KeycloakMixin from "~/mixins/keycloak";
-import { SelectArray } from "~/types";
+import { defineComponent, ref } from "vue";
+import fetchGroupList from "~/composables/groups/fetchGroupList";
 
 export default defineComponent({
-  name: "HelloWorld",
-  mixins: [KeycloakMixin],
-  components: {
-    Select,
+  props: {
+    modelValue: {
+      type: String,
+      required: false,
+    },
   },
-  props: {},
   data() {
+    return {};
+  },
+  computed: {},
+  emits: ["update:modelValue", "change"],
+  setup(props, { emit }) {
+    let now = ref(true);
+    let params = ref({});
+    let debounce: any = null;
+
+    // this is needed as there are multiple keys with the same param name
+    const urlparam = new URLSearchParams();
+    urlparam.append("limit", "10");
+    urlparam.append("sort", "name");
+    urlparam.append("columns", "name");
+    urlparam.append("columns", "user_count");
+
+    params.value = urlparam;
+    const { list, mutate } = fetchGroupList(now, params);
+
+    const handleSearch = (val: string) => {
+      clearTimeout(debounce);
+      debounce = setTimeout(() => {
+        if (val) {
+          params.value.set(
+            "filter",
+            JSON.stringify({
+              $or: [{ name: { $ilike: `%${val}%` } }],
+            })
+          );
+        } else {
+          params.value.set("filter", null);
+        }
+        mutate();
+      }, 200);
+    };
+    const handleChange = (checkedValues: string) => {
+      emit("update:modelValue", checkedValues);
+      emit("change", checkedValues);
+    };
+
     return {
-      loading: false,
-      list: [] as SelectArray,
-      cancelToken: null,
+      list,
+      handleSearch,
+      handleChange,
     };
   },
-  emits: ["change"],
-  mounted() {
-    this.handleSearch("");
-  },
   methods: {
-    async handleSearch(value: any) {
-      if (this.loading && this.cancelToken) {
-        this.cancelToken.cancel("Operation canceled by the user.");
-      } else {
-        this.cancelToken = this.$axios.CancelToken.source();
-      }
-      try {
-        let tempList: SelectArray = [];
-        this.loading = true;
-        let params = {};
-        let options = {};
-
-        console.log(this);
-
-        if (value === "") {
-          params = {
-            limit: 5,
-            sort: "name",
-            columns: ["name"],
-          };
-          options = {
-            cache: true,
-            cancelToken: this.cancelToken.token,
-            paramsSerializer: (p: any) =>
-              qs.stringify(p, { arrayFormat: "repeat" }),
-          };
-        } else {
-          params = {
-            limit: 5,
-            filter: {
-              $or: [
-                { name: { $ilike: `%${value}%` } },
-                { alias: { $ilike: `%${value}%` } },
-              ],
-            },
-          };
-          options = {
-            cache: true,
-            cancelToken: this.cancelToken.token,
-          };
-        }
-        const response = await GroupApi.ListV2(params, options);
-        if (response.data?.records) {
-          response.data?.records.forEach((element: any) => {
-            tempList.push({
-              id: element.name,
-              label: element.name,
-            });
-          });
-        }
-        this.list = [...tempList];
-        this.loading = false;
-      } catch (err) {
-        console.log(err);
-        this.loading = false;
-      }
-    },
-    handleChange(value: any) {
-      this.$emit("change", value);
-    },
+    // handleSearch(value: any) {
+    //   if (this.listAsync) {
+    //     clearTimeout(this.debounce);
+    //     this.debounce = setTimeout(() => {
+    //       this.listAsync(value);
+    //     }, 100);
+    //   }
+    // },
+    // handleChange(values: any) {
+    //   if (!this.forceClear) {
+    //     this.$emit("change", values);
+    //   } else {
+    //     this.forceClear = false;
+    //   }
+    // },
+    // clear() {
+    //   this.forceClear = true;
+    //   this.selected = null;
+    // },
   },
 });
 </script>
-    
-    
-    
-  <style lang="less" module>
+      
+<style lang="less" module>
 </style>
-    
+
+   

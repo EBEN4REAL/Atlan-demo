@@ -94,6 +94,9 @@ export default defineComponent({
       }
       return img;
     },
+    integrationName(item: any): string {
+      return this.attributes(item)?.integrationName
+    },
     relationshipList(item: any) {
       const found = AssetTypeList.find((a) => a.id == item.typeName);
 

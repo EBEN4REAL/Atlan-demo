@@ -3,12 +3,12 @@
 
 <template>
   <div>
-    <p class="text-gray-500 mb-0 text-xs">Users</p>
-    <Users @change="handleUserChange"></Users>
+    <p class="mb-1 text-xs text-gray-500">Users</p>
+    <Users></Users>
   </div>
   <div class="mt-2">
-    <p class="text-gray-500 mb-0 text-xs">Groups</p>
-    <Groups @change="handleGroupChange"></Groups>
+    <p class="mb-1 text-xs text-gray-500">Groups</p>
+    <Groups></Groups>
   </div>
 </template>
       

@@ -32,7 +32,7 @@
       </div>
     </a-layout-sider>
     <a-layout :style="{ marginLeft: '60px', height: '100vh' }">
-      <a-layout-content class="overflow-hidden">
+      <a-layout-content class="h-full overflow-hidden">
         <router-view />
       </a-layout-content>
     </a-layout>

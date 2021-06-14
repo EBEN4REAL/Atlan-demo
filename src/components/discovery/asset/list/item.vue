@@ -1,6 +1,6 @@
 <template>
   <div class="px-4 py-3 border-b border-gray-50 hover:bg-gray-50">
-    <div class="flex items-center justify-between align-middle">
+    <div class="flex items-center justify-between mb-1 align-middle">
       <div class="flex items-center mr-1 align-middle">
         <div class="">
           <component :is="item.typeName" class="w-6 h-6 mr-1"></component>
@@ -8,7 +8,7 @@
         <div class="flex flex-col w-full">
           <div class="flex items-center justify-between mb-0">
             <p
-              class="mb-0 text-sm font-semibold leading-none tracking-wide text-blue-600 truncate  hover:underline"
+              class="mb-0 text-sm font-semibold leading-none tracking-wide truncate  text-primary-500 hover:underline"
             >
               {{ title(item) }}
             </p>

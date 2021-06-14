@@ -30,6 +30,7 @@ module.exports = {
           800: "#0d0f54",
           900: "#06082a",
         },
+        sidebar: "#f7f6f3",
         dark: {
           100: "#d2d2d3",
           200: "#a5a6a7",
@@ -47,6 +48,9 @@ module.exports = {
   },
   variants: {
     extend: {},
-  },
-  plugins: ["@tailwindcss/line-clamp"],
+  }, 
+  plugins: [
+    require('@tailwindcss/line-clamp'),
+    require('@tailwindcss/typography'),
+  ],
 }

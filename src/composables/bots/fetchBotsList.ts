@@ -39,7 +39,6 @@ export default function fetchBotsList(dependent: any, query?: string, filters?: 
         }
         return {} as BotsType;
     });
-
     return {
         data,
         body,

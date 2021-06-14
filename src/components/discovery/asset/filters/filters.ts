@@ -38,26 +38,5 @@ export const List: CollapseArray = [
     ],
     isDeleted: false,
     isDisabled: false,
-  },
-  {
-    id: "projects",
-    label: "Projects",
-    overallCondition: "OR",
-    isDeleted: false,
-    filters: [
-      {
-        attributeName: "ownerUsers",
-        condition: "OR",
-        isMultiple: true,
-        operator: "eq",
-      },
-      {
-        attributeName: "ownerGroups",
-        condition: "OR",
-        isMultiple: true,
-        operator: "eq",
-      },
-    ],
-    isDisabled: false,
-  },
+  }
 ];

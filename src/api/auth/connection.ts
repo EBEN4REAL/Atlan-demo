@@ -25,6 +25,21 @@ const Setup = (
   );
 };
 
+const Archive = (id: string, body?: Components.Schemas.ConnectionSetup, options?: AxiosRequestConfig) => {
+
+  return getAxiosClient().post(
+    getAPIPath(serviceAlias, `/connections/${id}/archive`),
+    {
+      deleteAssets: true,
+      deleteType: "HARD",
+    },
+    {
+      timeout: 10000
+    }
+  );
+}
+
+
 
 // const Basic = (
 //   body?: Components.Schemas.SearchParameters,
@@ -37,25 +52,7 @@ const Setup = (
 //   );
 // };
 
-// const Archive = ($axios, id) => {
-//   return $axios.$post(
-//     ServiceURL(
-//       resourceName,
-//       $axios.defaults.tenant,
-//       `/connections/${id}/archive`
-//     ),
-//     {
-//       deleteAssets: true,
-//       deleteType: "HARD",
-//     },
-//     {
-//       timeout: 20000,
-//       validateStatus(status) {
-//         return status >= 200 && status < 300;
-//       },
-//     }
-//   );
-// };
+
 
 // const Setup = ($axios, body) => {
 //   return $axios.$post(
@@ -85,5 +82,6 @@ const Setup = (
 
 export const Connection = {
   TestNetwork,
-  Setup
+  Setup,
+  Archive
 };

@@ -24,9 +24,7 @@
 
 <script lang="ts">
 import { computed, defineComponent, ref } from "vue";
-import Select from "@common/selector/index.vue";
 import SourceMixin from "~/mixins/source";
-
 import fetchConnectionList from "~/composables/connection/fetchConnectionList";
 
 export default defineComponent({
@@ -37,55 +35,31 @@ export default defineComponent({
       required: false,
     },
   },
-  components: {
-    Select,
-  },
-  computed: {
-    localList() {},
-  },
-  data() {
-    return {
-      localList: [] as any[],
-    };
-  },
-  setup() {
+  emits: ["update:modelValue", "change"],
+  setup(props, { emit }) {
     let now = ref(true);
     let searchValue = ref("");
     const { list } = fetchConnectionList(now);
-
     const filteredList = computed(() => {
-      console.log(searchValue);
-      return list?.value.filter((item) =>
+      return list?.value?.filter((item) =>
         item?.attributes?.name
           ?.toLowerCase()
           .includes(searchValue.value.toLowerCase())
       );
     });
-
-    const handleSearch = (inputValue) => {
-      // update `props.user` to `user.value` to access the Reference value
+    const handleSearch = (inputValue: string) => {
       searchValue.value = inputValue;
     };
-
-    console.log(filteredList);
-
+    const handleChange = (checkedValues: string) => {
+      emit("update:modelValue", checkedValues);
+      emit("change", checkedValues);
+    };
     return {
       list,
       filteredList,
       handleSearch,
+      handleChange,
     };
-  },
-  // mounted() {
-  //   this.list = WorkflowTypeList;
-  // },
-  emits: ["update:modelValue", "change"],
-  methods: {
-    handleChange(checkedValues: string) {
-      console.log(checkedValues);
-      this.$emit("update:modelValue", checkedValues);
-      this.$emit("change", checkedValues);
-    },
-    clear() {},
   },
 });
 </script>

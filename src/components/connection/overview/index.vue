@@ -23,6 +23,8 @@
         <QueryView class="" :item="item"></QueryView>
       </div>
     </div>
+
+    <DeleteView :item="item" class="mt-4" :key="item.guid"></DeleteView>
   </div>
 </template>
         
@@ -37,9 +39,10 @@ import { ConnectionType } from "~/types/atlas/connection";
 import { CredentialType } from "~/types/atlas/credential";
 import { BotsType } from "~/types/atlas/bots";
 
+import DeleteView from "@/connection/overview/delete.vue";
 export default defineComponent({
   name: "HelloWorld",
-  components: { DetailsView, QueryView, RunsView },
+  components: { DetailsView, QueryView, RunsView, DeleteView },
   props: {
     item: {
       type: Object as PropType<ConnectionType>,

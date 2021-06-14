@@ -2,47 +2,37 @@
   <div class="grid h-full grid-cols-12">
     <AssetDiscovery @preview="handlePreview" class="shadow-sm"></AssetDiscovery>
     <div
-      class="flex flex-col items-stretch h-full col-span-3 border-l bg-gray-50"
+      class="flex flex-col items-stretch h-full col-span-3 border-l bg-sidebar"
     >
-      <AssetPreview :item="selected"></AssetPreview>
+      <AssetPreview :item="selected" v-if="selected?.guid"></AssetPreview>
     </div>
   </div>
 </template>
   
   
-  <script lang="ts">
-import { defineComponent } from "vue";
-import PageLoader from "@common/loaders/page.vue";
+<script lang="ts">
+import { defineComponent, ref } from "vue";
 import AssetDiscovery from "@/discovery/asset/index.vue";
 import AssetPreview from "@/preview/asset/index.vue";
 
 export default defineComponent({
-  name: "HelloWorld",
   components: {
-    PageLoader,
     AssetPreview,
     AssetDiscovery,
   },
-  data() {
-    return {
-      selected: {},
-    };
-  },
   setup() {
-    return {};
-  },
-  methods: {
-    handlePreview(selectedItem: any) {
-      console.log(selectedItem);
-      this.selected = selectedItem;
-    },
+    let selected = ref({});
+    const handlePreview = (selectedItem: any) => {
+      selected.value = selectedItem;
+    };
+    return {
+      selected,
+      handlePreview,
+    };
   },
 });
 </script>
   
-<style lang="less" module>
-</style>
-      
   
 <route lang="yaml">
 meta:

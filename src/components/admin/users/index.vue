@@ -27,9 +27,12 @@ export default defineComponent({
       filter: {},
     });
 
-    // Make an API
-    const { data: userList, mutate: getUserList } = useAPI('LIST_USERS', "GET", {cache: false});
-    
+    // Make an API Call
+    const { data: userList, mutate: getUserList } = useAPI(
+      "LIST_USERS",
+      "GET",
+      { cache: false }
+    );
     const searchText = ref("");
     const handleSearch = (searchValue: string) => {
       userListAPIParams.filter = searchText.value

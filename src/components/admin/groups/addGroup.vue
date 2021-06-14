@@ -21,11 +21,7 @@
       </a-col>
     </a-row>
     <a-form-item label="Group Description">
-      <a-textarea
-        v-model="group.description"
-        v-decorator="['description']"
-        :rows="3"
-      />
+      <a-textarea v-model="group.description" v-decorator="['description']" :rows="3" />
     </a-form-item>
     <UserList @updateSelectedUsers="updateUserList" />
     <a-row type="flex" justify="end">
@@ -35,9 +31,7 @@
           size="large"
           html-type="submit"
           :disabled="isSubmitDisabled"
-        >
-          Create Group
-        </a-button>
+        >Create Group</a-button>
       </a-col>
     </a-row>
   </a-form>

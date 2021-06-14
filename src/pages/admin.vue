@@ -39,7 +39,7 @@
       </div>
     </div>
     <div class="w-3/4 p-6">
-      <input type="file" @change="handleFileUpload" />
+      <!-- <input type="file" @change="handleFileUpload" /> -->
       <router-view></router-view>
     </div>
   </div>
@@ -78,7 +78,6 @@ export default defineComponent({
 });
 </script>
 
-
 <style lang="less" module>
 .sidebar {
   &:global(.ant-menu-inline) {
@@ -103,7 +102,6 @@ export default defineComponent({
   }
 }
 </style>
-
 
 <route lang="yaml">
   meta:

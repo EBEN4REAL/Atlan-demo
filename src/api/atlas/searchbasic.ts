@@ -1,8 +1,6 @@
-import { fetcherPost, getAPIPath, getAxiosClient } from "~/api";
+import { getAPIPath, getAxiosClient } from "~/api";
 import { AxiosRequestConfig } from "axios";
-import { Components } from "./client";
-import useSWRV, { IConfig, } from "swrv";
-import { reactive, ref, Ref, toRef, toRefs } from "vue";
+import { SearchParameters } from "~/types/atlas/attributes";
 
 const serviceAlias = "auth/atlas";
 
@@ -12,10 +10,9 @@ export const URL = {
 }
 
 const Basic = (
-  body?: Components.Schemas.SearchParameters,
+  body?: SearchParameters,
   options?: AxiosRequestConfig,
 ) => {
-  console.log("fetch");
   return getAxiosClient().post(
     getAPIPath(serviceAlias, URL.SEARCHBASIC),
     body,

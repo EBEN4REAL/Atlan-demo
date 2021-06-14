@@ -14,8 +14,6 @@ import { SearchParameters } from '~/types/atlas/attributes';
 import { Status } from '~/types/status';
 
 
-
-
 type Getters = GetterTree<State, any>
 
 export interface State extends Status {
@@ -79,18 +77,13 @@ export const actions: ActionTree<State, any> = {
             commit(SEARCH_SET_SEARCH, params);
             let body = state.searchParameters;
             body.attributes = BasicSearchAttributes;
-
             if (body.query === "*") {
                 delete body.query;
             }
-
             const response = await Search.Basic(body, {
                 cache: true,
-                cancelToken: state.cancelToken.token,
+                cancelToken: state.cancelToken?.token,
             });
-
-            console.log(response);
-
             if (response) {
                 commit(SEARCH_SET_LIST, response);
             }

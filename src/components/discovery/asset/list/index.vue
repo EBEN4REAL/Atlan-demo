@@ -14,9 +14,8 @@
   </DynamicScroller>
 </template>
     
-  <script lang="ts">
+<script lang="ts">
 import { defineComponent, PropType } from "vue";
-import { Components } from "~/api/atlas/client";
 import ListItem from "./item.vue";
 
 export default defineComponent({
@@ -25,7 +24,7 @@ export default defineComponent({
   },
   props: {
     list: {
-      type: Array as PropType<Components.Schemas.AtlasEntityHeader[]>,
+      type: Array,
       required: false,
       default() {
         return [];
@@ -55,7 +54,7 @@ export default defineComponent({
   },
   emits: ["preview"],
   methods: {
-    handlePreview(item: Components.Schemas.AtlasEntityHeader) {
+    handlePreview(item) {
       this.$emit("preview", item);
     },
   },

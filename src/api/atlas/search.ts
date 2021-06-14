@@ -3,11 +3,12 @@ import { AxiosRequestConfig } from "axios";
 import { Components } from "./client";
 import useSWRV, { IConfig, } from "swrv";
 import { reactive, ref, Ref, toRef, toRefs } from "vue";
+import { SearchParameters } from "~/types/atlas/attributes";
 
 const serviceAlias = "auth/atlas";
 
 const Basic = (
-  body?: Components.Schemas.SearchParameters,
+  body?: SearchParameters,
   options?: AxiosRequestConfig,
 ) => {
   return getAxiosClient().post(

@@ -23,10 +23,10 @@ export const install: UserModule = async ({ app }) => {
     onLoad: "check-sso",
     silentCheckSsoRedirectUri: window.location.origin + '/public/check-sso.html'
   };
-  
+
   let keycloak = Keycloak(initOptions);
   app.config.globalProperties.$keycloak = keycloak;
-  app.provide("$keycloak",keycloak);
+  app.provide("$keycloak", keycloak);
 
   setInterval(() => {
     keycloak

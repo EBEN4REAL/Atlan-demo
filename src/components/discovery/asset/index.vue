@@ -38,7 +38,7 @@
       </a-tabs>
     </div>
 
-    <AssetList :list="list" @preview="handlePreview"> </AssetList>
+    <AssetList :list="list.value" @preview="handlePreview"> </AssetList>
     <div class="flex items-center px-6 mt-2 mb-2" style="min-height: 17px">
       <div class="flex items-center leading-none" v-if="loading">
         <a-spin size="small" class="mr-1 leading-none"></a-spin
@@ -56,7 +56,7 @@
 </template>
       
 <script lang="ts">
-import { defineComponent } from "vue";
+import { defineComponent, ref } from "vue";
 
 import AssetFilters from "@/discovery/asset/filters/index.vue";
 import AssetList from "@/discovery/asset/list/index.vue";
@@ -67,6 +67,9 @@ import { Components } from "~/api/atlas/client";
 import { SearchParameters } from "~/store/modules/search/state";
 import { SEARCH_FETCH_LIST, SEARCH_GET_LIST } from "~/constant/store_types";
 import ConnectorDropdown from "@common/dropdown/connector/index.vue";
+import { BaseAttributes, BasicSearchAttributes } from "~/constant/projection";
+
+import fetchAssetDiscover from "~/composables/asset/fetchAssetDiscover";
 
 export default defineComponent({
   name: "HelloWorld",
@@ -85,35 +88,55 @@ export default defineComponent({
     };
   },
   computed: {
-    searchParams(): SearchParameters {
-      const store = useStore();
-      return store.getters.getSearchParams;
-    },
-    list(): Components.Schemas.AtlasEntityHeader[] {
-      const store = useStore();
-      return store.getters[SEARCH_GET_LIST];
-    },
     loading(): boolean {
-      const store = useStore();
-      return store.getters.getSearchLoading;
-    },
-    limit(): number {
-      return this.searchParams?.limit;
-    },
-    offset(): number {
-      return this.searchParams?.offset;
-    },
-    totalCount(): number {
-      return this.result?.approximateCount;
-    },
-    listCount(): number {
-      return this.list?.length;
+      return false;
     },
   },
   mounted() {
-    this.fetchSearch({});
+    // this.fetchSearch({});
   },
   emits: ["preview"],
+  setup(props) {
+    let now = ref(true);
+    let debounce = null;
+
+    const defaultBody = ref({
+      typeName: "Table",
+      excludeDeletedEntities: true,
+      includeClassificationAttributes: true,
+      includeSubClassifications: true,
+      includeSubTypes: true,
+      limit: 50,
+      offset: 0,
+      attributes: [...BaseAttributes, ...BasicSearchAttributes],
+      entityFilters: null,
+    });
+    const { list, totalCount, listCount, offset, limit, mutate } =
+      fetchAssetDiscover(now, defaultBody);
+
+    const handleSearchChange = (value: string) => {
+      if (value == "") {
+        defaultBody.value.query = value;
+        mutate();
+      } else {
+        clearTimeout(debounce);
+        debounce = setTimeout(() => {
+          defaultBody.value.query = value;
+          mutate();
+        }, 100);
+      }
+    };
+
+    return {
+      list,
+      offset,
+      limit,
+      totalCount,
+      listCount,
+      defaultBody,
+      handleSearchChange,
+    };
+  },
   methods: {
     handlePreview(item) {
       this.$emit("preview", item);
@@ -125,13 +148,7 @@ export default defineComponent({
       const store = useStore();
       store.dispatch(SEARCH_FETCH_LIST, params);
     },
-    handleSearchChange(value: string) {
-      clearTimeout(this.debounce);
-      this.debounce = setTimeout(() => {
-        // store.commit(MutationTypes.SEARCH_SET_SEARCH, { query: `${value}*` });
-        this.fetchSearch({ query: `${value}` });
-      }, 200);
-    },
+
     getIsLoadMore(
       length: number,
       offset: any,

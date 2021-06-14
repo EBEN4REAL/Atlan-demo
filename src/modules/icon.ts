@@ -51,6 +51,10 @@ import { faAnalytics } from "@fortawesome/pro-light-svg-icons/faAnalytics";
 import { faProjectDiagram } from "@fortawesome/pro-light-svg-icons/faProjectDiagram";
 import { faBolt } from "@fortawesome/pro-light-svg-icons/faBolt";
 import { faPen } from "@fortawesome/pro-light-svg-icons/faPen";
+import { faArrowCircleRight } from "@fortawesome/pro-light-svg-icons/faArrowCircleRight";
+import { faTrashAlt } from "@fortawesome/pro-light-svg-icons/faTrashAlt"
+import { faTabletAlt } from "@fortawesome/pro-light-svg-icons/faTabletAlt"
+import { faArrowDown } from "@fortawesome/pro-light-svg-icons/faArrowDown"
 
 
 library.add(
@@ -98,6 +102,10 @@ library.add(
   faSync,
   faGlobe, faHistory, faColumns, faAnalytics, faProjectDiagram, faBolt,
   faPen,
+  faArrowCircleRight,
+  faTabletAlt,
+  faTrashAlt,
+  faArrowDown,
 );
 
 // Solid Icons
@@ -108,6 +116,7 @@ import { faExclamationTriangle } from "@fortawesome/pro-solid-svg-icons/faExclam
 import { faExclamationCircle } from "@fortawesome/pro-solid-svg-icons/faExclamationCircle";
 import { faMinusCircle } from "@fortawesome/pro-solid-svg-icons/faMinusCircle";
 import { faCheckCircle as faSolidCheckCircle } from "@fortawesome/pro-solid-svg-icons/faCheckCircle";
+import { faKey } from "@fortawesome/pro-solid-svg-icons/faKey";
 
 library.add(
   faBadgeCheck,
@@ -116,7 +125,8 @@ library.add(
   faExclamationTriangle,
   faExclamationCircle,
   faMinusCircle,
-  faSolidCheckCircle
+  faSolidCheckCircle,
+  faKey
 );
 
 // import { far } from "@fortawesome/pro-regular-svg-icons";

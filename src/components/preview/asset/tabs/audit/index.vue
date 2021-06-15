@@ -1,7 +1,7 @@
 
 <template>
-  Audits: 
-  <!-- {{ audits }} -->
+  Audits:
+  {{ audits }}
 </template>
           
 <script lang="ts">

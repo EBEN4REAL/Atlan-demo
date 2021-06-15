@@ -61,6 +61,7 @@ specifiers:
   keycloak-js: ^13.0.1
   less: ^4.1.1
   lowlight: 1.20.0
+  mitt: ^2.1.0
   openapi-client-axios: ^3.14.0
   openapi-client-axios-ts: ^3.9.9
   openapi-typescript-codegen: ^0.9.3
@@ -146,6 +147,7 @@ dependencies:
   keycloak-js: 13.0.1
   less: 4.1.1
   lowlight: 1.20.0
+  mitt: 2.1.0
   openapi-client-axios: 3.14.0_axios@0.21.1
   openapi-client-axios-ts: 3.9.9
   qs: 6.10.1
@@ -7186,6 +7188,10 @@ packages:
 
   /minimist/1.2.5:
     resolution: {integrity: sha512-FM9nNUYrRBAELZQT3xeZQ7fmMOBg6nWNmJKTcgsJeaLstP/UODVpGsr5OhXhhXg6f+qtJ8uiZ+PUxkDWcgIXLw==}
+
+  /mitt/2.1.0:
+    resolution: {integrity: sha512-ILj2TpLiysu2wkBbWjAmww7TkZb65aiQO+DkVdUTBpBXq+MHYiETENkKFMtsJZX1Lf4pe4QOrTSjIfUwN5lRdg==}
+    dev: false
 
   /mkdirp/0.5.5:
     resolution: {integrity: sha512-NKmAlESf6jMGym1++R0Ra7wvhV+wFW63FaSOFPwRahvea0gMUcGUhVeAg/0BC0wiv9ih5NYPB1Wn1UEI1/L+xQ==}

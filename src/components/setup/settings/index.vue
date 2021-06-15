@@ -334,23 +334,24 @@ export default defineComponent({
         this.updateCronEval();
       }
     },
-    updateCronEval() {
-      console.log(this.job);
-      this.isCronError = false;
-      const options = {
-        tz: this.job.cronTimezone,
-      };
-      try {
-        this.evaluatedCron = [];
-        const interval = parser.parseExpression(this.job.cronString, options);
-        this.evaluatedCron.push(interval.next().toString());
-        this.evaluatedCron.push(interval.next().toString());
-      } catch (err) {
-        this.evaluatedCron.push("N/A");
-        this.evaluatedCron.push("N/A");
-        console.log("Error: " + err.message);
-      }
-    },
+    //updateCronEval is declared twice. Check and remove
+    // updateCronEval() {
+    //   console.log(this.job);
+    //   this.isCronError = false;
+    //   const options = {
+    //     tz: this.job.cronTimezone,
+    //   };
+    //   try {
+    //     this.evaluatedCron = [];
+    //     const interval = parser.parseExpression(this.job.cronString, options);
+    //     this.evaluatedCron.push(interval.next().toString());
+    //     this.evaluatedCron.push(interval.next().toString());
+    //   } catch (err) {
+    //     this.evaluatedCron.push("N/A");
+    //     this.evaluatedCron.push("N/A");
+    //     console.log("Error: " + err.message);
+    //   }
+    // },
   },
 });
 </script>

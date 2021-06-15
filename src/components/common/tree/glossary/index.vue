@@ -9,7 +9,6 @@
     @expand="expandNode"
   >
     <template #title="{ title, type }" class="">
-
       <a-dropdown :trigger="['contextmenu']">
         <div>
           <span>
@@ -30,16 +29,17 @@
           <span class="text-sm leading-none text-gray-600">{{ title }}</span>
         </div>
         <template #overlay>
-          <a-menu>
-            <a-menu-item  v-if="type === 'category' || type === 'glossary'" key="Term"> Add new term </a-menu-item>
-            <a-menu-item v-if="type === 'category' || type === 'glossary'"  key="Category"> Add new category </a-menu-item>
-            <a-menu-item key="Update"> Update {{ type }}</a-menu-item>
-            <a-menu-item key="Delete"> <span class="text-red-500">Delete {{ type }}</span></a-menu-item>
-          </a-menu>
+          <GlossaryContextMenu :type="type" />
         </template>
       </a-dropdown>
     </template>
   </a-tree>
+  <a-dropdown :trigger="['contextmenu']">
+    <div class="root"></div>
+    <template #overlay>
+      <GlossaryContextMenu type="root" />
+    </template>
+  </a-dropdown>
 </template>
 
 
@@ -53,8 +53,10 @@ import fetchGlossaryList from "~/composables/glossary/fetchGlossaryList";
 import useGlossaryTree from "~/composables/glossary/useGlossaryTree";
 import handleTreeExpand from "~/composables/tree/handleTreeExpand";
 
+import GlossaryContextMenu from "./glossaryContextMenu.vue";
+
 export default defineComponent({
-  components: { Emoji },
+  components: { Emoji, GlossaryContextMenu },
   props: {
     searchText: {
       type: String,
@@ -91,3 +93,8 @@ export default defineComponent({
   },
 });
 </script>
+<style lang="less" scoped>
+.root {
+  min-height: 50vh;
+}
+</style>

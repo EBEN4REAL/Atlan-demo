@@ -5,6 +5,7 @@ import Pages from "vite-plugin-pages";
 import Layouts from "vite-plugin-vue-layouts";
 import { resolve } from 'path'
 import commonjs from '@rollup/plugin-commonjs';
+import getAntDesignVariables from "./src/styles/antd_variables";
 
 
 import VueI18n from "@intlify/vite-plugin-vue-i18n";
@@ -30,12 +31,7 @@ export default defineConfig(({ mode }) => {
     css: {
       preprocessorOptions: {
         less: {
-          modifyVars: {
-            "primary-color": "#2026d2",
-            "link-color": "#2026d2",
-            "heading-color": "#595c97",
-            "text-color": "#595c97",
-          },
+          modifyVars: getAntDesignVariables,
           javascriptEnabled: true,
         },
       },

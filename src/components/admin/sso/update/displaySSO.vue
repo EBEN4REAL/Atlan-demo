@@ -16,7 +16,7 @@
         />
         <span class="text-2xl font-medium">{{ provider.title }}</span>
       </span>
-      <router-link :to="`/admin/SSO/config/${providerDetails.alias}`">
+      <router-link :to="`/admin/sso/config/${providerDetails.alias}`">
         <a-button>Configure</a-button>
       </router-link>
     </div>

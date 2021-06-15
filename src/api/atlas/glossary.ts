@@ -43,7 +43,6 @@ const ListTermsForCategory = (categoryId: string, params?: any, options?: AxiosR
 };
 
 
-
 export const Glossary = {
     List,
     ListCategoryHeadersForGlossary,

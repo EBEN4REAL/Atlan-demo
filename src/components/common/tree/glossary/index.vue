@@ -29,7 +29,10 @@
           <span class="text-sm leading-none text-gray-600">{{ title }}</span>
         </div>
         <template #overlay>
-          <GlossaryContextMenu :type="type" />
+          <GlossaryContextMenu
+            @glossarContextMenuClick="createGlossaryCategoryTerm"
+            :type="type"
+          />
         </template>
       </a-dropdown>
     </template>
@@ -37,7 +40,10 @@
   <a-dropdown :trigger="['contextmenu']">
     <div class="root"></div>
     <template #overlay>
-      <GlossaryContextMenu type="root" />
+      <GlossaryContextMenu
+        type="root"
+        @glossarContextMenuClick="createGlossaryCategoryTerm"
+      />
     </template>
   </a-dropdown>
 </template>
@@ -54,6 +60,7 @@ import useGlossaryTree from "~/composables/glossary/useGlossaryTree";
 import handleTreeExpand from "~/composables/tree/handleTreeExpand";
 
 import GlossaryContextMenu from "./glossaryContextMenu.vue";
+import { MenuInfo } from "ant-design-vue/lib/menu/src/interface";
 
 export default defineComponent({
   components: { Emoji, GlossaryContextMenu },
@@ -66,10 +73,11 @@ export default defineComponent({
       },
     },
   },
+  emits: ["showCreateGlossaryModal"],
   data() {
     return {};
   },
-  setup() {
+  setup(props, { emit }) {
     const { list, totalCount, listCount } = fetchGlossaryList();
     const { selectedKeys, expandedKeys, expandNode, selectNode } =
       handleTreeExpand();
@@ -77,6 +85,10 @@ export default defineComponent({
     const index = new EmojiIndex(data);
 
     const { treeData, onLoadData } = useGlossaryTree(list);
+
+    const createGlossaryCategoryTerm = (type: string) => {
+      emit("showCreateGlossaryModal", type);
+    };
 
     return {
       index,
@@ -89,6 +101,7 @@ export default defineComponent({
       expandedKeys,
       expandNode,
       selectNode,
+      createGlossaryCategoryTerm,
     };
   },
 });

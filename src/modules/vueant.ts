@@ -31,6 +31,7 @@ import {
   Progress,
   Table,
   Upload,
+  List,
   Cascader
 } from "ant-design-vue";
 
@@ -65,6 +66,7 @@ export const install: UserModule = ({ app }) => {
   app.use(Table);
   app.use(Modal);
   app.use(Upload);
+  app.use(List);
   app.use(Cascader);
 
   app.config.globalProperties.$message = message;

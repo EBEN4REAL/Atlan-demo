@@ -92,27 +92,6 @@ export default defineComponent({
       handleChange,
     };
   },
-  methods: {
-    // handleSearch(value: any) {
-    //   if (this.listAsync) {
-    //     clearTimeout(this.debounce);
-    //     this.debounce = setTimeout(() => {
-    //       this.listAsync(value);
-    //     }, 100);
-    //   }
-    // },
-    // handleChange(values: any) {
-    //   if (!this.forceClear) {
-    //     this.$emit("change", values);
-    //   } else {
-    //     this.forceClear = false;
-    //   }
-    // },
-    // clear() {
-    //   this.forceClear = true;
-    //   this.selected = null;
-    // },
-  },
 });
 </script>
       

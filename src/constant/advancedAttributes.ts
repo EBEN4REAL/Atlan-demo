@@ -10,7 +10,7 @@ export const AdvancedAttributeList = [
     {
         value: "__modifiedBy",
         label: "last updated by",
-        type: "user",
+        type: "users",
         children: [],
     },
     {
@@ -28,7 +28,13 @@ export const AdvancedAttributeList = [
     {
         value: "__createdBy",
         label: "created by",
-        type: "user",
+        type: "users",
+        children: [],
+    },
+    {
+        value: "name",
+        label: "name",
+        type: "string",
         children: [],
     },
     {

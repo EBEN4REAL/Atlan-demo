@@ -39,12 +39,8 @@
         </a-menu>
       </div>
     </div>
-<<<<<<< HEAD
-    <div class="w-3/4 p-6">
-      <!-- <input type="file" @change="handleFileUpload" /> -->
-=======
+
     <div class="w-4/5 max-h-screen p-6 overflow-y-auto">
->>>>>>> main
       <router-view></router-view>
     </div>
   </div>

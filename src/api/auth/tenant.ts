@@ -11,11 +11,10 @@ const Get = (params?: any, options?: AxiosRequestConfig) => {
   });
 };
 
-const TestSmtpConfig = ($axios, cancelToken, params) => {
+const TestSmtpConfig = (params) => {
   return useAPI("TEST_SMTP_CONFIG", "POST", {
     cache: false,
     body: {
-      cancelToken,
       ...params,
       validateStatus(status) {
         return status >= 200 && status < 300;
@@ -24,7 +23,7 @@ const TestSmtpConfig = ($axios, cancelToken, params) => {
   });
 };
 
-const Update = (fetcherPost, realm, body) => {
+const Update = (realm, body) => {
   return useAPI("UPDATE_SMTP", "POST", {
     cache: false,
     body,

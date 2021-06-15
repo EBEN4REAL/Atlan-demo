@@ -25,10 +25,10 @@
             :prop="config.id"
             :rules="config.rules"
           >
-            <template v-slot:label>
+            <div>
               {{ config.label }}
               <span v-if="config.required" class="text-red-600">*</span>
-            </template>
+            </div>
 
             <a-switch
               v-if="config.type === 'switch'"
@@ -155,295 +155,261 @@
   </div>
 </template>
 <script lang="ts">
-import { defineComponent } from "vue";
-import { mapState, mapMutations } from "vuex";
-import { UPDATE_SMTP_CONFIG } from "~/constant/store_types/smtp";
+import { defineComponent, reactive, computed, toRefs, ref } from "vue";
+import { useStore } from "~/store";
+// import { mapState, mapMutations } from "vuex";
+import { UPDATE_SMTP_CONFIG } from "~/constant/store_types";
 import { Tenant } from "~/api/auth/tenant";
+// import { useStore } from "~/store";
 
 export default defineComponent({
   name: "smtpForm",
-  setup() {
-    const state = reactive({
-      smtpConfig: [
-        {
-          id: "host",
-          type: "text",
-          label: "Host",
-          required: true,
-          rules: [
-            {
-              required: true,
-              message: "Host is required",
-              trigger: "blur",
-            },
-          ],
-        },
-        {
-          id: "port",
-          type: "text",
-          label: "Port",
-          placeholder: "Defaults to 25",
-        },
-        {
-          id: "fromDisplayName",
-          type: "text",
-          label: "From Display Name",
-        },
-        {
-          id: "from",
-          label: "From Email",
-          required: true,
-          rules: [
-            {
-              required: true,
-              message: "From email address is required.",
-              trigger: "blur",
-            },
-            {
-              type: "email",
-              message: "Please enter a valid email address",
-              trigger: "blur",
-            },
-          ],
-        },
-        {
-          id: "replyToDisplayName",
-          type: "text",
-          label: "Reply To Display Name ",
-        },
-        {
-          id: "replyTo",
-          label: "Reply To",
-          rules: [
-            {
-              type: "email",
-              message: "Please enter a valid email address",
-              trigger: "blur",
-            },
-          ],
-        },
-        {
-          id: "envelopeFrom",
-          label: "Envelope From",
-          helperText: "Email address used for bounces",
-          required: true,
-          rules: [
-            {
-              required: true,
-              message: "Envelope From is required",
-              trigger: "blur",
-            },
-            {
-              type: "email",
-              message: "Please enter a valid email address",
-              trigger: "blur",
-            },
-          ],
-        },
-        {
-          id: "ssl",
-          type: "switch",
-          label: "Enable SSL",
-        },
-        {
-          id: "starttls",
-          type: "switch",
-          label: "Enable Start TLS",
-        },
-        {
-          id: "auth",
-          type: "switch",
-          label: "Enable Authentication",
-        },
-      ],
-      testSmtpConfigState: "", // '' || 'TESTING' || 'VALID' || 'INVALID'
-      testSmtpConfigError: "",
-      saveSmtpConfigState: "", // '' || 'SAVING' || 'SUCCESS' || 'ERROR'
-      passwordReentered: false,
-    });
+  setup(props, context) {
+    console.log(context, "context");
+    const store = useStore();
+    console.log(store.state.tenant);
 
-    this.form = this.$form.createForm(this, { name: "register" });
-  },
-  data() {
-    return {
-      smtpConfig: [
-        {
-          id: "host",
-          type: "text",
-          label: "Host",
-          required: true,
-          rules: [
-            {
-              required: true,
-              message: "Host is required",
-              trigger: "blur",
-            },
-          ],
-        },
-        {
-          id: "port",
-          type: "text",
-          label: "Port",
-          placeholder: "Defaults to 25",
-        },
-        {
-          id: "fromDisplayName",
-          type: "text",
-          label: "From Display Name",
-        },
-        {
-          id: "from",
-          label: "From Email",
-          required: true,
-          rules: [
-            {
-              required: true,
-              message: "From email address is required.",
-              trigger: "blur",
-            },
-            {
-              type: "email",
-              message: "Please enter a valid email address",
-              trigger: "blur",
-            },
-          ],
-        },
-        {
-          id: "replyToDisplayName",
-          type: "text",
-          label: "Reply To Display Name ",
-        },
-        {
-          id: "replyTo",
-          label: "Reply To",
-          rules: [
-            {
-              type: "email",
-              message: "Please enter a valid email address",
-              trigger: "blur",
-            },
-          ],
-        },
-        {
-          id: "envelopeFrom",
-          label: "Envelope From",
-          helperText: "Email address used for bounces",
-          required: true,
-          rules: [
-            {
-              required: true,
-              message: "Envelope From is required",
-              trigger: "blur",
-            },
-            {
-              type: "email",
-              message: "Please enter a valid email address",
-              trigger: "blur",
-            },
-          ],
-        },
-        {
-          id: "ssl",
-          type: "switch",
-          label: "Enable SSL",
-        },
-        {
-          id: "starttls",
-          type: "switch",
-          label: "Enable Start TLS",
-        },
-        {
-          id: "auth",
-          type: "switch",
-          label: "Enable Authentication",
-        },
-      ],
-      testSmtpConfigState: "", // '' || 'TESTING' || 'VALID' || 'INVALID'
-      testSmtpConfigError: "",
-      saveSmtpConfigState: "", // '' || 'SAVING' || 'SUCCESS' || 'ERROR'
-      passwordReentered: false,
-    };
-  },
-  beforeCreate() {
-    this.form = this.$form.createForm(this, { name: "register" });
-  },
-  computed: {
-    ...mapState({
-      smtpServer: (state) => state.tenant.smtpServer,
-      tenant: (state) => state.tenant,
-    }),
-    finalTestSmtpConfigError() {
-      return this.testSmtpConfigError && this.testSmtpConfigError.length < 40
-        ? this.testSmtpConfigError
-        : "SMTP config are incorrect";
-    },
-  },
+    const smtpConfig = ref([
+      {
+        id: "host",
+        type: "text",
+        label: "Host",
+        required: true,
+        rules: [
+          {
+            required: true,
+            message: "Host is required",
+            trigger: "blur",
+          },
+        ],
+      },
+      {
+        id: "port",
+        type: "text",
+        label: "Port",
+        placeholder: "Defaults to 25",
+      },
+      {
+        id: "fromDisplayName",
+        type: "text",
+        label: "From Display Name",
+      },
+      {
+        id: "from",
+        label: "From Email",
+        required: true,
+        rules: [
+          {
+            required: true,
+            message: "From email address is required.",
+            trigger: "blur",
+          },
+          {
+            type: "email",
+            message: "Please enter a valid email address",
+            trigger: "blur",
+          },
+        ],
+      },
+      {
+        id: "replyToDisplayName",
+        type: "text",
+        label: "Reply To Display Name ",
+      },
+      {
+        id: "replyTo",
+        label: "Reply To",
+        rules: [
+          {
+            type: "email",
+            message: "Please enter a valid email address",
+            trigger: "blur",
+          },
+        ],
+      },
+      {
+        id: "envelopeFrom",
+        label: "Envelope From",
+        helperText: "Email address used for bounces",
+        required: true,
+        rules: [
+          {
+            required: true,
+            message: "Envelope From is required",
+            trigger: "blur",
+          },
+          {
+            type: "email",
+            message: "Please enter a valid email address",
+            trigger: "blur",
+          },
+        ],
+      },
+      {
+        id: "ssl",
+        type: "switch",
+        label: "Enable SSL",
+      },
+      {
+        id: "starttls",
+        type: "switch",
+        label: "Enable Start TLS",
+      },
+      {
+        id: "auth",
+        type: "switch",
+        label: "Enable Authentication",
+      },
+    ]);
+    const testSmtpConfigState = ref("");
+    const testSmtpConfigError = ref("");
+    const saveSmtpConfigState = ref("");
+    const passwordReentered = ref(false);
 
-  methods: {
-    ...mapMutations([UPDATE_SMTP_CONFIG]),
-    updateSmtpProperty(key, value) {
-      if (key === "password") this.passwordReentered = true;
-      this.UPDATE_SMTP_CONFIG({
-        ...this.smtpServer,
+    const smtpServer = computed(() => store.state.tenant.data.smtpServer);
+    const tenant = computed(() => store.state.tenant.data);
+    const finalTestSmtpConfigError = "SMTP config are incorrect";
+
+    const updateSmtpProperty = (key, value) => {
+      if (key === "password") passwordReentered.value = true;
+      console.log(key, value);
+      const payload = {
+        ...smtpServer.value,
         [key]: value,
-      });
-    },
-    async testSmtpConfig() {
-      this.cancelToken = this.$axios.CancelToken.source();
-      this.testSmtpConfigState = "TESTING";
-      if (!this.passwordReentered) {
-        this.testSmtpConfigState = "INVALID";
-        this.testSmtpConfigError = "Please re-enter password to test";
+      };
+      store.commit(UPDATE_SMTP_CONFIG, payload);
+    };
+    const testSmtpConfig = async () => {
+      testSmtpConfigState.value = "TESTING";
+      if (!passwordReentered.value) {
+        testSmtpConfigState.value = "INVALID";
+        testSmtpConfigError.value = "Please re-enter password to test";
         return;
       }
       try {
         const params = {
-          host: this.smtpServer.host,
-          port: parseInt(this.smtpServer.port, 10),
-          username: this.smtpServer.user,
-          password: this.smtpServer.password,
-          sslEnabled: this.smtpServer.ssl === "true",
-          tlsEnabled: this.smtpServer.startTls === "true",
+          host: smtpServer.host,
+          port: parseInt(smtpServer.port, 10),
+          username: smtpServer.user,
+          password: smtpServer.password,
+          sslEnabled: smtpServer.ssl === "true",
+          tlsEnabled: smtpServer.startTls === "true",
         };
-        await Tenant.TestSmtpConfig(this.$axios, this.cancelToken, params);
-        this.testSmtpConfigState = "VALID";
+        const data = await Tenant.TestSmtpConfig(params);
+        console.log(data, "dd");
+
+        testSmtpConfigState.value = "VALID";
       } catch (error) {
-        this.testSmtpConfigState = "INVALID";
+        testSmtpConfigState.value = "INVALID";
         if (
           error &&
           error.response &&
           error.response.data &&
           error.response.data.info
         ) {
-          this.testSmtpConfigError = `Error - ${error.response.data.info}`;
+          testSmtpConfigError.value = `Error - ${error.response.data.info}`;
         } else {
-          this.testSmtpConfigError =
+          testSmtpConfigError.value =
             "Unexpected error occured, please try again!";
         }
       }
-    },
-    async saveSmtpConfig(e) {
-      e.preventDefault();
-      this.$refs.form.validate(async (valid) => {
-        if (valid) {
-          this.saveSmtpConfigState = "SAVING";
-          this.cancelToken = this.$axios.CancelToken.source();
-          try {
-            await Tenant.Update(this.$axios, this.tenant.realm, {
-              smtpServer: this.smtpServer,
-            });
-            this.saveSmtpConfigState = "SUCCESS";
-          } catch (error) {
-            console.log(error);
-            this.saveSmtpConfigState = "ERROR";
-          }
-          setTimeout(() => {
-            this.saveSmtpConfigState = "";
-          }, 4000);
-        }
-      });
-    },
+    };
+
+    const saveSmtpConfig = () => {};
+
+    return {
+      smtpConfig,
+      testSmtpConfigState,
+      testSmtpConfigError,
+      saveSmtpConfigState,
+      passwordReentered,
+      updateSmtpProperty,
+      testSmtpConfig,
+      saveSmtpConfig,
+      smtpServer,
+      tenant,
+      finalTestSmtpConfigError,
+    };
   },
+  // beforeCreate() {
+  //   this.form = this.$form.createForm(this, { name: "register" });
+  // },
+  // computed: {
+  //   ...mapState({
+  //     smtpServer: (state) => state.tenant.smtpServer,
+  //     tenant: (state) => state.tenant,
+  //   }),
+  //   finalTestSmtpConfigError() {
+  //     return this.testSmtpConfigError && this.testSmtpConfigError.length < 40
+  //       ? this.testSmtpConfigError
+  //       : "SMTP config are incorrect";
+  //   },
+  // },
+
+  // methods: {
+  //   ...mapMutations([UPDATE_SMTP_CONFIG]),
+  //   updateSmtpProperty(key, value) {
+  //     if (key === "password") this.passwordReentered = true;
+  //     this.UPDATE_SMTP_CONFIG({
+  //       ...this.smtpServer,
+  //       [key]: value,
+  //     });
+  //   },
+  //   async testSmtpConfig() {
+  //     this.testSmtpConfigState = "TESTING";
+  //     if (!this.passwordReentered) {
+  //       this.testSmtpConfigState = "INVALID";
+  //       this.testSmtpConfigError = "Please re-enter password to test";
+  //       return;
+  //     }
+  //     try {
+  //       const params = {
+  //         host: this.smtpServer.host,
+  //         port: parseInt(this.smtpServer.port, 10),
+  //         username: this.smtpServer.user,
+  //         password: this.smtpServer.password,
+  //         sslEnabled: this.smtpServer.ssl === "true",
+  //         tlsEnabled: this.smtpServer.startTls === "true",
+  //       };
+  //       await Tenant.TestSmtpConfig(this.$axios, params);
+  //       this.testSmtpConfigState = "VALID";
+  //     } catch (error) {
+  //       this.testSmtpConfigState = "INVALID";
+  //       if (
+  //         error &&
+  //         error.response &&
+  //         error.response.data &&
+  //         error.response.data.info
+  //       ) {
+  //         this.testSmtpConfigError = `Error - ${error.response.data.info}`;
+  //       } else {
+  //         this.testSmtpConfigError =
+  //           "Unexpected error occured, please try again!";
+  //       }
+  //     }
+  //   },
+  //   async saveSmtpConfig(e) {
+  //     e.preventDefault();
+  //     this.$refs.form.validate(async (valid) => {
+  //       if (valid) {
+  //         this.saveSmtpConfigState = "SAVING";
+  //         this.cancelToken = this.$axios.CancelToken.source();
+  //         try {
+  //           await Tenant.Update(this.$axios, this.tenant.realm, {
+  //             smtpServer: this.smtpServer,
+  //           });
+  //           this.saveSmtpConfigState = "SUCCESS";
+  //         } catch (error) {
+  //           console.log(error);
+  //           this.saveSmtpConfigState = "ERROR";
+  //         }
+  //         setTimeout(() => {
+  //           this.saveSmtpConfigState = "";
+  //         }, 4000);
+  //       }
+  //     });
+  //   },
+  // },
 });
 </script>
 <style lang="less" module>

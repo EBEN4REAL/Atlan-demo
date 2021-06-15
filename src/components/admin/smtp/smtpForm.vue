@@ -16,7 +16,7 @@
           :labelCol="{ span: 6 }"
           :wrapperCol="{ span: 14, offset: 4 }"
           :model="smtpServer"
-          @submit="saveSmtpConfig"
+          @submit.prevent="saveSmtpConfig"
         >
           <a-form-model-item
             v-for="config in smtpConfig"
@@ -268,7 +268,12 @@ export default defineComponent({
 
     const smtpServer = computed(() => store.state.tenant.data.smtpServer);
     const tenant = computed(() => store.state.tenant.data);
-    const finalTestSmtpConfigError = "SMTP config are incorrect";
+
+    const finalTestSmtpConfigError = computed(() => {
+      return testSmtpConfigError.value && testSmtpConfigError.value.length < 40
+        ? testSmtpConfigError.value
+        : "SMTP config are incorrect";
+    });
 
     const updateSmtpProperty = (key, value) => {
       if (key === "password") passwordReentered.value = true;
@@ -279,6 +284,7 @@ export default defineComponent({
       };
       store.commit(UPDATE_SMTP_CONFIG, payload);
     };
+
     const testSmtpConfig = async () => {
       testSmtpConfigState.value = "TESTING";
       if (!passwordReentered.value) {
@@ -286,36 +292,53 @@ export default defineComponent({
         testSmtpConfigError.value = "Please re-enter password to test";
         return;
       }
-      try {
-        const params = {
-          host: smtpServer.host,
-          port: parseInt(smtpServer.port, 10),
-          username: smtpServer.user,
-          password: smtpServer.password,
-          sslEnabled: smtpServer.ssl === "true",
-          tlsEnabled: smtpServer.startTls === "true",
-        };
-        const data = await Tenant.TestSmtpConfig(params);
-        console.log(data, "dd");
-
-        testSmtpConfigState.value = "VALID";
-      } catch (error) {
+      const params = {
+        host: smtpServer.value.host,
+        port: parseInt(smtpServer.value.port, 10),
+        username: smtpServer.value.user,
+        password: smtpServer.value.password,
+        sslEnabled: smtpServer.value.ssl === "true",
+        tlsEnabled: smtpServer.value.startTls === "true",
+      };
+      console.log(params);
+      const { data, error } = await Tenant.TestSmtpConfig(params);
+      if (!data.value && error.value) {
         testSmtpConfigState.value = "INVALID";
         if (
           error &&
-          error.response &&
-          error.response.data &&
-          error.response.data.info
+          error.value.response &&
+          error.value.response.data &&
+          error.value.response.data.error
         ) {
-          testSmtpConfigError.value = `Error - ${error.response.data.info}`;
+          testSmtpConfigError.value = `Error - ${error.response.data.error}`;
         } else {
           testSmtpConfigError.value =
             "Unexpected error occured, please try again!";
         }
+      } else {
+        testSmtpConfigState.value = "VALID";
       }
+      console.log(data, error, error.value, "dd");
     };
 
-    const saveSmtpConfig = () => {};
+    const saveSmtpConfig = async () => {
+      console.log("hey");
+      // context.refs.form.validate(async (valid) => {
+      //   if (valid) {
+      //     saveSmtpConfigState.value = "SAVING";
+      //     // await Tenant.Update(
+      //     //   {
+      //     //     cache:false,
+      //     //   body:{smtpServer: smtpServer.value},
+      //     // });
+      //     saveSmtpConfigState.value = "SUCCESS";
+      //   }
+      //   setTimeout(() => {
+      //     saveSmtpConfigState.value = "";
+      //   }, 4000);
+      // });
+    };
+    console.log(smtpConfig, "smtpconfig");
 
     return {
       smtpConfig,

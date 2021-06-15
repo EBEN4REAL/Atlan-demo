@@ -41,11 +41,10 @@ export const mutations: MutationTree<State> = {
     state.error = payload.error;
   },
   [UPDATE_SMTP_CONFIG]: (state: State, payload) => {
-    console.log(state.data);
-    // state.data = {
-    //   ...state.data,
-    //   smtpServer: payload,
-    // };
+    state.data = {
+      ...state.data,
+      smtpServer: payload,
+    };
   },
 };
 

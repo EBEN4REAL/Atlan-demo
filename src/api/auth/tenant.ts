@@ -5,27 +5,23 @@ import { useAPI } from "~/api/useAPI";
 const serviceAlias = "auth";
 
 const Get = (params?: any, options?: AxiosRequestConfig) => {
-  return getAxiosClient().get((serviceAlias, ""), {
+  return getAxiosClient().get(getAPIPath(serviceAlias, ""), {
     params,
     ...options,
   });
 };
 
-const TestSmtpConfig = (params) => {
+const TestSmtpConfig = (body) => {
+  console.log(body, "test");
   return useAPI("TEST_SMTP_CONFIG", "POST", {
     cache: false,
-    body: {
-      ...params,
-      validateStatus(status) {
-        return status >= 200 && status < 300;
-      },
-    },
+    body,
   });
 };
 
-const Update = (realm, body) => {
+const Update = ({ cache, body }) => {
   return useAPI("UPDATE_SMTP", "POST", {
-    cache: false,
+    cache,
     body,
   });
 };

@@ -10,19 +10,25 @@ export default function updateOwners(item: any, type: Ref<string>) {
     const isCompleted = ref(false);
     const body: { [key: string]: any } = ref({});
     const localOwnerUsers: Ref<string[]> = ref([]);
+    localOwnerUsers.value = item?.attributes?.ownerUsers?.split(",") || [];
+
     const localOwnerGroups: Ref<string[]> = ref([]);
+    localOwnerGroups.value = item?.attributes?.ownerGroups?.split(",") || [];
 
     const getBody = () => {
 
-        let val = {};
-        if (type.value == "user") {
-            val = {
-                ownerUsers: localOwnerUsers.value.join(",")
-            }
-        } else if (type.value == "group") {
-            val = {
-                ownerGroups: localOwnerGroups.value.join(",")
-            }
+        let val = { ownerUsers: "", ownerGroups: "" };
+
+        if (localOwnerUsers.value.length > 0) {
+            val.ownerUsers = localOwnerUsers.value.join(",");
+        } else {
+            val.ownerUsers = "";
+        }
+
+        if (localOwnerUsers.value.length > 0) {
+            val.ownerGroups = localOwnerGroups.value.join(",");
+        } else {
+            val.ownerGroups = "";
         }
         return {
             entities: [
@@ -42,15 +48,7 @@ export default function updateOwners(item: any, type: Ref<string>) {
 
     const ownerUsers: WritableComputedRef<string[]> = computed({
         get: () => {
-
-            if (localOwnerUsers.value.length > 0) {
-                return localOwnerUsers.value;
-            } else {
-                return (
-                    item?.attributes?.ownerUsers?.split(",") || []
-                );
-            }
-
+            return localOwnerUsers.value;
         },
         set: (newValue: string[]) => {
             localOwnerUsers.value = newValue;
@@ -60,15 +58,7 @@ export default function updateOwners(item: any, type: Ref<string>) {
 
     const ownerGroups: WritableComputedRef<string[]> = computed({
         get: () => {
-
-            if (localOwnerGroups.value.length > 0) {
-                return localOwnerGroups.value;
-            } else {
-                return (
-                    item?.attributes?.ownerGroups?.split(",") || []
-                );
-            }
-
+            return localOwnerGroups.value;
         },
         set: (newValue: string[]) => {
             localOwnerGroups.value = newValue;
@@ -81,16 +71,23 @@ export default function updateOwners(item: any, type: Ref<string>) {
     watch(state, () => {
         if (!error.value) {
             isCompleted.value = false;
-            if (type.value == "user") {
+            if (localOwnerUsers?.value?.length > 0) {
                 item.attributes.ownerUsers = localOwnerUsers.value?.join(",");
+            } else {
+                item.attributes.ownerUsers = null;
             }
-            if (type.value == "group") {
+            if (localOwnerGroups?.value?.length > 0) {
                 item.attributes.ownerGroups = localOwnerGroups.value?.join(",");
+            } else {
+                item.attributes.ownerGroups = null;
             }
-
             item.attributes.__modifiedBy = username;
             item.attributes.__modificationTimestamp = Date.now();
+
+            console.log(item);
         }
+
+
     });
 
 

@@ -29,10 +29,10 @@
     </template>
     <div class="px-2 py-1 rounded-lg hover:bg-white hover:border">
       <p class="mb-0 text-sm tracking-wide text-gray-400">Description</p>
-      <p class="mb-0 text-dark-400" v-if="description">
+      <p class="mb-0 text-gray-900" v-if="description">
         {{ description }}
       </p>
-      <p class="mb-0 text-dark-400" v-else>No description available</p>
+      <p class="mb-0 text-gray-400" v-else>No description available</p>
     </div>
   </a-popover>
 </template>

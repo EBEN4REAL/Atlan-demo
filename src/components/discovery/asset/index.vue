@@ -44,7 +44,7 @@
 
     <AssetList :list="list.value" @preview="handlePreview"> </AssetList>
     <div
-      class="flex items-center px-6 py-2 bg-sidebar"
+      class="flex items-center px-6 py-2 border-t bg-sidebar"
       style="min-height: 17px"
     >
       <div

@@ -112,13 +112,19 @@
             </div>
           </template>
         </div>
+        <p
+          class="mb-0 text-gray-500"
+          v-if="!item?.attributes?.ownerUsers && !item?.attributes?.ownerGroups"
+        >
+          No owners assigned
+        </p>
       </div>
     </a-popover>
   </div>
 </template>
               
 <script lang="ts">
-import { defineComponent, nextTick, ref, watch } from "vue";
+import { defineComponent, ref } from "vue";
 import StatusBadge from "@common/badge/status/index.vue";
 import AssetMixin from "~/mixins/asset";
 
@@ -180,7 +186,7 @@ export default defineComponent({
     };
 
     let searchText = ref("");
-    const handleOwnerTypeChange = (e) => {
+    const handleOwnerTypeChange = (e: any) => {
       searchText.value = "";
       handleSearch(searchText.value);
     };

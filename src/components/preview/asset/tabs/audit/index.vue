@@ -5,7 +5,7 @@
 </template>
           
 <script lang="ts">
-import { toRefs } from "vue";
+import { watch } from "vue";
 import { defineComponent } from "vue";
 
 import useAssetAudit from "~/composables/asset/useAssetAudit";
@@ -19,9 +19,12 @@ export default defineComponent({
     },
   },
   setup(props: any) {
-    const { guid } = toRefs(props);
-    const { audits, error, isLoading } = useAssetAudit(guid.value);
-    return { audits, guid, error, isLoading };
+    const { audits, error, fetchAudits, isLoading } = useAssetAudit(props.guid);
+
+watch(() => props.guid, (newValue) => {
+      fetchAudits(newValue)
+})
+    return { audits, error, isLoading };
   },
 });
 </script>

@@ -1,7 +1,6 @@
 <template>
   <a-form :model="credential" layout="vertical" ref="form">
     <a-form-item
-      v-if="!isEdit"
       label="Connection name"
       name="name"
       :has-feedback="true"
@@ -274,11 +273,12 @@ export default defineComponent({
       testingAuthentication: false,
       credential: {
         name: "",
-        host: "jv22371.ap-south-1.aws.snowflakecomputing.com",
+        host: "",
+        // host: "jv22371.ap-south-1.aws.snowflakecomputing.com",
         port: "",
         conn_type: this.integrationName(this.item),
-        login: "atlanadmin",
-        password: "Atlan#2020",
+        login: "",
+        password: "",
         auth_type: this.authTypes(this.item)[0]?.id,
         extra: {},
         ...this.jdbcTemplate(this.item),
@@ -358,24 +358,6 @@ export default defineComponent({
         return false;
       }
     },
-    // async handleDuplicationCheck() {
-    //   try {
-    //     this.testCredStatus = "info";
-    //     this.testCredMessage = "Checking authentication";
-    //     await CredentialService.TestCredential(this.credential);
-    //     this.testCredStatus = "success";
-    //     this.testCredMessage = "Authentication is successful";
-    //   } catch (err) {
-    //     this.testCredStatus = "error";
-    //     this.testCredMessage =
-    //       "Authentication - something went wrong. Please try again.";
-    //     // if (err.response?.data) {
-    //     //   this.testCredMessage = err.response.data.info;
-    //     // } else {
-    //     //   this.testCredMessage = "Something went wrong. Please try again.";
-    //     // }
-    //   }
-    // },
     async handleTest() {
       let resp = await this.handleNetworkTest();
       if (resp) {
@@ -398,7 +380,6 @@ export default defineComponent({
   mounted() {
     if (this.isEdit) {
       this.credential = {
-        ...this.credential,
         ...this.defaultCredential,
       };
     }

@@ -10,6 +10,7 @@ export const ConnectionAttributes = [
   "port",
   "ownerUsers",
   "ownerGroups",
+  "displayName",
   "integrationName",
   "integrationCredentialQualifiedName",
 ];

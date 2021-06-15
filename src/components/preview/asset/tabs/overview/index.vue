@@ -2,10 +2,12 @@
   <a-collapse
     :bordered="false"
     :class="$style.filter"
+    defaultActiveKey="details"
     :accordion="false"
+    activeKey="details"
     class="bg-sidebar"
   >
-    <a-collapse-panel key="details" class="bg-sidebar">
+    <a-collapse-panel key="details" class="bg-sidebar forceRender">
       <template #header>
         <div class="flex items-center justify-between">
           <div>Details</div>

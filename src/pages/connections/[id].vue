@@ -10,7 +10,7 @@
             :src="logo(item?.attributes?.integrationName)"
             class="w-auto h-5 mr-2"
           />
-          <div class="text-gray-900">{{ item?.attributes?.name }}</div>
+          <div class="text-gray-900">{{ item?.attributes?.displayName }}</div>
         </div>
       </div>
       <div>

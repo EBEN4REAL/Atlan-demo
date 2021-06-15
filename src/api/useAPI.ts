@@ -1,4 +1,4 @@
-import { reactive, toRefs, UnwrapRef } from "vue";
+import { ref } from "vue";
 import { AxiosRequestConfig } from "axios";
 import useSWRV, { IConfig } from "swrv";
 
@@ -28,7 +28,6 @@ export const useAPI = <T>(key: string, method: 'GET' | 'POST', { cache = true, p
 
     if (cache) {
     // If using cache, make a generic swrv request
-
         const { data, error, mutate } = useSWRV<T>(key, () => {
             // Choose the fetcher function based on the method type
             switch (method) {
@@ -43,35 +42,33 @@ export const useAPI = <T>(key: string, method: 'GET' | 'POST', { cache = true, p
             }
         }, options);
 
-        const isLoading = !data && !error;
+        const isLoading = ref(!data && !error);
         return { data, error, isLoading, mutate };
     } else {
         // If not using cache, use Axios
         
-        const response = reactive({
-            data: null as T | null,
-            error: null as any | null,
-            isLoading: false
-        });
+        const data = ref<T>()
+        const error = ref()
+        const isLoading = ref<boolean>(false)
 
         switch (method) {
             case 'GET':
                 getAxiosClient().get<T>(url, { params, ...options })
-                    .then((data) => {
-                        response.data = data as UnwrapRef<T>
+                    .then((resp) => {
+                        data.value = resp  as unknown as T
                     })
-                    .catch((error) => {
-                        response.error = error
+                    .catch((e) => {
+                        error.value = e
                     })
                 break;
 
             case 'POST':
                 getAxiosClient().post<T>(url, body, { ...options })
-                    .then((data) => {
-                        response.data = data as UnwrapRef<T>
+                    .then((resp) => {
+                        data.value = resp  as unknown as T
                     })
-                    .catch((error) => {
-                        response.error = error
+                    .catch((e) => {
+                        error.value = e
                     })
                 break;
 
@@ -79,8 +76,9 @@ export const useAPI = <T>(key: string, method: 'GET' | 'POST', { cache = true, p
                 break;
         }
 
-        response.isLoading = !response.data && !response.error
-        return { ...toRefs(response) };
+        isLoading.value = !data.value && !error.value
+
+        return { data, error, isLoading };
     }
 }
 

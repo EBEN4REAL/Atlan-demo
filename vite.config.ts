@@ -75,5 +75,14 @@ export default defineConfig(({ mode }) => {
       include: ["vue", "vue-router", "@vueuse/core",],
       exclude: []
     },
+    server: {
+      proxy: {
+        '/api': {
+          target: 'https://bots.atlan.com',
+          changeOrigin: true,
+          ws: false
+        }
+      }
+    }
   };
 });

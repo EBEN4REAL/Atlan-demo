@@ -31,7 +31,8 @@ import {
   Progress,
   Table,
   Upload,
-  List
+  List,
+  Cascader
 } from "ant-design-vue";
 
 // https://github.com/antfu/vite-plugin-pwa#automatic-reload-when-new-content-available
@@ -66,6 +67,7 @@ export const install: UserModule = ({ app }) => {
   app.use(Modal);
   app.use(Upload);
   app.use(List);
+  app.use(Cascader);
 
   app.config.globalProperties.$message = message;
   app.config.globalProperties.$error = Modal.error;

@@ -1,50 +1,59 @@
 <template>
-  <a-popover placement="right">
-    <template #content>
-      <div class="flex items-center">
-        <div>
-          <fa :class="iconClass" :icon="icon" />
-        </div>
-        <p class="mb-0">
-          {{ label }}
-        </p>
+  <div :key="statusId">
+    <div class="flex items-center align-middle">
+      <div class="mr-1">
+        <fa :class="iconClass" :icon="icon" class="pushtop" />
       </div>
-      <!-- <p class="text-xs mb-0 line-height-1 text-gray-500">
-        {{ updatedAtRelative }} ago by
-        {{ updatedBy }}
-      </p> -->
-      <!-- <div v-if="message">
-        <a-divider class="mt-2 mb-1" />
-        <p class="mb-0 text-gray-500 text-xs">Message</p>
-        <p class="mb-0 text-xs">
-          {{ message }}
-        </p>
-      </div> -->
-    </template>
-    <div class="mb-0 flex items-center">
-      <fa :class="iconClass" :icon="icon" class="top-0" />
-      <span class="text-gray-500 tracking-wider ml-1" v-if="showLabel">
-        {{ label }}</span
-      >
+      <p class="mb-0 text-gray-900" v-if="showLabel">
+        {{ label }}
+      </p>
     </div>
-  </a-popover>
+
+    <p
+      class="mt-1 mb-0 text-xs leading-none text-gray-500"
+      v-if="showLabel && statusId"
+    >
+      {{ dayjs().from(statusUpdateAt, true) }}
+      ago by
+      {{ statusUpdateBy }}
+    </p>
+  </div>
 </template>
 
 
 
 <script lang="ts">
+import dayjs from "dayjs";
 import { defineComponent } from "vue";
 import { List } from "~/constant/status";
-import { Checkbox, CheckboxArray } from "~/types";
+import { Checkbox } from "~/types";
 
 export default defineComponent({
   props: {
-    status: {
+    statusId: {
       type: String,
       required: false,
       default() {
         return "";
       },
+    },
+    statusMessage: {
+      type: String,
+      required: false,
+      default() {
+        return "";
+      },
+    },
+    statusUpdateBy: {
+      type: String,
+      required: false,
+      default() {
+        return "";
+      },
+    },
+    statusUpdateAt: {
+      type: Date,
+      required: false,
     },
     showLabel: {
       type: Boolean,
@@ -63,6 +72,7 @@ export default defineComponent({
   },
   data() {
     return {
+      dayjs,
       List,
     };
   },
@@ -70,7 +80,7 @@ export default defineComponent({
   mounted() {},
   computed: {
     statusObject(): Checkbox {
-      let found = List.find((item) => item.id === this.status);
+      let found = List.find((item) => item.id === this.statusId);
       if (this.showNoStatus && !found) {
         found = List.find((item) => item.id === "is_null");
       }

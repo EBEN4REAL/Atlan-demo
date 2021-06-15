@@ -8,6 +8,9 @@
     :class="$style.searchbox"
     @input="handleInputChange"
   >
+    <template #suffix>
+      <a-spin size="small" v-if="loading" class="ml-1"></a-spin>
+    </template>
   </a-input>
 </template>
   
@@ -27,6 +30,13 @@ export default defineComponent({
       required: false,
       default() {
         return "Search....";
+      },
+    },
+    loading: {
+      type: Boolean,
+      required: false,
+      default() {
+        return true;
       },
     },
   },

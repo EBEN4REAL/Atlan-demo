@@ -10,6 +10,7 @@ export const ConnectionAttributes = [
   "port",
   "ownerUsers",
   "ownerGroups",
+  "displayName",
   "integrationName",
   "integrationCredentialQualifiedName",
 ];
@@ -107,4 +108,6 @@ export const BasicSearchAttributes = [
   "sourceViewCount",
   "integrationCredentialQualifiedName",
   "connectionName",
+  "ownerUsers",
+  "ownerGroups",
 ];

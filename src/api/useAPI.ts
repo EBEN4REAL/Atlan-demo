@@ -1,4 +1,4 @@
-import { reactive, toRefs, UnwrapRef } from "vue";
+import { ref } from "vue";
 import { AxiosRequestConfig } from "axios";
 import useSWRV, { IConfig } from "swrv";
 
@@ -28,11 +28,9 @@ export const useAPI = <T>(
   { cache = true, params, body, pathVariables, options }: useGetAPIParams
 ) => {
   const url = keyMaps[key]({ ...pathVariables });
-  console.log(url, "hello", method);
 
   if (cache) {
     // If using cache, make a generic swrv request
-
     const { data, error, mutate } = useSWRV<T>(
       key,
       () => {
@@ -51,40 +49,35 @@ export const useAPI = <T>(
       options
     );
 
-    const isLoading = !data && !error;
+    const isLoading = ref(!data && !error);
     return { data, error, isLoading, mutate };
   } else {
     // If not using cache, use Axios
 
-    const response = reactive({
-      data: null as T | null,
-      error: null as any | null,
-      isLoading: false,
-    });
+    const data = ref<T>();
+    const error = ref();
+    const isLoading = ref<boolean>(false);
 
     switch (method) {
-      case "GET": {
-        console.log("inside get");
+      case "GET":
         getAxiosClient()
           .get<T>(url, { params, ...options })
-          .then((data) => {
-            response.data = data as UnwrapRef<T>;
+          .then((resp) => {
+            data.value = (resp as unknown) as T;
           })
-          .catch((error) => {
-            response.error = error;
+          .catch((e) => {
+            error.value = e;
           });
         break;
-      }
 
       case "POST":
         getAxiosClient()
           .post<T>(url, body, { ...options })
-          .then((data) => {
-            response.data = data as UnwrapRef<T>;
+          .then((resp) => {
+            data.value = (resp as unknown) as T;
           })
-          .catch((error) => {
-            console.log(error);
-            response.error = error;
+          .catch((e) => {
+            error.value = e;
           });
         break;
 
@@ -92,7 +85,8 @@ export const useAPI = <T>(
         break;
     }
 
-    response.isLoading = !response.data && !response.error;
-    return { ...toRefs(response) };
+    isLoading.value = !data.value && !error.value;
+
+    return { data, error, isLoading };
   }
 };

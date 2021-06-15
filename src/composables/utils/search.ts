@@ -17,7 +17,6 @@ export default function fetchSearchList(dependent: any, body: Ref<Components.Sch
             return {}
         }
     }, {
-        cache: new LocalStorageCache(),
         revalidateOnFocus: false,
         dedupingInterval: 1,
     });

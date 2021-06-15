@@ -1,5 +1,5 @@
 import { UserModule } from "~/types/vitessg";
-import { getEnv, getBasePath } from "~/modules/__env";
+import { getEnv } from "~/modules/__env";
 import axios, { AxiosInstance, AxiosRequestConfig } from "axios";
 import VueAxios from "vue-axios";
 import { cacheAdapterEnhancer } from "axios-extensions";
@@ -70,7 +70,7 @@ export const install: UserModule = ({ app }) => {
     cacheFlag: "cache",
   };
   axiosClient = axios.create({
-    baseURL: `${getBasePath()}/api`,
+    baseURL: `/api`,
     timeout: getEnv().DEFAULT_REQUEST_TIMEOUT,
     headers: {
       "Content-Type": "application/json",

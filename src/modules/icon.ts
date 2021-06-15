@@ -52,10 +52,15 @@ import { faProjectDiagram } from "@fortawesome/pro-light-svg-icons/faProjectDiag
 import { faBolt } from "@fortawesome/pro-light-svg-icons/faBolt";
 import { faPen } from "@fortawesome/pro-light-svg-icons/faPen";
 import { faArrowCircleRight } from "@fortawesome/pro-light-svg-icons/faArrowCircleRight";
+
 import { faTrashAlt } from "@fortawesome/pro-light-svg-icons/faTrashAlt";
+import { faExclamationCircle } from "@fortawesome/pro-light-svg-icons/faExclamationCircle";
 import { faTabletAlt } from "@fortawesome/pro-light-svg-icons/faTabletAlt";
 import { faArrowDown } from "@fortawesome/pro-light-svg-icons/faArrowDown";
-import { faExclamationCircle } from "@fortawesome/pro-light-svg-icons/faExclamationCircle";
+
+import { faUserFriends } from "@fortawesome/pro-light-svg-icons/faUserFriends";
+
+import { faCopy } from "@fortawesome/pro-light-svg-icons/faCopy";
 
 library.add(
   faPlus,
@@ -111,7 +116,9 @@ library.add(
   faArrowCircleRight,
   faTabletAlt,
   faTrashAlt,
-  faArrowDown
+  faArrowDown,
+  faUserFriends,
+  faCopy
 );
 
 // Solid Icons

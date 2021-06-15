@@ -1,3 +1,4 @@
+import mitt from 'mitt';
 import { computed, ComputedRef, Ref, ref, watch } from 'vue';
 import { BaseAttributes, BasicSearchAttributes } from '~/constant/projection';
 import { SearchParameters } from '~/types/atlas/attributes';
@@ -18,9 +19,6 @@ export default function fetchAssetDiscover(dependent: any, body: Ref<SearchParam
         mutate } = fetchSearchList(dependent, body)
 
     watch(data, (newValue, oldValue) => {
-
-        console.log("changed");
-        console.log(newValue);
         if (body?.value?.offset > 0) {
             localList.value.concat(data?.value?.entities);
         } else {
@@ -28,6 +26,8 @@ export default function fetchAssetDiscover(dependent: any, body: Ref<SearchParam
         }
         console.log(localList);
     });
+
+
 
     const list: ComputedRef<any> = computed(() => {
         return localList;

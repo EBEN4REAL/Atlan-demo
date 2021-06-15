@@ -52,7 +52,7 @@ export default function fetchConnectionList(dependent: any, query?: string, filt
             }).map((item) => {
                 return {
                     key: item.guid,
-                    title: item.attributes.name,
+                    title: item.attributes.displayName,
                     type: "connection"
                 };
             });

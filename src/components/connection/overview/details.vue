@@ -6,9 +6,11 @@
       okText="Update"
       :width="600"
       :maskClosable="false"
+      @ok="handleUpdate"
       :closable="false"
     >
       <Credential
+        ref="credentialView"
         :item="bot"
         :isEdit="true"
         :defaultCredential="defaultCredential"
@@ -32,9 +34,9 @@
         >
       </div>
 
-      <p class="mt-3 mb-0 text-sm text-gray-400">Name</p>
+      <p class="mt-3 mb-0 text-sm text-gray-400">Display Name</p>
       <div class="flex items-center align-middle">
-        <div class="text-gray-900">{{ item?.attributes?.name }}</div>
+        <div class="text-gray-900">{{ item?.attributes?.displayName }}</div>
       </div>
 
       <div class="flex flex-col mt-3">
@@ -48,10 +50,16 @@
             </p>
             <div class="text-gray-900">{{ item?.attributes?.host }}</div>
           </div>
-          <div class="">
+          <div
+            class=""
+            v-if="
+              bot?.attributes?.config?.attributes?.credential?.attributes.port
+                .attributes.isVisible
+            "
+          >
             <p class="mb-0 text-sm text-gray-400">
               {{
-                bot?.attributes?.config?.attributes?.credential?.attributes.host
+                bot?.attributes?.config?.attributes?.credential?.attributes.port
                   .attributes.label
               }}
             </p>
@@ -119,7 +127,7 @@
 <script lang="ts">
 import dayjs from "dayjs";
 // import { ValidateErrorEntity } from "ant-design-vue/es/form/interface";
-import { defineComponent, PropType } from "vue";
+import { defineComponent, PropType, ref } from "vue";
 import { ConnectionType } from "~/types/atlas/connection";
 import SourceMixin from "~/mixins/source";
 import { BotsType } from "~/types/atlas/bots";
@@ -156,11 +164,42 @@ export default defineComponent({
   data() {
     return {
       dayjs,
-      visible: false,
-      defaultCredential: {},
     };
   },
   mounted() {},
+  setup(props) {
+    const visible = ref(false);
+    const defaultCredential = ref({});
+
+    const credentialView = ref();
+
+    const handleUpdate = async () => {
+      console.log("update");
+      console.log(await credentialView.value.getCredential());
+    };
+
+    const handleEdit = () => {
+      defaultCredential.value = {
+        name: props.item?.attributes?.displayName,
+        host: props.item?.attributes?.host,
+        port: props.item?.attributes?.port,
+        conn_type: props?.item.attributes?.integrationName,
+        login: "",
+        password: "",
+        auth_type: props.credential?.attributes?.authType,
+        extra: props.item?.attributes?.extra,
+      };
+      console.log(defaultCredential);
+      visible.value = true;
+    };
+    return {
+      handleEdit,
+      handleUpdate,
+      credentialView,
+      visible,
+      defaultCredential,
+    };
+  },
   computed: {
     authAttributesLocal(): any {
       let found =
@@ -180,20 +219,6 @@ export default defineComponent({
       return attr;
     },
   },
-  methods: {
-    handleEdit() {
-      this.defaultCredential = {
-        name: this.item?.attributes?.name,
-        host: this.item?.attributes?.host,
-        port: this.item?.attributes?.port,
-        conn_type: this.item?.attributes?.integrationName,
-        login: "atlanadmin",
-        password: "Atlan#2020",
-        auth_type: this.credential?.attributes?.authType,
-        extra: this.item?.attributes?.extra,
-      };
-      this.visible = true;
-    },
-  },
+  methods: {},
 });
 </script>

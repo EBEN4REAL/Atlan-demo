@@ -1,3 +1,9 @@
+/*
+ONLY include what is needed. 
+Use fontawesome for Icon
+
+*/
+
 import { updater } from './../api/index';
 import { UserModule } from "~/types/vitessg";
 import {
@@ -15,7 +21,6 @@ import {
   Select,
   Tree,
   TreeSelect,
-  Icon,
   Popover,
   Steps,
   message,
@@ -26,8 +31,6 @@ import {
   InputNumber,
   Switch,
   Alert,
-  Slider,
-  Result,
   Progress,
   Table,
   Upload,
@@ -50,7 +53,6 @@ export const install: UserModule = ({ app }) => {
   app.use(Tree);
   app.use(TreeSelect);
   app.use(Select);
-  app.use(Icon);
   app.use(Popover);
   app.use(Steps);
   app.use(Form);
@@ -59,9 +61,7 @@ export const install: UserModule = ({ app }) => {
   app.use(InputNumber);
   app.use(Switch);
   app.use(Alert);
-  app.use(Slider);
   app.use(Progress);
-  app.use(Result);
   app.use(Table);
   app.use(Modal);
   app.use(Upload);

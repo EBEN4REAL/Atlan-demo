@@ -1,5 +1,5 @@
 <template>
-  <CreateGlossaryModal :type="glossaryItemType" :visible="createGlossaryModalVisble" @closeModal="handleCloseModal"/>
+  <CreateGlossaryModal :eventContext="eventContext" :visible="createGlossaryModalVisble" @closeModal="handleCloseModal"/>
   <splitpanes class="h-full default-theme">
     <pane min-size="25" max-size="50" :size="25" class="px-3 bg-white">
       <a-input placeholder="Search" class="mt-3"></a-input>
@@ -19,23 +19,23 @@ export default defineComponent({
   components: { GlossaryTree, CreateGlossaryModal },
   setup(){
     const createGlossaryModalVisble = ref(false);
-    const glossaryItemType = ref("");
+    const eventContext = ref({});
 
-    const handleOpenModal = (type: string) => {
+    const handleOpenModal = (context: Record<string, string>) => {
       createGlossaryModalVisble.value = true;
-      glossaryItemType.value = type
+      eventContext.value = context
     }
 
     const handleCloseModal = () => {
       createGlossaryModalVisble.value = false;
-      glossaryItemType.value = ""      
+      eventContext.value = {}      
     }
     
     return {
       handleOpenModal,
       handleCloseModal,
       createGlossaryModalVisble,
-      glossaryItemType
+      eventContext
     }
   }
 });

@@ -5,6 +5,9 @@ import { GlossaryType } from "~/types/atlas/glossary";
 import { ref, Ref, toRefs } from "vue";
 import { Components } from "./client";
 
+import { CREATE_GLOSSARY } from "~/api/keyMaps/glossary"
+import { useAPI } from "../useAPI";
+
 const serviceAlias = "auth/atlas";
 
 const List = (params?: any, options?: AxiosRequestConfig, config?: IConfig) => {
@@ -42,10 +45,23 @@ const ListTermsForCategory = (categoryId: string, params?: any, options?: AxiosR
     return response;
 };
 
+const CreateGlossary = (body: Record<string, any>) => {
+    const { data, error, isLoading } = useAPI<Components.Schemas.AtlasGlossary>(CREATE_GLOSSARY, "POST", {
+        cache: false,
+        body
+    })
+
+    return {
+        data,
+        error,
+        isLoading
+    }
+}
 
 export const Glossary = {
     List,
     ListCategoryHeadersForGlossary,
     ListTermsForGlossary,
-    ListTermsForCategory
+    ListTermsForCategory,
+    CreateGlossary
 };

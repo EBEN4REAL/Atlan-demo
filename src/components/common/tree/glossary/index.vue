@@ -8,7 +8,7 @@
     @select="selectNode"
     @expand="expandNode"
   >
-    <template #title="{ title, type }" class="">
+    <template #title="{ title, type, key }" class="">
       <a-dropdown :trigger="['contextmenu']">
         <div>
           <span>
@@ -32,6 +32,7 @@
           <GlossaryContextMenu
             @glossarContextMenuClick="createGlossaryCategoryTerm"
             :type="type"
+            :guid="key"
           />
         </template>
       </a-dropdown>
@@ -42,6 +43,7 @@
     <template #overlay>
       <GlossaryContextMenu
         type="root"
+        :guid="key"
         @glossarContextMenuClick="createGlossaryCategoryTerm"
       />
     </template>
@@ -86,8 +88,9 @@ export default defineComponent({
 
     const { treeData, onLoadData } = useGlossaryTree(list);
 
-    const createGlossaryCategoryTerm = (type: string) => {
-      emit("showCreateGlossaryModal", type);
+    const createGlossaryCategoryTerm = (context: any) => {
+      if(context.action === "create")
+        emit("showCreateGlossaryModal", context);
     };
 
     return {

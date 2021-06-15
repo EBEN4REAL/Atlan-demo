@@ -51,7 +51,12 @@ export default function updateDescription(item: any) {
         }
     });
 
+    const handleCancel = () => {
+        isCompleted.value = false;
+    };
+
+
     return {
-        description, state, execute, isReady, error, isCompleted
+        description, state, execute, isReady, error, isCompleted, handleCancel
     }
 }

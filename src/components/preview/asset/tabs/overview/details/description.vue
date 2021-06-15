@@ -16,11 +16,12 @@
         style="width: 300px"
       >
       </a-textarea>
-      <div class="flex justify-end p-2 border-t border-gray-100">
+      <div class="flex justify-end p-2 space-x-2 border-t border-gray-100">
+        <a-button size="small" @click="handleCancel">Cancel</a-button>
         <a-button
           type="primary"
           size="small"
-          @click="handleDescriptionUpdate"
+          @click="handleUpdate"
           :loading="!state && isReady"
           >Update</a-button
         >
@@ -52,10 +53,10 @@ export default defineComponent({
     },
   },
   setup(props) {
-    const { execute, isReady, state, description, isCompleted } =
+    const { handleCancel, execute, isReady, state, description, isCompleted } =
       updateDescription(props.item);
 
-    const handleDescriptionUpdate = () => {
+    const handleUpdate = () => {
       execute();
     };
 
@@ -73,13 +74,12 @@ export default defineComponent({
 
     watch(esc, (v) => {
       if (v) {
-        if (isCompleted.value) {
-          isCompleted.value = false;
-        }
+        handleCancel();
       }
     });
     return {
-      handleDescriptionUpdate,
+      handleUpdate,
+      handleCancel,
       handleVisibleChange,
       isReady,
       state,

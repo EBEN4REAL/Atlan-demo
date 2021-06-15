@@ -27,6 +27,8 @@ export default function fetchAssetDiscover(dependent: any, body: Ref<SearchParam
         console.log(localList);
     });
 
+
+
     const list: ComputedRef<any> = computed(() => {
         return localList;
     });

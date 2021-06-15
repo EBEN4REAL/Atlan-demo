@@ -1,4 +1,4 @@
-import { defineComponent} from "vue";
+import { defineComponent } from "vue";
 import { Components } from "~/api/atlas/client";
 import { SourceList } from "~/constant/source";
 import { useStore } from "~/store";
@@ -10,7 +10,7 @@ export default defineComponent({
       return item?.attributes || {};
     },
     title(item): string {
-      return this.attributes(item)?.name;
+      return this.attributes(item)?.displayName;
     },
     integrationName(item) {
       return this.attributes(item)?.integrationName || "";

@@ -16,10 +16,7 @@
 
     <Status :item="item" :key="item.guid"></Status>
 
-    <div class="px-2 hover:bg-gray-50 hover:rounded">
-      <p class="mb-0 text-sm tracking-wide text-gray-400">Owners</p>
-      <!-- <StatusBadge :status="status(item)"></StatusBadge> -->
-    </div>
+    <Owners :item="item" :key="item.guid"></Owners>
 
     <div class="px-2 hover:bg-gray-50 hover:rounded">
       <p class="mb-0 text-sm tracking-wide text-gray-400">Terms</p>
@@ -39,10 +36,11 @@ import AssetMixin from "~/mixins/asset";
 
 import Description from "./description.vue";
 import Status from "./status.vue";
+import Owners from "./owners.vue";
 
 export default defineComponent({
   mixins: [AssetMixin],
-  components: { Status, Description },
+  components: { Status, Description, Owners },
   props: {
     item: {
       type: Object,

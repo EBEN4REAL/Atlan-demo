@@ -30,7 +30,7 @@
 </template>
       
 <script lang="ts">
-import { computed, defineComponent, ref } from "vue";
+import { defineComponent, ref } from "vue";
 import fetchUserList from "~/composables/user/fetchUserList";
 import whoami from "~/composables/user/whoami";
 
@@ -48,37 +48,11 @@ export default defineComponent({
   emits: ["update:modelValue", "change"],
   setup(props, { emit }) {
     let now = ref(true);
-    let params = ref({});
-    let debounce: any = null;
 
     // this is needed as there are multiple keys with the same param name
-    const urlparam = new URLSearchParams();
-    urlparam.append("limit", "10");
-    urlparam.append("sort", "first_name");
-    urlparam.append("columns", "first_name");
-    urlparam.append("columns", "last_name");
-    urlparam.append("columns", "username");
-
-    params.value = urlparam;
-    const { list, mutate } = fetchUserList(now, params);
+    const { list, handleSearch } = fetchUserList(now);
     const { username, name } = whoami();
 
-    const handleSearch = (val: string) => {
-      clearTimeout(debounce);
-      debounce = setTimeout(() => {
-        params.value.set(
-          "filter",
-          JSON.stringify({
-            $or: [
-              { first_name: { $ilike: `%${val}%` } },
-              { last_name: { $ilike: `%${val}%` } },
-              { username: { $ilike: `%${val}%` } },
-            ],
-          })
-        );
-        mutate();
-      }, 200);
-    };
     const handleChange = (checkedValues: string) => {
       emit("update:modelValue", checkedValues);
       emit("change", checkedValues);

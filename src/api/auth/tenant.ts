@@ -1,6 +1,7 @@
 import { getAPIPath, getAxiosClient } from "~/api";
 import { AxiosRequestConfig } from "axios";
 import { useAPI } from "~/api/useAPI";
+import { getEnv } from "~/modules/__env";
 
 const serviceAlias = "auth";
 
@@ -22,7 +23,7 @@ const TestSmtpConfig = (body) => {
 const Update = ({ cache, body }) => {
   return useAPI("UPDATE_SMTP", "POST", {
     cache,
-    body,
+    body: { ...body, realm: getEnv().DEFAULT_REALM },
   });
 };
 

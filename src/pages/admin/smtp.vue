@@ -1,7 +1,5 @@
 <template>
-  <div>
-    <p class="mb-2 text-xl font-normal tracking-tight">Manage Smtp</p>
-
+  <div class="my-8">
     <SmtpForm />
   </div>
 </template>

@@ -24,6 +24,10 @@ export const updater = (url, body, ...options): Promise<AxiosResponse["data"]> =
   return getAxiosClient().put(url, body, { ...options });
 }
 
+export const deleter = (url,...options): Promise<AxiosResponse["data"]> => {
+  return getAxiosClient().delete(url, { ...options });
+}
+
 // export const ServiceURLWithoutTenant = (serviceName, path = "") => {
 //   return `${getApiPath(serviceName)}${path}`;
 // };

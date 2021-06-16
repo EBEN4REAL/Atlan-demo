@@ -7,17 +7,12 @@
   >
     <a-input v-model:value="name" placeholder="Name" />
     <a-input v-model:value="description" placeholder="Description" />
-    <p v-if="entity">{{eventContext.entity}} successfully created</p>
+    <p v-if="entity">{{ eventContext.entity }} successfully created</p>
   </a-modal>
 </template>
 
 <script lang="ts">
-import {
-  defineComponent,
-  toRefs,
-  ref,
-  watch,
-} from "vue";
+import { defineComponent, toRefs, ref, watch } from "vue";
 
 import { Components } from "~/api/atlas/client";
 
@@ -52,7 +47,13 @@ export default defineComponent({
 
     let body = ref<Record<string, any>>({});
 
-    watch(eventContext, async () => {
+    watch([eventContext, name, description], async ([_, newName, newDescription]) => {
+      body.value = {
+        longDescription: "",
+        name: newName,
+        shortDescription: newDescription,
+      };
+
       if (props.eventContext.parentType === "glossary") {
         body.value = {
           ...body.value,
@@ -109,13 +110,6 @@ export default defineComponent({
       };
       const service = serviceMap[props.eventContext.entity];
 
-      body.value = {
-        longDescription: "",
-        name: name.value,
-        shortDescription: description.value,
-        ...body.value,
-      };
-
       // use eventContext.parentGuid to fetch parent object
 
       // Create Glossary -> nothing just make one
@@ -140,6 +134,9 @@ export default defineComponent({
         entity.value = newData;
         error.value = newError;
         isLoading.value = newLoading;
+        
+        name.value = "";
+        description.value="";
       });
     };
 

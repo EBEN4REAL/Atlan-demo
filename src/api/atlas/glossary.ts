@@ -5,12 +5,12 @@ import { GlossaryType } from "~/types/atlas/glossary";
 import { ref, Ref, toRefs } from "vue";
 import { Components } from "./client";
 
-import { CREATE_GLOSSARY, CREATE_GLOSSARY_CATEGORY, CREATE_GLOSSARY_TERM, GET_CATEGORY } from "~/api/keyMaps/glossary"
+import { CREATE_GLOSSARY, CREATE_GLOSSARY_CATEGORY, CREATE_GLOSSARY_TERM, DELETE_GLOSSARY, DELETE_GLOSSARY_CATEGORY, DELETE_GLOSSARY_TERM, GET_CATEGORY } from "~/api/keyMaps/glossary"
 import { useAPI } from "../useAPI";
 
 const serviceAlias = "auth/atlas";
 
-const GetCategory = (guid: string, params?: any, options?: AxiosRequestConfig ) => {
+const GetCategory = (guid: string, params?: any, options?: AxiosRequestConfig) => {
     const data = getAxiosClient().get(getAPIPath(serviceAlias, `/glossary/category/${guid}`), {
         params,
         ...options,
@@ -79,6 +79,37 @@ const CreateGlossaryTerm = (body: Record<string, any>, dependantFetchingKey?: Re
     return { data, error, isLoading }
 }
 
+const DeleteGlossary = (guid: string, dependantFetchingKey?: Ref) => {
+    const { data, error, isLoading } = useAPI<Components.Schemas.AtlasGlossary>(DELETE_GLOSSARY, "DELETE", {
+        cache: false,
+        pathVariables: {
+            guid
+        },
+        dependantFetchingKey
+    })
+    return { data, error, isLoading }
+}
+
+const DeleteGlossaryCategory = (guid: string, dependantFetchingKey?: Ref) => {
+    const { data, error, isLoading } = useAPI<Components.Schemas.AtlasGlossary>(DELETE_GLOSSARY_CATEGORY, "DELETE", {
+        cache: false,
+        pathVariables: {
+            guid
+        }, 
+        dependantFetchingKey
+    })
+    return { data, error, isLoading }
+}
+
+const DeleteGlossaryTerm = (guid: string) => {
+    const { data, error, isLoading } = useAPI<Components.Schemas.AtlasGlossary>(DELETE_GLOSSARY_TERM, "DELETE", {
+        cache: false,
+        pathVariables: {
+            guid
+        }
+    })
+    return { data, error, isLoading }
+}
 
 export const Glossary = {
     GetCategory,
@@ -88,5 +119,8 @@ export const Glossary = {
     ListTermsForCategory,
     CreateGlossary,
     CreateGlossaryCategory,
-    CreateGlossaryTerm
+    CreateGlossaryTerm,
+    DeleteGlossary,
+    DeleteGlossaryCategory,
+    DeleteGlossaryTerm
 };

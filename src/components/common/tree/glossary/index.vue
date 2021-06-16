@@ -60,6 +60,7 @@ import { defineComponent } from "vue";
 import fetchGlossaryList from "~/composables/glossary/fetchGlossaryList";
 import useGlossaryTree from "~/composables/glossary/useGlossaryTree";
 import handleTreeExpand from "~/composables/tree/handleTreeExpand";
+import { Glossary } from "~/api/atlas/glossary";
 
 import GlossaryContextMenu from "./glossaryContextMenu.vue";
 import { MenuInfo } from "ant-design-vue/lib/menu/src/interface";
@@ -89,8 +90,19 @@ export default defineComponent({
     const { treeData, onLoadData } = useGlossaryTree(list);
 
     const createGlossaryCategoryTerm = (context: any) => {
-      if(context.action === "create")
-        emit("showCreateGlossaryModal", context);
+      if (context.action === "create") emit("showCreateGlossaryModal", context);
+      if (context.action === "delete") {
+        const serviceMap: Record<
+          string,
+          "DeleteGlossary" | "DeleteGlossaryCategory" | "DeleteGlossaryTerm"
+        > = {
+          glossary: "DeleteGlossary",
+          category: "DeleteGlossaryCategory",
+          term: "DeleteGlossaryTerm",
+        };
+        const service = serviceMap[context.parentType];
+        Glossary[service](context.parentGuid)
+      }
     };
 
     return {

@@ -30,8 +30,8 @@ export default function useGlossaryTree(list: ComputedRef<GlossaryType[] | undef
                 const newNode = treeData.value.find((treeNode: TreeDataItem) => treeNode.key === element.guid);
 
                 const recursivelyRefreshChildren = async (element: TreeDataItem) => {
-                    if (element.children?.length) {
-                        element.children.forEach((child) => recursivelyRefreshChildren(child))
+                    if (element.children?.length || element.isOpen) {
+                        element?.children?.forEach((child) => recursivelyRefreshChildren(child))
                         if (element.type === 'category') {
                             const termsList = await Glossary.ListTermsForCategory(element.key as string, {}, { cache: false });
                             const response = await Glossary.ListCategoryHeadersForGlossary(element.glossaryID, {}, { cache: false });
@@ -57,9 +57,10 @@ export default function useGlossaryTree(list: ComputedRef<GlossaryType[] | undef
 
                             element.children = newChildren;
                         } else if(element.type === 'glossary'){
+
                             const response = await Glossary.ListCategoryHeadersForGlossary(element.key as string, {}, { cache: false });
                             const termsList = await Glossary.ListTermsForGlossary(element.key as string, {}, { cache: false });
-                           
+
                             const updatedList: TreeDataItem[] = [];
 
                             response.forEach((updated) => {
@@ -85,7 +86,6 @@ export default function useGlossaryTree(list: ComputedRef<GlossaryType[] | undef
                         return
                     }
                 }
-
                 if (!newNode) {
                     updatedTreeData.push({
                         key: element.guid,
@@ -95,7 +95,7 @@ export default function useGlossaryTree(list: ComputedRef<GlossaryType[] | undef
                     })
                 }
                 else if (newNode) {
-                    if (newNode.children?.length) {
+                    if (newNode.children?.length || newNode.isOpen) {
                         // newNode.children.forEach((child) => {
                             recursivelyRefreshChildren(newNode)
                         // })
@@ -110,6 +110,7 @@ export default function useGlossaryTree(list: ComputedRef<GlossaryType[] | undef
         }
     })
     const onLoadData = async (treeNode: any) => {
+        treeNode.dataRef.isOpen = true;
         if (treeNode.dataRef.children) {
             return;
         }
@@ -170,8 +171,6 @@ export default function useGlossaryTree(list: ComputedRef<GlossaryType[] | undef
         } else {
 
         }
-        console.log('updated', treeData.value)
-
     };
 
     return {

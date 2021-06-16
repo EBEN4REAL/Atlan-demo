@@ -13,6 +13,7 @@ export const UPDATE_GLOSSARY = 'UPDATE_GLOSSARY';
 export const UPDATE_GLOSSARY_CATEGORY = 'UPDATE_GLOSSARY_CATEGORY';
 export const UPDATE_GLOSSARY_TERM = 'UPDATE_GLOSSARY_TERM';
 
+
 const groupsMap: Record<string, (...params:any) => string> = {
     [CREATE_GLOSSARY]: () => getAPIPath('auth/atlas', "/glossary"),
     [CREATE_GLOSSARY_CATEGORY]: () => getAPIPath('auth/atlas', "/glossary/category"),

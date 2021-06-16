@@ -47,7 +47,7 @@ export default function fetchGlossaryList(query?: string, filters?: Components.S
             // loading.value = newLoading;
         });
     }
-
+    
     return {
         response,
         list,

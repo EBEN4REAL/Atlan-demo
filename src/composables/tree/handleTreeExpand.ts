@@ -4,7 +4,6 @@ export default function handleTreeExpand(emit: any): any {
     const selectedKeys = ref([]) as Ref<string[]>;
     let expandedKeys = ref([]) as Ref<string[]>;
     const expandNode = (expanded: string[], node: any) => {
-
         if (expanded.includes("_node_select_")) {
             const key: string = node.node.eventKey;
             const isExpanded = expandedKeys.value.includes(key);
@@ -15,7 +14,9 @@ export default function handleTreeExpand(emit: any): any {
                 expandedKeys.value.splice(index, 1);
             }
             expandedKeys.value = [...expandedKeys.value];
+
         }
+        node.node.dataRef.isOpen = !!node.expanded;
         return;
     }
 

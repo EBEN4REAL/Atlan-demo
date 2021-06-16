@@ -57,7 +57,7 @@ import "emoji-mart-vue-fast/css/emoji-mart.css";
 import { Emoji, EmojiIndex } from "emoji-mart-vue-fast/src";
 import { Modal } from "ant-design-vue";
 
-import { defineComponent } from "vue";
+import { defineComponent, watch } from "vue";
 import fetchGlossaryList from "~/composables/glossary/fetchGlossaryList";
 import useGlossaryTree from "~/composables/glossary/useGlossaryTree";
 import handleTreeExpand from "~/composables/tree/handleTreeExpand";
@@ -82,13 +82,18 @@ export default defineComponent({
     return {};
   },
   setup(props, { emit }) {
-    const { list, totalCount, listCount, refetchGlossary, response } = fetchGlossaryList();
+    const { list, totalCount, listCount, refetchGlossary, response } =
+      fetchGlossaryList();
     const { selectedKeys, expandedKeys, expandNode, selectNode } =
       handleTreeExpand();
 
     const index = new EmojiIndex(data);
 
     const { treeData, onLoadData } = useGlossaryTree(list);
+
+    const refreshTree = () => {
+      refetchGlossary();
+    };
 
     const createGlossaryCategoryTerm = (context: any) => {
       if (context.action === "create") emit("showCreateGlossaryModal", context);
@@ -110,15 +115,14 @@ export default defineComponent({
             };
             const service = serviceMap[context.parentType];
             Glossary[service](context.parentGuid);
-            emit("success")
+
+            setTimeout(() => {
+              refreshTree();
+            }, 1000);
           },
         });
       }
     };
-
-    const refreshTree = () => {
-      refetchGlossary();
-    }
 
     return {
       index,

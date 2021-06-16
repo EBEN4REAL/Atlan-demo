@@ -1,10 +1,25 @@
 <template>
-  <CreateGlossaryModal :eventContext="eventContext" :visible="createGlossaryModalVisble" @success="handleSuccess" @closeModal="handleCloseModal"/>
-  <UpdateGlossaryModal :eventContext="eventContext" :visible="updateGlossaryModalVisble" @success="handleSuccess" @closeModal="handleCloseModal"/>
+  <CreateGlossaryModal
+    :eventContext="eventContext"
+    :visible="createGlossaryModalVisble"
+    @success="handleSuccess"
+    @closeModal="handleCloseModal"
+  />
+  <UpdateGlossaryModal
+    :eventContext="eventContext"
+    :visible="updateGlossaryModalVisble"
+    @success="handleSuccess"
+    @closeModal="handleCloseModal"
+  />
   <splitpanes class="h-full default-theme">
     <pane min-size="25" max-size="50" :size="25" class="px-3 bg-white">
       <a-input placeholder="Search" class="mt-3"></a-input>
-      <GlossaryTree ref="glossaryTreeRef" @success="handleSuccess" @showCreateGlossaryModal="handleOpenModal" @showUpdateGlossaryModal="handleOpenUpdateModal"></GlossaryTree>
+      <GlossaryTree
+        ref="glossaryTreeRef"
+        @success="handleSuccess"
+        @showCreateGlossaryModal="handleOpenModal"
+        @showUpdateGlossaryModal="handleOpenUpdateModal"
+      ></GlossaryTree>
     </pane>
     <pane :size="74"> </pane>
   </splitpanes>
@@ -19,32 +34,34 @@ import UpdateGlossaryModal from "@common/tree/glossary/updateGlossaryModal.vue";
 
 export default defineComponent({
   components: { GlossaryTree, CreateGlossaryModal, UpdateGlossaryModal },
-  setup(){
+  setup() {
     const createGlossaryModalVisble = ref(false);
     const updateGlossaryModalVisble = ref(false);
-    const glossaryTreeRef = ref()
-    
+    const glossaryTreeRef = ref();
+
     const eventContext = ref({});
 
     const handleOpenModal = (context: Record<string, string>) => {
       createGlossaryModalVisble.value = true;
-      eventContext.value = context
-    }
+      eventContext.value = context;
+    };
 
     const handleOpenUpdateModal = (context: Record<string, string>) => {
       updateGlossaryModalVisble.value = true;
-      eventContext.value = context
-    }
+      eventContext.value = context;
+    };
 
     const handleCloseModal = () => {
       createGlossaryModalVisble.value = false;
       updateGlossaryModalVisble.value = false;
       eventContext.value = {};
-    }
+    };
 
     const handleSuccess = () => {
-      glossaryTreeRef.value.refreshTree();
-    }
+      setTimeout(() => {
+        glossaryTreeRef.value.refreshTree();
+      }, 1000);
+    };
 
     return {
       handleOpenModal,
@@ -54,9 +71,9 @@ export default defineComponent({
       createGlossaryModalVisble,
       updateGlossaryModalVisble,
       eventContext,
-      glossaryTreeRef
-    }
-  }
+      glossaryTreeRef,
+    };
+  },
 });
 </script>
 

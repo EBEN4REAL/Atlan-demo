@@ -7,12 +7,17 @@
   >
     <a-input v-model:value="name" placeholder="Name" />
     <a-input v-model:value="description" placeholder="Description" />
-    {{ entity }}
+    <p v-if="entity">{{eventContext.entity}} successfully created</p>
   </a-modal>
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, toRefs, ref, watch, reactive, onMounted } from "vue";
+import {
+  defineComponent,
+  toRefs,
+  ref,
+  watch,
+} from "vue";
 
 import { Components } from "~/api/atlas/client";
 
@@ -41,19 +46,13 @@ export default defineComponent({
     const name = ref<string>("");
     const description = ref<string>("");
 
-    const isCategoryParent = ref(false);
-
     const handleCloseModal = () => {
       emit("closeModal");
     };
 
-        // const { data:parentCategory } =  Glossary.GetCategory(props.eventContext.parentGuid, isCategoryParent);
-
-
     let body = ref<Record<string, any>>({});
-       
-watch(eventContext, async () => {
-  if (props.eventContext.entity === "category") {
+
+    watch(eventContext, async () => {
       if (props.eventContext.parentType === "glossary") {
         body.value = {
           ...body.value,
@@ -62,20 +61,42 @@ watch(eventContext, async () => {
           },
         };
       }
-      if (props.eventContext.parentType === "category") {
-        isCategoryParent.value = true
+
+      if (
+        props.eventContext.parentType === "category" &&
+        props.eventContext.entity === "category"
+      ) {
+        const response = await Glossary.GetCategory(
+          eventContext.value.parentGuid
+        );
+
         body.value = {
           ...body.value,
-          anchor: parentCategory.value?.anchor,
+          anchor: response?.anchor,
           parentCategory: {
-            categoryGuid: parentCategory.value?.guid,
+            categoryGuid: response?.guid,
           },
         };
       }
-    }
+      if (
+        props.eventContext.parentType === "category" &&
+        props.eventContext.entity === "term"
+      ) {
+        const response = await Glossary.GetCategory(
+          eventContext.value.parentGuid
+        );
 
-})
-   
+        body.value = {
+          ...body.value,
+          anchor: response?.anchor,
+          categories: [
+            {
+              categoryGuid: response?.guid,
+            },
+          ],
+        };
+      }
+    });
 
     const handleSubmit = () => {
       const serviceMap: Record<
@@ -87,8 +108,6 @@ watch(eventContext, async () => {
         term: "CreateGlossaryTerm",
       };
       const service = serviceMap[props.eventContext.entity];
-
- 
 
       body.value = {
         longDescription: "",

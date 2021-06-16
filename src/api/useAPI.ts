@@ -34,6 +34,7 @@ export const useAPI = <T>(key: string, method: 'GET' | 'POST', { cache = true, p
             }
             return key
         }
+        console.log(getKey())
         const { data, error, mutate } = useSWRV<T>(getKey, () => {
             // Choose the fetcher function based on the method type
             switch (method) {

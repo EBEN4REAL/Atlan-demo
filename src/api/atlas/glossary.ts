@@ -10,15 +10,12 @@ import { useAPI } from "../useAPI";
 
 const serviceAlias = "auth/atlas";
 
-const GetCategory = (guid: string, dependantFetchingKey?: Ref) => {
-    const { data, error, isLoading } = useAPI<Components.Schemas.AtlasGlossaryCategory>(GET_CATEGORY, "GET", {
-        cache: false,
-        pathVariables: {
-            guid
-        },
-        dependantFetchingKey
+const GetCategory = (guid: string, params?: any, options?: AxiosRequestConfig ) => {
+    const data = getAxiosClient().get(getAPIPath(serviceAlias, `/glossary/category/${guid}`), {
+        params,
+        ...options,
     })
-    return { data, error, isLoading }
+    return data as unknown as Components.Schemas.AtlasGlossaryCategory
 }
 
 const List = (params?: any, options?: AxiosRequestConfig, config?: IConfig) => {

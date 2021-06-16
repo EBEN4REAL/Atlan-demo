@@ -60,7 +60,7 @@ export default defineComponent({
     const handleSuccess = () => {
       setTimeout(() => {
         glossaryTreeRef.value.refreshTree();
-      }, 1000);
+      }, 2000);
     };
 
     return {

@@ -26,8 +26,8 @@ export default function useGlossaryTree(list: ComputedRef<GlossaryType[] | undef
         } else {
             const updatedTreeData: TreeDataItem[] = [];
 
-            newValue?.forEach((element) => {
-                const newNode = treeData.value.find((treeNode: TreeDataItem) => treeNode.key === element.guid);
+            newValue?.forEach((newElement) => {
+                const newNode = treeData.value.find((treeNode: TreeDataItem) => treeNode.key === newElement.guid);
 
                 const recursivelyRefreshChildren = async (element: TreeDataItem) => {
                     if (element.children?.length || element.isOpen) {
@@ -35,17 +35,17 @@ export default function useGlossaryTree(list: ComputedRef<GlossaryType[] | undef
                         if (element.type === 'category') {
                             const termsList = await Glossary.ListTermsForCategory(element.key as string, {}, { cache: false });
                             const response = await Glossary.ListCategoryHeadersForGlossary(element.glossaryID, {}, { cache: false });
-                            
-                            const newChildren:TreeDataItem[] = []
+                            console.log(element.glossaryID)
+                            const newChildren: TreeDataItem[] = []
 
                             response.forEach((updated) => {
                                 if (updated.parentCategoryGuid === element.key) {
                                     const orignal = element.children?.find((child) => child.key === updated.categoryGuid);
 
-                                    if (!orignal) newChildren.push({ title: updated.displayText, key: updated.categoryGuid, glossaryID: element.glossaryID, type: "category", isRoot: true  })
+                                    if (!orignal) newChildren.push({ title: updated.displayText, key: updated.categoryGuid, glossaryID: element.glossaryID, type: "category", isRoot: true })
                                     else newChildren.push({
                                         children: orignal.children,
-                                        title: updated.displayText, key: updated.categoryGuid, glossaryID: element.glossaryID, type: "category", isRoot: true 
+                                        title: updated.displayText, key: updated.categoryGuid, glossaryID: element.glossaryID, type: "category", isRoot: true
                                     })
                                 }
                             });
@@ -56,7 +56,7 @@ export default function useGlossaryTree(list: ComputedRef<GlossaryType[] | undef
                             });
 
                             element.children = newChildren;
-                        } else if(element.type === 'glossary'){
+                        } else if (element.type === 'glossary') {
 
                             const response = await Glossary.ListCategoryHeadersForGlossary(element.key as string, {}, { cache: false });
                             const termsList = await Glossary.ListTermsForGlossary(element.key as string, {}, { cache: false });
@@ -67,10 +67,10 @@ export default function useGlossaryTree(list: ComputedRef<GlossaryType[] | undef
                                 if (!updated.parentCategoryGuid) {
                                     const orignal = element.children?.find((child) => child.key === updated.categoryGuid);
 
-                                    if (!orignal) updatedList.push({ title: updated.displayText, key: updated.categoryGuid, glossaryID: element.glossaryID, type: "category", isRoot: true  })
+                                    if (!orignal) updatedList.push({ title: updated.displayText, key: updated.categoryGuid, glossaryID: element.glossaryID, type: "category", isRoot: true })
                                     else updatedList.push({
                                         children: orignal.children,
-                                        title: updated.displayText, key: updated.categoryGuid, glossaryID: element.glossaryID, type: "category", isRoot: true 
+                                        title: updated.displayText, key: updated.categoryGuid, glossaryID: element.glossaryID, type: "category", isRoot: true
                                     })
                                 }
                             });
@@ -88,8 +88,8 @@ export default function useGlossaryTree(list: ComputedRef<GlossaryType[] | undef
                 }
                 if (!newNode) {
                     updatedTreeData.push({
-                        key: element.guid,
-                        title: element.attributes.name,
+                        key: newElement.guid,
+                        title: newElement.attributes.name,
                         type: "glossary",
                         isRoot: true,
                     })
@@ -97,11 +97,23 @@ export default function useGlossaryTree(list: ComputedRef<GlossaryType[] | undef
                 else if (newNode) {
                     if (newNode.children?.length || newNode.isOpen) {
                         // newNode.children.forEach((child) => {
-                            recursivelyRefreshChildren(newNode)
+                        recursivelyRefreshChildren(newNode)
                         // })
-                        updatedTreeData.push(newNode)
+                        updatedTreeData.push({
+                            key: newElement.guid,
+                            title: newElement.attributes.name,
+                            type: "glossary",
+                            isRoot: true,
+                            children: newNode.children
+                        })
                     } else {
-                        updatedTreeData.push(newNode)
+                        updatedTreeData.push({
+                            key: newElement.guid,
+                            title: newElement.attributes.name,
+                            type: "glossary",
+                            isRoot: true,
+                            children: newNode.children
+                        })
                     }
                 }
             })

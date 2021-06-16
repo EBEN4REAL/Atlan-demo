@@ -70,15 +70,15 @@ export default defineComponent({
           entity.value = await Glossary.GetCategory(newContext.parentGuid);
           break;
         case "term":
-          entity.value =await  Glossary.GetTerm(newContext.parentGuid);
+          entity.value = await Glossary.GetTerm(newContext.parentGuid);
           break;
       }
     });
 
     watch(entity, (newEntity) => {
-        name.value = newEntity?.name ?? name.value
-        description.value = newEntity?.shortDescription ?? description.value 
-    })
+      name.value = newEntity?.name ?? name.value;
+      description.value = newEntity?.shortDescription ?? description.value;
+    });
 
     watch(
       [eventContext, name, description],
@@ -115,9 +115,12 @@ export default defineComponent({
         description.value = "";
 
         if (entity.value) {
-            emit("success");
+          emit("success");
           showSuccessMessage.value = true;
-          setTimeout(() => (showSuccessMessage.value = false), 2000);
+          setTimeout(() => {
+            showSuccessMessage.value = false;
+            emit("closeModal");
+          }, 2000);
         }
       });
     };

@@ -38,7 +38,7 @@ export default function fetchGlossaryList(query?: string, filters?: Components.S
     })
 
     const refetchGlossary = () => {
-        const { data, error, isLoading } = useAPI<Components.Schemas.AtlasSearchResult>('GLOSSARY_BASIC_SEARCH', 'POST', { cache: false, body })
+        const { data, error, isLoading } = useAPI<Components.Schemas.AtlasSearchResult>('BASIC_SEARCH', 'POST', { cache: false, body })
         watch([data, error, isLoading], ([newData, newError, newLoading]) => {
             if(newData){
                 response.value = newData ;

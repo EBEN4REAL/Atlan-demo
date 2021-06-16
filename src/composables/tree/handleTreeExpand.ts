@@ -6,7 +6,6 @@ export default function handleTreeExpand(emit: any): any {
     const expandNode = (expanded: string[], node: any) => {
 
         if (expanded.includes("_node_select_")) {
-            console.log("dasd");
             const key: string = node.node.eventKey;
             const isExpanded = expandedKeys.value.includes(key);
             if (!isExpanded) {

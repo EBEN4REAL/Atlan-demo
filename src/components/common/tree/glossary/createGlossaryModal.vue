@@ -5,9 +5,9 @@
     @cancel="handleCloseModal"
     @ok="handleSubmit"
   >
-    <a-input v-model:value="name" placeholder="Name" />
-    <a-input v-model:value="description" placeholder="Description" />
-    <p v-if="entity">{{ eventContext.entity }} successfully created</p>
+    <a-input class="m-1" v-model:value="name" placeholder="Name" />
+    <a-input class="m-1" v-model:value="description" placeholder="Description" />
+    <p v-if="showSuccessMessage">{{ eventContext.entity }} successfully created</p>
   </a-modal>
 </template>
 
@@ -35,11 +35,19 @@ export default defineComponent({
   setup(props, { emit }) {
     const { visible, eventContext } = toRefs(props);
 
-    const entity = ref<Components.Schemas.AtlasGlossary>();
+    const entity =
+      ref<
+        | Components.Schemas.AtlasGlossary
+        | Components.Schemas.AtlasGlossaryCategory
+        | Components.Schemas.AtlasGlossaryTerm
+      >();
     const error = ref<any>(null);
     const isLoading = ref<boolean>(false);
-    const name = ref<string>("");
+   
+   const name = ref<string>("");
     const description = ref<string>("");
+
+    const showSuccessMessage = ref(false)
 
     const handleCloseModal = () => {
       emit("closeModal");
@@ -47,57 +55,60 @@ export default defineComponent({
 
     let body = ref<Record<string, any>>({});
 
-    watch([eventContext, name, description], async ([_, newName, newDescription]) => {
-      body.value = {
-        longDescription: "",
-        name: newName,
-        shortDescription: newDescription,
-      };
-
-      if (props.eventContext.parentType === "glossary") {
+    watch(
+      [eventContext, name, description],
+      async ([_, newName, newDescription]) => {
         body.value = {
-          ...body.value,
-          anchor: {
-            glossaryGuid: props.eventContext.parentGuid,
-          },
+          longDescription: "",
+          name: newName,
+          shortDescription: newDescription,
         };
-      }
 
-      if (
-        props.eventContext.parentType === "category" &&
-        props.eventContext.entity === "category"
-      ) {
-        const response = await Glossary.GetCategory(
-          eventContext.value.parentGuid
-        );
+        if (props.eventContext.parentType === "glossary") {
+          body.value = {
+            ...body.value,
+            anchor: {
+              glossaryGuid: props.eventContext.parentGuid,
+            },
+          };
+        }
 
-        body.value = {
-          ...body.value,
-          anchor: response?.anchor,
-          parentCategory: {
-            categoryGuid: response?.guid,
-          },
-        };
-      }
-      if (
-        props.eventContext.parentType === "category" &&
-        props.eventContext.entity === "term"
-      ) {
-        const response = await Glossary.GetCategory(
-          eventContext.value.parentGuid
-        );
+        if (
+          props.eventContext.parentType === "category" &&
+          props.eventContext.entity === "category"
+        ) {
+          const response = await Glossary.GetCategory(
+            eventContext.value.parentGuid
+          );
 
-        body.value = {
-          ...body.value,
-          anchor: response?.anchor,
-          categories: [
-            {
+          body.value = {
+            ...body.value,
+            anchor: response?.anchor,
+            parentCategory: {
               categoryGuid: response?.guid,
             },
-          ],
-        };
+          };
+        }
+        if (
+          props.eventContext.parentType === "category" &&
+          props.eventContext.entity === "term"
+        ) {
+          const response = await Glossary.GetCategory(
+            eventContext.value.parentGuid
+          );
+
+          body.value = {
+            ...body.value,
+            anchor: response?.anchor,
+            categories: [
+              {
+                categoryGuid: response?.guid,
+              },
+            ],
+          };
+        }
       }
-    });
+    );
 
     const handleSubmit = () => {
       const serviceMap: Record<
@@ -110,33 +121,20 @@ export default defineComponent({
       };
       const service = serviceMap[props.eventContext.entity];
 
-      // use eventContext.parentGuid to fetch parent object
-
-      // Create Glossary -> nothing just make one
-
-      // Create Category
-      // add glossaryGuid as anchor from parent Object anchor
-      // if eventContext.parenttype === category:
-      // add parentGuid as parentCategory
-      // if eventContext.parenttype === glossary:
-      // do nothing
-
-      // Create Term
-      // add glossaryGuid as anchor from parent Object anchor
-      // if eventContext.parenttype === category:
-      // add parentGuid as CategoryGuid
-      // if eventContext.parenttype === glossary:
-      // do nothing
-
       const { data, error, isLoading } = Glossary[service](body.value, body);
 
       watch([data, error, isLoading], ([newData, newError, newLoading]) => {
         entity.value = newData;
         error.value = newError;
         isLoading.value = newLoading;
-        
+
         name.value = "";
-        description.value="";
+        description.value = "";
+
+        if(entity.value){
+          showSuccessMessage.value = true;
+          setTimeout(() => showSuccessMessage.value = false, 3000)
+        }
       });
     };
 
@@ -148,6 +146,7 @@ export default defineComponent({
       isLoading,
       name,
       description,
+      showSuccessMessage,
       handleCloseModal,
       handleSubmit,
     };

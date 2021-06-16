@@ -55,6 +55,7 @@
 import data from "emoji-mart-vue-fast/data/all.json";
 import "emoji-mart-vue-fast/css/emoji-mart.css";
 import { Emoji, EmojiIndex } from "emoji-mart-vue-fast/src";
+import { Modal } from "ant-design-vue";
 
 import { defineComponent } from "vue";
 import fetchGlossaryList from "~/composables/glossary/fetchGlossaryList";
@@ -92,16 +93,24 @@ export default defineComponent({
     const createGlossaryCategoryTerm = (context: any) => {
       if (context.action === "create") emit("showCreateGlossaryModal", context);
       if (context.action === "delete") {
-        const serviceMap: Record<
-          string,
-          "DeleteGlossary" | "DeleteGlossaryCategory" | "DeleteGlossaryTerm"
-        > = {
-          glossary: "DeleteGlossary",
-          category: "DeleteGlossaryCategory",
-          term: "DeleteGlossaryTerm",
-        };
-        const service = serviceMap[context.parentType];
-        Glossary[service](context.parentGuid)
+        Modal.confirm({
+          title: `Are you sure delete this ${context.parentType}?`,
+          okText: "Yes",
+          okType: "danger",
+          cancelText: "No",
+          onOk() {
+            const serviceMap: Record<
+              string,
+              "DeleteGlossary" | "DeleteGlossaryCategory" | "DeleteGlossaryTerm"
+            > = {
+              glossary: "DeleteGlossary",
+              category: "DeleteGlossaryCategory",
+              term: "DeleteGlossaryTerm",
+            };
+            const service = serviceMap[context.parentType];
+            Glossary[service](context.parentGuid);
+          },
+        });
       }
     };
 

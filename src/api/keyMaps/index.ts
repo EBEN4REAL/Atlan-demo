@@ -1,5 +1,7 @@
 import asset from "~/api/keyMaps/asset"
 
+import businessMetadata from "~/api/keyMaps/businessMetadata"
+
 import user from "~/api/keyMaps/auth/user";
 import tenant from "~/api/keyMaps/auth/tenant"
 import group from "~/api/keyMaps/auth/group";
@@ -10,5 +12,6 @@ export default {
     ...user,
     ...tenant,
     ...group,
-    ...connection
+    ...connection,
+    ...businessMetadata
 };

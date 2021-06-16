@@ -26,8 +26,8 @@
             <a-menu-item key="sso">SSO</a-menu-item>
           </a-menu-item-group>
           <a-menu-item-group class="mb-3" title="Metadata Management">
-            <a-menu-item key="bm"> Business Metadata </a-menu-item>
-            <a-menu-item key="enum"> Enums </a-menu-item>
+            <a-menu-item key="business-metadata"> Business Metadata </a-menu-item>
+            <a-menu-item key="enums"> Enums </a-menu-item>
           </a-menu-item-group>
           <a-menu-item-group class="mb-3" title="Cloud & Compliance">
             <a-menu-item key="accesslogs"> Access Logs </a-menu-item>
@@ -63,7 +63,6 @@ export default defineComponent({
 });
 </script>
 
-
 <style lang="less" module>
 .sidebar {
   &:global(.ant-menu-inline) {
@@ -88,7 +87,6 @@ export default defineComponent({
   }
 }
 </style>
-
 
 <route lang="yaml">
   meta:

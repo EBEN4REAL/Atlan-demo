@@ -1,4 +1,4 @@
-import { ref } from "vue";
+import { Ref, ref } from "vue";
 import { AxiosRequestConfig } from "axios";
 import useSWRV, { IConfig } from "swrv";
 
@@ -12,6 +12,7 @@ interface useGetAPIParams {
     body?: Record<string, any>,
     pathVariables?: Record<string, any>,
     options?: IConfig & AxiosRequestConfig,
+    dependantFetchingKey?: Ref,
     // swrOptions?: IConfig,
     // axiosOptions?: AxiosRequestConfig
 }
@@ -23,12 +24,17 @@ interface useGetAPIParams {
  * @param body - The payload to send while making a `POST` request
  * @param options - SWRV or Axios specefic configuration objects
  */
-export const useAPI = <T>(key: string, method: 'GET' | 'POST', { cache = true, params, body, pathVariables, options }: useGetAPIParams) => {
+export const useAPI = <T>(key: string, method: 'GET' | 'POST', { cache = true, params, body, pathVariables, options, dependantFetchingKey }: useGetAPIParams) => {
     const url = keyMaps[key]({...pathVariables});
-
     if (cache) {
     // If using cache, make a generic swrv request
-        const { data, error, mutate } = useSWRV<T>(key, () => {
+        const getKey = () => {
+            if(dependantFetchingKey){
+                return  key && dependantFetchingKey.value
+            }
+            return key
+        }
+        const { data, error, mutate } = useSWRV<T>(getKey, () => {
             // Choose the fetcher function based on the method type
             switch (method) {
                 case 'GET':

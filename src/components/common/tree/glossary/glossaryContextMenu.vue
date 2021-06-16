@@ -43,7 +43,7 @@ export default defineComponent({
     const handleMenuClick = (e: MenuInfo) => {
       emit("glossarContextMenuClick", {
         parentGuid: props.guid,
-
+        parentType: props.type,
         entity: ["glossary", "term", "category"].includes(e.key.toString())
           ? e.key: props.type,
 

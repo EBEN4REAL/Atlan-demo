@@ -5,10 +5,21 @@ import { GlossaryType } from "~/types/atlas/glossary";
 import { ref, Ref, toRefs } from "vue";
 import { Components } from "./client";
 
-import { CREATE_GLOSSARY } from "~/api/keyMaps/glossary"
+import { CREATE_GLOSSARY, CREATE_GLOSSARY_CATEGORY, CREATE_GLOSSARY_TERM, GET_CATEGORY } from "~/api/keyMaps/glossary"
 import { useAPI } from "../useAPI";
 
 const serviceAlias = "auth/atlas";
+
+const GetCategory = (guid: string, dependantFetchingKey?: Ref) => {
+    const { data, error, isLoading } = useAPI<Components.Schemas.AtlasGlossaryCategory>(GET_CATEGORY, "GET", {
+        cache: false,
+        pathVariables: {
+            guid
+        },
+        dependantFetchingKey
+    })
+    return { data, error, isLoading }
+}
 
 const List = (params?: any, options?: AxiosRequestConfig, config?: IConfig) => {
     const resp = useSWRV([getAPIPath(serviceAlias, "/glossary"), params, options], fetcher, config);
@@ -50,18 +61,35 @@ const CreateGlossary = (body: Record<string, any>) => {
         cache: false,
         body
     })
-
-    return {
-        data,
-        error,
-        isLoading
-    }
+    return { data, error, isLoading }
 }
 
+const CreateGlossaryCategory = (body: Record<string, any>, dependantFetchingKey?: Ref) => {
+    const { data, error, isLoading } = useAPI<Components.Schemas.AtlasGlossary>(CREATE_GLOSSARY_CATEGORY, "POST", {
+        cache: false,
+        body,
+        dependantFetchingKey
+    })
+    return { data, error, isLoading }
+}
+
+const CreateGlossaryTerm = (body: Record<string, any>, dependantFetchingKey?: Ref) => {
+    const { data, error, isLoading } = useAPI<Components.Schemas.AtlasGlossary>(CREATE_GLOSSARY_TERM, "POST", {
+        cache: false,
+        body,
+        dependantFetchingKey
+    })
+    return { data, error, isLoading }
+}
+
+
 export const Glossary = {
+    GetCategory,
     List,
     ListCategoryHeadersForGlossary,
     ListTermsForGlossary,
     ListTermsForCategory,
-    CreateGlossary
+    CreateGlossary,
+    CreateGlossaryCategory,
+    CreateGlossaryTerm
 };

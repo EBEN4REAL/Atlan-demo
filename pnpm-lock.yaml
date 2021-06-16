@@ -59,6 +59,7 @@ specifiers:
   less: ^4.1.1
   lowlight: 1.20.0
   mitt: ^2.1.0
+  numeral: '>=2'
   openapi-client-axios: ^3.14.0
   openapi-client-axios-ts: ^3.9.9
   openapi-typescript-codegen: ^0.9.3
@@ -90,6 +91,7 @@ specifiers:
   vue-i18n: ^9.1.6
   vue-linkify: ^1.0.1
   vue-loader: ^16.2.0
+  vue-numerals: ^4.0.6
   vue-router: ^4.0.8
   vue-tsc: ^0.1.7
   vue-virtual-scroll-list: ^2.3.2
@@ -143,6 +145,7 @@ dependencies:
   less: 4.1.1
   lowlight: 1.20.0
   mitt: 2.1.0
+  numeral: 2.0.6
   openapi-client-axios: 3.14.0_axios@0.21.1
   openapi-client-axios-ts: 3.9.9
   qs: 6.10.1
@@ -156,6 +159,7 @@ dependencies:
   vue-calendar-heatmap: 0.8.4_vue@3.1.1
   vue-i18n: 9.1.6_vue@3.1.1
   vue-linkify: 1.0.1
+  vue-numerals: 4.0.6_numeral@2.0.6+vue@3.1.1
   vue-router: 4.0.8_vue@3.1.1
   vue-virtual-scroll-list: 2.3.2
   vue3-timepicker: 1.0.0-beta.2
@@ -7336,6 +7340,10 @@ packages:
     resolution: {integrity: sha1-b2gragJ6Tp3fpFZM0lidHU5mnt4=}
     dev: true
 
+  /numeral/2.0.6:
+    resolution: {integrity: sha1-StCAk21EPCVhrtnyGX7//iX05QY=}
+    dev: false
+
   /nwsapi/2.2.0:
     resolution: {integrity: sha512-h2AatdwYH+JHiZpv7pt/gSX1XoRGb7L/qSIeuqA6GwYoF9w1vP1cw42TO0aI2pNyshRK5893hNSl+1//vHK7hQ==}
     dev: false
@@ -10336,6 +10344,16 @@ packages:
       hash-sum: 2.0.0
       loader-utils: 2.0.0
     dev: true
+
+  /vue-numerals/4.0.6_numeral@2.0.6+vue@3.1.1:
+    resolution: {integrity: sha512-MT/Qi2vPrN6xhYrQoEct7blDxZ1+BIHhuDq2GuFvCNgegj6dsc7mrtgaet+h70CLYqJffONsgdOcmJC1Lrsx5Q==}
+    peerDependencies:
+      numeral: '>=2'
+      vue: ^3.0.0-rc.9
+    dependencies:
+      numeral: 2.0.6
+      vue: 3.1.1
+    dev: false
 
   /vue-observe-visibility/0.4.6:
     resolution: {integrity: sha512-xo0CEVdkjSjhJoDdLSvoZoQrw/H2BlzB5jrCBKGZNXN2zdZgMuZ9BKrxXDjNP2AxlcCoKc8OahI3F3r3JGLv2Q==}

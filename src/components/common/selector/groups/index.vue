@@ -23,7 +23,7 @@
       
 <script lang="ts">
 import { defineComponent, ref } from "vue";
-import fetchGroupList from "~/composables/groups/fetchGroupList";
+import fetchGroupList from "~/composables/group/fetchGroupList";
 
 export default defineComponent({
   props: {

@@ -3,6 +3,7 @@
 
 <template>
   <div class="p-6">
+    <TotalView class="mb-3" :item="item" :key="item.guid"></TotalView>
     <DetailsView
       :item="item"
       :credential="credential"
@@ -35,6 +36,7 @@ import RunsView from "@common/list/runs/index.vue";
 
 import DetailsView from "@/connection/overview/details.vue";
 import QueryView from "@/connection/overview/query.vue";
+import TotalView from "@/connection/overview/analytics/total.vue";
 import { ConnectionType } from "~/types/atlas/connection";
 import { CredentialType } from "~/types/atlas/credential";
 import { BotsType } from "~/types/atlas/bots";
@@ -42,7 +44,7 @@ import { BotsType } from "~/types/atlas/bots";
 import DeleteView from "@/connection/overview/delete.vue";
 export default defineComponent({
   name: "HelloWorld",
-  components: { DetailsView, QueryView, RunsView, DeleteView },
+  components: { DetailsView, QueryView, RunsView, DeleteView, TotalView },
   props: {
     item: {
       type: Object as PropType<ConnectionType>,

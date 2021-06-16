@@ -47,7 +47,7 @@
                       copyText(getSamlAssertionUrl(ssoForm.alias).redirectUrl)
                     "
                   >
-                    <a-icon class="mr-1" type="copy" />
+                    <!-- <a-icon class="mr-1" type="copy" /> -->
                     Copy
                   </span>
                 </template>
@@ -67,7 +67,7 @@
                       copyText(getSamlAssertionUrl(ssoForm.alias).audienceUrl)
                     "
                   >
-                    <a-icon class="mr-1" type="copy" />
+                    <!-- <a-icon class="mr-1" type="copy" /> -->
                     Copy
                   </span>
                 </template>

@@ -23,7 +23,7 @@
       
 <script lang="ts">
 import { defineComponent, ref } from "vue";
-import fetchGroupList from "~/composables/groups/fetchGroupList";
+import fetchGroupList from "~/composables/group/fetchGroupList";
 
 export default defineComponent({
   props: {
@@ -39,40 +39,11 @@ export default defineComponent({
   emits: ["update:modelValue", "change"],
   setup(props, { emit }) {
     let now = ref(true);
-    let params = ref({});
-    let debounce: any = null;
-
-    // this is needed as there are multiple keys with the same param name
-    const urlparam = new URLSearchParams();
-    urlparam.append("limit", "10");
-    urlparam.append("sort", "name");
-    urlparam.append("columns", "name");
-    urlparam.append("columns", "user_count");
-
-    params.value = urlparam;
-    const { list, mutate } = fetchGroupList(now, params);
-
-    const handleSearch = (val: string) => {
-      clearTimeout(debounce);
-      debounce = setTimeout(() => {
-        if (val) {
-          params.value.set(
-            "filter",
-            JSON.stringify({
-              $or: [{ name: { $ilike: `%${val}%` } }],
-            })
-          );
-        } else {
-          params.value.set("filter", null);
-        }
-        mutate();
-      }, 200);
-    };
+    const { list, handleSearch } = fetchGroupList(now);
     const handleChange = (checkedValues: string) => {
       emit("update:modelValue", checkedValues);
       emit("change", checkedValues);
     };
-
     return {
       list,
       handleSearch,

@@ -108,4 +108,6 @@ export const BasicSearchAttributes = [
   "sourceViewCount",
   "integrationCredentialQualifiedName",
   "connectionName",
+  "ownerUsers",
+  "ownerGroups",
 ];

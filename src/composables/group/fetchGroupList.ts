@@ -2,27 +2,26 @@ import swrvState from '../utils/swrvState';
 import useSWRV from 'swrv';
 import { Components } from '~/api/auth/client';
 
-import { User, URL } from '~/api/auth/user';
+import { Group, URL } from '~/api/auth/group';
 import { computed, ref } from 'vue';
 import LocalStorageCache from 'swrv/dist/cache/adapters/localStorage';
 
-export default function fetchUserList(dependent: any) {
-
+export default function fetchGroupList(dependent: any, paramsdefault?: any) {
 
     let params = ref({});
     // this is needed as there are multiple keys with the same param name
     const urlparam = new URLSearchParams();
     urlparam.append("limit", "20");
-    urlparam.append("sort", "first_name");
-    urlparam.append("columns", "first_name");
-    urlparam.append("columns", "last_name");
-    urlparam.append("columns", "username");
+    urlparam.append("sort", "name");
+    urlparam.append("columns", "name");
+    urlparam.append("columns", "user_count");
+
     params.value = urlparam;
 
 
-    const { data, error, mutate, isValidating } = useSWRV([URL.UserList, params?.value, {}], () => {
+    const { data, error, mutate, isValidating } = useSWRV([URL.GroupList, params?.value, {}], () => {
         if (dependent.value) {
-            return User.ListV2(params?.value);
+            return Group.ListV2(params?.value);
         }
         else {
             return {}
@@ -31,7 +30,6 @@ export default function fetchUserList(dependent: any) {
         revalidateOnFocus: false,
         cache: new LocalStorageCache(),
         dedupingInterval: 1,
-
     });
     const { state, STATES } = swrvState(data, error, isValidating);
 
@@ -46,25 +44,26 @@ export default function fetchUserList(dependent: any) {
     });
 
     let debounce: any = null;
-    const handleSearch = (val: string) => {
+    const handleSearch = (val: any) => {
         let value = "";
         if (val?.target) {
             value = val.target.value
         } else {
             value = val;
         }
+
         clearTimeout(debounce);
         debounce = setTimeout(() => {
-            params.value.set(
-                "filter",
-                JSON.stringify({
-                    $or: [
-                        { first_name: { $ilike: `%${value}%` } },
-                        { last_name: { $ilike: `%${value}%` } },
-                        { username: { $ilike: `%${value}%` } },
-                    ],
-                })
-            );
+            if (val) {
+                params.value.set(
+                    "filter",
+                    JSON.stringify({
+                        $or: [{ name: { $ilike: `%${value}%` } }],
+                    })
+                );
+            } else {
+                params.value.set("filter", null);
+            }
             mutate();
         }, 200);
     };
@@ -78,7 +77,6 @@ export default function fetchUserList(dependent: any) {
         state,
         STATES,
         mutate,
-        params,
         handleSearch
     }
 }

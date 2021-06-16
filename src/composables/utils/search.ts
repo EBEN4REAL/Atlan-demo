@@ -28,11 +28,16 @@ export default function fetchSearchList(dependent: any, body: Ref<Components.Sch
         return data?.value?.entities?.length;
     });
 
+    const aggregations = computed(() => {
+        return data?.value?.aggregations;
+    });
+
     return {
         data,
         body,
         totalCount,
         listCount,
+        aggregations,
         error,
         state,
         STATES,

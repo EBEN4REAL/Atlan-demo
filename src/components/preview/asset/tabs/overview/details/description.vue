@@ -32,7 +32,7 @@
       <p class="mb-0 text-gray-900" v-if="description">
         {{ description }}
       </p>
-      <p class="mb-0 text-gray-400" v-else>No description available</p>
+      <p class="mb-0 text-gray-500" v-else>No description available</p>
     </div>
   </a-popover>
 </template>

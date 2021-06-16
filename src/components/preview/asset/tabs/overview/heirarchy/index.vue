@@ -21,7 +21,7 @@
       </div>
       <div class="flex justify-between" :class="$style.ellipsis">
         <div class="flex flex-col max-w-full">
-          <p class="text-blue-600 lh-sm text-sm truncate mb-0">
+          <p class="mb-0 text-sm text-blue-600 truncate lh-sm">
             <a-tooltip placement="left">
               <template slot="title">
                 {{ path.value }}
@@ -29,8 +29,8 @@
               {{ path.value }}
             </a-tooltip>
           </p>
-          <div class="flex justify-between items-center mb-0">
-            <p class="text-xs text-gray-500 line-height-1 mb-0">
+          <div class="flex items-center justify-between mb-0">
+            <p class="mb-0 text-xs text-gray-500 line-height-1">
               {{ path.label }}
             </p>
           </div>

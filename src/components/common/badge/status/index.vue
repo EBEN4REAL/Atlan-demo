@@ -4,7 +4,7 @@
       <div class="mr-1">
         <fa :class="iconClass" :icon="icon" class="pushtop" />
       </div>
-      <p class="mb-0 text-gray-900" v-if="showLabel">
+      <p class="mb-0 text-gray-700" v-if="showLabel">
         {{ label }}
       </p>
     </div>

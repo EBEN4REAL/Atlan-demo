@@ -91,7 +91,8 @@
             :key="user"
           >
             <div
-              class="flex items-center px-2 py-1 mb-1 leading-none text-blue-600 align-middle bg-blue-100 rounded-md "
+              class="flex items-center px-2 py-1 mb-1 leading-none text-blue-600 align-middle bg-blue-100 rounded-md cursor-pointer  hover:text-primary-500"
+              @click.prevent.stop="handleClickUser"
             >
               <fa icon="fal user" class="mr-1 leading-none pushtop"></fa>
               <div>{{ user }}</div>
@@ -102,7 +103,8 @@
             :key="group"
           >
             <div
-              class="flex items-center px-2 py-1 mb-1 leading-none text-blue-600 align-middle bg-blue-100 rounded-md "
+              class="flex items-center px-2 py-1 mb-1 leading-none text-blue-600 align-middle bg-blue-100 rounded-md cursor-pointer  hover:text-primary-500"
+              @click.prevent.stop="handleClickGroup"
             >
               <fa
                 icon="fal user-friends"
@@ -191,6 +193,13 @@ export default defineComponent({
       handleSearch(searchText.value);
     };
 
+    const handleClickUser = () => {
+      alert("user");
+    };
+    const handleClickGroup = () => {
+      alert("group");
+    };
+
     return {
       list,
       isReady,
@@ -208,6 +217,8 @@ export default defineComponent({
       totalGroupCount,
       handleOwnerTypeChange,
       searchText,
+      handleClickUser,
+      handleClickGroup,
     };
   },
 });

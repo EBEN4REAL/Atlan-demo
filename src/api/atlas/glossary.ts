@@ -5,10 +5,18 @@ import { GlossaryType } from "~/types/atlas/glossary";
 import { ref, Ref, toRefs } from "vue";
 import { Components } from "./client";
 
-import { CREATE_GLOSSARY, CREATE_GLOSSARY_CATEGORY, CREATE_GLOSSARY_TERM, DELETE_GLOSSARY, DELETE_GLOSSARY_CATEGORY, DELETE_GLOSSARY_TERM, GET_CATEGORY } from "~/api/keyMaps/glossary"
+import { CREATE_GLOSSARY, CREATE_GLOSSARY_CATEGORY, CREATE_GLOSSARY_TERM, DELETE_GLOSSARY, DELETE_GLOSSARY_CATEGORY, DELETE_GLOSSARY_TERM, GET_CATEGORY, UPDATE_GLOSSARY, UPDATE_GLOSSARY_CATEGORY, UPDATE_GLOSSARY_TERM } from "~/api/keyMaps/glossary"
 import { useAPI } from "../useAPI";
 
 const serviceAlias = "auth/atlas";
+
+const GetGlossary = (guid: string, params?: any, options?: AxiosRequestConfig) => {
+    const data = getAxiosClient().get(getAPIPath(serviceAlias, `/glossary/${guid}`), {
+        params,
+        ...options,
+    })
+    return data as unknown as Components.Schemas.AtlasGlossary
+}
 
 const GetCategory = (guid: string, params?: any, options?: AxiosRequestConfig) => {
     const data = getAxiosClient().get(getAPIPath(serviceAlias, `/glossary/category/${guid}`), {
@@ -16,6 +24,14 @@ const GetCategory = (guid: string, params?: any, options?: AxiosRequestConfig) =
         ...options,
     })
     return data as unknown as Components.Schemas.AtlasGlossaryCategory
+}
+
+const GetTerm = (guid: string, params?: any, options?: AxiosRequestConfig) => {
+    const data = getAxiosClient().get(getAPIPath(serviceAlias, `/glossary/term/${guid}`), {
+        params,
+        ...options,
+    })
+    return data as unknown as Components.Schemas.AtlasGlossaryTerm
 }
 
 const List = (params?: any, options?: AxiosRequestConfig, config?: IConfig) => {
@@ -79,24 +95,22 @@ const CreateGlossaryTerm = (body: Record<string, any>, dependantFetchingKey?: Re
     return { data, error, isLoading }
 }
 
-const DeleteGlossary = (guid: string, dependantFetchingKey?: Ref) => {
+const DeleteGlossary = (guid: string) => {
     const { data, error, isLoading } = useAPI<Components.Schemas.AtlasGlossary>(DELETE_GLOSSARY, "DELETE", {
         cache: false,
         pathVariables: {
             guid
         },
-        dependantFetchingKey
     })
     return { data, error, isLoading }
 }
 
-const DeleteGlossaryCategory = (guid: string, dependantFetchingKey?: Ref) => {
+const DeleteGlossaryCategory = (guid: string) => {
     const { data, error, isLoading } = useAPI<Components.Schemas.AtlasGlossary>(DELETE_GLOSSARY_CATEGORY, "DELETE", {
         cache: false,
         pathVariables: {
             guid
         }, 
-        dependantFetchingKey
     })
     return { data, error, isLoading }
 }
@@ -111,8 +125,43 @@ const DeleteGlossaryTerm = (guid: string) => {
     return { data, error, isLoading }
 }
 
+
+const UpdateGlossary = (guid: string, body: Record<string, any>) => {
+    const { data, error, isLoading } = useAPI<Components.Schemas.AtlasGlossary>(UPDATE_GLOSSARY, "PUT", {
+        cache: false,
+        pathVariables: {
+            guid
+        },
+        body
+    })
+    return { data, error, isLoading }
+}
+
+const UpdateGlossaryCategory = (guid: string, body: Record<string, any>) => {
+    const { data, error, isLoading } = useAPI<Components.Schemas.AtlasGlossary>(UPDATE_GLOSSARY_CATEGORY, "PUT", {
+        cache: false,
+        pathVariables: {
+            guid
+        }, 
+        body
+    })
+    return { data, error, isLoading }
+}
+
+const UpdateGlossaryTerm = (guid: string, body: Record<string, any>) => {
+    const { data, error, isLoading } = useAPI<Components.Schemas.AtlasGlossary>(UPDATE_GLOSSARY_TERM, "PUT", {
+        cache: false,
+        pathVariables: {
+            guid
+        },
+        body
+    })
+    return { data, error, isLoading }
+}
 export const Glossary = {
+    GetGlossary,
     GetCategory,
+    GetTerm,
     List,
     ListCategoryHeadersForGlossary,
     ListTermsForGlossary,
@@ -122,5 +171,8 @@ export const Glossary = {
     CreateGlossaryTerm,
     DeleteGlossary,
     DeleteGlossaryCategory,
-    DeleteGlossaryTerm
+    DeleteGlossaryTerm,
+    UpdateGlossary,
+    UpdateGlossaryCategory,
+    UpdateGlossaryTerm,
 };

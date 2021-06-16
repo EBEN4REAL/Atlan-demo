@@ -77,7 +77,7 @@ export default defineComponent({
       },
     },
   },
-  emits: ["showCreateGlossaryModal"],
+  emits: ["showCreateGlossaryModal", "showUpdateGlossaryModal"],
   data() {
     return {};
   },
@@ -92,6 +92,7 @@ export default defineComponent({
 
     const createGlossaryCategoryTerm = (context: any) => {
       if (context.action === "create") emit("showCreateGlossaryModal", context);
+      if (context.action === "update") emit("showUpdateGlossaryModal", context);
       if (context.action === "delete") {
         Modal.confirm({
           title: `Are you sure delete this ${context.parentType}?`,

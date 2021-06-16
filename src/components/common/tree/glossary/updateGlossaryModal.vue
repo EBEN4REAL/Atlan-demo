@@ -1,7 +1,7 @@
 <template>
   <a-modal
     :visible="visible"
-    :title="`Add new ${eventContext.entity}`"
+    :title="`Update ${eventContext.entity}`"
     @cancel="handleCloseModal"
     @ok="handleSubmit"
   >
@@ -12,7 +12,7 @@
       placeholder="Description"
     />
     <p v-if="showSuccessMessage">
-      {{ eventContext.entity }} successfully created
+      {{ eventContext.entity }} successfully updated!
     </p>
   </a-modal>
 </template>
@@ -61,73 +61,50 @@ export default defineComponent({
 
     let body = ref<Record<string, any>>({});
 
+    watch(eventContext, async (newContext) => {
+      switch (newContext.parentType) {
+        case "glossary":
+          entity.value = await Glossary.GetGlossary(newContext.parentGuid);
+          break;
+        case "category":
+          entity.value = await Glossary.GetCategory(newContext.parentGuid);
+          break;
+        case "term":
+          entity.value =await  Glossary.GetTerm(newContext.parentGuid);
+          break;
+      }
+    });
+
+    watch(entity, (newEntity) => {
+        name.value = newEntity?.name ?? name.value
+        description.value = newEntity?.shortDescription ?? description.value 
+    })
+
     watch(
       [eventContext, name, description],
-      async ([_, newName, newDescription]) => {
+      async ([newContext, newName, newDescription]) => {
         body.value = {
           longDescription: "",
           name: newName,
           shortDescription: newDescription,
         };
-
-        if (props.eventContext.parentType === "glossary") {
-          body.value = {
-            ...body.value,
-            anchor: {
-              glossaryGuid: props.eventContext.parentGuid,
-            },
-          };
-        }
-
-        if (
-          props.eventContext.parentType === "category" &&
-          props.eventContext.entity === "category"
-        ) {
-          const response = await Glossary.GetCategory(
-            eventContext.value.parentGuid
-          );
-
-          body.value = {
-            ...body.value,
-            anchor: response?.anchor,
-            parentCategory: {
-              categoryGuid: response?.guid,
-            },
-          };
-        }
-        if (
-          props.eventContext.parentType === "category" &&
-          props.eventContext.entity === "term"
-        ) {
-          const response = await Glossary.GetCategory(
-            eventContext.value.parentGuid
-          );
-
-          body.value = {
-            ...body.value,
-            anchor: response?.anchor,
-            categories: [
-              {
-                categoryGuid: response?.guid,
-              },
-            ],
-          };
-        }
       }
     );
 
     const handleSubmit = () => {
       const serviceMap: Record<
         string,
-        "CreateGlossary" | "CreateGlossaryCategory" | "CreateGlossaryTerm"
+        "UpdateGlossary" | "UpdateGlossaryCategory" | "UpdateGlossaryTerm"
       > = {
-        glossary: "CreateGlossary",
-        category: "CreateGlossaryCategory",
-        term: "CreateGlossaryTerm",
+        glossary: "UpdateGlossary",
+        category: "UpdateGlossaryCategory",
+        term: "UpdateGlossaryTerm",
       };
       const service = serviceMap[props.eventContext.entity];
-
-      const { data, error, isLoading } = Glossary[service](body.value, body);
+      const { data, error, isLoading } = Glossary[service](
+        props.eventContext.parentGuid,
+        body.value as Record<string, any>
+      );
 
       watch([data, error, isLoading], ([newData, newError, newLoading]) => {
         entity.value = newData;
@@ -139,10 +116,7 @@ export default defineComponent({
 
         if (entity.value) {
           showSuccessMessage.value = true;
-          setTimeout(() => {
-            showSuccessMessage.value = false;
-            emit("closeModal");
-          }, 2000);
+          setTimeout(() => (showSuccessMessage.value = false), 2000);
         }
       });
     };

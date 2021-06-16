@@ -2,7 +2,7 @@ import { Ref, ref } from "vue";
 import { AxiosRequestConfig } from "axios";
 import useSWRV, { IConfig } from "swrv";
 
-import { fetcher, fetcherPost, getAxiosClient, deleter } from "~/api";
+import { fetcher, fetcherPost, getAxiosClient, deleter, updater } from "~/api";
 import keyMaps from "~/api/keyMaps/index"
 
 
@@ -24,7 +24,7 @@ interface useGetAPIParams {
  * @param body - The payload to send while making a `POST` request
  * @param options - SWRV or Axios specefic configuration objects
  */
-export const useAPI = <T>(key: string, method: 'GET' | 'POST' | 'DELETE', { cache = true, params, body, pathVariables, options, dependantFetchingKey }: useGetAPIParams) => {
+export const useAPI = <T>(key: string, method: 'GET' | 'POST' | 'DELETE' | 'PUT', { cache = true, params, body, pathVariables, options, dependantFetchingKey }: useGetAPIParams) => {
     const url = keyMaps[key]({ ...pathVariables });
     if (cache) {
         // If using cache, make a generic swrv request
@@ -34,7 +34,6 @@ export const useAPI = <T>(key: string, method: 'GET' | 'POST' | 'DELETE', { cach
             }
             return key
         }
-        console.log(getKey())
         const { data, error, mutate } = useSWRV<T>(getKey, () => {
             // Choose the fetcher function based on the method type
             switch (method) {
@@ -45,7 +44,10 @@ export const useAPI = <T>(key: string, method: 'GET' | 'POST' | 'DELETE', { cach
                     return fetcherPost(url, body, options)
 
                 case 'DELETE':
-                    return deleter(url)
+                    return deleter(url, options)
+
+                case 'PUT':
+                    return updater(url, body, options)
 
                 default:
                     return fetcher(url, params, options)
@@ -84,6 +86,16 @@ export const useAPI = <T>(key: string, method: 'GET' | 'POST' | 'DELETE', { cach
 
             case 'DELETE':
                 getAxiosClient().delete<T>(url, { ...options })
+                    .then((resp) => {
+                        data.value = resp as unknown as T
+                    })
+                    .catch((e) => {
+                        error.value = e
+                    })
+                break;
+
+            case 'PUT':
+                getAxiosClient().put<T>(url, body, { ...options })
                     .then((resp) => {
                         data.value = resp as unknown as T
                     })

@@ -77,12 +77,12 @@ export default defineComponent({
       },
     },
   },
-  emits: ["showCreateGlossaryModal", "showUpdateGlossaryModal"],
+  emits: ["showCreateGlossaryModal", "showUpdateGlossaryModal", "success"],
   data() {
     return {};
   },
   setup(props, { emit }) {
-    const { list, totalCount, listCount } = fetchGlossaryList();
+    const { list, totalCount, listCount, refetchGlossary, response } = fetchGlossaryList();
     const { selectedKeys, expandedKeys, expandNode, selectNode } =
       handleTreeExpand();
 
@@ -110,14 +110,20 @@ export default defineComponent({
             };
             const service = serviceMap[context.parentType];
             Glossary[service](context.parentGuid);
+            emit("success")
           },
         });
       }
     };
 
+    const refreshTree = () => {
+      refetchGlossary();
+    }
+
     return {
       index,
       list,
+      response,
       treeData,
       listCount,
       totalCount,
@@ -126,6 +132,7 @@ export default defineComponent({
       expandedKeys,
       expandNode,
       selectNode,
+      refreshTree,
       createGlossaryCategoryTerm,
     };
   },

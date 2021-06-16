@@ -14,14 +14,100 @@ export default function useGlossaryTree(list: ComputedRef<GlossaryType[] | undef
     const categoryMap: { [key: string]: Components.Schemas.AtlasRelatedCategoryHeader[] } = {};
     const treeData = ref<TreeDataItem[]>([]);
     watch(list, (newValue, oldValue) => {
-        treeData.value = list.value?.map((item) => {
-            return {
-                key: item.guid,
-                title: item.attributes.name,
-                type: "glossary",
-                isRoot: true,
-            };
-        }) as TreeDataItem[];
+        if (!treeData.value.length) {
+            treeData.value = list.value?.map((item, index) => {
+                return {
+                    key: item.guid,
+                    title: item.attributes.name,
+                    type: "glossary",
+                    isRoot: true,
+                };
+            }) as TreeDataItem[];
+        } else {
+            const updatedTreeData: TreeDataItem[] = [];
+
+            newValue?.forEach((element) => {
+                const newNode = treeData.value.find((treeNode: TreeDataItem) => treeNode.key === element.guid);
+
+                const recursivelyRefreshChildren = async (element: TreeDataItem) => {
+                    if (element.children?.length) {
+                        element.children.forEach((child) => recursivelyRefreshChildren(child))
+                        if (element.type === 'category') {
+                            const termsList = await Glossary.ListTermsForCategory(element.key as string, {}, { cache: false });
+                            const response = await Glossary.ListCategoryHeadersForGlossary(element.glossaryID, {}, { cache: false });
+                            
+                            const newChildren:TreeDataItem[] = []
+
+                            response.forEach((updated) => {
+                                if (updated.parentCategoryGuid === element.key) {
+                                    const orignal = element.children?.find((child) => child.key === updated.categoryGuid);
+
+                                    if (!orignal) newChildren.push({ title: updated.displayText, key: updated.categoryGuid, glossaryID: element.glossaryID, type: "category", isRoot: true  })
+                                    else newChildren.push({
+                                        children: orignal.children,
+                                        title: updated.displayText, key: updated.categoryGuid, glossaryID: element.glossaryID, type: "category", isRoot: true 
+                                    })
+                                }
+                            });
+                            termsList.forEach((updated) => {
+                                newChildren.push({
+                                    title: updated.name, key: updated.guid, glossaryID: element.glossaryID, type: "term", isLeaf: true
+                                })
+                            });
+
+                            element.children = newChildren;
+                        } else if(element.type === 'glossary'){
+                            const response = await Glossary.ListCategoryHeadersForGlossary(element.key as string, {}, { cache: false });
+                            const termsList = await Glossary.ListTermsForGlossary(element.key as string, {}, { cache: false });
+                           
+                            const updatedList: TreeDataItem[] = [];
+
+                            response.forEach((updated) => {
+                                if (!updated.parentCategoryGuid) {
+                                    const orignal = element.children?.find((child) => child.key === updated.categoryGuid);
+
+                                    if (!orignal) updatedList.push({ title: updated.displayText, key: updated.categoryGuid, glossaryID: element.glossaryID, type: "category", isRoot: true  })
+                                    else updatedList.push({
+                                        children: orignal.children,
+                                        title: updated.displayText, key: updated.categoryGuid, glossaryID: element.glossaryID, type: "category", isRoot: true 
+                                    })
+                                }
+                            });
+                            termsList.forEach((updated) => {
+                                updatedList.push({
+                                    title: updated.name, key: updated.guid, glossaryID: element.glossaryID, type: "term", isLeaf: true
+                                })
+                            });
+
+                            element.children = updatedList;
+                        }
+                    } else {
+                        return
+                    }
+                }
+
+                if (!newNode) {
+                    updatedTreeData.push({
+                        key: element.guid,
+                        title: element.attributes.name,
+                        type: "glossary",
+                        isRoot: true,
+                    })
+                }
+                else if (newNode) {
+                    if (newNode.children?.length) {
+                        // newNode.children.forEach((child) => {
+                            recursivelyRefreshChildren(newNode)
+                        // })
+                        updatedTreeData.push(newNode)
+                    } else {
+                        updatedTreeData.push(newNode)
+                    }
+                }
+            })
+
+            treeData.value = updatedTreeData;
+        }
     })
     const onLoadData = async (treeNode: any) => {
         if (treeNode.dataRef.children) {
@@ -56,10 +142,10 @@ export default function useGlossaryTree(list: ComputedRef<GlossaryType[] | undef
             }
         } else if (treeNode.dataRef.type === "category") {
             //find all categories which are children
-            const children = categoryMap[treeNode.dataRef.glossaryID].filter((item) => {
+            const children = categoryMap[treeNode.dataRef.glossaryID]?.filter((item) => {
                 return item.parentCategoryGuid === treeNode.dataRef.key
             });
-            children.forEach((child) => {
+            children?.forEach((child) => {
                 if (!treeNode.dataRef.children) {
                     treeNode.dataRef.children = [];
                 }
@@ -84,6 +170,8 @@ export default function useGlossaryTree(list: ComputedRef<GlossaryType[] | undef
         } else {
 
         }
+        console.log('updated', treeData.value)
+
     };
 
     return {

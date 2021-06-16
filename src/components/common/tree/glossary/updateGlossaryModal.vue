@@ -37,7 +37,7 @@ export default defineComponent({
       default: false,
     },
   },
-  emits: ["closeModal"],
+  emits: ["closeModal", "success"],
   setup(props, { emit }) {
     const { visible, eventContext } = toRefs(props);
 
@@ -115,6 +115,7 @@ export default defineComponent({
         description.value = "";
 
         if (entity.value) {
+            emit("success");
           showSuccessMessage.value = true;
           setTimeout(() => (showSuccessMessage.value = false), 2000);
         }

@@ -6,6 +6,7 @@ import tenant from "~/api/keyMaps/auth/tenant"
 import connection from "~/api/keyMaps/auth/connection"
 import glossary from "~/api/keyMaps/glossary";
 import apiKeys from "~/api/keyMaps/auth/apiKeys";
+import { getAPIPath } from "..";
 
 export default {
     ...asset,
@@ -14,5 +15,6 @@ export default {
     ...glossary,
     // ...group,
     ...connection,
-    ...apiKeys
+    ...apiKeys,
+    "GLOSSARY_BASIC_SEARCH":() => getAPIPath("auth/atlas", "/search/basic")
 };

@@ -1,10 +1,10 @@
 <template>
-  <CreateGlossaryModal :eventContext="eventContext" :visible="createGlossaryModalVisble" @closeModal="handleCloseModal"/>
-  <UpdateGlossaryModal :eventContext="eventContext" :visible="updateGlossaryModalVisble" @closeModal="handleCloseModal"/>
+  <CreateGlossaryModal :eventContext="eventContext" :visible="createGlossaryModalVisble" @success="handleSuccess" @closeModal="handleCloseModal"/>
+  <UpdateGlossaryModal :eventContext="eventContext" :visible="updateGlossaryModalVisble" @success="handleSuccess" @closeModal="handleCloseModal"/>
   <splitpanes class="h-full default-theme">
     <pane min-size="25" max-size="50" :size="25" class="px-3 bg-white">
       <a-input placeholder="Search" class="mt-3"></a-input>
-      <GlossaryTree @showCreateGlossaryModal="handleOpenModal" @showUpdateGlossaryModal="handleOpenUpdateModal"></GlossaryTree>
+      <GlossaryTree ref="glossaryTreeRef" @success="handleSuccess" @showCreateGlossaryModal="handleOpenModal" @showUpdateGlossaryModal="handleOpenUpdateModal"></GlossaryTree>
     </pane>
     <pane :size="74"> </pane>
   </splitpanes>
@@ -22,7 +22,8 @@ export default defineComponent({
   setup(){
     const createGlossaryModalVisble = ref(false);
     const updateGlossaryModalVisble = ref(false);
-
+    const glossaryTreeRef = ref()
+    
     const eventContext = ref({});
 
     const handleOpenModal = (context: Record<string, string>) => {
@@ -38,16 +39,22 @@ export default defineComponent({
     const handleCloseModal = () => {
       createGlossaryModalVisble.value = false;
       updateGlossaryModalVisble.value = false;
-      eventContext.value = {}      
+      eventContext.value = {};
     }
-    
+
+    const handleSuccess = () => {
+      glossaryTreeRef.value.refreshTree();
+    }
+
     return {
       handleOpenModal,
       handleCloseModal,
       handleOpenUpdateModal,
+      handleSuccess,
       createGlossaryModalVisble,
       updateGlossaryModalVisble,
-      eventContext
+      eventContext,
+      glossaryTreeRef
     }
   }
 });

@@ -3,8 +3,8 @@
     <div class="w-2/3 p-12 m-8 text-gray-600 bg-white rounded shadow smtpForm">
       <div class="w-100">
         <div class="mb-8">
-          <span class="text-2xl">
-            <i class="fal fa-envelope"></i>
+          <span class="flex items-center text-2xl">
+            <fa icon="fal envelope" class="mr-2" />
             Configure SMTP
           </span>
         </div>
@@ -12,7 +12,6 @@
           ref="formRef"
           layout="vertical"
           labelAlign="left"
-          :hideRequiredMark="true"
           :rules="rules"
           :labelCol="{ span: 6 }"
           :model="smtpServer"
@@ -20,7 +19,7 @@
         >
           <a-form-item
             v-for="config in smtpConfig"
-            :required="true"
+            :required="config.required"
             :label="config.label"
             :name="config.id"
             class="w-full"
@@ -215,11 +214,23 @@ export default defineComponent({
 :global(.smtpForm .ant-form-item) {
   @apply flex items-center flex-row;
 }
-:global(.smtpForm .ant-form-item-label label),
-:global(.smtpForm .ant-form-item input) {
-  @apply text-gray-600;
-}
+
 :global(.smtpForm .test-config-button) {
   @apply text-green-500 border-green-500;
+}
+:global(.ant-form-item-label
+    > label.ant-form-item-required:not(.ant-form-item-required-mark-optional)::before) {
+  @apply hidden;
+}
+// Aesterik in right side
+:global(.ant-form-item-label
+    > label.ant-form-item-required:not(.ant-form-item-required-mark-optional)::after) {
+  display: inline-block;
+  margin-left: 4px;
+  color: #ff4d4f;
+  font-size: 14px;
+  font-family: SimSun, sans-serif;
+  line-height: 1;
+  content: "*";
 }
 </style>

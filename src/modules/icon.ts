@@ -51,6 +51,7 @@ import { faAnalytics } from "@fortawesome/pro-light-svg-icons/faAnalytics";
 import { faProjectDiagram } from "@fortawesome/pro-light-svg-icons/faProjectDiagram";
 import { faBolt } from "@fortawesome/pro-light-svg-icons/faBolt";
 import { faPen } from "@fortawesome/pro-light-svg-icons/faPen";
+import { faEnvelope } from "@fortawesome/pro-light-svg-icons/faEnvelope";
 import { faArrowCircleRight } from "@fortawesome/pro-light-svg-icons/faArrowCircleRight";
 
 import { faTrashAlt } from "@fortawesome/pro-light-svg-icons/faTrashAlt";
@@ -65,6 +66,7 @@ import { faCopy } from "@fortawesome/pro-light-svg-icons/faCopy";
 library.add(
   faPlus,
   faSearch,
+  faEnvelope,
   faUser,
   faUsers,
   faCheckCircle,

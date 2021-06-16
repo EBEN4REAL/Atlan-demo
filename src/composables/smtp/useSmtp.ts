@@ -167,6 +167,7 @@ export function useSmtp() {
     watch([testSmtpConfigReqData, testSmtpConfigReqError], () => {
       if (testSmtpConfigReqData.value) {
         testSmtpConfigState.value = "VALID";
+        timerMessage(testSmtpConfigState);
       } else if (testSmtpConfigReqError.value) {
         console.log(
           testSmtpConfigReqError.value.message,
@@ -175,6 +176,7 @@ export function useSmtp() {
         const errorMessage = testSmtpConfigReqError.value.response.data.error;
         testSmtpConfigState.value = "INVALID";
         testSmtpConfigError.value = `Error - ${errorMessage}`;
+        timerMessage(testSmtpConfigState);
         timerMessage(testSmtpConfigError);
       }
     });

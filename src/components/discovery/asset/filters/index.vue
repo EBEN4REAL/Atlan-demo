@@ -5,6 +5,7 @@
   <a-collapse
     v-model:activeKey="activeKey"
     :bordered="false"
+    class="bg-transparent"
     :class="$style.filter"
     :accordion="true"
   >
@@ -12,7 +13,7 @@
       v-for="item in List"
       :key="item.id"
       :header="item.label"
-      class=""
+      class="bg-transparent"
     >
       <component
         :is="item.component"

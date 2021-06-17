@@ -1,5 +1,7 @@
 <template>
-  <div class="px-4 py-3 border-b border-gray-100 hover:bg-gray-50">
+  <div
+    class="px-4 py-3 my-2 bg-white border border-gray-100 rounded  hover:bg-blue-50"
+  >
     <div class="flex items-center justify-between mb-1 align-middle">
       <div class="flex items-center mr-1 align-middle">
         <div class="">

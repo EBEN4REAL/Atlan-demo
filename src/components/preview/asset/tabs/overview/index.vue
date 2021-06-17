@@ -5,9 +5,9 @@
     defaultActiveKey="details"
     :accordion="false"
     v-model:activeKey="activeKey"
-    class="bg-sidebar"
+    class="bg-transparent"
   >
-    <a-collapse-panel key="details" class="bg-sidebar forceRender">
+    <a-collapse-panel key="details" class="bg-transparent" forceRender>
       <template #header>
         <div class="flex items-center justify-between">
           <div>Details</div>
@@ -15,7 +15,7 @@
       </template>
       <Details :item="item"></Details>
     </a-collapse-panel>
-    <a-collapse-panel key="heirarchy" class="bg-sidebar">
+    <a-collapse-panel key="heirarchy" class="bg-transparent">
       <template #header>
         <div class="flex items-center justify-between">
           <div>Heirarchy</div>

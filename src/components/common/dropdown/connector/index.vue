@@ -46,7 +46,7 @@
   </div>
   <template v-else>
     <p
-      class="flex items-center px-3 mb-0 text-base tracking-wide text-gray-900 align-middle "
+      class="flex items-center px-3 mb-0 text-sm tracking-wide text-gray-900 align-middle "
     >
       <fa icon="fal globe" class="mr-1"></fa>All Connectors
     </p>

@@ -55,10 +55,4 @@ export default defineComponent({
 </script>
 
 <style lang="less" module>
-.searchbox {
-  @apply border-none shadow-none !important;
-  &:global(.ant-input-affix-wrapper-focused) {
-    @apply border-none shadow-none;
-  }
-}
 </style>>

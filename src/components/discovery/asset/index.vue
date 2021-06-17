@@ -2,7 +2,7 @@
 
 
 <template>
-  <div class="h-full col-span-2 pt-5 border-r border-gray-100 bg-sidebar">
+  <div class="h-full col-span-2 pt-5">
     <div class="flex flex-col h-full">
       <div class="px-3 mb-3">
         <a-radio-group
@@ -19,9 +19,10 @@
       <keep-alive class="flex-grow h-full">
         <div>
           <div v-if="filterMode === 'custom'">
-            <div class="px-1 py-2 mx-3 mb-4 bg-white border rounded">
+            <div class="pb-2 mb-2">
               <ConnectorDropdown></ConnectorDropdown>
             </div>
+
             <AssetFilters @change="handleFilterChange"></AssetFilters>
           </div>
 
@@ -31,7 +32,7 @@
     </div>
   </div>
   <div
-    class="flex flex-col items-stretch h-full col-span-7 bg-white shadow-md"
+    class="flex flex-col items-stretch h-full col-span-7"
     style="overflow: hidden"
   >
     <div class="flex items-center border-b border-gray-200">
@@ -42,22 +43,15 @@
           [STATES.VALIDATING].includes(state)
         "
         size="large"
-        class="px-4"
+        class="px-4 mt-4"
       ></SearchBox>
-
-      <div class="flex px-1 border-dashed">
-        <a-button type="link"> <fa icon="fal eye" class=""></fa></a-button>
-      </div>
     </div>
-    <div class="flex w-full bg-sidebar">
+    <div class="flex w-full">
       <AssetTabs :assetTypeList="assetTypeList"></AssetTabs>
     </div>
 
     <AssetList :list="list.value" @preview="handlePreview"> </AssetList>
-    <div
-      class="flex items-center px-6 py-2 border-t bg-sidebar"
-      style="min-height: 17px"
-    >
+    <div class="flex items-center px-6 py-2" style="min-height: 17px">
       <div
         class="flex items-center leading-none"
         v-if="

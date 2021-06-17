@@ -20,7 +20,7 @@
           type="primary"
           class="ml-4"
           size="large"
-          @click="isShowInviteUserModal = true"
+          @click="handleInviteUsers"
         >Invite User</a-button>
       </div>
     </div>
@@ -93,6 +93,15 @@
   >
     <ChangeRole :user="selectedUser" @updateRole="handleUpdateRole" />
   </a-modal>
+  <a-modal
+    :visible="showInviteUserModal"
+    :destroy-on-close="true"
+    title="Invite User"
+    :footer="null"
+    @cancel="closeInviteUserModal"
+  >
+    <InviteUsers @close="closeInviteUserModal" @handleInviteSent="handleInviteSent" />
+  </a-modal>
 </template>
 <script lang="ts">
 import { defineComponent, ref, reactive, computed } from "vue";
@@ -107,17 +116,20 @@ import {
   getNameInTitleCase,
 } from "~/composables//utils/string-operations";
 import ChangeRole from "./changeRole.vue";
+import InviteUsers from "./inviteUsers.vue";
 export default defineComponent({
   components: {
     UserPreviewDrawer,
     InvitationListTable,
     ChangeRole,
+    InviteUsers,
   },
   setup() {
     const IS_SMTP_CONFIGURED = false;
     let listType = ref("users");
     const searchText = ref("");
     const showChangeRoleModal = ref(false);
+    const showInviteUserModal = ref(false);
     const showUserPreview = ref(false);
     let selectedUser = ref({});
     const invitationComponentRef = ref(null);
@@ -235,6 +247,12 @@ export default defineComponent({
       showChangeRoleModal.value = false;
       selectedUser.value = {};
     };
+    const handleInviteUsers = (user: any) => {
+      showInviteUserModal.value = true;
+    };
+    const closeInviteUserModal = () => {
+      showInviteUserModal.value = false;
+    };
     const getModalContent = (user: any, action: "enable" | "disable") => {
       if (user.role !== "admin")
         return `Are you sure you want to ${action} ${
@@ -287,6 +305,11 @@ export default defineComponent({
       closeChangeRoleModal();
       reloadTable();
     };
+    const handleInviteSent = () => {
+      if (listType.value === "invitations" && invitationComponentRef.value)
+        invitationComponentRef.value.getInvitationList();
+      closeInviteUserModal();
+    };
     return {
       searchText,
       handleSearch,
@@ -310,6 +333,10 @@ export default defineComponent({
       closeChangeRoleModal,
       handleUpdateRole,
       invitationComponentRef,
+      closeInviteUserModal,
+      showInviteUserModal,
+      handleInviteUsers,
+      handleInviteSent,
     };
   },
   data() {

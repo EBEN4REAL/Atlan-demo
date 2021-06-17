@@ -83,6 +83,32 @@ const AddGroups = (userId: string, body: any, options?: AxiosRequestConfig) => {
     options
   );
 };
+const ResendVerificationEmail = (
+  userId: string,
+  body?: any,
+  options?: AxiosRequestConfig
+) => {
+  return getAxiosClient().post(
+    getAPIPath(serviceAlias, `/users/${userId}/resendinvite`),
+    body,
+    options
+  );
+};
+// revoking invitation per se is not possible currently, so we will delete the invited user instead. Important to never use this endpoint for active (enabled/disabled) users. Just using this for invites.
+const RevokeInvitation = (
+  userId: string,
+  body?: any,
+  options?: AxiosRequestConfig
+) => {
+  return getAxiosClient().post(
+    getAPIPath(serviceAlias, `/users/${userId}/delete`),
+    body,
+    options
+  );
+};
+const InviteUsers = (body?: any, options?: AxiosRequestConfig) =>
+  getAxiosClient().post(getAPIPath(serviceAlias, `/users`), body, options);
+
 export const User = {
   ListV2,
   GetUserSessions,
@@ -92,4 +118,7 @@ export const User = {
   UpdateUser,
   UpdateUserRole,
   AddGroups,
+  ResendVerificationEmail,
+  RevokeInvitation,
+  InviteUsers,
 };

@@ -13,9 +13,13 @@
         </a-select>
       </template>
     </a-input>
-    <a-button v-if="emails.length > 1" icon="close" class="ml-3" @click="deleteUserInput" />
+    <a-button v-if="emails.length > 1" class="ml-3" @click="deleteUserInput">
+      <fa icon="fal times"></fa>
+    </a-button>
   </div>
-  <a-button type="link" icon="plus" class="px-0" @click="onAddNewUser">New user</a-button>
+  <a-button type="link" class="px-0" @click="onAddNewUser">
+    <fa icon="fal plus" class="mr-1"></fa>New user
+  </a-button>
   <div class="flex justify-end mt-3">
     <div>
       <a-button

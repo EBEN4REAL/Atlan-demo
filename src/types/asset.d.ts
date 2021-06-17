@@ -4,7 +4,8 @@ export interface BaseAttributes {
   name?: string;
   description?: string;
   assetStatus?: string;
-  createTime: Date
+  createTime: Date,
+  qualifiedName: string
 }
 
 export interface AtlanTableAttributes extends BaseAttributes {

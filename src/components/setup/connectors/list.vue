@@ -28,7 +28,7 @@
 </template>
             
 <script lang="ts">
-import { defineComponent, ref } from "vue";
+import { defineComponent, ref, watch } from "vue";
 import ItemView from "./item.vue";
 import CategorySelector from "@common/selector/category/index.vue";
 
@@ -40,6 +40,7 @@ import fetchBotsList from "~/composables/bots/fetchBotsList";
 
 import { debounce } from "~/composables/utils/debounce";
 import { Components } from "~/api/atlas/client";
+import { useRoute } from "vue-router";
 
 export default defineComponent({
   components: {
@@ -49,18 +50,40 @@ export default defineComponent({
     ErrorView,
     EmptyView,
   },
-  setup(props) {
+  setup(props, { emit }) {
     let searchText = ref("");
     let now = ref(true);
 
     const entityFilters = {
       operator: <Components.Schemas.Operator>"eq",
       attributeName: "category",
-      attributeValue: "crawler",
+      attributeValue: "metadata",
     };
 
     const { list, totalCount, listCount, mutate, body, state, STATES } =
       fetchBotsList(now, searchText.value, entityFilters);
+
+    const route = useRoute();
+    watch(list, () => {
+      console.log(route.query.connector);
+      console.log(route.query.sample);
+
+      let isSample = false;
+      if (route.query.sample) {
+        isSample = route.query.sample == "true";
+      }
+
+      if (route.query.connector) {
+        let found = list?.value?.find(
+          (item) =>
+            item.attributes.integrationName == route.query.connector &&
+            item.attributes.isSample === isSample
+        );
+        if (found) {
+          emit("select", found);
+        }
+      }
+    });
 
     const handleChangeSearchText = debounce((input: any) => {
       body.value.query = input.target.value;
@@ -86,11 +109,15 @@ export default defineComponent({
     };
   },
   emits: ["select"],
-  mounted() {
-    // this.handleSearch();
-  },
   methods: {
     handleSelect(item: any) {
+      const isSample = item?.attributes?.isSample?.toString();
+      const query = {
+        ...this.$route.query,
+        connector: item.attributes.integrationName,
+        sample: isSample,
+      };
+      this.$router.replace({ query });
       this.$emit("select", item);
     },
   },

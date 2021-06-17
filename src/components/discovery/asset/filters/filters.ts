@@ -38,5 +38,26 @@ export const List: CollapseArray = [
     ],
     isDeleted: false,
     isDisabled: false,
+  }, {
+    id: "advanced",
+    label: "Advanced",
+    component: "advanced",
+    overallCondition: "OR",
+    filters: [
+      {
+        attributeName: "ownerUsers",
+        condition: "OR",
+        isMultiple: true,
+        operator: "contains",
+      },
+      {
+        attributeName: "ownerGroups",
+        condition: "OR",
+        isMultiple: true,
+        operator: "contains",
+      },
+    ],
+    isDeleted: false,
+    isDisabled: false,
   }
 ];

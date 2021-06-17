@@ -10,14 +10,14 @@ export const ConnectionAttributes = [
   "port",
   "ownerUsers",
   "ownerGroups",
+  "displayName",
   "integrationName",
   "integrationCredentialQualifiedName",
 ];
 
 export const CredentialAttributes = [
-  "authType"
+  "authType",
 ];
-
 
 export const BaseAttributes = [
   "__timestamp",
@@ -49,7 +49,14 @@ export const BotsAttributes = [
   "integrationName",
   "version",
   "logo",
+  "isSample"
 ];
+
+export const ColumnAttributes = [
+  "dataType",
+  "tableQualifiedName"
+];
+
 
 export const BasicSearchAttributes = [
   "__timestamp",
@@ -107,4 +114,6 @@ export const BasicSearchAttributes = [
   "sourceViewCount",
   "integrationCredentialQualifiedName",
   "connectionName",
+  "ownerUsers",
+  "ownerGroups",
 ];

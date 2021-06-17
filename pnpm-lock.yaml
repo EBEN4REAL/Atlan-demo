@@ -37,10 +37,7 @@ specifiers:
   '@vueuse/core': ^5.0.2
   '@vueuse/head': ^0.6.0
   ant-design-vue: ^2.2.0-beta.3
-  antlr4-autosuggest: ^0.0.28
-  antlr4ts: ^0.5.0-alpha.4
   antlr4ts-cli: ^0.5.0-alpha.4
-  antlr4ts-sql: ^1.1.0
   assert: ^2.0.0
   autoprefixer: ^10.2.6
   axios: ^0.21.1
@@ -61,6 +58,8 @@ specifiers:
   keycloak-js: ^13.0.1
   less: ^4.1.1
   lowlight: 1.20.0
+  mitt: ^2.1.0
+  numeral: '>=2'
   openapi-client-axios: ^3.14.0
   openapi-client-axios-ts: ^3.9.9
   openapi-typescript-codegen: ^0.9.3
@@ -90,7 +89,9 @@ specifiers:
   vue-axios: ^3.2.4
   vue-calendar-heatmap: ^0.8.4
   vue-i18n: ^9.1.6
+  vue-linkify: ^1.0.1
   vue-loader: ^16.2.0
+  vue-numerals: ^4.0.6
   vue-router: ^4.0.8
   vue-tsc: ^0.1.7
   vue-virtual-scroll-list: ^2.3.2
@@ -131,9 +132,6 @@ dependencies:
   '@vueuse/core': 5.0.2_vue@3.1.1
   '@vueuse/head': 0.6.0_vue@3.1.1
   ant-design-vue: 2.2.0-beta.3_e5ecb0e97dbb049b22ef6d791bebe419
-  antlr4-autosuggest: 0.0.28
-  antlr4ts: 0.5.0-alpha.4
-  antlr4ts-sql: 1.1.0
   assert: 2.0.0
   axios: 0.21.1
   axios-extensions: 3.1.3_axios@0.21.1
@@ -147,6 +145,8 @@ dependencies:
   keycloak-js: 13.0.1
   less: 4.1.1
   lowlight: 1.20.0
+  mitt: 2.1.0
+  numeral: 2.0.6
   openapi-client-axios: 3.14.0_axios@0.21.1
   openapi-client-axios-ts: 3.9.9
   qs: 6.10.1
@@ -159,6 +159,8 @@ dependencies:
   vue-axios: 3.2.4_axios@0.21.1+vue@3.1.1
   vue-calendar-heatmap: 0.8.4_vue@3.1.1
   vue-i18n: 9.1.6_vue@3.1.1
+  vue-linkify: 1.0.1
+  vue-numerals: 4.0.6_numeral@2.0.6+vue@3.1.1
   vue-router: 4.0.8_vue@3.1.1
   vue-virtual-scroll-list: 2.3.2
   vue3-tel-input: 1.0.4
@@ -3138,32 +3140,10 @@ packages:
       warning: 4.0.3
     dev: false
 
-  /antlr4-autosuggest/0.0.28:
-    resolution: {integrity: sha512-nwbi1dXjt9tb7rPHqMcrhcdVmEmeND0qppv3DTVeUd5F0BVJLQrSJEI60zrPrzrjNEwBObeSgxN7LdHQUsiu5g==}
-    dependencies:
-      antlr4: 4.9.2
-      debug: 3.2.7
-    dev: false
-
-  /antlr4/4.9.2:
-    resolution: {integrity: sha512-UjMSlenUORL+a+6g4RNZxRh5LcFWybRi2g0ASDBpgXBY6nlavg0BRVAVEQF0dz8jH6SyX3lV7uP5y/krJzc+Hw==}
-    engines: {node: '>=14'}
-    dev: false
-
   /antlr4ts-cli/0.5.0-alpha.4:
     resolution: {integrity: sha512-lVPVBTA2CVHRYILSKilL6Jd4hAumhSZZWA7UbQNQrmaSSj7dPmmYaN4bOmZG79cOy0lS00i4LY68JZZjZMWVrw==}
     hasBin: true
     dev: true
-
-  /antlr4ts-sql/1.1.0:
-    resolution: {integrity: sha512-94+8/+hsPI/OLG0WRGqW88/gqz+xxrSLSz/jGqS8Xl7tYWwUj/cBB4D/QRmNezYLqEaUzMHhTeQn5hzrpC2wNQ==}
-    dependencies:
-      antlr4ts: 0.5.0-alpha.4
-    dev: false
-
-  /antlr4ts/0.5.0-alpha.4:
-    resolution: {integrity: sha512-WPQDt1B74OfPv/IMS2ekXAKkTZIHl88uMetg6q3OTqgFxZ/dxDXI0EWLyZid/1Pe6hTftyg5N7gel5wNAGxXyQ==}
-    dev: false
 
   /any-promise/1.3.0:
     resolution: {integrity: sha1-q8av7tzqUugJzcA3au0845Y10X8=}
@@ -6778,6 +6758,14 @@ packages:
     resolution: {integrity: sha1-HADHQ7QzzQpOgHWPe2SldEDZ/wA=}
     dev: true
 
+  /linkifyjs/2.1.9:
+    resolution: {integrity: sha512-74ivurkK6WHvHFozVaGtQWV38FzBwSTGNmJolEgFp7QgR2bl6ArUWlvT4GcHKbPe1z3nWYi+VUdDZk16zDOVug==}
+    peerDependencies:
+      jquery: '>= 1.11.0'
+      react: '>= 0.14.0'
+      react-dom: '>= 0.14.0'
+    dev: false
+
   /load-json-file/4.0.0:
     resolution: {integrity: sha1-L19Fq5HjMhYjT9U62rZo607AmTs=}
     engines: {node: '>=4'}
@@ -7193,6 +7181,10 @@ packages:
   /minimist/1.2.5:
     resolution: {integrity: sha512-FM9nNUYrRBAELZQT3xeZQ7fmMOBg6nWNmJKTcgsJeaLstP/UODVpGsr5OhXhhXg6f+qtJ8uiZ+PUxkDWcgIXLw==}
 
+  /mitt/2.1.0:
+    resolution: {integrity: sha512-ILj2TpLiysu2wkBbWjAmww7TkZb65aiQO+DkVdUTBpBXq+MHYiETENkKFMtsJZX1Lf4pe4QOrTSjIfUwN5lRdg==}
+    dev: false
+
   /mkdirp/0.5.5:
     resolution: {integrity: sha512-NKmAlESf6jMGym1++R0Ra7wvhV+wFW63FaSOFPwRahvea0gMUcGUhVeAg/0BC0wiv9ih5NYPB1Wn1UEI1/L+xQ==}
     hasBin: true
@@ -7353,6 +7345,10 @@ packages:
   /num2fraction/1.2.2:
     resolution: {integrity: sha1-b2gragJ6Tp3fpFZM0lidHU5mnt4=}
     dev: true
+
+  /numeral/2.0.6:
+    resolution: {integrity: sha1-StCAk21EPCVhrtnyGX7//iX05QY=}
+    dev: false
 
   /nwsapi/2.2.0:
     resolution: {integrity: sha512-h2AatdwYH+JHiZpv7pt/gSX1XoRGb7L/qSIeuqA6GwYoF9w1vP1cw42TO0aI2pNyshRK5893hNSl+1//vHK7hQ==}
@@ -10340,6 +10336,17 @@ packages:
       vue: 3.1.1
     dev: false
 
+  /vue-linkify/1.0.1:
+    resolution: {integrity: sha1-LGIYGXjvHGXYdNmxVkeVMdZjDLM=}
+    dependencies:
+      linkifyjs: 2.1.9
+      vue: 2.6.14
+    transitivePeerDependencies:
+      - jquery
+      - react
+      - react-dom
+    dev: false
+
   /vue-loader/16.2.0:
     resolution: {integrity: sha512-TitGhqSQ61RJljMmhIGvfWzJ2zk9m1Qug049Ugml6QP3t0e95o0XJjk29roNEiPKJQBEi8Ord5hFuSuELzSp8Q==}
     dependencies:
@@ -10347,6 +10354,16 @@ packages:
       hash-sum: 2.0.0
       loader-utils: 2.0.0
     dev: true
+
+  /vue-numerals/4.0.6_numeral@2.0.6+vue@3.1.1:
+    resolution: {integrity: sha512-MT/Qi2vPrN6xhYrQoEct7blDxZ1+BIHhuDq2GuFvCNgegj6dsc7mrtgaet+h70CLYqJffONsgdOcmJC1Lrsx5Q==}
+    peerDependencies:
+      numeral: '>=2'
+      vue: ^3.0.0-rc.9
+    dependencies:
+      numeral: 2.0.6
+      vue: 3.1.1
+    dev: false
 
   /vue-observe-visibility/0.4.6:
     resolution: {integrity: sha512-xo0CEVdkjSjhJoDdLSvoZoQrw/H2BlzB5jrCBKGZNXN2zdZgMuZ9BKrxXDjNP2AxlcCoKc8OahI3F3r3JGLv2Q==}
@@ -10409,6 +10426,10 @@ packages:
       vue: 3.1.1
       vue-observe-visibility: 0.4.6
       vue-resize: 0.4.5_vue@3.1.1
+    dev: false
+
+  /vue/2.6.14:
+    resolution: {integrity: sha512-x2284lgYvjOMj3Za7kqzRcUSxBboHqtgRE2zlos1qWaOye5yUmHn42LB1250NJBLRwEcdrB0JRwyPTEPhfQjiQ==}
     dev: false
 
   /vue/3.1.1:

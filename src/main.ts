@@ -24,15 +24,10 @@ Object.values(import.meta.globEager('./modules/*.ts')).map(i => i.install?.({ ap
 app.use(router).mount('#app');
 
 
-
-
-
 const fn = async () => {
   return await app.config.globalProperties.$keycloak.init({
     pkceMethod: "S256",
     onLoad: "check-sso",
-    enableLogging: true,
-    loginHint: "",
     silentCheckSsoRedirectUri: window.location.origin + "/check-sso.html",
   });
 };
@@ -54,12 +49,12 @@ router.beforeEach(async (to, from, next) => {
           window.location.replace(
             app.config.globalProperties.$keycloak.createLoginUrl()
           );
-          return;
+
         }
       } catch (err) {
         console.log("login", err);
         console.dir("error in init", err);
-        app.config.globalProperties.$error(err);
+        app.config.globalProperties.$error("Authentication Server is not available. Please try again");
         return;
         // window.location.replace("/not-found");
       }

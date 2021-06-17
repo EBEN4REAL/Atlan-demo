@@ -107,7 +107,7 @@ export default defineComponent({
           {
             botQualifiedName: this.attributes(this.item).qualifiedName,
             connection: {
-              name: this.credential.name,
+              displayName: this.credential.name,
               host: this.credential.host,
               port: this.credential.port,
               allowQuery: this.job.allowQuery,

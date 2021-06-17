@@ -1,6 +1,9 @@
 <template>
-  <div class="flex items-center justify-center min-h-screen min-w-screen">
+  <div
+    class="flex flex-col items-center justify-center w-full h-full text-center"
+  >
     {{ empty }}
+    <a-button @click="handleClick" class="mt-2">{{ buttonText }}</a-button>
   </div>
 </template>
   
@@ -16,9 +19,22 @@ export default defineComponent({
         return "";
       },
     },
+    buttonText: {
+      type: String,
+      required: false,
+      default() {
+        return "";
+      },
+    },
   },
-  computed: {},
-  mounted() {},
-  methods: {},
+  emits: ["event"],
+  setup(props, { emit }) {
+    const handleClick = () => {
+      emit("event");
+    };
+    return {
+      handleClick,
+    };
+  },
 });
 </script>

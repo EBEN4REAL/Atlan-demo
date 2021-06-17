@@ -62,13 +62,18 @@
         ><fa icon="fal user-edit"></fa
       ></a-button>
     </a-input-group>
+    <UserSelector v-if="dataType === 'users'"></UserSelector>
   </div>
 </template>
           
 <script lang="ts">
 import { defineComponent, PropType } from "vue";
+import UserSelector from "@common/selector/users/index.vue";
 
 export default defineComponent({
+  components: {
+    UserSelector,
+  },
   props: {
     modelValue: {
       required: false,

@@ -60,7 +60,7 @@ export default function useGroups(groupListAPIParams: {
     mutate: getGroupList,
     isValidating,
   } = useSWRV(
-    [getAPIPath("auth", "/groups/v2"), groupListAPIParams, {}],
+    [getAPIPath("auth", "/groups"), groupListAPIParams, {}],
     fetcher,
     {
       revalidateOnFocus: false,

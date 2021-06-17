@@ -1,12 +1,19 @@
 import { getAPIPath, getAxiosClient } from "~/api";
 import { AxiosRequestConfig } from "axios";
+import { useAPI } from "~/api/useAPI";
+import { generateQueryStringParamsFromObj } from "~/utils/queryString.ts";
+
+import {
+  GET_USER_SESSIONS,
+  SIGN_OUT_ALL_SESSIONS,
+  SIGN_OUT_SESSION_BY_ID,
+  GET_USER_ACCESS_LOGS,
+} from "~/api/keyMaps/auth/user";
 const serviceAlias = "auth";
 
-
 export const URL = {
-  UserList: "/users/v2"
-}
-
+  UserList: "/users",
+};
 
 const ListV2 = (params?: any, options?: AxiosRequestConfig) => {
   return getAxiosClient().get(getAPIPath(serviceAlias, URL.UserList), {
@@ -14,7 +21,67 @@ const ListV2 = (params?: any, options?: AxiosRequestConfig) => {
     ...options,
   });
 };
-
+//Sessions
+const GetUserSessions = (id: string, params?: any, options?: any) => {
+  return useAPI(GET_USER_SESSIONS, "GET", {
+    params,
+    options,
+    pathVariables: { id },
+  });
+};
+const SignOutAllSessions = (id: string) => {
+  return getAxiosClient().post(
+    getAPIPath(serviceAlias, `/users/${id}/sessions/delete`)
+  );
+  // return useAPI(SIGN_OUT_ALL_SESSIONS, "POST", {
+  //   params,
+  //   options,
+  //   pathVariables: { id },
+  //   cache: false,
+  // });
+};
+const SignOutSessionById = (id: string) => {
+  return getAxiosClient().post(
+    getAPIPath(serviceAlias, `/users/sessions/${id}/delete`)
+  );
+  // return useAPI(SIGN_OUT_SESSION_BY_ID, "POST", {
+  //   params,
+  //   options,
+  //   pathVariables: { id },
+  //   cache: false,
+  // });
+};
+const GetUserAccessLogs = (id: string, parameters?: any, options?: any) => {
+  // console.log("ppp", parameters);
+  // const params = generateQueryStringParamsFromObj(parameters);
+  // console.log("pppp", params);
+  const params = parameters;
+  return useAPI(GET_USER_ACCESS_LOGS, "GET", {
+    params,
+    options,
+    pathVariables: { id },
+  });
+};
+const UpdateUser = (id: string, body?: any, options?: any) => {
+  return getAxiosClient().post(
+    getAPIPath(serviceAlias, `/users/${id}`),
+    body,
+    options
+  );
+};
+const UpdateUserRole = (id: string, body?: any, options?: any) => {
+  return getAxiosClient().post(
+    getAPIPath(serviceAlias, `/users/${id}/roles/update`),
+    body,
+    options
+  );
+};
 export const User = {
   ListV2,
+  GetUserSessions,
+  SignOutAllSessions,
+  SignOutSessionById,
+  GetUserAccessLogs,
+  UpdateUser,
+  UpdateUserRole,
 };

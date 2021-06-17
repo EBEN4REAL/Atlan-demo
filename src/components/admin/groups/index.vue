@@ -22,18 +22,12 @@
     <a-table
       :dataSource="groupList"
       :columns="columns"
-      :rowKey="groupList.id"
+      :row-key="(group) => group.id"
       :pagination="pagination"
       @change="handleTableChange"
       :loading="[STATES.PENDING].includes(state) ||
           [STATES.VALIDATING].includes(state)"
     >
-      <!-- <a slot="name">hbhbhbhbhd</a> -->
-      <!-- <template v-slot:name="text">
-        <a-icon type="smile-o" />
-        {{text}}pppp
-      </template>-->
-
       <template #name="{text:group}">
         <div @click="() => {handleGroupClick(group)}">
           <span class="capitalize">{{ group.name }}</span>
@@ -61,7 +55,7 @@
       title="Create New Group"
       :footer="null"
     >
-      <AddGroup />
+      <AddGroup @createGroup="handleCreateGroup" />
     </a-modal>
     <GroupPreviewDrawer
       @closePreview="handleClosePreview "
@@ -73,7 +67,7 @@
 <script lang="ts">
 import { ref, reactive, defineComponent, computed } from "vue";
 import useGroups from "./useGroups";
-import AddGroup from "./addGroupNew.vue";
+import AddGroup from "./addGroup.vue";
 import ErrorView from "@common/error/index.vue";
 import GroupPreviewDrawer from "./groupPreview/groupPreviewDrawer.vue";
 import { Group } from "~/api/auth/group";
@@ -100,15 +94,20 @@ export default defineComponent({
     const pagination = computed(() => {
       return {
         total: Object.keys(groupListAPIParams.filter).length
-          ? groupList?.value?.length
+          ? filteredGroupsCount.value
           : totalGroupsCount.value,
         pageSize: groupListAPIParams.limit,
         current: groupListAPIParams.offset / groupListAPIParams.limit + 1,
       };
     });
-    const { groupList, totalGroupsCount, getGroupList, state, STATES } =
-      useGroups(groupListAPIParams);
-
+    const {
+      groupList,
+      totalGroupsCount,
+      filteredGroupsCount,
+      getGroupList,
+      state,
+      STATES,
+    } = useGroups(groupListAPIParams);
     //Logic for search input
     const searchText = ref<string>("");
     const onSearch = (searchValue: string) => {
@@ -156,6 +155,10 @@ export default defineComponent({
         message.error("Failed, try again");
       }
     };
+    const handleCreateGroup = () => {
+      isAddGroupModalVisible.value = false;
+      getGroupList();
+    };
     return {
       isAddGroupModalVisible,
       toggleAddGroupModal,
@@ -172,6 +175,7 @@ export default defineComponent({
       selectedGroup,
       handleClosePreview,
       handleDeleteGroup,
+      handleCreateGroup,
     };
   },
   data() {

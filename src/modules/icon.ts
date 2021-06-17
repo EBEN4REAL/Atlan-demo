@@ -43,6 +43,7 @@ import { faCertificate } from "@fortawesome/pro-light-svg-icons/faCertificate";
 import { faUserShield } from "@fortawesome/pro-light-svg-icons/faUserShield";
 import { faUserEdit } from "@fortawesome/pro-light-svg-icons/faUserEdit";
 import { faSync } from "@fortawesome/pro-light-svg-icons/faSync";
+import { faChevronDoubleLeft } from "@fortawesome/pro-light-svg-icons/faChevronDoubleLeft";
 
 import { faGlobe } from "@fortawesome/pro-light-svg-icons/faGlobe";
 import { faHistory } from "@fortawesome/pro-light-svg-icons/faHistory";
@@ -52,10 +53,9 @@ import { faProjectDiagram } from "@fortawesome/pro-light-svg-icons/faProjectDiag
 import { faBolt } from "@fortawesome/pro-light-svg-icons/faBolt";
 import { faPen } from "@fortawesome/pro-light-svg-icons/faPen";
 import { faArrowCircleRight } from "@fortawesome/pro-light-svg-icons/faArrowCircleRight";
-import { faTrashAlt } from "@fortawesome/pro-light-svg-icons/faTrashAlt"
-import { faTabletAlt } from "@fortawesome/pro-light-svg-icons/faTabletAlt"
-import { faArrowDown } from "@fortawesome/pro-light-svg-icons/faArrowDown"
-
+import { faTrashAlt } from "@fortawesome/pro-light-svg-icons/faTrashAlt";
+import { faTabletAlt } from "@fortawesome/pro-light-svg-icons/faTabletAlt";
+import { faArrowDown } from "@fortawesome/pro-light-svg-icons/faArrowDown";
 
 library.add(
   faPlus,
@@ -100,12 +100,18 @@ library.add(
   faPlug,
   faUserEdit,
   faSync,
-  faGlobe, faHistory, faColumns, faAnalytics, faProjectDiagram, faBolt,
+  faGlobe,
+  faHistory,
+  faColumns,
+  faAnalytics,
+  faProjectDiagram,
+  faBolt,
   faPen,
   faArrowCircleRight,
   faTabletAlt,
   faTrashAlt,
   faArrowDown,
+  faChevronDoubleLeft
 );
 
 // Solid Icons

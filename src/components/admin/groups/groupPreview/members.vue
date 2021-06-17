@@ -1,16 +1,10 @@
 <template>
   <div class="my-3 mr-5">
-    <div v-if="!selectedGroup.memberCount" class="flex flex-col items-center justify-center">
+    <div v-if="!memberList.value.length" class="flex flex-col items-center justify-center">
       <div class="text-center">
         <p class="text-lg">No members are present in the group.</p>
         <div class="mt-4">
-          <!-- <a-button
-            icon="plus"
-            size="large"
-            type="primary"
-            ghost
-            @click="handleAddMember"
-          >Add Members</a-button>-->
+          <a-button size="large" type="primary" ghost @click="handleAddMember">Add Members</a-button>
         </div>
       </div>
     </div>
@@ -26,7 +20,7 @@
           ></a-input-search>
         </div>
         <div>
-          <!-- <a-button icon="plus" type="primary" ghost @click="handleAddMember">Add Member</a-button> -->
+          <a-button type="primary" ghost @click="handleAddMember">Add Member</a-button>
         </div>
       </div>
       <div
@@ -40,7 +34,7 @@
           size="large"
           type="primary"
           ghost
-          @click="getGroupMembersList"
+          @click="()=>{getGroupMembersList()}"
         >Try again</a-button>
       </div>
       <div v-else class="min-h-screen mt-4">
@@ -78,14 +72,19 @@
         </div>
       </div>
     </div>
-    <!-- <a-modal v-model="showAddMemberModal" title="Add Users" :footer="null" :destroy-on-close="true">
-      <add-group-members
-        ref="addUsers"
-        :group-member-ids="members.map((member) => member.id)"
-        :add-member-loading="addMemberLoading"
+    <a-modal
+      :visible="showAddMemberModal"
+      title="Add Users"
+      :footer="null"
+      :destroy-on-close="true"
+      @cancel="closeAddGroupModal"
+    >
+      <AddGroupMembers
         @addMembersToGroup="addMembersToGroup"
+        :addMemberLoading="addMemberLoading"
+        ref="addUsers"
       />
-    </a-modal>-->
+    </a-modal>
   </div>
 </template>
 
@@ -102,7 +101,8 @@ import {
   getNameInTitleCase,
 } from "~/composables/utils/string-operations";
 import { Group } from "~/api/auth/group";
-// import AddGroupMembers from "~/components/admin/groups/groupPreview/addGroupMembers.vue";
+import { getIsLoadMore } from "~/composables/utils/isLoadMore";
+import AddGroupMembers from "~/components/admin/groups/groupPreview/about/members/addGroupMembers.vue";
 export default defineComponent({
   name: "GroupMembers",
   props: {
@@ -113,10 +113,12 @@ export default defineComponent({
   },
   components: {
     ErrorView,
-    //  .AddGroupMembers,
+    AddGroupMembers,
   },
   setup(props, context) {
     const searchText = ref("");
+    const showAddMemberModal = ref(false);
+    const addMemberLoading = ref(false);
     const memberListParams = reactive({
       groupId: props.selectedGroup.id,
       params: {
@@ -162,8 +164,28 @@ export default defineComponent({
         searchText.value ? filteredMembersCount.value : totalMembersCount.value
       );
     });
+    const addMembersToGroup = async (userIds) => {
+      addMemberLoading.value = true;
+      try {
+        await Group.AddMembers(props.selectedGroup.id, {
+          users: userIds,
+        });
+        memberListParams.params.offset = 0;
+        getGroupMembersList();
+        // TODO: fetch group again
+        // await this.FETCH_GROUP_LIST();
+        addMemberLoading.value = false;
+        message.success(
+          `${pluralizeString("Member", userIds.length, false)} added`
+        );
+        showAddMemberModal.value = false;
+      } catch (e) {
+        addMemberLoading.value = false;
+
+        message.error("Unable to add members, please try again.");
+      }
+    };
     const removeUserFromGroup = async (userId: any) => {
-      console.log(userId);
       const userIds = [userId];
       try {
         await Group.RemoveMembersFromGroup(
@@ -173,6 +195,7 @@ export default defineComponent({
           },
           {}
         );
+        memberListParams.params.offset = 0;
         getGroupMembersList();
         // TODO: fetch group again
         // await this.FETCH_GROUP_LIST();
@@ -181,22 +204,6 @@ export default defineComponent({
         message.error("Failed, try again");
       }
     };
-    const getIsLoadMore = (
-      length: number,
-      offset: any,
-      limit: number,
-      totalCount: number
-    ) => {
-      if (
-        totalCount >= limit &&
-        length < totalCount &&
-        offset + limit <= totalCount &&
-        offset + limit < 10000
-      ) {
-        return true;
-      }
-      return false;
-    };
     const getUserName = (user: any) => {
       const { first_name } = user;
       const { last_name } = user;
@@ -204,6 +211,12 @@ export default defineComponent({
         return `${first_name} ${last_name || ""}`;
       }
       return user.email;
+    };
+    const handleAddMember = () => {
+      showAddMemberModal.value = true;
+    };
+    const closeAddGroupModal = () => {
+      showAddMemberModal.value = false;
     };
     return {
       searchText,
@@ -221,6 +234,11 @@ export default defineComponent({
       getNameInitials,
       getNameInTitleCase,
       pluralizeString,
+      handleAddMember,
+      showAddMemberModal,
+      addMembersToGroup,
+      addMemberLoading,
+      closeAddGroupModal,
     };
   },
 });

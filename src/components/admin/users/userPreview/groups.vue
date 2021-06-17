@@ -1,0 +1,206 @@
+<template>
+  <div class="my-3 mr-5">
+    <div v-if="!selectedUser.group_count" class="flex flex-col items-center justify-center">
+      <div class="text-center">
+        <p class="text-lg">This user is not part of any group.</p>
+        <div class="mt-4">
+          <a-button size="large" type="primary" ghost @click="handleAddToGroup">
+            <fa icon="fal plus" class="mr-2"></fa>Add to group
+          </a-button>
+        </div>
+      </div>
+    </div>
+    <div v-else>
+      <div class="flex flex-row justify-between">
+        <div>
+          <a-input-search
+            placeholder="Search Groups"
+            :allowClear="true"
+            class="mr-1"
+            v-model:value="searchText"
+            @change="handleSearch"
+          ></a-input-search>
+        </div>
+        <div>
+          <!-- <a-button icon="plus" type="primary" ghost @click="handleAddToGroup">
+            Add to group
+          </a-button>-->
+        </div>
+      </div>
+      <div
+        class="flex items-center h-full align-middle bg-white"
+        style="min-height: 200px"
+        v-if="[STATES.ERROR, STATES.STALE_IF_ERROR].includes(state)"
+      >
+        <ErrorView></ErrorView>
+        <a-button size="large" type="primary" ghost @click="()=>{getUserGroupList()}">
+          <fa icon="fal sync"></fa>Try again
+        </a-button>
+      </div>
+      <div v-else class="min-h-screen mt-4">
+        <div v-for="group in groupList" :key="group.id" class="my-2">
+          <div class="flex justify-between">
+            <div class="flex items-center">
+              <a-avatar
+                shape="circle"
+                class="mr-1 ant-tag-blue text-primary-500 avatars"
+                :size="40"
+              >{{ getNameInitials(getNameInTitleCase(group.name)) }}</a-avatar>
+              <div class="ml-2">
+                <div>{{ group.name }}</div>
+                <div>@{{ group.alias }}</div>
+                <div>{{ pluralizeString("user", group.memberCount) }}</div>
+              </div>
+            </div>
+            <a-popover trigger="click" placement="bottom">
+              <template #content>
+                <span class="text-red-500" @click="() =>removeUserFromGroup(group)">Remove User</span>
+              </template>
+              <fa icon="fal cog"></fa>
+            </a-popover>
+          </div>
+        </div>
+        <div
+          class="flex justify-center"
+          v-if="[STATES.PENDING].includes(state) ||
+          [STATES.VALIDATING].includes(state)"
+        >
+          <a-spin></a-spin>
+        </div>
+        <div v-else-if="showLoadMore" class="flex justify-center">
+          <a-button @click="handleLoadMore">load more</a-button>
+        </div>
+      </div>
+    </div>
+    <a-modal
+      :visible="showAddToGroupModal"
+      title="Add to group"
+      :footer="null"
+      :destroy-on-close="true"
+      @cancel="closeAddToGroupModal"
+    >
+      <AddToGroup :user-group-ids="userGroupIds" @handleAddToGroup="addUserToGroup" />
+    </a-modal>
+  </div>
+</template>
+  
+<script lang='ts'>
+import { message } from "ant-design-vue";
+import getUserGroups from "~/components/admin/users/userPreview/getUserGroups";
+import { defineComponent, computed, reactive, ref } from "vue";
+import {
+  pluralizeString,
+  getNameInitials,
+  getNameInTitleCase,
+} from "~/composables//utils/string-operations";
+import { getIsLoadMore } from "~/composables/utils/isLoadMore";
+import { debounce } from "~/composables/utils/debounce";
+import ErrorView from "@common/error/index.vue";
+import { Group } from "~/api/auth/group";
+// import AddToGroup from "~/components/admin/users/addUserToGroupModal.vue";
+
+export default defineComponent({
+  name: "UserPreviewGroups",
+  props: {
+    selectedUser: {
+      type: Object,
+      default: {},
+    },
+  },
+  components: {
+    // AddToGroup,
+    ErrorView,
+  },
+  setup(props, context) {
+    const searchText = ref("");
+    const groupListAPIParams = reactive({
+      userId: props.selectedUser.id,
+      params: {
+        limit: 10,
+        offset: 0,
+        sort: "name",
+        filter: {},
+      },
+    });
+    const {
+      groupList,
+      totalGroupCount,
+      filteredGroupCount,
+      getUserGroupList,
+      state,
+      STATES,
+    } = getUserGroups(groupListAPIParams);
+    const handleSearch = debounce((input: any) => {
+      groupListAPIParams.params.filter = searchText.value
+        ? {
+            $or: [
+              { name: { $ilike: `%${searchText.value}%` } },
+              { alias: { $ilike: `%${searchText.value}%` } },
+            ],
+          }
+        : {};
+      groupListAPIParams.params.offset = 0;
+      getUserGroupList();
+    }, 200);
+    const handleLoadMore = () => {
+      groupListAPIParams.params.offset =
+        groupListAPIParams.params.offset + groupListAPIParams.params.limit;
+      getUserGroupList();
+    };
+    let showLoadMore = computed(() => {
+      return getIsLoadMore(
+        // TODO: check if there's a better way access memberList and not use ref in a ref
+        groupList.value.length,
+        groupListAPIParams.params.offset,
+        groupListAPIParams.params.limit,
+        searchText.value ? filteredGroupCount.value : totalGroupCount.value
+      );
+    });
+    const handleAddToGroup = () => {};
+
+    const removeUserFromGroup = async (group: any) => {
+      const userIds = [props.selectedUser.id];
+      try {
+        await Group.RemoveMembersFromGroup(
+          group.id,
+          {
+            users: userIds,
+          },
+          {}
+        );
+        getUserGroupList();
+        //TODO: fetch current user to update groupCount
+        message.success(
+          `${props.selectedUser.name} removed from ${group.name}`
+        );
+      } catch (error) {
+        message.error(
+          `Failed to remove ${props.selectedUser.name} from  ${group.name}, please try again.`
+        );
+      }
+    };
+
+    return {
+      groupList,
+      totalGroupCount,
+      filteredGroupCount,
+      handleLoadMore,
+      handleSearch,
+      handleAddToGroup,
+      removeUserFromGroup,
+      getNameInitials,
+      getNameInTitleCase,
+      pluralizeString,
+      getUserGroupList,
+      searchText,
+      showLoadMore,
+      state,
+      STATES,
+    };
+  },
+});
+</script>
+  
+  <style lang="less" module>
+</style>
+  

@@ -46,7 +46,7 @@
               </div>
             </div>
           </div>
-          <a-btn
+          <a-button
             variant="primary"
             class="px-3 py-2 btn-sm d-flex align-items-center"
             iconType="far"
@@ -54,7 +54,7 @@
             @click="onCreateNewBmClick"
           >
             New
-          </a-btn>
+          </a-button>
         </div>
         <BusinessMetadataList
           :finalList="
@@ -91,12 +91,12 @@
       <span class="mb-3 font-size-14"
         >Business metadata helps to power asset discovery and access control.</span
       >
-      <a-btn
+      <a-button
         class="px-4 d-flex align-items-center font-weight-bold border-primary text-primary"
         @click="onCreateNewBmClick"
       >
         <i class="mr-2 far fa-plus"></i>Add Business Metadata
-      </a-btn>
+      </a-button>
     </div>
   </div>
 </template>
@@ -129,7 +129,7 @@ export default defineComponent({
   name: "businessMetadata",
   setup(props, context) {
     const { bmResponse, error, loading } = useBusinessMetadata();
-    console.log({ xx: bmResponse.value, yy: error.value, loading });
+    console.log({ xx: bmResponse, yy: error, loading });
     // * Data
     let selectedBm = ref(null);
     let searchText = ref("");
@@ -180,13 +180,15 @@ export default defineComponent({
     };
 
     const onCreateNewBmClick = () => {
-      const reqIndex = finalBusinessMetadataList.findIndex(bm => bm.guid === "new");
+      const reqIndex = finalBusinessMetadataList.value.findIndex(bm => bm.guid === "new");
       if (reqIndex === -1) {
         const newBmTemplate = getNewBmTemplate();
-        newBm = JSON.parse(JSON.stringify(newBmTemplate));
-        selectedBm = JSON.parse(JSON.stringify(newBmTemplate));
+        newBm.value = JSON.parse(JSON.stringify(newBmTemplate));
+        selectedBm.value = JSON.parse(JSON.stringify(newBmTemplate));
       } else {
-        selectedBm = JSON.parse(JSON.stringify(finalBusinessMetadataList[reqIndex]));
+        selectedBm.value = JSON.parse(
+          JSON.stringify(finalBusinessMetadataList.value[reqIndex])
+        );
       }
     };
     // * Computed

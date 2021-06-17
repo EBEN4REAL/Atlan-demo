@@ -3,14 +3,32 @@
 
 <template>
   <div class="h-full col-span-2 pt-5 border-r border-gray-100 bg-sidebar">
-    <div class="mb-4">
-      <ConnectorDropdown></ConnectorDropdown>
-    </div>
-    <div class="px-4">
-      <p class="flex mb-1 text-sm leading-none text-gray-500">Filters</p>
-    </div>
+    <div class="flex flex-col h-full">
+      <div class="px-3 mb-3">
+        <a-radio-group
+          class="flex w-full text-center"
+          v-model:value="filterMode"
+        >
+          <a-radio-button class="flex-grow" value="custom"
+            >Filters</a-radio-button
+          >
+          <a-radio-button class="flex-grow" value="saved">Saved</a-radio-button>
+        </a-radio-group>
+      </div>
 
-    <AssetFilters @change="handleFilterChange"></AssetFilters>
+      <keep-alive class="flex-grow h-full">
+        <div>
+          <div v-if="filterMode === 'custom'">
+            <div class="px-1 py-2 mx-3 mb-4 bg-white border rounded">
+              <ConnectorDropdown></ConnectorDropdown>
+            </div>
+            <AssetFilters @change="handleFilterChange"></AssetFilters>
+          </div>
+
+          <SavedFilters v-if="filterMode === 'saved'"></SavedFilters>
+        </div>
+      </keep-alive>
+    </div>
   </div>
   <div
     class="flex flex-col items-stretch h-full col-span-7 bg-white shadow-md"
@@ -65,6 +83,7 @@
 import { defineComponent, ref } from "vue";
 
 import AssetFilters from "@/discovery/asset/filters/index.vue";
+import SavedFilters from "@/discovery/asset/saved/index.vue";
 import AssetList from "@/discovery/asset/list/index.vue";
 import AssetTabs from "@/discovery/asset/tabs/index.vue";
 import AssetPagination from "@common/pagination/index.vue";
@@ -79,6 +98,7 @@ export default defineComponent({
   name: "HelloWorld",
   components: {
     AssetList,
+    SavedFilters,
     SearchBox,
     AssetTabs,
     AssetFilters,
@@ -102,6 +122,8 @@ export default defineComponent({
   },
   emits: ["preview"],
   setup(props) {
+    let filterMode = ref("custom");
+
     let now = ref(true);
     let debounce = null;
     const defaultBody = ref({
@@ -143,6 +165,7 @@ export default defineComponent({
 
     return {
       list,
+      filterMode,
       state,
       STATES,
       offset,

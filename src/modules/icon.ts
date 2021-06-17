@@ -59,6 +59,13 @@ import { faArrowDown } from "@fortawesome/pro-light-svg-icons/faArrowDown"
 import { faUserFriends } from "@fortawesome/pro-light-svg-icons/faUserFriends"
 
 import { faCopy } from "@fortawesome/pro-light-svg-icons/faCopy"
+import { faUserTag } from "@fortawesome/pro-light-svg-icons/faUsertag"
+
+import { faBell } from "@fortawesome/pro-light-svg-icons/faBell"
+
+import { faGift } from "@fortawesome/pro-light-svg-icons/faGift"
+
+
 
 
 
@@ -112,8 +119,10 @@ library.add(
   faTrashAlt,
   faArrowDown,
   faUserFriends,
-  faCopy
-
+  faCopy,
+  faUserTag,
+  faBell,
+  faGift
 );
 
 // Solid Icons

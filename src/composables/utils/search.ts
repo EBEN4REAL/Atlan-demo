@@ -32,13 +32,28 @@ export default function fetchSearchList(dependent: any, body: Ref<Components.Sch
         return data?.value?.aggregations;
     });
 
+    const errorMessage = computed(() => {
+        if (error?.value.response?.data?.errorMessage) {
+            return error?.value.response?.data?.errorMessage;
+        } else {
+            return "Something went wrong.";
+        }
+    });
+
+    const list: ComputedRef = computed(() => {
+        return data?.value?.entities || [];
+    });
+
+
     return {
         data,
         body,
+        list,
         totalCount,
         listCount,
         aggregations,
         error,
+        errorMessage,
         state,
         STATES,
         mutate

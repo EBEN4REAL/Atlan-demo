@@ -1,7 +1,9 @@
 <template>
-  <div class="flex items-center justify-center min-h-screen min-w-screen">
-    <fa icon="fal exclamation-triangle" class="text-red-500"></fa>
-    {{ error }}
+  <div
+    class="flex flex-col items-center justify-center w-full h-full text-center"
+  >
+    <fa icon="fas exclamation-circle" class="mb-2 text-4xl text-red-500"></fa>
+    {{ error || "Something went wrong. Please try again" }}
   </div>
 </template>
   

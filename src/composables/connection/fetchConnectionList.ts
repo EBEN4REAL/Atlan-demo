@@ -28,6 +28,7 @@ export default function fetchConnectionList(dependent: any, query?: string, filt
         error,
         state,
         STATES,
+        errorMessage,
         mutate } = fetchSearchList(dependent, body)
 
     const list: ComputedRef<ConnectionType[] | undefined> = computed(() => {
@@ -93,6 +94,8 @@ export default function fetchConnectionList(dependent: any, query?: string, filt
 
 
 
+
+
     return {
         data,
         body,
@@ -103,6 +106,7 @@ export default function fetchConnectionList(dependent: any, query?: string, filt
         totalCount,
         listCount,
         error,
+        errorMessage,
         state,
         STATES,
         mutate

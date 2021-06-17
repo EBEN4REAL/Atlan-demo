@@ -131,11 +131,6 @@ export default defineComponent({
 </script>
     
 
-<style lang="less">
-.pushtop {
-  top: 2px;
-}
-</style>
     
        
 <style lang="less" module>

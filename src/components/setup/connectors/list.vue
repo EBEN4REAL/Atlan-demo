@@ -8,9 +8,14 @@
     ></a-input-search>
     <!-- <CategorySelector style="min-width: 200px;" v-model:value="category"></CategorySelector> -->
   </div>
-  <ErrorView
+
+  <div
+    class="flex-grow"
     v-if="[STATES.ERROR, STATES.STALE_IF_ERROR].includes(state)"
-  ></ErrorView>
+  >
+    <ErrorView :error="errorMessage"></ErrorView>
+  </div>
+
   <LoadingView
     v-else-if="
       [STATES.PENDING].includes(state) ||
@@ -60,8 +65,16 @@ export default defineComponent({
       attributeValue: "metadata",
     };
 
-    const { list, totalCount, listCount, mutate, body, state, STATES } =
-      fetchBotsList(now, searchText.value, entityFilters);
+    const {
+      errorMessage,
+      list,
+      totalCount,
+      listCount,
+      mutate,
+      body,
+      state,
+      STATES,
+    } = fetchBotsList(now, searchText.value, entityFilters);
 
     const route = useRoute();
     watch(list, () => {
@@ -93,6 +106,7 @@ export default defineComponent({
     return {
       list,
       state,
+      errorMessage,
       STATES,
       searchText,
       listCount,

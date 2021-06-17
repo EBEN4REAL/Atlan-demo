@@ -12,7 +12,7 @@
       v-for="item in List"
       :key="item.id"
       :header="item.label"
-      class="bg-sidebar"
+      class=""
     >
       <component
         :is="item.component"

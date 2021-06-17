@@ -1,53 +1,83 @@
 <template>
-  <div class="grid h-full grid-cols-12">
-    <div class="h-full col-span-3 shadow-inner bg-gray-50">
-      <div class="flex items-center p-3 border-b border-gray-200">
-        <a-avatar
-          :size="42"
-          class="border-2 border-primary-300"
-          src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png"
-        />
+  <div class="grid h-full grid-cols-12 p-6 gap-x-12">
+    <div class="col-span-12 sm:col-span-8">
+      <div class="flex items-center w-full align-middle">
+        <img :src="displayNameHTML" class="w-auto h-16 mr-2" />
+        <div class="flex flex-col w-full">
+          <p class="mb-1 font-bold tracking-tight text-md">
+            Good morning, Nitya
+          </p>
+          <a-input-search
+            placeholder="Search...."
+            size="large"
+          ></a-input-search>
+        </div>
+      </div>
+    </div>
+    <div
+      class="hidden h-full p-3 mt-3 bg-white border rounded-md  sm:col-span-4 sm:block"
+    >
+      <div class="flex items-center justify-between p-5 align-middle">
+        <div class="flex items-center">
+          <a-avatar
+            shape="square"
+            :size="56"
+            class="hidden border-2 rounded-lg border-primary-300 sm:block"
+            src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png"
+          />
 
-        <div class="flex flex-col ml-2">
-          <p class="mb-0 text-base">{{ name }}</p>
-          <p class="mb-0 text-sm text-gray-500">{{ username }}</p>
+          <div class="flex flex-col ml-2">
+            <p
+              class="mb-0 text-lg leading-none tracking-tight text-gray-800 truncate  text-semibold"
+            >
+              {{ fullName }}
+            </p>
+            <p class="mb-0 text-sm text-gray-500">@{{ username }}</p>
+            <p class="mt-0 mb-0 text-sm tracking-tight text-gray-800">
+              <fa icon="fal user-tag" class="mr-1 text-gray-800 pushtop"></fa
+              >Admin
+            </p>
+          </div>
+        </div>
+        <fa icon="fal cog"></fa>
+      </div>
+      <a-divider class="mt-0"></a-divider>
+
+      <div class="px-5">
+        <div>
+          <p class="mb-2 leading-none text-gray-400">Designation</p>
+          <Tags></Tags>
+        </div>
+
+        <div class="mt-4">
+          <p class="mb-2 leading-none text-gray-400">Skills/Expertise</p>
+          <Tags></Tags>
+        </div>
+        <div class="mt-4">
+          <p class="mb-2 leading-none text-gray-400">Saved Filters</p>
+          <SavedList></SavedList>
         </div>
       </div>
 
       <!-- <a-menu mode="inline" class="bg-transparent">
-        <a-menu-item key="1">
-          <span>Home</span>
-        </a-menu-item>
-        <a-menu-item-group title="Discover">
-          <a-menu-item key="2">
-            <span>Assets</span>
+          <a-menu-item key="1">
+            <span>Home</span>
           </a-menu-item>
-          <a-menu-item key="2">
-            <span>Terms</span>
-          </a-menu-item>
-          <a-menu-item key="2">
-            <span>Connections</span>
-          </a-menu-item>
-          <a-menu-item key="2">
-            <span>Projects</span>
-          </a-menu-item>
-        </a-menu-item-group>
-      </a-menu> -->
-    </div>
-    <div class="col-span-9 bg-white">
-      <div class="flex justify-center pt-6 pb-10 align-middle border-b">
-        <div>
-          <img :src="displayNameHTML" class="mr-0" />
-        </div>
-      </div>
-
-      <div class="flex px-6 -mt-4">
-        <a-input placeholder="Command Center"></a-input>
-        <a-button-group class="ml-2">
-          <a-button>Button</a-button>
-          <a-button>Button</a-button>
-        </a-button-group>
-      </div>
+          <a-menu-item-group title="Discover">
+            <a-menu-item key="2">
+              <span>Assets</span>
+            </a-menu-item>
+            <a-menu-item key="2">
+              <span>Terms</span>
+            </a-menu-item>
+            <a-menu-item key="2">
+              <span>Connections</span>
+            </a-menu-item>
+            <a-menu-item key="2">
+              <span>Projects</span>
+            </a-menu-item>
+          </a-menu-item-group>
+        </a-menu> -->
     </div>
   </div>
 </template>
@@ -60,11 +90,17 @@ import { useStore } from "~/store";
 import PageLoader from "@common/loaders/page.vue";
 import SearchBox from "@common/searchbox/searchlist.vue";
 
+import SavedList from "@/home/saved/index.vue";
+
+import Tags from "@common/badge/tags/index.vue";
+
 export default defineComponent({
   name: "HelloWorld",
   components: {
     PageLoader,
     SearchBox,
+    Tags,
+    SavedList,
   },
   props: {
     msg: {
@@ -78,17 +114,19 @@ export default defineComponent({
   setup() {
     const keycloak = inject("$keycloak");
     const store = useStore();
-    //console.log(app.appContext.config.globalProperties.$keycloak);
-    // const handleLogout = () => {
-    //   console.log(
-    //     app.appContext.config.globalProperties.$keycloak.keycloak.logout({
-    //       redirectUri: window.location.origin,
-    //     })
-    //   );
-    // };
+
+    const fullName = computed(() => {
+      let firstName = keycloak.tokenParsed.given_name || "";
+      let lastName = keycloak.tokenParsed.family_name || "";
+      return `${
+        firstName.charAt(0).toUpperCase() + firstName.substr(1).toLowerCase()
+      } ${lastName.charAt(0).toUpperCase() + lastName.substr(1).toLowerCase()}`;
+    });
+
     return {
+      fullName,
       name: keycloak.tokenParsed.name || "",
-      username: keycloak.tokenParsed.username || "",
+      username: keycloak.tokenParsed.preferred_username || "",
       displayName: computed(() => store.getters.getDisplayName),
       displayNameHTML: computed(() => store.getters.getDisplayNameHTML),
       realm: computed(() => store.getters.getRealmName),

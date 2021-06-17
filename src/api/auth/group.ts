@@ -6,7 +6,7 @@ import useSWRV from "swrv";
 const serviceAlias = "auth";
 
 export const URL = {
-  GroupList: "/groups/v2"
+  GroupList: "/groups"
 }
 
 // const listGroup = (params?: any, options?: AxiosRequestConfig) => {

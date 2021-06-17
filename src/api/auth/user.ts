@@ -4,7 +4,7 @@ const serviceAlias = "auth";
 
 
 export const URL = {
-  UserList: "/users/v2"
+  UserList: "/users"
 }
 
 

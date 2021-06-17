@@ -1,9 +1,20 @@
 <template>
   <div
-    class="flex flex-col items-center justify-center w-1/4 p-3 bg-white border rounded-lg shadow-sm  hover:shadow-md hover:border-primary-500 :hover:text-primary-500"
+    class="flex flex-col items-center justify-center w-1/4 p-3 transform bg-white border rounded-lg shadow-sm  hover:border-primary-500 :hover:text-primary-500"
   >
+    <div
+      class="absolute flex items-center justify-center w-auto h-3 mr-1 text-yellow-300 rounded-full "
+      style="top: 8px; right: 8px"
+      v-if="item?.attributes.isSample"
+    >
+      <fa icon="fas lock mr-1"></fa>
+    </div>
+
     <img :src="logo" class="w-auto h-10 mb-3" />
-    <div class="text-gray-900">{{ item.attributes.name }}</div>
+
+    <div class="flex items-center leading-none text-gray-900 align-middle">
+      {{ item?.attributes.name }}
+    </div>
   </div>
 </template>
               

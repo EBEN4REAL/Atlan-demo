@@ -9,6 +9,12 @@ export const List: MenuArray = [
     url: "/",
   },
   {
+    id: "columns",
+    label: "Columns",
+    description: "Columns",
+    icon: "fal columns",
+  },
+  {
     id: "chat",
     label: "Chat",
     description: "Chat",
@@ -22,12 +28,7 @@ export const List: MenuArray = [
     icon: "fal history",
     url: "",
   },
-  {
-    id: "column",
-    label: "Columns",
-    description: "Columns",
-    icon: "fal columns",
-  },
+
   {
     id: "Usage",
     label: "Usage",

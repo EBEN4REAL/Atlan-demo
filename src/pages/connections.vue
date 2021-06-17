@@ -1,21 +1,25 @@
 <template>
   <splitpanes class="h-full default-theme">
     <pane min-size="25" max-size="50" size="25" class="p-3 bg-white">
-      <p class="mb-2 text-2xl font-medium tracking-tight">Connections</p>
-      <div class="flex">
-        <a-input-search
-          placeholder="Search.."
-          v-model:value="searchText"
-        ></a-input-search>
-        <a-button type="primary" class="ml-2" @click="handleNewConnector">
-          <fa icon="fal plus"></fa>
-        </a-button>
-      </div>
-      <div class="mt-2">
-        <ConnectionTree
-          :searchText="searchText"
-          @select="handleSelect"
-        ></ConnectionTree>
+      <div class="flex flex-col h-full">
+        <div>
+          <p class="mb-2 text-2xl font-medium tracking-tight">Connections</p>
+          <div class="flex">
+            <a-input-search
+              placeholder="Search.."
+              v-model:value="searchText"
+            ></a-input-search>
+            <a-button type="primary" class="ml-2" @click="handleNewConnector">
+              <fa icon="fal plus" class="mr-1"></fa>New
+            </a-button>
+          </div>
+        </div>
+        <div class="flex-grow mt-2 overflow-y-auto">
+          <ConnectionTree
+            :searchText="searchText"
+            @select="handleSelect"
+          ></ConnectionTree>
+        </div>
       </div>
     </pane>
     <pane size="74">
@@ -30,8 +34,6 @@ import { defineComponent } from "vue";
 import ConnectionTree from "@/connection/tree/index.vue";
 import Loading from "@common/loaders/section.vue";
 import ErrorView from "@common/error/index.vue";
-
-import { useStore } from "~/store";
 
 export default defineComponent({
   name: "HelloWorld",

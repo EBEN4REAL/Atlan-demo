@@ -1,10 +1,12 @@
 import { computed, reactive, watch, toRefs } from "vue";
 import { Health } from "~/api/atlas/health";
-import { ServiceURLWithoutTenant } from "~/services";
+// import { ServiceURLWithoutTenant } from "~/services";
 
 const healthPaths = {
-  heka: ServiceURLWithoutTenant("query", "/debug/health"),
-  user: ServiceURLWithoutTenant("auth", "/debug/health"),
+  heka: "",
+  user: "",
+  // heka: ServiceURLWithoutTenant("query", "/debug/health"),
+  // user: ServiceURLWithoutTenant("auth", "/debug/health"),
 };
 
 const SERVICE_STATES = {

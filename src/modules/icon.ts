@@ -125,6 +125,7 @@ import { faExclamationCircle } from "@fortawesome/pro-solid-svg-icons/faExclamat
 import { faMinusCircle } from "@fortawesome/pro-solid-svg-icons/faMinusCircle";
 import { faCheckCircle as faSolidCheckCircle } from "@fortawesome/pro-solid-svg-icons/faCheckCircle";
 import { faKey } from "@fortawesome/pro-solid-svg-icons/faKey";
+import { faLock as faSolidLock } from "@fortawesome/pro-solid-svg-icons/faLock";
 
 library.add(
   faBadgeCheck,
@@ -134,7 +135,8 @@ library.add(
   faExclamationCircle,
   faMinusCircle,
   faSolidCheckCircle,
-  faKey
+  faKey,
+  faSolidLock
 );
 
 // import { far } from "@fortawesome/pro-regular-svg-icons";

@@ -127,11 +127,11 @@ export default defineComponent({
 
 <style lang="less" module>
 .topbar {
-  @apply bg-gradient-to-b from-primary-500 via-primary-500 to-primary-600    !important;
+  @apply bg-gradient-to-r from-primary-600 via-primary-700 to-primary-800    !important;
 }
 
 .sidebar {
-  @apply bg-gradient-to-b from-primary-500 via-primary-600 to-primary-700    !important;
+  @apply bg-gradient-to-b from-primary-600 via-primary-700 to-primary-800    !important;
   .sidebartab {
     :global(.ant-tabs-tab) {
       @apply text-primary-200 !important;

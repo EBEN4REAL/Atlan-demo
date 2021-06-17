@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: #adb5bd;
+      }
+
+      .cls-2 {
+        fill: none;
+      }
+    </style>
+  </defs>
+  <g id="Layer_2" data-name="Layer 2">
+    <g id="Layer_2-2" data-name="Layer 2">
+      <g id="float2">
+        <circle class="cls-1" cx="8" cy="8" r="1"/>
+        <path class="cls-1" d="M8,15A7,7,0,0,1,1,8,7,7,0,0,1,8,1a7,7,0,0,1,7,7A7,7,0,0,1,8,15ZM8,2.5A5.9,5.9,0,0,0,2.5,8,5.9,5.9,0,0,0,8,13.5,5.9,5.9,0,0,0,13.5,8,5.9,5.9,0,0,0,8,2.5Z"/>
+        <rect id="Transparent_path" data-name="Transparent path" class="cls-2" width="16" height="16"/>
+      </g>
+    </g>
+  </g>
+</svg>

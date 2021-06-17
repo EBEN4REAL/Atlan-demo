@@ -22,9 +22,7 @@
           ></a-input-search>
         </div>
         <div>
-          <!-- <a-button icon="plus" type="primary" ghost @click="handleAddToGroup">
-            Add to group
-          </a-button>-->
+          <a-button icon="plus" type="primary" ghost @click="handleAddToGroup">Add to group</a-button>
         </div>
       </div>
       <div
@@ -79,7 +77,7 @@
       :destroy-on-close="true"
       @cancel="closeAddToGroupModal"
     >
-      <AddToGroup :user-group-ids="userGroupIds" @handleAddToGroup="addUserToGroup" />
+      <AddToGroup @addUserToGroups="addUserToGroups" :addToGroupLoading="addToGroupLoading" />
     </a-modal>
   </div>
 </template>
@@ -97,7 +95,8 @@ import { getIsLoadMore } from "~/composables/utils/isLoadMore";
 import { debounce } from "~/composables/utils/debounce";
 import ErrorView from "@common/error/index.vue";
 import { Group } from "~/api/auth/group";
-// import AddToGroup from "~/components/admin/users/addUserToGroupModal.vue";
+import { User } from "~/api/auth/user";
+import AddToGroup from "~/components/admin/users/userPreview/groups/addUserToGroups.vue";
 
 export default defineComponent({
   name: "UserPreviewGroups",
@@ -108,11 +107,13 @@ export default defineComponent({
     },
   },
   components: {
-    // AddToGroup,
+    AddToGroup,
     ErrorView,
   },
   setup(props, context) {
     const searchText = ref("");
+    const showAddToGroupModal = ref(false);
+    const addToGroupLoading = ref(false);
     const groupListAPIParams = reactive({
       userId: props.selectedUser.id,
       params: {
@@ -156,7 +157,24 @@ export default defineComponent({
         searchText.value ? filteredGroupCount.value : totalGroupCount.value
       );
     });
-    const handleAddToGroup = () => {};
+    const addUserToGroups = async (groupIds) => {
+      addToGroupLoading.value = true;
+      try {
+        await User.AddGroups(props.selectedUser.id, {
+          groups: groupIds,
+        });
+        groupListAPIParams.params.offset = 0;
+        getUserGroupList();
+        // TODO: fetch group again
+        // await this.FETCH_GROUP_LIST();
+        addToGroupLoading.value = false;
+        message.success(`User added to groups`);
+        showAddToGroupModal.value = false;
+      } catch (e) {
+        addToGroupLoading.value = false;
+        message.error("Unable to add user to groups, please try again.");
+      }
+    };
 
     const removeUserFromGroup = async (group: any) => {
       const userIds = [props.selectedUser.id];
@@ -179,6 +197,12 @@ export default defineComponent({
         );
       }
     };
+    const handleAddToGroup = () => {
+      showAddToGroupModal.value = true;
+    };
+    const closeAddToGroupModal = () => {
+      showAddToGroupModal.value = false;
+    };
 
     return {
       groupList,
@@ -196,6 +220,10 @@ export default defineComponent({
       showLoadMore,
       state,
       STATES,
+      addToGroupLoading,
+      showAddToGroupModal,
+      closeAddToGroupModal,
+      addUserToGroups,
     };
   },
 });

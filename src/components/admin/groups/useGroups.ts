@@ -1,6 +1,6 @@
 //useGroups
 
-import { ref, onMounted, watch, computed, toRefs } from "vue";
+import { ref, onMounted, watch, computed, toRefs, ComputedRef, Ref } from "vue";
 import { fetcher, getAPIPath, getAxiosClient } from "~/api";
 import useSWRV from "swrv";
 import swrvState from "~/composables/utils/swrvState";
@@ -73,6 +73,24 @@ export default function useGroups(groupListAPIParams: {
       return data.value.records.map((group: any) => getFormattedGroup(group));
     return [];
   });
+  let localGroupsList: Ref<any[]> = ref([]);
+  watch(data, () => {
+    if (data && data.value && data.value.records) {
+      if (groupListAPIParams.offset > 0) {
+        localGroupsList.value = [
+          ...localGroupsList.value,
+          ...data.value.records.map((group: any) => getFormattedGroup(group)),
+        ];
+      } else {
+        localGroupsList.value = data.value.records.map((group: any) =>
+          getFormattedGroup(group)
+        );
+      }
+    }
+  });
+  const groupListConcatenated: ComputedRef<any> = computed(
+    () => localGroupsList || []
+  );
   let totalGroupsCount = computed(() => data?.value?.total_record ?? 0);
   let filteredGroupsCount = computed(() => data?.value?.filtered_record ?? 0);
   return {
@@ -82,5 +100,6 @@ export default function useGroups(groupListAPIParams: {
     getGroupList,
     state,
     STATES,
+    groupListConcatenated,
   };
 }

@@ -76,6 +76,13 @@ const UpdateUserRole = (id: string, body?: any, options?: any) => {
     options
   );
 };
+const AddGroups = (userId: string, body: any, options?: AxiosRequestConfig) => {
+  return getAxiosClient().post(
+    getAPIPath(serviceAlias, `/users/${userId}/groups`),
+    body,
+    options
+  );
+};
 export const User = {
   ListV2,
   GetUserSessions,
@@ -84,4 +91,5 @@ export const User = {
   GetUserAccessLogs,
   UpdateUser,
   UpdateUserRole,
+  AddGroups,
 };

@@ -3,7 +3,7 @@
     <div class="flex flex-row justify-between">
       <div>
         <a-input-search
-          placeholder="Search Users"
+          placeholder="Search Groups"
           :allowClear="true"
           class="mr-1"
           v-model:value="searchText"
@@ -23,25 +23,25 @@
         size="large"
         type="primary"
         ghost
-        @click="()=>{getUserList()}"
+        @click="()=>{getGroupList()}"
       >Try again</a-button>
     </div>
     <div v-else class="min-h-screen mt-4">
       <a-checkbox-group v-model:value="selectedIds" @change="handleChange" class="w-full">
         <div class="flex flex-col w-full">
-          <template v-for="user in userList.value" :key="user.id">
-            <a-checkbox :value="user.id" class="w-full">
+          <template v-for="group in groupList.value" :key="group.id">
+            <a-checkbox :value="group.id" class="w-full">
               <div class="flex justify-between my-2">
                 <div class="flex items-center">
                   <a-avatar
                     shape="circle"
                     class="mr-1 ant-tag-blue text-primary-500 avatars"
                     :size="40"
-                  >{{ getNameInitials(getNameInTitleCase(user.name)) }}</a-avatar>
+                  >{{ getNameInitials(getNameInTitleCase(group.name)) }}</a-avatar>
                   <div class="ml-2">
-                    <div>{{ user.name }}</div>
-                    <div>@{{ user.username }}</div>
-                    <div>{{ user.group_count_string }}</div>
+                    <div>{{ group.name }}</div>
+                    <div>@{{ group.alias }}</div>
+                    <div>{{ group.memberCountString }}</div>
                   </div>
                 </div>
               </div>
@@ -52,7 +52,7 @@
       <div
         class="flex justify-center"
         v-if="[STATES.PENDING].includes(state) ||
-            [STATES.VALIDATING].includes(state)"
+              [STATES.VALIDATING].includes(state)"
       >
         <a-spin></a-spin>
       </div>
@@ -62,8 +62,8 @@
     </div>
   </div>
 </template>
-<script lang="ts">
-import { ref, reactive, defineComponent, computed, watch } from "vue";
+  <script lang="ts">
+import { ref, reactive, defineComponent, computed } from "vue";
 import ErrorView from "@common/error/index.vue";
 import { debounce } from "~/composables/utils/debounce";
 import {
@@ -72,67 +72,67 @@ import {
   getNameInTitleCase,
 } from "~/composables/utils/string-operations";
 import { getIsLoadMore } from "~/composables/utils/isLoadMore";
-import useUsers from "~/components/admin/users/useUsers";
+import useGroups from "~/components/admin/groups/useGroups";
+
 export default defineComponent({
-  name: "Users",
+  name: "Groups",
   components: {
     ErrorView,
   },
   setup(props, context) {
     const selectedIds = ref([]);
     const searchText = ref("");
-    const userListAPIParams = reactive({
+    const groupListAPIParams = reactive({
       limit: 10,
       offset: 0,
-      sort: "first_name",
+      sort: "name",
       filter: {},
     });
     const {
-      usersListConcatenated: userList,
-      totalUserCount,
-      filteredUserCount,
-      getUserList,
+      groupListConcatenated: groupList,
+      totalGroupsCount,
+      filteredGroupsCount,
+      getGroupList,
       state,
       STATES,
-    } = useUsers(userListAPIParams);
+    } = useGroups(groupListAPIParams);
 
     const handleSearch = debounce((input: any) => {
-      userListAPIParams.filter = searchText.value
+      groupListAPIParams.filter = searchText.value
         ? {
             $or: [
-              { first_name: { $ilike: `%${searchText.value}%` } },
-              { last_name: { $ilike: `%${searchText.value}%` } },
-              { username: { $ilike: `%${searchText.value}%` } },
+              { name: { $ilike: `%${searchText.value}%` } },
+              { alias: { $ilike: `%${searchText.value}%` } },
             ],
           }
         : {};
-      userListAPIParams.offset = 0;
-      getUserList();
+      groupListAPIParams.offset = 0;
+      getGroupList();
     }, 200);
     const handleLoadMore = () => {
-      userListAPIParams.offset =
-        userListAPIParams.offset + userListAPIParams.limit;
-      getUserList();
+      groupListAPIParams.offset =
+        groupListAPIParams.offset + groupListAPIParams.limit;
+      getGroupList();
     };
     let showLoadMore = computed(() => {
       return getIsLoadMore(
         // TODO: check if there's a better way access memberList and not use ref in a ref
-        userList.value.value.length,
-        userListAPIParams.offset,
-        userListAPIParams.limit,
-        searchText.value ? filteredUserCount.value : totalUserCount.value
+        groupList.value.value.length,
+        groupListAPIParams.offset,
+        groupListAPIParams.limit,
+        searchText.value ? filteredGroupsCount.value : totalGroupsCount.value
       );
     });
     const handleChange = () => {
-      context.emit("updateSelectedUsers", selectedIds.value);
+      context.emit("updateSelectedGroups", selectedIds.value);
     };
     return {
       searchText,
       showLoadMore,
-      userList,
-      totalUserCount,
-      filteredUserCount,
-      getUserList,
+      groupList,
+      totalGroupsCount,
+      filteredGroupsCount,
+      getGroupList,
       handleSearch,
       state,
       STATES,
@@ -146,6 +146,6 @@ export default defineComponent({
   },
 });
 </script>
-  
-  <style>
+    
+    <style>
 </style>

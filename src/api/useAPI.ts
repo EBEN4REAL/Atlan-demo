@@ -113,6 +113,3 @@ export const useAPI = <T>(key: string, method: 'GET' | 'POST' | 'DELETE' | 'PUT'
         return { data, error, isLoading };
     }
 }
-
-
-

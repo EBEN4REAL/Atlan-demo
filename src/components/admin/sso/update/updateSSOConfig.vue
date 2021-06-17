@@ -156,7 +156,7 @@
     </div>
   </div>
 </template>
-  <script lang="ts">
+<script lang="ts">
 import {
   defineComponent,
   ref,
@@ -197,6 +197,7 @@ export default defineComponent({
   props: ["alias"],
   components: { ImportMetadataFromXML, ImportText },
   setup(props, context) {
+    console.log(context, "context");
     const store = useStore();
     const router = useRouter();
     const tenantData = computed(() => store.state.tenant.data);
@@ -326,7 +327,7 @@ export default defineComponent({
   },
 });
 </script>
-  <style lang="less" scoped>
+<style lang="less" scoped>
 .copyBtn {
   pointer-events: all !important;
   cursor: pointer;
@@ -342,4 +343,3 @@ export default defineComponent({
   background-color: white;
 }
 </style>
-  

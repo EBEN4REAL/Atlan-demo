@@ -6,7 +6,7 @@
       <fa icon="fal sync" class="cursor-pointer" @click="refreshAudits"></fa>
     </div>
     <div class="p-2 overflow-y-scroll audit-container">
-      <a-timeline :pending="isFetchingMore" v-if="audits">
+      <a-timeline v-if="audits">
         <a-timeline-item
           :color="getEventByAction(log).color || 'green'"
           v-for="(log, index) in audits"

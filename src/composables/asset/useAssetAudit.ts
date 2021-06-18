@@ -29,10 +29,11 @@ const useAssetAudit = (params: any, guid: string) => {
     const fetchMoreAudits = (fetchmoreParams: any) => {
         const { data, isLoading } = useAPI<Components.Schemas.EntityAuditEventV2[]>(GET_ASSET_AUDIT, 'GET', { params: fetchmoreParams, pathVariables: { guid }, cache: false });
         watchEffect(() => {
-            response.isFetchingMore = isLoading.value;
+
             if (data.value && fetchmoreParams?.startKey.length > 0) {
                 response.audits.push(...data.value);
                 response.isAllLogsFetched = data?.value?.length < fetchmoreParams.count
+                response.isFetchingMore = isLoading.value;
             }
 
         })

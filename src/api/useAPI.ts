@@ -1,4 +1,4 @@
-import { ref, watchEffect } from "vue";
+import { ref } from "vue";
 import { AxiosRequestConfig } from "axios";
 import useSWRV, { IConfig } from "swrv";
 
@@ -76,9 +76,7 @@ export const useAPI = <T>(key: string, method: 'GET' | 'POST', { cache = true, p
                 break;
         }
 
-        watchEffect(() => {
-            isLoading.value = !data.value && !error.value
-        })
+        isLoading.value = !data.value && !error.value
 
         return { data, error, isLoading };
     }

@@ -178,8 +178,10 @@ import { reactive, ref, toRefs, computed, onMounted, nextTick } from "vue";
 
 // * Utils
 import { generateUUID } from "~/utils/generator";
+import { getErrorMessage } from "~/utils/error";
 import { DEFAULT_ATTRIBUTE } from "~/constant/business_metadata";
 import { DEFAULT_SORT_BY, DEFAULT_SORT_ORDER } from "~/constant/search";
+import AddAttributeCard from "@/admin/business-metadata/addAttributeCard.vue";
 
 export default defineComponent({
   props: {
@@ -188,6 +190,7 @@ export default defineComponent({
       required: true,
     },
   },
+  components: { AddAttributeCard },
   setup(props, context) {
     // * Data
     let localBm = reactive({
@@ -234,7 +237,7 @@ export default defineComponent({
         context.emit("removeNewBm");
 
       if (props.selectedBm && props.selectedBm.guid) {
-        localBm = reactive(JSON.parse(JSON.stringify(props.selectedBm)));
+        Object.assign(localBm, reactive(JSON.parse(JSON.stringify(props.selectedBm))));
       }
       isUpdated.value = false;
       error.value = null;
@@ -244,9 +247,9 @@ export default defineComponent({
     const handleAddBusinessMetadata = async () => {
       error.value = null;
       let isInvalid = false;
-      // console.log("handleAddBusinessMetadata ->", $refs);
 
-      if (!localBm.displayName) {
+      // ! turn this back to displayName
+      if (!localBm.name) {
         isInvalid = true;
       }
       if (localBm && localBm.attributeDefs.length) {

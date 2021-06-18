@@ -9,17 +9,17 @@
   <div class="px-6 pt-4">
     <!-- <div
       v-if="loading"
-      class="d-flex flex-column align-items-center justify-content-center font-size-h4"
+      class="flex items-center flex-column justify-content-center font-size-h4"
       style="min-height: 30rem"
     >
       <loader loadingText="Fetching Business Metadata..." textLarge></loader>
     </div> -->
     <div
-      class="row no-gutters"
+      class="grid row-auto no-gutters"
       v-if="finalBusinessMetadataList && finalBusinessMetadataList.length"
     >
-      <div class="pr-4 col-4">
-        <div class="mb-4 d-flex align-items-center">
+      <div class="grid grid-cols-4 pr-4">
+        <div class="flex items-center mb-4">
           <div class="mb-0 mr-4 form-group">
             <div class="overflow-hidden border rounded input-group">
               <input
@@ -48,7 +48,7 @@
           </div>
           <a-button
             variant="primary"
-            class="px-3 py-2 btn-sm d-flex align-items-center"
+            class="flex items-center px-3 py-2 btn-sm"
             iconType="far"
             icon="plus"
             @click="onCreateNewBmClick"
@@ -83,7 +83,7 @@
     </div>
     <div
       v-else
-      class="d-flex flex-column align-items-center justify-content-center"
+      class="flex items-center flex-column justify-content-center"
       style="min-height: 30rem"
     >
       <img :src="EmptyBusinessMetadata" alt="Business Metadata Empty" class="mb-3" />
@@ -92,7 +92,7 @@
         >Business metadata helps to power asset discovery and access control.</span
       >
       <a-button
-        class="px-4 d-flex align-items-center font-weight-bold border-primary text-primary"
+        class="flex items-center px-4 font-weight-bold border-primary text-primary"
         @click="onCreateNewBmClick"
       >
         <i class="mr-2 far fa-plus"></i>Add Business Metadata

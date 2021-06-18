@@ -83,7 +83,9 @@
           >
         </div>
       </template>
-      <div class="px-2 py-1 rounded-lg hover:bg-gray-50 hover:border">
+      <div
+        class="px-2 py-1 transition duration-500 ease-in-out rounded-lg  hover:bg-gray-50 hover:border"
+      >
         <p class="mb-1 text-sm tracking-wide text-gray-400">Owners</p>
         <div class="flex flex-wrap gap-x-1">
           <template

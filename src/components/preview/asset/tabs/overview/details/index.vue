@@ -12,7 +12,7 @@
       </p>
     </div>
 
-    <Description :item="item"></Description>
+    <Description :item="item" :key="item.guid"></Description>
 
     <Status :item="item" :key="item.guid"></Status>
 

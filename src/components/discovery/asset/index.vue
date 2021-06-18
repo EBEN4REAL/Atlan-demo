@@ -37,7 +37,7 @@
     class="flex flex-col items-stretch h-full col-span-7 pt-6"
     style="overflow: hidden"
   >
-    <div class="flex items-center">
+    <div class="flex items-center px-6">
       <a-input placeholder="Search" @input="handleSearchChange">
         <template #suffix>
           <fa icon="fal eye"></fa>
@@ -53,7 +53,7 @@
         class="px-4"
       ></SearchBox> -->
     </div>
-    <div class="flex w-full">
+    <div class="flex w-full px-6">
       <AssetTabs :assetTypeList="assetTypeList"></AssetTabs>
     </div>
 

@@ -1,4 +1,4 @@
-import { ref } from "vue";
+import { ref, watchEffect } from "vue";
 import { AxiosRequestConfig } from "axios";
 import useSWRV, { IConfig } from "swrv";
 
@@ -24,10 +24,10 @@ interface useGetAPIParams {
  * @param options - SWRV or Axios specefic configuration objects
  */
 export const useAPI = <T>(key: string, method: 'GET' | 'POST', { cache = true, params, body, pathVariables, options }: useGetAPIParams) => {
-    const url = keyMaps[key]({...pathVariables});
+    const url = keyMaps[key]({ ...pathVariables });
 
     if (cache) {
-    // If using cache, make a generic swrv request
+        // If using cache, make a generic swrv request
         const { data, error, mutate } = useSWRV<T>(key, () => {
             // Choose the fetcher function based on the method type
             switch (method) {
@@ -46,7 +46,7 @@ export const useAPI = <T>(key: string, method: 'GET' | 'POST', { cache = true, p
         return { data, error, isLoading, mutate };
     } else {
         // If not using cache, use Axios
-        
+
         const data = ref<T>()
         const error = ref()
         const isLoading = ref<boolean>(false)
@@ -55,7 +55,7 @@ export const useAPI = <T>(key: string, method: 'GET' | 'POST', { cache = true, p
             case 'GET':
                 getAxiosClient().get<T>(url, { params, ...options })
                     .then((resp) => {
-                        data.value = resp  as unknown as T
+                        data.value = resp as unknown as T
                     })
                     .catch((e) => {
                         error.value = e
@@ -65,7 +65,7 @@ export const useAPI = <T>(key: string, method: 'GET' | 'POST', { cache = true, p
             case 'POST':
                 getAxiosClient().post<T>(url, body, { ...options })
                     .then((resp) => {
-                        data.value = resp  as unknown as T
+                        data.value = resp as unknown as T
                     })
                     .catch((e) => {
                         error.value = e
@@ -76,7 +76,9 @@ export const useAPI = <T>(key: string, method: 'GET' | 'POST', { cache = true, p
                 break;
         }
 
-        isLoading.value = !data.value && !error.value
+        watchEffect(() => {
+            isLoading.value = !data.value && !error.value
+        })
 
         return { data, error, isLoading };
     }

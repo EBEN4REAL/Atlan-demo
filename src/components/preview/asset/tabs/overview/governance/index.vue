@@ -1,24 +1,20 @@
 <template>
   <div class="flex flex-col px-2 space-y-3">
-    <div class="px-2 hover:bg-gray-50 hover:rounded">
-      <p class="mb-0 text-sm tracking-wide text-gray-400">Terms</p>
-      <!-- <StatusBadge :status="status(item)"></StatusBadge> -->
-    </div>
+    <Terms :item="item" :key="item.guid"></Terms>
 
-    <div class="px-2 py-1 mt-2 hover:bg-gray-50 hover:rounded">
-      <p class="mb-0 text-sm tracking-wide text-gray-400">Classifications</p>
-      <!-- <StatusBadge :status="status(item)" :key="item.guid"></StatusBadge> -->
-    </div>
+    <Classifications :item="item" :key="item.guid"></Classifications>
+    <!-- <StatusBadge :status="status(item)" :key="item.guid"></StatusBadge> -->
   </div>
 </template>
             
 <script lang="ts">
 import { defineComponent } from "vue";
-import AssetMixin from "~/mixins/asset";
+
+import Classifications from "./classifications.vue";
+import Terms from "./terms.vue";
 
 export default defineComponent({
-  mixins: [AssetMixin],
-  components: {},
+  components: { Classifications, Terms },
   props: {
     item: {
       type: Object,

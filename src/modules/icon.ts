@@ -65,6 +65,9 @@ import { faBell } from "@fortawesome/pro-light-svg-icons/faBell"
 
 import { faGift } from "@fortawesome/pro-light-svg-icons/faGift"
 
+import { faTag } from "@fortawesome/pro-light-svg-icons/faTag"
+import { faRobot } from "@fortawesome/pro-light-svg-icons/faRobot"
+import { faChartNetwork } from "@fortawesome/pro-light-svg-icons/faChartNetwork"
 
 
 
@@ -122,7 +125,10 @@ library.add(
   faCopy,
   faUserTag,
   faBell,
-  faGift
+  faGift,
+  faTag,
+  faRobot,
+  faChartNetwork
 );
 
 // Solid Icons

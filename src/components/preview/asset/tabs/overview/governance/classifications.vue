@@ -84,36 +84,26 @@
         </div>
       </template>
       <div class="px-2 py-1 rounded-lg hover:bg-gray-50 hover:border">
-        <p class="mb-1 text-sm tracking-wide text-gray-400">Owners</p>
+        <p class="mb-1 text-sm tracking-wide text-gray-400">Classifications</p>
         <div class="flex flex-wrap gap-x-1">
           <template
-            v-for="user in item?.attributes?.ownerUsers?.split(',')"
-            :key="user"
+            v-for="(classification, index) in item?.classifications"
+            :key="'classification-' + classification?.typeName + index"
           >
             <div
-              class="flex items-center px-2 py-1 mb-1 leading-none text-blue-500 align-middle transition-all bg-blue-500 rounded-md cursor-pointer  bg-opacity-10 hover:bg-opacity-100 hover:text-white"
+              class="flex items-center px-2 py-1 mb-1 leading-none text-red-500 align-middle bg-red-500 rounded-md cursor-pointer  bg-opacity-10 hover:bg-red-500 hover:text-white drop-shadow-sm"
               @click.prevent.stop="handleClickUser"
             >
               <fa
-                icon="fal user"
-                class="mr-1 leading-none pushtop text-shadow"
+                icon="fal tag"
+                class="mr-1 leading-none pushtop"
+                v-if="classification?.entityGuid === item.guid"
               ></fa>
-              <div class="text-shadow">{{ user }}</div>
-            </div>
-          </template>
-          <template
-            v-for="group in item?.attributes?.ownerGroups?.split(',')"
-            :key="group"
-          >
-            <div
-              class="flex items-center px-2 py-1 mb-1 leading-none text-blue-600 align-middle bg-blue-100 rounded-md cursor-pointer  hover:text-primary-500"
-              @click.prevent.stop="handleClickGroup"
-            >
               <fa
-                icon="fal user-friends"
+                icon="fal chart-network"
                 class="mr-1 leading-none pushtop"
               ></fa>
-              <div>{{ group }}</div>
+              <div class="text-shadow">{{ classification?.typeName }}</div>
             </div>
           </template>
         </div>
@@ -131,12 +121,14 @@
 <script lang="ts">
 import { defineComponent, ref } from "vue";
 import StatusBadge from "@common/badge/status/index.vue";
+
 import fetchUserList from "~/composables/user/fetchUserList";
 import fetchGroupList from "~/composables/group/fetchGroupList";
 import updateOwners from "~/composables/asset/updateOwners";
 
 export default defineComponent({
   components: { StatusBadge },
+
   props: {
     item: {
       type: Object,

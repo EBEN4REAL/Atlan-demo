@@ -1,6 +1,6 @@
 <template>
   <div
-    class="px-4 py-3 my-2 bg-white border border-gray-100 rounded  hover:bg-blue-50"
+    class="px-4 py-3 my-2 bg-white border border-gray-100 rounded-md  hover:bg-blue-50"
   >
     <div class="flex items-center justify-between mb-1 align-middle">
       <div class="flex items-center mr-1 align-middle">
@@ -31,7 +31,7 @@
           </div>
         </div>
       </div>
-      <img :src="logo(item)" class="w-auto h-5 mr-2" />
+      <img :src="logo(item)" class="w-auto h-5" />
     </div>
     <p class="mb-0 text-xs text-gray-500">
       {{ description(item) }}

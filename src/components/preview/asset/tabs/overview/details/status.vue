@@ -55,8 +55,8 @@
           :key="item.guid"
           :statusId="item?.attributes?.assetStatus"
           :statusMessage="item?.attributes?.assetStatusMessage"
-          :statusUpdateAt="item?.attributes?.assetStatusUpdateAt"
-          :statusUpdateBy="item?.attributes?.assetStatusUpdateBy"
+          :statusUpdatedAt="item?.attributes?.assetStatusUpdatedAt"
+          :statusUpdatedBy="item?.attributes?.assetStatusUpdatedBy"
           :showNoStatus="true"
           :showLabel="true"
         ></StatusBadge>
@@ -76,14 +76,13 @@
 import { defineComponent, nextTick, ref, watch } from "vue";
 import { useMagicKeys } from "@vueuse/core";
 import StatusBadge from "@common/badge/status/index.vue";
-import AssetMixin from "~/mixins/asset";
 
 import { List } from "~/constant/status";
 import updateStatus from "~/composables/asset/updateStatus";
 
 export default defineComponent({
   components: { StatusBadge },
-  mixins: [AssetMixin],
+
   props: {
     item: {
       type: Object,

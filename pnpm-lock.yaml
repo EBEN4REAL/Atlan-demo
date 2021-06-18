@@ -67,7 +67,6 @@ specifiers:
   qs: ^6.10.1
   rollup-plugin-visualizer: ^5.5.0
   splitpanes: ^3.0.4
-  sql-autocomplete: ^1.1.1
   sql-formatter: ^4.0.2
   stylelint: ^13.13.1
   stylelint-config-recommended: ^5.0.0
@@ -150,7 +149,6 @@ dependencies:
   openapi-client-axios-ts: 3.9.9
   qs: 6.10.1
   splitpanes: 3.0.4
-  sql-autocomplete: 1.1.1
   sql-formatter: 4.0.2
   swrv: 1.0.0-beta.8_vue@3.1.1
   tippy.js: 6.3.1
@@ -3136,22 +3134,6 @@ packages:
       vue: 3.1.1
       vue-types: 3.0.2_vue@3.1.1
       warning: 4.0.3
-    dev: false
-
-  /antlr4-c3/1.1.16:
-    resolution: {integrity: sha512-3CZQ54JPyo6lkZYDOXaKUsy5KNFucveocvRy+03R7zJQbYOUr4Z6lFeBWzkxJXLitc7yQYe7OHbB6snyp7IJvQ==}
-    dependencies:
-      antlr4ts: 0.5.0-alpha.4
-    dev: false
-
-  /antlr4ts-sql/1.1.0:
-    resolution: {integrity: sha512-94+8/+hsPI/OLG0WRGqW88/gqz+xxrSLSz/jGqS8Xl7tYWwUj/cBB4D/QRmNezYLqEaUzMHhTeQn5hzrpC2wNQ==}
-    dependencies:
-      antlr4ts: 0.5.0-alpha.4
-    dev: false
-
-  /antlr4ts/0.5.0-alpha.4:
-    resolution: {integrity: sha512-WPQDt1B74OfPv/IMS2ekXAKkTZIHl88uMetg6q3OTqgFxZ/dxDXI0EWLyZid/1Pe6hTftyg5N7gel5wNAGxXyQ==}
     dev: false
 
   /any-promise/1.3.0:
@@ -8957,13 +8939,6 @@ packages:
 
   /sprintf-js/1.0.3:
     resolution: {integrity: sha1-BOaSb2YolTVPPdAVIDYzuFcpfiw=}
-
-  /sql-autocomplete/1.1.1:
-    resolution: {integrity: sha512-0Fz1utcPC5m6qQiFDhIgyqNk8J0DyGBtv59++uUjkjM9vOdv6ugGuM+ZcjY0qyG9ofLmT6wLHSpx+2h6jm0t6Q==}
-    dependencies:
-      antlr4-c3: 1.1.16
-      antlr4ts-sql: 1.1.0
-    dev: false
 
   /sql-formatter/4.0.2:
     resolution: {integrity: sha512-R6u9GJRiXZLr/lDo8p56L+OyyN2QFJPCDnsyEOsbdIpsnDKL8gubYFo7lNR7Zx7hfdWT80SfkoVS0CMaF/DE2w==}

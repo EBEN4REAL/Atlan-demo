@@ -5,7 +5,7 @@
   <script lang="ts">
 import { defineComponent, onMounted, ref } from "vue";
 
-import { SQLAutocomplete, SQLDialect } from "sql-autocomplete";
+//import { SQLAutocomplete, SQLDialect } from "sql-autocomplete";
 
 import CodeMirror from "codemirror";
 import "codemirror/lib/codemirror.css";
@@ -25,32 +25,32 @@ export default defineComponent({
     let sqltext = ref("SELECT * FROM TABLE");
     let editor;
 
-    const sqlAutocomplete = new SQLAutocomplete(SQLDialect.MYSQL);
+    // const sqlAutocomplete = new SQLAutocomplete(SQLDialect.MYSQL);
 
-    sqlAutocomplete.setTableNames([
-      "NETFLIX_CUSTOMER_PAYMENTS_BY_TYPE",
-      "superstore_sales_data_2016-present",
-      "INSTACART_ALL_ORDER",
-    ]);
-    sqlAutocomplete.setColumnNames([
-      "Row_ID",
-      "Order_ID",
-      "Order_Date",
-      "Ship_Date",
-    ]);
+    // sqlAutocomplete.setTableNames([
+    //   "NETFLIX_CUSTOMER_PAYMENTS_BY_TYPE",
+    //   "superstore_sales_data_2016-present",
+    //   "INSTACART_ALL_ORDER",
+    // ]);
+    // sqlAutocomplete.setColumnNames([
+    //   "Row_ID",
+    //   "Order_ID",
+    //   "Order_Date",
+    //   "Ship_Date",
+    // ]);
 
     const getHints = (editor) => {
       let query = editor.getValue();
-      let suggestionList =
-        sqlAutocomplete
-          .autocomplete(query)
-          .filter(function (e) {
-            return e.value;
-          })
-          .map((suggestion) => suggestion.value) || [];
+      // let suggestionList =
+      //   sqlAutocomplete
+      //     .autocomplete(query)
+      //     .filter(function (e) {
+      //       return e.value;
+      //     })
+      //     .map((suggestion) => suggestion.value) || [];
 
-      console.log(query);
-      console.log(suggestionList);
+      // console.log(query);
+      // console.log(suggestionList);
 
       let cur = editor.getCursor();
       let curLine = editor.getLine(cur.line);
@@ -64,7 +64,7 @@ export default defineComponent({
         hint: () => ({
           from: CodeMirror.Pos(cur.line, start),
           to: CodeMirror.Pos(cur.line, end),
-          list: suggestionList,
+          list: [],
         }),
       };
       return options;

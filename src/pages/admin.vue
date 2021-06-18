@@ -40,10 +40,9 @@
         </a-menu>
       </div>
     </div>
-
-    <div class="w-4/5 max-h-screen p-6 overflow-y-auto">
+    <!-- <div class="w-4/5 max-h-screen p-6 overflow-y-auto">
       <router-view></router-view>
-    </div>
+    </div> -->
   </div>
 </template>
 

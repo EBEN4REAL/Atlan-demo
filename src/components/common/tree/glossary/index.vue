@@ -52,7 +52,7 @@
 
 
 <script lang="ts">
-import data from "emoji-mart-vue-fast/data/all.json";
+import data from "emoji-mart-vue-fast/data/facebook.json";
 import "emoji-mart-vue-fast/css/emoji-mart.css";
 import { Emoji, EmojiIndex } from "emoji-mart-vue-fast/src";
 import { Modal } from "ant-design-vue";

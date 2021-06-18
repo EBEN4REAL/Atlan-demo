@@ -25,8 +25,11 @@ export default defineComponent({
     integrationName(item: any) {
       return this.attributes(item).integrationName;
     },
-    jdbcTemplate(item: any) {
-      return this.attributes(item).config?.attributes?.jdbcConfigTemplate;
+    jdbcUrl(item: any) {
+      return this.attributes(item).config?.attributes?.credentialTemplate.url;
+    },
+    jdbcDriver(item: any) {
+      return this.attributes(item).config?.attributes?.credentialTemplate.driver;
     },
     supportLink(item: any) {
       return this.attributes(item).supportLink;

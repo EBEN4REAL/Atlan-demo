@@ -3,6 +3,7 @@
     <a-form-item
       label="Connection name"
       name="name"
+      autofocus
       :has-feedback="true"
       :rules="nameRules"
     >
@@ -99,7 +100,7 @@
     </div>
 
     <div
-      class="grid grid-cols-12 px-3 pt-3 border border-gray-200 rounded  flex-nowrap bg-gray-50"
+      class="grid grid-cols-12 px-3 pt-3 border border-gray-200 rounded flex-nowrap bg-gray-50"
     >
       <div class="col-span-12">
         <p class="mb-2 text-sm font-normal text-gray-400">Advanced</p>
@@ -141,15 +142,41 @@
       >
 
       <div class="" v-if="testingNetworkStatus">
-        <a-alert
-          :message="testingNetworkMessage"
-          :type="testingNetworkStatus"
-          show-icon
-        />
+        <a-alert :type="testingNetworkStatus" show-icon class="leading-none">
+          <template #message>
+            <div class="flex items-center align-middle">
+              <!-- <div v-html="testingNetworkMessage"></div> -->
+              <div class="hidden mr-2 md:block">
+                {{ testingNetworkMessage }}
+              </div>
+
+              <div v-if="testingNetworkError" class="">
+                <a-tooltip :title="testingNetworkError"
+                  ><fa icon="fal info-circle"></fa
+                ></a-tooltip>
+              </div>
+            </div>
+            <!-- {{ testingNetworkMessage }} -->
+          </template>
+        </a-alert>
       </div>
 
       <div class="" v-if="testCredStatus">
-        <a-alert :message="testCredMessage" :type="testCredStatus" show-icon />
+        <a-alert :type="testCredStatus" show-icon class="leading-none">
+          <template #message>
+            <div class="flex items-center align-middle">
+              <!-- <div v-html="testingNetworkMessage"></div> -->
+              <div class="hidden mr-2 md:block">{{ testCredMessage }}</div>
+
+              <div v-if="testCredError" class="">
+                <a-tooltip :title="testCredError"
+                  ><fa icon="fal info-circle"></fa
+                ></a-tooltip>
+              </div>
+            </div>
+            <!-- {{ testingNetworkMessage }} -->
+          </template>
+        </a-alert>
       </div>
     </div>
   </a-form>
@@ -166,10 +193,10 @@ import ConnectorMixin from "~/mixins/connector";
 import KeycloakMixin from "~/mixins/keycloak";
 
 import { Connection } from "~/api/auth/connection";
+import { Credential as CredentialService } from "~/api/auth/credential";
 
 import { Search } from "~/api/atlas/search";
 
-import { Credential as CredentialService } from "~/api/heka/credential";
 import { getEnv } from "~/modules/__env";
 import { BotsType } from "~/types/atlas/bots";
 
@@ -204,8 +231,10 @@ export default defineComponent({
       cancelToken: null,
       testingNetworkStatus: "",
       testingNetworkMessage: "",
+      testingNetworkError: "",
       testCredStatus: "",
       testCredMessage: "",
+      testCredError: "",
       nameRules: [
         {
           required: true,
@@ -276,12 +305,13 @@ export default defineComponent({
         host: "",
         // host: "jv22371.ap-south-1.aws.snowflakecomputing.com",
         port: "",
-        conn_type: this.integrationName(this.item),
+        connType: this.integrationName(this.item),
         login: "",
         password: "",
-        auth_type: this.authTypes(this.item)[0]?.id,
+        authType: this.authTypes(this.item)[0]?.id,
+        jdbcUrl: this.jdbcUrl(this.item),
+        jdbcDriver: this.jdbcDriver(this.item),
         extra: {},
-        ...this.jdbcTemplate(this.item),
       } as {
         [key: string]: any;
       },
@@ -298,7 +328,7 @@ export default defineComponent({
       return this.extraAttributes(this.item);
     },
     authAttributesLocal(): any {
-      return this.authAttributes(this.item, this.credential.auth_type);
+      return this.authAttributes(this.item, this.credential.authType);
     },
   },
   methods: {
@@ -324,21 +354,22 @@ export default defineComponent({
       try {
         this.testingNetworkStatus = "info";
         this.testingNetworkMessage = "Cheking network connection";
+        this.testingNetworkError = "";
         const res = await Connection.TestNetwork({
           host: this.credential.host,
           port: 443,
         });
         this.testingNetworkStatus = "success";
-        this.testingNetworkMessage = "Network Connection is successful";
+        this.testingNetworkMessage = "Network connection is successful";
         return true;
       } catch (err) {
-        console.dir(err);
         this.testingNetworkStatus = "error";
+        this.testingNetworkMessage = `Network connection failed`;
+
         if (err.response) {
-          this.testingNetworkMessage = `Network Connection - ${err.response.data.info}`;
+          this.testingNetworkError = err.response.data.message;
         } else {
-          this.testingNetworkMessage =
-            "Network Connection - something went wrong. Please try again.";
+          this.testingNetworkError = "Something went wrong. Please try again.";
         }
         return false;
       }
@@ -353,8 +384,12 @@ export default defineComponent({
         return true;
       } catch (err) {
         this.testCredStatus = "error";
-        this.testCredMessage =
-          "Authentication - something went wrong. Please try again.";
+        this.testCredMessage = "Authentication failed";
+        console.log(err.response);
+        if (err.response) {
+          this.testCredError = err.response.data.message;
+        }
+
         return false;
       }
     },
@@ -382,6 +417,8 @@ export default defineComponent({
       this.credential = {
         ...this.defaultCredential,
       };
+    } else {
+      this.credential.host = this.hostLocal.default;
     }
   },
 });

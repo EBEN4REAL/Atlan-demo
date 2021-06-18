@@ -25,6 +25,7 @@ export default function fetchBotsList(dependent: any, query?: string, filters?: 
         error,
         state,
         STATES,
+        errorMessage,
         mutate } = fetchSearchList(dependent, body)
 
     const list: ComputedRef<BotsType[] | undefined> = computed(() => {
@@ -49,6 +50,7 @@ export default function fetchBotsList(dependent: any, query?: string, filters?: 
         error,
         state,
         STATES,
+        errorMessage,
         mutate
     }
 }

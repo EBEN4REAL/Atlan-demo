@@ -49,14 +49,14 @@
           >
         </div>
       </template>
-      <div class="px-2 py-1 rounded-lg hover:bg-white hover:border">
+      <div class="px-2 py-1 rounded-lg hover:bg-gray-50 hover:border">
         <p class="mb-0 text-sm tracking-wide text-gray-400">Status</p>
         <StatusBadge
           :key="item.guid"
           :statusId="item?.attributes?.assetStatus"
           :statusMessage="item?.attributes?.assetStatusMessage"
-          :statusUpdateAt="item?.attributes?.assetStatusUpdateAt"
-          :statusUpdateBy="item?.attributes?.assetStatusUpdateBy"
+          :statusUpdatedAt="item?.attributes?.assetStatusUpdatedAt"
+          :statusUpdatedBy="item?.attributes?.assetStatusUpdatedBy"
           :showNoStatus="true"
           :showLabel="true"
         ></StatusBadge>
@@ -76,14 +76,13 @@
 import { defineComponent, nextTick, ref, watch } from "vue";
 import { useMagicKeys } from "@vueuse/core";
 import StatusBadge from "@common/badge/status/index.vue";
-import AssetMixin from "~/mixins/asset";
 
 import { List } from "~/constant/status";
 import updateStatus from "~/composables/asset/updateStatus";
 
 export default defineComponent({
   components: { StatusBadge },
-  mixins: [AssetMixin],
+
   props: {
     item: {
       type: Object,
@@ -131,11 +130,6 @@ export default defineComponent({
 </script>
     
 
-<style lang="less">
-.pushtop {
-  top: 2px;
-}
-</style>
     
        
 <style lang="less" module>

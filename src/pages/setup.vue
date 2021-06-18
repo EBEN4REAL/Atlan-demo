@@ -11,12 +11,13 @@
     ></StatusView>
   </div>
   <div class="flex w-full h-full">
-    <div class="flex flex-col p-6 border-r border-gray-200 bg-gray-50">
+    <div class="flex flex-col p-6 bg-white border-r border-gray-200">
       <p
-        class="mb-1 text-xs tracking-wide text-gray-500 uppercase"
+        class="mb-2 text-xs tracking-wide text-gray-500 uppercase cursor-pointer "
         @click="handleBack"
       >
-        <fa icon="fal chevron-left" class="mr-1"></fa>Back
+        <fa icon="fal chevron-left" class="mr-1 leading-none pushtop"></fa>All
+        Connections
       </p>
       <p class="text-2xl font-medium tracking-tight">New Connection</p>
       <a-steps
@@ -27,24 +28,33 @@
         class="flex-grow"
       >
         <a-step
-          title="Connectors"
           class
           disabled
           @click="handleStepClick(0)"
           description="Select your connector"
-        ></a-step>
+        >
+          <template #title>
+            <div class="text-tight">Connectors</div>
+          </template>
+        </a-step>
         <a-step
-          title="Credential"
           disabled
           @click="handleStepClick(1)"
           description="Enter your credentials"
-        ></a-step>
+        >
+          <template #title>
+            <div class="text-tight">Credential</div>
+          </template>
+        </a-step>
         <a-step
-          title="Settings"
           disabled
           @click="handleStepClick(2)"
           description="One last step"
-        ></a-step>
+        >
+          <template #title>
+            <div class="text-tight">Settings</div>
+          </template>
+        </a-step>
       </a-steps>
       <div class="p-4 mt-4 bg-gray-100 border rounded-lg">
         <p class="mb-1 font-semibold tracking-tight">
@@ -54,7 +64,7 @@
       </div>
     </div>
     <div class="flex flex-col w-full h-full shadow-md">
-      <div class="px-6 py-4 border-b bg-gray-50" v-if="current !== 0">
+      <div class="px-6 py-4 bg-transparent border-b" v-if="current !== 0">
         <div class="flex items-center justify-between align-middle">
           <div class="flex items-center align-middle">
             <div class="flex items-center align-middle">
@@ -75,28 +85,27 @@
           >
         </div>
       </div>
-      <div class="flex-grow overflow-y-auto">
-        <keep-alive>
-          <ConnectorList
-            v-if="current === 0"
-            @select="handleConnectorSelect"
-          ></ConnectorList>
-          <CredentialView
-            class="px-8 py-4"
-            ref="credentialView"
-            :key="selectedConnector.guid"
-            :item="selectedConnector"
-            v-else-if="current === 1"
-          ></CredentialView>
-          <Settings
-            class="px-8 py-4"
-            ref="settingsView"
-            v-else-if="current === 2"
-            :item="selectedConnector"
-            :credential="selectedCredential"
-          ></Settings>
-        </keep-alive>
-      </div>
+
+      <keep-alive class="flex-grow">
+        <ConnectorList
+          v-if="current === 0"
+          @select="handleConnectorSelect"
+        ></ConnectorList>
+        <CredentialView
+          class="px-8 py-4"
+          ref="credentialView"
+          :key="selectedConnector.guid"
+          :item="selectedConnector"
+          v-else-if="current === 1"
+        ></CredentialView>
+        <Settings
+          class="px-8 py-4"
+          ref="settingsView"
+          v-else-if="current === 2"
+          :item="selectedConnector"
+          :credential="selectedCredential"
+        ></Settings>
+      </keep-alive>
       <div
         class="flex justify-between px-4 py-5 align-middle bg-white border-t"
         v-if="current !== 0"

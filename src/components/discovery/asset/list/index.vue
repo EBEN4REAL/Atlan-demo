@@ -3,7 +3,7 @@
     :items="list"
     :keyField="keyField"
     :minItemSize="minItemSize"
-    class="scroller"
+    class="px-6 scroller"
     :buffer="400"
   >
     <template v-slot="{ item, index, active }">

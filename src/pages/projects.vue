@@ -1,12 +1,29 @@
-<!-- <template>
+<template>
   <a-layout class="min-h-screen">
     <a-layout-header
       theme="light"
-      class="flex items-center px-0 leading-none align-middle text-primary-100 bg-primary-500"
+      class="
+        flex
+        items-center
+        px-0
+        leading-none
+        align-middle
+        text-primary-100
+        bg-primary-500
+      "
       style="height: 42px"
     >
       <div
-        class="flex items-center h-full px-4 mr-3 align-middle border-r border-primary-400 hover:bg-primary-600"
+        class="
+          flex
+          items-center
+          h-full
+          px-4
+          mr-3
+          align-middle
+          border-r border-primary-400
+          hover:bg-primary-600
+        "
         @click="handleBack"
       >
         <fa icon="fal chevron-left" class="text-xl"></fa>
@@ -46,34 +63,6 @@ import { defineComponent, ref } from "vue";
 import { useRouter } from "vue-router";
 import Editor from "@/editor/index.vue";
 import ProjectSidebar from "~/layouts/project/index.vue";
-// import EditorJS from "@editorjs/editorjs";
-// import Header from "@editorjs/header";
-// import List from "@editorjs/list";
-
-// import { SimpleImage } from "@/block/sql";
-
-// import SQLEditor from "@common/sqleditor/index.vue";
-
-// import CodeMirror from "codemirror";
-// import "codemirror/lib/codemirror.css";
-
-// import "codemirror/mode/sql/sql.js";
-
-// import { EditorView } from "@codemirror/next/view";
-
-// import { EditorState } from "@codemirror/next/state";
-// // import { history, historyKeymap } from "@codemirror/next/history";
-// // import { defaultKeymap } from "@codemirror/next/commands";
-// // import { defaultHighlightStyle } from "@codemirror/next/highlight";
-// import { sql, PostgreSQL } from "@codemirror/next/lang-sql";
-
-// // import { lineNumbers } from "@codemirror/next/gutter";
-
-// import { basicSetup } from "@codemirror/next/basic-setup";
-
-// import { highlightActiveLine } from "@codemirror/next/highlightActiveLine";
-
-// import base style
 
 export default defineComponent({
   components: {
@@ -90,7 +79,6 @@ export default defineComponent({
     const handleBack = () => {
       router.push("assets");
     };
-
     return {
       handleBack,
     };
@@ -107,4 +95,4 @@ export default defineComponent({
     layout: project
     requiresAuth: true
 </route>
- -->
+

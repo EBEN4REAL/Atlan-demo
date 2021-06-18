@@ -57,6 +57,14 @@ export const ColumnAttributes = [
   "tableQualifiedName"
 ];
 
+export const SavedSearchAttribute = [
+  "ownerName",
+  "searchType",
+  "uniqueName",
+  "searchParameters",
+  "uiParameters"
+]
+
 
 export const BasicSearchAttributes = [
   "__timestamp",

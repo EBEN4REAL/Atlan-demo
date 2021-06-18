@@ -46,7 +46,7 @@ export default function updateAssetStatus(item: any) {
                         assetStatus: assetStatus.value.id,
                         assetStatusMessage: assetStatus.value.message,
                         assetStatusUpdatedAt: Date.now(),
-                        assetStatusUpdateBy: username,
+                        assetStatusUpdatedBy: username,
                         tenantId: item.attributes?.tenantId,
                     },
                 },
@@ -61,7 +61,7 @@ export default function updateAssetStatus(item: any) {
             item.attributes.assetStatus = assetStatus.value.id;
             item.attributes.assetStatusMessage = assetStatus.value.message;
             item.attributes.assetStatusUpdatedAt = Date.now();
-            item.attributes.assetStatusUpdateBy = username;
+            item.attributes.assetStatusUpdatedBy = username;
             item.attributes.__modifiedBy = username;
             item.attributes.__modificationTimestamp = Date.now();
         }

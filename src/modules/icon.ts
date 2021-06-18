@@ -54,6 +54,15 @@ import { faBolt } from "@fortawesome/pro-light-svg-icons/faBolt";
 import { faPen } from "@fortawesome/pro-light-svg-icons/faPen";
 import { faEnvelope } from "@fortawesome/pro-light-svg-icons/faEnvelope";
 import { faArrowCircleRight } from "@fortawesome/pro-light-svg-icons/faArrowCircleRight";
+import { faUserTag } from "@fortawesome/pro-light-svg-icons/faUserTag"
+
+import { faBell } from "@fortawesome/pro-light-svg-icons/faBell"
+
+import { faGift } from "@fortawesome/pro-light-svg-icons/faGift"
+
+import { faTag } from "@fortawesome/pro-light-svg-icons/faTag"
+import { faRobot } from "@fortawesome/pro-light-svg-icons/faRobot"
+import { faChartNetwork } from "@fortawesome/pro-light-svg-icons/faChartNetwork"
 
 import { faTrashAlt } from "@fortawesome/pro-light-svg-icons/faTrashAlt";
 import { faExclamationCircle } from "@fortawesome/pro-light-svg-icons/faExclamationCircle";
@@ -122,7 +131,13 @@ library.add(
   faArrowDown,
   faChevronDoubleLeft,
   faUserFriends,
-  faCopy
+  faCopy,
+  faUserTag,
+  faBell,
+  faGift,
+  faTag,
+  faRobot,
+  faChartNetwork
 );
 
 // Solid Icons

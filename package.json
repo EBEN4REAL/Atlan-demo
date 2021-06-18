@@ -6,8 +6,7 @@
     "build-staging": "vite build --mode staging",
     "build": "vite build",
     "preview": "vite preview --port 8080",
-    "preview-https": "serve dist",
-    "grammar": "antlr4ts -visitor ./src/grammar/PostgreSQLParser.g4"
+    "preview-https": "serve dist"
   },
   "dependencies": {
     "@dsb-norge/vue-keycloak-js": "^2.0.0-beta",
@@ -55,6 +54,7 @@
     "openapi-client-axios-ts": "^3.9.9",
     "qs": "^6.10.1",
     "splitpanes": "^3.0.4",
+    "sql-autocomplete": "^1.1.1",
     "sql-formatter": "^4.0.2",
     "swrv": "^1.0.0-beta.8",
     "tippy.js": "^6.3.1",
@@ -86,7 +86,6 @@
     "@vitejs/plugin-vue": "^1.2.3",
     "@vue/compiler-sfc": "^3.1.1",
     "@vue/server-renderer": "^3.1.1",
-    "antlr4ts-cli": "^0.5.0-alpha.4",
     "autoprefixer": "^10.2.6",
     "babel-loader": "^8.2.2",
     "cross-env": "^7.0.3",

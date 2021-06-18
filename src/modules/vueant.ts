@@ -39,6 +39,8 @@ import {
   List,
   Cascader,
   Badge,
+  Tag,
+  Timeline,
 } from "ant-design-vue";
 
 // https://github.com/antfu/vite-plugin-pwa#automatic-reload-when-new-content-available
@@ -72,7 +74,9 @@ export const install: UserModule = ({ app }) => {
   app.use(Drawer);
   app.use(List);
   app.use(Cascader);
+  app.use(Timeline);
   app.use(Badge);
+  app.use(Tag);
 
   app.config.globalProperties.$message = message;
   app.config.globalProperties.$error = Modal.error;

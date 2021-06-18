@@ -2,44 +2,63 @@
 
 
 <template>
-  <div class="h-full col-span-2 pt-5 border-r border-gray-100 bg-sidebar">
-    <div class="mb-4">
-      <ConnectorDropdown></ConnectorDropdown>
-    </div>
-    <div class="px-4">
-      <p class="flex mb-1 text-sm leading-none text-gray-500">Filters</p>
-    </div>
+  <div class="h-full col-span-2 pt-6 pl-4">
+    <div class="flex flex-col h-full">
+      <div class="px-3 mb-3">
+        <a-radio-group
+          class="flex w-full text-center"
+          v-model:value="filterMode"
+        >
+          <a-radio-button class="flex-grow" value="custom"
+            ><fa icon="fal filter" class="pushtop"></fa
+          ></a-radio-button>
+          <a-radio-button class="flex-grow" value="saved"
+            ><fa icon="fal list-alt" class="pushtop"></fa
+          ></a-radio-button>
+        </a-radio-group>
+      </div>
 
-    <AssetFilters @change="handleFilterChange"></AssetFilters>
+      <keep-alive class="flex-grow h-full">
+        <div>
+          <div v-if="filterMode === 'custom'">
+            <div class="pb-2 mb-2">
+              <ConnectorDropdown></ConnectorDropdown>
+            </div>
+
+            <AssetFilters @change="handleFilterChange"></AssetFilters>
+          </div>
+
+          <SavedFilters v-if="filterMode === 'saved'"></SavedFilters>
+        </div>
+      </keep-alive>
+    </div>
   </div>
   <div
-    class="flex flex-col items-stretch h-full col-span-7 bg-white shadow-md"
+    class="flex flex-col items-stretch h-full col-span-7 pt-6"
     style="overflow: hidden"
   >
-    <div class="flex items-center border-b border-gray-200">
-      <SearchBox
+    <div class="flex items-center px-6">
+      <a-input placeholder="Search" @input="handleSearchChange">
+        <template #suffix>
+          <fa icon="fal eye"></fa>
+        </template>
+      </a-input>
+      <!-- <SearchBox
         @change="handleSearchChange"
         :loading="
           [STATES.PENDING].includes(state) ||
           [STATES.VALIDATING].includes(state)
         "
-        size="large"
+        size="default"
         class="px-4"
-      ></SearchBox>
-
-      <div class="flex px-1 border-dashed">
-        <a-button type="link"> <fa icon="fal eye" class=""></fa></a-button>
-      </div>
+      ></SearchBox> -->
     </div>
-    <div class="flex w-full bg-sidebar">
+    <div class="flex w-full px-6">
       <AssetTabs :assetTypeList="assetTypeList"></AssetTabs>
     </div>
 
     <AssetList :list="list.value" @preview="handlePreview"> </AssetList>
-    <div
-      class="flex items-center px-6 py-2 border-t bg-sidebar"
-      style="min-height: 17px"
-    >
+    <div class="flex items-center px-6 py-2" style="min-height: 17px">
       <div
         class="flex items-center leading-none"
         v-if="
@@ -65,6 +84,7 @@
 import { defineComponent, ref } from "vue";
 
 import AssetFilters from "@/discovery/asset/filters/index.vue";
+import SavedFilters from "@/discovery/asset/saved/index.vue";
 import AssetList from "@/discovery/asset/list/index.vue";
 import AssetTabs from "@/discovery/asset/tabs/index.vue";
 import AssetPagination from "@common/pagination/index.vue";
@@ -79,6 +99,7 @@ export default defineComponent({
   name: "HelloWorld",
   components: {
     AssetList,
+    SavedFilters,
     SearchBox,
     AssetTabs,
     AssetFilters,
@@ -102,6 +123,8 @@ export default defineComponent({
   },
   emits: ["preview"],
   setup(props) {
+    let filterMode = ref("custom");
+
     let now = ref(true);
     let debounce = null;
     const defaultBody = ref({
@@ -143,6 +166,7 @@ export default defineComponent({
 
     return {
       list,
+      filterMode,
       state,
       STATES,
       offset,

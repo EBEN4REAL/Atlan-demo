@@ -2,12 +2,12 @@
   <LoadingView v-if="[STATES.PENDING].includes(state)"></LoadingView>
   <ErrorView
     v-else-if="[STATES.ERROR, STATES.STALE_IF_ERROR].includes(state)"
-    :error="error.response"
+    :error="errorMessage"
   ></ErrorView>
   <EmptyView
     v-else-if="![STATES.PENDING].includes(state) && treeData?.length === 0"
     empty="There are no connectitions available"
-    buttonText="Setup New Connection"
+    buttonText="Setup new connection"
     @event="handleEvent"
   ></EmptyView>
 
@@ -77,7 +77,7 @@ export default defineComponent({
   },
   setup(props, { emit }) {
     let now = ref(true);
-    const { treeData, body, mutate, state, STATES, error } =
+    const { treeData, body, mutate, state, STATES, error, errorMessage } =
       fetchConnectionList(now);
     debouncedWatch(
       () => props.searchText,
@@ -103,6 +103,7 @@ export default defineComponent({
       expandNode,
       state,
       error,
+      errorMessage,
       STATES,
     };
   },

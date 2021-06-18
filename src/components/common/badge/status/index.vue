@@ -13,9 +13,9 @@
       class="mt-1 mb-0 text-xs leading-none text-gray-500"
       v-if="showLabel && statusId"
     >
-      {{ dayjs().from(statusUpdateAt, true) }}
+      {{ dayjs().from(statusUpdatedAt, true) }}
       ago by
-      {{ statusUpdateBy }}
+      {{ statusUpdatedBy }}
     </p>
   </div>
 </template>
@@ -44,14 +44,14 @@ export default defineComponent({
         return "";
       },
     },
-    statusUpdateBy: {
+    statusUpdatedBy: {
       type: String,
       required: false,
       default() {
         return "";
       },
     },
-    statusUpdateAt: {
+    statusUpdatedAt: {
       type: Date,
       required: false,
     },

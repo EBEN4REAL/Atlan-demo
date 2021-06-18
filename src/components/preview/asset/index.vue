@@ -25,10 +25,8 @@
         ></template> </a-tab-pane
     ></a-tabs>
   </div>
-  <div class="flex-grow mt-3 overflow-y-auto">
+  <div class="flex-grow py-3 overflow-y-auto">
     <component :is="activeKey" :item="item"></component>
-    <!-- <Overview :item="item"></Overview>
-      <Audits :guid="item.guid" /> -->
   </div>
 </template>
         

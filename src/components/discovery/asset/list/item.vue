@@ -1,5 +1,7 @@
 <template>
-  <div class="px-4 py-3 border-b border-gray-100 hover:bg-gray-50">
+  <div
+    class="px-4 py-3 my-1 bg-white border border-gray-200 rounded-md  hover:border hover:border-primary-500 hover:scale-125"
+  >
     <div class="flex items-center justify-between mb-1 align-middle">
       <div class="flex items-center mr-1 align-middle">
         <div class="">
@@ -29,7 +31,7 @@
           </div>
         </div>
       </div>
-      <img :src="logo(item)" class="w-auto h-5 mr-2" />
+      <img :src="logo(item)" class="w-auto h-5" />
     </div>
     <p class="mb-0 text-xs text-gray-500">
       {{ description(item) }}

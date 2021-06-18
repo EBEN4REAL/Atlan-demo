@@ -2,6 +2,7 @@ import { computed, ComputedRef, ref, Ref, toRefs, watch } from 'vue';
 import { Components } from '~/api/atlas/client';
 import { Glossary } from '~/api/atlas/glossary'
 import { Search } from '~/api/atlas/search';
+import { useAPI } from '~/api/useAPI';
 
 import BasicSearch from '~/composables/common/basicsearch';
 import { BaseAttributes, GlossaryAttributes } from '~/constant/projection';
@@ -36,12 +37,25 @@ export default function fetchGlossaryList(query?: string, filters?: Components.S
         return response?.value?.entities?.length;
     })
 
+    const refetchGlossary = () => {
+        const { data, error, isLoading } = useAPI<Components.Schemas.AtlasSearchResult>('BASIC_SEARCH', 'POST', { cache: false, body })
+        watch([data, error, isLoading], ([newData, newError, newLoading]) => {
+            if(newData){
+                response.value = newData ;
+            }
+            // error.value = newError;
+            // loading.value = newLoading;
+        });
+    }
+    
     return {
+        response,
         list,
         totalCount,
         listCount,
         error,
         loading,
-        mutate
+        mutate,
+        refetchGlossary
     }
 }

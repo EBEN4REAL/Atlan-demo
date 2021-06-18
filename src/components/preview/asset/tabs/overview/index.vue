@@ -15,6 +15,24 @@
       </template>
       <Details :item="item"></Details>
     </a-collapse-panel>
+    <a-collapse-panel key="governance" class="bg-transparent">
+      <template #header>
+        <div class="flex items-center justify-between">
+          <div>Governance</div>
+        </div>
+      </template>
+      <!-- <Properties :item="item"></Properties> -->
+      <Governance :item="item"></Governance>
+    </a-collapse-panel>
+    <a-collapse-panel key="properties" class="bg-transparent">
+      <template #header>
+        <div class="flex items-center justify-between">
+          <div>Properties</div>
+        </div>
+      </template>
+      <!-- <Properties :item="item"></Properties> -->
+      <Properties :item="item"></Properties>
+    </a-collapse-panel>
     <a-collapse-panel key="heirarchy" class="bg-transparent">
       <template #header>
         <div class="flex items-center justify-between">
@@ -32,9 +50,11 @@ import { defineComponent, PropType, ref } from "vue";
 import Details from "./details/index.vue";
 // import Properties from "./properties/index.vue";
 import Heirarchy from "./heirarchy/index.vue";
+import Governance from "./governance/index.vue";
+import Properties from "./properties/index.vue";
 
 export default defineComponent({
-  components: { Details, Heirarchy },
+  components: { Details, Heirarchy, Governance, Properties },
   props: {
     item: {
       type: Object,

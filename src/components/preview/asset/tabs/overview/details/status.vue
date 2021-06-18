@@ -49,7 +49,7 @@
           >
         </div>
       </template>
-      <div class="px-2 py-1 rounded-lg hover:bg-gray-100 hover:border">
+      <div class="px-2 py-1 rounded-lg hover:bg-gray-50 hover:border">
         <p class="mb-0 text-sm tracking-wide text-gray-400">Status</p>
         <StatusBadge
           :key="item.guid"

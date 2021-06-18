@@ -7,7 +7,7 @@
   <EmptyView
     v-else-if="![STATES.PENDING].includes(state) && treeData?.length === 0"
     empty="There are no connectitions available"
-    buttonText="Setup New Connection"
+    buttonText="Setup new connection"
     @event="handleEvent"
   ></EmptyView>
 

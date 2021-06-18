@@ -11,7 +11,7 @@
     ></StatusView>
   </div>
   <div class="flex w-full h-full">
-    <div class="flex flex-col p-6 border-r border-gray-200 bg-gray-50">
+    <div class="flex flex-col p-6 bg-white border-r border-gray-200">
       <p
         class="mb-2 text-xs tracking-wide text-gray-500 uppercase cursor-pointer "
         @click="handleBack"
@@ -64,7 +64,7 @@
       </div>
     </div>
     <div class="flex flex-col w-full h-full shadow-md">
-      <div class="px-6 py-4 border-b bg-gray-50" v-if="current !== 0">
+      <div class="px-6 py-4 bg-transparent border-b" v-if="current !== 0">
         <div class="flex items-center justify-between align-middle">
           <div class="flex items-center align-middle">
             <div class="flex items-center align-middle">

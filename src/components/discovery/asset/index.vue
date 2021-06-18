@@ -2,7 +2,7 @@
 
 
 <template>
-  <div class="h-full col-span-2 pt-5">
+  <div class="h-full col-span-2 pt-6 pl-4">
     <div class="flex flex-col h-full">
       <div class="px-3 mb-3">
         <a-radio-group
@@ -10,9 +10,11 @@
           v-model:value="filterMode"
         >
           <a-radio-button class="flex-grow" value="custom"
-            >Filters</a-radio-button
-          >
-          <a-radio-button class="flex-grow" value="saved">Saved</a-radio-button>
+            ><fa icon="fal filter" class="pushtop"></fa
+          ></a-radio-button>
+          <a-radio-button class="flex-grow" value="saved"
+            ><fa icon="fal list-alt" class="pushtop"></fa
+          ></a-radio-button>
         </a-radio-group>
       </div>
 
@@ -32,19 +34,24 @@
     </div>
   </div>
   <div
-    class="flex flex-col items-stretch h-full col-span-7"
+    class="flex flex-col items-stretch h-full col-span-7 pt-6"
     style="overflow: hidden"
   >
-    <div class="flex items-center border-b border-gray-200">
-      <SearchBox
+    <div class="flex items-center">
+      <a-input placeholder="Search" @input="handleSearchChange">
+        <template #suffix>
+          <fa icon="fal eye"></fa>
+        </template>
+      </a-input>
+      <!-- <SearchBox
         @change="handleSearchChange"
         :loading="
           [STATES.PENDING].includes(state) ||
           [STATES.VALIDATING].includes(state)
         "
-        size="large"
-        class="px-4 mt-4"
-      ></SearchBox>
+        size="default"
+        class="px-4"
+      ></SearchBox> -->
     </div>
     <div class="flex w-full">
       <AssetTabs :assetTypeList="assetTypeList"></AssetTabs>

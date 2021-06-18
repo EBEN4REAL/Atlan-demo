@@ -36,6 +36,7 @@ import {
   Upload,
   List,
   Cascader,
+  Timeline,
   Badge
 } from "ant-design-vue";
 
@@ -69,6 +70,7 @@ export const install: UserModule = ({ app }) => {
   app.use(Upload);
   app.use(List);
   app.use(Cascader);
+  app.use(Timeline);
   app.use(Badge);
 
   app.config.globalProperties.$message = message;

@@ -24,6 +24,7 @@ interface useGetAPIParams {
  * @param body - The payload to send while making a `POST` request
  * @param options - SWRV or Axios specefic configuration objects
  */
+
 export const useAPI = <T>(key: string, method: 'GET' | 'POST' | 'DELETE' | 'PUT', { cache = true, params, body, pathVariables, options, dependantFetchingKey }: useGetAPIParams) => {
     const url = keyMaps[key]({ ...pathVariables });
     if (cache) {

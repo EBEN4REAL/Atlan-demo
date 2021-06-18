@@ -6,7 +6,7 @@
     "build-staging": "vite build --mode staging",
     "build": "vite build",
     "preview": "vite preview --port 8080",
-    "preview-https": "serve dist",
+    "preview-https": "serve dist"
   },
   "dependencies": {
     "@dsb-norge/vue-keycloak-js": "^2.0.0-beta",

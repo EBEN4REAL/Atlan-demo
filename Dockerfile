@@ -1,7 +1,8 @@
 FROM node:16-alpine as builder
 WORKDIR /app
 COPY ./ .npmrc /app/
-RUN npm install
+RUN echo "Node Version " && node --version && echo "NPM Version " && npm --version
+RUN npm install --save --legacy-peer-deps
 RUN npm run build
 FROM nginx:1.12.0
 COPY ./nginx.conf /etc/nginx/conf.d/default.conf

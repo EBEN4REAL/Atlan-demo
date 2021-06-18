@@ -43,6 +43,7 @@ import { faCertificate } from "@fortawesome/pro-light-svg-icons/faCertificate";
 import { faUserShield } from "@fortawesome/pro-light-svg-icons/faUserShield";
 import { faUserEdit } from "@fortawesome/pro-light-svg-icons/faUserEdit";
 import { faSync } from "@fortawesome/pro-light-svg-icons/faSync";
+import { faChevronDoubleLeft } from "@fortawesome/pro-light-svg-icons/faChevronDoubleLeft";
 
 import { faGlobe } from "@fortawesome/pro-light-svg-icons/faGlobe";
 import { faHistory } from "@fortawesome/pro-light-svg-icons/faHistory";
@@ -128,6 +129,7 @@ library.add(
   faTabletAlt,
   faTrashAlt,
   faArrowDown,
+  faChevronDoubleLeft,
   faUserFriends,
   faCopy,
   faUserTag,

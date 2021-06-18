@@ -90,6 +90,7 @@ specifiers:
   vue-router: ^4.0.8
   vue-tsc: ^0.1.7
   vue-virtual-scroll-list: ^2.3.2
+  vue3-tel-input: ^1.0.4
   vue3-timepicker: ^1.0.0-beta.2
   vue3-virtual-scroller: ^0.2.1
   vuex: ^4.0.0
@@ -152,6 +153,7 @@ dependencies:
   vue-numerals: 4.0.6_numeral@2.0.6+vue@3.1.1
   vue-router: 4.0.8_vue@3.1.1
   vue-virtual-scroll-list: 2.3.2
+  vue3-tel-input: 1.0.4
   vue3-timepicker: 1.0.0-beta.2
   vue3-virtual-scroller: 0.2.1_vue@3.1.1
   vuex: 4.0.1_vue@3.1.1
@@ -6680,6 +6682,10 @@ packages:
       type-check: 0.4.0
     dev: true
 
+  /libphonenumber-js/1.9.19:
+    resolution: {integrity: sha512-RjStfSE63LvXQEBw7pgQHPkY35z8feiMjC9wLvL1Hbt8PbhxpRrACwMXmLQgabb+IpVdcEx+olh8ll7UDXXkfA==}
+    dev: false
+
   /lines-and-columns/1.1.6:
     resolution: {integrity: sha1-HADHQ7QzzQpOgHWPe2SldEDZ/wA=}
     dev: true
@@ -9791,6 +9797,10 @@ packages:
       prepend-http: 2.0.0
     dev: true
 
+  /user/0.0.0:
+    resolution: {integrity: sha1-8n8bI/xRHyqO+kDbVc+6Ejgk4Co=}
+    dev: false
+
   /util-deprecate/1.0.2:
     resolution: {integrity: sha1-RQ1Nyfpw3nMnYvvS1KKJgUGaDM8=}
     dev: true
@@ -10371,6 +10381,15 @@ packages:
     peerDependencies:
       vue: ^3.0.0
     dependencies:
+      vue: 3.1.1
+    dev: false
+
+  /vue3-tel-input/1.0.4:
+    resolution: {integrity: sha512-C60OyAq5ORDErSJ4x7UmJJbF95CDncMswnySmAUtbuBP0pcVcJBu6DOTxKquykvTbJEh9I73DXyqMtDxtLrwJg==}
+    dependencies:
+      core-js: 3.14.0
+      libphonenumber-js: 1.9.19
+      user: 0.0.0
       vue: 3.1.1
     dev: false
 

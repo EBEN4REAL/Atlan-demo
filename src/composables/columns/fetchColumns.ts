@@ -43,7 +43,6 @@ export default function fetchColumns(dependent: any, query?: string, filters?: C
         } else {
             localList.value = data.value?.entities;
         }
-        console.log(localList);
     });
 
     const list: ComputedRef<any> = computed(() => {

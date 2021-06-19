@@ -71,7 +71,7 @@ export default defineConfig(({ mode }) => {
       svgLoader(),
     ],
     optimizeDeps: {
-      include: ["vue", "vue-router", "@vueuse/core",],
+      include: ["vue", "vue-router", "@vueuse/core"],
       exclude: []
     },
     server: {

@@ -5,7 +5,7 @@
       <h2 class="font-medium text-md">Audit Logs:</h2>
       <fa icon="fal sync" class="cursor-pointer" @click="refreshAudits"></fa>
     </div>
-    <div class="p-2 overflow-y-scroll audit-container">
+    <div class="p-2 audit-container">
       <a-timeline v-if="audits">
         <a-timeline-item
           :color="getEventByAction(log).color || 'green'"
@@ -13,10 +13,29 @@
           :key="index"
         >
           <div>
-            <span
-              v-if="getDetailsForEntityAuditEvent(log)"
-              v-html="getDetailsForEntityAuditEvent(log)"
-            ></span>
+            <span v-if="getDetailsForEntityAuditEvent(log)">
+              <span
+                v-html="getDetailsForEntityAuditEvent(log)?.displayValue"
+              ></span>
+              <span v-if="getDetailsForEntityAuditEvent(log)?.moreinfo"
+                >.<a-popover placement="left">
+                  <template #content>
+                    <a-timeline>
+                      <div class="mb-2">Users Added:</div>
+                      <a-timeline-item
+                        v-for="(user, index) in getDetailsForEntityAuditEvent(
+                          log
+                        )?.value"
+                        :key="index"
+                      >
+                        {{ user }}
+                      </a-timeline-item></a-timeline
+                    >
+                  </template>
+                  <a-button type="link">View Details</a-button>
+                </a-popover></span
+              >
+            </span>
             <span v-else>
               {{ getEventByAction(log).label || "Event" }}
             </span>
@@ -33,6 +52,7 @@
             >Show more logs</a-button
           >
         </div>
+        <div v-if="!audits.length">No Logs!!</div>
       </a-timeline>
       <div v-else>
         <img :src="emptyScreen" alt="No logs" class="w-3/5 m-auto" />
@@ -120,6 +140,21 @@ export default defineComponent({
 <style lang="less" scoped>
 .audit-container {
   height: 80vh;
+}
+
+.ant-timeline-item {
+  padding-bottom: 10px !important;
+  margin-bottom: 0 !important;
+}
+.ant-timeline-item-last > .ant-timeline-item-content {
+  min-height: 10px !important;
+  height: 20px !important;
+}
+.ant-timeline-item-content,
+.ant-timeline-item-last {
+  min-height: 10px !important;
+  margin-bottom: 0 !important;
+  height: 28px !important;
 }
 </style>
         

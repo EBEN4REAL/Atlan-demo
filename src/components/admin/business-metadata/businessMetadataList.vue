@@ -6,7 +6,7 @@
       class="p-3 bg-white cursor-pointer"
       :class="{
         'border-bottom': finalList.length - 1 !== index,
-        'border-l-4 border-primary-500 bg-blue-100':
+        'border-l-4 border-left-color bg-blue-100':
           selectedBm && item.guid === selectedBm.guid,
       }"
       @click="e => selectBm(item)"
@@ -45,12 +45,9 @@
     </div>
   </div>
 </template>
-
 <script lang="ts">
 import { reactive, Ref, toRefs, computed } from "vue";
-
 import { defineComponent } from "vue";
-
 export default defineComponent({
   props: ["finalList", "selectedBm", "updatedBm"],
   setup(props, context) {
@@ -60,10 +57,8 @@ export default defineComponent({
       }
       return false;
     };
-
     // * Methods
     const selectBm = item => context.emit("selectBm", item);
-
     // * Computed
     const finalList = computed(() => props.finalList);
     const selectedBm = computed(() => props.selectedBm);
@@ -78,5 +73,8 @@ export default defineComponent({
   },
 });
 </script>
-
-<style scoped></style>
+<style scoped>
+.border-left-color {
+  border-left-color: rgba(32, 38, 210);
+}
+</style>

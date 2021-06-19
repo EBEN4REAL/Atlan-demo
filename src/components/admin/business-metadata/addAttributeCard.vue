@@ -1,18 +1,18 @@
 <template>
   <div>
-    <div class="mb-0 form-group d-flex flex-column">
-      <div class="row no-gutters">
-        <div class="col-6">
+    <div class="flex mb-0 mb-4 flex-column">
+      <div class="flex flex-wrap no-gutters">
+        <div class="w-1/2">
           <label class="mb-0 font-w400 font-size-sm"
-            >Name<sup class="text-danger">*</sup></label
+            >Name<sup class="text-red">*</sup></label
           >
           <input
             type="text"
             v-model="attributeInput.data.options.displayName"
-            class="form-control"
+            class="block w-full px-2 py-1 mb-1 text-base leading-normal bg-white border rounded appearance-none text-grey-darker border-grey"
           />
         </div>
-        <div class="pl-3 col-6">
+        <div class="w-1/2 pl-3">
           <label class="mb-0 font-w400 font-size-sm"
             >Search Weight
             <i class="ml-2 far fa-question-circle fa-sm" id="search-weight-tooltip"></i>
@@ -23,7 +23,7 @@
             class="ml-2"
             target="search-weight-tooltip"
           >
-            <div class="d-flex flex-column align-items-center">
+            <div class="flex flex-column align-items-center">
               <div class="mb-2 font-size-14">
                 <i class="mr-1 fa fa-arrow-up"></i> the search weight for the attribute,<i
                   class="mx-1 fa fa-arrow-up"
@@ -31,7 +31,7 @@
                 the entity in the topmost <br />
                 search results when searched for by that attribute
               </div>
-              <div class="mb-1 font-size-14 font-weight-bold text-underline">
+              <div class="mb-1 font-bold font-size-14 text-underline">
                 Applicable Ranges
               </div>
               <div class="font-size-14">Quick search: <b>0 - 10</b></div>
@@ -40,20 +40,20 @@
           </b-popover>
           <select
             id="search-weight"
-            class="w-100 form-control"
+            class="block w-full px-2 py-1 mb-1 text-base leading-normal bg-white border rounded appearance-none text-grey-darker border-grey"
             v-model="attributeInput.data.searchWeight"
           >
             <option v-for="n in 10" :key="n" :value="n">{{ n }}</option>
           </select>
         </div>
       </div>
-      <div class="mt-3 row no-gutters">
-        <div class="col-6">
+      <div class="flex flex-wrap mt-3 no-gutters">
+        <div class="w-1/2">
           <label class="mb-0 font-w400 font-size-sm">Type</label>
           <select
             id="typeName"
             show-search
-            class="w-100 form-control"
+            class="block w-full px-2 py-1 mb-1 text-base leading-normal bg-white border rounded appearance-none text-grey-darker border-grey"
             v-model="attributeInput.data.typeName"
             :disabled="isEdit"
           >
@@ -62,7 +62,7 @@
             </option>
           </select>
         </div>
-        <div class="pl-3 col-6" v-if="attributeInput.data.typeName !== 'boolean'">
+        <div class="w-1/2 pl-3" v-if="attributeInput.data.typeName !== 'boolean'">
           <label class="mb-0 font-w400 font-size-sm">Multivalues</label>
           <div class="pt-2 mb-1 custom-control custom-switch">
             <input
@@ -85,15 +85,18 @@
         <label class="mb-0 font-w400 font-size-sm">Max. String Length</label>
         <input
           type="number"
-          class="form-control"
+          class="block w-full px-2 py-1 mb-1 text-base leading-normal bg-white border rounded appearance-none text-grey-darker border-grey"
           v-model="attributeInput.data.options.maxStrLength"
           :min="1"
         />
       </div>
-      <div class="mt-3 row no-gutters" v-if="attributeInput.data.typeName === 'enum'">
-        <div class="col-4">
+      <div
+        class="flex flex-wrap mt-3 no-gutters"
+        v-if="attributeInput.data.typeName === 'enum'"
+      >
+        <div class="w-1/3">
           <label class="mb-0 font-w400 font-size-sm"
-            >Choose Enum<sup class="text-danger">*</sup></label
+            >Choose Enum<sup class="text-red">*</sup></label
           >
           <treeselect
             v-model="enumType"
@@ -107,7 +110,7 @@
           >
           </treeselect>
         </div>
-        <div class="pl-3 col-8">
+        <div class="w-2/3 pl-3">
           <label class="mb-0 font-w400 font-size-sm">Options</label>
           <treeselect
             :value="selectedEnumOptions ? selectedEnumOptions.map(item => item.id) : null"
@@ -120,8 +123,8 @@
           </treeselect>
         </div>
       </div>
-      <div class="mt-3 row no-gutters">
-        <div class="col-12">
+      <div class="flex flex-wrap mt-3 no-gutters">
+        <div class="w-1/62">
           <label class="mb-0 font-w400 font-size-sm">Applicable Entities</label>
           <treeselect
             v-model="attributeInput.data.options.applicableEntityTypes"
@@ -138,27 +141,21 @@
     </div>
   </div>
 </template>
-
 <script lang="ts">
 import { defineComponent } from "vue";
 import { reactive, ref, toRefs, computed, onMounted, nextTick, watch } from "vue";
-
 import {
   DEFAULT_ATTRIBUTE,
   ATTRIBUTE_INPUT_VALIDATION_RULES,
   ATTRIBUTE_TYPES,
 } from "~/constant/business_metadata";
-
 // * Plugins
 // import Treeselect from "@riophae/vue-treeselect";
-
 // * Utils
 import { generateUUID } from "~/utils/generator";
-
 // * Composables
 import useEnums from "@/admin/enums/composables/useEnums";
 import useAssetQualifiedName from "~/composables/asset/useAssetQualifiedName";
-
 export default defineComponent({
   props: {
     attribute: {
@@ -177,18 +174,15 @@ export default defineComponent({
       const uuid4 = generateUUID();
       return { ...DEFAULT_ATTRIBUTE, name: uuid4 };
     };
-
     // * Data
     // !!!!!
     // const { isEdit, attribute } = toRefs(props);
     let attributeInput = reactive({
       data: JSON.parse(JSON.stringify(getDefaultAttributeTemplate())),
     });
-
     let rules = reactive(JSON.parse(JSON.stringify(ATTRIBUTE_INPUT_VALIDATION_RULES)));
     let attributesTypes = reactive(JSON.parse(JSON.stringify(ATTRIBUTE_TYPES)));
     let enumType = ref(null);
-
     // * Composables
     const { enumListData: enumsList } = useEnums();
     const { getApplicableEntitiesForBmAttributes } = useAssetQualifiedName();
@@ -203,7 +197,6 @@ export default defineComponent({
       }
       return [];
     });
-
     const finalApplicableTypeNamesOptions = computed(() => {
       let options = getApplicableEntitiesForBmAttributes();
       if (
@@ -219,10 +212,8 @@ export default defineComponent({
           isDisabled: selectedOptions.includes(option.id),
         }));
       }
-
       return options.filter(t => t.id !== "AtlanSavedQuery");
     });
-
     const selectedEnumOptions = computed(() => {
       if (enumType.value) {
         const reqIndex = enumsList.value.findIndex(item => item.name === enumType.value);
@@ -237,12 +228,9 @@ export default defineComponent({
           }));
         }
       }
-
       return null;
     });
-
     // * Methods
-
     const normalize = (attribute: {
       typeName: string;
       multiValueSelect: any;
@@ -280,7 +268,6 @@ export default defineComponent({
       }
       return attribute;
     };
-
     // * hooks
     onMounted(() => {
       if (props.attribute) {
@@ -320,7 +307,6 @@ export default defineComponent({
               .filter(t => t.id !== "AtlanSavedQuery"),
       };
     });
-
     // watch(
     //   [
     //     attributeInput.data.searchWeight,
@@ -342,28 +328,24 @@ export default defineComponent({
     //         normalize(JSON.parse(JSON.stringify(attributeInput.data)))
     //       );
     //     }
-
     //     if (oldVal1.length !== newVal1.length && oldVal1.length >= 1) {
     //       context.emit(
     //         "updateAttribute",
     //         normalize(JSON.parse(JSON.stringify(attributeInput.data)))
     //       );
     //     }
-
     //     if (oldVal2 !== newVal2 && oldVal2 !== undefined) {
     //       context.emit(
     //         "updateAttribute",
     //         normalize(JSON.parse(JSON.stringify(attributeInput.data)))
     //       );
     //     }
-
     //     if (oldVal3 !== newVal3 && oldVal3 !== undefined) {
     //       context.emit(
     //         "updateAttribute",
     //         normalize(JSON.parse(JSON.stringify(attributeInput.data)))
     //       );
     //     }
-
     //     if (oldVal4) {
     //       const reqIndexOld = ATTRIBUTE_TYPES.findIndex(type => type.id === oldVal4);
     //       if (reqIndexOld > -1 && ATTRIBUTE_TYPES[reqIndexOld].extraAttributeOptions) {
@@ -411,5 +393,4 @@ export default defineComponent({
   },
 });
 </script>
-
 <style scoped></style>

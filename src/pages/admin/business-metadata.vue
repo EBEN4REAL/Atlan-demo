@@ -1,12 +1,5 @@
 <template>
-  <!-- <BusinessMetadataList
-    :finalList="searchText ? searchedBusinessMetadataList : finalBusinessMetadataList"
-    :updatedBm="updatedBm"
-    :selectedBm="selectedBm"
-    @selectBm="handleSelectBm"
-    style="max-height: calc(100vh - 15.7rem)"
-  /> -->
-  <div class="px-6 pt-4">
+  <div class="">
     <!-- <div
       v-if="loading"
       class="flex items-center flex-column justify-content-center font-size-h4"
@@ -15,31 +8,34 @@
       <loader loadingText="Fetching Business Metadata..." textLarge></loader>
     </div> -->
     <div
-      class="grid row-auto no-gutters"
+      class="grid grid-cols-3 gap-7"
       v-if="finalBusinessMetadataList && finalBusinessMetadataList.length"
     >
-      <div class="grid grid-cols-4 pr-4">
-        <div class="flex items-center mb-4">
-          <div class="mb-0 mr-4 form-group">
-            <div class="overflow-hidden border rounded input-group">
+      <div class="col-span-3">
+        Business Metadata
+      </div>
+      <div class="col-span-1">
+        <div class="flex justify-between gap-5 mb-5">
+          <div class="w-full h-8">
+            <div class="w-full h-8">
               <input
                 ref="searchinput"
                 v-model="searchText"
                 type="text"
-                class="py-2 pl-3 bg-white border-0 shadow-none search-assets form-control rounded-0 font-size-h6"
+                class="w-full h-full pl-2 border border-1"
                 :placeholder="'Search Metadata'"
               />
-              <div class="input-group-append">
+              <div class="">
                 <span
                   v-if="!searchText"
-                  class="pr-4 bg-white border-0 input-group-text rounded-0"
+                  class="bg-white border-0 input-group-text roundehidden"
                 >
                   <i class="fal fa-search font-size-h4"></i>
                 </span>
                 <span
                   v-else
                   @click="clearSearchText"
-                  class="pr-4 bg-white border-0 cursor-pointer input-group-text text-danger rounded-0"
+                  class="bg-white border-0 cursor-pointer input-group-text text-red roundehidden"
                 >
                   <i class="far fa-times-circle font-size-h4"></i>
                 </span>
@@ -48,25 +44,24 @@
           </div>
           <a-button
             variant="primary"
-            class="flex items-center px-3 py-2 btn-sm"
-            iconType="far"
-            icon="plus"
+            class="flex items-center text-sm leading-tight"
             @click="onCreateNewBmClick"
-          >
-            New
+            >New
           </a-button>
         </div>
-        <BusinessMetadataList
-          :finalList="
-            searchText ? searchedBusinessMetadataList : finalBusinessMetadataList
-          "
-          :updatedBm="updatedBm"
-          :selectedBm="selectedBm"
-          @selectBm="handleSelectBm"
-          style="max-height: calc(100vh - 15.7rem)"
-        />
+        <div style="height: calc(100vh - 9rem); overflow-y: scroll;">
+          <BusinessMetadataList
+            :finalList="
+              searchText ? searchedBusinessMetadataList : finalBusinessMetadataList
+            "
+            :updatedBm="updatedBm"
+            :selectedBm="selectedBm"
+            @selectBm="handleSelectBm"
+          />
+        </div>
       </div>
-      <div class="col-8">
+
+      <div class="col-span-2">
         <BusinessMetadataProfile
           v-if="selectedBm"
           :key="selectedBm && selectedBm.guid"
@@ -77,80 +72,64 @@
           @removeNewBm="discardNewBm"
           @afterArchive="handleAfterArchive"
           @clearNewBm="newBm = null"
-          style="height: calc(100vh - 12rem); overflow: hidden;"
+          style="height: calc(100vh - 6rem); overflow: hidden;"
         />
       </div>
     </div>
-    <div
-      v-else
-      class="flex items-center flex-column justify-content-center"
-      style="min-height: 30rem"
-    >
+    <div v-else class="">
       <img :src="EmptyBusinessMetadata" alt="Business Metadata Empty" class="mb-3" />
-      <div class="font-weight-bold">No business metadata created yet! 💼</div>
+      <div class="font-bold">No business metadata created yet! 💼</div>
       <span class="mb-3 font-size-14"
         >Business metadata helps to power asset discovery and access control.</span
       >
       <a-button
-        class="flex items-center px-4 font-weight-bold border-primary text-primary"
+        class="flex items-center font-bold border-blue text-blue"
         @click="onCreateNewBmClick"
       >
-        <i class="mr-2 far fa-plus"></i>Add Business Metadata
+        <i class=" far fa-plus"></i>Add Business Metadata
       </a-button>
     </div>
   </div>
 </template>
-
 <script lang="ts">
 // ? components
 import BusinessMetadataList from "@/admin/business-metadata/businessMetadataList.vue";
 import BusinessMetadataProfile from "@/admin/business-metadata/businessMetadataProfile.vue";
-
 // ? composables
 import useBusinessMetadata from "@/admin/business-metadata/composables/useBusinessMetadata";
-
 // ? utils
 import { generateUUID } from "~/utils/generator";
-
 // ? Media
 import EmptyBusinessMetadata from "~/assets/images/illustrations/empty_business_metadata.svg";
-
 import { reactive, ref, toRefs, defineComponent, computed, nextTick } from "vue";
-
 const DEFAULT_BM = {
   displayName: "New Business Metadata",
   description: "",
   guid: "new",
   attributeDefs: [],
 };
-
 export default defineComponent({
   components: { BusinessMetadataList, BusinessMetadataProfile },
   name: "businessMetadata",
   setup(props, context) {
     const { bmResponse, error, loading } = useBusinessMetadata();
-    console.log({ xx: bmResponse, yy: error, loading });
     // * Data
     let selectedBm = ref(null);
     let searchText = ref("");
     let newBm = ref(null);
     let updatedBm = ref(null);
-
     // * Methods
     const handleSelectBm = (item: any) => {
       selectedBm.value = item;
       updatedBm.value = null;
     };
-
     const getNewBmTemplate = () => {
       const uuid4 = generateUUID();
       return { ...DEFAULT_BM, name: uuid4 };
     };
-
     const clearSearchText = () => {
       searchText.value = "";
     };
-
     const discardNewBm = () => {
       const reqIndex = finalBusinessMetadataList.findIndex(bm => bm.guid === "new");
       if (reqIndex !== -1) {
@@ -160,7 +139,6 @@ export default defineComponent({
           : undefined;
       }
     };
-
     const onUpdate = bm => {
       if (bm.guid === "new") {
         newBm = bm;
@@ -168,7 +146,6 @@ export default defineComponent({
         updatedBm = bm;
       }
     };
-
     const handleAfterArchive = () => {
       nextTick(() => {
         if (finalBusinessMetadataList && finalBusinessMetadataList.length) {
@@ -178,7 +155,6 @@ export default defineComponent({
         }
       });
     };
-
     const onCreateNewBmClick = () => {
       const reqIndex = finalBusinessMetadataList.value.findIndex(bm => bm.guid === "new");
       if (reqIndex === -1) {
@@ -197,23 +173,19 @@ export default defineComponent({
         return bmResponse.value.businessMetadataDefs;
       return [];
     });
-
     const businessMetadataListLoading = computed(() => {
       return !businessMetadataList && !businessMetadataListError;
     });
-
     const businessMetadataListError = computed(() => {
       if (error) return error.value;
       return null;
     });
-
     const finalBusinessMetadataList = computed(() => [
       ...(newBm?.name ? [newBm] : []),
       ...(businessMetadataList
         ? businessMetadataList.value.filter((bm: { isArchived: any }) => !bm.isArchived)
         : []),
     ]);
-
     const searchedBusinessMetadataList = computed(() => {
       if (searchText) {
         return finalBusinessMetadataList.value.filter((bm: { name: string }) =>
@@ -222,7 +194,6 @@ export default defineComponent({
       }
       return finalBusinessMetadataList;
     });
-
     return {
       businessMetadataList,
       finalBusinessMetadataList,
@@ -244,5 +215,4 @@ export default defineComponent({
   },
 });
 </script>
-
 <style scoped></style>

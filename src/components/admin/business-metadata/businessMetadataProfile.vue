@@ -6,11 +6,9 @@
       :businessMetadata="localBm"
       @afterArchive="handleAfterArchive"
     /> -->
-    <div
-      class="px-4 py-3 border-bottom d-flex align-items-center justify-content-between"
-    >
+    <div class="flex px-4 py-3 border-b align-items-center justify-content-between">
       <div>
-        <div class="font-weight-bold font-size-h5">
+        <div class="font-bold font-size-h5">
           {{ (localBm && localBm.displayName) || localBm.name }}
         </div>
         <createUpdateInfo
@@ -21,10 +19,10 @@
           :entityType="`bm-localBm-${localBm.guid}`"
         />
       </div>
-      <div class="d-flex align-items-center">
+      <div class="flex align-items-center">
         <i
           v-if="error"
-          class="mr-3 far fa-exclamation-triangle text-danger"
+          class="mr-3 far fa-exclamation-triangle text-red"
           v-b-popover.hover.top="
             `Unable to ${
               localBm.guid !== 'new' ? 'update' : 'create'
@@ -68,15 +66,15 @@
       </div>
     </div>
     <div class="px-4 py-3 overflow-y-auto" style="height: calc(100% - 4.3rem)">
-      <div class="pb-4 mb-3 border-bottom">
-        <div class="px-0 mb-4 col-6">
+      <div class="pb-4 mb-3 border-b">
+        <div class="w-1/2 px-0 mb-4">
           <label for="name" class="mb-1"
             >Name
-            <sup class="text-danger">*</sup>
+            <sup class="text-red">*</sup>
           </label>
           <input
             type="text"
-            class="form-control"
+            class="block w-full px-2 py-1 mb-1 text-base leading-normal bg-white border rounded appearance-none text-grey-darker border-grey"
             id="name"
             name="Name"
             v-model="localBm.displayName"
@@ -87,7 +85,7 @@
           <label for="description" class="mb-1">Description</label>
           <textarea
             placeholder="Add some details about this metadata."
-            class="form-control"
+            class="block w-full px-2 py-1 mb-1 text-base leading-normal bg-white border rounded appearance-none text-grey-darker border-grey"
             id="description"
             name="Description"
             v-model="localBm.description"
@@ -97,27 +95,27 @@
         </div>
       </div>
       <label class="">Attributes ({{ localBm.attributeDefs.length }})</label>
-      <div class="mb-4 d-flex align-items-center">
-        <div class="mb-0 mr-4 form-group">
-          <div class="overflow-hidden border rounded input-group">
+      <div class="flex mb-4 align-items-center">
+        <div class="mb-0 mb-4 mr-4">
+          <div class="relative flex items-stretch w-full overflow-hidden border rounded">
             <input
               ref="searchinput"
               v-model="attrsearchText"
               type="text"
-              class="py-2 pl-3 bg-white border-0 shadow-none search-assets form-control rounded-0 font-size-h6"
+              class="block w-full px-2 py-1 py-2 pl-3 mb-1 text-base leading-normal bg-white border border-0 rounded shadow-none appearance-none search-assets text-grey-darker border-grey roundehidden font-size-h6"
               :placeholder="'Search attribute'"
             />
             <div class="input-group-append">
               <span
                 v-if="!attrsearchText"
-                class="pr-4 bg-white border-0 input-group-text rounded-0"
+                class="pr-4 bg-white border-0 input-group-text roundehidden"
               >
                 <i class="fal fa-search font-size-h4"></i>
               </span>
               <span
                 v-else
                 @click="clearSearchText"
-                class="pr-4 bg-white border-0 cursor-pointer input-group-text text-danger rounded-0"
+                class="pr-4 bg-white border-0 cursor-pointer input-group-text text-red roundehidden"
               >
                 <i class="far fa-times-circle font-size-h4"></i>
               </span>
@@ -126,7 +124,7 @@
         </div>
         <a-button
           variant="alt-primary"
-          class="px-3 py-2 btn-sm d-flex align-items-center"
+          class="flex px-2 px-3 py-1 py-2 text-sm leading-tight align-items-center"
           iconType="far"
           icon="plus"
           @click="handleAddNewAttribute"
@@ -146,12 +144,12 @@
             : localBm.attributeDefs"
           :key="index + 1"
           :header="attribute.options.displayName || 'New attribute'"
-          class="advanceConfigCollapse"
+          class="advanceConfigflex-growlapse"
         >
           <span
             slot="extra"
             v-if="attribute.isNew"
-            class="cursor-pointer text-danger hover-underline font-size-sm"
+            class="cursor-pointer text-red hover-underline font-size-sm"
             @click.prevent.stop="handleRemoveAttribute(index)"
           >
             <i class="mr-1 fa-trash-alt far font-size-xs"></i> Remove
@@ -171,18 +169,15 @@
     </div>
   </div>
 </template>
-
 <script lang="ts">
 import { defineComponent } from "vue";
 import { reactive, ref, toRefs, computed, onMounted, nextTick } from "vue";
-
 // * Utils
 import { generateUUID } from "~/utils/generator";
 import { getErrorMessage } from "~/utils/error";
 import { DEFAULT_ATTRIBUTE } from "~/constant/business_metadata";
 import { DEFAULT_SORT_BY, DEFAULT_SORT_ORDER } from "~/constant/search";
 import AddAttributeCard from "@/admin/business-metadata/addAttributeCard.vue";
-
 export default defineComponent({
   props: {
     selectedBm: {
@@ -199,28 +194,23 @@ export default defineComponent({
       guid: "",
       attributeDefs: [],
     });
-
     let attrsearchText = ref("");
     let isUpdated = ref(false);
     let showArchiveMetadataModal = ref(false);
     let loading = ref(false);
     let error = ref(null);
-
     // * Methods
     const handleAfterArchive = () => {
       context.emit("afterArchive");
       fetchAssets();
     };
-
     const getDefaultAttributeTemplate = () => {
       const uuid4 = generateUUID();
       return { ...DEFAULT_ATTRIBUTE, name: uuid4 };
     };
-
     const onShowArchiveMetadataModal = () => {
       showArchiveMetadataModal.value = true;
     };
-
     const clearSearchText = () => {
       attrsearchText.value = "";
     };
@@ -231,11 +221,9 @@ export default defineComponent({
       isUpdated.value = true;
       context.emit("update", JSON.parse(JSON.stringify(localBm)));
     };
-
     const handleDiscardChanges = () => {
       if (props.selectedBm && props.selectedBm.guid === "new")
         context.emit("removeNewBm");
-
       if (props.selectedBm && props.selectedBm.guid) {
         Object.assign(localBm, reactive(JSON.parse(JSON.stringify(props.selectedBm))));
       }
@@ -243,11 +231,9 @@ export default defineComponent({
       error.value = null;
       context.emit("clearUpdatedBm");
     };
-
     const handleAddBusinessMetadata = async () => {
       error.value = null;
       let isInvalid = false;
-
       // ! turn this back to displayName
       if (!localBm.name) {
         isInvalid = true;
@@ -326,7 +312,6 @@ export default defineComponent({
       //     }
       //     // eslint-disable-next-line
       //     this.localBm = JSON.parse(JSON.stringify(apiResponse.businessMetadataDefs[0]));
-
       //     this.$emit("clearUpdatedBm");
       //   }
       //   this.fetchAssets();
@@ -345,7 +330,6 @@ export default defineComponent({
       //   }
       // }
     };
-
     const handleAddNewAttribute = () => {
       localBm.attributeDefs = [
         {
@@ -356,7 +340,6 @@ export default defineComponent({
       ];
       onUpdate();
     };
-
     const onAttributeValuesChange = (_uAttribute: any, uIndex: number) => {
       localBm.attributeDefs = localBm.attributeDefs.map((attribute: object, index) => {
         if (index === uIndex) {
@@ -369,7 +352,6 @@ export default defineComponent({
       });
       onUpdate();
     };
-
     const handleRemoveAttribute = index => {
       const tempAttributes = JSON.parse(JSON.stringify(localBm.attributeDefs));
       tempAttributes.splice(index, 1);
@@ -405,7 +387,6 @@ export default defineComponent({
       getAssets(options);
     };
     // * Computed
-
     const dropdownOptions = computed(() => {
       return [
         {
@@ -416,7 +397,6 @@ export default defineComponent({
         },
       ];
     });
-
     const searchedAttributes = computed(() => {
       if (attrsearchText.value) {
         return localBm.attributeDefs.filter(attr =>
@@ -434,15 +414,12 @@ export default defineComponent({
     //   sortOrder: state => state.asset.paginateOptions.sortOrder,
     //   paginateOptions: state => state.asset.paginateOptions
     // });
-
     const keymap = computed(() => {
       return {
         esc: handleClose,
       };
     });
-
     // * Lifecycle hooks
-
     onMounted(() => {
       if (props.selectedBm && props.selectedBm.guid) {
         Object.assign(
@@ -465,7 +442,6 @@ export default defineComponent({
         }
       }
     });
-
     return {
       localBm,
       searchedAttributes,

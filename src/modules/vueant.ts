@@ -30,7 +30,7 @@ import {
   Result,
   Progress,
   Table,
-  Upload
+  Upload,
 } from "ant-design-vue";
 
 // https://github.com/antfu/vite-plugin-pwa#automatic-reload-when-new-content-available

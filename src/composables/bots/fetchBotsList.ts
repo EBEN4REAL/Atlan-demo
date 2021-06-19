@@ -4,7 +4,7 @@ import { BaseAttributes, BotsAttributes } from '~/constant/projection';
 import { BotsType } from '~/types/atlas/bots';
 import fetchSearchList from '../utils/search';
 
-export default function fetchBotsList(dependent: any, query?: string, filters?: Components.Schemas.FilterCriteria, limit?: number, offset?: number) {
+export default function fetchBotsList(dependent: any, query?: string, filters?: any, limit?: number, offset?: number) {
 
     const body: Ref<Components.Schemas.SearchParameters> = ref({
         typeName: "Bot",

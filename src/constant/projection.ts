@@ -17,6 +17,7 @@ export const ConnectionAttributes = [
 
 export const CredentialAttributes = [
   "authType",
+  "extra"
 ];
 
 export const BaseAttributes = [

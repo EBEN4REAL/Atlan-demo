@@ -2,16 +2,12 @@
   <a-form :model="credential" layout="vertical" ref="form">
     <a-form-item
       label="Connection name"
-      name="name"
+      name="displayName"
       autofocus
       :has-feedback="true"
       :rules="nameRules"
     >
-      <a-input
-        autofocus
-        v-model:value="credential.name"
-        @input="credential.name = $event.target.value.toLowerCase().trim()"
-      />
+      <a-input autofocus v-model:value="credential.displayName" />
     </a-form-item>
 
     <div class="grid grid-cols-12 space-x-3 flex-nowrap">
@@ -63,17 +59,20 @@
     <a-form-item
       label="Authentication Mode"
       name="name"
-      v-if="authTypes(item).length > 1"
+      v-if="authTypes.length > 1"
     >
       <RadioButton
-        :list="authTypes(item)"
-        v-model="credential.auth_type"
+        :list="authTypes"
+        v-model="credential.authType"
         @change="handleAuthTypeChange"
       ></RadioButton>
     </a-form-item>
 
     <div class="grid grid-cols-12 space-x-3 flex-nowrap">
-      <template v-for="attr in authAttributesLocal" :key="attr.id">
+      <template
+        v-for="attr in authAttributesLocal(credential.authType)"
+        :key="attr.id"
+      >
         <div class="col-span-6">
           <a-form-item
             v-if="attr.isVisible"
@@ -106,12 +105,12 @@
       <div class="col-span-12">
         <p class="mb-2 text-sm font-normal text-gray-400">Advanced</p>
       </div>
-      <template v-for="attr in extraAttributesLocal" :key="attr.id">
+      <template v-for="attr in extraAttributesLocal" :key="attr?.id">
         <div class="col-span-6">
           <a-form-item
             v-if="attr.isVisible"
             :has-feedback="true"
-            :name="'extra.' + attr.id"
+            :name="'extra.' + attr?.id"
           >
             <template #label>
               <span>{{ attr.label }}</span>
@@ -119,15 +118,16 @@
                 ><span class="ml-1"><fa icon="fal info-circle"></fa></span
               ></a-tooltip>
             </template>
+
             <DynamicInput
               v-model="credential.extra[attr.id]"
-              :dataType="attr.type"
-              :placeholder="attr.placeholder"
-              :prefix="attr.prefix"
-              :suffix="attr.suffix"
+              :dataType="attr?.type"
+              :placeholder="attr?.placeholder"
+              :prefix="attr?.prefix"
+              :suffix="attr?.suffix"
               :enumList="enumAttributes(attr)"
-              :enumAllowCustom="attr.allowCustom"
-              :defaultValue="attr.default"
+              :enumAllowCustom="attr?.allowCustom"
+              :defaultValue="attr?.default"
             ></DynamicInput>
           </a-form-item>
         </div>
@@ -185,7 +185,7 @@
 
 <script lang="ts">
 // import { ValidateErrorEntity } from "ant-design-vue/es/form/interface";
-import { defineComponent, PropType } from "vue";
+import { defineComponent, PropType, Ref, ref } from "vue";
 
 import RadioButton from "@common/radio/button.vue";
 import DynamicInput from "@common/input/dynamic.vue";
@@ -200,6 +200,7 @@ import { Search } from "~/api/atlas/search";
 
 import { getEnv } from "~/modules/__env";
 import { BotsType } from "~/types/atlas/bots";
+import useBotModel from "~/composables/connection/useBotModel";
 
 export default defineComponent({
   components: { RadioButton, DynamicInput },
@@ -226,6 +227,13 @@ export default defineComponent({
         return {};
       },
     },
+    defaultConnection: {
+      type: Object,
+      required: false,
+      default(): any {
+        return {};
+      },
+    },
   },
   data() {
     return {
@@ -242,102 +250,67 @@ export default defineComponent({
           message: "Name of the connection is mandatory",
           trigger: "blur",
         },
-        {
-          message: "Must start with a letter. No special characters",
-          trigger: "blur",
-          pattern: /^[A-Za-z][a-zA-Z0-9_]+$/,
-        },
-        {
-          message: "There is an existing connection with the same name",
-          trigger: "blur",
-          asyncValidator: async (rule, value, callback) => {
-            try {
-              if (this.cancelToken) {
-                this.cancelToken.cancel("Operation canceled by the user.");
-              }
-              this.cancelToken = this.$axios.CancelToken.source();
-              let entityFilters = {
-                condition: "AND",
-                criterion: [],
-              };
-              const realm = getEnv().DEFAULT_REALM;
-              // const qualifiedName = `${realm}/${this.integrationName(
-              //   this.item
-              // )}/${this.credential.name}`;
-              entityFilters.criterion.push({
-                attributeName: "qualifiedName",
-                attributeValue: "qualifiedName",
-                operator: "eq",
-              });
-              let options = {
-                cancelToken: this.cancelToken.token,
-              };
-              const response = await Search.Basic(
-                {
-                  attributes: [],
-                  typeName: "Connection",
-                  limit: 1,
-                  offset: 0,
-                  excludeDeletedEntities: true,
-                  includeClassificationAttributes: false,
-                  includeSubClassifications: false,
-                  includeSubTypes: false,
-                  entityFilters: entityFilters,
-                },
-                options
-              );
-              if (response?.entities) {
-                if (response.entities.length > 0) {
-                  callback(
-                    "There is an existing connection with the same name"
-                  );
-                }
-              }
-              callback();
-            } catch (err) {
-              callback();
-            }
-          },
-        },
       ],
       testingAuthentication: false,
-      credential: {
-        name: "",
-        host: "",
-        // host: "jv22371.ap-south-1.aws.snowflakecomputing.com",
-        port: "",
-        connType: this.integrationName(this.item),
-        login: "",
-        password: "",
-        authType: this.authTypes(this.item)[0]?.id,
-        jdbcUrl: this.jdbcUrl(this.item),
-        jdbcDriver: this.jdbcDriver(this.item),
-        extra: {},
-      } as {
-        [key: string]: any;
-      },
     };
   },
-  computed: {
-    hostLocal(): any {
-      return this.host(this.item);
-    },
-    portLocal(): any {
-      return this.port(this.item);
-    },
-    extraAttributesLocal(): any {
-      return this.extraAttributes(this.item);
-    },
-    authAttributesLocal(): any {
-      return this.authAttributes(this.item, this.credential.authType);
-    },
+  setup(props) {
+    const {
+      host: hostLocal,
+      port: portLocal,
+      extraAttributes: extraAttributesLocal,
+      authAttributes: authAttributesLocal,
+      authTypes,
+    } = useBotModel(props.item);
+
+    const credential: {
+      [key: string]: any;
+    } = ref({
+      displayName: "",
+      host: hostLocal.value.default,
+      port: portLocal.value.default,
+      connType: props.item?.attributes?.integrationName,
+      login: "",
+      password: "",
+      authType: authTypes.value[0]?.id,
+      url: props?.item?.attributes?.config.attributes.credentialTemplate.url,
+      driver:
+        props.item?.attributes?.config?.attributes?.credentialTemplate.driver,
+      extra: {
+        role: "",
+      },
+    });
+
+    const credentialGuid = ref("");
+    if (props.isEdit) {
+      credential.value.displayName =
+        props.defaultConnection?.attributes?.displayName;
+      credential.value.host = props.defaultConnection?.attributes?.host;
+      credential.value.port = props.defaultConnection?.attributes?.port;
+      // change it to credential
+      if (props.defaultConnection?.attributes?.extra) {
+        credential.value.extra = props.defaultConnection?.attributes?.extra;
+      } else {
+        credential.value.extra = props.defaultCredential?.attributes?.extra;
+      }
+      credentialGuid.value = props.defaultCredential?.guid;
+    }
+
+    return {
+      hostLocal,
+      portLocal,
+      extraAttributesLocal,
+      authAttributesLocal,
+      credential,
+      authTypes,
+      credentialGuid,
+    };
   },
   methods: {
     async getCredential() {
       try {
         await this.$refs.form.validate();
         const resp = await this.handleTest();
-        console.log(this.credential);
         if (resp) {
           return this.credential;
         }
@@ -379,7 +352,14 @@ export default defineComponent({
       try {
         this.testCredStatus = "info";
         this.testCredMessage = "Checking authentication";
-        await CredentialService.TestCredential(this.credential);
+        console.log(this.credential.host);
+
+        if (this.isEdit) {
+          await CredentialService.TestCredentialByID(this.credentialGuid);
+        } else {
+          await CredentialService.TestCredential(this.credential);
+        }
+
         this.testCredStatus = "success";
         this.testCredMessage = "Authentication is successful";
         return true;
@@ -390,7 +370,6 @@ export default defineComponent({
         if (err.response) {
           this.testCredError = err.response.data.message;
         }
-
         return false;
       }
     },
@@ -412,15 +391,6 @@ export default defineComponent({
           console.log("error", error);
         });
     },
-  },
-  mounted() {
-    if (this.isEdit) {
-      this.credential = {
-        ...this.defaultCredential,
-      };
-    } else {
-      this.credential.host = this.hostLocal.default;
-    }
   },
 });
 </script>

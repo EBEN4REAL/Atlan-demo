@@ -20,14 +20,11 @@ export default function fetchAssetDiscover(dependent: any, body: Ref<SearchParam
         mutate } = fetchSearchList(dependent, body)
 
     watch(data, (newValue, oldValue) => {
-
-        console.log(data);
         if (body?.value?.offset > 0) {
             localList.value.concat(data?.value?.entities);
         } else {
             localList.value = data.value?.entities;
         }
-        console.log(localList);
     });
 
 
@@ -56,16 +53,13 @@ export default function fetchAssetDiscover(dependent: any, body: Ref<SearchParam
 
 
         let map = aggregations?.value?.['__typeName.keyword'];
-        // let keys = Object.keys(aggregations?.value?.['__typeName.keyword']);
-        console.log(map);
-
 
         if (map) {
             Object.keys(map).forEach((key) => {
 
                 if (map[key] > 0) {
                     const found = AssetTypeList.find((item) => {
-                        return item.id == key && item.isDiscoverable
+                        return item.id == key
                     });
                     if (found) {
                         temp.push({

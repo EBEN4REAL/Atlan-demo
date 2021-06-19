@@ -1,6 +1,6 @@
 <template>
-  <splitpanes class="h-full default-theme">
-    <pane min-size="25" max-size="50" size="25" class="p-3 bg-white">
+  <splitpanes class="h-full">
+    <pane min-size="25" max-size="50" size="25" class="p-3 bg-white border-r">
       <div class="flex flex-col h-full">
         <div>
           <p class="mb-2 text-2xl font-medium tracking-tight">Connections</p>

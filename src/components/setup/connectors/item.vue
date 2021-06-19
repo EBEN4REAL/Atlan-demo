@@ -21,11 +21,10 @@
 <script lang="ts">
 import { defineComponent, PropType } from "vue";
 import { SourceList } from "~/constant/source";
-import ConnectorMixin from "~/mixins/connector";
+
 import { BotsType } from "~/types/atlas/bots";
 
 export default defineComponent({
-  mixins: [ConnectorMixin],
   components: {},
   props: {
     item: {

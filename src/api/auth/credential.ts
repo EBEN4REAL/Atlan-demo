@@ -4,16 +4,17 @@ import { Components } from "./client";
 const serviceAlias = "auth";
 
 export const URL = {
-  UPDATECRDENTIAL: "/credential",
-  TESTCREDENTIAL: "/credentials/test"
+  UPDATECRDENTIAL: "/credentials",
+  TESTCREDENTIAL: "/credentials/test",
+  TESTCREDENTIALBYGUID: "/credentials"
 }
 
 const UpdateCredential = (
   id: String,
-  body?: Components.Schemas.Credential,
+  body?: any,
   options?: AxiosRequestConfig
 ) => {
-  return getAxiosClient().put(
+  return getAxiosClient().post(
     getAPIPath(serviceAlias, `${URL.UPDATECRDENTIAL}/${id}`),
     body,
     options
@@ -21,7 +22,7 @@ const UpdateCredential = (
 };
 
 const TestCredential = (
-  body?: Components.Schemas.Credential,
+  body?: any,
   options?: AxiosRequestConfig
 ) => {
   return getAxiosClient().post(
@@ -31,8 +32,20 @@ const TestCredential = (
   );
 };
 
+const TestCredentialByID = (
+  id?: any,
+  options?: AxiosRequestConfig
+) => {
+  return getAxiosClient().post(
+    getAPIPath(serviceAlias, `${URL.TESTCREDENTIALBYGUID}/${id}/test`),
+    options
+  );
+};
+
+
 
 export const Credential = {
   UpdateCredential,
   TestCredential,
+  TestCredentialByID,
 };

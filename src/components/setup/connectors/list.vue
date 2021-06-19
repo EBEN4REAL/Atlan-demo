@@ -1,34 +1,36 @@
 <template>
-  <div class="flex justify-between w-full px-6 py-4 border-b bg-gray-50">
-    <a-input-search
-      size="default"
-      placeholder="Search Connectors"
-      v-model:value="searchText"
-      @change="handleChangeSearchText"
-    ></a-input-search>
-    <!-- <CategorySelector style="min-width: 200px;" v-model:value="category"></CategorySelector> -->
-  </div>
+  <div class="h-full">
+    <div class="flex justify-between w-full px-6 py-4 border-b bg-gray-50">
+      <a-input-search
+        size="default"
+        placeholder="Search Connectors"
+        v-model:value="searchText"
+        @change="handleChangeSearchText"
+      ></a-input-search>
+      <!-- <CategorySelector style="min-width: 200px;" v-model:value="category"></CategorySelector> -->
+    </div>
 
-  <div
-    class="flex-grow"
-    v-if="[STATES.ERROR, STATES.STALE_IF_ERROR].includes(state)"
-  >
-    <ErrorView :error="errorMessage"></ErrorView>
-  </div>
+    <div
+      class="flex-grow"
+      v-if="[STATES.ERROR, STATES.STALE_IF_ERROR].includes(state)"
+    >
+      <ErrorView :error="errorMessage"></ErrorView>
+    </div>
 
-  <LoadingView
-    v-else-if="
-      [STATES.PENDING].includes(state) ||
-      (searchText && [STATES.VALIDATING].includes(state))
-    "
-  ></LoadingView>
-  <div
-    class="flex items-center px-6 py-4 space-x-3 align-middle"
-    v-else-if="[STATES.SUCCESS].includes(state)"
-  >
-    <template v-for="item in list" :key="item.guid">
-      <ItemView :item="item" @click="handleSelect(item)"></ItemView>
-    </template>
+    <LoadingView
+      v-else-if="
+        [STATES.PENDING].includes(state) ||
+        (searchText && [STATES.VALIDATING].includes(state))
+      "
+    ></LoadingView>
+    <div
+      class="flex items-center px-6 py-4 space-x-3 align-middle"
+      v-else-if="[STATES.SUCCESS].includes(state)"
+    >
+      <template v-for="item in list" :key="item.guid">
+        <ItemView :item="item" @click="handleSelect(item)"></ItemView>
+      </template>
+    </div>
   </div>
 </template>
             

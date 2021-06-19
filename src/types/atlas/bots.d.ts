@@ -32,8 +32,14 @@ export interface CredentialAuthConfigAttributes {
     config: ConfigAttributes[]
 }
 
+export interface CredentialAuthConfig {
+    attributes: CredentialAuthConfigAttributes
+    typeName: string
+}
+
+
 export interface CredentialConfigAttributes {
-    auth: CredentialAuthConfigAttributes[],
+    auth: CredentialAuthConfig[],
     connType: Config,
     extra: Config[],
     host: Config,

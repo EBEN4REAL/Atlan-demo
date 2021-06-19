@@ -32,7 +32,6 @@ export default function fetchConnectionList(dependent: any, query?: string, filt
         mutate } = fetchSearchList(dependent, body)
 
     const list: ComputedRef<ConnectionType[] | undefined> = computed(() => {
-        console.log(data);
         return <ConnectionType[] | undefined>data.value?.entities;
     });
     const item: any = computed(() => {
@@ -48,7 +47,7 @@ export default function fetchConnectionList(dependent: any, query?: string, filt
     watch(list, () => {
         treeData.value = [];
         sourceList.value?.forEach((src) => {
-            const children = list.value?.filter((item) => {
+            let children = list.value?.filter((item) => {
                 return item.attributes.integrationName === src.id;
             }).map((item) => {
                 return {
@@ -57,6 +56,8 @@ export default function fetchConnectionList(dependent: any, query?: string, filt
                     type: "connection"
                 };
             });
+
+            children = children?.sort((a, b) => (a.title > b.title) ? 1 : ((b.title > a.title) ? -1 : 0))
             let found = SourceList.find((item) => item.id == src.id)
             treeData.value.push({
                 key: src.id,
@@ -67,6 +68,7 @@ export default function fetchConnectionList(dependent: any, query?: string, filt
                 type: "connector",
                 isRoot: true,
             });
+
         });
     });
     const sourceList: ComputedRef<any[] | undefined> = computed(() => {

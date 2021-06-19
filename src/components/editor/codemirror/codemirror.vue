@@ -1,9 +1,20 @@
 <template>
-  <textarea id="editor"></textarea>
+  <div>
+    <p>Asset: superstore_subcategory_sales_profit</p>
+    <textarea id="editor"></textarea>
+  </div>
 </template>
     
   <script lang="ts">
-import { defineComponent, onMounted, ref } from "vue";
+import {
+  defineComponent,
+  onMounted,
+  ref,
+  toRefs,
+  isRef,
+  unref,
+  toRaw,
+} from "vue";
 
 //import { SQLAutocomplete, SQLDialect } from "sql-autocomplete";
 
@@ -14,16 +25,30 @@ import "codemirror/addon/hint/show-hint";
 import "codemirror/addon/hint/show-hint.css";
 import "codemirror/addon/hint/sql-hint.js";
 
+import fetchColumns from "~/composables/columns/fetchColumns";
+
 export default defineComponent({
   components: {},
-  data() {
-    return {
-      editor: null,
-    };
-  },
   setup() {
-    let sqltext = ref("SELECT * FROM TABLE");
     let editor;
+
+    let entityFilters = {
+      condition: "AND",
+      criterion: [
+        {
+          attributeName: "tableQualifiedName",
+          operator: "eq",
+          attributeValue:
+            "default/snowflake/vnmdjjg7g/SALES_DB/SALES_DB/superstore_subcategory_sales_profit",
+        },
+      ],
+    };
+
+    let now = ref(true);
+
+    const { list } = fetchColumns(now, "", entityFilters, 20, 0);
+
+    //columnList.value = list.value;
 
     // const sqlAutocomplete = new SQLAutocomplete(SQLDialect.MYSQL);
 
@@ -41,6 +66,8 @@ export default defineComponent({
 
     const getHints = (editor) => {
       let query = editor.getValue();
+      let columnList = JSON.parse(JSON.stringify(unref(list.value)));
+
       // let suggestionList =
       //   sqlAutocomplete
       //     .autocomplete(query)
@@ -64,7 +91,7 @@ export default defineComponent({
         hint: () => ({
           from: CodeMirror.Pos(cur.line, start),
           to: CodeMirror.Pos(cur.line, end),
-          list: [],
+          list: columnList.map((column) => column.attributes.name) || [],
         }),
       };
       return options;
@@ -74,20 +101,22 @@ export default defineComponent({
       // the DOM element will be assigned to the ref after initial render
       // console.log(root.value); // <div>This is a root element</div>
       editor = CodeMirror.fromTextArea(document.getElementById("editor"), {
+        indentWithTabs: true,
+        smartIndent: true,
         lineNumbers: true,
-        value: sqltext.value,
-        mode: "text/x-pgsql",
-      });
+        value: "SELECT * FROM TABLE",
+        hint: CodeMirror.hint.sql,
+        mode: "text/x-sql",
+      })
 
       editor.on("changes", () => {
         let hintOptions = getHints(editor);
-        editor.showHint(hintOptions);
+        editor.showHint( hintOptions);
       });
     });
 
     return {
       editor,
-      sqltext,
     };
   },
 });

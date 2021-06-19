@@ -67,7 +67,7 @@ export default defineComponent({
         {
           attributeName: "tableQualifiedName",
           operator: "eq",
-          attributeValue: props.item?.attributes?.qualifiedName,
+          attributeValue: ""default/snowflake/vnmdjjg7g/SALES_DB/SALES_DB/superstore_subcategory_sales_profit""
         },
       ],
     };

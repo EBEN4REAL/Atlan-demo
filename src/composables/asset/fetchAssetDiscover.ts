@@ -27,7 +27,6 @@ export default function fetchAssetDiscover(dependent: any, body: Ref<SearchParam
         } else {
             localList.value = data.value?.entities;
         }
-        console.log(localList);
     });
 
 

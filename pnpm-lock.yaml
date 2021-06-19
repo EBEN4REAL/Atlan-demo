@@ -54,6 +54,7 @@ specifiers:
   less: ^4.1.1
   lowlight: 1.20.0
   mitt: ^2.1.0
+  monaco-editor: ^0.25.2
   numeral: '>=2'
   openapi-client-axios: ^3.14.0
   openapi-client-axios-ts: ^3.9.9
@@ -136,6 +137,7 @@ dependencies:
   less: 4.1.1
   lowlight: 1.20.0
   mitt: 2.1.0
+  monaco-editor: 0.25.2
   numeral: 2.0.6
   openapi-client-axios: 3.14.0_axios@0.21.1
   openapi-client-axios-ts: 3.9.9
@@ -7132,6 +7134,10 @@ packages:
 
   /moment/2.29.1:
     resolution: {integrity: sha512-kHmoybcPV8Sqy59DwNDY3Jefr64lK/by/da0ViFcuA4DH0vQg5Q6Ze5VimxkfQNSC+Mls/Kx53s7TjP1RhFEDQ==}
+    dev: false
+
+  /monaco-editor/0.25.2:
+    resolution: {integrity: sha512-5iylzSJevCnzJn9UVsW8yOZ3yHjmAs4TfvH3zsbftKiFKmHG0xirGN6DK9Kk04VSWxYCZZAIafYJoNJJMAU1KA==}
     dev: false
 
   /ms/2.0.0:

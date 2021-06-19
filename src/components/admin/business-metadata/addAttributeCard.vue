@@ -1,9 +1,9 @@
 <template>
   <div>
-    <div class="flex mb-0 mb-4 flex-column">
-      <div class="flex flex-wrap no-gutters">
-        <div class="w-1/2">
-          <label class="mb-0 font-w400 font-size-sm"
+    <div class="flex flex-col ">
+      <div class="grid grid-cols-2 gap-4 mb-3">
+        <div class="">
+          <label class="mb-0 font-normal font-size-sm"
             >Name<sup class="text-red">*</sup></label
           >
           <input
@@ -12,32 +12,33 @@
             class="block w-full px-2 py-1 mb-1 text-base leading-normal bg-white border rounded appearance-none text-grey-darker border-grey"
           />
         </div>
-        <div class="w-1/2 pl-3">
-          <label class="mb-0 font-w400 font-size-sm"
-            >Search Weight
-            <i class="ml-2 far fa-question-circle fa-sm" id="search-weight-tooltip"></i>
-          </label>
-          <b-popover
-            placement="right"
-            triggers="hover"
-            class="ml-2"
-            target="search-weight-tooltip"
-          >
-            <div class="flex flex-column align-items-center">
-              <div class="mb-2 font-size-14">
-                <i class="mr-1 fa fa-arrow-up"></i> the search weight for the attribute,<i
-                  class="mx-1 fa fa-arrow-up"
-                ></i>
-                the entity in the topmost <br />
-                search results when searched for by that attribute
+        <div class="">
+          <label class="mb-0 font-normal font-size-sm">Search Weight </label>
+          <a-popover>
+            <template #content>
+              <div class="flex flex-col items-center">
+                <div class="mb-2 font-size-14">
+                  <fa icon="fal arrow-up" class="mr-1"></fa>
+                  the search weight for the attribute,
+                  <fa icon="fal arrow-up" class="mx-1"></fa>
+                  the entity in the topmost
+                  <br />
+                  search results when searched for by that attribute
+                </div>
+                <div class="mb-1 font-bold font-size-14 text-underline">
+                  Applicable Ranges
+                </div>
+                <div class="font-size-14">Quick search: <b>0 - 10</b></div>
+                <div class="font-size-14">Suggestion: <b>8 - 10</b></div>
               </div>
-              <div class="mb-1 font-bold font-size-14 text-underline">
-                Applicable Ranges
-              </div>
-              <div class="font-size-14">Quick search: <b>0 - 10</b></div>
-              <div class="font-size-14">Suggestion: <b>8 - 10</b></div>
-            </div>
-          </b-popover>
+            </template>
+            <fa
+              icon="fal question-circle"
+              class="ml-2 text-xs"
+              id="search-weight-tooltip"
+            ></fa>
+          </a-popover>
+
           <select
             id="search-weight"
             class="block w-full px-2 py-1 mb-1 text-base leading-normal bg-white border rounded appearance-none text-grey-darker border-grey"
@@ -47,9 +48,10 @@
           </select>
         </div>
       </div>
-      <div class="flex flex-wrap mt-3 no-gutters">
-        <div class="w-1/2">
-          <label class="mb-0 font-w400 font-size-sm">Type</label>
+
+      <div class="flex items-center justify-around w-full gap-4 mb-3">
+        <div class="w-full">
+          <label class="mb-0 font-normal font-size-sm">Type</label>
           <select
             id="typeName"
             show-search
@@ -62,80 +64,72 @@
             </option>
           </select>
         </div>
-        <div class="w-1/2 pl-3" v-if="attributeInput.data.typeName !== 'boolean'">
-          <label class="mb-0 font-w400 font-size-sm">Multivalues</label>
-          <div class="pt-2 mb-1 custom-control custom-switch">
-            <input
-              type="checkbox"
-              class="custom-control-input"
+        <div class="w-full" v-if="attributeInput.data.typeName !== 'boolean'">
+          <label class="mb-0 font-normal font-size-sm">Multivalues</label>
+          <div class="pt-2 mb-1">
+            <a-checkbox
+              class=""
               :id="`${attributeInput.data.name}-multiValueSelect`"
               :disabled="isEdit"
               :name="`${attributeInput.data.name}-multiValueSelect`"
               v-model="attributeInput.data.multiValueSelect"
             />
-            <label
-              class="custom-control-label"
-              :for="`${attributeInput.data.name}-multiValueSelect`"
-              >{{ attributeInput.data.multiValueSelect ? "Enabled" : "Disabled" }}</label
-            >
+            <label class="ml-1" :for="`${attributeInput.data.name}-multiValueSelect`">{{
+              attributeInput.data.multiValueSelect ? "Enabled" : "Disabled"
+            }}</label>
           </div>
         </div>
       </div>
-      <div class="mt-3" v-if="attributeInput.data.typeName === 'string'">
-        <label class="mb-0 font-w400 font-size-sm">Max. String Length</label>
+
+      <div class="mb-3" v-if="attributeInput.data.typeName === 'string'">
+        <label class="mb-0 font-normal font-size-sm">Max. String Length</label>
         <input
           type="number"
-          class="block w-full px-2 py-1 mb-1 text-base leading-normal bg-white border rounded appearance-none text-grey-darker border-grey"
+          class="block w-full px-2 py-1 mb-3 text-base leading-normal bg-white border rounded appearance-none text-grey-darker border-grey"
           v-model="attributeInput.data.options.maxStrLength"
           :min="1"
         />
       </div>
-      <div
-        class="flex flex-wrap mt-3 no-gutters"
-        v-if="attributeInput.data.typeName === 'enum'"
-      >
-        <div class="w-1/3">
-          <label class="mb-0 font-w400 font-size-sm"
+      <div class="flex flex-wrap" v-if="attributeInput.data.typeName === 'enum'">
+        <div class="">
+          <label class="mb-0 font-normal font-size-sm"
             >Choose Enum<sup class="text-red">*</sup></label
           >
-          <treeselect
+          <Treeselect
             v-model="enumType"
             noResultsText="No enum found"
             :options="finalEnumsList"
             :multiple="false"
             :async="false"
-            :append-to-body="true"
             placeholder="Select enum"
             :disabled="isEdit"
           >
-          </treeselect>
+          </Treeselect>
         </div>
-        <div class="w-2/3 pl-3">
-          <label class="mb-0 font-w400 font-size-sm">Options</label>
-          <treeselect
+        <div class="pl-3">
+          <label class="mb-0 font-normal font-size-sm">Options</label>
+          <Treeselect
             :value="selectedEnumOptions ? selectedEnumOptions.map(item => item.id) : null"
             :options="selectedEnumOptions"
             :multiple="true"
             :async="false"
-            :append-to-body="true"
             :disabled="true"
           >
-          </treeselect>
+          </Treeselect>
         </div>
       </div>
-      <div class="flex flex-wrap mt-3 no-gutters">
-        <div class="w-1/62">
-          <label class="mb-0 font-w400 font-size-sm">Applicable Entities</label>
-          <treeselect
+      <div class="flex">
+        <div class="">
+          <label class="mb-0 font-normal font-size-sm">Applicable Entities</label>
+          <Treeselect
             v-model="attributeInput.data.options.applicableEntityTypes"
             noResultsText="No entities found"
             :options="finalApplicableTypeNamesOptions"
             :multiple="true"
             :async="false"
-            :append-to-body="true"
             placeholder="Select entity types"
           >
-          </treeselect>
+          </Treeselect>
         </div>
       </div>
     </div>
@@ -150,7 +144,9 @@ import {
   ATTRIBUTE_TYPES,
 } from "~/constant/business_metadata";
 // * Plugins
-// import Treeselect from "@riophae/vue-treeselect";
+import Treeselect from "vue3-treeselect";
+import "vue3-treeselect/dist/vue3-treeselect.css";
+
 // * Utils
 import { generateUUID } from "~/utils/generator";
 // * Composables
@@ -167,7 +163,7 @@ export default defineComponent({
       default: false,
     },
   },
-  components: {},
+  components: { Treeselect },
   setup(props, context) {
     // * Methods
     const getDefaultAttributeTemplate = () => {

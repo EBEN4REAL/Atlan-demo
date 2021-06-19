@@ -6,35 +6,45 @@
       :businessMetadata="localBm"
       @afterArchive="handleAfterArchive"
     /> -->
-    <div class="flex px-4 py-3 border-b align-items-center justify-content-between">
+    <div class="flex items-center justify-between px-4 py-3 border-b">
       <div>
         <div class="font-bold font-size-h5">
           {{ (localBm && localBm.displayName) || localBm.name }}
         </div>
-        <createUpdateInfo
+        <div>
+          created at created by
+          <!-- <CreateUpdateInfo
           :createdAt="localBm.createTime"
           :updatedAt="localBm.updateTime"
           :createdBy="localBm.createdBy"
           :updatedBy="localBm.updatedBy"
           :entityType="`bm-localBm-${localBm.guid}`"
-        />
+        /> -->
+        </div>
       </div>
-      <div class="flex align-items-center">
-        <i
-          v-if="error"
-          class="mr-3 far fa-exclamation-triangle text-red"
-          v-b-popover.hover.top="
-            `Unable to ${
-              localBm.guid !== 'new' ? 'update' : 'create'
-            } business metadata, please check your config. ${(error &&
-              error.data &&
-              error.data.errorMessage) ||
-              ''}`
-          "
-        ></i>
+      <div class="flex items-center">
+        <a-popover title="Error">
+          <template #content>
+            <span>
+              {{
+                `Unable to ${
+                  localBm.guid !== "new" ? "update" : "create"
+                } business metadata, please check your config. ${(error &&
+                  error.data &&
+                  error.data.errorMessage) ||
+                  ""}`
+              }}
+            </span></template
+          >
+          <span type="primary">
+            <fa v-if="error" icon="fal info-circle" class="mr-3 text-red"></fa>
+          </span>
+        </a-popover>
+
         <a-button
           v-if="isUpdated"
           variant="link-danger mr-3"
+          class="mr-2"
           @click="handleDiscardChanges"
         >
           Discard
@@ -51,18 +61,23 @@
         <a-button v-else variant="alt-primary px-3">
           Saved
         </a-button>
-        <dropdown
+        <a-dropdown
+          trigger="click"
           v-if="localBm.guid !== 'new'"
           dropdownMenuClass="mt-1 ml-4"
-          :options="dropdownOptions"
-          :isArrow="false"
-          :variant="'link btn-no-focus text-dark border-0 pr-0 pl-3'"
-          noCaret
-          :no-caret="true"
-          right
         >
-          <i class="rounded far fa-ellipsis-h text-hover-primary font-size-lg"></i>
-        </dropdown>
+          <span><fa icon="fal ellipsis-v" class="ml-1 text-xl"></fa></span>
+          <template #overlay>
+            <a-menu>
+              <a-menu-item v-for="(d, x) in dropdownOptions" :key="x">
+                <a-button @click="d.handleClick">
+                  <fa :icon="d.icon" />
+                  {{ d.title }}
+                </a-button>
+              </a-menu-item>
+            </a-menu>
+          </template>
+        </a-dropdown>
       </div>
     </div>
     <div class="px-4 py-3 overflow-y-auto" style="height: calc(100% - 4.3rem)">
@@ -94,18 +109,18 @@
           ></textarea>
         </div>
       </div>
-      <label class="">Attributes ({{ localBm.attributeDefs.length }})</label>
-      <div class="flex mb-4 align-items-center">
-        <div class="mb-0 mb-4 mr-4">
+      <label class="block mb-2">Attributes ({{ localBm.attributeDefs.length }})</label>
+      <div class="flex items-center mb-4">
+        <div class="mr-4">
           <div class="relative flex items-stretch w-full overflow-hidden border rounded">
             <input
               ref="searchinput"
               v-model="attrsearchText"
               type="text"
-              class="block w-full px-2 py-1 py-2 pl-3 mb-1 text-base leading-normal bg-white border border-0 rounded shadow-none appearance-none search-assets text-grey-darker border-grey roundehidden font-size-h6"
+              class="w-full h-8 px-2 pl-2 font-size-h6"
               :placeholder="'Search attribute'"
             />
-            <div class="input-group-append">
+            <!-- <div class="input-group-append">
               <span
                 v-if="!attrsearchText"
                 class="pr-4 bg-white border-0 input-group-text roundehidden"
@@ -119,24 +134,22 @@
               >
                 <i class="far fa-times-circle font-size-h4"></i>
               </span>
-            </div>
+            </div> -->
           </div>
         </div>
         <a-button
           variant="alt-primary"
-          class="flex px-2 px-3 py-1 py-2 text-sm leading-tight align-items-center"
-          iconType="far"
-          icon="plus"
+          class="flex items-center text-sm leading-tight"
           @click="handleAddNewAttribute"
         >
           New attribute
         </a-button>
       </div>
+
       <a-collapse
         v-if="attrsearchText ? searchedAttributes.length : localBm.attributeDefs.length"
         :accordion="true"
         default-active-key="1"
-        class="overflow-hidden"
       >
         <a-collapse-panel
           v-for="(attribute, index) in attrsearchText
@@ -144,7 +157,7 @@
             : localBm.attributeDefs"
           :key="index + 1"
           :header="attribute.options.displayName || 'New attribute'"
-          class="advanceConfigflex-growlapse"
+          class="advanceConfigCollapse"
         >
           <span
             slot="extra"
@@ -178,6 +191,7 @@ import { getErrorMessage } from "~/utils/error";
 import { DEFAULT_ATTRIBUTE } from "~/constant/business_metadata";
 import { DEFAULT_SORT_BY, DEFAULT_SORT_ORDER } from "~/constant/search";
 import AddAttributeCard from "@/admin/business-metadata/addAttributeCard.vue";
+import CreateUpdateInfo from "@/shared/createUpdateInfo.vue";
 export default defineComponent({
   props: {
     selectedBm: {
@@ -185,7 +199,7 @@ export default defineComponent({
       required: true,
     },
   },
-  components: { AddAttributeCard },
+  components: { AddAttributeCard, CreateUpdateInfo },
   setup(props, context) {
     // * Data
     let localBm = reactive({
@@ -391,7 +405,7 @@ export default defineComponent({
       return [
         {
           title: `Archive metadata`,
-          icon: "trash text-danger",
+          icon: "fal trash text-red",
           iconType: "far",
           handleClick: onShowArchiveMetadataModal,
         },
@@ -462,3 +476,14 @@ export default defineComponent({
   },
 });
 </script>
+
+<style lang="less">
+.advanceConfigCollapse {
+  .ant-collapse-header {
+    background-color: #fff !important;
+  }
+  .ant-collapse-content-box {
+    background-color: #f8f8fd !important;
+  }
+}
+</style>

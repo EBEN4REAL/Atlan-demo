@@ -55,9 +55,11 @@ import { faArrowCircleRight } from "@fortawesome/pro-light-svg-icons/faArrowCirc
 import { faTrashAlt } from "@fortawesome/pro-light-svg-icons/faTrashAlt"
 import { faTabletAlt } from "@fortawesome/pro-light-svg-icons/faTabletAlt"
 import { faArrowDown } from "@fortawesome/pro-light-svg-icons/faArrowDown"
+import { faArrowUp } from "@fortawesome/pro-light-svg-icons/faArrowUp"
 
 
 library.add(
+  faArrowUp,
   faPlus,
   faSearch,
   faUser,

@@ -46,11 +46,9 @@ export default defineComponent({
 
     let now = ref(true);
     const { list } = fetchColumns(now, "", entityFilters, 20, 0);
-    //let columnList = JSON.parse(JSON.stringify(unref(list.value)));
 
     monaco.languages.register({ id: "atlansql" });
 
-    console.log(languageTokens);
     monaco.languages.setMonarchTokensProvider("atlansql", languageTokens);
 
     monaco.languages.registerCompletionItemProvider("atlansql", {

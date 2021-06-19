@@ -14,7 +14,17 @@
       <template v-slot="{ item, index, active }">
         <DynamicScrollerItem :item="item" :active="active" :data-index="index">
           <div
-            class="flex items-center justify-between px-2 py-1 align-middle rounded  hover:bg-white hover:border"
+            class="
+              flex
+              items-center
+              justify-between
+              px-2
+              py-1
+              align-middle
+              rounded
+              hover:bg-white
+              hover:border
+            "
             v-for="item in list.value"
             :key="item.guid"
           >
@@ -67,7 +77,7 @@ export default defineComponent({
         {
           attributeName: "tableQualifiedName",
           operator: "eq",
-          attributeValue: ""default/snowflake/vnmdjjg7g/SALES_DB/SALES_DB/superstore_subcategory_sales_profit""
+          attributeValue: props.item?.attributes?.qualifiedName,
         },
       ],
     };

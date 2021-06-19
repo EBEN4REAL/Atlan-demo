@@ -20,7 +20,11 @@
           <template #tab>
             <span class="mb-0">{{ tab.name }}</span>
           </template>
-          <component :is="tab.component" :selectedGroup="selectedGroup" />
+          <component
+            :is="tab.component"
+            :selectedGroup="selectedGroup"
+            @refreshTable="$emit('refreshTable')"
+          />
         </a-tab-pane>
       </a-tabs>
     </div>

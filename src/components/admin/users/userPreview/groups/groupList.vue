@@ -62,7 +62,7 @@
     </div>
   </div>
 </template>
-  <script lang="ts">
+<script lang="ts">
 import { ref, reactive, defineComponent, computed } from "vue";
 import ErrorView from "@common/error/index.vue";
 import { debounce } from "~/composables/utils/debounce";

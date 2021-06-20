@@ -31,7 +31,10 @@
   </div>
 </template>
 <script lang="ts">
-import { getNameInitials, getNameInTitleCase } from "../useGroups";
+import {
+  getNameInitials,
+  getNameInTitleCase,
+} from "~/composables//utils/string-operations";
 import { defineComponent, computed } from "vue";
 import About from "./about.vue";
 import Members from "./members.vue";

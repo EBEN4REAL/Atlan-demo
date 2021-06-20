@@ -24,6 +24,8 @@ export default function fetchColumns(dependent: any, query?: string, filters?: C
         offset: offset,
         attributes: [...BaseAttributes, ...ColumnAttributes],
         query: query,
+        sortBy: "order",
+        sortOrder: "ASCENDING",
         entityFilters: filters,
     });
 
@@ -43,6 +45,8 @@ export default function fetchColumns(dependent: any, query?: string, filters?: C
         } else {
             localList.value = data.value?.entities;
         }
+
+        console.log(localList);
     });
 
     const list: ComputedRef<any> = computed(() => {
@@ -103,6 +107,7 @@ export default function fetchColumns(dependent: any, query?: string, filters?: C
         error,
         state,
         STATES,
-        mutate
+        mutate,
+        body
     }
 }

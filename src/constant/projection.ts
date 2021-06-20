@@ -53,6 +53,16 @@ export const BotsAttributes = [
   "isSample"
 ];
 
+export const JobsAttributes = [
+  "arguments",
+  "botQualifiedName",
+  "connectionQualifiedName",
+  "cronString",
+  "isCron",
+  "isEvent",
+  "isIncomplete",
+];
+
 export const ColumnAttributes = [
   "dataType",
   "tableQualifiedName"

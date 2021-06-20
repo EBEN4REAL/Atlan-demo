@@ -1,7 +1,5 @@
 <template>
-  <div
-    class="px-4 py-3 my-1 bg-white border border-gray-200 rounded-md  hover:border hover:border-primary-500 hover:bg-blue-50 hover:-translate-y-1 hover:shadow-lg"
-  >
+  <div class="px-4 py-3 bg-white hover:bg-primary-100 hover:bg-opacity-10">
     <div class="flex items-center justify-between mb-1 align-middle">
       <div class="flex items-center mr-1 align-middle">
         <div class="">

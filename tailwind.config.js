@@ -43,12 +43,13 @@ module.exports = {
           900: "#060607",
         },
         body: "#f8f8fd",
-      },
+      }
     },
   },
   variants: {
     extend: {
       animation: ['motion-safe'],
+      borderWidth: ['last']
     },
   }, 
   plugins: [

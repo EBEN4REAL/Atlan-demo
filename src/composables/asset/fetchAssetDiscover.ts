@@ -12,22 +12,33 @@ export default function fetchAssetDiscover(dependent: any, body: Ref<SearchParam
 
     const { data,
         totalCount,
-        listCount,
+
         aggregations,
         error,
         state,
         STATES,
+        handleLoadMore,
         mutate } = fetchSearchList(dependent, body)
 
     watch(data, (newValue, oldValue) => {
+
+        console.log(data);
         if (body?.value?.offset > 0) {
-            localList.value.concat(data?.value?.entities);
+            localList.value = localList.value.concat(data?.value?.entities);
         } else {
-            localList.value = data.value?.entities;
+            if (data.value?.entities) {
+                localList.value = data.value?.entities;
+            } else {
+                localList.value = [];
+            }
+
         }
     });
 
 
+    const listCount: ComputedRef<any> = computed(() => {
+        return localList.value.length;
+    });
 
     const list: ComputedRef<any> = computed(() => {
         return localList;
@@ -99,6 +110,6 @@ export default function fetchAssetDiscover(dependent: any, body: Ref<SearchParam
         error,
         state,
         STATES,
-        mutate
+        mutate, handleLoadMore
     }
 }

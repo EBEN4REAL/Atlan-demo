@@ -20,6 +20,14 @@ export default function fetchSearchList(dependent: any, body: Ref<Components.Sch
         revalidateOnFocus: false,
         dedupingInterval: 1,
     });
+
+    const handleLoadMore = () => {
+        let newOffset = body?.value.limit + body?.value.offset;
+        body.value.offset = newOffset;
+        mutate();
+    };
+
+
     const { state, STATES } = swrvState(data, error, isValidating);
     const totalCount = computed(() => {
         return data.value?.approximateCount;
@@ -45,12 +53,15 @@ export default function fetchSearchList(dependent: any, body: Ref<Components.Sch
     });
 
 
+
+
     return {
         data,
         body,
         list,
         totalCount,
         listCount,
+        handleLoadMore,
         aggregations,
         error,
         errorMessage,

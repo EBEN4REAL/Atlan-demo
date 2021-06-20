@@ -2,7 +2,7 @@
 
 
 <template>
-  <div class="h-full col-span-2 pt-6 pl-4">
+  <div class="h-full col-span-2 pt-6 pl-4 bg-white">
     <div class="flex flex-col h-full">
       <div class="px-3 mb-3">
         <a-radio-group
@@ -34,7 +34,7 @@
     </div>
   </div>
   <div
-    class="flex flex-col items-stretch h-full col-span-7 pt-6"
+    class="flex flex-col items-stretch h-full col-span-7 pt-6 bg-white"
     style="overflow: hidden"
   >
     <div class="flex items-center px-6">
@@ -53,12 +53,16 @@
         class="px-4"
       ></SearchBox> -->
     </div>
+
     <div class="flex w-full px-6">
       <AssetTabs :assetTypeList="assetTypeList"></AssetTabs>
     </div>
 
     <AssetList :list="list.value" @preview="handlePreview"> </AssetList>
-    <div class="flex items-center px-6 py-2" style="min-height: 17px">
+    <div
+      class="flex items-center justify-between px-6 py-2"
+      style="min-height: 17px"
+    >
       <div
         class="flex items-center leading-none"
         v-if="
@@ -76,6 +80,10 @@
         :totalCount="totalCount"
         :listCount="listCount"
       ></AssetPagination>
+
+      <div class="cursor-pointer text-primary-500" @click="handleLoadMore">
+        Load More...
+      </div>
     </div>
   </div>
 </template>
@@ -149,16 +157,17 @@ export default defineComponent({
       mutate,
       state,
       STATES,
+      handleLoadMore,
     } = fetchAssetDiscover(now, defaultBody);
 
-    const handleSearchChange = (value: string) => {
-      if (value == "") {
-        defaultBody.value.query = value;
+    const handleSearchChange = (e: any) => {
+      if (e == "") {
+        defaultBody.value.query = e.target.value;
         mutate();
       } else {
         clearTimeout(debounce);
         debounce = setTimeout(() => {
-          defaultBody.value.query = value;
+          defaultBody.value.query = e.target.value;
           mutate();
         }, 100);
       }
@@ -176,6 +185,7 @@ export default defineComponent({
       listCount,
       defaultBody,
       handleSearchChange,
+      handleLoadMore,
     };
   },
   methods: {

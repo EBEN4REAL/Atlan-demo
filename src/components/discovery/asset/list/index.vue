@@ -7,7 +7,12 @@
     :buffer="400"
   >
     <template v-slot="{ item, index, active }">
-      <DynamicScrollerItem :item="item" :active="active" :data-index="index">
+      <DynamicScrollerItem
+        :item="item"
+        :active="active"
+        :data-index="index"
+        class="border border-b-0 border-gray-200"
+      >
         <ListItem :item="item" @click="handlePreview(item)"></ListItem>
       </DynamicScrollerItem>
     </template>
@@ -61,9 +66,17 @@ export default defineComponent({
 });
 </script>
     
-  <style scoped>
+<style lang="less" scoped>
 .scroller {
   height: 100%;
   overflow-y: auto;
+
+  :global(.vue-recycle-scroller__item-wrapper) {
+    :global(.vue-recycle-scroller__item-view:last-child) {
+      @apply border-b;
+    }
+  }
 }
 </style>
+
+

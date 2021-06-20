@@ -2,10 +2,15 @@
 <template>
   <div class="flex flex-col h-full pb-3">
     <div class="flex px-3 mb-3">
-      <a-input placeholder="Search.." class=""></a-input>
+      <a-input
+        placeholder="Search.."
+        class=""
+        @input="handleSearchChange"
+      ></a-input>
     </div>
+
     <DynamicScroller
-      :items="list.value"
+      :items="list?.value"
       keyField="guid"
       :minItemSize="24"
       class="px-1 scroller"
@@ -14,19 +19,7 @@
       <template v-slot="{ item, index, active }">
         <DynamicScrollerItem :item="item" :active="active" :data-index="index">
           <div
-            class="
-              flex
-              items-center
-              justify-between
-              px-2
-              py-1
-              align-middle
-              rounded
-              hover:bg-white
-              hover:border
-            "
-            v-for="item in list.value"
-            :key="item.guid"
+            class="flex items-center justify-between px-2 py-1 align-middle rounded  hover:bg-white hover:border"
           >
             <div
               class="w-full leading-none tracking-tight text-gray-600 truncate"
@@ -54,7 +47,6 @@
 <script lang="ts">
 import { ref, watch } from "vue";
 import { defineComponent } from "vue";
-import { Components } from "~/api/atlas/client";
 
 import fetchColumns from "~/composables/columns/fetchColumns";
 
@@ -71,7 +63,7 @@ export default defineComponent({
   setup(props: any) {
     let now = ref(true);
 
-    let entityFilters = {
+    let entityFilters = ref({
       condition: "AND",
       criterion: [
         {
@@ -80,21 +72,51 @@ export default defineComponent({
           attributeValue: props.item?.attributes?.qualifiedName,
         },
       ],
-    };
-
-    watch(props.item.guid, () => {
-      mutate();
     });
 
-    const { list, getDataType, mutate } = fetchColumns(
+    const { list, getDataType, mutate, body } = fetchColumns(
       now,
       "",
-      entityFilters,
+      entityFilters.value,
       20,
       0
     );
 
-    return { list, getDataType };
+    let debounce = null;
+
+    const handleSearchChange = (value: any) => {
+      if (value.target.value == "") {
+        body.value.query = "";
+        mutate();
+      } else {
+        clearTimeout(debounce);
+        debounce = setTimeout(() => {
+          body.value.query = value.target.value;
+          mutate();
+        }, 100);
+      }
+    };
+
+    watch(
+      () => props.item.guid,
+      () => {
+        entityFilters.value = {
+          condition: "AND",
+          criterion: [
+            {
+              attributeName: "tableQualifiedName",
+              operator: "eq",
+              attributeValue: props.item?.attributes?.qualifiedName,
+            },
+          ],
+        };
+        body.value.sortBy = "order";
+        body.value.sortOrder = "ASCENDING";
+        mutate();
+      }
+    );
+
+    return { list, getDataType, mutate, handleSearchChange };
   },
 });
 </script>

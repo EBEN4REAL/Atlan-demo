@@ -72,7 +72,7 @@ import {
   getNameInTitleCase,
 } from "~/composables/utils/string-operations";
 import { getIsLoadMore } from "~/composables/utils/isLoadMore";
-import useGroups from "~/components/admin/groups/useGroups";
+import useGroups from "~/composables/group/useGroups";
 
 export default defineComponent({
   name: "Groups",

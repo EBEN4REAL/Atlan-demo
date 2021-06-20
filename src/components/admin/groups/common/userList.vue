@@ -71,7 +71,7 @@ import {
   getNameInTitleCase,
 } from "~/composables/utils/string-operations";
 import { getIsLoadMore } from "~/composables/utils/isLoadMore";
-import useUsers from "~/components/admin/users/useUsers";
+import useUsers from "~/composables/user/useUsers";
 export default defineComponent({
   name: "Users",
   components: {

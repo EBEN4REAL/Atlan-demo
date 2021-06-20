@@ -107,7 +107,7 @@
 <script lang="ts">
 import { defineComponent, ref, reactive, computed } from "vue";
 import { debounce } from "~/composables/utils/debounce";
-import useUsers from "./useUsers";
+import useUsers from "~/composables/user/useUsers";
 import UserPreviewDrawer from "./userPreview/userPreviewDrawer.vue";
 import InvitationListTable from "./invitationListTable.vue";
 import { Modal, message } from "ant-design-vue";

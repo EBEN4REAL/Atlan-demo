@@ -69,7 +69,7 @@
 </template>
 <script lang="ts">
 import { ref, reactive, defineComponent, computed } from "vue";
-import useGroups from "./useGroups";
+import useGroups from "~/composables/group/useGroups";
 import AddGroup from "./addGroup.vue";
 import ErrorView from "@common/error/index.vue";
 import GroupPreviewDrawer from "./groupPreview/groupPreviewDrawer.vue";

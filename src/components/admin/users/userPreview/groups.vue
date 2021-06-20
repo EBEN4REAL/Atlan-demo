@@ -88,7 +88,7 @@
   
 <script lang='ts'>
 import { message } from "ant-design-vue";
-import getUserGroups from "~/components/admin/users/userPreview/getUserGroups";
+import getUserGroups from "~/composables/user/getUserGroups";
 import { defineComponent, computed, reactive, ref } from "vue";
 import {
   pluralizeString,

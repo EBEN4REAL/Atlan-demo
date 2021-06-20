@@ -80,7 +80,7 @@
     </div>
     <a-modal
       :visible="showAddMemberModal"
-      title="Add Users"
+      title="Add Members"
       :footer="null"
       :destroy-on-close="true"
       @cancel="closeAddGroupModal"
@@ -98,7 +98,7 @@
 <script lang="ts">
 import { message } from "ant-design-vue";
 import { ref, reactive, defineComponent, computed, watch } from "vue";
-import useGroupMembers from "~/components/admin/groups/useGroupMembers";
+import useGroupMembers from "~/composables/group/useGroupMembers";
 import ErrorView from "@common/error/index.vue";
 import { debounce } from "~/composables/utils/debounce";
 import {

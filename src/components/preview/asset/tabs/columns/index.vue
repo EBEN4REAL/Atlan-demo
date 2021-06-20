@@ -8,37 +8,63 @@
         @input="handleSearchChange"
       ></a-input>
     </div>
+    <div class="overflow-y-auto">
+      <div class="mt-3">
+        <p
+          class="px-3 mb-0 text-xs font-medium tracking-tight text-gray-500 uppercase "
+        >
+          Featured Columns
+        </p>
+      </div>
+      <div class="mt-3">
+        <p
+          class="px-3 mb-0 text-xs font-medium tracking-tight text-gray-500 uppercase "
+        >
+          Pinned Columns
+        </p>
+      </div>
 
-    <DynamicScroller
-      :items="list?.value"
-      keyField="guid"
-      :minItemSize="24"
-      class="px-1 scroller"
-      :buffer="400"
-    >
-      <template v-slot="{ item, index, active }">
-        <DynamicScrollerItem :item="item" :active="active" :data-index="index">
-          <div
-            class="flex items-center justify-between px-2 py-1 align-middle rounded  hover:bg-white hover:border"
+      <p
+        class="px-3 mb-0 text-xs font-medium tracking-tight text-gray-500 uppercase "
+      >
+        All columns
+      </p>
+      <DynamicScroller
+        :items="list?.value"
+        keyField="guid"
+        :minItemSize="24"
+        class="px-1 scroller-column"
+        :buffer="400"
+      >
+        <template v-slot="{ item, index, active }">
+          <DynamicScrollerItem
+            :item="item"
+            :active="active"
+            :data-index="index"
           >
             <div
-              class="w-full leading-none tracking-tight text-gray-600 truncate"
+              class="flex items-center justify-between px-2 py-1 align-middle rounded  hover:bg-white hover:border"
             >
-              <fa
-                icon="fas key"
-                class="mr-1 text-xs text-yellow-300 pushtop"
-              ></fa>
-              {{ item.attributes.name }}
-            </div>
+              <div
+                class="w-full leading-none tracking-tight text-gray-600 truncate "
+              >
+                <fa
+                  icon="fas key"
+                  class="mr-1 text-xs text-yellow-300 pushtop"
+                ></fa>
+                {{ item.attributes.name }}
+              </div>
 
-            <component
-              :is="getDataType(item)?.image"
-              class="mr-1 text-gray-700"
-            ></component>
-          </div>
-        </DynamicScrollerItem>
-      </template>
-    </DynamicScroller>
+              <component
+                :is="getDataType(item)?.image"
+                class="mr-1 text-gray-700"
+              ></component>
+            </div>
+          </DynamicScrollerItem>
+        </template>
+      </DynamicScroller>
+      <p class="px-3 mb-0 cursor-pointer text-primary">Load more..</p>
+    </div>
   </div>
   <!-- </div>
   </div> -->
@@ -126,8 +152,6 @@ export default defineComponent({
 
 
 <style scoped>
-.scroller {
-  height: 100%;
-  overflow-y: auto;
+.scroller-column {
 }
 </style>

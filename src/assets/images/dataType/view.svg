@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="16.75" height="16" viewBox="0 0 16.75 16">
+  <defs>
+    <style>
+      .cls-1, .cls-4, .cls-5, .cls-6 {
+        fill: none;
+      }
+
+      .cls-2, .cls-7 {
+        fill: #c3efe6;
+      }
+
+      .cls-3 {
+        fill: #5accae;
+      }
+
+      .cls-4, .cls-5, .cls-6, .cls-7 {
+        stroke: #5accae;
+      }
+
+      .cls-4, .cls-5, .cls-7 {
+        stroke-linecap: round;
+      }
+
+      .cls-4, .cls-7 {
+        stroke-linejoin: round;
+      }
+
+      .cls-5, .cls-6 {
+        stroke-miterlimit: 10;
+      }
+
+      .cls-7 {
+        stroke-width: 0.5px;
+      }
+    </style>
+  </defs>
+  <g id="Layer_2" data-name="Layer 2">
+    <g id="Layer_1-2" data-name="Layer 1">
+      <g id="View">
+        <rect id="Transparent_path" data-name="Transparent path" class="cls-1" width="16" height="16"/>
+        <g id="Icon">
+          <g>
+            <path class="cls-2" d="M1.5,4.5V3A1.5,1.5,0,0,1,3,1.5H13A1.5,1.5,0,0,1,14.5,3V4.5Z"/>
+            <path class="cls-3" d="M13,2a1,1,0,0,1,1,1V4H2V3A1,1,0,0,1,3,2H13m0-1H3A2,2,0,0,0,1,3V5H15V3a2,2,0,0,0-2-2Z"/>
+          </g>
+          <path class="cls-4" d="M9.64,14.5H3.36a1.93,1.93,0,0,1-1.86-2v-6"/>
+          <line class="cls-5" x1="8" y1="6.5" x2="8" y2="14.25"/>
+          <line class="cls-6" x1="1.5" y1="9.5" x2="14.5" y2="9.5"/>
+          <line class="cls-4" x1="14.5" y1="6.5" x2="14.5" y2="10.5"/>
+          <path class="cls-7" d="M16.5,14A3.45,3.45,0,0,1,14,15.5,3.45,3.45,0,0,1,11.5,14,3.45,3.45,0,0,1,14,12.5,3.45,3.45,0,0,1,16.5,14Z"/>
+          <circle class="cls-3" cx="14" cy="14" r="1"/>
+        </g>
+      </g>
+    </g>
+  </g>
+</svg>

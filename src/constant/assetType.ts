@@ -26,6 +26,15 @@ export const AssetTypeList = [
     isDiscoverable: false,
   },
   {
+    id: "View",
+    label: "View",
+    nameAttribute: "viewName",
+    qualifiedNameAttribute: "viewQualifiedName",
+    parents: ["Connection", "Database", "Schema"],
+    children: ["Columns"],
+    isDiscoverable: true,
+  },
+  {
     id: "Table",
     label: "Table",
     nameAttribute: "tableName",

@@ -1,17 +1,17 @@
 <template>
-  <a-tabs class="w-full ml-2" :class="$style.assetbar">
-    <a-tab-pane
-      :key="item.id"
-      :tab="item.label"
-      v-for="item in assetTypeList"
-    ></a-tab-pane>
+  <a-tabs class="w-full" :class="$style.assetbar" v-model:value="assetType">
+    <a-tab-pane :key="item.id" v-for="item in assetTypeList">
+      <template #tab>
+        {{ item.label }} <span class="text-xs">({{ item.count }})</span>
+      </template>
+    </a-tab-pane>
     <!-- <a-tab-pane key="2" tab="Tab 2"></a-tab-pane>
     <a-tab-pane key="3" tab="Tab 3"></a-tab-pane> -->
   </a-tabs>
 </template>
     
-  <script lang="ts">
-import { defineComponent } from "vue";
+<script lang="ts">
+import { defineComponent, Ref, ref } from "vue";
 
 export default defineComponent({
   props: {
@@ -22,10 +22,23 @@ export default defineComponent({
         return [];
       },
     },
+    defaultAssetType: {
+      type: String,
+      required: false,
+      default() {
+        return "";
+      },
+    },
   },
-  computed: {},
-  mounted() {},
-  methods: {},
+  setup(props, { emit }) {
+    const assetType: Ref<""> = ref("");
+    if (props.defaultAssetType) {
+      assetType.value = props.defaultAssetType;
+    }
+    return {
+      assetType,
+    };
+  },
 });
 </script>
 

@@ -1,17 +1,23 @@
-import { computed, ComputedRef, Ref, ref, watch } from 'vue';
-import { Components } from '~/api/atlas/client';
+import { computed, ComputedRef, Ref } from 'vue';
+
 import { SearchBasic, URL } from '~/api/atlas/searchbasic';
-import { BaseAttributes, ConnectionAttributes } from '~/constant/projection';
-import { ConnectionType } from '~/types/atlas/connection';
+
 import swrvState from '../utils/swrvState';
 import useSWRV from 'swrv';
-import LocalStorageCache from 'swrv/dist/cache/adapters/localStorage'
 
-export default function fetchSearchList(dependent: any, body: Ref<Components.Schemas.SearchParameters>) {
+import { CancelTokenSource } from 'axios';
+
+import { SearchParameters } from '~/types/atlas/attributes';
+
+export default function fetchSearchList(dependent: any, body: Ref<SearchParameters>, paramCancelToken?: Ref<CancelTokenSource>) {
 
     const { data, error, mutate, isValidating } = useSWRV([URL.SEARCHBASIC, body.value, {}], () => {
+
+        console.log("dependent", dependent.value);
         if (dependent.value) {
-            return SearchBasic.Basic(body.value, {})
+            return SearchBasic.Basic(body.value, {
+                cancelToken: paramCancelToken?.value.token
+            });
         }
         else {
             return {}
@@ -20,13 +26,6 @@ export default function fetchSearchList(dependent: any, body: Ref<Components.Sch
         revalidateOnFocus: false,
         dedupingInterval: 1,
     });
-
-    const handleLoadMore = () => {
-        let newOffset = body?.value.limit + body?.value.offset;
-        body.value.offset = newOffset;
-        mutate();
-    };
-
 
     const { state, STATES } = swrvState(data, error, isValidating);
     const totalCount = computed(() => {
@@ -52,16 +51,12 @@ export default function fetchSearchList(dependent: any, body: Ref<Components.Sch
         return data?.value?.entities || [];
     });
 
-
-
-
     return {
         data,
         body,
         list,
         totalCount,
         listCount,
-        handleLoadMore,
         aggregations,
         error,
         errorMessage,

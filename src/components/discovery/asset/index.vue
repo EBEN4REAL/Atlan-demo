@@ -40,49 +40,54 @@
     <div class="flex items-center px-6">
       <a-input placeholder="Search" @input="handleSearchChange">
         <template #suffix>
-          <fa icon="fal eye"></fa>
+          <a-popover placement="bottom">
+            <template #content>
+              <Preferences
+                :defaultProjection="projection"
+                @change="handleChangePreferences"
+              ></Preferences>
+            </template>
+            <fa icon="fal eye"></fa>
+          </a-popover>
         </template>
       </a-input>
-      <!-- <SearchBox
-        @change="handleSearchChange"
-        :loading="
-          [STATES.PENDING].includes(state) ||
-          [STATES.VALIDATING].includes(state)
-        "
-        size="default"
-        class="px-4"
-      ></SearchBox> -->
     </div>
 
-    <div class="flex w-full px-6">
-      <AssetTabs :assetTypeList="assetTypeList"></AssetTabs>
+    <div class="flex w-full px-6 mt-3">
+      <AssetTabs
+        :assetTypeList="assetTypeList"
+        class="border-t border-l border-r rounded-tl rounded-tr bg-gray-50"
+      ></AssetTabs>
     </div>
-
-    <AssetList :list="list.value" @preview="handlePreview"> </AssetList>
-    <div
-      class="flex items-center justify-between px-6 py-2"
-      style="min-height: 17px"
-    >
+    <AssetList
+      @preview="handlePreview"
+      :list="list"
+      :projection="projection"
+      ref="assetlist"
+    ></AssetList>
+    <div class="flex w-full px-6 pb-2" style="min-height: 17px">
       <div
-        class="flex items-center leading-none"
-        v-if="
-          [STATES.PENDING].includes(state) ||
-          [STATES.VALIDATING].includes(state)
-        "
+        class="flex items-center justify-between w-full px-2 py-2 border rounded-bl rounded-br shadow-lg  bg-gray-50"
       >
-        <a-spin size="small" class="mr-2 leading-none"></a-spin
-        ><span>searching results</span>
-      </div>
-      <AssetPagination
-        v-else
-        :limit="limit"
-        :offset="offset"
-        :totalCount="totalCount"
-        :listCount="listCount"
-      ></AssetPagination>
+        <div class="flex items-center text-sm leading-none" v-if="isLoading">
+          <a-spin size="small" class="mr-2 leading-none"></a-spin
+          ><span>searching results</span>
+        </div>
+        <AssetPagination
+          v-else
+          :limit="limit"
+          :offset="offset"
+          :totalCount="totalCount"
+          :listCount="listCount"
+        ></AssetPagination>
 
-      <div class="cursor-pointer text-primary-500" @click="handleLoadMore">
-        Load More...
+        <div
+          class="text-sm cursor-pointer text-primary-500"
+          @click="loadMore(limit)"
+          v-if="isLoadMore"
+        >
+          Load More...
+        </div>
       </div>
     </div>
   </div>
@@ -101,7 +106,10 @@ import { SearchParameters } from "~/store/modules/search/state";
 import ConnectorDropdown from "@common/dropdown/connector/index.vue";
 import { BaseAttributes, BasicSearchAttributes } from "~/constant/projection";
 
+import Preferences from "@/discovery/asset/preference/index.vue";
+import { useDebounceFn } from "@vueuse/core";
 import fetchAssetDiscover from "~/composables/asset/fetchAssetDiscover";
+import useDiscoveryPreferences from "~/composables/preference/useDiscoveryPreference";
 
 export default defineComponent({
   name: "HelloWorld",
@@ -113,79 +121,75 @@ export default defineComponent({
     AssetFilters,
     AssetPagination,
     ConnectorDropdown,
+    Preferences,
   },
-  props: {},
   data() {
     return {
       activeKey: "",
       debounce: null,
     };
   },
-  computed: {
-    loading(): boolean {
-      return false;
-    },
-  },
-  mounted() {
-    // this.fetchSearch({});
-  },
   emits: ["preview"],
   setup(props) {
     let filterMode = ref("custom");
 
-    let now = ref(true);
-    let debounce = null;
-    const defaultBody = ref({
-      typeName: "Table",
-      excludeDeletedEntities: true,
-      includeClassificationAttributes: true,
-      includeSubClassifications: true,
-      includeSubTypes: true,
-      limit: 20,
-      offset: 0,
-      attributes: [...BaseAttributes, ...BasicSearchAttributes],
-      entityFilters: null,
-      aggregationAttributes: ["__typeName.keyword"],
-    });
+    const assetlist = ref(null);
+    const { projection } = useDiscoveryPreferences();
+    const immediate = ref(true);
     const {
       list,
-      totalCount,
       listCount,
-      assetTypeList,
-      offset,
+      isLoadMore,
+      loadMore,
+      query,
+      isLoading,
       limit,
-      mutate,
-      state,
-      STATES,
-      handleLoadMore,
-    } = fetchAssetDiscover(now, defaultBody);
+      offset,
+      totalCount,
+      handleChangeAssetType,
+      assetTypeList,
+    } = fetchAssetDiscover(true, immediate);
 
-    const handleSearchChange = (e: any) => {
-      if (e == "") {
-        defaultBody.value.query = e.target.value;
-        mutate();
-      } else {
-        clearTimeout(debounce);
-        debounce = setTimeout(() => {
-          defaultBody.value.query = e.target.value;
-          mutate();
-        }, 100);
+    const handleSearchChange = useDebounceFn((val) => {
+      query(val.target.value);
+      if (assetlist.value) {
+        console.log("scroll");
+        assetlist?.value.scrollToItem(0);
       }
+    }, 100);
+
+    const handleChangePreferences = (payload: any) => {
+      projection.value = payload;
     };
 
     return {
       list,
       filterMode,
-      state,
-      STATES,
-      offset,
-      limit,
-      assetTypeList,
-      totalCount,
       listCount,
-      defaultBody,
+      isLoading,
+      limit,
+      offset,
+      totalCount,
+      isLoadMore,
+      loadMore,
       handleSearchChange,
-      handleLoadMore,
+      assetlist,
+      projection,
+      handleChangePreferences,
+      handleChangeAssetType,
+      assetTypeList,
+      // list,
+      // filterMode,
+      // state,
+      // STATES,
+      // assetTypeList,
+      // totalCount,
+      // listCount,
+      // // defaultBody,
+      // // handleSearchChange,
+      // // handleChangePreferences,
+      // // handleChangeAssetType,
+      // projection,
     };
   },
   methods: {

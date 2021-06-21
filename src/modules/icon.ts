@@ -51,17 +51,24 @@ import { faAnalytics } from "@fortawesome/pro-light-svg-icons/faAnalytics";
 import { faProjectDiagram } from "@fortawesome/pro-light-svg-icons/faProjectDiagram";
 import { faBolt } from "@fortawesome/pro-light-svg-icons/faBolt";
 import { faPen } from "@fortawesome/pro-light-svg-icons/faPen";
+import { faEnvelope } from "@fortawesome/pro-light-svg-icons/faEnvelope";
 import { faArrowCircleRight } from "@fortawesome/pro-light-svg-icons/faArrowCircleRight";
-import { faTrashAlt } from "@fortawesome/pro-light-svg-icons/faTrashAlt"
-import { faTabletAlt } from "@fortawesome/pro-light-svg-icons/faTabletAlt"
-import { faArrowDown } from "@fortawesome/pro-light-svg-icons/faArrowDown"
-import { faArrowUp } from "@fortawesome/pro-light-svg-icons/faArrowUp"
+import { faTrashAlt } from "@fortawesome/pro-light-svg-icons/faTrashAlt";
+import { faTabletAlt } from "@fortawesome/pro-light-svg-icons/faTabletAlt";
+import { faArrowDown } from "@fortawesome/pro-light-svg-icons/faArrowDown";
+import { faArrowUp } from "@fortawesome/pro-light-svg-icons/faArrowUp";
 
+import { faExclamationCircle } from "@fortawesome/pro-light-svg-icons/faExclamationCircle";
+
+import { faUserFriends } from "@fortawesome/pro-light-svg-icons/faUserFriends";
+
+import { faCopy } from "@fortawesome/pro-light-svg-icons/faCopy";
 
 library.add(
   faArrowUp,
   faPlus,
   faSearch,
+  faEnvelope,
   faUser,
   faUsers,
   faCheckCircle,
@@ -79,6 +86,7 @@ library.add(
   faChevronLeft,
   faChevronDown,
   faChevronUp,
+  faExclamationCircle,
   faListAlt,
   faPlug,
   faShare,
@@ -102,12 +110,19 @@ library.add(
   faPlug,
   faUserEdit,
   faSync,
-  faGlobe, faHistory, faColumns, faAnalytics, faProjectDiagram, faBolt,
+  faGlobe,
+  faHistory,
+  faColumns,
+  faAnalytics,
+  faProjectDiagram,
+  faBolt,
   faPen,
   faArrowCircleRight,
   faTabletAlt,
   faTrashAlt,
   faArrowDown,
+  faUserFriends,
+  faCopy
 );
 
 // Solid Icons
@@ -115,20 +130,20 @@ import { faBadgeCheck } from "@fortawesome/pro-solid-svg-icons/faBadgeCheck";
 import { faBadge as faBadgeSolid } from "@fortawesome/pro-solid-svg-icons/faBadge";
 import { faTrash as faTrashSolid } from "@fortawesome/pro-solid-svg-icons/faTrash";
 import { faExclamationTriangle } from "@fortawesome/pro-solid-svg-icons/faExclamationTriangle";
-import { faExclamationCircle } from "@fortawesome/pro-solid-svg-icons/faExclamationCircle";
 import { faMinusCircle } from "@fortawesome/pro-solid-svg-icons/faMinusCircle";
 import { faCheckCircle as faSolidCheckCircle } from "@fortawesome/pro-solid-svg-icons/faCheckCircle";
 import { faKey } from "@fortawesome/pro-solid-svg-icons/faKey";
+import { faLock as faSolidLock } from "@fortawesome/pro-solid-svg-icons/faLock";
 
 library.add(
   faBadgeCheck,
   faBadgeSolid,
   faTrashSolid,
   faExclamationTriangle,
-  faExclamationCircle,
   faMinusCircle,
   faSolidCheckCircle,
-  faKey
+  faKey,
+  faSolidLock
 );
 
 // import { far } from "@fortawesome/pro-regular-svg-icons";

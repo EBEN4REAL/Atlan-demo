@@ -13,7 +13,7 @@
               {{ title(item) }}
             </p>
             <StatusBadge
-              :status="status(item)"
+              :statusId="item?.attributes?.assetStatus"
               class="ml-1"
               :key="item.guid"
             ></StatusBadge>

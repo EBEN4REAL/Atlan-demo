@@ -14,6 +14,7 @@ export const AssetTypeList = [
     qualifiedNameAttribute: "databaseQualifiedName",
     parents: ["AtlanConnection"],
     children: ["Columns"],
+    isDiscoverable: false,
   },
   {
     id: "Schema",
@@ -22,6 +23,7 @@ export const AssetTypeList = [
     qualifiedNameAttribute: "schemaQualifiedName",
     parents: ["AtlanConnection", "AtlanDatabase"],
     children: ["Columns"],
+    isDiscoverable: false,
   },
   {
     id: "Table",
@@ -30,13 +32,15 @@ export const AssetTypeList = [
     qualifiedNameAttribute: "tableQualifiedName",
     parents: ["Connection", "Database", "Schema"],
     children: ["Columns"],
+    isDiscoverable: true,
   },
   {
-    id: "Columns",
-    label: "Columns",
+    id: "Column",
+    label: "Column",
     nameAttributeattribute: "",
     qualifiedNameAttribute: "databaseQualifiedName",
     parents: ["Connection", "Database", "Schema"],
     children: ["Columns"],
+    isDiscoverable: true,
   },
 ];

@@ -24,6 +24,7 @@
             </a-menu-item>
             <a-menu-item key="data policies"> Data Policies </a-menu-item>
             <a-menu-item key="sso">SSO</a-menu-item>
+            <a-menu-item key="smtp">SMTP</a-menu-item>
           </a-menu-item-group>
           <a-menu-item-group class="mb-3" title="Metadata Management">
             <a-menu-item key="business-metadata"> Business Metadata </a-menu-item>
@@ -39,6 +40,7 @@
         </a-menu>
       </div>
     </div>
+
     <div class="w-4/5 max-h-screen p-6 overflow-y-auto">
       <router-view></router-view>
     </div>

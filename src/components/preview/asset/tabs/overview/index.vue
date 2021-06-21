@@ -2,10 +2,12 @@
   <a-collapse
     :bordered="false"
     :class="$style.filter"
+    defaultActiveKey="details"
     :accordion="false"
+    v-model:activeKey="activeKey"
     class="bg-sidebar"
   >
-    <a-collapse-panel key="details" class="bg-sidebar">
+    <a-collapse-panel key="details" class="bg-sidebar forceRender">
       <template #header>
         <div class="flex items-center justify-between">
           <div>Details</div>
@@ -13,7 +15,7 @@
       </template>
       <Details :item="item"></Details>
     </a-collapse-panel>
-    <a-collapse-panel key="properties" class="bg-sidebar">
+    <a-collapse-panel key="heirarchy" class="bg-sidebar">
       <template #header>
         <div class="flex items-center justify-between">
           <div>Heirarchy</div>
@@ -26,7 +28,7 @@
 </template>
           
 <script lang="ts">
-import { defineComponent, PropType } from "vue";
+import { defineComponent, PropType, ref } from "vue";
 import Details from "./details/index.vue";
 // import Properties from "./properties/index.vue";
 import Heirarchy from "./heirarchy/index.vue";
@@ -41,6 +43,12 @@ export default defineComponent({
         return {};
       },
     },
+  },
+  setup() {
+    let activeKey = ref("details");
+    return {
+      activeKey,
+    };
   },
 });
 </script>

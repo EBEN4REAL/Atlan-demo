@@ -1,17 +1,23 @@
-import asset from "~/api/keyMaps/asset"
+import asset from "~/api/keyMaps/asset";
 
-import businessMetadata from "~/api/keyMaps/businessMetadata"
+import businessMetadata from "~/api/keyMaps/businessMetadata";
 
 import user from "~/api/keyMaps/auth/user";
-import tenant from "~/api/keyMaps/auth/tenant"
+import tenant from "~/api/keyMaps/auth/tenant";
 import group from "~/api/keyMaps/auth/group";
-import connection from "~/api/keyMaps/auth/connection"
+import connection from "~/api/keyMaps/auth/connection";
+import glossary from "~/api/keyMaps/glossary";
+import apiKeys from "~/api/keyMaps/auth/apiKeys";
+import { getAPIPath } from "..";
 
 export default {
-    ...asset,
-    ...user,
-    ...tenant,
-    ...group,
-    ...connection,
-    ...businessMetadata
+  ...asset,
+  ...user,
+  ...tenant,
+  ...glossary,
+  ...group,
+  ...connection,
+  ...businessMetadata,
+  ...apiKeys,
+  BASIC_SEARCH: () => getAPIPath("auth/atlas", "/search/basic"),
 };

@@ -3,21 +3,35 @@ import useSWRV from 'swrv';
 import { Components } from '~/api/auth/client';
 
 import { User, URL } from '~/api/auth/user';
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
+import LocalStorageCache from 'swrv/dist/cache/adapters/localStorage';
 
-export default function fetchUserList(dependent: any, paramsdefault?: any) {
+export default function fetchUserList(dependent: any) {
 
 
+    let params = ref({});
+    // this is needed as there are multiple keys with the same param name
+    const urlparam = new URLSearchParams();
+    urlparam.append("limit", "20");
+    urlparam.append("sort", "first_name");
+    urlparam.append("columns", "first_name");
+    urlparam.append("columns", "last_name");
+    urlparam.append("columns", "username");
+    params.value = urlparam;
 
-    const { data, error, mutate, isValidating } = useSWRV([URL.UserList, paramsdefault?.value, {}], () => {
+
+    const { data, error, mutate, isValidating } = useSWRV([URL.UserList, params?.value, {}], () => {
         if (dependent.value) {
-            return User.ListV2(paramsdefault?.value);
+            return User.ListV2(params?.value);
         }
         else {
             return {}
         }
     }, {
         revalidateOnFocus: false,
+        cache: new LocalStorageCache(),
+        dedupingInterval: 1,
+
     });
     const { state, STATES } = swrvState(data, error, isValidating);
 
@@ -31,6 +45,30 @@ export default function fetchUserList(dependent: any, paramsdefault?: any) {
         return data.value?.filter_record;
     });
 
+    let debounce: any = null;
+    const handleSearch = (val: string) => {
+        let value = "";
+        if (val?.target) {
+            value = val.target.value
+        } else {
+            value = val;
+        }
+        clearTimeout(debounce);
+        debounce = setTimeout(() => {
+            params.value.set(
+                "filter",
+                JSON.stringify({
+                    $or: [
+                        { first_name: { $ilike: `%${value}%` } },
+                        { last_name: { $ilike: `%${value}%` } },
+                        { username: { $ilike: `%${value}%` } },
+                    ],
+                })
+            );
+            mutate();
+        }, 200);
+    };
+
     return {
         list,
         filtered,
@@ -39,6 +77,8 @@ export default function fetchUserList(dependent: any, paramsdefault?: any) {
         error,
         state,
         STATES,
-        mutate
+        mutate,
+        params,
+        handleSearch
     }
 }

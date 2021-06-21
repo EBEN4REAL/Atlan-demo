@@ -19,6 +19,10 @@
     <div class="flex items-center border-b border-gray-200">
       <SearchBox
         @change="handleSearchChange"
+        :loading="
+          [STATES.PENDING].includes(state) ||
+          [STATES.VALIDATING].includes(state)
+        "
         size="large"
         class="px-4"
       ></SearchBox>
@@ -27,21 +31,23 @@
         <a-button type="link"> <fa icon="fal eye" class=""></fa></a-button>
       </div>
     </div>
-    <div class="flex w-full bg-gray-50">
-      <div class="flex border-r border-dashed">
-        <a-button type="link"> <fa icon="fal eye" class=""></fa></a-button>
-      </div>
-      <a-tabs class="w-full ml-2" :class="$style.assetbar">
-        <a-tab-pane key="1" tab="Tab 1"></a-tab-pane>
-        <a-tab-pane key="2" tab="Tab 2"></a-tab-pane>
-        <a-tab-pane key="3" tab="Tab 3"></a-tab-pane>
-      </a-tabs>
+    <div class="flex w-full bg-sidebar">
+      <AssetTabs :assetTypeList="assetTypeList"></AssetTabs>
     </div>
 
     <AssetList :list="list.value" @preview="handlePreview"> </AssetList>
-    <div class="flex items-center px-6 mt-2 mb-2" style="min-height: 17px">
-      <div class="flex items-center leading-none" v-if="loading">
-        <a-spin size="small" class="mr-1 leading-none"></a-spin
+    <div
+      class="flex items-center px-6 py-2 border-t bg-sidebar"
+      style="min-height: 17px"
+    >
+      <div
+        class="flex items-center leading-none"
+        v-if="
+          [STATES.PENDING].includes(state) ||
+          [STATES.VALIDATING].includes(state)
+        "
+      >
+        <a-spin size="small" class="mr-2 leading-none"></a-spin
         ><span>searching results</span>
       </div>
       <AssetPagination
@@ -60,12 +66,10 @@ import { defineComponent, ref } from "vue";
 
 import AssetFilters from "@/discovery/asset/filters/index.vue";
 import AssetList from "@/discovery/asset/list/index.vue";
+import AssetTabs from "@/discovery/asset/tabs/index.vue";
 import AssetPagination from "@common/pagination/index.vue";
-import { useStore } from "~/store";
 import SearchBox from "@common/searchbox/searchlist.vue";
-import { Components } from "~/api/atlas/client";
 import { SearchParameters } from "~/store/modules/search/state";
-import { SEARCH_FETCH_LIST, SEARCH_GET_LIST } from "~/constant/store_types";
 import ConnectorDropdown from "@common/dropdown/connector/index.vue";
 import { BaseAttributes, BasicSearchAttributes } from "~/constant/projection";
 
@@ -76,6 +80,7 @@ export default defineComponent({
   components: {
     AssetList,
     SearchBox,
+    AssetTabs,
     AssetFilters,
     AssetPagination,
     ConnectorDropdown,
@@ -99,20 +104,29 @@ export default defineComponent({
   setup(props) {
     let now = ref(true);
     let debounce = null;
-
     const defaultBody = ref({
       typeName: "Table",
       excludeDeletedEntities: true,
       includeClassificationAttributes: true,
       includeSubClassifications: true,
       includeSubTypes: true,
-      limit: 50,
+      limit: 20,
       offset: 0,
       attributes: [...BaseAttributes, ...BasicSearchAttributes],
       entityFilters: null,
+      aggregationAttributes: ["__typeName.keyword"],
     });
-    const { list, totalCount, listCount, offset, limit, mutate } =
-      fetchAssetDiscover(now, defaultBody);
+    const {
+      list,
+      totalCount,
+      listCount,
+      assetTypeList,
+      offset,
+      limit,
+      mutate,
+      state,
+      STATES,
+    } = fetchAssetDiscover(now, defaultBody);
 
     const handleSearchChange = (value: string) => {
       if (value == "") {
@@ -129,8 +143,11 @@ export default defineComponent({
 
     return {
       list,
+      state,
+      STATES,
       offset,
       limit,
+      assetTypeList,
       totalCount,
       listCount,
       defaultBody,
@@ -144,11 +161,6 @@ export default defineComponent({
     handleFilterChange(params: SearchParameters) {
       this.fetchSearch(params);
     },
-    fetchSearch(params: SearchParameters) {
-      const store = useStore();
-      store.dispatch(SEARCH_FETCH_LIST, params);
-    },
-
     getIsLoadMore(
       length: number,
       offset: any,
@@ -169,18 +181,4 @@ export default defineComponent({
 });
 </script>
       
-      
-<style lang="less" module>
-.assetbar {
-  :global(.ant-tabs-bar) {
-    margin-bottom: 0px;
-    border-color: #fff !important;
-  }
-
-  :global(.ant-tabs-tab) {
-    margin: 0 32px 0 0 !important;
-    padding: 6px 8px !important;
-  }
-}
-</style>
       

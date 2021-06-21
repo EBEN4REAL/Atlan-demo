@@ -1,11 +1,8 @@
 <template>
-  <LoadingView v-if="[STATES.PENDING].includes(state)"></LoadingView>
-  <ErrorView
-    v-else-if="[STATES.ERROR, STATES.STALE_IF_ERROR].includes(state)"
-    :error="errorMessage"
-  ></ErrorView>
+  <LoadingView v-if="isLoading"></LoadingView>
+  <ErrorView v-else-if="isError" :error="error"></ErrorView>
   <EmptyView
-    v-else-if="![STATES.PENDING].includes(state) && treeData?.length === 0"
+    v-else-if="!isLoading && treeData?.length === 0"
     empty="There are no connectitions available"
     buttonText="Setup new connection"
     @event="handleEvent"
@@ -77,16 +74,17 @@ export default defineComponent({
   },
   setup(props, { emit }) {
     let now = ref(true);
-    const { treeData, body, mutate, state, STATES, error, errorMessage } =
+    const { treeData, query, error, isLoading, isError } =
       fetchConnectionList(now);
+
     debouncedWatch(
       () => props.searchText,
       () => {
-        body.value.query = props.searchText;
-        mutate();
+        query(props.searchText);
       },
       { debounce: 100 }
     );
+
     const router = useRouter();
     const handleEvent = () => {
       router.push("/setup");
@@ -101,10 +99,9 @@ export default defineComponent({
       selectedKeys,
       selectNode,
       expandNode,
-      state,
+      isLoading,
+      isError,
       error,
-      errorMessage,
-      STATES,
     };
   },
 });

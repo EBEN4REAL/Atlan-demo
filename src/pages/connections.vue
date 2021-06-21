@@ -32,36 +32,27 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import ConnectionTree from "@/connection/tree/index.vue";
-import Loading from "@common/loaders/section.vue";
-import ErrorView from "@common/error/index.vue";
+import { useRouter } from "vue-router";
 
 export default defineComponent({
-  name: "HelloWorld",
-  components: { ConnectionTree, Loading, ErrorView },
+  components: { ConnectionTree },
   data() {
     return {
-      selected: {},
       searchText: "",
     };
   },
-  mounted() {},
-  computed: {
-    // loading() {
-    //   const store = useStore();
-    //   return store.getters.getConnectionStatus.loading;
-    // },
-    // error() {
-    //   const store = useStore();
-    //   return store.getters.getConnectionStatus.error;
-    // },
-  },
-  methods: {
-    handleNewConnector() {
-      this.$router.push("/setup");
-    },
-    handleSelect(key) {
-      this.$router.push(`/connections/${key}`);
-    },
+  setup() {
+    const router = useRouter();
+    const handleNewConnector = () => {
+      router.push("/setup");
+    };
+    const handleSelect = (key: any) => {
+      router.push(`/connections/${key}`);
+    };
+    return {
+      handleNewConnector,
+      handleSelect,
+    };
   },
 });
 </script>

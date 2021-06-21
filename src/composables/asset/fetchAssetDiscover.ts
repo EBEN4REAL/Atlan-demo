@@ -18,7 +18,7 @@ import swrvState from '../utils/swrvState';
 import { Components } from '~/api/atlas/client';
 
 
-export default function fetchAssetDiscover(cache?: boolean, dependentKey?: Ref<any>, assetTypeAggregation: string) {
+export default function fetchAssetDiscover(cache?: boolean, dependentKey?: Ref<any>) {
 
     let cancelTokenSource: Ref<CancelTokenSource> = ref(axios.CancelToken.source());
 
@@ -26,8 +26,6 @@ export default function fetchAssetDiscover(cache?: boolean, dependentKey?: Ref<a
         condition: "AND" as Components.Schemas.Condition,
         criterion: []
     };
-
-
 
     const body: Ref<SearchParameters> = ref({
         typeName: "Table,View,Column",
@@ -54,7 +52,6 @@ export default function fetchAssetDiscover(cache?: boolean, dependentKey?: Ref<a
     const { state, STATES } = swrvState(data, error, isValidating);
 
 
-
     //Aggregate Setup
     const aggregateBody: Ref<SearchParameters> = ref({
         ...body.value,
@@ -70,7 +67,6 @@ export default function fetchAssetDiscover(cache?: boolean, dependentKey?: Ref<a
     const dependentKeyAggregation = ref(false);
     const { data: aggregationData, mutate: mutateAggregation, error: errorAggregation, isValidating: isValidatingAggregation } = SearchBasic.BasicV2(false, aggregateBody, options);
     const { state: AggregationState, STATES: AggergationSTATES } = swrvState(data, error, isValidating);
-
 
 
     const list = ref([]);

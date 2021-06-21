@@ -30,7 +30,7 @@ const Basic = (
 
 const BasicV2 = (
   cache: boolean,
-  body?: SearchParameters,
+  body?: Ref<SearchParameters>,
   options?: Ref<IConfig & AxiosRequestConfig>,
   dependantFetchingKey?: Ref<any>
 ) => {

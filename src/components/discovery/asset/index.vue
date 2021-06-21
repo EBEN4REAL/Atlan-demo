@@ -25,7 +25,7 @@
               <ConnectorDropdown></ConnectorDropdown>
             </div>
 
-            <AssetFilters @change="handleFilterChange"></AssetFilters>
+            <AssetFilters @refresh="handleFilterChange"></AssetFilters>
           </div>
 
           <SavedFilters v-if="filterMode === 'saved'"></SavedFilters>
@@ -53,9 +53,10 @@
       </a-input>
     </div>
 
-    <div class="flex w-full px-6 mt-3">
+    <div class="flex w-full px-6 mt-3" style="min-height: 34px">
       <AssetTabs
         :assetTypeList="assetTypeList"
+        @change="handleChangeAssetType"
         class="border-t border-l border-r rounded-tl rounded-tr bg-gray-50"
       ></AssetTabs>
     </div>
@@ -142,11 +143,12 @@ export default defineComponent({
       isLoadMore,
       loadMore,
       query,
+      filter,
       isLoading,
       limit,
       offset,
       totalCount,
-      handleChangeAssetType,
+      changeAssetType,
       assetTypeList,
     } = fetchAssetDiscover(true, immediate);
 
@@ -162,6 +164,15 @@ export default defineComponent({
       projection.value = payload;
     };
 
+    const handleFilterChange = (payload: any) => {
+      console.log(payload);
+      filter(payload);
+    };
+
+    const handleChangeAssetType = (payload: any) => {
+      changeAssetType(payload);
+    };
+
     return {
       list,
       filterMode,
@@ -173,6 +184,7 @@ export default defineComponent({
       isLoadMore,
       loadMore,
       handleSearchChange,
+      handleFilterChange,
       assetlist,
       projection,
       handleChangePreferences,
@@ -195,9 +207,6 @@ export default defineComponent({
   methods: {
     handlePreview(item) {
       this.$emit("preview", item);
-    },
-    handleFilterChange(params: SearchParameters) {
-      this.fetchSearch(params);
     },
     getIsLoadMore(
       length: number,

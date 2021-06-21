@@ -15,14 +15,22 @@ import { BaseAttributes, BasicSearchAttributes } from '~/constant/projection';
 import axios, { CancelTokenSource } from 'axios';
 import { SourceList } from '~/constant/source';
 import swrvState from '../utils/swrvState';
+import { Components } from '~/api/atlas/client';
 
 
 export default function fetchAssetDiscover(cache?: boolean, dependentKey?: Ref<any>, assetTypeAggregation: string) {
 
     let cancelTokenSource: Ref<CancelTokenSource> = ref(axios.CancelToken.source());
 
+    let entityFilters: Components.Schemas.FilterCriteria = {
+        condition: "AND" as Components.Schemas.Condition,
+        criterion: []
+    };
+
+
+
     const body: Ref<SearchParameters> = ref({
-        typeName: "Table,View",
+        typeName: "Table,View,Column",
         excludeDeletedEntities: true,
         includeClassificationAttributes: true,
         includeSubClassifications: true,
@@ -30,7 +38,10 @@ export default function fetchAssetDiscover(cache?: boolean, dependentKey?: Ref<a
         limit: 20,
         offset: 0,
         attributes: [...BaseAttributes, ...BasicSearchAttributes],
-        entityFilters: null,
+        entityFilters: {
+            ...entityFilters,
+            criterion: entityFilters.criterion
+        }
     });
 
     let options = ref({
@@ -39,21 +50,25 @@ export default function fetchAssetDiscover(cache?: boolean, dependentKey?: Ref<a
         dedupingInterval: 1,
         immediate: false,
     });
-    const { data, mutate, isValidating, error } = SearchBasic.BasicV2(true, body.value, options, dependentKey);
+    const { data, mutate, isValidating, error } = SearchBasic.BasicV2(true, body, options, dependentKey);
     const { state, STATES } = swrvState(data, error, isValidating);
 
 
 
     //Aggregate Setup
-    const aggregateBody = ref({
+    const aggregateBody: Ref<SearchParameters> = ref({
         ...body.value,
         limit: 1,
         offset: 0,
         attributes: [],
+        entityFilters: {
+            ...entityFilters,
+            criterion: entityFilters.criterion
+        },
         aggregationAttributes: ["__typeName.keyword"]
     });
     const dependentKeyAggregation = ref(false);
-    const { data: aggregationData, mutate: mutateAggregation, error: errorAggregation, isValidating: isValidatingAggregation } = SearchBasic.BasicV2(false, aggregateBody.value, options);
+    const { data: aggregationData, mutate: mutateAggregation, error: errorAggregation, isValidating: isValidatingAggregation } = SearchBasic.BasicV2(false, aggregateBody, options);
     const { state: AggregationState, STATES: AggergationSTATES } = swrvState(data, error, isValidating);
 
 
@@ -69,6 +84,7 @@ export default function fetchAssetDiscover(cache?: boolean, dependentKey?: Ref<a
                 list.value = [];
             }
         }
+        console.log("refresh");
         refreshAggregation();
     });
 
@@ -114,11 +130,15 @@ export default function fetchAssetDiscover(cache?: boolean, dependentKey?: Ref<a
         dependentKeyAggregation.value = true;
         aggregateBody.value = {
             ...body.value,
+            limit: 1,
+            offset: 0,
+            attributes: [],
+            entityFilters: {
+            },
             aggregationAttributes: ["__typeName.keyword"]
         }
         mutateAggregation();
     };
-
 
     const refresh = () => {
         if ([STATES.PENDING].includes(state.value) || [STATES.VALIDATING].includes(state.value) || [AggergationSTATES.PENDING].includes(AggregationState.value)
@@ -141,7 +161,6 @@ export default function fetchAssetDiscover(cache?: boolean, dependentKey?: Ref<a
         if (isLoadMore.value) {
             body.value.offset += limit;
         }
-
         refresh();
     };
 
@@ -151,8 +170,26 @@ export default function fetchAssetDiscover(cache?: boolean, dependentKey?: Ref<a
         refresh();
     };
 
-    const handleChangeAssetType = (assetType: string) => {
-        console.log(assetType);
+
+
+    const changeAssetType = (assetType: string) => {
+        let temp = {
+            ...entityFilters
+        }
+        temp.criterion = [...entityFilters.criterion];
+        temp.criterion?.push({
+            attributeName: "__typeName",
+            attributeValue: assetType,
+            operator: "eq"
+        });
+        body.value.entityFilters = {
+            ...temp
+        }
+        refresh();
+    };
+
+    const filter = (filters: Components.Schemas.FilterCriteria) => {
+        body.value.entityFilters.criterion = filters;
         refresh();
     };
 
@@ -172,111 +209,6 @@ export default function fetchAssetDiscover(cache?: boolean, dependentKey?: Ref<a
     });
 
 
-
-
-
-    // let localList: Ref<any[]> = ref([]);
-    // const body: Ref<SearchParameters> = ref({
-    //     typeName: "Table,View",
-    //     excludeDeletedEntities: true,
-    //     includeClassificationAttributes: true,
-    //     includeSubClassifications: true,
-    //     includeSubTypes: true,
-    //     limit: 20,
-    //     offset: 0,
-    //     attributes: [...BaseAttributes, ...BasicSearchAttributes],
-    //     entityFilters: null,
-    // });
-
-    // const { data,
-    //     totalCount,
-    //     aggregations,
-    //     error,
-    //     state,
-    //     STATES,
-    //     mutate } = fetchSearchList(immediate, body, cancelToken);
-
-    // watch(data, (newValue, oldValue) => {
-    //     if (body?.value?.offset > 0) {
-    //         localList.value = localList.value.concat(data?.value?.entities);
-    //     } else {
-    //         if (data.value?.entities) {
-    //             localList.value = data.value?.entities;
-    //         } else {
-    //             localList.value = [];
-    //         }
-    //     }
-    // });
-
-    // const refreshAssets = (limit?: number, offset?: number, filters?: SearchParameters, assetType?: string, sort?: string) => {
-    //     // if ([STATES.PENDING].includes(state.value) || [STATES.VALIDATING].includes(state.value)) {
-    //     //     if (cancelToken.value) {
-    //     //         cancelToken.value.cancel("cancelled");
-    //     //     }
-    //     //     cancelToken.value = axios.CancelToken.source();
-    //     // }
-    //     // console.log("refresh");
-    //     // immediate.value = true;
-    //     // console.log(immediate.value);
-    //     // if (assetType?.value) {
-    //     //     aggregationBody.value = {
-    //     //         ...body.value
-    //     //     }
-    //     //     aggregationBody.value.aggregationAttributes = ["__typeName.keyword"];
-    //     //     execute();
-    //     // }
-    //     mutate();
-    // };
-
-
-
-    // // let aggregationBody: Ref<SearchParameters> = ref({});
-    // // const {
-    // //     execute
-    // // } = fetchAssetAggregation(aggregationBody, cancelToken);
-
-
-
-    // const listCount: ComputedRef<any> = computed(() => {
-    //     return localList.value.length;
-    // });
-
-    // const listCountSum: ComputedRef<any> = computed(() => {
-    //     let sum = 0;
-    //     assetTypeList.value.forEach((element: { count: number; }) => {
-    //         sum += element.count;
-    //     });
-    //     return sum;
-    // });
-
-    // const assetTypeList: ComputedRef<any> = computed(() => {
-    //     let temp: any[] = [];
-    //     let map = aggregations?.value?.['__typeName.keyword'];
-    //     if (map) {
-    //         Object.keys(map).forEach((key) => {
-    //             if (map[key] > 0) {
-    //                 const found = AssetTypeList.find((item) => {
-    //                     return item.id == key
-    //                 });
-    //                 if (found) {
-    //                     temp.push({
-    //                         ...found,
-    //                         count: map[key]
-    //                     });
-    //                 }
-    //             }
-    //         });
-    //     }
-    //     return temp;
-    // });
-
-    // const updateLocalList = (updatedItem: any) => {
-    //     const found = localList.value.findIndex((item) => item.guid === updatedItem.guid)
-    //     if (found >= 0) {
-    //         localList.value.splice(found, 1, updatedItem);
-    //     }
-    // };
-
     return {
         data,
         list,
@@ -285,6 +217,7 @@ export default function fetchAssetDiscover(cache?: boolean, dependentKey?: Ref<a
         isLoadMore,
         loadMore,
         query,
+        filter,
         isError,
         isLoading,
         error,
@@ -293,5 +226,6 @@ export default function fetchAssetDiscover(cache?: boolean, dependentKey?: Ref<a
         totalCount,
         refresh,
         assetTypeList,
+        changeAssetType,
     }
 }

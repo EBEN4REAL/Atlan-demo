@@ -27,6 +27,7 @@
     
 <script lang="ts">
 import { computed, defineComponent, PropType, ref } from "vue";
+import { Components } from "~/api/atlas/client";
 import { List } from "~/constant/status";
 import { Collapse } from "~/types";
 
@@ -56,9 +57,23 @@ export default defineComponent({
     checkedValues.value = props.modelValue;
     const handleChange = (checkedValue: string) => {
       emit("update:modelValue", checkedValues.value);
+
+      let criterion: Components.Schemas.FilterCriteria[] = [];
+
+      checkedValues.value.forEach((val) => {
+        criterion.push({
+          attributeName: "assetStatus",
+          attributeValue: val,
+          operator: "eq",
+        });
+      });
+
       emit("change", {
         id: props.item.id,
-        payload: [checkedValues.value],
+        payload: {
+          condition: "OR",
+          criterion: criterion,
+        } as Components.Schemas.FilterCriteria,
       });
     };
     return {

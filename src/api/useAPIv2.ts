@@ -9,7 +9,7 @@ import { AsyncStateOptions, useAsyncState } from "@vueuse/core";
 interface useGetAPIParams {
   cache?: boolean;
   params?: Record<string, any>;
-  body?: Record<string, any>;
+  body?: Ref<Record<string, any>>;
   pathVariables?: Record<string, any>;
   options?: Ref<IConfig & AxiosRequestConfig & AsyncStateOptions>;
   dependantFetchingKey?: Ref;
@@ -55,11 +55,11 @@ export const useAPI = <T>(
           case "GET":
             return fetcher(url, params, options?.value);
           case "POST":
-            return fetcherPost(url, body, options?.value);
+            return fetcherPost(url, body?.value, options?.value);
           case "DELETE":
             return deleter(url, options?.value);
           case "PUT":
-            return updater(url, body, options?.value);
+            return updater(url, body?.value, options?.value);
           default:
             return fetcher(url, params, options?.value);
         }
@@ -76,13 +76,13 @@ export const useAPI = <T>(
       switch (method) {
         case "POST":
           return getAxiosClient()
-            .post<T>(url, body, { ...options?.value });
+            .post<T>(url, body?.value, { ...options?.value });
         case "DELETE":
           return getAxiosClient()
             .delete<T>(url, { ...options?.value });
         case "PUT":
           return getAxiosClient()
-            .put<T>(url, body, { ...options?.value });
+            .put<T>(url, body?.value, { ...options?.value });
         default:
           return getAxiosClient()
             .get<T>(url, { params, ...options?.value });

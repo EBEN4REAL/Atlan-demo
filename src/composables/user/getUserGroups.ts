@@ -38,7 +38,7 @@ export default function getUserGroups(groupListAPIParams: {
   const { state, STATES } = swrvState(data, error, isValidating);
   const groupList: ComputedRef<any> = computed(() => localGroupsList || []);
   let totalGroupCount = computed(() => data?.value?.total_record ?? 0);
-  let filteredGroupCount = computed(() => data?.value?.filtered_record ?? 0);
+  let filteredGroupCount = computed(() => data?.value?.filter_record ?? 0);
   return {
     groupList,
     totalGroupCount,

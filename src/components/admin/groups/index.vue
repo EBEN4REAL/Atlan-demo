@@ -75,6 +75,7 @@ import ErrorView from "@common/error/index.vue";
 import GroupPreviewDrawer from "./groupPreview/groupPreviewDrawer.vue";
 import { Group } from "~/api/auth/group";
 import { message } from "ant-design-vue";
+import { useDebounceFn } from "@vueuse/core";
 export default defineComponent({
   components: {
     AddGroup,
@@ -113,7 +114,7 @@ export default defineComponent({
     } = useGroups(groupListAPIParams);
     //Logic for search input
     const searchText = ref<string>("");
-    const onSearch = (searchValue: string) => {
+    const onSearch = useDebounceFn(() => {
       groupListAPIParams.filter = searchText.value
         ? {
             $or: [
@@ -124,7 +125,7 @@ export default defineComponent({
         : {};
       groupListAPIParams.offset = 0;
       getGroupList();
-    };
+    }, 600);
     const handleTableChange = (pagination: any, filters: any, sorter: any) => {
       //add sort
       if (Object.keys(sorter).length) {

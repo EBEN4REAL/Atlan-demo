@@ -32,13 +32,13 @@ export default function useGroupsMembers(memberListParams: {
         ...(data?.value?.records ?? []),
       ];
     } else {
-      localMembersList.value = data?.value?.records;
+      localMembersList.value = data?.value?.records ?? [];
     }
   });
   const { state, STATES } = swrvState(data, error, isValidating);
   const memberList: ComputedRef<any> = computed(() => localMembersList || []);
   let totalMembersCount = computed(() => data?.value?.total_record ?? 0);
-  let filteredMembersCount = computed(() => data?.value?.filtered_record ?? 0);
+  let filteredMembersCount = computed(() => data?.value?.filter_record ?? 0);
   return {
     memberList,
     totalMembersCount,

@@ -78,12 +78,12 @@
     ref="invitationComponentRef"
   />
   <!--Preview Drawer-->
-  <UserPreviewDrawer
+  <!-- <UserPreviewDrawer
     @closePreview="handleClosePreview"
     :selectedUser="selectedUser"
     :showUserPreview="showUserPreview"
     @reloadTable="reloadTable"
-  />
+  />-->
   <!-- Change Role Modal-->
   <a-modal
     :visible="showChangeRoleModal"
@@ -105,6 +105,7 @@
   </a-modal>
 </template>
 <script lang="ts">
+import { usePreview } from "~/composables/user/showUserPreview";
 import { defineComponent, ref, reactive, computed } from "vue";
 import { useDebounceFn } from "@vueuse/core";
 import useUsers from "~/composables/user/useUsers";
@@ -238,14 +239,22 @@ export default defineComponent({
       // fetch groups
       getUserList();
     };
+    const { togglePreview, setUserUniqueAttribute } = usePreview();
     const showUserPreviewDrawer = (user: any) => {
-      showUserPreview.value = true;
+      setUserUniqueAttribute(user.id);
+      togglePreview();
+      // showUserPreview.value = true;
       selectedUserId.value = user.id;
     };
     const handleClosePreview = () => {
-      showUserPreview.value = false;
+      // showUserPreview.value = false;
+
+      togglePreview();
+      setUserId("");
+
       selectedUserId.value = "";
     };
+
     const handleChangeRole = (user: any) => {
       showChangeRoleModal.value = true;
       selectedUserId.value = user.id;

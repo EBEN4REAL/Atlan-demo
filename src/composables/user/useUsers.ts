@@ -61,6 +61,41 @@ const getFormattedUser = (user: any) => {
   };
   return localUser;
 };
+export const useUser = (userListAPIParams: {
+  limit: number;
+  offset: number;
+  filter: any;
+  sort: string;
+}) => {
+  const {
+    data,
+    error,
+    isValidating,
+    mutate: getUserList,
+  } = useAPI("GET_USER", "GET", {
+    params: userListAPIParams,
+    options: {
+      revalidateOnFocus: false,
+      dedupingInterval: 1,
+    },
+  });
+  const { state, STATES } = swrvState(data, error, isValidating);
+  let userList = computed(() => {
+    if (data.value && data?.value?.records)
+      return data?.value.records.map((user: any) => getFormattedUser(user));
+    return [];
+  });
+  let totalUserCount = computed(() => data?.value?.total_record ?? 0);
+  let filteredUserCount = computed(() => data?.value?.filter_record ?? 0);
+  return {
+    userList,
+    totalUserCount,
+    filteredUserCount,
+    getUserList,
+    state,
+    STATES,
+  };
+};
 export default function useUsers(userListAPIParams: {
   limit: number;
   offset: number;
@@ -93,7 +128,6 @@ export default function useUsers(userListAPIParams: {
   //     }
   //   );
   const { state, STATES } = swrvState(data, error, isValidating);
-
   let userList = computed(() => {
     if (data.value && data?.value?.records)
       return data?.value.records.map((user: any) => getFormattedUser(user));

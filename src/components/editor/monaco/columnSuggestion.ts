@@ -11,7 +11,7 @@ const columSuggestion = (list:any) => {
       detail: data.attributes.dataType,
       kind: monaco.languages.CompletionItemKind.Field,
       documentation: "Some description or Classification",
-      insertText: data.attributes.name,
+      insertText: "'" + data.attributes.name + "'"
      }
     });
     return  columnList;

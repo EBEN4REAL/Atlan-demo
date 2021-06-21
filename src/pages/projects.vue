@@ -49,11 +49,13 @@
             <span>1</span>
           </pane>
           <pane size="80" class="shadow-md">
-            <div class="min-h-full p-4 m-6 bg-white border rounded">
+            <div class="p-4 m-6 bg-white border rounded">
               <Editor></Editor>
             </div>
-          </pane> </splitpanes
-      ></a-layout-content>
+            <div class="p-6 m-6 bg-white border rounded">Table</div>
+          </pane>
+        </splitpanes></a-layout-content
+      >
     </a-layout>
   </a-layout>
 </template>

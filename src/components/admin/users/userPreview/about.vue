@@ -46,6 +46,7 @@
       size="large"
       :disabled="!localChangesPresent || updateLoading || !localUserInfo.firstName"
       @click="handleProfileUpdate"
+      :loading="updateLoading"
     >Update Profile</a-button>
   </div>
 </template>
@@ -103,7 +104,7 @@ export default defineComponent({
         };
         try {
           await User.UpdateUser(props.selectedUser.id, requestPayload);
-          //TODO:fetch User
+          context.emit("reloadTable");
           message.success("User profile updated.");
           updateLoading.value = false;
         } catch (error) {

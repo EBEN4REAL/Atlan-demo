@@ -20,7 +20,11 @@
           <template #tab>
             <span class="mb-0">{{ tab.name }}</span>
           </template>
-          <component :is="tab.component" :selectedUser="selectedUser" />
+          <component
+            :is="tab.component"
+            :selectedUser="selectedUser"
+            @reloadTable="$emit('reloadTable')"
+          />
         </a-tab-pane>
       </a-tabs>
     </div>

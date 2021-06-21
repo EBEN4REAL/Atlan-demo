@@ -36,7 +36,7 @@
   <script lang="ts">
 import { User } from "~/api/auth/user";
 import { defineComponent, ref, computed } from "vue";
-import useRoles from "~/components/admin/users/useRoles";
+import useRoles from "~/composables/roles/useRoles";
 import { message } from "ant-design-vue";
 export default defineComponent({
   name: "InviteUsersModal",

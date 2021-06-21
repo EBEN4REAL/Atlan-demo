@@ -68,6 +68,7 @@ export default defineComponent({
     let groupNameLocal = ref("");
     let updateErrorMessage = ref("");
     let updateSuccess = ref(false);
+    let updateLoading = ref(false);
     const onUpdate = () => {
       isUpdate.value = true;
     };
@@ -76,21 +77,36 @@ export default defineComponent({
       isUpdate.value = false;
     };
     const handleUpdate = async () => {
-      const updatedGroup = {
-        name: props.group.alias,
-        path: props.group.path,
-        attributes: {
-          description: [props.group.description],
-          alias: [groupNameLocal.value],
-          created_at: [props.group.createdAt],
-          created_by: [props.group.createdBy],
-          image: [props.group.image],
-        },
-      };
-      console.log(updatedGroup);
-      await Group.EditGroup(props.group.id, { ...updatedGroup }, {});
+      try {
+        updateLoading.value = true;
+        const updatedGroup = {
+          name: props.group.alias,
+          path: props.group.path,
+          attributes: {
+            description: [props.group.description],
+            alias: [groupNameLocal.value],
+            created_at: [props.group.createdAt],
+            created_by: [props.group.createdBy],
+            image: [props.group.image],
+          },
+        };
+
+        await Group.EditGroup(props.group.id, { ...updatedGroup }, {});
+        context.emit("refreshTable");
+        updateLoading.value = false;
+        updateSuccess.value = true;
+        updateErrorMessage.value = "";
+        isUpdate.value = false;
+        setTimeout(() => {
+          updateSuccess.value = false;
+        }, 1000);
+      } catch (e) {
+        updateLoading.value = false;
+        updateErrorMessage.value =
+          "Unable to update group name, please try again.";
+      }
     };
-    const updateLoading = ref(false);
+
     return {
       updateLoading,
       isUpdate,

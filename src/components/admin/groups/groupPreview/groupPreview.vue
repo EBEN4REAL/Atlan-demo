@@ -20,14 +20,21 @@
           <template #tab>
             <span class="mb-0">{{ tab.name }}</span>
           </template>
-          <component :is="tab.component" :selectedGroup="selectedGroup" />
+          <component
+            :is="tab.component"
+            :selectedGroup="selectedGroup"
+            @refreshTable="$emit('refreshTable')"
+          />
         </a-tab-pane>
       </a-tabs>
     </div>
   </div>
 </template>
 <script lang="ts">
-import { getNameInitials, getNameInTitleCase } from "../useGroups";
+import {
+  getNameInitials,
+  getNameInTitleCase,
+} from "~/composables//utils/string-operations";
 import { defineComponent, computed } from "vue";
 import About from "./about.vue";
 import Members from "./members.vue";

@@ -22,18 +22,22 @@
           ></a-input-search>
         </div>
         <div>
-          <a-button icon="plus" type="primary" ghost @click="handleAddToGroup">Add to group</a-button>
+          <a-button type="primary" ghost @click="handleAddToGroup">
+            <fa icon="fal plus" class="mr-2"></fa>Add to group
+          </a-button>
         </div>
       </div>
       <div
-        class="flex items-center h-full align-middle bg-white"
+        class="flex flex-col items-center h-full align-middle bg-white"
         style="min-height: 200px"
         v-if="[STATES.ERROR, STATES.STALE_IF_ERROR].includes(state)"
       >
         <ErrorView></ErrorView>
-        <a-button size="large" type="primary" ghost @click="()=>{getUserGroupList()}">
-          <fa icon="fal sync"></fa>Try again
-        </a-button>
+        <div class="mt-3">
+          <a-button size="large" type="primary" ghost @click="()=>{getUserGroupList()}">
+            <fa icon="fal sync"></fa>Try again
+          </a-button>
+        </div>
       </div>
       <div v-else class="min-h-screen mt-4">
         <div v-for="group in groupList" :key="group.id" class="my-2">
@@ -84,7 +88,7 @@
   
 <script lang='ts'>
 import { message } from "ant-design-vue";
-import getUserGroups from "~/components/admin/users/userPreview/getUserGroups";
+import getUserGroups from "~/composables/user/getUserGroups";
 import { defineComponent, computed, reactive, ref } from "vue";
 import {
   pluralizeString,
@@ -165,8 +169,7 @@ export default defineComponent({
         });
         groupListAPIParams.params.offset = 0;
         getUserGroupList();
-        // TODO: fetch group again
-        // await this.FETCH_GROUP_LIST();
+        context.emit("reloadTable");
         addToGroupLoading.value = false;
         message.success(`User added to groups`);
         showAddToGroupModal.value = false;
@@ -187,7 +190,7 @@ export default defineComponent({
           {}
         );
         getUserGroupList();
-        //TODO: fetch current user to update groupCount
+        context.emit("reloadTable");
         message.success(
           `${props.selectedUser.name} removed from ${group.name}`
         );

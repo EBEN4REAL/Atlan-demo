@@ -1,34 +1,12 @@
 //useGroups
 
-import { ref, onMounted, watch, computed, toRefs, ComputedRef, Ref } from "vue";
+import { ref, watch, computed, ComputedRef, Ref } from "vue";
 import { fetcher, getAPIPath, getAxiosClient } from "~/api";
 import useSWRV from "swrv";
 import swrvState from "~/composables/utils/swrvState";
 import { useTimeAgo } from "@vueuse/core";
+import { pluralizeString } from "~/composables//utils/string-operations";
 
-export const pluralizeString = (
-  string: string,
-  count: number,
-  includeCountInString: boolean = true
-) => {
-  if (includeCountInString)
-    return count === 1 ? `${count} ${string}` : `${count} ${string}s`;
-  else return count === 1 ? `${string}` : `${string}s`;
-};
-export const getNameInTitleCase = (name: string, delimiter = " ") => {
-  return name
-    .split(delimiter)
-    .map(
-      (word) => `${word.charAt(0).toUpperCase()}${word.substr(1).toLowerCase()}`
-    )
-    .join(" ");
-};
-export const getNameInitials = (name: string) => {
-  return name
-    .split(" ")
-    .map((n) => n[0])
-    .join("");
-};
 const getFormattedGroup = (group: any) => {
   //deliberately switching alias and name so as to keep alias as a unique identifier for the group, for keycloak name is the unique identifier. For us, alias is the unique identifier and different groups with same name can exist.
   let formattedGroup = {

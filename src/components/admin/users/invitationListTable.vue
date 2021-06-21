@@ -52,7 +52,7 @@
 <script lang="ts">
 import { defineComponent, ref, reactive, computed, watch } from "vue";
 import { debounce } from "~/composables/utils/debounce";
-import useInvitations from "./useInvitations";
+import useInvitations from "~/composables/user/useInvitations";
 import {
   getNameInitials,
   getNameInTitleCase,

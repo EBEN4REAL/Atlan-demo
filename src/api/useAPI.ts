@@ -13,6 +13,7 @@ interface useGetAPIParams {
     pathVariables?: Record<string, any>,
     options?: IConfig & AxiosRequestConfig,
     dependantFetchingKey?: Ref,
+    getPromise?: boolean
     // swrOptions?: IConfig,
     // axiosOptions?: AxiosRequestConfig
 }
@@ -25,7 +26,7 @@ interface useGetAPIParams {
  * @param options - SWRV or Axios specefic configuration objects
  */
 
-export const useAPI = <T>(key: string, method: 'GET' | 'POST' | 'DELETE' | 'PUT', { cache = true, params, body, pathVariables, options, dependantFetchingKey }: useGetAPIParams) => {
+export const useAPI = <T>(key: string, method: 'GET' | 'POST' | 'DELETE' | 'PUT', { cache = true, params, body, pathVariables, options, dependantFetchingKey, getPromise = false }: useGetAPIParams) => {
     const url = keyMaps[key]({ ...pathVariables });
     if (cache) {
         // If using cache, make a generic swrv request
@@ -57,9 +58,29 @@ export const useAPI = <T>(key: string, method: 'GET' | 'POST' | 'DELETE' | 'PUT'
 
         const isLoading = ref(!data && !error);
         return { data, error, isLoading, mutate };
-    } else {
+    } else if (getPromise) {
+        // If get back a promise instead
+        let data = null;
+        switch (method) {
+            case 'GET':
+                data = getAxiosClient().get<T>(url, { params, ...options })
+                break;
+            case 'POST':
+                data = getAxiosClient().post<T>(url, body, { ...options })
+                break;
+            case 'DELETE':
+                data = getAxiosClient().delete<T>(url, { ...options })
+                break;
+            case 'PUT':
+                data = getAxiosClient().put<T>(url, body, { ...options })
+                break;
+            default:
+                break;
+        }
+        return { data };
+    }
+    else {
         // If not using cache, use Axios
-
         const data = ref<T>()
         const error = ref()
         const isLoading = ref<boolean>(false)

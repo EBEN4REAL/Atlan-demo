@@ -74,7 +74,7 @@ export default defineConfig(({ mode }) => {
     server: {
       proxy: {
         '/api': {
-          target: 'https://bots.atlan.com',
+          target: 'https://alpha.atlan.com',
           changeOrigin: true,
           ws: false
         }

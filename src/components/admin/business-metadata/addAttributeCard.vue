@@ -8,7 +8,7 @@
           >
           <input
             type="text"
-            v-model="attributeInput.data.options.displayName"
+            v-model="attributeInput.data.displayName"
             class="block w-full px-2 py-1 mb-1 text-base leading-normal bg-white border rounded appearance-none text-grey-darker border-grey"
           />
         </div>
@@ -167,8 +167,10 @@ export default defineComponent({
   setup(props, context) {
     // * Methods
     const getDefaultAttributeTemplate = () => {
-      const uuid4 = generateUUID();
-      return { ...DEFAULT_ATTRIBUTE, name: uuid4 };
+      // const uuid4 = generateUUID();
+      // TODO change back to uuid4
+      return { ...DEFAULT_ATTRIBUTE };
+      // return { ...DEFAULT_ATTRIBUTE, name: uuid4 };
     };
     // * Data
     // !!!!!
@@ -376,6 +378,7 @@ export default defineComponent({
     //     }
     //   }
     // );
+
     return {
       attributeInput,
       rules,

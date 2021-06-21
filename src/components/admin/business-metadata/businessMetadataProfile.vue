@@ -92,7 +92,7 @@
             class="block w-full px-2 py-1 mb-1 text-base leading-normal bg-white border rounded appearance-none text-grey-darker border-grey"
             id="name"
             name="Name"
-            v-model="localBm.displayName"
+            v-model="localBm.name"
             @keyup="onUpdate"
           />
         </div>
@@ -192,6 +192,10 @@ import { DEFAULT_ATTRIBUTE } from "~/constant/business_metadata";
 import { DEFAULT_SORT_BY, DEFAULT_SORT_ORDER } from "~/constant/search";
 import AddAttributeCard from "@/admin/business-metadata/addAttributeCard.vue";
 import CreateUpdateInfo from "@/shared/createUpdateInfo.vue";
+
+// ? composables
+import useBusinessMetadata from "@/admin/business-metadata/composables/useBusinessMetadata";
+
 export default defineComponent({
   props: {
     selectedBm: {
@@ -206,7 +210,7 @@ export default defineComponent({
       name: "New Business Metadata",
       description: "",
       guid: "",
-      attributeDefs: [],
+      attributeDefs: <any>[],
     });
     let attrsearchText = ref("");
     let isUpdated = ref(false);
@@ -214,13 +218,22 @@ export default defineComponent({
     let loading = ref(false);
     let error = ref(null);
     // * Methods
+    const {
+      businessMetadataAppendToList,
+      addNewBusinessMetadata,
+      updateBusinessMetadataInList,
+      updateNewBusinessMetadata,
+    } = useBusinessMetadata();
+
     const handleAfterArchive = () => {
       context.emit("afterArchive");
       fetchAssets();
     };
     const getDefaultAttributeTemplate = () => {
       const uuid4 = generateUUID();
-      return { ...DEFAULT_ATTRIBUTE, name: uuid4 };
+      // TODO changes when UUID4 support
+      return { ...DEFAULT_ATTRIBUTE };
+      // return { ...DEFAULT_ATTRIBUTE, name: uuid4 };
     };
     const onShowArchiveMetadataModal = () => {
       showArchiveMetadataModal.value = true;
@@ -256,7 +269,8 @@ export default defineComponent({
         // eslint-disable-next-line
         for (let i = 0; i < localBm.attributeDefs.length; i++) {
           const attribute = localBm.attributeDefs[i];
-          if (!attribute.options.displayName) {
+          //TODO change back to displayName
+          if (!attribute.name) {
             error.value = {
               data: { errorMessage: "Attribute names cannot be empty" },
             };
@@ -280,69 +294,76 @@ export default defineComponent({
         });
       }
       loading.value = true;
-      // try {
-      //   const apiResponse = await AtlasTypeDefService[
-      //     tempBm.guid === "new" ? "Add" : "Update"
-      //   ](this.$axios, {
-      //     queryParams: { type: "BUSINESS_METADATA" },
-      //     payload: {
-      //       businessMetadataDefs: [
-      //         {
-      //           ...(tempBm.guid === "new"
-      //             ? {
-      //                 category: "BUSINESS_METADATA",
-      //                 typeVersion: "1.1",
-      //                 version: 1,
-      //                 attributeDefs: tempBm.attributeDefs,
-      //                 description: tempBm.description,
-      //                 name: tempBm.name,
-      //                 displayName: tempBm.displayName,
-      //               }
-      //             : tempBm),
-      //         },
-      //       ],
-      //       classificationDefs: [],
-      //       entityDefs: [],
-      //       enumDefs: [],
-      //       structDefs: [],
-      //     },
-      //   });
-      //   if (
-      //     apiResponse &&
-      //     apiResponse.businessMetadataDefs &&
-      //     apiResponse.businessMetadataDefs.length
-      //   ) {
-      //     if (this.localBm.guid === "new") {
-      //       this.BUSINESS_METADATA_APPEND_TO_LIST(apiResponse.businessMetadataDefs[0]);
-      //       this.$emit("clearNewBm");
-      //       this.$emit(
-      //         "selectBm",
-      //         JSON.parse(JSON.stringify(apiResponse.businessMetadataDefs[0]))
-      //       );
-      //     } else {
-      //       this.BUSINESS_METADATA_UPDATE_BUSINESS_METADATA_IN_LIST(
-      //         apiResponse.businessMetadataDefs[0]
-      //       );
-      //     }
-      //     // eslint-disable-next-line
-      //     this.localBm = JSON.parse(JSON.stringify(apiResponse.businessMetadataDefs[0]));
-      //     this.$emit("clearUpdatedBm");
-      //   }
-      //   this.fetchAssets();
-      //   this.loading = false;
-      //   this.$nextTick(() => {
-      //     this.isUpdated = false;
-      //   });
-      // } catch (error) {
-      //   this.loading = false;
-      //   console.log(
-      //     "🚀 ~ file: businessMetadataProfile.vue ~ line 323 ~ handleAddBusinessMetadata ~ error",
-      //     error
-      //   );
-      //   if (error.response) {
-      //     this.error = error.response;
-      //   }
-      // }
+      try {
+        const payload = {
+          businessMetadataDefs: [
+            {
+              ...(tempBm.guid === "new"
+                ? {
+                    category: "BUSINESS_METADATA",
+                    typeVersion: "1.1",
+                    version: 1,
+                    attributeDefs: tempBm.attributeDefs,
+                    description: tempBm.description,
+                    name: tempBm.name,
+                    displayName: tempBm.displayName,
+                  }
+                : tempBm),
+            },
+          ],
+          classificationDefs: [],
+          entityDefs: [],
+          enumDefs: [],
+          structDefs: [],
+        };
+        let apiResponse = null;
+        if (tempBm.guid === "new") {
+          try {
+            apiResponse = await addNewBusinessMetadata(payload).promise;
+          } catch (e) {
+            throw e;
+          }
+          console.log({ apiResponse });
+        } else apiResponse = await updateNewBusinessMetadata(payload).promise;
+        if (
+          apiResponse &&
+          apiResponse.businessMetadataDefs &&
+          apiResponse.businessMetadataDefs.length
+        ) {
+          if (localBm.guid === "new") {
+            businessMetadataAppendToList(apiResponse.businessMetadataDefs[0]);
+            context.emit("clearNewBm");
+            context.emit(
+              "selectBm",
+              JSON.parse(JSON.stringify(apiResponse.businessMetadataDefs[0]))
+            );
+          } else {
+            updateBusinessMetadataInList(apiResponse.businessMetadataDefs[0]);
+          }
+          // eslint-disable-next-line
+          Object.assign(
+            localBm,
+            JSON.parse(JSON.stringify(apiResponse.businessMetadataDefs[0]))
+          );
+          context.emit("clearUpdatedBm");
+        }
+        // this.fetchAssets();
+        // this.loading = false;
+        // context.nextTick(() => {
+        //   this.isUpdated = false;
+        // });
+        loading.value = false;
+      } catch (e) {
+        loading.value = false;
+        console.log(
+          "🚀 ~ file: businessMetadataProfile.vue ~ handleAddBusinessMetadata ~ error",
+          e
+        );
+        if (e?.response?.data?.errorMessage) {
+          error.value = e.response.data.errorMessage;
+          console.log(error.value);
+        }
+      }
     };
     const handleAddNewAttribute = () => {
       localBm.attributeDefs = [
@@ -355,15 +376,17 @@ export default defineComponent({
       onUpdate();
     };
     const onAttributeValuesChange = (_uAttribute: any, uIndex: number) => {
-      localBm.attributeDefs = localBm.attributeDefs.map((attribute: object, index) => {
-        if (index === uIndex) {
-          return {
-            ...attribute,
-            ..._uAttribute,
-          };
+      localBm.attributeDefs = localBm.attributeDefs.map(
+        (attribute: object, index: number) => {
+          if (index === uIndex) {
+            return {
+              ...attribute,
+              ..._uAttribute,
+            };
+          }
+          return attribute;
         }
-        return attribute;
-      });
+      );
       onUpdate();
     };
     const handleRemoveAttribute = index => {
@@ -472,6 +495,7 @@ export default defineComponent({
       handleAddBusinessMetadata,
       onAttributeValuesChange,
       handleRemoveAttribute,
+      handleAddNewAttribute,
     };
   },
 });

@@ -12,7 +12,8 @@
       @click="e => selectBm(item)"
     >
       <div class="mb-1 font-w700">
-        {{ isUpdateBmSameAsCurrentBm(item) ? updatedBm.displayName : item.displayName }}
+        <!-- // TODO {{ isUpdateBmSameAsCurrentBm(item) ? updatedBm.displayName  : item.displayName }} -->
+        {{ isUpdateBmSameAsCurrentBm(item) ? updatedBm.name : item.name }}
         <sup
           class=""
           v-if="isUpdateBmSameAsCurrentBm(item) || (item && item.guid === 'new')"

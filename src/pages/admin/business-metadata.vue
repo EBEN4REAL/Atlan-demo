@@ -103,7 +103,9 @@ import { generateUUID } from "~/utils/generator";
 import EmptyBusinessMetadata from "~/assets/images/illustrations/empty_business_metadata.svg";
 import { reactive, ref, toRefs, defineComponent, computed, nextTick } from "vue";
 const DEFAULT_BM = {
-  displayName: "New Business Metadata",
+  // TODO changes when UUID4 support
+  // displayName: "New Business Metadata",
+  name: "New Business Metadata",
   description: "",
   guid: "new",
   attributeDefs: [],
@@ -125,7 +127,9 @@ export default defineComponent({
     };
     const getNewBmTemplate = () => {
       const uuid4 = generateUUID();
-      return { ...DEFAULT_BM, name: uuid4 };
+      // TODO changes when UUID4 support
+      // return { ...DEFAULT_BM, name: uuid4 };
+      return { ...DEFAULT_BM };
     };
     const clearSearchText = () => {
       searchText.value = "";

@@ -73,6 +73,7 @@ import { faUserFriends } from "@fortawesome/pro-light-svg-icons/faUserFriends";
 
 import { faCopy } from "@fortawesome/pro-light-svg-icons/faCopy";
 
+
 library.add(
   faPlus,
   faSearch,
@@ -150,6 +151,16 @@ import { faCheckCircle as faSolidCheckCircle } from "@fortawesome/pro-solid-svg-
 import { faKey } from "@fortawesome/pro-solid-svg-icons/faKey";
 import { faLock as faSolidLock } from "@fortawesome/pro-solid-svg-icons/faLock";
 
+import { faBold } from "@fortawesome/pro-solid-svg-icons/faBold";
+import { faItalic } from "@fortawesome/pro-solid-svg-icons/faItalic";
+import { faStrikethrough } from "@fortawesome/pro-solid-svg-icons/faStrikethrough";
+import { faParagraph } from "@fortawesome/pro-solid-svg-icons/faParagraph";
+import { faUnderline } from "@fortawesome/pro-solid-svg-icons/faUnderline";
+import { faListOl } from "@fortawesome/pro-solid-svg-icons/faListOl";
+import { faListUl } from "@fortawesome/pro-solid-svg-icons/faListUl";
+import { faCode } from "@fortawesome/pro-solid-svg-icons/faCode";
+import { faQuoteLeft } from "@fortawesome/pro-solid-svg-icons/faQuoteLeft";
+
 library.add(
   faBadgeCheck,
   faBadgeSolid,
@@ -158,7 +169,16 @@ library.add(
   faMinusCircle,
   faSolidCheckCircle,
   faKey,
-  faSolidLock
+  faSolidLock,
+  faBold,
+  faItalic,
+  faStrikethrough,
+  faParagraph,
+  faUnderline,
+  faListOl,
+  faListUl,
+  faCode,
+  faQuoteLeft
 );
 
 // import { far } from "@fortawesome/pro-regular-svg-icons";

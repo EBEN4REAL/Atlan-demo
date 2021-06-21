@@ -12,7 +12,7 @@ import { ConnectionType } from '~/types/atlas/connection';
 import { TreeDataItem } from 'ant-design-vue/lib/tree/Tree';
 
 
-export default function fetchConnectionList(cache?: boolean, dependentKey?: Ref<any>) {
+export default function fetchConnectionList(cache?: string, dependentKey?: Ref<any>) {
 
     let cancelTokenSource: Ref<CancelTokenSource> = ref(axios.CancelToken.source());
 
@@ -43,7 +43,7 @@ export default function fetchConnectionList(cache?: boolean, dependentKey?: Ref<
         dedupingInterval: 1,
         immediate: false,
     });
-    const { data, mutate, isValidating, error } = SearchBasic.BasicV2(true, body, options, dependentKey);
+    const { data, mutate, isValidating, error } = SearchBasic.BasicV2(cache, body, options, dependentKey);
     const { state, STATES } = swrvState(data, error, isValidating);
 
     const list: Ref<ConnectionType[]> = ref([]);
@@ -156,7 +156,7 @@ export default function fetchConnectionList(cache?: boolean, dependentKey?: Ref<
             }).map((item) => {
                 return {
                     key: item.guid,
-                    title: item.attributes.displayName,
+                    title: item.attributes.displayName || item.attributes.name,
                     type: "connection"
                 };
             });

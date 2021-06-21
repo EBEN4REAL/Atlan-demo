@@ -1,6 +1,6 @@
 <template>
   <div class="flex w-full p-6 bg-white border rounded-md">
-    <div class="pr-3 border-r border-gray-200 border-dashed">
+    <div class="flex-grow pr-3 border-r border-gray-200 border-dashed">
       <p
         class="mb-1 text-xs font-semibold text-gray-500 uppercase  leading-tighter"
       >
@@ -25,9 +25,8 @@
           </div>
         </div>
       </div>
-      {{ aggregations }}
     </div>
-    <div class="pl-3">
+    <div class="flex-grow pl-3">
       <p
         class="mb-1 text-xs font-semibold text-gray-500 uppercase  leading-tighter"
       >
@@ -52,7 +51,6 @@
           </div>
         </div>
       </div>
-      {{ aggregations }}
     </div>
   </div>
 </template>

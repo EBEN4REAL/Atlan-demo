@@ -20,7 +20,7 @@
         </div>
       </div>
     </div>
-    {{ aggregations }}
+
     <!-- <div v-else>
       <p
         class="mb-1 text-2xl font-semibold leading-tight text-gray-800 uppercase "

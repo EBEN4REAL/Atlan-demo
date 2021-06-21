@@ -13,7 +13,7 @@ import swrvState from '../utils/swrvState';
 import { Components } from '~/api/atlas/client';
 
 
-export default function fetchAssetAggregation(assetType: string, aggregationAttributes: string[], cache?: boolean, dependentKey?: Ref<any>) {
+export default function fetchAssetAggregation(assetType: string, aggregationAttributes: string[], cache?: string, dependentKey?: Ref<any>) {
 
     let cancelTokenSource: Ref<CancelTokenSource> = ref(axios.CancelToken.source());
 
@@ -43,7 +43,7 @@ export default function fetchAssetAggregation(assetType: string, aggregationAttr
         dedupingInterval: 1,
         immediate: false,
     });
-    const { data, mutate, isValidating, error } = SearchBasic.BasicV2(true, body, options, dependentKey);
+    const { data, mutate, isValidating, error } = SearchBasic.BasicV2(cache, body, options, dependentKey);
     const { state, STATES } = swrvState(data, error, isValidating);
 
 

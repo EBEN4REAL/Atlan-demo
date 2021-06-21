@@ -1,5 +1,17 @@
 <template>
-  <div>
+  <LoadingView v-if="[STATES.PENDING].includes(state)"></LoadingView>
+  <ErrorView
+    v-else-if="[STATES.ERROR, STATES.STALE_IF_ERROR].includes(state)"
+    :error="error.response"
+  ></ErrorView>
+  <EmptyView
+    v-else-if="![STATES.PENDING].includes(state) && treeData?.length === 0"
+    empty="There are no connectitions available"
+    buttonText="Setup New Connection"
+    @event="handleEvent"
+  ></EmptyView>
+
+  <div v-else>
     <a-tree
       :treeData="treeData"
       :blockNode="true"
@@ -43,9 +55,14 @@ import { defineComponent, ref, watch } from "vue";
 import handleTreeExpand from "~/composables/tree/handleTreeExpand";
 import fetchConnectionList from "~/composables/connection/fetchConnectionList";
 import { debouncedWatch } from "@vueuse/core";
+// :loading="[STATES.PENDING].includes(state)"
+import EmptyView from "@common/empty/index.vue";
+import ErrorView from "@common/error/index.vue";
+import LoadingView from "@common/loaders/section.vue";
+import { useRouter } from "vue-router";
 
 export default defineComponent({
-  components: {},
+  components: { EmptyView, ErrorView, LoadingView },
   props: {
     searchText: {
       type: String,
@@ -60,7 +77,8 @@ export default defineComponent({
   },
   setup(props, { emit }) {
     let now = ref(true);
-    const { treeData, body, mutate } = fetchConnectionList(now);
+    const { treeData, body, mutate, state, STATES, error } =
+      fetchConnectionList(now);
     debouncedWatch(
       () => props.searchText,
       () => {
@@ -69,14 +87,23 @@ export default defineComponent({
       },
       { debounce: 100 }
     );
+    const router = useRouter();
+    const handleEvent = () => {
+      router.push("/setup");
+    };
+
     const { expandedKeys, selectNode, selectedKeys, expandNode } =
       handleTreeExpand(emit);
     return {
       treeData,
+      handleEvent,
       expandedKeys,
       selectedKeys,
       selectNode,
       expandNode,
+      state,
+      error,
+      STATES,
     };
   },
 });

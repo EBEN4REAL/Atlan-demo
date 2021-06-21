@@ -84,6 +84,7 @@
           <CredentialView
             class="px-8 py-4"
             ref="credentialView"
+            :key="selectedConnector.guid"
             :item="selectedConnector"
             v-else-if="current === 1"
           ></CredentialView>
@@ -163,11 +164,13 @@ export default defineComponent({
     },
     handlePrevious() {
       this.current = this.current - 1;
-      if (this.current === 1) {
+      if (this.current === 0) {
+        const query = {};
+        this.$router.replace({ query });
+      } else if (this.current === 1) {
         this.nextTitle = "Test & Continue";
         this.nextType = "default";
-      }
-      if (this.current === 2) {
+      } else if (this.current === 2) {
         this.nextTitle = "Setup & Run";
         this.nextType = "primary";
       }

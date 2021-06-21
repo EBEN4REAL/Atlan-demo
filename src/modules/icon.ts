@@ -41,6 +41,7 @@ import { faHouseUser } from "@fortawesome/pro-light-svg-icons/faHouseUser";
 import { faBan } from "@fortawesome/pro-light-svg-icons/faBan";
 import { faCertificate } from "@fortawesome/pro-light-svg-icons/faCertificate";
 import { faUserShield } from "@fortawesome/pro-light-svg-icons/faUserShield";
+import { faShield } from "@fortawesome/pro-light-svg-icons/faShield";
 import { faUserEdit } from "@fortawesome/pro-light-svg-icons/faUserEdit";
 import { faSync } from "@fortawesome/pro-light-svg-icons/faSync";
 
@@ -50,6 +51,7 @@ import { faColumns } from "@fortawesome/pro-light-svg-icons/faColumns";
 import { faAnalytics } from "@fortawesome/pro-light-svg-icons/faAnalytics";
 import { faProjectDiagram } from "@fortawesome/pro-light-svg-icons/faProjectDiagram";
 import { faBolt } from "@fortawesome/pro-light-svg-icons/faBolt";
+import { faPlusCircle } from "@fortawesome/pro-light-svg-icons/faPlusCircle";
 import { faPen } from "@fortawesome/pro-light-svg-icons/faPen";
 import { faEnvelope } from "@fortawesome/pro-light-svg-icons/faEnvelope";
 import { faArrowCircleRight } from "@fortawesome/pro-light-svg-icons/faArrowCircleRight";
@@ -65,6 +67,7 @@ import { faCopy } from "@fortawesome/pro-light-svg-icons/faCopy";
 
 library.add(
   faPlus,
+  faPlusCircle,
   faSearch,
   faEnvelope,
   faUser,
@@ -105,6 +108,7 @@ library.add(
   faCircle,
   faCertificate,
   faUserShield,
+  faShield,
   faPlug,
   faUserEdit,
   faSync,

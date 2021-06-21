@@ -29,7 +29,6 @@
   </a-tree>
 </template>
 
-
 <script lang="ts">
 import data from "emoji-mart-vue-fast/data/all.json";
 import "emoji-mart-vue-fast/css/emoji-mart.css";
@@ -56,12 +55,17 @@ export default defineComponent({
   },
   setup() {
     const { list, totalCount, listCount } = fetchGlossaryList();
-    const { selectedKeys, expandedKeys, expandNode, selectNode } =
-      handleTreeExpand();
+    const {
+      selectedKeys,
+      expandedKeys,
+      expandNode,
+      selectNode,
+    } = handleTreeExpand();
 
     const index = new EmojiIndex(data);
 
     const { treeData, onLoadData } = useGlossaryTree(list);
+    console.log(treeData, "treeData");
 
     return {
       index,

@@ -96,7 +96,7 @@ import {
   getNameInTitleCase,
 } from "~/composables//utils/string-operations";
 import { getIsLoadMore } from "~/composables/utils/isLoadMore";
-import { debounce } from "~/composables/utils/debounce";
+import { useDebounceFn } from "@vueuse/core";
 import ErrorView from "@common/error/index.vue";
 import { Group } from "~/api/auth/group";
 import { User } from "~/api/auth/user";
@@ -135,7 +135,7 @@ export default defineComponent({
       state,
       STATES,
     } = getUserGroups(groupListAPIParams);
-    const handleSearch = debounce((input: any) => {
+    const handleSearch = useDebounceFn((input: any) => {
       groupListAPIParams.params.filter = searchText.value
         ? {
             $or: [

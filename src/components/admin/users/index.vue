@@ -106,7 +106,7 @@
 </template>
 <script lang="ts">
 import { defineComponent, ref, reactive, computed } from "vue";
-import { debounce } from "~/composables/utils/debounce";
+import { useDebounceFn } from "@vueuse/core";
 import useUsers from "~/composables/user/useUsers";
 import UserPreviewDrawer from "./userPreview/userPreviewDrawer.vue";
 import InvitationListTable from "./invitationListTable.vue";
@@ -159,9 +159,8 @@ export default defineComponent({
     const { userList, filteredUserCount, getUserList, state, STATES } =
       useUsers(userListAPIParams);
 
-    const handleSearch = debounce(() => {
+    const handleSearch = useDebounceFn(() => {
       if (listType.value === "users") searchUserList();
-      // else searchInvitationList();
     }, 600);
     const searchUserList = () => {
       let localFilterParams = userListAPIParams.filter.$and;

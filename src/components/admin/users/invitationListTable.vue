@@ -51,7 +51,7 @@
 
 <script lang="ts">
 import { defineComponent, ref, reactive, computed, watch } from "vue";
-import { debounce } from "~/composables/utils/debounce";
+import { useDebounceFn } from "@vueuse/core";
 import useInvitations from "~/composables/user/useInvitations";
 import {
   getNameInitials,
@@ -89,7 +89,7 @@ export default defineComponent({
       state,
       STATES,
     } = useInvitations(invitationListAPIParams);
-    const handleSearch = debounce(() => {
+    const handleSearch = useDebounceFn(() => {
       searchInvitationList();
     }, 600);
     watch(() => props.searchText, handleSearch);

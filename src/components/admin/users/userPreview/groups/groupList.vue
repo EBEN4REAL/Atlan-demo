@@ -65,7 +65,7 @@
 <script lang="ts">
 import { ref, reactive, defineComponent, computed } from "vue";
 import ErrorView from "@common/error/index.vue";
-import { debounce } from "~/composables/utils/debounce";
+import { useDebounceFn } from "@vueuse/core";
 import {
   pluralizeString,
   getNameInitials,
@@ -97,7 +97,7 @@ export default defineComponent({
       STATES,
     } = useGroups(groupListAPIParams);
 
-    const handleSearch = debounce((input: any) => {
+    const handleSearch = useDebounceFn((input: any) => {
       groupListAPIParams.filter = searchText.value
         ? {
             $or: [

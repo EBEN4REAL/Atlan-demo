@@ -62,9 +62,9 @@
   </div>
 </template>
 <script lang="ts">
-import { ref, reactive, defineComponent, computed, watch } from "vue";
+import { ref, reactive, defineComponent, computed } from "vue";
 import ErrorView from "@common/error/index.vue";
-import { debounce } from "~/composables/utils/debounce";
+import { useDebounceFn } from "@vueuse/core";
 import {
   pluralizeString,
   getNameInitials,
@@ -95,7 +95,7 @@ export default defineComponent({
       STATES,
     } = useUsers(userListAPIParams);
 
-    const handleSearch = debounce((input: any) => {
+    const handleSearch = useDebounceFn(() => {
       userListAPIParams.filter = searchText.value
         ? {
             $or: [

@@ -70,7 +70,7 @@ export default function useGroups(groupListAPIParams: {
     () => localGroupsList || []
   );
   let totalGroupsCount = computed(() => data?.value?.total_record ?? 0);
-  let filteredGroupsCount = computed(() => data?.value?.filtered_record ?? 0);
+  let filteredGroupsCount = computed(() => data?.value?.filter_record ?? 0);
   return {
     groupList,
     totalGroupsCount,

@@ -73,13 +73,31 @@ export default defineComponent({
     },
   },
   setup(props, context) {
-    let accessLogsParams = reactive({ max: 10, first: 0 });
+    let accessLogsParams: any = reactive({ max: 10, first: 0 });
+    let params = new URLSearchParams({ max: "10", first: "0" });
+
+    const fetchLogs = () => {
+      //reset query params
+      for (let key of params.keys()) {
+        params.delete(key);
+      }
+      Object.keys(accessLogsParams).forEach((param) => {
+        if (!Array.isArray(accessLogsParams[param])) {
+          params.set(param, accessLogsParams[param]);
+        } else if (accessLogsParams[param] && accessLogsParams[param].length) {
+          accessLogsParams[param].forEach((value) => {
+            params.append(param, value);
+          });
+        }
+      });
+      fetchUserAccessLogs();
+    };
     const {
       data,
       error,
       isValidating,
       mutate: fetchUserAccessLogs,
-    } = User.GetUserAccessLogs(props.selectedUser.id, accessLogsParams, {
+    } = User.GetUserAccessLogs(props.selectedUser.id, params, {
       revalidateOnFocus: false,
       dedupingInterval: 1,
     });
@@ -95,6 +113,7 @@ export default defineComponent({
       }
       return [];
     });
+
     const applyLogTypeFilter = (value) => {
       if (value && value.length > 0) {
         accessLogsParams.type = value;
@@ -123,30 +142,29 @@ export default defineComponent({
     const handleTableChange = (pagination, filters) => {
       // apply filters
       if (filters && filters.action) {
-        console.log(filters.action);
         accessLogsParams.first = 0;
         applyLogTypeFilter(filters.action);
       }
-      fetchUserAccessLogs();
+      fetchLogs();
     };
     const paginateLogs = (value) => {
       if (value === "start") {
         accessLogsParams.first = 0;
-        fetchUserAccessLogs();
+        fetchLogs();
       }
       if (value === "prev") {
         accessLogsParams.first = accessLogsParams.first - accessLogsParams.max;
-        fetchUserAccessLogs();
+        fetchLogs();
       } else if (value === "next") {
         accessLogsParams.first = accessLogsParams.first + accessLogsParams.max;
-        fetchUserAccessLogs();
+        fetchLogs();
       }
     };
     return {
       accessLogs,
       state,
       STATES,
-      fetchUserAccessLogs,
+      fetchLogs,
       accessLogsParams,
       handleResetIPAddressFilter,
       handleApplyIPAddressFilter,

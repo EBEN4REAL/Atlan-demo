@@ -51,11 +51,7 @@ const SignOutSessionById = (id: string) => {
   //   cache: false,
   // });
 };
-const GetUserAccessLogs = (id: string, parameters?: any, options?: any) => {
-  // console.log("ppp", parameters);
-  // const params = generateQueryStringParamsFromObj(parameters);
-  // console.log("pppp", params);
-  const params = parameters;
+const GetUserAccessLogs = (id: string, params?: any, options?: any) => {
   return useAPI(GET_USER_ACCESS_LOGS, "GET", {
     params,
     options,

@@ -62,7 +62,7 @@
     </div>
   </div>
 </template>
-  <script lang="ts">
+<script lang="ts">
 import { ref, reactive, defineComponent, computed } from "vue";
 import ErrorView from "@common/error/index.vue";
 import { debounce } from "~/composables/utils/debounce";
@@ -72,7 +72,7 @@ import {
   getNameInTitleCase,
 } from "~/composables/utils/string-operations";
 import { getIsLoadMore } from "~/composables/utils/isLoadMore";
-import useGroups from "~/components/admin/groups/useGroups";
+import useGroups from "~/composables/group/useGroups";
 
 export default defineComponent({
   name: "Groups",

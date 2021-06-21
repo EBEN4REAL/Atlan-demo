@@ -4,6 +4,7 @@
     <div type="flex content-end">
       <div>
         <a-button
+          class="mt-3"
           type="primary"
           size="large"
           :loading="addMemberLoading"

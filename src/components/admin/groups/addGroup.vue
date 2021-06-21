@@ -1,37 +1,30 @@
 <template>
   <div>
-    <a-form layout="vertical" @submit="handleSubmit">
-      <div class="flex content-between">
-        <div>
-          <a-form-item label="Group Name">
-            <a-input
-              v-model:value="group.name"
-              v-decorator="['name', { rules: [{ required: true }] }]"
-              @input="setGroupAlias"
-            />
+    <a-form :model="group" :rules="validations" layout="vertical" @submit="handleSubmit">
+      <div class="flex justify-between">
+        <div class="w-1/2">
+          <a-form-item label="Group Name" name="name">
+            <a-input v-model:value="group.name" @input="setGroupAlias" />
           </a-form-item>
         </div>
         <div>
-          <a-form-item label="Group Alias">
-            <a-input
-              v-model:value="group.alias"
-              v-decorator="['alias', { rules: [{ required: true }] }]"
-              @input="restrictGroupAlias"
-            />
+          <a-form-item label="Group Alias" name="alias">
+            <a-input v-model:value="group.alias" @input="restrictGroupAlias" />
           </a-form-item>
         </div>
       </div>
-      <a-form-item label="Group Description">
-        <a-textarea v-model:value="group.description" v-decorator="['description']" :rows="3" />
+      <a-form-item label="Group Description" name="description">
+        <a-textarea v-model:value="group.description" :rows="3" />
       </a-form-item>
-      <UserList @updateSelectedUsers="updateUserList" />
-      <div class="flex content-end">
+      <UserList class="max-h-48" @updateSelectedUsers="updateUserList" />
+      <div class="flex justify-end mt-6">
         <div>
           <a-button
             type="primary"
             size="large"
             html-type="submit"
             :disabled="isSubmitDisabled"
+            :loading="createGroupLoading"
           >Create Group</a-button>
         </div>
       </div>
@@ -41,9 +34,15 @@
 <script lang="ts">
 import { Group } from "~/api/auth/group";
 import UserList from "~/components/admin/groups/common/userList.vue";
-import { defineComponent, ref, reactive, computed } from "vue";
+import { defineComponent, ref, reactive, computed, UnwrapRef } from "vue";
 import whoami from "~/composables/user/whoami";
 import { message } from "ant-design-vue";
+
+interface Group {
+  name: String;
+  alias: String;
+  description: String;
+}
 export default defineComponent({
   name: "AddGroup",
   data() {
@@ -57,8 +56,19 @@ export default defineComponent({
   },
   components: { UserList },
   setup(props, context) {
-    const group = reactive({ name: "", description: "", alias: "" });
-    // const userIds = ref([]);
+    const createGroupLoading = ref(false);
+    const group: UnwrapRef<Group> = reactive({
+      name: "",
+      description: "",
+      alias: "",
+    });
+    const validations = {
+      name: [
+        { required: true, message: "Group name is required", trigger: "blur" },
+      ],
+    };
+    const { username } = whoami();
+    const userIds = ref([]);
     const isSubmitDisabled = computed(() => {
       const { name, alias } = group;
       return name == "" || alias == "" ? true : false;
@@ -77,14 +87,14 @@ export default defineComponent({
       group.alias = getAliasFromName(group.alias);
     };
     const updateUserList = (list) => {
-      // userIds.value = list;
+      userIds.value = list;
     };
     const handleSubmit = async (event) => {
       event.preventDefault();
       try {
-        const { username } = whoami();
+        createGroupLoading.value = true;
         const currentDate = new Date().toISOString();
-        const createdById = username;
+        const createdById = username.value;
         // deliberately switching alias and name so as to keep alias as a unique identifier for the group, for keycloak name is the unique identifier. For us, alias is the unique identifier and different groups with same name can exist.
         const params = {
           group: {
@@ -102,13 +112,17 @@ export default defineComponent({
         await Group.CreateGroup(params);
         message.success("Group added");
         context.emit("createGroup");
+        createGroupLoading.value = false;
       } catch (error) {
+        createGroupLoading.value = false;
         message.error("Unable to create group, please try again.");
       }
     };
     return {
       group,
       isSubmitDisabled,
+      validations,
+      createGroupLoading,
       handleSubmit,
       setGroupAlias,
       restrictGroupAlias,

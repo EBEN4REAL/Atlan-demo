@@ -1,6 +1,6 @@
 <template>
   <div class="my-3 mr-5">
-    <div v-if="!memberList.value.length" class="flex flex-col items-center justify-center">
+    <div v-if="!selectedGroup.memberCount" class="flex flex-col items-center justify-center">
       <div class="text-center">
         <p class="text-lg">No members are present in the group.</p>
         <div class="mt-4">
@@ -36,6 +36,12 @@
           ghost
           @click="()=>{getGroupMembersList()}"
         >Try again</a-button>
+      </div>
+      <div
+        style="min-height: 200px"
+        v-else-if="[STATES.PENDING].includes(state) || [STATES.VALIDATING].includes(state)"
+      >
+        <a-spin></a-spin>
       </div>
       <div v-else class="min-h-screen mt-4">
         <div v-for="user in memberList.value" :key="user.id" class="my-2">
@@ -74,7 +80,7 @@
     </div>
     <a-modal
       :visible="showAddMemberModal"
-      title="Add Users"
+      title="Add Members"
       :footer="null"
       :destroy-on-close="true"
       @cancel="closeAddGroupModal"
@@ -92,7 +98,7 @@
 <script lang="ts">
 import { message } from "ant-design-vue";
 import { ref, reactive, defineComponent, computed, watch } from "vue";
-import useGroupMembers from "~/components/admin/groups/useGroupMembers";
+import useGroupMembers from "~/composables/group/useGroupMembers";
 import ErrorView from "@common/error/index.vue";
 import { debounce } from "~/composables/utils/debounce";
 import {
@@ -172,8 +178,7 @@ export default defineComponent({
         });
         memberListParams.params.offset = 0;
         getGroupMembersList();
-        // TODO: fetch group again
-        // await this.FETCH_GROUP_LIST();
+        context.emit("refreshTable");
         addMemberLoading.value = false;
         message.success(
           `${pluralizeString("Member", userIds.length, false)} added`
@@ -197,8 +202,7 @@ export default defineComponent({
         );
         memberListParams.params.offset = 0;
         getGroupMembersList();
-        // TODO: fetch group again
-        // await this.FETCH_GROUP_LIST();
+        context.emit("refreshTable");
         message.success("Member Removed");
       } catch (error) {
         message.error("Failed, try again");

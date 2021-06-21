@@ -20,6 +20,7 @@
       <ErrorView></ErrorView>
     </div>
     <a-table
+      v-else-if="groupList && groupList.length"
       :dataSource="groupList"
       :columns="columns"
       :row-key="(group) => group.id"
@@ -54,19 +55,21 @@
       class="addGroupModal"
       title="Create New Group"
       :footer="null"
+      :destroy-on-close="true"
     >
       <AddGroup @createGroup="handleCreateGroup" />
     </a-modal>
     <GroupPreviewDrawer
-      @closePreview="handleClosePreview "
+      @closePreview="handleClosePreview"
       :selectedGroup="selectedGroup"
       :showGroupPreview="showGroupPreview"
+      @refreshTable="getGroupList"
     />
   </div>
 </template>
 <script lang="ts">
 import { ref, reactive, defineComponent, computed } from "vue";
-import useGroups from "./useGroups";
+import useGroups from "~/composables/group/useGroups";
 import AddGroup from "./addGroup.vue";
 import ErrorView from "@common/error/index.vue";
 import GroupPreviewDrawer from "./groupPreview/groupPreviewDrawer.vue";
@@ -84,7 +87,7 @@ export default defineComponent({
     const toggleAddGroupModal = () => {
       isAddGroupModalVisible.value = !isAddGroupModalVisible.value;
     };
-    let selectedGroup = ref({});
+    let selectedGroupId = ref("");
     const groupListAPIParams = reactive({
       limit: 6,
       offset: 0,
@@ -141,8 +144,16 @@ export default defineComponent({
     };
     const handleGroupClick = (group: any) => {
       showGroupPreview.value = true;
-      selectedGroup.value = group;
+      selectedGroupId.value = group.id;
     };
+    const selectedGroup = computed(() => {
+      let activeGroupObj = {};
+      if (groupList && groupList.value && groupList.value.length)
+        activeGroupObj = groupList.value.find(
+          (group: any) => group.id === selectedGroupId.value
+        );
+      return activeGroupObj;
+    });
     const handleClosePreview = () => {
       showGroupPreview.value = false;
     };
@@ -176,6 +187,7 @@ export default defineComponent({
       handleClosePreview,
       handleDeleteGroup,
       handleCreateGroup,
+      getGroupList,
     };
   },
   data() {

@@ -1,9 +1,7 @@
-import { useAPI } from "~/api/useAPI";
 import swrvState from "~/composables/utils/swrvState";
 import { computed } from "vue"
 import { fetcher, getAPIPath } from "~/api";
 import useSWRV, { IConfig } from "swrv";
-import { DELETE_API_KEY, GET_API_KEYS } from "~/api/keyMaps/auth/apiKeys";
 
 export default function useAPIKeys(config?: IConfig) {
     const param = {
@@ -43,14 +41,6 @@ export default function useAPIKeys(config?: IConfig) {
         config,
     );
 
-    const createNewAPI = (body: any) => {
-        useAPI(GET_API_KEYS, "POST", { cache: false, body });
-    }
-
-    const deleteAPIKey = (id: string) => {
-        useAPI(DELETE_API_KEY, "POST", { pathVariables: { id }, cache: false });
-    }
-
     const getUpdatedAPI = () => {
         mutateApiList();
     }
@@ -82,8 +72,6 @@ export default function useAPIKeys(config?: IConfig) {
         AdminrolesId,
         roleState,
         roleSTATES,
-        createNewAPI,
-        deleteAPIKey,
         searchAPI,
         resetSearch
     }

@@ -82,6 +82,7 @@
     @closePreview="handleClosePreview"
     :selectedUser="selectedUser"
     :showUserPreview="showUserPreview"
+    @reloadTable="reloadTable"
   />
   <!-- Change Role Modal-->
   <a-modal
@@ -106,7 +107,7 @@
 <script lang="ts">
 import { defineComponent, ref, reactive, computed } from "vue";
 import { debounce } from "~/composables/utils/debounce";
-import useUsers from "./useUsers";
+import useUsers from "~/composables/user/useUsers";
 import UserPreviewDrawer from "./userPreview/userPreviewDrawer.vue";
 import InvitationListTable from "./invitationListTable.vue";
 import { Modal, message } from "ant-design-vue";
@@ -131,7 +132,16 @@ export default defineComponent({
     const showChangeRoleModal = ref(false);
     const showInviteUserModal = ref(false);
     const showUserPreview = ref(false);
-    let selectedUser = ref({});
+
+    let selectedUserId = ref("");
+    const selectedUser = computed(() => {
+      let activeUserObj = {};
+      if (userList && userList.value && userList.value.length)
+        activeUserObj = userList.value.find(
+          (user: any) => user.id === selectedUserId.value
+        );
+      return activeUserObj;
+    });
     const invitationComponentRef = ref(null);
     let userListAPIParams: any = reactive({
       limit: 6,
@@ -184,8 +194,6 @@ export default defineComponent({
         };
       }
       getUserList();
-      //TODO: fetch roles
-      // getRolesList();
     };
     const handleTableChange = (pagination: any, filters: any, sorter: any) => {
       //add filters
@@ -233,19 +241,19 @@ export default defineComponent({
     };
     const showUserPreviewDrawer = (user: any) => {
       showUserPreview.value = true;
-      selectedUser.value = user;
+      selectedUserId.value = user.id;
     };
     const handleClosePreview = () => {
       showUserPreview.value = false;
-      selectedUser.value = {};
+      selectedUserId.value = "";
     };
     const handleChangeRole = (user: any) => {
       showChangeRoleModal.value = true;
-      selectedUser.value = user;
+      selectedUserId.value = user.id;
     };
     const closeChangeRoleModal = () => {
       showChangeRoleModal.value = false;
-      selectedUser.value = {};
+      selectedUserId.value = "";
     };
     const handleInviteUsers = (user: any) => {
       showInviteUserModal.value = true;
@@ -337,6 +345,7 @@ export default defineComponent({
       showInviteUserModal,
       handleInviteUsers,
       handleInviteSent,
+      reloadTable,
     };
   },
   data() {

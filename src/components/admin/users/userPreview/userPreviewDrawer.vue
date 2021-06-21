@@ -8,7 +8,7 @@
     :body-style="{ height: '100%' }"
     @close="handleClose"
   >
-    <UserPreview :selectedUser="selectedUser" />
+    <UserPreview :selectedUser="selectedUser" @reloadTable="$emit('reloadTable')" />
   </a-drawer>
 </template>
     

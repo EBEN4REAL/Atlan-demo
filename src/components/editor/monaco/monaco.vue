@@ -1,5 +1,5 @@
 <template>
-  <div id="monacoeditor" ref="monacoRoot" class="w-100"></div>
+  <div id="monacoeditor" ref="monacoRoot" class="max-w-full"></div>
 </template>
     
   <script lang="ts">
@@ -73,6 +73,7 @@ export default defineComponent({
         minimap: {
           enabled: false,
         },
+        automaticLayout: true,
         quickSuggestions: {
           other: true,
           comments: false,

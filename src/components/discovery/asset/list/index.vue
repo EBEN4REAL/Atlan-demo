@@ -4,7 +4,7 @@
     :items="list"
     :keyField="keyField"
     :minItemSize="minItemSize"
-    class="px-6 scroller"
+    class="mx-6 border scroller"
     :buffer="1000"
   >
     <template v-slot="{ item, index, active }">
@@ -12,7 +12,7 @@
         :item="item"
         :active="active"
         :data-index="index"
-        class="border border-t-0 border-gray-200"
+        class="border-b border-gray-200"
       >
         <ListItem
           :item="item"

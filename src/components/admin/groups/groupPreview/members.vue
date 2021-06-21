@@ -37,6 +37,13 @@
           @click="()=>{getGroupMembersList()}"
         >Try again</a-button>
       </div>
+      <div v-else-if="!filteredMembersCount" class="mt-2">
+        {{`No member with name ${searchText} found.`}}
+        <!-- <span
+          class="cursor-pointer text-primary-600"
+          @click="{searchText='';handleSearch();}"
+        >Clear</span>-->
+      </div>
       <div
         style="min-height: 200px"
         v-else-if="[STATES.PENDING].includes(state) || [STATES.VALIDATING].includes(state)"
@@ -100,7 +107,7 @@ import { message } from "ant-design-vue";
 import { ref, reactive, defineComponent, computed, watch } from "vue";
 import useGroupMembers from "~/composables/group/useGroupMembers";
 import ErrorView from "@common/error/index.vue";
-import { debounce } from "~/composables/utils/debounce";
+import { useDebounceFn } from "@vueuse/core";
 import {
   pluralizeString,
   getNameInitials,
@@ -143,7 +150,7 @@ export default defineComponent({
       STATES,
     } = useGroupMembers(memberListParams);
 
-    const handleSearch = debounce((input: any) => {
+    const handleSearch = useDebounceFn(() => {
       memberListParams.params.filter = searchText.value
         ? {
             $or: [
@@ -155,7 +162,7 @@ export default defineComponent({
         : {};
       memberListParams.params.offset = 0;
       getGroupMembersList();
-    }, 200);
+    }, 600);
     const handleLoadMore = () => {
       memberListParams.params.offset =
         memberListParams.params.offset + memberListParams.params.limit;

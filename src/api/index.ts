@@ -7,6 +7,10 @@ export const getAPIPath = (serviceName: string, path = "") => {
   return `${serviceName}/tenants/${realm}${path}`;
 };
 
+export const getHealthPath = (serviceName: string, path = "") => {
+  return `${serviceName}${path}`;
+};
+
 export const getAxiosClient = () => {
   return axiosClient;
 };
@@ -28,17 +32,13 @@ export const fetcherPost = (
   return getAxiosClient().post(url, body, options);
 };
 
-export const updater = (
-  url,
-  body,
-  options
-): Promise<AxiosResponse["data"]> => {
+export const updater = (url, body, options): Promise<AxiosResponse["data"]> => {
   return getAxiosClient().put(url, body, options);
 };
 
 export const deleter = (url, options): Promise<AxiosResponse["data"]> => {
   return getAxiosClient().delete(url, options);
-}
+};
 
 // export const ServiceURLWithoutTenant = (serviceName, path = "") => {
 //   return `${getApiPath(serviceName)}${path}`;

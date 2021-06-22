@@ -23,7 +23,9 @@
           :key="service"
           class="flex items-center justify-between flex-grow"
         >
-          <span class="text-xl text-gray-500 capitalize">{{ service }}</span>
+          <span class="text-xl text-gray-500 capitalize">{{
+            SERVICES[service]
+          }}</span>
           <Fa
             class="text-xl"
             v-bind="getStatusClass(services[service].value)"
@@ -54,6 +56,7 @@ export default defineComponent({
   name: "HealthStatus",
   setup() {
     const {
+      SERVICES,
       services,
       overallStatusText,
       overallStatus,
@@ -62,6 +65,7 @@ export default defineComponent({
     } = useHealth();
 
     return {
+      SERVICES,
       services,
       overallStatusText,
       overallStatus,

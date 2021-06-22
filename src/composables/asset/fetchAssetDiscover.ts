@@ -28,7 +28,7 @@ export default function fetchAssetDiscover(cache?: string, dependentKey?: Ref<an
     };
 
     const body: Ref<SearchParameters> = ref({
-        typeName: "Table",
+        typeName: "Table,Column,Views",
         excludeDeletedEntities: true,
         includeClassificationAttributes: true,
         includeSubClassifications: true,

@@ -130,21 +130,24 @@ export default defineComponent({
     };
   },
   mounted() {
-    if (this.defaultValue) {
-      if (this.dataType === "number") {
-        this.$emit("update:modelValue", parseInt(this.defaultValue));
-      } else {
-        this.$emit("update:modelValue", this.defaultValue);
-      }
-    }
+    // if (this.defaultValue) {
+    //   if (this.dataType === "number") {
+    //     this.$emit("update:modelValue", parseInt(this.defaultValue));
+    //   } else {
+    //     this.$emit("update:modelValue", this.defaultValue);
+    //   }
+    // }
   },
   emits: ["update:modelValue", "change", "blur"],
   methods: {
     handleChange(e) {
+      console.log("changed");
+      console.log(this.modelValue);
       let val = e;
       if (e.target) {
         val = e.target.value;
       }
+      console.log(val);
       if (this.dataType === "number") {
         this.$emit("update:modelValue", parseInt(val));
       } else {

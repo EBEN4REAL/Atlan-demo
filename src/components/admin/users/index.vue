@@ -73,6 +73,10 @@
     </template>
 
     <template #actions="{ text: user }">
+      <a-button-group>
+        <a-button size="small"><fa icon="fal user-slash"></fa></a-button>
+        <a-button size="small"><fa icon="fal user-shield"></fa></a-button>
+      </a-button-group>
       <a-dropdown :trigger="['click']">
         <a class="ant-dropdown-link" @click="(e) => e.preventDefault()">
           <fa icon="fal cog" />

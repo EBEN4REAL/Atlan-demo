@@ -154,10 +154,12 @@ export default defineComponent({
       return true;
     };
 
+    let username = keycloak.tokenParsed.preferred_username || "";
+
     return {
       fullName,
       name: keycloak.tokenParsed.name || "",
-      username: keycloak.tokenParsed.preferred_username || "",
+      username,
       displayName: computed(() => store.getters.getDisplayName),
       displayNameHTML: computed(() => store.getters.getDisplayNameHTML),
       realm: computed(() => store.getters.getRealmName),

@@ -19,12 +19,18 @@
     >
       <div class="flex items-center justify-between p-5 align-middle">
         <div class="flex items-center">
-          <a-avatar
-            shape="square"
-            :size="56"
-            class="hidden border-2 rounded-lg border-primary-300 sm:block"
-            src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png"
-          />
+          <a-upload
+            accept="image/*"
+            :customRequest="handleUploadAvatar"
+            :show-upload-list="false"
+          >
+            <a-avatar
+              shape="square"
+              :size="56"
+              class="hidden border-2 rounded-lg border-primary-300 sm:block"
+              src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png"
+            />
+          </a-upload>
 
           <div class="flex flex-col ml-2">
             <p
@@ -94,6 +100,8 @@ import SavedList from "@/home/saved/index.vue";
 
 import Tags from "@common/badge/tags/index.vue";
 
+import uploadAvatar from "~/composables/avatar/uploadAvatar";
+
 export default defineComponent({
   name: "HelloWorld",
   components: {
@@ -123,6 +131,14 @@ export default defineComponent({
       } ${lastName.charAt(0).toUpperCase() + lastName.substr(1).toLowerCase()}`;
     });
 
+    const { upload } = uploadAvatar();
+
+    const handleUploadAvatar = async (uploaded) => {
+      console.log("handle Upload");
+      upload(uploaded.file);
+      return true;
+    };
+
     return {
       fullName,
       name: keycloak.tokenParsed.name || "",
@@ -130,6 +146,7 @@ export default defineComponent({
       displayName: computed(() => store.getters.getDisplayName),
       displayNameHTML: computed(() => store.getters.getDisplayNameHTML),
       realm: computed(() => store.getters.getRealmName),
+      handleUploadAvatar,
     };
   },
 });

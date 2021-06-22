@@ -1,12 +1,23 @@
 <template>
   <div
     v-if="editor"
-    class="sticky top-0 max-w-full min-w-full overflow-x-auto editor-menu z-50"
+    class="
+      mb-3
+      border
+      sticky
+      top-0
+      max-w-full
+      min-w-full
+      overflow-x-auto
+      editor-menu
+      z-50
+    "
   >
     <a-button-group>
       <a-button
         v-for="menuItem in menuData"
         :key="menuItem.key"
+        class="border-0 border-r-2"
         :class="{
           'is-active':
             editor.isActive(`${menuItem.key}`) ||
@@ -16,6 +27,46 @@
       >
         <fa v-if="menuItem.icon" :icon="menuItem.icon" class="m-1" />
         <span v-else>{{ menuItem.title }}</span>
+
+        <a-modal
+          v-if="menuItem.title === 'Link'"
+          class="border-gray-700"
+          :visible="showLinkModal"
+          :title="null"
+          :closable="true"
+          :mask="false"
+          :maskClosable="true"
+          width="50vw"
+          :footer="null"
+          @cancel="() => (showLinkModal = false)"
+        >
+          <div class="d-flex align-items-center justify-content-start">
+            <label>Link</label>
+            <div class="flex">
+              <a-input
+                type="url"
+                v-model:value="link"
+                focused
+                placeholder="https://"
+                @keydown.esc="showLinkModal = false"
+              />
+              <a-button
+                type="primary"
+                class="ml-3 mr-2"
+                @click="() => setLink(editor)"
+              >
+                Apply
+              </a-button>
+              <a-button
+                type="default"
+                v-if="editor.isActive('link')"
+                @click="() => unLink(editor)"
+              >
+                Remove
+              </a-button>
+            </div>
+          </div>
+        </a-modal>
       </a-button>
     </a-button-group>
   </div>
@@ -23,7 +74,8 @@
 
 <script lang="ts">
 import { Editor } from "@tiptap/core";
-import { defineComponent, Ref } from "vue";
+import { defineComponent, ref } from "vue";
+import { URL } from "~/api/auth/credential";
 
 interface MenuItem {
   title: string;
@@ -41,6 +93,9 @@ export default defineComponent({
     },
   },
   setup() {
+    const showLinkModal = ref(false);
+    const link = ref("");
+
     const menuData: MenuItem[] = [
       {
         title: "H1",
@@ -95,11 +150,27 @@ export default defineComponent({
         onClick: (editor) => editor.chain().focus().toggleStrike().run(),
       },
       {
-        title: "Paragraph",
-        key: "paragraph",
+        title: "Hr",
+        key: "rule",
         helpText: "",
-        icon: "fa paragraph",
-        onClick: (editor) => editor.chain().focus().createParagraphNear().run(),
+        onClick: (editor) => editor.chain().focus().setHorizontalRule().run(),
+      },
+      // {
+      //   title: "Paragraph",
+      //   key: "paragraph",
+      //   helpText: "",
+      //   icon: "fa paragraph",
+      //   onClick: (editor) => editor.chain().focus().createParagraphNear().run(),
+      // },
+      {
+        title: "Link",
+        key: "link",
+        helpText: "",
+        icon: "fa link",
+        onClick: (editor) => {
+          link.value = editor.getAttributes('link').href ?? ''
+          showLinkModal.value = !showLinkModal.value;
+        },
       },
       {
         title: "Unordered List",
@@ -130,16 +201,46 @@ export default defineComponent({
         onClick: (editor) =>
           editor.chain().focus().toggleCodeBlock({ language: "css" }).run(),
       },
-      // h1,h2,h3
-      //horizontal rule
-      //link
+      {
+        title: "Undo",
+        key: "undo",
+        helpText: "",
+        icon: "fa undo",
+        onClick: (editor) => editor.chain().focus().undo().run(),
+      },
+      {
+        title: "Redo",
+        key: "redo",
+        helpText: "",
+        icon: "fa redo",
+        onClick: (editor) => editor.chain().focus().redo().run(),
+      },
       //table
-      //undo
-      //redo
     ];
+
+    const setLink = (editor: Editor) => {
+      if (link.value) {
+        let url = link.value;
+        if (!(url.split(":")[0] === "http" || url.split(":")[0] === "https"))
+          url = `https://${url}`;
+
+        editor.chain().setLink({ href: url }).run();
+        link.value = "";
+        showLinkModal.value = false;
+      }
+    };
+
+    const unLink = (editor: Editor) => {
+      editor.chain().focus().unsetLink().run();
+      link.value = "";
+    };
 
     return {
       menuData,
+      showLinkModal,
+      link,
+      setLink,
+      unLink,
     };
   },
 });

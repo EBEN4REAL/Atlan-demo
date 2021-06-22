@@ -34,6 +34,7 @@
             </div>
             <a-avatar
               v-else
+              :key="uploadKey"
               shape="square"
               :size="56"
               class="hidden border-2 rounded-lg border-primary-300 sm:block"
@@ -131,6 +132,7 @@ export default defineComponent({
   setup() {
     const keycloak = inject("$keycloak");
     const store = useStore();
+    let username = keycloak.tokenParsed.preferred_username || "";
 
     const fullName = computed(() => {
       let firstName = keycloak.tokenParsed.given_name || "";
@@ -140,21 +142,20 @@ export default defineComponent({
       } ${lastName.charAt(0).toUpperCase() + lastName.substr(1).toLowerCase()}`;
     });
 
-    const imageUrl = computed(() => {
-      return `http://localhost:3333/api/auth/tenants/default/avatars/${username}`;
-    });
+    let imageUrl = ref(
+      `http://localhost:3333/api/auth/tenants/default/avatars/${username}`
+    );
 
     let uploadStarted = ref(false);
-    const { upload, isReady } = uploadAvatar();
+    const { upload, isReady, uploadKey } = uploadAvatar();
 
     const handleUploadAvatar = async (uploaded) => {
       console.log("handle Upload");
       upload(uploaded.file);
       uploadStarted.value = true;
+      imageUrl.value = imageUrl.value + "?" + uploadKey;
       return true;
     };
-
-    let username = keycloak.tokenParsed.preferred_username || "";
 
     return {
       fullName,
@@ -167,6 +168,7 @@ export default defineComponent({
       isReady,
       uploadStarted,
       imageUrl,
+      uploadKey,
     };
   },
 });

@@ -24,7 +24,16 @@ export default function uploadAvatar() {
         resetOnExecute: false,
     });
     let formData = ref();
+
+    let uploadKey = ref(Date.now().toString());
+
     const { data, mutate, isReady, error } = Avatar.UploadAvatar("", formData, options);
+
+    watch(data, () => {
+        console.log("changed");
+        uploadKey.value = Date.now().toString();
+    });
+
     const upload = (imageData: any) => {
         const formDataObject = new FormData();
         formDataObject.append("image", imageData)
@@ -36,6 +45,7 @@ export default function uploadAvatar() {
         upload,
         error,
         isReady,
-        data
+        data,
+        uploadKey
     }
 }

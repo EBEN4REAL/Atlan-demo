@@ -21,14 +21,23 @@
         <div class="flex items-center">
           <a-upload
             accept="image/*"
+            class="cursor-pointer"
             :customRequest="handleUploadAvatar"
             :show-upload-list="false"
           >
+            <div
+              class="hidden text-center border-2 rounded-lg  border-primary-300 sm:block"
+              style="width: 56px; height: 56px"
+              v-if="!isReady && uploadStarted"
+            >
+              <a-spin size="small" class="" style="margin-top: 18px"></a-spin>
+            </div>
             <a-avatar
+              v-else
               shape="square"
               :size="56"
               class="hidden border-2 rounded-lg border-primary-300 sm:block"
-              src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png"
+              src="http://localhost:3333/api/auth/tenants/default/avatars/nitya"
             />
           </a-upload>
 
@@ -90,7 +99,7 @@
 
 
 <script lang="ts">
-import { defineComponent, inject, computed } from "vue";
+import { defineComponent, inject, computed, ref } from "vue";
 import { useStore } from "~/store";
 
 import PageLoader from "@common/loaders/page.vue";
@@ -131,11 +140,13 @@ export default defineComponent({
       } ${lastName.charAt(0).toUpperCase() + lastName.substr(1).toLowerCase()}`;
     });
 
-    const { upload } = uploadAvatar();
+    let uploadStarted = ref(false);
+    const { upload, isReady } = uploadAvatar();
 
     const handleUploadAvatar = async (uploaded) => {
       console.log("handle Upload");
       upload(uploaded.file);
+      uploadStarted.value = true;
       return true;
     };
 
@@ -147,6 +158,8 @@ export default defineComponent({
       displayNameHTML: computed(() => store.getters.getDisplayNameHTML),
       realm: computed(() => store.getters.getRealmName),
       handleUploadAvatar,
+      isReady,
+      uploadStarted,
     };
   },
 });

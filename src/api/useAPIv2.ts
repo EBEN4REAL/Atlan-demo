@@ -40,6 +40,8 @@ export const useAPI = <T>(
   const url = keyMaps[key]({ ...pathVariables });
   if (cache) {
 
+
+
     // If using cache, make a generic swrv request
     const getKey = () => {
       if (dependantFetchingKey) {
@@ -70,7 +72,7 @@ export const useAPI = <T>(
     const isLoading = ref(!data && !error);
     return { data, error, isLoading, mutate, isValidating };
   } else {
-
+    console.log("not cached", url);
     function getRequest(): any {
 
       switch (method) {
@@ -91,9 +93,11 @@ export const useAPI = <T>(
     const { state, execute, isReady, error } = useAsyncState(() => getRequest(), {}, {
       immediate: options?.value.immediate
     });
-    const isLoading = ref(!isReady);
+
+
+
     return {
-      data: state, mutate: execute, error, isLoading
+      data: state, mutate: execute, error, isReady
     }
   }
 };

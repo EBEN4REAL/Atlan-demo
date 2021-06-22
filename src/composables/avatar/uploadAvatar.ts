@@ -21,9 +21,10 @@ export default function uploadAvatar() {
         revalidateOnFocus: false,
         dedupingInterval: 1,
         immediate: false,
+        resetOnExecute: false,
     });
     let formData = ref();
-    const { data, mutate, isLoading, error } = Avatar.UploadAvatar("", formData, options);
+    const { data, mutate, isReady, error } = Avatar.UploadAvatar("", formData, options);
     const upload = (imageData: any) => {
         const formDataObject = new FormData();
         formDataObject.append("image", imageData)
@@ -34,7 +35,7 @@ export default function uploadAvatar() {
     return {
         upload,
         error,
-        isLoading,
+        isReady,
         data
     }
 }

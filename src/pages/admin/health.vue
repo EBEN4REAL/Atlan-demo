@@ -16,7 +16,14 @@
         </span>
       </div>
       <div
-        class="grid grid-cols-2 p-6 mb-20 lg:grid-cols-3 xl:grid-cols-3 gap-x-12 gap-y-6"
+        class="
+          grid grid-cols-2
+          p-6
+          mb-20
+          lg:grid-cols-3
+          xl:grid-cols-3
+          gap-x-12 gap-y-6
+        "
       >
         <div
           v-for="service in servicesNames"
@@ -136,3 +143,8 @@ export default defineComponent({
   }
 }
 </style>
+  <route lang="yaml">
+  meta:
+  layout: default
+  requiresAuth: true
+  </route>

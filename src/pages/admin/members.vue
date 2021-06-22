@@ -21,3 +21,8 @@ export default defineComponent({
 </script>
 <style lang="less" module>
 </style>
+<route lang="yaml">
+    meta:
+    layout: default
+    requiresAuth: true
+    </route>

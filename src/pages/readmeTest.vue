@@ -2,7 +2,7 @@
   <div
     class="flex flex-col w-full h-full bg-white"
   >
-    <h1 class="font-bold">readme test yo</h1>
+    <h1>readme test yo</h1>
     <Editor />
   </div>
 </template>

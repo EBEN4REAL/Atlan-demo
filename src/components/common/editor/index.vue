@@ -186,10 +186,27 @@ export default defineComponent({
 
   blockquote {
     @apply m-0;
+    border-left: 2px solid rgba(#161515, 0.1);
 
     p {
-      @apply p-2 bg-gray-100 rounded;
+      @apply p-2 bg-gray-50 rounded;
     }
+  }
+
+  hr {
+    border: none;
+    border-top: 2px solid rgba(#0d0d0d, 0.1);
+    margin: 2rem 0;
+  }
+
+  h1 {
+    @apply text-3xl;
+  }
+  h2 {
+    @apply text-2xl;
+  }
+  h3 {
+    @apply text-lg;
   }
 }
 </style>

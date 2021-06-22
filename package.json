@@ -52,6 +52,7 @@
     "numeral": ">=2",
     "openapi-client-axios": "^3.14.0",
     "openapi-client-axios-ts": "^3.9.9",
+    "pinia": "^2.0.0-beta.3",
     "pluralize": "^8.0.0",
     "qs": "^6.10.1",
     "splitpanes": "^3.0.4",

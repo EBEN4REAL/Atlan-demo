@@ -12,7 +12,7 @@
       layout="vertical"
     >
       <a-form-item ref="name" label="Name" name="name">
-        <a-input v-model:value="editFormState.name" />
+        <a-input v-model:value="editFormState.displayName" />
       </a-form-item>
       <a-form-item ref="description" label="Description" name="description">
         <a-textarea v-model:value="editFormState.description" />
@@ -26,6 +26,9 @@
           >Update</a-button
         >
       </div>
+      <p v-if="updateClassificationError" class="text-red-500">
+        {{ updateClassificationError }}
+      </p>
     </a-form>
   </a-modal>
 </template>
@@ -66,9 +69,10 @@ export default defineComponent({
 
     //edit modal
     const updateClassificationStatus = ref("");
+    const updateClassificationError = ref("");
     const editClassificationFormRef = ref(null);
     const editFormState: UnwrapRef<FormState> = reactive({
-      name: selectedClassification.value.name,
+      displayName: selectedClassification.value.displayName,
       description: selectedClassification.value.description,
     });
 
@@ -85,6 +89,12 @@ export default defineComponent({
     const closeEditModal = () => {
       context.emit("close");
     };
+
+    const resetRef = (ref, time) => {
+      setTimeout(() => {
+        ref.value = "";
+      }, time);
+    };
     const updateClassification = () => {
       updateClassificationStatus.value = "loading";
       editClassificationFormRef.value
@@ -96,8 +106,8 @@ export default defineComponent({
             description: formState.description || "-",
             attributeDefs: selectedClassification.value.attributeDefs,
             superTypes: selectedClassification.value.superTypes,
-            displayName: formState.name,
-            name: formState.name,
+            displayName: formState.value.displayName,
+            name: selectedClassification.value.name,
           };
 
           updateClassificationStatus.value = "loading";
@@ -110,6 +120,8 @@ export default defineComponent({
             context.emit("close");
           } catch (error) {
             updateClassificationStatus.value = "error";
+            updateClassificationError.value = error.message;
+            resetRef(updateClassificationError, 3000);
             console.log("WTF: handleUpdateDescription -> error", error);
           }
         })
@@ -119,6 +131,7 @@ export default defineComponent({
     };
 
     return {
+      updateClassificationError,
       editClassificationFormRef,
       updateClassification,
       showEditModal,

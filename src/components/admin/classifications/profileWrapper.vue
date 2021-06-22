@@ -107,7 +107,7 @@ import { useRouter } from "vue-router";
 // import { Classification } from "~/api/atlas/classification";
 import { ActionTypes } from "~/store/modules/classification/types-actions";
 // import useModal from "~/composables/classification/useModal";
-import { useStore } from "~/store";
+import { useClassificationStore } from "~/pinea";
 import { ValidateErrorEntity } from "ant-design-vue/es/form/interface";
 
 export default defineComponent({
@@ -124,10 +124,9 @@ export default defineComponent({
     classificationName: String,
   },
   setup(props, context) {
-    const store = useStore();
+    const store = useClassificationStore();
     const router = useRouter();
-    const createClassificationStatus =
-      store.state.classification.createClassificationStatus;
+    const createClassificationStatus = store.createClassificationStatus;
     const modalVisible = ref(false);
     const treeFilterText = ref("");
     const createClassificationFormRef = ref();
@@ -136,13 +135,9 @@ export default defineComponent({
       name: string;
       description: string;
     }
-    const treeData = computed(
-      () => store.state.classification.classificationTree
-    );
+    const treeData = computed(() => store.classificationTree);
 
-    const filteredData = computed(
-      () => store.state.classification.filteredClassificationTree
-    );
+    const filteredData = computed(() => store.filteredClassificationTree);
     const nodeEmit = (node) => {
       router.push(`/admin/classifications/${encodeURIComponent(node.name)}`);
     };
@@ -221,9 +216,7 @@ export default defineComponent({
       console.log(node, "parent");
     };
 
-    const classifications = computed(
-      () => store.state.classification.classifications
-    );
+    const classifications = computed(() => store.classifications);
 
     const selectedClassification: any = computed(() => {
       if (!props.classificationName) {

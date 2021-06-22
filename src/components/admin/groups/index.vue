@@ -26,11 +26,18 @@
       :row-key="(group) => group.id"
       :pagination="pagination"
       @change="handleTableChange"
-      :loading="[STATES.PENDING].includes(state) ||
-          [STATES.VALIDATING].includes(state)"
+      :loading="
+        [STATES.PENDING].includes(state) || [STATES.VALIDATING].includes(state)
+      "
     >
-      <template #name="{text:group}">
-        <div @click="() => {handleGroupClick(group)}">
+      <template #name="{ text: group }">
+        <div
+          @click="
+            () => {
+              handleGroupClick(group);
+            }
+          "
+        >
           <span class="capitalize">{{ group.name }}</span>
           <p>{{ group.description }}</p>
         </div>
@@ -38,12 +45,14 @@
 
       <!-- <template v-slot="actions">...</template> -->
 
-      <template #actions="{text:group}">
+      <template #actions="{ text: group }">
         <a-popover trigger="click" placement="bottom">
           <template #content>
             <span class="flex items-center text-red-600">
               <fa icon="fal trash-alt"></fa>
-              <span class="ml-2" @click="()=>handleDeleteGroup(group.id)">Delete</span>
+              <span class="ml-2" @click="() => handleDeleteGroup(group.id)"
+                >Delete</span
+              >
             </span>
           </template>
           <fa icon="fal cog"></fa>

@@ -5,8 +5,10 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, computed } from "vue";
+import { defineComponent, computed, toRaw } from "vue";
 import ClassificationProfileWrapper from "~/components/admin/classifications/profileWrapper.vue";
+import { useStore } from "~/store";
+import { useRouter } from "vue-router";
 
 export default defineComponent({
   name: "AssetClassificationProfileLayout",
@@ -18,7 +20,6 @@ export default defineComponent({
   },
   setup(props, context) {
     const classificationName = computed(() => props.classificationId);
-    console.log(classificationName.value, "hello");
     return {
       classificationName,
     };

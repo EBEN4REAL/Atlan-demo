@@ -100,9 +100,12 @@ export const getters: GetterTree<State, RootState> & Getters = {
     return state.classificationTree;
   },
   getFilteredClassificationsBySeach: (state) => (searchText: string) => {
-    return state.classifications.filter((classification: any) =>
-      classification.title.includes(searchText)
-    );
+    console.log(searchText, "in getters");
+    return state.classificationTree.filter((classification: any) => {
+      return classification.title
+        .toLowerCase()
+        .includes(searchText.toLocaleLowerCase());
+    });
   },
   getFilteredClassifications: (state) => {
     return state.classifications.filter(

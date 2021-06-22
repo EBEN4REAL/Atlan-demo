@@ -1,19 +1,19 @@
 <template>
-  <div class="flex-1 bg-white classification-header">
-    <div class="px-4 py-3 col-9 border-right">
+  <div class="grid grid-cols-11 bg-white classification-header">
+    <div class="col-start-1 col-end-9 px-4 py-3 border-right">
       <div class="mb-3 d-flex justify-content-between">
         <div class="d-flex justify-content-start">
           <div>
-            <p class="mb-1 text-sm text-base text-muted text-uppercase">
+            <p class="mb-2 text-sm text-base text-gray-500 text-uppercase">
               CLASSIFICATION
             </p>
-            <p class="flex items-center mb-0 text-lg">
-              <span class="flex items-center text-lg"
-                ><fa icon="fal shield text-indigo-700 " class="mr-2"
+            <p class="flex items-center mb-2 text-xl text-gray-600">
+              <span class="flex items-center mr-2 text-2xl"
+                ><fa icon="fal shield text-gray-500  " class="mr-2"
               /></span>
               {{ displayName }}
             </p>
-            <div class="mb-1">
+            <div class="mb-1 text-xs text-gray-400">
               <span v-if="createdAt">
                 Created {{ createdAt }} By <span>{{ createdBy }}</span>
               </span>
@@ -26,9 +26,11 @@
           </div>
         </div>
       </div>
-      <div class="mb-0">
-        <p class="mb-1 text-base text-muted text-uppercase">Description</p>
-        <p class="mb-0 font-size-sm">
+      <div class="mt-3">
+        <p class="mb-1 text-xs text-gray-400 uppercase text-muted">
+          Description
+        </p>
+        <p class="mb-0 text-xs text-gray-500">
           <span v-if="!selectedClassification.description"
             >Click to add description</span
           >
@@ -39,16 +41,49 @@
         </p>
       </div>
     </div>
+
+    <div class="flex justify-end col-start-9 col-end-12">
+      <div class="flex items-start p-2 three-dots">
+        <Dropdown
+          :options="classificationDropdownOption"
+          :isArrow="false"
+          :variant="'link btn-no-focus text-dark p-0 border-0'"
+          :no-caret="true"
+          right
+        >
+        </Dropdown>
+      </div>
+    </div>
+    <UpdateClassificationModal
+      :classification="selectedClassification"
+      @close="closeEditClassificationModal"
+      :open="isEditClassificationModalOpen"
+    />
+
+    <DeleteClassificationModal
+      :classification="selectedClassification"
+      @close="closeDeleteClassificationModal"
+      :open="isDeleteClassificationModalOpen"
+    />
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, computed } from "vue";
-// import { useStore } from "~/store";
+import { defineComponent, computed, ref } from "vue";
+import Dropdown from "~/components/admin/classifications/dropdown.vue";
+import UpdateClassificationModal from "./updateClassificationModal.vue";
+import DeleteClassificationModal from "./deleteClassificationModal.vue";
+import { useStore } from "~/store";
+import { useRouter } from "vue-router";
 import moment from "moment";
 
 export default defineComponent({
   name: "ClassificationHeader",
+  components: {
+    Dropdown,
+    UpdateClassificationModal,
+    DeleteClassificationModal,
+  },
   props: {
     classification: Object,
     createdAt: {
@@ -73,12 +108,16 @@ export default defineComponent({
     },
   },
   setup(props, context) {
-    // const store = useStore();
+    const store = useStore();
+    const router = useRouter();
+    const isDeleteClassificationModalOpen = ref(false);
+    const isEditClassificationModalOpen = ref(false);
+    const deleteStatus = ref("");
+
     const selectedClassification = computed(() => props.classification);
     const displayName = computed(() => {
       return selectedClassification.value.name;
     });
-    console.log(selectedClassification, displayName);
 
     const truncate = computed((string, length) => {
       return string.substring(0, length);
@@ -93,10 +132,70 @@ export default defineComponent({
       const timestamp = selectedClassification.value.updateTime;
       return moment(timestamp).fromNow();
     });
+
     const updatedBy = computed(() => selectedClassification.value.updatedBy);
 
-    console.log(createdAt, "header");
+    const classificationDropdownOption = computed(() => {
+      const dpOpArray = [];
+
+      dpOpArray.push({
+        title: `Edit classification`,
+        icon: "pencil",
+        iconType: "fal",
+        handleClick: editClassification,
+      });
+
+      dpOpArray.push({
+        title: `Delete classification`,
+        icon: "trash-alt",
+        iconType: "fal",
+        class: ["text-danger"],
+        handleClick: deleteClassification,
+      });
+
+      // if (store.getters.isEditClassificationEnable) {
+      //   dpOpArray.push({
+      //     title: `Edit classification`,
+      //     icon: "pencil",
+      //     iconType: "far",
+      //     handleClick: editClassification,
+      //   });
+      // }
+      // if (store.getters.isArchiveClassificationEnable) {
+      //   dpOpArray.push({
+      //     title: `Delete classification`,
+      //     icon: "trash-alt",
+      //     iconType: "far",
+      //     class: ["text-danger"],
+      //     handleClick: deleteClassification,
+      //   });
+      // }
+      return dpOpArray;
+    });
+
+    const deleteClassification = () => {
+      console.log("delete called");
+      isDeleteClassificationModalOpen.value = true;
+    };
+    const editClassification = () => {
+      console.log("edit called");
+      isEditClassificationModalOpen.value = true;
+    };
+
+    const closeEditClassificationModal = () => {
+      isEditClassificationModalOpen.value = false;
+    };
+    const closeDeleteClassificationModal = () => {
+      isDeleteClassificationModalOpen.value = false;
+    };
+
     return {
+      isDeleteClassificationModalOpen,
+      closeDeleteClassificationModal,
+      closeEditClassificationModal,
+      classificationDropdownOption,
+      isEditClassificationModalOpen,
+      deleteClassification,
       selectedClassification,
       displayName,
       truncate,
@@ -108,4 +207,9 @@ export default defineComponent({
   },
 });
 </script>
-<style lang="less" scoped></style>
+<style lang="less" scoped>
+.three-dots {
+  height: fit-content;
+  cursor: pointer;
+}
+</style>

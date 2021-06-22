@@ -1,6 +1,6 @@
 import { UserModule } from "~/types/vitessg";
 // const debug = process.env.NODE_ENV !== "production";
-const parse = function (value: any, fallback: any): any {
+const parse = function(value: any, fallback: any): any {
   if (typeof value === "undefined") {
     return fallback;
   }
@@ -14,21 +14,23 @@ const parse = function (value: any, fallback: any): any {
   }
 };
 
-export const getEnv = function (): any {
+export const getEnv = function(): any {
   const config = {
     DEFAULT_REQUEST_TIMEOUT: parse(
       import.meta.env.VITE_DEFAULT_REQUEST_TIMEOUT,
       30
     ),
-    DEV_API_BASE_URL: parse(import.meta.env.VITE_DEV_API_BASE_URL, "https://bots.atlan.com"),
+    DEV_API_BASE_URL: parse(
+      import.meta.env.VITE_DEV_API_BASE_URL,
+      "https://alpha.atlan.com"
+    ),
     DEFAULT_REALM: parse(import.meta.env.VITE_DEFAULT_REALM, "default"),
-    DEFAULT_CLIENT_ID: parse(import.meta.env.VITE_HOME_CLIENT_ID, "atlan-home")
+    DEFAULT_CLIENT_ID: parse(import.meta.env.VITE_HOME_CLIENT_ID, "atlan-home"),
   };
   return config;
 };
 
-
-export const getBasePath = function (): any {
+export const getBasePath = function(): any {
   const env = import.meta.env.MODE;
   const devBaseUrl = getEnv().DEV_API_BASE_URL;
   switch (env) {
@@ -39,7 +41,7 @@ export const getBasePath = function (): any {
     default:
       return `${devBaseUrl}`;
   }
-}
+};
 
 // https://github.com/antfu/vite-plugin-pwa#automatic-reload-when-new-content-available
 export const install: UserModule = ({ app }) => {

@@ -35,7 +35,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, computed } from "vue";
+import { defineComponent, ref, computed, toRaw } from "vue";
 import handleTreeExpand from "~/composables/tree/handleTreeExpand";
 import { useStore } from "~/store";
 
@@ -57,7 +57,10 @@ export default defineComponent({
   },
   setup(props, { emit }) {
     const store = useStore();
-    const treeData = props.treeData;
+    const treeData = computed(() => {
+      return props.treeData;
+    });
+    console.log(toRaw(treeData.value), "tree");
     const addClassificationIcon = ref(false);
     const hoveredClassificationKey = ref(null);
     const showAddClassificationIcon = (key) => {
@@ -77,7 +80,7 @@ export default defineComponent({
     } = handleTreeExpand(emit);
 
     return {
-      treeData,
+      treeData: toRaw(treeData),
       selectedKeys,
       expandedKeys,
       expandNode,

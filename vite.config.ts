@@ -3,20 +3,17 @@ import { defineConfig } from "vite";
 import Vue from "@vitejs/plugin-vue";
 import Pages from "vite-plugin-pages";
 import Layouts from "vite-plugin-vue-layouts";
-import { resolve } from 'path'
-import commonjs from '@rollup/plugin-commonjs';
+import { resolve } from "path";
+import commonjs from "@rollup/plugin-commonjs";
 import getAntDesignVariables from "./src/styles/antd_variables";
-
 
 import VueI18n from "@intlify/vite-plugin-vue-i18n";
 import styleImport from "vite-plugin-style-import";
 import svgLoader from "vite-svg-loader";
 
-
-import { visualizer } from 'rollup-plugin-visualizer'
+import { visualizer } from "rollup-plugin-visualizer";
 
 export default defineConfig(({ mode }) => {
-
   return {
     resolve: {
       alias: {
@@ -41,7 +38,7 @@ export default defineConfig(({ mode }) => {
       commonjsOptions: {
         //transformMixedEsModules: true,
         //defaultIsModuleExports: true
-      }
+      },
     },
     plugins: [
       //commonjs({enforce: 'pre'}),
@@ -68,17 +65,17 @@ export default defineConfig(({ mode }) => {
       svgLoader(),
     ],
     optimizeDeps: {
-      include: ["vue", "vue-router", "@vueuse/core",],
-      exclude: []
+      include: ["vue", "vue-router", "@vueuse/core"],
+      exclude: [],
     },
     server: {
       proxy: {
-        '/api': {
-          target: 'https://bots.atlan.com',
+        "/api": {
+          target: "https://alpha.atlan.com",
           changeOrigin: true,
-          ws: false
-        }
-      }
-    }
+          ws: false,
+        },
+      },
+    },
   };
 });

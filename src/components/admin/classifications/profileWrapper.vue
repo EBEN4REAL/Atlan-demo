@@ -36,7 +36,10 @@
       </div>
     </pane>
     <pane size="74" class="flex flex-col">
-      <ClassificationHeader :classification="selectedClassification" />
+      <ClassificationHeader
+        :classification="selectedClassification"
+        v-if="selectedClassification"
+      />
 
       <!-- <AssetListWrapper
         class="px-0 col-10"

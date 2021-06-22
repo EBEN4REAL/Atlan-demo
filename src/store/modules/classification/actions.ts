@@ -1,4 +1,4 @@
-import { watch } from "vue";
+import { watch, toRaw } from "vue";
 import { ActionTree, ActionContext } from "vuex";
 import { Classification } from "~/api/atlas/classification";
 import { RootState } from "~/store";
@@ -38,6 +38,10 @@ export interface Actions {
   [ActionTypes.UPDATE_CLASSIFICATION_LIST_BY_ID](
     { commit, getters }: AugmentedActionContext,
     params: any
+  ): void;
+  [ActionTypes.DELETE_CLASSIFICATION_BY_NAME](
+    { commit, getters }: AugmentedActionContext,
+    classificationName: any
   ): void;
   [ActionTypes.UPDATE_CLASSIFICATION_TREE](
     { commit }: AugmentedActionContext,
@@ -140,13 +144,42 @@ export const actions: ActionTree<State, RootState> & Actions = {
       return false;
     }
   },
-  [ActionTypes.UPDATE_CLASSIFICATION_LIST_BY_ID](
+  [ActionTypes.UPDATE_CLASSIFICATION_LIST_BY_ID]({ commit, getters }, params) {
+    const {
+      data: updateClassificationData,
+      error: updateClassificationError,
+    } = Classification.updateClassification({ cache: false, params });
+
+    watch([updateClassificationData, updateClassificationError], () => {
+      console.log(updateClassificationData, updateClassificationError);
+      if (updateClassificationData.value) {
+        const classificationObject: any = updateClassificationData;
+        const classification =
+          classificationObject &&
+          classificationObject.value.classificationDefs &&
+          classificationObject.value.classificationDefs.length &&
+          classificationObject.value.classificationDefs[0]
+            ? classificationObject.value.classificationDefs[0]
+            : {};
+
+        commit(MutationTypes.UPDATE_CLASSIFICATION_LIST_BY_ID, {
+          classification,
+        });
+        const classificationTree = getters.transformClassificationTreeData;
+        commit(MutationTypes.SET_CLASSIFICATION_TREE, {
+          tree: classificationTree,
+        });
+      } else if (updateClassificationError.value) {
+        console.log(updateClassificationError.value);
+        // throw Error(updateClassificationError.value);
+      }
+    });
+  },
+  [ActionTypes.DELETE_CLASSIFICATION_BY_NAME](
     { commit, getters },
-    classification
+    classificationName
   ) {
-    commit(MutationTypes.UPDATE_CLASSIFICATION_LIST_BY_ID, { classification });
-    const classificationTree = getters.transformClassificationTreeData;
-    commit(MutationTypes.SET_CLASSIFICATION_TREE, { tree: classificationTree });
+    Classification.archiveClassification({ cache: false, classificationName });
   },
   [ActionTypes.UPDATE_CLASSIFICATION_TREE]({ commit }, tree) {
     commit(MutationTypes.SET_CLASSIFICATION_TREE, tree);
@@ -158,7 +191,8 @@ export const actions: ActionTree<State, RootState> & Actions = {
     { commit, getters },
     searchText: string
   ) {
+    console.log(searchText, "in action");
     const tree = getters.getFilteredClassificationsBySeach(searchText);
-    commit(MutationTypes.SET_FILTERED_CLASSIFICATION_TREE, tree);
+    commit(MutationTypes.SET_FILTERED_CLASSIFICATION_TREE, { tree });
   },
 };

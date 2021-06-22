@@ -35,6 +35,7 @@ import { faUserCog } from "@fortawesome/pro-light-svg-icons/faUserCog";
 import { faClock } from "@fortawesome/pro-light-svg-icons/faClock";
 import { faUsersCog } from "@fortawesome/pro-light-svg-icons/faUsersCog";
 import { faEllipsisV } from "@fortawesome/pro-light-svg-icons/faEllipsisV";
+import { faEllipsisH } from "@fortawesome/pro-light-svg-icons/faEllipsisH";
 import { faLock } from "@fortawesome/pro-light-svg-icons/faLock";
 import { faBrowser } from "@fortawesome/pro-light-svg-icons/faBrowser";
 import { faHouseUser } from "@fortawesome/pro-light-svg-icons/faHouseUser";
@@ -53,6 +54,7 @@ import { faProjectDiagram } from "@fortawesome/pro-light-svg-icons/faProjectDiag
 import { faBolt } from "@fortawesome/pro-light-svg-icons/faBolt";
 import { faPlusCircle } from "@fortawesome/pro-light-svg-icons/faPlusCircle";
 import { faPen } from "@fortawesome/pro-light-svg-icons/faPen";
+import { faPencil } from "@fortawesome/pro-light-svg-icons/faPencil";
 import { faEnvelope } from "@fortawesome/pro-light-svg-icons/faEnvelope";
 import { faArrowCircleRight } from "@fortawesome/pro-light-svg-icons/faArrowCircleRight";
 
@@ -82,6 +84,7 @@ library.add(
   faLink,
   faQuestionCircle,
   faInfo,
+  faPencil,
   faInfoCircle,
   faChevronRight,
   faChevronLeft,
@@ -101,6 +104,7 @@ library.add(
   faUsersCog,
   faTimesCircle,
   faEllipsisV,
+  faEllipsisH,
   faLock,
   faBrowser,
   faHouseUser,

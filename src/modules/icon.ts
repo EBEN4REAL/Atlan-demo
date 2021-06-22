@@ -163,6 +163,8 @@ import { faQuoteLeft } from "@fortawesome/pro-solid-svg-icons/faQuoteLeft";
 import { faUndo } from "@fortawesome/pro-solid-svg-icons/faUndo";
 import { faRedo } from "@fortawesome/pro-solid-svg-icons/faRedo";
 import { faLink as faSolidLink} from "@fortawesome/pro-solid-svg-icons/faLink";
+import { faPencil} from "@fortawesome/pro-solid-svg-icons/faPencil";
+
 
 library.add(
   faBadgeCheck,
@@ -185,6 +187,7 @@ library.add(
   faUndo,
   faRedo,
   faSolidLink,
+  faPencil,
 );
 
 // import { far } from "@fortawesome/pro-regular-svg-icons";

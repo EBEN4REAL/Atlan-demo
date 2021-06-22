@@ -9,16 +9,15 @@
       top-0
       max-w-full
       min-w-full
-      overflow-x-auto
       editor-menu
       z-50
     "
   >
-    <a-button-group>
+    <a-button-group class="flex flex-wrap">
       <a-button
         v-for="menuItem in menuData"
         :key="menuItem.key"
-        class="border-0"
+        class="border-0 "
         :class="{
           'is-active':
             editor.isActive(`${menuItem.key}`) ||
@@ -230,7 +229,6 @@ export default defineComponent({
         key: "redo",
         helpText: "",
         icon: "fa redo",
-        border: true,
         onClick: (editor) => editor.chain().focus().redo().run(),
       },
       //table
@@ -269,6 +267,5 @@ export default defineComponent({
 }
 .editor-menu {
   @apply bg-white opacity-100 !important;
-  z-inded: 999;
 }
 </style>

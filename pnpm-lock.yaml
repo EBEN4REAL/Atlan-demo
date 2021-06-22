@@ -18,7 +18,7 @@ specifiers:
   '@tiptap/extension-document': ^2.0.0-beta.12
   '@tiptap/extension-heading': ^2.0.0-beta.14
   '@tiptap/extension-history': ^2.0.0-beta.13
-  '@tiptap/extension-link': ^2.0.0-beta.18
+  '@tiptap/extension-link': 2.0.0-beta.17
   '@tiptap/extension-paragraph': ^2.0.0-beta.15
   '@tiptap/extension-text': ^2.0.0-beta.12
   '@tiptap/extension-typography': ^2.0.0-beta.12
@@ -116,7 +116,7 @@ dependencies:
   '@tiptap/extension-document': 2.0.0-beta.12_@tiptap+core@2.0.0-beta.81
   '@tiptap/extension-heading': 2.0.0-beta.14_@tiptap+core@2.0.0-beta.81
   '@tiptap/extension-history': 2.0.0-beta.13_@tiptap+core@2.0.0-beta.81
-  '@tiptap/extension-link': 2.0.0-beta.18_@tiptap+core@2.0.0-beta.81
+  '@tiptap/extension-link': 2.0.0-beta.17_@tiptap+core@2.0.0-beta.81
   '@tiptap/extension-paragraph': 2.0.0-beta.15_@tiptap+core@2.0.0-beta.81
   '@tiptap/extension-text': 2.0.0-beta.12_@tiptap+core@2.0.0-beta.81
   '@tiptap/extension-typography': 2.0.0-beta.12_@tiptap+core@2.0.0-beta.81
@@ -2345,8 +2345,8 @@ packages:
       '@tiptap/core': 2.0.0-beta.81
     dev: false
 
-  /@tiptap/extension-link/2.0.0-beta.18_@tiptap+core@2.0.0-beta.81:
-    resolution: {integrity: sha512-i87vd82hsBCw6ROR8qjffWMsm7pd/4kwqhytq3l8zrArWLZXxC6JwknYjVNcwiWs2JFr+xJNAnzNgr0oGXguTg==}
+  /@tiptap/extension-link/2.0.0-beta.17_@tiptap+core@2.0.0-beta.81:
+    resolution: {integrity: sha512-/xvUEMRh3E651kXidTEpmlSGqdVXjtnA0KuVModmCmxMchDCpO7kTIpjzS60joCl2Nx2WgICFoJ4SO6dSTMf/w==}
     peerDependencies:
       '@tiptap/core': ^2.0.0-beta.1
     dependencies:

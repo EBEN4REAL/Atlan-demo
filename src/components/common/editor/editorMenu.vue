@@ -1,9 +1,10 @@
 <template>
   <div
-    v-if="editor"
+    v-if="editor && editable"
     class="
       mb-3
-      border
+      border-b-2
+      rounded-t 
       sticky
       top-0
       max-w-full
@@ -17,16 +18,22 @@
       <a-button
         v-for="menuItem in menuData"
         :key="menuItem.key"
-        class="border-0 border-r-2"
+        class="border-0"
         :class="{
           'is-active':
             editor.isActive(`${menuItem.key}`) ||
             editor.isActive(`heading`, { level: menuItem.level }),
+          'border-r-2': menuItem.border,
         }"
         @click="() => menuItem.onClick(editor)"
       >
-        <fa v-if="menuItem.icon" :icon="menuItem.icon" class="m-1" />
-        <span v-else>{{ menuItem.title }}</span>
+
+        <a-popover placement="bottom">
+          <fa v-if="menuItem.icon" :icon="menuItem.icon" class="m-1" />
+          <span v-else>{{ menuItem.title }}</span>
+          <template #content>bruh</template>
+
+        </a-popover>
 
         <a-modal
           v-if="menuItem.title === 'Link'"
@@ -49,6 +56,7 @@
                 focused
                 placeholder="https://"
                 @keydown.esc="showLinkModal = false"
+                @keydown.enter="() => setLink(editor)"
               />
               <a-button
                 type="primary"
@@ -75,7 +83,6 @@
 <script lang="ts">
 import { Editor } from "@tiptap/core";
 import { defineComponent, ref } from "vue";
-import { URL } from "~/api/auth/credential";
 
 interface MenuItem {
   title: string;
@@ -83,12 +90,18 @@ interface MenuItem {
   helpText: string;
   icon?: string;
   level?: number;
+  border?: boolean;
   onClick: (editor: Editor) => void;
 }
 
 export default defineComponent({
   props: {
     editor: {
+      required: true,
+    },
+    editable: {
+      type: Boolean,
+      default: false,
       required: true,
     },
   },
@@ -117,6 +130,7 @@ export default defineComponent({
         title: "H3",
         key: "heading-3",
         level: 3,
+        border: true,
         helpText: "",
         onClick: (editor) =>
           editor.chain().focus().toggleHeading({ level: 3 }).run(),
@@ -153,6 +167,7 @@ export default defineComponent({
         title: "Hr",
         key: "rule",
         helpText: "",
+        border: true,
         onClick: (editor) => editor.chain().focus().setHorizontalRule().run(),
       },
       // {
@@ -162,16 +177,6 @@ export default defineComponent({
       //   icon: "fa paragraph",
       //   onClick: (editor) => editor.chain().focus().createParagraphNear().run(),
       // },
-      {
-        title: "Link",
-        key: "link",
-        helpText: "",
-        icon: "fa link",
-        onClick: (editor) => {
-          link.value = editor.getAttributes('link').href ?? ''
-          showLinkModal.value = !showLinkModal.value;
-        },
-      },
       {
         title: "Unordered List",
         key: "bulletList",
@@ -184,7 +189,18 @@ export default defineComponent({
         key: "orderedList",
         helpText: "",
         icon: "fa list-ol",
+        border: true,
         onClick: (editor) => editor.chain().focus().toggleOrderedList().run(),
+      },
+      {
+        title: "Link",
+        key: "link",
+        helpText: "",
+        icon: "fa link",
+        onClick: (editor) => {
+          link.value = editor.getAttributes("link").href ?? "";
+          showLinkModal.value = !showLinkModal.value;
+        },
       },
       {
         title: "Blockquote",
@@ -198,6 +214,7 @@ export default defineComponent({
         key: "codeBlock",
         helpText: "",
         icon: "fa code",
+        border: true,
         onClick: (editor) =>
           editor.chain().focus().toggleCodeBlock({ language: "css" }).run(),
       },
@@ -213,6 +230,7 @@ export default defineComponent({
         key: "redo",
         helpText: "",
         icon: "fa redo",
+        border: true,
         onClick: (editor) => editor.chain().focus().redo().run(),
       },
       //table

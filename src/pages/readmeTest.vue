@@ -1,9 +1,11 @@
 <template>
   <div
-    class="flex flex-col w-full h-full bg-white"
+    class="flex container flex-col w-full h-full bg-gray-200"
   >
     <h1>readme test yo</h1>
-    <Editor />
+    <div class="readmewrapper">
+      <Editor :editable="true" />
+    </div>
   </div>
 </template>
 
@@ -20,6 +22,14 @@ export default defineComponent({
 </script>
 
 <style lang="less">
+.readmewrapper{
+  width: 70vw
+}
+.container{
+   display: flex;
+   width: 100vw !important;
+  align-items: center;
+}
 </style>
 
 <route lang="yaml">

@@ -1,8 +1,8 @@
 <template>
   <div>
-    <div class="m-2 font-bold bg-white border rounded editor">
-      <editor-menu :editor="editor" />
-      <editor-content :editor="editor" class="px-5" />
+    <div class="m-2 w-full h-full bg-white border rounded editor">
+      <editor-menu :editable="editable" :editor="editor" />
+      <editor-content :editor="editor" class="px-7 py-3 rounded-b" />
     </div>
   </div>
 </template>
@@ -21,6 +21,12 @@ export default defineComponent({
     EditorContent,
     BubbleMenu,
     EditorMenu,
+  },
+  props:{
+    editable: {
+      type: Boolean,
+      default: false,
+    }
   },
   setup() {
     const editor = useEditor({

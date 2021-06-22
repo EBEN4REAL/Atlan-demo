@@ -7,7 +7,7 @@ import keyMaps from "~/api/keyMaps/index";
 import { AsyncStateOptions, useAsyncState } from "@vueuse/core";
 
 interface useGetAPIParams {
-  cache?: boolean;
+  cache?: string;
   params?: Record<string, any>;
   body?: Ref<Record<string, any>>;
   pathVariables?: Record<string, any>;
@@ -29,7 +29,7 @@ export const useAPI = <T>(
   key: string,
   method: "GET" | "POST" | "DELETE" | "PUT",
   {
-    cache = true,
+    cache = "",
     params,
     body,
     pathVariables,
@@ -43,9 +43,9 @@ export const useAPI = <T>(
     // If using cache, make a generic swrv request
     const getKey = () => {
       if (dependantFetchingKey) {
-        return key && dependantFetchingKey.value;
+        return dependantFetchingKey.value ? `${key}_${cache}` : null;
       }
-      return key;
+      return `${key}_${cache}`;
     };
     const { data, error, mutate, isValidating } = useSWRV<T>(
       getKey,

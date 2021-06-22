@@ -52,7 +52,6 @@ export default defineComponent({
       },
     },
     statusUpdatedAt: {
-      type: Date,
       required: false,
     },
     showLabel: {

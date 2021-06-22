@@ -18,7 +18,12 @@
             <fa icon="fal times-circle"></fa>
           </div>
         </div>
-        <DynamicInput :dataType="item.type" v-if="item.isInput"></DynamicInput>
+        <DynamicInput
+          :dataType="item.type"
+          v-if="item.isInput"
+          v-model="item.operand"
+          @change="handleOperandChange(index)"
+        ></DynamicInput>
       </div>
     </template>
   </div>
@@ -26,7 +31,7 @@
     ><fa icon="fal plus"></fa
   ></a-button>
 </template>
-    
+      
 <script lang="ts">
 import { computed, defineComponent, PropType, ref } from "vue";
 
@@ -37,6 +42,7 @@ import {
   OperatorList,
 } from "~/constant/advancedAttributes";
 import { Collapse } from "~/types";
+import { Components } from "~/api/atlas/client";
 
 export default defineComponent({
   components: {
@@ -77,11 +83,12 @@ export default defineComponent({
     };
     const handleRemove = (index) => {
       list.value.splice(index, 1);
+      handleChange();
     };
 
     const handleOperatorChange = (index) => {
       let selected = list.value[index].operator;
-      console.log(selected);
+
       if (selected?.length > 0) {
         const found = options.value.find((op) => op.value === selected[0]);
         list.value[index].type = found?.type;
@@ -89,8 +96,73 @@ export default defineComponent({
           (op) => op.value === selected[1]
         );
         list.value[index].isInput = foundOperator?.isInput;
+        if (!list.value[index].isInput) {
+          handleChange();
+        }
       }
     };
+
+    const handleOperandChange = (index) => {
+      console.log(list.value[index]);
+      let selected = list.value[index].operand;
+      console.log(selected);
+      handleChange();
+    };
+
+    const handleChange = () => {
+      let criterion: Components.Schemas.FilterCriteria[] = [];
+
+      list.value.forEach((element) => {
+        console.log(element);
+        if (!element.isInput) {
+          criterion.push({
+            attributeName: element.operator[0],
+            operator: element.operator[1],
+          });
+        } else {
+          criterion.push({
+            attributeName: element.operator[0],
+            operator: element.operator[1],
+            attributeValue: element.operand,
+          });
+        }
+      });
+
+      emit("change", {
+        id: props.item.id,
+        payload: {
+          condition: "AND",
+          criterion: criterion,
+        } as Components.Schemas.FilterCriteria,
+      });
+
+      //   let criterion: Components.Schemas.FilterCriteria[] = [];
+
+      //   if (userValue.value) {
+      //     criterion.push({
+      //       attributeName: "ownerUsers",
+      //       attributeValue: userValue.value,
+      //       operator: "contains",
+      //     });
+      //   }
+      //   if (groupValue.value) {
+      //     criterion.push({
+      //       attributeName: "ownerGroups",
+      //       attributeValue: groupValue.value,
+      //       operator: "contains",
+      //     });
+      //   }
+      //   emit("change", {
+      //     id: props.item.id,
+      //     payload: {
+      //       condition: "OR",
+      //       criterion: criterion,
+      //     } as Components.Schemas.FilterCriteria,
+      //   });
+    };
+
+    // let inputMap: { [key: number]: any } = ref({});
+
     // const attributeList = computed(() => {
     //   let temp = [];
     //   AdvancedAttributeList.forEach((item) => {
@@ -116,6 +188,7 @@ export default defineComponent({
       handleAdd,
       handleRemove,
       handleOperatorChange,
+      handleOperandChange,
     };
   },
 });

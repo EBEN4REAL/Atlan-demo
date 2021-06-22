@@ -29,7 +29,7 @@ const Basic = (
 
 
 const BasicV2 = (
-  cache: boolean,
+  cache?: string,
   body?: Ref<SearchParameters>,
   options?: Ref<IConfig & AxiosRequestConfig>,
   dependantFetchingKey?: Ref<any>

@@ -2,6 +2,13 @@
 
 
 import number from "~/assets/images/dataType/number.svg";
+import float1 from "~/assets/images/dataType/float1.svg";
+import boolean from "~/assets/images/dataType/boolean.svg";
+import string from "~/assets/images/dataType/string.svg";
+import date from "~/assets/images/dataType/date.svg";
+import array from "~/assets/images/dataType/array.svg";
+import struct from "~/assets/images/dataType/struct.svg";
+import geography from "~/assets/images/dataType/geography.svg";
 
 export const dataTypeList = [
   {
@@ -24,12 +31,6 @@ export const dataTypeList = [
     image: number,
   },
   {
-    id: "integer",
-    label: "Integer",
-    type: ["INT", "INTEGER", "BIGINT", "SMALLINT"],
-    image: number,
-  },
-  {
     id: "decimal",
     label: "Decimal",
     type: [
@@ -42,7 +43,7 @@ export const dataTypeList = [
       "DOUBLE PRECISION",
       "REAL",
     ],
-    image: number,
+    image: float1,
   },
   {
     id: "text",
@@ -56,13 +57,13 @@ export const dataTypeList = [
       "BINARY",
       "VARBINARY",
     ],
-    image: number,
+    image: string,
   },
   {
     id: "boolean",
     label: "Boolean",
     type: ["BOOLEAN"],
-    image: number,
+    image: boolean,
   },
   {
     id: "date",
@@ -74,25 +75,28 @@ export const dataTypeList = [
       "TIMESTAMP_LTZ",
       "TIMESTAMP_NTZ",
       "IMESTAMP_TZ",
+      "TIMESTAMPLTZ",
+      "TIMESTAMPNTZ",
+      "TIMESTAMPTZ",
     ],
-    image: number,
+    image: date,
   },
   {
     id: "array",
     label: "Array",
     type: ["ARRAY"],
-    image: number,
+    image: array,
   },
   {
     id: "object",
     label: "Object",
     type: ["VARIANT", "OBJECT"],
-    image: number,
+    image: struct,
   },
   {
     id: "geography",
     label: "Geography",
     type: ["GEOGRAPHY", "OBJECT"],
-    image: number,
+    image: geography,
   },
 ];

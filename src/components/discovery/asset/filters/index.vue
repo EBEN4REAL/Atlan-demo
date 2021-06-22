@@ -34,7 +34,9 @@ export default defineComponent({
   components: {
     Status: defineAsyncComponent(() => import("@common/facets/status.vue")),
     Owners: defineAsyncComponent(() => import("@common/facets/owners.vue")),
-    Advanced: defineAsyncComponent(() => import("@common/facets/advanced.vue")),
+    Advanced: defineAsyncComponent(
+      () => import("@common/facets/advanced/index.vue")
+    ),
   },
   props: {},
   data() {

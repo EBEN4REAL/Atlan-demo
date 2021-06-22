@@ -57,6 +57,7 @@ import EmptyView from "@common/empty/index.vue";
 import ErrorView from "@common/error/index.vue";
 import LoadingView from "@common/loaders/section.vue";
 import { useRouter } from "vue-router";
+import { CONNECTION_FETCH_LIST } from "~/constant/cache";
 
 export default defineComponent({
   components: { EmptyView, ErrorView, LoadingView },
@@ -73,9 +74,9 @@ export default defineComponent({
     return {};
   },
   setup(props, { emit }) {
-    let now = ref(true);
-    const { treeData, query, error, isLoading, isError } =
-      fetchConnectionList(now);
+    const { treeData, query, error, isLoading, isError } = fetchConnectionList(
+      CONNECTION_FETCH_LIST
+    );
 
     debouncedWatch(
       () => props.searchText,

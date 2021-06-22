@@ -14,7 +14,10 @@
     </div>
 
     <LoadingView v-else-if="isLoading"></LoadingView>
-    <div class="flex items-center px-6 py-4 space-x-3 align-middle" v-else>
+    <div
+      class="grid items-center grid-cols-12 gap-2 px-6 py-4 align-middle"
+      v-else
+    >
       <template v-for="item in list" :key="item.guid">
         <ItemView :item="item" @click="handleSelect(item)"></ItemView>
       </template>
@@ -37,6 +40,7 @@ import { Components } from "~/api/atlas/client";
 import { useRoute, useRouter } from "vue-router";
 import { useDebounceFn } from "@vueuse/core";
 import { BotsType } from "~/types/atlas/bots";
+import { BOTS_FETCH_LIST } from "~/constant/cache";
 
 export default defineComponent({
   components: {
@@ -55,7 +59,7 @@ export default defineComponent({
     };
 
     const { list, isError, isLoading, query, error } = fetchBotsList(
-      true,
+      BOTS_FETCH_LIST,
       now,
       entityFilters
     );

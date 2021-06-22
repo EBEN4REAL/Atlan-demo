@@ -3,20 +3,20 @@ import { computed, ComputedRef, Ref, ref, watch } from 'vue';
 import { SearchParameters } from '~/types/atlas/attributes';
 
 import { SearchBasic } from '~/api/atlas/searchbasic';
-import { BaseAttributes, BotsAttributes } from '~/constant/projection';
+import { BaseAttributes, BotsAttributes, ColumnAttributes } from '~/constant/projection';
 import axios, { CancelTokenSource } from 'axios';
 
 import swrvState from '../utils/swrvState';
 import { Components } from '~/api/atlas/client';
-import { ConnectionType } from '~/types/atlas/connection';
 import { BotsType } from '~/types/atlas/bots';
+import { dataTypeList } from '~/constant/datatype';
 
 
 
-export default function fetchBotsList(cache?: string, dependentKey?: Ref<any>, paramEntityFilters?: Components.Schemas.FilterCriteria) {
+export default function fetchColumnList(cache?: string, dependentKey?: Ref<any>, paramEntityFilters?: Components.Schemas.FilterCriteria, aggregationAttributes?: string[], sortBy?: string, sortOrder?: string) {
+
 
     let cancelTokenSource: Ref<CancelTokenSource> = ref(axios.CancelToken.source());
-
     let entityFilters: Components.Schemas.FilterCriteria = {};
 
     if (paramEntityFilters) {
@@ -32,30 +32,32 @@ export default function fetchBotsList(cache?: string, dependentKey?: Ref<any>, p
     }
 
     const body: Ref<SearchParameters> = ref({
-        typeName: "Bot",
+        typeName: "Column",
         excludeDeletedEntities: true,
         includeClassificationAttributes: false,
         includeSubClassifications: false,
         includeSubTypes: false,
-        limit: 100,
+        limit: 20,
         offset: 0,
-        attributes: [...BaseAttributes, ...BotsAttributes],
+        sortBy: sortBy,
+        sortOrder: sortOrder,
+        attributes: [...BaseAttributes, ...ColumnAttributes],
         entityFilters: {
             ...entityFilters,
             criterion: entityFilters.criterion
         },
-        aggregationAttributes: [],
+        aggregationAttributes: aggregationAttributes
     });
     let options = ref({
         cancelToken: cancelTokenSource?.value.token,
         revalidateOnFocus: false,
         dedupingInterval: 1,
-        immediate: false,
+        immediate: dependentKey?.value,
     });
     const { data, mutate, isValidating, error } = SearchBasic.BasicV2(cache, body, options, dependentKey);
     const { state, STATES } = swrvState(data, error, isValidating);
 
-    const list: Ref<BotsType[]> = ref([]);
+    const list: Ref<any[]> = ref([]);
     watch(data, () => {
         if (body?.value?.offset > 0) {
             list.value = list.value.concat(data?.value?.entities);
@@ -69,10 +71,10 @@ export default function fetchBotsList(cache?: string, dependentKey?: Ref<any>, p
     });
 
     const listCount: ComputedRef<any> = computed(() => {
-        return list.value.length;
+        return list.value?.length;
     });
     const limit: ComputedRef<any> = computed(() => {
-        return body.value.limit;
+        return body.value?.limit;
     });
     const offset: ComputedRef<any> = computed(() => {
         return body.value.offset;
@@ -84,12 +86,65 @@ export default function fetchBotsList(cache?: string, dependentKey?: Ref<any>, p
         return data?.value?.aggregations;
     });
 
+    const aggrgeationsArray = (val: string) => {
+        let temp: { id: string, value: any }[] = [];
+        if (aggregations?.value) {
+            Object.keys(aggregations?.value[val]).forEach((key) => {
+                temp.push({
+                    id: key,
+                    value: aggregations?.value[val][key]
+                })
+            });
+        }
+        temp.sort((a, b) => (a.value < b.value) ? 1 : ((b.value < a.value) ? -1 : 0))
+        return temp;
+    };
+    const aggrgeationsSum = (val: string) => {
+        let sum = 0;
+        aggrgeationsArray(val).forEach((element) => {
+            sum += element.value;
+        });
+        return sum;
+    };
+
+
+    const getDataTypeImage = (dataType: any) => {
+        const found = dataTypeList.find(item => {
+            return item.type.includes(dataType);
+        });
+        return found?.image;
+    };
+
+
+    const dataTypeAggregationList = (list: any) => {
+        let temp = [];
+        list.forEach(element => {
+
+            console.log(element);
+            const found = dataTypeList.find(item => {
+                return item.type.includes(element.id.toUpperCase());
+            });
+            if (found) {
+                temp.push({
+                    ...found,
+                    count: element.value,
+                    label: element.id,
+                })
+            }
+        });
+        return temp;
+    };
+
+
     const refresh = () => {
         if ([STATES.PENDING].includes(state.value) || [STATES.VALIDATING].includes(state.value)) {
             cancelTokenSource.value.cancel();
             cancelTokenSource.value = axios.CancelToken.source();
             options.value.cancelToken = cancelTokenSource.value.token;
         }
+
+        console.log("refresh");
+
         mutate();
     };
 
@@ -100,9 +155,9 @@ export default function fetchBotsList(cache?: string, dependentKey?: Ref<any>, p
         return false;
     });
 
-    const loadMore = (limit: number) => {
+    const loadMore = () => {
         if (isLoadMore.value) {
-            body.value.offset += limit;
+            body.value.offset += body.value.limit;
         }
         refresh();
     };
@@ -113,9 +168,10 @@ export default function fetchBotsList(cache?: string, dependentKey?: Ref<any>, p
         refresh();
     };
 
-
     const filter = (filters: Components.Schemas.FilterCriteria) => {
-        body.value.entityFilters.criterion = filters;
+        body.value.entityFilters = {
+            ...filters
+        }
         refresh();
     };
 
@@ -135,9 +191,9 @@ export default function fetchBotsList(cache?: string, dependentKey?: Ref<any>, p
 
 
     return {
-        data,
         list,
         listCount,
+        body,
         mutate,
         isLoadMore,
         loadMore,
@@ -150,6 +206,10 @@ export default function fetchBotsList(cache?: string, dependentKey?: Ref<any>, p
         offset,
         totalCount,
         aggregations,
+        aggrgeationsArray,
+        aggrgeationsSum,
+        dataTypeAggregationList,
         refresh,
+        getDataTypeImage
     }
 }

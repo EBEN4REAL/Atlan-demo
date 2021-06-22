@@ -111,6 +111,7 @@ import Preferences from "@/discovery/asset/preference/index.vue";
 import { useDebounceFn } from "@vueuse/core";
 import fetchAssetDiscover from "~/composables/asset/fetchAssetDiscover";
 import useDiscoveryPreferences from "~/composables/preference/useDiscoveryPreference";
+import { DISCOVERY_FETCH_LIST } from "~/constant/cache";
 
 export default defineComponent({
   name: "HelloWorld",
@@ -150,7 +151,7 @@ export default defineComponent({
       totalCount,
       changeAssetType,
       assetTypeList,
-    } = fetchAssetDiscover(true, immediate);
+    } = fetchAssetDiscover(DISCOVERY_FETCH_LIST, immediate);
 
     const handleSearchChange = useDebounceFn((val) => {
       query(val.target.value);

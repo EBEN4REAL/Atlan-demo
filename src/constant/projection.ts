@@ -65,7 +65,11 @@ export const JobsAttributes = [
 
 export const ColumnAttributes = [
   "dataType",
-  "tableQualifiedName"
+  "tableQualifiedName",
+  "isPrimary",
+  "isClustered",
+  "isPartition",
+  "isIndexed"
 ];
 
 export const SavedSearchAttribute = [

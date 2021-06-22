@@ -6,8 +6,8 @@
     </div>
 
     <div class="grid grid-cols-12 gap-6 px-6">
-      <ConnectionDistribution class="col-span-8"></ConnectionDistribution>
-      <CrudDistribution class="col-span-4"></CrudDistribution>
+      <ConnectionDistribution class="col-span-6"></ConnectionDistribution>
+      <CrudDistribution class="col-span-6"></CrudDistribution>
     </div>
 
     <!-- <div class="grid grid-cols-12 gap-6 px-6">

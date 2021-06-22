@@ -12,7 +12,9 @@
       ></StatusView>
     </div>
     <div class="flex w-full h-full">
-      <div class="flex flex-col p-6 bg-white border-r border-gray-200">
+      <div
+        class="flex flex-col hidden p-6 bg-white border-r border-gray-200  sm:block"
+      >
         <p
           class="mb-2 text-xs tracking-wide text-gray-500 uppercase cursor-pointer "
           @click="handleBack"

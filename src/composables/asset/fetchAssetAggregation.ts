@@ -11,16 +11,27 @@ import axios, { CancelTokenSource } from 'axios';
 
 import swrvState from '../utils/swrvState';
 import { Components } from '~/api/atlas/client';
+import { SourceList } from '~/constant/source';
+import { AssetTypeList } from '~/constant/assetType';
 
 
-export default function fetchAssetAggregation(assetType: string, aggregationAttributes: string[], cache?: string, dependentKey?: Ref<any>) {
+export default function fetchAssetAggregation(assetType: string, aggregationAttributes: string[], paramEntityFilters?: Components.Schemas.FilterCriteria, cache?: string, dependentKey?: Ref<any>) {
 
     let cancelTokenSource: Ref<CancelTokenSource> = ref(axios.CancelToken.source());
 
-    let entityFilters: Components.Schemas.FilterCriteria = {
-        condition: "AND" as Components.Schemas.Condition,
-        criterion: []
-    };
+
+    let entityFilters: Components.Schemas.FilterCriteria = {};
+    if (paramEntityFilters) {
+        entityFilters = {
+            ...paramEntityFilters,
+            criterion: paramEntityFilters.criterion
+        }
+    } else {
+        entityFilters = {
+            condition: "AND" as Components.Schemas.Condition,
+            criterion: []
+        }
+    }
 
     const body: Ref<SearchParameters> = ref({
         typeName: assetType,
@@ -65,7 +76,7 @@ export default function fetchAssetAggregation(assetType: string, aggregationAttr
         refresh();
     };
 
-    const aggrgeationsArray = (val: string) => {
+    const aggregationArray = (val: string) => {
         let temp: { id: string, value: any }[] = [];
         if (aggregations?.value) {
             Object.keys(aggregations?.value[val]).forEach((key) => {
@@ -78,9 +89,9 @@ export default function fetchAssetAggregation(assetType: string, aggregationAttr
         temp.sort((a, b) => (a.value < b.value) ? 1 : ((b.value < a.value) ? -1 : 0))
         return temp;
     };
-    const aggrgeationsSum = (val: string) => {
+    const aggregationSum = (val: string) => {
         let sum = 0;
-        aggrgeationsArray(val).forEach((element) => {
+        aggregationArray(val).forEach((element) => {
             sum += element.value;
         });
         return sum;
@@ -101,6 +112,14 @@ export default function fetchAssetAggregation(assetType: string, aggregationAttr
         return false;
     });
 
+    const source = (integratioName: string) => {
+        return SourceList.find((item) => item.id == integratioName);
+    };
+
+    const assetTypeObject = (type: string) => {
+        return AssetTypeList.find((item) => item.id == type);
+    };
+
 
     return {
         data,
@@ -111,7 +130,9 @@ export default function fetchAssetAggregation(assetType: string, aggregationAttr
         isLoading,
         error,
         refresh,
-        aggrgeationsArray,
-        aggrgeationsSum
+        aggregationArray,
+        aggregationSum,
+        source,
+        assetTypeObject
     }
 }

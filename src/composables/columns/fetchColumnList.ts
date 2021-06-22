@@ -86,7 +86,7 @@ export default function fetchColumnList(cache?: string, dependentKey?: Ref<any>,
         return data?.value?.aggregations;
     });
 
-    const aggrgeationsArray = (val: string) => {
+    const aggregationArray = (val: string) => {
         let temp: { id: string, value: any }[] = [];
         if (aggregations?.value) {
             Object.keys(aggregations?.value[val]).forEach((key) => {
@@ -99,9 +99,9 @@ export default function fetchColumnList(cache?: string, dependentKey?: Ref<any>,
         temp.sort((a, b) => (a.value < b.value) ? 1 : ((b.value < a.value) ? -1 : 0))
         return temp;
     };
-    const aggrgeationsSum = (val: string) => {
+    const aggregationSum = (val: string) => {
         let sum = 0;
-        aggrgeationsArray(val).forEach((element) => {
+        aggregationArray(val).forEach((element) => {
             sum += element.value;
         });
         return sum;
@@ -206,8 +206,8 @@ export default function fetchColumnList(cache?: string, dependentKey?: Ref<any>,
         offset,
         totalCount,
         aggregations,
-        aggrgeationsArray,
-        aggrgeationsSum,
+        aggregationArray,
+        aggregationSum,
         dataTypeAggregationList,
         refresh,
         getDataTypeImage

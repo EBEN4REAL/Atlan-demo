@@ -2,15 +2,15 @@
   <div class="grid h-full grid-cols-12 p-6 gap-x-12">
     <div class="col-span-12 sm:col-span-8">
       <div class="flex items-center w-full align-middle">
-        <img :src="displayNameHTML" class="w-auto h-16 mr-2" />
         <div class="flex flex-col w-full">
-          <p class="mb-1 font-bold tracking-tight text-md">
-            Good morning, Nitya
+          <p class="mb-2 text-xl font-bold tracking-tight text-gray-900">
+            Welcome Home, {{ fullName }}
           </p>
-          <a-input-search
-            placeholder="Search...."
-            size="large"
-          ></a-input-search>
+          <a-input-search placeholder="Search all your assets.." size="large">
+            <template #prefix>
+              <img :src="displayNameHTML" class="w-auto h-8 mr-3" />
+            </template>
+          </a-input-search>
         </div>
       </div>
     </div>

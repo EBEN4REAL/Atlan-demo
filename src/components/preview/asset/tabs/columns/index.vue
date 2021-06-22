@@ -4,7 +4,8 @@
     <div class="flex flex-wrap gap-1 mx-3 mb-2">
       <template
         v-for="item in dataTypeAggregationList(
-          aggrgeationsArray(dataTypeAggregationAttribute)
+          aggregationArray,
+          dataTypeAggregationAttribute
         )"
         :key="item.id"
       >
@@ -141,7 +142,7 @@ export default defineComponent({
     });
     const {
       list,
-      aggrgeationsArray,
+      aggregationsArray,
       dataTypeAggregationList,
       getDataTypeImage,
       loadMore,
@@ -269,7 +270,7 @@ export default defineComponent({
       specialList,
       placeholder,
       columnCount,
-      aggrgeationsArray,
+      aggregationArray,
       dataTypeAggregationAttribute,
       dataTypeAggregationList,
       getDataTypeImage,

@@ -18,7 +18,7 @@ import swrvState from '../utils/swrvState';
 import { Components } from '~/api/atlas/client';
 
 
-export default function fetchAssetDiscover(cache?: boolean, dependentKey?: Ref<any>, assetTypeAggregation: string) {
+export default function fetchAssetDiscover(cache?: string, dependentKey?: Ref<any>) {
 
     let cancelTokenSource: Ref<CancelTokenSource> = ref(axios.CancelToken.source());
 
@@ -27,10 +27,8 @@ export default function fetchAssetDiscover(cache?: boolean, dependentKey?: Ref<a
         criterion: []
     };
 
-
-
     const body: Ref<SearchParameters> = ref({
-        typeName: "Table,View,Column",
+        typeName: "Table,Column,Views",
         excludeDeletedEntities: true,
         includeClassificationAttributes: true,
         includeSubClassifications: true,
@@ -50,9 +48,8 @@ export default function fetchAssetDiscover(cache?: boolean, dependentKey?: Ref<a
         dedupingInterval: 1,
         immediate: false,
     });
-    const { data, mutate, isValidating, error } = SearchBasic.BasicV2(true, body, options, dependentKey);
+    const { data, mutate, isValidating, error } = SearchBasic.BasicV2(cache, body, options, dependentKey);
     const { state, STATES } = swrvState(data, error, isValidating);
-
 
 
     //Aggregate Setup
@@ -72,7 +69,6 @@ export default function fetchAssetDiscover(cache?: boolean, dependentKey?: Ref<a
     const { state: AggregationState, STATES: AggergationSTATES } = swrvState(data, error, isValidating);
 
 
-
     const list = ref([]);
     watch(data, () => {
         if (body?.value?.offset > 0) {
@@ -84,7 +80,6 @@ export default function fetchAssetDiscover(cache?: boolean, dependentKey?: Ref<a
                 list.value = [];
             }
         }
-        console.log("refresh");
         refreshAggregation();
     });
 

@@ -5,6 +5,9 @@ import Schema from "~/assets/images/assetType/Schema.svg";
 import View from "~/assets/images/assetType/View.svg";
 import { UserModule } from "~/types/vitessg";
 
+
+import number from "~/assets/images/dataType/number.svg";
+
 // import Snowflake from "~/assets/images/source/snowflake.png";
 // import tableau from "~/assets/images/source/tableau.png";
 // import redshift from "~/assets/images/source/redshift.png";
@@ -15,4 +18,6 @@ export const install: UserModule = ({ app }) => {
   app.component("Database", Database);
   app.component("Schema", Schema);
   app.component("View", View);
+
+  // app.component("number", number);
 };

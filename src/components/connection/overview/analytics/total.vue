@@ -85,22 +85,15 @@ export default defineComponent({
       },
       aggregationAttributes: ["__typeName.keyword"],
     });
-    const {
-      totalCount,
-      listCount,
-      assetTypeList,
-      assetDistributionSum,
-      state,
-      STATES,
-    } = fetchAssetDiscover(now, defaultBody);
+    const { totalCount, listCount, assetTypeList } = fetchAssetDiscover(
+      now,
+      defaultBody
+    );
 
     return {
       totalCount,
       listCount,
       assetTypeList,
-      assetDistributionSum,
-      state,
-      STATES,
     };
   },
   mounted() {},

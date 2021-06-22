@@ -25,7 +25,7 @@
         ></template> </a-tab-pane
     ></a-tabs>
   </div>
-  <div class="flex-grow py-3 overflow-y-auto">
+  <div class="flex-grow overflow-y-auto">
     <component :is="activeKey" :item="item" :key="item.guid"></component>
   </div>
 </template>

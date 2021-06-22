@@ -1,58 +1,78 @@
 <template>
-  <div class="flex justify-between my-3">
-    <div class="flex justify-between min-w-full">
-      <a-input-search
-        placeholder="Search Members"
-        class="mr-1"
-        v-model:value="searchText"
-        @change="handleSearch"
-        :allowClear="true"
-      ></a-input-search>
-      <div class="flex justify-end">
-        <a-button
-          type="primary"
-          size="large"
-          ghost
-          @click="toggleUserInvitationList"
-        >{{ listType === "users" ? "View Pending Invitations" : "View Active Users" }}</a-button>
-        <a-button
-          v-if="true||IS_SMTP_CONFIGURED"
-          type="primary"
-          class="ml-4"
-          size="large"
-          @click="handleInviteUsers"
-        >Invite User</a-button>
-      </div>
+  <div class="flex justify-between my-3 gap-x-5">
+    <a-input-search
+      placeholder="Search Members"
+      class="mr-1"
+      size="default"
+      v-model:value="searchText"
+      @change="handleSearch"
+      :allowClear="true"
+    ></a-input-search>
+    <div class="flex justify-end">
+      <a-button
+        type="primary"
+        size="default"
+        ghost
+        @click="toggleUserInvitationList"
+        >{{
+          listType === "users"
+            ? "View Pending Invitations"
+            : "View Active Users"
+        }}</a-button
+      >
+      <a-button
+        v-if="true || IS_SMTP_CONFIGURED"
+        type="primary"
+        class="ml-4"
+        size="default"
+        @click="handleInviteUsers"
+        >Add User</a-button
+      >
     </div>
   </div>
   <!-- Table for users-->
   <a-table
-    v-if="userList && userList.length && listType==='users'"
+    v-if="userList && userList.length && listType === 'users'"
     :dataSource="userList"
     :columns="columns"
-    :rowKey="(user)=>user.id"
+    :rowKey="(user) => user.id"
     :pagination="pagination"
     @change="handleTableChange"
-    :loading="[STATES.PENDING].includes(state) ||
-          [STATES.VALIDATING].includes(state)"
+    :scroll="{ x: '100%', y: 300 }"
+    :loading="
+      [STATES.PENDING].includes(state) || [STATES.VALIDATING].includes(state)
+    "
   >
-    <template #name="{text:user}">
-      <div class="flex cursor-pointer" @click="() => {showUserPreviewDrawer(user)}">
+    <template #name="{ text: user }">
+      <div
+        class="flex items-center align-middle cursor-pointer"
+        @click="
+          () => {
+            showUserPreviewDrawer(user);
+          }
+        "
+      >
+        <a-avatar
+          v-if="user.name || user.uername || user.email"
+          shape="square"
+          class="mr-2 border-2 rounded-lg  ant-tag-blue text-primary-500 avatars border-primary-300"
+          :size="40"
+          :src="imageUrl(user.username)"
+          >{{
+            getNameInitials(
+              getNameInTitleCase(user.name || user.uername || user.email)
+            )
+          }}</a-avatar
+        >
+
         <div>
-          <a-avatar
-            v-if="user.name||user.uername||user.email"
-            shape="circle"
-            class="mr-1 ant-tag-blue text-primary-500 avatars"
-          >{{getNameInitials(getNameInTitleCase(user.name||user.uername||user.email)) }}</a-avatar>
-        </div>
-        <div>
-          <span class>{{ user.name || '-'}}</span>
-          <p>@{{ user.username ||'-'}}</p>
+          <span class="text-gray-900">{{ nameCase(user.name) || "-" }}</span>
+          <p class="mb-0 text-gray-500">@{{ user.username || "-" }}</p>
         </div>
       </div>
     </template>
 
-    <template #actions="{text:user}">
+    <template #actions="{ text: user }">
       <a-dropdown :trigger="['click']">
         <a class="ant-dropdown-link" @click="(e) => e.preventDefault()">
           <fa icon="fal cog" />
@@ -60,18 +80,18 @@
         <template #overlay>
           <a-menu>
             <a-menu-item key="0" @click="showEnableDisableConfirm(user)">
-              {{
-              user.enabled ? "Disable User" : "Enable User"
-              }}
+              {{ user.enabled ? "Disable User" : "Enable User" }}
             </a-menu-item>
-            <a-menu-item key="1" @click="handleChangeRole(user)">Change User Role</a-menu-item>
+            <a-menu-item key="1" @click="handleChangeRole(user)"
+              >Change User Role</a-menu-item
+            >
           </a-menu>
         </template>
       </a-dropdown>
     </template>
   </a-table>
   <InvitationListTable
-    v-if="listType==='invitations'"
+    v-if="listType === 'invitations'"
     :searchText="searchText"
     @showPreview="showUserPreviewDrawer"
     @changeRole="handleChangeRole"
@@ -101,7 +121,10 @@
     :footer="null"
     @cancel="closeInviteUserModal"
   >
-    <InviteUsers @close="closeInviteUserModal" @handleInviteSent="handleInviteSent" />
+    <InviteUsers
+      @close="closeInviteUserModal"
+      @handleInviteSent="handleInviteSent"
+    />
   </a-modal>
 </template>
 <script lang="ts">
@@ -317,6 +340,25 @@ export default defineComponent({
         invitationComponentRef.value.getInvitationList();
       closeInviteUserModal();
     };
+
+    const nameCase = (name) => {
+      if (name) {
+        let nameCaseArray = [];
+        let split = name.split(" ");
+        split.forEach((element) => {
+          nameCaseArray.push(
+            element.charAt(0).toUpperCase() + element.substr(1).toLowerCase()
+          );
+        });
+        return nameCaseArray.join(" ");
+      }
+      return name;
+    };
+
+    const imageUrl = (username: any) => {
+      return `http://localhost:3333/api/auth/tenants/default/avatars/${username}`;
+    };
+
     return {
       searchText,
       handleSearch,
@@ -345,6 +387,8 @@ export default defineComponent({
       handleInviteUsers,
       handleInviteSent,
       reloadTable,
+      nameCase,
+      imageUrl,
     };
   },
   data() {

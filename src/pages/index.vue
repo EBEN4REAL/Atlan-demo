@@ -37,7 +37,7 @@
               shape="square"
               :size="56"
               class="hidden border-2 rounded-lg border-primary-300 sm:block"
-              src="http://localhost:3333/api/auth/tenants/default/avatars/nitya"
+              :src="imageUrl"
             />
           </a-upload>
 
@@ -140,6 +140,10 @@ export default defineComponent({
       } ${lastName.charAt(0).toUpperCase() + lastName.substr(1).toLowerCase()}`;
     });
 
+    const imageUrl = computed(() => {
+      return `http://localhost:3333/api/auth/tenants/default/avatars/${username}`;
+    });
+
     let uploadStarted = ref(false);
     const { upload, isReady } = uploadAvatar();
 
@@ -160,6 +164,7 @@ export default defineComponent({
       handleUploadAvatar,
       isReady,
       uploadStarted,
+      imageUrl,
     };
   },
 });

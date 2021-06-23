@@ -8,10 +8,7 @@ export default function updateAssetStatus(item: any) {
     const { username } = whoami();
     const assetStatus: { [key: string]: any } = ref({});
     const isCompleted = ref(false);
-
-
     const isLoading = ref(false);
-
     const body: { [key: string]: any } = ref({});
 
     const statusId: WritableComputedRef<string> = computed({
@@ -59,19 +56,17 @@ export default function updateAssetStatus(item: any) {
     };
 
     const update = () => {
-        // isCompleted.value = true;
         isLoading.value = true;
-
         execute();
     };
 
     const { state, execute, isReady, error } = updateAsset(body, { immediate: false, resetOnExecute: true });
 
-    watch(state, () => {
+    watch(isReady, () => {
 
-        if (!error.value) {
+        if (!error.value && state && isReady.value) {
             isLoading.value = false;
-            // isCompleted.value = false;
+            isCompleted.value = false;
             item.attributes.assetStatus = assetStatus.value.id;
             item.attributes.assetStatusMessage = assetStatus.value.message;
             item.attributes.assetStatusUpdatedAt = Date.now();

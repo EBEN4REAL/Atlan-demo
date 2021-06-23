@@ -1,16 +1,6 @@
 <template>
   <div class="my-3 mr-5">
-    <div v-if="!selectedUser.group_count" class="flex flex-col items-center justify-center">
-      <div class="text-center">
-        <p class="text-lg">This user is not part of any group.</p>
-        <div class="mt-4">
-          <a-button size="large" type="primary" ghost @click="handleAddToGroup">
-            <fa icon="fal plus" class="mr-2"></fa>Add to group
-          </a-button>
-        </div>
-      </div>
-    </div>
-    <div v-else>
+    <div>
       <div class="flex flex-row justify-between">
         <div>
           <a-input-search
@@ -28,13 +18,30 @@
         </div>
       </div>
       <div
+        v-if="!selectedUser.group_count"
+        class="flex flex-col items-center justify-center"
+      >
+        <div class="text-center">
+          <p class="text-lg">This user is not part of any group.</p>
+        </div>
+      </div>
+      <div
         class="flex flex-col items-center h-full align-middle bg-white"
         style="min-height: 200px"
-        v-if="[STATES.ERROR, STATES.STALE_IF_ERROR].includes(state)"
+        v-else-if="[STATES.ERROR, STATES.STALE_IF_ERROR].includes(state)"
       >
         <ErrorView></ErrorView>
         <div class="mt-3">
-          <a-button size="large" type="primary" ghost @click="()=>{getUserGroupList()}">
+          <a-button
+            size="large"
+            type="primary"
+            ghost
+            @click="
+              () => {
+                getUserGroupList();
+              }
+            "
+          >
             <fa icon="fal sync"></fa>Try again
           </a-button>
         </div>
@@ -47,7 +54,8 @@
                 shape="circle"
                 class="mr-1 ant-tag-blue text-primary-500 avatars"
                 :size="40"
-              >{{ getNameInitials(getNameInTitleCase(group.name)) }}</a-avatar>
+                >{{ getNameInitials(getNameInTitleCase(group.name)) }}</a-avatar
+              >
               <div class="ml-2">
                 <div>{{ group.name }}</div>
                 <div>@{{ group.alias }}</div>
@@ -56,7 +64,11 @@
             </div>
             <a-popover trigger="click" placement="bottom">
               <template #content>
-                <span class="text-red-500" @click="() =>removeUserFromGroup(group)">Remove User</span>
+                <span
+                  class="text-red-500"
+                  @click="() => removeUserFromGroup(group)"
+                  >Remove User</span
+                >
               </template>
               <fa icon="fal cog"></fa>
             </a-popover>
@@ -64,8 +76,10 @@
         </div>
         <div
           class="flex justify-center"
-          v-if="[STATES.PENDING].includes(state) ||
-          [STATES.VALIDATING].includes(state)"
+          v-if="
+            [STATES.PENDING].includes(state) ||
+            [STATES.VALIDATING].includes(state)
+          "
         >
           <a-spin></a-spin>
         </div>
@@ -81,7 +95,10 @@
       :destroy-on-close="true"
       @cancel="closeAddToGroupModal"
     >
-      <AddToGroup @addUserToGroups="addUserToGroups" :addToGroupLoading="addToGroupLoading" />
+      <AddToGroup
+        @addUserToGroups="addUserToGroups"
+        :addToGroupLoading="addToGroupLoading"
+      />
     </a-modal>
   </div>
 </template>

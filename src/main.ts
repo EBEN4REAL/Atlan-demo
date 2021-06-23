@@ -1,9 +1,9 @@
-import Vue, { createApp } from "vue";
-import { createRouter, createWebHistory } from "vue-router";
-import generatedRoutes from "virtual:generated-pages";
-import { setupLayouts } from "virtual:generated-layouts";
-import { VueKeycloakInstance } from "@dsb-norge/vue-keycloak-js/dist/types";
-import App from "./App.vue";
+import Vue, { createApp } from 'vue'
+import { createRouter, createWebHistory } from 'vue-router'
+import generatedRoutes from 'virtual:generated-pages'
+import { setupLayouts } from 'virtual:generated-layouts'
+import App from './App.vue'
+
 
 import "~/styles/index.less";
 

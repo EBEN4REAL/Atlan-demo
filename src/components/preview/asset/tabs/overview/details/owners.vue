@@ -78,7 +78,7 @@
             type="primary"
             size="small"
             @click="handleUpdate"
-            :loading="!state && isReady"
+            :loading="isLoading"
             >Update</a-button
           >
         </div>
@@ -168,16 +168,17 @@ export default defineComponent({
 
     const {
       handleCancel,
-      execute,
+      update,
       isReady,
       state,
       ownerUsers,
       isCompleted,
+      isLoading,
       ownerGroups,
     } = updateOwners(props.item, ownerType);
 
     const handleUpdate = () => {
-      execute();
+      update();
     };
 
     const handleSearch = (e) => {
@@ -221,6 +222,8 @@ export default defineComponent({
       searchText,
       handleClickUser,
       handleClickGroup,
+      update,
+      isLoading,
     };
   },
 });

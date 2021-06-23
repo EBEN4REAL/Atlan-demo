@@ -73,6 +73,11 @@ import { faUserFriends } from "@fortawesome/pro-light-svg-icons/faUserFriends";
 
 import { faCopy } from "@fortawesome/pro-light-svg-icons/faCopy";
 
+import { faUserSlash } from "@fortawesome/pro-light-svg-icons/faUserSlash";
+import { faUserCheck } from "@fortawesome/pro-light-svg-icons/faUserCheck";
+import { faSlidersHSquare } from "@fortawesome/pro-light-svg-icons/faSlidersHSquare";
+
+
 library.add(
   faPlus,
   faSearch,
@@ -137,7 +142,12 @@ library.add(
   faGift,
   faTag,
   faRobot,
-  faChartNetwork
+  faChartNetwork,
+  faUserSlash,
+  faUserCheck,
+  faUserShield,
+  faSlidersHSquare,
+
 );
 
 // Solid Icons

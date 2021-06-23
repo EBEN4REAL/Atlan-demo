@@ -22,7 +22,7 @@
           type="primary"
           size="small"
           @click="handleUpdate"
-          :loading="!state && isReady"
+          :loading="isLoading"
           >Update</a-button
         >
       </div>
@@ -55,11 +55,19 @@ export default defineComponent({
     },
   },
   setup(props) {
-    const { handleCancel, execute, isReady, state, description, isCompleted } =
-      updateDescription(props.item);
+    const {
+      isLoading,
+      update,
+      handleCancel,
+
+      isReady,
+      state,
+      description,
+      isCompleted,
+    } = updateDescription(props.item);
 
     const handleUpdate = () => {
-      execute();
+      update();
     };
 
     const descriptionInput = ref();
@@ -87,6 +95,7 @@ export default defineComponent({
       state,
       description,
       isCompleted,
+      isLoading,
     };
   },
 });

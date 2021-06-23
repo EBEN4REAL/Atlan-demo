@@ -1,13 +1,7 @@
 <template>
   <div class="h-full overflow-auto">
-    <div class="flex justify-between px-6 pt-6 mb-2">
-      <h2 class="text-lg font-medium">Overview</h2>
-      <fa icon="fal sync"></fa>
-    </div>
-
-    <div class="grid grid-cols-12 gap-6 px-6">
-      <ConnectionDistribution class="col-span-6"></ConnectionDistribution>
-      <CrudDistribution class="col-span-6"></CrudDistribution>
+    <div class="p-6">
+      <ConnectionDistribution></ConnectionDistribution>
     </div>
 
     <!-- <div class="grid grid-cols-12 gap-6 px-6">

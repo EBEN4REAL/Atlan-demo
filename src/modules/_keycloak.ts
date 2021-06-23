@@ -1,14 +1,9 @@
 import { UserModule } from "~/types/vitessg";
-import { VueKeycloakInstance } from "@dsb-norge/vue-keycloak-js/dist/types";
 
 import Keycloak from "keycloak-js";
 import { getEnv, getBasePath } from "./__env";
 
-declare module "@vue/runtime-core" {
-  interface ComponentCustomProperties {
-    $keycloak: VueKeycloakInstance;
-  }
-}
+
 
 // const debug = process.env.NODE_ENV !== "production";
 export const install: UserModule = async ({ app }) => {

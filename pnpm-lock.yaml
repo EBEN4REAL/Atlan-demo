@@ -71,6 +71,7 @@ specifiers:
   tailwindcss: ^2.1.4
   tippy.js: ^6.3.1
   ts-jest: ^27.0.3
+  turndown: ^7.0.0
   typescript: ^4.3.2
   vite: ^2.3.7
   vite-plugin-components: ^0.11.1
@@ -147,6 +148,7 @@ dependencies:
   swrv: 1.0.0-beta.8_vue@3.1.1
   tippy.js: 6.3.1
   ts-jest: 27.0.3_jest@27.0.4+typescript@4.3.2
+  turndown: 7.0.0
   vue: 3.1.1
   vue-axios: 3.2.4_axios@0.21.1+vue@3.1.1
   vue-calendar-heatmap: 0.8.4_vue@3.1.1
@@ -4292,6 +4294,10 @@ packages:
     dependencies:
       domelementtype: 2.2.0
     dev: true
+
+  /domino/2.1.6:
+    resolution: {integrity: sha512-3VdM/SXBZX2omc9JF9nOPCtDaYQ67BGp5CoLpIQlO2KCAPETs8TcDHacF26jXadGbvUteZzRTeos2fhID5+ucQ==}
+    dev: false
 
   /domutils/1.7.0:
     resolution: {integrity: sha512-Lgd2XcJ/NjEw+7tFvfKxOzCYKZsdct5lczQ2ZaQY8Djz7pfAD3Gbp8ySJWtreII/vDlMVmxwa6pHmdxIYgttDg==}
@@ -9467,6 +9473,12 @@ packages:
       tslib: 1.14.1
       typescript: 4.3.2
     dev: true
+
+  /turndown/7.0.0:
+    resolution: {integrity: sha512-G1FfxfR0mUNMeGjszLYl3kxtopC4O9DRRiMlMDDVHvU1jaBkGFg4qxIyjIk2aiKLHyDyZvZyu4qBO2guuYBy3Q==}
+    dependencies:
+      domino: 2.1.6
+    dev: false
 
   /type-check/0.3.2:
     resolution: {integrity: sha1-WITKtRLPHTVeP7eE8wgEsrUg23I=}

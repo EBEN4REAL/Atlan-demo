@@ -82,6 +82,9 @@
           >
         </div>
       </a-form>
+      <p v-if="createErrorText" class="mt-4 mb-0 text-sm text-red-500">
+        {{ createErrorText }}
+      </p>
     </a-modal>
   </splitpanes>
 </template>
@@ -103,7 +106,7 @@ import CreateClassificationTree from "@common/tree/classification/index.vue";
 import ClassificationHeader from "~/components/admin/classifications/classificationHeader.vue";
 import AssetListWrapper from "~/components/asset/assetListWrapper.vue";
 import { useRouter } from "vue-router";
-import { useClassificationStore } from "~/pinea";
+import { useClassificationStore } from "~/pinia/classifications";
 import { ValidateErrorEntity } from "ant-design-vue/es/form/interface";
 
 export default defineComponent({
@@ -122,11 +125,14 @@ export default defineComponent({
   setup(props, context) {
     const store = useClassificationStore();
     const router = useRouter();
-    const createClassificationStatus = store.createClassificationStatus;
+    const createClassificationStatus = computed(
+      () => store.createClassificationStatus
+    );
     const modalVisible = ref(false);
     const treeFilterText = ref("");
     const createClassificationFormRef = ref();
     const classificationName = computed(() => props.classificationName);
+    const createErrorText = ref("");
     interface FormState {
       name: string;
       description: string;
@@ -158,12 +164,16 @@ export default defineComponent({
     };
 
     const clearSearchText = () => {
-      console.log("clear text");
       treeFilterText.value = "";
     };
 
     const closeModal = () => {
       modalVisible.value = false;
+    };
+    const resetRef = (ref, time) => {
+      setTimeout(() => {
+        ref.value = "";
+      }, time);
     };
     const createClassification = () => {
       const payload = {
@@ -183,10 +193,15 @@ export default defineComponent({
           classificationObj.description = formState.description;
           payload.classificationDefs.push(classificationObj);
           const fromDispatch = store.createClassification(payload);
-          fromDispatch.then((res) => {
-            if (res) closeModal();
-          });
-          console.log("values", formState, toRaw(formState));
+          fromDispatch
+            .then((res) => {
+              if (res) closeModal();
+            })
+            .catch((error: any) => {
+              console.log("errormessage", error.response.data.errorMessage);
+              createErrorText.value = error.response.data.errorMessage;
+              resetRef(createErrorText, 6000);
+            });
         })
         .catch((error: ValidateErrorEntity<FormState>) => {
           console.log("error", error);
@@ -218,6 +233,7 @@ export default defineComponent({
     });
 
     return {
+      createErrorText,
       filteredData,
       treeData,
       clearSearchText,

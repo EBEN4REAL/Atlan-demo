@@ -20,7 +20,6 @@ export default function handleTreeExpand(emit: any): any {
   };
 
   const selectNode = (selected: any, node) => {
-    console.log(selected, node, "select");
     if (selectedKeys.value.includes(selected)) {
       selectedKeys.value = [];
     } else {
@@ -29,14 +28,12 @@ export default function handleTreeExpand(emit: any): any {
     if (node.node.dataRef?.isRoot) {
       expandNode(["_node_select_"], node);
     } else {
-      console.log("emit");
       emit("select", node.node.eventKey);
     }
     return;
   };
 
   const classificationSelectNode = (selected: any, node) => {
-    console.log(selected, node, "select");
     if (selectedKeys.value.includes(selected)) {
       selectedKeys.value = [];
     } else {
@@ -45,7 +42,6 @@ export default function handleTreeExpand(emit: any): any {
     if (node.node.dataRef?.isRoot) {
       expandNode(["_node_select_"], node);
     } else {
-      console.log("emit");
       emit("nodeEmit", toRaw(node.node.dataRef));
     }
     return;

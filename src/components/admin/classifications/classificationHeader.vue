@@ -55,13 +55,13 @@
       </div>
     </div>
     <UpdateClassificationModal
-      :classification="selectedClassification"
+      :classification="{ ...selectedClassification }"
       @close="closeEditClassificationModal"
       :open="isEditClassificationModalOpen"
     />
 
     <DeleteClassificationModal
-      :classification="selectedClassification"
+      :classification="{ ...selectedClassification }"
       @close="closeDeleteClassificationModal"
       :open="isDeleteClassificationModalOpen"
     />
@@ -109,9 +109,11 @@ export default defineComponent({
     const isDeleteClassificationModalOpen = ref(false);
     const isEditClassificationModalOpen = ref(false);
 
-    const selectedClassification = computed(() => props.classification);
+    const selectedClassification = computed(() => {
+      return props.classification;
+    });
     const displayName = computed(() => {
-      return selectedClassification.value.name;
+      return selectedClassification.value.displayName;
     });
 
     const truncate = computed((string, length) => {
@@ -169,11 +171,9 @@ export default defineComponent({
     });
 
     const deleteClassification = () => {
-      console.log("delete called");
       isDeleteClassificationModalOpen.value = true;
     };
     const editClassification = () => {
-      console.log("edit called");
       isEditClassificationModalOpen.value = true;
     };
 

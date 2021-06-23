@@ -4,7 +4,6 @@ import createPersistedState from "vuex-persistedstate";
 import { groups } from "~/store/modules/admin/groups";
 import { tenant } from "~/store/modules/admin/tenant";
 import { search } from "~/store/modules/search";
-import { classification } from "~/store/modules/classification";
 import { asset } from "~/store/modules/asset";
 import authCheck from "~/store/modules/authCheck";
 // import { connection } from "~/store/modules/connection"
@@ -70,7 +69,6 @@ export const store = createStore({
     // tenantmodule,
     // searchmodule,
     authCheck,
-    classification,
     search,
     groups,
     tenant,

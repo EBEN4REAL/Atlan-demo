@@ -1,6 +1,7 @@
 <template>
   <a-modal
     :visible="showEditModal"
+    :destroyOnClose="true"
     title="Edit Classification"
     :onCancel="closeEditModal"
     :footer="null"
@@ -26,7 +27,10 @@
           >Update</a-button
         >
       </div>
-      <p v-if="updateClassificationError" class="text-red-500">
+      <p
+        v-if="updateClassificationError"
+        class="mt-4 mb-0 text-sm text-red-500"
+      >
         {{ updateClassificationError }}
       </p>
     </a-form>
@@ -40,10 +44,10 @@ import {
   ref,
   UnwrapRef,
   reactive,
+  watch,
   toRaw,
 } from "vue";
-import { ActionTypes } from "~/store/modules/classification/types-actions";
-import { useClassificationStore } from "~/pinea";
+import { useClassificationStore } from "~/pinia/classifications";
 
 export default defineComponent({
   name: "UpdateClassification",
@@ -62,20 +66,41 @@ export default defineComponent({
       description: string;
     }
     const store = useClassificationStore();
+    const updateClassificationStatus = computed(
+      () => store.updateClassificationStatus
+    );
 
-    const selectedClassification = computed(() => props.classification);
-    console.log(selectedClassification);
+    const selectedClassification = computed(() => {
+      return props.classification;
+    });
     const showEditModal = computed(() => props.open);
 
     //edit modal
-    const updateClassificationStatus = ref("");
     const updateClassificationError = ref("");
     const editClassificationFormRef = ref(null);
-    const editFormState: UnwrapRef<FormState> = reactive({
-      displayName: selectedClassification.value.alias,
+
+    // let editFormState: UnwrapRef<FormState> = computed(() => {
+    //   return {
+    //     displayName:
+    //       selectedClassification.value.displayName ||
+    //       selectedClassification.value.name,
+    //     description: selectedClassification.value.description,
+    //   };
+    // });
+
+    let editFormState: UnwrapRef<FormState> = ref({
+      displayName:
+        selectedClassification.value.displayName ||
+        selectedClassification.value.name,
       description: selectedClassification.value.description,
     });
 
+    watch(selectedClassification, () => {
+      editFormState.value.displayName =
+        selectedClassification.value.displayName;
+      editFormState.value.description =
+        selectedClassification.value.description;
+    });
     const editClassificationRules = {
       displayName: [
         {
@@ -96,31 +121,27 @@ export default defineComponent({
       }, time);
     };
     const updateClassification = () => {
-      updateClassificationStatus.value = "loading";
       editClassificationFormRef.value
         .validate()
         .then(() => {
-          const formState = toRaw(editFormState);
-
-          console.log(formState, formState.description);
           let params = {
-            description: formState.description || "-",
+            description: editFormState.value.description || "-",
             attributeDefs: selectedClassification.value.attributeDefs,
             superTypes: selectedClassification.value.superTypes,
-            displayName: formState.displayName,
+            displayName: editFormState.value.displayName,
             name: selectedClassification.value.name,
           };
-          updateClassificationStatus.value = "loading";
-          try {
-            store.updateClassificationListById(params);
-            updateClassificationStatus.value = "success";
-            context.emit("close");
-          } catch (error) {
-            updateClassificationStatus.value = "error";
-            updateClassificationError.value = error.message;
-            resetRef(updateClassificationError, 3000);
-            console.log("WTF: handleUpdateDescription -> error", error);
-          }
+          store.updateClassificationListById(params).then(
+            (resolve) => {
+              context.emit("close");
+            },
+            (error) => {
+              updateClassificationError.value =
+                error.response.data.errorMessage;
+              resetRef(updateClassificationError, 6000);
+              console.log("WTF: handleUpdateDescription -> error", error);
+            }
+          );
         })
         .catch((error: ValidateErrorEntity<FormState>) => {
           console.log("error", error);

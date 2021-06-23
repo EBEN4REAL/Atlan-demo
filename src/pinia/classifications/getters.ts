@@ -1,7 +1,4 @@
-import { GetterTree } from "vuex";
-
 // eslint-disable-next-line import/no-cycle
-import { RootState } from "~/store";
 
 import { State } from "./state";
 
@@ -9,24 +6,20 @@ export type Getters = {
   transformClassificationTreeData(state: State): any;
   getClassificationTree(state: State): any;
   getFilteredClassifications(state: State): any;
+  getFilteredClassificationsBySeach(state: State): any;
 };
 const RESTRICTED_CLASSIFICATION_PREFIX = "atlan_";
 
 const orderTreeNodesAsc = (node0, node1) => {
   const compareStrings = (a, b) => {
-    // Assuming you want case-insensitive comparison
-    // eslint-disable-next-line no-param-reassign
     a = a.toLowerCase();
-    // eslint-disable-next-line no-param-reassign
     b = b.toLowerCase();
-
-    // eslint-disable-next-line no-nested-ternary
     return a < b ? -1 : a > b ? 1 : 0;
   };
   return compareStrings(node0.title, node1.title);
 };
 
-export const getters: GetterTree<State, RootState> & Getters = {
+export const getters: Getters = {
   transformClassificationTreeData: (state) => {
     // each classification has a unique name, create a hashmap with name for O(1) access
     const hashMap = {};
@@ -37,7 +30,7 @@ export const getters: GetterTree<State, RootState> & Getters = {
     const getClassificationNodeObj = (classification) => {
       return {
         title: classification.displayName || classification.name,
-        name: classification.displayName || classification.name,
+        name: classification.name,
         key: classification.guid,
         data: {
           ...classification,
@@ -100,7 +93,6 @@ export const getters: GetterTree<State, RootState> & Getters = {
     return state.classificationTree;
   },
   getFilteredClassificationsBySeach: (state) => (searchText: string) => {
-    console.log(searchText, "in getters");
     return state.classificationTree.filter((classification: any) => {
       return classification.title
         .toLowerCase()

@@ -2,7 +2,7 @@
 
 <script lang="ts">
 import { defineComponent, toRaw } from "vue";
-import { useClassificationStore } from "~/pinea";
+import { useClassificationStore } from "~/pinia/classifications";
 import { useRouter } from "vue-router";
 
 export default defineComponent({

@@ -76,7 +76,14 @@
         class="rounded-tr"
       ></AssetTabs>
     </div>
+    <div
+      v-if="list && list.length <= 0 && !isLoading"
+      class="flex-grow mx-6 border rounded"
+    >
+      <EmptyView></EmptyView>
+    </div>
     <AssetList
+      v-else
       @preview="handlePreview"
       :list="list"
       :projection="projection"
@@ -122,6 +129,8 @@ import { SearchParameters } from "~/store/modules/search/state";
 import ConnectorDropdown from "@common/dropdown/connector/index.vue";
 import { BaseAttributes, BasicSearchAttributes } from "~/constant/projection";
 
+import EmptyView from "@common/empty/discover.vue";
+
 import Preferences from "@/discovery/asset/preference/index.vue";
 import { useDebounceFn } from "@vueuse/core";
 import fetchAssetDiscover from "~/composables/asset/fetchAssetDiscover";
@@ -140,6 +149,7 @@ export default defineComponent({
     AssetPagination,
     ConnectorDropdown,
     Preferences,
+    EmptyView,
   },
   data() {
     return {

@@ -1,5 +1,5 @@
 import { state } from "./state";
-import { actions, Actions } from "./actions";
+import { actions } from "./actions";
 import { getters } from "./getters";
 
 import { defineStore } from "pinia";

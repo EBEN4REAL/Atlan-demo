@@ -30,6 +30,7 @@ const updateClassification = ({
   cache: boolean;
   params: any;
 }) => {
+  console.log(params, "request");
   const payload = {
     classificationDefs: [{ ...params }],
   };

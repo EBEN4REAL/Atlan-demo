@@ -103,10 +103,6 @@ import CreateClassificationTree from "@common/tree/classification/index.vue";
 import ClassificationHeader from "~/components/admin/classifications/classificationHeader.vue";
 import AssetListWrapper from "~/components/asset/assetListWrapper.vue";
 import { useRouter } from "vue-router";
-// import {fetchClassificationList} from "~/composables/classification/fetchClassificationList"
-// import { Classification } from "~/api/atlas/classification";
-import { ActionTypes } from "~/store/modules/classification/types-actions";
-// import useModal from "~/composables/classification/useModal";
 import { useClassificationStore } from "~/pinea";
 import { ValidateErrorEntity } from "ant-design-vue/es/form/interface";
 
@@ -158,11 +154,7 @@ export default defineComponent({
 
     const handleSearch = (e) => {
       treeFilterText.value = e.target.value;
-      store.dispatch(
-        ActionTypes.FILTER_CLASSIFICATION_TREE,
-        treeFilterText.value
-      );
-      console.log(e.target.value);
+      store.filterClassificationTree(treeFilterText.value);
     };
 
     const clearSearchText = () => {
@@ -190,10 +182,7 @@ export default defineComponent({
           classificationObj.name = formState.name;
           classificationObj.description = formState.description;
           payload.classificationDefs.push(classificationObj);
-          const fromDispatch = store.dispatch(
-            ActionTypes.CREATE_CLASSIFICATION,
-            payload
-          );
+          const fromDispatch = store.createClassification(payload);
           fromDispatch.then((res) => {
             if (res) closeModal();
           });
@@ -202,15 +191,12 @@ export default defineComponent({
         .catch((error: ValidateErrorEntity<FormState>) => {
           console.log("error", error);
         });
-
-      // store.dispatch(ActionTypes.CREATE_CLASSIFICATION);
     };
 
     const toggleModal = () => {
       modalVisible.value = !modalVisible.value;
     };
-
-    store.dispatch(ActionTypes.GET_CLASSIFICATIONS);
+    store.getClassifications();
 
     const handleSelectNode = (node) => {
       console.log(node, "parent");

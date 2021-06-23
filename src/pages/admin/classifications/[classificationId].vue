@@ -7,8 +7,6 @@
 <script lang="ts">
 import { defineComponent, computed, toRaw } from "vue";
 import ClassificationProfileWrapper from "~/components/admin/classifications/profileWrapper.vue";
-import { useStore } from "~/store";
-import { useRouter } from "vue-router";
 
 export default defineComponent({
   name: "AssetClassificationProfileLayout",

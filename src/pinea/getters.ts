@@ -98,7 +98,6 @@ export const getters: Getters = {
     return state.classificationTree;
   },
   getFilteredClassificationsBySeach: (state) => (searchText: string) => {
-    console.log(searchText, "in getters");
     return state.classificationTree.filter((classification: any) => {
       return classification.title
         .toLowerCase()

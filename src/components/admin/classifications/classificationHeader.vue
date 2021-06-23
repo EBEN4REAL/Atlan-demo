@@ -73,8 +73,6 @@ import { defineComponent, computed, ref } from "vue";
 import Dropdown from "~/components/admin/classifications/dropdown.vue";
 import UpdateClassificationModal from "./updateClassificationModal.vue";
 import DeleteClassificationModal from "./deleteClassificationModal.vue";
-import { useStore } from "~/store";
-import { useRouter } from "vue-router";
 import moment from "moment";
 
 export default defineComponent({
@@ -108,11 +106,8 @@ export default defineComponent({
     },
   },
   setup(props, context) {
-    const store = useStore();
-    const router = useRouter();
     const isDeleteClassificationModalOpen = ref(false);
     const isEditClassificationModalOpen = ref(false);
-    const deleteStatus = ref("");
 
     const selectedClassification = computed(() => props.classification);
     const displayName = computed(() => {

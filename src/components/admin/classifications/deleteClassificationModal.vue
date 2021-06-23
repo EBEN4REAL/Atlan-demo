@@ -6,11 +6,11 @@
     :footer="null"
   >
     <div class="p-0 block-content">
-      <p class="mb-0" v-show="selectedClassification.displayName">
+      <p class="mb-0" v-show="selectedClassification.alias">
         This action
         <span class="font-w700">cannot</span> be undone. This will permanently
         delete
-        <span class="font-w700">{{ selectedClassification.displayName }}</span>
+        <span class="font-w700">{{ selectedClassification.alias }}</span>
         classification.
       </p>
       <a-button
@@ -39,7 +39,7 @@ import {
   toRaw,
 } from "vue";
 import { ActionTypes } from "~/store/modules/classification/types-actions";
-import { useStore } from "~/store";
+import { useClassificationStore } from "~/pinea";
 import { useRouter } from "vue-router";
 
 export default defineComponent({
@@ -55,7 +55,7 @@ export default defineComponent({
 
   setup(props, context) {
     const router = useRouter();
-    const store = useStore();
+    const store = useClassificationStore();
     const showDeleteModal = computed(() => props.open);
 
     const selectedClassification = computed(() => props.classification);
@@ -75,11 +75,11 @@ export default defineComponent({
     const onDelete = async () => {
       try {
         deleteStatus.value = "loading";
-        await store.dispatch(
-          ActionTypes.DELETE_CLASSIFICATION_BY_NAME,
+
+        await store.deleteClassificationByName(
           selectedClassification.value.name
         );
-        await store.dispatch(ActionTypes.GET_CLASSIFICATIONS);
+        await store.getClassifications();
         deleteStatus.value = "success";
         router.push("/admin/classifications");
         context.emit("close");

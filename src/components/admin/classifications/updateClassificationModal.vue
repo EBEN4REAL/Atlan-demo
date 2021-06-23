@@ -11,7 +11,7 @@
       :rules="editClassificationRules"
       layout="vertical"
     >
-      <a-form-item ref="name" label="Name" name="name">
+      <a-form-item label="Name" name="displayName">
         <a-input v-model:value="editFormState.displayName" />
       </a-form-item>
       <a-form-item ref="description" label="Description" name="description">
@@ -43,7 +43,7 @@ import {
   toRaw,
 } from "vue";
 import { ActionTypes } from "~/store/modules/classification/types-actions";
-import { useStore } from "~/store";
+import { useClassificationStore } from "~/pinea";
 
 export default defineComponent({
   name: "UpdateClassification",
@@ -58,13 +58,13 @@ export default defineComponent({
 
   setup(props, context) {
     interface FormState {
-      name: string;
+      displayName: string;
       description: string;
     }
-    const store = useStore();
+    const store = useClassificationStore();
 
     const selectedClassification = computed(() => props.classification);
-    console.log(props.classification);
+    console.log(selectedClassification);
     const showEditModal = computed(() => props.open);
 
     //edit modal
@@ -72,12 +72,12 @@ export default defineComponent({
     const updateClassificationError = ref("");
     const editClassificationFormRef = ref(null);
     const editFormState: UnwrapRef<FormState> = reactive({
-      displayName: selectedClassification.value.displayName,
+      displayName: selectedClassification.value.alias,
       description: selectedClassification.value.description,
     });
 
     const editClassificationRules = {
-      name: [
+      displayName: [
         {
           required: true,
           message: "Please input Classification name",
@@ -101,21 +101,18 @@ export default defineComponent({
         .validate()
         .then(() => {
           const formState = toRaw(editFormState);
+
           console.log(formState, formState.description);
           let params = {
             description: formState.description || "-",
             attributeDefs: selectedClassification.value.attributeDefs,
             superTypes: selectedClassification.value.superTypes,
-            displayName: formState.value.displayName,
+            displayName: formState.displayName,
             name: selectedClassification.value.name,
           };
-
           updateClassificationStatus.value = "loading";
           try {
-            store.dispatch(
-              ActionTypes.UPDATE_CLASSIFICATION_LIST_BY_ID,
-              params
-            );
+            store.updateClassificationListById(params);
             updateClassificationStatus.value = "success";
             context.emit("close");
           } catch (error) {

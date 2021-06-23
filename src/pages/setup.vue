@@ -89,25 +89,27 @@
           </div>
         </div>
 
-        <keep-alive class="flex-grow">
-          <ConnectorList
-            v-if="current === 0"
-            @select="handleConnectorSelect"
-          ></ConnectorList>
-          <CredentialView
-            class="px-8 py-4"
-            ref="credentialView"
-            :key="selectedConnector.guid"
-            :item="selectedConnector"
-            v-else-if="current === 1"
-          ></CredentialView>
-          <Settings
-            class="px-8 py-4"
-            ref="settingsView"
-            v-else-if="current === 2"
-            :item="selectedConnector"
-            :credential="selectedCredential"
-          ></Settings>
+        <keep-alive class="">
+          <div class="h-full overflow-y-auto flew-grow">
+            <ConnectorList
+              v-if="current === 0"
+              @select="handleConnectorSelect"
+            ></ConnectorList>
+            <CredentialView
+              class="px-8 py-4"
+              ref="credentialView"
+              :key="selectedConnector.guid"
+              :item="selectedConnector"
+              v-else-if="current === 1"
+            ></CredentialView>
+            <Settings
+              class="px-8 py-4"
+              ref="settingsView"
+              v-else-if="current === 2"
+              :item="selectedConnector"
+              :credential="selectedCredential"
+            ></Settings>
+          </div>
         </keep-alive>
         <div
           class="flex justify-between px-4 py-5 align-middle bg-white border-t"

@@ -72,9 +72,16 @@ export default function fetchAssetAggregation(assetType: string, aggregationAttr
     };
 
     const filter = (filters: Components.Schemas.FilterCriteria) => {
-        body.value.entityFilters.criterion = filters;
+        body.value.entityFilters = filters;
         refresh();
     };
+
+    const filterWithDelete = (filters: Components.Schemas.FilterCriteria) => {
+        body.value.excludeDeletedEntities = false;
+        body.value.entityFilters = filters;
+        refresh();
+    };
+
 
     const aggregationArray = (val: string) => {
         let temp: { id: string, value: any }[] = [];
@@ -126,6 +133,7 @@ export default function fetchAssetAggregation(assetType: string, aggregationAttr
         aggregations,
         mutate,
         filter,
+        filterWithDelete,
         isError,
         isLoading,
         error,

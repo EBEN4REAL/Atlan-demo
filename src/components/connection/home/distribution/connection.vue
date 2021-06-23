@@ -3,16 +3,21 @@
     <div
       class="flex items-center justify-between w-full pb-3 align-middle border-gray-100 "
     >
-      <p class="mb-0 font-bold tracking-tight text-gray-500 uppercase">
-        Assets
-      </p>
-      <a-radio-group v-model:value="timeMode" button-style="solid">
+      <a-radio-group
+        v-model:value="timeMode"
+        button-style="solid"
+        @change="handleModeChange"
+      >
         <a-radio-button value="all">All</a-radio-button>
-        <a-radio-button value="last30">Last 30 Days</a-radio-button>
-        <a-radio-button value="last7">Last 7 days</a-radio-button>
-        <a-radio-button value="last24h">Last 24 hrs</a-radio-button>
-        <a-radio-button value="last1h">Last 1 hr</a-radio-button>
+        <a-radio-button value="last30">30 Days</a-radio-button>
+        <a-radio-button value="last7">7 days</a-radio-button>
+        <a-radio-button value="last24h">24 hrs</a-radio-button>
+        <a-radio-button value="last1h">1 hr</a-radio-button>
       </a-radio-group>
+      <a-spin
+        size="small"
+        v-if="isLoadingDelete || isLoadingUpdate || isLoadingCreate"
+      ></a-spin>
     </div>
 
     <!-- <div class="flex-grow pr-4 border-r border-gray-200 border-dashed">
@@ -37,11 +42,11 @@
         </div>
       </div>
     </div> -->
-    <div class="flex w-full mt-3 gap-x-6">
-      <div class="flex flex-col gap-y-10">
+    <div class="grid grid-cols-12 mt-3">
+      <div class="flex col-span-12 pb-3 mb-3 border-b border-dashed gap-x-10">
         <div class="">
           <p
-            class="mb-0 text-xs font-bold tracking-tight text-gray-900 uppercase "
+            class="mb-0 text-xs font-bold tracking-tight text-gray-500 uppercase "
           >
             New
           </p>
@@ -53,30 +58,41 @@
         </div>
         <div>
           <p
-            class="mb-0 text-xs font-bold tracking-tight text-gray-900 uppercase "
+            class="mb-0 text-xs font-bold tracking-tight text-gray-500 uppercase "
           >
             Updated
+            <a-tooltip title="Created & Updated"
+              ><fa icon="fal info-circle" class="ml-1"></fa
+            ></a-tooltip>
           </p>
           <div
             class="mb-1 text-2xl font-semibold leading-tight text-gray-900 uppercase "
           >
-            {{ numeralFormat(aggregationSum(integrationNameAttribute)) }}
+            {{
+              numeralFormat(
+                updateAggregationSum(integrationNameAttribute) -
+                  aggregationSum(integrationNameAttribute)
+              )
+            }}
           </div>
         </div>
         <div>
           <p
-            class="mb-0 text-xs font-bold tracking-tight text-gray-900 uppercase "
+            class="mb-0 text-xs font-bold tracking-tight text-gray-500 uppercase "
           >
-            Deleted
+            Archived
+            <a-tooltip title="Archived"
+              ><fa icon="fal info-circle" class="ml-1"></fa
+            ></a-tooltip>
           </p>
           <div
-            class="mb-1 text-2xl font-semibold leading-tight text-gray-800 uppercase "
+            class="mb-1 text-2xl font-semibold leading-tight text-gray-900 uppercase "
           >
-            {{ numeralFormat(aggregationSum(integrationNameAttribute)) }}
+            {{ numeralFormat(deleteAggregationSum(integrationNameAttribute)) }}
           </div>
         </div>
       </div>
-      <div class="flex-grow">
+      <div class="col-span-6">
         <table class="table table-report">
           <!-- <thead>
             <tr class="font-normal text-gray-400">
@@ -88,24 +104,38 @@
           </thead> -->
           <tbody>
             <template
-              v-for="item in aggregationArray(integrationNameAttribute)"
+              v-for="item in createAggregationArray(integrationNameAttribute)"
               :key="item.id"
             >
-              <tr class="text-gray-900">
-                <td class="flex pr-6">
+              <tr class="mb-3 text-gray-900">
+                <td class="flex py-2 pr-6">
                   <!-- <component :is="item.id" class="w-auto h-5 mr-1"></component> -->
                   <img :src="source(item.id)?.image" class="w-auto h-5 mr-1" />
                   {{ source(item.id)?.label }}
                 </td>
-                <td class="pr-8">
-                  {{ numeralFormat(item.value) }}
+                <td class="py-2 pr-8">
+                  {{
+                    numeralFormat(
+                      getCreateValue(item.id, integrationNameAttribute)?.value
+                    )
+                  }}
                 </td>
-                <td class="pr-8">
-                  {{ numeralFormat(item.value) }}
+                <td class="py-2 pr-8">
+                  {{
+                    numeralFormat(
+                      getUpdateValue(item.id, integrationNameAttribute)?.value -
+                        getCreateValue(item.id, integrationNameAttribute)?.value
+                    )
+                  }}
+
                   <!-- {{ numeralFormat(getCRUDUpdateValue(item.id).value) }} -->
                 </td>
-                <td>
-                  {{ numeralFormat(item.value) }}
+                <td class="py-2">
+                  {{
+                    numeralFormat(
+                      getDeleteValue(item.id, integrationNameAttribute)?.value
+                    )
+                  }}
                   <!-- {{ numeralFormat(getCRUDUpdateValue(item.id).value) }} -->
                 </td>
               </tr>
@@ -113,29 +143,39 @@
           </tbody>
         </table>
       </div>
-      <div class="flex-grow">
+      <div class="col-span-6">
         <table class="table table-report">
-          <thead>
-            <tr>
-              <th>Title</th>
-              <th>Author</th>
-              <th>Views</th>
-            </tr>
-          </thead>
           <tbody>
             <template
-              v-for="item in aggregationArray(typeNameAttribute)"
+              v-for="item in createAggregationArray(typeNameAttribute)"
               :key="item.id"
             >
-              <tr class="">
-                <td class="w-3">
+              <tr class="text-gray-900">
+                <td class="flex py-2 pr-6">
                   <component :is="item.id" class="w-auto h-5 mr-1"></component>
+                  {{ item.id }}
                 </td>
-                <td class="">
-                  {{ numeralFormat(item.value) }}
+
+                <td class="py-2 pr-8">
+                  {{
+                    numeralFormat(
+                      getCreateValue(item.id, typeNameAttribute)?.value
+                    )
+                  }}
                 </td>
-                <td>
-                  {{ numeralFormat(getCRUDUpdateValue(item.id).value) }}
+                <td class="py-2 pr-8">
+                  {{
+                    numeralFormat(
+                      getUpdateValue(item.id, typeNameAttribute)?.value
+                    )
+                  }}
+                </td>
+                <td class="py-2">
+                  {{
+                    numeralFormat(
+                      getDeleteValue(item.id, typeNameAttribute)?.value
+                    )
+                  }}
                 </td>
               </tr>
             </template>
@@ -154,6 +194,7 @@ import LoadingView from "@common/loaders/section.vue";
 import ErrorView from "@common/error/index.vue";
 
 import { CONNECTIONWISE_AGGREGATION, CRUD_AGGREGATION } from "~/constant/cache";
+import { Components } from "~/api/atlas/client";
 // import EmptyView from "@common/empty/index.vue";
 
 export default defineComponent({
@@ -162,39 +203,136 @@ export default defineComponent({
   props: {},
   setup(props) {
     let timeMode = ref("last30");
+
+    let period = ref(
+      new Date(new Date().setDate(new Date().getDate() - 30)).getTime()
+    );
+
+    // Created Aggregations
+    let entityFiltersCreate = ref({
+      condition: "AND" as Components.Schemas.Condition,
+      criterion: [],
+    });
+
+    let entityFiltersUpdate = ref({
+      condition: "AND" as Components.Schemas.Condition,
+      criterion: [],
+    });
+    let entityFiltersDelete = ref({
+      condition: "AND" as Components.Schemas.Condition,
+      criterion: [],
+    });
+
+    const handleModeChange = (refresh: any) => {
+      switch (timeMode.value) {
+        case "all":
+          updateFilters();
+          break;
+        case "last30":
+          period.value = new Date(
+            new Date().setDate(new Date().getDate() - 1000)
+          ).getTime();
+          updateFilters();
+          break;
+        case "last7":
+          period.value = new Date(
+            new Date().setDate(new Date().getDate() - 7)
+          ).getTime();
+          updateFilters();
+          break;
+        case "last24h":
+          period.value = new Date(
+            new Date().getTime() - 24 * 60 * 60 * 1000
+          ).getTime();
+          updateFilters();
+          break;
+        case "last1h":
+          period.value = new Date(
+            new Date().getTime() - 1 * 60 * 60 * 1000
+          ).getTime();
+          updateFilters();
+          break;
+      }
+
+      if (refresh) {
+        updateCreateFilter(entityFiltersCreate.value);
+        updateUpdateFilter(entityFiltersUpdate.value);
+        updateDeleteFilter(entityFiltersDelete.value);
+      }
+    };
+
+    const updateFilters = () => {
+      if (timeMode.value === "all") {
+        entityFiltersCreate.value.criterion = [
+          {
+            attributeName: "connectionLastSyncedAt",
+            operator: "notNull",
+          },
+        ];
+        entityFiltersUpdate.value.criterion = [];
+        entityFiltersDelete.value.criterion = [
+          {
+            attributeName: "__state",
+            operator: "eq",
+            attributeValue: "DELETED",
+          },
+        ];
+      } else {
+        entityFiltersCreate.value.criterion = [
+          {
+            attributeName: "__timestamp",
+            operator: "gte",
+            attributeValue: period.value.toString(),
+          },
+        ];
+        entityFiltersUpdate.value.criterion = [
+          {
+            attributeName: "connectionLastSyncedAt",
+            operator: "gte",
+            attributeValue: period.value.toString(),
+          },
+        ];
+        entityFiltersDelete.value.criterion = [
+          {
+            attributeName: "__state",
+            operator: "eq",
+            attributeValue: "DELETED",
+          },
+          {
+            attributeName: "__modificationTimestamp",
+            operator: "gte",
+            attributeValue: period.value.toString(),
+          },
+        ];
+      }
+    };
+    handleModeChange(false);
+
     let now = ref(true);
     const typeNameAttribute = "__typeName.keyword";
     const integrationNameAttribute = "Catalog.integrationName.keyword";
     const {
       aggregations,
-      aggregationArray,
+      aggregationArray: createAggregationArray,
       aggregationSum,
       source,
+      filter: updateCreateFilter,
       assetTypeObject,
+      isLoading: isLoadingCreate,
     } = fetchAssetAggregation(
       "Catalog",
       [typeNameAttribute, integrationNameAttribute],
-      undefined,
+      entityFiltersCreate.value,
       CONNECTIONWISE_AGGREGATION,
       now
     );
 
-    let last7 = new Date(
-      new Date().setDate(new Date().getDate() - 7)
-    ).getTime();
-
-    let entityFiltersUpdate = ref({
-      condition: "AND" as Components.Schemas.Condition,
-      criterion: [
-        {
-          attributeName: "connectionLastSyncedAt",
-          operator: "gte",
-          attributeValue: last7.toString(),
-        },
-      ],
-    });
-
-    const { aggregationArray: updateAggregationArray } = fetchAssetAggregation(
+    const {
+      aggregationArray: updateAggregationArray,
+      aggregationSum: updateAggregationSum,
+      filter: updateUpdateFilter,
+      isLoading: isLoadingUpdate,
+    } = fetchAssetAggregation(
       "Catalog",
       [typeNameAttribute, integrationNameAttribute],
       entityFiltersUpdate.value,
@@ -202,20 +340,53 @@ export default defineComponent({
       now
     );
 
-    const getCRUDUpdateValue = (id) => {
-      return updateAggregationArray(typeNameAttribute).find((i) => i.id == id);
+    const {
+      aggregationArray: deleteAggregationArray,
+      aggregationSum: deleteAggregationSum,
+      filterWithDelete: updateDeleteFilter,
+      isLoading: isLoadingDelete,
+    } = fetchAssetAggregation(
+      "Catalog",
+      [typeNameAttribute, integrationNameAttribute],
+      entityFiltersDelete.value,
+      `${CRUD_AGGREGATION}_delete`,
+      now
+    );
+
+    const getCreateValue = (id, attribute) => {
+      return createAggregationArray(attribute).find((i) => i.id == id);
+    };
+
+    const getUpdateValue = (id, attribute) => {
+      return updateAggregationArray(attribute).find((i) => i.id == id);
+    };
+
+    const getDeleteValue = (id, attribute) => {
+      return deleteAggregationArray(attribute).find((i) => i.id == id);
     };
 
     return {
       timeMode,
       aggregations,
-      aggregationArray,
+      createAggregationArray,
       aggregationSum,
       integrationNameAttribute,
       typeNameAttribute,
       source,
       assetTypeObject,
-      getCRUDUpdateValue,
+
+      handleModeChange,
+      updateAggregationSum,
+      period,
+      deleteAggregationSum,
+      deleteAggregationArray,
+      updateDeleteFilter,
+      getCreateValue,
+      getUpdateValue,
+      getDeleteValue,
+      isLoadingDelete,
+      isLoadingUpdate,
+      isLoadingCreate,
     };
   },
   mounted() {},

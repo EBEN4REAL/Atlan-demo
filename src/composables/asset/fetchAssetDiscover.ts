@@ -22,13 +22,15 @@ export default function fetchAssetDiscover(cache?: string, dependentKey?: Ref<an
 
     let cancelTokenSource: Ref<CancelTokenSource> = ref(axios.CancelToken.source());
 
-    let entityFilters: Components.Schemas.FilterCriteria = {
+    let doAggregation = ref(true);
+
+    let entityFilters: Ref<Components.Schemas.FilterCriteria> = ref({
         condition: "AND" as Components.Schemas.Condition,
         criterion: []
-    };
+    });
 
     const body: Ref<SearchParameters> = ref({
-        typeName: "Table,Column,Views",
+        typeName: "Table,Column,View",
         excludeDeletedEntities: true,
         includeClassificationAttributes: true,
         includeSubClassifications: true,
@@ -37,8 +39,8 @@ export default function fetchAssetDiscover(cache?: string, dependentKey?: Ref<an
         offset: 0,
         attributes: [...BaseAttributes, ...BasicSearchAttributes],
         entityFilters: {
-            ...entityFilters,
-            criterion: entityFilters.criterion
+            ...entityFilters.value,
+            criterion: entityFilters.value.criterion
         }
     });
 
@@ -60,7 +62,7 @@ export default function fetchAssetDiscover(cache?: string, dependentKey?: Ref<an
         attributes: [],
         entityFilters: {
             ...entityFilters,
-            criterion: entityFilters.criterion
+            criterion: entityFilters.value.criterion
         },
         aggregationAttributes: ["__typeName.keyword"]
     });
@@ -71,6 +73,10 @@ export default function fetchAssetDiscover(cache?: string, dependentKey?: Ref<an
 
     const list = ref([]);
     watch(data, () => {
+
+        if (doAggregation.value) {
+            refreshAggregation();
+        }
         if (body?.value?.offset > 0) {
             list.value = list.value.concat(data?.value?.entities);
         } else {
@@ -80,7 +86,6 @@ export default function fetchAssetDiscover(cache?: string, dependentKey?: Ref<an
                 list.value = [];
             }
         }
-        refreshAggregation();
     });
 
     const listCount: ComputedRef<any> = computed(() => {
@@ -101,23 +106,23 @@ export default function fetchAssetDiscover(cache?: string, dependentKey?: Ref<an
     const assetTypeList: ComputedRef<any> = computed(() => {
         let temp: any[] = [];
         let map = aggregations?.value?.['__typeName.keyword'];
-        if (map) {
-            Object.keys(map).forEach((key) => {
-                if (map[key] > 0) {
-                    const found = AssetTypeList.find((item) => {
-                        return item.id == key
-                    });
-                    if (found) {
-                        temp.push({
-                            ...found,
-                            count: map[key]
-                        });
-                    }
-                }
-            });
-        }
-        console.log(map);
-        return temp;
+        // if (map) {
+        //     Object.keys(map).forEach((key) => {
+        //         if (map[key] > 0) {
+        //             const found = AssetTypeList.find((item) => {
+        //                 return item.id == key
+        //             });
+        //             if (found) {
+        //                 temp.push({
+        //                     ...found,
+        //                     count: map[key]
+        //                 });
+        //             }
+        //         }
+        //     });
+        // }
+        // console.log(map);
+        return map;
     });
 
 
@@ -129,13 +134,23 @@ export default function fetchAssetDiscover(cache?: string, dependentKey?: Ref<an
             offset: 0,
             attributes: [],
             entityFilters: {
+                ...body.value.entityFilters,
+                criterion: body.value.entityFilters.criterion
             },
             aggregationAttributes: ["__typeName.keyword"]
         }
         mutateAggregation();
     };
 
-    const refresh = () => {
+    const refresh = (dontAggregate?: boolean) => {
+
+        if (dontAggregate) {
+            doAggregation.value = false;
+        } else {
+            doAggregation.value = true;
+        }
+        console.log(doAggregation.value);
+
         if ([STATES.PENDING].includes(state.value) || [STATES.VALIDATING].includes(state.value) || [AggergationSTATES.PENDING].includes(AggregationState.value)
             || [AggergationSTATES.VALIDATING].includes(AggregationState.value)) {
             cancelTokenSource.value.cancel();
@@ -156,7 +171,11 @@ export default function fetchAssetDiscover(cache?: string, dependentKey?: Ref<an
         if (isLoadMore.value) {
             body.value.offset += limit;
         }
-        refresh();
+        body.value.entityFilters = {
+            ...entityFilters.value,
+            criterion: entityFilters.value.criterion
+        }
+        refresh(true);
     };
 
     const query = (queryText: string) => {
@@ -166,12 +185,12 @@ export default function fetchAssetDiscover(cache?: string, dependentKey?: Ref<an
     };
 
 
-
     const changeAssetType = (assetType: string) => {
+
         let temp = {
-            ...entityFilters
+            ...entityFilters.value
         }
-        temp.criterion = [...entityFilters.criterion];
+        temp.criterion = [...entityFilters.value.criterion];
         temp.criterion?.push({
             attributeName: "__typeName",
             attributeValue: assetType,
@@ -180,11 +199,16 @@ export default function fetchAssetDiscover(cache?: string, dependentKey?: Ref<an
         body.value.entityFilters = {
             ...temp
         }
-        refresh();
+        console.log("chaneg asset type");
+        refresh(true);
     };
 
     const filter = (filters: Components.Schemas.FilterCriteria) => {
-        body.value.entityFilters.criterion = filters;
+        entityFilters.value = filters;
+        body.value.entityFilters = {
+            ...filters,
+            criterion: filters.criterion
+        }
         refresh();
     };
 

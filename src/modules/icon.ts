@@ -75,7 +75,8 @@ import { faCopy } from "@fortawesome/pro-light-svg-icons/faCopy";
 
 import { faUserSlash } from "@fortawesome/pro-light-svg-icons/faUserSlash";
 import { faUserCheck } from "@fortawesome/pro-light-svg-icons/faUserCheck";
-import { faUserShield } from "@fortawesome/pro-light-svg-icons/faUserShield";
+import { faSlidersHSquare } from "@fortawesome/pro-light-svg-icons/faSlidersHSquare";
+
 
 library.add(
   faPlus,
@@ -144,7 +145,8 @@ library.add(
   faChartNetwork,
   faUserSlash,
   faUserCheck,
-  faUserShield
+  faUserShield,
+  faSlidersHSquare,
 
 );
 

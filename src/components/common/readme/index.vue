@@ -42,7 +42,7 @@
         Edit
       </a-button>
     </div>
-    <Editor placeholder="some placeholder" class="rounded-t-none" :editable="editable" />
+    <Editor content="" placeholder="some placeholder" class="rounded-t-none" :editable="editable" />
   </div>
 </template>
 

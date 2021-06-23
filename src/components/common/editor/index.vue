@@ -1,16 +1,18 @@
 <template>
-    <div class="mx-2 w-full h-full bg-white border  editor">
-      <editor-menu :editable="editable" :editor="editor" />
-      <editor-content :editor="editor" class="px-7 py-3 rounded-b" />
-    </div>
+  <div class="mx-2 w-full h-full bg-white border editor">
+    <editor-menu :editable="editable" :editor="editor" />
+    <editor-content :editor="editor" class="px-7 py-3 rounded-b" />
+  </div>
 </template>
   
   <script lang="ts">
 import { defineComponent } from "vue";
+import { useDebounceFn } from "@vueuse/core";
+
 import { useEditor, EditorContent, BubbleMenu } from "@tiptap/vue-3";
 import StarterKit from "@tiptap/starter-kit";
 import Underline from "@tiptap/extension-underline";
-// import Link from "@tiptap/extension-link";
+import Link from "@tiptap/extension-link";
 
 import EditorMenu from "./editorMenu.vue";
 
@@ -20,22 +22,34 @@ export default defineComponent({
     BubbleMenu,
     EditorMenu,
   },
-  props:{
+  props: {
     editable: {
       type: Boolean,
       default: false,
     },
     placeholder: {
       type: String,
-      default: 'Add some details here',
-    }
+      default: "Add some details here",
+    },
+    content: {
+      type: String,
+      default: "",
+    },
   },
-  setup(props) {
-    const editor = useEditor({
-      content: `${props.placeholder}`,
-      extensions: [StarterKit, Underline],
-    });
+  events: ["onEditorContentUpdate"],
+  setup(props, { emit }) {
+    const debouncedEmit = useDebounceFn((content: string) => {
+      emit("onEditorContentUpdate", content);
+    }, 200);
 
+    const editor = useEditor({
+      content: `${props.content.length ? props.content : props.placeholder}`,
+      extensions: [StarterKit, Underline, Link],
+      onUpdate({ editor }) {
+        const content = editor.getHTML();
+        debouncedEmit(content);
+      },
+    });
     return { editor };
   },
 });

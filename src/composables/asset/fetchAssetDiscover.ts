@@ -181,6 +181,10 @@ export default function fetchAssetDiscover(cache?: string, dependentKey?: Ref<an
     const query = (queryText: string) => {
         body.value.query = queryText;
         body.value.offset = 0;
+        body.value.entityFilters = {
+            ...entityFilters.value,
+            criterion: entityFilters.value.criterion
+        }
         refresh();
     };
 

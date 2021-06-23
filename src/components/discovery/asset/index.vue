@@ -2,7 +2,9 @@
 
 
 <template>
-  <div class="h-full col-span-2 pt-6 pl-4 bg-white">
+  <div
+    class="hidden h-full pt-6 pl-4 bg-white  sm:block sm:col-span-4 md:col-span-2 sm"
+  >
     <div class="flex flex-col h-full">
       <div class="px-3 mb-3">
         <a-radio-group
@@ -34,7 +36,7 @@
     </div>
   </div>
   <div
-    class="flex flex-col items-stretch h-full col-span-7 pt-6 bg-white"
+    class="flex flex-col items-stretch h-full col-span-12 pt-6 bg-white  sm:col-span-8 md:col-span-7"
     style="overflow: hidden"
   >
     <div class="flex items-center px-6 gap-x-3">

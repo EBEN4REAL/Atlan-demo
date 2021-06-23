@@ -13,6 +13,8 @@ import { useEditor, EditorContent, BubbleMenu } from "@tiptap/vue-3";
 import StarterKit from "@tiptap/starter-kit";
 import Underline from "@tiptap/extension-underline";
 import Link from "@tiptap/extension-link";
+import TaskList from "@tiptap/extension-task-list";
+import TaskItem from "@tiptap/extension-task-item";
 
 import EditorMenu from "./editorMenu.vue";
 
@@ -44,7 +46,7 @@ export default defineComponent({
 
     const editor = useEditor({
       content: `${props.content.length ? props.content : props.placeholder}`,
-      extensions: [StarterKit, Underline, Link],
+      extensions: [StarterKit, Underline, Link, TaskList, TaskItem],
       onUpdate({ editor }) {
         const content = editor.getHTML();
         debouncedEmit(content);
@@ -68,6 +70,22 @@ export default defineComponent({
   }
   ul {
     @apply list-disc;
+
+    &[data-type="taskList"] {
+      list-style-type: none;
+      @apply p-0 m-0;
+
+      li {
+        @apply p-0 m-0 flex align-middle;
+
+        label {
+          @apply my-1 mr-2 flex align-middle;
+        }
+         div {
+          @apply p-0 m-0 flex align-middle;
+        }
+      }
+    }
   }
   ol {
     @apply list-decimal;

@@ -4,7 +4,7 @@
     class="
       mb-3
       border-b-2
-      rounded-t 
+      rounded-t
       sticky
       top-0
       max-w-full
@@ -17,7 +17,7 @@
       <a-button
         v-for="menuItem in menuData"
         :key="menuItem.key"
-        class="border-0 "
+        class="border-0"
         :class="{
           'is-active':
             editor.isActive(`${menuItem.key}`) ||
@@ -26,12 +26,10 @@
         }"
         @click="() => menuItem.onClick(editor)"
       >
-
         <a-popover placement="bottom">
           <fa v-if="menuItem.icon" :icon="menuItem.icon" class="m-1" />
           <span v-else>{{ menuItem.title }}</span>
           <template #content>bruh</template>
-
         </a-popover>
 
         <a-modal
@@ -200,6 +198,13 @@ export default defineComponent({
           link.value = editor.getAttributes("link").href ?? "";
           showLinkModal.value = !showLinkModal.value;
         },
+      },
+      {
+        title: "TaskList",
+        key: "taskList",
+        helpText: "",
+        icon: "fa square",
+        onClick: (editor) => editor.chain().focus().toggleTaskList().run(),
       },
       {
         title: "Blockquote",

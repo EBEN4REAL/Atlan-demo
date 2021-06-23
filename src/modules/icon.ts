@@ -164,6 +164,7 @@ import { faUndo } from "@fortawesome/pro-solid-svg-icons/faUndo";
 import { faRedo } from "@fortawesome/pro-solid-svg-icons/faRedo";
 import { faLink as faSolidLink} from "@fortawesome/pro-solid-svg-icons/faLink";
 import { faPencil} from "@fortawesome/pro-solid-svg-icons/faPencil";
+import { faSquare } from "@fortawesome/pro-solid-svg-icons/faSquare";
 
 
 library.add(
@@ -188,6 +189,7 @@ library.add(
   faRedo,
   faSolidLink,
   faPencil,
+  faSquare,
 );
 
 // import { far } from "@fortawesome/pro-regular-svg-icons";

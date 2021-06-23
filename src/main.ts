@@ -1,9 +1,8 @@
-import Vue, { createApp } from 'vue'
-import { createRouter, createWebHistory } from 'vue-router'
-import generatedRoutes from 'virtual:generated-pages'
-import { setupLayouts } from 'virtual:generated-layouts'
-import App from './App.vue'
-
+import Vue, { createApp } from "vue";
+import { createRouter, createWebHistory } from "vue-router";
+import generatedRoutes from "virtual:generated-pages";
+import { setupLayouts } from "virtual:generated-layouts";
+import App from "./App.vue";
 
 import "~/styles/index.less";
 
@@ -13,7 +12,7 @@ import { useStore } from "~/store";
 const app = createApp(App);
 
 // auto-focus directive use it as v-focus
-app.directive("focus", {
+app.directive("input-focus", {
   mounted(el) {
     el.focus();
   },

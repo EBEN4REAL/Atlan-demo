@@ -4,7 +4,8 @@
     :items="list"
     :keyField="keyField"
     :minItemSize="minItemSize"
-    class="mx-6 border scroller"
+    class="mx-6 border rounded scroller"
+    :class="{ 'opacity-50': isLoading }"
     :buffer="1000"
   >
     <template v-slot="{ item, index, active }">
@@ -68,6 +69,13 @@ export default defineComponent({
         return [];
       },
     },
+    isLoading: {
+      type: Boolean,
+      required: false,
+      default() {
+        return false;
+      },
+    },
   },
   emits: ["preview"],
   methods: {
@@ -88,12 +96,6 @@ export default defineComponent({
 .scroller {
   height: 100%;
   overflow-y: auto;
-
-  .vue-recycle-scroller__item-wrapper {
-    .vue-recycle-scroller__item-view:last-child {
-      @apply border-b;
-    }
-  }
 }
 </style>
 

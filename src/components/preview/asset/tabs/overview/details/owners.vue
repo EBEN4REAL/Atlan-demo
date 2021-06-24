@@ -70,12 +70,7 @@
 
         <div class="flex justify-end p-2 space-x-2 border-t border-gray-100">
           <a-button size="small" @click="handleCancel">Cancel</a-button>
-          <a-button
-            type="primary"
-            size="small"
-            @click="handleUpdate"
-            :loading="!state && isReady"
-          >Update</a-button>
+          <a-button type="primary" size="small" @click="handleUpdate" :loading="isLoading">Update</a-button>
         </div>
       </template>
       <div
@@ -149,16 +144,17 @@ export default defineComponent({
 
     const {
       handleCancel,
-      execute,
+      update,
       isReady,
       state,
       ownerUsers,
       isCompleted,
+      isLoading,
       ownerGroups,
     } = updateOwners(props.item, ownerType);
 
     const handleUpdate = () => {
-      execute();
+      update();
     };
 
     const handleSearch = (e) => {
@@ -205,6 +201,8 @@ export default defineComponent({
       searchText,
       handleClickUser,
       handleClickGroup,
+      update,
+      isLoading,
     };
   },
 });

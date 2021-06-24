@@ -43,3 +43,8 @@ export default defineComponent({
   overflow-y: auto;
 }
 </style>
+<route lang="yaml">
+  meta:
+  layout: default
+  requiresAuth: true
+  </route>

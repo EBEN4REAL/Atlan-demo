@@ -1,10 +1,15 @@
 <template>
   <div class="my-3 mr-5">
-    <div v-if="!selectedGroup.memberCount" class="flex flex-col items-center justify-center">
+    <div
+      v-if="!selectedGroup.memberCount"
+      class="flex flex-col items-center justify-center"
+    >
       <div class="text-center">
         <p class="text-lg">No members are present in the group.</p>
         <div class="mt-4">
-          <a-button size="large" type="primary" ghost @click="handleAddMember">Add Members</a-button>
+          <a-button size="large" type="primary" ghost @click="handleAddMember"
+            >Add Members</a-button
+          >
         </div>
       </div>
     </div>
@@ -20,7 +25,9 @@
           ></a-input-search>
         </div>
         <div>
-          <a-button type="primary" ghost @click="handleAddMember">Add Member</a-button>
+          <a-button type="primary" ghost @click="handleAddMember"
+            >Add Member</a-button
+          >
         </div>
       </div>
       <div
@@ -34,11 +41,16 @@
           size="large"
           type="primary"
           ghost
-          @click="()=>{getGroupMembersList()}"
-        >Try again</a-button>
+          @click="
+            () => {
+              getGroupMembersList();
+            }
+          "
+          >Try again</a-button
+        >
       </div>
       <div v-else-if="!filteredMembersCount" class="mt-2">
-        {{`No member with name ${searchText} found.`}}
+        {{ `No member with name ${searchText} found.` }}
         <!-- <span
           class="cursor-pointer text-primary-600"
           @click="{searchText='';handleSearch();}"
@@ -46,7 +58,10 @@
       </div>
       <div
         style="min-height: 200px"
-        v-else-if="[STATES.PENDING].includes(state) || [STATES.VALIDATING].includes(state)"
+        v-else-if="
+          [STATES.PENDING].includes(state) ||
+          [STATES.VALIDATING].includes(state)
+        "
       >
         <a-spin></a-spin>
       </div>
@@ -58,7 +73,10 @@
                 shape="circle"
                 class="mr-1 ant-tag-blue text-primary-500 avatars"
                 :size="40"
-              >{{ getNameInitials(getNameInTitleCase(`${getUserName(user)}`)) }}</a-avatar>
+                >{{
+                  getNameInitials(getNameInTitleCase(`${getUserName(user)}`))
+                }}</a-avatar
+              >
               <div class="ml-2">
                 <div>{{ getUserName(user) }}</div>
                 <div>@{{ user.username }}</div>
@@ -67,7 +85,11 @@
             </div>
             <a-popover trigger="click" placement="bottom">
               <template #content>
-                <span class="text-red-500" @click="() =>removeUserFromGroup(user.id)">Remove User</span>
+                <span
+                  class="text-red-500"
+                  @click="() => removeUserFromGroup(user.id)"
+                  >Remove User</span
+                >
               </template>
               <fa icon="fal cog"></fa>
             </a-popover>
@@ -75,8 +97,10 @@
         </div>
         <div
           class="flex justify-center"
-          v-if="[STATES.PENDING].includes(state) ||
-          [STATES.VALIDATING].includes(state)"
+          v-if="
+            [STATES.PENDING].includes(state) ||
+            [STATES.VALIDATING].includes(state)
+          "
         >
           <a-spin></a-spin>
         </div>

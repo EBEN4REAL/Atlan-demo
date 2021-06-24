@@ -2,15 +2,15 @@
   <div class="grid h-full grid-cols-12 p-6 gap-x-12">
     <div class="col-span-12 sm:col-span-8">
       <div class="flex items-center w-full align-middle">
-        <img :src="displayNameHTML" class="w-auto h-16 mr-2" />
         <div class="flex flex-col w-full">
-          <p class="mb-1 font-bold tracking-tight text-md">
-            Good morning, Nitya
+          <p class="mb-2 text-xl font-bold tracking-tight text-gray-900">
+            Welcome Home, {{ fullName }}
           </p>
-          <a-input-search
-            placeholder="Search...."
-            size="large"
-          ></a-input-search>
+          <a-input-search placeholder="Search all your assets.." size="large">
+            <template #prefix>
+              <img :src="displayNameHTML" class="w-auto h-8 mr-3" />
+            </template>
+          </a-input-search>
         </div>
       </div>
     </div>
@@ -19,12 +19,28 @@
     >
       <div class="flex items-center justify-between p-5 align-middle">
         <div class="flex items-center">
-          <a-avatar
-            shape="square"
-            :size="56"
-            class="hidden border-2 rounded-lg border-primary-300 sm:block"
-            src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png"
-          />
+          <a-upload
+            accept="image/*"
+            class="cursor-pointer"
+            :customRequest="handleUploadAvatar"
+            :show-upload-list="false"
+          >
+            <div
+              class="hidden text-center border-2 rounded-lg  border-primary-300 sm:block"
+              style="width: 56px; height: 56px"
+              v-if="!isReady && uploadStarted"
+            >
+              <a-spin size="small" class="" style="margin-top: 18px"></a-spin>
+            </div>
+            <a-avatar
+              v-else
+              :key="uploadKey"
+              shape="square"
+              :size="56"
+              class="hidden border-2 rounded-lg border-primary-300 sm:block"
+              :src="imageUrl"
+            />
+          </a-upload>
 
           <div class="flex flex-col ml-2">
             <p
@@ -84,7 +100,7 @@
 
 
 <script lang="ts">
-import { defineComponent, inject, computed } from "vue";
+import { defineComponent, inject, computed, ref } from "vue";
 import { useStore } from "~/store";
 
 import PageLoader from "@common/loaders/page.vue";
@@ -93,6 +109,8 @@ import SearchBox from "@common/searchbox/searchlist.vue";
 import SavedList from "@/home/saved/index.vue";
 
 import Tags from "@common/badge/tags/index.vue";
+
+import uploadAvatar from "~/composables/avatar/uploadAvatar";
 
 export default defineComponent({
   name: "HelloWorld",
@@ -114,6 +132,7 @@ export default defineComponent({
   setup() {
     const keycloak = inject("$keycloak");
     const store = useStore();
+    let username = keycloak.tokenParsed.preferred_username || "";
 
     const fullName = computed(() => {
       let firstName = keycloak.tokenParsed.given_name || "";
@@ -123,13 +142,33 @@ export default defineComponent({
       } ${lastName.charAt(0).toUpperCase() + lastName.substr(1).toLowerCase()}`;
     });
 
+    let imageUrl = ref(
+      `http://localhost:3333/api/auth/tenants/default/avatars/${username}`
+    );
+
+    let uploadStarted = ref(false);
+    const { upload, isReady, uploadKey } = uploadAvatar();
+
+    const handleUploadAvatar = async (uploaded) => {
+      console.log("handle Upload");
+      upload(uploaded.file);
+      uploadStarted.value = true;
+      imageUrl.value = imageUrl.value + "?" + uploadKey;
+      return true;
+    };
+
     return {
       fullName,
       name: keycloak.tokenParsed.name || "",
-      username: keycloak.tokenParsed.preferred_username || "",
+      username,
       displayName: computed(() => store.getters.getDisplayName),
       displayNameHTML: computed(() => store.getters.getDisplayNameHTML),
       realm: computed(() => store.getters.getRealmName),
+      handleUploadAvatar,
+      isReady,
+      uploadStarted,
+      imageUrl,
+      uploadKey,
     };
   },
 });

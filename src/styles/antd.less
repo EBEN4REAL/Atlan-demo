@@ -162,6 +162,51 @@ body {
   }
 }
 
+
+//Table
+.ant-table-thead {
+  tr {
+    &:first-child {
+      th {
+        &:first-child {
+          border-top-left-radius: 8px !important;
+        }
+      }
+    }
+
+    &:last-child {
+      th {
+        &:last-child {
+          border-top-right-radius: 8px !important;
+        }
+      }
+    }
+
+    th {
+      @apply bg-white px-4 py-2 !important;
+    }
+  }
+}
+
+.ant-table-tbody {
+  tr {
+    td {
+      @apply bg-white px-4 py-2 !important;
+    }
+  }
+}
+
+
+// .ant-table-thead>tr:first-child>th:first-child {
+//   border-top-left-radius: 8px !important;
+// }
+
+// .ant-table-thead>tr:last-child>th:last-child {
+//   border-top-right-radius: 8px !important;
+// }
+
+
+
 // Split Panes
 .default-theme.splitpanes--vertical>.splitpanes__splitter:before {
   width: 0px !important;

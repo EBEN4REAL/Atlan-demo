@@ -28,6 +28,11 @@ export default function useBotModel(item: BotsType) {
             ?.attributes;
     });
 
+    const database = computed(() => {
+        return item?.attributes?.config?.attributes?.credential?.attributes?.database
+            ?.attributes;
+    });
+
     const extraAttributes = computed(() => {
         let attr: any[] = [];
         item?.attributes?.config?.attributes?.credential?.attributes?.extra.forEach(
@@ -67,11 +72,26 @@ export default function useBotModel(item: BotsType) {
     };
 
 
+    const enumAttributes = (authAttr: any) => {
+        let attr: any[] = [];
+        if (authAttr) {
+            authAttr?.enumConfig.forEach((element) => {
+                attr.push({
+                    value: element.attributes.id,
+                    label: element.attributes.label,
+                });
+            });
+        }
+        return attr;
+    };
+
     return {
         host,
         port,
+        database,
         extraAttributes,
         authAttributes,
-        authTypes
+        authTypes,
+        enumAttributes
     }
 }

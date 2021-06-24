@@ -18,3 +18,8 @@ export default defineComponent({
   components: { UpdateSSOConfig },
 });
 </script>
+  <route lang="yaml">
+  meta:
+  layout: default
+  requiresAuth: true
+  </route>

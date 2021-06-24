@@ -9,9 +9,9 @@ export interface ConfigAttributes {
     id: string,
     label: string,
     allowCustom: boolean
-    default: "",
-    enumConfig: [],
-    info: "",
+    default: string | number,
+    enumConfig: any[],
+    info: string,
     isMandatory: boolean,
     isVisible: boolean,
     order: number,
@@ -42,6 +42,7 @@ export interface CredentialConfigAttributes {
     auth: CredentialAuthConfig[],
     connType: Config,
     extra: Config[],
+    database: Config,
     host: Config,
     port: Config,
     [key: string]: any

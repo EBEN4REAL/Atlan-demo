@@ -3,6 +3,7 @@
     <a-form-item
       label="Connection name"
       name="displayName"
+      class="w-1/2"
       autofocus
       :has-feedback="true"
       :rules="nameRules"
@@ -99,6 +100,33 @@
       </template>
     </div>
 
+    <div class="grid grid-cols-12">
+      <a-form-item
+        v-if="databaseLocal?.isVisible"
+        :has-feedback="true"
+        class="col-span-4"
+        :name="databaseLocal?.id"
+      >
+        <template #label>
+          <span>{{ databaseLocal?.label }}</span>
+          <a-tooltip
+            v-if="databaseLocal?.info"
+            :title="databaseLocal?.info"
+            placement="right"
+            ><span class="ml-1"><fa icon="fal info-circle"></fa></span
+          ></a-tooltip>
+        </template>
+        <DynamicInput
+          :name="databaseLocal?.id"
+          v-model="credential.database"
+          :dataType="databaseLocal?.type"
+          :placeholder="databaseLocal?.placeholder"
+          :prefix="databaseLocal?.prefix"
+          :defaultValue="databaseLocal?.default"
+        ></DynamicInput>
+      </a-form-item>
+    </div>
+
     <div
       class="grid grid-cols-12 px-3 pt-3 border border-gray-200 rounded  flex-nowrap bg-gray-50"
     >
@@ -133,6 +161,7 @@
         </div>
       </template>
     </div>
+
     <div class="flex py-2 mt-3 space-x-3">
       <a-button
         type="primary"
@@ -184,27 +213,19 @@
 </template>
 
 <script lang="ts">
-// import { ValidateErrorEntity } from "ant-design-vue/es/form/interface";
-import { defineComponent, PropType, Ref, ref } from "vue";
+import { defineComponent, PropType, ref } from "vue";
 
 import RadioButton from "@common/radio/button.vue";
 import DynamicInput from "@common/input/dynamic.vue";
 
-import ConnectorMixin from "~/mixins/connector";
-import KeycloakMixin from "~/mixins/keycloak";
-
 import { Connection } from "~/api/auth/connection";
 import { Credential as CredentialService } from "~/api/auth/credential";
 
-import { Search } from "~/api/atlas/search";
-
-import { getEnv } from "~/modules/__env";
 import { BotsType } from "~/types/atlas/bots";
 import useBotModel from "~/composables/connection/useBotModel";
 
 export default defineComponent({
   components: { RadioButton, DynamicInput },
-  mixins: [ConnectorMixin, KeycloakMixin],
   props: {
     item: {
       type: Object as PropType<BotsType>,
@@ -258,8 +279,10 @@ export default defineComponent({
     const {
       host: hostLocal,
       port: portLocal,
+      database: databaseLocal,
       extraAttributes: extraAttributesLocal,
       authAttributes: authAttributesLocal,
+      enumAttributes,
       authTypes,
     } = useBotModel(props.item);
 
@@ -268,14 +291,15 @@ export default defineComponent({
     } = ref({
       displayName: "",
       host: hostLocal.value.default,
-      port: portLocal.value.default,
+      port: parseInt(portLocal?.value?.default),
+      database: databaseLocal?.value?.default,
       connType: props.item?.attributes?.integrationName,
       login: "",
       password: "",
       authType: authTypes.value[0]?.id,
-      url: props?.item?.attributes?.config.attributes.credentialTemplate.url,
+      url: props?.item?.attributes?.config.attributes.credentialTemplate?.url,
       driver:
-        props.item?.attributes?.config?.attributes?.credentialTemplate.driver,
+        props.item?.attributes?.config?.attributes?.credentialTemplate?.driver,
       extra: {
         role: "",
       },
@@ -299,11 +323,13 @@ export default defineComponent({
     return {
       hostLocal,
       portLocal,
+      databaseLocal,
       extraAttributesLocal,
       authAttributesLocal,
       credential,
       authTypes,
       credentialGuid,
+      enumAttributes,
     };
   },
   methods: {
@@ -331,7 +357,7 @@ export default defineComponent({
         this.testingNetworkError = "";
         const res = await Connection.TestNetwork({
           host: this.credential.host,
-          port: 443,
+          port: this.credential.port,
         });
         this.testingNetworkStatus = "success";
         this.testingNetworkMessage = "Network connection is successful";
@@ -352,7 +378,7 @@ export default defineComponent({
       try {
         this.testCredStatus = "info";
         this.testCredMessage = "Checking authentication";
-        console.log(this.credential.host);
+        this.testCredError = "";
 
         if (this.isEdit) {
           await CredentialService.TestCredentialByID(this.credentialGuid);

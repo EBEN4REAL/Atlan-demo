@@ -75,6 +75,10 @@ export default function fetchConnectionList(cache?: string, dependentKey?: Ref<a
         return data?.value?.aggregations;
     });
 
+
+
+
+
     const sourceList: ComputedRef<any[] | undefined> = computed(() => {
         let source: any[] = [];
         let allSourceList = list.value?.map((value) => {

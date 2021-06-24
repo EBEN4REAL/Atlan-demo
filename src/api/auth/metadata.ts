@@ -1,6 +1,6 @@
 import { getAPIPath, getAxiosClient } from "~/api";
 import { AxiosRequestConfig } from "axios";
-const serviceAlias = "query";
+const serviceAlias = "auth";
 
 const List = (body?: any, options?: AxiosRequestConfig) => {
   return getAxiosClient().post(

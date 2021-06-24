@@ -1,10 +1,12 @@
 
 <template>
-  <div class="flex flex-col h-full py-2">
+  <LoadingView v-if="isLoading"></LoadingView>
+
+  <div class="flex flex-col h-full py-2" v-else>
     <div class="flex flex-wrap gap-1 mx-3 mb-2">
       <template
         v-for="item in dataTypeAggregationList(
-          aggrgeationsArray(dataTypeAggregationAttribute)
+          aggregationArray(dataTypeAggregationAttribute)
         )"
         :key="item.id"
       >
@@ -87,9 +89,6 @@
       </p>
     </div>
   </div>
-
-  <!-- </div>
-  </div> -->
 </template>
           
 <script lang="ts">
@@ -98,10 +97,15 @@ import { ref, watch } from "vue";
 import { defineComponent } from "vue";
 import { Components } from "~/api/atlas/client";
 
+import LoadingView from "@common/loaders/section.vue";
+
 import fetchColumnList from "~/composables/columns/fetchColumnList";
 import { COLUMNS_FETCH_LIST } from "~/constant/cache";
 
 export default defineComponent({
+  components: {
+    LoadingView,
+  },
   props: {
     item: {
       type: Object,
@@ -141,7 +145,7 @@ export default defineComponent({
     });
     const {
       list,
-      aggrgeationsArray,
+      aggregationArray,
       dataTypeAggregationList,
       getDataTypeImage,
       loadMore,
@@ -149,6 +153,7 @@ export default defineComponent({
       isLoadMore,
       totalCount,
       query,
+      isLoading,
       refresh,
       listCount,
     } = fetchColumnList(
@@ -267,9 +272,10 @@ export default defineComponent({
     return {
       list,
       specialList,
+      isLoading,
       placeholder,
       columnCount,
-      aggrgeationsArray,
+      aggregationArray,
       dataTypeAggregationAttribute,
       dataTypeAggregationList,
       getDataTypeImage,

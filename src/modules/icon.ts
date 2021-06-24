@@ -165,6 +165,9 @@ import { faRedo } from "@fortawesome/pro-solid-svg-icons/faRedo";
 import { faLink as faSolidLink} from "@fortawesome/pro-solid-svg-icons/faLink";
 import { faPencil} from "@fortawesome/pro-solid-svg-icons/faPencil";
 import { faSquare } from "@fortawesome/pro-solid-svg-icons/faSquare";
+import { faAlignLeft } from "@fortawesome/pro-solid-svg-icons/faAlignLeft";
+import { faAlignCenter } from "@fortawesome/pro-solid-svg-icons/faAlignCenter";
+import { faAlignRight } from "@fortawesome/pro-solid-svg-icons/faAlignRight";
 
 
 library.add(
@@ -190,6 +193,9 @@ library.add(
   faSolidLink,
   faPencil,
   faSquare,
+  faAlignLeft,
+  faAlignCenter,
+  faAlignRight,
 );
 
 // import { far } from "@fortawesome/pro-regular-svg-icons";

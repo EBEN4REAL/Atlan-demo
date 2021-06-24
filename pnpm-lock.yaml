@@ -21,11 +21,13 @@ specifiers:
   '@tiptap/extension-document': ^2.0.0-beta.12
   '@tiptap/extension-heading': ^2.0.0-beta.14
   '@tiptap/extension-history': ^2.0.0-beta.13
+  '@tiptap/extension-image': ^2.0.0-beta.14
   '@tiptap/extension-link': 2.0.0-beta.17
   '@tiptap/extension-paragraph': ^2.0.0-beta.15
   '@tiptap/extension-task-item': ^2.0.0-beta.16
   '@tiptap/extension-task-list': ^2.0.0-beta.16
   '@tiptap/extension-text': ^2.0.0-beta.12
+  '@tiptap/extension-text-align': ^2.0.0-beta.20
   '@tiptap/extension-typography': ^2.0.0-beta.12
   '@tiptap/extension-underline': ^2.0.0-beta.15
   '@tiptap/starter-kit': ^2.0.0-beta.76
@@ -121,11 +123,13 @@ dependencies:
   '@tiptap/extension-document': 2.0.0-beta.12_@tiptap+core@2.0.0-beta.81
   '@tiptap/extension-heading': 2.0.0-beta.14_@tiptap+core@2.0.0-beta.81
   '@tiptap/extension-history': 2.0.0-beta.13_@tiptap+core@2.0.0-beta.81
+  '@tiptap/extension-image': 2.0.0-beta.14_@tiptap+core@2.0.0-beta.81
   '@tiptap/extension-link': 2.0.0-beta.17_@tiptap+core@2.0.0-beta.81
   '@tiptap/extension-paragraph': 2.0.0-beta.15_@tiptap+core@2.0.0-beta.81
   '@tiptap/extension-task-item': 2.0.0-beta.16_@tiptap+core@2.0.0-beta.81
   '@tiptap/extension-task-list': 2.0.0-beta.16_@tiptap+core@2.0.0-beta.81
   '@tiptap/extension-text': 2.0.0-beta.12_@tiptap+core@2.0.0-beta.81
+  '@tiptap/extension-text-align': 2.0.0-beta.20_@tiptap+core@2.0.0-beta.81
   '@tiptap/extension-typography': 2.0.0-beta.12_@tiptap+core@2.0.0-beta.81
   '@tiptap/extension-underline': 2.0.0-beta.15_@tiptap+core@2.0.0-beta.81
   '@tiptap/starter-kit': 2.0.0-beta.77
@@ -2344,6 +2348,14 @@ packages:
       prosemirror-state: 1.3.4
     dev: false
 
+  /@tiptap/extension-image/2.0.0-beta.14_@tiptap+core@2.0.0-beta.81:
+    resolution: {integrity: sha512-OguktQVJ8D0wFm8jrnct16Pu+T5J0N+rzMNk5kguJJCMiFjhQZ4USZw5jHU6BIAKwulupXmZ/PUBIYCx02LhIA==}
+    peerDependencies:
+      '@tiptap/core': ^2.0.0-beta.1
+    dependencies:
+      '@tiptap/core': 2.0.0-beta.81
+    dev: false
+
   /@tiptap/extension-italic/2.0.0-beta.14_@tiptap+core@2.0.0-beta.81:
     resolution: {integrity: sha512-kDdHVHfHuQe3s0A+xrJm0OTE3MrCRWDFHiJ+rC5JnY3/b8GEzovOD6cslz6CeVSZAUDERmHKVPF+ioAct7HXtw==}
     peerDependencies:
@@ -2405,6 +2417,14 @@ packages:
 
   /@tiptap/extension-task-list/2.0.0-beta.16_@tiptap+core@2.0.0-beta.81:
     resolution: {integrity: sha512-CxVrjdOAmEGIQjz5Jg46jNZUjLdll726ZCUyE1H9cW1e5bFRCWdjyPb5D3NFw2qJ7IBrf2utE7ESvKWJWws9nA==}
+    peerDependencies:
+      '@tiptap/core': ^2.0.0-beta.1
+    dependencies:
+      '@tiptap/core': 2.0.0-beta.81
+    dev: false
+
+  /@tiptap/extension-text-align/2.0.0-beta.20_@tiptap+core@2.0.0-beta.81:
+    resolution: {integrity: sha512-R06oz4xr6ULKkVA9MBwttR+72ostEnPDAeXfdf++/RxGwLLmM7TG2+ulMcfp4ICWe6H/zLwTAPpkaKeZSEwwrw==}
     peerDependencies:
       '@tiptap/core': ^2.0.0-beta.1
     dependencies:

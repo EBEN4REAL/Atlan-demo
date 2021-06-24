@@ -21,14 +21,34 @@
         :class="{
           'is-active':
             editor.isActive(`${menuItem.key}`) ||
-            editor.isActive(`heading`, { level: menuItem.level }),
+            editor.isActive(`heading`, { level: menuItem.level }) ||
+            (menuItem.key.split('-')[0] === 'align' &&
+              editor.isActive({ textAlign: menuItem.key.split('-')[1] })),
           'border-r-2': menuItem.border,
         }"
         @click="() => menuItem.onClick(editor)"
       >
         <a-popover placement="bottom">
-          <fa v-if="menuItem.icon" :icon="menuItem.icon" class="m-1" />
+          <a-dropdown v-if="menuItem.key === 'image'">
+            <fa icon="fa link" class="m-1" />
+            <template #overlay>
+              <a-menu>
+                <a-menu-item>
+                  <a href="javascript:;">1st menu item</a>
+                </a-menu-item>
+                <a-menu-item>
+                  <a href="javascript:;">2nd menu item</a>
+                </a-menu-item>
+                <a-menu-item>
+                  <a href="javascript:;">3rd menu item</a>
+                </a-menu-item>
+              </a-menu>
+            </template>
+          </a-dropdown>
+
+          <fa v-else-if="menuItem.icon" :icon="menuItem.icon" class="m-1" />
           <span v-else>{{ menuItem.title }}</span>
+
           <template #content>bruh</template>
         </a-popover>
 
@@ -190,6 +210,32 @@ export default defineComponent({
         onClick: (editor) => editor.chain().focus().toggleOrderedList().run(),
       },
       {
+        title: "Align Left",
+        key: "align-left",
+        helpText: "",
+        icon: "fa align-left",
+        onClick: (editor) => editor.chain().focus().setTextAlign("left").run(),
+      },
+      {
+        title: "Align Center",
+        key: "align-center",
+        helpText: "",
+        icon: "fa align-center",
+        onClick: (editor) =>
+          editor.chain().focus().setTextAlign("center").run(),
+      },
+      {
+        title: "Align Right",
+        key: "align-right",
+        helpText: "",
+        icon: "fa align-right",
+        border: true,
+        onClick: (editor) => {
+          console.log(editor.commands);
+          editor.chain().focus().setTextAlign("right").run();
+        },
+      },
+      {
         title: "Link",
         key: "link",
         helpText: "",
@@ -197,6 +243,16 @@ export default defineComponent({
         onClick: (editor) => {
           link.value = editor.getAttributes("link").href ?? "";
           showLinkModal.value = !showLinkModal.value;
+        },
+      },
+      {
+        title: "Image",
+        key: "image",
+        helpText: "",
+        icon: "fa link",
+        onClick: (editor) => {
+          // link.value = editor.getAttributes("link").href ?? "";
+          // showLinkModal.value = !showLinkModal.value;
         },
       },
       {
@@ -272,5 +328,12 @@ export default defineComponent({
 }
 .editor-menu {
   @apply bg-white opacity-100 !important;
+
+  button {
+    width: 2.5rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
 }
 </style>

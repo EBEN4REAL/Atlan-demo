@@ -15,6 +15,8 @@ import Underline from "@tiptap/extension-underline";
 import Link from "@tiptap/extension-link";
 import TaskList from "@tiptap/extension-task-list";
 import TaskItem from "@tiptap/extension-task-item";
+import TextAlign from "@tiptap/extension-text-align";
+import Image from '@tiptap/extension-image'
 
 import EditorMenu from "./editorMenu.vue";
 
@@ -45,13 +47,27 @@ export default defineComponent({
     }, 200);
 
     const editor = useEditor({
-      content: `${props.content.length ? props.content : props.placeholder}`,
-      extensions: [StarterKit, Underline, Link, TaskList, TaskItem],
+      content: `${
+        props.content.length ? props.content : props.placeholder
+      }<p style="text-align: center">sdf</p>`,
+      extensions: [
+        StarterKit,
+        Underline,
+        Link,
+        TaskList,
+        TaskItem,
+        Image,
+        TextAlign.configure({
+          types: ["heading", "paragraph"],
+        }),
+      ],
       onUpdate({ editor }) {
         const content = editor.getHTML();
         debouncedEmit(content);
       },
     });
+
+    console.log(editor.value?.schema);
     return { editor };
   },
 });
@@ -81,7 +97,7 @@ export default defineComponent({
         label {
           @apply my-1 mr-2 flex align-middle;
         }
-         div {
+        div {
           @apply p-0 m-0 flex align-middle;
         }
       }

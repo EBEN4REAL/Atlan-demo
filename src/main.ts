@@ -2,6 +2,7 @@ import Vue, { createApp } from "vue";
 import { createRouter, createWebHistory } from "vue-router";
 import generatedRoutes from "virtual:generated-pages";
 import { setupLayouts } from "virtual:generated-layouts";
+import { inputFocusDirective } from "~/directives/input-focus";
 import App from "./App.vue";
 
 import "~/styles/index.less";
@@ -10,13 +11,7 @@ import { TENANT_FETCH_DATA } from "./constant/store_types";
 import { useStore } from "~/store";
 
 const app = createApp(App);
-
-// auto-focus directive use it as v-focus
-app.directive("input-focus", {
-  mounted(el) {
-    el.focus();
-  },
-});
+inputFocusDirective(app);
 
 // setup up pages with layouts
 const routes = setupLayouts(generatedRoutes);

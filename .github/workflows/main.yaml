@@ -100,3 +100,16 @@ jobs:
         owner: atlanhq
         repo: atlan-v2
         commitish: ${{ steps.get_latest_tag.outputs.charts_tag }}
+        
+        
+    # Send a slack notification message on the specified channel with the failure github actions workflow report.
+    - name: Slack notification
+      uses: 8398a7/action-slack@v3
+      with:
+        status: ${{ job.status }}
+        author_name: Github-Actions # default: 8398a7@action-slack
+        fields: repo,commit,workflow,message,author,took # default: repo,commit
+        text: "- @infra, Job ${{ job.status }} :rocket:"
+      env:
+        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }} # required
+      if: failure() # Pick up events even if the job fails or is canceled.

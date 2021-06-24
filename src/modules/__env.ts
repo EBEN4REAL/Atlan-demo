@@ -1,6 +1,6 @@
 import { UserModule } from "~/types/vitessg";
 // const debug = process.env.NODE_ENV !== "production";
-const parse = function(value: any, fallback: any): any {
+const parse = function (value: any, fallback: any): any {
   if (typeof value === "undefined") {
     return fallback;
   }
@@ -14,7 +14,7 @@ const parse = function(value: any, fallback: any): any {
   }
 };
 
-export const getEnv = function(): any {
+export const getEnv = function (): any {
   const config = {
     DEFAULT_REQUEST_TIMEOUT: parse(
       import.meta.env.VITE_DEFAULT_REQUEST_TIMEOUT,
@@ -30,7 +30,7 @@ export const getEnv = function(): any {
   return config;
 };
 
-export const getBasePath = function(): any {
+export const getBasePath = function (): any {
   const env = import.meta.env.MODE;
   const devBaseUrl = getEnv().DEV_API_BASE_URL;
   switch (env) {

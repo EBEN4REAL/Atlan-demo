@@ -26,6 +26,16 @@ export const AssetTypeList = [
     isDiscoverable: false,
   },
   {
+    id: "View",
+    label: "View",
+    nameAttribute: "viewName",
+    qualifiedNameAttribute: "viewQualifiedName",
+    parents: ["Connection", "Database", "Schema"],
+    children: ["Columns"],
+    isDiscoverable: true,
+    orderWeight: 90,
+  },
+  {
     id: "Table",
     label: "Table",
     nameAttribute: "tableName",
@@ -33,6 +43,7 @@ export const AssetTypeList = [
     parents: ["Connection", "Database", "Schema"],
     children: ["Columns"],
     isDiscoverable: true,
+    orderWeight: 100,
   },
   {
     id: "Column",
@@ -42,5 +53,6 @@ export const AssetTypeList = [
     parents: ["Connection", "Database", "Schema"],
     children: ["Columns"],
     isDiscoverable: true,
+    orderWeight: 80,
   },
 ];

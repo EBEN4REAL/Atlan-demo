@@ -1,16 +1,39 @@
 <template>
-  <div class="grid grid-cols-12 mb-3">
-    <div class="col-span-3 p-4 bg-white border rounded-lg">
+  <div class="w-full bg-white">
+    <p class="mb-1 text-xs font-semibold leading-tight text-gray-500 uppercase">
+      Total Assets
+    </p>
+    <LoadingView
+      style="min-height: 100px"
+      v-if="
+        [STATES.PENDING].includes(state) || [STATES.VALIDATING].includes(state)
+      "
+    ></LoadingView>
+    <ErrorView
+      style="min-height: 100px"
+      v-else-if="[STATES.ERROR, STATES.STALE_IF_ERROR].includes(state)"
+    ></ErrorView>
+    <div v-else>
       <p
-        class="mb-1 text-xs font-semibold leading-tight text-gray-500 uppercase"
-      >
-        Total Assets
-      </p>
-      <p
-        class="mb-1 text-lg font-semibold leading-tight text-gray-800 uppercase"
+        class="mb-1 text-2xl font-semibold leading-tight text-gray-800 uppercase "
       >
         {{ numeralFormat(assetDistributionSum) }}
       </p>
+      <div
+        v-for="item in assetTypeList"
+        :key="item.id"
+        class="flex flex-col mt-4 space-y-2"
+      >
+        <div class="flex justify-between">
+          <div class="flex">
+            <component :is="item.id" class="w-auto h-5 mr-1"></component>
+            {{ item.label }}
+          </div>
+          <div>
+            {{ numeralFormat(item.count) }}
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -21,10 +44,13 @@ import { BaseAttributes, BasicSearchAttributes } from "~/constant/projection";
 import { ConnectionType } from "~/types/atlas/connection";
 
 import fetchAssetDiscover from "~/composables/asset/fetchAssetDiscover";
+import LoadingView from "@common/loaders/section.vue";
+import ErrorView from "@common/error/index.vue";
+// import EmptyView from "@common/empty/index.vue";
 
 export default defineComponent({
   mixins: [],
-  components: {},
+  components: { LoadingView, ErrorView },
   props: {
     item: {
       type: Object as PropType<ConnectionType>,
@@ -59,14 +85,15 @@ export default defineComponent({
       },
       aggregationAttributes: ["__typeName.keyword"],
     });
-    const { totalCount, listCount, assetTypeList, assetDistributionSum } =
-      fetchAssetDiscover(now, defaultBody);
+    const { totalCount, listCount, assetTypeList } = fetchAssetDiscover(
+      now,
+      defaultBody
+    );
 
     return {
       totalCount,
       listCount,
       assetTypeList,
-      assetDistributionSum,
     };
   },
   mounted() {},

@@ -44,19 +44,22 @@
             type="primary"
             size="small"
             @click="handleUpdate"
-            :loading="!state && isReady"
+            :loading="isLoading"
             >Update</a-button
           >
         </div>
       </template>
-      <div class="px-2 py-1 rounded-lg hover:bg-white hover:border">
+      <div
+        class="px-2 py-1 transition duration-500 ease-in-out rounded-lg  hover:bg-gray-50 hover:border"
+        ref="animationPoint"
+      >
         <p class="mb-0 text-sm tracking-wide text-gray-400">Status</p>
         <StatusBadge
           :key="item.guid"
           :statusId="item?.attributes?.assetStatus"
           :statusMessage="item?.attributes?.assetStatusMessage"
-          :statusUpdateAt="item?.attributes?.assetStatusUpdateAt"
-          :statusUpdateBy="item?.attributes?.assetStatusUpdateBy"
+          :statusUpdatedAt="item?.attributes?.assetStatusUpdatedAt"
+          :statusUpdatedBy="item?.attributes?.assetStatusUpdatedBy"
           :showNoStatus="true"
           :showLabel="true"
         ></StatusBadge>
@@ -73,17 +76,17 @@
 </template>
               
 <script lang="ts">
-import { defineComponent, nextTick, ref, watch } from "vue";
+import { computed, defineComponent, nextTick, ref, watch } from "vue";
 import { useMagicKeys } from "@vueuse/core";
 import StatusBadge from "@common/badge/status/index.vue";
-import AssetMixin from "~/mixins/asset";
 
 import { List } from "~/constant/status";
 import updateStatus from "~/composables/asset/updateStatus";
+import confetti from "~/utils/confetti";
 
 export default defineComponent({
   components: { StatusBadge },
-  mixins: [AssetMixin],
+
   props: {
     item: {
       type: Object,
@@ -94,19 +97,41 @@ export default defineComponent({
     },
   },
   setup(props) {
+    // const isLoading = ref(false);
+
     const {
       handleCancel,
-      execute,
+      update,
       isReady,
       state,
       statusId,
       statusMessage,
       isCompleted,
+      isLoading,
     } = updateStatus(props.item);
 
+    const animationPoint = ref(null);
+
     const handleUpdate = () => {
-      execute();
+      update();
     };
+
+    watch(isReady, () => {
+      if (isReady.value) {
+        if (statusId.value === "verified") {
+          const config = {
+            angle: 45,
+            startVelocity: 10,
+            spread: 100,
+            elementCount: 50,
+            colors: ["#2251cc", "#2251cc", "#82b54b", "#e94a3f", "#faa040"],
+            width: "0.3rem",
+            height: "0.3rem",
+          };
+          confetti(animationPoint.value, config);
+        }
+      }
+    });
 
     const keys = useMagicKeys();
     const esc = keys["Escape"];
@@ -119,23 +144,21 @@ export default defineComponent({
     return {
       handleUpdate,
       handleCancel,
+
       isReady,
       state,
       statusId,
       statusMessage,
       isCompleted,
       List,
+      animationPoint,
+      isLoading,
     };
   },
 });
 </script>
     
 
-<style lang="less">
-.pushtop {
-  top: 2px;
-}
-</style>
     
        
 <style lang="less" module>

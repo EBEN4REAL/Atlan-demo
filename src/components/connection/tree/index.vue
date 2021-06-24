@@ -1,5 +1,14 @@
 <template>
-  <div>
+  <LoadingView v-if="isLoading"></LoadingView>
+  <ErrorView v-else-if="isError" :error="error"></ErrorView>
+  <EmptyView
+    v-else-if="!isLoading && treeData?.length === 0"
+    empty="There are no connectitions available"
+    buttonText="Setup new connection"
+    @event="handleEvent"
+  ></EmptyView>
+
+  <div v-else>
     <a-tree
       :treeData="treeData"
       :blockNode="true"
@@ -43,9 +52,15 @@ import { defineComponent, ref, watch } from "vue";
 import handleTreeExpand from "~/composables/tree/handleTreeExpand";
 import fetchConnectionList from "~/composables/connection/fetchConnectionList";
 import { debouncedWatch } from "@vueuse/core";
+// :loading="[STATES.PENDING].includes(state)"
+import EmptyView from "@common/empty/index.vue";
+import ErrorView from "@common/error/index.vue";
+import LoadingView from "@common/loaders/section.vue";
+import { useRouter } from "vue-router";
+import { CONNECTION_FETCH_LIST } from "~/constant/cache";
 
 export default defineComponent({
-  components: {},
+  components: { EmptyView, ErrorView, LoadingView },
   props: {
     searchText: {
       type: String,
@@ -59,24 +74,35 @@ export default defineComponent({
     return {};
   },
   setup(props, { emit }) {
-    let now = ref(true);
-    const { treeData, body, mutate } = fetchConnectionList(now);
+    const { treeData, query, error, isLoading, isError } = fetchConnectionList(
+      CONNECTION_FETCH_LIST
+    );
+
     debouncedWatch(
       () => props.searchText,
       () => {
-        body.value.query = props.searchText;
-        mutate();
+        query(props.searchText);
       },
       { debounce: 100 }
     );
+
+    const router = useRouter();
+    const handleEvent = () => {
+      router.push("/setup");
+    };
+
     const { expandedKeys, selectNode, selectedKeys, expandNode } =
       handleTreeExpand(emit);
     return {
       treeData,
+      handleEvent,
       expandedKeys,
       selectedKeys,
       selectNode,
       expandNode,
+      isLoading,
+      isError,
+      error,
     };
   },
 });

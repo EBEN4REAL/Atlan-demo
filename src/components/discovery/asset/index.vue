@@ -2,61 +2,118 @@
 
 
 <template>
-  <div class="h-full col-span-2 pt-5 border-r border-gray-100 bg-sidebar">
-    <div class="mb-4">
-      <ConnectorDropdown></ConnectorDropdown>
-    </div>
-    <div class="px-4">
-      <p class="flex mb-1 text-sm leading-none text-gray-500">Filters</p>
-    </div>
+  <div
+    class="hidden h-full pt-6 pl-4 bg-white  sm:block sm:col-span-4 md:col-span-2 sm"
+  >
+    <div class="flex flex-col h-full">
+      <div class="px-3 mb-3">
+        <a-radio-group
+          class="flex w-full text-center"
+          v-model:value="filterMode"
+        >
+          <a-radio-button class="flex-grow" value="custom"
+            ><fa icon="fal filter" class="pushtop"></fa
+          ></a-radio-button>
+          <a-radio-button class="flex-grow" value="saved"
+            ><fa icon="fal list-alt" class="pushtop"></fa
+          ></a-radio-button>
+        </a-radio-group>
+      </div>
 
-    <AssetFilters @change="handleFilterChange"></AssetFilters>
+      <keep-alive class="flex-grow h-full">
+        <div>
+          <div v-if="filterMode === 'custom'">
+            <div class="pb-2 mb-2">
+              <ConnectorDropdown></ConnectorDropdown>
+            </div>
+
+            <AssetFilters @refresh="handleFilterChange"></AssetFilters>
+          </div>
+
+          <SavedFilters v-if="filterMode === 'saved'"></SavedFilters>
+        </div>
+      </keep-alive>
+    </div>
   </div>
   <div
-    class="flex flex-col items-stretch h-full col-span-7 bg-white shadow-md"
+    class="flex flex-col items-stretch h-full col-span-12 pt-6 bg-white  sm:col-span-8 md:col-span-7"
     style="overflow: hidden"
   >
-    <div class="flex items-center border-b border-gray-200">
-      <SearchBox
-        @change="handleSearchChange"
-        :loading="
-          [STATES.PENDING].includes(state) ||
-          [STATES.VALIDATING].includes(state)
-        "
-        size="large"
-        class="px-4"
-      ></SearchBox>
-
-      <div class="flex px-1 border-dashed">
-        <a-button type="link"> <fa icon="fal eye" class=""></fa></a-button>
-      </div>
+    <div class="flex items-center px-6 gap-x-3">
+      <a-input placeholder="Search" @input="handleSearchChange">
+        <template #suffix>
+          <a-popover placement="bottom">
+            <template #content>
+              <Preferences
+                :defaultProjection="projection"
+                @change="handleChangePreferences"
+              ></Preferences>
+            </template>
+            <a-spin
+              size="small"
+              class="mr-2 leading-none"
+              v-if="isLoading"
+            ></a-spin>
+          </a-popover>
+        </template>
+      </a-input>
+      <a-popover placement="bottom">
+        <template #content>
+          <Preferences
+            :defaultProjection="projection"
+            @change="handleChangePreferences"
+          ></Preferences>
+        </template>
+        <a-button size="default"
+          ><fa icon="fal cog" class="mr-1"></fa
+          ><fa icon="fal chevron-down" class="text-xs text-primary-500"></fa
+        ></a-button>
+      </a-popover>
     </div>
-    <div class="flex w-full bg-sidebar">
-      <AssetTabs :assetTypeList="assetTypeList"></AssetTabs>
-    </div>
 
-    <AssetList :list="list.value" @preview="handlePreview"> </AssetList>
+    <div class="flex w-full px-6 my-1" style="min-height: 34px">
+      <AssetTabs
+        :assetTypeList="assetTypeList"
+        @change="handleChangeAssetType"
+        class="rounded-tr"
+      ></AssetTabs>
+    </div>
     <div
-      class="flex items-center px-6 py-2 border-t bg-sidebar"
-      style="min-height: 17px"
+      v-if="list && list.length <= 0 && !isLoading"
+      class="flex-grow mx-6 border rounded"
     >
-      <div
-        class="flex items-center leading-none"
-        v-if="
-          [STATES.PENDING].includes(state) ||
-          [STATES.VALIDATING].includes(state)
-        "
-      >
-        <a-spin size="small" class="mr-2 leading-none"></a-spin
-        ><span>searching results</span>
+      <EmptyView></EmptyView>
+    </div>
+    <AssetList
+      v-else
+      @preview="handlePreview"
+      :list="list"
+      :projection="projection"
+      :isLoading="isLoading"
+      ref="assetlist"
+    ></AssetList>
+    <div class="flex w-full px-6 pb-2" style="min-height: 17px">
+      <div class="flex items-center justify-between w-full px-2 py-2">
+        <div class="flex items-center text-sm leading-none" v-if="isLoading">
+          <a-spin size="small" class="mr-2 leading-none"></a-spin
+          ><span>searching results</span>
+        </div>
+        <AssetPagination
+          v-else
+          :limit="limit"
+          :offset="offset"
+          :totalCount="totalCount"
+          :listCount="listCount"
+        ></AssetPagination>
+
+        <div
+          class="text-sm cursor-pointer text-primary-500"
+          @click="loadMore(limit)"
+          v-if="isLoadMore"
+        >
+          Load More...
+        </div>
       </div>
-      <AssetPagination
-        v-else
-        :limit="limit"
-        :offset="offset"
-        :totalCount="totalCount"
-        :listCount="listCount"
-      ></AssetPagination>
     </div>
   </div>
 </template>
@@ -65,6 +122,7 @@
 import { defineComponent, ref } from "vue";
 
 import AssetFilters from "@/discovery/asset/filters/index.vue";
+import SavedFilters from "@/discovery/asset/saved/index.vue";
 import AssetList from "@/discovery/asset/list/index.vue";
 import AssetTabs from "@/discovery/asset/tabs/index.vue";
 import AssetPagination from "@common/pagination/index.vue";
@@ -73,93 +131,114 @@ import { SearchParameters } from "~/store/modules/search/state";
 import ConnectorDropdown from "@common/dropdown/connector/index.vue";
 import { BaseAttributes, BasicSearchAttributes } from "~/constant/projection";
 
+import EmptyView from "@common/empty/discover.vue";
+
+import Preferences from "@/discovery/asset/preference/index.vue";
+import { useDebounceFn } from "@vueuse/core";
 import fetchAssetDiscover from "~/composables/asset/fetchAssetDiscover";
+import useDiscoveryPreferences from "~/composables/preference/useDiscoveryPreference";
+import { DISCOVERY_FETCH_LIST } from "~/constant/cache";
+import { Components } from "~/api/atlas/client";
 
 export default defineComponent({
   name: "HelloWorld",
   components: {
     AssetList,
+    SavedFilters,
     SearchBox,
     AssetTabs,
     AssetFilters,
     AssetPagination,
     ConnectorDropdown,
+    Preferences,
+    EmptyView,
   },
-  props: {},
   data() {
     return {
       activeKey: "",
       debounce: null,
     };
   },
-  computed: {
-    loading(): boolean {
-      return false;
-    },
-  },
-  mounted() {
-    // this.fetchSearch({});
-  },
   emits: ["preview"],
   setup(props) {
-    let now = ref(true);
-    let debounce = null;
-    const defaultBody = ref({
-      typeName: "Table",
-      excludeDeletedEntities: true,
-      includeClassificationAttributes: true,
-      includeSubClassifications: true,
-      includeSubTypes: true,
-      limit: 20,
-      offset: 0,
-      attributes: [...BaseAttributes, ...BasicSearchAttributes],
-      entityFilters: null,
-      aggregationAttributes: ["__typeName.keyword"],
-    });
+    let filterMode = ref("custom");
+
+    const assetlist = ref(null);
+    const { projection } = useDiscoveryPreferences();
+    const immediate = ref(true);
     const {
       list,
-      totalCount,
       listCount,
-      assetTypeList,
-      offset,
+      isLoadMore,
+      loadMore,
+      query,
+      filter,
+      isLoading,
       limit,
-      mutate,
-      state,
-      STATES,
-    } = fetchAssetDiscover(now, defaultBody);
+      offset,
+      totalCount,
+      changeAssetType,
+      assetTypeList,
+    } = fetchAssetDiscover(DISCOVERY_FETCH_LIST, immediate);
 
-    const handleSearchChange = (value: string) => {
-      if (value == "") {
-        defaultBody.value.query = value;
-        mutate();
-      } else {
-        clearTimeout(debounce);
-        debounce = setTimeout(() => {
-          defaultBody.value.query = value;
-          mutate();
-        }, 100);
+    const handleSearchChange = useDebounceFn((val) => {
+      query(val.target.value);
+      if (assetlist.value) {
+        console.log("scroll");
+        assetlist?.value.scrollToItem(0);
       }
+    }, 100);
+
+    const handleChangePreferences = (payload: any) => {
+      projection.value = payload;
+    };
+
+    const handleFilterChange = (payload: any) => {
+      console.log(payload);
+      filter({
+        condition: "AND" as Components.Schemas.Condition,
+        criterion: payload,
+      });
+    };
+
+    const handleChangeAssetType = (payload: any) => {
+      changeAssetType(payload);
     };
 
     return {
       list,
-      state,
-      STATES,
-      offset,
-      limit,
-      assetTypeList,
-      totalCount,
+      filterMode,
       listCount,
-      defaultBody,
+      isLoading,
+      limit,
+      offset,
+      totalCount,
+      isLoadMore,
+      loadMore,
       handleSearchChange,
+      handleFilterChange,
+      assetlist,
+      projection,
+      handleChangePreferences,
+      handleChangeAssetType,
+      assetTypeList,
+      // list,
+      // filterMode,
+      // state,
+      // STATES,
+      // assetTypeList,
+      // totalCount,
+      // listCount,
+      // // defaultBody,
+      // // handleSearchChange,
+      // // handleChangePreferences,
+      // // handleChangeAssetType,
+      // projection,
     };
   },
   methods: {
     handlePreview(item) {
       this.$emit("preview", item);
-    },
-    handleFilterChange(params: SearchParameters) {
-      this.fetchSearch(params);
     },
     getIsLoadMore(
       length: number,

@@ -2,19 +2,15 @@
   "0 debug pnpm:scope": {
     "selected": 1
   },
-  "1 error pnpm": {
-    "code": "ELIFECYCLE",
-    "errno": "ENOENT",
-    "syscall": "spawn",
-    "file": "sh",
-    "pkgid": "@",
-    "stage": "build-staging",
-    "script": "vite build --mode staging",
+  "1 error JSONError": {
+    "fileName": "/Users/admin/Documents/GitHub/atlan-frontend/package.json",
+    "codeFrame": "\u001b[0m \u001b[90m  8 |\u001b[39m     \u001b[32m\"preview\"\u001b[39m\u001b[33m:\u001b[39m \u001b[32m\"vite preview --port 8080\"\u001b[39m\u001b[33m,\u001b[39m\u001b[0m\n\u001b[0m \u001b[90m  9 |\u001b[39m     \u001b[32m\"preview-https\"\u001b[39m\u001b[33m:\u001b[39m \u001b[32m\"serve dist\"\u001b[39m\u001b[33m,\u001b[39m\u001b[0m\n\u001b[0m\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 10 |\u001b[39m   }\u001b[33m,\u001b[39m\u001b[0m\n\u001b[0m \u001b[90m    |\u001b[39m   \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\u001b[0m\n\u001b[0m \u001b[90m 11 |\u001b[39m   \u001b[32m\"dependencies\"\u001b[39m\u001b[33m:\u001b[39m {\u001b[0m\n\u001b[0m \u001b[90m 12 |\u001b[39m     \u001b[32m\"@codemirror/next\"\u001b[39m\u001b[33m:\u001b[39m \u001b[32m\"^0.16.0\"\u001b[39m\u001b[33m,\u001b[39m\u001b[0m\n\u001b[0m \u001b[90m 13 |\u001b[39m     \u001b[32m\"@dsb-norge/vue-keycloak-js\"\u001b[39m\u001b[33m:\u001b[39m \u001b[32m\"^2.0.0-beta\"\u001b[39m\u001b[33m,\u001b[39m\u001b[0m",
+    "code": "ERR_PNPM_JSON_PARSE",
     "err": {
-      "name": "Error",
-      "message": "@ build-staging: `vite build --mode staging`\nspawn ENOENT",
-      "code": "ELIFECYCLE",
-      "stack": "Error: @ build-staging: `vite build --mode staging`\nspawn ENOENT\n    at ChildProcess.<anonymous> (/usr/local/lib/node_modules/pnpm/dist/pnpm.cjs:92406:22)\n    at ChildProcess.emit (node:events:369:20)\n    at maybeClose (node:internal/child_process:1067:16)\n    at Process.ChildProcess._handle.onexit (node:internal/child_process:301:5)"
+      "name": "JSONError",
+      "message": "Unexpected token \"}\" (0x7D) in JSON at position 281 while parsing near \"...s\\\": \\\"serve dist\\\",\\n  },\\n  \\\"dependencies\\\":...\" in /Users/admin/Documents/GitHub/atlan-frontend/package.json \n\n\u001b[0m \u001b[90m  8 |\u001b[39m     \u001b[32m\"preview\"\u001b[39m\u001b[33m:\u001b[39m \u001b[32m\"vite preview --port 8080\"\u001b[39m\u001b[33m,\u001b[39m\u001b[0m\n\u001b[0m \u001b[90m  9 |\u001b[39m     \u001b[32m\"preview-https\"\u001b[39m\u001b[33m:\u001b[39m \u001b[32m\"serve dist\"\u001b[39m\u001b[33m,\u001b[39m\u001b[0m\n\u001b[0m\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 10 |\u001b[39m   }\u001b[33m,\u001b[39m\u001b[0m\n\u001b[0m \u001b[90m    |\u001b[39m   \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\u001b[0m\n\u001b[0m \u001b[90m 11 |\u001b[39m   \u001b[32m\"dependencies\"\u001b[39m\u001b[33m:\u001b[39m {\u001b[0m\n\u001b[0m \u001b[90m 12 |\u001b[39m     \u001b[32m\"@codemirror/next\"\u001b[39m\u001b[33m:\u001b[39m \u001b[32m\"^0.16.0\"\u001b[39m\u001b[33m,\u001b[39m\u001b[0m\n\u001b[0m \u001b[90m 13 |\u001b[39m     \u001b[32m\"@dsb-norge/vue-keycloak-js\"\u001b[39m\u001b[33m:\u001b[39m \u001b[32m\"^2.0.0-beta\"\u001b[39m\u001b[33m,\u001b[39m\u001b[0m\n",
+      "code": "ERR_PNPM_JSON_PARSE",
+      "stack": "JSONError: Unexpected token \"}\" (0x7D) in JSON at position 281 while parsing near \"...s\\\": \\\"serve dist\\\",\\n  },\\n  \\\"dependencies\\\":...\" in /Users/admin/Documents/GitHub/atlan-frontend/package.json \n\n\u001b[0m \u001b[90m  8 |\u001b[39m     \u001b[32m\"preview\"\u001b[39m\u001b[33m:\u001b[39m \u001b[32m\"vite preview --port 8080\"\u001b[39m\u001b[33m,\u001b[39m\u001b[0m\n\u001b[0m \u001b[90m  9 |\u001b[39m     \u001b[32m\"preview-https\"\u001b[39m\u001b[33m:\u001b[39m \u001b[32m\"serve dist\"\u001b[39m\u001b[33m,\u001b[39m\u001b[0m\n\u001b[0m\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 10 |\u001b[39m   }\u001b[33m,\u001b[39m\u001b[0m\n\u001b[0m \u001b[90m    |\u001b[39m   \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\u001b[0m\n\u001b[0m \u001b[90m 11 |\u001b[39m   \u001b[32m\"dependencies\"\u001b[39m\u001b[33m:\u001b[39m {\u001b[0m\n\u001b[0m \u001b[90m 12 |\u001b[39m     \u001b[32m\"@codemirror/next\"\u001b[39m\u001b[33m:\u001b[39m \u001b[32m\"^0.16.0\"\u001b[39m\u001b[33m,\u001b[39m\u001b[0m\n\u001b[0m \u001b[90m 13 |\u001b[39m     \u001b[32m\"@dsb-norge/vue-keycloak-js\"\u001b[39m\u001b[33m:\u001b[39m \u001b[32m\"^2.0.0-beta\"\u001b[39m\u001b[33m,\u001b[39m\u001b[0m\n\n    at Object.parseJson [as default] (/usr/local/lib/node_modules/pnpm/dist/pnpm.cjs:3122:27)\n    at Object.readJsonFile (/usr/local/lib/node_modules/pnpm/dist/pnpm.cjs:39592:37)\n    at async tryReadProjectManifest (/usr/local/lib/node_modules/pnpm/dist/pnpm.cjs:39653:32)\n    at async readProjectManifest (/usr/local/lib/node_modules/pnpm/dist/pnpm.cjs:39638:22)\n    at async Object.readProjectManifestOnly (/usr/local/lib/node_modules/pnpm/dist/pnpm.cjs:39646:28)\n    at async Object.readProjectManifestOnly (/usr/local/lib/node_modules/pnpm/dist/pnpm.cjs:39865:24)\n    at async Object.handler (/usr/local/lib/node_modules/pnpm/dist/pnpm.cjs:120302:24)\n    at async Timeout._onTimeout (/usr/local/lib/node_modules/pnpm/dist/pnpm.cjs:124348:24)"
     }
   }
 }

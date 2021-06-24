@@ -2,7 +2,8 @@
   <div class="grid h-full grid-cols-12">
     <AssetDiscovery @preview="handlePreview"></AssetDiscovery>
     <div
-      class="flex flex-col items-stretch h-full col-span-3 border-l bg-sidebar"
+      class="flex flex-col items-stretch hidden h-full bg-white border-l  md:col-span-3 md:block"
+      style="overflow: hidden"
     >
       <AssetPreview :item="selected" v-if="selected?.guid"></AssetPreview>
     </div>

@@ -2,28 +2,14 @@
 
 
 <template>
-  <div class="p-6">
-    <TotalView class="mb-3" :item="item" :key="item.guid"></TotalView>
-    <DetailsView
-      :item="item"
-      :credential="credential"
-      :bot="bot"
-      class="mb-3"
-    ></DetailsView>
-    <div class="flex justify-between mt-4">
+  <div class="px-6 py-6">
+    <DetailsView :item="item" :credential="credential" :bot="bot"></DetailsView>
+    <!-- <div class="flex justify-between mt-4">
       <p class="mb-0 text-gray-400">Last 5 runs</p>
       <p class="mb-0 cursor-pointer text-primary-500">View All</p>
-    </div>
+    </div> -->
 
-    <RunsView :item="item" :credential="credential" :bot="bot"></RunsView>
-    <div class="flex justify-between mt-3">
-      <p class="mb-0 text-gray-400">Query Configuration</p>
-    </div>
-    <div class="grid grid-cols-12 mt-3">
-      <div class="col-span-6">
-        <QueryView class="" :item="item"></QueryView>
-      </div>
-    </div>
+    <!-- <RunsView :item="item" :credential="credential" :bot="bot"></RunsView> -->
 
     <DeleteView :item="item" class="mt-4" :key="item.guid"></DeleteView>
   </div>
@@ -35,7 +21,7 @@ import { defineComponent, PropType } from "vue";
 import RunsView from "@common/list/runs/index.vue";
 
 import DetailsView from "@/connection/overview/details.vue";
-import QueryView from "@/connection/overview/query.vue";
+
 import TotalView from "@/connection/overview/analytics/total.vue";
 import { ConnectionType } from "~/types/atlas/connection";
 import { CredentialType } from "~/types/atlas/credential";
@@ -44,7 +30,7 @@ import { BotsType } from "~/types/atlas/bots";
 import DeleteView from "@/connection/overview/delete.vue";
 export default defineComponent({
   name: "HelloWorld",
-  components: { DetailsView, QueryView, RunsView, DeleteView, TotalView },
+  components: { DetailsView, RunsView, DeleteView, TotalView },
   props: {
     item: {
       type: Object as PropType<ConnectionType>,

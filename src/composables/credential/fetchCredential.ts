@@ -28,7 +28,7 @@ export default function fetchCredentialList(dependent: any, query?: string, filt
         mutate } = fetchSearchList(dependent, body)
 
     const list: ComputedRef<CredentialType[] | undefined> = computed(() => {
-        console.log(data);
+
         return <CredentialType[] | undefined>data.value?.entities;
     });
     const item: ComputedRef<CredentialType | undefined> = computed(() => {

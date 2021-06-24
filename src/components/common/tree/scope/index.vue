@@ -1,26 +1,30 @@
 <template>
-  <a-tree-select
-    tree-checkable
-    style="width: 100%"
-    showCheckedStrategy="SHOW_PARENT"
-    :treeData="treeData"
-    :maxTagCount="10"
-    @change="handleChange"
-    :dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"
-    placeholder="Please select"
-  >
-    <template #title="{ title, image, isLeaf }" class="flex">
-      <span v-if="!isLeaf"
-        ><img :src="image" class="float-left w-auto h-4 mr-1"
-      /></span>
-      <span class="text-base leading-none text-dark-400" v-if="!isLeaf">{{
-        title
-      }}</span>
-      <span class="text-sm leading-none text-dark-400" v-if="isLeaf">{{
-        title
-      }}</span>
-    </template>
-  </a-tree-select>
+  <div class="flex">
+    <a-tree-select
+      tree-checkable
+      style="width: 100%"
+      :disabled="isLoading"
+      showCheckedStrategy="SHOW_PARENT"
+      :treeData="treeData"
+      :maxTagCount="10"
+      @change="handleChange"
+      :dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"
+      placeholder="Please select"
+    >
+      <template #title="{ title, image, isLeaf }" class="flex">
+        <span v-if="!isLeaf"
+          ><img :src="image" class="float-left w-auto h-4 mr-1"
+        /></span>
+        <span class="text-base leading-none text-dark-400" v-if="!isLeaf">{{
+          title
+        }}</span>
+        <span class="text-sm leading-none text-dark-400" v-if="isLeaf">{{
+          title
+        }}</span>
+      </template>
+    </a-tree-select>
+    <a-spin size="small" v-if="isLoading" class="ml-2"></a-spin>
+  </div>
 </template>
   
   
@@ -28,7 +32,7 @@
 import { defineComponent } from "vue";
 import TreeView from "@common/tree/index.vue";
 import ConnectionMixin from "~/mixins/connection";
-import { Metadata } from "~/api/heka/metadata";
+import { Metadata } from "~/api/auth/metadata";
 
 export default defineComponent({
   mixins: [ConnectionMixin],
@@ -49,7 +53,7 @@ export default defineComponent({
     },
   },
   data() {
-    return { treeData: [] };
+    return { treeData: [], isLoading: false };
   },
   watch: {
     credential() {
@@ -74,7 +78,9 @@ export default defineComponent({
       this.treeData = [];
       const temp = [];
       try {
+        this.isLoading = true;
         const res = await Metadata.List({ ...this.credential });
+
         console.log(res);
         if (res.result) {
           const list = res.result.reduce((r, obj) => {
@@ -120,7 +126,9 @@ export default defineComponent({
             children: temp,
           },
         ];
+        this.isLoading = false;
       } catch (err) {
+        this.isLoading = false;
         console.log(err);
       }
     },

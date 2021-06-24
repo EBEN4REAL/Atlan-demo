@@ -19,7 +19,7 @@ export const List: CheckboxArray = [
     id: "issue",
     label: "Issue",
     description: "Issue",
-    icon: "fas exclamation-circle",
+    icon: "fas exclamation-triangle",
     iconClass: "text-red-500",
   },
   {

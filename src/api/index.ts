@@ -11,17 +11,33 @@ export const getAxiosClient = () => {
   return axiosClient;
 };
 
-export const fetcher = (url, params, ...options): Promise<AxiosResponse["data"]> => {
-  return getAxiosClient().get(url, { params, ...options, });
-}
+export const fetcher = (
+  url,
+  params,
+  options
+): Promise<AxiosResponse["data"]> => {
+  return getAxiosClient().get(url, { params, ...options });
+};
 
-export const fetcherPost = (url, body, ...options): Promise<AxiosResponse["data"]> => {
-  console.log("fetcher");
-  return getAxiosClient().post(url, body, { ...options });
-}
+export const fetcherPost = (
+  url,
+  body,
+  options
+): Promise<AxiosResponse["data"]> => {
+  console.log("fetcher", options);
+  return getAxiosClient().post(url, body, options);
+};
 
-export const updater = (url, body, ...options): Promise<AxiosResponse["data"]> => {
-  return getAxiosClient().put(url, body, { ...options });
+export const updater = (
+  url,
+  body,
+  options
+): Promise<AxiosResponse["data"]> => {
+  return getAxiosClient().put(url, body, options);
+};
+
+export const deleter = (url, options): Promise<AxiosResponse["data"]> => {
+  return getAxiosClient().delete(url, options);
 }
 
 // export const ServiceURLWithoutTenant = (serviceName, path = "") => {

@@ -43,11 +43,14 @@ module.exports = {
           900: "#060607",
         },
         body: "#f8f8fd",
-      },
+      }
     },
   },
   variants: {
-    extend: {},
+    extend: {
+      animation: ['motion-safe'],
+      borderWidth: ['last']
+    },
   }, 
   plugins: [
     require('@tailwindcss/line-clamp'),

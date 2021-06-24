@@ -1,5 +1,5 @@
 <template>
-  <div class="p-6 bg-white rounded shadow-sm">
+  <div class="">
     <div class="flex space-x-6">
       <div>
         <p class="mb-0 text-sm text-gray-400">Allow Query</p>

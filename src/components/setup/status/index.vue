@@ -107,7 +107,7 @@ export default defineComponent({
           {
             botQualifiedName: this.attributes(this.item).qualifiedName,
             connection: {
-              displayName: this.credential.name,
+              displayName: this.credential.displayName,
               host: this.credential.host,
               port: this.credential.port,
               allowQuery: this.job.allowQuery,
@@ -117,8 +117,8 @@ export default defineComponent({
               queryConfig: {},
             },
             credential: {
-              authType: this.credential.auth_type,
-              connType: this.credential.conn_type,
+              authType: this.credential.authType,
+              connType: this.credential.connType,
               extra: this.credential.extra,
               login: this.credential.login,
               password: this.credential.password,

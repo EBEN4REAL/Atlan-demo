@@ -7,6 +7,8 @@ export default function updateOwners(item: any, type: Ref<string>) {
 
     const { username } = whoami();
 
+    const isLoading = ref(false);
+
     const isCompleted = ref(false);
     const body: { [key: string]: any } = ref({});
     const localOwnerUsers: Ref<string[]> = ref([]);
@@ -68,9 +70,16 @@ export default function updateOwners(item: any, type: Ref<string>) {
 
     const { state, execute, isReady, error } = updateAsset(body, { immediate: false });
 
+
+    const update = () => {
+        isLoading.value = true;
+        execute();
+    };
+
     watch(state, () => {
-        if (!error.value) {
+        if (!error.value && state && isReady.value) {
             isCompleted.value = false;
+            isLoading.value = false;
             if (localOwnerUsers?.value?.length > 0) {
                 item.attributes.ownerUsers = localOwnerUsers.value?.join(",");
             } else {
@@ -93,9 +102,10 @@ export default function updateOwners(item: any, type: Ref<string>) {
 
     const handleCancel = () => {
         isCompleted.value = false;
+        isLoading.value = false;
     };
 
     return {
-        handleCancel, ownerUsers, state, execute, isReady, error, isCompleted, ownerGroups
+        handleCancel, ownerUsers, state, execute, isReady, error, isCompleted, ownerGroups, update, isLoading
     }
 }

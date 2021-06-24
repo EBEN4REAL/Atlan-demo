@@ -2,15 +2,14 @@ import { fetcher, getAPIPath, getAxiosClient } from "~/api";
 import { AxiosRequestConfig } from "axios";
 import useSWRV from "swrv";
 
-
 const serviceAlias = "auth";
 
 export const URL = {
-  GroupList: "/groups/v2"
-}
+  GroupList: "/groups",
+};
 
 // const listGroup = (params?: any, options?: AxiosRequestConfig) => {
-//   const { data, error, mutate } = useSWRV([getAPIPath(serviceAlias, "/groups/v2"), params, options], fetcher);
+//   const { data, error, mutate } = useSWRV([getAPIPath(serviceAlias, "/groups"), params, options], fetcher);
 //   return {
 //     data,
 //     isLoading: !error && !data,
@@ -25,17 +24,63 @@ const ListV2 = (params?: any, options?: AxiosRequestConfig) => {
     ...options,
   });
 };
-
+const DeleteGroup = (
+  groupId: string,
+  body?: any,
+  options?: AxiosRequestConfig
+) => {
+  return getAxiosClient().post(
+    getAPIPath(serviceAlias, `/groups/${groupId}/delete`),
+    body,
+    options
+  );
+};
+const EditGroup = (
+  groupId: string,
+  body: any,
+  options?: AxiosRequestConfig
+) => {
+  return getAxiosClient().post(
+    getAPIPath(serviceAlias, `/groups/${groupId}`),
+    body,
+    options
+  );
+};
+const RemoveMembersFromGroup = (
+  groupId: string,
+  body: any,
+  options?: AxiosRequestConfig
+) => {
+  return getAxiosClient().post(
+    getAPIPath(serviceAlias, `/groups/${groupId}/members/remove`),
+    body,
+    options
+  );
+};
+const CreateGroup = (body?: any, options?: AxiosRequestConfig) => {
+  return getAxiosClient().post(
+    getAPIPath(serviceAlias, `/groups`),
+    body,
+    options
+  );
+};
+const AddMembers = (
+  groupId: string,
+  body: any,
+  options?: AxiosRequestConfig
+) => {
+  return getAxiosClient().post(
+    getAPIPath(serviceAlias, `/groups/${groupId}/members`),
+    body,
+    options
+  );
+};
 
 export const Group = {
   ListV2,
+  EditGroup,
+  RemoveMembersFromGroup,
+  DeleteGroup,
+  CreateGroup,
+  AddMembers,
 };
-
-
-
-
-
-
-
-
-

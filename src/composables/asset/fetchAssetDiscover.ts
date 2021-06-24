@@ -207,6 +207,45 @@ export default function fetchAssetDiscover(cache?: string, dependentKey?: Ref<an
         refresh(true);
     };
 
+    const changeConnectors = (payload: any) => {
+
+
+
+        let temp = {
+            ...entityFilters.value
+        }
+        temp.criterion = [...entityFilters.value.criterion];
+
+
+        let tempCriteria = {
+            condition: "OR",
+            criterion: [],
+        }
+
+        payload.connectors.forEach((element: any) => {
+            tempCriteria.criterion?.push({
+                attributeName: "integrationName",
+                attributeValue: element,
+                operator: "eq"
+            });
+        });
+        payload.connections.forEach((element: any) => {
+            tempCriteria.criterion?.push({
+                attributeName: "connectionQualifiedName",
+                attributeValue: element,
+                operator: "eq"
+            });
+        });
+        temp.criterion.push(tempCriteria);
+
+        body.value.entityFilters = {
+            ...temp
+        }
+        console.log("chaneg asset type");
+        refresh()
+
+    }
+
     const filter = (filters: Components.Schemas.FilterCriteria) => {
         entityFilters.value = filters;
         body.value.entityFilters = {
@@ -250,5 +289,6 @@ export default function fetchAssetDiscover(cache?: string, dependentKey?: Ref<an
         refresh,
         assetTypeList,
         changeAssetType,
+        changeConnectors,
     }
 }

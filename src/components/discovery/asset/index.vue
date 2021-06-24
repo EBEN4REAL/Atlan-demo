@@ -6,7 +6,7 @@
     class="hidden h-full pt-6 pl-4 bg-white  sm:block sm:col-span-4 md:col-span-2 sm"
   >
     <div class="flex flex-col h-full">
-      <div class="px-3 mb-3">
+      <div class="mb-3">
         <a-radio-group
           class="flex w-full text-center"
           v-model:value="filterMode"
@@ -22,15 +22,20 @@
 
       <keep-alive class="flex-grow h-full">
         <div>
-          <div v-if="filterMode === 'custom'">
+          <div v-show="filterMode === 'custom'">
             <div class="pb-2 mb-2">
-              <ConnectorDropdown></ConnectorDropdown>
+              <ConnectorDropdown
+                @change="handleChangeConnectors"
+              ></ConnectorDropdown>
             </div>
 
             <AssetFilters @refresh="handleFilterChange"></AssetFilters>
           </div>
-
-          <SavedFilters v-if="filterMode === 'saved'"></SavedFilters>
+        </div>
+      </keep-alive>
+      <keep-alive class="">
+        <div v-show="filterMode === 'saved'">
+          <SavedFilters></SavedFilters>
         </div>
       </keep-alive>
     </div>
@@ -179,6 +184,7 @@ export default defineComponent({
       totalCount,
       changeAssetType,
       assetTypeList,
+      changeConnectors,
     } = fetchAssetDiscover(DISCOVERY_FETCH_LIST, immediate);
 
     const handleSearchChange = useDebounceFn((val) => {
@@ -205,6 +211,10 @@ export default defineComponent({
       changeAssetType(payload);
     };
 
+    const handleChangeConnectors = (payload: any) => {
+      changeConnectors(payload);
+    };
+
     return {
       list,
       filterMode,
@@ -222,6 +232,8 @@ export default defineComponent({
       handleChangePreferences,
       handleChangeAssetType,
       assetTypeList,
+      handleChangeConnectors,
+      changeConnectors,
       // list,
       // filterMode,
       // state,

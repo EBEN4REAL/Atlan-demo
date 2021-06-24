@@ -5,7 +5,7 @@
       :columns="columns"
       v-if="invitationList && invitationList.length"
       :rowKey="(invitation)=>invitation.id"
-      :pagination="pagination"
+      :pagination="false"
       @change="handleTableChange"
       :loading="[STATES.PENDING].includes(state) ||
           [STATES.VALIDATING].includes(state)"
@@ -46,6 +46,15 @@
         </a-dropdown>
       </template>
     </a-table>
+    <div class="flex justify-between max-w-full mt-4">
+      <a-button type="link" size="default" @click="$emit('toggleList')">View Active Users</a-button>
+      <a-pagination
+        :total="pagination.total"
+        :current="pagination.current"
+        :pageSize="pagination.pageSize"
+        @change="handlePagination"
+      />
+    </div>
   </div>
 </template>
 
@@ -211,6 +220,12 @@ export default defineComponent({
         },
       });
     };
+    const handlePagination = (page) => {
+      //modify offset
+      const offset = (page - 1) * invitationListAPIParams.limit;
+      invitationListAPIParams.offset = offset;
+      getInvitationList();
+    };
 
     return {
       handleTableChange,
@@ -225,6 +240,7 @@ export default defineComponent({
       invitationList,
       state,
       STATES,
+      handlePagination,
     };
   },
   data() {

@@ -2,7 +2,7 @@ import Vue, { createApp } from "vue";
 import { createRouter, createWebHistory } from "vue-router";
 import generatedRoutes from "virtual:generated-pages";
 import { setupLayouts } from "virtual:generated-layouts";
-import { inputFocusDirective } from "~/directives/input-focus";
+import { createPinia } from "pinia";
 import App from "./App.vue";
 
 import "~/styles/index.less";
@@ -23,6 +23,7 @@ Object.values(import.meta.globEager("./modules/*.ts")).map((i) =>
 );
 
 app.use(router).mount("#app");
+app.use(createPinia());
 
 const fn = async () => {
   return await app.config.globalProperties.$keycloak.init({

@@ -8,46 +8,47 @@
       @change="handleSearch"
       :allowClear="true"
     ></a-input-search>
-    <a-popover placement="bottom">
-      <template #content>
-        <div class="flex">
-          <div class="pr-3 border-r border-gray-200 border-dashed">
-            <div class="flex justify-between">
-              <p class="mb-1 text-gray-500">Status</p>
-              <fa
-                icon="fal times-circle"
-                class="text-red-600 cursor-pointer"
-                @click="resetStatusFilter"
-                v-if="statusFilterValue"
-              ></fa>
-            </div>
-            <a-radio-group v-model:value="statusFilterValue" @change="handleStatusFilterChange">
-              <div class="flex flex-col space-y-1">
-                <a-radio :value="'enabled'">Active Users</a-radio>
-                <a-radio :value="'disabled'">Disabled Users</a-radio>
-              </div>
-            </a-radio-group>
-          </div>
-          <div class="pl-3">
-            <p class="mb-1 text-gray-500">Role</p>
-            <a-radio-group>
-              <div class="flex flex-col space-y-1">
-                <a-radio>Admin</a-radio>
-                <a-radio>Cloud</a-radio>
-                <a-radio>Steward</a-radio>
-                <a-radio>Member</a-radio>
-              </div>
-            </a-radio-group>
-          </div>
-        </div>
-      </template>
-      <a-button size="default">
-        <fa icon="fal filter" class="mr-1"></fa>
-        <!--TODO: add logic to count filters and show the count here-->
-        <span v-if="statusFilterValue">(1)</span>
-      </a-button>
-    </a-popover>
+
     <div class="flex justify-end">
+      <a-popover placement="bottom">
+        <template #content>
+          <div class="flex">
+            <div class="pr-3 border-r border-gray-200 border-dashed">
+              <div class="flex justify-between">
+                <p class="mb-1 text-gray-500">Status</p>
+                <fa
+                  icon="fal times-circle"
+                  class="text-red-600 cursor-pointer"
+                  @click="resetStatusFilter"
+                  v-if="statusFilterValue"
+                ></fa>
+              </div>
+              <a-radio-group v-model:value="statusFilterValue" @change="handleStatusFilterChange">
+                <div class="flex flex-col space-y-1">
+                  <a-radio :value="'enabled'">Active Users</a-radio>
+                  <a-radio :value="'disabled'">Disabled Users</a-radio>
+                </div>
+              </a-radio-group>
+            </div>
+            <div class="pl-3">
+              <p class="mb-1 text-gray-500">Role</p>
+              <a-radio-group>
+                <div class="flex flex-col space-y-1">
+                  <a-radio>Admin</a-radio>
+                  <a-radio>Cloud</a-radio>
+                  <a-radio>Steward</a-radio>
+                  <a-radio>Member</a-radio>
+                </div>
+              </a-radio-group>
+            </div>
+          </div>
+        </template>
+        <a-button size="default">
+          <fa icon="fal filter" class="mr-1"></fa>
+          <!--TODO: add logic to count filters and show the count here-->
+          <span v-if="statusFilterValue">(1)</span>
+        </a-button>
+      </a-popover>
       <a-button
         v-if="true || IS_SMTP_CONFIGURED"
         type="primary"

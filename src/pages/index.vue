@@ -3,9 +3,9 @@
     <div class="col-span-12 sm:col-span-8">
       <div class="flex items-center w-full align-middle">
         <div class="flex flex-col w-full">
-          <p class="mb-2 text-xl font-bold tracking-tight text-gray-900">
-            Welcome Home, {{ fullName }}
-          </p>
+          <p
+            class="mb-2 text-xl font-bold tracking-tight text-gray-900"
+          >Welcome Home, {{ fullName }}</p>
           <a-input-search placeholder="Search all your assets.." size="large">
             <template #prefix>
               <img :src="displayNameHTML" class="w-auto h-8 mr-3" />
@@ -14,9 +14,7 @@
         </div>
       </div>
     </div>
-    <div
-      class="hidden h-full p-3 mt-3 bg-white border rounded-md  sm:col-span-4 sm:block"
-    >
+    <div class="hidden h-full p-3 mt-3 bg-white border rounded-md sm:col-span-4 sm:block">
       <div class="flex items-center justify-between p-5 align-middle">
         <div class="flex items-center">
           <a-upload
@@ -26,11 +24,11 @@
             :show-upload-list="false"
           >
             <div
-              class="hidden text-center border-2 rounded-lg  border-primary-300 sm:block"
+              class="hidden text-center border-2 rounded-lg border-primary-300 sm:block"
               style="width: 56px; height: 56px"
               v-if="!isReady && uploadStarted"
             >
-              <a-spin size="small" class="" style="margin-top: 18px"></a-spin>
+              <a-spin size="small" class style="margin-top: 18px"></a-spin>
             </div>
             <a-avatar
               v-else
@@ -44,30 +42,36 @@
 
           <div class="flex flex-col ml-2">
             <p
-              class="mb-0 text-lg leading-none tracking-tight text-gray-800 truncate  text-semibold"
-            >
-              {{ fullName }}
-            </p>
+              class="mb-0 text-lg leading-none tracking-tight text-gray-800 truncate text-semibold"
+            >{{ fullName }}</p>
             <p class="mb-0 text-sm text-gray-500">@{{ username }}</p>
             <p class="mt-0 mb-0 text-sm tracking-tight text-gray-800">
-              <fa icon="fal user-tag" class="mr-1 text-gray-800 pushtop"></fa
-              >Admin
+              <fa icon="fal user-tag" class="mr-1 text-gray-800 pushtop"></fa>Admin
             </p>
           </div>
         </div>
         <fa icon="fal cog"></fa>
       </div>
       <a-divider class="mt-0"></a-divider>
-
       <div class="px-5">
         <div>
           <p class="mb-2 leading-none text-gray-400">Designation</p>
-          <Tags></Tags>
+          <div class="flex">
+            <Tags
+              :tags="designations"
+              @updateTags="handleUpdateDesignation"
+              :disableNewTag="updatingDesignation"
+            ></Tags>
+            <a-spin size="small" v-if="updatingDesignation"></a-spin>
+          </div>
         </div>
 
         <div class="mt-4">
           <p class="mb-2 leading-none text-gray-400">Skills/Expertise</p>
-          <Tags></Tags>
+          <div class="flex">
+            <Tags :tags="skills" @updateTags="handleUpdateSkills" :disableNewTag="updatingSkills"></Tags>
+            <a-spin size="small" v-if="updatingSkills"></a-spin>
+          </div>
         </div>
         <div class="mt-4">
           <p class="mb-2 leading-none text-gray-400">Saved Filters</p>
@@ -93,7 +97,7 @@
               <span>Projects</span>
             </a-menu-item>
           </a-menu-item-group>
-        </a-menu> -->
+      </a-menu>-->
     </div>
   </div>
 </template>
@@ -111,6 +115,12 @@ import SavedList from "@/home/saved/index.vue";
 import Tags from "@common/badge/tags/index.vue";
 
 import uploadAvatar from "~/composables/avatar/uploadAvatar";
+
+import { message } from "ant-design-vue";
+
+import { User } from "~/api/auth/user";
+
+import { useUser } from "~/composables/user/useUsers";
 
 export default defineComponent({
   name: "HelloWorld",
@@ -132,6 +142,7 @@ export default defineComponent({
   setup() {
     const keycloak = inject("$keycloak");
     const store = useStore();
+
     let username = keycloak.tokenParsed.preferred_username || "";
 
     const fullName = computed(() => {
@@ -147,14 +158,85 @@ export default defineComponent({
     );
 
     let uploadStarted = ref(false);
+    let updatingDesignation = ref(false);
+    let updatingSkills = ref(false);
     const { upload, isReady, uploadKey } = uploadAvatar();
+    const filterObj = { $and: [{ email_verified: true }, { username }] };
+    const { userList, getUser, state, STATES } = useUser({
+      limit: 1,
+      offset: 0,
+      sort: "first_name",
+      filter: filterObj,
+    });
 
+    const userObj = computed(() => {
+      return userList && userList.value && userList.value.length
+        ? userList.value[0]
+        : [];
+    });
+    const designations = computed(() => {
+      if (userObj?.value?.attributes?.designation)
+        return userObj.value.attributes.designation.split(",");
+      return [];
+    });
+    const skills = computed(() => {
+      if (userObj?.value?.attributes?.skills)
+        return userObj.value.attributes.skills.split(",");
+      return [];
+    });
     const handleUploadAvatar = async (uploaded) => {
       console.log("handle Upload");
       upload(uploaded.file);
       uploadStarted.value = true;
       imageUrl.value = imageUrl.value + "?" + uploadKey;
       return true;
+    };
+    const handleUpdateDesignation = async (tags: any) => {
+      const attributeKeys = Object.keys(userObj.value.attributes);
+      let formattedAttributes = {};
+      attributeKeys.forEach((key) => {
+        formattedAttributes[key] = [userObj.value.attributes[key]];
+      });
+      const requestPayload = {
+        attributes: {
+          ...formattedAttributes,
+          designation: [tags.join(",")],
+        },
+      };
+      try {
+        //TODO: use useAPI chaining and fetch the user after update
+        updatingDesignation.value = true;
+        await User.UpdateUser(userObj.value.id, requestPayload);
+        getUser();
+        updatingDesignation.value = false;
+      } catch (error) {
+        updatingDesignation.value = false;
+        message.error("Unable to update designation, please try again");
+      }
+    };
+    const handleUpdateSkills = async (tags: any) => {
+      const attributeKeys = Object.keys(userObj.value.attributes);
+      let formattedAttributes = {};
+      attributeKeys.forEach((key) => {
+        formattedAttributes[key] = [userObj.value.attributes[key]];
+      });
+      const requestPayload = {
+        attributes: {
+          ...formattedAttributes,
+          skills: [tags.join(",")],
+        },
+      };
+
+      try {
+        //TODO: use useAPI chaining and fetch the user after update
+        updatingSkills.value = true;
+        await User.UpdateUser(userObj.value.id, requestPayload);
+        getUser();
+        updatingSkills.value = false;
+      } catch (error) {
+        message.error("Unable to update skills, please try again");
+        updatingSkills.value = false;
+      }
     };
 
     return {
@@ -169,6 +251,14 @@ export default defineComponent({
       uploadStarted,
       imageUrl,
       uploadKey,
+      handleUpdateDesignation,
+      handleUpdateSkills,
+      skills,
+      designations,
+      state,
+      STATES,
+      updatingSkills,
+      updatingDesignation,
     };
   },
 });

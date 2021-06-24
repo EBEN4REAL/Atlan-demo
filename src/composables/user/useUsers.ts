@@ -71,7 +71,7 @@ export const useUser = (userListAPIParams: {
     data,
     error,
     isValidating,
-    mutate: getUserList,
+    mutate: getUser,
   } = useAPI("GET_USER", "GET", {
     params: userListAPIParams,
     options: {
@@ -91,7 +91,8 @@ export const useUser = (userListAPIParams: {
     userList,
     totalUserCount,
     filteredUserCount,
-    getUserList,
+    isValidating,
+    getUser,
     state,
     STATES,
   };

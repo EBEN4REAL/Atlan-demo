@@ -3,20 +3,17 @@ import { defineConfig, loadEnv } from "vite";
 import Vue from "@vitejs/plugin-vue";
 import Pages from "vite-plugin-pages";
 import Layouts from "vite-plugin-vue-layouts";
-import { resolve } from 'path'
-import commonjs from '@rollup/plugin-commonjs';
+import { resolve } from "path";
+import commonjs from "@rollup/plugin-commonjs";
 import getAntDesignVariables from "./src/styles/antd_variables";
-
 
 import VueI18n from "@intlify/vite-plugin-vue-i18n";
 import styleImport from "vite-plugin-style-import";
 import svgLoader from "vite-svg-loader";
 
-
-import { visualizer } from 'rollup-plugin-visualizer'
+import { visualizer } from "rollup-plugin-visualizer";
 
 export default defineConfig(({ mode }) => {
-
   const root = process.cwd();
   const env = loadEnv(mode, root);
 
@@ -44,7 +41,7 @@ export default defineConfig(({ mode }) => {
       commonjsOptions: {
         //transformMixedEsModules: true,
         //defaultIsModuleExports: true
-      }
+      },
     },
     plugins: [
       //commonjs({enforce: 'pre'}),
@@ -72,16 +69,16 @@ export default defineConfig(({ mode }) => {
     ],
     optimizeDeps: {
       include: ["vue", "vue-router", "@vueuse/core"],
-      exclude: []
+      exclude: [],
     },
     server: {
       proxy: {
-        '/api': {
+        "/api": {
           target: env.VITE_DEV_API_BASE_URL,
           changeOrigin: true,
-          ws: false
-        }
-      }
-    }
+          ws: false,
+        },
+      },
+    },
   };
 });

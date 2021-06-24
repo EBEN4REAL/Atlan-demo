@@ -50,7 +50,6 @@
   </a-dropdown>
 </template>
 
-
 <script lang="ts">
 import data from "emoji-mart-vue-fast/data/facebook.json";
 import "emoji-mart-vue-fast/css/emoji-mart.css";
@@ -81,15 +80,26 @@ export default defineComponent({
   data() {
     return {};
   },
+
   setup(props, { emit }) {
-    const { list, totalCount, listCount, refetchGlossary, response } =
-      fetchGlossaryList();
-    const { selectedKeys, expandedKeys, expandNode, selectNode } =
-      handleTreeExpand();
+    const {
+      list,
+      totalCount,
+      listCount,
+      refetchGlossary,
+      response,
+    } = fetchGlossaryList();
+    const {
+      selectedKeys,
+      expandedKeys,
+      expandNode,
+      selectNode,
+    } = handleTreeExpand();
 
     const index = new EmojiIndex(data);
 
     const { treeData, onLoadData } = useGlossaryTree(list);
+    console.log(treeData, "treeData");
 
     const refreshTree = () => {
       refetchGlossary();
@@ -142,8 +152,10 @@ export default defineComponent({
   },
 });
 </script>
+<<<<<<< HEAD =======
 <style lang="less" scoped>
 .root {
   min-height: 50vh;
 }
 </style>
+>>>>>>> main

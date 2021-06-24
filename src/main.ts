@@ -3,6 +3,7 @@ import { createRouter, createWebHistory } from "vue-router";
 import generatedRoutes from "virtual:generated-pages";
 import { setupLayouts } from "virtual:generated-layouts";
 import { createPinia } from "pinia";
+import { inputFocusDirective } from "~/directives/input-focus";
 import App from "./App.vue";
 
 import "~/styles/index.less";
@@ -11,6 +12,7 @@ import { TENANT_FETCH_DATA } from "./constant/store_types";
 import { useStore } from "~/store";
 
 const app = createApp(App);
+inputFocusDirective(app);
 
 // setup up pages with layouts
 const routes = setupLayouts(generatedRoutes);

@@ -1,13 +1,20 @@
 <template>
-  <div id="monacoeditor" ref="monacoRoot" class="max-w-full"></div>
+  <div ref="monacoRoot" class="max-w-full monacoeditor"></div>
 </template>
-    
-  <script lang="ts">
+
+<script lang="ts">
 //https://github.com/vitejs/vite/discussions/1791
 //https://github.com/vitejs/vite/issues/1927#issuecomment-805803918
 
-import { defineComponent, ref, unref, onMounted, onUnmounted } from "vue";
-import fetchColumns from "~/composables/columns/fetchColumns";
+import {
+  defineComponent,
+  ref,
+  unref,
+  onMounted,
+  onUnmounted,
+  computed,
+} from "vue";
+import fetchColumnList from "~/composables/columns/fetchColumnList";
 
 import savedQuery from "@/editor/monaco/savedQuery";
 import sqlKeywords from "@/editor/monaco/sqlKeywords";
@@ -35,41 +42,68 @@ export default defineComponent({
     let editor: monaco.editor.IStandaloneCodeEditor;
 
     let entityFilters = {
-      condition: "AND",
+      condition: "OR",
       criterion: [
+        {
+          attributeName: "viewQualifiedName",
+          operator: "eq",
+          attributeValue:
+            "default/snowflake/shpllkz7g/SNOWFLAKE/ORGANIZATION_USAGE/RATE_SHEET_DAILY",
+        },
         {
           attributeName: "tableQualifiedName",
           operator: "eq",
           attributeValue:
-            "default/snowflake/vnmdjjg7g/SALES_DB/SALES_DB/superstore_subcategory_sales_profit",
+            "default/snowflake/shpllkz7g/SNOWFLAKE/ORGANIZATION_USAGE/RATE_SHEET_DAILY",
         },
       ],
     };
 
+    const isSelectedWordIsTableName = (word: string): boolean => {
+      switch (word) {
+        case "superstore_sales_data_2016-present": {
+          return true;
+        }
+        case "superstore_sales_data_2016": {
+          return true;
+        }
+        default: {
+          return false;
+        }
+      }
+    };
+
     let now = ref(true);
-    //const { list } = fetchColumns(now, "", entityFilters, 20, 0);
+    const { list } = fetchColumnList("", now, entityFilters, [
+      "Column.dataType.keyword",
+    ]);
+    console.log(list);
 
     monaco.languages.register({ id: "atlansql" });
 
     monaco.languages.setMonarchTokensProvider("atlansql", languageTokens);
 
     monaco.languages.registerCompletionItemProvider("atlansql", {
-      provideCompletionItems: function () {
+      provideCompletionItems: function() {
         //For object properties https://microsoft.github.io/monaco-editor/api/interfaces/monaco.languages.completionitem.html
         return {
           suggestions: [
             ...savedQuery(),
             ...sqlKeywords(),
-            //...columnSuggestion(unref(list.value)),
+            ...columnSuggestion(unref(list.value)),
           ],
         };
       },
     });
 
     monaco.languages.registerHoverProvider("atlansql", {
-      provideHover: function (model, position, token) {
+      provideHover: function(model, position, token) {
+        const hoveredWord = model.getWordAtPosition(position).word;
         //ignore whitespace
-        if (model.getLineContent(position.lineNumber).trim() !== "") {
+        if (
+          model.getLineContent(position.lineNumber).trim() !== "" &&
+          isSelectedWordIsTableName(hoveredWord)
+        ) {
           console.log(model.getWordAtPosition(position).word);
           return {
             contents: [
@@ -119,9 +153,9 @@ export default defineComponent({
   },
 });
 </script>
-    
+
 <style scoped>
-#monacoeditor {
-  height: 100vh;
+.monacoeditor {
+  height: 50vh;
 }
 </style>

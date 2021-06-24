@@ -38,7 +38,6 @@
     "emoji-mart-vue-fast": "^10.0.1",
     "event-source-polyfill": "^1.0.24",
     "highlight.js": "^11.0.1",
-    
     "keycloak-js": "^14.0.0",
     "less": "^4.1.1",
     "mitt": "^2.1.0",

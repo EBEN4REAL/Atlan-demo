@@ -48,7 +48,9 @@ jobs:
         build-args: |
           ACCESS_TOKEN_USR=$GITHUB_ACTOR
           ACCESS_TOKEN_PWD=${{ secrets.my_pat }}
+    
     - name: Check out into atlan-v2 repo
+      if: ${{ github.ref != 'refs/heads/main' }}
       uses: actions/checkout@v2
       with:
         fetch-depth: 0
@@ -57,6 +59,7 @@ jobs:
         token: ${{ secrets.my_pat }}
 
     - name: Get previous tag from atlan-v2 repo
+      if: ${{ github.ref != 'refs/heads/main' }}
       id: get_latest_tag
       run: |
         repo_branch=${{ steps.get_branch.outputs.branch }}
@@ -78,6 +81,7 @@ jobs:
       shell: bash
 
     - name: Get new tag by doing semver version bump
+      if: ${{ github.ref != 'refs/heads/main' }}
       id: bump_tag
       run: |
         chmod +x ./scripts/semver-version-upgrade.sh
@@ -85,6 +89,7 @@ jobs:
         echo "##[set-output name=new_tag;]$(echo $bumped_tag)"
         
     - name: Create Release on atlan-v2 repo
+      if: ${{ github.ref != 'refs/heads/main' }}
       id: create_release
       uses: actions/create-release@v1
       env:

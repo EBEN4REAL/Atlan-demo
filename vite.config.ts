@@ -1,5 +1,5 @@
 import path from "path";
-import { defineConfig } from "vite";
+import { defineConfig, loadEnv } from "vite";
 import Vue from "@vitejs/plugin-vue";
 import Pages from "vite-plugin-pages";
 import Layouts from "vite-plugin-vue-layouts";
@@ -14,6 +14,9 @@ import svgLoader from "vite-svg-loader";
 import { visualizer } from "rollup-plugin-visualizer";
 
 export default defineConfig(({ mode }) => {
+  const root = process.cwd();
+  const env = loadEnv(mode, root);
+
   return {
     resolve: {
       alias: {
@@ -71,7 +74,7 @@ export default defineConfig(({ mode }) => {
     server: {
       proxy: {
         "/api": {
-          target: "https://alpha.atlan.com",
+          target: env.VITE_DEV_API_BASE_URL,
           changeOrigin: true,
           ws: false,
         },

@@ -5,6 +5,7 @@
   <a-collapse
     v-model:activeKey="activeKey"
     :bordered="false"
+    class="bg-transparent"
     :class="$style.filter"
     :accordion="true"
   >
@@ -12,7 +13,7 @@
       v-for="item in List"
       :key="item.id"
       :header="item.label"
-      class="bg-sidebar"
+      class="bg-transparent"
     >
       <component
         :is="item.component"
@@ -33,7 +34,9 @@ export default defineComponent({
   components: {
     Status: defineAsyncComponent(() => import("@common/facets/status.vue")),
     Owners: defineAsyncComponent(() => import("@common/facets/owners.vue")),
-    Advanced: defineAsyncComponent(() => import("@common/facets/advanced.vue")),
+    Advanced: defineAsyncComponent(
+      () => import("@common/facets/advanced/index.vue")
+    ),
   },
   props: {},
   data() {
@@ -47,12 +50,33 @@ export default defineComponent({
       filters: {} as Components.Schemas.FilterCriteria,
     };
   },
-  emits: ["change"],
+  emits: ["refresh"],
+  setup(props, { emit }) {
+    const filterMap: { [key: string]: Components.Schemas.FilterCriteria } = {};
+    let filters: Components.Schemas.FilterCriteria[] = [];
+
+    const refresh = () => {
+      filters = [];
+      Object.keys(filterMap).forEach((key) => {
+        console.log(filterMap[key]);
+        filters.push(filterMap[key]);
+      });
+      emit("refresh", filters);
+    };
+
+    const handleChange = (value: any) => {
+      filterMap[value.id] = value.payload;
+      refresh();
+    };
+
+    return {
+      handleChange,
+    };
+  },
   mounted() {},
   methods: {
-    handleChange(value: any) {
-      console.log("handle Change filters", value);
-
+    handleChanged(value: any) {
+      //   console.log("handle Change filters", value);
       // this.filters.condition = "AND";
       // const found = List.find((item) => item.id == value.id);
       // if (found) {
@@ -65,15 +89,12 @@ export default defineComponent({
       //       condition: element.condition,
       //       criterion: [],
       //     };
-
       //     console.log(value);
       //     if (value.payload[element.attributeName]) {
       //       if (value.payload[element.attributeName].length > 0) {
       //         value.payload[element.attributeName].forEach((e: any) => {
       //           let valCriteria = <Components.Schemas.FilterCriteria>{};
-
       //           valCriteria.attributeName = element.attributeName;
-
       //           console.log(e);
       //           // special condition for null support
       //           if (e === "is_null") {
@@ -82,7 +103,6 @@ export default defineComponent({
       //             valCriteria.attributeValue = e;
       //             valCriteria.operator = element.operator;
       //           }
-
       //           if (element.isMultiple) {
       //             groupCriteria.criterion.push(valCriteria);
       //           } else {
@@ -98,7 +118,6 @@ export default defineComponent({
       //   console.log(criteria);
       //   this.filterMap[found.id] = criteria;
       // }
-
       // console.log(this.filterMap);
       // this.searchParam.entityFilters.condition = "AND";
       // this.searchParam.entityFilters.criterion = [];

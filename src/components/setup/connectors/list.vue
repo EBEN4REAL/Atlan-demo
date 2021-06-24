@@ -1,29 +1,27 @@
 <template>
-  <div class="flex justify-between w-full px-6 py-4 border-b bg-gray-50">
-    <a-input-search
-      size="default"
-      placeholder="Search Connectors"
-      v-model:value="searchText"
-      @change="handleChangeSearchText"
-    ></a-input-search>
-    <!-- <CategorySelector style="min-width: 200px;" v-model:value="category"></CategorySelector> -->
-  </div>
-  <ErrorView
-    v-if="[STATES.ERROR, STATES.STALE_IF_ERROR].includes(state)"
-  ></ErrorView>
-  <LoadingView
-    v-else-if="
-      [STATES.PENDING].includes(state) ||
-      (searchText && [STATES.VALIDATING].includes(state))
-    "
-  ></LoadingView>
-  <div
-    class="flex items-center px-6 py-4 space-x-3 align-middle"
-    v-else-if="[STATES.SUCCESS].includes(state)"
-  >
-    <template v-for="item in list" :key="item.guid">
-      <ItemView :item="item" @click="handleSelect(item)"></ItemView>
-    </template>
+  <div class="h-full">
+    <div class="flex justify-between w-full px-6 py-4 border-b bg-gray-50">
+      <a-input-search
+        size="default"
+        placeholder="Search Connectors"
+        @change="handleSearchChange"
+      ></a-input-search>
+      <!-- <CategorySelector style="min-width: 200px;" v-model:value="category"></CategorySelector> -->
+    </div>
+
+    <div class="flex-grow h-full" v-if="isError">
+      <ErrorView :error="error"></ErrorView>
+    </div>
+
+    <LoadingView v-else-if="isLoading"></LoadingView>
+    <div
+      class="grid items-center grid-cols-12 gap-2 px-6 py-4 align-middle"
+      v-else
+    >
+      <template v-for="item in list" :key="item.guid">
+        <ItemView :item="item" @click="handleSelect(item)"></ItemView>
+      </template>
+    </div>
   </div>
 </template>
             
@@ -38,9 +36,11 @@ import EmptyView from "@common/empty/index.vue";
 
 import fetchBotsList from "~/composables/bots/fetchBotsList";
 
-import { debounce } from "~/composables/utils/debounce";
 import { Components } from "~/api/atlas/client";
-import { useRoute } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
+import { useDebounceFn } from "@vueuse/core";
+import { BotsType } from "~/types/atlas/bots";
+import { BOTS_FETCH_LIST } from "~/constant/cache";
 
 export default defineComponent({
   components: {
@@ -51,28 +51,26 @@ export default defineComponent({
     EmptyView,
   },
   setup(props, { emit }) {
-    let searchText = ref("");
     let now = ref(true);
-
-    const entityFilters = {
+    const entityFilters: Components.Schemas.FilterCriteria = {
       operator: <Components.Schemas.Operator>"eq",
       attributeName: "category",
       attributeValue: "metadata",
     };
 
-    const { list, totalCount, listCount, mutate, body, state, STATES } =
-      fetchBotsList(now, searchText.value, entityFilters);
-
+    const { list, isError, isLoading, query, error } = fetchBotsList(
+      BOTS_FETCH_LIST,
+      now,
+      entityFilters
+    );
     const route = useRoute();
-    watch(list, () => {
-      console.log(route.query.connector);
-      console.log(route.query.sample);
 
+    const router = useRouter();
+    watch(list, () => {
       let isSample = false;
       if (route.query.sample) {
         isSample = route.query.sample == "true";
       }
-
       if (route.query.connector) {
         let found = list?.value?.find(
           (item) =>
@@ -85,41 +83,34 @@ export default defineComponent({
       }
     });
 
-    const handleChangeSearchText = debounce((input: any) => {
-      body.value.query = input.target.value;
-      mutate();
-    }, 200);
+    const handleSearchChange = useDebounceFn((val) => {
+      query(val.target.value);
+    }, 100);
+
+    const handleSelect = (item: BotsType) => {
+      const isSample = item?.attributes?.isSample?.toString();
+
+      const query = {
+        ...route?.query,
+        connector: item?.attributes?.integrationName,
+        sample: isSample,
+      };
+      router.replace({ query });
+      emit("select", item);
+    };
 
     return {
       list,
-      state,
-      STATES,
-      searchText,
-      listCount,
-      totalCount,
-      handleChangeSearchText,
+      isError,
+      isLoading,
+      handleSearchChange,
+      handleSelect,
+      error,
     };
   },
   data() {
-    return {
-      category: "",
-      error: "",
-      debounce: undefined as any,
-      cancelToken: undefined,
-    };
+    return {};
   },
   emits: ["select"],
-  methods: {
-    handleSelect(item: any) {
-      const isSample = item?.attributes?.isSample?.toString();
-      const query = {
-        ...this.$route.query,
-        connector: item.attributes.integrationName,
-        sample: isSample,
-      };
-      this.$router.replace({ query });
-      this.$emit("select", item);
-    },
-  },
 });
 </script>

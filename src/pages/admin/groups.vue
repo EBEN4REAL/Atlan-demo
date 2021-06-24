@@ -1,8 +1,8 @@
 <template>
   <div>
     <p class="mb-2 text-xl font-normal tracking-tight">Manage Groups</p>
+    <GroupList></GroupList>
   </div>
-  <GroupList></GroupList>
 </template>
 
 <script lang="ts">
@@ -16,3 +16,8 @@ export default defineComponent({
 </script>
 <style lang="less" module>
 </style>
+<route lang="yaml">
+  meta:
+    layout: default
+    requiresAuth: true
+  </route>

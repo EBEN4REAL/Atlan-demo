@@ -45,6 +45,7 @@ import { faUserShield } from "@fortawesome/pro-light-svg-icons/faUserShield";
 import { faShield } from "@fortawesome/pro-light-svg-icons/faShield";
 import { faUserEdit } from "@fortawesome/pro-light-svg-icons/faUserEdit";
 import { faSync } from "@fortawesome/pro-light-svg-icons/faSync";
+import { faChevronDoubleLeft } from "@fortawesome/pro-light-svg-icons/faChevronDoubleLeft";
 
 import { faGlobe } from "@fortawesome/pro-light-svg-icons/faGlobe";
 import { faHistory } from "@fortawesome/pro-light-svg-icons/faHistory";
@@ -57,6 +58,15 @@ import { faPen } from "@fortawesome/pro-light-svg-icons/faPen";
 import { faPencil } from "@fortawesome/pro-light-svg-icons/faPencil";
 import { faEnvelope } from "@fortawesome/pro-light-svg-icons/faEnvelope";
 import { faArrowCircleRight } from "@fortawesome/pro-light-svg-icons/faArrowCircleRight";
+import { faUserTag } from "@fortawesome/pro-light-svg-icons/faUserTag"
+
+import { faBell } from "@fortawesome/pro-light-svg-icons/faBell"
+
+import { faGift } from "@fortawesome/pro-light-svg-icons/faGift"
+
+import { faTag } from "@fortawesome/pro-light-svg-icons/faTag"
+import { faRobot } from "@fortawesome/pro-light-svg-icons/faRobot"
+import { faChartNetwork } from "@fortawesome/pro-light-svg-icons/faChartNetwork"
 
 import { faTrashAlt } from "@fortawesome/pro-light-svg-icons/faTrashAlt";
 import { faExclamationCircle } from "@fortawesome/pro-light-svg-icons/faExclamationCircle";
@@ -66,6 +76,11 @@ import { faArrowDown } from "@fortawesome/pro-light-svg-icons/faArrowDown";
 import { faUserFriends } from "@fortawesome/pro-light-svg-icons/faUserFriends";
 
 import { faCopy } from "@fortawesome/pro-light-svg-icons/faCopy";
+
+import { faUserSlash } from "@fortawesome/pro-light-svg-icons/faUserSlash";
+import { faUserCheck } from "@fortawesome/pro-light-svg-icons/faUserCheck";
+import { faSlidersHSquare } from "@fortawesome/pro-light-svg-icons/faSlidersHSquare";
+
 
 library.add(
   faPlus,
@@ -127,8 +142,20 @@ library.add(
   faTabletAlt,
   faTrashAlt,
   faArrowDown,
+  faChevronDoubleLeft,
   faUserFriends,
-  faCopy
+  faCopy,
+  faUserTag,
+  faBell,
+  faGift,
+  faTag,
+  faRobot,
+  faChartNetwork,
+  faUserSlash,
+  faUserCheck,
+  faUserShield,
+  faSlidersHSquare,
+
 );
 
 // Solid Icons

@@ -162,6 +162,51 @@ body {
   }
 }
 
+
+//Table
+.ant-table-thead {
+  tr {
+    &:first-child {
+      th {
+        &:first-child {
+          border-top-left-radius: 8px !important;
+        }
+      }
+    }
+
+    &:last-child {
+      th {
+        &:last-child {
+          border-top-right-radius: 8px !important;
+        }
+      }
+    }
+
+    th {
+      @apply bg-white px-4 py-2 !important;
+    }
+  }
+}
+
+.ant-table-tbody {
+  tr {
+    td {
+      @apply bg-white px-4 py-2 !important;
+    }
+  }
+}
+
+
+// .ant-table-thead>tr:first-child>th:first-child {
+//   border-top-left-radius: 8px !important;
+// }
+
+// .ant-table-thead>tr:last-child>th:last-child {
+//   border-top-right-radius: 8px !important;
+// }
+
+
+
 // Split Panes
 .default-theme.splitpanes--vertical>.splitpanes__splitter:before {
   width: 0px !important;
@@ -255,4 +300,12 @@ body {
   transition-duration: .15s;
   transition-timing-function: cubic-bezier(.4, 0, .2, 1);
   transition-duration: .3s;
+}
+
+.pushtop {
+  top: 2px;
+}
+
+.text-shadow {
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.10);
 }

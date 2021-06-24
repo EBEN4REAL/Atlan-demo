@@ -3,19 +3,24 @@ import asset from "~/api/keyMaps/asset";
 import user from "~/api/keyMaps/auth/user";
 import tenant from "~/api/keyMaps/auth/tenant";
 import group from "~/api/keyMaps/auth/group";
-import { getAPIPath } from "..";
+import avatar from "~/api/keyMaps/auth/avatar";
 import connection from "~/api/keyMaps/auth/connection";
+import glossary from "~/api/keyMaps/glossary";
 import apiKeys from "~/api/keyMaps/auth/apiKeys";
+import role from "~/api/keyMaps/auth/role";
+import search from "~/api/keyMaps/search";
 import classification from "~/api/keyMaps/atlas/classification";
 
 export default {
   ...asset,
   ...user,
   ...tenant,
-  ...group,
   ...connection,
   ...apiKeys,
   ...classification,
-  "BASIC_SEARCH":() => getAPIPath("auth/atlas", "/search/basic")
-
+  ...glossary,
+  ...group,
+  ...role,
+  ...avatar,
+  ...search,
 };

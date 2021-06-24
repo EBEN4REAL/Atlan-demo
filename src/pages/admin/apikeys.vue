@@ -1,6 +1,6 @@
 <template>
-  <div class="p-4">
-    <h1 class="mb-6 ml-1 text-xl font-normal tracking-tight">API Keys</h1>
+  <div>
+    <p class="mb-2 text-xl font-normal tracking-tight">API Keys</p>
     <ListAPIKeys />
   </div>
 </template>
@@ -14,3 +14,8 @@ export default defineComponent({
 </script>
 <style lang="less" module>
 </style>
+<route lang="yaml">
+  meta:
+  layout: default
+  requiresAuth: true
+  </route>

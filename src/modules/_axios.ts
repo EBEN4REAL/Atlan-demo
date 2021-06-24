@@ -8,7 +8,8 @@ const authInterceptor = (app: any) => {
   return (config: AxiosRequestConfig) => {
     config.headers[
       "Authorization"
-    ] = `Bearer ${app.config.globalProperties.$keycloak.token}`;
+    ] = `Bearer ${app.config.globalProperties.$keycloak.token}
+    `;
     return config;
   };
 };
@@ -36,7 +37,6 @@ const errorInterceptor = (error: any) => {
 
 // Interceptor for responses
 const responseInterceptor = (response: any) => {
-
   // switch (response.status) {
   //   case 200:
   //     // yay!
@@ -48,7 +48,6 @@ const responseInterceptor = (response: any) => {
 
   return response.data;
 };
-
 
 // export function getBasePath() {
 //   const env = process.env.NODE_ENV;

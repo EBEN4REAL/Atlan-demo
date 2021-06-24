@@ -5,12 +5,18 @@
     <div class="px-4 pt-3 bg-white">
       <div class="">
         <div class="flex items-center align-middle">
-          <fa icon="fal chevron-left" class="mr-1" @click="handleBack"></fa>
+          <fa
+            icon="fal chevron-left"
+            class="mr-1 text-xl text-gray-400"
+            @click="handleBack"
+          ></fa>
           <img
             :src="logo(item?.attributes?.integrationName)"
             class="w-auto h-5 mr-2"
           />
-          <div class="text-gray-900">{{ item?.attributes?.displayName }}</div>
+          <div class="text-lg text-gray-900">
+            {{ item?.attributes?.displayName }}
+          </div>
         </div>
       </div>
       <div>

@@ -2,7 +2,7 @@
 
 export const AdvancedAttributeList = [
     {
-        value: "guid",
+        value: "__guid",
         label: "guid",
         type: "string",
         children: [],

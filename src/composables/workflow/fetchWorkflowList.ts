@@ -14,12 +14,18 @@ export default function fetchWorkflowList(dependent: any, paramsdefault: any) {
         revalidateOnFocus: false,
         dedupingInterval: 1,
     });
+
+    const phase = (item: any) => {
+        return item?.status?.phase;
+    };
+
     const { state, STATES } = swrvState(data, error, isValidating);
     return {
         data,
         error,
         state,
         STATES,
-        mutate
+        mutate,
+        phase,
     }
 }

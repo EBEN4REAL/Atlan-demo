@@ -78,24 +78,29 @@
             type="primary"
             size="small"
             @click="handleUpdate"
-            :loading="!state && isReady"
+            :loading="isLoading"
             >Update</a-button
           >
         </div>
       </template>
-      <div class="px-2 py-1 rounded-lg hover:bg-white hover:border">
-        <p class="mb-0 text-sm tracking-wide text-gray-400">Owners</p>
+      <div
+        class="px-2 py-1 transition duration-500 ease-in-out rounded-lg  hover:bg-gray-50 hover:border"
+      >
+        <p class="mb-1 text-sm tracking-wide text-gray-400">Owners</p>
         <div class="flex flex-wrap gap-x-1">
           <template
             v-for="user in item?.attributes?.ownerUsers?.split(',')"
             :key="user"
           >
             <div
-              class="flex items-center px-2 py-1 mb-1 leading-none text-blue-600 align-middle bg-blue-100 rounded-md cursor-pointer  hover:text-primary-500"
+              class="flex items-center px-2 py-1 mb-1 leading-none text-blue-500 align-middle transition-all bg-blue-500 rounded-md cursor-pointer  bg-opacity-10 hover:bg-opacity-100 hover:text-white"
               @click.prevent.stop="handleClickUser"
             >
-              <fa icon="fal user" class="mr-1 leading-none pushtop"></fa>
-              <div>{{ user }}</div>
+              <fa
+                icon="fal user"
+                class="mr-1 leading-none pushtop text-shadow"
+              ></fa>
+              <div class="text-shadow">{{ user }}</div>
             </div>
           </template>
           <template
@@ -128,15 +133,12 @@
 <script lang="ts">
 import { defineComponent, ref } from "vue";
 import StatusBadge from "@common/badge/status/index.vue";
-import AssetMixin from "~/mixins/asset";
-
 import fetchUserList from "~/composables/user/fetchUserList";
 import fetchGroupList from "~/composables/group/fetchGroupList";
 import updateOwners from "~/composables/asset/updateOwners";
 
 export default defineComponent({
   components: { StatusBadge },
-  mixins: [AssetMixin],
   props: {
     item: {
       type: Object,
@@ -166,16 +168,17 @@ export default defineComponent({
 
     const {
       handleCancel,
-      execute,
+      update,
       isReady,
       state,
       ownerUsers,
       isCompleted,
+      isLoading,
       ownerGroups,
     } = updateOwners(props.item, ownerType);
 
     const handleUpdate = () => {
-      execute();
+      update();
     };
 
     const handleSearch = (e) => {
@@ -219,6 +222,8 @@ export default defineComponent({
       searchText,
       handleClickUser,
       handleClickGroup,
+      update,
+      isLoading,
     };
   },
 });

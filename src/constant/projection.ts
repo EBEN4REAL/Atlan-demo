@@ -17,6 +17,7 @@ export const ConnectionAttributes = [
 
 export const CredentialAttributes = [
   "authType",
+  "extra"
 ];
 
 export const BaseAttributes = [
@@ -52,10 +53,32 @@ export const BotsAttributes = [
   "isSample"
 ];
 
+export const JobsAttributes = [
+  "arguments",
+  "botQualifiedName",
+  "connectionQualifiedName",
+  "cronString",
+  "isCron",
+  "isEvent",
+  "isIncomplete",
+];
+
 export const ColumnAttributes = [
   "dataType",
-  "tableQualifiedName"
+  "tableQualifiedName",
+  "isPrimary",
+  "isClustered",
+  "isPartition",
+  "isIndexed"
 ];
+
+export const SavedSearchAttribute = [
+  "ownerName",
+  "searchType",
+  "uniqueName",
+  "searchParameters",
+  "uiParameters"
+]
 
 
 export const BasicSearchAttributes = [
@@ -84,7 +107,6 @@ export const BasicSearchAttributes = [
   "assetStatusMessage",
   "connectionLastSyncedAt",
   "connectionQualifiedName",
-  "rowCount",
   "columnCount",
   "subType",
   "image",

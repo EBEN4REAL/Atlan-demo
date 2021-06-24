@@ -4,6 +4,8 @@
       placeholder="Search API..."
       style="width: 300px"
       v-model:value="searchText"
+      @change="handleSearch"
+      allowClear="true"
     />
     <a-button type="primary" @click="showAPIKeyModal">Create New API</a-button>
   </div>
@@ -74,11 +76,12 @@ import { defineComponent, inject, onMounted, ref } from "vue";
 import useAPIKeys from "./useAPIKeys";
 import { copyToClipboard } from "~/utils/clipboard";
 import { message, Modal } from "ant-design-vue";
-import { debouncedWatch } from "@vueuse/core";
 import ErrorView from "@common/error/index.vue";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 dayjs.extend(relativeTime);
+import { APIKeyService } from "~/api/auth/apiKeys";
+import { debounce } from "~/composables/utils/debounce";
 
 export default defineComponent({
   components: { ErrorView },
@@ -89,12 +92,13 @@ export default defineComponent({
       state,
       STATES,
       AdminrolesId,
-      createNewAPI,
       getUpdatedAPI,
       getRoleList,
-      deleteAPIKey,
       searchAPI,
-    } = useAPIKeys();
+    } = useAPIKeys({
+      revalidateOnFocus: false,
+      dedupingInterval: 1,
+    });
     const isCreateAPI = ref(false);
     const apiName = ref("");
     const isAPILoading = ref(false);
@@ -113,13 +117,9 @@ export default defineComponent({
       });
     };
 
-    debouncedWatch(
-      searchText,
-      () => {
-        searchAPI(searchText.value);
-      },
-      { debounce: 500 }
-    );
+    const handleSearch = debounce(() => {
+      searchAPI(searchText.value);
+    }, 500);
 
     const onSearch = (value: string) => {
       searchAPI(value);
@@ -133,13 +133,11 @@ export default defineComponent({
         roleId: AdminrolesId.value,
         roleName: "$admin",
       };
-      await createNewAPI(body);
-      setTimeout(() => {
-        getUpdatedAPI();
-        showAPIKeyModal();
-        apiName.value = "";
-        isAPILoading.value = false;
-      }, 1000);
+      await APIKeyService.createAPIKey(body);
+      getUpdatedAPI();
+      showAPIKeyModal();
+      apiName.value = "";
+      isAPILoading.value = false;
     };
 
     const deleteAPI = (item: any) => {
@@ -149,11 +147,9 @@ export default defineComponent({
         okType: "danger",
         okText: "Yes",
         cancelText: "No",
-        onOk() {
-          deleteAPIKey(item);
-          setTimeout(() => {
-            getUpdatedAPI();
-          }, 1000);
+        async onOk() {
+          await APIKeyService.deleteAPIKey(item);
+          getUpdatedAPI();
         },
       });
     };
@@ -174,6 +170,7 @@ export default defineComponent({
       isAPILoading,
       timeAgo,
       searchText,
+      handleSearch,
     };
   },
 });

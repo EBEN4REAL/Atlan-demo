@@ -14,21 +14,23 @@
     "
   >
     <a-button-group class="flex flex-wrap">
-      <a-button
+      <a-popover
+        placement="bottom"
         v-for="menuItem in menuData"
         :key="menuItem.key"
-        class="border-0"
-        :class="{
-          'is-active':
-            editor.isActive(`${menuItem.key}`) ||
-            editor.isActive(`heading`, { level: menuItem.level }) ||
-            (menuItem.key.split('-')[0] === 'align' &&
-              editor.isActive({ textAlign: menuItem.key.split('-')[1] })),
-          'border-r-2': menuItem.border,
-        }"
-        @click="() => menuItem.onClick(editor)"
       >
-        <a-popover placement="bottom">
+        <a-button
+          class="border-0"
+          :class="{
+            'is-active':
+              editor.isActive(`${menuItem.key}`) ||
+              editor.isActive(`heading`, { level: menuItem.level }) ||
+              (menuItem.key.split('-')[0] === 'align' &&
+                editor.isActive({ textAlign: menuItem.key.split('-')[1] })),
+            'border-r-2': menuItem.border,
+          }"
+          @click="() => menuItem.onClick(editor)"
+        >
           <a-dropdown v-if="menuItem.key === 'image'">
             <fa icon="fa link" class="m-1" />
             <template #overlay>
@@ -48,52 +50,52 @@
 
           <fa v-else-if="menuItem.icon" :icon="menuItem.icon" class="m-1" />
           <span v-else>{{ menuItem.title }}</span>
+        </a-button>
 
-          <template #content>bruh</template>
-        </a-popover>
-
-        <a-modal
-          v-if="menuItem.title === 'Link'"
-          class="border-gray-700"
-          :visible="showLinkModal"
-          :title="null"
-          :closable="true"
-          :mask="false"
-          :maskClosable="true"
-          width="50vw"
-          :footer="null"
-          @cancel="() => (showLinkModal = false)"
-        >
-          <div class="d-flex align-items-center justify-content-start">
-            <label>Link</label>
-            <div class="flex">
-              <a-input
-                type="url"
-                v-model:value="link"
-                focused
-                placeholder="https://"
-                @keydown.esc="showLinkModal = false"
-                @keydown.enter="() => setLink(editor)"
-              />
-              <a-button
-                type="primary"
-                class="ml-3 mr-2"
-                @click="() => setLink(editor)"
-              >
-                Apply
-              </a-button>
-              <a-button
-                type="default"
-                v-if="editor.isActive('link')"
-                @click="() => unLink(editor)"
-              >
-                Remove
-              </a-button>
-            </div>
-          </div>
-        </a-modal>
-      </a-button>
+        <template #content>{{ menuItem.helpText || menuItem.title }}</template>
+      </a-popover>
     </a-button-group>
+
+
+    <a-modal
+      class="border-gray-700 mt-16"
+      :visible="showLinkModal"
+      :title="null"
+      :closable="true"
+      :mask="false"
+      :maskClosable="true"
+      width="50vw"
+      :footer="null"
+      @cancel="() => (showLinkModal = false)"
+    >
+      <div class="d-flex align-items-center justify-content-start">
+        <label>Link</label>
+        <div class="flex">
+          <a-input
+            type="url"
+            v-model:value="link"
+            focused
+            placeholder="https://"
+            @keydown.esc="showLinkModal = false"
+            @keydown.enter="() => setLink(editor)"
+          />
+          <a-button
+            type="primary"
+            class="ml-3 mr-2"
+            @click="() => setLink(editor)"
+          >
+            Apply
+          </a-button>
+          <a-button
+            type="default"
+            v-if="editor.isActive('link')"
+            @click="() => unLink(editor)"
+          >
+            Remove
+          </a-button>
+        </div>
+      </div>
+    </a-modal>
   </div>
 </template>
 

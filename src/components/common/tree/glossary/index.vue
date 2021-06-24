@@ -152,10 +152,8 @@ export default defineComponent({
   },
 });
 </script>
-<<<<<<< HEAD =======
 <style lang="less" scoped>
 .root {
   min-height: 50vh;
 }
 </style>
->>>>>>> main

@@ -4,6 +4,10 @@
       <ConnectionDistribution></ConnectionDistribution>
     </div>
 
+    <div class="px-6">
+      <RunList></RunList>
+    </div>
+
     <!-- <div class="grid grid-cols-12 gap-6 px-6">
       <div class="col-span-4 p-4 bg-white rounded-md shadow-sm">
         <p class="mb-0 text-xs tracking-wide text-gray-500 uppercase">

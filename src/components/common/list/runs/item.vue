@@ -7,9 +7,9 @@
         v-if="status == 'Succeeded'"
       ></fa>
       <fa
-        icon="fas exclamation-circle"
+        icon="fas exclamation-triangle"
         class="text-xl text-red-500"
-        v-else-if="status == 'Failed'"
+        v-else-if="status == 'Failed' || status === 'Error'"
       ></fa>
       <a-spin v-else-if="status == 'Running'"></a-spin>
 
@@ -27,8 +27,8 @@
           <p class="mb-0 leading-none text-gray-700">
             {{ connectionName(item) }}
           </p>
-          <p class="mb-0 text-gray-400" v-if="botName(item)">
-            {{ botName(item) }}
+          <p class="mb-0 text-gray-400" v-if="category(item)">
+            {{ category(item) }}
           </p>
           <p class="mb-0 text-gray-400" v-else>{{ item.name }}</p>
         </div>

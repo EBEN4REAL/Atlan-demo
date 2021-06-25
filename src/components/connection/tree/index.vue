@@ -14,6 +14,7 @@
       :blockNode="true"
       v-model:expandedKeys="expandedKeys"
       v-model:value="selectedKeys"
+      :defaultExpandAll="true"
       @select="selectNode"
       @expand="expandNode"
     >

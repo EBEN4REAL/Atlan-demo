@@ -188,6 +188,10 @@ export default function fetchAssetDiscover(cache?: string, dependentKey?: Ref<an
         refresh();
     };
 
+    const changeSort = (assetType: string) => {
+
+    };
+
 
     const changeAssetType = (assetType: string) => {
 

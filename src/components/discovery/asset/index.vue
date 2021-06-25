@@ -47,19 +47,11 @@
     <div class="flex items-center px-6 gap-x-3">
       <a-input placeholder="Search" @input="handleSearchChange">
         <template #suffix>
-          <a-popover placement="bottom">
-            <template #content>
-              <Preferences
-                :defaultProjection="projection"
-                @change="handleChangePreferences"
-              ></Preferences>
-            </template>
-            <a-spin
-              size="small"
-              class="mr-2 leading-none"
-              v-if="isLoading"
-            ></a-spin>
-          </a-popover>
+          <a-spin
+            size="small"
+            class="mr-2 leading-none"
+            v-if="isLoading"
+          ></a-spin>
         </template>
       </a-input>
       <a-popover placement="bottom">
@@ -67,6 +59,7 @@
           <Preferences
             :defaultProjection="projection"
             @change="handleChangePreferences"
+            @sort="handleChangeSort"
           ></Preferences>
         </template>
         <a-button size="default"
@@ -197,6 +190,10 @@ export default defineComponent({
 
     const handleChangePreferences = (payload: any) => {
       projection.value = payload;
+    };
+
+    const handleChangeSort = (payload:any) => {
+
     };
 
     const handleFilterChange = (payload: any) => {

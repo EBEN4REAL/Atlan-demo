@@ -42,6 +42,9 @@ export default defineComponent({
     botName(item: any) {
       return this.labels(item)["bot-template-name"];
     },
+    category(item: any) {
+      return this.labels(item)["category"];
+    },
     connectionName(item) {
       const qualifiedName = this.labels(item)["connection-qualified-name"];
       if (qualifiedName) {

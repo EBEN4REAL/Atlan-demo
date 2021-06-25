@@ -2,7 +2,7 @@
 
 export const WorkflowTypeList = [
     {
-        id: "assets",
+        id: "metadata",
         label: "Assets",
     },
     {

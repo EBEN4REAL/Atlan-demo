@@ -3,16 +3,8 @@
     <p class="mb-1 text-xs font-semibold leading-tight text-gray-500 uppercase">
       Total Assets
     </p>
-    <LoadingView
-      style="min-height: 100px"
-      v-if="
-        [STATES.PENDING].includes(state) || [STATES.VALIDATING].includes(state)
-      "
-    ></LoadingView>
-    <ErrorView
-      style="min-height: 100px"
-      v-else-if="[STATES.ERROR, STATES.STALE_IF_ERROR].includes(state)"
-    ></ErrorView>
+    <LoadingView style="min-height: 100px" v-if="isLoading"></LoadingView>
+    <ErrorView style="min-height: 100px" v-else-if="isError"></ErrorView>
     <div v-else>
       <p
         class="mb-1 text-2xl font-semibold leading-tight text-gray-800 uppercase "
@@ -85,15 +77,15 @@ export default defineComponent({
       },
       aggregationAttributes: ["__typeName.keyword"],
     });
-    const { totalCount, listCount, assetTypeList } = fetchAssetDiscover(
-      now,
-      defaultBody
-    );
+    const { totalCount, listCount, assetTypeList, isLoading, isError } =
+      fetchAssetDiscover(now, defaultBody);
 
     return {
       totalCount,
       listCount,
+      isLoading,
       assetTypeList,
+      isError,
     };
   },
   mounted() {},

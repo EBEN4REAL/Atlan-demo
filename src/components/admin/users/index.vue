@@ -191,6 +191,7 @@ import UserPreviewDrawer from "./userPreview/userPreviewDrawer.vue";
 import InvitationListTable from "./invitationListTable.vue";
 import { Modal, message } from "ant-design-vue";
 import { User } from "~/api/auth/user";
+import whoami from "~/composables/user/whoami";
 import {
   getNameInitials,
   getNameInTitleCase,
@@ -212,7 +213,7 @@ export default defineComponent({
     const showInviteUserModal = ref(false);
     const showUserPreview = ref(false);
     const statusFilterValue = ref<string>("");
-
+    const { username: currentUserUsername } = whoami();
     let selectedUserId = ref("");
     const selectedUser = computed(() => {
       let activeUserObj = {};
@@ -318,19 +319,23 @@ export default defineComponent({
       // fetch groups
       getUserList();
     };
-    const { togglePreview, setUserUniqueAttribute } = usePreview();
+    const {
+      showUserPreview: openPreview,
+      closePreview,
+      setUserUniqueAttribute,
+    } = usePreview();
     const showUserPreviewDrawer = (user: any) => {
       setUserUniqueAttribute(user.id);
-      togglePreview();
-      // showUserPreview.value = true;
+      let blacklistedTabs = [];
+      if (user.username !== currentUserUsername.value)
+        blacklistedTabs = ["about"];
+      openPreview({ blacklisted: blacklistedTabs });
       selectedUserId.value = user.id;
     };
     const handleClosePreview = () => {
       // showUserPreview.value = false;
-
-      togglePreview();
-      setUserId("");
-
+      closePreview();
+      setUserUniqueAttribute("");
       selectedUserId.value = "";
     };
 

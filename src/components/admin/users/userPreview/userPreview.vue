@@ -35,8 +35,7 @@ import {
   getNameInitials,
   getNameInTitleCase,
 } from "~/composables/utils/string-operations";
-import whoami from "~/composables/user/whoami";
-import { defineComponent, computed } from "vue";
+import { defineComponent } from "vue";
 import About from "./about.vue";
 import Groups from "./groups.vue";
 import AccessLogs from "./accessLogs.vue";
@@ -54,39 +53,15 @@ export default defineComponent({
       type: Object,
       default: {},
     },
+    tabs: {
+      type: Array,
+      default: () => [],
+    },
   },
-  setup(props, context) {
-    const { username } = whoami();
-    const tabs = computed(() => {
-      let allTabs = [
-        {
-          name: "About",
-          iconClass: "",
-          component: "About",
-        },
-        {
-          name: "Groups",
-          iconClass: "",
-          component: "Groups",
-        },
-        {
-          name: "Sessions",
-          iconClass: "",
-          component: "Sessions",
-        },
-        {
-          name: "Access Logs",
-          iconClass: "",
-          component: "AccessLogs",
-        },
-      ];
-      if (props.selectedUser.username === username.value) return allTabs;
-      return allTabs.slice(1);
-    });
+  setup() {
     return {
       getNameInitials,
       getNameInTitleCase,
-      tabs,
     };
   },
 });

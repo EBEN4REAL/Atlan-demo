@@ -171,17 +171,15 @@ export default defineComponent({
       searchText.value = "";
       handleSearch(searchText.value);
     };
-    const { togglePreview, setUserUniqueAttribute } = usePreview();
-    const handleClickUser = (username) => {
+    // user preview drawer
+    const { showUserPreview, setUserUniqueAttribute } = usePreview();
+    const handleClickUser = (username: string) => {
       setUserUniqueAttribute(username, "username");
-      console.log("userID set", username);
-      togglePreview();
-      // alert("user");
+      showUserPreview({ allowed: ["about"] });
     };
     const handleClickGroup = () => {
       alert("group");
     };
-
     return {
       list,
       isReady,

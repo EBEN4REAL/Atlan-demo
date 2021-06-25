@@ -2,13 +2,13 @@
   <a-drawer
     :visible="showPreview"
     :selectedUser="selectedUser"
-    :destroyOnClose="true"
+    :destroy-on-close="true"
     width="40%"
     placement="right"
     :body-style="{ height: '100%' }"
     @close="handleClose"
   >
-    <UserPreview :selectedUser="userObj" @reloadTable="$emit('reloadTable')" />
+    <UserPreview :tabs="finalTabs" :selectedUser="userObj" @reloadTable="$emit('reloadTable')" />
   </a-drawer>
 </template>
     
@@ -38,8 +38,14 @@ export default defineComponent({
     };
   },
   setup(props, context) {
-    const { showPreview, userId, username, togglePreview, uniqueAttribute } =
-      usePreview();
+    const {
+      showPreview,
+      userId,
+      username,
+      closePreview,
+      uniqueAttribute,
+      finalTabs,
+    } = usePreview();
     let filterObj = {};
     if (uniqueAttribute.value === "username")
       filterObj = {
@@ -58,10 +64,10 @@ export default defineComponent({
         : [];
     });
     const handleClose = () => {
-      togglePreview();
+      closePreview();
     };
 
-    return { showPreview, userObj, userId, handleClose };
+    return { showPreview, userObj, userId, handleClose, finalTabs };
   },
 });
 </script>

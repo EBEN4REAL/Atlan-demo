@@ -8,46 +8,47 @@
       @change="handleSearch"
       :allowClear="true"
     ></a-input-search>
-    <a-popover placement="bottom">
-      <template #content>
-        <div class="flex">
-          <div class="pr-3 border-r border-gray-200 border-dashed">
-            <div class="flex justify-between">
-              <p class="mb-1 text-gray-500">Status</p>
-              <fa
-                icon="fal times-circle"
-                class="text-red-600 cursor-pointer"
-                @click="resetStatusFilter"
-                v-if="statusFilterValue"
-              ></fa>
-            </div>
-            <a-radio-group v-model:value="statusFilterValue" @change="handleStatusFilterChange">
-              <div class="flex flex-col space-y-1">
-                <a-radio :value="'enabled'">Active Users</a-radio>
-                <a-radio :value="'disabled'">Disabled Users</a-radio>
-              </div>
-            </a-radio-group>
-          </div>
-          <div class="pl-3">
-            <p class="mb-1 text-gray-500">Role</p>
-            <a-radio-group>
-              <div class="flex flex-col space-y-1">
-                <a-radio>Admin</a-radio>
-                <a-radio>Cloud</a-radio>
-                <a-radio>Steward</a-radio>
-                <a-radio>Member</a-radio>
-              </div>
-            </a-radio-group>
-          </div>
-        </div>
-      </template>
-      <a-button size="default">
-        <fa icon="fal filter" class="mr-1"></fa>
-        <!--TODO: add logic to count filters and show the count here-->
-        <span v-if="statusFilterValue">(1)</span>
-      </a-button>
-    </a-popover>
+
     <div class="flex justify-end">
+      <a-popover placement="bottom">
+        <template #content>
+          <div class="flex">
+            <div class="pr-3 border-r border-gray-200 border-dashed">
+              <div class="flex justify-between">
+                <p class="mb-1 text-gray-500">Status</p>
+                <fa
+                  icon="fal times-circle"
+                  class="text-red-600 cursor-pointer"
+                  @click="resetStatusFilter"
+                  v-if="statusFilterValue"
+                ></fa>
+              </div>
+              <a-radio-group v-model:value="statusFilterValue" @change="handleStatusFilterChange">
+                <div class="flex flex-col space-y-1">
+                  <a-radio :value="'enabled'">Active Users</a-radio>
+                  <a-radio :value="'disabled'">Disabled Users</a-radio>
+                </div>
+              </a-radio-group>
+            </div>
+            <div class="pl-3">
+              <p class="mb-1 text-gray-500">Role</p>
+              <a-radio-group>
+                <div class="flex flex-col space-y-1">
+                  <a-radio>Admin</a-radio>
+                  <a-radio>Cloud</a-radio>
+                  <a-radio>Steward</a-radio>
+                  <a-radio>Member</a-radio>
+                </div>
+              </a-radio-group>
+            </div>
+          </div>
+        </template>
+        <a-button size="default">
+          <fa icon="fal filter" class="mr-1"></fa>
+          <!--TODO: add logic to count filters and show the count here-->
+          <span v-if="statusFilterValue">(1)</span>
+        </a-button>
+      </a-popover>
       <a-button
         v-if="true || IS_SMTP_CONFIGURED"
         type="primary"
@@ -155,12 +156,12 @@
     />
   </div>
   <!--Preview Drawer-->
-  <UserPreviewDrawer
+  <!-- <UserPreviewDrawer
     @closePreview="handleClosePreview"
     :selectedUser="selectedUser"
     :showUserPreview="showUserPreview"
     @reloadTable="reloadTable"
-  />
+  />-->
   <!-- Change Role Modal-->
   <a-modal
     :visible="showChangeRoleModal"
@@ -182,6 +183,7 @@
   </a-modal>
 </template>
 <script lang="ts">
+import { usePreview } from "~/composables/user/showUserPreview";
 import { defineComponent, ref, reactive, computed } from "vue";
 import { useDebounceFn } from "@vueuse/core";
 import useUsers from "~/composables/user/useUsers";
@@ -189,6 +191,7 @@ import UserPreviewDrawer from "./userPreview/userPreviewDrawer.vue";
 import InvitationListTable from "./invitationListTable.vue";
 import { Modal, message } from "ant-design-vue";
 import { User } from "~/api/auth/user";
+import whoami from "~/composables/user/whoami";
 import {
   getNameInitials,
   getNameInTitleCase,
@@ -210,7 +213,7 @@ export default defineComponent({
     const showInviteUserModal = ref(false);
     const showUserPreview = ref(false);
     const statusFilterValue = ref<string>("");
-
+    const { username: currentUserUsername } = whoami();
     let selectedUserId = ref("");
     const selectedUser = computed(() => {
       let activeUserObj = {};
@@ -316,14 +319,26 @@ export default defineComponent({
       // fetch groups
       getUserList();
     };
+    const {
+      showUserPreview: openPreview,
+      closePreview,
+      setUserUniqueAttribute,
+    } = usePreview();
     const showUserPreviewDrawer = (user: any) => {
-      showUserPreview.value = true;
+      setUserUniqueAttribute(user.id);
+      let blacklistedTabs = [];
+      if (user.username !== currentUserUsername.value)
+        blacklistedTabs = ["about"];
+      openPreview({ blacklisted: blacklistedTabs });
       selectedUserId.value = user.id;
     };
     const handleClosePreview = () => {
-      showUserPreview.value = false;
+      // showUserPreview.value = false;
+      closePreview();
+      setUserUniqueAttribute("");
       selectedUserId.value = "";
     };
+
     const handleChangeRole = (user: any) => {
       showChangeRoleModal.value = true;
       selectedUserId.value = user.id;

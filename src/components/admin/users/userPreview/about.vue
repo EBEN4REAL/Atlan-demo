@@ -58,9 +58,10 @@ import "vue3-tel-input/dist/vue3-tel-input.css";
 import { defineComponent, computed, reactive, ref } from "vue";
 import { User } from "~/api/auth/user";
 import { message } from "ant-design-vue";
+import Tags from "@common/badge/tags/index.vue";
 export default defineComponent({
   name: "UserPreviewAboutComponent",
-  components: { VueTelInput },
+  components: { VueTelInput, Tags },
   props: {
     selectedUser: {
       type: Object,

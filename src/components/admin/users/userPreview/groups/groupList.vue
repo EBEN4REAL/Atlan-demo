@@ -10,12 +10,14 @@
           @change="handleSearch"
         ></a-input-search>
       </div>
-      <a-button @click="$emit('showUserGroups')">
-        <fa icon="fal chevron-left" />
-      </a-button>
-      <a-button @click="$emit('addUserToGroups')" type="primary" :disabled="addToGroupLoading">
-        <fa icon="fal plus" class="mr-2" />Add
-      </a-button>
+      <div>
+        <a-button @click="$emit('showUserGroups')" class="mr-3">
+          <fa icon="fal chevron-left" />
+        </a-button>
+        <a-button @click="$emit('addUserToGroups')" type="primary" :disabled="addToGroupLoading">
+          <fa icon="fal plus" class="mr-2" />Add
+        </a-button>
+      </div>
     </div>
     <div
       class="flex items-center h-full align-middle bg-white"

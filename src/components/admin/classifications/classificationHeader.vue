@@ -73,7 +73,7 @@ import { defineComponent, computed, ref } from "vue";
 import Dropdown from "~/components/admin/classifications/dropdown.vue";
 import UpdateClassificationModal from "./updateClassificationModal.vue";
 import DeleteClassificationModal from "./deleteClassificationModal.vue";
-import moment from "moment";
+// import moment from "moment";
 
 export default defineComponent({
   name: "ClassificationHeader",
@@ -122,12 +122,14 @@ export default defineComponent({
 
     const createdAt = computed(() => {
       const timestamp = selectedClassification.value.createTime;
-      return moment(timestamp).fromNow();
+      return "";
+      // return moment(timestamp).fromNow();
     });
     const createdBy = computed(() => selectedClassification.value.createdBy);
     const updatedAt = computed(() => {
       const timestamp = selectedClassification.value.updateTime;
-      return moment(timestamp).fromNow();
+      return "";
+      // return moment(timestamp).fromNow();
     });
 
     const updatedBy = computed(() => selectedClassification.value.updatedBy);

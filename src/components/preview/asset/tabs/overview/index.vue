@@ -6,7 +6,7 @@
     :accordion="false"
     v-model:activeKey="activeKey"
     style="height: calc(100% - 125px)"
-    class="overflow-y-auto bg-transparent"
+    class="mt-2 overflow-y-auto bg-transparent"
   >
     <a-collapse-panel key="details" class="bg-transparent" forceRender>
       <template #header>

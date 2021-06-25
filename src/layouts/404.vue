@@ -1,7 +1,8 @@
-<script lang="ts">
-import { useI18n } from "vue-i18n";
 
-const { t } = useI18n();
+
+<script lang="ts">
+import { defineComponent } from "vue";
+export default defineComponent({});
 </script>
 
 <template>
@@ -11,9 +12,7 @@ const { t } = useI18n();
     </div>
     <router-view />
     <div>
-      <button class="btn m-3 text-sm mt-8">
-        {{ t("button.back") }}
-      </button>
+      <button class="m-3 mt-8 text-sm btn">back</button>
     </div>
   </main>
 </template>

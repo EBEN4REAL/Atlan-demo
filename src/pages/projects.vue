@@ -2,28 +2,11 @@
   <a-layout class="min-h-screen">
     <!-- <a-layout-header
       theme="light"
-      class="
-        flex
-        items-center
-        px-0
-        leading-none
-        align-middle
-        text-primary-100
-        bg-primary-500
-      "
+      class="flex items-center px-0 leading-none align-middle text-primary-100 bg-primary-500"
       style="height: 42px"
     >
       <div
-        class="
-          flex
-          items-center
-          h-full
-          px-4
-          mr-3
-          align-middle
-          border-r border-primary-400
-          hover:bg-primary-600
-        "
+        class="flex items-center h-full px-4 mr-3 align-middle border-r border-primary-400 hover:bg-primary-600"
         @click="handleBack"
       >
         <fa icon="fal chevron-left" class="text-xl"></fa>
@@ -45,7 +28,7 @@
       ></a-layout-sider> -->
       <a-layout-content>
         <splitpanes class="bg-white default-theme">
-          <pane size="20" class="bg-white p-4">
+          <pane size="20" class="p-4 bg-white">
             <a-tabs>
               <a-tab-pane key="1" tab="All">
                 <a-input-search placeholder="Search projects" />
@@ -63,15 +46,7 @@
               <Editor></Editor>
             </div>
             <div
-              class="
-                p-6
-                m-6
-                overflow-x-auto
-                bg-white
-                border
-                rounded
-                table-wrapper
-              "
+              class="p-6 m-6 overflow-x-auto bg-white border rounded  table-wrapper"
             >
               <p class="">Table</p>
               <a-table

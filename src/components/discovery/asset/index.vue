@@ -20,24 +20,19 @@
         </a-radio-group>
       </div>
 
-      <keep-alive class="flex-grow h-full">
-        <div>
-          <div v-show="filterMode === 'custom'">
-            <div class="pb-2 mb-2">
-              <ConnectorDropdown
-                @change="handleChangeConnectors"
-              ></ConnectorDropdown>
-            </div>
+      <div v-show="filterMode === 'custom'" class="flex-grow h-full">
+        <div class="pb-2 mb-2">
+          <ConnectorDropdown
+            @change="handleChangeConnectors"
+          ></ConnectorDropdown>
+        </div>
 
-            <AssetFilters @refresh="handleFilterChange"></AssetFilters>
-          </div>
-        </div>
-      </keep-alive>
-      <keep-alive class="">
-        <div v-show="filterMode === 'saved'">
-          <SavedFilters></SavedFilters>
-        </div>
-      </keep-alive>
+        <AssetFilters @refresh="handleFilterChange"></AssetFilters>
+      </div>
+
+      <div v-show="filterMode === 'saved'">
+        <SavedFilters @refresh="handleSavedSearchChange"></SavedFilters>
+      </div>
     </div>
   </div>
   <div
@@ -177,7 +172,9 @@ export default defineComponent({
       totalCount,
       changeAssetType,
       assetTypeList,
+      changeSort,
       changeConnectors,
+      savedSearch,
     } = fetchAssetDiscover(DISCOVERY_FETCH_LIST, immediate);
 
     const handleSearchChange = useDebounceFn((val) => {
@@ -192,8 +189,8 @@ export default defineComponent({
       projection.value = payload;
     };
 
-    const handleChangeSort = (payload:any) => {
-
+    const handleChangeSort = (payload: any) => {
+      changeSort(payload);
     };
 
     const handleFilterChange = (payload: any) => {
@@ -202,6 +199,16 @@ export default defineComponent({
         condition: "AND" as Components.Schemas.Condition,
         criterion: payload,
       });
+    };
+
+    const handleSavedSearchChange = (payload: any) => {
+      console.log(payload);
+
+      if (payload.attributes) {
+        let searchParam = JSON.parse(payload?.attributes?.searchParameters);
+        console.log(searchParam);
+        savedSearch(searchParam);
+      }
     };
 
     const handleChangeAssetType = (payload: any) => {
@@ -231,6 +238,9 @@ export default defineComponent({
       assetTypeList,
       handleChangeConnectors,
       changeConnectors,
+      handleChangeSort,
+      handleSavedSearchChange,
+      savedSearch,
       // list,
       // filterMode,
       // state,

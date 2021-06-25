@@ -122,6 +122,7 @@ export default defineComponent({
               extra: this.credential.extra,
               login: this.credential.login,
               password: this.credential.password,
+              database: this.credential.database,
             },
             job: {
               isCron: this.job.isCron,

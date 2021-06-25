@@ -104,7 +104,7 @@ export default function fetchAssetDiscover(cache?: string, dependentKey?: Ref<an
         return aggregationData?.value?.aggregations;
     });
     const assetTypeList: ComputedRef<any> = computed(() => {
-        let temp: any[] = [];
+        const temp = [];
         let map = aggregations?.value?.['__typeName.keyword'];
         // if (map) {
         //     Object.keys(map).forEach((key) => {
@@ -135,7 +135,7 @@ export default function fetchAssetDiscover(cache?: string, dependentKey?: Ref<an
             attributes: [],
             entityFilters: {
                 ...body.value.entityFilters,
-                criterion: body.value.entityFilters.criterion
+                criterion: body.value?.entityFilters?.criterion
             },
             aggregationAttributes: ["__typeName.keyword"]
         }
@@ -188,8 +188,22 @@ export default function fetchAssetDiscover(cache?: string, dependentKey?: Ref<an
         refresh();
     };
 
-    const changeSort = (assetType: string) => {
+    const changeSort = (sort: string) => {
+        console.log(sort);
 
+        if (sort !== "default") {
+            const split = sort.split("|");
+            if (split.length > 1) {
+                body.value.sortBy = split[0];
+                body.value.sortOrder = split[1].toUpperCase();
+            }
+        } else {
+            body.value.sortBy = "";
+            delete body.value.sortOrder;
+        }
+        refresh(true);
+
+        // body.value.
     };
 
 
@@ -258,6 +272,18 @@ export default function fetchAssetDiscover(cache?: string, dependentKey?: Ref<an
         }
         refresh();
     };
+    const savedSearch = (param: SearchParameters) => {
+        console.log(param);
+
+        param.limit = body.value.limit;
+        param.attributes = [...BaseAttributes, ...BasicSearchAttributes];
+
+        body.value = {
+            ...param
+        };
+
+        refresh();
+    };
 
 
     const isLoading = computed(() => {
@@ -294,5 +320,7 @@ export default function fetchAssetDiscover(cache?: string, dependentKey?: Ref<an
         assetTypeList,
         changeAssetType,
         changeConnectors,
+        changeSort,
+        savedSearch,
     }
 }

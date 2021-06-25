@@ -85,14 +85,10 @@
           <template #name="{ text: user }">
             <div
               class="flex items-center align-middle cursor-pointer"
-              @click="
-          () => {
-            showUserPreviewDrawer(user);
-          }
-        "
+              @click="() => {showUserPreviewDrawer(user);}"
             >
               <a-avatar
-                v-if="user.name || user.uername || user.email"
+                v-if="user.name || user.username || user.email"
                 shape="square"
                 class="mr-2 border-2 rounded-lg ant-tag-blue text-primary-500 avatars border-primary-300"
                 :size="40"
@@ -202,12 +198,14 @@ import InvitationListTable from "./invitationListTable.vue";
 import { Modal, message } from "ant-design-vue";
 import { User } from "~/api/auth/user";
 import whoami from "~/composables/user/whoami";
+import uploadAvatar from "~/composables/avatar/uploadAvatar";
 import {
   getNameInitials,
   getNameInTitleCase,
 } from "~/composables//utils/string-operations";
 import ChangeRole from "./changeRole.vue";
 import InviteUsers from "./inviteUsers.vue";
+
 export default defineComponent({
   components: {
     UserPreviewDrawer,
@@ -441,7 +439,6 @@ export default defineComponent({
       }
       return name;
     };
-
     const imageUrl = (username: any) => {
       return `http://localhost:3333/api/auth/tenants/default/avatars/${username}`;
     };
@@ -494,6 +491,16 @@ export default defineComponent({
       userListAPIParams.offset = offset;
       getUserList();
     };
+
+    let uploadStarted = ref(false);
+    const { upload, isReady, uploadKey } = uploadAvatar();
+    const handleUploadAvatar = async (uploaded) => {
+      console.log("handle Upload");
+      upload(uploaded.file);
+      uploadStarted.value = true;
+      imageUrl.value = imageUrl.value + "?" + uploadKey;
+      return true;
+    };
     return {
       searchText,
       handleSearch,
@@ -529,6 +536,10 @@ export default defineComponent({
       resetStatusFilter,
       handlePagination,
       filteredUserCount,
+      handleUploadAvatar,
+      uploadStarted,
+      isReady,
+      uploadKey,
     };
   },
   data() {

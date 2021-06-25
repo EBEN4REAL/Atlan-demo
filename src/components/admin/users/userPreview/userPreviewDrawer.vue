@@ -8,7 +8,11 @@
     :body-style="{ height: '100%' }"
     @close="handleClose"
   >
-    <UserPreview :tabs="finalTabs" :selectedUser="userObj" @reloadTable="()=>setUserUpdatedFlag(true)" />
+    <UserPreview
+      :tabs="finalTabs"
+      :selectedUser="userObj"
+      @updatedUser="()=>setUserUpdatedFlag(true)"
+    />
   </a-drawer>
 </template>
     

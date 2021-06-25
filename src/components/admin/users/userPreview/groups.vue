@@ -1,6 +1,6 @@
 <template>
   <div class="my-3 mr-5">
-    <div>
+    <div v-if="showUserGroups">
       <div class="flex flex-row justify-between">
         <div>
           <a-input-search
@@ -44,7 +44,7 @@
         </div>
       </div>
       <div v-else class="min-h-screen mt-4">
-        <div v-for="group in groupList" :key="group.id" class="my-2">
+        <div v-for="group in groupList.value" :key="group.id" class="my-2">
           <div class="flex justify-between">
             <div class="flex items-center">
               <a-avatar
@@ -53,9 +53,9 @@
                 :size="40"
               >{{ getNameInitials(getNameInTitleCase(group.name)) }}</a-avatar>
               <div class="ml-2">
-                <div>{{ group.name }}</div>
-                <div>@{{ group.alias }}</div>
-                <div>{{ pluralizeString("user", group.memberCount) }}</div>
+                <div>{{ group.alias }}</div>
+                <div>@{{ group.name }}</div>
+                <div>{{ pluralizeString("user", group.user_count) }}</div>
               </div>
             </div>
             <a-popover trigger="click" placement="bottom">
@@ -80,20 +80,28 @@
         </div>
       </div>
     </div>
-    <a-modal
+    <div v-else-if="!showUserGroups">
+      <GroupList
+        @updateSelectedGroups="updateSelectedGroups"
+        @showUserGroups="handleShowUserGroups"
+        @addUserToGroups="addUserToGroups"
+        :addToGroupLoading="addToGroupLoading"
+      />
+    </div>
+    <!-- <a-modal
       :visible="showAddToGroupModal"
       title="Add to group"
       :footer="null"
       :destroy-on-close="true"
-      @cancel="closeAddToGroupModal"
     >
       <AddToGroup @addUserToGroups="addUserToGroups" :addToGroupLoading="addToGroupLoading" />
-    </a-modal>
+    </a-modal>-->
   </div>
 </template>
   
 <script lang='ts'>
 import { message } from "ant-design-vue";
+import GroupList from "~/components/admin/users/userPreview/groups/groupList.vue";
 import getUserGroups from "~/composables/user/getUserGroups";
 import { defineComponent, computed, reactive, ref } from "vue";
 import {
@@ -119,11 +127,14 @@ export default defineComponent({
   components: {
     AddToGroup,
     ErrorView,
+    GroupList,
   },
   setup(props, context) {
+    const showUserGroups = ref(true);
     const searchText = ref("");
     const showAddToGroupModal = ref(false);
     const addToGroupLoading = ref(false);
+    const selectedGroupIds = ref([]);
     const groupListAPIParams = reactive({
       userId: props.selectedUser.id,
       params: {
@@ -167,7 +178,8 @@ export default defineComponent({
         searchText.value ? filteredGroupCount.value : totalGroupCount.value
       );
     });
-    const addUserToGroups = async (groupIds) => {
+    const addUserToGroups = async () => {
+      const groupIds = [...selectedGroupIds.value];
       addToGroupLoading.value = true;
       try {
         await User.AddGroups(props.selectedUser.id, {
@@ -178,7 +190,8 @@ export default defineComponent({
         context.emit("updatedUser");
         addToGroupLoading.value = false;
         message.success(`User added to groups`);
-        showAddToGroupModal.value = false;
+        // showAddToGroupModal.value = false;
+        showUserGroups.value = true;
       } catch (e) {
         addToGroupLoading.value = false;
         message.error("Unable to add user to groups, please try again.");
@@ -207,10 +220,15 @@ export default defineComponent({
       }
     };
     const handleAddToGroup = () => {
-      showAddToGroupModal.value = true;
+      // showAddToGroupModal.value = true;
+      showUserGroups.value = false;
     };
-    const closeAddToGroupModal = () => {
-      showAddToGroupModal.value = false;
+    const handleShowUserGroups = () => {
+      // showAddToGroupModal.value = false;
+      showUserGroups.value = true;
+    };
+    const updateSelectedGroups = (groupList) => {
+      selectedGroupIds.value = [...groupList];
     };
 
     return {
@@ -231,8 +249,10 @@ export default defineComponent({
       STATES,
       addToGroupLoading,
       showAddToGroupModal,
-      closeAddToGroupModal,
       addUserToGroups,
+      updateSelectedGroups,
+      showUserGroups,
+      handleShowUserGroups,
     };
   },
 });

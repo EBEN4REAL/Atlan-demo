@@ -40,15 +40,7 @@
     style="overflow: hidden"
   >
     <div class="flex items-center px-6 gap-x-3">
-      <a-input placeholder="Search" @input="handleSearchChange">
-        <template #suffix>
-          <a-spin
-            size="small"
-            class="mr-2 leading-none"
-            v-if="isLoading"
-          ></a-spin>
-        </template>
-      </a-input>
+      <a-input placeholder="Search" @input="handleSearchChange"> </a-input>
       <a-popover placement="bottom">
         <template #content>
           <Preferences
@@ -179,10 +171,10 @@ export default defineComponent({
 
     const handleSearchChange = useDebounceFn((val) => {
       query(val.target.value);
-      if (assetlist.value) {
-        console.log("scroll");
-        assetlist?.value.scrollToItem(0);
-      }
+      // if (assetlist.value) {
+      //   console.log("scroll");
+      //   assetlist?.value.scrollToItem(0);
+      // }
     }, 100);
 
     const handleChangePreferences = (payload: any) => {

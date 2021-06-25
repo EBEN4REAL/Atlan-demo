@@ -37,7 +37,28 @@
     >
       {{ description(item) }}
     </p>
-    <div class="flex flex-wrap gap-x-1" v-if="projection?.includes('owners')">
+
+    {{ item.typeName }}
+    <div
+      v-if="
+        projection?.includes('rows') &&
+        (item.typeName.toLowerCase() === 'table' ||
+          item.typeName.toLowerCase() === 'view')
+      "
+    >
+      <p class="mb-0 text-dark-400">
+        <span class="font-bold tracking-wide">{{ rowCount(item, true) }}</span>
+        rows,
+        <span class="font-bold tracking-wide cursor-pointer text-primary-500">{{
+          columnCount(item, true)
+        }}</span>
+        cols
+      </p>
+    </div>
+    <div
+      class="flex flex-wrap mt-1 gap-x-1"
+      v-if="projection?.includes('owners')"
+    >
       <template
         v-for="user in item?.attributes?.ownerUsers?.split(',')"
         :key="user"

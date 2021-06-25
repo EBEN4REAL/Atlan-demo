@@ -127,7 +127,11 @@ export default defineComponent({
       console.log(props.assetTypeList);
       //Update Count from Aggregations
       filteredTypeList.forEach((f) => {
-        f.count = props.assetTypeList[f.id];
+        if (props.assetTypeList[f.id]) {
+          f.count = props.assetTypeList[f.id];
+        } else if (props.assetTypeList[f.id.toLowerCase()]) {
+          f.count = props.assetTypeList[f.id.toLowerCase()];
+        }
       });
 
       return filteredTypeList;

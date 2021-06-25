@@ -1,12 +1,29 @@
 <template>
   <a-layout class="min-h-screen">
-    <a-layout-header
+    <!-- <a-layout-header
       theme="light"
-      class="flex items-center px-0 leading-none align-middle text-primary-100 bg-primary-500"
+      class="
+        flex
+        items-center
+        px-0
+        leading-none
+        align-middle
+        text-primary-100
+        bg-primary-500
+      "
       style="height: 42px"
     >
       <div
-        class="flex items-center h-full px-4 mr-3 align-middle border-r border-primary-400 hover:bg-primary-600"
+        class="
+          flex
+          items-center
+          h-full
+          px-4
+          mr-3
+          align-middle
+          border-r border-primary-400
+          hover:bg-primary-600
+        "
         @click="handleBack"
       >
         <fa icon="fal chevron-left" class="text-xl"></fa>
@@ -14,9 +31,9 @@
       <p class="mb-0 leading-none tracking-wide">
         Personal Workspace
       </p></a-layout-header
-    >
+    > -->
     <a-layout :hasSider="true">
-      <a-layout-sider
+      <!-- <a-layout-sider
         class="border-r bg-sidebar"
         :collapsedWidth="48"
         :collapsed="true"
@@ -25,18 +42,36 @@
         }"
       >
         <ProjectSidebar class="mt-3"></ProjectSidebar
-      ></a-layout-sider>
+      ></a-layout-sider> -->
       <a-layout-content>
         <splitpanes class="bg-white default-theme">
-          <pane size="20" class="bg-sidebar">
-            <span>1</span>
+          <pane size="20" class="bg-white p-4">
+            <a-tabs>
+              <a-tab-pane key="1" tab="All">
+                <a-input-search placeholder="Search projects" />
+              </a-tab-pane>
+              <a-tab-pane key="2" tab="My Queries" force-render
+                >Content of Tab Pane 2</a-tab-pane
+              >
+              <a-tab-pane key="3" tab="Shared"
+                >Content of Tab Pane 3</a-tab-pane
+              >
+            </a-tabs>
           </pane>
           <pane size="80" class="shadow-md">
             <div class="p-4 m-6 bg-white border rounded">
               <Editor></Editor>
             </div>
             <div
-              class="p-6 m-6 overflow-x-auto bg-white border rounded table-wrapper"
+              class="
+                p-6
+                m-6
+                overflow-x-auto
+                bg-white
+                border
+                rounded
+                table-wrapper
+              "
             >
               <p class="">Table</p>
               <a-table
@@ -54,7 +89,9 @@
 <script lang="ts">
 import { defineComponent, ref } from "vue";
 import { useRouter } from "vue-router";
+import { fetcher, getAPIPath, getAxiosClient } from "~/api";
 import Editor from "@/editor/index.vue";
+
 import ProjectSidebar from "~/layouts/project/index.vue";
 
 export default defineComponent({
@@ -236,6 +273,6 @@ export default defineComponent({
 
 <route lang="yaml">
   meta:
-    layout: project
+    layout: default
     requiresAuth: true
 </route>

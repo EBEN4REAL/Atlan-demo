@@ -8,7 +8,7 @@
     :body-style="{ height: '100%' }"
     @close="handleClose"
   >
-    <UserPreview :tabs="finalTabs" :selectedUser="userObj" @reloadTable="$emit('reloadTable')" />
+    <UserPreview :tabs="finalTabs" :selectedUser="userObj" @reloadTable="()=>setUserUpdatedFlag(true)" />
   </a-drawer>
 </template>
     
@@ -45,6 +45,7 @@ export default defineComponent({
       closePreview,
       uniqueAttribute,
       finalTabs,
+      setUserUpdatedFlag,
     } = usePreview();
     let filterObj = {};
     if (uniqueAttribute.value === "username")
@@ -67,7 +68,14 @@ export default defineComponent({
       closePreview();
     };
 
-    return { showPreview, userObj, userId, handleClose, finalTabs };
+    return {
+      showPreview,
+      userObj,
+      userId,
+      handleClose,
+      finalTabs,
+      setUserUpdatedFlag,
+    };
   },
 });
 </script>

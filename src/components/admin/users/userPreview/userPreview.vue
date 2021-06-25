@@ -23,7 +23,7 @@
           <component
             :is="tab.component"
             :selectedUser="selectedUser"
-            @reloadTable="$emit('reloadTable')"
+            @updatedUser="$emit('updatedUser')"
           />
         </a-tab-pane>
       </a-tabs>

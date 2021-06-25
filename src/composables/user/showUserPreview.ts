@@ -6,6 +6,7 @@ const showPreview = ref(false);
 const userId = ref("");
 const username = ref("");
 const uniqueAttribute = ref("");
+const userUpdated = ref(false);
 const allTabs = [
   {
     //tab name
@@ -78,6 +79,9 @@ export function usePreview() {
   const setBlackListedTabs = (tabs) => {
     blacklistedTabs.value = [...tabs];
   };
+  const setUserUpdatedFlag = (value) => {
+    userUpdated.value = value;
+  };
   return {
     showPreview,
     userId,
@@ -89,5 +93,7 @@ export function usePreview() {
     finalTabs,
     showUserPreview,
     closePreview,
+    userUpdated,
+    setUserUpdatedFlag,
   };
 }

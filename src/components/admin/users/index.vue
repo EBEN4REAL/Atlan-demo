@@ -194,7 +194,7 @@
 </template>
 <script lang="ts">
 import { usePreview } from "~/composables/user/showUserPreview";
-import { defineComponent, ref, reactive, computed } from "vue";
+import { defineComponent, ref, reactive, computed, watch } from "vue";
 import { useDebounceFn } from "@vueuse/core";
 import useUsers from "~/composables/user/useUsers";
 import UserPreviewDrawer from "./userPreview/userPreviewDrawer.vue";
@@ -333,6 +333,8 @@ export default defineComponent({
       showUserPreview: openPreview,
       closePreview,
       setUserUniqueAttribute,
+      userUpdated,
+      setUserUpdatedFlag,
     } = usePreview();
     const showUserPreviewDrawer = (user: any) => {
       setUserUniqueAttribute(user.id);
@@ -348,7 +350,12 @@ export default defineComponent({
       setUserUniqueAttribute("");
       selectedUserId.value = "";
     };
-
+    watch(userUpdated, () => {
+      if (userUpdated) {
+        reloadTable();
+        setUserUpdatedFlag(false);
+      }
+    });
     const handleChangeRole = (user: any) => {
       showChangeRoleModal.value = true;
       selectedUserId.value = user.id;

@@ -105,7 +105,7 @@ export default defineComponent({
         };
         try {
           await User.UpdateUser(props.selectedUser.id, requestPayload);
-          context.emit("reloadTable");
+          context.emit("updatedUser");
           message.success("User profile updated.");
           updateLoading.value = false;
         } catch (error) {

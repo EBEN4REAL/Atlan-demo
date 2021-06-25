@@ -17,10 +17,7 @@
           </a-button>
         </div>
       </div>
-      <div
-        v-if="!selectedUser.group_count"
-        class="flex flex-col items-center justify-center"
-      >
+      <div v-if="!selectedUser.group_count" class="flex flex-col items-center justify-center">
         <div class="text-center">
           <p class="text-lg">This user is not part of any group.</p>
         </div>
@@ -54,8 +51,7 @@
                 shape="circle"
                 class="mr-1 ant-tag-blue text-primary-500 avatars"
                 :size="40"
-                >{{ getNameInitials(getNameInTitleCase(group.name)) }}</a-avatar
-              >
+              >{{ getNameInitials(getNameInTitleCase(group.name)) }}</a-avatar>
               <div class="ml-2">
                 <div>{{ group.name }}</div>
                 <div>@{{ group.alias }}</div>
@@ -64,11 +60,7 @@
             </div>
             <a-popover trigger="click" placement="bottom">
               <template #content>
-                <span
-                  class="text-red-500"
-                  @click="() => removeUserFromGroup(group)"
-                  >Remove User</span
-                >
+                <span class="text-red-500" @click="() => removeUserFromGroup(group)">Remove User</span>
               </template>
               <fa icon="fal cog"></fa>
             </a-popover>
@@ -95,10 +87,7 @@
       :destroy-on-close="true"
       @cancel="closeAddToGroupModal"
     >
-      <AddToGroup
-        @addUserToGroups="addUserToGroups"
-        :addToGroupLoading="addToGroupLoading"
-      />
+      <AddToGroup @addUserToGroups="addUserToGroups" :addToGroupLoading="addToGroupLoading" />
     </a-modal>
   </div>
 </template>
@@ -186,7 +175,7 @@ export default defineComponent({
         });
         groupListAPIParams.params.offset = 0;
         getUserGroupList();
-        context.emit("reloadTable");
+        context.emit("updatedUser");
         addToGroupLoading.value = false;
         message.success(`User added to groups`);
         showAddToGroupModal.value = false;
@@ -207,7 +196,7 @@ export default defineComponent({
           {}
         );
         getUserGroupList();
-        context.emit("reloadTable");
+        context.emit("updatedUser");
         message.success(
           `${props.selectedUser.name} removed from ${group.name}`
         );

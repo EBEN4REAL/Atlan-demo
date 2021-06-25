@@ -3,62 +3,78 @@
     <template v-for="(tag, index) in tags" :key="index">
       <a-tooltip v-if="tag.length > 20" :title="tag">
         <a-tag
+          :closable="tag.hasOwnProperty('closeable')?tag[closable]:true"
           :key="tag"
-          :closable="index !== 0"
           @close="handleClose(tag)"
           class="bg-gray-50"
-        >
-          {{ `${tag.slice(0, 20)}...` }}
-        </a-tag>
+        >{{ `${tag.slice(0, 20)}...` }}</a-tag>
       </a-tooltip>
       <a-tag
+        :closable="tag.hasOwnProperty('closeable')?tag[closable]:true"
         v-else
-        :closable="index !== 0"
         @close="handleClose(tag)"
         class="bg-gray-50"
-      >
-        {{ tag }}
-      </a-tag>
+      >{{ tag }}</a-tag>
     </template>
     <a-input
-      v-if="inputVisible"
+      v-if="inputVisible && !disableNewTag"
       ref="inputRef"
       type="text"
       size="small"
       :style="{ width: '78px' }"
       v-model:value="inputValue"
       @blur="handleInputConfirm"
-      @keyup.enter="handleInputConfirm"
+      @keyup.enter="$event.target.blur()"
     />
     <a-tag
-      v-else
+      v-else-if="!disableNewTag"
       class="bg-white"
       @click="showInput"
       style="background: #fff; border-style: dashed"
     >
-      <fa icon="fal plus" class="pushtop"></fa>
-      New Tag
+      <fa icon="fal plus" class="pushtop"></fa>New Tag
     </a-tag>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, reactive, toRefs, nextTick } from "vue";
+import { defineComponent, ref, reactive, toRefs, nextTick, watch } from "vue";
 
 export default defineComponent({
+  props: {
+    tags: {
+      type: Array,
+      default: ["Unremovable", "Tag 2", "Tag 3Tag 3Tag 3Tag 3Tag 3Tag 3Tag 3"],
+    },
+    disableNewTag: {
+      type: Boolean,
+      default: false,
+    },
+  },
   components: {},
-  setup() {
+  setup(props, context) {
     const inputRef = ref();
     const state = reactive({
-      tags: ["Unremovable", "Tag 2", "Tag 3Tag 3Tag 3Tag 3Tag 3Tag 3Tag 3"],
+      tags: props.tags,
       inputVisible: false,
       inputValue: "",
     });
-
+    watch(
+      () => props.tags,
+      () => {
+        state.tags = [...props.tags];
+      }
+    );
     const handleClose = (removedTag: string) => {
       const tags = state.tags.filter((tag) => tag !== removedTag);
       console.log(tags);
       state.tags = tags;
+      Object.assign(state, {
+        tags,
+        inputVisible: false,
+        inputValue: "",
+      });
+      context.emit("updateTags", tags);
     };
 
     const showInput = () => {
@@ -80,6 +96,7 @@ export default defineComponent({
         inputVisible: false,
         inputValue: "",
       });
+      context.emit("updateTags", tags);
     };
     return {
       ...toRefs(state),

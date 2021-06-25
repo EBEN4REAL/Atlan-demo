@@ -58,7 +58,9 @@
         </template>
       </div>
       <template v-for="item in list" :key="item.guid">
-        <div class="flex items-center w-full tracking-tight text-gray-600">
+        <div
+          class="flex items-center w-full tracking-tight text-gray-600 gap-y-1"
+        >
           <div class="flex items-center w-11/12 align-middle">
             <component
               :is="getDataTypeImage(item?.attributes?.dataType)"

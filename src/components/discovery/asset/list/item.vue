@@ -38,7 +38,6 @@
       {{ description(item) }}
     </p>
 
-    {{ item.typeName }}
     <div
       v-if="
         projection?.includes('rows') &&
@@ -47,8 +46,12 @@
       "
     >
       <p class="mb-0 text-dark-400">
-        <span class="font-bold tracking-wide">{{ rowCount(item, true) }}</span>
-        rows,
+        <span v-if="item?.typeName.toLowerCase() === 'table'">
+          <span class="font-bold tracking-wide">{{
+            rowCount(item, true)
+          }}</span>
+          rows,
+        </span>
         <span class="font-bold tracking-wide cursor-pointer text-primary-500">{{
           columnCount(item, true)
         }}</span>

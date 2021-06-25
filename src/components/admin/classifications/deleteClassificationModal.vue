@@ -36,7 +36,6 @@
 import { defineComponent, computed, ref, toRaw, watch } from "vue";
 import { useClassificationStore } from "~/pinia/classifications";
 import { Classification } from "~/api/atlas/classification";
-import { useRouter } from "vue-router";
 
 export default defineComponent({
   name: "DeleteClassificationModal",
@@ -50,7 +49,6 @@ export default defineComponent({
   },
 
   setup(props, context) {
-    const router = useRouter();
     const store = useClassificationStore();
     const showDeleteModal = computed(() => props.open);
 
@@ -58,7 +56,7 @@ export default defineComponent({
     const selectedClassificationName = computed(
       () => props.classification.displayName || props.classification.name
     );
-    const deleteStatus = computed(() => store.deleteClassificationStatus);
+    const deleteStatus = ref("");
     const deleteErrorText = ref("");
 
     const resetRef = (ref, time) => {
@@ -76,19 +74,19 @@ export default defineComponent({
         cache: false,
         classificationName,
       });
-      store.deleteClassificationStatus = "loading";
+      deleteStatus.value = "loading";
       watch([data, error], () => {
         if (!error.value) {
-          store.deleteClassificationStatus = "success";
+          deleteStatus.value = "success";
           store.deleteClassificationByName(classificationName);
           context.emit("close");
         } else {
-          store.deleteClassificationStatus = "error";
-          const error = toRaw(error.value);
+          deleteStatus.value = "error";
+          const reqError = toRaw(error.value);
           deleteErrorText.value = "Failed to delete classification!";
           resetRef(deleteErrorText, 6000);
           // Notify.error("Unable to delete this classification");
-          console.log("WTF: handleDeleteClassification -> error", error);
+          console.log("WTF: handleDeleteClassification -> error", reqError);
         }
       });
     };

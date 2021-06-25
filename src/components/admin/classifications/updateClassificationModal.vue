@@ -67,9 +67,7 @@ export default defineComponent({
       description: string;
     }
     const store = useClassificationStore();
-    const updateClassificationStatus = computed(
-      () => store.updateClassificationStatus
-    );
+    const updateClassificationStatus = ref("");
 
     const selectedClassification = computed(() => {
       return props.classification;
@@ -134,7 +132,7 @@ export default defineComponent({
           };
           //update classification
 
-          store.updateClassificationStatus = "loading";
+          updateClassificationStatus.value = "loading";
           const {
             data: updateClassificationData,
             error: updateClassificationError,
@@ -161,10 +159,10 @@ export default defineComponent({
               store.classifications = [...store.classifications];
               const classificationTree = store.transformClassificationTreeData;
               store.classificationTree = classificationTree;
-              store.updateClassificationStatus = "success";
+              updateClassificationStatus.value = "success";
               context.emit("close");
             } else if (updateClassificationError.value) {
-              store.updateClassificationStatus = "error";
+              updateClassificationStatus.value = "error";
               const error = toRaw(updateClassificationError.value);
               updateClassificationErrorText.value =
                 error.response.data.errorMessage;

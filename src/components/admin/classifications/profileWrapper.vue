@@ -126,10 +126,9 @@ export default defineComponent({
   setup(props, context) {
     const store = useClassificationStore();
     const router = useRouter();
-    const createClassificationStatus = computed(
-      () => store.createClassificationStatus
-    );
     const modalVisible = ref(false);
+    const createClassificationStatus = ref("");
+    const classificationsStatus = ref("");
     const treeFilterText = ref("");
     const createClassificationFormRef = ref();
     const classificationName = computed(() => props.classificationName);
@@ -194,7 +193,7 @@ export default defineComponent({
           classificationObj.description = formState.description;
           payload.classificationDefs.push(classificationObj);
           // create classification
-          store.createClassificationStatus = "loading";
+          createClassificationStatus.value = "loading";
           const {
             data: createClassificationData,
             error: createClassificationError,
@@ -216,12 +215,13 @@ export default defineComponent({
               );
               store.classifications = classifications ?? [];
               const classificationTree = store.transformClassificationTreeData;
-              console.log(classificationTree, "classifciation Tree");
               store.classificationTree = classificationTree ?? [];
-              store.createClassificationStatus = "success";
+              createClassificationStatus.value = "success";
+              formState.name = "";
+              formState.description = "";
               closeModal();
             } else {
-              store.createClassificationStatus = "error";
+              createClassificationStatus.value = "error";
               const error = toRaw(createClassificationError.value);
               console.log("errormessage", error.response.data.errorMessage);
               createErrorText.value = error.response.data.errorMessage;
@@ -239,7 +239,7 @@ export default defineComponent({
     };
 
     // get classifications
-    store.classificationsStatus = "loading";
+    classificationsStatus.value = "loading";
 
     const {
       data: classificationData,
@@ -247,19 +247,17 @@ export default defineComponent({
     } = Classification.getClassificationList({ cache: false });
 
     watch([classificationData, classificationError], () => {
-      console.log(classificationData, classificationError);
       if (classificationData.value) {
         let classifications = classificationData.value.classificationDefs || [];
         classifications = classifications.map((classification) => {
           classification.alias = classification.name;
           return classification;
         });
-        console.log("getClassifications -> classifications", classifications);
         store.setClassifications(classifications ?? []);
         store.initializeFilterTree();
-        store.classificationsStatus = "success";
+        classificationsStatus.value = "success";
       } else {
-        store.classificationsStatus = "error";
+        classificationsStatus.value = "error";
       }
     });
 
@@ -283,6 +281,8 @@ export default defineComponent({
     });
 
     return {
+      classificationsStatus,
+      createClassificationStatus,
       createErrorText,
       filteredData,
       treeData,
@@ -300,7 +300,6 @@ export default defineComponent({
       other: "",
       formState,
       rules,
-      createClassificationStatus,
       handleSelectNode,
     };
   },

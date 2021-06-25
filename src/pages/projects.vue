@@ -2,28 +2,11 @@
   <a-layout class="min-h-screen">
     <a-layout-header
       theme="light"
-      class="
-        flex
-        items-center
-        px-0
-        leading-none
-        align-middle
-        text-primary-100
-        bg-primary-500
-      "
+      class="flex items-center px-0 leading-none align-middle  text-primary-100 bg-primary-500"
       style="height: 42px"
     >
       <div
-        class="
-          flex
-          items-center
-          h-full
-          px-4
-          mr-3
-          align-middle
-          border-r border-primary-400
-          hover:bg-primary-600
-        "
+        class="flex items-center h-full px-4 mr-3 align-middle border-r  border-primary-400 hover:bg-primary-600"
         @click="handleBack"
       >
         <fa icon="fal chevron-left" class="text-xl"></fa>
@@ -65,6 +48,7 @@ import { defineComponent, ref } from "vue";
 import { useRouter } from "vue-router";
 import Editor from "@/editor/index.vue";
 import ProjectSidebar from "~/layouts/project/index.vue";
+import { useHead } from "@vueuse/head";
 
 export default defineComponent({
   components: {
@@ -77,6 +61,9 @@ export default defineComponent({
     };
   },
   setup() {
+    useHead({
+      title: "Query Playground",
+    });
     const router = useRouter();
     const handleBack = () => {
       router.push("assets");
@@ -89,12 +76,10 @@ export default defineComponent({
 });
 </script>
 
-<style lang="less">
-</style>
+<style lang="less"></style>
 
 <route lang="yaml">
   meta:
     layout: project
     requiresAuth: true
 </route>
-

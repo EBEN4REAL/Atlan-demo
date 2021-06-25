@@ -15,7 +15,7 @@
       </div>
     </div>
     <div
-      class="hidden h-full p-3 mt-3 bg-white border rounded-md  sm:col-span-4 sm:block"
+      class="hidden h-full p-3 mt-3 bg-white border rounded-md sm:col-span-4 sm:block"
     >
       <div class="flex items-center justify-between p-5 align-middle">
         <div class="flex items-center">
@@ -26,7 +26,7 @@
             :show-upload-list="false"
           >
             <div
-              class="hidden text-center border-2 rounded-lg  border-primary-300 sm:block"
+              class="hidden text-center border-2 rounded-lg border-primary-300 sm:block"
               style="width: 56px; height: 56px"
               v-if="!isReady && uploadStarted"
             >
@@ -44,7 +44,7 @@
 
           <div class="flex flex-col ml-2">
             <p
-              class="mb-0 text-lg leading-none tracking-tight text-gray-800 truncate  text-semibold"
+              class="mb-0 text-lg leading-none tracking-tight text-gray-800 truncate text-semibold"
             >
               {{ fullName }}
             </p>
@@ -98,7 +98,6 @@
   </div>
 </template>
 
-
 <script lang="ts">
 import { defineComponent, inject, computed, ref } from "vue";
 import { useStore } from "~/store";
@@ -111,6 +110,7 @@ import SavedList from "@/home/saved/index.vue";
 import Tags from "@common/badge/tags/index.vue";
 
 import uploadAvatar from "~/composables/avatar/uploadAvatar";
+import { useHead } from "@vueuse/head";
 
 export default defineComponent({
   name: "HelloWorld",
@@ -137,9 +137,12 @@ export default defineComponent({
     const fullName = computed(() => {
       let firstName = keycloak.tokenParsed.given_name || "";
       let lastName = keycloak.tokenParsed.family_name || "";
-      return `${
-        firstName.charAt(0).toUpperCase() + firstName.substr(1).toLowerCase()
-      } ${lastName.charAt(0).toUpperCase() + lastName.substr(1).toLowerCase()}`;
+      return `${firstName.charAt(0).toUpperCase() +
+        firstName.substr(1).toLowerCase()} ${lastName.charAt(0).toUpperCase() +
+        lastName.substr(1).toLowerCase()}`;
+    });
+    useHead({
+      title: `Welcome - ${fullName} `,
     });
 
     let imageUrl = ref(
@@ -173,8 +176,6 @@ export default defineComponent({
   },
 });
 </script>
-
-
 
 <route lang="yaml">
 meta:

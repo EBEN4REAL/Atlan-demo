@@ -108,6 +108,7 @@ import AssetListWrapper from "~/components/asset/assetListWrapper.vue";
 import { useRouter } from "vue-router";
 import { useClassificationStore } from "~/pinia/classifications";
 import { ValidateErrorEntity } from "ant-design-vue/es/form/interface";
+import { Classification } from "~/api/atlas/classification";
 
 export default defineComponent({
   name: "ClassificationProfileWrapper",
@@ -179,7 +180,7 @@ export default defineComponent({
       const payload = {
         classificationDefs: [],
       };
-      const classificationObj = {
+      const classificationObj: any = {
         attributeDefs: [],
         description: "",
         name: "",
@@ -192,16 +193,41 @@ export default defineComponent({
           classificationObj.name = formState.name;
           classificationObj.description = formState.description;
           payload.classificationDefs.push(classificationObj);
-          const fromDispatch = store.createClassification(payload);
-          fromDispatch
-            .then((res) => {
-              if (res) closeModal();
-            })
-            .catch((error: any) => {
+          // create classification
+          store.createClassificationStatus = "loading";
+          const {
+            data: createClassificationData,
+            error: createClassificationError,
+          } = Classification.createClassification({ cache: false, payload });
+
+          watch([createClassificationData, createClassificationError], () => {
+            console.log(createClassificationData, createClassificationError);
+            if (createClassificationData.value) {
+              let classifications =
+                createClassificationData.value.classificationDefs ?? [];
+              classifications = [...store.classifications, ...classifications];
+              classifications = classifications.map((classification: any) => {
+                classification.alias = classification.name;
+                return classification;
+              });
+              console.log(
+                "getClassifications -> classifications",
+                classifications
+              );
+              store.classifications = classifications ?? [];
+              const classificationTree = store.transformClassificationTreeData;
+              console.log(classificationTree, "classifciation Tree");
+              store.classificationTree = classificationTree ?? [];
+              store.createClassificationStatus = "success";
+              closeModal();
+            } else {
+              store.createClassificationStatus = "error";
+              const error = toRaw(createClassificationError.value);
               console.log("errormessage", error.response.data.errorMessage);
               createErrorText.value = error.response.data.errorMessage;
               resetRef(createErrorText, 6000);
-            });
+            }
+          });
         })
         .catch((error: ValidateErrorEntity<FormState>) => {
           console.log("error", error);
@@ -211,7 +237,31 @@ export default defineComponent({
     const toggleModal = () => {
       modalVisible.value = !modalVisible.value;
     };
-    store.getClassifications();
+
+    // get classifications
+    store.classificationsStatus = "loading";
+
+    const {
+      data: classificationData,
+      error: classificationError,
+    } = Classification.getClassificationList({ cache: false });
+
+    watch([classificationData, classificationError], () => {
+      console.log(classificationData, classificationError);
+      if (classificationData.value) {
+        let classifications = classificationData.value.classificationDefs || [];
+        classifications = classifications.map((classification) => {
+          classification.alias = classification.name;
+          return classification;
+        });
+        console.log("getClassifications -> classifications", classifications);
+        store.setClassifications(classifications ?? []);
+        store.initializeFilterTree();
+        store.classificationsStatus = "success";
+      } else {
+        store.classificationsStatus = "error";
+      }
+    });
 
     const handleSelectNode = (node) => {
       console.log(node, "parent");

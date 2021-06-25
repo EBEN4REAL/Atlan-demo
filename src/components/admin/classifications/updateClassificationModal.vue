@@ -28,10 +28,10 @@
         >
       </div>
       <p
-        v-if="updateClassificationError"
+        v-if="updateClassificationErrorText"
         class="mt-4 mb-0 text-sm text-red-500"
       >
-        {{ updateClassificationError }}
+        {{ updateClassificationErrorText }}
       </p>
     </a-form>
   </a-modal>
@@ -48,6 +48,7 @@ import {
   toRaw,
 } from "vue";
 import { useClassificationStore } from "~/pinia/classifications";
+import { Classification } from "~/api/atlas/classification";
 
 export default defineComponent({
   name: "UpdateClassification",
@@ -76,7 +77,7 @@ export default defineComponent({
     const showEditModal = computed(() => props.open);
 
     //edit modal
-    const updateClassificationError = ref("");
+    const updateClassificationErrorText = ref("");
     const editClassificationFormRef = ref(null);
 
     // let editFormState: UnwrapRef<FormState> = computed(() => {
@@ -125,23 +126,52 @@ export default defineComponent({
         .validate()
         .then(() => {
           let params = {
-            description: editFormState.value.description || "-",
+            description: editFormState.value.description ?? "-",
             attributeDefs: selectedClassification.value.attributeDefs,
             superTypes: selectedClassification.value.superTypes,
             displayName: editFormState.value.displayName,
             name: selectedClassification.value.name,
           };
-          store.updateClassificationListById(params).then(
-            (resolve) => {
+          //update classification
+
+          store.updateClassificationStatus = "loading";
+          const {
+            data: updateClassificationData,
+            error: updateClassificationError,
+          } = Classification.updateClassification({ cache: false, params });
+
+          watch([updateClassificationData, updateClassificationError], () => {
+            console.log(updateClassificationData, updateClassificationError);
+            if (updateClassificationData.value) {
+              const classificationObject: any = updateClassificationData;
+              const classification =
+                classificationObject &&
+                classificationObject.value.classificationDefs &&
+                classificationObject.value.classificationDefs.length &&
+                classificationObject.value.classificationDefs[0]
+                  ? classificationObject.value.classificationDefs[0]
+                  : {};
+              const classificationIndex = store.classifications.findIndex(
+                (c: any) => c.guid === classification.guid
+              );
+              if (classificationIndex === -1) {
+                return;
+              }
+              store.classifications[classificationIndex] = classification;
+              store.classifications = [...store.classifications];
+              const classificationTree = store.transformClassificationTreeData;
+              store.classificationTree = classificationTree;
+              store.updateClassificationStatus = "success";
               context.emit("close");
-            },
-            (error) => {
-              updateClassificationError.value =
+            } else if (updateClassificationError.value) {
+              store.updateClassificationStatus = "error";
+              const error = toRaw(updateClassificationError.value);
+              updateClassificationErrorText.value =
                 error.response.data.errorMessage;
-              resetRef(updateClassificationError, 6000);
+              resetRef(updateClassificationErrorText, 6000);
               console.log("WTF: handleUpdateDescription -> error", error);
             }
-          );
+          });
         })
         .catch((error: ValidateErrorEntity<FormState>) => {
           console.log("error", error);
@@ -149,7 +179,7 @@ export default defineComponent({
     };
 
     return {
-      updateClassificationError,
+      updateClassificationErrorText,
       editClassificationFormRef,
       updateClassification,
       showEditModal,

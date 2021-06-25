@@ -33,8 +33,9 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, computed, ref } from "vue";
+import { defineComponent, computed, ref, toRaw, watch } from "vue";
 import { useClassificationStore } from "~/pinia/classifications";
+import { Classification } from "~/api/atlas/classification";
 import { useRouter } from "vue-router";
 
 export default defineComponent({
@@ -69,20 +70,27 @@ export default defineComponent({
     const closeDeleteModal = () => {
       context.emit("close");
     };
-    const onDelete = async () => {
-      store.deleteClassificationByName(selectedClassification.value.name).then(
-        () => {
+    const onDelete = () => {
+      const classificationName = selectedClassification.value.name;
+      const { data, error, isLoading } = Classification.archiveClassification({
+        cache: false,
+        classificationName,
+      });
+      store.deleteClassificationStatus = "loading";
+      watch([data, error], () => {
+        if (!error.value) {
+          store.deleteClassificationStatus = "success";
+          store.deleteClassificationByName(classificationName);
           context.emit("close");
-        },
-        (error) => {
+        } else {
+          store.deleteClassificationStatus = "error";
+          const error = toRaw(error.value);
           deleteErrorText.value = "Failed to delete classification!";
           resetRef(deleteErrorText, 6000);
           // Notify.error("Unable to delete this classification");
           console.log("WTF: handleDeleteClassification -> error", error);
         }
-      );
-      store.getClassifications();
-      router.push("/admin/classifications");
+      });
     };
 
     return {

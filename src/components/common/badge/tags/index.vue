@@ -69,6 +69,11 @@ export default defineComponent({
       const tags = state.tags.filter((tag) => tag !== removedTag);
       console.log(tags);
       state.tags = tags;
+      Object.assign(state, {
+        tags,
+        inputVisible: false,
+        inputValue: "",
+      });
       context.emit("updateTags", tags);
     };
 

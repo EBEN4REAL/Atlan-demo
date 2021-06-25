@@ -3,7 +3,7 @@ import useSWRV from 'swrv';
 import { Workflows, URL } from '~/api/argo/workflow';
 
 export default function fetchWorkflowList(cachekey: string, dependent: any, paramsdefault: any, isArchive: boolean) {
-    const { data, error, mutate, isValidating } = useSWRV([cachekey, paramsdefault.value, {}], () => {
+    const { data, error, mutate, isValidating } = useSWRV([cachekey, paramsdefault?.value, {}], () => {
         if (dependent.value && isArchive) {
             return Workflows.ArchivedList(paramsdefault.value);
         }

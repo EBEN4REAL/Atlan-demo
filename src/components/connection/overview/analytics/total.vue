@@ -12,7 +12,7 @@
         {{ numeralFormat(assetDistributionSum) }}
       </p>
       <div
-        v-for="item in assetTypeList"
+        v-for="item in assetTypeListArray(assetTypeList)"
         :key="item.id"
         class="flex flex-col mt-4 space-y-2"
       >
@@ -80,11 +80,24 @@ export default defineComponent({
     const { totalCount, listCount, assetTypeList, isLoading, isError } =
       fetchAssetDiscover(now, defaultBody);
 
+    const assetTypeListArray = (list: any) => {
+      let temp = [];
+      Object.keys(list).forEach((key) => {
+        temp.push({
+          id: key,
+          label: key,
+          count: list[key.toLowerCase()] || list[key.toUpperCase()],
+        });
+      });
+      return temp;
+    };
+
     return {
       totalCount,
       listCount,
       isLoading,
       assetTypeList,
+      assetTypeListArray,
       isError,
     };
   },

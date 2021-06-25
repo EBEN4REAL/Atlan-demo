@@ -1,10 +1,6 @@
 <template>
   <div class="h-full overflow-auto">
-    <div class="p-6">
-      <ConnectionDistribution></ConnectionDistribution>
-    </div>
-
-    <div class="px-6">
+    <div class="px-6 mt-6">
       <RunList></RunList>
     </div>
 

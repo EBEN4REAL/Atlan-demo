@@ -19,7 +19,64 @@
         v-for="menuItem in menuData"
         :key="menuItem.key"
       >
+        <a-dropdown
+          v-if="menuItem.key === 'image'"
+          :trigger="['click']"
+          placement="bottomCenter"
+        >
+          <a-button
+            class="border-0"
+            :class="{
+              'is-active': editor.isActive(`${menuItem.key}`),
+              'border-r-2': menuItem.border,
+            }"
+            @click="() => menuItem.onClick(editor)"
+          >
+            <fa v-if="menuItem.icon" :icon="menuItem.icon" class="m-1" />
+            <span v-else>{{ menuItem.title }}</span>
+          </a-button>
+
+          <template #overlay>
+            <a-menu>
+              <div class="w-96 p-3 rounded">
+                <div class="d-flex align-items-center justify-content-start">
+                  <label>By Url</label>
+                  <div class="flex">
+                    <a-input
+                      type="url"
+                      v-model:value="imageLink"
+                      focused
+                      @keydown.enter="() =>  menuItem.onClick(editor)"
+                    />
+                    <a-button
+                      type="primary"
+                      class="ml-3 mr-2"
+                      @click="() =>  menuItem.onClick(editor)"
+                    >
+                      Add
+                    </a-button>
+                  </div>
+                </div>
+                <div
+                  class="mt-3 d-flex align-items-center justify-center text-center"
+                >
+                  <label>OR</label>
+                  <div class="mt-1">
+                    <a-upload v-model:file-list="fileList" name="file">
+                      <a-button>
+                        <upload-outlined></upload-outlined>
+                        Click to Upload
+                      </a-button>
+                    </a-upload>
+                  </div>
+                </div>
+              </div>
+            </a-menu>
+          </template>
+        </a-dropdown>
+
         <a-button
+          v-else
           class="border-0"
           :class="{
             'is-active':
@@ -31,31 +88,13 @@
           }"
           @click="() => menuItem.onClick(editor)"
         >
-          <a-dropdown v-if="menuItem.key === 'image'">
-            <fa icon="fa link" class="m-1" />
-            <template #overlay>
-              <a-menu>
-                <a-menu-item>
-                  <a href="javascript:;">1st menu item</a>
-                </a-menu-item>
-                <a-menu-item>
-                  <a href="javascript:;">2nd menu item</a>
-                </a-menu-item>
-                <a-menu-item>
-                  <a href="javascript:;">3rd menu item</a>
-                </a-menu-item>
-              </a-menu>
-            </template>
-          </a-dropdown>
-
-          <fa v-else-if="menuItem.icon" :icon="menuItem.icon" class="m-1" />
+          <fa v-if="menuItem.icon" :icon="menuItem.icon" class="m-1" />
           <span v-else>{{ menuItem.title }}</span>
         </a-button>
 
         <template #content>{{ menuItem.helpText || menuItem.title }}</template>
       </a-popover>
     </a-button-group>
-
 
     <a-modal
       class="border-gray-700 mt-16"
@@ -126,6 +165,8 @@ export default defineComponent({
   },
   setup() {
     const showLinkModal = ref(false);
+    const showImageDropdown = ref(false);
+    const imageLink = ref("");
     const link = ref("");
 
     const menuData: MenuItem[] = [
@@ -251,8 +292,17 @@ export default defineComponent({
         title: "Image",
         key: "image",
         helpText: "",
-        icon: "fa link",
+        icon: "fa file-image",
         onClick: (editor) => {
+          console.log("image");
+          editor
+            .chain()
+            .focus()
+            .setImage({
+              src: imageLink.value,
+            })
+            .run();
+            imageLink.value = '';
           // link.value = editor.getAttributes("link").href ?? "";
           // showLinkModal.value = !showLinkModal.value;
         },
@@ -317,6 +367,8 @@ export default defineComponent({
     return {
       menuData,
       showLinkModal,
+      showImageDropdown,
+      imageLink,
       link,
       setLink,
       unLink,

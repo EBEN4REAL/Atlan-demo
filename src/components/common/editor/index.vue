@@ -16,7 +16,7 @@ import Link from "@tiptap/extension-link";
 import TaskList from "@tiptap/extension-task-list";
 import TaskItem from "@tiptap/extension-task-item";
 import TextAlign from "@tiptap/extension-text-align";
-import Image from '@tiptap/extension-image'
+import Image from "@tiptap/extension-image";
 
 import EditorMenu from "./editorMenu.vue";
 
@@ -56,7 +56,12 @@ export default defineComponent({
         Link,
         TaskList,
         TaskItem,
-        Image,
+        Image.configure({
+          inline: true,
+          // HTMLAttributes: {
+          //   width: 100,
+          // },
+        }),
         TextAlign.configure({
           types: ["heading", "paragraph"],
         }),
@@ -64,7 +69,7 @@ export default defineComponent({
       onUpdate({ editor }) {
         const content = editor.getHTML();
         debouncedEmit(content);
-      },
+      }
     });
 
     console.log(editor.value?.schema);
@@ -79,10 +84,17 @@ export default defineComponent({
   min-width: inherit;
   max-width: inherit;
 }
+
 .ProseMirror {
   strong {
     font-family: "Avenir-heavy" !important;
     // @apply font-black text-black !important;
+  }
+  img {
+    display: inline-block;
+  }
+  .ProseMirror-selectednode {
+    outline: 1px dashed #3b82f6 !important;
   }
   ul {
     @apply list-disc;

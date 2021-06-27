@@ -168,6 +168,7 @@ import { faSquare } from "@fortawesome/pro-solid-svg-icons/faSquare";
 import { faAlignLeft } from "@fortawesome/pro-solid-svg-icons/faAlignLeft";
 import { faAlignCenter } from "@fortawesome/pro-solid-svg-icons/faAlignCenter";
 import { faAlignRight } from "@fortawesome/pro-solid-svg-icons/faAlignRight";
+import { faFileImage } from "@fortawesome/pro-solid-svg-icons/faFileImage";
 
 
 library.add(
@@ -196,6 +197,7 @@ library.add(
   faAlignLeft,
   faAlignCenter,
   faAlignRight,
+  faFileImage
 );
 
 // import { far } from "@fortawesome/pro-regular-svg-icons";

@@ -12,14 +12,22 @@ import { ConnectionType } from '~/types/atlas/connection';
 import { TreeDataItem } from 'ant-design-vue/lib/tree/Tree';
 
 
-export default function fetchConnectionList(cache?: string, dependentKey?: Ref<any>) {
+export default function fetchConnectionList(cache?: string, dependentKey?: Ref<any>, paramEntityFilters?: Components.Schemas.FilterCriteria) {
 
     let cancelTokenSource: Ref<CancelTokenSource> = ref(axios.CancelToken.source());
 
-    let entityFilters: Components.Schemas.FilterCriteria = {
-        condition: "AND" as Components.Schemas.Condition,
-        criterion: []
-    };
+    let entityFilters: Components.Schemas.FilterCriteria = {};
+    if (paramEntityFilters) {
+        entityFilters = {
+            ...paramEntityFilters,
+            criterion: paramEntityFilters.criterion
+        }
+    } else {
+        entityFilters = {
+            condition: "AND" as Components.Schemas.Condition,
+            criterion: []
+        }
+    }
 
     const body: Ref<SearchParameters> = ref({
         typeName: "Connection",

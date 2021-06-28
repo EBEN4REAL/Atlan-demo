@@ -84,7 +84,13 @@ export default defineComponent({
       limit: 10,
       offset: 0,
       sort: "first_name",
-      filter: {},
+      filter: {
+        $and: [
+          {
+            email_verified: true,
+          },
+        ],
+      },
     });
     const {
       usersListConcatenated: userList,
@@ -98,10 +104,15 @@ export default defineComponent({
     const handleSearch = useDebounceFn(() => {
       userListAPIParams.filter = searchText.value
         ? {
-            $or: [
-              { first_name: { $ilike: `%${searchText.value}%` } },
-              { last_name: { $ilike: `%${searchText.value}%` } },
-              { username: { $ilike: `%${searchText.value}%` } },
+            $and: [
+              { email_verified: true },
+              {
+                $or: [
+                  { first_name: { $ilike: `%${searchText.value}%` } },
+                  { last_name: { $ilike: `%${searchText.value}%` } },
+                  { username: { $ilike: `%${searchText.value}%` } },
+                ],
+              },
             ],
           }
         : {};

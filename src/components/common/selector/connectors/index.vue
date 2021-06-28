@@ -1,5 +1,6 @@
 <template>
   <a-select
+    ref="connectorsDropdown"
     :value="modelValue"
     placeholder="Connections"
     :show-search="true"
@@ -12,7 +13,9 @@
     <template v-for="item in filteredList" :key="item">
       <a-select-option :value="item">
         <div class="flex items-center">
-          <img :src="logo(item)" class="w-auto h-3 mr-1" />{{ item }}
+          <img :src="logo(item)" class="w-auto h-3 mr-1" />{{
+            item?.charAt(0).toUpperCase() + item?.substr(1).toLowerCase()
+          }}
         </div>
       </a-select-option>
     </template>
@@ -28,13 +31,14 @@ export default defineComponent({
   mixins: [SourceMixin],
   props: {
     modelValue: {
-      type: String,
       required: false,
     },
   },
   emits: ["update:modelValue", "change"],
   setup(props, { emit }) {
     let now = ref(true);
+
+    let connectorsDropdown = ref(null);
     let searchValue = ref("");
     const { list } = fetchConnectionList(now);
     const sourceMap = computed(() => {
@@ -52,6 +56,7 @@ export default defineComponent({
       searchValue.value = inputValue;
     };
     const handleChange = (checkedValues: string) => {
+      connectorsDropdown?.value?.blur();
       emit("update:modelValue", checkedValues);
       emit("change", checkedValues);
     };
@@ -61,6 +66,7 @@ export default defineComponent({
       filteredList,
       handleSearch,
       handleChange,
+      connectorsDropdown,
     };
   },
 });

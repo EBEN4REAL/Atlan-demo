@@ -3,16 +3,8 @@
     <p class="mb-1 text-xs font-semibold leading-tight text-gray-500 uppercase">
       Total Assets
     </p>
-    <LoadingView
-      style="min-height: 100px"
-      v-if="
-        [STATES.PENDING].includes(state) || [STATES.VALIDATING].includes(state)
-      "
-    ></LoadingView>
-    <ErrorView
-      style="min-height: 100px"
-      v-else-if="[STATES.ERROR, STATES.STALE_IF_ERROR].includes(state)"
-    ></ErrorView>
+    <LoadingView style="min-height: 100px" v-if="isLoading"></LoadingView>
+    <ErrorView style="min-height: 100px" v-else-if="isError"></ErrorView>
     <div v-else>
       <p
         class="mb-1 text-2xl font-semibold leading-tight text-gray-800 uppercase "
@@ -20,7 +12,7 @@
         {{ numeralFormat(assetDistributionSum) }}
       </p>
       <div
-        v-for="item in assetTypeList"
+        v-for="item in assetTypeListArray(assetTypeList)"
         :key="item.id"
         class="flex flex-col mt-4 space-y-2"
       >
@@ -85,15 +77,28 @@ export default defineComponent({
       },
       aggregationAttributes: ["__typeName.keyword"],
     });
-    const { totalCount, listCount, assetTypeList } = fetchAssetDiscover(
-      now,
-      defaultBody
-    );
+    const { totalCount, listCount, assetTypeList, isLoading, isError } =
+      fetchAssetDiscover(now, defaultBody);
+
+    const assetTypeListArray = (list: any) => {
+      let temp = [];
+      Object.keys(list).forEach((key) => {
+        temp.push({
+          id: key,
+          label: key,
+          count: list[key.toLowerCase()] || list[key.toUpperCase()],
+        });
+      });
+      return temp;
+    };
 
     return {
       totalCount,
       listCount,
+      isLoading,
       assetTypeList,
+      assetTypeListArray,
+      isError,
     };
   },
   mounted() {},

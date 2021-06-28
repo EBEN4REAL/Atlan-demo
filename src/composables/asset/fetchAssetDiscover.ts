@@ -104,7 +104,7 @@ export default function fetchAssetDiscover(cache?: string, dependentKey?: Ref<an
         return aggregationData?.value?.aggregations;
     });
     const assetTypeList: ComputedRef<any> = computed(() => {
-        let temp: any[] = [];
+        const temp = [];
         let map = aggregations?.value?.['__typeName.keyword'];
         // if (map) {
         //     Object.keys(map).forEach((key) => {
@@ -135,7 +135,7 @@ export default function fetchAssetDiscover(cache?: string, dependentKey?: Ref<an
             attributes: [],
             entityFilters: {
                 ...body.value.entityFilters,
-                criterion: body.value.entityFilters.criterion
+                criterion: body.value?.entityFilters?.criterion
             },
             aggregationAttributes: ["__typeName.keyword"]
         }
@@ -188,6 +188,24 @@ export default function fetchAssetDiscover(cache?: string, dependentKey?: Ref<an
         refresh();
     };
 
+    const changeSort = (sort: string) => {
+        console.log(sort);
+
+        if (sort !== "default") {
+            const split = sort.split("|");
+            if (split.length > 1) {
+                body.value.sortBy = split[0];
+                body.value.sortOrder = split[1].toUpperCase();
+            }
+        } else {
+            body.value.sortBy = "";
+            delete body.value.sortOrder;
+        }
+        refresh(true);
+
+        // body.value.
+    };
+
 
     const changeAssetType = (assetType: string) => {
 
@@ -207,12 +225,63 @@ export default function fetchAssetDiscover(cache?: string, dependentKey?: Ref<an
         refresh(true);
     };
 
+    const changeConnectors = (payload: any) => {
+
+
+
+        let temp = {
+            ...entityFilters.value
+        }
+        temp.criterion = [...entityFilters.value.criterion];
+
+
+        let tempCriteria = {
+            condition: "OR",
+            criterion: [],
+        }
+
+        payload.connectors.forEach((element: any) => {
+            tempCriteria.criterion?.push({
+                attributeName: "integrationName",
+                attributeValue: element,
+                operator: "eq"
+            });
+        });
+        payload.connections.forEach((element: any) => {
+            tempCriteria.criterion?.push({
+                attributeName: "connectionQualifiedName",
+                attributeValue: element,
+                operator: "eq"
+            });
+        });
+        temp.criterion.push(tempCriteria);
+
+        body.value.entityFilters = {
+            ...temp
+        }
+        console.log("chaneg asset type");
+        refresh()
+
+    }
+
     const filter = (filters: Components.Schemas.FilterCriteria) => {
         entityFilters.value = filters;
         body.value.entityFilters = {
             ...filters,
             criterion: filters.criterion
         }
+        refresh();
+    };
+    const savedSearch = (param: SearchParameters) => {
+        console.log(param);
+
+        param.limit = body.value.limit;
+        param.attributes = [...BaseAttributes, ...BasicSearchAttributes];
+
+        body.value = {
+            ...param
+        };
+
         refresh();
     };
 
@@ -250,5 +319,8 @@ export default function fetchAssetDiscover(cache?: string, dependentKey?: Ref<an
         refresh,
         assetTypeList,
         changeAssetType,
+        changeConnectors,
+        changeSort,
+        savedSearch,
     }
 }

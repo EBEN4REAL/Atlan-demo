@@ -251,10 +251,14 @@ export default defineComponent({
         const options = {
           tz: this.job.cronTimezone,
         };
-
-        let cronTemp = e.target.value.split(" ").join("");
+        this.isCronError = false;
+        let cronTemp = e.target.value.replace(/ /g, "");
+        // console.log(cronTemp);
         cronTemp = cronTemp.split("").join(" ");
+        // console.log(cronTemp);
         this.job.cronString = cronTemp;
+
+        console.log(cronTemp);
         parser.parseExpression(cronTemp, options);
         this.job.isCron = true;
         this.updateCronEval();

@@ -1,5 +1,6 @@
 import { computed, reactive, watch, toRefs, toRaw } from "vue";
 import { Health } from "~/api/atlas/health";
+import { Query } from "~/api/heka/health";
 
 const SERVICE_STATES = {
   loading: "loading",
@@ -81,6 +82,8 @@ export function useHealth() {
     }
     return "";
   };
+
+  Query.health();
 
   const { data: hekaServiceData, error: hekaServiceError } = Health.pingHeka();
   const {

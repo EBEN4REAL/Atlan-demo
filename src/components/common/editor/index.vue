@@ -1,15 +1,49 @@
 <template>
   <div class="mx-2 w-full h-full bg-white border editor">
     <editor-menu :editable="editable" :editor="editor" />
+    <bubble-menu :editor="editor" v-if="editor" @blur="showBubble = false">
+      <div
+        class="bg-white py-3 px-5 w-48 shadow-xl rounded flex flex-col"
+        v-if="editable && showBubble"
+      >
+        <a-radio-group class="flex flex-col" v-model:value="widthOption">
+          <a-radio :value="1">Orignal Size</a-radio>
+          <div class="pt-4 flex flex-col">
+            <a-radio class="pb-2" :value="2">Width</a-radio>
+            <div class="p-0 m-0 flex">
+              <a-input-number
+                class="ml-2 w-48 rounded-r-none"
+                :min="5"
+                :max="200"
+                :disabled="widthOption === 1"
+                v-model:value="customWidth"
+              />
+              <span class="border-gray-300 border border-l-0 pt-1.5 px-1 h-8">
+                %
+              </span>
+            </div>
+            <div class="ml-2 flex justify-between text-xs text-gray-400">
+              <span class="">Min: 5</span><span>Max: 200</span>
+            </div>
+          </div>
+        </a-radio-group>
+        <a-button
+          class="mt-4"
+          type="primary"
+          @click="() => applyImageWidth(editor)"
+          >Apply</a-button
+        >
+      </div>
+    </bubble-menu>
     <editor-content :editor="editor" class="px-7 py-3 rounded-b" />
   </div>
 </template>
   
   <script lang="ts">
-import { defineComponent } from "vue";
+import { defineComponent, ref, watch } from "vue";
 import { useDebounceFn } from "@vueuse/core";
 
-import { useEditor, EditorContent, BubbleMenu } from "@tiptap/vue-3";
+import { useEditor, EditorContent, BubbleMenu, Editor } from "@tiptap/vue-3";
 import StarterKit from "@tiptap/starter-kit";
 import Underline from "@tiptap/extension-underline";
 import Link from "@tiptap/extension-link";
@@ -42,24 +76,84 @@ export default defineComponent({
   },
   events: ["onEditorContentUpdate"],
   setup(props, { emit }) {
+    const showBubble = ref(false);
+    const widthOption = ref(1);
+    const customWidth = ref(100);
+
     const debouncedEmit = useDebounceFn((content: string) => {
       emit("onEditorContentUpdate", content);
     }, 200);
 
+    const CustomImage = Image.extend({
+      addAttributes() {
+        return {
+          ...this.parent?.(),
+          imageWidth: {
+            default: 100,
+            renderHTML: (attributes) => {
+              return {
+                imageWidth: attributes.imageWidth,
+              };
+            },
+          },
+          style: {
+            default: null,
+            renderHTML: (attributes) => {
+              return {
+                style: `width: ${attributes.imageWidth}% !important; ${
+                  attributes.style ? attributes.style : ""
+                }`,
+              };
+            },
+          },
+        };
+      },
+      priority: 10000,
+    });
+
+    const applyImageWidth = (editor: Editor) => {
+      const { node } = editor.state.selection;
+      if (node && node.type.name === "image") {
+        // node.attrs.style = `width: ${
+        //   widthOption.value === 1 ? 100 : customWidth.value
+        // }% !important; height: auto !important;`;
+        for (let i = 1; i >= 0; i--) {
+          let transaction = editor.state.tr;
+
+          const currentCursorPosition = transaction.selection.from;
+          node.attrs.imageWidth =
+            widthOption.value === 1 ? 100 : customWidth.value;
+
+          transaction = transaction.setNodeMarkup(
+            currentCursorPosition,
+            undefined,
+            {
+              ...node.attrs,
+            }
+          );
+
+          console.log(transaction);
+          const state = editor.state.apply(transaction);
+          editor.view.updateState(state);
+          editor.view.dispatch(transaction);
+        }
+      }
+    };
+
     const editor = useEditor({
       content: `${
         props.content.length ? props.content : props.placeholder
-      }<p style="text-align: center">sdf</p>`,
+      }<p style="text-align: center">https://cdn.britannica.com/22/206222-131-E921E1FB/Domestic-feline-tabby-cat.jpg</p><img src='https://cdn.britannica.com/22/206222-131-E921E1FB/Domestic-feline-tabby-cat.jpg' imagewidth='30'/>`,
       extensions: [
         StarterKit,
         Underline,
         Link,
         TaskList,
         TaskItem,
-        Image.configure({
+        CustomImage.configure({
           inline: true,
           // HTMLAttributes: {
-          //   width: 100,
+          //   style: 'width: 70% !important'
           // },
         }),
         TextAlign.configure({
@@ -69,11 +163,48 @@ export default defineComponent({
       onUpdate({ editor }) {
         const content = editor.getHTML();
         debouncedEmit(content);
-      }
+      },
+
+      onSelectionUpdate({ editor }) {
+        const { node } = editor.state.selection;
+        if (node && node.type.name === "image") {
+          widthOption.value = node.attrs.imageWidth === 100 ? 1 : 2;
+          customWidth.value = node.attrs.imageWidth;
+
+          showBubble.value = true;
+        } else {
+          showBubble.value = false;
+        }
+      },
     });
 
+    // watch(customWidth, (width) => {
+    //   if (editor.value) {
+    //     let transaction = editor.value.state.tr;
+    //     const { node } = transaction.selection;
+    //     if (node && node.type.name === "image") {
+    //       const currentCursorPosition = transaction.selection.from;
+    //       // node.attrs.style = `width: ${
+    //       //   widthOption.value === 1 ? 100 : customWidth.value
+    //       // }% !important; height: auto !important;`;
+    //       node.attrs.imageWidth = widthOption.value === 1 ? 100 : width;
+
+    //       transaction = transaction?.setNodeMarkup(
+    //         currentCursorPosition,
+    //         undefined,
+    //         {
+    //           ...node.attrs,
+    //         }
+    //       );
+    //       console.log(transaction);
+    //       editor.value.view.dispatch(transaction);
+    //       editor.value.state.apply(transaction);
+
+    //     }
+    //   }
+    // });
     console.log(editor.value?.schema);
-    return { editor };
+    return { editor, showBubble, widthOption, customWidth, applyImageWidth };
   },
 });
 </script>

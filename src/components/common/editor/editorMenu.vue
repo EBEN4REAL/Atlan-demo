@@ -62,9 +62,8 @@
                 >
                   <label>OR</label>
                   <div class="mt-1">
-                    <a-upload v-model:file-list="fileList" name="file">
+                    <a-upload name="file">
                       <a-button>
-                        <upload-outlined></upload-outlined>
                         Click to Upload
                       </a-button>
                     </a-upload>
@@ -200,7 +199,12 @@ export default defineComponent({
         key: "bold",
         helpText: "",
         icon: "fa bold",
-        onClick: (editor) => editor.chain().focus().toggleBold().run(),
+        onClick: (editor) => {
+          // editor.chain().focus().toggleBold().run()
+                let transaction = editor.state.tr;
+          transaction = transaction.deleteSelection();
+          const state = editor.state.apply(transaction);
+          },
       },
       {
         title: "Italic",

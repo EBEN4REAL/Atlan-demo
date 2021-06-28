@@ -3,9 +3,9 @@
     <div class="col-span-12 sm:col-span-8">
       <div class="flex items-center w-full align-middle">
         <div class="flex flex-col w-full">
-          <p
-            class="mb-2 text-xl font-bold tracking-tight text-gray-900"
-          >Welcome Home, {{ fullName }}</p>
+          <p class="mb-2 text-xl font-bold tracking-tight text-gray-900">
+            Welcome Home, {{ fullName }}
+          </p>
           <a-input-search placeholder="Search all your assets.." size="large">
             <template #prefix>
               <img :src="displayNameHTML" class="w-auto h-8 mr-3" />
@@ -14,7 +14,10 @@
         </div>
       </div>
     </div>
-    <div class="hidden h-full p-3 mt-3 bg-white border rounded-md sm:col-span-4 sm:block">
+
+    <div
+      class="hidden h-full p-3 mt-3 bg-white border rounded-md sm:col-span-4 sm:block"
+    >
       <div class="flex items-center justify-between p-5 align-middle">
         <div class="flex items-center">
           <a-upload
@@ -43,10 +46,13 @@
           <div class="flex flex-col ml-2">
             <p
               class="mb-0 text-lg leading-none tracking-tight text-gray-800 truncate text-semibold"
-            >{{ fullName }}</p>
+            >
+              {{ fullName }}
+            </p>
             <p class="mb-0 text-sm text-gray-500">@{{ username }}</p>
             <p class="mt-0 mb-0 text-sm tracking-tight text-gray-800">
-              <fa icon="fal user-tag" class="mr-1 text-gray-800 pushtop"></fa>Admin
+              <fa icon="fal user-tag" class="mr-1 text-gray-800 pushtop"></fa
+              >Admin
             </p>
           </div>
         </div>
@@ -69,7 +75,11 @@
         <div class="mt-4">
           <p class="mb-2 leading-none text-gray-400">Skills/Expertise</p>
           <div class="flex">
-            <Tags :tags="skills" @updateTags="handleUpdateSkills" :disableNewTag="updatingSkills"></Tags>
+            <Tags
+              :tags="skills"
+              @updateTags="handleUpdateSkills"
+              :disableNewTag="updatingSkills"
+            ></Tags>
             <a-spin size="small" v-if="updatingSkills"></a-spin>
           </div>
         </div>
@@ -102,7 +112,6 @@
   </div>
 </template>
 
-
 <script lang="ts">
 import { defineComponent, inject, computed, ref } from "vue";
 import { useStore } from "~/store";
@@ -115,6 +124,7 @@ import SavedList from "@/home/saved/index.vue";
 import Tags from "@common/badge/tags/index.vue";
 
 import uploadAvatar from "~/composables/avatar/uploadAvatar";
+import { useHead } from "@vueuse/head";
 
 import { message } from "ant-design-vue";
 
@@ -148,9 +158,12 @@ export default defineComponent({
     const fullName = computed(() => {
       let firstName = keycloak.tokenParsed.given_name || "";
       let lastName = keycloak.tokenParsed.family_name || "";
-      return `${
-        firstName.charAt(0).toUpperCase() + firstName.substr(1).toLowerCase()
-      } ${lastName.charAt(0).toUpperCase() + lastName.substr(1).toLowerCase()}`;
+      return `${firstName.charAt(0).toUpperCase() +
+        firstName.substr(1).toLowerCase()} ${lastName.charAt(0).toUpperCase() +
+        lastName.substr(1).toLowerCase()}`;
+    });
+    useHead({
+      title: `Welcome - ${fullName} `,
     });
 
     let imageUrl = ref(
@@ -263,8 +276,6 @@ export default defineComponent({
   },
 });
 </script>
-
-
 
 <route lang="yaml">
 meta:

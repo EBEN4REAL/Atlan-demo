@@ -6,10 +6,16 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
-export default defineComponent({});
+import { useHead } from "@vueuse/head";
+export default defineComponent({
+  setup() {
+    useHead({
+      title: "Billings",
+    });
+  },
+});
 </script>
-<style lang="less" module>
-</style>
+<style lang="less" module></style>
 <route lang="yaml">
 meta:
 layout: default

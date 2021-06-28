@@ -2,6 +2,7 @@
   <a-layout class="min-h-screen">
     <!-- <a-layout-header
       theme="light"
+
       class="flex items-center px-0 leading-none align-middle text-primary-100 bg-primary-500"
       style="height: 42px"
     >
@@ -60,7 +61,7 @@
               <Editor @run="runQuery"></Editor>
             </div>
             <div
-              class="p-6 m-6 overflow-x-auto bg-white border rounded  table-wrapper"
+              class="p-6 m-6 overflow-x-auto bg-white border rounded table-wrapper"
             >
               {{ queryResult }}
               <a-table
@@ -83,6 +84,7 @@ import Editor from "@/editor/index.vue";
 import queryData from "@/editor/monaco/queryData.json";
 import { sse } from "~/utils/sse";
 import ProjectSidebar from "~/layouts/project/index.vue";
+import { useHead } from "@vueuse/head";
 
 export default defineComponent({
   components: {
@@ -95,6 +97,9 @@ export default defineComponent({
     };
   },
   setup() {
+    useHead({
+      title: "Query Playground",
+    });
     const router = useRouter();
     const $keycloak = inject("$keycloak");
     const columnList = ref([]);

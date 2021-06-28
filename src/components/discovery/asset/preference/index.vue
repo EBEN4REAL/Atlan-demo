@@ -15,13 +15,17 @@
     </div>
     <div class="pl-3">
       <p class="mb-1 text-gray-500">Order</p>
-      <a-radio-group>
+      <a-radio-group @change="handeChangeSorting" v-model:value="sorting">
         <div class="flex flex-col space-y-1">
-          <a-radio>Relevance</a-radio>
-          <a-radio>Popularity Score(High-Low)</a-radio>
-          <a-radio>Popularity Score(Low-High)</a-radio>
-          <a-radio>Name (A-Z)</a-radio>
-          <a-radio>Name (Z-A)</a-radio>
+          <a-radio value="default">Relevance</a-radio>
+          <a-radio value="popularityScore|descending"
+            >Popularity Score(High-Low)</a-radio
+          >
+          <a-radio value="popularityScore|ascending"
+            >Popularity Score(Low-High)</a-radio
+          >
+          <a-radio value="name|ascending">Name (A-Z)</a-radio>
+          <a-radio value="name|descending">Name (Z-A)</a-radio>
         </div>
       </a-radio-group>
     </div>
@@ -37,10 +41,16 @@ import useDiscoveryPreferences from "~/composables/preference/useDiscoveryPrefer
 
 export default defineComponent({
   components: { ConnectionSelector, ConnectorSelector },
-  emits: ["change"],
+  emits: ["change", "sort"],
   props: {
     defaultProjection: {
       type: Array,
+    },
+    defaultSorting: {
+      type: String,
+      default() {
+        return "default";
+      },
     },
   },
   setup(props, { emit }) {
@@ -52,9 +62,19 @@ export default defineComponent({
     const handleChange = () => {
       emit("change", projection.value);
     };
+
+    const sorting = ref("");
+
+    sorting.value = props.defaultSorting || "default";
+    const handeChangeSorting = () => {
+      emit("sort", sorting.value);
+    };
+
     return {
       projection,
+      sorting,
       handleChange,
+      handeChangeSorting,
     };
   },
 });

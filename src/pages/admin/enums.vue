@@ -1,13 +1,11 @@
 <template>
-  <div class="flex flex-col h-screen p-4">
+  <div class="flex flex-col h-screen">
     <AddEnumModal
       v-if="addModalVisible"
       @add="addToList"
       @close="toggleAddModal(false)"
     />
-    <div class="mb-4">
-      <div class="text-xl">Enumerations</div>
-    </div>
+    <p class="mb-2 text-xl font-normal tracking-tight">Enumerations</p>
     <div class="flex items-center justify-between">
       <p>Search Enumerations</p>
       <a-button @click="toggleAddModal(true)" type="primary"> + New </a-button>
@@ -35,10 +33,14 @@ import useEnums from "@/admin/enums/composables/useEnums";
 import EnumList from "@/admin/enums/enumList.vue";
 import EnumDetails from "@/admin/enums/enumDetails.vue";
 import AddEnumModal from "@/admin/enums/addEnumModal.vue";
+import { useHead } from "@vueuse/head";
 
 export default defineComponent({
   components: { EnumList, EnumDetails, AddEnumModal },
   setup(props, context) {
+    useHead({
+      title: "Billings",
+    });
     const { enumListData, selectedId, selectedEnum, addToList } = useEnums();
     const addModalVisible = ref(false);
 
@@ -57,3 +59,8 @@ export default defineComponent({
   },
 });
 </script>
+<route lang="yaml">
+  meta:
+  layout: default
+  requiresAuth: true
+  </route>

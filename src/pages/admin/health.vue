@@ -16,7 +16,7 @@
         </span>
       </div>
       <div
-        class="grid grid-cols-2 p-6 mb-20 lg:grid-cols-3 xl:grid-cols-3 gap-x-12 gap-y-6"
+        class="grid grid-cols-2 p-6 mb-20  lg:grid-cols-3 xl:grid-cols-3 gap-x-12 gap-y-6"
       >
         <div
           v-for="service in servicesNames"
@@ -49,10 +49,14 @@
 import { defineComponent } from "vue";
 import { useHealth } from "~/composables/health/useHealth";
 import grafana from "~/assets/images/source/grafana.png";
+import { useHead } from "@vueuse/head";
 
 export default defineComponent({
   name: "HealthStatus",
   setup() {
+    useHead({
+      title: "Health",
+    });
     const {
       services,
       overallStatusText,
@@ -136,3 +140,8 @@ export default defineComponent({
   }
 }
 </style>
+<route lang="yaml">
+  meta:
+  layout: default
+  requiresAuth: true
+  </route>

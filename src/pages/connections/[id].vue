@@ -33,7 +33,6 @@
         :is="selectedTab"
         :item="item"
         :credential="credential"
-        :bot="bot"
       ></component>
       <!-- <Overview :item="item" :credential="credential" :bot="bot"></Overview> -->
     </div>
@@ -41,7 +40,7 @@
 </template>
     
 <script lang="ts">
-import { defineComponent, ref, watch } from "vue";
+import { computed, defineComponent, ref, watch } from "vue";
 import { Components } from "~/api/atlas/client";
 
 import Loader from "@common/loaders/page.vue";
@@ -57,9 +56,12 @@ import fetchConnectionList from "~/composables/connection/fetchConnectionList";
 import { useRoute } from "vue-router";
 import fetchCredentialList from "~/composables/credential/fetchCredential";
 import fetchBotsList from "~/composables/bots/fetchBotsList";
+import {
+  CONNECTION_FETCH_LIST_ITEM,
+  CREDENTIAL_FETCH_LIST_ITEM,
+} from "~/constant/cache";
 
 export default defineComponent({
-  name: "HelloWorld",
   mixins: [SourceMixin],
   components: { Loader, ErrorView, Overview, Workflows, Assets, Policies },
   data() {
@@ -72,67 +74,77 @@ export default defineComponent({
   },
   setup(props, { emit }) {
     const route = useRoute();
-    let now = ref(true);
     const entityFilters = {
       operator: <Components.Schemas.Operator>"eq",
       attributeName: "__guid",
       attributeValue: route.params.id as string,
     };
-    const { item, mutate, body, state, STATES } = fetchConnectionList(
+    const now = ref(true);
+    const { list, isLoading, isError } = fetchConnectionList(
+      CONNECTION_FETCH_LIST_ITEM,
       now,
-      "",
       entityFilters
     );
 
-    let credentialNow = ref(false);
-    const {
-      item: credential,
-      mutate: credentialMutate,
-      body: credentialBody,
-    } = fetchCredentialList(credentialNow, "");
-
-    let botsNow = ref(false);
-    const {
-      item: bot,
-      mutate: botMutate,
-      body: botBody,
-    } = fetchBotsList(botsNow, "");
-
-    watch(item, () => {
-      if ([STATES.SUCCESS].includes(state.value)) {
-        credentialNow.value = true;
-        credentialBody.value.entityFilters = {
-          operator: <Components.Schemas.Operator>"eq",
-          attributeName: "qualifiedName",
-          attributeValue:
-            item.value?.attributes.integrationCredentialQualifiedName,
-        };
-        credentialMutate();
-        botsNow.value = true;
-        botBody.value.entityFilters = {
-          operator: <Components.Schemas.Operator>"eq",
-          attributeName: "qualifiedName",
-          attributeValue: item.value?.attributes.botQualifiedName,
-        };
-        botMutate();
-      }
+    const item = computed(() => {
+      return list.value[0];
     });
 
-    watch(
-      () => route.params.id,
-      () => {
-        console.log("watch");
-        body.value.entityFilters = {
-          operator: <Components.Schemas.Operator>"eq",
-          attributeName: "__guid",
-          attributeValue: route.params.id as string,
-        };
-        mutate();
-      }
+    //     credentialBody.value.entityFilters = {
+    //       operator: <Components.Schemas.Operator>"eq",
+    //       attributeName: "qualifiedName",
+    //       attributeValue:
+    //         item.value?.attributes.integrationCredentialQualifiedName,
+    //     };
+    const { list: credentialList } = fetchCredentialList(
+      CREDENTIAL_FETCH_LIST_ITEM,
+      list
     );
+    const credential = computed(() => {
+      return credentialList.value[0];
+    });
+
+    // let botsNow = ref(false);
+    // const {
+    //   item: bot,
+    //   mutate: botMutate,
+    //   body: botBody,
+    // } = fetchBotsList(botsNow, "");
+
+    // watch(item, () => {
+    //   if ([STATES.SUCCESS].includes(state.value)) {
+    //     credentialNow.value = true;
+    //     credentialBody.value.entityFilters = {
+    //       operator: <Components.Schemas.Operator>"eq",
+    //       attributeName: "qualifiedName",
+    //       attributeValue:
+    //         item.value?.attributes.integrationCredentialQualifiedName,
+    //     };
+    //     credentialMutate();
+    //     botsNow.value = true;
+    //     botBody.value.entityFilters = {
+    //       operator: <Components.Schemas.Operator>"eq",
+    //       attributeName: "qualifiedName",
+    //       attributeValue: item.value?.attributes.botQualifiedName,
+    //     };
+    //     botMutate();
+    //   }
+    // });
+
+    // watch(
+    //   () => route.params.id,
+    //   () => {
+    //     console.log("watch");
+    //     body.value.entityFilters = {
+    //       operator: <Components.Schemas.Operator>"eq",
+    //       attributeName: "__guid",
+    //       attributeValue: route.params.id as string,
+    //     };
+    //     mutate();
+    //   }
+    // );
 
     return {
-      bot,
       item,
       credential,
     };

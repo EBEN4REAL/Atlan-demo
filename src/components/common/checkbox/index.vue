@@ -13,10 +13,12 @@
             item.description
           }}</template>
           <a-checkbox :value="item.id" class="w-full">
-            <span class="truncated text-gray-700 ml-1 mb-0">
-              <fa :icon="item.icon" class="mr-1" :class="item.iconClass" />{{
-                item.label
-              }}
+            <span class="mb-0 ml-1 text-gray-700 truncated">
+              <fa
+                :icon="item.icon"
+                class="mr-1 pushtop"
+                :class="item.iconClass"
+              />{{ item.label }}
             </span>
           </a-checkbox>
         </a-tooltip>

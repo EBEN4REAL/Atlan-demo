@@ -25,11 +25,11 @@
                     @change="handleOwnerTypeChange"
                   >
                     <a-radio-button size="small" value="user">
-                      <fa icon="fal user" class="leading-none pushtop"></fa
-                    ></a-radio-button>
+                      <fa icon="fal user" class="leading-none pushtop"></fa>
+                    </a-radio-button>
                     <a-radio-button size="small" value="group">
-                      <fa icon="fal user-friends" class="pushtop"></fa
-                    ></a-radio-button>
+                      <fa icon="fal user-friends" class="pushtop"></fa>
+                    </a-radio-button>
                   </a-radio-group>
                 </template>
               </a-input>
@@ -43,14 +43,12 @@
                     v-for="item in list"
                     :key="item.username"
                     :value="item.username"
-                  >
-                    {{ item.first_name }} {{ item.last_name }}
-                  </a-checkbox>
+                  >{{ item.first_name }} {{ item.last_name }}</a-checkbox>
                 </div>
               </a-checkbox-group>
-              <p class="mt-1 mb-0 text-xs text-gray-500">
-                Showing {{ list?.length || 0 }} of {{ total }} Users
-              </p>
+              <p
+                class="mt-1 mb-0 text-xs text-gray-500"
+              >Showing {{ list?.length || 0 }} of {{ total }} Users</p>
             </div>
             <div v-if="ownerType == 'group'">
               <a-checkbox-group v-model:value="ownerGroups">
@@ -59,9 +57,7 @@
                     v-for="item in listGroup"
                     :key="item.name"
                     :value="item.name"
-                  >
-                    {{ item.name }}
-                  </a-checkbox>
+                  >{{ item.name }}</a-checkbox>
                 </div>
               </a-checkbox-group>
               <p class="mt-1 mb-0 text-xs text-gray-500">
@@ -74,47 +70,29 @@
 
         <div class="flex justify-end p-2 space-x-2 border-t border-gray-100">
           <a-button size="small" @click="handleCancel">Cancel</a-button>
-          <a-button
-            type="primary"
-            size="small"
-            @click="handleUpdate"
-            :loading="!state && isReady"
-            >Update</a-button
-          >
+          <a-button type="primary" size="small" @click="handleUpdate" :loading="isLoading">Update</a-button>
         </div>
       </template>
       <div
-        class="px-2 py-1 transition duration-500 ease-in-out rounded-lg  hover:bg-gray-50 hover:border"
+        class="px-2 py-1 transition duration-500 ease-in-out rounded-lg hover:bg-gray-50 hover:border"
       >
         <p class="mb-1 text-sm tracking-wide text-gray-400">Owners</p>
         <div class="flex flex-wrap gap-x-1">
-          <template
-            v-for="user in item?.attributes?.ownerUsers?.split(',')"
-            :key="user"
-          >
+          <template v-for="user in item?.attributes?.ownerUsers?.split(',')" :key="user">
             <div
-              class="flex items-center px-2 py-1 mb-1 leading-none text-blue-500 align-middle transition-all bg-blue-500 rounded-md cursor-pointer  bg-opacity-10 hover:bg-opacity-100 hover:text-white"
-              @click.prevent.stop="handleClickUser"
+              class="flex items-center px-2 py-1 mb-1 leading-none text-blue-500 align-middle transition-all bg-blue-500 rounded-md cursor-pointer bg-opacity-10 hover:bg-opacity-100 hover:text-white"
+              @click.prevent.stop="()=>handleClickUser(user)"
             >
-              <fa
-                icon="fal user"
-                class="mr-1 leading-none pushtop text-shadow"
-              ></fa>
+              <fa icon="fal user" class="mr-1 leading-none pushtop text-shadow"></fa>
               <div class="text-shadow">{{ user }}</div>
             </div>
           </template>
-          <template
-            v-for="group in item?.attributes?.ownerGroups?.split(',')"
-            :key="group"
-          >
+          <template v-for="group in item?.attributes?.ownerGroups?.split(',')" :key="group">
             <div
-              class="flex items-center px-2 py-1 mb-1 leading-none text-blue-600 align-middle bg-blue-100 rounded-md cursor-pointer  hover:text-primary-500"
+              class="flex items-center px-2 py-1 mb-1 leading-none text-blue-600 align-middle bg-blue-100 rounded-md cursor-pointer hover:text-primary-500"
               @click.prevent.stop="handleClickGroup"
             >
-              <fa
-                icon="fal user-friends"
-                class="mr-1 leading-none pushtop"
-              ></fa>
+              <fa icon="fal user-friends" class="mr-1 leading-none pushtop"></fa>
               <div>{{ group }}</div>
             </div>
           </template>
@@ -122,9 +100,7 @@
         <p
           class="mb-0 text-gray-500"
           v-if="!item?.attributes?.ownerUsers && !item?.attributes?.ownerGroups"
-        >
-          No owners assigned
-        </p>
+        >No owners assigned</p>
       </div>
     </a-popover>
   </div>
@@ -136,7 +112,7 @@ import StatusBadge from "@common/badge/status/index.vue";
 import fetchUserList from "~/composables/user/fetchUserList";
 import fetchGroupList from "~/composables/group/fetchGroupList";
 import updateOwners from "~/composables/asset/updateOwners";
-
+import { usePreview } from "~/composables/user/showUserPreview";
 export default defineComponent({
   components: { StatusBadge },
   props: {
@@ -168,16 +144,17 @@ export default defineComponent({
 
     const {
       handleCancel,
-      execute,
+      update,
       isReady,
       state,
       ownerUsers,
       isCompleted,
+      isLoading,
       ownerGroups,
     } = updateOwners(props.item, ownerType);
 
     const handleUpdate = () => {
-      execute();
+      update();
     };
 
     const handleSearch = (e) => {
@@ -194,14 +171,15 @@ export default defineComponent({
       searchText.value = "";
       handleSearch(searchText.value);
     };
-
-    const handleClickUser = () => {
-      alert("user");
+    // user preview drawer
+    const { showUserPreview, setUserUniqueAttribute } = usePreview();
+    const handleClickUser = (username: string) => {
+      setUserUniqueAttribute(username, "username");
+      showUserPreview({ allowed: ["about"] });
     };
     const handleClickGroup = () => {
       alert("group");
     };
-
     return {
       list,
       isReady,
@@ -221,6 +199,8 @@ export default defineComponent({
       searchText,
       handleClickUser,
       handleClickGroup,
+      update,
+      isLoading,
     };
   },
 });

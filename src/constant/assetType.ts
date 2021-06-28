@@ -33,6 +33,7 @@ export const AssetTypeList = [
     parents: ["Connection", "Database", "Schema"],
     children: ["Columns"],
     isDiscoverable: true,
+    orderWeight: 90,
   },
   {
     id: "Table",
@@ -42,6 +43,7 @@ export const AssetTypeList = [
     parents: ["Connection", "Database", "Schema"],
     children: ["Columns"],
     isDiscoverable: true,
+    orderWeight: 100,
   },
   {
     id: "Column",
@@ -51,5 +53,6 @@ export const AssetTypeList = [
     parents: ["Connection", "Database", "Schema"],
     children: ["Columns"],
     isDiscoverable: true,
+    orderWeight: 80,
   },
 ];

@@ -107,6 +107,7 @@ export const BasicSearchAttributes = [
   "assetStatusMessage",
   "connectionLastSyncedAt",
   "connectionQualifiedName",
+  "rowCount",
   "columnCount",
   "subType",
   "image",

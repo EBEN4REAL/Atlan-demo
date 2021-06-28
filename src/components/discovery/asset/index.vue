@@ -2,9 +2,11 @@
 
 
 <template>
-  <div class="h-full col-span-2 pt-6 pl-4 bg-white">
+  <div
+    class="hidden h-full pt-6 pl-4 bg-white  sm:block sm:col-span-4 md:col-span-2 sm"
+  >
     <div class="flex flex-col h-full">
-      <div class="px-3 mb-3">
+      <div class="mb-3">
         <a-radio-group
           class="flex w-full text-center"
           v-model:value="filterMode"
@@ -18,58 +20,65 @@
         </a-radio-group>
       </div>
 
-      <keep-alive class="flex-grow h-full">
-        <div>
-          <div v-if="filterMode === 'custom'">
-            <div class="pb-2 mb-2">
-              <ConnectorDropdown></ConnectorDropdown>
-            </div>
-
-            <AssetFilters @refresh="handleFilterChange"></AssetFilters>
-          </div>
-
-          <SavedFilters v-if="filterMode === 'saved'"></SavedFilters>
+      <div v-show="filterMode === 'custom'" class="flex-grow h-full">
+        <div class="pb-2 mb-2">
+          <ConnectorDropdown
+            @change="handleChangeConnectors"
+          ></ConnectorDropdown>
         </div>
-      </keep-alive>
+
+        <AssetFilters @refresh="handleFilterChange"></AssetFilters>
+      </div>
+
+      <div v-show="filterMode === 'saved'">
+        <SavedFilters @refresh="handleSavedSearchChange"></SavedFilters>
+      </div>
     </div>
   </div>
   <div
-    class="flex flex-col items-stretch h-full col-span-7 pt-6 bg-white"
+    class="flex flex-col items-stretch h-full col-span-12 pt-6 bg-white  sm:col-span-8 md:col-span-7"
     style="overflow: hidden"
   >
-    <div class="flex items-center px-6">
-      <a-input placeholder="Search" @input="handleSearchChange">
-        <template #suffix>
-          <a-popover placement="bottom">
-            <template #content>
-              <Preferences
-                :defaultProjection="projection"
-                @change="handleChangePreferences"
-              ></Preferences>
-            </template>
-            <fa icon="fal eye"></fa>
-          </a-popover>
+    <div class="flex items-center px-6 gap-x-3">
+      <a-input placeholder="Search" @input="handleSearchChange"> </a-input>
+      <a-popover placement="bottom">
+        <template #content>
+          <Preferences
+            :defaultProjection="projection"
+            @change="handleChangePreferences"
+            @sort="handleChangeSort"
+          ></Preferences>
         </template>
-      </a-input>
+        <a-button size="default"
+          ><fa icon="fal cog" class="mr-1"></fa
+          ><fa icon="fal chevron-down" class="text-xs text-primary-500"></fa
+        ></a-button>
+      </a-popover>
     </div>
 
-    <div class="flex w-full px-6 mt-3" style="min-height: 34px">
+    <div class="flex w-full px-6 my-1" style="min-height: 34px">
       <AssetTabs
         :assetTypeList="assetTypeList"
         @change="handleChangeAssetType"
-        class="border-t border-l border-r rounded-tl rounded-tr bg-gray-50"
+        class="rounded-tr"
       ></AssetTabs>
     </div>
+    <div
+      v-if="list && list.length <= 0 && !isLoading"
+      class="flex-grow mx-6 border rounded"
+    >
+      <EmptyView></EmptyView>
+    </div>
     <AssetList
+      v-else
       @preview="handlePreview"
       :list="list"
       :projection="projection"
+      :isLoading="isLoading"
       ref="assetlist"
     ></AssetList>
     <div class="flex w-full px-6 pb-2" style="min-height: 17px">
-      <div
-        class="flex items-center justify-between w-full px-2 py-2 border rounded-bl rounded-br shadow-lg  bg-gray-50"
-      >
+      <div class="flex items-center justify-between w-full px-2 py-2">
         <div class="flex items-center text-sm leading-none" v-if="isLoading">
           <a-spin size="small" class="mr-2 leading-none"></a-spin
           ><span>searching results</span>
@@ -107,11 +116,14 @@ import { SearchParameters } from "~/store/modules/search/state";
 import ConnectorDropdown from "@common/dropdown/connector/index.vue";
 import { BaseAttributes, BasicSearchAttributes } from "~/constant/projection";
 
+import EmptyView from "@common/empty/discover.vue";
+
 import Preferences from "@/discovery/asset/preference/index.vue";
 import { useDebounceFn } from "@vueuse/core";
 import fetchAssetDiscover from "~/composables/asset/fetchAssetDiscover";
 import useDiscoveryPreferences from "~/composables/preference/useDiscoveryPreference";
 import { DISCOVERY_FETCH_LIST } from "~/constant/cache";
+import { Components } from "~/api/atlas/client";
 
 export default defineComponent({
   name: "HelloWorld",
@@ -124,6 +136,7 @@ export default defineComponent({
     AssetPagination,
     ConnectorDropdown,
     Preferences,
+    EmptyView,
   },
   data() {
     return {
@@ -151,27 +164,51 @@ export default defineComponent({
       totalCount,
       changeAssetType,
       assetTypeList,
+      changeSort,
+      changeConnectors,
+      savedSearch,
     } = fetchAssetDiscover(DISCOVERY_FETCH_LIST, immediate);
 
     const handleSearchChange = useDebounceFn((val) => {
       query(val.target.value);
-      if (assetlist.value) {
-        console.log("scroll");
-        assetlist?.value.scrollToItem(0);
-      }
+      // if (assetlist.value) {
+      //   console.log("scroll");
+      //   assetlist?.value.scrollToItem(0);
+      // }
     }, 100);
 
     const handleChangePreferences = (payload: any) => {
       projection.value = payload;
     };
 
+    const handleChangeSort = (payload: any) => {
+      changeSort(payload);
+    };
+
     const handleFilterChange = (payload: any) => {
       console.log(payload);
-      filter(payload);
+      filter({
+        condition: "AND" as Components.Schemas.Condition,
+        criterion: payload,
+      });
+    };
+
+    const handleSavedSearchChange = (payload: any) => {
+      console.log(payload);
+
+      if (payload.attributes) {
+        let searchParam = JSON.parse(payload?.attributes?.searchParameters);
+        console.log(searchParam);
+        savedSearch(searchParam);
+      }
     };
 
     const handleChangeAssetType = (payload: any) => {
       changeAssetType(payload);
+    };
+
+    const handleChangeConnectors = (payload: any) => {
+      changeConnectors(payload);
     };
 
     return {
@@ -191,6 +228,11 @@ export default defineComponent({
       handleChangePreferences,
       handleChangeAssetType,
       assetTypeList,
+      handleChangeConnectors,
+      changeConnectors,
+      handleChangeSort,
+      handleSavedSearchChange,
+      savedSearch,
       // list,
       // filterMode,
       // state,

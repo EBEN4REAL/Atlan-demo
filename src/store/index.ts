@@ -1,9 +1,11 @@
 import { createStore, createLogger } from "vuex";
 import createPersistedState from "vuex-persistedstate";
 
-import { groups } from "~/store/modules/admin/groups"
-import { tenant } from "~/store/modules/admin/tenant"
-import { search } from "~/store/modules/search"
+import { groups } from "~/store/modules/admin/groups";
+import { tenant } from "~/store/modules/admin/tenant";
+import { search } from "~/store/modules/search";
+import { asset } from "~/store/modules/asset";
+import authCheck from "~/store/modules/authCheck";
 // import { connection } from "~/store/modules/connection"
 
 // TODO: How to surpass cyclical dependency linting errors cleanly?
@@ -66,13 +68,14 @@ export const store = createStore({
     // connectionmodule,
     // tenantmodule,
     // searchmodule,
+    authCheck,
     search,
     groups,
     tenant,
-
+    asset,
   },
 });
 
 export function useStore() {
-  return store
+  return store;
 }

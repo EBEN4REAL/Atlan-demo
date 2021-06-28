@@ -1,16 +1,25 @@
 <template>
-  <div class="p-4">
-    <h1 class="mb-6 ml-1 text-xl font-normal tracking-tight">API Keys</h1>
+  <div>
+    <p class="mb-2 text-xl font-normal tracking-tight">API Keys</p>
     <ListAPIKeys />
   </div>
 </template>
 <script lang="ts">
 import { defineComponent } from "vue";
 import ListAPIKeys from "~/components/admin/apikeys/listApiKeys.vue";
+import { useHead } from "@vueuse/head";
 export default defineComponent({
   components: { ListAPIKeys },
-  setup() {},
+  setup() {
+    useHead({
+      title: "API keys",
+    });
+  },
 });
 </script>
-<style lang="less" module>
-</style>
+<style lang="less" module></style>
+<route lang="yaml">
+  meta:
+  layout: default
+  requiresAuth: true
+  </route>

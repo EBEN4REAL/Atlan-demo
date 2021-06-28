@@ -1,14 +1,21 @@
 <template>
   <div>
-    <!-- <p>Codemirror</p>
-    <Codemirror /> -->
-    <p>For asset: superstore_sales_data_2016-present</p>
+    <div class="flex justify-between mb-4 run-btn-wrapper">
+      <div>
+        <p class="text-base mb-1">Superstore sales data 2016</p>
+        <span class="text-sm text-gray-400 mr-4"> Add to Test Suite</span>
+        <span class="text-sm text-gray-400">Schedule query</span>
+      </div>
+      <a-button type="primary" class="mr-5" @click="runQuery"
+        >Run Query</a-button
+      >
+    </div>
     <Monaco />
   </div>
 </template>
-  
+
 <script lang="ts">
-import { defineComponent, ref } from "vue";
+import { defineComponent } from "vue";
 import Monaco from "@/editor/monaco/monaco.vue";
 
 export default defineComponent({
@@ -16,10 +23,18 @@ export default defineComponent({
     Monaco,
   },
   setup(props, context) {
-    return {};
+    const runQuery = () => {
+      context.emit("run");
+    };
+    return {
+      runQuery,
+    };
   },
 });
 </script>
-  
-<style lang="less">
+
+<style lang="less" scoped>
+.monacoeditor {
+  height: 30vh;
+}
 </style>

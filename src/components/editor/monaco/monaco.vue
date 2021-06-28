@@ -1,5 +1,7 @@
 <template>
-  <div ref="monacoRoot" class="max-w-full monacoeditor"></div>
+  <div>
+    <div ref="monacoRoot" class="max-w-full monacoeditor"></div>
+  </div>
 </template>
 
 <script lang="ts">
@@ -84,7 +86,7 @@ export default defineComponent({
     monaco.languages.setMonarchTokensProvider("atlansql", languageTokens);
 
     monaco.languages.registerCompletionItemProvider("atlansql", {
-      provideCompletionItems: function() {
+      provideCompletionItems: function () {
         //For object properties https://microsoft.github.io/monaco-editor/api/interfaces/monaco.languages.completionitem.html
         return {
           suggestions: [
@@ -97,7 +99,7 @@ export default defineComponent({
     });
 
     monaco.languages.registerHoverProvider("atlansql", {
-      provideHover: function(model, position, token) {
+      provideHover: function (model, position, token) {
         const hoveredWord = model.getWordAtPosition(position).word;
         //ignore whitespace
         if (
@@ -156,6 +158,6 @@ export default defineComponent({
 
 <style scoped>
 .monacoeditor {
-  height: 50vh;
+  height: 30vh;
 }
 </style>

@@ -74,7 +74,7 @@
           </pane>
           <pane size="80" class="shadow-md">
             <div class="p-4 m-6 bg-white border rounded">
-              <Editor></Editor>
+              <Editor @run="runQuery"></Editor>
             </div>
             <div
               class="
@@ -90,8 +90,8 @@
               {{ queryResult }}
               <a-table
                 class="overflow-x-auto"
-                :dataSource="dataSource"
-                :columns="columns"
+                :dataSource="dataList"
+                :columns="columnList"
                 :scroll="{ x: 500, y: 240 }"
               />
             </div>
@@ -104,10 +104,9 @@
 <script lang="ts">
 import { defineComponent, ref, inject } from "vue";
 import { useRouter } from "vue-router";
-import { sse } from "~/utils/sse";
 import Editor from "@/editor/index.vue";
 import queryData from "@/editor/monaco/queryData.json";
-
+import { sse } from "~/utils/sse";
 import ProjectSidebar from "~/layouts/project/index.vue";
 
 export default defineComponent({
@@ -123,15 +122,9 @@ export default defineComponent({
   setup() {
     const router = useRouter();
     const $keycloak = inject("$keycloak");
-    const queryResult = ref("");
-    // const dataSource = [
-    //   // {
-    //   //   key: "1",
-    //   //   name: "Mike",
-    //   //   age: 32,
-    //   //   address: "10 Downing Street",
-    //   // },
-    // ];
+    const columnList = ref([]);
+    let dataList = [];
+
     const listData = [
       {
         title: "Profit by Segment",
@@ -157,10 +150,20 @@ export default defineComponent({
 
     const dataSource = queryData;
 
-    let URL =
-      "https://alpha.atlan.com/heka/api/query/tenants/default/sql/stream?sql=c2VsZWN0ICogZnJvbSAiV0VCX1NBTEVTIiBsaW1pdCAyMDA%3D&defaultSchema=SNOWFLAKE_SAMPLE_DATA.TPCDS_SF10TCL&dataSourceName=default%2Fsnowflake%2Fnqmebzz7r&length=16";
+    const handleBack = () => {
+      router.push("assets");
+    };
 
-    const listenEvents = () => {
+    const queryResponse = ref({});
+
+    const runQuery = () => {
+      console.log("run project");
+      let query = btoa('select * from "WEB_SALES" limit 100');
+      let URL =
+        "https://alpha.atlan.com/heka/api/query/tenants/default/sql/stream?sql=" +
+        query +
+        "&defaultSchema=SNOWFLAKE_SAMPLE_DATA.TPCDS_SF10TCL&dataSourceName=default%2Fsnowflake%2Fp1sj4mk7g&length=16";
+
       sse(URL, {}, $keycloak.token, {})
         .then((sse) => {
           sse.onError((e) => {
@@ -168,8 +171,40 @@ export default defineComponent({
             sse.close();
           });
           sse.subscribe("", (message) => {
-            console.log(message);
-            queryResult.value(message);
+            queryResponse.value = message;
+            if (message.columns) {
+              console.log(message.columns);
+              message.columns.map((col, index) => {
+                columnList.value.push({
+                  title: col.columnName.split("_").join(" "),
+                  dataIndex: col.columnName,
+                  width: "9vw",
+                  key: col.columnName,
+                });
+              });
+
+              console.log(message.results);
+
+              message.results.map((result, index) => {
+                let tmp = {};
+                result.map((row, rowindex) => {
+                  tmp = {
+                    ...tmp,
+                    ...{
+                      [message.columns[rowindex].columnName]: row,
+                      key: rowindex,
+                    },
+                  };
+                });
+                dataList.push(tmp);
+              });
+              console.log(dataList);
+              //columnList.value = message.columns;
+            }
+
+            //message.queryId
+            //message.columns
+            //message.results
           });
         })
         .catch((err) => {
@@ -178,160 +213,15 @@ export default defineComponent({
         });
     };
 
-    listenEvents();
-
-    const columns = [
-      {
-        title: "Row ID",
-        dataIndex: "Row ID",
-        width: "9vw",
-        key: "Row ID",
-      },
-      {
-        title: "Order ID",
-        dataIndex: "Order ID",
-        width: "9vw",
-        key: "Order ID",
-      },
-      {
-        title: "Ship Date_sales",
-        dataIndex: "Ship Date_sales",
-        width: "9vw",
-        key: "Ship Date_sales",
-      },
-      {
-        title: "Ship Mode_sales",
-        dataIndex: "Ship Mode_sales",
-        width: "9vw",
-        key: "Ship Mode_sales",
-      },
-      {
-        title: "Customer ID",
-        dataIndex: "Customer ID",
-        width: "9vw",
-        key: "Customer ID",
-      },
-      {
-        title: "Customer Name",
-        dataIndex: "Customer Name",
-        width: "9vw",
-        key: "Customer Name",
-      },
-      {
-        title: "Segment",
-        dataIndex: "Segment",
-        width: "9vw",
-        key: "Segment",
-      },
-      {
-        title: "City",
-        dataIndex: "City",
-        width: "9vw",
-        key: "City",
-      },
-      {
-        title: "State",
-        dataIndex: "State",
-        width: "9vw",
-        key: "State",
-      },
-      {
-        title: "Country",
-        dataIndex: "Country",
-        width: "9vw",
-        key: "Country",
-      },
-      {
-        title: "Postal Code",
-        dataIndex: "Postal Code",
-        width: "9vw",
-        key: "Postal Code",
-      },
-      {
-        title: "Sales_Market",
-        dataIndex: "Sales_Market",
-        width: "9vw",
-        key: "Sales_Market",
-      },
-      {
-        title: "Sales_Region",
-        dataIndex: "Sales_Region",
-        width: "9vw",
-        key: "Sales_Region",
-      },
-      {
-        title: "Product ID",
-        dataIndex: "Product ID",
-        width: "9vw",
-        key: "Product ID",
-      },
-      {
-        title: "Sales_Category",
-        dataIndex: "Sales_Category",
-        width: "9vw",
-        key: "Sales_Category",
-      },
-      {
-        title: "Sub-Category",
-        dataIndex: "Sub-Category",
-        width: "9vw",
-        key: "Sub-Category",
-      },
-      {
-        title: "Product Name",
-        dataIndex: "Product Name",
-        width: "9vw",
-        key: "Product Name",
-      },
-      {
-        title: "Sales",
-        dataIndex: "Sales",
-        width: "9vw",
-        key: "Sales",
-      },
-      {
-        title: "Quantity",
-        dataIndex: "Quantity",
-        width: "9vw",
-        key: "Quantity",
-      },
-      {
-        title: "Instant_Sales_Discount",
-        dataIndex: "Instant_Sales_Discount",
-        width: "9vw",
-        key: "Instant_Sales_Discount",
-      },
-      {
-        title: "Profit",
-        dataIndex: "Profit",
-        width: "9vw",
-        key: "Profit",
-      },
-      {
-        title: "Shipping Cost",
-        dataIndex: "Shipping Cost",
-        width: "9vw",
-        key: "Shipping Cost",
-      },
-      {
-        title: "Order Priority",
-        dataIndex: "Order Priority",
-        width: "9vw",
-        key: "Order Priority",
-      },
-    ];
-
-    const handleBack = () => {
-      router.push("assets");
-    };
     return {
+      runQuery,
       listData,
       dataSource,
-      columns,
+      dataList,
+      columnList,
       handleBack,
     };
   },
-  mounted() {},
 });
 </script>
 

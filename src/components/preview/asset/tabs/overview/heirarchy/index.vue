@@ -15,8 +15,8 @@
         <div :class="$style.itemPic" class="border" v-if="index === 0">
           <img :src="logo(item)" :class="$style.itemType" />
         </div>
-        <div :class="$style.itemPic" class="border" v-else>
-          <component :is="path.id"></component>
+        <div :class="$style.itemPic" v-else class="border">
+          <component :is="path.id" :class="$style.itemType"></component>
         </div>
       </div>
       <div class="flex justify-between" :class="$style.ellipsis">
@@ -81,9 +81,9 @@ export default defineComponent({
 
   .itemDots {
     position: absolute;
-    top: calc(50% + 19px);
+    top: calc(50% + 26px);
     transform: translateY(-50%);
-    left: 15px;
+    left: 24px;
     bottom: 0;
     width: 5px;
     height: 24px;

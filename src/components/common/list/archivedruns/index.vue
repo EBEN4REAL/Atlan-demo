@@ -19,27 +19,9 @@
       <a-button @click="handleRefresh"><fa icon="fal sync"></fa></a-button>
     </div>
     <div class="w-full overflow-auto min-h-10">
-      <div
-        class="flex items-center h-full align-middle bg-white"
-        style="min-height: 200px"
-        v-if="[STATES.ERROR, STATES.STALE_IF_ERROR].includes(state)"
-      >
-        <ErrorView></ErrorView>
-      </div>
-      <div
-        class="flex items-center h-full align-middle bg-white"
-        style="min-height: 200px"
-        v-else-if="
-          [STATES.PENDING].includes(state) ||
-          [STATES.VALIDATING].includes(state)
-        "
-      >
-        <LoadingView></LoadingView>
-      </div>
-
-      <table class="table w-full mx-auto overflow-x-hidden table-report" v-else>
+      <table class="table w-full mx-auto overflow-x-hidden table-report">
         <tbody class="rounded-md">
-          <template v-for="item in data.items" :key="item.metadata.uid">
+          <template v-for="item in data?.items" :key="item.metadata.uid">
             <ItemView :item="item"></ItemView>
           </template>
         </tbody>
@@ -99,14 +81,15 @@ export default defineComponent({
 
     params.value = {
       "listOptions.limit": 50,
+      "listOptions.fieldSelector": "metadata.namespace=default",
       "listOptions.labelSelector": "category=metadata",
     };
 
     const { data, mutate, state, STATES } = fetchWorkflowList(
-      "archived_list",
+      "archived_runslist",
       now,
       params,
-      false
+      true
     );
 
     const updateLabel = () => {
@@ -120,6 +103,7 @@ export default defineComponent({
       if (botTemplateName.value) {
         labels.push(`category=${botTemplateName.value}`);
       }
+
       params.value["listOptions.labelSelector"] = labels.join(",");
     };
 

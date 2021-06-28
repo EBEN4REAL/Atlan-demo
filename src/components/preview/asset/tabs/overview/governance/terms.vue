@@ -103,7 +103,7 @@
           class="mb-0 text-gray-500"
           v-if="!item?.attributes?.ownerUsers && !item?.attributes?.ownerGroups"
         >
-          No owners assigned
+          No terms added
         </p>
       </div>
     </a-popover>

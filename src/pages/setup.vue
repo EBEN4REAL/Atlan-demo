@@ -89,8 +89,8 @@
           </div>
         </div>
 
-        <keep-alive class="">
-          <div class="h-full overflow-y-auto flew-grow">
+        <div class="h-full overflow-y-auto flew-grow">
+          <keep-alive class="">
             <ConnectorList
               v-if="current === 0"
               @select="handleConnectorSelect"
@@ -109,8 +109,9 @@
               :item="selectedConnector"
               :credential="selectedCredential"
             ></Settings>
-          </div>
-        </keep-alive>
+          </keep-alive>
+        </div>
+
         <div
           class="flex justify-between px-4 py-5 align-middle bg-white border-t"
           v-if="current !== 0"

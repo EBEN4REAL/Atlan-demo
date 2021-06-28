@@ -15,7 +15,7 @@ export default defineComponent({
   },
   setup() {
     useHead({
-      title: "Setup",
+      title: "Groups",
     });
   },
 });

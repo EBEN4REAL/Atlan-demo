@@ -255,8 +255,4 @@ export default defineComponent({
   meta:
     layout: default
     requiresAuth: true
-<<<<<<< HEAD
 </route>
-=======
-</route>
->>>>>>> development

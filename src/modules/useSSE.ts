@@ -65,7 +65,6 @@ function formatters(formatKey: string, e: any) {
 /***
  * @param url - Path for making the network request
  * @param includeAuthHeader - Boolean to include the authroization header or not
- * @param token - Keycloack token
  * @param config - config object
  * @param headers - Standard req headers to send while making a request
  * @param params - The query params to send while making a `GET` request

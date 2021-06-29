@@ -12,6 +12,7 @@
       :tabs="finalTabs"
       :selectedUser="userObj"
       @updatedUser="()=>setUserUpdatedFlag(true)"
+      @imageUpdated="()=>setUserUpdatedFlag(true,emitPayload)"
     />
   </a-drawer>
 </template>

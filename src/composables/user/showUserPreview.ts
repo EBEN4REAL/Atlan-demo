@@ -7,6 +7,7 @@ const userId = ref("");
 const username = ref("");
 const uniqueAttribute = ref("");
 const userUpdated = ref(false);
+const emitPayload = ref({});
 const allTabs = [
   {
     //tab name
@@ -79,8 +80,9 @@ export function usePreview() {
   const setBlackListedTabs = (tabs) => {
     blacklistedTabs.value = [...tabs];
   };
-  const setUserUpdatedFlag = (value) => {
+  const setUserUpdatedFlag = (value, payload = {}) => {
     userUpdated.value = value;
+    emitPayload.value = payload;
   };
   return {
     showPreview,
@@ -95,5 +97,6 @@ export function usePreview() {
     closePreview,
     userUpdated,
     setUserUpdatedFlag,
+    emitPayload,
   };
 }

@@ -83,11 +83,15 @@
     "
         >
           <template #name="{ text: user }">
-            <div
-              class="flex items-center align-middle cursor-pointer"
-              @click="() => {showUserPreviewDrawer(user);}"
-            >
-              <a-avatar
+            <div class="flex items-center align-middle">
+              <avatar
+                :imageUrl="imageUrl(user.username)"
+                :allowUpload="isCurrentUser(user.username)"
+                :avatarName="user.name || user.uername || user.email"
+                :avatarSize="40"
+                class="mr-2"
+              />
+              <!-- <a-avatar
                 v-if="user.name || user.username || user.email"
                 shape="square"
                 class="mr-2 border-2 rounded-lg ant-tag-blue text-primary-500 avatars border-primary-300"
@@ -99,9 +103,9 @@
                 getNameInTitleCase(user.name || user.uername || user.email)
                 )
                 }}
-              </a-avatar>
+              </a-avatar>-->
 
-              <div>
+              <div class="cursor-pointer" @click="() => {showUserPreviewDrawer(user);}">
                 <span class="text-gray-900">{{ nameCase(user.name) || "-" }}</span>
                 <p class="mb-0 text-gray-500">@{{ user.username || "-" }}</p>
               </div>
@@ -198,7 +202,7 @@ import InvitationListTable from "./invitationListTable.vue";
 import { Modal, message } from "ant-design-vue";
 import { User } from "~/api/auth/user";
 import whoami from "~/composables/user/whoami";
-import uploadAvatar from "~/composables/avatar/uploadAvatar";
+import Avatar from "~/components/common/avatar.vue";
 import {
   getNameInitials,
   getNameInTitleCase,
@@ -212,6 +216,7 @@ export default defineComponent({
     InvitationListTable,
     ChangeRole,
     InviteUsers,
+    Avatar,
   },
   setup() {
     const IS_SMTP_CONFIGURED = false;
@@ -333,12 +338,12 @@ export default defineComponent({
       setUserUniqueAttribute,
       userUpdated,
       setUserUpdatedFlag,
+      emitPayload,
     } = usePreview();
     const showUserPreviewDrawer = (user: any) => {
       setUserUniqueAttribute(user.id);
       let blacklistedTabs = [];
-      if (user.username !== currentUserUsername.value)
-        blacklistedTabs = ["about"];
+      if (!isCurrentUser(user.username)) blacklistedTabs = ["about"];
       openPreview({ blacklisted: blacklistedTabs });
       selectedUserId.value = user.id;
     };
@@ -491,15 +496,8 @@ export default defineComponent({
       userListAPIParams.offset = offset;
       getUserList();
     };
-
-    let uploadStarted = ref(false);
-    const { upload, isReady, uploadKey } = uploadAvatar();
-    const handleUploadAvatar = async (uploaded) => {
-      console.log("handle Upload");
-      upload(uploaded.file);
-      uploadStarted.value = true;
-      imageUrl.value = imageUrl.value + "?" + uploadKey;
-      return true;
+    const isCurrentUser = (username: string) => {
+      return username === currentUserUsername.value;
     };
     return {
       searchText,
@@ -536,10 +534,7 @@ export default defineComponent({
       resetStatusFilter,
       handlePagination,
       filteredUserCount,
-      handleUploadAvatar,
-      uploadStarted,
-      isReady,
-      uploadKey,
+      isCurrentUser,
     };
   },
   data() {

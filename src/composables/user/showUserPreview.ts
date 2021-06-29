@@ -47,9 +47,9 @@ const finalTabs = computed(() => {
 });
 
 export function usePreview() {
-  const showUserPreview = (config: { allowed?: any; blacklisted?: any }) => {
-    blacklistedTabs.value = [...(config.blacklisted || [])];
-    allowedTabs.value = [...(config.allowed || [])];
+  const showUserPreview = (config?: { allowed?: any; blacklisted?: any }) => {
+    blacklistedTabs.value = [...(config?.blacklisted || [])];
+    allowedTabs.value = [...(config?.allowed || [])];
     showPreview.value = true;
   };
   const closePreview = () => {

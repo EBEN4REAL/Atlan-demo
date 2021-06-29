@@ -30,7 +30,6 @@
               'is-active': editor.isActive(`${menuItem.key}`),
               'border-r-2': menuItem.border,
             }"
-            @click="() => menuItem.onClick(editor)"
           >
             <fa v-if="menuItem.icon" :icon="menuItem.icon" class="m-1" />
             <span v-else>{{ menuItem.title }}</span>
@@ -46,26 +45,30 @@
                       type="url"
                       v-model:value="imageLink"
                       focused
-                      @keydown.enter="() =>  menuItem.onClick(editor)"
+                      @keydown.enter="() => menuItem.onClick(editor)"
                     />
                     <a-button
                       type="primary"
                       class="ml-3 mr-2"
-                      @click="() =>  menuItem.onClick(editor)"
+                      @click="() => menuItem.onClick(editor)"
                     >
                       Add
                     </a-button>
                   </div>
                 </div>
                 <div
-                  class="mt-3 d-flex align-items-center justify-center text-center"
+                  class="
+                    mt-3
+                    d-flex
+                    align-items-center
+                    justify-center
+                    text-center
+                  "
                 >
                   <label>OR</label>
                   <div class="mt-1">
                     <a-upload name="file">
-                      <a-button>
-                        Click to Upload
-                      </a-button>
+                      <a-button> Click to Upload </a-button>
                     </a-upload>
                   </div>
                 </div>
@@ -201,10 +204,10 @@ export default defineComponent({
         icon: "fa bold",
         onClick: (editor) => {
           // editor.chain().focus().toggleBold().run()
-                let transaction = editor.state.tr;
+          let transaction = editor.state.tr;
           transaction = transaction.deleteSelection();
           const state = editor.state.apply(transaction);
-          },
+        },
       },
       {
         title: "Italic",
@@ -299,14 +302,16 @@ export default defineComponent({
         icon: "fa file-image",
         onClick: (editor) => {
           console.log("image");
-          editor
-            .chain()
-            .focus()
-            .setImage({
-              src: imageLink.value,
-            })
-            .run();
-            imageLink.value = '';
+          if (imageLink.value) {
+            editor
+              .chain()
+              .focus()
+              .setImage({
+                src: imageLink.value,
+              })
+              .run();
+            imageLink.value = "";
+          }
           // link.value = editor.getAttributes("link").href ?? "";
           // showLinkModal.value = !showLinkModal.value;
         },
@@ -332,7 +337,7 @@ export default defineComponent({
         icon: "fa code",
         border: true,
         onClick: (editor) =>
-          editor.chain().focus().toggleCodeBlock({ language: "css" }).run(),
+          editor.chain().focus().toggleCodeBlock({ language: "json" }).run(),
       },
       {
         title: "Undo",

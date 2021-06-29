@@ -23,6 +23,7 @@ specifiers:
   '@tiptap/extension-image': ^2.0.0-beta.14
   '@tiptap/extension-link': 2.0.0-beta.17
   '@tiptap/extension-paragraph': ^2.0.0-beta.15
+  '@tiptap/extension-placeholder': ^2.0.0-beta.25
   '@tiptap/extension-task-item': ^2.0.0-beta.16
   '@tiptap/extension-task-list': ^2.0.0-beta.16
   '@tiptap/extension-text': ^2.0.0-beta.12
@@ -126,6 +127,7 @@ dependencies:
   '@tiptap/extension-image': 2.0.0-beta.14_@tiptap+core@2.0.0-beta.81
   '@tiptap/extension-link': 2.0.0-beta.17_@tiptap+core@2.0.0-beta.81
   '@tiptap/extension-paragraph': 2.0.0-beta.15_@tiptap+core@2.0.0-beta.81
+  '@tiptap/extension-placeholder': 2.0.0-beta.25_@tiptap+core@2.0.0-beta.81
   '@tiptap/extension-task-item': 2.0.0-beta.16_@tiptap+core@2.0.0-beta.81
   '@tiptap/extension-task-list': 2.0.0-beta.16_@tiptap+core@2.0.0-beta.81
   '@tiptap/extension-text': 2.0.0-beta.12_@tiptap+core@2.0.0-beta.81
@@ -2481,6 +2483,17 @@ packages:
       '@tiptap/core': ^2.0.0-beta.1
     dependencies:
       '@tiptap/core': 2.0.0-beta.81
+    dev: false
+
+  /@tiptap/extension-placeholder/2.0.0-beta.25_@tiptap+core@2.0.0-beta.81:
+    resolution: {integrity: sha512-/EEH82YmevjcmKg4YcV1h9o7Z00d3fyRKYTElexmQDetIvsEYLSrwd3lIpbWfa0gghdfwkSnEBd3Akx/09cN9w==}
+    peerDependencies:
+      '@tiptap/core': ^2.0.0-beta.1
+    dependencies:
+      '@tiptap/core': 2.0.0-beta.81
+      prosemirror-model: 1.14.1
+      prosemirror-state: 1.3.4
+      prosemirror-view: 1.18.8
     dev: false
 
   /@tiptap/extension-strike/2.0.0-beta.16_@tiptap+core@2.0.0-beta.81:
@@ -8333,6 +8346,14 @@ packages:
 
   /prosemirror-view/1.18.7:
     resolution: {integrity: sha512-pUCxoyuWnbVfJ/ukhQ+7+bfDMArG3wu6hHnnTFi61C7Teb5OILUhkkhEhF2/RsppBFWrkwsNcf8rQm8SSoSKRg==}
+    dependencies:
+      prosemirror-model: 1.14.1
+      prosemirror-state: 1.3.4
+      prosemirror-transform: 1.3.2
+    dev: false
+
+  /prosemirror-view/1.18.8:
+    resolution: {integrity: sha512-iLNonsRUM+ByIxJZP+tRuE8jUy56jfgf8oxnc4InWYTYdPibARs4FL6DQ6D56GdPMlXyTjXjSdfDp/x8mwHhtw==}
     dependencies:
       prosemirror-model: 1.14.1
       prosemirror-state: 1.3.4

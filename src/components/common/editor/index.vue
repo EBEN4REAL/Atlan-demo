@@ -1,6 +1,7 @@
 <template>
   <div class="mx-2 w-full h-full bg-white border editor">
     <editor-menu :editable="editable" :editor="editor" />
+
     <bubble-menu :editor="editor" v-if="editor" @blur="showBubble = false">
       <div
         class="bg-white py-3 px-5 w-48 shadow-xl rounded flex flex-col"
@@ -35,6 +36,7 @@
         >
       </div>
     </bubble-menu>
+
     <editor-content :editor="editor" class="px-7 py-3 rounded-b" />
   </div>
 </template>
@@ -51,6 +53,7 @@ import TaskList from "@tiptap/extension-task-list";
 import TaskItem from "@tiptap/extension-task-item";
 import TextAlign from "@tiptap/extension-text-align";
 import Image from "@tiptap/extension-image";
+import Placeholder from "@tiptap/extension-placeholder";
 
 import EditorMenu from "./editorMenu.vue";
 
@@ -67,7 +70,7 @@ export default defineComponent({
     },
     placeholder: {
       type: String,
-      default: "Add some details here",
+      default: "Add some details here...",
     },
     content: {
       type: String,
@@ -80,9 +83,12 @@ export default defineComponent({
     const widthOption = ref(1);
     const customWidth = ref(100);
 
-    const debouncedEmit = useDebounceFn((content: string) => {
-      emit("onEditorContentUpdate", content);
-    }, 200);
+    const debouncedEmit = useDebounceFn(
+      (content: string, json: Record<string, any>) => {
+        emit("onEditorContentUpdate", content, json);
+      },
+      200
+    );
 
     const CustomImage = Image.extend({
       addAttributes() {
@@ -132,18 +138,15 @@ export default defineComponent({
             }
           );
 
-          console.log(transaction);
           const state = editor.state.apply(transaction);
           editor.view.updateState(state);
           editor.view.dispatch(transaction);
         }
       }
     };
-
+    // <p style="text-align: center">https://cdn.britannica.com/22/206222-131-E921E1FB/Domestic-feline-tabby-cat.jpg</p><img src='https://cdn.britannica.com/22/206222-131-E921E1FB/Domestic-feline-tabby-cat.jpg' imagewidth='30'/>
     const editor = useEditor({
-      content: `${
-        props.content.length ? props.content : props.placeholder
-      }<p style="text-align: center">https://cdn.britannica.com/22/206222-131-E921E1FB/Domestic-feline-tabby-cat.jpg</p><img src='https://cdn.britannica.com/22/206222-131-E921E1FB/Domestic-feline-tabby-cat.jpg' imagewidth='30'/>`,
+      content: props.content,
       extensions: [
         StarterKit,
         Underline,
@@ -152,17 +155,18 @@ export default defineComponent({
         TaskItem,
         CustomImage.configure({
           inline: true,
-          // HTMLAttributes: {
-          //   style: 'width: 70% !important'
-          // },
         }),
         TextAlign.configure({
           types: ["heading", "paragraph"],
         }),
+        Placeholder.configure({
+          placeholder: props.placeholder,
+        }),
       ],
       onUpdate({ editor }) {
         const content = editor.getHTML();
-        debouncedEmit(content);
+        const json = editor.getJSON();
+        debouncedEmit(content, json);
       },
 
       onSelectionUpdate({ editor }) {
@@ -177,6 +181,10 @@ export default defineComponent({
         }
       },
     });
+
+    const resetEditor = () => {
+      editor.value?.chain().setContent(props.content).run();
+    };
 
     // watch(customWidth, (width) => {
     //   if (editor.value) {
@@ -204,7 +212,14 @@ export default defineComponent({
     //   }
     // });
     console.log(editor.value?.schema);
-    return { editor, showBubble, widthOption, customWidth, applyImageWidth };
+    return {
+      editor,
+      showBubble,
+      widthOption,
+      customWidth,
+      applyImageWidth,
+      resetEditor,
+    };
   },
 });
 </script>
@@ -273,6 +288,13 @@ export default defineComponent({
   }
   h3 {
     @apply text-lg;
+  }
+  p.is-editor-empty:first-child::before {
+    content: attr(data-placeholder);
+    float: left;
+    pointer-events: none;
+    height: 0;
+    @apply text-gray-400;
   }
 }
 </style>

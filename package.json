@@ -24,6 +24,7 @@
     "@tiptap/extension-image": "^2.0.0-beta.14",
     "@tiptap/extension-link": "2.0.0-beta.17",
     "@tiptap/extension-paragraph": "^2.0.0-beta.15",
+    "@tiptap/extension-placeholder": "^2.0.0-beta.25",
     "@tiptap/extension-task-item": "^2.0.0-beta.16",
     "@tiptap/extension-task-list": "^2.0.0-beta.16",
     "@tiptap/extension-text": "^2.0.0-beta.12",
@@ -78,7 +79,6 @@
     "vuex-typex": "^3.1.9"
   },
   "devDependencies": {
-    "jest": "^27.0.5",
     "@babel/core": "^7.14.6",
     "@intlify/vite-plugin-vue-i18n": "^2.2.1",
     "@rollup/plugin-replace": "^2.4.2",
@@ -95,6 +95,7 @@
     "eslint": "^7.29.0",
     "eslint-plugin-vue": "^7.10.0",
     "https-localhost": "^4.6.5",
+    "jest": "^27.0.5",
     "openapi-typescript-codegen": "^0.9.3",
     "pnpm": "^6.8.0",
     "postcss": "^8.3.5",

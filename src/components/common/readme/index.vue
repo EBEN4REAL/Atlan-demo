@@ -26,28 +26,30 @@
         <a-button
           type="link"
           :variant="'btn btn-sm btn-link mb-0 btn-no-focus font-w700 text-muted'"
-          @click="editable = false"
+          @click="onCancel"
           :loading="false"
           :loadingText="'Cancelling...'"
           >Cancel</a-button
         >
       </div>
-      <a-button
-        v-else
-        type="link"
-        class="text-sm"
-        @click="editable = true"
-      >
-        <fa icon="fa pencil" class="mx-2 text-xs"/>
+      <a-button v-else type="link" class="text-sm" @click="editable = true">
+        <fa icon="fa pencil" class="mx-2 text-xs" />
         Edit
       </a-button>
     </div>
-    <Editor content="" placeholder="some placeholder" class="rounded-t-none" :editable="editable" />
+    <Editor
+      @onEditorContentUpdate="onUpdate"
+      ref="editor"
+      content="Some initial content fetched from the api"
+      :placeholder="placeholder"
+      class="rounded-t-none"
+      :editable="editable"
+    />
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from "vue";
+import { defineComponent, ref, watch } from "vue";
 
 import Editor from "@/common/editor/index.vue";
 
@@ -55,11 +57,34 @@ export default defineComponent({
   components: {
     Editor,
   },
+  props: {
+    placeholder: {
+      type: String,
+      default: "Add some details here...",
+    },
+  },
   setup() {
     const editable = ref(false);
+    const editor = ref();
+
+    const onUpdate = (content: string, json: Record<string, any>) => {
+      // console.log(content, json)
+    };
+    watch(editor, (newEditor) => console.log(newEditor.value))
+
+    const onCancel = () => {
+      console.log(editor.value)
+      if (editor.value) {
+        editor.value.resetEditor();
+      }
+      editable.value = false;
+    };
 
     return {
       editable,
+      editor,
+      onUpdate,
+      onCancel,
     };
   },
 });

@@ -1,7 +1,7 @@
 <template>
   <div class="h-full overflow-auto">
-    <div class="p-6">
-      <ConnectionDistribution></ConnectionDistribution>
+    <div class="px-6 mt-6">
+      <RunList></RunList>
     </div>
 
     <!-- <div class="grid grid-cols-12 gap-6 px-6">
@@ -34,6 +34,7 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import RunList from "@common/list/runs/index.vue";
+import ArchivedRunList from "@common/list/archivedruns/index.vue";
 
 import ConnectionDistribution from "@/connection/home/distribution/connection.vue";
 
@@ -43,6 +44,7 @@ export default defineComponent({
   name: "HelloWorld",
   components: {
     RunList,
+    ArchivedRunList,
     ConnectionDistribution,
     CrudDistribution,
   },

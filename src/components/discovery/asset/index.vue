@@ -6,7 +6,7 @@
     class="hidden h-full pt-6 pl-4 bg-white  sm:block sm:col-span-4 md:col-span-2 sm"
   >
     <div class="flex flex-col h-full">
-      <div class="px-3 mb-3">
+      <div class="mb-3">
         <a-radio-group
           class="flex w-full text-center"
           v-model:value="filterMode"
@@ -20,19 +20,19 @@
         </a-radio-group>
       </div>
 
-      <keep-alive class="flex-grow h-full">
-        <div>
-          <div v-if="filterMode === 'custom'">
-            <div class="pb-2 mb-2">
-              <ConnectorDropdown></ConnectorDropdown>
-            </div>
-
-            <AssetFilters @refresh="handleFilterChange"></AssetFilters>
-          </div>
-
-          <SavedFilters v-if="filterMode === 'saved'"></SavedFilters>
+      <div v-show="filterMode === 'custom'" class="flex-grow h-full">
+        <div class="pb-2 mb-2">
+          <ConnectorDropdown
+            @change="handleChangeConnectors"
+          ></ConnectorDropdown>
         </div>
-      </keep-alive>
+
+        <AssetFilters @refresh="handleFilterChange"></AssetFilters>
+      </div>
+
+      <div v-show="filterMode === 'saved'">
+        <SavedFilters @refresh="handleSavedSearchChange"></SavedFilters>
+      </div>
     </div>
   </div>
   <div
@@ -40,28 +40,13 @@
     style="overflow: hidden"
   >
     <div class="flex items-center px-6 gap-x-3">
-      <a-input placeholder="Search" @input="handleSearchChange">
-        <template #suffix>
-          <a-popover placement="bottom">
-            <template #content>
-              <Preferences
-                :defaultProjection="projection"
-                @change="handleChangePreferences"
-              ></Preferences>
-            </template>
-            <a-spin
-              size="small"
-              class="mr-2 leading-none"
-              v-if="isLoading"
-            ></a-spin>
-          </a-popover>
-        </template>
-      </a-input>
+      <a-input placeholder="Search" @input="handleSearchChange"> </a-input>
       <a-popover placement="bottom">
         <template #content>
           <Preferences
             :defaultProjection="projection"
             @change="handleChangePreferences"
+            @sort="handleChangeSort"
           ></Preferences>
         </template>
         <a-button size="default"
@@ -179,18 +164,25 @@ export default defineComponent({
       totalCount,
       changeAssetType,
       assetTypeList,
+      changeSort,
+      changeConnectors,
+      savedSearch,
     } = fetchAssetDiscover(DISCOVERY_FETCH_LIST, immediate);
 
     const handleSearchChange = useDebounceFn((val) => {
       query(val.target.value);
-      if (assetlist.value) {
-        console.log("scroll");
-        assetlist?.value.scrollToItem(0);
-      }
+      // if (assetlist.value) {
+      //   console.log("scroll");
+      //   assetlist?.value.scrollToItem(0);
+      // }
     }, 100);
 
     const handleChangePreferences = (payload: any) => {
       projection.value = payload;
+    };
+
+    const handleChangeSort = (payload: any) => {
+      changeSort(payload);
     };
 
     const handleFilterChange = (payload: any) => {
@@ -201,8 +193,22 @@ export default defineComponent({
       });
     };
 
+    const handleSavedSearchChange = (payload: any) => {
+      console.log(payload);
+
+      if (payload.attributes) {
+        let searchParam = JSON.parse(payload?.attributes?.searchParameters);
+        console.log(searchParam);
+        savedSearch(searchParam);
+      }
+    };
+
     const handleChangeAssetType = (payload: any) => {
       changeAssetType(payload);
+    };
+
+    const handleChangeConnectors = (payload: any) => {
+      changeConnectors(payload);
     };
 
     return {
@@ -222,6 +228,11 @@ export default defineComponent({
       handleChangePreferences,
       handleChangeAssetType,
       assetTypeList,
+      handleChangeConnectors,
+      changeConnectors,
+      handleChangeSort,
+      handleSavedSearchChange,
+      savedSearch,
       // list,
       // filterMode,
       // state,

@@ -137,6 +137,20 @@ export default defineComponent({
   :global(.ant-collapse-item) {
     @apply border-none;
   }
+
+  :global(.ant-collapse-header) {
+    padding-left: 18px !important;
+    padding-right: 0px !important;
+  }
+  :global(.ant-collapse-arrow) {
+    left: 0px !important;
+  }
+
+  :global(.ant-collapse-content-box) {
+    padding-right: 0px;
+    padding-left: 0px;
+    padding-top: 0px;
+  }
 }
 </style>
     

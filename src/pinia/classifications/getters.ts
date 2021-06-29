@@ -6,7 +6,7 @@ export type Getters = {
   transformClassificationTreeData(state: State): any;
   getClassificationTree(state: State): any;
   getFilteredClassifications(state: State): any;
-  getFilteredClassificationsBySeach(state: State): any;
+  getFilteredClassificationsBySeach(searchText: string): any;
 };
 const RESTRICTED_CLASSIFICATION_PREFIX = "atlan_";
 

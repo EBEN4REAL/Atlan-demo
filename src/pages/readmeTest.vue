@@ -3,7 +3,7 @@
     class="flex container flex-col w-full h-full bg-gray-200"
   >
     <h1>readme test</h1><br><br>
-      <Readme  />
+      <Readme placeholder="Add some details here..." parentAssetId="" />
   </div>
 </template>
 

@@ -42,7 +42,7 @@
 </template>
   
   <script lang="ts">
-import { defineComponent, ref, watch } from "vue";
+import { defineComponent, ref, watch, computed } from "vue";
 import { useDebounceFn } from "@vueuse/core";
 
 import { useEditor, EditorContent, BubbleMenu, Editor } from "@tiptap/vue-3";
@@ -82,6 +82,7 @@ export default defineComponent({
     const showBubble = ref(false);
     const widthOption = ref(1);
     const customWidth = ref(100);
+    const editable = computed(() => props.editable);
 
     const debouncedEmit = useDebounceFn(
       (content: string, json: Record<string, any>) => {
@@ -147,6 +148,7 @@ export default defineComponent({
     // <p style="text-align: center">https://cdn.britannica.com/22/206222-131-E921E1FB/Domestic-feline-tabby-cat.jpg</p><img src='https://cdn.britannica.com/22/206222-131-E921E1FB/Domestic-feline-tabby-cat.jpg' imagewidth='30'/>
     const editor = useEditor({
       content: props.content,
+      editable: false,
       extensions: [
         StarterKit,
         Underline,
@@ -161,6 +163,7 @@ export default defineComponent({
         }),
         Placeholder.configure({
           placeholder: props.placeholder,
+          showOnlyWhenEditable: false
         }),
       ],
       onUpdate({ editor }) {
@@ -186,6 +189,9 @@ export default defineComponent({
       editor.value?.chain().setContent(props.content).run();
     };
 
+    watch(editable, (newEditable) => {
+      editor.value?.setEditable(newEditable)
+    })
     // watch(customWidth, (width) => {
     //   if (editor.value) {
     //     let transaction = editor.value.state.tr;

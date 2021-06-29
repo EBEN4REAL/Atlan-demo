@@ -40,7 +40,6 @@
     <Editor
       @onEditorContentUpdate="onUpdate"
       ref="editor"
-      content="Some initial content fetched from the api"
       :placeholder="placeholder"
       class="rounded-t-none"
       :editable="editable"
@@ -62,6 +61,11 @@ export default defineComponent({
       type: String,
       default: "Add some details here...",
     },
+    parentAssetId: {
+      type: String,
+      required: true,
+      default: ''
+    }
   },
   setup() {
     const editable = ref(false);
@@ -70,10 +74,8 @@ export default defineComponent({
     const onUpdate = (content: string, json: Record<string, any>) => {
       // console.log(content, json)
     };
-    watch(editor, (newEditor) => console.log(newEditor.value))
 
     const onCancel = () => {
-      console.log(editor.value)
       if (editor.value) {
         editor.value.resetEditor();
       }

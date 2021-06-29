@@ -58,7 +58,7 @@
           </pane>
           <pane size="80" class="shadow-md">
             <div class="p-4 m-6 bg-white border rounded">
-              <Editor @run="runQuery" :isQueryRunning="isQueryRunning"></Editor>
+              <Editor @run="queryRun" :isQueryRunning="isQueryRunning"></Editor>
             </div>
             <div
               class="p-6 m-6 overflow-x-auto bg-white border rounded table-wrapper"
@@ -93,8 +93,6 @@ export default defineComponent({
     useHead({
       title: "Query Playground",
     });
-    const $keycloak = inject("$keycloak");
-    const token = $keycloak.token;
 
     const {
       queryRun,
@@ -105,13 +103,9 @@ export default defineComponent({
       listData,
     } = useProject();
 
-    const runQuery = () => {
-      queryRun(token);
-    };
-
     return {
       isQueryRunning,
-      runQuery,
+      queryRun,
       listData,
       dataList,
       columnList,

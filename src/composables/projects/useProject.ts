@@ -1,6 +1,7 @@
 import { ref, inject, toRaw, Ref, watch } from "vue";
 import { useRouter } from "vue-router";
-import useSSE from "~/api/useSSE";
+// import useSSE from "~/api/useSSE";
+import { useSSE } from "~/modules/useSSE";
 
 export default function useProject() {
   const router = useRouter();
@@ -71,7 +72,7 @@ export default function useProject() {
     });
   };
 
-  const queryRun = (token: string) => {
+  const queryRun = () => {
     isQueryRunning.value = "loading";
     dataList.value = [];
     let query = btoa('select * from "WEB_SALES" limit 100');
@@ -83,7 +84,6 @@ export default function useProject() {
     const { data: sse, error, isLoading } = useSSE({
       url,
       includeAuthHeader: true,
-      token,
     });
 
     watch(isLoading, () => {

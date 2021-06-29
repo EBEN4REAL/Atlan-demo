@@ -1,11 +1,10 @@
+import { UserModule } from "~/types";
 import { EventSourcePolyfill } from "event-source-polyfill";
 import { useAsyncState } from "@vueuse/core";
-import { inject } from "vue";
 
 interface useSSEParams {
   url: any;
   includeAuthHeader: boolean;
-  token: string;
   params?: Record<string, any>;
   headers?: { [index: string]: string };
   config?: {
@@ -72,17 +71,21 @@ function formatters(formatKey: string, e: any) {
  * @param params - The query params to send while making a `GET` request
  */
 
-export default function SSE({
+let appInstance: any;
+
+export const install: UserModule = ({ app }) => {
+  appInstance = app;
+};
+
+export function useSSE({
   url,
   includeAuthHeader,
-  token,
   config,
   headers = {},
   params = {},
 }: useSSEParams): any {
-  console.log(this);
-  return;
-  console.log(tokeni);
+  const keycloack = appInstance.config.globalProperties.$keycloak;
+  const { token } = keycloack;
   const intialState = {
     getSource: null,
     onError: null,

@@ -20,7 +20,6 @@ export const sse = (url, params, token, cfg) => {
     link = `${link}?${u}`;
   }
 
-
   const source = new EventSourcePolyfill(link, {
     headers: {
       Authorization: `Bearer ${token}`,
@@ -39,6 +38,7 @@ export const sse = (url, params, token, cfg) => {
           return source;
         },
         onError(handler) {
+          console.log("handlererr");
           source.onerror = handler;
 
           return this;
@@ -51,6 +51,7 @@ export const sse = (url, params, token, cfg) => {
               data = formatters[config.format](e);
             } catch (err) {
               if (typeof source.onerror === "function") {
+                console.log("subscribe error");
                 source.onerror(err);
               }
             }
@@ -104,5 +105,4 @@ export const sse = (url, params, token, cfg) => {
       });
     };
   });
-
 };

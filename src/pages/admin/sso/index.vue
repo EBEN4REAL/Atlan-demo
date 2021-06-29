@@ -7,11 +7,12 @@
     <EmptySSOScreen v-else @configureSSO="configureSSO" />
   </div>
 </template>
-  <script lang="ts">
+<script lang="ts">
 import { useStore } from "vuex";
 import { defineComponent, computed } from "vue";
 import EmptySSOScreen from "@/admin/sso/configure/emptySSOScreen.vue";
 import DisplaySSO from "@/admin/sso/update/displaySSO.vue";
+import { useHead } from "@vueuse/head";
 
 export default defineComponent({
   components: {
@@ -19,6 +20,9 @@ export default defineComponent({
     DisplaySSO,
   },
   setup() {
+    useHead({
+      title: "SSO",
+    });
     const store = useStore();
     const tenantData = computed(() => store.state.tenant.data);
     const identityProviders: Array<any> =
@@ -37,9 +41,14 @@ export default defineComponent({
   },
 });
 </script>
-  <style lang="less" module>
+<style lang="less" module>
 .ssoPage {
   max-height: 90vh;
   overflow-y: auto;
 }
 </style>
+<route lang="yaml">
+  meta:
+  layout: default
+  requiresAuth: true
+  </route>

@@ -1,5 +1,5 @@
 <template>
-  <div class="p-6 bg-white rounded shadow-sm">
+  <div class="p-6 bg-white border rounded shadow-sm">
     <p class="mb-0 text-xl tracking-wide text-gray-900">Delete Connection</p>
     <p class="text-gray-500">
       Permanently delete all data, assets, workflows, credentials for this

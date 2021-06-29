@@ -2,7 +2,11 @@ import Table from "~/assets/images/assetType/Table.svg";
 import Column from "~/assets/images/assetType/Column.svg";
 import Database from "~/assets/images/assetType/Database.svg";
 import Schema from "~/assets/images/assetType/Schema.svg";
+import View from "~/assets/images/assetType/View.svg";
 import { UserModule } from "~/types/vitessg";
+
+
+import number from "~/assets/images/dataType/number.svg";
 
 // import Snowflake from "~/assets/images/source/snowflake.png";
 // import tableau from "~/assets/images/source/tableau.png";
@@ -13,4 +17,7 @@ export const install: UserModule = ({ app }) => {
   app.component("Column", Column);
   app.component("Database", Database);
   app.component("Schema", Schema);
+  app.component("View", View);
+
+  // app.component("number", number);
 };

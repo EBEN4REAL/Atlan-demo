@@ -5,10 +5,13 @@ import businessMetadata from "~/api/keyMaps/businessMetadata";
 import user from "~/api/keyMaps/auth/user";
 import tenant from "~/api/keyMaps/auth/tenant";
 import group from "~/api/keyMaps/auth/group";
+import avatar from "~/api/keyMaps/auth/avatar";
 import connection from "~/api/keyMaps/auth/connection";
 import glossary from "~/api/keyMaps/glossary";
 import apiKeys from "~/api/keyMaps/auth/apiKeys";
-import { getAPIPath } from "..";
+import role from "~/api/keyMaps/auth/role";
+import search from "~/api/keyMaps/search";
+import classification from "~/api/keyMaps/atlas/classification";
 
 export default {
   ...asset,
@@ -20,4 +23,8 @@ export default {
   ...businessMetadata,
   ...apiKeys,
   BASIC_SEARCH: () => getAPIPath("auth/atlas", "/search/basic"),
+  ...classification,
+  ...role,
+  ...avatar,
+  ...search,
 };

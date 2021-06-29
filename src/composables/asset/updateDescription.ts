@@ -12,6 +12,9 @@ export default function updateDescription(item: any) {
     const localDescription = ref("");
     const isCompleted = ref(false);
     const body = ref({});
+    const isLoading = ref(false);
+
+
     const getBody = () => {
         return {
             entities: [
@@ -42,8 +45,15 @@ export default function updateDescription(item: any) {
     });
     const { state, execute, isReady, error } = updateAsset(body, { immediate: false });
 
+    const update = () => {
+        isLoading.value = true;
+        execute();
+    };
+
+
     watch(state, () => {
-        if (!error.value) {
+        if (!error.value && state && isReady.value) {
+            isLoading.value = false;
             isCompleted.value = false;
             item.attributes.userDescription = localDescription.value;
             item.attributes.__modifiedBy = username;
@@ -53,10 +63,11 @@ export default function updateDescription(item: any) {
 
     const handleCancel = () => {
         isCompleted.value = false;
+        isLoading.value = false;
     };
 
 
     return {
-        description, state, execute, isReady, error, isCompleted, handleCancel
+        description, state, execute, isReady, error, isCompleted, handleCancel, update, isLoading
     }
 }

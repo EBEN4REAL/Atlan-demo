@@ -8,6 +8,7 @@ export default function updateAssetStatus(item: any) {
     const { username } = whoami();
     const assetStatus: { [key: string]: any } = ref({});
     const isCompleted = ref(false);
+    const isLoading = ref(false);
     const body: { [key: string]: any } = ref({});
 
     const statusId: WritableComputedRef<string> = computed({
@@ -46,22 +47,30 @@ export default function updateAssetStatus(item: any) {
                         assetStatus: assetStatus.value.id,
                         assetStatusMessage: assetStatus.value.message,
                         assetStatusUpdatedAt: Date.now(),
-                        assetStatusUpdateBy: username,
+                        assetStatusUpdatedBy: username,
                         tenantId: item.attributes?.tenantId,
                     },
                 },
             ],
         };
     };
-    const { state, execute, isReady, error } = updateAsset(body, { immediate: false });
 
-    watch(state, () => {
-        if (!error.value) {
+    const update = () => {
+        isLoading.value = true;
+        execute();
+    };
+
+    const { state, execute, isReady, error } = updateAsset(body, { immediate: false, resetOnExecute: true });
+
+    watch(isReady, () => {
+
+        if (!error.value && state && isReady.value) {
+            isLoading.value = false;
             isCompleted.value = false;
             item.attributes.assetStatus = assetStatus.value.id;
             item.attributes.assetStatusMessage = assetStatus.value.message;
             item.attributes.assetStatusUpdatedAt = Date.now();
-            item.attributes.assetStatusUpdateBy = username;
+            item.attributes.assetStatusUpdatedBy = username;
             item.attributes.__modifiedBy = username;
             item.attributes.__modificationTimestamp = Date.now();
         }
@@ -70,9 +79,10 @@ export default function updateAssetStatus(item: any) {
 
     const handleCancel = () => {
         isCompleted.value = false;
+        isLoading.value = false;
     };
 
     return {
-        handleCancel, statusId, statusMessage, state, execute, isReady, error, isCompleted
+        handleCancel, statusId, statusMessage, state, update, isReady, error, isCompleted, isLoading
     }
 }

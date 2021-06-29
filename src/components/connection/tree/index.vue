@@ -1,13 +1,10 @@
 <template>
-  <LoadingView v-if="[STATES.PENDING].includes(state)"></LoadingView>
-  <ErrorView
-    v-else-if="[STATES.ERROR, STATES.STALE_IF_ERROR].includes(state)"
-    :error="error.response"
-  ></ErrorView>
+  <LoadingView v-if="isLoading"></LoadingView>
+  <ErrorView v-else-if="isError" :error="error"></ErrorView>
   <EmptyView
-    v-else-if="![STATES.PENDING].includes(state) && treeData?.length === 0"
+    v-else-if="!isLoading && treeData?.length === 0"
     empty="There are no connectitions available"
-    buttonText="Setup New Connection"
+    buttonText="Setup new connection"
     @event="handleEvent"
   ></EmptyView>
 
@@ -17,6 +14,7 @@
       :blockNode="true"
       v-model:expandedKeys="expandedKeys"
       v-model:value="selectedKeys"
+      :defaultExpandAll="true"
       @select="selectNode"
       @expand="expandNode"
     >
@@ -60,6 +58,7 @@ import EmptyView from "@common/empty/index.vue";
 import ErrorView from "@common/error/index.vue";
 import LoadingView from "@common/loaders/section.vue";
 import { useRouter } from "vue-router";
+import { CONNECTION_FETCH_LIST } from "~/constant/cache";
 
 export default defineComponent({
   components: { EmptyView, ErrorView, LoadingView },
@@ -76,17 +75,18 @@ export default defineComponent({
     return {};
   },
   setup(props, { emit }) {
-    let now = ref(true);
-    const { treeData, body, mutate, state, STATES, error } =
-      fetchConnectionList(now);
+    const { treeData, query, error, isLoading, isError } = fetchConnectionList(
+      CONNECTION_FETCH_LIST
+    );
+
     debouncedWatch(
       () => props.searchText,
       () => {
-        body.value.query = props.searchText;
-        mutate();
+        query(props.searchText);
       },
       { debounce: 100 }
     );
+
     const router = useRouter();
     const handleEvent = () => {
       router.push("/setup");
@@ -101,9 +101,9 @@ export default defineComponent({
       selectedKeys,
       selectNode,
       expandNode,
-      state,
+      isLoading,
+      isError,
       error,
-      STATES,
     };
   },
 });

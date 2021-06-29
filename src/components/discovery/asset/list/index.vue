@@ -1,14 +1,25 @@
 <template>
   <DynamicScroller
+    ref="itemscroll"
     :items="list"
     :keyField="keyField"
     :minItemSize="minItemSize"
-    class="scroller"
-    :buffer="400"
+    class="mx-6 border rounded scroller"
+    :class="{ 'opacity-50': isLoading }"
+    :buffer="1000"
   >
     <template v-slot="{ item, index, active }">
-      <DynamicScrollerItem :item="item" :active="active" :data-index="index">
-        <ListItem :item="item" @click="handlePreview(item)"></ListItem>
+      <DynamicScrollerItem
+        :item="item"
+        :active="active"
+        :data-index="index"
+        class="border-b border-gray-200"
+      >
+        <ListItem
+          :item="item"
+          @click="handlePreview(item)"
+          :projection="projection"
+        ></ListItem>
       </DynamicScrollerItem>
     </template>
   </DynamicScroller>
@@ -41,7 +52,7 @@ export default defineComponent({
       type: Number,
       required: false,
       default() {
-        return 75;
+        return 100;
       },
     },
     keyField: {
@@ -51,19 +62,41 @@ export default defineComponent({
         return "guid";
       },
     },
+    projection: {
+      type: Array,
+      required: false,
+      default() {
+        return [];
+      },
+    },
+    isLoading: {
+      type: Boolean,
+      required: false,
+      default() {
+        return false;
+      },
+    },
   },
   emits: ["preview"],
   methods: {
     handlePreview(item) {
       this.$emit("preview", item);
     },
+    scrollToItem() {
+      if (this.$refs.itemscroll) {
+        console.log("scrol");
+        this.$refs.itemscroll.scrollToItem(0);
+      }
+    },
   },
 });
 </script>
     
-  <style scoped>
+<style lang="less">
 .scroller {
   height: 100%;
   overflow-y: auto;
 }
 </style>
+
+

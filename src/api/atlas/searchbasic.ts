@@ -1,27 +1,65 @@
 import { getAPIPath, getAxiosClient } from "~/api";
-import { AxiosRequestConfig } from "axios";
+import axios, { AxiosRequestConfig } from "axios";
 import { SearchParameters } from "~/types/atlas/attributes";
+import { useAPI } from "../useAPIv2";
 
-const serviceAlias = "auth/atlas";
+import { BASIC_SEARCH, SAVED_SEARCH } from "~/api/keyMaps/search"
+import { Ref } from "vue";
+import { IConfig } from "swrv";
+import { Components } from "./client";
+import { AsyncStateOptions } from "@vueuse/core";
 
 
-export const URL = {
-  SEARCHBASIC: "/search/basic"
-}
 
+
+
+
+
+//DEPRECATE
 const Basic = (
   body?: SearchParameters,
   options?: AxiosRequestConfig,
 ) => {
-  return getAxiosClient().post(
-    getAPIPath(serviceAlias, URL.SEARCHBASIC),
-    body,
-    options
-  );
+
+
+  return;
 };
 
+
+const BasicV2 = (
+  cache?: string,
+  body?: Ref<SearchParameters>,
+  options?: Ref<IConfig & AxiosRequestConfig>,
+  dependantFetchingKey?: Ref<any>
+) => {
+
+  return useAPI<any>(BASIC_SEARCH, "POST", {
+    cache,
+    body,
+    options,
+    dependantFetchingKey
+  });
+};
+
+const CreateSavedSearch = (
+  cache?: string,
+  body?: Ref<Components.Schemas.AtlasUserSavedSearch>,
+  options?: Ref<IConfig & AxiosRequestConfig & AsyncStateOptions>,
+  dependantFetchingKey?: Ref<any>
+) => {
+
+  return useAPI<any>(SAVED_SEARCH, "POST", {
+    cache,
+    body,
+    options,
+    dependantFetchingKey
+  });
+};
+
+
 export const SearchBasic = {
-  URL,
   Basic,
+  BasicV2,
+  CreateSavedSearch
 };
 

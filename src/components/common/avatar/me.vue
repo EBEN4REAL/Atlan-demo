@@ -1,8 +1,8 @@
 <template>
   <a-dropdown>
     <a-avatar
-      :size="36"
-      class="border-primary-300 border-2"
+      :size="24"
+      class="border-2 border-primary-300"
       src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png"
     />
     <!-- <a class="ant-dropdown-link" @click="(e) => e.preventDefault()">
@@ -14,13 +14,13 @@
           <div class="flex items-center">
             <a-avatar
               :size="42"
-              class="border-primary-300 border-2"
+              class="border-2 border-primary-300"
               src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png"
             />
 
             <div class="flex flex-col ml-2">
               <p class="mb-0 text-base">{{ name }}</p>
-              <p class="text-gray-500 mb-0 text-sm">
+              <p class="mb-0 text-sm text-gray-500">
                 {{ username }}
               </p>
             </div>

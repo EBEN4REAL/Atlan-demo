@@ -31,10 +31,14 @@ import { defineComponent, ref } from "vue";
 import GlossaryTree from "@common/tree/glossary/index.vue";
 import CreateGlossaryModal from "@common/tree/glossary/createGlossaryModal.vue";
 import UpdateGlossaryModal from "@common/tree/glossary/updateGlossaryModal.vue";
+import { useHead } from "@vueuse/head";
 
 export default defineComponent({
   components: { GlossaryTree, CreateGlossaryModal, UpdateGlossaryModal },
   setup() {
+    useHead({
+      title: "Glossary",
+    });
     const createGlossaryModalVisble = ref(false);
     const updateGlossaryModalVisble = ref(false);
     const glossaryTreeRef = ref();

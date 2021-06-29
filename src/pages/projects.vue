@@ -2,6 +2,7 @@
   <a-layout class="min-h-screen">
     <!-- <a-layout-header
       theme="light"
+
       class="flex items-center px-0 leading-none align-middle text-primary-100 bg-primary-500"
       style="height: 42px"
     >
@@ -78,17 +79,20 @@
 
 <script lang="ts">
 import { defineComponent, ref, inject, toRaw, Ref, watch } from "vue";
-import { useRouter } from "vue-router";
 import Editor from "@/editor/index.vue";
 import useProject from "~/composables/projects/useProject";
 import ProjectSidebar from "~/layouts/project/index.vue";
+import { useHead } from "@vueuse/head";
+
 export default defineComponent({
   components: {
     ProjectSidebar,
     Editor,
   },
   setup() {
-    const router = useRouter();
+    useHead({
+      title: "Query Playground",
+    });
     const $keycloak = inject("$keycloak");
     const token = $keycloak.token;
 

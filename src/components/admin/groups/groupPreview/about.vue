@@ -19,7 +19,7 @@
       <div class="flex items-center">
         <p class="mb-0 text-xs text-gray-500">Created</p>
       </div>
-      <div class="text-gray-500 capitalize">{{ selectedGroup.createdAt }}</div>
+      <div class="text-gray-500 capitalize">{{ selectedGroup.createdAtTimeAgo }}</div>
     </div>
   </div>
 </template>

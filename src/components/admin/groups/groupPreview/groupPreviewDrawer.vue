@@ -7,7 +7,11 @@
     :body-style="{ height: '100%' }"
     @close="handleClose"
   >
-    <GroupPreview :selectedGroup="selectedGroup" @refreshTable="$emit('refreshTable')" />
+    <GroupPreview
+      :defaultTab="defaultTab"
+      :selectedGroup="selectedGroup"
+      @refreshTable="$emit('refreshTable')"
+    />
   </a-drawer>
 </template>
   
@@ -28,6 +32,10 @@ export default defineComponent({
     selectedGroup: {
       type: Object,
       default: {},
+    },
+    defaultTab: {
+      type: String,
+      default: "members",
     },
   },
   setup(props, context) {

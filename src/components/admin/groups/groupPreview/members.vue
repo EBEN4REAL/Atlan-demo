@@ -1,15 +1,10 @@
 <template>
   <div class="my-3 mr-5">
-    <div
-      v-if="!selectedGroup.memberCount"
-      class="flex flex-col items-center justify-center"
-    >
+    <div v-if="!selectedGroup.memberCount" class="flex flex-col items-center justify-center">
       <div class="text-center">
         <p class="text-lg">No members are present in the group.</p>
         <div class="mt-4">
-          <a-button size="large" type="primary" ghost @click="handleAddMember"
-            >Add Members</a-button
-          >
+          <a-button size="large" type="primary" ghost @click="handleAddMember">Add Members</a-button>
         </div>
       </div>
     </div>
@@ -25,9 +20,7 @@
           ></a-input-search>
         </div>
         <div>
-          <a-button type="primary" ghost @click="handleAddMember"
-            >Add Member</a-button
-          >
+          <a-button type="primary" ghost @click="handleAddMember">Add Member</a-button>
         </div>
       </div>
       <div
@@ -46,8 +39,7 @@
               getGroupMembersList();
             }
           "
-          >Try again</a-button
-        >
+        >Try again</a-button>
       </div>
       <div v-else-if="!filteredMembersCount" class="mt-2">
         {{ `No member with name ${searchText} found.` }}
@@ -67,16 +59,17 @@
       </div>
       <div v-else class="min-h-screen mt-4">
         <div v-for="user in memberList.value" :key="user.id" class="my-2">
-          <div class="flex justify-between">
-            <div class="flex items-center">
+          <div class="flex justify-between cursor-pointer">
+            <div class="flex items-center" @click="()=>handleClickUser(user.username)">
               <a-avatar
                 shape="circle"
                 class="mr-1 ant-tag-blue text-primary-500 avatars"
                 :size="40"
-                >{{
-                  getNameInitials(getNameInTitleCase(`${getUserName(user)}`))
-                }}</a-avatar
               >
+                {{
+                getNameInitials(getNameInTitleCase(`${getUserName(user)}`))
+                }}
+              </a-avatar>
               <div class="ml-2">
                 <div>{{ getUserName(user) }}</div>
                 <div>@{{ user.username }}</div>
@@ -85,11 +78,7 @@
             </div>
             <a-popover trigger="click" placement="bottom">
               <template #content>
-                <span
-                  class="text-red-500"
-                  @click="() => removeUserFromGroup(user.id)"
-                  >Remove User</span
-                >
+                <span class="text-red-500" @click="() => removeUserFromGroup(user.id)">Remove User</span>
               </template>
               <fa icon="fal cog"></fa>
             </a-popover>
@@ -140,6 +129,8 @@ import {
 import { Group } from "~/api/auth/group";
 import { getIsLoadMore } from "~/composables/utils/isLoadMore";
 import AddGroupMembers from "~/components/admin/groups/groupPreview/about/members/addGroupMembers.vue";
+import { usePreview } from "~/composables/user/showUserPreview";
+
 export default defineComponent({
   name: "GroupMembers",
   props: {
@@ -253,6 +244,12 @@ export default defineComponent({
     const closeAddGroupModal = () => {
       showAddMemberModal.value = false;
     };
+    // user preview drawer
+    const { showUserPreview, setUserUniqueAttribute } = usePreview();
+    const handleClickUser = (username: string) => {
+      setUserUniqueAttribute(username, "username");
+      showUserPreview({ allowed: ["about"] });
+    };
     return {
       searchText,
       showLoadMore,
@@ -274,6 +271,7 @@ export default defineComponent({
       addMembersToGroup,
       addMemberLoading,
       closeAddGroupModal,
+      handleClickUser,
     };
   },
 });

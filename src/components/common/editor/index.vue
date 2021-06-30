@@ -45,7 +45,7 @@
 import { defineComponent, ref, watch, computed } from "vue";
 import { useDebounceFn } from "@vueuse/core";
 
-import { useEditor, EditorContent, BubbleMenu, Editor } from "@tiptap/vue-3";
+import { useEditor, EditorContent, BubbleMenu, Editor, VueRenderer } from "@tiptap/vue-3";
 import StarterKit from "@tiptap/starter-kit";
 import Underline from "@tiptap/extension-underline";
 import Link from "@tiptap/extension-link";
@@ -56,6 +56,7 @@ import Image from "@tiptap/extension-image";
 import Placeholder from "@tiptap/extension-placeholder";
 
 import EditorMenu from "./editorMenu.vue";
+import SlashCommands from './extensions/slashCommands/commands'
 
 export default defineComponent({
   components: {
@@ -165,6 +166,7 @@ export default defineComponent({
           placeholder: props.placeholder,
           showOnlyWhenEditable: false
         }),
+        SlashCommands,
       ],
       onUpdate({ editor }) {
         const content = editor.getHTML();
@@ -191,6 +193,8 @@ export default defineComponent({
 
     watch(editable, (newEditable) => {
       editor.value?.setEditable(newEditable)
+    console.log(editor.value?.extensionManager.extensions);
+
     })
     // watch(customWidth, (width) => {
     //   if (editor.value) {
@@ -217,7 +221,6 @@ export default defineComponent({
     //     }
     //   }
     // });
-    console.log(editor.value?.schema);
     return {
       editor,
       showBubble,

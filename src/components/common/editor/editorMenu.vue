@@ -203,10 +203,7 @@ export default defineComponent({
         helpText: "",
         icon: "fa bold",
         onClick: (editor) => {
-          // editor.chain().focus().toggleBold().run()
-          let transaction = editor.state.tr;
-          transaction = transaction.deleteSelection();
-          const state = editor.state.apply(transaction);
+          editor.chain().focus().toggleBold().run()
         },
       },
       {

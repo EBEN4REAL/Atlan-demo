@@ -23,6 +23,7 @@
           v-if="menuItem.key === 'image'"
           :trigger="['click']"
           placement="bottomCenter"
+          v-model:visible="showImageDropdown"
         >
           <a-button
             class="border-0"
@@ -30,12 +31,13 @@
               'is-active': editor.isActive(`${menuItem.key}`),
               'border-r-2': menuItem.border,
             }"
+            @click="showImageDropdown = true"
           >
             <fa v-if="menuItem.icon" :icon="menuItem.icon" class="m-1" />
             <span v-else>{{ menuItem.title }}</span>
           </a-button>
 
-          <template #overlay>
+          <template #overlay @blur="showImageDropdown = false">
             <a-menu>
               <div class="w-96 p-3 rounded">
                 <div class="d-flex align-items-center justify-content-start">
@@ -66,10 +68,21 @@
                   "
                 >
                   <label>OR</label>
-                  <div class="mt-1">
-                    <a-upload name="file">
-                      <a-button> Click to Upload </a-button>
-                    </a-upload>
+                  <div
+                    class="mt-4 flex flex-col content-center align-items-center"
+                  >
+                    <a-upload-dragger
+                      class="mx-5 justify-center content-center"
+                      name="file"
+                      listType="picture"
+                      :multiple="false"
+                      :customRequest="uploadImage"
+                    >
+                      <fa icon="fal plus" />
+                      <div class="text-sm">
+                        Click or drag and drop to upload
+                      </div>
+                    </a-upload-dragger>
                   </div>
                 </div>
               </div>
@@ -142,7 +155,10 @@
 
 <script lang="ts">
 import { Editor } from "@tiptap/core";
-import { defineComponent, ref } from "vue";
+import { defineComponent, ref, watch } from "vue";
+
+import useUploadImage from "~/composables/image/uploadImage";
+import { getAPIPath } from "~/api";
 
 interface MenuItem {
   title: string;
@@ -152,6 +168,11 @@ interface MenuItem {
   level?: number;
   border?: boolean;
   onClick: (editor: Editor) => void;
+}
+
+interface Props {
+  editor: Editor;
+  editable: boolean;
 }
 
 export default defineComponent({
@@ -165,11 +186,18 @@ export default defineComponent({
       required: true,
     },
   },
-  setup() {
+  setup(props) {
     const showLinkModal = ref(false);
     const showImageDropdown = ref(false);
     const imageLink = ref("");
     const link = ref("");
+
+    const {
+      data: imageUploadData,
+      error: imageUploadError,
+      isLoading: imageUploadLoading,
+      upload,
+    } = useUploadImage();
 
     const menuData: MenuItem[] = [
       {
@@ -203,7 +231,7 @@ export default defineComponent({
         helpText: "",
         icon: "fa bold",
         onClick: (editor) => {
-          editor.chain().focus().toggleBold().run()
+          editor.chain().focus().toggleBold().run();
         },
       },
       {
@@ -308,6 +336,7 @@ export default defineComponent({
               })
               .run();
             imageLink.value = "";
+            showImageDropdown.value = false;
           }
           // link.value = editor.getAttributes("link").href ?? "";
           // showLinkModal.value = !showLinkModal.value;
@@ -370,6 +399,34 @@ export default defineComponent({
       link.value = "";
     };
 
+    const uploadImage = (payload: { file: File }) => {
+      const { file } = payload;
+      upload(file);
+  
+    };
+
+    watch(imageUploadData, (newImageUploadData) => {
+      if (newImageUploadData) {
+        if (props.editor) {
+          const { editor } = props as Props;
+          const { id } = newImageUploadData;
+
+          const imageUrl = getAPIPath(
+            "/auth",
+            `/images/${id}?ContentDisposition=inline&name=image`
+          );
+          editor
+            .chain()
+            .focus()
+            .setImage({
+              src: `/api${imageUrl}`,
+            })
+            .run();
+            showImageDropdown.value = false;
+        }
+      }
+    });
+
     return {
       menuData,
       showLinkModal,
@@ -378,6 +435,7 @@ export default defineComponent({
       link,
       setLink,
       unLink,
+      uploadImage,
     };
   },
 });

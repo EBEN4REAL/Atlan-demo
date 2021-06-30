@@ -85,7 +85,14 @@ export default {
   },
   setup(props, context) {
     let uploadStarted = ref(false);
-    let updatedImageUrl = ref(props.imageUrl);
+    const updatedImageUrl = ref(props.imageUrl);
+
+    watch(
+      () => props.imageUrl,
+      () => {
+        updatedImageUrl.value = props.imageUrl;
+      }
+    );
     const { upload, isReady, uploadKey, refreshImage } = uploadAvatar();
     const handleUploadAvatar = async (uploaded) => {
       console.log("handle Upload", uploaded);

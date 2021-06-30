@@ -332,6 +332,7 @@ export default defineComponent({
       // fetch groups
       getUserList();
     };
+    // BEGIN: USER PREVIEW
     const {
       showUserPreview: openPreview,
       closePreview,
@@ -342,9 +343,7 @@ export default defineComponent({
     } = usePreview();
     const showUserPreviewDrawer = (user: any) => {
       setUserUniqueAttribute(user.id);
-      let blacklistedTabs = [];
-      if (!isCurrentUser(user.username)) blacklistedTabs = ["about"];
-      openPreview({ blacklisted: blacklistedTabs });
+      openPreview();
       selectedUserId.value = user.id;
     };
     const handleClosePreview = () => {
@@ -359,6 +358,7 @@ export default defineComponent({
         setUserUpdatedFlag(false);
       }
     });
+    // END: USER PREVIEW
     const handleChangeRole = (user: any) => {
       showChangeRoleModal.value = true;
       selectedUserId.value = user.id;

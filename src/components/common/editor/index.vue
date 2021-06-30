@@ -45,7 +45,13 @@
 import { defineComponent, ref, watch, computed } from "vue";
 import { useDebounceFn } from "@vueuse/core";
 
-import { useEditor, EditorContent, BubbleMenu, Editor, VueRenderer } from "@tiptap/vue-3";
+import {
+  useEditor,
+  EditorContent,
+  BubbleMenu,
+  Editor,
+  VueRenderer,
+} from "@tiptap/vue-3";
 import StarterKit from "@tiptap/starter-kit";
 import Underline from "@tiptap/extension-underline";
 import Link from "@tiptap/extension-link";
@@ -56,7 +62,7 @@ import Image from "@tiptap/extension-image";
 import Placeholder from "@tiptap/extension-placeholder";
 
 import EditorMenu from "./editorMenu.vue";
-import SlashCommands from './extensions/slashCommands/commands'
+import SlashCommands from "./extensions/slashCommands/commands";
 
 export default defineComponent({
   components: {
@@ -164,7 +170,7 @@ export default defineComponent({
         }),
         Placeholder.configure({
           placeholder: props.placeholder,
-          showOnlyWhenEditable: false
+          showOnlyWhenEditable: false,
         }),
         SlashCommands,
       ],
@@ -192,10 +198,9 @@ export default defineComponent({
     };
 
     watch(editable, (newEditable) => {
-      editor.value?.setEditable(newEditable)
-    console.log(editor.value?.extensionManager.extensions);
-
-    })
+      editor.value?.setEditable(newEditable);
+      console.log(editor.value?.extensionManager.extensions);
+    });
     // watch(customWidth, (width) => {
     //   if (editor.value) {
     //     let transaction = editor.value.state.tr;
@@ -297,6 +302,13 @@ export default defineComponent({
   }
   h3 {
     @apply text-lg;
+  }
+  p.is-empty::before {
+    content: "Type '/' for commands";
+    float: left;
+    pointer-events: none;
+    height: 0;
+    @apply text-gray-400;
   }
   p.is-editor-empty:first-child::before {
     content: attr(data-placeholder);

@@ -43,6 +43,10 @@
           </a-button>
         </div>
       </div>
+      <div
+        v-else-if="searchText && !filteredGroupCount"
+        class="mt-2"
+      >{{ `No group with name ${searchText} found.` }}</div>
       <div v-else class="min-h-screen mt-4">
         <div v-for="group in groupList.value" :key="group.id" class="my-2">
           <div class="flex justify-between">

@@ -61,7 +61,15 @@
               <Editor @run="queryRun" :isQueryRunning="isQueryRunning"></Editor>
             </div>
             <div
-              class="p-6 m-6 overflow-x-auto bg-white border rounded table-wrapper"
+              class="
+                p-6
+                m-6
+                overflow-x-auto
+                bg-white
+                border
+                rounded
+                table-wrapper
+              "
             >
               <!-- {{ queryResult }} -->
               <a-table
@@ -79,7 +87,7 @@
 
 <script lang="ts">
 import { defineComponent, ref, inject, toRaw, Ref, watch } from "vue";
-import Editor from "@/editor/index.vue";
+import Editor from "@/projects/index.vue";
 import useProject from "~/composables/projects/useProject";
 import ProjectSidebar from "~/layouts/project/index.vue";
 import { useHead } from "@vueuse/head";

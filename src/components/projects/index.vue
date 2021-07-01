@@ -20,7 +20,7 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import Monaco from "@/editor/monaco/monaco.vue";
+import Monaco from "@/projects/monaco/monaco.vue";
 import { computed } from "vue";
 
 export default defineComponent({

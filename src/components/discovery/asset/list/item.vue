@@ -45,7 +45,7 @@
           item.typeName.toLowerCase() === 'view')
       "
     >
-      <p class="mb-0 text-dark-400">
+      <p class="mb-0 text-gray-600">
         <span v-if="item?.typeName.toLowerCase() === 'table'">
           <span class="font-bold tracking-wide">{{
             rowCount(item, true)

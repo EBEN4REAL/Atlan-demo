@@ -112,12 +112,8 @@ import AssetList from "@/discovery/asset/list/index.vue";
 import AssetTabs from "@/discovery/asset/tabs/index.vue";
 import AssetPagination from "@common/pagination/index.vue";
 import SearchBox from "@common/searchbox/searchlist.vue";
-import { SearchParameters } from "~/store/modules/search/state";
 import ConnectorDropdown from "@common/dropdown/connector/index.vue";
-import { BaseAttributes, BasicSearchAttributes } from "~/constant/projection";
-
 import EmptyView from "@common/empty/discover.vue";
-
 import Preferences from "@/discovery/asset/preference/index.vue";
 import { useDebounceFn } from "@vueuse/core";
 import fetchAssetDiscover from "~/composables/asset/fetchAssetDiscover";

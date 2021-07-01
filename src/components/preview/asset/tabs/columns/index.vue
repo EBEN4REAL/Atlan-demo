@@ -163,7 +163,7 @@ export default defineComponent({
       immediate,
       entityFilters.value,
       [dataTypeAggregationAttribute],
-      "order",
+      "Column.order",
       "ASCENDING"
     );
 

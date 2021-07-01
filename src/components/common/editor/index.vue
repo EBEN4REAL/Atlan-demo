@@ -2,10 +2,10 @@
   <div class="mx-2 w-full h-full bg-white border editor">
     <editor-menu :editable="editable" :editor="editor" />
 
-    <bubble-menu :editor="editor" v-if="editor" @blur="showBubble = false">
+    <bubble-menu key="imageWidth" :editor="editor" v-if="editor" @blur="showImageBubble = false">
       <div
         class="bg-white py-3 px-5 w-48 shadow-xl rounded flex flex-col"
-        v-if="editable && showBubble"
+        v-if="editable && showImageBubble"
       >
         <a-radio-group class="flex flex-col" v-model:value="widthOption">
           <a-radio :value="1">Orignal Size</a-radio>
@@ -37,6 +37,11 @@
       </div>
     </bubble-menu>
 
+    <!-- <bubble-menu key="selectionMenu" :editor="editor" v-if="editor">
+      <selection-menu :editor="editor" :editable="editable" />
+    </bubble-menu> -->
+
+
     <editor-content :editor="editor" class="px-7 py-3 rounded-b" />
   </div>
 </template>
@@ -63,6 +68,7 @@ import Placeholder from "@tiptap/extension-placeholder";
 import Highlight from '@tiptap/extension-highlight'
 
 import EditorMenu from "./editorMenu.vue";
+import SelectionMenu from "./selectionMenu.vue";
 import SlashCommands from "./extensions/slashCommands/commands";
 
 import LinkPreview from "./extensions/linkPreview/linkPreview";
@@ -72,6 +78,7 @@ export default defineComponent({
     EditorContent,
     BubbleMenu,
     EditorMenu,
+    SelectionMenu
   },
   props: {
     editable: {
@@ -89,7 +96,7 @@ export default defineComponent({
   },
   events: ["onEditorContentUpdate"],
   setup(props, { emit }) {
-    const showBubble = ref(false);
+    const showImageBubble = ref(false);
     const widthOption = ref(1);
     const customWidth = ref(100);
     const editable = computed(() => props.editable);
@@ -192,9 +199,9 @@ export default defineComponent({
           widthOption.value = node.attrs.imageWidth === 100 ? 1 : 2;
           customWidth.value = node.attrs.imageWidth;
 
-          showBubble.value = true;
+          showImageBubble.value = true;
         } else {
-          showBubble.value = false;
+          showImageBubble.value = false;
         }
       },
     });
@@ -237,7 +244,7 @@ export default defineComponent({
     // });
     return {
       editor,
-      showBubble,
+      showImageBubble,
       widthOption,
       customWidth,
       applyImageWidth,

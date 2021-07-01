@@ -23,14 +23,14 @@
           iconMargin="mr-0"
           ><fa icon="fal save"></fa> Save</a-button
         >
-        <!-- <a-button
+        <a-button
           type="link"
           :variant="'btn btn-sm btn-link mb-0 btn-no-focus font-w700'"
           :loadingText="'Updating...'"
           iconMargin="mr-0"
           @click="saveAsTemplate"
           ><fa icon="fal save"></fa> Save as template</a-button
-        > -->
+        >
         <a-button
           type="link"
           :variant="'btn btn-sm btn-link mb-0 btn-no-focus font-w700 text-muted'"
@@ -45,7 +45,7 @@
         Edit
       </a-button>
     </div>
-    <!-- <div v-if="templateList.length && editable" class="ml-2 p-1 flex bg-white">
+    <div v-if="templateList.length && editable" class="ml-2 p-1 flex bg-white">
       <a-button
         v-for="template in templateList"
         :key="template.name"
@@ -54,7 +54,7 @@
       >
         {{ template.name }}
       </a-button>
-    </div> -->
+    </div>
     <Editor
       @onEditorContentUpdate="onUpdate"
       ref="editor"
@@ -118,7 +118,7 @@ export default defineComponent({
 
     const saveAsTemplate = () => {
       templateList.value.push({
-        name: `Template ${Math.floor(Math.random() * 11)}`,
+        name: `Template 1`,
         content: editorContent.value
       })
     }

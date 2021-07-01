@@ -13,7 +13,7 @@
     </div>
     <div class="flex w-full h-full">
       <div
-        class="flex flex-col hidden p-6 bg-white border-r border-gray-200 sm:block"
+        class="flex flex-col hidden p-6 bg-white border-r border-gray-200  sm:block"
       >
         <p
           class="mb-2 text-xs tracking-wide text-gray-500 uppercase cursor-pointer "
@@ -117,7 +117,7 @@
         </div>
 
         <div
-          class="flex justify-between px-4 py-5 align-middle bg-white border-t"
+          class="flex justify-between px-8 py-5 align-middle bg-white border-t"
           v-if="current !== 0"
         >
           <a-button
@@ -196,8 +196,7 @@ export default defineComponent({
     },
 
     handleVerified(credential) {
-      console.log("verified");
-      if (credential) {
+      if (credential && this.loadingNext) {
         this.loadingNext = false;
         this.selectedCredential = credential;
         this.current = this.current + 1;
@@ -209,8 +208,8 @@ export default defineComponent({
     },
     async handleNext() {
       try {
-        this.loadingNext = true;
         if (this.current === 1) {
+          this.loadingNext = true;
           if (this.$refs.credentialView) {
             const res = await this.$refs.credentialView.getCredential();
             if (!res) {
@@ -219,6 +218,7 @@ export default defineComponent({
           }
         }
         if (this.current === 2) {
+          this.loadingNext = true;
           if (this.$refs.settingsView) {
             this.selectedJob = this.$refs.settingsView.getJob();
             console.log(this.selectedJob);

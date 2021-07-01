@@ -59,7 +59,7 @@ export default defineComponent({
     );
 
     watch(
-      () => props.item,
+      () => props.item.guid,
       () => {
         refresh();
       }

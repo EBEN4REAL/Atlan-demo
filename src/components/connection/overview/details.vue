@@ -6,16 +6,19 @@
       okText="Update"
       :width="600"
       :maskClosable="false"
+      :centered="true"
       @ok="handleUpdate"
       :closable="false"
     >
-      <Credential
-        ref="credentialView"
-        :item="bot"
-        :isEdit="true"
-        :defaultConnection="item"
-        :defaultCredential="credential"
-      ></Credential>
+      <div class="overflow-y-auto" style="height: 500px">
+        <Credential
+          ref="credentialView"
+          :item="bot"
+          :isEdit="true"
+          :defaultConnection="item"
+          :defaultCredential="credential"
+        ></Credential>
+      </div>
     </a-modal>
 
     <div class="col-span-9 pr-6">
@@ -284,14 +287,20 @@ export default defineComponent({
     const credBody = ref({});
     const guid = ref("");
 
+
+    const isUpdating = ref(false);
+
     const { execute } = updateCredential(guid, credBody, {
       immediate: false,
     });
 
     const handleUpdate = async () => {
-      console.log("update");
       guid.value = props.credential.guid;
-      console.log(await credentialView.value.getCredential());
+      try {
+        const res = await credentialView.value.getCredential();
+      } catch (err) {
+        console.log("error");
+      }
     };
 
     const handleTest = () => {

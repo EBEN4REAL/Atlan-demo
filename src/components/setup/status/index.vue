@@ -130,7 +130,7 @@ export default defineComponent({
               triggerNow: this.job.triggerNow,
               cronString: this.job.cronString,
               cronTimezone: this.job.cronTimezone,
-              arguments: {},
+              arguments: this.job.arguments,
             },
           },
           { timeout: 10000 }

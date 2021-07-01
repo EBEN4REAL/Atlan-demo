@@ -9,9 +9,6 @@ import { createHead } from "@vueuse/head";
 
 import "~/styles/index.less";
 
-import { TENANT_FETCH_DATA } from "./constant/store_types";
-import { useStore } from "~/store";
-import useConnectionInit from "./composables/connection/useConnectionInit";
 import { useTenantStore } from "./pinia/tenants";
 
 const app = createApp(App);
@@ -49,9 +46,6 @@ router.beforeEach(async (to, from, next) => {
         const auth = await timeout(fn(), 10000);
         const tenantStore = useTenantStore();
         if (auth) {
-
-
-          // console.log(app.config.globalProperties.$keycloak.tokenParsed);
           tenantStore.setIsAuthenticated(true, app.config.globalProperties.$keycloak.tokenParsed);
           next();
         } else {

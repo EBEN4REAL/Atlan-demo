@@ -59,7 +59,6 @@ export default defineComponent({
       emit("update:modelValue", checkedValues.value);
 
       let criterion: Components.Schemas.FilterCriteria[] = [];
-
       checkedValues.value.forEach((val) => {
         criterion.push({
           attributeName: "assetStatus",
@@ -76,10 +75,17 @@ export default defineComponent({
         } as Components.Schemas.FilterCriteria,
       });
     };
+
+    const clear = () => {
+      checkedValues.value = [];
+      handleChange("");
+    };
+
     return {
       handleChange,
       list,
       checkedValues,
+      clear,
     };
   },
 });

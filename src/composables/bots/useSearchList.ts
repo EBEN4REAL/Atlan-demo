@@ -101,7 +101,7 @@ export default function useSearchList(typeName: string, list: any, attributes: s
     const assetTypeList = computed(() => {
         const tempList = AssetTypeList.filter((item) => item.isDiscoverable);
         tempList.forEach((item) => {
-            item.count = data.value?.aggregations["__typeName.keyword"][item.id.toLowerCase()];
+            item.count = assetTypeMap.value[item.id];
         })
         return tempList;
     });

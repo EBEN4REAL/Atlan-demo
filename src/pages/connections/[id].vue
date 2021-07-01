@@ -88,28 +88,31 @@ export default defineComponent({
     const { list, replaceFilters, isLoading, isValidating } =
       useBotCredentialList(now, defaultBody, "FETCH_BOTS_ITEM");
 
-    // const { list: credentialList, replaceFilters: replaceCredentialList } =
-    //   useCredentialList(now, defaultBody, "FETCH_BOTS_ITEM");
-
-    watch(item, () => {
-      replaceFilters({
-        condition: "OR",
-        criterion: [
-          {
-            operator: <Components.Schemas.Operator>"eq",
-            attributeName: "qualifiedName",
-            attributeValue: item.value?.attributes.botQualifiedName,
-          },
-          {
-            operator: <Components.Schemas.Operator>"eq",
-            attributeName: "qualifiedName",
-            attributeValue:
-              item.value?.attributes.integrationCredentialQualifiedName,
-          },
-        ],
-      });
-      now.value = true;
-    });
+    watch(
+      () => route.params.id,
+      () => {
+        replaceFilters({
+          condition: "OR",
+          criterion: [
+            {
+              operator: <Components.Schemas.Operator>"eq",
+              attributeName: "qualifiedName",
+              attributeValue: item.value?.attributes.botQualifiedName,
+            },
+            {
+              operator: <Components.Schemas.Operator>"eq",
+              attributeName: "qualifiedName",
+              attributeValue:
+                item.value?.attributes.integrationCredentialQualifiedName,
+            },
+          ],
+        });
+        if (!now.value) {
+          now.value = true;
+        }
+      },
+      { immediate: true }
+    );
 
     const bot = computed(() => {
       return list.value.find((item) => item.typeName === "Bot");
@@ -118,13 +121,6 @@ export default defineComponent({
     const credential = computed(() => {
       return list.value.find((item) => item.typeName === "Credential");
     });
-
-    // const credential = computed(() => {
-    //   if (credentialList.value.length > 0) {
-    //     return credentialList.value[0];
-    //   }
-    //   return {};
-    // });
 
     return {
       item,

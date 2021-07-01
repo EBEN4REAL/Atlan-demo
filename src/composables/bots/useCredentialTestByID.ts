@@ -6,7 +6,7 @@ import { Credential } from '~/api2/credential';
 import useSWRVState from '~/api2/useSWRVState';
 
 
-export default function useCredentialTest(dependentKey?: Ref<any>, initialBody?: any, cacheSuffx?: string | "") {
+export default function useCredentialTestbyID(dependentKey?: Ref<any>, id?: any, cacheSuffx?: string | "") {
 
     const asyncOptions: IConfig & AxiosRequestConfig = {
         dedupingInterval: 0,
@@ -14,17 +14,12 @@ export default function useCredentialTest(dependentKey?: Ref<any>, initialBody?:
         revalidateOnFocus: false,
         revalidateDebounce: 0,
     };
-    let body = ref({
-        ...initialBody
-    });
+
+    const paramId = ref(id);
 
     let cancelTokenSource: Ref<CancelTokenSource> = ref(axios.CancelToken.source());
     const { data, state, STATES,
-        mutate, error, isValidating } = Credential.TestCredential(body, asyncOptions, `${cacheSuffx}`, dependentKey);
-
-
-
-
+        mutate, error, isValidating } = Credential.TestCredentialByID(paramId.value, asyncOptions, `${cacheSuffx}`, dependentKey);
 
     const isLoading = computed(() => {
         return (([STATES.PENDING].includes(state.value) || [STATES.VALIDATING].includes(state.value)) && dependentKey?.value)
@@ -64,6 +59,11 @@ export default function useCredentialTest(dependentKey?: Ref<any>, initialBody?:
     });
 
 
+    const replaceId = (id: any) => {
+        paramId.value = id;
+        refresh();
+    };
+
 
     const refresh = () => {
         if ([STATES.PENDING].includes(state.value) || [STATES.VALIDATING].includes(state.value)) {
@@ -74,10 +74,6 @@ export default function useCredentialTest(dependentKey?: Ref<any>, initialBody?:
         mutate();
     };
 
-    const replaceBody = (payload: any) => {
-        body.value = payload;
-        refresh();
-    }
     return {
         data,
         state,
@@ -88,8 +84,8 @@ export default function useCredentialTest(dependentKey?: Ref<any>, initialBody?:
         alertType,
         alertMessage,
         errorMessage,
-        replaceBody,
         refresh,
+        replaceId,
         error
     }
 };

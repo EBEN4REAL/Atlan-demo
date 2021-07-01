@@ -10,7 +10,7 @@
     <div class="grid grid-cols-12" v-if="job.scope === 'custom'">
       <a-form-item label="Include Metadata" name="include" class="col-span-6">
         <ScopeSelector
-          v-model:value="job.include"
+          v-model="job.include"
           :credential="credential"
         ></ScopeSelector>
       </a-form-item>
@@ -20,7 +20,7 @@
         class="col-span-6 ml-3"
       >
         <ScopeSelector
-          v-model:value="job.exclude"
+          v-model="job.exclude"
           :credential="credential"
         ></ScopeSelector>
       </a-form-item>
@@ -201,7 +201,7 @@ export default defineComponent({
         triggerNow: true,
         scope: "all",
         include: ["all"],
-        exclude: undefined,
+        exclude: [],
         cron: "none",
         startTime: "00:00",
       } as { [key: string]: any },
@@ -210,7 +210,6 @@ export default defineComponent({
   methods: {
     handleScopeSelector(attr) {
       let databases: any[] = [];
-
       if (this.job[attr]) {
         if (this.job[attr] == ["all"]) {
           return JSON.stringify({
@@ -285,6 +284,8 @@ export default defineComponent({
         this.handleScopeSelector("include");
       this.job.arguments["exclude-filter"] =
         this.handleScopeSelector("exclude");
+
+      console.log(this.job);
       return this.job;
     },
     updateCronEval() {

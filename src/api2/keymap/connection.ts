@@ -7,7 +7,7 @@ export const CONNECTION_ARCHIVE = "CONNECTION_ARCHIVE";
 const connectionmap: Record<string, (...params: any) => string> = {
     [CONNECTION_SETUP]: () => getAPIPath('auth/atlas', `/connections/setup`),
     [CONNECTION_TEST_NETWORK]: () => getAPIPath('auth', `/connections/test`),
-    [CONNECTION_ARCHIVE]: (id) => getAPIPath('auth', `/connections/${id}/archive`),
+    [CONNECTION_ARCHIVE]: ({ id }) => getAPIPath('auth', `/connections/${id}/archive`),
 }
 
 export default connectionmap;

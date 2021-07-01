@@ -9,7 +9,7 @@
     <div class="flex items-center justify-between px-4 py-3 border-b">
       <div>
         <div class="font-bold font-size-h5">
-          {{ (localBm && localBm.displayName) || localBm.name }}
+          {{ (localBm.options && localBm.options.displayName) || localBm.name }}
         </div>
         <div>
           created at created by
@@ -45,7 +45,7 @@
           v-if="isUpdated"
           variant="link-danger mr-3"
           class="mr-2"
-          @click="handleDiscardChanges"
+          @keyup="handleDiscardChanges"
         >
           Discard
         </a-button>
@@ -92,8 +92,8 @@
             class="block w-full px-2 py-1 mb-1 text-base leading-normal bg-white border rounded appearance-none text-grey-darker border-grey"
             id="name"
             name="Name"
-            v-model="localBm.name"
-            @keyup="onUpdate"
+            v-model="localBm.options.displayName"
+            @input="onUpdate"
           />
         </div>
         <div>
@@ -104,7 +104,7 @@
             id="description"
             name="Description"
             v-model="localBm.description"
-            @keyup="onUpdate"
+            @input="onUpdate"
             :rows="2"
           ></textarea>
         </div>
@@ -184,7 +184,7 @@
 </template>
 <script lang="ts">
 import { defineComponent } from "vue";
-import { reactive, ref, toRefs, computed, onMounted, nextTick } from "vue";
+import { reactive, ref, toRefs, computed, onMounted, nextTick, watch } from "vue";
 // * Utils
 import { generateUUID } from "~/utils/generator";
 import { getErrorMessage } from "~/utils/error";
@@ -207,8 +207,9 @@ export default defineComponent({
   setup(props, context) {
     // * Data
     let localBm = reactive({
-      name: "New Business Metadata",
+      name: "",
       description: "",
+      options: { displayName: "" },
       guid: "",
       attributeDefs: <any>[],
     });
@@ -259,12 +260,15 @@ export default defineComponent({
       context.emit("clearUpdatedBm");
     };
     const handleAddBusinessMetadata = async () => {
+      console.trace({ handleAddBusinessMetadata });
       error.value = null;
       let isInvalid = false;
       // ! turn this back to displayName
-      if (!localBm.name) {
+      if (!localBm.options.displayName) {
         isInvalid = true;
       }
+      // * if creating new BM append displayName to name,
+      if (!localBm.name) localBm.name = localBm.options.displayName;
       if (localBm && localBm.attributeDefs.length) {
         // eslint-disable-next-line
         for (let i = 0; i < localBm.attributeDefs.length; i++) {
@@ -276,6 +280,9 @@ export default defineComponent({
             };
             isInvalid = true;
             break;
+          } else if (!attribute.name) {
+            // * if creating new BM attribtue <> append displayName to name,
+            attribute.name = attribute.options.displayName;
           }
         }
       }
@@ -294,68 +301,73 @@ export default defineComponent({
         });
       }
       loading.value = true;
-      try {
-        const payload = {
-          businessMetadataDefs: [
-            {
-              ...(tempBm.guid === "new"
-                ? {
-                    category: "BUSINESS_METADATA",
-                    typeVersion: "1.1",
-                    version: 1,
-                    attributeDefs: tempBm.attributeDefs,
-                    description: tempBm.description,
-                    name: tempBm.name,
-                    displayName: tempBm.displayName,
-                  }
-                : tempBm),
-            },
-          ],
-          classificationDefs: [],
-          entityDefs: [],
-          enumDefs: [],
-          structDefs: [],
-        };
-        let apiResponse = null;
-        if (tempBm.guid === "new") {
-          // try {
-          //   apiResponse = await addNewBusinessMetadata(payload);
-          // } catch (e) {
-          //   throw e;
-          // }
-          const apiResponse = addNewBusinessMetadata(ref(payload));
+      const payload = {
+        businessMetadataDefs: [
+          {
+            ...(tempBm.guid === "new"
+              ? {
+                  category: "BUSINESS_METADATA",
+                  typeVersion: "1.1",
+                  version: 1,
+                  attributeDefs: tempBm.attributeDefs,
+                  description: tempBm.description,
+                  name: tempBm.name,
+                  options: { displayName: tempBm.displayName },
+                }
+              : tempBm),
+          },
+        ],
+        classificationDefs: [],
+        entityDefs: [],
+        enumDefs: [],
+        structDefs: [],
+      };
+      let apiResponse = ref();
 
-          console.log({ apiResponse });
-        } else apiResponse = await updateNewBusinessMetadata(payload);
-        if (
-          apiResponse &&
-          apiResponse.businessMetadataDefs &&
-          apiResponse.businessMetadataDefs.length
-        ) {
-          if (localBm.guid === "new") {
-            businessMetadataAppendToList(apiResponse.businessMetadataDefs[0]);
-            context.emit("clearNewBm");
-            context.emit(
-              "selectBm",
-              JSON.parse(JSON.stringify(apiResponse.businessMetadataDefs[0]))
+      if (tempBm.guid === "new") {
+        apiResponse.value = addNewBusinessMetadata(ref(payload));
+      } else apiResponse.value = updateNewBusinessMetadata(ref(payload));
+
+      watch(
+        () => apiResponse.value.data,
+        (n, o) => {
+          console.log("n,o", n, o);
+          if (
+            apiResponse.value.data &&
+            apiResponse.value.data.businessMetadataDefs &&
+            apiResponse.value.data.businessMetadataDefs.length
+          ) {
+            if (localBm.guid === "new") {
+              businessMetadataAppendToList(
+                apiResponse.value.data.businessMetadataDefs[0]
+              );
+              context.emit("clearNewBm");
+              context.emit(
+                "selectBm",
+                JSON.parse(JSON.stringify(apiResponse.value.data.businessMetadataDefs[0]))
+              );
+            } else {
+              updateBusinessMetadataInList(
+                apiResponse.value.data.businessMetadataDefs[0]
+              );
+            }
+            // eslint-disable-next-line
+            Object.assign(
+              localBm,
+              JSON.parse(JSON.stringify(apiResponse.value.data.businessMetadataDefs[0]))
             );
-          } else {
-            updateBusinessMetadataInList(apiResponse.businessMetadataDefs[0]);
+            context.emit("clearUpdatedBm");
           }
-          // eslint-disable-next-line
-          Object.assign(
-            localBm,
-            JSON.parse(JSON.stringify(apiResponse.businessMetadataDefs[0]))
-          );
-          context.emit("clearUpdatedBm");
+          // this.fetchAssets();
+          // this.loading = false;
+          // context.nextTick(() => {
+          //   this.isUpdated = false;
+          // });
+          loading.value = false;
         }
-        // this.fetchAssets();
-        // this.loading = false;
-        // context.nextTick(() => {
-        //   this.isUpdated = false;
-        // });
-        loading.value = false;
-      } catch (e) {
+      );
+
+      watch(apiResponse.value.error, e => {
         loading.value = false;
         console.log(
           "🚀 ~ file: businessMetadataProfile.vue ~ handleAddBusinessMetadata ~ error",
@@ -365,8 +377,9 @@ export default defineComponent({
           error.value = e.response.data.errorMessage;
           console.log(error.value);
         }
-      }
+      });
     };
+
     const handleAddNewAttribute = () => {
       localBm.attributeDefs = [
         {
@@ -483,6 +496,7 @@ export default defineComponent({
     });
     return {
       localBm,
+      onUpdate,
       searchedAttributes,
       dropdownOptions,
       attrsearchText,

@@ -128,12 +128,12 @@ const useBusinessMetadata = () => {
         );
     };
     const addNewBusinessMetadata = (payload: any) => {
-        const { data, mutate, error, isReady } = useAPI(ADD_BUSINESS_METADATA, "POST", { cache: false, body: payload })
+        const { data, mutate, error, isReady } = useAPI(ADD_BUSINESS_METADATA, "POST", { params: { type: "BUSINESS_METADATA" }, cache: false, body: payload })
         return { data, mutate, error, isReady };
     }
 
     const updateNewBusinessMetadata = (payload: any) => {
-        const { data, mutate, error, isReady } = useAPI(ADD_BUSINESS_METADATA, "PUT", { cache: false, body: payload })
+        const { data, mutate, error, isReady } = useAPI(ADD_BUSINESS_METADATA, "PUT", { params: { type: "BUSINESS_METADATA" }, cache: false, body: payload })
         return { data, mutate, error, isReady };
     }
 

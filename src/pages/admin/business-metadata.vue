@@ -109,7 +109,8 @@ import { reactive, ref, toRefs, defineComponent, computed, nextTick } from "vue"
 const DEFAULT_BM = {
   // TODO changes when UUID4 support
   // displayName: "New Business Metadata",
-  name: "New Business Metadata",
+  name: "",
+  options: { displayName: "New Business Metadata" },
   description: "",
   guid: "new",
   attributeDefs: [],

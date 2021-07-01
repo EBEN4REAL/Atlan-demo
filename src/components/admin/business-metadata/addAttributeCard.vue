@@ -320,20 +320,13 @@ export default defineComponent({
       };
     });
 
-    // watch(
-    //   () => attributeInput.data.displayName,
-    //   newVal => {
-    //     console.log(newVal);
-    //   }
-    // );
-
     watch(
       () => attributeInput.data.options.displayName,
       (state, prevState) => {
         if (prevState !== state && prevState !== undefined) {
           context.emit(
             "updateAttribute",
-            normalize(JSON.parse(JSON.stringify({ ...attributeInput.data, name: state })))
+            normalize(JSON.parse(JSON.stringify(attributeInput.data)))
           );
         }
       }

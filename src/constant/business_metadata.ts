@@ -8,7 +8,8 @@ export const DEFAULT_ATTRIBUTE = {
   options: {
     /* applicableEntityTypes's value needs to be send stringified when adding/updating in Atlas */
     applicableEntityTypes: [],
-    maxStrLength: "50"
+    maxStrLength: "50",
+    displayName: "New Attribute"
   },
   searchWeight: 3,
   typeName: "string",

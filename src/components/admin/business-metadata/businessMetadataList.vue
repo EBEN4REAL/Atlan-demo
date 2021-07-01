@@ -13,7 +13,11 @@
     >
       <div class="mb-1 font-w700">
         <!-- // TODO {{ isUpdateBmSameAsCurrentBm(item) ? updatedBm.displayName  : item.displayName }} -->
-        {{ isUpdateBmSameAsCurrentBm(item) ? updatedBm.name : item.name }}
+        {{
+          isUpdateBmSameAsCurrentBm(item)
+            ? updatedBm.options && updatedBm.options.displayName
+            : item.options.displayName || item.name
+        }}
         <sup
           class=""
           v-if="isUpdateBmSameAsCurrentBm(item) || (item && item.guid === 'new')"

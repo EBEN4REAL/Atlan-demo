@@ -19,7 +19,7 @@ export const fetcher = (
 
   console.log("replace api", params);
 
-  return getAxiosClient().get(url, { ...params, ...options });
+  return getAxiosClient().get(url, { params: { ...params }, ...options });
 };
 
 export const fetcherPost = (

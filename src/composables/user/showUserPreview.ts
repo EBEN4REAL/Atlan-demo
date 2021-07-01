@@ -1,7 +1,4 @@
 import { ref, computed } from "vue";
-import { getAPIPath, getAxiosClient } from "~/api";
-import useUsers from "./useUsers";
-import { useUser } from "./useUsers";
 const showPreview = ref(false);
 const userId = ref("");
 const username = ref("");

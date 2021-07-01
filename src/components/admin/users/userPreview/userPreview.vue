@@ -3,7 +3,7 @@
     <div v-if="selectedUser && selectedUser.id">
       <div class="flex mb-3">
         <avatar
-          :imageUrl="imageUrl(selectedUser.username)"
+          :imageUrl="imageUrl"
           :allowUpload="isCurrentUser"
           :avatarName="selectedUser.name || selectedUser.uername || selectedUser.email"
           :avatarSize="48"
@@ -22,6 +22,7 @@
             <span class="mb-0">{{ tab.name }}</span>
           </template>
           <component
+            :isCurrentUser="isCurrentUser"
             :is="tab.component"
             :selectedUser="selectedUser"
             @updatedUser="$emit('updatedUser')"
@@ -67,9 +68,14 @@ export default defineComponent({
     let isCurrentUser = computed(() => {
       return username.value === props.selectedUser.username;
     });
-    const imageUrl = (username: any) => {
-      return `http://localhost:3333/api/auth/tenants/default/avatars/${username}`;
-    };
+    // const imageUrl = (username: any) => {
+    //   return `http://localhost:3333/api/auth/tenants/default/avatars/${username}`;
+    // };
+    const imageUrl = computed(() => {
+      if (props.selectedUser && props.selectedUser.username)
+        return `http://localhost:3333/api/auth/tenants/default/avatars/${props.selectedUser.username}`;
+      return "";
+    });
     return {
       getNameInitials,
       getNameInTitleCase,

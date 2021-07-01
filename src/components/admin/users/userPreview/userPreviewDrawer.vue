@@ -11,7 +11,7 @@
     <UserPreview
       :tabs="finalTabs"
       :selectedUser="userObj"
-      @updatedUser="()=>setUserUpdatedFlag(true)"
+      @updatedUser="()=>{setUserUpdatedFlag(true);getUser();}"
       @imageUpdated="()=>setUserUpdatedFlag(true,emitPayload)"
     />
   </a-drawer>
@@ -22,6 +22,7 @@ import { defineComponent, onMounted, watch, computed } from "vue";
 import UserPreview from "./userPreview.vue";
 import { usePreview } from "~/composables/user/showUserPreview";
 import { useUser } from "~/composables/user/useUsers";
+
 export default defineComponent({
   name: "UserPreviewDrawer",
   components: {
@@ -58,7 +59,7 @@ export default defineComponent({
         $and: [{ email_verified: true }, { username: username.value }],
       };
     else filterObj = { $and: [{ email_verified: true }, { id: userId.value }] };
-    const { userList } = useUser({
+    const { userList, getUser } = useUser({
       limit: 1,
       offset: 0,
       sort: "first_name",
@@ -80,6 +81,7 @@ export default defineComponent({
       handleClose,
       finalTabs,
       setUserUpdatedFlag,
+      getUser,
     };
   },
 });

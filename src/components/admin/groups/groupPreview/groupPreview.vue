@@ -15,8 +15,8 @@
           >{{ selectedGroup.name }}</div>
         </div>
       </div>
-      <a-tabs>
-        <a-tab-pane v-for="tab in tabs" :key="tab.name">
+      <a-tabs v-model:activeKey="activeKey">
+        <a-tab-pane v-for="tab in tabs" :key="tab.key">
           <template #tab>
             <span class="mb-0">{{ tab.name }}</span>
           </template>
@@ -35,7 +35,7 @@ import {
   getNameInitials,
   getNameInTitleCase,
 } from "~/composables//utils/string-operations";
-import { defineComponent, computed } from "vue";
+import { defineComponent, computed, ref } from "vue";
 import About from "./about.vue";
 import Members from "./members.vue";
 export default defineComponent({
@@ -49,19 +49,26 @@ export default defineComponent({
       type: Object,
       default: {},
     },
+    defaultTab: {
+      type: String,
+      default: "members",
+    },
   },
   setup(props, context) {
+    const activeKey = ref(props.defaultTab);
     const tabs = computed(() => {
       return [
         {
           name: "About",
           iconClass: "",
           component: "About",
+          key: "about",
         },
         {
           name: "Members",
           iconClass: "",
           component: "Members",
+          key: "members",
         },
       ];
     });
@@ -69,6 +76,7 @@ export default defineComponent({
       getNameInitials,
       getNameInTitleCase,
       tabs,
+      activeKey,
     };
   },
 });

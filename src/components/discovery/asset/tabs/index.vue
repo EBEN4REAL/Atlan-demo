@@ -7,10 +7,7 @@
           >({{ numeralFormat(item.count) }})</span
         >
       </template>
-      <template #extra> asdas</template>
     </a-tab-pane>
-    <!-- <a-tab-pane key="2" tab="Tab 2"></a-tab-pane>
-    <a-tab-pane key="3" tab="Tab 3"></a-tab-pane> -->
   </a-tabs>
 </template>
     

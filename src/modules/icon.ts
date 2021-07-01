@@ -172,6 +172,26 @@ import { faCheckCircle as faSolidCheckCircle } from "@fortawesome/pro-solid-svg-
 import { faKey } from "@fortawesome/pro-solid-svg-icons/faKey";
 import { faLock as faSolidLock } from "@fortawesome/pro-solid-svg-icons/faLock";
 
+import { faBold } from "@fortawesome/pro-solid-svg-icons/faBold";
+import { faItalic } from "@fortawesome/pro-solid-svg-icons/faItalic";
+import { faStrikethrough } from "@fortawesome/pro-solid-svg-icons/faStrikethrough";
+import { faParagraph } from "@fortawesome/pro-solid-svg-icons/faParagraph";
+import { faUnderline } from "@fortawesome/pro-solid-svg-icons/faUnderline";
+import { faListOl } from "@fortawesome/pro-solid-svg-icons/faListOl";
+import { faListUl } from "@fortawesome/pro-solid-svg-icons/faListUl";
+import { faCode } from "@fortawesome/pro-solid-svg-icons/faCode";
+import { faQuoteLeft } from "@fortawesome/pro-solid-svg-icons/faQuoteLeft";
+import { faUndo } from "@fortawesome/pro-solid-svg-icons/faUndo";
+import { faRedo } from "@fortawesome/pro-solid-svg-icons/faRedo";
+import { faLink as faSolidLink} from "@fortawesome/pro-solid-svg-icons/faLink";
+// import { faPencil as faPencilDark} from "@fortawesome/pro-solid-svg-icons/faPencil";
+import { faSquare } from "@fortawesome/pro-solid-svg-icons/faSquare";
+import { faAlignLeft } from "@fortawesome/pro-solid-svg-icons/faAlignLeft";
+import { faAlignCenter } from "@fortawesome/pro-solid-svg-icons/faAlignCenter";
+import { faAlignRight } from "@fortawesome/pro-solid-svg-icons/faAlignRight";
+import { faFileImage } from "@fortawesome/pro-solid-svg-icons/faFileImage";
+
+
 library.add(
   faBadgeCheck,
   faBadgeSolid,
@@ -180,7 +200,25 @@ library.add(
   faMinusCircle,
   faSolidCheckCircle,
   faKey,
-  faSolidLock
+  faSolidLock,
+  faBold,
+  faItalic,
+  faStrikethrough,
+  faParagraph,
+  faUnderline,
+  faListOl,
+  faListUl,
+  faCode,
+  faQuoteLeft,
+  faUndo,
+  faRedo,
+  faSolidLink,
+  // faPencil,
+  faSquare,
+  faAlignLeft,
+  faAlignCenter,
+  faAlignRight,
+  faFileImage
 );
 
 // import { far } from "@fortawesome/pro-regular-svg-icons";

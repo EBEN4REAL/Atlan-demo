@@ -97,7 +97,7 @@
                     testSmtpConfigError === 'Please re-enter password to test'
                   "
                   icon="fal times"
-                  class="ml-2 mr-1 text-red-600 "
+                  class="ml-2 mr-1 text-red-600"
                 />
 
                 {{ finalTestSmtpConfigError }}
@@ -112,7 +112,7 @@
                       testSmtpConfigError !== 'Please re-enter password to test'
                     "
                     icon="fal info-circle"
-                    class="ml-2 mr-1 text-red-600 "
+                    class="ml-2 mr-1 text-red-600"
                   />
                 </a-popover>
               </span>
@@ -140,10 +140,7 @@
                   <template #content>
                     <div>{{ saveSmtpConfigError }}</div>
                   </template>
-                  <fa
-                    icon="fal exclamation-circle"
-                    class="mr-2 text-red-600 "
-                  />
+                  <fa icon="fal exclamation-circle" class="mr-2 text-red-600" />
                 </a-popover>
                 <span>Something went wrong</span>
               </div>
@@ -166,7 +163,7 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import { useSmtp } from "~/composables/smtp/useSmtp";
+import { useSmtp } from "@/admin/smtp/useSmtp.ts";
 
 export default defineComponent({
   name: "smtpForm",

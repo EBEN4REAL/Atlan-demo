@@ -10,6 +10,7 @@
           <a-checkbox value="classifications">Classifications</a-checkbox>
           <a-checkbox value="rows">Row/Columns</a-checkbox>
           <a-checkbox value="heirarchy">Heirarchy</a-checkbox>
+          <a-checkbox value="popularity">Popularity</a-checkbox>
         </div>
       </a-checkbox-group>
     </div>
@@ -18,10 +19,10 @@
       <a-radio-group @change="handeChangeSorting" v-model:value="sorting">
         <div class="flex flex-col space-y-1">
           <a-radio value="default">Relevance</a-radio>
-          <a-radio value="popularityScore|descending"
+          <a-radio value="Catalog.popularityScore|descending"
             >Popularity Score(High-Low)</a-radio
           >
-          <a-radio value="popularityScore|ascending"
+          <a-radio value="Catalog.popularityScore|ascending"
             >Popularity Score(Low-High)</a-radio
           >
           <a-radio value="name|ascending">Name (A-Z)</a-radio>

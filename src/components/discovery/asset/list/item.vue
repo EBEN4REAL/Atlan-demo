@@ -39,24 +39,40 @@
     </p>
 
     <div
-      v-if="
-        projection?.includes('rows') &&
-        (item.typeName.toLowerCase() === 'table' ||
-          item.typeName.toLowerCase() === 'view')
-      "
+      class="flex items-center justify-between align-middle"
+      v-if="projection?.includes('rows') || projection?.includes('popularity')"
     >
-      <p class="mb-0 text-dark-400">
-        <span v-if="item?.typeName.toLowerCase() === 'table'">
-          <span class="font-bold tracking-wide">{{
-            rowCount(item, true)
-          }}</span>
-          rows,
-        </span>
-        <span class="font-bold tracking-wide cursor-pointer text-primary-500">{{
-          columnCount(item, true)
-        }}</span>
-        cols
-      </p>
+      <div
+        v-if="
+          (projection?.includes('rows') &&
+            item.typeName.toLowerCase() === 'table') ||
+          item.typeName.toLowerCase() === 'view'
+        "
+      >
+        <p class="mb-0 text-gray-600">
+          <span v-if="item?.typeName.toLowerCase() === 'table'">
+            <span class="font-bold tracking-wide">{{
+              rowCount(item, true)
+            }}</span>
+            rows,
+          </span>
+          <span
+            class="font-bold tracking-wide cursor-pointer text-primary-500"
+            >{{ columnCount(item, true) }}</span
+          >
+          cols
+        </p>
+      </div>
+      <div
+        class="text-xs text-gray-500"
+        v-if="
+          projection?.includes('popularity') &&
+          item?.attributes?.popularityScore > 0
+        "
+      >
+        <fa icon="fal analytics" class="pushtop"></fa>
+        {{ numeralFormat(item?.attributes?.popularityScore, "0[.]00") }}
+      </div>
     </div>
     <div
       class="flex flex-wrap mt-1 gap-x-1"

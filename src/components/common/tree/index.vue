@@ -24,7 +24,7 @@
 
 <script lang="ts">
 import { TreeDataItem } from "ant-design-vue/lib/tree/Tree";
-import { defineComponent, PropType } from "vue";
+import { defineComponent, onMounted, PropType } from "vue";
 // import { TreeDataItem } from "ant-design-vue/es/tree/Tree";
 
 export default defineComponent({
@@ -61,6 +61,7 @@ export default defineComponent({
     };
   },
   emits: ["select"],
+
   methods: {
     handleNodeSelect(selectedKeys, { selected, node }) {
       //   console.log("load select");

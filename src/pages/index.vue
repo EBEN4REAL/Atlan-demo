@@ -3,9 +3,9 @@
     <div class="col-span-12 sm:col-span-8">
       <div class="flex items-center w-full align-middle">
         <div class="flex flex-col w-full">
-          <p class="mb-2 text-xl font-bold tracking-tight text-gray-900">
-            Welcome Home, {{ fullName }}
-          </p>
+          <p
+            class="mb-2 text-xl font-bold tracking-tight text-gray-900"
+          >Welcome Home, {{ fullName }}</p>
           <a-input-search placeholder="Search all your assets.." size="large">
             <template #prefix>
               <img :src="displayNameHTML" class="w-auto h-8 mr-3" />
@@ -15,44 +15,17 @@
       </div>
     </div>
 
-    <div
-      class="hidden h-full p-3 mt-3 bg-white border rounded-md sm:col-span-4 sm:block"
-    >
+    <div class="hidden h-full p-3 mt-3 bg-white border rounded-md sm:col-span-4 sm:block">
       <div class="flex items-center justify-between p-5 align-middle">
         <div class="flex items-center">
-          <a-upload
-            accept="image/*"
-            class="cursor-pointer"
-            :customRequest="handleUploadAvatar"
-            :show-upload-list="false"
-          >
-            <div
-              class="hidden text-center border-2 rounded-lg border-primary-300 sm:block"
-              style="width: 56px; height: 56px"
-              v-if="!isReady && uploadStarted"
-            >
-              <a-spin size="small" class style="margin-top: 18px"></a-spin>
-            </div>
-            <a-avatar
-              v-else
-              :key="uploadKey"
-              shape="square"
-              :size="56"
-              class="hidden border-2 rounded-lg border-primary-300 sm:block"
-              :src="imageUrl"
-            />
-          </a-upload>
-
+          <avatar :imageUrl="imageUrl" :allowUpload="true" :avatarName="fullName || username" />
           <div class="flex flex-col ml-2">
             <p
               class="mb-0 text-lg leading-none tracking-tight text-gray-800 truncate text-semibold"
-            >
-              {{ fullName }}
-            </p>
+            >{{ fullName }}</p>
             <p class="mb-0 text-sm text-gray-500">@{{ username }}</p>
             <p class="mt-0 mb-0 text-sm tracking-tight text-gray-800">
-              <fa icon="fal user-tag" class="mr-1 text-gray-800 pushtop"></fa
-              >Admin
+              <fa icon="fal user-tag" class="mr-1 text-gray-800 pushtop"></fa>Admin
             </p>
           </div>
         </div>
@@ -75,11 +48,7 @@
         <div class="mt-4">
           <p class="mb-2 leading-none text-gray-400">Skills/Expertise</p>
           <div class="flex">
-            <Tags
-              :tags="skills"
-              @updateTags="handleUpdateSkills"
-              :disableNewTag="updatingSkills"
-            ></Tags>
+            <Tags :tags="skills" @updateTags="handleUpdateSkills" :disableNewTag="updatingSkills"></Tags>
             <a-spin size="small" v-if="updatingSkills"></a-spin>
           </div>
         </div>
@@ -123,7 +92,6 @@ import SavedList from "@/home/saved/index.vue";
 
 import Tags from "@common/badge/tags/index.vue";
 
-import uploadAvatar from "~/composables/avatar/uploadAvatar";
 import { useHead } from "@vueuse/head";
 
 import { message } from "ant-design-vue";
@@ -132,6 +100,8 @@ import { User } from "~/api/auth/user";
 
 import { useUser } from "~/composables/user/useUsers";
 
+import Avatar from "~/components/common/avatar.vue";
+
 export default defineComponent({
   name: "HelloWorld",
   components: {
@@ -139,6 +109,7 @@ export default defineComponent({
     SearchBox,
     Tags,
     SavedList,
+    Avatar,
   },
   props: {
     msg: {
@@ -158,22 +129,18 @@ export default defineComponent({
     const fullName = computed(() => {
       let firstName = keycloak.tokenParsed.given_name || "";
       let lastName = keycloak.tokenParsed.family_name || "";
-      return `${firstName.charAt(0).toUpperCase() +
-        firstName.substr(1).toLowerCase()} ${lastName.charAt(0).toUpperCase() +
-        lastName.substr(1).toLowerCase()}`;
+      return `${
+        firstName.charAt(0).toUpperCase() + firstName.substr(1).toLowerCase()
+      } ${lastName.charAt(0).toUpperCase() + lastName.substr(1).toLowerCase()}`;
     });
     useHead({
       title: `Welcome - ${fullName} `,
     });
-
     let imageUrl = ref(
       `http://localhost:3333/api/auth/tenants/default/avatars/${username}`
     );
-
-    let uploadStarted = ref(false);
     let updatingDesignation = ref(false);
     let updatingSkills = ref(false);
-    const { upload, isReady, uploadKey } = uploadAvatar();
     const filterObj = { $and: [{ email_verified: true }, { username }] };
     const { userList, getUser, state, STATES } = useUser({
       limit: 1,
@@ -197,13 +164,6 @@ export default defineComponent({
         return userObj.value.attributes.skills.split(",");
       return [];
     });
-    const handleUploadAvatar = async (uploaded) => {
-      console.log("handle Upload");
-      upload(uploaded.file);
-      uploadStarted.value = true;
-      imageUrl.value = imageUrl.value + "?" + uploadKey;
-      return true;
-    };
     const handleUpdateDesignation = async (tags: any) => {
       const attributeKeys = Object.keys(userObj.value.attributes);
       let formattedAttributes = {};
@@ -259,11 +219,7 @@ export default defineComponent({
       displayName: computed(() => store.getters.getDisplayName),
       displayNameHTML: computed(() => store.getters.getDisplayNameHTML),
       realm: computed(() => store.getters.getRealmName),
-      handleUploadAvatar,
-      isReady,
-      uploadStarted,
       imageUrl,
-      uploadKey,
       handleUpdateDesignation,
       handleUpdateSkills,
       skills,

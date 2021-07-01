@@ -47,7 +47,7 @@ import {
   watch,
   toRaw,
 } from "vue";
-import { useClassificationStore } from "~/pinia/classifications";
+import { useClassificationStore } from "./_store";
 import { Classification } from "~/api/atlas/classification";
 
 export default defineComponent({

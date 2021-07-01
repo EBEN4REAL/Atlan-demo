@@ -86,11 +86,12 @@ export default defineComponent({
     return {
       status: "",
       error: "",
+      guid: "",
     };
   },
   mounted() {
     this.status = "loading";
-    console.log(this.credential);
+
     this.handleConnectionSetup();
   },
   emits: ["back"],
@@ -99,7 +100,7 @@ export default defineComponent({
       this.$emit("back");
     },
     handleProgress() {
-      this.$router.push("/connections");
+      this.$router.push(`/connections/${this.guid}`);
     },
     async handleConnectionSetup() {
       try {
@@ -129,11 +130,16 @@ export default defineComponent({
               triggerNow: this.job.triggerNow,
               cronString: this.job.cronString,
               cronTimezone: this.job.cronTimezone,
-              arguments: {},
+              arguments: this.job.arguments,
             },
           },
           { timeout: 10000 }
         );
+        this.guid =
+          resp.connection?.guidAssignments[
+            Object.keys(resp.connection?.guidAssignments)[0]
+          ];
+
         this.status = "success";
       } catch (err) {
         console.log(err);

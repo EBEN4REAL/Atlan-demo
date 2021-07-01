@@ -189,7 +189,6 @@ export default defineComponent({
       onUpdate({ editor }) {
         const content = editor.getHTML();
         const json = editor.getJSON();
-        console.log(content)
         debouncedEmit(content, json);
       },
       onSelectionUpdate({ editor }) {
@@ -219,7 +218,6 @@ export default defineComponent({
 
     watch(editable, (newEditable) => {
       editor.value?.setEditable(newEditable);
-      console.log(editor.value?.extensionManager.extensions);
     });
     // watch(customWidth, (width) => {
     //   if (editor.value) {

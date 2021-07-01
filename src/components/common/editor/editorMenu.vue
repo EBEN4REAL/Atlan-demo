@@ -306,7 +306,6 @@ export default defineComponent({
         icon: "fa align-right",
         border: true,
         onClick: (editor) => {
-          console.log(editor.commands);
           editor.chain().focus().setTextAlign("right").run();
         },
       },
@@ -326,7 +325,6 @@ export default defineComponent({
         helpText: "",
         icon: "fa file-image",
         onClick: (editor) => {
-          console.log("image");
           if (imageLink.value) {
             editor
               .chain()

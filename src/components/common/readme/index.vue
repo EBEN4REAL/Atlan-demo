@@ -16,14 +16,40 @@
     >
       <div>README</div>
       <div v-if="editable" class="flex align-items-center">
-        <a-button
-        class="mr-2"
-          >Save</a-button
+        <a-button class="mr-2">Save</a-button>
+
+        <a-dropdown :trigger="['click']"
+                  v-model:visible="templateNameDropdown"
+
         >
-        <a-button
-          @click="saveAsTemplate"
-          >{{ templateName === '' ? 'Save as template' : 'Save as a new template'}}</a-button
-        >
+          <a-button v-if="(editorContent && editorContent !== '<p></p>')" @click="templateNameDropdown = true">{{
+            templateName === "" ? "Save as template" : "Save as a new template"
+          }}</a-button>
+          <template #overlay>
+            <a-menu>
+              <div class="w-96 p-3 rounded">
+                <div class="d-flex align-items-center justify-content-start">
+                  <label>Template Name</label>
+                  <div class="flex">
+                    <a-input
+                      type="url"
+                      v-model:value="newTemplateName"
+                      focused
+                      @keydown.enter="saveAsTemplate"
+                    />
+                    <a-button
+                      type="primary"
+                      class="ml-3 mr-2"
+                      @click="saveAsTemplate"
+                    >
+                      Add
+                    </a-button>
+                  </div>
+                </div>
+              </div>
+            </a-menu>
+          </template>
+        </a-dropdown>
         <a-button
           type="link"
           :variant="'btn btn-sm btn-link mb-0 btn-no-focus font-w700 text-muted'"
@@ -95,7 +121,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, watch } from "vue";
+import { defineComponent, ref } from "vue";
 
 import Editor from "@/common/editor/index.vue";
 
@@ -120,6 +146,8 @@ export default defineComponent({
     const editorContent = ref("");
     const showTemplatesModal = ref(false);
     const templateName = ref("");
+    const newTemplateName = ref("");
+  const templateNameDropdown = ref(false);
 
     const templateList = ref([
       {
@@ -158,14 +186,16 @@ export default defineComponent({
 
     const saveAsTemplate = () => {
       templateList.value.push({
-        name: `Template 1`,
+        name: newTemplateName.value,
         content: editorContent.value,
       });
+      newTemplateName.value = ""
+      templateNameDropdown.value = false;
     };
 
     const startEdit = () => {
       editable.value = true;
-      if (!editorContent.value || editorContent.value==='<p></p>') {
+      if (!editorContent.value || editorContent.value === "<p></p>") {
         showTemplatesModal.value = true;
       }
     };
@@ -181,8 +211,11 @@ export default defineComponent({
     return {
       editable,
       editor,
+      editorContent,
       templateList,
       templateName,
+      newTemplateName,
+      templateNameDropdown,
       onUpdate,
       onCancel,
       applyTemplate,

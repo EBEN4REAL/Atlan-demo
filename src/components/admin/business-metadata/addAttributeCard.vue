@@ -8,7 +8,7 @@
           >
           <input
             type="text"
-            v-model="attributeInput.data.displayName"
+            v-model="attributeInput.data.options.displayName"
             class="block w-full px-2 py-1 mb-1 text-base leading-normal bg-white border rounded appearance-none text-grey-darker border-grey"
           />
         </div>
@@ -95,7 +95,7 @@
           <label class="mb-0 font-normal font-size-sm"
             >Choose Enum<sup class="text-red">*</sup></label
           >
-          <Treeselect
+          <a-tree-select
             v-model="enumType"
             noResultsText="No enum found"
             :options="finalEnumsList"
@@ -104,32 +104,35 @@
             placeholder="Select enum"
             :disabled="isEdit"
           >
-          </Treeselect>
+          </a-tree-select>
         </div>
         <div class="pl-3">
           <label class="mb-0 font-normal font-size-sm">Options</label>
-          <Treeselect
+          <a-tree-select
             :value="selectedEnumOptions ? selectedEnumOptions.map(item => item.id) : null"
             :options="selectedEnumOptions"
             :multiple="true"
             :async="false"
             :disabled="true"
           >
-          </Treeselect>
+          </a-tree-select>
         </div>
       </div>
       <div class="flex">
         <div class="">
           <label class="mb-0 font-normal font-size-sm">Applicable Entities</label>
-          <Treeselect
-            v-model="attributeInput.data.options.applicableEntityTypes"
+          <a-tree-select
+            v-model:value="attributeInput.data.options.applicableEntityTypes"
             noResultsText="No entities found"
-            :options="finalApplicableTypeNamesOptions"
+            style="width: 100%"
+            :tree-data="finalApplicableTypeNamesOptions"
             :multiple="true"
             :async="false"
+            tree-checkable
+            allow-clear
             placeholder="Select entity types"
           >
-          </Treeselect>
+          </a-tree-select>
         </div>
       </div>
     </div>
@@ -144,11 +147,11 @@ import {
   ATTRIBUTE_TYPES,
 } from "~/constant/business_metadata";
 // * Plugins
-import Treeselect from "vue3-treeselect";
-import "vue3-treeselect/dist/vue3-treeselect.css";
 
 // * Utils
 import { generateUUID } from "~/utils/generator";
+import _ from "lodash";
+
 // * Composables
 import useEnums from "@/admin/enums/composables/useEnums";
 import useAssetQualifiedName from "~/composables/asset/useAssetQualifiedName";
@@ -163,7 +166,7 @@ export default defineComponent({
       default: false,
     },
   },
-  components: { Treeselect },
+  components: {},
   setup(props, context) {
     // * Methods
     const getDefaultAttributeTemplate = () => {
@@ -207,11 +210,22 @@ export default defineComponent({
         );
         options = options.map((option: { id: any }) => ({
           ...option,
+          title: option.label,
+          key: option.id,
+          value: option.id,
           isDisabled: selectedOptions.includes(option.id),
         }));
       }
-      return options.filter(t => t.id !== "AtlanSavedQuery");
+      return options
+        .filter(t => t.id !== "AtlanSavedQuery")
+        .map((option: { id: any }) => ({
+          ...option,
+          title: option.label,
+          key: option.id,
+          value: option.id,
+        }));
     });
+
     const selectedEnumOptions = computed(() => {
       if (enumType.value) {
         const reqIndex = enumsList.value.findIndex(item => item.name === enumType.value);
@@ -305,79 +319,99 @@ export default defineComponent({
               .filter(t => t.id !== "AtlanSavedQuery"),
       };
     });
+
     // watch(
-    //   [
-    //     attributeInput.data.searchWeight,
-    //     attributeInput.data.options.applicableEntityTypes,
-    //     attributeInput.data.options.maxStrLength,
-    //     attributeInput.data.options.displayName,
-    //     attributeInput.data.typeName,
-    //   ],
-    //   (
-    //     [oldVal, newVal],
-    //     [oldVal1, newVal1],
-    //     [oldVal2, newVal2],
-    //     [oldVal3, newVal3],
-    //     [oldVal4, newVal4]
-    //   ) => {
-    //     if (oldVal !== newVal) {
-    //       context.emit(
-    //         "updateAttribute",
-    //         normalize(JSON.parse(JSON.stringify(attributeInput.data)))
-    //       );
-    //     }
-    //     if (oldVal1.length !== newVal1.length && oldVal1.length >= 1) {
-    //       context.emit(
-    //         "updateAttribute",
-    //         normalize(JSON.parse(JSON.stringify(attributeInput.data)))
-    //       );
-    //     }
-    //     if (oldVal2 !== newVal2 && oldVal2 !== undefined) {
-    //       context.emit(
-    //         "updateAttribute",
-    //         normalize(JSON.parse(JSON.stringify(attributeInput.data)))
-    //       );
-    //     }
-    //     if (oldVal3 !== newVal3 && oldVal3 !== undefined) {
-    //       context.emit(
-    //         "updateAttribute",
-    //         normalize(JSON.parse(JSON.stringify(attributeInput.data)))
-    //       );
-    //     }
-    //     if (oldVal4) {
-    //       const reqIndexOld = ATTRIBUTE_TYPES.findIndex(type => type.id === oldVal4);
-    //       if (reqIndexOld > -1 && ATTRIBUTE_TYPES[reqIndexOld].extraAttributeOptions) {
-    //         Object.keys(ATTRIBUTE_TYPES[reqIndexOld].extraAttributeOptions).forEach(
-    //           key => {
-    //             delete attributeInput.data.options[key];
-    //           }
-    //         );
-    //       }
-    //     }
-    //     if (newVal4) {
-    //       const reqIndexNew = ATTRIBUTE_TYPES.findIndex(type => type.id === newVal4);
-    //       if (reqIndexNew > -1 && ATTRIBUTE_TYPES[reqIndexNew].extraAttributeOptions) {
-    //         attributeInput.data = {
-    //           ...attributeInput.data,
-    //           options: {
-    //             ...attributeInput.data.options,
-    //             ...ATTRIBUTE_TYPES[reqIndexNew].extraAttributeOptions,
-    //           },
-    //           ...(newVal4 === "boolean"
-    //             ? {
-    //                 multiValueSelect: false,
-    //               }
-    //             : {}),
-    //         };
-    //       } else if (newVal4 === "boolean") {
-    //         attributeInput.data = {
-    //           ...attributeInput.data,
-    //           multiValueSelect: false,
-    //         };
-    //       }
-    //     }
+    //   () => attributeInput.data.displayName,
+    //   newVal => {
+    //     console.log(newVal);
     //   }
     // );
+
+    watch(
+      () => attributeInput.data.options.displayName,
+      (state, prevState) => {
+        if (prevState !== state && prevState !== undefined) {
+          context.emit(
+            "updateAttribute",
+            normalize(JSON.parse(JSON.stringify({ ...attributeInput.data, name: state })))
+          );
+        }
+      }
+    );
+    watch(
+      () => attributeInput.data.searchWeight,
+      (state, prevState) => {
+        if (prevState !== state) {
+          context.emit(
+            "updateAttribute",
+            normalize(JSON.parse(JSON.stringify(attributeInput.data)))
+          );
+        }
+      }
+    );
+
+    watch(
+      () => attributeInput.data.options.applicableEntityTypes,
+      (state, prevState) => {
+        if (prevState.length !== state.length && prevState.length >= 1) {
+          context.emit(
+            "updateAttribute",
+            normalize(JSON.parse(JSON.stringify(attributeInput.data)))
+          );
+        }
+      }
+    );
+
+    watch(
+      () => attributeInput.data.options.maxStrLength,
+      (state, prevState) => {
+        if (prevState !== state && prevState !== undefined) {
+          context.emit(
+            "updateAttribute",
+            normalize(JSON.parse(JSON.stringify(attributeInput.data)))
+          );
+        }
+      }
+    );
+
+    watch(
+      () => attributeInput.data.typeName,
+      (state, prevState) => {
+        if (prevState) {
+          const reqIndexOld = ATTRIBUTE_TYPES.findIndex(type => type.id === prevState);
+          if (reqIndexOld > -1 && ATTRIBUTE_TYPES[reqIndexOld].extraAttributeOptions) {
+            Object.keys(ATTRIBUTE_TYPES[reqIndexOld].extraAttributeOptions).forEach(
+              key => {
+                delete attributeInput.data.options[key];
+              }
+            );
+          }
+        }
+
+        if (state) {
+          const reqIndexNew = ATTRIBUTE_TYPES.findIndex(type => type.id === state);
+          if (reqIndexNew > -1 && ATTRIBUTE_TYPES[reqIndexNew].extraAttributeOptions) {
+            attributeInput.data = {
+              ...attributeInput.data,
+              options: {
+                ...attributeInput.data.options,
+                ...ATTRIBUTE_TYPES[reqIndexNew].extraAttributeOptions,
+              },
+              ...(state === "boolean"
+                ? {
+                    multiValueSelect: false,
+                  }
+                : {}),
+            };
+          } else if (state === "boolean") {
+            attributeInput.data = {
+              ...attributeInput.data,
+              multiValueSelect: false,
+            };
+          }
+        }
+      }
+    );
 
     return {
       attributeInput,

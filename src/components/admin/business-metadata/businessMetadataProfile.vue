@@ -270,7 +270,7 @@ export default defineComponent({
         for (let i = 0; i < localBm.attributeDefs.length; i++) {
           const attribute = localBm.attributeDefs[i];
           //TODO change back to displayName
-          if (!attribute.name) {
+          if (!attribute.options.displayName) {
             error.value = {
               data: { errorMessage: "Attribute names cannot be empty" },
             };
@@ -318,13 +318,15 @@ export default defineComponent({
         };
         let apiResponse = null;
         if (tempBm.guid === "new") {
-          try {
-            apiResponse = await addNewBusinessMetadata(payload).promise;
-          } catch (e) {
-            throw e;
-          }
+          // try {
+          //   apiResponse = await addNewBusinessMetadata(payload);
+          // } catch (e) {
+          //   throw e;
+          // }
+          const apiResponse = addNewBusinessMetadata(ref(payload));
+
           console.log({ apiResponse });
-        } else apiResponse = await updateNewBusinessMetadata(payload).promise;
+        } else apiResponse = await updateNewBusinessMetadata(payload);
         if (
           apiResponse &&
           apiResponse.businessMetadataDefs &&

@@ -1,119 +1,185 @@
 import { computed, ComputedRef, Ref, ref, watch } from 'vue';
 import useAssetItemConstants from '~/composables/asset/useAssetItemConstants';
 
+// const newTypes = ["Asset", "AtlanAsset", "AtlasServer", "Bot", "Catalog", "Column", "Connection", "Credential", "Database", "DataSet", "ddl", "Infrastructure", "Internal", "Job", "MaterialisedView", "Path", "Procedure", "Process", "ProcessExecution", "Referenceable", "Schema", "Table", "TableauDashboard", "TableauProject", "TableauSite", "TableauWorkbook", "TableauWorksheet", "TablePartition", "View"]
+
 const ASSET_TYPES_LIST = [
   {
-    id: "AtlanTable",
-    label: "Table",
-    icon: "far fa-table text-success",
-    parents: [
-      "AtlanIntegration",
-      "AtlanServer",
-      "AtlanDatabase",
-      "AtlanSchema"
-    ],
-    childrens: ["AtlanColumn"]
+    "id": "Asset",
+    "label": "Asset",
+    "parents": [],
+    "childrens": []
   },
   {
-    id: "AtlanSavedQuery",
-    label: "Query",
-    icon: "far fa-code",
-    parents: [
-      "AtlanIntegration",
-      "AtlanServer",
-      "AtlanDatabase",
-      "AtlanSchema",
-      "AtlanTable"
-    ],
-    childrens: []
+    "id": "AtlanAsset",
+    "label": "AtlanAsset",
+    "parents": [],
+    "childrens": []
   },
   {
-    id: "AtlanView",
-    label: "View",
-    icon: "far fa-table text-success",
-    parents: [
-      "AtlanIntegration",
-      "AtlanServer",
-      "AtlanDatabase",
-      "AtlanSchema"
-    ],
-    childrens: ["AtlanColumn"]
+    "id": "AtlasServer",
+    "label": "AtlasServer",
+    "parents": [],
+    "childrens": []
   },
   {
-    id: "AtlanColumn",
-    label: "Column",
-    icon: "far fa-columns text-success",
-    parents: [
-      "AtlanIntegration",
-      "AtlanServer",
-      "AtlanDatabase",
-      "AtlanSchema",
-      ["AtlanTable", "AtlanView"]
-    ],
-    childrens: []
+    "id": "Bot",
+    "label": "Bot",
+    "parents": [],
+    "childrens": []
   },
   {
-    id: "AtlanSchema",
-    label: "Schema",
-    icon: "far fa-network-wired text-success",
-    parents: ["AtlanIntegration", "AtlanServer", "AtlanDatabase"],
-    childrens: [["AtlanTable", "AtlanView"]]
+    "id": "Catalog",
+    "label": "Catalog",
+    "parents": [],
+    "childrens": []
   },
   {
-    id: "AtlanDatabase",
-    label: "Database",
-    icon: "far fa-database text-success",
-    parents: ["AtlanIntegration", "AtlanServer"],
-    childrens: ["AtlanSchema"]
+    "id": "Column",
+    "label": "Column",
+    "parents": [],
+    "childrens": []
   },
   {
-    id: "AtlanBICollection",
-    label: "Collection",
-    icon: "far fa-folder",
-    parents: ["AtlanIntegration", "AtlanServer"],
-    childrens: ["AtlanBIDashboard"]
+    "id": "Connection",
+    "label": "Connection",
+    "parents": [],
+    "childrens": []
   },
   {
-    id: "AtlanBIDashboard",
-    label: "Dashboard",
-    icon: "far fa-user-chart",
-    parents: ["AtlanIntegration", "AtlanServer", "AtlanBICollection"],
-    childrens: []
+    "id": "Credential",
+    "label": "Credential",
+    "parents": [],
+    "childrens": []
   },
   {
-    id: "AtlanBIWidget",
-    label: "Widget",
-    icon: "far fa-chart-pie-alt",
-    parents: [
-      "AtlanIntegration",
-      "AtlanServer",
-      "AtlanBICollection",
-      "AtlanBIDashboard"
-    ],
-    childrens: []
+    "id": "Database",
+    "label": "Database",
+    "parents": [],
+    "childrens": []
   },
   {
-    id: "AtlanServer",
-    label: "Server",
-    icon: "far fa-server",
-    parents: ["AtlanIntegration"],
-    childrens: []
+    "id": "DataSet",
+    "label": "DataSet",
+    "parents": [],
+    "childrens": []
   },
   {
-    id: "AtlanIntegration",
-    label: "Source",
-    iconClass: "far fa-link text-database",
-    icon: "far fa-link",
-    parents: [],
-    childrens: []
+    "id": "ddl",
+    "label": "ddl",
+    "parents": [],
+    "childrens": []
   },
   {
-    id: "AtlanProcess",
-    label: "Process",
-    parents: [],
-    childrens: []
+    "id": "Infrastructure",
+    "label": "Infrastructure",
+    "parents": [],
+    "childrens": []
+  },
+  {
+    "id": "Internal",
+    "label": "Internal",
+    "parents": [],
+    "childrens": []
+  },
+  {
+    "id": "Job",
+    "label": "Job",
+    "parents": [],
+    "childrens": []
+  },
+  {
+    "id": "MaterialisedView",
+    "label": "MaterialisedView",
+    "parents": [],
+    "childrens": []
+  },
+  {
+    "id": "Path",
+    "label": "Path",
+    "parents": [],
+    "childrens": []
+  },
+  {
+    "id": "Procedure",
+    "label": "Procedure",
+    "parents": [],
+    "childrens": []
+  },
+  {
+    "id": "Process",
+    "label": "Process",
+    "parents": [],
+    "childrens": []
+  },
+  {
+    "id": "ProcessExecution",
+    "label": "ProcessExecution",
+    "parents": [],
+    "childrens": []
+  },
+  {
+    "id": "Referenceable",
+    "label": "Referenceable",
+    "parents": [],
+    "childrens": []
+  },
+  {
+    "id": "Schema",
+    "label": "Schema",
+    "parents": [],
+    "childrens": []
+  },
+  {
+    "id": "Table",
+    "label": "Table",
+    "parents": [],
+    "childrens": []
+  },
+  {
+    "id": "TableauDashboard",
+    "label": "TableauDashboard",
+    "parents": [],
+    "childrens": []
+  },
+  {
+    "id": "TableauProject",
+    "label": "TableauProject",
+    "parents": [],
+    "childrens": []
+  },
+  {
+    "id": "TableauSite",
+    "label": "TableauSite",
+    "parents": [],
+    "childrens": []
+  },
+  {
+    "id": "TableauWorkbook",
+    "label": "TableauWorkbook",
+    "parents": [],
+    "childrens": []
+  },
+  {
+    "id": "TableauWorksheet",
+    "label": "TableauWorksheet",
+    "parents": [],
+    "childrens": []
+  },
+  {
+    "id": "TablePartition",
+    "label": "TablePartition",
+    "parents": [],
+    "childrens": []
+  },
+  {
+    "id": "View",
+    "label": "View",
+    "parents": [],
+    "childrens": []
   }
 ];
+
 
 export default function useAssetQualifiedName() {
   // * Composables 
@@ -208,7 +274,7 @@ export default function useAssetQualifiedName() {
 
   const getApplicableEntitiesForBmAttributes = () => {
     return (
-      ASSET_TYPES_LIST.filter(entity => entity.id !== "AtlanServer") ||
+      ASSET_TYPES_LIST.filter(entity => entity.id !== "AtlasServer") ||
       []
     );
   }

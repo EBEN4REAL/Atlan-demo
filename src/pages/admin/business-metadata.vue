@@ -76,7 +76,11 @@
         />
       </div>
     </div>
-    <div v-else class="">
+    <div
+      v-else
+      class="flex flex-col items-center place-content-center"
+      style="min-height: 50rem"
+    >
       <img :src="EmptyBusinessMetadata" alt="Business Metadata Empty" class="mb-3" />
       <div class="font-bold">No business metadata created yet! 💼</div>
       <span class="mb-3 font-size-14"
@@ -137,7 +141,7 @@ export default defineComponent({
     const discardNewBm = () => {
       const reqIndex = finalBusinessMetadataList.findIndex(bm => bm.guid === "new");
       if (reqIndex !== -1) {
-        newBm = undefined;
+        newBm.value = undefined;
         selectedBm = finalBusinessMetadataList.length
           ? JSON.parse(JSON.stringify(finalBusinessMetadataList[0]))
           : undefined;
@@ -145,7 +149,7 @@ export default defineComponent({
     };
     const onUpdate = bm => {
       if (bm.guid === "new") {
-        newBm = bm;
+        newBm.value = bm;
       } else {
         updatedBm = bm;
       }
@@ -185,7 +189,7 @@ export default defineComponent({
       return null;
     });
     const finalBusinessMetadataList = computed(() => [
-      ...(newBm?.name ? [newBm] : []),
+      ...(newBm.value ? [newBm.value] : []),
       ...(businessMetadataList
         ? businessMetadataList.value.filter((bm: { isArchived: any }) => !bm.isArchived)
         : []),

@@ -1,4 +1,4 @@
-import { useAPI } from "~/api/useAPI";
+import { useAPI } from "~/api/useAPIv2";
 // import { reactive, Ref, toRefs } from 'vue';
 import differenceWith from "lodash/differenceWith";
 
@@ -128,13 +128,13 @@ const useBusinessMetadata = () => {
         );
     };
     const addNewBusinessMetadata = (payload: any) => {
-        const { data: promise, error } = useAPI(ADD_BUSINESS_METADATA, "POST", { cache: false, body: payload, getPromise: true })
-        return { promise, error };
+        const { data, mutate, error, isReady } = useAPI(ADD_BUSINESS_METADATA, "POST", { cache: false, body: payload })
+        return { data, mutate, error, isReady };
     }
 
     const updateNewBusinessMetadata = (payload: any) => {
-        const { data: promise, error, } = useAPI(ADD_BUSINESS_METADATA, "PUT", { cache: false, body: payload, getPromise: true })
-        return { promise, error };
+        const { data, mutate, error, isReady } = useAPI(ADD_BUSINESS_METADATA, "PUT", { cache: false, body: payload })
+        return { data, mutate, error, isReady };
     }
 
     return {

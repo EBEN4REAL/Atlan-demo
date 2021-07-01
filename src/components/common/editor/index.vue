@@ -192,7 +192,6 @@ export default defineComponent({
         console.log(content)
         debouncedEmit(content, json);
       },
-
       onSelectionUpdate({ editor }) {
         const { node } = editor.state.selection;
         if (node && node.type.name === "image") {
@@ -212,6 +211,11 @@ export default defineComponent({
     const applyTemplate = (content: string) => {
             editor.value?.chain().setContent(content).run();
     }
+      const getEditorContent = () => {
+         const content = editor.value.getHTML();
+        const json = editor.value.getJSON();
+        return { content, json }
+      }
 
     watch(editable, (newEditable) => {
       editor.value?.setEditable(newEditable);
@@ -249,7 +253,8 @@ export default defineComponent({
       customWidth,
       applyImageWidth,
       resetEditor,
-      applyTemplate
+      applyTemplate,
+      getEditorContent
     };
   },
 });

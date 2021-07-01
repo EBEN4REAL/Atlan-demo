@@ -10,6 +10,7 @@ import apiKeys from "~/api/keyMaps/auth/apiKeys";
 import role from "~/api/keyMaps/auth/role";
 import search from "~/api/keyMaps/search";
 import classification from "~/api/keyMaps/atlas/classification";
+import image from "~/api/keyMaps/auth/image";
 
 export default {
   ...asset,
@@ -23,4 +24,5 @@ export default {
   ...role,
   ...avatar,
   ...search,
+  ...image,
 };

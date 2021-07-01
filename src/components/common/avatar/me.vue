@@ -7,7 +7,7 @@
     />
     <!-- <a class="ant-dropdown-link" @click="(e) => e.preventDefault()">
               Hover me <a-icon type="down" />
-            </a> -->
+    </a>-->
     <template #overlay>
       <a-menu>
         <a-menu-item>
@@ -20,15 +20,13 @@
 
             <div class="flex flex-col ml-2">
               <p class="mb-0 text-base">{{ name }}</p>
-              <p class="mb-0 text-sm text-gray-500">
-                {{ username }}
-              </p>
+              <p class="mb-0 text-sm text-gray-500">{{ username }}</p>
             </div>
           </div>
         </a-menu-item>
         <a-menu-divider />
         <a-menu-item>
-          <a href="javascript:;">View Profile</a>
+          <a @click="()=>handleClickUser(username)">View Profile</a>
         </a-menu-item>
         <a-menu-item>
           <a href="javascript:;">Admin Centre</a>
@@ -57,6 +55,8 @@
 
 <script lang="ts">
 import { defineComponent, inject } from "vue";
+import { usePreview } from "~/composables/user/showUserPreview";
+import whoami from "~/composables/user/whoami";
 
 export default defineComponent({
   name: "HelloWorld",
@@ -73,8 +73,18 @@ export default defineComponent({
         })
       );
     };
+    const { username, name } = whoami();
+    // user preview drawer
+    const { showUserPreview, setUserUniqueAttribute } = usePreview();
+    const handleClickUser = (username: string) => {
+      setUserUniqueAttribute(username, "username");
+      showUserPreview();
+    };
     return {
       handleLogout,
+      handleClickUser,
+      username,
+      name,
     };
   },
 });

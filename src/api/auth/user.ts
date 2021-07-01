@@ -1,13 +1,12 @@
 import { getAPIPath, getAxiosClient } from "~/api";
 import { AxiosRequestConfig } from "axios";
 import { useAPI } from "~/api/useAPI";
-import { generateQueryStringParamsFromObj } from "~/utils/queryString.ts";
-
 import {
   GET_USER_SESSIONS,
   SIGN_OUT_ALL_SESSIONS,
   SIGN_OUT_SESSION_BY_ID,
   GET_USER_ACCESS_LOGS,
+  UPDATE_USER,
 } from "~/api/keyMaps/auth/user";
 const serviceAlias = "auth";
 
@@ -65,6 +64,14 @@ const UpdateUser = (id: string, body?: any, options?: any) => {
     options
   );
 };
+const UpdateUserV2 = (id: string, body) => {
+  const { data, error, isLoading } = useAPI(UPDATE_USER, "POST", {
+    cache: false,
+    body,
+    pathVariables: { id },
+  });
+  return { data, error, isLoading };
+};
 const UpdateUserRole = (id: string, body?: any, options?: any) => {
   return getAxiosClient().post(
     getAPIPath(serviceAlias, `/users/${id}/roles/update`),
@@ -117,4 +124,5 @@ export const User = {
   ResendVerificationEmail,
   RevokeInvitation,
   InviteUsers,
+  UpdateUserV2,
 };

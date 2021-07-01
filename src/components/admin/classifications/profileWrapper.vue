@@ -14,12 +14,12 @@
             v-if="treeFilterText"
             @click="clearSearchText"
             icon="fal times-circle"
-            class="ml-2 mr-1 text-red-600 "
+            class="ml-2 mr-1 text-red-600"
           />
           <fa
             v-if="!treeFilterText"
             icon="fal search"
-            class="ml-2 mr-1 text-gray-500 "
+            class="ml-2 mr-1 text-gray-500"
           />
         </template>
       </a-input>
@@ -106,7 +106,7 @@ import CreateClassificationTree from "@common/tree/classification/index.vue";
 import ClassificationHeader from "~/components/admin/classifications/classificationHeader.vue";
 import AssetListWrapper from "~/components/asset/assetListWrapper.vue";
 import { useRouter } from "vue-router";
-import { useClassificationStore } from "~/pinia/classifications";
+import { useClassificationStore } from "./_store";
 import { ValidateErrorEntity } from "ant-design-vue/es/form/interface";
 import { Classification } from "~/api/atlas/classification";
 
@@ -241,10 +241,8 @@ export default defineComponent({
     // get classifications
     classificationsStatus.value = "loading";
 
-    const {
-      data: classificationData,
-      error: classificationError,
-    } = Classification.getClassificationList({ cache: false });
+    const { data: classificationData, error: classificationError } =
+      Classification.getClassificationList({ cache: false });
 
     watch([classificationData, classificationError], () => {
       if (classificationData.value) {

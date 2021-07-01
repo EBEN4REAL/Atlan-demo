@@ -58,12 +58,20 @@
           </pane>
           <pane size="80" class="shadow-md">
             <div class="p-4 m-6 bg-white border rounded">
-              <Editor @run="runQuery"></Editor>
+              <Editor @run="queryRun" :isQueryRunning="isQueryRunning"></Editor>
             </div>
             <div
-              class="p-6 m-6 overflow-x-auto bg-white border rounded table-wrapper"
+              class="
+                p-6
+                m-6
+                overflow-x-auto
+                bg-white
+                border
+                rounded
+                table-wrapper
+              "
             >
-              {{ queryResult }}
+              <!-- {{ queryResult }} -->
               <a-table
                 class="overflow-x-auto"
                 :dataSource="dataList"
@@ -78,11 +86,9 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, inject } from "vue";
-import { useRouter } from "vue-router";
-import Editor from "@/editor/index.vue";
-import queryData from "@/editor/monaco/queryData.json";
-import { sse } from "~/utils/sse";
+import { defineComponent, ref, inject, toRaw, Ref, watch } from "vue";
+import Editor from "@/projects/index.vue";
+import useProject from "~/composables/projects/useProject";
 import ProjectSidebar from "~/layouts/project/index.vue";
 import { useHead } from "@vueuse/head";
 
@@ -91,112 +97,24 @@ export default defineComponent({
     ProjectSidebar,
     Editor,
   },
-  data() {
-    return {
-      editor: null,
-    };
-  },
   setup() {
     useHead({
       title: "Query Playground",
     });
-    const router = useRouter();
-    const $keycloak = inject("$keycloak");
-    const columnList = ref([]);
-    let dataList = [];
 
-    const listData = [
-      {
-        title: "Profit by Segment",
-        description:
-          'SELECT "Segment", SUM("Profit") AS "sum of Profit" FROM "superstore_sales_data_2016-present" GROUP BY "Segment"',
-      },
-      {
-        title: "Sales by City",
-        description:
-          'SELECT "City", COUNT("Sales") AS "count of Sales" FROM "superstore_sales_data_2016-present" GROUP BY "City" ORDER BY "count of Sales" DESC  LIMIT 50',
-      },
-      {
-        title: "Missing Postal Codes",
-        description:
-          'SELECT * FROM "superstore_sales_data_2016-present" WHERE "Postal Code" IS NULL LIMIT 50',
-      },
-      {
-        title: "Orders by City",
-        description:
-          'SELECT "Segment", SUM("Profit") AS "sum of Profit" FROM "superstore_sales_data_2016-present" GROUP BY "Segment"',
-      },
-    ];
-
-    const dataSource = queryData;
-
-    const handleBack = () => {
-      router.push("assets");
-    };
-
-    const queryResponse = ref({});
-
-    const runQuery = () => {
-      console.log("run project");
-      let query = btoa('select * from "WEB_SALES" limit 100');
-      let URL =
-        "https://alpha.atlan.com/heka/api/query/tenants/default/sql/stream?sql=" +
-        query +
-        "&defaultSchema=SNOWFLAKE_SAMPLE_DATA.TPCDS_SF10TCL&dataSourceName=default%2Fsnowflake%2Fp1sj4mk7g&length=16";
-
-      sse(URL, {}, $keycloak.token, {})
-        .then((sse) => {
-          sse.onError((e) => {
-            console.error("lost connection; giving up!", e);
-            sse.close();
-          });
-          sse.subscribe("", (message) => {
-            queryResponse.value = message;
-            if (message.columns) {
-              console.log(message.columns);
-              message.columns.map((col, index) => {
-                columnList.value.push({
-                  title: col.columnName.split("_").join(" "),
-                  dataIndex: col.columnName,
-                  width: "9vw",
-                  key: col.columnName,
-                });
-              });
-
-              console.log(message.results);
-
-              message.results.map((result, index) => {
-                let tmp = {};
-                result.map((row, rowindex) => {
-                  tmp = {
-                    ...tmp,
-                    ...{
-                      [message.columns[rowindex].columnName]: row,
-                      key: rowindex,
-                    },
-                  };
-                });
-                dataList.push(tmp);
-              });
-              console.log(dataList);
-              //columnList.value = message.columns;
-            }
-
-            //message.queryId
-            //message.columns
-            //message.results
-          });
-        })
-        .catch((err) => {
-          console.error("Failed to connect to server");
-          console.error(err);
-        });
-    };
+    const {
+      queryRun,
+      isQueryRunning,
+      handleBack,
+      dataList,
+      columnList,
+      listData,
+    } = useProject();
 
     return {
-      runQuery,
+      isQueryRunning,
+      queryRun,
       listData,
-      dataSource,
       dataList,
       columnList,
       handleBack,

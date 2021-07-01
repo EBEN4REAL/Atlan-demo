@@ -32,7 +32,10 @@
       <component
         :is="selectedTab"
         :item="item"
+        :bot="bot"
         :credential="credential"
+        :loading="isLoading"
+        :syncing="isValidating"
       ></component>
       <!-- <Overview :item="item" :credential="credential" :bot="bot"></Overview> -->
     </div>
@@ -40,9 +43,7 @@
 </template>
     
 <script lang="ts">
-import { computed, defineComponent, ref, watch } from "vue";
-import { Components } from "~/api/atlas/client";
-
+import { computed, defineComponent, reactive, ref, watch } from "vue";
 import Loader from "@common/loaders/page.vue";
 import ErrorView from "@common/error/index.vue";
 import SourceMixin from "~/mixins/source";
@@ -52,14 +53,17 @@ import Workflows from "@/connection/workflows/index.vue";
 import Assets from "@/connection/assets/index.vue";
 import Policies from "@/connection/policies/index.vue";
 
-import fetchConnectionList from "~/composables/connection/fetchConnectionList";
 import { useRoute } from "vue-router";
-import fetchCredentialList from "~/composables/credential/fetchCredential";
-import fetchBotsList from "~/composables/bots/fetchBotsList";
-import {
-  CONNECTION_FETCH_LIST_ITEM,
-  CREDENTIAL_FETCH_LIST_ITEM,
-} from "~/constant/cache";
+
+import useBotList from "~/composables/bots/useBotList";
+import useCredentialList from "~/composables/bots/useCredentialList";
+
+import useBotCredentialList from "~/composables/bots/useBotCredentialList";
+
+import { useConnectionsStore } from "~/pinia/connections";
+import { Components } from "~/api/atlas/client";
+import useConnectionsList from "~/composables/bots/useConnectionList";
+import useConnectionRefresh from "~/composables/bots/useConnectionRefresh";
 
 export default defineComponent({
   mixins: [SourceMixin],
@@ -74,79 +78,63 @@ export default defineComponent({
   },
   setup(props, { emit }) {
     const route = useRoute();
-    const entityFilters = {
-      operator: <Components.Schemas.Operator>"eq",
-      attributeName: "__guid",
-      attributeValue: route.params.id as string,
-    };
-    const now = ref(true);
-    const { list, isLoading, isError } = fetchConnectionList(
-      CONNECTION_FETCH_LIST_ITEM,
-      now,
-      entityFilters
-    );
-
+    const store = useConnectionsStore();
     const item = computed(() => {
-      return list.value[0];
+      return store.getList?.find((item) => item.guid === route.params.id);
     });
 
-    //     credentialBody.value.entityFilters = {
-    //       operator: <Components.Schemas.Operator>"eq",
-    //       attributeName: "qualifiedName",
-    //       attributeValue:
-    //         item.value?.attributes.integrationCredentialQualifiedName,
-    //     };
-    const { list: credentialList } = fetchCredentialList(
-      CREDENTIAL_FETCH_LIST_ITEM,
-      list
-    );
+    const now = ref(false);
+    let defaultBody = reactive({});
+    const { list, replaceFilters, isLoading, isValidating } =
+      useBotCredentialList(now, defaultBody, "FETCH_BOTS_ITEM");
+
+    // const { list: credentialList, replaceFilters: replaceCredentialList } =
+    //   useCredentialList(now, defaultBody, "FETCH_BOTS_ITEM");
+
+    watch(item, () => {
+      replaceFilters({
+        condition: "OR",
+        criterion: [
+          {
+            operator: <Components.Schemas.Operator>"eq",
+            attributeName: "qualifiedName",
+            attributeValue: item.value?.attributes.botQualifiedName,
+          },
+          {
+            operator: <Components.Schemas.Operator>"eq",
+            attributeName: "qualifiedName",
+            attributeValue:
+              item.value?.attributes.integrationCredentialQualifiedName,
+          },
+        ],
+      });
+      now.value = true;
+    });
+
+    const bot = computed(() => {
+      return list.value.find((item) => item.typeName === "Bot");
+    });
+
     const credential = computed(() => {
-      return credentialList.value[0];
+      return list.value.find((item) => item.typeName === "Credential");
     });
 
-    // let botsNow = ref(false);
-    // const {
-    //   item: bot,
-    //   mutate: botMutate,
-    //   body: botBody,
-    // } = fetchBotsList(botsNow, "");
-
-    // watch(item, () => {
-    //   if ([STATES.SUCCESS].includes(state.value)) {
-    //     credentialNow.value = true;
-    //     credentialBody.value.entityFilters = {
-    //       operator: <Components.Schemas.Operator>"eq",
-    //       attributeName: "qualifiedName",
-    //       attributeValue:
-    //         item.value?.attributes.integrationCredentialQualifiedName,
-    //     };
-    //     credentialMutate();
-    //     botsNow.value = true;
-    //     botBody.value.entityFilters = {
-    //       operator: <Components.Schemas.Operator>"eq",
-    //       attributeName: "qualifiedName",
-    //       attributeValue: item.value?.attributes.botQualifiedName,
-    //     };
-    //     botMutate();
+    // const credential = computed(() => {
+    //   if (credentialList.value.length > 0) {
+    //     return credentialList.value[0];
     //   }
+    //   return {};
     // });
-
-    // watch(
-    //   () => route.params.id,
-    //   () => {
-    //     console.log("watch");
-    //     body.value.entityFilters = {
-    //       operator: <Components.Schemas.Operator>"eq",
-    //       attributeName: "__guid",
-    //       attributeValue: route.params.id as string,
-    //     };
-    //     mutate();
-    //   }
-    // );
 
     return {
       item,
+      defaultBody,
       credential,
+      bot,
+      store,
+      list,
+      isLoading,
+      isValidating,
     };
   },
   computed: {},

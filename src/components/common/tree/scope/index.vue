@@ -23,7 +23,7 @@
         }}</span>
       </template>
     </a-tree-select>
-    <a-spin size="small" v-if="isLoading" class="ml-2"></a-spin>
+    <a-spin size="small" v-if="isLoading" class="mt-2 ml-2"></a-spin>
   </div>
 </template>
   

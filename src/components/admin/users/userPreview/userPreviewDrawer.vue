@@ -8,7 +8,12 @@
     :body-style="{ height: '100%' }"
     @close="handleClose"
   >
-    <UserPreview :tabs="finalTabs" :selectedUser="userObj" @reloadTable="$emit('reloadTable')" />
+    <UserPreview
+      :tabs="finalTabs"
+      :selectedUser="userObj"
+      @updatedUser="()=>{setUserUpdatedFlag(true);getUser();}"
+      @imageUpdated="()=>setUserUpdatedFlag(true,emitPayload)"
+    />
   </a-drawer>
 </template>
     
@@ -17,6 +22,7 @@ import { defineComponent, onMounted, watch, computed } from "vue";
 import UserPreview from "./userPreview.vue";
 import { usePreview } from "~/composables/user/showUserPreview";
 import { useUser } from "~/composables/user/useUsers";
+
 export default defineComponent({
   name: "UserPreviewDrawer",
   components: {
@@ -45,6 +51,7 @@ export default defineComponent({
       closePreview,
       uniqueAttribute,
       finalTabs,
+      setUserUpdatedFlag,
     } = usePreview();
     let filterObj = {};
     if (uniqueAttribute.value === "username")
@@ -52,7 +59,7 @@ export default defineComponent({
         $and: [{ email_verified: true }, { username: username.value }],
       };
     else filterObj = { $and: [{ email_verified: true }, { id: userId.value }] };
-    const { userList } = useUser({
+    const { userList, getUser } = useUser({
       limit: 1,
       offset: 0,
       sort: "first_name",
@@ -67,7 +74,15 @@ export default defineComponent({
       closePreview();
     };
 
-    return { showPreview, userObj, userId, handleClose, finalTabs };
+    return {
+      showPreview,
+      userObj,
+      userId,
+      handleClose,
+      finalTabs,
+      setUserUpdatedFlag,
+      getUser,
+    };
   },
 });
 </script>

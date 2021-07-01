@@ -18,6 +18,12 @@
         {{ item?.attributes?.__createdBy }}
       </p>
     </div>
+    <div class="px-2">
+      <p class="mb-0 text-sm tracking-wide text-gray-400">Popularity Score</p>
+      <p class="mb-0 text-gray-700">
+        {{ item?.attributes?.popularityScore }}
+      </p>
+    </div>
   </div>
 </template>
             

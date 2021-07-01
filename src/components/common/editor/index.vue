@@ -60,6 +60,7 @@ import TaskItem from "@tiptap/extension-task-item";
 import TextAlign from "@tiptap/extension-text-align";
 import Image from "@tiptap/extension-image";
 import Placeholder from "@tiptap/extension-placeholder";
+import Highlight from '@tiptap/extension-highlight'
 
 import EditorMenu from "./editorMenu.vue";
 import SlashCommands from "./extensions/slashCommands/commands";
@@ -175,7 +176,8 @@ export default defineComponent({
           showOnlyWhenEditable: false,
         }),
         SlashCommands,
-        LinkPreview
+        LinkPreview,
+        Highlight.configure({ multicolor: true })
       ],
       onUpdate({ editor }) {
         const content = editor.getHTML();

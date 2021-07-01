@@ -16,6 +16,7 @@ export interface CommandItem {
     textIcon?: string;
     icon?: string;
     description?: string;
+    color?: string;
     command: (props: commandsProps) => void
 }
 
@@ -230,7 +231,81 @@ const commands: Record<string, CommandItem[]> = {
                     .run()
             },
         },
-    ]
+    ],
+    Highlights: [
+        {
+            title: 'Default',
+            color:'#FFF',
+            command: ({ editor, range }: commandsProps) => {
+                editor
+                    .chain()
+                    .focus()
+                    .deleteRange(range)
+                    .toggleHighlight()
+                    .run()
+            },
+        },
+        {
+            title: 'Yellow',
+            color:'#fde68a',
+            command: ({ editor, range }: commandsProps) => {
+                editor
+                    .chain()
+                    .focus()
+                    .deleteRange(range)
+                    .toggleHighlight({ color: '#fde68a' })
+                    .run()
+            },
+        },
+        {
+            title: 'Green',
+            color:'#a7f3d0',
+            command: ({ editor, range }: commandsProps) => {
+                editor
+                    .chain()
+                    .focus()
+                    .deleteRange(range)
+                    .toggleHighlight({ color: '#a7f3d0' })
+                    .run()
+            },
+        },
+        {
+            title: 'Blue',
+            color:'#bfdbfe',
+            command: ({ editor, range }: commandsProps) => {
+                editor
+                    .chain()
+                    .focus()
+                    .deleteRange(range)
+                    .toggleHighlight({ color: '#bfdbfe' })
+                    .run()
+            },
+        },
+        {
+            title: 'Pink',
+            color:'#fbcfe8',
+            command: ({ editor, range }: commandsProps) => {
+                editor
+                    .chain()
+                    .focus()
+                    .deleteRange(range)
+                    .toggleHighlight({ color: '#fbcfe8' })
+                    .run()
+            },
+        },
+        {
+            title: 'Red',
+            color:'#fca5a5',
+            command: ({ editor, range }: commandsProps) => {
+                editor
+                    .chain()
+                    .focus()
+                    .deleteRange(range)
+                    .toggleHighlight({ color: '#fca5a5' })
+                    .run()
+            },
+        },
+    ],
 }
 
 export default Extension.create({

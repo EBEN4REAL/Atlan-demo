@@ -31,11 +31,16 @@
         @click="selectItem(categoryIndex, index)"
       >
         <div class="flex">
-          <div class="p-2 mr-2 flex border-2">
+          <div :class="{
+            'mr-2 border-2': true,
+            'p-2':category.categoryTitle !== 'Highlights',
+            'p-0 flex w-5 h-5': category.categoryTitle === 'Highlights'
+          }">
             <fa v-if="item.icon" :icon="item.icon" />
             <span v-else-if="item.textIcon" class="text-xs">{{
               item.textIcon
             }}</span>
+            <span v-else-if="category.categoryTitle === 'Highlights'" class="text-xs pl-1 w-full" :style="`background-color: ${item.color}`">A</span>
           </div>
           <div class="flex flex-col justify-center">
             <div>{{ item.title }}</div>

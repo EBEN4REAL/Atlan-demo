@@ -33,7 +33,7 @@
         <div class="flex">
           <div :class="{
             'mr-2 border-2': true,
-            'p-2':category.categoryTitle !== 'Highlights',
+            'p-2': category.categoryTitle !== 'Highlights',
             'p-0 flex w-5 h-5': category.categoryTitle === 'Highlights'
           }">
             <fa v-if="item.icon" :icon="item.icon" />

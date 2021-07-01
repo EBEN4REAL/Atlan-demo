@@ -1,14 +1,10 @@
-import { CommandProps, Editor, Extension, Range } from '@tiptap/core'
+import { Editor, Extension, Range } from '@tiptap/core'
 import { VueRenderer } from '@tiptap/vue-3'
-import Suggestion, { SuggestionProps } from '@tiptap/suggestion'
-import tippy, { Instance, Tippy } from 'tippy.js'
 
-import { Plugin, PluginKey } from 'prosemirror-state'
-import { nodeInputRule } from '@tiptap/core'
+import { Plugin } from 'prosemirror-state'
 import { Slice, Fragment } from 'prosemirror-model'
 import { Node, mergeAttributes } from '@tiptap/core'
 
-import Paragraph from "@tiptap/extension-paragraph";
 
 interface commandsProps {
     editor: Editor;
@@ -117,15 +113,18 @@ const nodePasteRule = (regexp: RegExp, type, getAttrs) => {
 
         fragment.forEach(c => {
             const textNodes = c.content;
+            nodes.push(c)
+
             textNodes.forEach((child) => {
                 if (!child.isText) {
                     nodes.push(child.copy(handler(child.content)));
                 }
+                if(child.text.match(pasteRegex)){
+                    const attrs = getAttrs;
+                    nodes.push(type.create(attrs));
+                }
             })
-            nodes.push(c)
-            const attrs = getAttrs;
 
-            nodes.push(type.create(attrs));
 
         });
 

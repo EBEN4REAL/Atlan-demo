@@ -182,6 +182,7 @@ export default defineComponent({
       onUpdate({ editor }) {
         const content = editor.getHTML();
         const json = editor.getJSON();
+        console.log(content)
         debouncedEmit(content, json);
       },
 
@@ -201,6 +202,9 @@ export default defineComponent({
     const resetEditor = () => {
       editor.value?.chain().setContent(props.content).run();
     };
+    const applyTemplate = (content: string) => {
+            editor.value?.chain().setContent(content).run();
+    }
 
     watch(editable, (newEditable) => {
       editor.value?.setEditable(newEditable);
@@ -238,6 +242,7 @@ export default defineComponent({
       customWidth,
       applyImageWidth,
       resetEditor,
+      applyTemplate
     };
   },
 });

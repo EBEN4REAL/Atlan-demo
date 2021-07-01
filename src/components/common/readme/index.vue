@@ -191,6 +191,7 @@ export default defineComponent({
       });
       newTemplateName.value = ""
       templateNameDropdown.value = false;
+      editorContent.value =''
     };
 
     const startEdit = () => {

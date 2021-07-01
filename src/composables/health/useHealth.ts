@@ -1,6 +1,5 @@
 import { computed, reactive, watch, toRefs, toRaw } from "vue";
 import { Health } from "~/api/atlas/health";
-import { Query } from "~/api/heka/health";
 
 const SERVICE_STATES = {
   loading: "loading",
@@ -11,7 +10,7 @@ const SERVICE_STATES = {
 const SERVICES = {
   user: "User management",
   heka: "Query",
-  argo: "argo",
+  argo: "Argo",
   atlas: "Search",
   authentication: "API's",
   authorisation: "Policies",
@@ -48,6 +47,7 @@ export function useHealth() {
     [k: string]: string;
   } = reactive({
     user: "loading",
+    argo: "loading",
     heka: "loading",
     atlas: "loading",
     authentication: "loading",
@@ -83,9 +83,6 @@ export function useHealth() {
     return "";
   };
 
-  Query.health();
-
-  const { data: hekaServiceData, error: hekaServiceError } = Health.pingHeka();
   const {
     data: userServicesData,
     error: userServicesError,
@@ -98,6 +95,7 @@ export function useHealth() {
       typeof toRaw(userServicesData.value) === "object" &&
       !userServicesError.value
     ) {
+      console.log(userServicesData.value);
       setServiceStatus("user", SERVICE_STATES.up);
       const userServicesNames = getUserServicesNames(userServicesData.value);
       userServicesNames.forEach((serviceName) => {
@@ -132,18 +130,6 @@ export function useHealth() {
           setServiceStatus(serviceName, SERVICE_STATES.down);
         });
       }
-    }
-  });
-
-  watch([hekaServiceError, hekaServiceData], () => {
-    if (
-      hekaServiceData.value &&
-      typeof hekaServiceData.value === "object" &&
-      !hekaServiceError.value
-    ) {
-      setServiceStatus("heka", SERVICE_STATES.up);
-    } else {
-      setServiceStatus("heka", SERVICE_STATES.down);
     }
   });
 

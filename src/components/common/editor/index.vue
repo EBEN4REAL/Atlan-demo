@@ -64,6 +64,8 @@ import Placeholder from "@tiptap/extension-placeholder";
 import EditorMenu from "./editorMenu.vue";
 import SlashCommands from "./extensions/slashCommands/commands";
 
+import LinkPreview from "./extensions/linkPreview/linkPreview";
+
 export default defineComponent({
   components: {
     EditorContent,
@@ -173,6 +175,7 @@ export default defineComponent({
           showOnlyWhenEditable: false,
         }),
         SlashCommands,
+        LinkPreview
       ],
       onUpdate({ editor }) {
         const content = editor.getHTML();

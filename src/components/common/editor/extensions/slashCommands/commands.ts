@@ -231,7 +231,7 @@ const commands: Record<string, CommandItem[]> = {
             },
         },
     ]
-} 
+}
 
 export default Extension.create({
     name: 'mention',
@@ -246,17 +246,17 @@ export default Extension.create({
             items: (query: string) => {
                 // if (!query){}
                 // else{
-                    const categories = Object.keys(commands)
-                    const suggestions: Record<string, CommandItem[] | string>[] = [];
+                const categories = Object.keys(commands)
+                const suggestions: Record<string, CommandItem[] | string>[] = [];
 
-                    categories.forEach((category) => {
-                        const filtered = commands[category].filter(item => item.title.toLowerCase().startsWith(query.toLowerCase()))
-                        suggestions.push({
-                            categoryTitle: category,
-                            content: filtered
-                        })
+                categories.forEach((category) => {
+                    const filtered = commands[category].filter(item => item.title.toLowerCase().startsWith(query.toLowerCase()))
+                    suggestions.push({
+                        categoryTitle: category,
+                        content: filtered
                     })
-                    return suggestions
+                })
+                return suggestions
                 // }
             },
             render: () => {

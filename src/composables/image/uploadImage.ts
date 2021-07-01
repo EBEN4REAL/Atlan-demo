@@ -29,8 +29,9 @@ export default function useUploadImage() {
     let formData = ref();
 
     const { data, isLoading, error, mutate } = useAPI<uploadImageData>(UPLOAD_IMAGE, "POST", {
-        cache: '',
-        body: formData
+        cache: 'image',
+        body: formData,
+        dependantFetchingKey: formData
     })
 
     const upload = (image: File, name?: string) => {

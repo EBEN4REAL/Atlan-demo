@@ -14,32 +14,11 @@
         </div>
       </div>
     </div>
+
     <div class="hidden h-full p-3 mt-3 bg-white border rounded-md sm:col-span-4 sm:block">
       <div class="flex items-center justify-between p-5 align-middle">
         <div class="flex items-center">
-          <a-upload
-            accept="image/*"
-            class="cursor-pointer"
-            :customRequest="handleUploadAvatar"
-            :show-upload-list="false"
-          >
-            <div
-              class="hidden text-center border-2 rounded-lg border-primary-300 sm:block"
-              style="width: 56px; height: 56px"
-              v-if="!isReady && uploadStarted"
-            >
-              <a-spin size="small" class style="margin-top: 18px"></a-spin>
-            </div>
-            <a-avatar
-              v-else
-              :key="uploadKey"
-              shape="square"
-              :size="56"
-              class="hidden border-2 rounded-lg border-primary-300 sm:block"
-              :src="imageUrl"
-            />
-          </a-upload>
-
+          <avatar :imageUrl="imageUrl" :allowUpload="true" :avatarName="fullName || username" />
           <div class="flex flex-col ml-2">
             <p
               class="mb-0 text-lg leading-none tracking-tight text-gray-800 truncate text-semibold"
@@ -102,7 +81,6 @@
   </div>
 </template>
 
-
 <script lang="ts">
 import { defineComponent, inject, computed, ref } from "vue";
 import { useStore } from "~/store";
@@ -114,13 +92,15 @@ import SavedList from "@/home/saved/index.vue";
 
 import Tags from "@common/badge/tags/index.vue";
 
-import uploadAvatar from "~/composables/avatar/uploadAvatar";
+import { useHead } from "@vueuse/head";
 
 import { message } from "ant-design-vue";
 
 import { User } from "~/api/auth/user";
 
 import { useUser } from "~/composables/user/useUsers";
+
+import Avatar from "~/components/common/avatar.vue";
 
 export default defineComponent({
   name: "HelloWorld",
@@ -129,6 +109,7 @@ export default defineComponent({
     SearchBox,
     Tags,
     SavedList,
+    Avatar,
   },
   props: {
     msg: {
@@ -152,15 +133,14 @@ export default defineComponent({
         firstName.charAt(0).toUpperCase() + firstName.substr(1).toLowerCase()
       } ${lastName.charAt(0).toUpperCase() + lastName.substr(1).toLowerCase()}`;
     });
-
+    useHead({
+      title: `Welcome - ${fullName} `,
+    });
     let imageUrl = ref(
       `http://localhost:3333/api/auth/tenants/default/avatars/${username}`
     );
-
-    let uploadStarted = ref(false);
     let updatingDesignation = ref(false);
     let updatingSkills = ref(false);
-    const { upload, isReady, uploadKey } = uploadAvatar();
     const filterObj = { $and: [{ email_verified: true }, { username }] };
     const { userList, getUser, state, STATES } = useUser({
       limit: 1,
@@ -184,13 +164,6 @@ export default defineComponent({
         return userObj.value.attributes.skills.split(",");
       return [];
     });
-    const handleUploadAvatar = async (uploaded) => {
-      console.log("handle Upload");
-      upload(uploaded.file);
-      uploadStarted.value = true;
-      imageUrl.value = imageUrl.value + "?" + uploadKey;
-      return true;
-    };
     const handleUpdateDesignation = async (tags: any) => {
       const attributeKeys = Object.keys(userObj.value.attributes);
       let formattedAttributes = {};
@@ -246,11 +219,7 @@ export default defineComponent({
       displayName: computed(() => store.getters.getDisplayName),
       displayNameHTML: computed(() => store.getters.getDisplayNameHTML),
       realm: computed(() => store.getters.getRealmName),
-      handleUploadAvatar,
-      isReady,
-      uploadStarted,
       imageUrl,
-      uploadKey,
       handleUpdateDesignation,
       handleUpdateSkills,
       skills,
@@ -263,8 +232,6 @@ export default defineComponent({
   },
 });
 </script>
-
-
 
 <route lang="yaml">
 meta:

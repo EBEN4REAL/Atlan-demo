@@ -1,5 +1,7 @@
 <template>
-  <div ref="monacoRoot" class="max-w-full monacoeditor"></div>
+  <div>
+    <div ref="monacoRoot" class="max-w-full monacoeditor"></div>
+  </div>
 </template>
 
 <script lang="ts">
@@ -16,11 +18,11 @@ import {
 } from "vue";
 import fetchColumnList from "~/composables/columns/fetchColumnList";
 
-import savedQuery from "@/editor/monaco/savedQuery";
-import sqlKeywords from "@/editor/monaco/sqlKeywords";
-import columnSuggestion from "@/editor/monaco/columnSuggestion";
+import savedQuery from "@/projects/monaco/savedQuery";
+import sqlKeywords from "@/projects/monaco/sqlKeywords";
+import columnSuggestion from "@/projects/monaco/columnSuggestion";
 
-import { languageTokens } from "@/editor/monaco/sqlTokens";
+import { languageTokens } from "@/projects/monaco/sqlTokens";
 import TurndownService from "turndown";
 import * as monaco from "monaco-editor";
 
@@ -29,7 +31,7 @@ let turndownService = new TurndownService({});
 // @ts-ignore
 self.MonacoEnvironment = {
   getWorker(_: string, label: string) {
-    return new Worker("./monaco-editor/esm/vs/editor/editor.worker", {
+    return new Worker("./monaco-editor/esm/vs/projects/editor.worker", {
       type: "module",
     });
     //return new EditorWorker();
@@ -84,7 +86,7 @@ export default defineComponent({
     monaco.languages.setMonarchTokensProvider("atlansql", languageTokens);
 
     monaco.languages.registerCompletionItemProvider("atlansql", {
-      provideCompletionItems: function() {
+      provideCompletionItems: function () {
         //For object properties https://microsoft.github.io/monaco-editor/api/interfaces/monaco.languages.completionitem.html
         return {
           suggestions: [
@@ -97,7 +99,7 @@ export default defineComponent({
     });
 
     monaco.languages.registerHoverProvider("atlansql", {
-      provideHover: function(model, position, token) {
+      provideHover: function (model, position, token) {
         const hoveredWord = model.getWordAtPosition(position).word;
         //ignore whitespace
         if (
@@ -156,6 +158,6 @@ export default defineComponent({
 
 <style scoped>
 .monacoeditor {
-  height: 50vh;
+  height: 30vh;
 }
 </style>

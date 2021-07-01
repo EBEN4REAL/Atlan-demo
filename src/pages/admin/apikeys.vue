@@ -7,13 +7,17 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import ListAPIKeys from "~/components/admin/apikeys/listApiKeys.vue";
+import { useHead } from "@vueuse/head";
 export default defineComponent({
   components: { ListAPIKeys },
-  setup() {},
+  setup() {
+    useHead({
+      title: "API keys",
+    });
+  },
 });
 </script>
-<style lang="less" module>
-</style>
+<style lang="less" module></style>
 <route lang="yaml">
   meta:
   layout: default

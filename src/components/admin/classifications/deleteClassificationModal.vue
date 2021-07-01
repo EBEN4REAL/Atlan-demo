@@ -33,9 +33,9 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, computed, ref } from "vue";
-import { useClassificationStore } from "~/pinia/classifications";
-import { useRouter } from "vue-router";
+import { defineComponent, computed, ref, toRaw, watch } from "vue";
+import { useClassificationStore } from "./_store";
+import { Classification } from "~/api/atlas/classification";
 
 export default defineComponent({
   name: "DeleteClassificationModal",
@@ -49,7 +49,6 @@ export default defineComponent({
   },
 
   setup(props, context) {
-    const router = useRouter();
     const store = useClassificationStore();
     const showDeleteModal = computed(() => props.open);
 
@@ -57,7 +56,7 @@ export default defineComponent({
     const selectedClassificationName = computed(
       () => props.classification.displayName || props.classification.name
     );
-    const deleteStatus = computed(() => store.deleteClassificationStatus);
+    const deleteStatus = ref("");
     const deleteErrorText = ref("");
 
     const resetRef = (ref, time) => {
@@ -69,20 +68,27 @@ export default defineComponent({
     const closeDeleteModal = () => {
       context.emit("close");
     };
-    const onDelete = async () => {
-      store.deleteClassificationByName(selectedClassification.value.name).then(
-        () => {
+    const onDelete = () => {
+      const classificationName = selectedClassification.value.name;
+      const { data, error, isLoading } = Classification.archiveClassification({
+        cache: false,
+        classificationName,
+      });
+      deleteStatus.value = "loading";
+      watch([data, error], () => {
+        if (!error.value) {
+          deleteStatus.value = "success";
+          store.deleteClassificationByName(classificationName);
           context.emit("close");
-        },
-        (error) => {
+        } else {
+          deleteStatus.value = "error";
+          const reqError = toRaw(error.value);
           deleteErrorText.value = "Failed to delete classification!";
           resetRef(deleteErrorText, 6000);
           // Notify.error("Unable to delete this classification");
-          console.log("WTF: handleDeleteClassification -> error", error);
+          console.log("WTF: handleDeleteClassification -> error", reqError);
         }
-      );
-      store.getClassifications();
-      router.push("/admin/classifications");
+      });
     };
 
     return {

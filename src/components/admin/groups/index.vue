@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="flex justify-between my-3">
+    <div class="flex justify-between my-3 gap-x-5">
       <div class="flex w-1/2">
         <a-input-search
           placeholder="Search Groups"
@@ -26,6 +26,7 @@
       :row-key="(group) => group.id"
       :pagination="pagination"
       @change="handleTableChange"
+      :scroll="{ x: '100%' }"
       :loading="
         [STATES.PENDING].includes(state) || [STATES.VALIDATING].includes(state)
       "
@@ -38,25 +39,38 @@
             }
           "
         >
-          <span class="capitalize">{{ group.name }}</span>
-          <p class="mb-0">{{ group.description }}</p>
+          <div class="text-gray-900 capitalize truncate">{{group.name}}</div>
+          <p class="mb-0 text-gray-500 truncate">{{ group.description }}</p>
         </div>
       </template>
 
       <!-- <template v-slot="actions">...</template> -->
 
       <template #actions="{ text: group }">
-        <a-popover trigger="click" placement="bottom">
-          <template #content>
-            <span class="flex items-center text-red-600">
+        <a-dropdown :trigger="['click']">
+          <a class="ant-dropdown-link" @click="(e) => e.preventDefault()">
+            <fa icon="fal cog" />
+          </a>
+          <template #overlay>
+            <a-menu>
+              <a-menu-item key="0" @click="() => handleDeleteGroup(group.id)">
+                <fa icon="fal trash-alt" class="mr-2"></fa>Delete
+              </a-menu-item>
+              <a-menu-item key="1" @click="addMembers(group)">
+                <fa icon="fal plus" class="mr-2"></fa>Add Members
+              </a-menu-item>
+              <a-menu-item key="2" @click="addMembers(group)">
+                <fa icon="fal plus" class="mr-2"></fa>Mark as default
+                <div class="text-xs">New users will be added to this group by default</div>
+              </a-menu-item>
+            </a-menu>
+            <!-- <span class="flex items-center text-red-600">
               <fa icon="fal trash-alt"></fa>
-              <span class="ml-2" @click="() => handleDeleteGroup(group.id)"
-                >Delete</span
-              >
-            </span>
+              <span class="ml-2" @click="() => handleDeleteGroup(group.id)">Delete</span>
+            </span>-->
           </template>
-          <fa icon="fal cog"></fa>
-        </a-popover>
+          <!-- <fa icon="fal cog"></fa> -->
+        </a-dropdown>
       </template>
     </a-table>
     <a-modal
@@ -73,6 +87,7 @@
       :selectedGroup="selectedGroup"
       :showGroupPreview="showGroupPreview"
       @refreshTable="getGroupList"
+      :defaultTab="defaultTab"
     />
   </div>
 </template>
@@ -93,6 +108,7 @@ export default defineComponent({
   },
   setup(props, context) {
     const isAddGroupModalVisible = ref(false);
+    const defaultTab = ref("about");
     const showGroupPreview = ref(false);
     const toggleAddGroupModal = () => {
       isAddGroupModalVisible.value = !isAddGroupModalVisible.value;
@@ -152,6 +168,10 @@ export default defineComponent({
       // fetch groups
       getGroupList();
     };
+    const addMembers = (group: any) => {
+      defaultTab.value = "members";
+      handleGroupClick(group);
+    };
     const handleGroupClick = (group: any) => {
       showGroupPreview.value = true;
       selectedGroupId.value = group.id;
@@ -165,6 +185,7 @@ export default defineComponent({
       return activeGroupObj;
     });
     const handleClosePreview = () => {
+      defaultTab.value = "about";
       showGroupPreview.value = false;
     };
     const handleDeleteGroup = async (groupId: string) => {
@@ -198,6 +219,8 @@ export default defineComponent({
       handleDeleteGroup,
       handleCreateGroup,
       getGroupList,
+      addMembers,
+      defaultTab,
     };
   },
   data() {
@@ -209,6 +232,7 @@ export default defineComponent({
           key: "name",
           sorter: true,
           ellipsis: true,
+          width: 200,
           sortKey: "alias",
           slots: { title: "customTitle", customRender: "name" },
         },

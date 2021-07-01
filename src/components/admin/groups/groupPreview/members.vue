@@ -1,19 +1,6 @@
 <template>
   <div class="my-3 mr-5">
-    <div
-      v-if="!selectedGroup.memberCount"
-      class="flex flex-col items-center justify-center"
-    >
-      <div class="text-center">
-        <p class="text-lg">No members are present in the group.</p>
-        <div class="mt-4">
-          <a-button size="large" type="primary" ghost @click="handleAddMember"
-            >Add Members</a-button
-          >
-        </div>
-      </div>
-    </div>
-    <div v-else>
+    <div v-if="showGroupMembers">
       <div class="flex flex-row justify-between">
         <div>
           <a-input-search
@@ -25,9 +12,12 @@
           ></a-input-search>
         </div>
         <div>
-          <a-button type="primary" ghost @click="handleAddMember"
-            >Add Member</a-button
-          >
+          <a-button type="primary" ghost @click="handleAddMember">Add Member</a-button>
+        </div>
+      </div>
+      <div v-if="!selectedGroup.memberCount" class="flex flex-col items-center justify-center">
+        <div class="text-center">
+          <p class="text-lg">No members are present in the group.</p>
         </div>
       </div>
       <div
@@ -46,37 +36,28 @@
               getGroupMembersList();
             }
           "
-          >Try again</a-button
-        >
+        >Try again</a-button>
       </div>
-      <div v-else-if="!filteredMembersCount" class="mt-2">
+      <div v-else-if="searchText&&!filteredMembersCount" class="mt-2">
         {{ `No member with name ${searchText} found.` }}
         <!-- <span
           class="cursor-pointer text-primary-600"
           @click="{searchText='';handleSearch();}"
         >Clear</span>-->
       </div>
-      <div
-        style="min-height: 200px"
-        v-else-if="
-          [STATES.PENDING].includes(state) ||
-          [STATES.VALIDATING].includes(state)
-        "
-      >
-        <a-spin></a-spin>
-      </div>
       <div v-else class="min-h-screen mt-4">
         <div v-for="user in memberList.value" :key="user.id" class="my-2">
-          <div class="flex justify-between">
-            <div class="flex items-center">
+          <div class="flex justify-between cursor-pointer">
+            <div class="flex items-center" @click="()=>handleClickUser(user.username)">
               <a-avatar
                 shape="circle"
                 class="mr-1 ant-tag-blue text-primary-500 avatars"
                 :size="40"
-                >{{
-                  getNameInitials(getNameInTitleCase(`${getUserName(user)}`))
-                }}</a-avatar
               >
+                {{
+                getNameInitials(getNameInTitleCase(`${getUserName(user)}`))
+                }}
+              </a-avatar>
               <div class="ml-2">
                 <div>{{ getUserName(user) }}</div>
                 <div>@{{ user.username }}</div>
@@ -85,11 +66,7 @@
             </div>
             <a-popover trigger="click" placement="bottom">
               <template #content>
-                <span
-                  class="text-red-500"
-                  @click="() => removeUserFromGroup(user.id)"
-                  >Remove User</span
-                >
+                <span class="text-red-500" @click="() => removeUserFromGroup(user.id)">Remove User</span>
               </template>
               <fa icon="fal cog"></fa>
             </a-popover>
@@ -109,7 +86,16 @@
         </div>
       </div>
     </div>
-    <a-modal
+    <div v-else-if="!showGroupMembers">
+      <UserList
+        @updateSelectedUsers="updateSelectedUsers"
+        @showGroupMembers="handleShowGroupMembers"
+        @addMembersToGroup="addMembersToGroup"
+        :addMemberLoading="addMemberLoading"
+        :showHeaderButtons="true"
+      />
+    </div>
+    <!-- <a-modal
       :visible="showAddMemberModal"
       title="Add Members"
       :footer="null"
@@ -121,13 +107,14 @@
         :addMemberLoading="addMemberLoading"
         ref="addUsers"
       />
-    </a-modal>
+    </a-modal>-->
   </div>
 </template>
 
 
 <script lang="ts">
 import { message } from "ant-design-vue";
+import UserList from "~/components/admin/groups/common/userList.vue";
 import { ref, reactive, defineComponent, computed, watch } from "vue";
 import useGroupMembers from "~/composables/group/useGroupMembers";
 import ErrorView from "@common/error/index.vue";
@@ -140,6 +127,8 @@ import {
 import { Group } from "~/api/auth/group";
 import { getIsLoadMore } from "~/composables/utils/isLoadMore";
 import AddGroupMembers from "~/components/admin/groups/groupPreview/about/members/addGroupMembers.vue";
+import { usePreview } from "~/composables/user/showUserPreview";
+
 export default defineComponent({
   name: "GroupMembers",
   props: {
@@ -151,11 +140,14 @@ export default defineComponent({
   components: {
     ErrorView,
     AddGroupMembers,
+    UserList,
   },
   setup(props, context) {
+    const showGroupMembers = ref(true);
     const searchText = ref("");
     const showAddMemberModal = ref(false);
     const addMemberLoading = ref(false);
+    const selectedUserIds = ref([]);
     const memberListParams = reactive({
       groupId: props.selectedGroup.id,
       params: {
@@ -201,7 +193,8 @@ export default defineComponent({
         searchText.value ? filteredMembersCount.value : totalMembersCount.value
       );
     });
-    const addMembersToGroup = async (userIds) => {
+    const addMembersToGroup = async () => {
+      const userIds = [...selectedUserIds.value];
       addMemberLoading.value = true;
       try {
         await Group.AddMembers(props.selectedGroup.id, {
@@ -214,10 +207,9 @@ export default defineComponent({
         message.success(
           `${pluralizeString("Member", userIds.length, false)} added`
         );
-        showAddMemberModal.value = false;
+        showGroupMembers.value = true;
       } catch (e) {
         addMemberLoading.value = false;
-
         message.error("Unable to add members, please try again.");
       }
     };
@@ -248,10 +240,24 @@ export default defineComponent({
       return user.email;
     };
     const handleAddMember = () => {
-      showAddMemberModal.value = true;
+      // showAddMemberModal.value = true;
+      showGroupMembers.value = false;
+    };
+    const handleShowGroupMembers = () => {
+      // showAddToGroupModal.value = false;
+      showGroupMembers.value = true;
     };
     const closeAddGroupModal = () => {
       showAddMemberModal.value = false;
+    };
+    // user preview drawer
+    const { showUserPreview, setUserUniqueAttribute } = usePreview();
+    const handleClickUser = (username: string) => {
+      setUserUniqueAttribute(username, "username");
+      showUserPreview({ allowed: ["about"] });
+    };
+    const updateSelectedUsers = (userList) => {
+      selectedUserIds.value = [...userList];
     };
     return {
       searchText,
@@ -274,6 +280,10 @@ export default defineComponent({
       addMembersToGroup,
       addMemberLoading,
       closeAddGroupModal,
+      handleClickUser,
+      showGroupMembers,
+      handleShowGroupMembers,
+      updateSelectedUsers,
     };
   },
 });

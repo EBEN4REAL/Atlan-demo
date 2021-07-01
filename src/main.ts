@@ -5,6 +5,7 @@ import { setupLayouts } from "virtual:generated-layouts";
 
 import { inputFocusDirective } from "~/directives/input-focus";
 import App from "./App.vue";
+import { createHead } from "@vueuse/head";
 
 import "~/styles/index.less";
 
@@ -14,6 +15,8 @@ import useConnectionInit from "./composables/connection/useConnectionInit";
 import { useTenantStore } from "./pinia/tenants";
 
 const app = createApp(App);
+const head = createHead();
+
 inputFocusDirective(app);
 
 // setup up pages with layouts
@@ -24,7 +27,7 @@ const router = createRouter({ history: createWebHistory(), routes });
 Object.values(import.meta.globEager("./modules/*.ts")).map((i) =>
   i.install?.({ app, router, routes })
 );
-
+app.use(head);
 app.use(router).mount("#app");
 
 const fn = async () => {

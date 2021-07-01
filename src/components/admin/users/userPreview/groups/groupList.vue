@@ -10,7 +10,14 @@
           @change="handleSearch"
         ></a-input-search>
       </div>
-      <div></div>
+      <div>
+        <a-button @click="$emit('showUserGroups')" class="mr-3">
+          <fa icon="fal chevron-left" />
+        </a-button>
+        <a-button @click="$emit('addUserToGroups')" type="primary" :disabled="addToGroupLoading">
+          <fa icon="fal plus" class="mr-2" />Add
+        </a-button>
+      </div>
     </div>
     <div
       class="flex items-center h-full align-middle bg-white"
@@ -26,22 +33,21 @@
         @click="()=>{getGroupList()}"
       >Try again</a-button>
     </div>
-    <div v-else class="min-h-screen mt-4">
+    <div v-else class="mt-4 overflow-auto">
       <a-checkbox-group v-model:value="selectedIds" @change="handleChange" class="w-full">
         <div class="flex flex-col w-full">
           <template v-for="group in groupList.value" :key="group.id">
-            <a-checkbox :value="group.id" class="w-full">
-              <div class="flex justify-between my-2">
+            <a-checkbox :value="group.id" class="flex items-center w-full">
+              <div class="flex justify-between mb-2">
                 <div class="flex items-center">
                   <a-avatar
                     shape="circle"
                     class="mr-1 ant-tag-blue text-primary-500 avatars"
-                    :size="40"
                   >{{ getNameInitials(getNameInTitleCase(group.name)) }}</a-avatar>
                   <div class="ml-2">
                     <div>{{ group.name }}</div>
-                    <div>@{{ group.alias }}</div>
-                    <div>{{ group.memberCountString }}</div>
+                    <div class="text-xs">@{{ group.alias }}</div>
+                    <div class="text-xs">{{ group.memberCountString }}</div>
                   </div>
                 </div>
               </div>
@@ -78,6 +84,12 @@ export default defineComponent({
   name: "Groups",
   components: {
     ErrorView,
+  },
+  props: {
+    addToGroupLoading: {
+      type: Boolean,
+      default: false,
+    },
   },
   setup(props, context) {
     const selectedIds = ref([]);
@@ -147,5 +159,4 @@ export default defineComponent({
 });
 </script>
     
-    <style>
-</style>
+<style></style>

@@ -32,12 +32,12 @@
     </pane>
   </splitpanes>
 </template>
-      
-      
+
 <script lang="ts">
 import { defineComponent, onMounted } from "vue";
 import ConnectionTree from "@/connection/tree/index.vue";
 import { useRouter } from "vue-router";
+import { useHead } from "@vueuse/head";
 
 export default defineComponent({
   components: { ConnectionTree },
@@ -47,6 +47,9 @@ export default defineComponent({
     };
   },
   setup() {
+    useHead({
+      title: "Connections",
+    });
     const router = useRouter();
     const handleNewConnector = () => {
       router.push("/setup");
@@ -62,8 +65,7 @@ export default defineComponent({
   },
 });
 </script>
-      
-      
+
 <route lang="yaml">
 meta:
   layout: default

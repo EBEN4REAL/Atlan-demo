@@ -13,7 +13,7 @@
     </div>
     <div class="flex w-full h-full">
       <div
-        class="flex flex-col hidden p-6 bg-white border-r border-gray-200  sm:block"
+        class="flex flex-col hidden p-6 bg-white border-r border-gray-200 sm:block"
       >
         <p
           class="mb-2 text-xs tracking-wide text-gray-500 uppercase cursor-pointer "
@@ -71,7 +71,10 @@
           <div class="flex items-center justify-between align-middle">
             <div class="flex items-center align-middle">
               <div class="flex items-center align-middle">
-                <p @click="handlePrevious" class="px-1 mb-0 mr-2 leading-none">
+                <p
+                  @click="handlePrevious"
+                  class="px-1 mb-0 mr-2 text-xl leading-none text-gray-500"
+                >
                   <fa icon="fal chevron-left"></fa>
                 </p>
                 <img :src="logo(selectedConnector)" class="w-auto h-8 mr-2" />
@@ -100,6 +103,7 @@
               ref="credentialView"
               :key="selectedConnector.guid"
               :item="selectedConnector"
+              @verified="handleVerified"
               v-else-if="current === 1"
             ></CredentialView>
             <Settings
@@ -190,17 +194,27 @@ export default defineComponent({
         this.nextType = "primary";
       }
     },
+
+    handleVerified(credential) {
+      console.log("verified");
+      if (credential) {
+        this.loadingNext = false;
+        this.selectedCredential = credential;
+        this.current = this.current + 1;
+        this.nextTitle = "Setup & Run";
+        this.nextType = "primary";
+      } else {
+        this.loadingNext = false;
+      }
+    },
     async handleNext() {
       try {
         this.loadingNext = true;
         if (this.current === 1) {
           if (this.$refs.credentialView) {
-            this.selectedCredential =
-              await this.$refs.credentialView.getCredential();
-            if (this.selectedCredential) {
-              this.current = this.current + 1;
-              this.nextTitle = "Setup & Run";
-              this.nextType = "primary";
+            const res = await this.$refs.credentialView.getCredential();
+            if (!res) {
+              this.loadingNext = false;
             }
           }
         }
@@ -210,8 +224,8 @@ export default defineComponent({
             console.log(this.selectedJob);
             this.current = this.current + 1;
           }
+          this.loadingNext = false;
         }
-        this.loadingNext = false;
       } catch (err) {
         this.loadingNext = false;
       }

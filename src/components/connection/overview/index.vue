@@ -2,8 +2,14 @@
 
 
 <template>
-  <div class="px-6 py-6">
-    <DetailsView :item="item" :credential="credential" :bot="bot"></DetailsView>
+  <div class="p-8">
+    <DetailsView
+      :item="item"
+      :credential="credential"
+      :bot="bot"
+      :loading="loading"
+      :syncing="syncing"
+    ></DetailsView>
     <!-- <div class="flex justify-between mt-4">
       <p class="mb-0 text-gray-400">Last 5 runs</p>
       <p class="mb-0 cursor-pointer text-primary-500">View All</p>
@@ -52,6 +58,12 @@ export default defineComponent({
       default(): any {
         return {};
       },
+    },
+    loading: {
+      type: Boolean,
+    },
+    syncing: {
+      type: Boolean,
     },
   },
   data() {

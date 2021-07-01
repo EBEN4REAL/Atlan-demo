@@ -24,10 +24,9 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, ref, watch } from "vue";
+import { computed, defineComponent, ref } from "vue";
 import SourceMixin from "~/mixins/source";
-import fetchConnectionList from "~/composables/connection/fetchConnectionList";
-import { CONNECTION_FETCH_LIST } from "~/constant/cache";
+import { useConnectionsStore } from "~/pinia/connections";
 
 export default defineComponent({
   mixins: [SourceMixin],
@@ -42,18 +41,25 @@ export default defineComponent({
   },
   emits: ["update:modelValue", "change"],
   setup(props, { emit }) {
+    const store = useConnectionsStore();
+
     let searchValue = ref("");
     let openState = ref(false);
     let connectionsDropdown = ref(null);
     let localValue = ref();
 
-    const now = ref(true);
-
-    const { list } = fetchConnectionList(CONNECTION_FETCH_LIST, now);
     const filteredList = computed(() => {
-      return list?.value?.sort((a, b) =>
-        a.attributes?.displayName.localeCompare(b.attributes?.displayName)
-      );
+      return store.getList?.filter((item) => {
+        if (props.connectors) {
+          if (props.connectors.includes(item.attributes.integrationName)) {
+            return true;
+          } else {
+            return false;
+          }
+        } else {
+          return true;
+        }
+      });
     });
 
     const handleSearch = (inputValue: string) => {
@@ -66,7 +72,6 @@ export default defineComponent({
       connectionsDropdown?.value?.blur();
     };
     return {
-      list,
       filteredList,
       handleSearch,
       handleChange,

@@ -73,8 +73,7 @@ export const install: UserModule = ({ app }) => {
     timeout: getEnv().DEFAULT_REQUEST_TIMEOUT,
     headers: {
       "Content-Type": "application/json",
-    },
-    adapter: cacheAdapterEnhancer(axios.defaults.adapter, cacheConfig),
+    }
   });
   axiosClient.interceptors.request.use(authInterceptor(app));
   axiosClient.interceptors.response.use(responseInterceptor, errorInterceptor);

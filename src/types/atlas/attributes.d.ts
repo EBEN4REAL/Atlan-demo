@@ -1,3 +1,5 @@
+import { Components } from "~/api/auth/atlas";
+
 export interface BaseAttributes {
     name?: string;
     description?: string;

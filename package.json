@@ -47,6 +47,7 @@
     "openapi-client-axios-ts": "^3.9.9",
     "pinia": "^2.0.0-beta.3",
     "pluralize": "^8.0.0",
+    "posthog-js": "^1.11.4",
     "qs": "^6.10.1",
     "splitpanes": "^3.0.4",
     "sql-formatter": "^4.0.2",
@@ -63,7 +64,6 @@
     "vue-numerals": "^4.0.6",
     "vue-router": "^4.0.8",
     "vue-virtual-scroll-list": "^2.3.2",
-    "vue-warehouse": "^2.2.0",
     "vue3-tel-input": "^1.0.4",
     "vue3-timepicker": "^1.0.0-beta.2",
     "vue3-virtual-scroller": "^0.2.1",
@@ -72,7 +72,6 @@
     "vuex-typex": "^3.1.9"
   },
   "devDependencies": {
-    "jest": "^27.0.5",
     "@babel/core": "^7.14.6",
     "@intlify/vite-plugin-vue-i18n": "^2.2.1",
     "@rollup/plugin-replace": "^2.4.2",
@@ -89,6 +88,7 @@
     "eslint": "^7.29.0",
     "eslint-plugin-vue": "^7.10.0",
     "https-localhost": "^4.6.5",
+    "jest": "^27.0.5",
     "openapi-typescript-codegen": "^0.9.3",
     "pnpm": "^6.8.0",
     "postcss": "^8.3.5",

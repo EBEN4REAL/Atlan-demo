@@ -16,7 +16,10 @@ export const fetcher = (
   params,
   options
 ): Promise<AxiosResponse["data"]> => {
-  return getAxiosClient().get(url, { params, ...options });
+
+  console.log("replace api", params);
+
+  return getAxiosClient().get(url, { ...params, ...options });
 };
 
 export const fetcherPost = (

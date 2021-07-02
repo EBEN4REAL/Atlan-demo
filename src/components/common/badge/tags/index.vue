@@ -1,6 +1,6 @@
 <template>
   <div class="flex flex-wrap gap-1">
-    <template v-for="(tag, index) in tags" :key="index">
+    <template v-for="(tag, index) in finalTags" :key="index">
       <a-tooltip v-if="tag.length > 20" :title="tag">
         <a-tag
           :closable="tag.hasOwnProperty('closeable')?tag[closable]:true"
@@ -38,7 +38,16 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, reactive, toRefs, nextTick, watch } from "vue";
+import {
+  defineComponent,
+  ref,
+  reactive,
+  toRefs,
+  nextTick,
+  watch,
+  onMounted,
+  computed,
+} from "vue";
 
 export default defineComponent({
   props: {
@@ -54,15 +63,27 @@ export default defineComponent({
   components: {},
   setup(props, context) {
     const inputRef = ref();
+    const tagsF = computed(() => props.tags);
+    const finalTags = ref(tagsF);
     const state = reactive({
       tags: props.tags,
       inputVisible: false,
       inputValue: "",
     });
+
+    onMounted(() => {
+      state.tags = [...props.tags];
+    });
+    // watch(
+    //   () => props.tags,
+    //   () => {
+    //     state.tags = [...props.tags];
+    //   }
+    // );
     watch(
-      () => props.tags,
+      () => state.tags,
       () => {
-        state.tags = [...props.tags];
+        console.log(state.tags);
       }
     );
     const handleClose = (removedTag: string) => {
@@ -74,7 +95,7 @@ export default defineComponent({
         inputVisible: false,
         inputValue: "",
       });
-      context.emit("updateTags", tags);
+      context.emit("updateTags", removedTag, "remove");
     };
 
     const showInput = () => {
@@ -96,7 +117,7 @@ export default defineComponent({
         inputVisible: false,
         inputValue: "",
       });
-      context.emit("updateTags", tags);
+      context.emit("updateTags", inputValue);
     };
     return {
       ...toRefs(state),
@@ -104,6 +125,7 @@ export default defineComponent({
       showInput,
       handleInputConfirm,
       inputRef,
+      finalTags,
     };
   },
 });

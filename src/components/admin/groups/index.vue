@@ -39,7 +39,13 @@
             }
           "
         >
-          <div class="text-gray-900 capitalize truncate">{{group.name}}</div>
+          <div class="text-gray-900 capitalize truncate">
+            {{group.name}}
+            <span
+              class="px-2 py-1 text-xs font-bold bg-blue-100 rounded-sm rounded rounded-full text-primary-500"
+              v-if="group.isDefault==='true'"
+            >Default</span>
+          </div>
           <p class="mb-0 text-gray-500 truncate">{{ group.description }}</p>
         </div>
       </template>
@@ -54,14 +60,21 @@
           <template #overlay>
             <a-menu>
               <a-menu-item key="0" @click="() => handleDeleteGroup(group.id)">
-                <fa icon="fal trash-alt" class="mr-2"></fa>Delete
+                <div class="flex text-red-600">
+                  <fa icon="fal trash-alt" class="mr-2"></fa>Delete
+                </div>
               </a-menu-item>
-              <a-menu-item key="1" @click="handleAddMembers(group)">
-                <fa icon="fal plus" class="mr-2"></fa>Add Members
+              <a-menu-item key="1" @click="handleAddMembers(group)" class="flex">
+                <div class="flex">
+                  <fa icon="fal plus" class="mr-2"></fa>Add Members
+                </div>
               </a-menu-item>
-              <a-menu-item key="2" @click="(e)=>{e.stopPropagation();handleToggleDefault(group)}">
-                <fa icon="fal plus" class="mr-2"></fa>Mark as default
-                <a-spin size="small" v-if="markAsDefaultLoading"></a-spin>
+              <a-menu-item key="2" @click="handleToggleDefault(group)">
+                <div class="flex">
+                  <fa icon="fal plus" class="mr-2"></fa>
+                  {{group.isDefault?'Unmark':'Mark'}} as default
+                </div>
+                <!-- <a-spin size="small" v-if="markAsDefaultLoading"></a-spin> -->
                 <!-- <div class="text-xs">New users will be automatically added to default groups</div> -->
               </a-menu-item>
             </a-menu>
@@ -209,7 +222,7 @@ export default defineComponent({
       isAddGroupModalVisible.value = false;
       getGroupList();
     };
-    // BEGIN: USER PREVIEW
+    // BEGIN: GROUP PREVIEW
     const {
       showPreview,
       showGroupPreview: openPreview,
@@ -222,18 +235,12 @@ export default defineComponent({
     watch(showPreview, () => {
       if (!showPreview.value) getGroupList();
     });
-    // END: USER PREVIEW
+    // END: GROUP PREVIEW
     const handleToggleDefault = (group) => {
       const requestPayload = ref();
       requestPayload.value = {
         name: group.alias,
-        alias: group.name,
         attributes: {
-          description: [group.description],
-          alias: [group.name],
-          created_at: [group.createdAt],
-          created_by: [group.createdBy],
-          image: [group.image],
           isDefault: [`${!group.isDefault}`],
         },
       };
@@ -245,10 +252,17 @@ export default defineComponent({
         console.log({ data, isLoading, error });
         markAsDefaultLoading.value = isLoading.value;
         if (data.value) {
-          message.success("Group marked as default");
+          message.success(
+            `Group ${group.isDefault ? "unmarked" : "marked"} as default`
+          );
+          getGroupList();
         } else if (error.value) {
           markAsDefaultLoading.value = false;
-          message.error("Unable to mark group as default, please try again");
+          message.error(
+            `Unable to ${
+              group.isDefault ? "unmark" : "mark"
+            } group as default, please try again`
+          );
         }
       });
     };
@@ -285,7 +299,7 @@ export default defineComponent({
           key: "name",
           sorter: true,
           ellipsis: true,
-          width: 200,
+          width: 300,
           sortKey: "alias",
           slots: { title: "customTitle", customRender: "name" },
         },

@@ -1,6 +1,5 @@
 <template>
   <div class>
-    {{updateLoading}}
     <div>
       <div class="flex flex-row items-center cursor-pointer group">
         <p class="mb-0 text-xs text-gray-500">
@@ -87,11 +86,11 @@ export default defineComponent({
     const handleUpdate = () => {
       requestPayload.value = {
         firstName: firstNameLocal.value,
-        lastName: props.selectedUser.last_name,
-        attributes: {
-          designation: props.selectedUser.attributes.designation,
-          mobile_number: props.selectedUser.attributes.mobile_number,
-        },
+        // lastName: props.selectedUser.last_name,
+        // attributes: {
+        //   designation: props.selectedUser.attributes.designation,
+        //   mobile_number: props.selectedUser.attributes.mobile_number,
+        // },
       };
       const { data, isLoading, error } = User.UpdateUserV2(
         props.selectedUser.id,

@@ -24,6 +24,7 @@
             :isCurrentUser="isCurrentUser"
             :is="tab.component"
             :selectedUser="selectedUser"
+            @updatedUser="getUser"
           />
         </a-tab-pane>
       </a-tabs>
@@ -77,7 +78,7 @@ export default defineComponent({
         $and: [{ email_verified: true }, { username: userUsername.value }],
       };
     else filterObj = { $and: [{ email_verified: true }, { id: userId.value }] };
-    const { userList } = useUser({
+    const { userList, getUser } = useUser({
       limit: 1,
       offset: 0,
       sort: "first_name",
@@ -113,6 +114,7 @@ export default defineComponent({
       userId,
       // handleClose,
       tabs: finalTabs,
+      getUser,
     };
   },
 });

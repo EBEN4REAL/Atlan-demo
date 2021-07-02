@@ -114,7 +114,7 @@ export default defineComponent({
               alias: [group.name],
               created_at: [currentDate],
               created_by: [createdBy],
-              is_default: [isDefault.value],
+              isDefault: [`${isDefault.value}`],
             },
           },
           users: userIds.value,

@@ -20,11 +20,7 @@
           <template #tab>
             <span class="mb-0">{{ tab.name }}</span>
           </template>
-          <component
-            :is="tab.component"
-            :selectedGroup="selectedGroup"
-            @refreshTable="$emit('refreshTable')"
-          />
+          <component :is="tab.component" :selectedGroup="selectedGroup" @refreshTable="getGroup" />
         </a-tab-pane>
       </a-tabs>
     </div>
@@ -72,7 +68,7 @@ export default defineComponent({
         $and: [{ name: groupAlias.value }],
       };
     else filterObj = { $and: [{ id: groupId.value }] };
-    const { groupList } = useGroup({
+    const { groupList, getGroup } = useGroup({
       limit: 1,
       offset: 0,
       // sort: "alias",
@@ -83,6 +79,7 @@ export default defineComponent({
         ? groupList.value[0]
         : [];
     });
+
     // const tabs = computed(() => {
     //   return [
     //     {
@@ -103,6 +100,7 @@ export default defineComponent({
       getNameInitials,
       getNameInTitleCase,
       tabs: finalTabs,
+      getGroup,
       // activeKey,
       selectedGroup: groupObj,
     };

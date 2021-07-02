@@ -1,7 +1,7 @@
 //useGroups
 
 import { ref, watch, computed, ComputedRef, Ref } from "vue";
-import { fetcher, getAPIPath, getAxiosClient } from "~/api";
+import { fetcher, getAPIPath } from "~/api";
 import useSWRV from "swrv";
 import swrvState from "~/composables/utils/swrvState";
 import { getFormattedGroup } from "~/composables/group/formatGroup";

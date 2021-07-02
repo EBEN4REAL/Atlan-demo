@@ -66,7 +66,7 @@ const UpdateUser = (id: string, body?: any, options?: any) => {
   );
 };
 const UpdateUserV2 = (id: string, body, options) => {
-  const { data, error, isLoading } = useAPIv2(UPDATE_USER, "POST", {
+  const { data, error, isLoading } = useAPI(UPDATE_USER, "POST", {
     // const { data, mutate, error, isReady } = useAPIv2(UPDATE_USER, "POST", {
     cache: "",
     options,

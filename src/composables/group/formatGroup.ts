@@ -11,11 +11,10 @@ export const getFormattedGroup = (group: any) => {
       ? useTimeAgo(group.attributes.created_at?.[0]).value
       : "",
     createdBy: group?.attributes?.created_by?.[0] ?? "-",
-    image: group.attributes.image[0] || "",
-    description: group.attributes.description[0] || "",
+    description: group?.attributes?.description?.[0] || "",
     memberCount: group.user_count || 0,
     memberCountString: pluralizeString("member", group.user_count || 0),
-    isDefault: group?.attributes?.isDefault ?? false,
+    isDefault: group?.attributes?.isDefault?.[0] ?? false,
   };
   return formattedGroup || {};
 };

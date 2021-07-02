@@ -82,13 +82,13 @@ export default defineComponent({
         const updatedGroup = {
           name: props.group.alias,
           // path: props.group.path,
-          // attributes: {
-          //   description: [props.group.description],
-          //   alias: [groupNameLocal.value],
-          //   created_at: [props.group.createdAt],
-          //   created_by: [props.group.createdBy],
-          //   image: [props.group.image],
-          // },
+          attributes: {
+            // description: [props.group.description],
+            alias: [groupNameLocal.value],
+            // created_at: [props.group.createdAt],
+            // created_by: [props.group.createdBy],
+            // image: [props.group.image],
+          },
         };
 
         await Group.EditGroup(props.group.id, { ...updatedGroup }, {});

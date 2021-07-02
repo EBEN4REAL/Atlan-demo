@@ -193,7 +193,7 @@ import AddAttributeCard from "@/admin/business-metadata/addAttributeCard.vue";
 import CreateUpdateInfo from "@/shared/createUpdateInfo.vue";
 
 // ? composables
-import useBusinessMetadata from "@/admin/business-metadata/composables/useBusinessMetadata";
+import { useBusinessMetadata } from "@/admin/business-metadata/composables/useBusinessMetadata";
 
 export default defineComponent({
   props: {
@@ -218,7 +218,7 @@ export default defineComponent({
     let loading = ref(false);
     let error = ref(null);
     // * Methods
-    const { addNewBusinessMetadata, updateNewBusinessMetadata } = useBusinessMetadata();
+    const { addNewBusinessMetadata, updateNewBusinessMetadata } = useBusinessMetadata;
 
     const handleAfterArchive = () => {
       context.emit("afterArchive");

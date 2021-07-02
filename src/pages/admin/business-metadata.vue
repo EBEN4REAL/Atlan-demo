@@ -108,7 +108,7 @@ import { generateUUID } from "~/utils/generator";
 // ? Media
 import EmptyBusinessMetadata from "~/assets/images/illustrations/empty_business_metadata.svg";
 
-import { useBMList } from "@/admin/business-metadata/composables/useBMList";
+import { useBusinessMetadata } from "@/admin/business-metadata/composables/useBusinessMetadata";
 
 // ? Utils
 import differenceWith from "lodash/differenceWith";
@@ -128,7 +128,12 @@ export default defineComponent({
   components: { BusinessMetadataList, BusinessMetadataProfile },
   name: "businessMetadata",
   setup(props, context) {
-    const { data: bmResponse, error, isLoading: loading } = useBMList.getBMList();
+    const {
+      data: bmResponse,
+      error,
+      isLoading: loading,
+    } = useBusinessMetadata.getBMList();
+
     // * Data
     let selectedBm = ref(null);
     let searchText = ref("");
@@ -251,6 +256,7 @@ export default defineComponent({
       );
     };
     // !!!!!!!
+
     const handleSelectBm = (item: any) => {
       selectedBm.value = item;
       updatedBm.value = null;

@@ -1,6 +1,7 @@
 import { getAPIPath, getAxiosClient } from "~/api";
 import { AxiosRequestConfig } from "axios";
 import { useAPI } from "~/api/useAPI";
+import { useAPI as useAPIv2 } from "~/api/useAPIv2";
 import {
   GET_USER_SESSIONS,
   SIGN_OUT_ALL_SESSIONS,
@@ -64,13 +65,16 @@ const UpdateUser = (id: string, body?: any, options?: any) => {
     options
   );
 };
-const UpdateUserV2 = (id: string, body) => {
-  const { data, error, isLoading } = useAPI(UPDATE_USER, "POST", {
-    cache: false,
+const UpdateUserV2 = (id: string, body, options) => {
+  const { data, error, isLoading } = useAPIv2(UPDATE_USER, "POST", {
+    // const { data, mutate, error, isReady } = useAPIv2(UPDATE_USER, "POST", {
+    cache: "",
+    options,
     body,
     pathVariables: { id },
   });
   return { data, error, isLoading };
+  // return { data, mutate, error, isReady };
 };
 const UpdateUserRole = (id: string, body?: any, options?: any) => {
   return getAxiosClient().post(

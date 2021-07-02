@@ -14,14 +14,15 @@ const getFormattedGroup = (group: any) => {
     name: group.alias,
     alias: group.name,
     createdAt: group?.attributes?.created_at ?? "-",
-    createdAtTimeAgo: group.attributes.created_at
+    createdAtTimeAgo: group?.attributes?.created_at
       ? useTimeAgo(group.attributes.created_at).value
       : "",
     createdBy: group?.attributes?.created_by ?? "-",
-    image: group.attributes.image || "",
-    description: group.attributes.description || "",
+    image: group?.attributes?.image || "",
+    description: group?.attributes?.description || "",
     memberCount: group.user_count || 0,
     memberCountString: pluralizeString("member", group.user_count || 0),
+    isDefault: group?.attributes?.is_default,
   };
   return formattedGroup || {};
 };

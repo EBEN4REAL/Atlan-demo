@@ -18,7 +18,7 @@ export default function useAssetList(dependentKey?: Ref<any>, typeName?: string,
         replaceBody,
         refresh,
         body,
-    } = useSearchList(typeName || "Catalog", list, [], dependentKey, initialBody, cacheSuffx, true, cancelTokenSource, true);
+    } = useSearchList(typeName || "Catalog", list, [], dependentKey, initialBody, cacheSuffx, false, cancelTokenSource, true);
 
 
     const aggregationList: Ref<any> = ref([]);
@@ -36,7 +36,7 @@ export default function useAssetList(dependentKey?: Ref<any>, typeName?: string,
         assetTypeSum,
 
         replaceBody: refreshAggregation,
-    } = useSearchList("Catalog", aggregationList, [], data, aggregationBody, cacheSuffx, true, cancelTokenSource, true);
+    } = useSearchList("Catalog", aggregationList, [], data, aggregationBody, cacheSuffx, false, cancelTokenSource, true);
 
 
     watch(data, () => {

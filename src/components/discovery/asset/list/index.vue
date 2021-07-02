@@ -4,7 +4,7 @@
     :items="list"
     :keyField="keyField"
     :minItemSize="minItemSize"
-    class="mx-6 border rounded scroller"
+    class="mx-6 border-b border-l border-r rounded-b-md scroller"
     :class="{ 'opacity-50': isLoading }"
     :buffer="1000"
   >

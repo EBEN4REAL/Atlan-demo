@@ -61,7 +61,7 @@
       </a-popover>
     </div>
 
-    <div class="flex w-full px-6 my-1" style="min-height: 34px">
+    <div class="flex w-full px-6 mt-3">
       <AssetTabs
         v-model="assetType"
         :assetTypeList="assetTypeList"

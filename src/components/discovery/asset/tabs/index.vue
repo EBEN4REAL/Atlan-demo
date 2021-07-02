@@ -1,9 +1,10 @@
 <template>
   <a-tabs
     class="w-full"
-    :class="$style.assetbar"
     v-model:activeKey="assetType"
+    :class="$style.assetbar"
     @change="handleChange"
+    type="card"
   >
     <a-tab-pane :key="item.id" v-for="item in assetTypeList">
       <template #tab>
@@ -184,18 +185,31 @@ export default defineComponent({
       
 <style lang="less" module>
 .assetbar {
+  height: 32px !important;
+  min-height: 32px !important;
+
+  :global(.ant-tabs-nav-container) {
+    height: 32px !important;
+    min-height: 32px !important;
+  }
+
   :global(.ant-tabs-bar) {
+    @apply border-b border-gray-200 !important;
     margin-bottom: 0px;
-    border-color: #fff !important;
   }
 
   :global(.ant-tabs-tab) {
-    margin: 0 32px 0 0 !important;
-    padding: 6px 8px !important;
+    height: 32px !important;
+    line-height: 30px !important;
+    @apply bg-transparent border-0  !important;
+  }
+
+  :global(.ant-tabs-tab-active) {
+    @apply bg-white border-t border-l border-r border-gray-200 !important;
   }
 
   :global(.ant-tabs-ink-bar) {
-    height: 0px;
+    @apply hidden;
   }
 }
 </style>

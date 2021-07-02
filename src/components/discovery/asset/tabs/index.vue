@@ -8,8 +8,8 @@
     <a-tab-pane :key="item.id" v-for="item in assetTypeList">
       <template #tab>
         {{ item.label }}
-        <span v-if="item.count && item.count > 0"
-          >({{ numeralFormat(item.count) }})</span
+        <span v-if="assetTypeMap[item.id] && assetTypeMap[item.id] > 0"
+          >({{ numeralFormat(assetTypeMap[item.id]) }})</span
         >
       </template>
     </a-tab-pane>
@@ -31,6 +31,13 @@ export default defineComponent({
       required: false,
       default() {
         return [];
+      },
+    },
+    assetTypeMap: {
+      type: Object,
+      required: false,
+      default() {
+        return {};
       },
     },
     modelValue: {

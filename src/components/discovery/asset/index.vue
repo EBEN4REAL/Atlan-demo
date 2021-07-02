@@ -65,9 +65,11 @@
       <AssetTabs
         v-model="assetType"
         :assetTypeList="assetTypeList"
+        :assetTypeMap="assetTypeMap"
         class="rounded-tr"
       ></AssetTabs>
     </div>
+
     <div
       v-if="list && list.length <= 0 && !isLoading && !isValidating"
       class="flex-grow mx-6 border rounded"
@@ -190,8 +192,14 @@ export default defineComponent({
     });
 
     //TODO - Get Filtered Asset Types based on selected connectors
-    const { list, replaceBody, isLoading, isValidating, searchScoreList } =
-      useAssetList(now, assetTypeListString, initialBody, assetType.value);
+    const {
+      list,
+      replaceBody,
+      isLoading,
+      isValidating,
+      searchScoreList,
+      assetTypeMap,
+    } = useAssetList(now, assetTypeListString, initialBody, assetType.value);
 
     const updateBody = () => {
       initialBody = {
@@ -340,6 +348,7 @@ export default defineComponent({
       list,
       assetType,
       assetTypeList,
+      assetTypeMap,
       filterMode,
       replaceBody,
       handleSearchChange,

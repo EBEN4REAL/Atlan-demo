@@ -11,17 +11,21 @@ import LocalStorageCache from 'swrv/dist/cache/adapters/localStorage';
 
 
 
-export default function useSearchList(typeName: string, list: any, attributes: string[], dependentKey?: Ref<any>, initialBody?: any, cacheSuffx?: string | "", quickChange?: boolean, isLocalStorage?: boolean) {
+export default function useSearchList(typeName: string, list: any, attributes: string[], dependentKey?: Ref<any>, initialBody?: any, cacheSuffx?: string | "", isLocalStorage?: boolean, cancelTokenSource?: Ref<CancelTokenSource>, quickChange?: boolean) {
 
-    let cancelTokenSource: Ref<CancelTokenSource> = ref(axios.CancelToken.source());
+
     let asyncOptions: IConfig & AxiosRequestConfig = {
         dedupingInterval: 0,
         shouldRetryOnError: false,
         revalidateOnFocus: false,
         revalidateDebounce: 0,
+
     };
     if (isLocalStorage) {
         asyncOptions.cache = new LocalStorageCache()
+    }
+    if (cancelTokenSource) {
+        asyncOptions.cancelToken = cancelTokenSource.value.token;
     }
 
     let body = ref({
@@ -76,11 +80,14 @@ export default function useSearchList(typeName: string, list: any, attributes: s
     });
 
     const refresh = () => {
-        if (([STATES.PENDING].includes(state.value) || [STATES.VALIDATING].includes(state.value)) && cancelTokenSource.value) {
-            cancelTokenSource.value.cancel("aborted");
+
+        if (cancelTokenSource) {
+            if (([STATES.PENDING].includes(state.value) || [STATES.VALIDATING].includes(state.value)) && cancelTokenSource.value) {
+                cancelTokenSource?.value.cancel("aborted");
+            }
+            cancelTokenSource.value = axios.CancelToken.source();
+            asyncOptions.cancelToken = cancelTokenSource?.value.token;
         }
-        cancelTokenSource.value = axios.CancelToken.source();
-        asyncOptions.cancelToken = cancelTokenSource.value.token;
         if (quickChange) {
             cachekey.value = `${cacheSuffx}_${Date.now().toString()}`;
         }
@@ -146,6 +153,7 @@ export default function useSearchList(typeName: string, list: any, attributes: s
         refresh,
         replaceBody,
         body,
+        mutate,
         assetTypeMap,
         assetTypeList,
         assetTypeSum,

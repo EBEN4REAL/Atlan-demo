@@ -6,14 +6,14 @@ import { fetcher, fetcherPost, getAxiosClient, deleter, updater } from "~/api";
 import keyMaps from "~/api/keyMaps/index";
 
 interface useGetAPIParams {
-  cache?: boolean;
-  params?: Record<string, any>;
-  body?: Record<string, any>;
-  pathVariables?: Record<string, any>;
-  options?: IConfig & AxiosRequestConfig;
-  dependantFetchingKey?: Ref;
-  // swrOptions?: IConfig,
-  // axiosOptions?: AxiosRequestConfig
+    cache?: boolean;
+    params?: Record<string, any>;
+    body?: Record<string, any>;
+    pathVariables?: Record<string, any>;
+    options?: IConfig & AxiosRequestConfig;
+    dependantFetchingKey?: Ref;
+    // swrOptions?: IConfig,
+    // axiosOptions?: AxiosRequestConfig
 }
 
 /***
@@ -25,110 +25,109 @@ interface useGetAPIParams {
  */
 
 export const useAPI = <T>(
-  key: string,
-  method: "GET" | "POST" | "DELETE" | "PUT",
-  {
-    cache = true,
-    params,
-    body,
-    pathVariables,
-    options,
-    dependantFetchingKey,
-  }: useGetAPIParams
+    key: string,
+    method: "GET" | "POST" | "DELETE" | "PUT",
+    {
+        cache = true,
+        params,
+        body,
+        pathVariables,
+        options,
+        dependantFetchingKey,
+    }: useGetAPIParams
 ) => {
-  const url = keyMaps[key]({ ...pathVariables });
-  if (cache) {
-    // If using cache, make a generic swrv request
-    const getKey = () => {
-      if (dependantFetchingKey) {
-        return key && dependantFetchingKey.value;
-      }
-      return key;
-    };
-    const { data, error, mutate, isValidating } = useSWRV<T>(
-      getKey,
-      () => {
-        // Choose the fetcher function based on the method type
+    const url = keyMaps[key]({ ...pathVariables });
+    if (cache) {
+        // If using cache, make a generic swrv request
+        const getKey = () => {
+            if (dependantFetchingKey) {
+                return key && dependantFetchingKey.value;
+            }
+            return key;
+        };
+        const { data, error, mutate, isValidating } = useSWRV<T>(
+            getKey,
+            () => {
+                // Choose the fetcher function based on the method type
+                switch (method) {
+                    case "GET":
+                        return fetcher(url, params, options);
+
+                    case "POST":
+                        return fetcherPost(url, body, options);
+
+                    case "DELETE":
+                        return deleter(url, options);
+
+                    case "PUT":
+                        return updater(url, body, options);
+                    default:
+                        return fetcher(url, params, options);
+                }
+            },
+            options
+        );
+
+        const isLoading = ref(!data && !error);
+        return { data, error, isLoading, mutate, isValidating };
+    } else {
+        // If not using cache, use Axios
+
+        const data = ref<T>();
+        const error = ref();
+        const isLoading = ref<boolean>(false);
+
         switch (method) {
-          case "GET":
-            return fetcher(url, params, options);
+            case "GET":
+                getAxiosClient()
+                    .get<T>(url, { params, ...options })
+                    .then((resp) => {
+                        data.value = resp as unknown as T;
+                    })
+                    .catch((e) => {
+                        error.value = e;
+                    });
+                break;
 
-          case "POST":
-            return fetcherPost(url, body, options);
+            case "POST":
+                getAxiosClient()
+                    .post<T>(url, body, { ...options })
+                    .then((resp) => {
+                        data.value = resp as unknown as T;
+                    })
+                    .catch((e) => {
+                        error.value = e;
+                    });
+                break;
 
-          case "DELETE":
-            return deleter(url, options);
+            case "DELETE":
+                getAxiosClient()
+                    .delete<T>(url, { ...options })
+                    .then((resp) => {
+                        data.value = resp as unknown as T;
+                    })
+                    .catch((e) => {
+                        error.value = e;
+                    });
+                break;
 
-          case "PUT":
-            return updater(url, body, options);
+            case "PUT":
+                getAxiosClient()
+                    .put<T>(url, body, { ...options })
+                    .then((resp) => {
+                        data.value = resp as unknown as T;
+                    })
+                    .catch((e) => {
+                        error.value = e;
+                    });
+                break;
 
-          default:
-            return fetcher(url, params, options);
+            default:
+                break;
         }
-      },
-      options
-    );
 
-    const isLoading = ref(!data && !error);
-    return { data, error, isLoading, mutate, isValidating };
-  } else {
-    // If not using cache, use Axios
+        isLoading.value = !data.value && !error.value;
 
-    const data = ref<T>();
-    const error = ref();
-    const isLoading = ref<boolean>(false);
-
-    switch (method) {
-      case "GET":
-        getAxiosClient()
-          .get<T>(url, { params, ...options })
-          .then((resp) => {
-            data.value = resp as unknown as T;
-          })
-          .catch((e) => {
-            error.value = e;
-          });
-        break;
-
-      case "POST":
-        getAxiosClient()
-          .post<T>(url, body, { ...options })
-          .then((resp) => {
-            data.value = resp as unknown as T;
-          })
-          .catch((e) => {
-            error.value = e;
-          });
-        break;
-
-      case "DELETE":
-        getAxiosClient()
-          .delete<T>(url, { ...options })
-          .then((resp) => {
-            data.value = resp as unknown as T;
-          })
-          .catch((e) => {
-            error.value = e;
-          });
-        break;
-
-      case "PUT":
-        getAxiosClient()
-          .put<T>(url, body, { ...options })
-          .then((resp) => {
-            data.value = resp as unknown as T;
-          })
-          .catch((e) => {
-            error.value = e;
-          });
-        break;
-
-      default:
-        break;
+        return { data, error, isLoading };
     }
-
-    isLoading.value = !data.value && !error.value;
-
-    return { data, error, isLoading };
-  }
 };

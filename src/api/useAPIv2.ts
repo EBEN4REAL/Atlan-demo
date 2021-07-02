@@ -38,6 +38,8 @@ export const useAPI = <T>(
   }: useGetAPIParams
 ) => {
   const url = keyMaps[key]({ ...pathVariables });
+  console.trace("useapiv2")
+
   if (cache) {
 
 
@@ -78,13 +80,13 @@ export const useAPI = <T>(
       switch (method) {
         case "POST":
           return getAxiosClient()
-            .post<T>(url, body?.value, { ...options?.value });
+            .post<T>(url, body?.value, { params, ...options?.value });
         case "DELETE":
           return getAxiosClient()
             .delete<T>(url, { ...options?.value });
         case "PUT":
           return getAxiosClient()
-            .put<T>(url, body?.value, { ...options?.value });
+            .put<T>(url, body?.value, { params, ...options?.value });
         default:
           return getAxiosClient()
             .get<T>(url, { params, ...options?.value });
@@ -93,7 +95,6 @@ export const useAPI = <T>(
     const { state, execute, isReady, error } = useAsyncState(() => getRequest(), {}, {
       immediate: options?.value.immediate
     });
-
 
 
     return {

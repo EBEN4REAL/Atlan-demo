@@ -15,6 +15,7 @@ export const getFormattedGroup = (group: any) => {
     description: group.attributes.description[0] || "",
     memberCount: group.user_count || 0,
     memberCountString: pluralizeString("member", group.user_count || 0),
+    isDefault: group?.attributes?.isDefault ?? false,
   };
   return formattedGroup || {};
 };

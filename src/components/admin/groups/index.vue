@@ -56,12 +56,13 @@
               <a-menu-item key="0" @click="() => handleDeleteGroup(group.id)">
                 <fa icon="fal trash-alt" class="mr-2"></fa>Delete
               </a-menu-item>
-              <a-menu-item key="1" @click="addMembers(group)">
+              <a-menu-item key="1" @click="handleAddMembers(group)">
                 <fa icon="fal plus" class="mr-2"></fa>Add Members
               </a-menu-item>
-              <a-menu-item key="2" @click="addMembers(group)">
+              <a-menu-item key="2" @click="(e)=>{e.stopPropagation();handleToggleDefault(group)}">
                 <fa icon="fal plus" class="mr-2"></fa>Mark as default
-                <div class="text-xs">New users will be added to this group by default</div>
+                <a-spin size="small" v-if="markAsDefaultLoading"></a-spin>
+                <!-- <div class="text-xs">New users will be automatically added to default groups</div> -->
               </a-menu-item>
             </a-menu>
             <!-- <span class="flex items-center text-red-600">
@@ -111,6 +112,7 @@ export default defineComponent({
     const isAddGroupModalVisible = ref(false);
     const defaultTab = ref("about");
     const showGroupPreview = ref(false);
+    const markAsDefaultLoading = ref(false);
     const toggleAddGroupModal = () => {
       isAddGroupModalVisible.value = !isAddGroupModalVisible.value;
     };
@@ -173,7 +175,7 @@ export default defineComponent({
       // fetch groups
       getGroupList();
     };
-    const addMembers = (group: any) => {
+    const handleAddMembers = (group: any) => {
       defaultTab.value = "members";
       handleGroupClick(group);
     };
@@ -221,6 +223,35 @@ export default defineComponent({
       if (!showPreview.value) getGroupList();
     });
     // END: USER PREVIEW
+    const handleToggleDefault = (group) => {
+      const requestPayload = ref();
+      requestPayload.value = {
+        name: group.alias,
+        alias: group.name,
+        attributes: {
+          description: [group.description],
+          alias: [group.name],
+          created_at: [group.createdAt],
+          created_by: [group.createdBy],
+          image: [group.image],
+          isDefault: [`${!group.isDefault}`],
+        },
+      };
+      const { data, isLoading, error } = Group.UpdateGroupV2(
+        group.id,
+        requestPayload.value
+      );
+      watch([data, isLoading, error], () => {
+        console.log({ data, isLoading, error });
+        markAsDefaultLoading.value = isLoading.value;
+        if (data.value) {
+          message.success("Group marked as default");
+        } else if (error.value) {
+          markAsDefaultLoading.value = false;
+          message.error("Unable to mark group as default, please try again");
+        }
+      });
+    };
     return {
       isAddGroupModalVisible,
       toggleAddGroupModal,
@@ -239,8 +270,10 @@ export default defineComponent({
       handleDeleteGroup,
       handleCreateGroup,
       getGroupList,
-      addMembers,
+      handleAddMembers,
       defaultTab,
+      handleToggleDefault,
+      markAsDefaultLoading,
     };
   },
   data() {

@@ -15,7 +15,7 @@ export default function useAssetList(dependentKey?: Ref<any>, typeName?: string,
         refresh,
         body,
         assetTypeList,
-        abort,
+        searchScoreList,
         assetTypeSum
     } = useSearchList(typeName || "Catalog", list, [], dependentKey, initialBody, cacheSuffx, true);
 
@@ -27,7 +27,7 @@ export default function useAssetList(dependentKey?: Ref<any>, typeName?: string,
         isLoading,
         isValidating,
         query,
-        abort,
+        searchScoreList,
         replaceFilters,
         replaceBody,
         refresh,

@@ -77,6 +77,7 @@
     <AssetList
       v-else
       :list="list"
+      :score="searchScoreList"
       @preview="handlePreview"
       :projection="projection"
       :isLoading="isLoading || isValidating"
@@ -189,12 +190,8 @@ export default defineComponent({
     });
 
     //TODO - Get Filtered Asset Types based on selected connectors
-    const { list, replaceBody, isLoading, isValidating, abort } = useAssetList(
-      now,
-      assetTypeListString,
-      initialBody,
-      assetType.value
-    );
+    const { list, replaceBody, isLoading, isValidating, searchScoreList } =
+      useAssetList(now, assetTypeListString, initialBody, assetType.value);
 
     const updateBody = () => {
       initialBody = {
@@ -339,7 +336,7 @@ export default defineComponent({
     };
 
     return {
-      abort,
+      searchScoreList,
       list,
       assetType,
       assetTypeList,

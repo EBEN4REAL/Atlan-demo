@@ -43,15 +43,24 @@ export default function useSearchList(typeName: string, list: any, attributes: s
     const { data,
         mutate, state, STATES, error } = Search.BasicSearch(body, asyncOptions, cachekey, dependentKey);
 
+    const searchScoreList = ref({});
 
     watch(data, () => {
         if (body?.value?.offset > 0) {
             list.value = list.value.concat(data?.value?.entities);
+            searchScoreList.value = {
+                ...searchScoreList.value,
+                ...data?.value?.searchScore
+            }
         } else {
             if (data.value?.entities) {
                 list.value = [...data.value?.entities];
+                searchScoreList.value = {
+                    ...data?.value?.searchScore
+                }
             } else {
                 list.value = [];
+                searchScoreList.value = {};
             }
         }
     });
@@ -88,7 +97,6 @@ export default function useSearchList(typeName: string, list: any, attributes: s
 
     const replaceBody = (payload: any) => {
         body.value = payload;
-
         refresh();
     }
 
@@ -141,5 +149,6 @@ export default function useSearchList(typeName: string, list: any, attributes: s
         assetTypeMap,
         assetTypeList,
         assetTypeSum,
+        searchScoreList,
     }
 };

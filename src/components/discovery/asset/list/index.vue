@@ -17,6 +17,7 @@
       >
         <ListItem
           :item="item"
+          :score="score[item.guid]"
           @click="handlePreview(item)"
           :projection="projection"
         ></ListItem>
@@ -39,6 +40,13 @@ export default defineComponent({
       required: false,
       default() {
         return [];
+      },
+    },
+    score: {
+      type: Object,
+      required: false,
+      default() {
+        return {};
       },
     },
     itemSize: {

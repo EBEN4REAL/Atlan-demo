@@ -346,7 +346,7 @@ export default defineComponent({
     watch(
       () => attributeInput.data.options.applicableEntityTypes,
       (state, prevState) => {
-        if (prevState.length !== state.length && prevState.length >= 1) {
+        if (prevState.length !== state.length) {
           context.emit(
             "updateAttribute",
             normalize(JSON.parse(JSON.stringify(attributeInput.data)))

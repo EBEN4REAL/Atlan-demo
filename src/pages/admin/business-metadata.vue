@@ -63,6 +63,8 @@
 
       <div class="col-span-2">
         <BusinessMetadataProfile
+          @businessMetadataAppendToList="businessMetadataAppendToList"
+          @updateBusinessMetadataInList="updateBusinessMetadataInList"
           v-if="selectedBm"
           :key="selectedBm && selectedBm.guid"
           :selectedBm="selectedBm"
@@ -100,36 +102,160 @@
 import BusinessMetadataList from "@/admin/business-metadata/businessMetadataList.vue";
 import BusinessMetadataProfile from "@/admin/business-metadata/businessMetadataProfile.vue";
 // ? composables
-import useBusinessMetadata from "@/admin/business-metadata/composables/useBusinessMetadata";
+// import useBusinessMetadata from "@/admin/business-metadata/composables/useBusinessMetadata";
 // ? utils
 import { generateUUID } from "~/utils/generator";
 // ? Media
 import EmptyBusinessMetadata from "~/assets/images/illustrations/empty_business_metadata.svg";
-import { reactive, ref, toRefs, defineComponent, computed, nextTick } from "vue";
+
+import { useBMList } from "@/admin/business-metadata/composables/useBMList";
+
+// ? Utils
+import differenceWith from "lodash/differenceWith";
+
+import { ref, defineComponent, computed, nextTick, watch } from "vue";
+
 const DEFAULT_BM = {
   // TODO changes when UUID4 support
-  // displayName: "New Business Metadata",
   name: "",
   options: { displayName: "New Business Metadata" },
   description: "",
   guid: "new",
   attributeDefs: [],
 };
+
 export default defineComponent({
   components: { BusinessMetadataList, BusinessMetadataProfile },
   name: "businessMetadata",
   setup(props, context) {
-    const { bmResponse, error, loading } = useBusinessMetadata();
+    const { data: bmResponse, error, isLoading: loading } = useBMList.getBMList();
     // * Data
     let selectedBm = ref(null);
     let searchText = ref("");
     let newBm = ref(null);
     let updatedBm = ref(null);
     // * Methods
+
+    // !!!!!!!
+    const getBusinessMetadatAttributesNames = () => {
+      const reqBmAttrNames: string[] = [];
+      if (
+        bmResponse?.value?.businessMetadataDefs &&
+        bmResponse.value.businessMetadataDefs.length
+      ) {
+        bmResponse.value.businessMetadataDefs.forEach(
+          (bm: { attributeDefs: any[]; name: any }) => {
+            if (bm.attributeDefs && bm.attributeDefs.length) {
+              bm.attributeDefs.forEach(attr => {
+                reqBmAttrNames.push(`${bm.name}.${attr.name}`);
+              });
+            }
+          }
+        );
+      }
+      return reqBmAttrNames;
+    };
+
+    const getBusinessMetadataAttributesForTypeNames = (
+      types: string | any[],
+      appliedBmAttributesToAsset: any[]
+    ) => {
+      const reqBms: any[] = [];
+      if (
+        types &&
+        types.length &&
+        bmResponse?.value?.businessMetadataDefs &&
+        bmResponse.value.businessMetadataDefs.length
+      ) {
+        bmResponse.value.businessMetadataDefs.forEach(bm => {
+          if (bm.attributeDefs && bm.attributeDefs.length && !bm.isArchived) {
+            const reqBmAttrs: any[] = [];
+            const selectedBmCollection = appliedBmAttributesToAsset.find(
+              c => c.bm === bm.name
+            );
+            let attributesList = [...bm.attributeDefs];
+            if (selectedBmCollection && selectedBmCollection.attributes) {
+              attributesList = differenceWith(
+                bm.attributeDefs,
+                selectedBmCollection.attributes,
+                (a: { name: any }, b: { name: any }) => a.name === b.name
+              );
+            }
+            attributesList.forEach(attr => {
+              if (attr.options && attr.options.applicableEntityTypes) {
+                try {
+                  const applicableEntityTypes = JSON.parse(
+                    attr.options.applicableEntityTypes
+                  );
+                  if (
+                    Array.isArray(applicableEntityTypes) &&
+                    applicableEntityTypes.some(
+                      item => types.includes(item) || item.includes("AtlanAsset")
+                    )
+                  ) {
+                    reqBmAttrs.push(attr);
+                  }
+                } catch (error) {
+                  console.log("error", error);
+                }
+              }
+            });
+            if (reqBmAttrs && reqBmAttrs.length) {
+              reqBms.push({
+                ...bm,
+                attributeDefs: reqBmAttrs,
+              });
+            }
+          }
+        });
+      }
+      return reqBms;
+    };
+
+    const getBusinessMetadataAttributeProjection = () => {
+      const reqBmAttrNames: string[] = [];
+      if (
+        bmResponse?.value?.businessMetadataDefs &&
+        bmResponse.value.businessMetadataDefs.length
+      ) {
+        bmResponse.value.businessMetadataDefs.forEach(bm => {
+          if (bm.attributeDefs && bm.attributeDefs.length && !bm.isArchived) {
+            bm.attributeDefs.forEach(attr => {
+              reqBmAttrNames.push(`${bm.name}.${attr.name}`);
+            });
+          }
+        });
+      }
+      return reqBmAttrNames;
+    };
+
+    const businessMetadataAppendToList = (value: { guid: any }) => {
+      bmResponse.value.businessMetadataDefs = bmResponse.value.businessMetadataDefs.map(
+        item => {
+          if (item.guid === value.guid) {
+            return { ...item, ...value };
+          }
+          return item;
+        }
+      );
+    };
+
+    const updateBusinessMetadataInList = (value: { guid: any }) => {
+      bmResponse.value.businessMetadataDefs = bmResponse.value.businessMetadataDefs.map(
+        (item: { guid: any }) => {
+          if (item.guid === value.guid) {
+            return { ...item, ...value };
+          }
+          return item;
+        }
+      );
+    };
+    // !!!!!!!
     const handleSelectBm = (item: any) => {
       selectedBm.value = item;
       updatedBm.value = null;
     };
+
     const getNewBmTemplate = () => {
       const uuid4 = generateUUID();
       // TODO changes when UUID4 support
@@ -140,12 +266,12 @@ export default defineComponent({
       searchText.value = "";
     };
     const discardNewBm = () => {
-      const reqIndex = finalBusinessMetadataList.findIndex(bm => bm.guid === "new");
+      const reqIndex = finalBusinessMetadataList.value.findIndex(bm => bm.guid === "new");
       if (reqIndex !== -1) {
-        newBm.value = undefined;
-        selectedBm = finalBusinessMetadataList.length
-          ? JSON.parse(JSON.stringify(finalBusinessMetadataList[0]))
-          : undefined;
+        newBm.value = null;
+        selectedBm.value = finalBusinessMetadataList.value.length
+          ? JSON.parse(JSON.stringify(finalBusinessMetadataList.value[0]))
+          : null;
       }
     };
     const onUpdate = bm => {
@@ -157,8 +283,8 @@ export default defineComponent({
     };
     const handleAfterArchive = () => {
       nextTick(() => {
-        if (finalBusinessMetadataList && finalBusinessMetadataList.length) {
-          handleSelectBm(JSON.parse(JSON.stringify(finalBusinessMetadataList[0])));
+        if (finalBusinessMetadataList.value && finalBusinessMetadataList.value.length) {
+          handleSelectBm(JSON.parse(JSON.stringify(finalBusinessMetadataList.value[0])));
         } else {
           handleSelectBm(null);
         }
@@ -179,16 +305,30 @@ export default defineComponent({
     // * Computed
     const businessMetadataList = computed(() => {
       if (bmResponse?.value?.businessMetadataDefs)
-        return bmResponse.value.businessMetadataDefs;
+        return bmResponse.value.businessMetadataDefs.map(
+          (bm: { options: { displayName: any }; name: any; attributeDefs: any[] }) => ({
+            ...bm,
+            options: {
+              ...bm?.options,
+              displayName: bm?.options?.displayName ? bm.options.displayName : bm.name,
+            },
+            attributeDefs: bm.attributeDefs.map(a => {
+              if (a.options?.displayName?.length) return a;
+              return { ...a, options: { ...a.options, displayName: a.name } };
+            }),
+          })
+        );
       return [];
     });
     const businessMetadataListLoading = computed(() => {
       return !businessMetadataList && !businessMetadataListError;
     });
+
     const businessMetadataListError = computed(() => {
       if (error) return error.value;
       return null;
     });
+
     const finalBusinessMetadataList = computed(() => [
       ...(newBm.value ? [newBm.value] : []),
       ...(businessMetadataList
@@ -203,6 +343,15 @@ export default defineComponent({
       }
       return finalBusinessMetadataList;
     });
+
+    //* Hooks
+
+    watch(finalBusinessMetadataList, (n, o) => {
+      if (n.length && !selectedBm.value) {
+        selectedBm.value = JSON.parse(JSON.stringify(finalBusinessMetadataList.value[0]));
+      }
+    });
+
     return {
       businessMetadataList,
       finalBusinessMetadataList,
@@ -219,6 +368,8 @@ export default defineComponent({
       onUpdate,
       handleAfterArchive,
       discardNewBm,
+      businessMetadataAppendToList,
+      updateBusinessMetadataInList,
       EmptyBusinessMetadata,
     };
   },

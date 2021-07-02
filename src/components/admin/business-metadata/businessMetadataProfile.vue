@@ -12,14 +12,13 @@
           {{ (localBm.options && localBm.options.displayName) || localBm.name }}
         </div>
         <div>
-          created at created by
-          <!-- <CreateUpdateInfo
-          :createdAt="localBm.createTime"
-          :updatedAt="localBm.updateTime"
-          :createdBy="localBm.createdBy"
-          :updatedBy="localBm.updatedBy"
-          :entityType="`bm-localBm-${localBm.guid}`"
-        /> -->
+          <CreateUpdateInfo
+            :createdAt="localBm.createTime"
+            :updatedAt="localBm.updateTime"
+            :createdBy="localBm.createdBy"
+            :updatedBy="localBm.updatedBy"
+            :entityType="`bm-localBm-${localBm.guid}`"
+          />
         </div>
       </div>
       <div class="flex items-center">
@@ -206,7 +205,7 @@ export default defineComponent({
   components: { AddAttributeCard, CreateUpdateInfo },
   setup(props, context) {
     // * Data
-    let localBm = reactive({
+    let localBm = ref({
       name: "",
       description: "",
       options: { displayName: "" },
@@ -219,16 +218,11 @@ export default defineComponent({
     let loading = ref(false);
     let error = ref(null);
     // * Methods
-    const {
-      businessMetadataAppendToList,
-      addNewBusinessMetadata,
-      updateBusinessMetadataInList,
-      updateNewBusinessMetadata,
-    } = useBusinessMetadata();
+    const { addNewBusinessMetadata, updateNewBusinessMetadata } = useBusinessMetadata();
 
     const handleAfterArchive = () => {
       context.emit("afterArchive");
-      fetchAssets();
+      // fetchAssets();
     };
     const getDefaultAttributeTemplate = () => {
       const uuid4 = generateUUID();
@@ -247,13 +241,13 @@ export default defineComponent({
     };
     const onUpdate = () => {
       isUpdated.value = true;
-      context.emit("update", JSON.parse(JSON.stringify(localBm)));
+      context.emit("update", JSON.parse(JSON.stringify(localBm.value)));
     };
     const handleDiscardChanges = () => {
       if (props.selectedBm && props.selectedBm.guid === "new")
         context.emit("removeNewBm");
       if (props.selectedBm && props.selectedBm.guid) {
-        Object.assign(localBm, reactive(JSON.parse(JSON.stringify(props.selectedBm))));
+        localBm.value = JSON.parse(JSON.stringify(props.selectedBm));
       }
       isUpdated.value = false;
       error.value = null;
@@ -264,15 +258,15 @@ export default defineComponent({
       error.value = null;
       let isInvalid = false;
       // ! turn this back to displayName
-      if (!localBm.options.displayName) {
+      if (!localBm.value.options.displayName) {
         isInvalid = true;
       }
       // * if creating new BM append displayName to name,
-      if (!localBm.name) localBm.name = localBm.options.displayName;
-      if (localBm && localBm.attributeDefs.length) {
+      if (!localBm.value.name) localBm.value.name = localBm.value.options.displayName;
+      if (localBm.value && localBm.value.attributeDefs.length) {
         // eslint-disable-next-line
-        for (let i = 0; i < localBm.attributeDefs.length; i++) {
-          const attribute = localBm.attributeDefs[i];
+        for (let i = 0; i < localBm.value.attributeDefs.length; i++) {
+          const attribute = localBm.value.attributeDefs[i];
           //TODO change back to displayName
           if (!attribute.options.displayName) {
             error.value = {
@@ -289,7 +283,7 @@ export default defineComponent({
       if (isInvalid) {
         return;
       }
-      const tempBm = JSON.parse(JSON.stringify(localBm));
+      const tempBm = JSON.parse(JSON.stringify(localBm.value));
       if (!tempBm.description.length) tempBm.description = "-";
       if (tempBm && tempBm.attributeDefs.length) {
         tempBm.attributeDefs.forEach((attribute, index) => {
@@ -312,7 +306,7 @@ export default defineComponent({
                   attributeDefs: tempBm.attributeDefs,
                   description: tempBm.description,
                   name: tempBm.name,
-                  options: { displayName: tempBm.displayName },
+                  options: tempBm.options,
                 }
               : tempBm),
           },
@@ -337,8 +331,9 @@ export default defineComponent({
             apiResponse.value.data.businessMetadataDefs &&
             apiResponse.value.data.businessMetadataDefs.length
           ) {
-            if (localBm.guid === "new") {
-              businessMetadataAppendToList(
+            if (localBm.value.guid === "new") {
+              context.emit(
+                "businessMetadataAppendToList",
                 apiResponse.value.data.businessMetadataDefs[0]
               );
               context.emit("clearNewBm");
@@ -347,14 +342,14 @@ export default defineComponent({
                 JSON.parse(JSON.stringify(apiResponse.value.data.businessMetadataDefs[0]))
               );
             } else {
-              updateBusinessMetadataInList(
+              context.emit(
+                "updateBusinessMetadataInList",
                 apiResponse.value.data.businessMetadataDefs[0]
               );
             }
             // eslint-disable-next-line
-            Object.assign(
-              localBm,
-              JSON.parse(JSON.stringify(apiResponse.value.data.businessMetadataDefs[0]))
+            localBm.value = JSON.parse(
+              JSON.stringify(apiResponse.value.data.businessMetadataDefs[0])
             );
             context.emit("clearUpdatedBm");
           }
@@ -381,17 +376,17 @@ export default defineComponent({
     };
 
     const handleAddNewAttribute = () => {
-      localBm.attributeDefs = [
+      localBm.value.attributeDefs = [
         {
           ...JSON.parse(JSON.stringify(getDefaultAttributeTemplate())),
           id: Date.now(),
         },
-        ...localBm.attributeDefs,
+        ...localBm.value.attributeDefs,
       ];
       onUpdate();
     };
     const onAttributeValuesChange = (_uAttribute: any, uIndex: number) => {
-      localBm.attributeDefs = localBm.attributeDefs.map(
+      localBm.value.attributeDefs = localBm.value.attributeDefs.map(
         (attribute: object, index: number) => {
           if (index === uIndex) {
             return {
@@ -405,39 +400,40 @@ export default defineComponent({
       onUpdate();
     };
     const handleRemoveAttribute = index => {
-      const tempAttributes = JSON.parse(JSON.stringify(localBm.attributeDefs));
+      const tempAttributes = JSON.parse(JSON.stringify(localBm.value.attributeDefs));
       tempAttributes.splice(index, 1);
-      localBm.attributeDefs = tempAttributes;
+      localBm.value.attributeDefs = tempAttributes;
       onUpdate();
     };
-    const fetchAssets = async (isAppend = false) => {
-      setAssetsStatus("loading");
-      const paginateOptions = {
-        filters: filters || {},
-        limit: limit || 20,
-        skip: skip || 0,
-        searchText: searchText || "",
-        sortBy: sortBy || DEFAULT_SORT_BY,
-        sortOrder: sortOrder || DEFAULT_SORT_ORDER,
-        showOwnedByMe: showOwnedByMe || false,
-        showBookmarkedAssets: showBookmarkedAssets || false,
-      };
-      setAssetListPaginateOptions(paginateOptions);
-      const options = {
-        staticOptions: {
-          searchType: "BASIC",
-          typeName: "AtlanAsset",
-          excludeDeletedEntities: true,
-          includeClassificationAttributes: true,
-          includeSubClassifications: true,
-          includeSubTypes: true,
-        },
-        ...paginateOptions,
-        isAppend,
-      };
-      console.log("fetchAssets -> options", options);
-      getAssets(options);
-    };
+
+    // const fetchAssets = async (isAppend = false) => {
+    //   setAssetsStatus("loading");
+    //   const paginateOptions = {
+    //     filters: filters || {},
+    //     limit: limit || 20,
+    //     skip: skip || 0,
+    //     searchText: searchText || "",
+    //     sortBy: sortBy || DEFAULT_SORT_BY,
+    //     sortOrder: sortOrder || DEFAULT_SORT_ORDER,
+    //     showOwnedByMe: showOwnedByMe || false,
+    //     showBookmarkedAssets: showBookmarkedAssets || false,
+    //   };
+    //   setAssetListPaginateOptions(paginateOptions);
+    //   const options = {
+    //     staticOptions: {
+    //       searchType: "BASIC",
+    //       typeName: "AtlanAsset",
+    //       excludeDeletedEntities: true,
+    //       includeClassificationAttributes: true,
+    //       includeSubClassifications: true,
+    //       includeSubTypes: true,
+    //     },
+    //     ...paginateOptions,
+    //     isAppend,
+    //   };
+    //   console.log("fetchAssets -> options", options);
+    //   getAssets(options);
+    // };
     // * Computed
     const dropdownOptions = computed(() => {
       return [
@@ -451,11 +447,11 @@ export default defineComponent({
     });
     const searchedAttributes = computed(() => {
       if (attrsearchText.value) {
-        return localBm.attributeDefs.filter(attr =>
+        return localBm.value.attributeDefs.filter(attr =>
           attr.name.toUpperCase().includes(attrsearchText.value.toUpperCase())
         );
       }
-      return localBm.attributeDefs;
+      return localBm.value.attributeDefs;
     });
     // ...mapState({
     //   bmList: state => state.businessMetadata.list,
@@ -474,18 +470,7 @@ export default defineComponent({
     // * Lifecycle hooks
     onMounted(() => {
       if (props.selectedBm && props.selectedBm.guid) {
-        Object.assign(
-          localBm,
-          JSON.parse(
-            JSON.stringify({
-              ...props.selectedBm,
-              attributeDefs: props.selectedBm.attributeDefs.map(a => {
-                if (a.options?.displayName?.length) return a;
-                return { ...a, options: { ...a.options, displayName: a.name } };
-              }),
-            })
-          )
-        );
+        localBm.value = JSON.parse(JSON.stringify(props.selectedBm));
         if (props.selectedBm.guid === "new") {
           isUpdated.value = true;
           if (!props.selectedBm.attributeDefs.length) {

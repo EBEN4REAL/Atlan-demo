@@ -8,12 +8,12 @@ import useSWRVState from '~/api2/useSWRVState';
 
 export default function useCredentialTestbyID(dependentKey?: Ref<any>, id?: any, cacheSuffx?: string | "") {
 
-    const asyncOptions: IConfig & AxiosRequestConfig = {
+    const asyncOptions: Ref<IConfig & AxiosRequestConfig> = ref({
         dedupingInterval: 0,
         shouldRetryOnError: false,
         revalidateOnFocus: false,
         revalidateDebounce: 0,
-    };
+    });
 
     const paramId = ref(id);
 

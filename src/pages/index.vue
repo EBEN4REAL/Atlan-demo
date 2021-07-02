@@ -3,9 +3,9 @@
     <div class="col-span-12 sm:col-span-8">
       <div class="flex items-center w-full align-middle">
         <div class="flex flex-col w-full">
-          <p
-            class="mb-2 text-xl font-bold tracking-tight text-gray-900"
-          >Welcome Home, {{ fullName }}</p>
+          <p class="mb-2 text-xl font-bold tracking-tight text-gray-900">
+            Welcome Home, {{ fullName }}
+          </p>
           <a-input-search placeholder="Search all your assets.." size="large">
             <template #prefix>
               <img :src="displayNameHTML" class="w-auto h-8 mr-3" />
@@ -15,17 +15,26 @@
       </div>
     </div>
 
-    <div class="hidden h-full p-3 mt-3 bg-white border rounded-md sm:col-span-4 sm:block">
+    <div
+      class="hidden h-full p-3 mt-3 bg-white border rounded-md  sm:col-span-4 sm:block"
+    >
       <div class="flex items-center justify-between p-5 align-middle">
         <div class="flex items-center">
-          <avatar :imageUrl="imageUrl" :allowUpload="true" :avatarName="fullName || username" />
+          <avatar
+            :imageUrl="imageUrl"
+            :allowUpload="true"
+            :avatarName="fullName || username"
+          />
           <div class="flex flex-col ml-2">
             <p
-              class="mb-0 text-lg leading-none tracking-tight text-gray-800 truncate text-semibold"
-            >{{ fullName }}</p>
+              class="mb-0 text-lg leading-none tracking-tight text-gray-800 truncate  text-semibold"
+            >
+              {{ fullName }}
+            </p>
             <p class="mb-0 text-sm text-gray-500">@{{ username }}</p>
             <p class="mt-0 mb-0 text-sm tracking-tight text-gray-800">
-              <fa icon="fal user-tag" class="mr-1 text-gray-800 pushtop"></fa>Admin
+              <fa icon="fal user-tag" class="mr-1 text-gray-800 pushtop"></fa
+              >Admin
             </p>
           </div>
         </div>
@@ -48,7 +57,11 @@
         <div class="mt-4">
           <p class="mb-2 leading-none text-gray-400">Skills/Expertise</p>
           <div class="flex">
-            <Tags :tags="skills" @updateTags="handleUpdateSkills" :disableNewTag="updatingSkills"></Tags>
+            <Tags
+              :tags="skills"
+              @updateTags="handleUpdateSkills"
+              :disableNewTag="updatingSkills"
+            ></Tags>
             <a-spin size="small" v-if="updatingSkills"></a-spin>
           </div>
         </div>
@@ -134,7 +147,7 @@ export default defineComponent({
       } ${lastName.charAt(0).toUpperCase() + lastName.substr(1).toLowerCase()}`;
     });
     useHead({
-      title: `Welcome - ${fullName} `,
+      title: `Welcome - ${fullName.value} `,
     });
     let imageUrl = ref(
       `http://localhost:3333/api/auth/tenants/default/avatars/${username}`

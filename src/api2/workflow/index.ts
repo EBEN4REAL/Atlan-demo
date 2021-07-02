@@ -7,7 +7,7 @@ import { useAPI } from "../useAPI";
 const List = (
     params?: any,
     options?: IConfig & AxiosRequestConfig,
-    cacheSuffix?: string,
+    cacheSuffix?: Ref<string>,
     dependantFetchingKey?: Ref<any>
 ) => {
     return useAPI<any>(WORKFLOW_LIST, "GET", {

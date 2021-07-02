@@ -1,16 +1,21 @@
 <template>
   <div class="flex">
-    <div class="pr-3 border-r border-gray-200 border-dashed">
+    <div class="px-3 border-r border-gray-200 border-dashed">
       <p class="mb-1 text-gray-500">Show/Hide</p>
       <a-checkbox-group v-model:value="projection" @change="handleChange">
-        <div class="flex flex-col space-y-1">
-          <a-checkbox value="description">Description</a-checkbox>
-          <a-checkbox value="owners">Owners</a-checkbox>
-          <a-checkbox value="terms">Business Terms</a-checkbox>
-          <a-checkbox value="classifications">Classifications</a-checkbox>
-          <a-checkbox value="rows">Row/Columns</a-checkbox>
-          <a-checkbox value="heirarchy">Heirarchy</a-checkbox>
-          <a-checkbox value="popularity">Popularity</a-checkbox>
+        <div class="flex">
+          <div class="flex flex-col space-y-1">
+            <a-checkbox value="description">Description</a-checkbox>
+            <a-checkbox value="owners">Owners</a-checkbox>
+            <a-checkbox value="terms">Business Terms</a-checkbox>
+            <a-checkbox value="classifications">Classifications</a-checkbox>
+            <a-checkbox value="rows">Row/Columns</a-checkbox>
+            <a-checkbox value="heirarchy">Heirarchy</a-checkbox>
+          </div>
+          <div class="flex flex-col space-y-1">
+            <a-checkbox value="popularity">Popularity Score</a-checkbox>
+            <a-checkbox value="searchscore">Relevance Score</a-checkbox>
+          </div>
         </div>
       </a-checkbox-group>
     </div>
@@ -25,8 +30,8 @@
           <a-radio value="Catalog.popularityScore|ascending"
             >Popularity Score(Low-High)</a-radio
           >
-          <a-radio value="name|ascending">Name (A-Z)</a-radio>
-          <a-radio value="name|descending">Name (Z-A)</a-radio>
+          <a-radio value="Asset.name.keyword|ascending">Name (A-Z)</a-radio>
+          <a-radio value="Asset.name.keyword|descending">Name (Z-A)</a-radio>
         </div>
       </a-radio-group>
     </div>

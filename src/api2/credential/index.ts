@@ -12,7 +12,7 @@ import { useAPI } from "../useAPI";
 const TestCredential = (
     body?: Ref<Components.Schemas.ConnectionTest>,
     options?: IConfig & AxiosRequestConfig,
-    cacheSuffix?: string,
+    cacheSuffix?: Ref<string>,
     dependantFetchingKey?: Ref<any>
 ) => {
     return useAPI<any>(CREDENTIAL_TEST, "POST", {
@@ -27,7 +27,7 @@ const TestCredential = (
 const TestCredentialByID = (
     id?: any,
     options?: IConfig & AxiosRequestConfig,
-    cacheSuffix?: string,
+    cacheSuffix?: Ref<string>,
     dependantFetchingKey?: Ref<any>
 ) => {
     console.log(id);

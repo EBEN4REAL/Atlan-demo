@@ -44,9 +44,9 @@
     >
       <div
         v-if="
-          (projection?.includes('rows') &&
-            item.typeName.toLowerCase() === 'table') ||
-          item.typeName.toLowerCase() === 'view'
+          projection?.includes('rows') &&
+          (item.typeName.toLowerCase() === 'table' ||
+            item.typeName.toLowerCase() === 'view')
         "
       >
         <p class="mb-0 text-gray-600">
@@ -73,6 +73,13 @@
         <fa icon="fal analytics" class="pushtop"></fa>
         {{ numeralFormat(item?.attributes?.popularityScore, "0[.]00") }}
       </div>
+    </div>
+    <div
+      class="text-xs text-gray-500"
+      v-if="projection?.includes('searchscore')"
+    >
+      <fa icon="fal search" class="pushtop"></fa>
+      {{ numeralFormat(score, "0[.]000000") }}
     </div>
     <div
       class="flex flex-wrap mt-1 gap-x-1"
@@ -134,6 +141,13 @@ export default defineComponent({
       required: false,
       default(): Components.Schemas.AtlasEntityHeader {
         return {};
+      },
+    },
+    score: {
+      type: Number,
+      required: false,
+      default() {
+        return 0;
       },
     },
     projection: {

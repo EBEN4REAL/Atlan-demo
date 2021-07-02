@@ -81,7 +81,7 @@ import relativeTime from "dayjs/plugin/relativeTime";
 dayjs.extend(relativeTime);
 import { APIKeyService } from "~/api/auth/apiKeys";
 import { debounce } from "~/composables/utils/debounce";
-import { usePreview } from "~/composables/user/showUserPreview";
+import { useUserPreview } from "~/composables/user/showUserPreview";
 
 export default defineComponent({
   components: { ErrorView },
@@ -154,7 +154,7 @@ export default defineComponent({
       });
     };
     // user preview drawer
-    const { showUserPreview, setUserUniqueAttribute } = usePreview();
+    const { showUserPreview, setUserUniqueAttribute } = useUserPreview();
     const handleClickUser = (userId: string) => {
       setUserUniqueAttribute(userId);
       showUserPreview({ allowed: ["about"] });

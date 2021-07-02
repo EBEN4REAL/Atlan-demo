@@ -1,37 +1,24 @@
 import { ref, computed } from "vue";
 const showPreview = ref(false);
-const userId = ref("");
-const username = ref("");
+const groupId = ref("");
+const groupAlias = ref("");
 const uniqueAttribute = ref("");
-
 const allTabs = [
   {
     //tab name
     name: "About",
     //tab icon
     iconClass: "",
-    //component name in userPreview.vue
+    //component name in groupPreview.vue
     component: "About",
     // unique id for tab - the one that'll get passed from different components
     key: "about",
   },
   {
-    name: "Groups",
+    name: "Members",
     iconClass: "",
-    component: "Groups",
-    key: "groups",
-  },
-  {
-    name: "Sessions",
-    iconClass: "",
-    component: "Sessions",
-    key: "sessions",
-  },
-  {
-    name: "Access Logs",
-    iconClass: "",
-    component: "AccessLogs",
-    key: "accessLogs",
+    component: "Members",
+    key: "members",
   },
 ];
 
@@ -43,8 +30,8 @@ const finalTabs = computed(() => {
   return allTabs.filter((tab) => !blacklistedTabs.value.includes(tab.key));
 });
 
-export function useUserPreview() {
-  const showUserPreview = (config?: { allowed?: any; blacklisted?: any }) => {
+export function useGroupPreview() {
+  const showGroupPreview = (config?: { allowed?: any; blacklisted?: any }) => {
     blacklistedTabs.value = [...(config?.blacklisted || [])];
     allowedTabs.value = [...(config?.allowed || [])];
     showPreview.value = true;
@@ -54,21 +41,21 @@ export function useUserPreview() {
     allowedTabs.value = [];
     showPreview.value = false;
   };
-  const setUserUniqueAttribute = (value, key = "id") => {
-    if (key === "username") {
-      setUserUsername(value);
-    } else setUserId(value);
+  const setGroupUniqueAttribute = (value, key = "id") => {
+    if (key === "groupAlias") {
+      setGroupAlias(value);
+    } else setGroupId(value);
     uniqueAttribute.value = key;
   };
-  const setUserId = (id: string) => {
+  const setGroupId = (id: string) => {
     console.log("setting user id", id);
-    userId.value = id;
-    console.log("done", userId.value);
+    groupId.value = id;
+    console.log("done", groupId.value);
   };
-  const setUserUsername = (id: string) => {
+  const setGroupAlias = (id: string) => {
     console.log("setting user id", id);
-    username.value = id;
-    console.log("done", username.value);
+    groupAlias.value = id;
+    console.log("done", groupAlias.value);
   };
   const setAllowedTabs = (tabs) => {
     allowedTabs.value = [...tabs];
@@ -79,14 +66,14 @@ export function useUserPreview() {
 
   return {
     showPreview,
-    userId,
-    setUserUniqueAttribute,
+    groupId,
+    setGroupUniqueAttribute,
     setAllowedTabs,
     setBlackListedTabs,
     uniqueAttribute,
-    username,
+    groupAlias,
     finalTabs,
-    showUserPreview,
+    showGroupPreview,
     closePreview,
   };
 }

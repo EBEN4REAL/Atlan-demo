@@ -1,6 +1,3 @@
-s
-
-
 <template>
   <a-layout class="min-h-full">
     <a-layout-header style="height: 32px; padding: 0 0px; line-height: 32px" class="shadow-sm">
@@ -49,7 +46,7 @@ s
       </a-layout-content>
     </a-layout>
   </a-layout>
-  <UserPreviewDrawer v-if="showPreview" />
+  <PreviewDrawer />
   <!-- <div class="mx-auto mt-5" @click="themeToggle">[Default Layout]</div> -->
 </template>
 
@@ -59,9 +56,7 @@ import KeycloakMixin from "~/mixins/keycloak";
 import PageLoader from "@common/loaders/page.vue";
 import Sidebar from "./sidebar/index.vue";
 import UserPersonalAvatar from "~/components/common/avatar/me.vue";
-import UserPreviewDrawer from "~/components/admin/users/userPreview/userPreviewDrawer.vue";
-import { usePreview } from "~/composables/user/showUserPreview";
-import { useStore } from "~/store";
+import PreviewDrawer from "~/components/common/previewDrawer.vue";
 
 export default defineComponent({
   name: "HelloWorld",
@@ -70,11 +65,7 @@ export default defineComponent({
     PageLoader,
     Sidebar,
     UserPersonalAvatar,
-    UserPreviewDrawer,
-  },
-  setup() {
-    const { showPreview } = usePreview();
-    return { showPreview };
+    PreviewDrawer,
   },
   props: {},
   data() {

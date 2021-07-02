@@ -7,7 +7,6 @@
           :allowUpload="isCurrentUser"
           :avatarName="selectedUser.name || selectedUser.uername || selectedUser.email"
           :avatarSize="48"
-          @imageUpdated="(emitPayload)=>$emit('imageUpdated',emitPayload)"
           class="mr-2"
         />
         <div class="ml-3">
@@ -25,7 +24,6 @@
             :isCurrentUser="isCurrentUser"
             :is="tab.component"
             :selectedUser="selectedUser"
-            @updatedUser="$emit('updatedUser')"
           />
         </a-tab-pane>
       </a-tabs>
@@ -44,6 +42,8 @@ import AccessLogs from "./accessLogs.vue";
 import Sessions from "./sessions.vue";
 import whoami from "~/composables/user/whoami";
 import Avatar from "~/components/common/avatar.vue";
+import { useUserPreview } from "~/composables/user/showUserPreview";
+import { useUser } from "~/composables/user/useUsers";
 export default defineComponent({
   name: "UserPreview",
   components: {
@@ -53,27 +53,54 @@ export default defineComponent({
     Sessions,
     Avatar,
   },
-  props: {
-    selectedUser: {
-      type: Object,
-      default: {},
-    },
-    tabs: {
-      type: Array,
-      default: () => [],
-    },
-  },
+  // props: {
+  //   selectedUser: {
+  //     type: Object,
+  //     default: {},
+  //   },
+  //   tabs: {
+  //     type: Array,
+  //     default: () => [],
+  //   },
+  // },
   setup(props, context) {
+    const {
+      // showPreview,
+      userId,
+      username: userUsername,
+      uniqueAttribute,
+      finalTabs,
+    } = useUserPreview();
+    let filterObj = {};
+    if (uniqueAttribute.value === "username")
+      filterObj = {
+        $and: [{ email_verified: true }, { username: userUsername.value }],
+      };
+    else filterObj = { $and: [{ email_verified: true }, { id: userId.value }] };
+    const { userList } = useUser({
+      limit: 1,
+      offset: 0,
+      sort: "first_name",
+      filter: filterObj,
+    });
+    const userObj = computed(() => {
+      return userList && userList.value && userList.value.length
+        ? userList.value[0]
+        : [];
+    });
+    // const handleClose = () => {
+    //   closePreview();
+    // };
     const { username } = whoami();
     let isCurrentUser = computed(() => {
-      return username.value === props.selectedUser.username;
+      return username.value === userObj.value.username;
     });
     // const imageUrl = (username: any) => {
     //   return `http://localhost:3333/api/auth/tenants/default/avatars/${username}`;
     // };
     const imageUrl = computed(() => {
-      if (props.selectedUser && props.selectedUser.username)
-        return `http://localhost:3333/api/auth/tenants/default/avatars/${props.selectedUser.username}`;
+      if (userObj.value && userObj.value.username)
+        return `http://localhost:3333/api/auth/tenants/default/avatars/${userObj.value.username}`;
       return "";
     });
     return {
@@ -81,6 +108,11 @@ export default defineComponent({
       getNameInTitleCase,
       imageUrl,
       isCurrentUser,
+      // showPreview,
+      selectedUser: userObj,
+      userId,
+      // handleClose,
+      tabs: finalTabs,
     };
   },
 });

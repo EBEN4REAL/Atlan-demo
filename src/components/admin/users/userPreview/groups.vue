@@ -57,9 +57,9 @@
                 :size="40"
               >{{ getNameInitials(getNameInTitleCase(group.name)) }}</a-avatar>
               <div class="ml-2">
-                <div>{{ group.alias }}</div>
-                <div>@{{ group.name }}</div>
-                <div>{{ pluralizeString("user", group.user_count) }}</div>
+                <div>{{ group.name }}</div>
+                <div>@{{ group.alias }}</div>
+                <div>{{group.memberCountString}}</div>
               </div>
             </div>
             <a-popover trigger="click" placement="bottom">

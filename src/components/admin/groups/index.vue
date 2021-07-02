@@ -82,17 +82,17 @@
     >
       <AddGroup @createGroup="handleCreateGroup" />
     </a-modal>
-    <GroupPreviewDrawer
+    <!-- <GroupPreviewDrawer
       @closePreview="handleClosePreview"
       :selectedGroup="selectedGroup"
       :showGroupPreview="showGroupPreview"
       @refreshTable="getGroupList"
       :defaultTab="defaultTab"
-    />
+    />-->
   </div>
 </template>
 <script lang="ts">
-import { ref, reactive, defineComponent, computed } from "vue";
+import { ref, reactive, defineComponent, computed, watch } from "vue";
 import useGroups from "~/composables/group/useGroups";
 import AddGroup from "./addGroup.vue";
 import ErrorView from "@common/error/index.vue";
@@ -100,6 +100,7 @@ import GroupPreviewDrawer from "./groupPreview/groupPreviewDrawer.vue";
 import { Group } from "~/api/auth/group";
 import { message } from "ant-design-vue";
 import { useDebounceFn } from "@vueuse/core";
+import { useGroupPreview } from "~/composables/drawer/showGroupPreview";
 export default defineComponent({
   components: {
     AddGroup,
@@ -117,7 +118,6 @@ export default defineComponent({
     const groupListAPIParams = reactive({
       limit: 6,
       offset: 0,
-      sort: "-created_at",
       filter: {},
     });
     const pagination = computed(() => {
@@ -144,7 +144,12 @@ export default defineComponent({
         ? {
             $or: [
               { name: { $ilike: `%${searchText.value}%` } },
-              { alias: { $ilike: `%${searchText.value}%` } },
+              {
+                attributes: {
+                  $elemMatch: { alias: { $ilike: `%${searchText.value}%` } },
+                },
+              },
+              // { alias: { $ilike: `%${searchText.value}%` } },
             ],
           }
         : {};
@@ -173,7 +178,8 @@ export default defineComponent({
       handleGroupClick(group);
     };
     const handleGroupClick = (group: any) => {
-      showGroupPreview.value = true;
+      // showGroupPreview.value = true;
+      showGroupPreviewDrawer(group);
       selectedGroupId.value = group.id;
     };
     const selectedGroup = computed(() => {
@@ -201,6 +207,20 @@ export default defineComponent({
       isAddGroupModalVisible.value = false;
       getGroupList();
     };
+    // BEGIN: USER PREVIEW
+    const {
+      showPreview,
+      showGroupPreview: openPreview,
+      setGroupUniqueAttribute,
+    } = useGroupPreview();
+    const showGroupPreviewDrawer = (group: any) => {
+      setGroupUniqueAttribute(group.id);
+      openPreview();
+    };
+    watch(showPreview, () => {
+      if (!showPreview.value) getGroupList();
+    });
+    // END: USER PREVIEW
     return {
       isAddGroupModalVisible,
       toggleAddGroupModal,

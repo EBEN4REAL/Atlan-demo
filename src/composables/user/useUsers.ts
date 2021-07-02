@@ -1,10 +1,8 @@
 import { ref, watch, computed, ComputedRef, Ref } from "vue";
 import swrvState from "~/composables/utils/swrvState";
 import { useAPI } from "~/api/useAPI";
-import { pluralizeString } from "~/composables/utils/string-operations.ts";
+import { pluralizeString } from "~/composables/utils/string-operations";
 import { roleMap } from "~/constant/role";
-import { fetcher, getAPIPath, getAxiosClient } from "~/api";
-import useSWRV from "swrv";
 
 const getUserName = (user: any) => {
   const { first_name } = user;
@@ -67,6 +65,7 @@ export const useUser = (userListAPIParams: {
   filter: any;
   sort: string;
 }) => {
+  console.log(userListAPIParams);
   const {
     data,
     error,

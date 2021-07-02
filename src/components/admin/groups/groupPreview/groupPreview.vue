@@ -38,6 +38,8 @@ import {
 import { defineComponent, computed, ref } from "vue";
 import About from "./about.vue";
 import Members from "./members.vue";
+import { useGroup } from "~/composables/group/useGroups";
+import { useGroupPreview } from "~/composables/drawer/showGroupPreview";
 export default defineComponent({
   name: "GroupPreview",
   components: {
@@ -55,28 +57,54 @@ export default defineComponent({
     },
   },
   setup(props, context) {
-    const activeKey = ref(props.defaultTab);
-    const tabs = computed(() => {
-      return [
-        {
-          name: "About",
-          iconClass: "",
-          component: "About",
-          key: "about",
-        },
-        {
-          name: "Members",
-          iconClass: "",
-          component: "Members",
-          key: "members",
-        },
-      ];
+    // const activeKey = ref(props.defaultTab);
+    const {
+      showPreview,
+      groupId,
+      groupAlias,
+      closePreview,
+      uniqueAttribute,
+      finalTabs,
+    } = useGroupPreview();
+    let filterObj = {};
+    if (uniqueAttribute.value === "groupAlias")
+      filterObj = {
+        $and: [{ name: groupAlias.value }],
+      };
+    else filterObj = { $and: [{ id: groupId.value }] };
+    const { groupList } = useGroup({
+      limit: 1,
+      offset: 0,
+      // sort: "alias",
+      filter: filterObj,
     });
+    const groupObj = computed(() => {
+      return groupList && groupList.value && groupList.value.length
+        ? groupList.value[0]
+        : [];
+    });
+    // const tabs = computed(() => {
+    //   return [
+    //     {
+    //       name: "About",
+    //       iconClass: "",
+    //       component: "About",
+    //       key: "about",
+    //     },
+    //     {
+    //       name: "Members",
+    //       iconClass: "",
+    //       component: "Members",
+    //       key: "members",
+    //     },
+    //   ];
+    // });
     return {
       getNameInitials,
       getNameInTitleCase,
-      tabs,
-      activeKey,
+      tabs: finalTabs,
+      // activeKey,
+      selectedGroup: groupObj,
     };
   },
 });

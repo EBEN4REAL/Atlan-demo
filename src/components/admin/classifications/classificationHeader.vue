@@ -73,7 +73,7 @@ import { defineComponent, computed, ref } from "vue";
 import Dropdown from "~/components/admin/classifications/dropdown.vue";
 import UpdateClassificationModal from "./updateClassificationModal.vue";
 import DeleteClassificationModal from "./deleteClassificationModal.vue";
-import { usePreview } from "~/composables/user/showUserPreview";
+import { useUserPreview } from "~/composables/user/showUserPreview";
 import { useTimeAgo } from "@vueuse/core";
 // import moment from "moment";
 
@@ -189,7 +189,7 @@ export default defineComponent({
       isDeleteClassificationModalOpen.value = false;
     };
     // user preview drawer
-    const { showUserPreview, setUserUniqueAttribute } = usePreview();
+    const { showUserPreview, setUserUniqueAttribute } = useUserPreview();
     const handleClickUser = (username: string) => {
       setUserUniqueAttribute(username, "username");
       showUserPreview({ allowed: ["about"] });

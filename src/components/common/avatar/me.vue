@@ -55,7 +55,7 @@
 
 <script lang="ts">
 import { defineComponent, inject } from "vue";
-import { usePreview } from "~/composables/user/showUserPreview";
+import { useUserPreview } from "~/composables/user/showUserPreview";
 import whoami from "~/composables/user/whoami";
 
 export default defineComponent({
@@ -75,7 +75,7 @@ export default defineComponent({
     };
     const { username, name } = whoami();
     // user preview drawer
-    const { showUserPreview, setUserUniqueAttribute } = usePreview();
+    const { showUserPreview, setUserUniqueAttribute } = useUserPreview();
     const handleClickUser = (username: string) => {
       setUserUniqueAttribute(username, "username");
       showUserPreview();

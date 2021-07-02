@@ -112,7 +112,7 @@ import StatusBadge from "@common/badge/status/index.vue";
 import fetchUserList from "~/composables/user/fetchUserList";
 import fetchGroupList from "~/composables/group/fetchGroupList";
 import updateOwners from "~/composables/asset/updateOwners";
-import { usePreview } from "~/composables/user/showUserPreview";
+import { useUserPreview } from "~/composables/user/showUserPreview";
 export default defineComponent({
   components: { StatusBadge },
   props: {
@@ -172,7 +172,7 @@ export default defineComponent({
       handleSearch(searchText.value);
     };
     // user preview drawer
-    const { showUserPreview, setUserUniqueAttribute } = usePreview();
+    const { showUserPreview, setUserUniqueAttribute } = useUserPreview();
     const handleClickUser = (username: string) => {
       setUserUniqueAttribute(username, "username");
       showUserPreview({ allowed: ["about"] });

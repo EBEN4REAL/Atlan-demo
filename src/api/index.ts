@@ -16,10 +16,9 @@ export const fetcher = (
   params,
   options
 ): Promise<AxiosResponse["data"]> => {
-
   console.log("replace api", params);
 
-  return getAxiosClient().get(url, { ...params, ...options });
+  return getAxiosClient().get(url, { params, ...options });
 };
 
 export const fetcherPost = (
@@ -31,17 +30,13 @@ export const fetcherPost = (
   return getAxiosClient().post(url, body, options);
 };
 
-export const updater = (
-  url,
-  body,
-  options
-): Promise<AxiosResponse["data"]> => {
+export const updater = (url, body, options): Promise<AxiosResponse["data"]> => {
   return getAxiosClient().put(url, body, options);
 };
 
 export const deleter = (url, options): Promise<AxiosResponse["data"]> => {
   return getAxiosClient().delete(url, options);
-}
+};
 
 // export const ServiceURLWithoutTenant = (serviceName, path = "") => {
 //   return `${getApiPath(serviceName)}${path}`;

@@ -31,16 +31,23 @@
         @click="selectItem(categoryIndex, index)"
       >
         <div class="flex">
-          <div :class="{
-            'mr-2 border-2': true,
-            'p-2': category.categoryTitle !== 'Highlights',
-            'p-0 flex w-5 h-5': category.categoryTitle === 'Highlights'
-          }">
+          <div
+            :class="{
+              'mr-2 border-2': true,
+              'p-2': category.categoryTitle !== 'Highlights',
+              'p-0 flex w-5 h-5': category.categoryTitle === 'Highlights',
+            }"
+          >
             <fa v-if="item.icon" :icon="item.icon" />
             <span v-else-if="item.textIcon" class="text-xs">{{
               item.textIcon
             }}</span>
-            <span v-else-if="category.categoryTitle === 'Highlights'" class="text-xs pl-1 w-full" :style="`background-color: ${item.color}`">A</span>
+            <span
+              v-else-if="category.categoryTitle === 'Highlights'"
+              class="text-xs pl-1 w-full"
+              :style="`background-color: ${item.color}`"
+              >A</span
+            >
           </div>
           <div class="flex flex-col justify-center">
             <div>{{ item.title }}</div>
@@ -119,6 +126,14 @@ export default defineComponent({
             1) %
           this.items[this.selectedCategoryIndex].content.length;
       }
+      const selected = document.getElementsByClassName("is-selected");
+
+      if (selected[0]) {
+        selected[0]?.scrollIntoView(false  , {
+          behaviour: "smooth",
+          block: "nearest",
+        });
+      }
     },
 
     downHandler() {
@@ -135,6 +150,13 @@ export default defineComponent({
         this.selectedIndex =
           (this.selectedIndex + 1) %
           this.items[this.selectedCategoryIndex].content.length;
+      }
+      const selected = document.getElementsByClassName("is-selected");
+      if (selected[0]) {
+        selected[0]?.scrollIntoView(true, {
+          behaviour: "smooth",
+          block: "nearest",
+        });
       }
     },
 

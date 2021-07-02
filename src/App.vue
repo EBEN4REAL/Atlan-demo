@@ -30,7 +30,11 @@ export default defineComponent({
     };
 
     const isAuth = ref(false);
-    const { data: tenantData } = Tenant.GetTenant(asyncOptions, "", isAuth);
+    const { data: tenantData } = Tenant.GetTenant(
+      asyncOptions,
+      ref(""),
+      isAuth
+    );
 
     const initialBody = {
       limit: 100,

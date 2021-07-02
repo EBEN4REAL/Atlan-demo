@@ -3,17 +3,15 @@ import { computed, reactive, Ref, ref, watch } from 'vue';
 import { SearchParameters } from '~/types/atlas/attributes';
 import { BaseAttributes, BotsAttributes } from '~/constant/projection';
 import axios, { AxiosRequestConfig, CancelTokenSource } from 'axios';
-import { BotsType } from '~/types/atlas/bots';
 import { Search } from '~/api2/search';
 import { IConfig } from 'swrv';
 import { Components } from '~/api/atlas/client';
 import { AssetTypeList } from '~/constant/assetType';
-import useSWRVState from '~/api2/useSWRVState';
 import LocalStorageCache from 'swrv/dist/cache/adapters/localStorage';
 
 
 
-export default function useSearchList(typeName: string, list: any, attributes: string[], dependentKey?: Ref<any>, initialBody?: any, cacheSuffx?: string | "", isLocalStorage?: boolean) {
+export default function useSearchList(typeName: string, list: any, attributes: string[], dependentKey?: Ref<any>, initialBody?: any, cacheSuffx?: string | "", quickChange?: boolean, isLocalStorage?: boolean) {
 
     let cancelTokenSource: Ref<CancelTokenSource> = ref(axios.CancelToken.source());
     let asyncOptions: IConfig & AxiosRequestConfig = {
@@ -22,12 +20,11 @@ export default function useSearchList(typeName: string, list: any, attributes: s
         revalidateOnFocus: false,
         revalidateDebounce: 0,
     };
-
     if (isLocalStorage) {
         asyncOptions.cache = new LocalStorageCache()
     }
 
-    const body: Ref<SearchParameters> = ref({
+    let body = ref({
         typeName: typeName,
         excludeDeletedEntities: true,
         includeClassificationAttributes: false,
@@ -40,8 +37,11 @@ export default function useSearchList(typeName: string, list: any, attributes: s
         aggregationAttributes: [],
         ...initialBody
     });
+
+
+    let cachekey = ref(`${cacheSuffx}`);
     const { data,
-        mutate, state, STATES, error } = Search.BasicSearch(body, asyncOptions, `${cacheSuffx}`, dependentKey);
+        mutate, state, STATES, error } = Search.BasicSearch(body, asyncOptions, cachekey, dependentKey);
 
 
     watch(data, () => {
@@ -56,8 +56,6 @@ export default function useSearchList(typeName: string, list: any, attributes: s
         }
     });
 
-
-
     const isLoading = computed(() => {
         return ([STATES.PENDING].includes(state.value) || [STATES.VALIDATING].includes(state.value)) && !data;
     });
@@ -68,14 +66,18 @@ export default function useSearchList(typeName: string, list: any, attributes: s
         return [STATES.ERROR].includes(state.value);
     });
 
-
     const refresh = () => {
-        if ([STATES.PENDING].includes(state.value) || [STATES.VALIDATING].includes(state.value)) {
-            cancelTokenSource.value.cancel();
-            cancelTokenSource.value = axios.CancelToken.source();
-            asyncOptions.cancelToken = cancelTokenSource.value.token;
+        if (([STATES.PENDING].includes(state.value) || [STATES.VALIDATING].includes(state.value)) && cancelTokenSource.value) {
+            cancelTokenSource.value.cancel("aborted");
         }
-        mutate();
+        cancelTokenSource.value = axios.CancelToken.source();
+        asyncOptions.cancelToken = cancelTokenSource.value.token;
+        if (quickChange) {
+            cachekey.value = `${cacheSuffx}_${Date.now().toString()}`;
+        }
+        else {
+            mutate();
+        }
     };
 
     const query = (queryText: string) => {
@@ -83,6 +85,12 @@ export default function useSearchList(typeName: string, list: any, attributes: s
         body.value.offset = 0;
         refresh();
     };
+
+    const replaceBody = (payload: any) => {
+        body.value = payload;
+
+        refresh();
+    }
 
     const replaceFilters = (filters: Components.Schemas.FilterCriteria) => {
         body.value.entityFilters = {
@@ -128,9 +136,10 @@ export default function useSearchList(typeName: string, list: any, attributes: s
         query,
         replaceFilters,
         refresh,
+        replaceBody,
         body,
         assetTypeMap,
         assetTypeList,
-        assetTypeSum
+        assetTypeSum,
     }
 };

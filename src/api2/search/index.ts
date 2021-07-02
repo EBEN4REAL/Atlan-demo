@@ -6,9 +6,9 @@ import { BASIC_SEARCH } from "../keymap/search";
 import { useAPI } from "../useAPI";
 
 const BasicSearch = (
-    body?: Ref<SearchParameters>,
+    body?: Ref,
     options?: IConfig & AxiosRequestConfig,
-    cacheSuffix?: string,
+    cacheSuffix?: Ref<string>,
     dependantFetchingKey?: Ref<any>
 ) => {
     return useAPI<any>(BASIC_SEARCH, "POST", {

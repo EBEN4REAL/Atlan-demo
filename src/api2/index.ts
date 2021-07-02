@@ -25,6 +25,7 @@ export const fetcherPost = (
     body,
     options
 ): Promise<AxiosResponse["data"]> => {
+    console.log("fetcher", options.cancelToken);
     return getAxiosClient().post(url, body, options);
 };
 

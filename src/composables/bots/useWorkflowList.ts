@@ -15,12 +15,12 @@ export default function useWorkflowList(dependentKey?: Ref<any>, initialParams?:
 
     console.log(initialParams);
     let cancelTokenSource: Ref<CancelTokenSource> = ref(axios.CancelToken.source());
-    const asyncOptions: IConfig & AxiosRequestConfig = {
+    const asyncOptions: Ref<IConfig & AxiosRequestConfig> = ref({
         dedupingInterval: 0,
         shouldRetryOnError: false,
         revalidateOnFocus: false,
         revalidateDebounce: 0,
-    };
+    });
     let params = ref({
         ...initialParams
     });

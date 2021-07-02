@@ -25,8 +25,8 @@
           <a-radio value="Catalog.popularityScore|ascending"
             >Popularity Score(Low-High)</a-radio
           >
-          <a-radio value="name|ascending">Name (A-Z)</a-radio>
-          <a-radio value="name|descending">Name (Z-A)</a-radio>
+          <a-radio value="Asset.name.keyword|ascending">Name (A-Z)</a-radio>
+          <a-radio value="Asset.name.keyword|descending">Name (Z-A)</a-radio>
         </div>
       </a-radio-group>
     </div>

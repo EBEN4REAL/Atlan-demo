@@ -117,7 +117,8 @@ export default defineComponent({
       };
       const { data, isLoading, error } = User.UpdateUserV2(
         props.selectedUser.id,
-        requestPayload.value
+        requestPayload.value,
+        {}
       );
       watch([data, isLoading, error], () => {
         updateLoading = isLoading;

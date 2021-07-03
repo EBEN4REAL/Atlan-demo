@@ -24,7 +24,7 @@
             :isCurrentUser="isCurrentUser"
             :is="tab.component"
             :selectedUser="selectedUser"
-            @updatedUser="getUser"
+            @updatedUser="handleUserUpdate"
           />
         </a-tab-pane>
       </a-tabs>
@@ -54,19 +54,8 @@ export default defineComponent({
     Sessions,
     Avatar,
   },
-  // props: {
-  //   selectedUser: {
-  //     type: Object,
-  //     default: {},
-  //   },
-  //   tabs: {
-  //     type: Array,
-  //     default: () => [],
-  //   },
-  // },
   setup(props, context) {
     const {
-      // showPreview,
       userId,
       username: userUsername,
       uniqueAttribute,
@@ -89,9 +78,6 @@ export default defineComponent({
         ? userList.value[0]
         : [];
     });
-    // const handleClose = () => {
-    //   closePreview();
-    // };
     const { username } = whoami();
     let isCurrentUser = computed(() => {
       return username.value === userObj.value.username;
@@ -104,17 +90,18 @@ export default defineComponent({
         return `http://localhost:3333/api/auth/tenants/default/avatars/${userObj.value.username}`;
       return "";
     });
+    const handleUserUpdate = async () => {
+      await getUser();
+    };
     return {
       getNameInitials,
       getNameInTitleCase,
       imageUrl,
       isCurrentUser,
-      // showPreview,
       selectedUser: userObj,
       userId,
-      // handleClose,
       tabs: finalTabs,
-      getUser,
+      handleUserUpdate,
     };
   },
 });

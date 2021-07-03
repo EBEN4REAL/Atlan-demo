@@ -8,9 +8,9 @@ import useSWRVState from "./useSWRVState";
 import { AsyncStateOptions, useAsyncState } from "@vueuse/core";
 
 interface useGetAPIParams {
-  cacheSuffix?: string;
+  cacheSuffix?: Ref<string>;
   params?: Ref;
-  body?: Ref<Record<string, any>>;
+  body?: Ref;
   pathVariables?: Record<string, any>;
   options?: IConfig & AxiosRequestConfig;
   dependantFetchingKey?: Ref;
@@ -44,35 +44,32 @@ export const useAPI = <T>(
   }: useGetAPIParams
 ) => {
   const url = keyMaps[key]({ ...pathVariables });
-
   const getKey = () => {
-    return dependantFetchingKey?.value ? `${key}_${cacheSuffix}` : null;
+    return dependantFetchingKey?.value ? `${key}_${cacheSuffix?.value}` : null;
   };
   const { data, error, mutate, isValidating } = useSWRV<T>(
     getKey,
     () => {
-      return getRequest(method, url, body, params, options);
+      return getRequest(method, url, body?.value, params?.value, options);
     },
     options
   )
   const { state, STATES } = useSWRVState(data, error, isValidating);
-
   return { data, error, mutate, state, STATES, isValidating };
-
 };
 
 
 function getRequest(method, url, body, params, options) {
   switch (method) {
     case "GET":
-      return fetcher(url, params?.value, options);
+      return fetcher(url, params, options);
     case "POST":
-      return fetcherPost(url, body?.value, options);
+      return fetcherPost(url, body, options);
     case "DELETE":
       return deleter(url, options);
     case "PUT":
-      return updater(url, body?.value, options);
+      return updater(url, body, options);
     default:
-      return fetcher(url, params?.value, options);
+      return fetcher(url, params, options);
   }
 }

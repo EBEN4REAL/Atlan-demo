@@ -12,7 +12,7 @@ import { useAPI } from "../useAPI";
 const TestNetwork = (
     body?: Ref<Components.Schemas.ConnectionTest>,
     options?: IConfig & AxiosRequestConfig,
-    cacheSuffix?: string,
+    cacheSuffix?: Ref<string>,
     dependantFetchingKey?: Ref<any>
 ) => {
     return useAPI<any>(CONNECTION_TEST_NETWORK, "POST", {
@@ -26,7 +26,7 @@ const TestNetwork = (
 const Setup = (
     body?: Ref<Components.Schemas.ConnectionSetup>,
     options?: IConfig & AxiosRequestConfig,
-    cacheSuffix?: string,
+    cacheSuffix?: Ref<string>,
     dependantFetchingKey?: Ref<any>
 ) => {
 
@@ -38,7 +38,7 @@ const Setup = (
     });
 };
 
-const Archive = (id: string, options?: IConfig & AxiosRequestConfig, cacheSuffix?: string,
+const Archive = (id: string, options?: Ref<IConfig & AxiosRequestConfig>, cacheSuffix?: string,
     dependantFetchingKey?: Ref<any>) => {
     return useAPI<any>(CONNECTION_ARCHIVE, "POST", {
         pathVariables: {

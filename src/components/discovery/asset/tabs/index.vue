@@ -1,10 +1,16 @@
 <template>
-  <a-tabs class="w-full" :class="$style.assetbar" v-model:value="assetType">
-    <a-tab-pane :key="item.id" v-for="item in filteredList">
+  <a-tabs
+    class="w-full"
+    v-model:activeKey="assetType"
+    :class="$style.assetbar"
+    @change="handleChange"
+    type="card"
+  >
+    <a-tab-pane :key="item.id" v-for="item in assetTypeList">
       <template #tab>
         {{ item.label }}
-        <span v-if="item.count && item.count > 0"
-          >({{ numeralFormat(item.count) }})</span
+        <span v-if="assetTypeMap[item.id] && assetTypeMap[item.id] > 0"
+          >({{ numeralFormat(assetTypeMap[item.id]) }})</span
         >
       </template>
     </a-tab-pane>
@@ -17,7 +23,6 @@ import fetchConnectionList from "~/composables/connection/fetchConnectionList";
 
 import { AssetTypeList } from "~/constant/assetType";
 import { CONNECTION_FETCH_LIST } from "~/constant/store_types";
-import connector from "~/mixins/connector";
 import { ConnectionType } from "~/types/atlas/connection";
 
 export default defineComponent({
@@ -29,7 +34,14 @@ export default defineComponent({
         return [];
       },
     },
-    defaultAssetType: {
+    assetTypeMap: {
+      type: Object,
+      required: false,
+      default() {
+        return {};
+      },
+    },
+    modelValue: {
       type: String,
       required: false,
       default() {
@@ -44,15 +56,13 @@ export default defineComponent({
       },
     },
   },
+  emits: ["refresh", "update:modelValue"],
   setup(props, { emit }) {
-    let list = ref([]);
-    list.value = AssetTypeList.filter((item) => {
-      return item.isDiscoverable == true;
-    });
+    const assetType = ref(props.modelValue);
 
-    const { list: cachedConnectionList } = fetchConnectionList(
-      CONNECTION_FETCH_LIST
-    );
+    const handleChange = () => {
+      emit("update:modelValue", assetType.value);
+    };
 
     let testMapping = [
       {
@@ -87,54 +97,68 @@ export default defineComponent({
       },
     ];
 
-    const filteredList = computed(() => {
-      let foundConnections: ConnectionType[] = [];
-
-      // get one example of connection for each connector
-      props.connectors?.forEach((element) => {
-        let found = cachedConnectionList.value.find((item) => {
-          return item.attributes?.integrationName === element;
-        });
-        if (found) {
-          foundConnections.push(found);
+    watch(
+      () => props.assetTypeList,
+      () => {
+        //check if the current assetType exists in assetTypeList
+        const found = props.assetTypeList.find(
+          (item) => item.id === assetType.value
+        );
+        if (!found) {
+          assetType.value = "Catalog";
         }
-      });
+      },
+      {
+        immediate: true,
+      }
+    );
 
-      //filter on discoverable and mappings and order asset types
-      let filteredTypeList = AssetTypeList.filter((item) => {
-        if (item.isDiscoverable) {
-          let isAvailable = false;
-          foundConnections.forEach((conn) => {
-            //TODO - Change to dynamic mapping
-            let found = testMapping.find((map) => {
-              return map.id === item.id;
-            });
-            console.log(found);
-            if (found) {
-              isAvailable = true;
-            }
-          });
-          return isAvailable;
-        }
-        return false;
-      }).sort((x, y) => {
-        return y.orderWeight - x.orderWeight;
-      });
+    // const filteredList = computed(() => {
+    //   let foundConnections: ConnectionType[] = [];
 
-      console.log(props.assetTypeList);
-      //Update Count from Aggregations
-      filteredTypeList.forEach((f) => {
-        if (props.assetTypeList[f.id]) {
-          f.count = props.assetTypeList[f.id];
-        } else if (props.assetTypeList[f.id.toLowerCase()]) {
-          f.count = props.assetTypeList[f.id.toLowerCase()];
-        }
-      });
+    //   // get one example of connection for each connector
+    //   props.connectors?.forEach((element) => {
+    //     let found = cachedConnectionList.value.find((item) => {
+    //       return item.attributes?.integrationName === element;
+    //     });
+    //     if (found) {
+    //       foundConnections.push(found);
+    //     }
+    //   });
 
-      return filteredTypeList;
-    });
+    //   //filter on discoverable and mappings and order asset types
+    //   let filteredTypeList = AssetTypeList.filter((item) => {
+    //     if (item.isDiscoverable) {
+    //       let isAvailable = false;
+    //       foundConnections.forEach((conn) => {
+    //         //TODO - Change to dynamic mapping
+    //         let found = testMapping.find((map) => {
+    //           return map.id === item.id;
+    //         });
+    //         console.log(found);
+    //         if (found) {
+    //           isAvailable = true;
+    //         }
+    //       });
+    //       return isAvailable;
+    //     }
+    //     return false;
+    //   }).sort((x, y) => {
+    //     return y.orderWeight - x.orderWeight;
+    //   });
 
-    const assetType = ref("");
+    //   console.log(props.assetTypeList);
+    //   //Update Count from Aggregations
+    //   filteredTypeList.forEach((f) => {
+    //     if (props.assetTypeList[f.id]) {
+    //       f.count = props.assetTypeList[f.id];
+    //     } else if (props.assetTypeList[f.id.toLowerCase()]) {
+    //       f.count = props.assetTypeList[f.id.toLowerCase()];
+    //     }
+    //   });
+
+    //   return filteredTypeList;
+    // });
 
     // let foundConnections = [];
     // props.connectors?.forEach((element) => {
@@ -146,16 +170,12 @@ export default defineComponent({
     //   }
     // });
 
-    console.log(filteredList);
-
     // if (props.defaultAssetType) {
     //   assetType.value = props.defaultAssetType;
     // }
     return {
       assetType,
-      list,
-      cachedConnectionList,
-      filteredList,
+      handleChange,
     };
   },
 });
@@ -165,18 +185,31 @@ export default defineComponent({
       
 <style lang="less" module>
 .assetbar {
+  height: 32px !important;
+  min-height: 32px !important;
+
+  :global(.ant-tabs-nav-container) {
+    height: 32px !important;
+    min-height: 32px !important;
+  }
+
   :global(.ant-tabs-bar) {
+    @apply border-b border-gray-200 !important;
     margin-bottom: 0px;
-    border-color: #fff !important;
   }
 
   :global(.ant-tabs-tab) {
-    margin: 0 32px 0 0 !important;
-    padding: 6px 8px !important;
+    height: 32px !important;
+    line-height: 30px !important;
+    @apply bg-transparent border-0  !important;
+  }
+
+  :global(.ant-tabs-tab-active) {
+    @apply bg-white border-t border-l border-r border-gray-200 !important;
   }
 
   :global(.ant-tabs-ink-bar) {
-    height: 0px;
+    @apply hidden;
   }
 }
 </style>

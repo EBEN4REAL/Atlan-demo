@@ -20,6 +20,7 @@ export const getEnv = function (): any {
       import.meta.env.VITE_DEFAULT_REQUEST_TIMEOUT,
       30
     ),
+
     DEV_API_BASE_URL: parse(
       import.meta.env.VITE_DEV_API_BASE_URL,
       "https://alpha.atlan.com"

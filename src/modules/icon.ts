@@ -58,6 +58,7 @@ import { faPen } from "@fortawesome/pro-light-svg-icons/faPen";
 import { faPencil } from "@fortawesome/pro-light-svg-icons/faPencil";
 import { faEnvelope } from "@fortawesome/pro-light-svg-icons/faEnvelope";
 import { faArrowCircleRight } from "@fortawesome/pro-light-svg-icons/faArrowCircleRight";
+
 import { faUserTag } from "@fortawesome/pro-light-svg-icons/faUserTag"
 
 import { faBell } from "@fortawesome/pro-light-svg-icons/faBell"
@@ -69,9 +70,11 @@ import { faRobot } from "@fortawesome/pro-light-svg-icons/faRobot"
 import { faChartNetwork } from "@fortawesome/pro-light-svg-icons/faChartNetwork"
 
 import { faTrashAlt } from "@fortawesome/pro-light-svg-icons/faTrashAlt";
-import { faExclamationCircle } from "@fortawesome/pro-light-svg-icons/faExclamationCircle";
 import { faTabletAlt } from "@fortawesome/pro-light-svg-icons/faTabletAlt";
 import { faArrowDown } from "@fortawesome/pro-light-svg-icons/faArrowDown";
+import { faArrowUp } from "@fortawesome/pro-light-svg-icons/faArrowUp";
+
+import { faExclamationCircle } from "@fortawesome/pro-light-svg-icons/faExclamationCircle";
 
 import { faUserFriends } from "@fortawesome/pro-light-svg-icons/faUserFriends";
 
@@ -83,6 +86,7 @@ import { faSlidersHSquare } from "@fortawesome/pro-light-svg-icons/faSlidersHSqu
 
 
 library.add(
+  faArrowUp,
   faPlus,
   faPlusCircle,
   faSearch,

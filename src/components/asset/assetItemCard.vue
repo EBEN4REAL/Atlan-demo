@@ -8,11 +8,7 @@
     <div class="w-100">
       <div class="mb-2 d-flex align-items-center">
         <div class="pr-2"><i class="font-size-h2" :class="[typeIcon]"></i></div>
-        <img
-          v-if="isAssetAccessible"
-          :src="integrationIcon"
-          class="integration-icon"
-        />
+        <img v-if="isAssetAccessible" :src="integrationIcon" class="integration-icon" />
         <div class="d-flex flex-column w-90">
           <nuxt-link
             v-if="isAssetAccessible"
@@ -21,10 +17,7 @@
           >
             <span>{{ name }}</span>
 
-            <span
-              class="ml-2"
-              :id="`status-icon-${asset.guid}`"
-              v-if="statusIcon"
+            <span class="ml-2" :id="`status-icon-${asset.guid}`" v-if="statusIcon"
               ><i :class="[statusIcon]"></i
             ></span>
             <!-- <StatusDetailPopover
@@ -35,17 +28,11 @@
           </nuxt-link>
           <span v-else class="mb-0 asset-title font-w700">
             <span>{{ name }}</span>
-            <span
-              class="ml-2"
-              v-if="statusIcon"
-              v-b-popover.hover.right="statusMessage"
+            <span class="ml-2" v-if="statusIcon" v-b-popover.hover.right="statusMessage"
               ><i :class="[statusIcon]"></i
             ></span>
           </span>
-          <p
-            v-if="type === 'table' || type === 'view'"
-            class="mb-0 font-size-sm"
-          >
+          <p v-if="type === 'table' || type === 'view'" class="mb-0 font-size-sm">
             <template v-if="isAssetAccessible">
               <span
                 v-b-popover.hover.bottom="
@@ -53,28 +40,20 @@
                 "
                 class="pr-2"
                 v-if="tableRowCount"
-                ><span class="font-w700">{{ rowCountString }}</span>
-                {{ rowString }}</span
+                ><span class="font-w700">{{ rowCountString }}</span> {{ rowString }}</span
               >
 
               <span class="pr-2"
-                ><span class="font-w700">{{
-                  tableColumnsCount.toLocaleString()
-                }}</span>
+                ><span class="font-w700">{{ tableColumnsCount.toLocaleString() }}</span>
                 {{ columnString }}</span
               >
             </template>
           </p>
-          <p
-            v-if="type === 'column'"
-            class="mb-0 font-size-sm d-flex align-items-center"
-          >
+          <p v-if="type === 'column'" class="mb-0 font-size-sm d-flex align-items-center">
             <template v-if="isAssetAccessible">
               <span class="pr-2"
                 ><i class="text-gray-500 fa-sm" :class="columnDataTypeIcon"></i>
-                <span class="font-w700 text-capitalize">{{
-                  columnDataType
-                }}</span></span
+                <span class="font-w700 text-capitalize">{{ columnDataType }}</span></span
               >
               <a-tooltip v-if="columnIsPrimary">
                 <template slot="title">Primary Key</template>
@@ -84,9 +63,7 @@
             </template>
           </p>
           <p
-            v-else-if="
-              type === 'schema' || type === 'database' || type.startsWith('bi')
-            "
+            v-else-if="type === 'schema' || type === 'database' || type.startsWith('bi')"
             class="mb-0 font-size-sm d-flex align-items-center"
           >
             <template v-if="isAssetAccessible">
@@ -111,9 +88,7 @@
               :placement="queryPopoverPlacement"
             /> -->
           </div>
-          <div
-            class="d-flex justify-content-between align-items-center font-size-sm"
-          >
+          <div class="d-flex justify-content-between align-items-center font-size-sm">
             <div
               v-show="description && showDescription"
               class="text-ellipsis"
@@ -129,17 +104,12 @@
           :asset="asset"
           class="pl-6 ml-1"
           :class="{ invisible: hideParentsList }"
-          :qualifiedNameCharacterCountToDisplay="
-            qualifiedNameCharacterCountToDisplay
-          "
+          :qualifiedNameCharacterCountToDisplay="qualifiedNameCharacterCountToDisplay"
         ></asset-item-parents-list>
         <span
           v-if="type === 'query' && isQueryPrivate"
           class="ml-auto mr-3 text-sm bg-warning-lighter badge-pill"
-          ><i
-            style="font-size: 14px"
-            class="text-xs far fa-lock text-warning"
-          ></i>
+          ><i style="font-size: 14px" class="text-xs far fa-lock text-warning"></i>
           Private</span
         >
         <slot name="unlinkButton"></slot>
@@ -191,7 +161,10 @@ export default defineComponent({
 
   setup(props, context) {
     const {
-      assetItemsconstants,
+      typeNameMapping,
+      iconsMappingByType,
+      typeNameReadableNameMapping,
+
       assetTypeFilterItems,
       getNameFromType,
       getIconClassByType,
@@ -221,7 +194,7 @@ export default defineComponent({
     const type = computed(() => {
       if (props.asset) {
         const typeName = props.asset.typeName || "";
-        return assetItemsconstants.typeNameMapping[typeName] || "";
+        return typeNameMapping[typeName] || "";
       }
       return "table";
     });
@@ -237,9 +210,7 @@ export default defineComponent({
       if (this.isMultiTenant && qualifiedNameParts.length) {
         qualifiedNameParts.splice(0, 1);
       }
-      const integration = qualifiedNameParts.length
-        ? qualifiedNameParts[0]
-        : "";
+      const integration = qualifiedNameParts.length ? qualifiedNameParts[0] : "";
       return getSourceImage(integration);
     };
 

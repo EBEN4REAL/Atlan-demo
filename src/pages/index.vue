@@ -120,7 +120,7 @@ export default defineComponent({
       } ${lastName.charAt(0).toUpperCase() + lastName.substr(1).toLowerCase()}`;
     });
     useHead({
-      title: `Welcome - ${fullName} `,
+      title: `Welcome - ${fullName.value} `,
     });
     let imageUrl = ref(
       `http://localhost:3333/api/auth/tenants/default/avatars/${username}`

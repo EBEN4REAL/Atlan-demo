@@ -1,5 +1,7 @@
 import asset from "~/api/keyMaps/asset";
 
+import businessMetadata from "~/api/keyMaps/businessMetadata";
+
 import user from "~/api/keyMaps/auth/user";
 import tenant from "~/api/keyMaps/auth/tenant";
 import group from "~/api/keyMaps/auth/group";
@@ -16,11 +18,13 @@ export default {
   ...asset,
   ...user,
   ...tenant,
-  ...connection,
-  ...apiKeys,
-  ...classification,
   ...glossary,
   ...group,
+  ...connection,
+  ...businessMetadata,
+  ...apiKeys,
+  BASIC_SEARCH: () => getAPIPath("auth/atlas", "/search/basic"),
+  ...classification,
   ...role,
   ...avatar,
   ...search,

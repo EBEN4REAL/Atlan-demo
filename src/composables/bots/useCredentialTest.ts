@@ -8,12 +8,12 @@ import useSWRVState from '~/api2/useSWRVState';
 
 export default function useCredentialTest(dependentKey?: Ref<any>, initialBody?: any, cacheSuffx?: string | "") {
 
-    const asyncOptions: IConfig & AxiosRequestConfig = {
+    const asyncOptions: Ref<IConfig & AxiosRequestConfig> = ref({
         dedupingInterval: 0,
         shouldRetryOnError: false,
         revalidateOnFocus: false,
         revalidateDebounce: 0,
-    };
+    });
     let body = ref({
         ...initialBody
     });
@@ -21,9 +21,6 @@ export default function useCredentialTest(dependentKey?: Ref<any>, initialBody?:
     let cancelTokenSource: Ref<CancelTokenSource> = ref(axios.CancelToken.source());
     const { data, state, STATES,
         mutate, error, isValidating } = Credential.TestCredential(body, asyncOptions, `${cacheSuffx}`, dependentKey);
-
-
-
 
 
     const isLoading = computed(() => {

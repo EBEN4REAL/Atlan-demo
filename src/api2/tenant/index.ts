@@ -6,7 +6,7 @@ import { useAPI } from "../useAPI";
 
 const GetTenant = (
     options?: IConfig & AxiosRequestConfig,
-    cacheSuffix?: string,
+    cacheSuffix?: Ref<string>,
     dependantFetchingKey?: Ref<any>
 ) => {
     return useAPI<any>(GET_TENANT, "GET", {

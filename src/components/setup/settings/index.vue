@@ -211,10 +211,8 @@ export default defineComponent({
     handleScopeSelector(attr) {
       let databases: any[] = [];
       if (this.job[attr]) {
-        if (this.job[attr] == ["all"]) {
-          return JSON.stringify({
-            "*": [],
-          });
+        if (this.job[attr].includes("all")) {
+          return JSON.stringify({});
         } else {
           this.job[attr].forEach((item) => {
             if (!item.startsWith("AtlanSchema$")) {

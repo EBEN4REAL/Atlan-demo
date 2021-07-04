@@ -25,8 +25,8 @@
             <a-menu-item key="smtp">SMTP</a-menu-item>
           </a-menu-item-group>
           <a-menu-item-group class="mb-3" title="Metadata Management">
-            <a-menu-item key="bm">Business Metadata</a-menu-item>
-            <a-menu-item key="enums">Enums</a-menu-item>
+            <a-menu-item key="business-metadata"> Business Metadata </a-menu-item>
+            <a-menu-item key="enums"> Enums </a-menu-item>
           </a-menu-item-group>
           <a-menu-item-group class="mb-3" title="Cloud & Compliance">
             <a-menu-item key="accesslogs">Access Logs</a-menu-item>

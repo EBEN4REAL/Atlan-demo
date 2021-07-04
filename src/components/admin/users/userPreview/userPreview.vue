@@ -2,13 +2,14 @@
   <div class="max-h-full">
     <div v-if="selectedUser && selectedUser.id">
       <div class="flex mb-3">
-        <div>
-          <a-avatar
-            shape="square"
-            class="mr-1 ant-tag-blue text-primary-500 avatars"
-            :size="48"
-          >{{ getNameInitials(getNameInTitleCase(selectedUser.name)) }}</a-avatar>
-        </div>
+        <avatar
+          :imageUrl="imageUrl"
+          :allowUpload="isCurrentUser"
+          :avatarName="selectedUser.name || selectedUser.uername || selectedUser.email"
+          :avatarSize="48"
+          @imageUpdated="(emitPayload)=>$emit('imageUpdated',emitPayload)"
+          class="mr-2"
+        />
         <div class="ml-3">
           <div
             class="text-lg font-bold capitalize cursor-pointer text-primary-500"
@@ -21,26 +22,28 @@
             <span class="mb-0">{{ tab.name }}</span>
           </template>
           <component
+            :isCurrentUser="isCurrentUser"
             :is="tab.component"
             :selectedUser="selectedUser"
-            @reloadTable="$emit('reloadTable')"
+            @updatedUser="$emit('updatedUser')"
           />
         </a-tab-pane>
       </a-tabs>
     </div>
   </div>
 </template>
-  <script lang="ts">
+<script lang="ts">
 import {
   getNameInitials,
   getNameInTitleCase,
 } from "~/composables/utils/string-operations";
-import whoami from "~/composables/user/whoami";
-import { defineComponent, computed } from "vue";
+import { defineComponent, ref, computed } from "vue";
 import About from "./about.vue";
 import Groups from "./groups.vue";
 import AccessLogs from "./accessLogs.vue";
 import Sessions from "./sessions.vue";
+import whoami from "~/composables/user/whoami";
+import Avatar from "~/components/common/avatar.vue";
 export default defineComponent({
   name: "UserPreview",
   components: {
@@ -48,45 +51,36 @@ export default defineComponent({
     Groups,
     AccessLogs,
     Sessions,
+    Avatar,
   },
   props: {
     selectedUser: {
       type: Object,
       default: {},
     },
+    tabs: {
+      type: Array,
+      default: () => [],
+    },
   },
   setup(props, context) {
     const { username } = whoami();
-    const tabs = computed(() => {
-      let allTabs = [
-        {
-          name: "About",
-          iconClass: "",
-          component: "About",
-        },
-        {
-          name: "Groups",
-          iconClass: "",
-          component: "Groups",
-        },
-        {
-          name: "Sessions",
-          iconClass: "",
-          component: "Sessions",
-        },
-        {
-          name: "Access Logs",
-          iconClass: "",
-          component: "AccessLogs",
-        },
-      ];
-      if (props.selectedUser.username === username.value) return allTabs;
-      return allTabs.slice(1);
+    let isCurrentUser = computed(() => {
+      return username.value === props.selectedUser.username;
+    });
+    // const imageUrl = (username: any) => {
+    //   return `http://localhost:3333/api/auth/tenants/default/avatars/${username}`;
+    // };
+    const imageUrl = computed(() => {
+      if (props.selectedUser && props.selectedUser.username)
+        return `http://localhost:3333/api/auth/tenants/default/avatars/${props.selectedUser.username}`;
+      return "";
     });
     return {
       getNameInitials,
       getNameInTitleCase,
-      tabs,
+      imageUrl,
+      isCurrentUser,
     };
   },
 });

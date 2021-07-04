@@ -6,76 +6,24 @@
       okText="Update"
       :width="600"
       :maskClosable="false"
+      :centered="true"
       @ok="handleUpdate"
       :closable="false"
     >
-      <Credential
-        ref="credentialView"
-        :item="bot"
-        :isEdit="true"
-        :defaultConnection="item"
-        :defaultCredential="credential"
-      ></Credential>
+      <div class="overflow-y-auto" style="height: 500px">
+        <Credential
+          ref="credentialView"
+          :item="bot"
+          :isEdit="true"
+          :defaultConnection="item"
+          :defaultCredential="credential"
+        ></Credential>
+      </div>
     </a-modal>
 
     <div class="col-span-9 pr-6">
       <div class="flex justify-between">
-        <div class="flex items-center align-middle">
-          <img
-            :src="logo(item?.attributes?.integrationName)"
-            class="w-auto h-6 mr-1"
-          />
-
-          <div class="text-sm tracking-wider text-gray-600 uppercase">
-            {{ label(item?.attributes?.integrationName) }}
-          </div>
-        </div>
-        <div class="flex space-x-2">
-          <div class="mr-1" v-if="testingNetworkStatus">
-            <a-alert
-              :type="testingNetworkStatus"
-              show-icon
-              class="leading-none"
-            >
-              <template #message>
-                <div class="flex items-center align-middle">
-                  <!-- <div v-html="testingNetworkMessage"></div> -->
-
-                  <div class="">
-                    <a-tooltip :title="testingNetworkError"
-                      ><fa icon="fal info-circle"></fa
-                    ></a-tooltip>
-                  </div>
-                </div>
-                <!-- {{ testingNetworkMessage }} -->
-              </template>
-            </a-alert>
-          </div>
-          <div class="" v-if="testCredStatus">
-            <a-alert :type="testCredStatus" show-icon class="leading-none">
-              <template #message>
-                <div class="flex items-center align-middle">
-                  <!-- <div v-html="testingNetworkMessage"></div> -->
-                  <!-- <div class="hidden mr-2 md:block">{{ testCredMessage }}</div> -->
-
-                  <div class="">
-                    <a-tooltip :title="testCredError"
-                      ><fa icon="fal info-circle"></fa
-                    ></a-tooltip>
-                  </div>
-                </div>
-                <!-- {{ testingNetworkMessage }} -->
-              </template>
-            </a-alert>
-          </div>
-          <a-button
-            class="bg-green-500 border-green-500"
-            type="primary"
-            @click="handleTest"
-          >
-            Test Authentication</a-button
-          >
-        </div>
+        <div class="flex items-center text-base align-middle">Details</div>
       </div>
 
       <div class="flex space-x-5">
@@ -83,18 +31,15 @@
           <p class="mt-3 mb-0 text-sm text-gray-400">Display Name</p>
           <div class="flex items-center align-middle">
             <div class="text-gray-900">
-              {{ item?.attributes?.displayName }}
+              {{ item?.attributes?.displayName
+              }}<span class="ml-1 text-gray-500"
+                >({{ item?.attributes?.name }})</span
+              >
             </div>
           </div>
         </div>
-        <div>
-          <p class="mt-3 mb-0 text-sm text-gray-400">Unique Name</p>
-          <div class="flex items-center align-middle">
-            <div class="text-gray-900">{{ item?.attributes?.name }}</div>
-          </div>
-        </div>
       </div>
-      <div class="flex flex-col mt-3">
+      <div class="flex flex-col mt-4">
         <div class="flex space-x-5">
           <div class="">
             <p class="mb-0 text-sm text-gray-400">
@@ -103,7 +48,9 @@
                   .attributes.label
               }}
             </p>
-            <div class="text-gray-900">{{ item?.attributes?.host }}</div>
+            <div class="text-base text-gray-900">
+              {{ item?.attributes?.host }}
+            </div>
           </div>
           <div
             class=""
@@ -121,41 +68,126 @@
             <div class="text-gray-900">{{ item?.attributes?.port }}</div>
           </div>
         </div>
-        <div class="flex flex-wrap mt-4 space-x-8">
-          <div>
-            <p class="mb-0 text-sm text-gray-400">Authentication</p>
-            <div class="tracking-wider text-gray-900 uppercase">
-              {{ credential?.attributes?.authType }}
+        <div class="p-4 mt-4 border rounded bg-gray-50">
+          <div
+            class="flex items-center justify-between mb-3 text-sm align-middle"
+          >
+            Credential
+            <div class="text-red-500">
+              <i><fa icon="fal lock" class="mr-1"></fa>Secured & encrypted</i>
             </div>
           </div>
-          <template v-for="attr in authAttributesLocal" :key="attr.id">
-            <div>
-              <p class="mb-0 text-sm text-gray-400">{{ attr.label }}</p>
-              <div class="text-red-500">
-                <fa icon="fal lock" class="mr-1"></fa>Secured
-              </div>
-            </div>
-          </template>
-        </div>
-        <div class="mt-4">
-          <div class="grid grid-cols-12 flex-nowrap">
-            <template
-              v-for="extra in bot?.attributes?.config?.attributes?.credential
-                ?.attributes?.extra"
-              :key="extra.id"
-            >
-              <div class="col-span-4" v-if="extra.attributes.isVisible">
-                <p class="mb-0 text-sm text-gray-400">
-                  {{ extra.attributes.label }}
-                </p>
-                <div
-                  class="tracking-wider text-gray-900 uppercase"
-                  v-if="item?.attributes?.extra"
-                >
-                  {{ item?.attributes?.extra[extra.attributes.id] }}
+
+          <div v-if="syncing">
+            <LoadingView style="min-height: 100px"></LoadingView>
+          </div>
+
+          <div v-if="!syncing && !loading">
+            <div class="flex flex-wrap space-x-8">
+              <div>
+                <p class="mb-0 text-sm text-gray-400">Authentication</p>
+                <div class="tracking-wider text-gray-900 uppercase">
+                  {{ credential?.attributes?.authType }}
                 </div>
               </div>
-            </template>
+              <template v-for="attr in authAttributesLocal" :key="attr.id">
+                <div>
+                  <p class="mb-0 text-sm text-gray-400">{{ attr.label }}</p>
+                  <div class="text-red-500">
+                    <fa icon="fal lock" class="mr-1"></fa>Secured
+                  </div>
+                </div>
+              </template>
+            </div>
+            <div class="mt-4">
+              <div class="grid grid-cols-12 flex-nowrap">
+                <template
+                  v-for="extra in bot?.attributes?.config?.attributes
+                    ?.credential?.attributes?.extra"
+                  :key="extra.id"
+                >
+                  <div class="col-span-4" v-if="extra.attributes.isVisible">
+                    <p class="mb-0 text-sm text-gray-400">
+                      {{ extra.attributes.label }}
+                    </p>
+                    <div
+                      class="tracking-wider text-gray-900 uppercase"
+                      v-if="credential?.attributes?.extra"
+                    >
+                      <span
+                        v-if="
+                          credential?.attributes?.extra[extra.attributes.id]
+                        "
+                      >
+                        {{
+                          credential?.attributes?.extra[extra.attributes.id]
+                        }}</span
+                      >
+                      <span v-else>N/A</span>
+                    </div>
+                  </div>
+                </template>
+              </div>
+            </div>
+            <div class="flex items-center mt-4 align-middle">
+              <a-button
+                class="mr-3 bg-green-500 border-green-500"
+                type="primary"
+                @click="handleTest"
+              >
+                Test Authentication</a-button
+              >
+              <div class="flex space-x-2">
+                <div class="mr-1" v-if="testingNetworkStatus">
+                  <a-alert
+                    :type="testingNetworkStatus"
+                    show-icon
+                    class="leading-none"
+                  >
+                    <template #message>
+                      <div class="flex items-center align-middle">
+                        <div>Network</div>
+
+                        <div class="">
+                          <a-tooltip :title="testingNetworkError"
+                            ><fa
+                              icon="fal info-circle"
+                              class="ml-1 pushtop"
+                            ></fa
+                          ></a-tooltip>
+                        </div>
+                      </div>
+                      <!-- {{ testingNetworkMessage }} -->
+                    </template>
+                  </a-alert>
+                </div>
+                <div class="" v-if="testCredStatus">
+                  <a-alert
+                    :type="testCredStatus"
+                    show-icon
+                    class="leading-none"
+                  >
+                    <template #message>
+                      <div class="flex items-center align-middle">
+                        <div>Authentication</div>
+                        <!-- <div v-html="testingNetworkMessage"></div> -->
+                        <!-- <div class="hidden mr-2 md:block">{{ testCredMessage }}</div> -->
+
+                        <div class="">
+                          <a-tooltip :title="testCredError"
+                            ><fa
+                              icon="fal info-circle"
+                              class="ml-1 pushtop"
+                            ></fa
+                          ></a-tooltip>
+                        </div>
+                      </div>
+                      <!-- {{ testingNetworkMessage }} -->
+                    </template>
+                  </a-alert>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
         <div class="flex items-center justify-between mt-5 align-middle">
@@ -175,15 +207,14 @@
           </p>
         </div>
       </div>
-      <a-divider class="text-sm">Query Configuration</a-divider>
-      <div class="p-3 mt-3 border rounded bg-gray-50">
-        <QueryView :item="item"></QueryView>
-      </div>
     </div>
     <div class="col-span-3 pl-6 border-l border-dashed">
-      <Lastrun :item="item"></Lastrun>
+      <Lastrun :item="item" :key="item.guid"></Lastrun>
       <TotalView class="mt-6" :item="item" :key="item.guid"></TotalView>
     </div>
+  </div>
+  <div class="p-6 mt-4 bg-white border rounded shadow-sm">
+    <QueryView :item="item"></QueryView>
   </div>
 </template>
   
@@ -199,6 +230,8 @@ import { CredentialType } from "~/types/atlas/credential";
 import TotalView from "@/connection/overview/analytics/total.vue";
 import Lastrun from "@/connection/overview/lastrun/index.vue";
 
+import LoadingView from "@/common/loaders/section.vue";
+
 import Credential from "@/setup/credential/index.vue";
 import useBotModel from "~/composables/connection/useBotModel";
 import updateCredential from "~/composables/credential/updateCredential";
@@ -207,7 +240,7 @@ import { Credential as CredentialService } from "~/api/auth/credential";
 
 export default defineComponent({
   mixins: [SourceMixin],
-  components: { Credential, TotalView, QueryView, Lastrun },
+  components: { Credential, TotalView, QueryView, Lastrun, LoadingView },
   props: {
     item: {
       type: Object as PropType<ConnectionType>,
@@ -230,6 +263,12 @@ export default defineComponent({
         return {};
       },
     },
+    loading: {
+      type: Boolean,
+    },
+    syncing: {
+      type: Boolean,
+    },
   },
   data() {
     return {
@@ -248,15 +287,20 @@ export default defineComponent({
     const credBody = ref({});
     const guid = ref("");
 
+
+    const isUpdating = ref(false);
+
     const { execute } = updateCredential(guid, credBody, {
       immediate: false,
     });
 
     const handleUpdate = async () => {
-      console.log("update");
       guid.value = props.credential.guid;
-      console.log(await credentialView.value.getCredential());
-      execute();
+      try {
+        const res = await credentialView.value.getCredential();
+      } catch (err) {
+        console.log("error");
+      }
     };
 
     const handleTest = () => {
@@ -285,7 +329,7 @@ export default defineComponent({
         testingNetworkMessage.value = `Network connection failed`;
 
         if (err.response) {
-          testingNetworkError = err.response.data.message;
+          testingNetworkError.value = err.response.data.message;
         } else {
           testingNetworkError.value = "Something went wrong. Please try again.";
         }
@@ -305,12 +349,12 @@ export default defineComponent({
         await CredentialService.TestCredentialByID(props.credential.guid);
         testCredStatus.value = "success";
         testCredMessage.value = "Authentication is successful";
-        testCredError.value = "";
+        testCredError.value = "Authentication is successful";
       } catch (err) {
         testCredStatus.value = "error";
         testCredMessage.value = `Network connection failed`;
         if (err.response) {
-          testCredError = err.response.data.message;
+          testCredError.value = err.response.data.message;
         } else {
           testCredError.value = "Something went wrong. Please try again.";
         }

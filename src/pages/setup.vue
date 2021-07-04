@@ -71,7 +71,10 @@
           <div class="flex items-center justify-between align-middle">
             <div class="flex items-center align-middle">
               <div class="flex items-center align-middle">
-                <p @click="handlePrevious" class="px-1 mb-0 mr-2 leading-none">
+                <p
+                  @click="handlePrevious"
+                  class="px-1 mb-0 mr-2 text-xl leading-none text-gray-500"
+                >
                   <fa icon="fal chevron-left"></fa>
                 </p>
                 <img :src="logo(selectedConnector)" class="w-auto h-8 mr-2" />
@@ -89,8 +92,8 @@
           </div>
         </div>
 
-        <keep-alive class="">
-          <div class="h-full overflow-y-auto flew-grow">
+        <div class="h-full overflow-y-auto flew-grow">
+          <keep-alive class="">
             <ConnectorList
               v-if="current === 0"
               @select="handleConnectorSelect"
@@ -100,6 +103,7 @@
               ref="credentialView"
               :key="selectedConnector.guid"
               :item="selectedConnector"
+              @verified="handleVerified"
               v-else-if="current === 1"
             ></CredentialView>
             <Settings
@@ -109,10 +113,11 @@
               :item="selectedConnector"
               :credential="selectedCredential"
             ></Settings>
-          </div>
-        </keep-alive>
+          </keep-alive>
+        </div>
+
         <div
-          class="flex justify-between px-4 py-5 align-middle bg-white border-t"
+          class="flex justify-between px-8 py-5 align-middle bg-white border-t"
           v-if="current !== 0"
         >
           <a-button
@@ -189,28 +194,38 @@ export default defineComponent({
         this.nextType = "primary";
       }
     },
+
+    handleVerified(credential) {
+      if (credential && this.loadingNext) {
+        this.loadingNext = false;
+        this.selectedCredential = credential;
+        this.current = this.current + 1;
+        this.nextTitle = "Setup & Run";
+        this.nextType = "primary";
+      } else {
+        this.loadingNext = false;
+      }
+    },
     async handleNext() {
       try {
-        this.loadingNext = true;
         if (this.current === 1) {
+          this.loadingNext = true;
           if (this.$refs.credentialView) {
-            this.selectedCredential =
-              await this.$refs.credentialView.getCredential();
-            if (this.selectedCredential) {
-              this.current = this.current + 1;
-              this.nextTitle = "Setup & Run";
-              this.nextType = "primary";
+            const res = await this.$refs.credentialView.getCredential();
+            if (!res) {
+              this.loadingNext = false;
             }
           }
         }
         if (this.current === 2) {
+          this.loadingNext = true;
           if (this.$refs.settingsView) {
             this.selectedJob = this.$refs.settingsView.getJob();
             console.log(this.selectedJob);
             this.current = this.current + 1;
           }
+          this.loadingNext = false;
         }
-        this.loadingNext = false;
       } catch (err) {
         this.loadingNext = false;
       }

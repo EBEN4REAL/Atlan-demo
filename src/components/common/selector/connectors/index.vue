@@ -1,5 +1,6 @@
 <template>
   <a-select
+    ref="connectorsDropdown"
     :value="modelValue"
     placeholder="Connections"
     :show-search="true"
@@ -9,10 +10,10 @@
     :filterOption="false"
     @change="handleChange"
   >
-    <template v-for="item in filteredList" :key="item">
-      <a-select-option :value="item">
+    <template v-for="item in filteredList" :key="item.id">
+      <a-select-option :value="item.id">
         <div class="flex items-center">
-          <img :src="logo(item)" class="w-auto h-3 mr-1" />{{ item }}
+          <img :src="item.image" class="w-auto h-3 mr-1" />{{ item.label }}
         </div>
       </a-select-option>
     </template>
@@ -23,44 +24,47 @@
 import { computed, defineComponent, ref } from "vue";
 import SourceMixin from "~/mixins/source";
 import fetchConnectionList from "~/composables/connection/fetchConnectionList";
+import { useConnectionsStore } from "~/pinia/connections";
 
 export default defineComponent({
-  mixins: [SourceMixin],
   props: {
     modelValue: {
-      type: String,
       required: false,
     },
   },
   emits: ["update:modelValue", "change"],
   setup(props, { emit }) {
-    let now = ref(true);
+    const store = useConnectionsStore();
+
+    // let now = ref(true);
+
+    let connectorsDropdown = ref(null);
     let searchValue = ref("");
-    const { list } = fetchConnectionList(now);
-    const sourceMap = computed(() => {
-      return [
-        ...new Set(list.value?.map((item) => item.attributes.integrationName)),
-      ];
-    });
+    // const { list } = fetchConnectionList(now);
+    // const sourceMap = computed(() => {
+    //   return [
+    //     ...new Set(list.value?.map((item) => item.attributes.integrationName)),
+    //   ];
+    // });
 
     const filteredList = computed(() => {
-      return sourceMap.value?.filter((item) =>
-        item?.toLowerCase().includes(searchValue.value.toLowerCase())
+      return store.getSourceList?.filter((item) =>
+        item.id.toLowerCase().includes(searchValue.value.toLowerCase())
       );
     });
     const handleSearch = (inputValue: string) => {
       searchValue.value = inputValue;
     };
     const handleChange = (checkedValues: string) => {
+      connectorsDropdown?.value?.blur();
       emit("update:modelValue", checkedValues);
       emit("change", checkedValues);
     };
     return {
-      list,
-      sourceMap,
       filteredList,
       handleSearch,
       handleChange,
+      connectorsDropdown,
     };
   },
 });

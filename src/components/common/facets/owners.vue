@@ -90,12 +90,20 @@ export default defineComponent({
         } as Components.Schemas.FilterCriteria,
       });
     };
+
+    const clear = () => {
+      userValue.value = "";
+      groupValue.value = "";
+      handleChange();
+    };
+
     return {
       handleChange,
       handleUsersChange,
       handleGroupsChange,
       userValue,
       groupValue,
+      clear,
     };
   },
 });

@@ -1,29 +1,22 @@
 <template>
   <div class="flex flex-col h-full">
-    <LoadingView
-      v-if="
-        [STATES.PENDING].includes(state) || [STATES.VALIDATING].includes(state)
-      "
-    ></LoadingView>
-
-    <ErrorView
-      :error="errorMessage"
-      v-else-if="[STATES.ERROR, STATES.STALE_IF_ERROR].includes(state)"
-    ></ErrorView>
-
-    <div class="px-3 mb-3" v-else>
+    <div class="mb-3">
       <a-input placeholder="Search.."></a-input>
     </div>
-    <div class="flex flex-col flex-grow w-full px-3 space-y-2">
+    <div class="flex flex-col flex-grow w-full space-y-2">
       <div
-        class="flex flex-col px-3 py-2 text-gray-800 bg-white border rounded-lg cursor-pointer  hover:bg-gray-50"
+        class="flex flex-col px-3 py-2 text-gray-800 bg-white border rounded-lg cursor-pointer  hover:bg-gray-100"
+        :class="{ 'bg-gray-100': isSelected(item.guid) }"
         v-for="item in list"
         :key="item.guid"
+        @click="handleSelect(item)"
       >
         <div class="mb-0 leading-none tracking-tight">
           {{ item?.attributes?.name }}
         </div>
-        <div class="text-gray-400">{{ item?.attributes?.__createdBy }}</div>
+        <div class="text-sm text-gray-400">
+          {{ item?.attributes?.__createdBy }}
+        </div>
       </div>
     </div>
   </div>
@@ -40,17 +33,34 @@ import EmptyView from "@common/empty/index.vue";
 export default defineComponent({
   components: { LoadingView, ErrorView },
   props: {},
-  setup(props) {
+  emits: ["refresh"],
+  setup(props, { emit }) {
+    let selected = ref("");
+
     let now = ref(true);
-    const { list, totalCount, listCount, state, STATES, errorMessage } =
-      fetchSavedSearchList(now);
+    const { list, totalCount, listCount, isLoading, isError, error } =
+      fetchSavedSearchList("sadasd", now);
+
+    const handleSelect = (payload) => {
+      selected.value = payload.guid;
+      console.log(payload);
+      emit("refresh", payload);
+    };
+
+    const isSelected = (id) => {
+      if (selected.value === id) return true;
+      return false;
+    };
+
     return {
       list,
-      state,
-      STATES,
-      errorMessage,
+      isLoading,
       totalCount,
+      isError,
       listCount,
+      error,
+      handleSelect,
+      isSelected,
     };
   },
 });

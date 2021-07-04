@@ -4,11 +4,10 @@
       label="Connection name"
       name="displayName"
       class="w-1/2"
-      autofocus
       :has-feedback="true"
       :rules="nameRules"
     >
-      <a-input autofocus v-model:value="credential.displayName" />
+      <a-input v-model:value="credential.displayName" input-focus />
     </a-form-item>
 
     <div class="grid grid-cols-12 space-x-3 flex-nowrap">
@@ -20,7 +19,8 @@
               v-if="hostLocal?.info"
               :title="hostLocal?.info"
               placement="right"
-              ><span class="ml-1"><fa icon="fal info-circle"></fa></span
+              ><span class="ml-1"
+                ><fa icon="fal info-circle" class="pushtop"></fa></span
             ></a-tooltip>
           </template>
           <DynamicInput
@@ -42,7 +42,8 @@
               v-if="portLocal?.info"
               :title="portLocal?.info"
               placement="right"
-              ><span class="ml-1"><fa icon="fal info-circle"></fa></span
+              ><span class="ml-1"
+                ><fa icon="fal info-circle" class="pushtop"></fa></span
             ></a-tooltip>
           </template>
           <DynamicInput
@@ -83,7 +84,8 @@
             <template #label>
               <span>{{ attr.label }}</span>
               <a-tooltip v-if="attr.info" :title="attr.info" placement="right"
-                ><span class="ml-1"><fa icon="fal info-circle"></fa></span
+                ><span class="ml-1"
+                  ><fa icon="fal info-circle" class="pushtop"></fa></span
               ></a-tooltip>
             </template>
             <DynamicInput
@@ -113,7 +115,8 @@
             v-if="databaseLocal?.info"
             :title="databaseLocal?.info"
             placement="right"
-            ><span class="ml-1"><fa icon="fal info-circle"></fa></span
+            ><span class="ml-1"
+              ><fa icon="fal info-circle" class="pushtop"></fa></span
           ></a-tooltip>
         </template>
         <DynamicInput
@@ -143,7 +146,8 @@
             <template #label>
               <span>{{ attr.label }}</span>
               <a-tooltip v-if="attr.info" :title="attr.info" placement="right"
-                ><span class="ml-1"><fa icon="fal info-circle"></fa></span
+                ><span class="ml-1"
+                  ><fa icon="fal info-circle" class="pushtop"></fa></span
               ></a-tooltip>
             </template>
 
@@ -165,23 +169,29 @@
     <div class="flex py-2 mt-3 space-x-3">
       <a-button
         type="primary"
-        :loading="testingNetworkStatus === 'info'"
         class="bg-green-500 border-green-500"
+        :loading="
+          isNetworkTestLoading || isCredTestLoading || isCredIdTestLoading
+        "
         @click="handleTest"
         >Test Authentication</a-button
       >
-
-      <div class="" v-if="testingNetworkStatus">
-        <a-alert :type="testingNetworkStatus" show-icon class="leading-none">
+      <div
+        class=""
+        v-if="
+          (isNetworkTestSuccess || isNetworkTestError) && !isNetworkTestLoading
+        "
+      >
+        <a-alert :type="networkAlertType" show-icon class="leading-none">
           <template #message>
             <div class="flex items-center align-middle">
               <!-- <div v-html="testingNetworkMessage"></div> -->
               <div class="hidden mr-2 md:block">
-                {{ testingNetworkMessage }}
+                {{ networkAlertMessage }}
               </div>
 
-              <div v-if="testingNetworkError" class="">
-                <a-tooltip :title="testingNetworkError"
+              <div v-if="isNetworkTestError" class="">
+                <a-tooltip :title="networkErrorMessage"
                   ><fa icon="fal info-circle"></fa
                 ></a-tooltip>
               </div>
@@ -191,15 +201,49 @@
         </a-alert>
       </div>
 
-      <div class="" v-if="testCredStatus">
-        <a-alert :type="testCredStatus" show-icon class="leading-none">
+      <div
+        class=""
+        v-if="
+          (!isEdit || credential.login || credential.password) &&
+          (isCredTestSuccess || isCredTestError) &&
+          !isCredTestLoading
+        "
+      >
+        <a-alert :type="credAlertType" show-icon class="leading-none">
           <template #message>
             <div class="flex items-center align-middle">
               <!-- <div v-html="testingNetworkMessage"></div> -->
-              <div class="hidden mr-2 md:block">{{ testCredMessage }}</div>
+              <div class="hidden mr-2 md:block">{{ credAlertMessage }}</div>
 
-              <div v-if="testCredError" class="">
-                <a-tooltip :title="testCredError"
+              <div v-if="isCredTestError" class="">
+                <a-tooltip :title="credErrorMessage"
+                  ><fa icon="fal info-circle"></fa
+                ></a-tooltip>
+              </div>
+            </div>
+            <!-- {{ testingNetworkMessage }} -->
+          </template>
+        </a-alert>
+      </div>
+
+      <div
+        class=""
+        v-if="
+          isEdit &&
+          !credential.login &&
+          !credential.password &&
+          (isCredIdTestSuccess || isCredIdTestError) &&
+          !isCredIdTestLoading
+        "
+      >
+        <a-alert :type="credIdAlertType" show-icon class="leading-none">
+          <template #message>
+            <div class="flex items-center align-middle">
+              <!-- <div v-html="testingNetworkMessage"></div> -->
+              <div class="hidden mr-2 md:block">{{ credIdAlertMessage }}</div>
+
+              <div v-if="isCredIdTestError" class="">
+                <a-tooltip :title="credIdAlertMessage"
                   ><fa icon="fal info-circle"></fa
                 ></a-tooltip>
               </div>
@@ -209,20 +253,26 @@
         </a-alert>
       </div>
     </div>
+    <div
+      class="p-2 mt-2 text-sm text-gray-500 bg-yellow-200 rounded"
+      v-if="isEdit"
+    >
+      Sensitive credentials are not displayed for security reasons.
+    </div>
   </a-form>
 </template>
 
 <script lang="ts">
-import { defineComponent, PropType, ref } from "vue";
+import { defineComponent, PropType, reactive, ref, watch } from "vue";
 
 import RadioButton from "@common/radio/button.vue";
 import DynamicInput from "@common/input/dynamic.vue";
 
-import { Connection } from "~/api/auth/connection";
-import { Credential as CredentialService } from "~/api/auth/credential";
-
 import { BotsType } from "~/types/atlas/bots";
 import useBotModel from "~/composables/connection/useBotModel";
+import useConnectionTest from "~/composables/bots/useConnectionTest";
+import useCredentialTest from "~/composables/bots/useCredentialTest";
+import useCredentialTestbyID from "~/composables/bots/useCredentialTestByID";
 
 export default defineComponent({
   components: { RadioButton, DynamicInput },
@@ -258,13 +308,6 @@ export default defineComponent({
   },
   data() {
     return {
-      cancelToken: null,
-      testingNetworkStatus: "",
-      testingNetworkMessage: "",
-      testingNetworkError: "",
-      testCredStatus: "",
-      testCredMessage: "",
-      testCredError: "",
       nameRules: [
         {
           required: true,
@@ -272,10 +315,12 @@ export default defineComponent({
           trigger: "blur",
         },
       ],
-      testingAuthentication: false,
     };
   },
-  setup(props) {
+  emits: ["verified"],
+  setup(props, { emit }) {
+    const form = ref("");
+
     const {
       host: hostLocal,
       port: portLocal,
@@ -288,7 +333,7 @@ export default defineComponent({
 
     const credential: {
       [key: string]: any;
-    } = ref({
+    } = reactive({
       displayName: "",
       host: hostLocal.value.default,
       port: parseInt(portLocal?.value?.default),
@@ -300,27 +345,139 @@ export default defineComponent({
       url: props?.item?.attributes?.config.attributes.credentialTemplate?.url,
       driver:
         props.item?.attributes?.config?.attributes?.credentialTemplate?.driver,
-      extra: {
-        role: "",
-      },
+      extra: {},
     });
 
     const credentialGuid = ref("");
     if (props.isEdit) {
-      credential.value.displayName =
-        props.defaultConnection?.attributes?.displayName;
-      credential.value.host = props.defaultConnection?.attributes?.host;
-      credential.value.port = props.defaultConnection?.attributes?.port;
+      credential.displayName = props.defaultConnection?.attributes?.displayName;
+      credential.host = props.defaultConnection?.attributes?.host;
+      credential.port = props.defaultConnection?.attributes?.port;
+      credential.authType = props.defaultCredential?.attributes?.authType;
       // change it to credential
-      if (props.defaultConnection?.attributes?.extra) {
-        credential.value.extra = props.defaultConnection?.attributes?.extra;
-      } else {
-        credential.value.extra = props.defaultCredential?.attributes?.extra;
-      }
+      credential.extra = props.defaultCredential?.attributes?.extra;
       credentialGuid.value = props.defaultCredential?.guid;
     }
 
+    const now = ref(false);
+    const initialBody = {};
+    const {
+      data,
+      state: stateNetwork,
+      error: errorNetwork,
+      isLoading: isNetworkTestLoading,
+      isSuccess: isNetworkTestSuccess,
+      isError: isNetworkTestError,
+      alertType: networkAlertType,
+      alertMessage: networkAlertMessage,
+      errorMessage: networkErrorMessage,
+      isValidating,
+      replaceBody: replaceNetworkTestBody,
+    } = useConnectionTest(now, initialBody);
+
+    const handleNetworkTest = () => {
+      replaceNetworkTestBody({
+        host: credential.host,
+        port: credential.port,
+      });
+      if (!now.value) {
+        now.value = true;
+      }
+    };
+
+    const credNow = ref(false);
+    const {
+      state: stateCredential,
+      isLoading: isCredTestLoading,
+      isSuccess: isCredTestSuccess,
+      isError: isCredTestError,
+      alertType: credAlertType,
+      alertMessage: credAlertMessage,
+      errorMessage: credErrorMessage,
+      replaceBody: replaceCredentialTestBody,
+    } = useCredentialTest(credNow, credentialGuid.value);
+
+    const editNow = ref(false);
+    const {
+      isLoading: isCredIdTestLoading,
+      isSuccess: isCredIdTestSuccess,
+      isError: isCredIdTestError,
+      alertType: credIdAlertType,
+      alertMessage: credIdAlertMessage,
+      errorMessage: credIdErrorMessage,
+      replaceId: replaceCredID,
+    } = useCredentialTestbyID(editNow, credentialGuid.value);
+
+    const handleCredentialTest = () => {
+      if (props.isEdit) {
+        if (credential.login || credential.password) {
+          replaceCredentialTestBody(credential);
+          if (!credNow.value) {
+            credNow.value = true;
+          }
+        } else {
+          replaceCredID(credentialGuid.value);
+          if (!editNow.value) {
+            editNow.value = true;
+          }
+        }
+      } else {
+        replaceCredentialTestBody(credential);
+        if (!credNow.value) {
+          credNow.value = true;
+        }
+      }
+    };
+
+    const handleTest = () => {
+      handleNetworkTest();
+      handleCredentialTest();
+    };
+
+    const handleAuthTypeChange = () => {
+      credential.login = "";
+      credential.password = "";
+    };
+
+    watch(
+      [isNetworkTestLoading, isCredTestLoading, isCredIdTestLoading],
+      () => {
+        if (props.isEdit && !credential.login && !credential.password) {
+          if (!isNetworkTestLoading.value && !isCredIdTestLoading.value) {
+            if (isCredIdTestSuccess.value && isNetworkTestSuccess.value) {
+              emit("verified", credential);
+            } else if (isNetworkTestError.value || isCredIdTestError.value) {
+              emit("verified", null);
+            }
+          }
+        } else {
+          if (!isNetworkTestLoading.value && !isCredTestLoading.value) {
+            if (isCredTestSuccess.value && isNetworkTestSuccess.value) {
+              emit("verified", credential);
+            } else if (isNetworkTestError.value || isCredTestError.value) {
+              emit("verified", null);
+            }
+          }
+        }
+      }
+    );
+
+    const getCredential = async () => {
+      try {
+        await form.value.validate();
+        handleTest();
+        return true;
+      } catch (err) {
+        console.log("error", err);
+        return;
+      }
+    };
+
     return {
+      data,
+      stateNetwork,
+      errorNetwork,
+      stateCredential,
       hostLocal,
       portLocal,
       databaseLocal,
@@ -328,95 +485,36 @@ export default defineComponent({
       authAttributesLocal,
       credential,
       authTypes,
+      isValidating,
       credentialGuid,
       enumAttributes,
+      handleTest,
+      handleNetworkTest,
+      handleCredentialTest,
+      isNetworkTestLoading,
+      isNetworkTestSuccess,
+      isNetworkTestError,
+      networkAlertType,
+      networkAlertMessage,
+      networkErrorMessage,
+      isCredTestLoading,
+      isCredTestSuccess,
+      isCredTestError,
+      credAlertType,
+      credAlertMessage,
+      credErrorMessage,
+      handleAuthTypeChange,
+      form,
+      getCredential,
+      isCredIdTestLoading,
+      isCredIdTestSuccess,
+      isCredIdTestError,
+      credIdAlertType,
+      credIdAlertMessage,
+      credIdErrorMessage,
+      replaceCredID,
     };
   },
-  methods: {
-    async getCredential() {
-      try {
-        await this.$refs.form.validate();
-        const resp = await this.handleTest();
-        if (resp) {
-          return this.credential;
-        }
-        return;
-      } catch (err) {
-        console.log("error", err);
-        return;
-      }
-    },
-    handleAuthTypeChange() {
-      this.credential.login = "";
-      this.credential.password = "";
-    },
-    async handleNetworkTest() {
-      try {
-        this.testingNetworkStatus = "info";
-        this.testingNetworkMessage = "Cheking network connection";
-        this.testingNetworkError = "";
-        const res = await Connection.TestNetwork({
-          host: this.credential.host,
-          port: this.credential.port,
-        });
-        this.testingNetworkStatus = "success";
-        this.testingNetworkMessage = "Network connection is successful";
-        return true;
-      } catch (err) {
-        this.testingNetworkStatus = "error";
-        this.testingNetworkMessage = `Network connection failed`;
-
-        if (err.response) {
-          this.testingNetworkError = err.response.data.message;
-        } else {
-          this.testingNetworkError = "Something went wrong. Please try again.";
-        }
-        return false;
-      }
-    },
-    async handleCredentialTest() {
-      try {
-        this.testCredStatus = "info";
-        this.testCredMessage = "Checking authentication";
-        this.testCredError = "";
-
-        if (this.isEdit) {
-          await CredentialService.TestCredentialByID(this.credentialGuid);
-        } else {
-          await CredentialService.TestCredential(this.credential);
-        }
-
-        this.testCredStatus = "success";
-        this.testCredMessage = "Authentication is successful";
-        return true;
-      } catch (err) {
-        this.testCredStatus = "error";
-        this.testCredMessage = "Authentication failed";
-        console.log(err.response);
-        if (err.response) {
-          this.testCredError = err.response.data.message;
-        }
-        return false;
-      }
-    },
-    async handleTest() {
-      let resp = await this.handleNetworkTest();
-      if (resp) {
-        resp = await this.handleCredentialTest();
-      }
-      return resp;
-    },
-    handleValidate() {
-      console.log(this.credential.name);
-      this.$refs.form
-        .validate()
-        .then(() => {
-          console.log("values");
-        })
-        .catch((error) => {
-          console.log("error", error);
-        });
-    },
-  },
+  methods: {},
 });
 </script>

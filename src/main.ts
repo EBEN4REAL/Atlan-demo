@@ -2,16 +2,18 @@ import Vue, { createApp } from "vue";
 import { createRouter, createWebHistory } from "vue-router";
 import generatedRoutes from "virtual:generated-pages";
 import { setupLayouts } from "virtual:generated-layouts";
-import { createPinia } from "pinia";
+
 import { inputFocusDirective } from "~/directives/input-focus";
 import App from "./App.vue";
+import { createHead } from "@vueuse/head";
 
 import "~/styles/index.less";
 
-import { TENANT_FETCH_DATA } from "./constant/store_types";
-import { useStore } from "~/store";
+import { useTenantStore } from "./pinia/tenants";
 
 const app = createApp(App);
+const head = createHead();
+
 inputFocusDirective(app);
 
 // setup up pages with layouts
@@ -22,9 +24,8 @@ const router = createRouter({ history: createWebHistory(), routes });
 Object.values(import.meta.globEager("./modules/*.ts")).map((i) =>
   i.install?.({ app, router, routes })
 );
-
+app.use(head);
 app.use(router).mount("#app");
-app.use(createPinia());
 
 const fn = async () => {
   return await app.config.globalProperties.$keycloak.init({
@@ -37,17 +38,18 @@ const fn = async () => {
 // const debug = process.env.NODE_ENV !== "production";
 router.beforeEach(async (to, from, next) => {
   if (to.matched.some((record) => record.meta.requiresAuth)) {
+    //if first route
     if (!from.name) {
       try {
         const timeout = (prom: Promise<any>, time: number) =>
           Promise.race([prom, new Promise((_r, rej) => setTimeout(rej, time))]);
         const auth = await timeout(fn(), 10000);
+        const tenantStore = useTenantStore();
         if (auth) {
-          const store = useStore();
-          store.dispatch(TENANT_FETCH_DATA);
+          tenantStore.setIsAuthenticated(true, app.config.globalProperties.$keycloak.tokenParsed);
           next();
         } else {
-          console.log("login");
+          tenantStore.setIsAuthenticated(false, null);
           window.location.replace(
             app.config.globalProperties.$keycloak.createLoginUrl()
           );

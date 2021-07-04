@@ -42,8 +42,6 @@ export default defineComponent({
       )?.image;
     },
   },
-  mounted() {
-    console.log(this.item);
-  },
+  mounted() {},
 });
 </script>

@@ -37,7 +37,54 @@
     >
       {{ description(item) }}
     </p>
-    <div class="flex flex-wrap gap-x-1" v-if="projection?.includes('owners')">
+
+    <div
+      class="flex items-center justify-between align-middle"
+      v-if="projection?.includes('rows') || projection?.includes('popularity')"
+    >
+      <div
+        v-if="
+          projection?.includes('rows') &&
+          (item.typeName.toLowerCase() === 'table' ||
+            item.typeName.toLowerCase() === 'view')
+        "
+      >
+        <p class="mb-0 text-gray-600">
+          <span v-if="item?.typeName.toLowerCase() === 'table'">
+            <span class="font-bold tracking-wide">{{
+              rowCount(item, true)
+            }}</span>
+            rows,
+          </span>
+          <span
+            class="font-bold tracking-wide cursor-pointer text-primary-500"
+            >{{ columnCount(item, true) }}</span
+          >
+          cols
+        </p>
+      </div>
+      <div
+        class="text-xs text-gray-500"
+        v-if="
+          projection?.includes('popularity') &&
+          item?.attributes?.popularityScore > 0
+        "
+      >
+        <fa icon="fal analytics" class="pushtop"></fa>
+        {{ numeralFormat(item?.attributes?.popularityScore, "0[.]00") }}
+      </div>
+    </div>
+    <div
+      class="text-xs text-gray-500"
+      v-if="projection?.includes('searchscore')"
+    >
+      <fa icon="fal search" class="pushtop"></fa>
+      {{ numeralFormat(score, "0[.]000000") }}
+    </div>
+    <div
+      class="flex flex-wrap mt-1 gap-x-1"
+      v-if="projection?.includes('owners')"
+    >
       <template
         v-for="user in item?.attributes?.ownerUsers?.split(',')"
         :key="user"
@@ -94,6 +141,13 @@ export default defineComponent({
       required: false,
       default(): Components.Schemas.AtlasEntityHeader {
         return {};
+      },
+    },
+    score: {
+      type: Number,
+      required: false,
+      default() {
+        return 0;
       },
     },
     projection: {

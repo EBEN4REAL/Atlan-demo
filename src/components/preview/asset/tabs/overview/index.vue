@@ -5,7 +5,8 @@
     defaultActiveKey="details"
     :accordion="false"
     v-model:activeKey="activeKey"
-    class="bg-transparent"
+    style="height: calc(100% - 125px)"
+    class="mt-2 overflow-y-auto bg-transparent"
   >
     <a-collapse-panel key="details" class="bg-transparent" forceRender>
       <template #header>
@@ -24,15 +25,6 @@
       <!-- <Properties :item="item"></Properties> -->
       <Governance :item="item"></Governance>
     </a-collapse-panel>
-    <a-collapse-panel key="properties" class="bg-transparent">
-      <template #header>
-        <div class="flex items-center justify-between">
-          <div>Properties</div>
-        </div>
-      </template>
-      <!-- <Properties :item="item"></Properties> -->
-      <Properties :item="item"></Properties>
-    </a-collapse-panel>
     <a-collapse-panel key="heirarchy" class="bg-transparent">
       <template #header>
         <div class="flex items-center justify-between">
@@ -41,6 +33,15 @@
       </template>
       <!-- <Properties :item="item"></Properties> -->
       <Heirarchy :item="item"></Heirarchy>
+    </a-collapse-panel>
+    <a-collapse-panel key="properties" class="bg-transparent">
+      <template #header>
+        <div class="flex items-center justify-between">
+          <div>Properties</div>
+        </div>
+      </template>
+      <!-- <Properties :item="item"></Properties> -->
+      <Properties :item="item"></Properties>
     </a-collapse-panel>
   </a-collapse>
 </template>

@@ -23,7 +23,7 @@
         }}</span>
       </template>
     </a-tree-select>
-    <a-spin size="small" v-if="isLoading" class="ml-2"></a-spin>
+    <a-spin size="small" v-if="isLoading" class="mt-2 ml-2"></a-spin>
   </div>
 </template>
   
@@ -41,8 +41,11 @@ export default defineComponent({
   },
   props: {
     modelValue: {
-      required: false,
       type: Array,
+      required: false,
+      default(): any {
+        return [];
+      },
     },
     credential: {
       type: Object,
@@ -70,9 +73,9 @@ export default defineComponent({
       console.log("load data");
     },
     handleChange(e) {
-      console.log(e);
+      console.log("update", e);
       this.$emit("update:modelValue", e);
-      // this.$emit("change", e);
+      this.$emit("change", e);
     },
     async getTreeData() {
       this.treeData = [];

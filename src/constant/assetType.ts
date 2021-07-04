@@ -6,6 +6,7 @@ export const AssetTypeList = [
     qualifiedNameAttribute: "connectionQualifiedName",
     parents: [],
     children: ["Columns"],
+    count: 0,
   },
   {
     id: "Database",
@@ -15,6 +16,7 @@ export const AssetTypeList = [
     parents: ["AtlanConnection"],
     children: ["Columns"],
     isDiscoverable: false,
+    count: 0,
   },
   {
     id: "Schema",
@@ -24,6 +26,7 @@ export const AssetTypeList = [
     parents: ["AtlanConnection", "AtlanDatabase"],
     children: ["Columns"],
     isDiscoverable: false,
+    count: 0,
   },
   {
     id: "View",
@@ -34,6 +37,7 @@ export const AssetTypeList = [
     children: ["Columns"],
     isDiscoverable: true,
     orderWeight: 90,
+    count: 0,
   },
   {
     id: "Table",
@@ -44,6 +48,7 @@ export const AssetTypeList = [
     children: ["Columns"],
     isDiscoverable: true,
     orderWeight: 100,
+    count: 0,
   },
   {
     id: "Column",
@@ -54,5 +59,6 @@ export const AssetTypeList = [
     children: ["Columns"],
     isDiscoverable: true,
     orderWeight: 80,
+    count: 0,
   },
 ];

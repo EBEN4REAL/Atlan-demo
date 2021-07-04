@@ -1,7 +1,7 @@
 <template>
-  <div class="w-full">
+  <div class="w-full border rounded">
     <div
-      class="flex justify-between w-full px-4 py-3  bg-gray-50 rounded-tl-md rounded-tr-md"
+      class="flex justify-between w-full px-4 py-3 rounded-tl-md rounded-tr-md"
     >
       <div class="flex space-x-3">
         <Runstatus
@@ -78,14 +78,18 @@ export default defineComponent({
     ConnectionSelector,
     Runstatus,
   },
-  props: {},
+  props: {
+    isArchived: {
+      type: Boolean,
+    },
+  },
   data() {
     return {
       list: [],
       msgServer: null,
     };
   },
-  setup() {
+  setup(props) {
     let now = ref(true);
     let params = ref({}) as { [key: string]: any };
 
@@ -94,10 +98,16 @@ export default defineComponent({
     let phase = ref("");
 
     params.value = {
-      "listOptions.limit": 5,
+      "listOptions.limit": 50,
+      "listOptions.labelSelector": "category=metadata",
     };
 
-    const { data, mutate, state, STATES } = fetchWorkflowList(now, params);
+    const { data, mutate, state, STATES } = fetchWorkflowList(
+      "archived_list",
+      now,
+      params,
+      false
+    );
 
     const updateLabel = () => {
       let labels = [];
@@ -108,7 +118,7 @@ export default defineComponent({
         labels.push(`connection-guid=${connectionGuid.value}`);
       }
       if (botTemplateName.value) {
-        labels.push(`bot-template-name=${botTemplateName.value}`);
+        labels.push(`category=${botTemplateName.value}`);
       }
       params.value["listOptions.labelSelector"] = labels.join(",");
     };

@@ -12,10 +12,29 @@
     <a-collapse-panel
       v-for="item in List"
       :key="item.id"
-      :header="item.label"
       class="bg-transparent"
     >
+      <template #header>
+        <div class="flex justify-between" :key="dirtyTimestamp">
+          {{ item.label }}
+
+          <div
+            v-if="isFilter(item.id)"
+            @click.stop.prevent="handleClear(item.id)"
+          >
+            <fa
+              icon="fal times-circle"
+              class="text-sm hover:text-red-500 pushtop"
+            ></fa>
+          </div>
+        </div>
+      </template>
       <component
+        :ref="
+          (el) => {
+            refMap[item.id] = el;
+          }
+        "
         :is="item.component"
         :item="item"
         @change="handleChange"
@@ -25,7 +44,7 @@
 </template>
     
 <script lang="ts">
-import { defineAsyncComponent, defineComponent } from "vue";
+import { defineAsyncComponent, defineComponent, ref } from "vue";
 import { List } from "./filters";
 import { Components } from "~/api/atlas/client";
 
@@ -55,22 +74,49 @@ export default defineComponent({
     const filterMap: { [key: string]: Components.Schemas.FilterCriteria } = {};
     let filters: Components.Schemas.FilterCriteria[] = [];
 
+    const dirtyTimestamp = ref("dirty_");
+
+    const refMap: { [key: string]: any } = ref({});
+
     const refresh = () => {
       filters = [];
       Object.keys(filterMap).forEach((key) => {
-        console.log(filterMap[key]);
         filters.push(filterMap[key]);
       });
       emit("refresh", filters);
     };
-
     const handleChange = (value: any) => {
       filterMap[value.id] = value.payload;
+      dirtyTimestamp.value = `dirty_${Date.now().toString()}`;
+      console.log(dirtyTimestamp.value);
       refresh();
+    };
+
+    const isFilter = (id) => {
+      console.log(id);
+      console.log(filterMap[id]);
+      if (filterMap[id]) {
+        if (filterMap[id]?.criterion?.length > 0) {
+          return true;
+        }
+      }
+      return false;
+    };
+
+    const handleClear = (id) => {
+      console.log(refMap.value[id]);
+      if (refMap.value[id]) {
+        refMap.value[id].clear();
+      }
     };
 
     return {
       handleChange,
+      isFilter,
+      dirtyTimestamp,
+      filterMap,
+      handleClear,
+      refMap,
     };
   },
   mounted() {},
@@ -136,6 +182,20 @@ export default defineComponent({
 .filter {
   :global(.ant-collapse-item) {
     @apply border-none;
+  }
+
+  :global(.ant-collapse-header) {
+    padding-left: 18px !important;
+    padding-right: 0px !important;
+  }
+  :global(.ant-collapse-arrow) {
+    left: 0px !important;
+  }
+
+  :global(.ant-collapse-content-box) {
+    padding-right: 0px;
+    padding-left: 0px;
+    padding-top: 0px;
   }
 }
 </style>

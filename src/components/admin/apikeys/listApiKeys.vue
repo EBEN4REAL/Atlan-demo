@@ -10,9 +10,7 @@
     <a-button type="primary" @click="showAPIKeyModal">Create New API</a-button>
   </div>
   <div class="py-6">
-    <ErrorView
-      v-if="[STATES.ERROR, STATES.STALE_IF_ERROR].includes(state)"
-    ></ErrorView>
+    <ErrorView v-if="[STATES.ERROR, STATES.STALE_IF_ERROR].includes(state)"></ErrorView>
     <a-list
       v-else
       item-layout="horizontal"
@@ -29,24 +27,26 @@
                 class="flex flex-row items-center justify-end"
                 v-if="item.created_by === currentUserId"
               >
-                <a-button class="mx-4" shape="circle" @click="copyAPI(item)"
-                  ><fa icon="fal copy"></fa
-                ></a-button>
-                <a-button shape="circle" @click="deleteAPI(item.id)"
-                  ><fa icon="fal trash-alt" class="text-red-600"></fa
-                ></a-button>
+                <a-button class="mx-4" shape="circle" @click="copyAPI(item)">
+                  <fa icon="fal copy"></fa>
+                </a-button>
+                <a-button shape="circle" @click="deleteAPI(item.id)">
+                  <fa icon="fal trash-alt" class="text-red-600"></fa>
+                </a-button>
               </div>
             </div>
           </template>
           <a-list-item-meta>
-            <template #title> {{ item.name }} </template>
-            <template #description>
-              {{ timeAgo(item.created_at) }} ago
-            </template>
+            <template #title>{{ item.name }}</template>
+            <template #description>{{ timeAgo(item.created_at) }} ago</template>
           </a-list-item-meta>
-          <div class="overflow-x-hidden text-left w-44 hide-initial">
-            {{ item.code.slice(item.code.length - 22) }}
-          </div>
+          <div
+            class="mx-3 cursor-pointer"
+            @click="()=>handleClickUser(item.created_by)"
+          >{{item.created_by}}</div>
+          <div
+            class="overflow-x-hidden text-left w-44 hide-initial"
+          >{{ item.code.slice(item.code.length - 22) }}</div>
         </a-list-item>
       </template>
     </a-list>
@@ -63,8 +63,7 @@
           :disabled="!apiName.length"
           @click="createAPIKey"
           :loading="isAPILoading"
-          >Create</a-button
-        >
+        >Create</a-button>
       </template>
     </a-modal>
   </div>
@@ -82,6 +81,7 @@ import relativeTime from "dayjs/plugin/relativeTime";
 dayjs.extend(relativeTime);
 import { APIKeyService } from "~/api/auth/apiKeys";
 import { debounce } from "~/composables/utils/debounce";
+import { usePreview } from "~/composables/user/showUserPreview";
 
 export default defineComponent({
   components: { ErrorView },
@@ -153,6 +153,12 @@ export default defineComponent({
         },
       });
     };
+    // user preview drawer
+    const { showUserPreview, setUserUniqueAttribute } = usePreview();
+    const handleClickUser = (userId: string) => {
+      setUserUniqueAttribute(userId);
+      showUserPreview({ allowed: ["about"] });
+    };
 
     return {
       copyAPI,
@@ -171,6 +177,7 @@ export default defineComponent({
       timeAgo,
       searchText,
       handleSearch,
+      handleClickUser,
     };
   },
 });

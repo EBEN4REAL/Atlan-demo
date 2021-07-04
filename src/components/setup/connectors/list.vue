@@ -9,11 +9,8 @@
       <!-- <CategorySelector style="min-width: 200px;" v-model:value="category"></CategorySelector> -->
     </div>
 
-    <div class="flex-grow h-full" v-if="isError">
-      <ErrorView :error="error"></ErrorView>
-    </div>
+    <LoadingView v-if="isLoading || isValidating"></LoadingView>
 
-    <LoadingView v-else-if="isLoading"></LoadingView>
     <div
       class="grid items-center grid-cols-12 gap-2 px-6 py-4 align-middle"
       v-else
@@ -26,46 +23,53 @@
 </template>
             
 <script lang="ts">
-import { defineComponent, ref, watch } from "vue";
+import { defineComponent, reactive, ref, watch } from "vue";
 import ItemView from "./item.vue";
-import CategorySelector from "@common/selector/category/index.vue";
 
 import LoadingView from "@common/loaders/section.vue";
 import ErrorView from "@common/error/index.vue";
 import EmptyView from "@common/empty/index.vue";
 
-import fetchBotsList from "~/composables/bots/fetchBotsList";
+import useBotList from "~/composables/bots/useBotList";
 
 import { Components } from "~/api/atlas/client";
-import { useRoute, useRouter } from "vue-router";
 import { useDebounceFn } from "@vueuse/core";
+import { useRoute, useRouter } from "vue-router";
 import { BotsType } from "~/types/atlas/bots";
-import { BOTS_FETCH_LIST } from "~/constant/cache";
 
 export default defineComponent({
   components: {
     ItemView,
-    CategorySelector,
     LoadingView,
     ErrorView,
     EmptyView,
   },
+  emits: ["select"],
   setup(props, { emit }) {
     let now = ref(true);
-    const entityFilters: Components.Schemas.FilterCriteria = {
-      operator: <Components.Schemas.Operator>"eq",
-      attributeName: "category",
-      attributeValue: "metadata",
-    };
 
-    const { list, isError, isLoading, query, error } = fetchBotsList(
-      BOTS_FETCH_LIST,
+    const defaultBody = reactive({
+      entityFilters: {
+        condition: "AND",
+        criterion: [
+          {
+            operator: <Components.Schemas.Operator>"eq",
+            attributeName: "category",
+            attributeValue: "metadata",
+          },
+        ],
+      },
+    });
+
+    const { list, isLoading, isValidating, query } = useBotList(
       now,
-      entityFilters
+      defaultBody
     );
+
     const route = useRoute();
 
     const router = useRouter();
+
     watch(list, () => {
       let isSample = false;
       if (route.query.sample) {
@@ -83,13 +87,12 @@ export default defineComponent({
       }
     });
 
-    const handleSearchChange = useDebounceFn((val) => {
-      query(val.target.value);
-    }, 100);
+    const handleSearchChange = useDebounceFn((e) => {
+      query(e.target.value);
+    }, 200);
 
     const handleSelect = (item: BotsType) => {
       const isSample = item?.attributes?.isSample?.toString();
-
       const query = {
         ...route?.query,
         connector: item?.attributes?.integrationName,
@@ -101,16 +104,11 @@ export default defineComponent({
 
     return {
       list,
-      isError,
       isLoading,
+      isValidating,
       handleSearchChange,
       handleSelect,
-      error,
     };
   },
-  data() {
-    return {};
-  },
-  emits: ["select"],
 });
 </script>

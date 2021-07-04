@@ -1,19 +1,14 @@
 <template>
   <LoadingView v-if="isLoading"></LoadingView>
   <ErrorView v-else-if="isError" :error="error"></ErrorView>
-  <EmptyView
-    v-else-if="!isLoading && treeData?.length === 0"
-    empty="There are no connectitions available"
-    buttonText="Setup new connection"
-    @event="handleEvent"
-  ></EmptyView>
 
-  <div v-else>
+  <div>
     <a-tree
-      :treeData="treeData"
+      :treeData="sourceTree"
       :blockNode="true"
+      :defaultExpandAll="true"
       v-model:expandedKeys="expandedKeys"
-      v-model:value="selectedKeys"
+      v-model:selectedKeys="selectedKeys"
       @select="selectNode"
       @expand="expandNode"
     >
@@ -48,15 +43,15 @@
   
   
 <script lang="ts">
-import { defineComponent, ref, watch } from "vue";
+import { defineComponent, reactive, ref, watch } from "vue";
 import handleTreeExpand from "~/composables/tree/handleTreeExpand";
-import fetchConnectionList from "~/composables/connection/fetchConnectionList";
 import { debouncedWatch } from "@vueuse/core";
-// :loading="[STATES.PENDING].includes(state)"
 import EmptyView from "@common/empty/index.vue";
 import ErrorView from "@common/error/index.vue";
 import LoadingView from "@common/loaders/section.vue";
 import { useRouter } from "vue-router";
+import { useConnectionsStore } from "~/pinia/connections";
+import useConnectionsList from "~/composables/bots/useConnectionList";
 import { CONNECTION_FETCH_LIST } from "~/constant/cache";
 
 export default defineComponent({
@@ -73,36 +68,50 @@ export default defineComponent({
   data() {
     return {};
   },
+  emits: ["select"],
   setup(props, { emit }) {
-    const { treeData, query, error, isLoading, isError } = fetchConnectionList(
-      CONNECTION_FETCH_LIST
+    const store = useConnectionsStore();
+
+    let sourceTree = ref([...store.getSourceTree(props.searchText)]);
+    watch(
+      () => store.getList,
+      () => {
+        sourceTree.value = [...store.getSourceTree(props.searchText)];
+      }
     );
 
     debouncedWatch(
       () => props.searchText,
       () => {
-        query(props.searchText);
+        sourceTree.value = [...store.getSourceTree(props.searchText)];
       },
       { debounce: 100 }
     );
-
     const router = useRouter();
     const handleEvent = () => {
       router.push("/setup");
     };
-
     const { expandedKeys, selectNode, selectedKeys, expandNode } =
-      handleTreeExpand(emit);
+      handleTreeExpand(emit, "connection_tree");
+
+    const now = ref(true);
+    const initialBody = {
+      limit: 100,
+    };
+    useConnectionsList(now, initialBody, CONNECTION_FETCH_LIST);
+
     return {
-      treeData,
       handleEvent,
       expandedKeys,
       selectedKeys,
       selectNode,
       expandNode,
-      isLoading,
-      isError,
-      error,
+      isSuccess: store.getStatus.isValidating,
+      isValidating: store.getStatus.isValidating,
+      isLoading: store.getStatus.isLoading,
+      isError: store.getStatus.isError,
+      error: store.getStatus.error,
+      sourceTree,
     };
   },
 });

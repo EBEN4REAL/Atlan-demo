@@ -20,12 +20,13 @@ export const getEnv = function (): any {
       import.meta.env.VITE_DEFAULT_REQUEST_TIMEOUT,
       30
     ),
+
     DEV_API_BASE_URL: parse(
       import.meta.env.VITE_DEV_API_BASE_URL,
       "https://alpha.atlan.com"
     ),
     DEFAULT_REALM: parse(import.meta.env.VITE_DEFAULT_REALM, "default"),
-    DEFAULT_CLIENT_ID: parse(import.meta.env.VITE_HOME_CLIENT_ID, "atlan-home"),
+    DEFAULT_CLIENT_ID: parse(import.meta.env.VITE_HOME_CLIENT_ID, "atlan-frontend"),
   };
   return config;
 };

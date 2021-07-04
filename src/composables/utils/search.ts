@@ -1,6 +1,6 @@
 import { computed, ComputedRef, Ref } from 'vue';
 
-import { SearchBasic, URL } from '~/api/atlas/searchbasic';
+import { SearchBasic } from '~/api/atlas/searchbasic';
 
 import swrvState from '../utils/swrvState';
 import useSWRV from 'swrv';
@@ -11,7 +11,7 @@ import { SearchParameters } from '~/types/atlas/attributes';
 
 export default function fetchSearchList(dependent: any, body: Ref<SearchParameters>, paramCancelToken?: Ref<CancelTokenSource>) {
 
-    const { data, error, mutate, isValidating } = useSWRV([URL.SEARCHBASIC, body.value, {}], () => {
+    const { data, error, mutate, isValidating } = useSWRV(["", body.value, {}], () => {
 
         console.log("dependent", dependent.value);
         if (dependent.value) {

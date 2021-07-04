@@ -10,7 +10,7 @@
     <div class="grid grid-cols-12" v-if="job.scope === 'custom'">
       <a-form-item label="Include Metadata" name="include" class="col-span-6">
         <ScopeSelector
-          v-model:value="job.include"
+          v-model="job.include"
           :credential="credential"
         ></ScopeSelector>
       </a-form-item>
@@ -20,7 +20,7 @@
         class="col-span-6 ml-3"
       >
         <ScopeSelector
-          v-model:value="job.exclude"
+          v-model="job.exclude"
           :credential="credential"
         ></ScopeSelector>
       </a-form-item>
@@ -201,7 +201,7 @@ export default defineComponent({
         triggerNow: true,
         scope: "all",
         include: ["all"],
-        exclude: undefined,
+        exclude: [],
         cron: "none",
         startTime: "00:00",
       } as { [key: string]: any },
@@ -210,12 +210,9 @@ export default defineComponent({
   methods: {
     handleScopeSelector(attr) {
       let databases: any[] = [];
-
       if (this.job[attr]) {
-        if (this.job[attr] == ["all"]) {
-          return JSON.stringify({
-            "*": [],
-          });
+        if (this.job[attr].includes("all")) {
+          return JSON.stringify({});
         } else {
           this.job[attr].forEach((item) => {
             if (!item.startsWith("AtlanSchema$")) {
@@ -251,10 +248,14 @@ export default defineComponent({
         const options = {
           tz: this.job.cronTimezone,
         };
-
-        let cronTemp = e.target.value.split(" ").join("");
+        this.isCronError = false;
+        let cronTemp = e.target.value.replace(/ /g, "");
+        // console.log(cronTemp);
         cronTemp = cronTemp.split("").join(" ");
+        // console.log(cronTemp);
         this.job.cronString = cronTemp;
+
+        console.log(cronTemp);
         parser.parseExpression(cronTemp, options);
         this.job.isCron = true;
         this.updateCronEval();
@@ -281,6 +282,8 @@ export default defineComponent({
         this.handleScopeSelector("include");
       this.job.arguments["exclude-filter"] =
         this.handleScopeSelector("exclude");
+
+      console.log(this.job);
       return this.job;
     },
     updateCronEval() {

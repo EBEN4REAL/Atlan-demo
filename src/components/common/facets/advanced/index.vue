@@ -120,11 +120,13 @@ export default defineComponent({
             operator: element.operator[1],
           });
         } else {
-          criterion.push({
-            attributeName: element.operator[0],
-            operator: element.operator[1],
-            attributeValue: element.operand,
-          });
+          if (element.operand !== "") {
+            criterion.push({
+              attributeName: element.operator[0],
+              operator: element.operator[1],
+              attributeValue: element.operand,
+            });
+          }
         }
       });
 
@@ -135,53 +137,13 @@ export default defineComponent({
           criterion: criterion,
         } as Components.Schemas.FilterCriteria,
       });
-
-      //   let criterion: Components.Schemas.FilterCriteria[] = [];
-
-      //   if (userValue.value) {
-      //     criterion.push({
-      //       attributeName: "ownerUsers",
-      //       attributeValue: userValue.value,
-      //       operator: "contains",
-      //     });
-      //   }
-      //   if (groupValue.value) {
-      //     criterion.push({
-      //       attributeName: "ownerGroups",
-      //       attributeValue: groupValue.value,
-      //       operator: "contains",
-      //     });
-      //   }
-      //   emit("change", {
-      //     id: props.item.id,
-      //     payload: {
-      //       condition: "OR",
-      //       criterion: criterion,
-      //     } as Components.Schemas.FilterCriteria,
-      //   });
     };
 
-    // let inputMap: { [key: number]: any } = ref({});
+    const clear = () => {
+      list.value = [];
+      handleChange();
+    };
 
-    // const attributeList = computed(() => {
-    //   let temp = [];
-    //   AdvancedAttributeList.forEach((item) => {
-    //     item?.children = OperatorList.filter((op) =>
-    //       op.allowedType.includes(item.typeName)
-    //     );
-    //   });
-    //   return AdvancedAttributeList;
-    // });
-
-    // const checkedValues = ref([]);
-    // checkedValues.value = props.modelValue;
-    // const handleChange = (checkedValue: string) => {
-    //   emit("update:modelValue", checkedValues.value);
-    //   emit("change", {
-    //     id: props.item.id,
-    //     payload: [checkedValues.value],
-    //   });
-    // };
     return {
       options,
       list,
@@ -189,6 +151,7 @@ export default defineComponent({
       handleRemove,
       handleOperatorChange,
       handleOperandChange,
+      clear,
     };
   },
 });

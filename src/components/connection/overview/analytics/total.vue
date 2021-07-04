@@ -1,24 +1,13 @@
 <template>
-  <div class="w-full bg-white">
+  <div>
     <p class="mb-1 text-xs font-semibold leading-tight text-gray-500 uppercase">
       Total Assets
     </p>
-    <LoadingView
-      style="min-height: 100px"
-      v-if="
-        [STATES.PENDING].includes(state) || [STATES.VALIDATING].includes(state)
-      "
-    ></LoadingView>
-    <ErrorView
-      style="min-height: 100px"
-      v-else-if="[STATES.ERROR, STATES.STALE_IF_ERROR].includes(state)"
-    ></ErrorView>
+    <div class="text-xl text-gray-900">{{ numeralFormat(assetTypeSum) }}</div>
+
+    <LoadingView style="min-height: 100px" v-if="isLoading"></LoadingView>
+
     <div v-else>
-      <p
-        class="mb-1 text-2xl font-semibold leading-tight text-gray-800 uppercase "
-      >
-        {{ numeralFormat(assetDistributionSum) }}
-      </p>
       <div
         v-for="item in assetTypeList"
         :key="item.id"
@@ -39,14 +28,12 @@
 </template>
   
 <script lang="ts">
-import { defineComponent, PropType, ref } from "vue";
-import { BaseAttributes, BasicSearchAttributes } from "~/constant/projection";
+import { defineComponent, PropType, reactive, ref, watch } from "vue";
 import { ConnectionType } from "~/types/atlas/connection";
 
-import fetchAssetDiscover from "~/composables/asset/fetchAssetDiscover";
+import useCatalogList from "~/composables/bots/useCatalogList";
 import LoadingView from "@common/loaders/section.vue";
 import ErrorView from "@common/error/index.vue";
-// import EmptyView from "@common/empty/index.vue";
 
 export default defineComponent({
   mixins: [],
@@ -61,40 +48,24 @@ export default defineComponent({
     },
   },
   setup(props) {
-    let now = ref(true);
-
-    console.log(props.item);
-    const defaultBody = ref({
-      typeName: "Catalog",
-      excludeDeletedEntities: true,
-      includeClassificationAttributes: true,
-      includeSubClassifications: true,
-      includeSubTypes: true,
-      limit: 0,
-      offset: 0,
-      attributes: [...BaseAttributes, ...BasicSearchAttributes],
-      entityFilters: {
-        condition: "AND",
-        criterion: [
-          {
-            attributeName: "connectionQualifiedName",
-            operator: "eq",
-            attributeValue: props.item?.attributes?.qualifiedName,
-          },
-        ],
-      },
+    const now = ref(true);
+    const defaultBody = reactive({
+      limit: 1,
       aggregationAttributes: ["__typeName.keyword"],
     });
-    const { totalCount, listCount, assetTypeList } = fetchAssetDiscover(
+    const { assetTypeList, isLoading, refresh, assetTypeSum } = useCatalogList(
       now,
       defaultBody
     );
 
-    return {
-      totalCount,
-      listCount,
-      assetTypeList,
-    };
+    watch(
+      () => props.item.guid,
+      () => {
+        refresh();
+      }
+    );
+
+    return { assetTypeList, isLoading, assetTypeSum };
   },
   mounted() {},
 });

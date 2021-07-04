@@ -10,7 +10,14 @@
           @change="handleSearch"
         ></a-input-search>
       </div>
-      <div></div>
+      <div v-if="showHeaderButtons">
+        <a-button @click="$emit('showGroupMembers')" class="mr-3">
+          <fa icon="fal chevron-left" />
+        </a-button>
+        <a-button @click="$emit('addMembersToGroup')" type="primary" :disabled="addMemberLoading">
+          <fa icon="fal plus" class="mr-2" />Add
+        </a-button>
+      </div>
     </div>
     <div
       class="flex items-center h-full align-middle bg-white"
@@ -26,21 +33,21 @@
         @click="()=>{getUserList()}"
       >Try again</a-button>
     </div>
-    <div v-else class="mt-4 overflow-auto max-h-24">
+    <div v-else class="mt-4 overflow-auto">
       <a-checkbox-group v-model:value="selectedIds" @change="handleChange" class="w-full">
         <div class="flex flex-col w-full">
           <template v-for="user in userList.value" :key="user.id">
             <a-checkbox :value="user.id" class="flex items-center w-full">
               <span class="flex justify-between mb-2">
                 <div class="flex items-center">
-                  <!-- <a-avatar
+                  <a-avatar
                     shape="circle"
                     class="mr-1 ant-tag-blue text-primary-500 avatars"
-                  >{{ getNameInitials(getNameInTitleCase(user.name)) }}</a-avatar>-->
+                  >{{ getNameInitials(getNameInTitleCase(user.name)) }}</a-avatar>
                   <div class="ml-2">
                     <div>{{ user.name }}</div>
-                    <div>@{{ user.username }}</div>
-                    <!--<div>{{ user.group_count_string }}</div>-->
+                    <div class="text-xs">@{{ user.username }}</div>
+                    <div class="text-xs">{{ user.group_count_string }}</div>
                   </div>
                 </div>
               </span>
@@ -77,6 +84,16 @@ export default defineComponent({
   components: {
     ErrorView,
   },
+  props: {
+    addMemberLoading: {
+      type: Boolean,
+      default: false,
+    },
+    showHeaderButtons: {
+      type: Boolean,
+      default: false,
+    },
+  },
   setup(props, context) {
     const selectedIds = ref([]);
     const searchText = ref("");
@@ -84,7 +101,13 @@ export default defineComponent({
       limit: 10,
       offset: 0,
       sort: "first_name",
-      filter: {},
+      filter: {
+        $and: [
+          {
+            email_verified: true,
+          },
+        ],
+      },
     });
     const {
       usersListConcatenated: userList,
@@ -98,10 +121,15 @@ export default defineComponent({
     const handleSearch = useDebounceFn(() => {
       userListAPIParams.filter = searchText.value
         ? {
-            $or: [
-              { first_name: { $ilike: `%${searchText.value}%` } },
-              { last_name: { $ilike: `%${searchText.value}%` } },
-              { username: { $ilike: `%${searchText.value}%` } },
+            $and: [
+              { email_verified: true },
+              {
+                $or: [
+                  { first_name: { $ilike: `%${searchText.value}%` } },
+                  { last_name: { $ilike: `%${searchText.value}%` } },
+                  { username: { $ilike: `%${searchText.value}%` } },
+                ],
+              },
             ],
           }
         : {};
@@ -146,5 +174,4 @@ export default defineComponent({
 });
 </script>
   
-  <style>
-</style>
+<style></style>

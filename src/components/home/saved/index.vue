@@ -1,15 +1,8 @@
 <template>
   <div class="flex flex-col h-full">
-    <LoadingView
-      v-if="
-        [STATES.PENDING].includes(state) || [STATES.VALIDATING].includes(state)
-      "
-    ></LoadingView>
+    <LoadingView v-if="isLoading"></LoadingView>
 
-    <ErrorView
-      :error="errorMessage"
-      v-else-if="[STATES.ERROR, STATES.STALE_IF_ERROR].includes(state)"
-    ></ErrorView>
+    <ErrorView :error="error" v-else-if="isError"></ErrorView>
 
     <div class="flex flex-col flex-grow w-full space-y-2">
       <div
@@ -33,21 +26,22 @@ import fetchSavedSearchList from "~/composables/savedsearch/fetchSavedSearchList
 import LoadingView from "@common/loaders/section.vue";
 import ErrorView from "@common/error/index.vue";
 import EmptyView from "@common/empty/index.vue";
+import { SAVED_SEARCH } from "~/api/keyMaps/search";
 
 export default defineComponent({
   components: { LoadingView, ErrorView },
   props: {},
   setup(props) {
     let now = ref(true);
-    const { list, totalCount, listCount, state, STATES, errorMessage } =
-      fetchSavedSearchList(now);
+    const { list, totalCount, listCount, isLoading, isError, error } =
+      fetchSavedSearchList("sadasd", now);
     return {
       list,
-      state,
-      STATES,
-      errorMessage,
+      error,
       totalCount,
       listCount,
+      isError,
+      isLoading,
     };
   },
 });

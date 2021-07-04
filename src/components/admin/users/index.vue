@@ -1,206 +1,222 @@
 <template>
-  <div class="flex justify-between my-3 gap-x-5">
-    <a-input-search
-      placeholder="Search Members"
-      class="mr-1"
-      size="default"
-      v-model:value="searchText"
-      @change="handleSearch"
-      :allowClear="true"
-    ></a-input-search>
-    <a-popover placement="bottom">
-      <template #content>
-        <div class="flex">
-          <div class="pr-3 border-r border-gray-200 border-dashed">
-            <div class="flex justify-between">
-              <p class="mb-1 text-gray-500">Status</p>
-              <fa
-                icon="fal times-circle"
-                class="text-red-600 cursor-pointer"
-                @click="resetStatusFilter"
-                v-if="statusFilterValue"
-              ></fa>
-            </div>
-            <a-radio-group v-model:value="statusFilterValue" @change="handleStatusFilterChange">
-              <div class="flex flex-col space-y-1">
-                <a-radio :value="'enabled'">Active Users</a-radio>
-                <a-radio :value="'disabled'">Disabled Users</a-radio>
-              </div>
-            </a-radio-group>
-          </div>
-          <div class="pl-3">
-            <p class="mb-1 text-gray-500">Role</p>
-            <a-radio-group>
-              <div class="flex flex-col space-y-1">
-                <a-radio>Admin</a-radio>
-                <a-radio>Cloud</a-radio>
-                <a-radio>Steward</a-radio>
-                <a-radio>Member</a-radio>
-              </div>
-            </a-radio-group>
-          </div>
-        </div>
-      </template>
-      <a-button size="default">
-        <fa icon="fal filter" class="mr-1"></fa>
-        <!--TODO: add logic to count filters and show the count here-->
-        <span v-if="statusFilterValue">(1)</span>
-      </a-button>
-    </a-popover>
-    <div class="flex justify-end">
-      <a-button
-        v-if="true || IS_SMTP_CONFIGURED"
-        type="primary"
-        class="ml-4"
-        size="default"
-        @click="handleInviteUsers"
-      >Add User</a-button>
-    </div>
-  </div>
-  <!-- Table for users-->
   <div>
-    <div v-if="listType==='users'">
-      <a-table
-        v-if="userList && userList.length && listType === 'users'"
-        :dataSource="userList"
-        :columns="columns"
-        :rowKey="(user) => user.id"
-        @change="handleTableChange"
-        :pagination="false"
-        :scroll="{ x: '100%' }"
-        :loading="
-      [STATES.PENDING].includes(state) || [STATES.VALIDATING].includes(state)
-    "
-      >
-        <template #name="{ text: user }">
-          <div
-            class="flex items-center align-middle cursor-pointer"
-            @click="
-          () => {
-            showUserPreviewDrawer(user);
-          }
-        "
-          >
-            <a-avatar
-              v-if="user.name || user.uername || user.email"
-              shape="square"
-              class="mr-2 border-2 rounded-lg ant-tag-blue text-primary-500 avatars border-primary-300"
-              :size="40"
-              :src="imageUrl(user.username)"
-            >
-              {{
-              getNameInitials(
-              getNameInTitleCase(user.name || user.uername || user.email)
-              )
-              }}
-            </a-avatar>
+    <div>
+      <p class="mb-2 text-xl font-normal tracking-tight">
+        Manage Members
+        <span
+          class="inline-flex items-center justify-center px-2 py-1 ml-2 mr-2 text-xs font-bold leading-none text-red-100 bg-indigo-600 rounded-full"
+        >{{filteredUserCount}}</span>
+      </p>
+    </div>
+    <div class="flex justify-between my-3 gap-x-5">
+      <a-input-search
+        placeholder="Search Members"
+        class="mr-1"
+        size="default"
+        v-model:value="searchText"
+        @change="handleSearch"
+        :allowClear="true"
+      ></a-input-search>
 
-            <div>
-              <span class="text-gray-900">{{ nameCase(user.name) || "-" }}</span>
-              <p class="mb-0 text-gray-500">@{{ user.username || "-" }}</p>
+      <div class="flex justify-end">
+        <a-popover placement="bottom">
+          <template #content>
+            <div class="flex">
+              <div class="pr-3 border-r border-gray-200 border-dashed">
+                <div class="flex justify-between">
+                  <p class="mb-1 text-gray-500">Status</p>
+                  <fa
+                    icon="fal times-circle"
+                    class="text-red-600 cursor-pointer"
+                    @click="resetStatusFilter"
+                    v-if="statusFilterValue"
+                  ></fa>
+                </div>
+                <a-radio-group v-model:value="statusFilterValue" @change="handleStatusFilterChange">
+                  <div class="flex flex-col space-y-1">
+                    <a-radio :value="'enabled'">Active Users</a-radio>
+                    <a-radio :value="'disabled'">Disabled Users</a-radio>
+                  </div>
+                </a-radio-group>
+              </div>
+              <div class="pl-3">
+                <p class="mb-1 text-gray-500">Role</p>
+                <a-radio-group>
+                  <div class="flex flex-col space-y-1">
+                    <a-radio>Admin</a-radio>
+                    <a-radio>Cloud</a-radio>
+                    <a-radio>Steward</a-radio>
+                    <a-radio>Member</a-radio>
+                  </div>
+                </a-radio-group>
+              </div>
             </div>
-          </div>
-        </template>
-
-        <template #actions="{ text: user }">
-          <a-button-group>
-            <a-tooltip v-if="user.enabled" placement="bottom">
-              <template #title>
-                <span>Disable User</span>
-              </template>
-              <a-button size="small" @click="showEnableDisableConfirm(user)">
-                <fa icon="fal user-slash"></fa>
-              </a-button>
-            </a-tooltip>
-            <a-tooltip v-if="!user.enabled" placement="bottom">
-              <template #title>
-                <span>Enable User</span>
-              </template>
-              <a-button size="small" @click="showEnableDisableConfirm(user)">
-                <fa icon="fal user-check"></fa>
-              </a-button>
-            </a-tooltip>
-            <a-tooltip v-if="user.enabled" placement="bottom">
-              <template #title>
-                <span>Change Role</span>
-              </template>
-              <a-button size="small" v-if="user.enabled" @click="handleChangeRole(user)">
-                <fa icon="fal user-shield"></fa>
-              </a-button>
-            </a-tooltip>
-          </a-button-group>
-        </template>
-      </a-table>
-      <div class="flex justify-between max-w-full mt-4">
+          </template>
+          <a-button size="default">
+            <fa icon="fal filter" class="mr-1"></fa>
+            <!--TODO: add logic to count filters and show the count here-->
+            <span v-if="statusFilterValue">(1)</span>
+          </a-button>
+        </a-popover>
         <a-button
-          type="link"
+          v-if="true || IS_SMTP_CONFIGURED"
+          type="primary"
+          class="ml-4"
           size="default"
-          @click="toggleUserInvitationList"
-        >View Pending Invitations</a-button>
-        <a-pagination
-          :total="pagination.total"
-          :current="pagination.current"
-          :pageSize="pagination.pageSize"
-          @change="handlePagination"
-        />
+          @click="handleInviteUsers"
+        >Add User</a-button>
       </div>
     </div>
-    <InvitationListTable
-      @toggleList="toggleUserInvitationList"
-      v-if="listType === 'invitations'"
-      :searchText="searchText"
-      @showPreview="showUserPreviewDrawer"
-      @changeRole="handleChangeRole"
-      ref="invitationComponentRef"
-    />
-  </div>
-  <!--Preview Drawer-->
-  <UserPreviewDrawer
+    <!-- Table for users-->
+    <div>
+      <div v-if="listType==='users'">
+        <a-table
+          v-if="userList && userList.length && listType === 'users'"
+          :dataSource="userList"
+          :columns="columns"
+          :rowKey="(user) => user.id"
+          @change="handleTableChange"
+          :pagination="false"
+          :scroll="{ x: '100%' }"
+          :loading="
+      [STATES.PENDING].includes(state) || [STATES.VALIDATING].includes(state)
+    "
+        >
+          <template #name="{ text: user }">
+            <div class="flex items-center align-middle">
+              <avatar
+                :imageUrl="imageUrl(user.username)"
+                :allowUpload="isCurrentUser(user.username)"
+                :avatarName="user.name || user.uername || user.email"
+                :avatarSize="40"
+                class="mr-2"
+              />
+              <!-- <a-avatar
+                v-if="user.name || user.username || user.email"
+                shape="square"
+                class="mr-2 border-2 rounded-lg ant-tag-blue text-primary-500 avatars border-primary-300"
+                :size="40"
+                :src="imageUrl(user.username)"
+              >
+                {{
+                getNameInitials(
+                getNameInTitleCase(user.name || user.uername || user.email)
+                )
+                }}
+              </a-avatar>-->
+
+              <div class="cursor-pointer" @click="() => {showUserPreviewDrawer(user);}">
+                <span class="text-gray-900">{{ nameCase(user.name) || "-" }}</span>
+                <p class="mb-0 text-gray-500">@{{ user.username || "-" }}</p>
+              </div>
+            </div>
+          </template>
+
+          <template #actions="{ text: user }">
+            <a-button-group>
+              <a-tooltip v-if="user.enabled" placement="bottom">
+                <template #title>
+                  <span>Disable User</span>
+                </template>
+                <a-button size="small" @click="showEnableDisableConfirm(user)">
+                  <fa icon="fal user-slash"></fa>
+                </a-button>
+              </a-tooltip>
+              <a-tooltip v-if="!user.enabled" placement="bottom">
+                <template #title>
+                  <span>Enable User</span>
+                </template>
+                <a-button size="small" @click="showEnableDisableConfirm(user)">
+                  <fa icon="fal user-check"></fa>
+                </a-button>
+              </a-tooltip>
+              <a-tooltip v-if="user.enabled" placement="bottom">
+                <template #title>
+                  <span>Change Role</span>
+                </template>
+                <a-button size="small" v-if="user.enabled" @click="handleChangeRole(user)">
+                  <fa icon="fal user-shield"></fa>
+                </a-button>
+              </a-tooltip>
+            </a-button-group>
+          </template>
+        </a-table>
+        <div class="flex justify-between max-w-full mt-4">
+          <a-button
+            type="link"
+            size="default"
+            @click="toggleUserInvitationList"
+          >View Pending Invitations</a-button>
+          <a-pagination
+            :total="pagination.total"
+            :current="pagination.current"
+            :pageSize="pagination.pageSize"
+            @change="handlePagination"
+          />
+        </div>
+      </div>
+      <InvitationListTable
+        @toggleList="toggleUserInvitationList"
+        v-if="listType === 'invitations'"
+        :searchText="searchText"
+        @showPreview="showUserPreviewDrawer"
+        @changeRole="handleChangeRole"
+        ref="invitationComponentRef"
+      />
+    </div>
+    <!--Preview Drawer-->
+    <!-- <UserPreviewDrawer
     @closePreview="handleClosePreview"
     :selectedUser="selectedUser"
     :showUserPreview="showUserPreview"
     @reloadTable="reloadTable"
-  />
-  <!-- Change Role Modal-->
-  <a-modal
-    :visible="showChangeRoleModal"
-    :destroy-on-close="true"
-    title="Change Role"
-    :footer="null"
-    @cancel="closeChangeRoleModal"
-  >
-    <ChangeRole :user="selectedUser" @updateRole="handleUpdateRole" />
-  </a-modal>
-  <a-modal
-    :visible="showInviteUserModal"
-    :destroy-on-close="true"
-    title="Invite User"
-    :footer="null"
-    @cancel="closeInviteUserModal"
-  >
-    <InviteUsers @close="closeInviteUserModal" @handleInviteSent="handleInviteSent" />
-  </a-modal>
+    />-->
+    <!-- Change Role Modal-->
+    <a-modal
+      :visible="showChangeRoleModal"
+      :destroy-on-close="true"
+      title="Change Role"
+      :footer="null"
+      @cancel="closeChangeRoleModal"
+    >
+      <ChangeRole :user="selectedUser" @updateRole="handleUpdateRole" />
+    </a-modal>
+    <a-modal
+      :visible="showInviteUserModal"
+      :destroy-on-close="true"
+      title="Invite User"
+      :footer="null"
+      @cancel="closeInviteUserModal"
+    >
+      <InviteUsers @close="closeInviteUserModal" @handleInviteSent="handleInviteSent" />
+    </a-modal>
+  </div>
 </template>
 <script lang="ts">
-import { defineComponent, ref, reactive, computed } from "vue";
+import { usePreview } from "~/composables/user/showUserPreview";
+import { defineComponent, ref, reactive, computed, watch } from "vue";
 import { useDebounceFn } from "@vueuse/core";
 import useUsers from "~/composables/user/useUsers";
 import UserPreviewDrawer from "./userPreview/userPreviewDrawer.vue";
 import InvitationListTable from "./invitationListTable.vue";
 import { Modal, message } from "ant-design-vue";
 import { User } from "~/api/auth/user";
+import whoami from "~/composables/user/whoami";
+import Avatar from "~/components/common/avatar.vue";
 import {
   getNameInitials,
   getNameInTitleCase,
 } from "~/composables//utils/string-operations";
 import ChangeRole from "./changeRole.vue";
 import InviteUsers from "./inviteUsers.vue";
+
 export default defineComponent({
   components: {
     UserPreviewDrawer,
     InvitationListTable,
     ChangeRole,
     InviteUsers,
+    Avatar,
   },
   setup() {
     const IS_SMTP_CONFIGURED = false;
@@ -210,7 +226,7 @@ export default defineComponent({
     const showInviteUserModal = ref(false);
     const showUserPreview = ref(false);
     const statusFilterValue = ref<string>("");
-
+    const { username: currentUserUsername } = whoami();
     let selectedUserId = ref("");
     const selectedUser = computed(() => {
       let activeUserObj = {};
@@ -316,14 +332,33 @@ export default defineComponent({
       // fetch groups
       getUserList();
     };
+    // BEGIN: USER PREVIEW
+    const {
+      showUserPreview: openPreview,
+      closePreview,
+      setUserUniqueAttribute,
+      userUpdated,
+      setUserUpdatedFlag,
+      emitPayload,
+    } = usePreview();
     const showUserPreviewDrawer = (user: any) => {
-      showUserPreview.value = true;
+      setUserUniqueAttribute(user.id);
+      openPreview();
       selectedUserId.value = user.id;
     };
     const handleClosePreview = () => {
-      showUserPreview.value = false;
+      // showUserPreview.value = false;
+      closePreview();
+      setUserUniqueAttribute("");
       selectedUserId.value = "";
     };
+    watch(userUpdated, () => {
+      if (userUpdated) {
+        reloadTable();
+        setUserUpdatedFlag(false);
+      }
+    });
+    // END: USER PREVIEW
     const handleChangeRole = (user: any) => {
       showChangeRoleModal.value = true;
       selectedUserId.value = user.id;
@@ -409,7 +444,6 @@ export default defineComponent({
       }
       return name;
     };
-
     const imageUrl = (username: any) => {
       return `http://localhost:3333/api/auth/tenants/default/avatars/${username}`;
     };
@@ -462,6 +496,9 @@ export default defineComponent({
       userListAPIParams.offset = offset;
       getUserList();
     };
+    const isCurrentUser = (username: string) => {
+      return username === currentUserUsername.value;
+    };
     return {
       searchText,
       handleSearch,
@@ -496,6 +533,8 @@ export default defineComponent({
       handleStatusFilterChange,
       resetStatusFilter,
       handlePagination,
+      filteredUserCount,
+      isCurrentUser,
     };
   },
   data() {

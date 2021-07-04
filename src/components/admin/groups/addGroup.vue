@@ -16,6 +16,15 @@
       <a-form-item label="Group Description" name="description">
         <a-textarea v-model:value="group.description" :rows="3" />
       </a-form-item>
+      <a-checkbox class="flex items-center mb-2" v-model:checked="isDefault">
+        <div class="flex items-center">
+          <div class="mr-2">Mark as default</div>
+          <a-tooltip>
+            <template #title>New users will be added to this group by default</template>
+            <fa icon="fal info-circle" class="text-xs" />
+          </a-tooltip>
+        </div>
+      </a-checkbox>
       <UserList class="max-h-48" @updateSelectedUsers="updateUserList" />
       <div class="flex justify-end mt-6">
         <div>
@@ -57,6 +66,7 @@ export default defineComponent({
   components: { UserList },
   setup(props, context) {
     const createGroupLoading = ref(false);
+    const isDefault = ref(false);
     const group: UnwrapRef<Group> = reactive({
       name: "",
       description: "",
@@ -127,6 +137,7 @@ export default defineComponent({
       setGroupAlias,
       restrictGroupAlias,
       updateUserList,
+      isDefault,
     };
   },
 });

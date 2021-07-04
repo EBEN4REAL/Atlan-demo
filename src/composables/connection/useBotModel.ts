@@ -1,4 +1,4 @@
-import { computed, Ref } from 'vue';
+import { computed } from 'vue';
 import { BotsType } from '~/types/atlas/bots';
 
 export default function useBotModel(item: BotsType) {

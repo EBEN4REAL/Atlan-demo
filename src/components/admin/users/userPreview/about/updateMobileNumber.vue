@@ -4,9 +4,7 @@
       <div class="flex flex-row items-center cursor-pointer group">
         <p class="mb-0 text-xs text-gray-500">
           Mobile Number
-          <span v-if="updateSuccess" class="ml-1">
-            <i class="text-green-600 far fa-check" />
-          </span>
+          <fa icon="fal check" class="ml-1 text-green-600 cursor-pointer" v-if="updateSuccess"></fa>
         </p>
         <p
           v-if="!isUpdate && allowUpdate"
@@ -44,21 +42,16 @@
             <a-spin v-if="updateLoading" size="small" />
             <a-popover v-else-if="updateErrorMessage || updateSuccess" placement="bottom">
               <template #content>{{ updateErrorMessage }}</template>
-              <i
-                class
-                :class="{
-                  'far fa-warning text-red-600 cursor-pointer': updateErrorMessage,
-                  'far fa-check text-green-600': updateSuccess,
-                }"
-              />
+              <fa
+                icon="fal exclamation-circle"
+                class="text-red-600 cursor-pointer"
+                v-if="updateErrorMessage"
+              ></fa>
             </a-popover>
           </div>
         </div>
       </div>
-      <div
-        v-else
-        class="text-gray-500 capitalize"
-      >{{ selectedUser.attributes.mobile_number[0] || '-' }}</div>
+      <div v-else class="text-gray-500">{{ selectedUser.attributes.mobile_number[0] || '-' }}</div>
     </div>
   </div>
 </template>
@@ -69,8 +62,6 @@ import { VueTelInput } from "vue3-tel-input";
 import "vue3-tel-input/dist/vue3-tel-input.css";
 import { defineComponent, ref, watch } from "vue";
 import { User } from "~/api/auth/user";
-import { message } from "ant-design-vue";
-import axios, { CancelTokenSource } from "axios";
 export default defineComponent({
   name: "UpdateMobileNumber",
   props: {
@@ -88,15 +79,16 @@ export default defineComponent({
   },
   setup(props, context) {
     let isUpdate = ref(false);
-    let mobileNumberLocal = ref("");
+    let mobileNumberLocal = ref(
+      props?.selectedUser?.attributes?.mobile_number?.[0] ?? ""
+    );
     let updateErrorMessage = ref("");
     let updateSuccess = ref(false);
     let updateLoading = ref(false);
     const onUpdate = () => {
       isUpdate.value = true;
     };
-    const onInput = (phone, phoneObject, input) => {
-      console.log(phone, phoneObject, input);
+    const onInput = (phone, phoneObject) => {
       if (phone && phoneObject?.formatted) {
         mobileNumberLocal.value = phoneObject.formatted;
       } else if (!phone) mobileNumberLocal.value = "";
@@ -108,22 +100,19 @@ export default defineComponent({
     const requestPayload = ref();
     const handleUpdate = () => {
       requestPayload.value = {
-        // firstName: props.selectedUser.first_name,
-        // lastName: props.selectedUser.last_name,
         attributes: {
-          // designation: [props.selectedUser.attributes.designation],
           mobile_number: [mobileNumberLocal.value],
         },
       };
-      const { data, isLoading, error } = User.UpdateUserV2(
+      updateLoading.value = true;
+      const { data, isReady, error } = User.UpdateUserV2(
         props.selectedUser.id,
-        requestPayload.value,
-        {}
+        requestPayload
       );
-      watch([data, isLoading, error], () => {
-        updateLoading = isLoading;
-        if (data) {
+      watch([data, isReady, error], () => {
+        if (isReady && !error.value) {
           context.emit("updatedUser");
+          updateLoading.value = false;
           updateSuccess.value = true;
           updateErrorMessage.value = "";
           isUpdate.value = false;
@@ -132,7 +121,8 @@ export default defineComponent({
           }, 1000);
         } else {
           updateErrorMessage.value =
-            "Unable to update first name, please try again.";
+            "Unable to update mobile number, please try again.";
+          updateLoading.value = false;
         }
       });
     };

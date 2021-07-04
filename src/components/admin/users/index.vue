@@ -71,7 +71,7 @@
     <div>
       <div v-if="listType==='users'">
         <a-table
-          v-if="userList && userList.length && listType === 'users'"
+          v-if="userList && listType === 'users'"
           :dataSource="userList"
           :columns="columns"
           :rowKey="(user) => user.id"

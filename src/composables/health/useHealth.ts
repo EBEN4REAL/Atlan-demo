@@ -10,7 +10,7 @@ const SERVICE_STATES = {
 const SERVICES = {
   user: "User management",
   heka: "Query",
-  argo: "Argo",
+  argo: "Bots",
   atlas: "Search",
   authentication: "API's",
   authorisation: "Policies",

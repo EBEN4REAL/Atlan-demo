@@ -64,9 +64,14 @@
             </div>
             <a-popover trigger="click" placement="bottom">
               <template #content>
-                <span class="text-red-500" @click="() => removeUserFromGroup(group)">Remove User</span>
+                <a-button
+                  :loading="removeFromGroupLoading"
+                  type="link"
+                  class="px-1 text-red-500"
+                  @click="() => removeUserFromGroup(group)"
+                >Remove User</a-button>
               </template>
-              <fa icon="fal cog"></fa>
+              <fa icon="fal cog" class="cursor-pointer"></fa>
             </a-popover>
           </div>
         </div>
@@ -92,14 +97,6 @@
         :addToGroupLoading="addToGroupLoading"
       />
     </div>
-    <!-- <a-modal
-      :visible="showAddToGroupModal"
-      title="Add to group"
-      :footer="null"
-      :destroy-on-close="true"
-    >
-      <AddToGroup @addUserToGroups="addUserToGroups" :addToGroupLoading="addToGroupLoading" />
-    </a-modal>-->
   </div>
 </template>
   
@@ -138,6 +135,7 @@ export default defineComponent({
     const searchText = ref("");
     const showAddToGroupModal = ref(false);
     const addToGroupLoading = ref(false);
+    const removeFromGroupLoading = ref(false);
     const selectedGroupIds = ref([]);
     const groupListAPIParams = reactive({
       userId: props.selectedUser.id,
@@ -205,6 +203,7 @@ export default defineComponent({
     const removeUserFromGroup = async (group: any) => {
       const userIds = [props.selectedUser.id];
       try {
+        removeFromGroupLoading.value = true;
         await Group.RemoveMembersFromGroup(
           group.id,
           {
@@ -214,10 +213,12 @@ export default defineComponent({
         );
         getUserGroupList();
         context.emit("updatedUser");
+        removeFromGroupLoading.value = false;
         message.success(
           `${props.selectedUser.name} removed from ${group.name}`
         );
       } catch (error) {
+        removeFromGroupLoading.value = false;
         message.error(
           `Failed to remove ${props.selectedUser.name} from  ${group.name}, please try again.`
         );
@@ -252,6 +253,7 @@ export default defineComponent({
       state,
       STATES,
       addToGroupLoading,
+      removeFromGroupLoading,
       showAddToGroupModal,
       addUserToGroups,
       updateSelectedGroups,

@@ -3,9 +3,9 @@
     <div class="col-span-12 sm:col-span-8">
       <div class="flex items-center w-full align-middle">
         <div class="flex flex-col w-full">
-          <p class="mb-2 text-xl font-bold tracking-tight text-gray-900">
-            Welcome Home, {{ fullName }}
-          </p>
+          <p
+            class="mb-2 text-xl font-bold tracking-tight text-gray-900"
+          >Welcome Home, {{ fullName }}</p>
           <a-input-search placeholder="Search all your assets.." size="large">
             <template #prefix>
               <img :src="displayNameHTML" class="w-auto h-8 mr-3" />
@@ -15,26 +15,17 @@
       </div>
     </div>
 
-    <div
-      class="hidden h-full p-3 mt-3 bg-white border rounded-md  sm:col-span-4 sm:block"
-    >
+    <div class="hidden h-full p-3 mt-3 bg-white border rounded-md sm:col-span-4 sm:block">
       <div class="flex items-center justify-between p-5 align-middle">
         <div class="flex items-center">
-          <avatar
-            :imageUrl="imageUrl"
-            :allowUpload="true"
-            :avatarName="fullName || username"
-          />
+          <avatar :imageUrl="imageUrl" :allowUpload="true" :avatarName="fullName || username" />
           <div class="flex flex-col ml-2">
             <p
-              class="mb-0 text-lg leading-none tracking-tight text-gray-800 truncate  text-semibold"
-            >
-              {{ fullName }}
-            </p>
+              class="mb-0 text-lg leading-none tracking-tight text-gray-800 truncate text-semibold"
+            >{{ fullName }}</p>
             <p class="mb-0 text-sm text-gray-500">@{{ username }}</p>
             <p class="mt-0 mb-0 text-sm tracking-tight text-gray-800">
-              <fa icon="fal user-tag" class="mr-1 text-gray-800 pushtop"></fa
-              >Admin
+              <fa icon="fal user-tag" class="mr-1 text-gray-800 pushtop"></fa>Admin
             </p>
           </div>
         </div>
@@ -42,29 +33,13 @@
       </div>
       <a-divider class="mt-0"></a-divider>
       <div class="px-5">
-        <div>
-          <p class="mb-2 leading-none text-gray-400">Designation</p>
-          <div class="flex">
-            <Tags
-              :tags="designations"
-              @updateTags="handleUpdateDesignation"
-              :disableNewTag="updatingDesignation"
-            ></Tags>
-            <a-spin size="small" v-if="updatingDesignation"></a-spin>
-          </div>
-        </div>
-
-        <div class="mt-4">
-          <p class="mb-2 leading-none text-gray-400">Skills/Expertise</p>
-          <div class="flex">
-            <Tags
-              :tags="skills"
-              @updateTags="handleUpdateSkills"
-              :disableNewTag="updatingSkills"
-            ></Tags>
-            <a-spin size="small" v-if="updatingSkills"></a-spin>
-          </div>
-        </div>
+        <UpdateDesignation @updatedUser="handleUpdateUser" :user="userObj" :allowUpdate="true" />
+        <UpdateSkills
+          class="mt-4"
+          @updatedUser="handleUpdateUser"
+          :user="userObj"
+          :allowUpdate="true"
+        />
         <div class="mt-4">
           <p class="mb-2 leading-none text-gray-400">Saved Filters</p>
           <SavedList></SavedList>
@@ -107,13 +82,12 @@ import Tags from "@common/badge/tags/index.vue";
 
 import { useHead } from "@vueuse/head";
 
-import { message } from "ant-design-vue";
-
-import { User } from "~/api/auth/user";
-
 import { useUser } from "~/composables/user/useUsers";
 
 import Avatar from "~/components/common/avatar.vue";
+
+import UpdateSkills from "~/components/admin/users/userPreview/about/updateSkills.vue";
+import UpdateDesignation from "~/components/admin/users/userPreview/about/updateDesignation.vue";
 
 export default defineComponent({
   name: "HelloWorld",
@@ -123,15 +97,14 @@ export default defineComponent({
     Tags,
     SavedList,
     Avatar,
+    UpdateSkills,
+    UpdateDesignation,
   },
   props: {
     msg: {
       type: String,
       default: "",
     },
-  },
-  mounted() {
-    console.log("mounted");
   },
   setup() {
     const keycloak = inject("$keycloak");
@@ -152,8 +125,6 @@ export default defineComponent({
     let imageUrl = ref(
       `http://localhost:3333/api/auth/tenants/default/avatars/${username}`
     );
-    let updatingDesignation = ref(false);
-    let updatingSkills = ref(false);
     const filterObj = { $and: [{ email_verified: true }, { username }] };
     const { userList, getUser, state, STATES } = useUser({
       limit: 1,
@@ -161,72 +132,14 @@ export default defineComponent({
       sort: "first_name",
       filter: filterObj,
     });
-
+    const handleUpdateUser = async () => {
+      await getUser();
+    };
     const userObj = computed(() => {
       return userList && userList.value && userList.value.length
         ? userList.value[0]
         : [];
     });
-    const designations = computed(() => {
-      if (userObj?.value?.attributes?.designation)
-        return userObj.value.attributes.designation;
-      return [];
-    });
-    const skills = computed(() => {
-      if (userObj?.value?.attributes?.skills)
-        return userObj.value.attributes.skills;
-      return [];
-    });
-    const handleUpdateDesignation = async (tag: string, action = "add") => {
-      // const attributeKeys = Object.keys(userObj.value.attributes);
-      // let formattedAttributes = {};
-      // attributeKeys.forEach((key) => {
-      //   formattedAttributes[key] = [userObj.value.attributes[key]];
-      // });
-      const requestPayload = {
-        attributes: {
-          designation:
-            action === "add"
-              ? [...(userObj.value.attributes.designation || []), tag]
-              : userObj.value.attributes.designation.filter(
-                  (value: string) => value !== tag
-                ),
-        },
-      };
-      try {
-        //TODO: use useAPI chaining and fetch the user after update
-        updatingDesignation.value = true;
-        await User.UpdateUser(userObj.value.id, requestPayload);
-        getUser();
-        updatingDesignation.value = false;
-      } catch (error) {
-        updatingDesignation.value = false;
-        message.error("Unable to update designation, please try again");
-      }
-    };
-    const handleUpdateSkills = async (tags: any) => {
-      // const attributeKeys = Object.keys(userObj.value.attributes);
-      // let formattedAttributes = {};
-      // attributeKeys.forEach((key) => {
-      //   formattedAttributes[key] = [userObj.value.attributes[key]];
-      // });
-      const requestPayload = {
-        attributes: {
-          skills: tags.join(","),
-        },
-      };
-
-      try {
-        //TODO: use useAPI chaining and fetch the user after update
-        updatingSkills.value = true;
-        await User.UpdateUser(userObj.value.id, requestPayload);
-        getUser();
-        updatingSkills.value = false;
-      } catch (error) {
-        message.error("Unable to update skills, please try again");
-        updatingSkills.value = false;
-      }
-    };
 
     return {
       fullName,
@@ -236,14 +149,10 @@ export default defineComponent({
       displayNameHTML: computed(() => store.getters.getDisplayNameHTML),
       realm: computed(() => store.getters.getRealmName),
       imageUrl,
-      handleUpdateDesignation,
-      handleUpdateSkills,
-      skills,
-      designations,
       state,
       STATES,
-      updatingSkills,
-      updatingDesignation,
+      userObj,
+      handleUpdateUser,
     };
   },
 });

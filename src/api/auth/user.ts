@@ -65,16 +65,14 @@ const UpdateUser = (id: string, body?: any, options?: any) => {
     options
   );
 };
-const UpdateUserV2 = (id: string, body, options) => {
-  const { data, error, isLoading } = useAPI(UPDATE_USER, "POST", {
-    // const { data, mutate, error, isReady } = useAPIv2(UPDATE_USER, "POST", {
-    cache: "",
-    options,
+const UpdateUserV2 = (id: string, body) => {
+  // const { data, error, isLoading } = useAPIv2(UPDATE_USER, "POST", {
+  const { data, mutate, error, isReady } = useAPIv2(UPDATE_USER, "POST", {
     body,
     pathVariables: { id },
   });
-  return { data, error, isLoading };
-  // return { data, mutate, error, isReady };
+  // return { data, error, isLoading };
+  return { data, mutate, error, isReady };
 };
 const UpdateUserRole = (id: string, body?: any, options?: any) => {
   return getAxiosClient().post(

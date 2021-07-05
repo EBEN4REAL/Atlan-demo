@@ -4,9 +4,7 @@
       <div class="flex flex-row items-center cursor-pointer group">
         <p class="mb-0 text-xs text-gray-500">
           First Name
-          <span v-if="updateSuccess" class="ml-1">
-            <i class="text-green-600 far fa-check" />
-          </span>
+          <fa icon="fal check" class="ml-1 text-green-600 cursor-pointer" v-if="updateSuccess"></fa>
         </p>
         <p
           v-if="!isUpdate && allowUpdate"
@@ -34,20 +32,18 @@
           </div>
           <div>
             <a-spin v-if="updateLoading" size="small" />
-            <a-popover v-else-if="updateErrorMessage || updateSuccess" placement="bottom">
+            <a-popover v-else-if="updateErrorMessage" placement="bottom">
               <template #content>{{ updateErrorMessage }}</template>
-              <i
-                class
-                :class="{
-                  'far fa-warning text-red-600 cursor-pointer': updateErrorMessage,
-                  'far fa-check text-green-600': updateSuccess,
-                }"
-              />
+              <fa
+                icon="fal exclamation-circle"
+                class="text-red-600 cursor-pointer"
+                v-if="updateErrorMessage"
+              ></fa>
             </a-popover>
           </div>
         </div>
       </div>
-      <div v-else class="text-gray-500 capitalize">{{ selectedUser.first_name }}</div>
+      <div v-else class="text-gray-500">{{ selectedUser.first_name }}</div>
     </div>
   </div>
 </template>
@@ -55,8 +51,6 @@
 <script lang="ts">
 import { defineComponent, ref, watch } from "vue";
 import { User } from "~/api/auth/user";
-import { message } from "ant-design-vue";
-import axios, { CancelTokenSource } from "axios";
 export default defineComponent({
   name: "UpdateFirstName",
   props: {
@@ -71,7 +65,7 @@ export default defineComponent({
   },
   setup(props, context) {
     let isUpdate = ref(false);
-    let firstNameLocal = ref("");
+    let firstNameLocal = ref(props.selectedUser.first_name);
     let updateErrorMessage = ref("");
     let updateSuccess = ref(false);
     let updateLoading = ref(false);
@@ -86,31 +80,26 @@ export default defineComponent({
     const handleUpdate = () => {
       requestPayload.value = {
         firstName: firstNameLocal.value,
-        // lastName: props.selectedUser.last_name,
-        // attributes: {
-        //   designation: props.selectedUser.attributes.designation,
-        //   mobile_number: props.selectedUser.attributes.mobile_number,
-        // },
       };
-      const { data, isLoading, error } = User.UpdateUserV2(
+      updateLoading.value = true;
+      const { data, isReady, error } = User.UpdateUserV2(
         props.selectedUser.id,
-        requestPayload.value
+        requestPayload
       );
-      watch([data, isLoading, error], () => {
-        updateLoading = isLoading;
-        console.log("DTA", data);
-        if (data) {
-          console.log("DTAOOO", data, isLoading, error);
+      watch([data, isReady, error], () => {
+        if (isReady && !error.value) {
           context.emit("updatedUser");
+          updateLoading.value = false;
           updateSuccess.value = true;
           updateErrorMessage.value = "";
           isUpdate.value = false;
           setTimeout(() => {
             updateSuccess.value = false;
-          }, 1000);
-        } else {
+          }, 2000);
+        } else if (error && error.value) {
           updateErrorMessage.value =
             "Unable to update first name, please try again.";
+          updateLoading.value = false;
         }
       });
     };

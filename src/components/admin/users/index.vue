@@ -59,7 +59,7 @@
           </a-button>
         </a-popover>
         <a-button
-          v-if="true || IS_SMTP_CONFIGURED"
+          v-if="loginWithEmailAllowed"
           type="primary"
           class="ml-4"
           size="default"
@@ -71,7 +71,7 @@
     <div>
       <div v-if="listType==='users'">
         <a-table
-          v-if="userList && userList.length && listType === 'users'"
+          v-if="userList && listType === 'users'"
           :dataSource="userList"
           :columns="columns"
           :rowKey="(user) => user.id"
@@ -132,6 +132,7 @@
             type="link"
             size="default"
             @click="toggleUserInvitationList"
+            :class="{'opacity-0 pointer-events-none':!loginWithEmailAllowed}"
           >View Pending Invitations</a-button>
           <a-pagination
             :total="pagination.total"
@@ -187,6 +188,7 @@ import {
 } from "~/composables//utils/string-operations";
 import ChangeRole from "./changeRole.vue";
 import InviteUsers from "./inviteUsers.vue";
+import { useTenantStore } from "~/pinia/tenants";
 
 export default defineComponent({
   components: {
@@ -197,7 +199,10 @@ export default defineComponent({
   },
 
   setup() {
-    const IS_SMTP_CONFIGURED = false;
+    const tenantStore = useTenantStore();
+    const loginWithEmailAllowed = ref(
+      tenantStore?.tenant?.loginWithEmailAllowed ?? false
+    );
     let listType = ref("users");
     const searchText = ref("");
     const showChangeRoleModal = ref(false);
@@ -481,7 +486,7 @@ export default defineComponent({
       showUserPreview,
       state,
       STATES,
-      IS_SMTP_CONFIGURED,
+      loginWithEmailAllowed,
       showChangeRoleModal,
       handleChangeRole,
       closeChangeRoleModal,

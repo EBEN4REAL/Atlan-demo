@@ -3,7 +3,7 @@
     <a-table
       :dataSource="invitationList"
       :columns="columns"
-      v-if="invitationList && invitationList.length"
+      v-if="invitationList"
       :rowKey="(invitation)=>invitation.id"
       :pagination="false"
       @change="handleTableChange"

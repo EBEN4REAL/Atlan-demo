@@ -32,6 +32,18 @@
       @updatedUser="$emit('updatedUser')"
       class="mt-3"
     />
+    <UpdateDesignation
+      class="mt-3"
+      @updatedUser="$emit('updatedUser')"
+      :user="selectedUser"
+      :allowUpdate="isCurrentUser"
+    />
+    <UpdateSkills
+      class="mt-3"
+      @updatedUser="$emit('updatedUser')"
+      :user="selectedUser"
+      :allowUpdate="isCurrentUser"
+    />
   </div>
 </template>
   
@@ -41,6 +53,8 @@ import Tags from "@common/badge/tags/index.vue";
 import UpdateFirstName from "~/components/admin/users/userPreview/about/updateFirstName.vue";
 import UpdateLastName from "~/components/admin/users/userPreview/about/updateLastName.vue";
 import UpdateMobileNumber from "~/components/admin/users/userPreview/about/updateMobileNumber.vue";
+import UpdateSkills from "~/components/admin/users/userPreview/about/updateSkills.vue";
+import UpdateDesignation from "~/components/admin/users/userPreview/about/updateDesignation.vue";
 export default defineComponent({
   name: "UserPreviewAboutComponent",
   components: {
@@ -48,6 +62,8 @@ export default defineComponent({
     UpdateFirstName,
     UpdateLastName,
     UpdateMobileNumber,
+    UpdateSkills,
+    UpdateDesignation,
   },
   props: {
     selectedUser: {

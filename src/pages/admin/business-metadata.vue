@@ -1,12 +1,15 @@
 <template>
   <div class="">
-    <!-- <div
-      v-if="loading"
-      class="flex items-center flex-column justify-content-center font-size-h4"
-      style="min-height: 30rem"
-    >
-      <loader loadingText="Fetching Business Metadata..." textLarge></loader>
-    </div> -->
+    <div v-if="businessMetadataListLoading" class="" style="min-height: 30rem">
+      <div class="fixed top-0 left-0 z-50 block w-full h-full bg-white opacity-75">
+        <span
+          class="relative block w-0 h-0 mx-auto my-0 text-green-500 opacity-75 top-1/2"
+          style="top: 50%;"
+        >
+          <i class="fal fa-circle-notch fa-spin fa-5x"></i>
+        </span>
+      </div>
+    </div>
     <div
       class="grid grid-cols-3 gap-7"
       v-if="finalBusinessMetadataList && finalBusinessMetadataList.length"
@@ -114,6 +117,7 @@ import { useBusinessMetadata } from "@/admin/business-metadata/composables/useBu
 import differenceWith from "lodash/differenceWith";
 
 import { ref, defineComponent, computed, nextTick, watch } from "vue";
+import { useHead } from "@vueuse/head";
 
 const DEFAULT_BM = {
   // TODO changes when UUID4 support
@@ -128,11 +132,11 @@ export default defineComponent({
   components: { BusinessMetadataList, BusinessMetadataProfile },
   name: "businessMetadata",
   setup(props, context) {
-    const {
-      data: bmResponse,
-      error,
-      isLoading: loading,
-    } = useBusinessMetadata.getBMList();
+    const { data: bmResponse, error, isLoading } = useBusinessMetadata.getBMList();
+
+    useHead({
+      title: computed(() => "Business Metadata"),
+    });
 
     // * Data
     let selectedBm = ref(null);
@@ -361,7 +365,7 @@ export default defineComponent({
     return {
       businessMetadataList,
       finalBusinessMetadataList,
-      loading: businessMetadataListLoading,
+      businessMetadataListLoading: isLoading,
       businessMetadataListError,
       searchedBusinessMetadataList,
       selectedBm,

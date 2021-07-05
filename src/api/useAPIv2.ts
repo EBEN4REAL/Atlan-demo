@@ -38,7 +38,6 @@ export const useAPI = <T>(
   }: useGetAPIParams
 ) => {
   const url = keyMaps[key]({ ...pathVariables });
-  console.trace("useapiv2")
 
   if (cache) {
 

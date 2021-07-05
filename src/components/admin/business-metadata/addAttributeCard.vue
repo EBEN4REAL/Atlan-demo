@@ -96,23 +96,25 @@
             >Choose Enum<sup class="text-red">*</sup></label
           >
           <a-tree-select
-            v-model="enumType"
+            v-model:value="enumType"
             noResultsText="No enum found"
-            :options="finalEnumsList"
+            :tree-data="finalEnumsList"
             :multiple="false"
             :async="false"
             placeholder="Select enum"
             :disabled="isEdit"
+            @change="selectEnumType"
           >
           </a-tree-select>
         </div>
         <div class="pl-3">
           <label class="mb-0 font-normal font-size-sm">Options</label>
           <a-tree-select
-            :value="selectedEnumOptions ? selectedEnumOptions.map(item => item.id) : null"
-            :options="selectedEnumOptions"
+            :value="
+              selectedEnumOptions ? selectedEnumOptions.map(item => item.value) : null
+            "
+            :tree-data="selectedEnumOptions"
             :multiple="true"
-            :async="false"
             :disabled="true"
           >
           </a-tree-select>
@@ -184,16 +186,18 @@ export default defineComponent({
     let rules = reactive(JSON.parse(JSON.stringify(ATTRIBUTE_INPUT_VALIDATION_RULES)));
     let attributesTypes = reactive(JSON.parse(JSON.stringify(ATTRIBUTE_TYPES)));
     let enumType = ref(null);
+    let enumTypeOtions = ref(null);
     // * Composables
     const { enumListData: enumsList } = useEnums();
     const { getApplicableEntitiesForBmAttributes } = useAssetQualifiedName();
     // * Computed
     const finalEnumsList = computed(() => {
-      if (enumsList && enumsList.value.length) {
+      if (enumsList.value && enumsList.value.length) {
         return enumsList.value.map(item => ({
-          ...item,
-          id: item.name,
-          label: item.name,
+          value: item.name,
+          key: item.guid,
+          title: item.name,
+          children: undefined,
         }));
       }
       return [];
@@ -209,8 +213,7 @@ export default defineComponent({
           props.attribute.options.applicableEntityTypes || "[]"
         );
         options = options.map((option: { id: any }) => ({
-          ...option,
-          title: option.label,
+          title: option.id,
           key: option.id,
           value: option.id,
           isDisabled: selectedOptions.includes(option.id),
@@ -235,8 +238,10 @@ export default defineComponent({
           enumsList.value[reqIndex].elementDefs.length
         ) {
           return enumsList.value[reqIndex].elementDefs.map((item: { value: any }) => ({
-            id: item.value,
-            label: item.value,
+            key: item.value,
+            title: item.value,
+            value: item.value,
+            children: undefined,
           }));
         }
       }
@@ -279,6 +284,13 @@ export default defineComponent({
         };
       }
       return attribute;
+    };
+
+    const selectEnumType = () => {
+      context.emit(
+        "updateAttribute",
+        normalize(JSON.parse(JSON.stringify(attributeInput.data)))
+      );
     };
     // * hooks
     onMounted(() => {
@@ -412,6 +424,8 @@ export default defineComponent({
       attributesTypes,
       finalEnumsList,
       enumType,
+      enumTypeOtions,
+      selectEnumType,
       enumsList,
       finalApplicableTypeNamesOptions,
       selectedEnumOptions,

@@ -58,7 +58,7 @@
       <div
         v-else
         class="text-gray-500 capitalize"
-      >{{ selectedUser.attributes.mobile_number || '-' }}</div>
+      >{{ selectedUser.attributes.mobile_number[0] || '-' }}</div>
     </div>
   </div>
 </template>
@@ -108,10 +108,10 @@ export default defineComponent({
     const requestPayload = ref();
     const handleUpdate = () => {
       requestPayload.value = {
-        firstName: props.selectedUser.first_name,
-        lastName: props.selectedUser.last_name,
+        // firstName: props.selectedUser.first_name,
+        // lastName: props.selectedUser.last_name,
         attributes: {
-          designation: [props.selectedUser.attributes.designation],
+          // designation: [props.selectedUser.attributes.designation],
           mobile_number: [mobileNumberLocal.value],
         },
       };

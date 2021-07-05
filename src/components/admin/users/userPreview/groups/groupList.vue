@@ -40,10 +40,10 @@
             <a-checkbox :value="group.id" class="flex items-center w-full">
               <div class="flex justify-between mb-2">
                 <div class="flex items-center">
-                  <a-avatar
+                  <!-- <a-avatar
                     shape="circle"
                     class="mr-1 ant-tag-blue text-primary-500 avatars"
-                  >{{ getNameInitials(getNameInTitleCase(group.name)) }}</a-avatar>
+                  >{{ getNameInitials(getNameInTitleCase(group.name)) }}</a-avatar>-->
                   <div class="ml-2">
                     <div>{{ group.name }}</div>
                     <div class="text-xs">@{{ group.alias }}</div>

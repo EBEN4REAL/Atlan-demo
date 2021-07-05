@@ -81,13 +81,13 @@ export default defineComponent({
         updateLoading.value = true;
         const updatedGroup = {
           name: props.group.alias,
-          path: props.group.path,
+          // path: props.group.path,
           attributes: {
-            description: [props.group.description],
+            // description: [props.group.description],
             alias: [groupNameLocal.value],
-            created_at: [props.group.createdAt],
-            created_by: [props.group.createdBy],
-            image: [props.group.image],
+            // created_at: [props.group.createdAt],
+            // created_by: [props.group.createdBy],
+            // image: [props.group.image],
           },
         };
 

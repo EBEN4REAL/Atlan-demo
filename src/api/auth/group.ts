@@ -1,7 +1,8 @@
 import { fetcher, getAPIPath, getAxiosClient } from "~/api";
 import { AxiosRequestConfig } from "axios";
 import useSWRV from "swrv";
-
+import { useAPI } from "~/api/useAPI";
+import { UPDATE_GROUP } from "~/api/keyMaps/auth/group";
 const serviceAlias = "auth";
 
 export const URL = {
@@ -75,7 +76,14 @@ const AddMembers = (
     options
   );
 };
-
+const UpdateGroupV2 = (id: string, body) => {
+  const { data, error, isLoading } = useAPI(UPDATE_GROUP, "POST", {
+    cache: false,
+    body,
+    pathVariables: { id },
+  });
+  return { data, error, isLoading };
+};
 export const Group = {
   ListV2,
   EditGroup,
@@ -83,4 +91,5 @@ export const Group = {
   DeleteGroup,
   CreateGroup,
   AddMembers,
+  UpdateGroupV2,
 };

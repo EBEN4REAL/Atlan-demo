@@ -2,6 +2,7 @@ import { ref, onMounted, watch, computed, Ref, ComputedRef } from "vue";
 import { fetcher, getAPIPath, getAxiosClient } from "~/api";
 import useSWRV from "swrv";
 import swrvState from "~/composables/utils/swrvState";
+import { getFormattedGroup } from "~/composables/group/formatGroup";
 
 export default function getUserGroups(groupListAPIParams: {
   userId: string;
@@ -29,10 +30,14 @@ export default function getUserGroups(groupListAPIParams: {
     if (groupListAPIParams.params.offset > 0) {
       localGroupsList.value = [
         ...localGroupsList.value,
-        ...(data?.value?.records ?? []),
+        ...(data?.value?.records?.map((group: any) =>
+          getFormattedGroup(group)
+        ) ?? []),
       ];
     } else {
-      localGroupsList.value = data?.value?.records;
+      localGroupsList.value =
+        data?.value?.records?.map((group: any) => getFormattedGroup(group)) ??
+        [];
     }
   });
   const { state, STATES } = swrvState(data, error, isValidating);

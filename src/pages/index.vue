@@ -169,24 +169,28 @@ export default defineComponent({
     });
     const designations = computed(() => {
       if (userObj?.value?.attributes?.designation)
-        return userObj.value.attributes.designation.split(",");
+        return userObj.value.attributes.designation;
       return [];
     });
     const skills = computed(() => {
       if (userObj?.value?.attributes?.skills)
-        return userObj.value.attributes.skills.split(",");
+        return userObj.value.attributes.skills;
       return [];
     });
-    const handleUpdateDesignation = async (tags: any) => {
-      const attributeKeys = Object.keys(userObj.value.attributes);
-      let formattedAttributes = {};
-      attributeKeys.forEach((key) => {
-        formattedAttributes[key] = [userObj.value.attributes[key]];
-      });
+    const handleUpdateDesignation = async (tag: string, action = "add") => {
+      // const attributeKeys = Object.keys(userObj.value.attributes);
+      // let formattedAttributes = {};
+      // attributeKeys.forEach((key) => {
+      //   formattedAttributes[key] = [userObj.value.attributes[key]];
+      // });
       const requestPayload = {
         attributes: {
-          ...formattedAttributes,
-          designation: [tags.join(",")],
+          designation:
+            action === "add"
+              ? [...(userObj.value.attributes.designation || []), tag]
+              : userObj.value.attributes.designation.filter(
+                  (value: string) => value !== tag
+                ),
         },
       };
       try {
@@ -201,15 +205,14 @@ export default defineComponent({
       }
     };
     const handleUpdateSkills = async (tags: any) => {
-      const attributeKeys = Object.keys(userObj.value.attributes);
-      let formattedAttributes = {};
-      attributeKeys.forEach((key) => {
-        formattedAttributes[key] = [userObj.value.attributes[key]];
-      });
+      // const attributeKeys = Object.keys(userObj.value.attributes);
+      // let formattedAttributes = {};
+      // attributeKeys.forEach((key) => {
+      //   formattedAttributes[key] = [userObj.value.attributes[key]];
+      // });
       const requestPayload = {
         attributes: {
-          ...formattedAttributes,
-          skills: [tags.join(",")],
+          skills: tags.join(","),
         },
       };
 

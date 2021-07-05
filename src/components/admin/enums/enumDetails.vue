@@ -63,7 +63,7 @@ import { computed, defineComponent, reactive, ref, watch } from "vue";
 import { useTimeAgo } from "@vueuse/core";
 import { message } from "ant-design-vue";
 
-import { usePreview } from "~/composables/user/showUserPreview";
+import { useUserPreview } from "~/composables/user/showUserPreview";
 import { useUpdateEnums } from "./composables/useModifyEnums";
 
 export default defineComponent({
@@ -122,7 +122,7 @@ export default defineComponent({
       }
     });
     // user preview drawer
-    const { showUserPreview, setUserUniqueAttribute } = usePreview();
+    const { showUserPreview, setUserUniqueAttribute } = useUserPreview();
     const handleClickUser = (username: string) => {
       setUserUniqueAttribute(username, "username");
       showUserPreview({ allowed: ["about"] });

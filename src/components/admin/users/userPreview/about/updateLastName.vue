@@ -85,12 +85,12 @@ export default defineComponent({
     const requestPayload = ref();
     const handleUpdate = () => {
       requestPayload.value = {
-        firstName: props.selectedUser.first_name,
+        //  firstName: props.selectedUser.first_name,
         lastName: lastNameLocal.value,
-        attributes: {
-          designation: [props.selectedUser.attributes.designation],
-          mobile_number: [props.selectedUser.attributes.mobile_number],
-        },
+        // attributes: {
+        //   designation: [props.selectedUser.attributes.designation],
+        //   mobile_number: [props.selectedUser.attributes.mobile_number],
+        // },
       };
       const { data, isLoading, error } = User.UpdateUserV2(
         props.selectedUser.id,

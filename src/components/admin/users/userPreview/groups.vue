@@ -51,15 +51,15 @@
         <div v-for="group in groupList.value" :key="group.id" class="my-2">
           <div class="flex justify-between">
             <div class="flex items-center">
-              <a-avatar
+              <!-- <a-avatar
                 shape="circle"
                 class="mr-1 ant-tag-blue text-primary-500 avatars"
                 :size="40"
-              >{{ getNameInitials(getNameInTitleCase(group.name)) }}</a-avatar>
+              >{{ getNameInitials(getNameInTitleCase(group.name)) }}</a-avatar>-->
               <div class="ml-2">
-                <div>{{ group.alias }}</div>
-                <div>@{{ group.name }}</div>
-                <div>{{ pluralizeString("user", group.user_count) }}</div>
+                <div>{{ group.name }}</div>
+                <div>@{{ group.alias }}</div>
+                <div>{{group.memberCountString}}</div>
               </div>
             </div>
             <a-popover trigger="click" placement="bottom">

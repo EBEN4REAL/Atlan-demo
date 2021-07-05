@@ -39,7 +39,13 @@
             }
           "
         >
-          <div class="text-gray-900 capitalize truncate">{{group.name}}</div>
+          <div class="text-gray-900 capitalize truncate">
+            {{group.name}}
+            <span
+              class="px-2 py-1 text-xs font-bold bg-blue-100 rounded-sm rounded rounded-full text-primary-500"
+              v-if="group.isDefault==='true'"
+            >Default</span>
+          </div>
           <p class="mb-0 text-gray-500 truncate">{{ group.description }}</p>
         </div>
       </template>
@@ -54,14 +60,22 @@
           <template #overlay>
             <a-menu>
               <a-menu-item key="0" @click="() => handleDeleteGroup(group.id)">
-                <fa icon="fal trash-alt" class="mr-2"></fa>Delete
+                <div class="flex text-red-600">
+                  <fa icon="fal trash-alt" class="mr-2"></fa>Delete
+                </div>
               </a-menu-item>
-              <a-menu-item key="1" @click="addMembers(group)">
-                <fa icon="fal plus" class="mr-2"></fa>Add Members
+              <a-menu-item key="1" @click="handleAddMembers(group)" class="flex">
+                <div class="flex">
+                  <fa icon="fal plus" class="mr-2"></fa>Add Members
+                </div>
               </a-menu-item>
-              <a-menu-item key="2" @click="addMembers(group)">
-                <fa icon="fal plus" class="mr-2"></fa>Mark as default
-                <div class="text-xs">New users will be added to this group by default</div>
+              <a-menu-item key="2" @click="handleToggleDefault(group)">
+                <div class="flex">
+                  <fa icon="fal plus" class="mr-2"></fa>
+                  {{group.isDefault?'Unmark':'Mark'}} as default
+                </div>
+                <!-- <a-spin size="small" v-if="markAsDefaultLoading"></a-spin> -->
+                <!-- <div class="text-xs">New users will be automatically added to default groups</div> -->
               </a-menu-item>
             </a-menu>
             <!-- <span class="flex items-center text-red-600">
@@ -82,17 +96,17 @@
     >
       <AddGroup @createGroup="handleCreateGroup" />
     </a-modal>
-    <GroupPreviewDrawer
+    <!-- <GroupPreviewDrawer
       @closePreview="handleClosePreview"
       :selectedGroup="selectedGroup"
       :showGroupPreview="showGroupPreview"
       @refreshTable="getGroupList"
       :defaultTab="defaultTab"
-    />
+    />-->
   </div>
 </template>
 <script lang="ts">
-import { ref, reactive, defineComponent, computed } from "vue";
+import { ref, reactive, defineComponent, computed, watch } from "vue";
 import useGroups from "~/composables/group/useGroups";
 import AddGroup from "./addGroup.vue";
 import ErrorView from "@common/error/index.vue";
@@ -100,6 +114,7 @@ import GroupPreviewDrawer from "./groupPreview/groupPreviewDrawer.vue";
 import { Group } from "~/api/auth/group";
 import { message } from "ant-design-vue";
 import { useDebounceFn } from "@vueuse/core";
+import { useGroupPreview } from "~/composables/drawer/showGroupPreview";
 export default defineComponent({
   components: {
     AddGroup,
@@ -110,6 +125,7 @@ export default defineComponent({
     const isAddGroupModalVisible = ref(false);
     const defaultTab = ref("about");
     const showGroupPreview = ref(false);
+    const markAsDefaultLoading = ref(false);
     const toggleAddGroupModal = () => {
       isAddGroupModalVisible.value = !isAddGroupModalVisible.value;
     };
@@ -117,7 +133,6 @@ export default defineComponent({
     const groupListAPIParams = reactive({
       limit: 6,
       offset: 0,
-      sort: "-created_at",
       filter: {},
     });
     const pagination = computed(() => {
@@ -144,7 +159,12 @@ export default defineComponent({
         ? {
             $or: [
               { name: { $ilike: `%${searchText.value}%` } },
-              { alias: { $ilike: `%${searchText.value}%` } },
+              {
+                attributes: {
+                  $elemMatch: { alias: { $ilike: `%${searchText.value}%` } },
+                },
+              },
+              // { alias: { $ilike: `%${searchText.value}%` } },
             ],
           }
         : {};
@@ -168,12 +188,13 @@ export default defineComponent({
       // fetch groups
       getGroupList();
     };
-    const addMembers = (group: any) => {
+    const handleAddMembers = (group: any) => {
       defaultTab.value = "members";
       handleGroupClick(group);
     };
     const handleGroupClick = (group: any) => {
-      showGroupPreview.value = true;
+      // showGroupPreview.value = true;
+      showGroupPreviewDrawer(group);
       selectedGroupId.value = group.id;
     };
     const selectedGroup = computed(() => {
@@ -201,6 +222,50 @@ export default defineComponent({
       isAddGroupModalVisible.value = false;
       getGroupList();
     };
+    // BEGIN: GROUP PREVIEW
+    const {
+      showPreview,
+      showGroupPreview: openPreview,
+      setGroupUniqueAttribute,
+    } = useGroupPreview();
+    const showGroupPreviewDrawer = (group: any) => {
+      setGroupUniqueAttribute(group.id);
+      openPreview();
+    };
+    watch(showPreview, () => {
+      if (!showPreview.value) getGroupList();
+    });
+    // END: GROUP PREVIEW
+    const handleToggleDefault = (group) => {
+      const requestPayload = ref();
+      requestPayload.value = {
+        name: group.alias,
+        attributes: {
+          isDefault: [`${!group.isDefault}`],
+        },
+      };
+      const { data, isLoading, error } = Group.UpdateGroupV2(
+        group.id,
+        requestPayload.value
+      );
+      watch([data, isLoading, error], () => {
+        console.log({ data, isLoading, error });
+        markAsDefaultLoading.value = isLoading.value;
+        if (data.value) {
+          message.success(
+            `Group ${group.isDefault ? "unmarked" : "marked"} as default`
+          );
+          getGroupList();
+        } else if (error.value) {
+          markAsDefaultLoading.value = false;
+          message.error(
+            `Unable to ${
+              group.isDefault ? "unmark" : "mark"
+            } group as default, please try again`
+          );
+        }
+      });
+    };
     return {
       isAddGroupModalVisible,
       toggleAddGroupModal,
@@ -219,8 +284,10 @@ export default defineComponent({
       handleDeleteGroup,
       handleCreateGroup,
       getGroupList,
-      addMembers,
+      handleAddMembers,
       defaultTab,
+      handleToggleDefault,
+      markAsDefaultLoading,
     };
   },
   data() {
@@ -232,7 +299,7 @@ export default defineComponent({
           key: "name",
           sorter: true,
           ellipsis: true,
-          width: 200,
+          width: 300,
           sortKey: "alias",
           slots: { title: "customTitle", customRender: "name" },
         },

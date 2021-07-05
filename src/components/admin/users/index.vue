@@ -91,20 +91,6 @@
                 :avatarSize="40"
                 class="mr-2"
               />
-              <!-- <a-avatar
-                v-if="user.name || user.username || user.email"
-                shape="square"
-                class="mr-2 border-2 rounded-lg ant-tag-blue text-primary-500 avatars border-primary-300"
-                :size="40"
-                :src="imageUrl(user.username)"
-              >
-                {{
-                getNameInitials(
-                getNameInTitleCase(user.name || user.uername || user.email)
-                )
-                }}
-              </a-avatar>-->
-
               <div class="cursor-pointer" @click="() => {showUserPreviewDrawer(user);}">
                 <span class="text-gray-900">{{ nameCase(user.name) || "-" }}</span>
                 <p class="mb-0 text-gray-500">@{{ user.username || "-" }}</p>
@@ -164,13 +150,6 @@
         ref="invitationComponentRef"
       />
     </div>
-    <!--Preview Drawer-->
-    <!-- <UserPreviewDrawer
-    @closePreview="handleClosePreview"
-    :selectedUser="selectedUser"
-    :showUserPreview="showUserPreview"
-    @reloadTable="reloadTable"
-    />-->
     <!-- Change Role Modal-->
     <a-modal
       :visible="showChangeRoleModal"
@@ -193,11 +172,10 @@
   </div>
 </template>
 <script lang="ts">
-import { usePreview } from "~/composables/user/showUserPreview";
+import { useUserPreview } from "~/composables/user/showUserPreview";
 import { defineComponent, ref, reactive, computed, watch } from "vue";
 import { useDebounceFn } from "@vueuse/core";
 import useUsers from "~/composables/user/useUsers";
-import UserPreviewDrawer from "./userPreview/userPreviewDrawer.vue";
 import InvitationListTable from "./invitationListTable.vue";
 import { Modal, message } from "ant-design-vue";
 import { User } from "~/api/auth/user";
@@ -212,12 +190,12 @@ import InviteUsers from "./inviteUsers.vue";
 
 export default defineComponent({
   components: {
-    UserPreviewDrawer,
     InvitationListTable,
     ChangeRole,
     InviteUsers,
     Avatar,
   },
+
   setup() {
     const IS_SMTP_CONFIGURED = false;
     let listType = ref("users");
@@ -334,29 +312,17 @@ export default defineComponent({
     };
     // BEGIN: USER PREVIEW
     const {
+      showPreview,
       showUserPreview: openPreview,
-      closePreview,
       setUserUniqueAttribute,
-      userUpdated,
-      setUserUpdatedFlag,
-      emitPayload,
-    } = usePreview();
+    } = useUserPreview();
     const showUserPreviewDrawer = (user: any) => {
       setUserUniqueAttribute(user.id);
       openPreview();
       selectedUserId.value = user.id;
     };
-    const handleClosePreview = () => {
-      // showUserPreview.value = false;
-      closePreview();
-      setUserUniqueAttribute("");
-      selectedUserId.value = "";
-    };
-    watch(userUpdated, () => {
-      if (userUpdated) {
-        reloadTable();
-        setUserUpdatedFlag(false);
-      }
+    watch(showPreview, () => {
+      if (!showPreview.value) reloadTable();
     });
     // END: USER PREVIEW
     const handleChangeRole = (user: any) => {
@@ -504,7 +470,6 @@ export default defineComponent({
       handleSearch,
       handleTableChange,
       showUserPreviewDrawer,
-      handleClosePreview,
       showEnableDisableConfirm,
       toggleUserInvitationList,
       getNameInitials,
@@ -535,6 +500,7 @@ export default defineComponent({
       handlePagination,
       filteredUserCount,
       isCurrentUser,
+      showPreview,
     };
   },
   data() {

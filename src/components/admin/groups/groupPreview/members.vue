@@ -127,7 +127,7 @@ import {
 import { Group } from "~/api/auth/group";
 import { getIsLoadMore } from "~/composables/utils/isLoadMore";
 import AddGroupMembers from "~/components/admin/groups/groupPreview/about/members/addGroupMembers.vue";
-import { usePreview } from "~/composables/user/showUserPreview";
+import { useUserPreview } from "~/composables/user/showUserPreview";
 
 export default defineComponent({
   name: "GroupMembers",
@@ -251,7 +251,7 @@ export default defineComponent({
       showAddMemberModal.value = false;
     };
     // user preview drawer
-    const { showUserPreview, setUserUniqueAttribute } = usePreview();
+    const { showUserPreview, setUserUniqueAttribute } = useUserPreview();
     const handleClickUser = (username: string) => {
       setUserUniqueAttribute(username, "username");
       showUserPreview({ allowed: ["about"] });

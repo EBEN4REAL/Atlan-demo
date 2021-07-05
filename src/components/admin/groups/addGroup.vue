@@ -20,7 +20,7 @@
         <div class="flex items-center">
           <div class="mr-2">Mark as default</div>
           <a-tooltip>
-            <template #title>New users will be added to this group by default</template>
+            <template #title>New users will be automatically added to default groups</template>
             <fa icon="fal info-circle" class="text-xs" />
           </a-tooltip>
         </div>
@@ -104,7 +104,7 @@ export default defineComponent({
       try {
         createGroupLoading.value = true;
         const currentDate = new Date().toISOString();
-        const createdById = username.value;
+        const createdBy = username.value;
         // deliberately switching alias and name so as to keep alias as a unique identifier for the group, for keycloak name is the unique identifier. For us, alias is the unique identifier and different groups with same name can exist.
         const params = {
           group: {
@@ -113,8 +113,8 @@ export default defineComponent({
               description: [group.description],
               alias: [group.name],
               created_at: [currentDate],
-              created_by: [createdById],
-              image: [""],
+              created_by: [createdBy],
+              isDefault: [`${isDefault.value}`],
             },
           },
           users: userIds.value,

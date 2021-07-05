@@ -1,13 +1,5 @@
-import { computed, reactive, watch, toRefs } from "vue";
+import { computed, reactive, watch, toRefs, toRaw } from "vue";
 import { Health } from "~/api/atlas/health";
-// import { ServiceURLWithoutTenant } from "~/services";
-
-const healthPaths = {
-  heka: "",
-  user: "",
-  // heka: ServiceURLWithoutTenant("query", "/debug/health"),
-  // user: ServiceURLWithoutTenant("auth", "/debug/health"),
-};
 
 const SERVICE_STATES = {
   loading: "loading",
@@ -16,15 +8,15 @@ const SERVICE_STATES = {
 };
 
 const SERVICES = {
-  user: "user",
-  heka: "heka",
-  argo: "argo",
-  atlas: "atlas",
-  authentication: "authentication",
-  authorisation: "authorisation",
-  cache: "cache",
-  database: "database",
-  smtp: "smtp",
+  user: "User management",
+  heka: "Query",
+  argo: "Bots",
+  atlas: "Search",
+  authentication: "API's",
+  authorisation: "Policies",
+  cache: "Cache",
+  database: "Database",
+  smtp: "Emails",
 };
 
 export const MODULES = {
@@ -46,10 +38,6 @@ export const MODULES = {
   email: { services: [SERVICES.smtp], displayName: "Email" },
 };
 
-function getServiceStatus(url: string) {
-  return Health.ping(url);
-}
-
 function getUserServicesNames(services: { [key: string]: string }): string[] {
   return Object.keys(services);
 }
@@ -59,6 +47,7 @@ export function useHealth() {
     [k: string]: string;
   } = reactive({
     user: "loading",
+    argo: "loading",
     heka: "loading",
     atlas: "loading",
     authentication: "loading",
@@ -71,7 +60,7 @@ export function useHealth() {
   const setServiceStatus = (serviceName: string, status: string) => {
     if (serviceName in services) {
       services[serviceName] = status;
-    } else console.warn("Cannot set non-existent service", serviceName, status);
+    }
   };
 
   const getStatusClass = (status: string) => {
@@ -94,20 +83,20 @@ export function useHealth() {
     return "";
   };
 
-  const { heka, user } = healthPaths;
+  const {
+    data: userServicesData,
+    error: userServicesError,
+    isLoading,
+  } = Health.pingUser();
 
-  const { data: hekaServiceData, error: hekaServiceError } = getServiceStatus(
-    heka
-  );
-  const { data: userServicesData, error: userServicesError } = getServiceStatus(
-    user
-  );
-
-  watch([userServicesData, hekaServiceData], () => {
-    if (hekaServiceData.value && userServicesData.value) {
-      setServiceStatus("heka", SERVICE_STATES.up);
+  watch([userServicesData, userServicesError], () => {
+    if (
+      userServicesData.value &&
+      typeof toRaw(userServicesData.value) === "object" &&
+      !userServicesError.value
+    ) {
+      console.log(userServicesData.value);
       setServiceStatus("user", SERVICE_STATES.up);
-
       const userServicesNames = getUserServicesNames(userServicesData.value);
       userServicesNames.forEach((serviceName) => {
         setServiceStatus(
@@ -117,13 +106,30 @@ export function useHealth() {
             : SERVICE_STATES.down
         );
       });
-    } else if (hekaServiceError.value) {
-      setServiceStatus("heka", SERVICE_STATES.down);
-      setServiceStatus("user", SERVICE_STATES.down);
-      const userServicesNames = getUserServicesNames(userServicesData.value);
-      userServicesNames.forEach((s) => {
-        setServiceStatus(s, SERVICE_STATES.down);
-      });
+    } else {
+      try {
+        if (typeof userServicesError.value?.error?.response?.data) {
+          const errorData = userServicesError.value.error.response.data;
+          setServiceStatus("user", SERVICE_STATES.down);
+          const userServicesNames = getUserServicesNames(
+            userServicesError.value
+          );
+          userServicesNames.forEach((serviceName) => {
+            setServiceStatus(
+              serviceName,
+              errorData[serviceName].status === "ok"
+                ? SERVICE_STATES.up
+                : SERVICE_STATES.down
+            );
+          });
+        }
+      } catch (err) {
+        setServiceStatus("user", SERVICE_STATES.down);
+        const userServicesNames = Object.keys(toRaw(services));
+        userServicesNames.forEach((serviceName) => {
+          setServiceStatus(serviceName, SERVICE_STATES.down);
+        });
+      }
     }
   });
 
@@ -152,6 +158,7 @@ export function useHealth() {
   );
 
   return {
+    SERVICES,
     services: toRefs(services),
     overallStatusText,
     overallStatus,

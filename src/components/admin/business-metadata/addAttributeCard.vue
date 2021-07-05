@@ -121,7 +121,7 @@
         </div>
       </div>
       <div class="flex">
-        <div class="">
+        <div class="" style="width: 100%;">
           <label class="mb-0 font-normal font-size-sm">Applicable Entities</label>
           <a-tree-select
             v-model:value="attributeInput.data.options.applicableEntityTypes"
@@ -131,8 +131,11 @@
             :multiple="true"
             :async="false"
             tree-checkable
-            allow-clear
+            :allowClear="!isEdit"
             placeholder="Select entity types"
+            :class="isEdit ? 'custom-class-edit' : ''"
+            dropdownClassName="type-select-dd"
+            maxTagCount="5"
           >
           </a-tree-select>
         </div>
@@ -191,6 +194,7 @@ export default defineComponent({
     const { enumListData: enumsList } = useEnums();
     const { getApplicableEntitiesForBmAttributes } = useAssetQualifiedName();
     // * Computed
+    const isEdit = computed(() => props.isEdit);
     const finalEnumsList = computed(() => {
       if (enumsList.value && enumsList.value.length) {
         return enumsList.value.map(item => ({
@@ -213,20 +217,16 @@ export default defineComponent({
           props.attribute.options.applicableEntityTypes || "[]"
         );
         options = options.map((option: { id: any }) => ({
-          title: option.id,
+          title: option.label,
           key: option.id,
           value: option.id,
-          isDisabled: selectedOptions.includes(option.id),
+          id: option.id,
+          disabled: selectedOptions.includes(option.id),
         }));
       }
       return options
         .filter(t => t.id !== "AtlanSavedQuery")
-        .map((option: { id: any }) => ({
-          ...option,
-          title: option.label,
-          key: option.id,
-          value: option.id,
-        }));
+        .map(o => ({ title: o.label, value: o.id, key: o.id }));
     });
 
     const selectedEnumOptions = computed(() => {
@@ -429,8 +429,18 @@ export default defineComponent({
       enumsList,
       finalApplicableTypeNamesOptions,
       selectedEnumOptions,
+      isEdit,
     };
   },
 });
 </script>
-<style scoped></style>
+
+<style lang="less">
+.custom-class-edit .ant-select-selection-item-remove {
+  display: none !important;
+}
+
+.type-select-dd {
+  max-height: 30vh !important;
+}
+</style>

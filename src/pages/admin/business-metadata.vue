@@ -1,18 +1,20 @@
 <template>
   <div class="">
-    <div v-if="businessMetadataListLoading" class="" style="min-height: 30rem">
-      <div class="fixed top-0 left-0 z-50 block w-full h-full bg-white opacity-75">
-        <span
-          class="relative block w-0 h-0 mx-auto my-0 text-green-500 opacity-75 top-1/2"
-          style="top: 50%;"
-        >
-          <i class="fal fa-circle-notch fa-spin fa-5x"></i>
+    <div
+      v-if="isLoading"
+      class="flex items-center place-content-center"
+      style="min-height: 40rem"
+    >
+      <div class="">
+        <span class=""
+          >Loading...
+          <i class="fal circle-notch spin 5x"></i>
         </span>
       </div>
     </div>
     <div
       class="grid grid-cols-3 gap-7"
-      v-if="finalBusinessMetadataList && finalBusinessMetadataList.length"
+      v-else-if="finalBusinessMetadataList && finalBusinessMetadataList.length"
     >
       <div class="col-span-3">
         Business Metadata
@@ -330,9 +332,6 @@ export default defineComponent({
         );
       return [];
     });
-    const businessMetadataListLoading = computed(() => {
-      return !businessMetadataList && !businessMetadataListError;
-    });
 
     const businessMetadataListError = computed(() => {
       if (error) return error.value;
@@ -365,7 +364,7 @@ export default defineComponent({
     return {
       businessMetadataList,
       finalBusinessMetadataList,
-      businessMetadataListLoading: isLoading,
+      isLoading,
       businessMetadataListError,
       searchedBusinessMetadataList,
       selectedBm,

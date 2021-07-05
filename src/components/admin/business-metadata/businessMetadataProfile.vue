@@ -64,7 +64,7 @@
         </a-button>
         <a-dropdown
           trigger="click"
-          v-if="localBm.guid !== 'new'"
+          v-if="localBm.guid !== 'new' && dropdownOptions.length"
           dropdownMenuClass="mt-1 ml-4"
         >
           <span><fa icon="fal ellipsis-v" class="ml-1 text-xl"></fa></span>
@@ -449,12 +449,12 @@ export default defineComponent({
     // * Computed
     const dropdownOptions = computed(() => {
       return [
-        {
-          title: `Archive metadata`,
-          icon: "fal trash text-red",
-          iconType: "far",
-          handleClick: onShowArchiveMetadataModal,
-        },
+        // {
+        //   title: `Archive metadata`,
+        //   icon: "fal trash text-red",
+        //   iconType: "far",
+        //   handleClick: onShowArchiveMetadataModal,
+        // },
       ];
     });
     const searchedAttributes = computed(() => {

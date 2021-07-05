@@ -7,6 +7,10 @@ export const getAPIPath = (serviceName: string, path = "") => {
   return `${serviceName}/tenants/${realm}${path}`;
 };
 
+export const getHealthPath = (serviceName: string, path = "") => {
+  return `${serviceName}${path}`;
+};
+
 export const getAxiosClient = () => {
   return axiosClient;
 };

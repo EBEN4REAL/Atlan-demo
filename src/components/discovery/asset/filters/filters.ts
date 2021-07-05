@@ -18,6 +18,22 @@ export const List: CollapseArray = [
     isDisabled: false,
   },
   {
+    id: "classifications",
+    label: "Classifications",
+    component: "classifications",
+    overallCondition: "OR",
+    filters: [
+      {
+        attributeName: "assetStatus",
+        condition: "OR",
+        isMultiple: false,
+        operator: "eq",
+      },
+    ],
+    isDeleted: false,
+    isDisabled: false,
+  },
+  {
     id: "owners",
     label: "Owners",
     component: "owners",
@@ -38,7 +54,8 @@ export const List: CollapseArray = [
     ],
     isDeleted: false,
     isDisabled: false,
-  }, {
+  },
+  {
     id: "advanced",
     label: "Advanced",
     component: "advanced",
@@ -59,5 +76,5 @@ export const List: CollapseArray = [
     ],
     isDeleted: false,
     isDisabled: false,
-  }
+  },
 ];

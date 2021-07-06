@@ -12,19 +12,9 @@
       @updatedUser="$emit('updatedUser')"
       class="mt-3"
     />
-    <p class="mt-3 mb-0 text-xs text-gray-500">
-      Display Name
-      <span v-if="updateSuccess" class="ml-1">
-        <i class="text-green-600 far fa-check" />
-      </span>
-    </p>
+    <p class="mt-3 mb-0 text-xs text-gray-500">Display Name</p>
     <div class="text-gray-500">@{{ selectedUser.username }}</div>
-    <p class="mt-3 mb-0 text-xs text-gray-500">
-      Email
-      <span v-if="updateSuccess" class="ml-1">
-        <i class="text-green-600 far fa-check" />
-      </span>
-    </p>
+    <p class="mt-3 mb-0 text-xs text-gray-500">Email</p>
     <div class="text-gray-500">{{ selectedUser.email }}</div>
     <UpdateMobileNumber
       :selectedUser="selectedUser"

@@ -14,7 +14,7 @@
 </template>
 
 <script lang="ts">
-import { computed, ref } from "vue";
+import { computed, ref, watch } from "vue";
 import { User } from "~/api/auth/user";
 import Tags from "@common/badge/tags/index.vue";
 import { message } from "ant-design-vue";
@@ -33,38 +33,41 @@ export default {
   },
   setup(props, context) {
     let updatingSkills = ref(false);
-    const skills = computed(() => {
-      if (props.user?.attributes?.skills) return props.user.attributes.skills;
-      return [];
-    });
+    const userObj = ref(props.user);
+    const skills = computed(() => userObj?.value?.attributes?.skills ?? []);
     const handleUpdateSkills = async (tag: string, action = "add") => {
-      const requestPayload = {
+      const updatedTags =
+        action === "add"
+          ? [...(props.user.attributes.skills || []), tag]
+          : props.user.attributes.skills.filter(
+              (value: string) => value !== tag
+            );
+      const requestPayload = ref({
         attributes: {
-          skills:
-            action === "add"
-              ? [...(props.user.attributes.skills || []), tag]
-              : props.user.attributes.skills.filter(
-                  (value: string) => value !== tag
-                ),
+          skills: updatedTags,
         },
-      };
-
-      try {
-        //TODO: use useAPI chaining and fetch the user after update
-        updatingSkills.value = true;
-        await User.UpdateUser(props.user.id, requestPayload);
-        context.emit("updatedUser");
-        // await getUser();
-        updatingSkills.value = false;
-      } catch (error) {
-        message.error("Unable to update skills, please try again");
-        updatingSkills.value = false;
-      }
+      });
+      const { data, isReady, error, isLoading } = User.UpdateUser(
+        props.user.id,
+        requestPayload
+      );
+      watch(
+        [data, isReady, error, isLoading],
+        () => {
+          updatingSkills.value = isLoading.value;
+          if (isReady && !error.value && !isLoading.value) {
+            userObj.value.attributes.skills = [...updatedTags];
+          } else if (error && error.value) {
+            message.error("Unable to update skills, please try again");
+          }
+        },
+        { immediate: true }
+      );
     };
-    return { skills, handleUpdateSkills, updatingSkills };
+    return { handleUpdateSkills, updatingSkills, skills };
   },
 };
 </script>
 
 <style>
-</style>
+</style>``

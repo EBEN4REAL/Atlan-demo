@@ -83,7 +83,7 @@ export default defineComponent({
         lastName: lastNameLocal.value,
       };
       updateLoading.value = true;
-      const { data, isReady, error } = User.UpdateUserV2(
+      const { data, isReady, error } = User.UpdateUser(
         props.selectedUser.id,
         requestPayload
       );

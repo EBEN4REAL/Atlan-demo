@@ -1,8 +1,11 @@
 import { fetcher, getAPIPath, getAxiosClient } from "~/api";
 import { AxiosRequestConfig } from "axios";
 import useSWRV from "swrv";
-import { useAPI } from "~/api/useAPI";
-import { UPDATE_GROUP } from "~/api/keyMaps/auth/group";
+import { useAPI as useAPIv2 } from "~/api/useAPIv2";
+import {
+  UPDATE_GROUP,
+  REMOVE_MEMBERS_FROM_GROUP,
+} from "~/api/keyMaps/auth/group";
 const serviceAlias = "auth";
 
 export const URL = {
@@ -47,17 +50,18 @@ const EditGroup = (
     options
   );
 };
-const RemoveMembersFromGroup = (
-  groupId: string,
-  body: any,
-  options?: AxiosRequestConfig
-) => {
-  return getAxiosClient().post(
-    getAPIPath(serviceAlias, `/groups/${groupId}/members/remove`),
-    body,
-    options
+const RemoveMembersFromGroup = (id: string, body: any) => {
+  const { data, mutate, error, isReady, isLoading } = useAPIv2(
+    REMOVE_MEMBERS_FROM_GROUP,
+    "POST",
+    {
+      body,
+      pathVariables: { id },
+    }
   );
+  return { data, mutate, error, isReady, isLoading };
 };
+
 const CreateGroup = (body?: any, options?: AxiosRequestConfig) => {
   return getAxiosClient().post(
     getAPIPath(serviceAlias, `/groups`),

@@ -14,7 +14,7 @@
 </template>
 
 <script lang="ts">
-import { computed, ref } from "vue";
+import { computed, ref, watch } from "vue";
 import { User } from "~/api/auth/user";
 import Tags from "@common/badge/tags/index.vue";
 import { message } from "ant-design-vue";
@@ -33,36 +33,46 @@ export default {
   },
   setup(props, context) {
     let updatingDesignation = ref(false);
-    const designation = computed(() => {
-      if (props.user?.attributes?.designation)
-        return props.user.attributes.designation;
-      return [];
-    });
+    const userObj = ref(props.user);
+    const designation = computed(
+      () => userObj?.value?.attributes?.designation ?? []
+    );
     const handleUpdateDesignation = async (tag: string, action = "add") => {
-      const requestPayload = {
+      const updatedTags =
+        action === "add"
+          ? [...(props.user.attributes.designation || []), tag]
+          : props.user.attributes.designation.filter(
+              (value: string) => value !== tag
+            );
+      const requestPayload = ref({
         attributes: {
-          designation:
-            action === "add"
-              ? [...(props.user.attributes.designation || []), tag]
-              : props.user.attributes.designation.filter(
-                  (value: string) => value !== tag
-                ),
+          designation: updatedTags,
         },
-      };
-
-      try {
-        //TODO: use useAPI chaining and fetch the user after update
-        updatingDesignation.value = true;
-        await User.UpdateUser(props.user.id, requestPayload);
-        context.emit("updatedUser");
-        // await getUser();
-        updatingDesignation.value = false;
-      } catch (error) {
-        message.error("Unable to update designation, please try again");
-        updatingDesignation.value = false;
-      }
+      });
+      const { data, isReady, error, isLoading } = User.UpdateUser(
+        props.user.id,
+        requestPayload
+      );
+      watch(
+        [data, isReady, error, isLoading],
+        () => {
+          updatingDesignation.value = isLoading.value;
+          if (isReady && !error.value && !isLoading.value) {
+            // context.emit("updatedUser");
+            userObj.value.attributes.designation = [...updatedTags];
+          } else if (error && error.value) {
+            message.error("Unable to update designation, please try again");
+          }
+        },
+        { immediate: true }
+      );
     };
-    return { designation, handleUpdateDesignation, updatingDesignation };
+    return {
+      handleUpdateDesignation,
+      updatingDesignation,
+      designation,
+      userObj,
+    };
   },
 };
 </script>

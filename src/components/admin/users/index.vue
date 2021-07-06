@@ -159,7 +159,11 @@
       :footer="null"
       @cancel="closeChangeRoleModal"
     >
-      <ChangeRole :user="selectedUser" @updateRole="handleUpdateRole" />
+      <ChangeRole
+        :user="listType==='users'?selectedUser:selectedInvite"
+        :roleList="roleList"
+        @updateRole="handleUpdateRole"
+      />
     </a-modal>
     <a-modal
       :visible="showInviteUserModal"
@@ -188,6 +192,7 @@ import {
 } from "~/composables//utils/string-operations";
 import ChangeRole from "./changeRole.vue";
 import InviteUsers from "./inviteUsers.vue";
+import useRoles from "~/composables/roles/useRoles";
 import { useTenantStore } from "~/pinia/tenants";
 
 export default defineComponent({
@@ -219,6 +224,7 @@ export default defineComponent({
         );
       return activeUserObj;
     });
+    const selectedInvite = ref({});
     const invitationComponentRef = ref(null);
     let userListAPIParams: any = reactive({
       limit: 6,
@@ -235,7 +241,8 @@ export default defineComponent({
     });
     const { userList, filteredUserCount, getUserList, state, STATES } =
       useUsers(userListAPIParams);
-
+    // fetch roles- need this to find role id when changing user/invite role
+    const { roleList } = useRoles();
     const handleSearch = useDebounceFn(() => {
       if (listType.value === "users") searchUserList();
     }, 600);
@@ -332,7 +339,8 @@ export default defineComponent({
     // END: USER PREVIEW
     const handleChangeRole = (user: any) => {
       showChangeRoleModal.value = true;
-      selectedUserId.value = user.id;
+      if (listType.value === "users") selectedUserId.value = user.id;
+      else Object.assign(selectedInvite.value, user);
     };
     const closeChangeRoleModal = () => {
       showChangeRoleModal.value = false;
@@ -359,21 +367,27 @@ export default defineComponent({
         okType: user.role !== "admin" ? "danger" : "default",
         async onOk() {
           if (user.role !== "admin") {
-            try {
-              {
-                await User.UpdateUser(user.id, { enabled: !user.enabled });
+            const requestPayload = ref({
+              enabled: !user.enabled,
+            });
+            const { data, isReady, error, isLoading } = User.UpdateUser(
+              user.id,
+              requestPayload
+            );
+            watch([data, isReady, error, isLoading], () => {
+              if (isReady && !error.value && !isLoading.value) {
                 getUserList();
                 message.success(
                   `User ${user.enabled ? "Disabled" : "Enabled"}`
                 );
+              } else if (error && error.value) {
+                message.error(
+                  `Unable to ${
+                    user.enabled ? "disable" : "enable"
+                  } user. Try again.`
+                );
               }
-            } catch (e) {
-              message.error(
-                `Unable to ${
-                  user.enabled ? "disable" : "enable"
-                } user. Try again.`
-              );
-            }
+            });
           } else return;
         },
       });
@@ -506,6 +520,8 @@ export default defineComponent({
       filteredUserCount,
       isCurrentUser,
       showPreview,
+      selectedInvite,
+      roleList,
     };
   },
   data() {

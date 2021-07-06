@@ -72,7 +72,7 @@
 
     <div
       v-if="list && list.length <= 0 && !isLoading && !isValidating"
-      class="flex-grow mx-6 border rounded"
+      class="flex-grow mx-6 border-b border-l border-r rounded-b-md"
     >
       <EmptyView></EmptyView>
     </div>
@@ -85,8 +85,8 @@
       :isLoading="isLoading || isValidating"
       ref="assetlist"
     ></AssetList>
-    <div class="flex w-full px-6 pb-2" style="min-height: 17px">
-      <div class="flex items-center justify-between w-full px-2 py-2">
+    <div class="flex w-full px-6 py-1" style="height: 24px; min-height: 24px">
+      <div class="flex items-center justify-between w-full">
         <div
           class="flex items-center text-sm leading-none"
           v-if="isLoading || isValidating"
@@ -94,15 +94,14 @@
           <a-spin size="small" class="mr-2 leading-none"></a-spin
           ><span>searching results</span>
         </div>
-        <!--        <AssetPagination
+        <AssetPagination
           v-else
-          :limit="limit"
-          :offset="offset"
+          :label="assetTypeLabel"
+          :listCount="list.length"
           :totalCount="totalCount"
-          :listCount="listCount"
         ></AssetPagination>
 
-        <div
+        <!--   <div
           class="text-sm cursor-pointer text-primary-500"
           @click="loadMore(limit)"
           v-if="isLoadMore"
@@ -115,7 +114,7 @@
 </template>
       
 <script lang="ts">
-import { defineComponent, reactive, ref, watch } from "vue";
+import { computed, defineComponent, reactive, ref, watch } from "vue";
 
 import AssetFilters from "@/discovery/asset/filters/index.vue";
 import SavedFilters from "@/discovery/asset/saved/index.vue";
@@ -176,6 +175,17 @@ export default defineComponent({
     const offset = ref(0);
     const sortOrder = ref("");
 
+    const assetTypeLabel = computed(() => {
+      const found = AssetTypeList.find((item) => {
+        return item.id == assetType.value;
+      });
+      return found?.label;
+    });
+
+    const totalCount = computed(() => {
+      return assetTypeMap.value[assetType.value];
+    });
+
     //Get All Disoverable Asset Types
     let assetTypeList = ref([]);
     assetTypeList.value = AssetTypeList.filter((item) => {
@@ -226,6 +236,10 @@ export default defineComponent({
         condition: "OR",
         criterion: [],
       };
+      let connectionCriteria = {
+        condition: "OR",
+        criterion: [],
+      };
       connectorsPayload.value?.connectors?.forEach((element: any) => {
         connectorCritera.criterion?.push({
           attributeName: "integrationName",
@@ -234,13 +248,14 @@ export default defineComponent({
         });
       });
       connectorsPayload.value?.connections?.forEach((element: any) => {
-        connectorCritera.criterion?.push({
+        connectionCriteria.criterion?.push({
           attributeName: "connectionQualifiedName",
           attributeValue: element,
           operator: "eq",
         });
       });
       initialBody.entityFilters.criterion.push(connectorCritera);
+      initialBody.entityFilters.criterion.push(connectionCriteria);
 
       if (sortOrder.value !== "default") {
         const split = sortOrder.value.split("|");
@@ -347,6 +362,7 @@ export default defineComponent({
       searchScoreList,
       list,
       assetType,
+      assetTypeLabel,
       assetTypeList,
       assetTypeMap,
       filterMode,
@@ -361,6 +377,7 @@ export default defineComponent({
       handleFilterChange,
       handlePreview,
       queryText,
+      totalCount,
       // listCount,
       // isLoading,
       // limit,

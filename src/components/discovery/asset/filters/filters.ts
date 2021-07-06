@@ -24,7 +24,13 @@ export const List: CollapseArray = [
     overallCondition: "OR",
     filters: [
       {
-        attributeName: "assetStatus",
+        attributeName: "__classificationNames",
+        condition: "OR",
+        isMultiple: false,
+        operator: "eq",
+      },
+      {
+        attributeName: "__propagatedClassificationNames",
         condition: "OR",
         isMultiple: false,
         operator: "eq",

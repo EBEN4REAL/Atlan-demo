@@ -1,7 +1,15 @@
 <template>
   <div class="h-full">
     <div
-      class="flex items-center justify-center w-full h-full align-middle bg-white "
+      class="
+        flex
+        items-center
+        justify-center
+        w-full
+        h-full
+        align-middle
+        bg-white
+      "
       v-if="current === 3"
     >
       <StatusView
@@ -13,10 +21,24 @@
     </div>
     <div class="flex w-full h-full">
       <div
-        class="flex flex-col hidden p-6 bg-white border-r border-gray-200  sm:block"
+        class="
+          flex flex-col
+          hidden
+          p-6
+          bg-white
+          border-r border-gray-200
+          sm:block
+        "
       >
         <p
-          class="mb-2 text-xs tracking-wide text-gray-500 uppercase cursor-pointer "
+          class="
+            mb-2
+            text-xs
+            tracking-wide
+            text-gray-500
+            uppercase
+            cursor-pointer
+          "
           @click="handleBack"
         >
           <fa icon="fal chevron-left" class="mr-1 leading-none pushtop"></fa>All
@@ -81,7 +103,7 @@
               </div>
 
               <div class="flex flex-col">
-                <div class="text-base tracking-wide text-dark-400">
+                <div class="text-base tracking-wide text-gray">
                   {{ title(selectedConnector) }}
                 </div>
               </div>

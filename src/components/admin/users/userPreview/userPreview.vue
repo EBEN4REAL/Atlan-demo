@@ -8,14 +8,16 @@
         <avatar
           :imageUrl="imageUrl"
           :allowUpload="isCurrentUser"
-          :avatarName="selectedUser.name || selectedUser.uername || selectedUser.email"
+          :avatarName="
+            selectedUser.name || selectedUser.uername || selectedUser.email
+          "
           :avatarSize="48"
           class="mr-2"
         />
         <div class="ml-3">
-          <div
-            class="text-lg font-bold capitalize cursor-pointer text-primary-500"
-          >{{ selectedUser.name }}</div>
+          <div class="text-lg font-bold capitalize cursor-pointer text-gray">
+            {{ selectedUser.name }}
+          </div>
         </div>
       </div>
       <a-tabs>

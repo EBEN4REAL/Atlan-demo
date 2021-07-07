@@ -42,8 +42,8 @@
           <div class="text-gray-900 capitalize truncate cursor-pointer">
             {{group.name}}
             <span
-              class="px-2 py-1 text-xs font-bold bg-blue-100 rounded-sm rounded rounded-full text-primary-500"
-              v-if="group.isDefault==='true'"
+              class="px-2 py-1 text-xs font-bold bg-blue-100 rounded-sm rounded rounded-full text-gray"
+              v-if="group.isDefault === 'true'"
             >Default</span>
           </div>
           <p class="mb-0 text-gray-500 truncate">{{ group.description }}</p>

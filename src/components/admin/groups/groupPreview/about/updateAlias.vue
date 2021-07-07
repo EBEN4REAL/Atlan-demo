@@ -8,7 +8,7 @@
         </p>
         <p
           v-if="!isUpdate"
-          class="mb-0 ml-2 text-xs leading-none transition duration-300 ease-in-out delay-100 opacity-0 text-primary-500 group-hover:opacity-100"
+          class="mb-0 ml-2 text-xs leading-none transition duration-300 ease-in-out delay-100 opacity-0 text-gray group-hover:opacity-100"
           @click="onUpdate"
         >edit</p>
       </div>

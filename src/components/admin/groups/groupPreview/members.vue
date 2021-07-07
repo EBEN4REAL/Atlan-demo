@@ -38,22 +38,18 @@
           "
         >Try again</a-button>
       </div>
-      <div v-else-if="searchText&&!filteredMembersCount" class="mt-2">
+      <div v-else-if="searchText && !filteredMembersCount" class="mt-2">
         {{ `No member with name ${searchText} found.` }}
         <!-- <span
-          class="cursor-pointer text-primary-600"
+          class="cursor-pointer text-gray"
           @click="{searchText='';handleSearch();}"
         >Clear</span>-->
       </div>
       <div v-else class="min-h-screen mt-4">
         <div v-for="user in memberList.value" :key="user.id" class="my-2">
           <div class="flex justify-between cursor-pointer">
-            <div class="flex items-center" @click="()=>handleClickUser(user.username)">
-              <a-avatar
-                shape="circle"
-                class="mr-1 ant-tag-blue text-primary-500 avatars"
-                :size="40"
-              >
+            <div class="flex items-center" @click="() => handleClickUser(user.username)">
+              <a-avatar shape="circle" class="mr-1 ant-tag-blue text-gray avatars" :size="40">
                 {{
                 getNameInitials(getNameInTitleCase(`${getUserName(user)}`))
                 }}
@@ -66,11 +62,7 @@
             </div>
             <a-popover trigger="click" placement="bottom">
               <template #content>
-                <span
-                  class="text-red-500"
-                  :loading="removeMemberLoading"
-                  @click="() => removeUserFromGroup(user.id)"
-                >Remove User</span>
+                <span class="text-red-500" @click="() => removeUserFromGroup(user.id)">Remove User</span>
               </template>
               <fa icon="fal cog"></fa>
             </a-popover>

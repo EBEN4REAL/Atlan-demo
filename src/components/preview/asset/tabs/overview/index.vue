@@ -23,7 +23,10 @@
         </div>
       </template>
       <!-- <Properties :item="item"></Properties> -->
-      <Governance :item="item"></Governance>
+      <Governance
+        @unLinkClassification="unLinkClassification"
+        :item="{ ...item, classifications }"
+      ></Governance>
     </a-collapse-panel>
     <a-collapse-panel key="heirarchy" class="bg-transparent">
       <template #header>
@@ -45,14 +48,16 @@
     </a-collapse-panel>
   </a-collapse>
 </template>
-          
+
 <script lang="ts">
-import { defineComponent, PropType, ref } from "vue";
+import { defineComponent, PropType, ref, watch } from "vue";
 import Details from "./details/index.vue";
 // import Properties from "./properties/index.vue";
 import Heirarchy from "./heirarchy/index.vue";
 import Governance from "./governance/index.vue";
 import Properties from "./properties/index.vue";
+import useAsset from "~/composables/asset/useAsset";
+import { Classification } from "~/api/atlas/classification";
 
 export default defineComponent({
   components: { Details, Heirarchy, Governance, Properties },
@@ -65,17 +70,57 @@ export default defineComponent({
       },
     },
   },
-  setup() {
+  setup(props) {
     let activeKey = ref("details");
+    const assetInfo = ref({});
+    const classifications = ref([]);
+    const { response, error, loading, mutate } = useAsset({
+      entityId: props.item.guid,
+    });
+    watch([response, error], () => {
+      if (response.value && error.value == undefined) {
+        console.log(response.value, "dataRes");
+        assetInfo.value = response.value?.entities[0] ?? {};
+        classifications.value =
+          response.value?.entities[0]?.classifications ?? [];
+      } else {
+        console.log(error.value, "------ assetInfo failed to fetch ------ ");
+      }
+    });
+
+    const deleteClassificationFromLocal = (typeName) => {
+      classifications.value = classifications.value.filter(
+        (classification) => classification.typeName !== typeName
+      );
+    };
+    const unLinkClassification = ({ typeName, entityGuid }) => {
+      // No content response
+      const { data, error, isReady } = Classification.archiveClassification({
+        cache: false,
+        typeName,
+        entityGuid,
+      });
+
+      /* Todo show loader during unlinking of classification from asset*/
+      watch([data, error, isReady], () => {
+        if (isReady && !error.value) {
+          // unlinkClassificationStatus.value = "success";
+          deleteClassificationFromLocal(typeName);
+        } else {
+          // unlinkClassificationStatus.value = "failed";
+          console.error("unling link failed");
+        }
+      });
+    };
     return {
+      unLinkClassification,
+      classifications,
       activeKey,
     };
   },
 });
 </script>
 
-
-   
 <style lang="less" module>
 .filter {
   :global(.ant-collapse-item) {
@@ -91,4 +136,3 @@ export default defineComponent({
   }
 }
 </style>
-        

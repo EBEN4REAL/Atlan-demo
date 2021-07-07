@@ -28,6 +28,7 @@ export default defineComponent({
     });
     const handlePreview = (selectedItem: any) => {
       selected.value = selectedItem;
+      console.log(selected.value, "selected");
     };
     return {
       selected,

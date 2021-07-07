@@ -2,7 +2,7 @@
   <div class="flex flex-col px-5 py-3">
     <div class="flex items-center mb-2 align-middle">
       <component :is="item.typeName" class="w-6 h-6 mr-1"></component>
-      <p class="mb-0 text-sm font-bold leading-none truncate text-primary-400">
+      <p class="mb-0 text-sm font-bold leading-none truncate text-primary">
         {{ title(item) }}
       </p>
     </div>

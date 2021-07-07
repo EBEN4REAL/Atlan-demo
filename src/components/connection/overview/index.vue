@@ -12,7 +12,7 @@
     ></DetailsView>
     <!-- <div class="flex justify-between mt-4">
       <p class="mb-0 text-gray-400">Last 5 runs</p>
-      <p class="mb-0 cursor-pointer text-primary-500">View All</p>
+      <p class="mb-0 cursor-pointer text-primary">View All</p>
     </div> -->
 
     <!-- <RunsView :item="item" :credential="credential" :bot="bot"></RunsView> -->

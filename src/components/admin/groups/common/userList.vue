@@ -14,7 +14,11 @@
         <a-button @click="$emit('showGroupMembers')" class="mr-3">
           <fa icon="fal chevron-left" />
         </a-button>
-        <a-button @click="$emit('addMembersToGroup')" type="primary" :disabled="addMemberLoading">
+        <a-button
+          @click="$emit('addMembersToGroup')"
+          type="primary"
+          :disabled="addMemberLoading"
+        >
           <fa icon="fal plus" class="mr-2" />Add
         </a-button>
       </div>
@@ -30,11 +34,20 @@
         size="large"
         type="primary"
         ghost
-        @click="()=>{getUserList()}"
-      >Try again</a-button>
+        @click="
+          () => {
+            getUserList();
+          }
+        "
+        >Try again</a-button
+      >
     </div>
     <div v-else class="mt-4 overflow-auto">
-      <a-checkbox-group v-model:value="selectedIds" @change="handleChange" class="w-full">
+      <a-checkbox-group
+        v-model:value="selectedIds"
+        @change="handleChange"
+        class="w-full"
+      >
         <div class="flex flex-col w-full">
           <template v-for="user in userList.value" :key="user.id">
             <a-checkbox :value="user.id" class="flex items-center w-full">
@@ -42,8 +55,11 @@
                 <div class="flex items-center">
                   <a-avatar
                     shape="circle"
-                    class="mr-1 ant-tag-blue text-primary-500 avatars"
-                  >{{ getNameInitials(getNameInTitleCase(user.name)) }}</a-avatar>
+                    class="mr-1 ant-tag-blue text-gray avatars"
+                    >{{
+                      getNameInitials(getNameInTitleCase(user.name))
+                    }}</a-avatar
+                  >
                   <div class="ml-2">
                     <div>{{ user.name }}</div>
                     <div class="text-xs">@{{ user.username }}</div>
@@ -57,8 +73,10 @@
       </a-checkbox-group>
       <div
         class="flex justify-center"
-        v-if="[STATES.PENDING].includes(state) ||
-            [STATES.VALIDATING].includes(state)"
+        v-if="
+          [STATES.PENDING].includes(state) ||
+          [STATES.VALIDATING].includes(state)
+        "
       >
         <a-spin></a-spin>
       </div>

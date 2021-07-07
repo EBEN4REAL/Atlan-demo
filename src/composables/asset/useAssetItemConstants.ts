@@ -88,7 +88,7 @@ export default function useAssetItemConstants() {
     } else if (status === "ISSUE") {
       return "fas fa-exclamation-triangle text-danger";
     } else if (status === "LOCKED") {
-      return "fas fa-lock text-dark";
+      return "fas fa-lock text-gray";
     } else if (status === "DEPRECATED") {
       return "fas fa-archive text-muted";
     }

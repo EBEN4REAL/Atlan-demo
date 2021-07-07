@@ -5,14 +5,17 @@
         <div>
           <a-avatar
             shape="square"
-            class="mr-1 ant-tag-blue text-primary-500 avatars"
+            class="mr-1 ant-tag-blue text-gray avatars"
             :size="48"
-          >{{ getNameInitials(getNameInTitleCase(selectedGroup.name)) }}</a-avatar>
+            >{{
+              getNameInitials(getNameInTitleCase(selectedGroup.name))
+            }}</a-avatar
+          >
         </div>
         <div class="ml-3">
-          <div
-            class="text-lg font-bold capitalize cursor-pointer text-primary-500"
-          >{{ selectedGroup.name }}</div>
+          <div class="text-lg font-bold capitalize cursor-pointer text-gray">
+            {{ selectedGroup.name }}
+          </div>
         </div>
       </div>
       <a-tabs v-model:activeKey="activeKey">
@@ -20,7 +23,11 @@
           <template #tab>
             <span class="mb-0">{{ tab.name }}</span>
           </template>
-          <component :is="tab.component" :selectedGroup="selectedGroup" @refreshTable="getGroup" />
+          <component
+            :is="tab.component"
+            :selectedGroup="selectedGroup"
+            @refreshTable="getGroup"
+          />
         </a-tab-pane>
       </a-tabs>
     </div>

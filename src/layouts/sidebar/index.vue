@@ -56,7 +56,7 @@ export default defineComponent({
 <style lang="less" module>
 .sidebartab {
   :global(.ant-tabs-tab) {
-    @apply text-primary-200 !important;
+    @apply text-primary-muted !important;
     padding: 8px 12px !important;
     max-width: 60px !important;
     //   min-height: 48px !important;

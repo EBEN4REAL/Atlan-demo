@@ -40,11 +40,20 @@
           "
         >
           <div class="text-gray-900 capitalize truncate">
-            {{group.name}}
+            {{ group.name }}
             <span
-              class="px-2 py-1 text-xs font-bold bg-blue-100 rounded-sm rounded rounded-full text-primary-500"
-              v-if="group.isDefault==='true'"
-            >Default</span>
+              class="
+                px-2
+                py-1
+                text-xs
+                font-bold
+                bg-blue-100
+                rounded-sm rounded rounded-full
+                text-gray
+              "
+              v-if="group.isDefault === 'true'"
+              >Default</span
+            >
           </div>
           <p class="mb-0 text-gray-500 truncate">{{ group.description }}</p>
         </div>
@@ -64,7 +73,11 @@
                   <fa icon="fal trash-alt" class="mr-2"></fa>Delete
                 </div>
               </a-menu-item>
-              <a-menu-item key="1" @click="handleAddMembers(group)" class="flex">
+              <a-menu-item
+                key="1"
+                @click="handleAddMembers(group)"
+                class="flex"
+              >
                 <div class="flex">
                   <fa icon="fal plus" class="mr-2"></fa>Add Members
                 </div>
@@ -72,7 +85,7 @@
               <a-menu-item key="2" @click="handleToggleDefault(group)">
                 <div class="flex">
                   <fa icon="fal plus" class="mr-2"></fa>
-                  {{group.isDefault?'Unmark':'Mark'}} as default
+                  {{ group.isDefault ? "Unmark" : "Mark" }} as default
                 </div>
                 <!-- <a-spin size="small" v-if="markAsDefaultLoading"></a-spin> -->
                 <!-- <div class="text-xs">New users will be automatically added to default groups</div> -->

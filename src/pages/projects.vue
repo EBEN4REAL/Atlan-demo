@@ -3,7 +3,7 @@
     <!-- <a-layout-header
       theme="light"
 
-      class="flex items-center px-0 leading-none align-middle text-primary-100 bg-primary-500"
+      class="flex items-center px-0 leading-none align-middle text-primary-muted bg-primary-500"
       style="height: 42px"
     >
       <div
@@ -18,7 +18,7 @@
     > -->
     <a-layout :hasSider="true">
       <!-- <a-layout-sider
-        class="border-r bg-sidebar"
+        class="border-r"
         :collapsedWidth="48"
         :collapsed="true"
         :style="{

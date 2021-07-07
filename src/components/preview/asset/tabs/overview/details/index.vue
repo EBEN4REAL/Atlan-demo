@@ -8,14 +8,14 @@
       "
     >
       <p class="mb-0 text-sm tracking-wide text-gray-400">Rows/Columns</p>
-      <p class="mb-0 text-dark-400">
+      <p class="mb-0 text-gray">
         <span v-if="item?.typeName.toLowerCase() === 'table'">
           <span class="font-bold tracking-wide">{{
             rowCount(item, true)
           }}</span>
           rows,
         </span>
-        <span class="font-bold tracking-wide cursor-pointer text-primary-500">{{
+        <span class="font-bold tracking-wide cursor-pointer text-primary">{{
           columnCount(item, true)
         }}</span>
         cols

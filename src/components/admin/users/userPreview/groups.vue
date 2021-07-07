@@ -17,7 +17,10 @@
           </a-button>
         </div>
       </div>
-      <div v-if="!selectedUser.group_count" class="flex flex-col items-center justify-center">
+      <div
+        v-if="!selectedUser.group_count"
+        class="flex flex-col items-center justify-center"
+      >
         <div class="text-center">
           <p class="text-lg">This user is not part of any group.</p>
         </div>
@@ -43,23 +46,22 @@
           </a-button>
         </div>
       </div>
-      <div
-        v-else-if="searchText && !filteredGroupCount"
-        class="mt-2"
-      >{{ `No group with name ${searchText} found.` }}</div>
+      <div v-else-if="searchText && !filteredGroupCount" class="mt-2">
+        {{ `No group with name ${searchText} found.` }}
+      </div>
       <div v-else class="min-h-screen mt-4">
         <div v-for="group in groupList.value" :key="group.id" class="my-2">
           <div class="flex justify-between">
             <div class="flex items-center">
               <!-- <a-avatar
                 shape="circle"
-                class="mr-1 ant-tag-blue text-primary-500 avatars"
+                class="mr-1 ant-tag-blue text-gray avatars"
                 :size="40"
               >{{ getNameInitials(getNameInTitleCase(group.name)) }}</a-avatar>-->
               <div class="ml-2">
                 <div>{{ group.name }}</div>
                 <div>@{{ group.alias }}</div>
-                <div>{{group.memberCountString}}</div>
+                <div>{{ group.memberCountString }}</div>
               </div>
             </div>
             <a-popover trigger="click" placement="bottom">
@@ -69,7 +71,8 @@
                   type="link"
                   class="px-1 text-red-500"
                   @click="() => removeUserFromGroup(group)"
-                >Remove User</a-button>
+                  >Remove User</a-button
+                >
               </template>
               <fa icon="fal cog" class="cursor-pointer"></fa>
             </a-popover>

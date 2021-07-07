@@ -1,16 +1,8 @@
-
-
-
 <template>
-  <div
-    class="hidden h-full pt-6 pl-4 bg-white  sm:block sm:col-span-4 md:col-span-2 sm"
-  >
+  <div class="hidden h-full pt-6 pl-4 bg-white sm:block sm:col-span-4 md:col-span-2 sm">
     <div class="flex flex-col h-full">
       <div class="mb-3">
-        <a-radio-group
-          class="flex w-full text-center"
-          v-model:value="filterMode"
-        >
+        <a-radio-group class="flex w-full text-center" v-model:value="filterMode">
           <a-radio-button class="flex-grow" value="custom"
             ><fa icon="fal filter" class="pushtop"></fa
           ></a-radio-button>
@@ -22,9 +14,7 @@
 
       <div v-show="filterMode === 'custom'" class="flex-grow h-full">
         <div class="pb-2 mb-2">
-          <ConnectorDropdown
-            @change="handleChangeConnectors"
-          ></ConnectorDropdown>
+          <ConnectorDropdown @change="handleChangeConnectors"></ConnectorDropdown>
         </div>
 
         <AssetFilters @refresh="handleFilterChange"></AssetFilters>
@@ -36,7 +26,7 @@
     </div>
   </div>
   <div
-    class="flex flex-col items-stretch h-full col-span-12 pt-6 bg-white  sm:col-span-8 md:col-span-7"
+    class="flex flex-col items-stretch h-full col-span-12 pt-6 bg-white sm:col-span-8 md:col-span-7"
     style="overflow: hidden"
   >
     <div class="flex items-center px-6 gap-x-3">
@@ -113,9 +103,9 @@
     </div>
   </div>
 </template>
-      
+
 <script lang="ts">
-import { defineComponent, reactive, ref, watch } from "vue";
+import { defineComponent, reactive, ref, watch, computed, toRaw } from "vue";
 
 import AssetFilters from "@/discovery/asset/filters/index.vue";
 import SavedFilters from "@/discovery/asset/saved/index.vue";
@@ -138,6 +128,8 @@ import { useDebounceFn } from "@vueuse/core";
 import { Components } from "~/api/atlas/client";
 import { SearchParameters } from "~/types/atlas/attributes";
 import { BaseAttributes, BasicSearchAttributes } from "~/constant/projection";
+import { useBusinessMetadataStore } from "~/pinia/businessMetadata";
+import { useBusinessMetadata } from "@/admin/business-metadata/composables/useBusinessMetadata";
 
 export default defineComponent({
   name: "HelloWorld",
@@ -176,14 +168,59 @@ export default defineComponent({
     const offset = ref(0);
     const sortOrder = ref("");
 
+    // * Get all available BMs and save on store
+    const store = useBusinessMetadataStore();
+    const {
+      data: BMResponse,
+      error: BMListError,
+      isLoading: BMListLoading,
+    } = useBusinessMetadata.getBMList();
+
+    //FIXME debug this
+    watch(
+      [BMListLoading, BMListError],
+      n => {
+        console.log([BMListLoading, BMListError]);
+        const error = toRaw(BMListError.value);
+        console.log(error);
+        store.setBusinessMetadataListLoading(n[0].value);
+        store.setBusinessMetadataListError(error.response.data.errorMessage);
+      },
+      { deep: true }
+    );
+
+    watch(
+      () => BMResponse?.value?.businessMetadataDefs,
+      (n, o) => {
+        if (JSON.stringify(n) !== JSON.stringify(o)) {
+          const list = n.map(
+            (bm: { options: { displayName: any }; name: any; attributeDefs: any[] }) => ({
+              ...bm,
+              options: {
+                ...bm?.options,
+                displayName: bm?.options?.displayName ? bm.options.displayName : bm.name,
+              },
+              attributeDefs: bm.attributeDefs.map(a => {
+                if (a.options?.displayName?.length) return a;
+                return { ...a, options: { ...a.options, displayName: a.name } };
+              }),
+            })
+          );
+          store.setData(list);
+        }
+      }
+    );
+
+    const BMAttributeProjection = computed(
+      () => store.getBusinessMetadataListProjections
+    );
+
     //Get All Disoverable Asset Types
     let assetTypeList = ref([]);
-    assetTypeList.value = AssetTypeList.filter((item) => {
+    assetTypeList.value = AssetTypeList.filter(item => {
       return item.isDiscoverable == true;
     });
-    const assetTypeListString = assetTypeList.value
-      .map((item) => item.id)
-      .join(",");
+    const assetTypeListString = assetTypeList.value.map(item => item.id).join(",");
 
     // Push all asset type
     assetTypeList.value.push({
@@ -207,7 +244,11 @@ export default defineComponent({
         limit: limit.value,
         offset: offset.value,
         entityFilters: {},
-        attributes: [...BaseAttributes, ...BasicSearchAttributes],
+        attributes: [
+          ...BaseAttributes,
+          ...BasicSearchAttributes,
+          ...BMAttributeProjection.value,
+        ],
         aggregationAttributes: [],
       };
       initialBody.entityFilters = {
@@ -261,8 +302,8 @@ export default defineComponent({
     };
 
     watch(
-      assetType,
-      () => {
+      [assetType, () => BMAttributeProjection.value.length],
+      (n, o) => {
         console.log("asset type changed");
         // abort();
         updateBody();
@@ -295,7 +336,7 @@ export default defineComponent({
     //   savedSearch,
     // } = fetchAssetDiscover(DISCOVERY_FETCH_LIST, immediate);
 
-    const handleSearchChange = useDebounceFn((val) => {
+    const handleSearchChange = useDebounceFn(val => {
       updateBody();
       // query(val.target.value);
       // if (assetlist.value) {
@@ -339,7 +380,7 @@ export default defineComponent({
       updateBody();
     };
 
-    const handlePreview = (item) => {
+    const handlePreview = item => {
       emit("preview", item);
     };
 
@@ -395,12 +436,7 @@ export default defineComponent({
     };
   },
   methods: {
-    getIsLoadMore(
-      length: number,
-      offset: any,
-      limit: number,
-      totalCount: number
-    ) {
+    getIsLoadMore(length: number, offset: any, limit: number, totalCount: number) {
       if (
         totalCount >= limit &&
         length < totalCount &&
@@ -414,5 +450,3 @@ export default defineComponent({
   },
 });
 </script>
-      
-      

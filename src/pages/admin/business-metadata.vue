@@ -1,7 +1,7 @@
 <template>
   <div class="">
     <!-- <div
-      v-if="loading"
+      v-if="businessMetadataListLoading"
       class="flex items-center flex-column justify-content-center font-size-h4"
       style="min-height: 30rem"
     >
@@ -63,8 +63,6 @@
 
       <div class="col-span-2">
         <BusinessMetadataProfile
-          @businessMetadataAppendToList="businessMetadataAppendToList"
-          @updateBusinessMetadataInList="updateBusinessMetadataInList"
           v-if="selectedBm"
           :key="selectedBm && selectedBm.guid"
           :selectedBm="selectedBm"
@@ -101,13 +99,17 @@
 // ? components
 import BusinessMetadataList from "@/admin/business-metadata/businessMetadataList.vue";
 import BusinessMetadataProfile from "@/admin/business-metadata/businessMetadataProfile.vue";
-// ? composables
-// import useBusinessMetadata from "@/admin/business-metadata/composables/useBusinessMetadata";
+
+// ? Store
+import { useBusinessMetadataStore } from "~/pinia/businessMetadata";
+
 // ? utils
 import { generateUUID } from "~/utils/generator";
+
 // ? Media
 import EmptyBusinessMetadata from "~/assets/images/illustrations/empty_business_metadata.svg";
 
+// ? Composables
 import { useBusinessMetadata } from "@/admin/business-metadata/composables/useBusinessMetadata";
 
 // ? Utils
@@ -128,11 +130,35 @@ export default defineComponent({
   components: { BusinessMetadataList, BusinessMetadataProfile },
   name: "businessMetadata",
   setup(props, context) {
+    // * Get all available BMs and save on store
+    const store = useBusinessMetadataStore();
     const {
-      data: bmResponse,
+      data: BMResponse,
       error,
       isLoading: loading,
     } = useBusinessMetadata.getBMList();
+
+    watch(
+      () => BMResponse?.value?.businessMetadataDefs,
+      (n, o) => {
+        if (n) {
+          const list = n.map(
+            (bm: { options: { displayName: any }; name: any; attributeDefs: any[] }) => ({
+              ...bm,
+              options: {
+                ...bm?.options,
+                displayName: bm?.options?.displayName ? bm.options.displayName : bm.name,
+              },
+              attributeDefs: bm.attributeDefs.map(a => {
+                if (a.options?.displayName?.length) return a;
+                return { ...a, options: { ...a.options, displayName: a.name } };
+              }),
+            })
+          );
+          store.setData(list);
+        }
+      }
+    );
 
     // * Data
     let selectedBm = ref(null);
@@ -140,27 +166,6 @@ export default defineComponent({
     let newBm = ref(null);
     let updatedBm = ref(null);
     // * Methods
-
-    // !!!!!!!
-    const getBusinessMetadatAttributesNames = () => {
-      const reqBmAttrNames: string[] = [];
-      if (
-        bmResponse?.value?.businessMetadataDefs &&
-        bmResponse.value.businessMetadataDefs.length
-      ) {
-        bmResponse.value.businessMetadataDefs.forEach(
-          (bm: { attributeDefs: any[]; name: any }) => {
-            if (bm.attributeDefs && bm.attributeDefs.length) {
-              bm.attributeDefs.forEach(attr => {
-                reqBmAttrNames.push(`${bm.name}.${attr.name}`);
-              });
-            }
-          }
-        );
-      }
-      return reqBmAttrNames;
-    };
-
     const getBusinessMetadataAttributesForTypeNames = (
       types: string | any[],
       appliedBmAttributesToAsset: any[]
@@ -217,46 +222,6 @@ export default defineComponent({
       return reqBms;
     };
 
-    const getBusinessMetadataAttributeProjection = () => {
-      const reqBmAttrNames: string[] = [];
-      if (
-        bmResponse?.value?.businessMetadataDefs &&
-        bmResponse.value.businessMetadataDefs.length
-      ) {
-        bmResponse.value.businessMetadataDefs.forEach(bm => {
-          if (bm.attributeDefs && bm.attributeDefs.length && !bm.isArchived) {
-            bm.attributeDefs.forEach(attr => {
-              reqBmAttrNames.push(`${bm.name}.${attr.name}`);
-            });
-          }
-        });
-      }
-      return reqBmAttrNames;
-    };
-
-    const businessMetadataAppendToList = (value: { guid: any }) => {
-      bmResponse.value.businessMetadataDefs = bmResponse.value.businessMetadataDefs.map(
-        item => {
-          if (item.guid === value.guid) {
-            return { ...item, ...value };
-          }
-          return item;
-        }
-      );
-    };
-
-    const updateBusinessMetadataInList = (value: { guid: any }) => {
-      bmResponse.value.businessMetadataDefs = bmResponse.value.businessMetadataDefs.map(
-        (item: { guid: any }) => {
-          if (item.guid === value.guid) {
-            return { ...item, ...value };
-          }
-          return item;
-        }
-      );
-    };
-    // !!!!!!!
-
     const handleSelectBm = (item: any) => {
       selectedBm.value = item;
       updatedBm.value = null;
@@ -309,35 +274,19 @@ export default defineComponent({
       }
     };
     // * Computed
-    const businessMetadataList = computed(() => {
-      if (bmResponse?.value?.businessMetadataDefs)
-        return bmResponse.value.businessMetadataDefs.map(
-          (bm: { options: { displayName: any }; name: any; attributeDefs: any[] }) => ({
-            ...bm,
-            options: {
-              ...bm?.options,
-              displayName: bm?.options?.displayName ? bm.options.displayName : bm.name,
-            },
-            attributeDefs: bm.attributeDefs.map(a => {
-              if (a.options?.displayName?.length) return a;
-              return { ...a, options: { ...a.options, displayName: a.name } };
-            }),
-          })
-        );
-      return [];
-    });
+    const businessMetadataList = computed(() => store.getBusinessMetadataList);
+
     const businessMetadataListLoading = computed(() => {
-      return !businessMetadataList && !businessMetadataListError;
+      return !businessMetadataList.value && !businessMetadataListError.value;
     });
 
     const businessMetadataListError = computed(() => {
-      if (error) return error.value;
-      return null;
+      return store.businessMetadataListError;
     });
 
     const finalBusinessMetadataList = computed(() => [
       ...(newBm.value ? [newBm.value] : []),
-      ...(businessMetadataList
+      ...(businessMetadataList.value
         ? businessMetadataList.value.filter((bm: { isArchived: any }) => !bm.isArchived)
         : []),
     ]);
@@ -361,7 +310,7 @@ export default defineComponent({
     return {
       businessMetadataList,
       finalBusinessMetadataList,
-      loading: businessMetadataListLoading,
+      businessMetadataListLoading,
       businessMetadataListError,
       searchedBusinessMetadataList,
       selectedBm,
@@ -374,8 +323,6 @@ export default defineComponent({
       onUpdate,
       handleAfterArchive,
       discardNewBm,
-      businessMetadataAppendToList,
-      updateBusinessMetadataInList,
       EmptyBusinessMetadata,
     };
   },

@@ -4,9 +4,7 @@
       <div class="flex flex-row items-center cursor-pointer group">
         <p class="mb-0 text-xs text-gray-500">
           Group Description
-          <span v-if="updateSuccess" class="ml-1">
-            <i class="text-green-600 far fa-check" />
-          </span>
+          <fa icon="fal check" class="ml-1 text-green-600 cursor-pointer" v-if="updateSuccess"></fa>
         </p>
         <p
           v-if="!isUpdate"
@@ -34,15 +32,13 @@
           </div>
           <div>
             <a-spin v-if="updateLoading" size="small" />
-            <a-popover v-else-if="updateErrorMessage || updateSuccess" placement="bottom">
+            <a-popover v-else-if="updateErrorMessage" placement="bottom">
               <template #content>{{ updateErrorMessage }}</template>
-              <i
-                class
-                :class="{
-                  'far fa-warning text-red-600 cursor-pointer': updateErrorMessage,
-                  'far fa-check text-green-600': updateSuccess,
-                }"
-              />
+              <fa
+                icon="fal exclamation-circle"
+                class="text-red-600 cursor-pointer"
+                v-if="updateErrorMessage"
+              ></fa>/>
             </a-popover>
           </div>
         </div>
@@ -56,7 +52,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from "vue";
+import { defineComponent, ref, watch } from "vue";
 import { Group } from "~/api/auth/group";
 export default defineComponent({
   name: "About",
@@ -79,36 +75,37 @@ export default defineComponent({
       groupDescriptionLocal.value = "";
       isUpdate.value = false;
     };
-    const handleUpdate = async () => {
-      try {
-        updateLoading.value = true;
-        const updatedGroup = {
-          name: props.group.alias,
-          // path: props.group.path,
-          attributes: {
-            description: [groupDescriptionLocal.value],
-            // alias: [props.group.name],
-            // created_at: [props.group.createdAt],
-            // created_by: [props.group.createdBy],
-            // image: [props.group.image],
-          },
-        };
-        await Group.EditGroup(props.group.id, { ...updatedGroup }, {});
-        context.emit("refreshTable");
-        updateLoading.value = false;
-        updateSuccess.value = true;
-        updateErrorMessage.value = "";
-        isUpdate.value = false;
-        setTimeout(() => {
-          updateSuccess.value = false;
-        }, 1000);
-      } catch (e) {
-        updateLoading.value = false;
-        updateErrorMessage.value =
-          "Unable to update group description, please try again.";
-      }
+    const handleUpdate = () => {
+      const requestPayload = ref();
+      requestPayload.value = {
+        attributes: {
+          description: [groupDescriptionLocal.value],
+        },
+      };
+      const { data, isReady, error, isLoading } = Group.UpdateGroup(
+        props.group.id,
+        requestPayload
+      );
+      watch(
+        [data, isReady, error, isLoading],
+        () => {
+          updateLoading.value = isLoading.value;
+          if (isReady && !error.value && !isLoading.value) {
+            context.emit("refreshTable");
+            updateSuccess.value = true;
+            updateErrorMessage.value = "";
+            isUpdate.value = false;
+            setTimeout(() => {
+              updateSuccess.value = false;
+            }, 2000);
+          } else if (error && error.value) {
+            updateErrorMessage.value =
+              "Unable to update group description, please try again.";
+          }
+        },
+        { immediate: true }
+      );
     };
-
     return {
       updateLoading,
       isUpdate,

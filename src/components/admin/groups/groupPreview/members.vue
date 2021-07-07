@@ -66,7 +66,11 @@
             </div>
             <a-popover trigger="click" placement="bottom">
               <template #content>
-                <span class="text-red-500" @click="() => removeUserFromGroup(user.id)">Remove User</span>
+                <span
+                  class="text-red-500"
+                  :loading="removeMemberLoading"
+                  @click="() => removeUserFromGroup(user.id)"
+                >Remove User</span>
               </template>
               <fa icon="fal cog"></fa>
             </a-popover>
@@ -147,6 +151,7 @@ export default defineComponent({
     const searchText = ref("");
     const showAddMemberModal = ref(false);
     const addMemberLoading = ref(false);
+    const removeMemberLoading = ref(false);
     const selectedUserIds = ref([]);
     const memberListParams = reactive({
       groupId: props.selectedGroup.id,
@@ -193,43 +198,60 @@ export default defineComponent({
         searchText.value ? filteredMembersCount.value : totalMembersCount.value
       );
     });
-    const addMembersToGroup = async () => {
+    const addMembersToGroup = () => {
       const userIds = [...selectedUserIds.value];
-      addMemberLoading.value = true;
-      try {
-        await Group.AddMembers(props.selectedGroup.id, {
-          users: userIds,
-        });
-        memberListParams.params.offset = 0;
-        getGroupMembersList();
-        context.emit("refreshTable");
-        addMemberLoading.value = false;
-        message.success(
-          `${pluralizeString("Member", userIds.length, false)} added`
-        );
-        showGroupMembers.value = true;
-      } catch (e) {
-        addMemberLoading.value = false;
-        message.error("Unable to add members, please try again.");
-      }
+      const requestPayload = ref();
+      requestPayload.value = {
+        users: userIds,
+      };
+      const { data, isReady, error, isLoading } = Group.AddMembers(
+        props.selectedGroup.id,
+        requestPayload
+      );
+      watch(
+        [data, isReady, error, isLoading],
+        () => {
+          addMemberLoading.value = isLoading.value;
+          if (isReady && !error.value && !isLoading.value) {
+            memberListParams.params.offset = 0;
+            getGroupMembersList();
+            context.emit("refreshTable");
+            message.success(
+              `${pluralizeString("Member", userIds.length, false)} added`
+            );
+            showGroupMembers.value = true;
+          } else if (error && error.value) {
+            message.error("Unable to add members, please try again.");
+          }
+        },
+        { immediate: true }
+      );
     };
     const removeUserFromGroup = async (userId: any) => {
       const userIds = [userId];
-      try {
-        await Group.RemoveMembersFromGroup(
-          props.selectedGroup.id,
-          {
-            users: userIds,
-          },
-          {}
-        );
-        memberListParams.params.offset = 0;
-        getGroupMembersList();
-        context.emit("refreshTable");
-        message.success("Member Removed");
-      } catch (error) {
-        message.error("Failed, try again");
-      }
+      const requestPayload = ref();
+      requestPayload.value = {
+        users: userIds,
+      };
+      const { data, isReady, error, isLoading } = Group.RemoveMembersFromGroup(
+        props.selectedGroup.id,
+        requestPayload
+      );
+      watch(
+        [data, isReady, error, isLoading],
+        () => {
+          removeMemberLoading.value = isLoading.value;
+          if (isReady && !error.value && !isLoading.value) {
+            memberListParams.params.offset = 0;
+            getGroupMembersList();
+            context.emit("refreshTable");
+            message.success("Member Removed");
+          } else if (error && error.value) {
+            message.error("Failed, try again");
+          }
+        },
+        { immediate: true }
+      );
     };
     const getUserName = (user: any) => {
       const { first_name } = user;
@@ -284,6 +306,7 @@ export default defineComponent({
       showGroupMembers,
       handleShowGroupMembers,
       updateSelectedUsers,
+      removeMemberLoading,
     };
   },
 });

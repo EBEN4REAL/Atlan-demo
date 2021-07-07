@@ -1,10 +1,12 @@
-import { fetcher, getAPIPath, getAxiosClient } from "~/api";
+import { getAPIPath, getAxiosClient } from "~/api";
 import { AxiosRequestConfig } from "axios";
-import useSWRV from "swrv";
-import { useAPI as useAPIv2 } from "~/api/useAPIv2";
+import { useAPI } from "~/api/useAPIv2";
 import {
   UPDATE_GROUP,
   REMOVE_MEMBERS_FROM_GROUP,
+  ADD_MEMBERS_TO_GROUP,
+  DELETE_GROUP,
+  CREATE_GROUP,
 } from "~/api/keyMaps/auth/group";
 const serviceAlias = "auth";
 
@@ -12,46 +14,24 @@ export const URL = {
   GroupList: "/groups",
 };
 
-// const listGroup = (params?: any, options?: AxiosRequestConfig) => {
-//   const { data, error, mutate } = useSWRV([getAPIPath(serviceAlias, "/groups"), params, options], fetcher);
-//   return {
-//     data,
-//     isLoading: !error && !data,
-//     isError: error,
-//     mutate
-//   }
-// }
-
 const ListV2 = (params?: any, options?: AxiosRequestConfig) => {
   return getAxiosClient().get(getAPIPath(serviceAlias, URL.GroupList), {
     params,
     ...options,
   });
 };
-const DeleteGroup = (
-  groupId: string,
-  body?: any,
-  options?: AxiosRequestConfig
-) => {
-  return getAxiosClient().post(
-    getAPIPath(serviceAlias, `/groups/${groupId}/delete`),
-    body,
-    options
+const DeleteGroup = (id: string) => {
+  const { data, mutate, error, isReady, isLoading } = useAPI(
+    DELETE_GROUP,
+    "POST",
+    {
+      pathVariables: { id },
+    }
   );
-};
-const EditGroup = (
-  groupId: string,
-  body: any,
-  options?: AxiosRequestConfig
-) => {
-  return getAxiosClient().post(
-    getAPIPath(serviceAlias, `/groups/${groupId}`),
-    body,
-    options
-  );
+  return { data, mutate, error, isReady, isLoading };
 };
 const RemoveMembersFromGroup = (id: string, body: any) => {
-  const { data, mutate, error, isReady, isLoading } = useAPIv2(
+  const { data, mutate, error, isReady, isLoading } = useAPI(
     REMOVE_MEMBERS_FROM_GROUP,
     "POST",
     {
@@ -61,39 +41,39 @@ const RemoveMembersFromGroup = (id: string, body: any) => {
   );
   return { data, mutate, error, isReady, isLoading };
 };
-
-const CreateGroup = (body?: any, options?: AxiosRequestConfig) => {
-  return getAxiosClient().post(
-    getAPIPath(serviceAlias, `/groups`),
-    body,
-    options
+const CreateGroup = (body: any) => {
+  const { data, mutate, error, isReady, isLoading } = useAPI(
+    CREATE_GROUP,
+    "POST",
+    {
+      body,
+    }
   );
+  return { data, mutate, error, isReady, isLoading };
 };
-const AddMembers = (
-  groupId: string,
-  body: any,
-  options?: AxiosRequestConfig
-) => {
-  return getAxiosClient().post(
-    getAPIPath(serviceAlias, `/groups/${groupId}/members`),
-    body,
-    options
+const AddMembers = (id: string, body: any) => {
+  const { data, mutate, error, isReady, isLoading } = useAPI(
+    ADD_MEMBERS_TO_GROUP,
+    "POST",
+    {
+      body,
+      pathVariables: { id },
+    }
   );
+  return { data, mutate, error, isReady, isLoading };
 };
-const UpdateGroupV2 = (id: string, body) => {
-  const { data, error, isLoading } = useAPI(UPDATE_GROUP, "POST", {
-    cache: false,
+const UpdateGroup = (id: string, body) => {
+  const { data, error, isLoading, isReady } = useAPI(UPDATE_GROUP, "POST", {
     body,
     pathVariables: { id },
   });
-  return { data, error, isLoading };
+  return { data, error, isLoading, isReady };
 };
 export const Group = {
   ListV2,
-  EditGroup,
   RemoveMembersFromGroup,
   DeleteGroup,
   CreateGroup,
   AddMembers,
-  UpdateGroupV2,
+  UpdateGroup,
 };

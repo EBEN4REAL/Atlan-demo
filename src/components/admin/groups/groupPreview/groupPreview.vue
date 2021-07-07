@@ -79,23 +79,6 @@ export default defineComponent({
         ? groupList.value[0]
         : [];
     });
-
-    // const tabs = computed(() => {
-    //   return [
-    //     {
-    //       name: "About",
-    //       iconClass: "",
-    //       component: "About",
-    //       key: "about",
-    //     },
-    //     {
-    //       name: "Members",
-    //       iconClass: "",
-    //       component: "Members",
-    //       key: "members",
-    //     },
-    //   ];
-    // });
     return {
       getNameInitials,
       getNameInTitleCase,

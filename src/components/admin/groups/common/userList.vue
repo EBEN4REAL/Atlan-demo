@@ -14,7 +14,12 @@
         <a-button @click="$emit('showGroupMembers')" class="mr-3">
           <fa icon="fal chevron-left" />
         </a-button>
-        <a-button @click="$emit('addMembersToGroup')" type="primary" :disabled="addMemberLoading">
+        <a-button
+          @click="$emit('addMembersToGroup')"
+          type="primary"
+          :loading="addMemberLoading"
+          :disabled="addMemberLoading"
+        >
           <fa icon="fal plus" class="mr-2" />Add
         </a-button>
       </div>

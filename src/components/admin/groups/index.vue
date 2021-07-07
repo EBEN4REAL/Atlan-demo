@@ -39,7 +39,7 @@
             }
           "
         >
-          <div class="text-gray-900 capitalize truncate">
+          <div class="text-gray-900 capitalize truncate cursor-pointer">
             {{group.name}}
             <span
               class="px-2 py-1 text-xs font-bold bg-blue-100 rounded-sm rounded rounded-full text-primary-500"
@@ -72,18 +72,13 @@
               <a-menu-item key="2" @click="handleToggleDefault(group)">
                 <div class="flex">
                   <fa icon="fal plus" class="mr-2"></fa>
-                  {{group.isDefault?'Unmark':'Mark'}} as default
+                  {{group.isDefault==='true'?'Unmark':'Mark'}} as default
                 </div>
                 <!-- <a-spin size="small" v-if="markAsDefaultLoading"></a-spin> -->
                 <!-- <div class="text-xs">New users will be automatically added to default groups</div> -->
               </a-menu-item>
             </a-menu>
-            <!-- <span class="flex items-center text-red-600">
-              <fa icon="fal trash-alt"></fa>
-              <span class="ml-2" @click="() => handleDeleteGroup(group.id)">Delete</span>
-            </span>-->
           </template>
-          <!-- <fa icon="fal cog"></fa> -->
         </a-dropdown>
       </template>
     </a-table>
@@ -96,13 +91,6 @@
     >
       <AddGroup @createGroup="handleCreateGroup" />
     </a-modal>
-    <!-- <GroupPreviewDrawer
-      @closePreview="handleClosePreview"
-      :selectedGroup="selectedGroup"
-      :showGroupPreview="showGroupPreview"
-      @refreshTable="getGroupList"
-      :defaultTab="defaultTab"
-    />-->
   </div>
 </template>
 <script lang="ts">
@@ -134,6 +122,7 @@ export default defineComponent({
       limit: 6,
       offset: 0,
       filter: {},
+      sort: "-created_at",
     });
     const pagination = computed(() => {
       return {
@@ -209,14 +198,20 @@ export default defineComponent({
       defaultTab.value = "about";
       showGroupPreview.value = false;
     };
-    const handleDeleteGroup = async (groupId: string) => {
-      try {
-        await Group.DeleteGroup(groupId);
-        getGroupList();
-        message.success("Group Removed");
-      } catch (error) {
-        message.error("Failed, try again");
-      }
+    const handleDeleteGroup = (groupId: string) => {
+      const { data, isReady, error, isLoading } = Group.DeleteGroup(groupId);
+      watch(
+        [data, isReady, error, isLoading],
+        () => {
+          if (isReady && !error.value && !isLoading.value) {
+            getGroupList();
+            message.success("Group Removed");
+          } else if (error && error.value) {
+            message.error("Failed, try again");
+          }
+        },
+        { immediate: true }
+      );
     };
     const handleCreateGroup = () => {
       isAddGroupModalVisible.value = false;
@@ -236,35 +231,38 @@ export default defineComponent({
       if (!showPreview.value) getGroupList();
     });
     // END: GROUP PREVIEW
-    const handleToggleDefault = (group) => {
+    const handleToggleDefault = (group: any) => {
       const requestPayload = ref();
       requestPayload.value = {
-        name: group.alias,
         attributes: {
-          isDefault: [`${!group.isDefault}`],
+          isDefault: [`${group.isDefault === "true" ? "false" : "true"}`],
         },
       };
-      const { data, isLoading, error } = Group.UpdateGroupV2(
+      const { data, isReady, error, isLoading } = Group.UpdateGroup(
         group.id,
-        requestPayload.value
+        requestPayload
       );
-      watch([data, isLoading, error], () => {
-        console.log({ data, isLoading, error });
-        markAsDefaultLoading.value = isLoading.value;
-        if (data.value) {
-          message.success(
-            `Group ${group.isDefault ? "unmarked" : "marked"} as default`
-          );
-          getGroupList();
-        } else if (error.value) {
-          markAsDefaultLoading.value = false;
-          message.error(
-            `Unable to ${
-              group.isDefault ? "unmark" : "mark"
-            } group as default, please try again`
-          );
-        }
-      });
+      watch(
+        [data, isReady, error, isLoading],
+        () => {
+          markAsDefaultLoading.value = isLoading.value;
+          if (isReady && !error.value && !isLoading.value) {
+            message.success(
+              `Group ${
+                group.isDefault === "true" ? "unmarked" : "marked"
+              } as default`
+            );
+            getGroupList();
+          } else if (error && error.value) {
+            message.error(
+              `Unable to ${
+                group.isDefault === "true" ? "unmark" : "mark"
+              } group as default, please try again`
+            );
+          }
+        },
+        { immediate: true }
+      );
     };
     return {
       isAddGroupModalVisible,

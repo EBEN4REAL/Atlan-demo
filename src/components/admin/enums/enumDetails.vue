@@ -1,37 +1,68 @@
 <template>
-  <div class="h-full bg-white border border-gray-200 divide-y divide-gray-100 rounded">
+  <div
+    class="
+      h-full
+      bg-white
+      border border-gray-200
+      divide-y divide-gray-100
+      rounded
+    "
+  >
     <div class="flex flex-col pt-2" v-if="!isNew">
       <div class="flex items-center justify-between px-3">
         <div class="p-4">
-          <p class="m-0 text-lg font-medium text-gray-700">{{ selectedEnum.name }}</p>
+          <p class="m-0 text-lg font-medium text-gray-700">
+            {{ selectedEnum.name }}
+          </p>
           <span class="m-0 text-xs">
             Created
             {{ timeAgo(selectedEnum.createTime) }} by
             <span
               class="underline cursor-pointer"
-              @click="()=>handleClickUser(selectedEnum.createdBy)"
-            >{{ selectedEnum.createdBy }}</span>
+              @click="() => handleClickUser(selectedEnum.createdBy)"
+              >{{ selectedEnum.createdBy }}</span
+            >
             · Updated
             {{ timeAgo(selectedEnum.updateTime) }} by
             <span
               class="underline cursor-pointer"
-              @click="()=>handleClickUser(selectedEnum.createdBy)"
-            >{{ selectedEnum.updatedBy }}</span>
+              @click="() => handleClickUser(selectedEnum.createdBy)"
+              >{{ selectedEnum.updatedBy }}</span
+            >
           </span>
         </div>
         <div>
-          <a-button v-if="!isEditing" shape="circle" @click="() => (isEditing = true)">
+          <a-button
+            v-if="!isEditing"
+            shape="circle"
+            @click="() => (isEditing = true)"
+          >
             <fa icon="fal pen" />
           </a-button>
-          <a-button v-if="isEditing" type="danger" shape="circle" ghost @click="discardChanges">
+          <a-button
+            v-if="isEditing"
+            type="danger"
+            shape="circle"
+            ghost
+            @click="discardChanges"
+          >
             <fa icon="fal times" />
           </a-button>
-          <a-button v-if="isEditing" type="primary" shape="circle" ghost @click="saveChanges">
+          <a-button
+            v-if="isEditing"
+            type="primary"
+            shape="circle"
+            ghost
+            @click="saveChanges"
+          >
             <fa icon="fal check" />
           </a-button>
         </div>
       </div>
-      <div class="w-full h-1" :class="!isReady ? 'animate-pulse bg-primary-400' : ''" />
+      <div
+        class="w-full h-1"
+        :class="!isReady ? 'animate-pulse bg-primary400' : ''"
+      />
     </div>
     <div class="p-8">
       <a-form layout="vertical">
@@ -63,7 +94,7 @@ import { computed, defineComponent, reactive, ref, watch } from "vue";
 import { useTimeAgo } from "@vueuse/core";
 import { message } from "ant-design-vue";
 
-import { usePreview } from "~/composables/user/showUserPreview";
+import { useUserPreview } from "~/composables/user/showUserPreview";
 import { useUpdateEnums } from "./composables/useModifyEnums";
 
 export default defineComponent({
@@ -122,7 +153,7 @@ export default defineComponent({
       }
     });
     // user preview drawer
-    const { showUserPreview, setUserUniqueAttribute } = usePreview();
+    const { showUserPreview, setUserUniqueAttribute } = useUserPreview();
     const handleClickUser = (username: string) => {
       setUserUniqueAttribute(username, "username");
       showUserPreview({ allowed: ["about"] });

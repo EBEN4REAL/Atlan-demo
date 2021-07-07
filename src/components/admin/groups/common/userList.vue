@@ -14,7 +14,12 @@
         <a-button @click="$emit('showGroupMembers')" class="mr-3">
           <fa icon="fal chevron-left" />
         </a-button>
-        <a-button @click="$emit('addMembersToGroup')" type="primary" :disabled="addMemberLoading">
+        <a-button
+          @click="$emit('addMembersToGroup')"
+          type="primary"
+          :loading="addMemberLoading"
+          :disabled="addMemberLoading"
+        >
           <fa icon="fal plus" class="mr-2" />Add
         </a-button>
       </div>
@@ -30,7 +35,11 @@
         size="large"
         type="primary"
         ghost
-        @click="()=>{getUserList()}"
+        @click="
+          () => {
+            getUserList();
+          }
+        "
       >Try again</a-button>
     </div>
     <div v-else class="mt-4 overflow-auto">
@@ -40,10 +49,11 @@
             <a-checkbox :value="user.id" class="flex items-center w-full">
               <span class="flex justify-between mb-2">
                 <div class="flex items-center">
-                  <a-avatar
-                    shape="circle"
-                    class="mr-1 ant-tag-blue text-primary-500 avatars"
-                  >{{ getNameInitials(getNameInTitleCase(user.name)) }}</a-avatar>
+                  <a-avatar shape="circle" class="mr-1 ant-tag-blue text-gray avatars">
+                    {{
+                    getNameInitials(getNameInTitleCase(user.name))
+                    }}
+                  </a-avatar>
                   <div class="ml-2">
                     <div>{{ user.name }}</div>
                     <div class="text-xs">@{{ user.username }}</div>
@@ -57,8 +67,10 @@
       </a-checkbox-group>
       <div
         class="flex justify-center"
-        v-if="[STATES.PENDING].includes(state) ||
-            [STATES.VALIDATING].includes(state)"
+        v-if="
+          [STATES.PENDING].includes(state) ||
+          [STATES.VALIDATING].includes(state)
+        "
       >
         <a-spin></a-spin>
       </div>

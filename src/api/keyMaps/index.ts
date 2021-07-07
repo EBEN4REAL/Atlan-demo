@@ -8,6 +8,7 @@ import group from "~/api/keyMaps/auth/group";
 import avatar from "~/api/keyMaps/auth/avatar";
 import connection from "~/api/keyMaps/auth/connection";
 import glossary from "~/api/keyMaps/glossary";
+import health from "~/api/keyMaps/health";
 import apiKeys from "~/api/keyMaps/auth/apiKeys";
 import role from "~/api/keyMaps/auth/role";
 import search from "~/api/keyMaps/search";
@@ -16,6 +17,7 @@ import image from "~/api/keyMaps/auth/image";
 
 export default {
   ...asset,
+  ...health,
   ...user,
   ...tenant,
   ...glossary,

@@ -15,10 +15,10 @@
         <span v-if="!isLeaf"
           ><img :src="image" class="float-left w-auto h-4 mr-1"
         /></span>
-        <span class="text-base leading-none text-dark-400" v-if="!isLeaf">{{
+        <span class="text-base leading-none text-gray" v-if="!isLeaf">{{
           title
         }}</span>
-        <span class="text-sm leading-none text-dark-400" v-if="isLeaf">{{
+        <span class="text-sm leading-none text-gray" v-if="isLeaf">{{
           title
         }}</span>
       </template>

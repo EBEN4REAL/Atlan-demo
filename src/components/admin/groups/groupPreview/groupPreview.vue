@@ -5,14 +5,17 @@
         <div>
           <a-avatar
             shape="square"
-            class="mr-1 ant-tag-blue text-primary-500 avatars"
+            class="mr-1 ant-tag-blue text-gray avatars"
             :size="48"
-          >{{ getNameInitials(getNameInTitleCase(selectedGroup.name)) }}</a-avatar>
+            >{{
+              getNameInitials(getNameInTitleCase(selectedGroup.name))
+            }}</a-avatar
+          >
         </div>
         <div class="ml-3">
-          <div
-            class="text-lg font-bold capitalize cursor-pointer text-primary-500"
-          >{{ selectedGroup.name }}</div>
+          <div class="text-lg font-bold capitalize cursor-pointer text-gray">
+            {{ selectedGroup.name }}
+          </div>
         </div>
       </div>
       <a-tabs v-model:activeKey="activeKey">
@@ -23,7 +26,7 @@
           <component
             :is="tab.component"
             :selectedGroup="selectedGroup"
-            @refreshTable="$emit('refreshTable')"
+            @refreshTable="getGroup"
           />
         </a-tab-pane>
       </a-tabs>
@@ -38,6 +41,8 @@ import {
 import { defineComponent, computed, ref } from "vue";
 import About from "./about.vue";
 import Members from "./members.vue";
+import { useGroup } from "~/composables/group/useGroups";
+import { useGroupPreview } from "~/composables/drawer/showGroupPreview";
 export default defineComponent({
   name: "GroupPreview",
   components: {
@@ -55,28 +60,39 @@ export default defineComponent({
     },
   },
   setup(props, context) {
-    const activeKey = ref(props.defaultTab);
-    const tabs = computed(() => {
-      return [
-        {
-          name: "About",
-          iconClass: "",
-          component: "About",
-          key: "about",
-        },
-        {
-          name: "Members",
-          iconClass: "",
-          component: "Members",
-          key: "members",
-        },
-      ];
+    // const activeKey = ref(props.defaultTab);
+    const {
+      showPreview,
+      groupId,
+      groupAlias,
+      closePreview,
+      uniqueAttribute,
+      finalTabs,
+    } = useGroupPreview();
+    let filterObj = {};
+    if (uniqueAttribute.value === "groupAlias")
+      filterObj = {
+        $and: [{ name: groupAlias.value }],
+      };
+    else filterObj = { $and: [{ id: groupId.value }] };
+    const { groupList, getGroup } = useGroup({
+      limit: 1,
+      offset: 0,
+      // sort: "alias",
+      filter: filterObj,
+    });
+    const groupObj = computed(() => {
+      return groupList && groupList.value && groupList.value.length
+        ? groupList.value[0]
+        : [];
     });
     return {
       getNameInitials,
       getNameInTitleCase,
-      tabs,
-      activeKey,
+      tabs: finalTabs,
+      getGroup,
+      // activeKey,
+      selectedGroup: groupObj,
     };
   },
 });

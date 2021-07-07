@@ -3,51 +3,69 @@
     <a-table
       :dataSource="invitationList"
       :columns="columns"
-      v-if="invitationList && invitationList.length"
-      :rowKey="(invitation)=>invitation.id"
+      v-if="invitationList"
+      :rowKey="(invitation) => invitation.id"
       :pagination="false"
       @change="handleTableChange"
-      :loading="[STATES.PENDING].includes(state) ||
-          [STATES.VALIDATING].includes(state)"
+      :loading="
+        [STATES.PENDING].includes(state) || [STATES.VALIDATING].includes(state)
+      "
     >
-      <template #invites="{text:invite}">
-        <div class="flex cursor-pointer" @click="() => {handleInvitationClick(invite)}">
+      <template #invites="{ text: invite }">
+        <div
+          class="flex cursor-pointer"
+          @click="
+            () => {
+              handleInvitationClick(invite);
+            }
+          "
+        >
           <div>
             <a-avatar
-              v-if="invite.username||invite.email"
+              v-if="invite.username || invite.email"
               shape="circle"
-              class="mr-1 ant-tag-blue text-primary-500 avatars"
-            >{{getNameInitials(getNameInTitleCase(invite.username||invite.email)) }}</a-avatar>
+              class="mr-1 ant-tag-blue text-gray avatars"
+              >{{
+                getNameInitials(
+                  getNameInTitleCase(invite.username || invite.email)
+                )
+              }}</a-avatar
+            >
           </div>
           <div>
-            <span>{{ invite.email || '-' }}</span>
-            <p>@{{ invite.username || '-'}}</p>
+            <span>{{ invite.email || "-" }}</span>
+            <p>@{{ invite.username || "-" }}</p>
           </div>
         </div>
       </template>
-      <template #role="{text:invite}">
+      <template #role="{ text: invite }">
         <span>{{ invite.role_object.name }}</span>
       </template>
-      <template #actions="{text:invite}">
+      <template #actions="{ text: invite }">
         <a-dropdown :trigger="['click']">
           <a class="ant-dropdown-link" @click="(e) => e.preventDefault()">
             <fa icon="fal cog" />
           </a>
           <template #overlay>
             <a-menu>
-              <a-menu-item
-                key="0"
-                @click="showResendInvitationConfirm(invite)"
-              >Resend Verification Email</a-menu-item>
-              <a-menu-item key="1" @click="showRevokeInvitationConfirm(invite)">Revoke Invitation</a-menu-item>
-              <a-menu-item key="2" @click="handleChangeRole(invite)">Change User Role</a-menu-item>
+              <a-menu-item key="0" @click="showResendInvitationConfirm(invite)"
+                >Resend Verification Email</a-menu-item
+              >
+              <a-menu-item key="1" @click="showRevokeInvitationConfirm(invite)"
+                >Revoke Invitation</a-menu-item
+              >
+              <a-menu-item key="2" @click="handleChangeRole(invite)"
+                >Change User Role</a-menu-item
+              >
             </a-menu>
           </template>
         </a-dropdown>
       </template>
     </a-table>
     <div class="flex justify-between max-w-full mt-4">
-      <a-button type="link" size="default" @click="$emit('toggleList')">View Active Users</a-button>
+      <a-button type="link" size="default" @click="$emit('toggleList')"
+        >View Active Users</a-button
+      >
       <a-pagination
         :total="pagination.total"
         :current="pagination.current"
@@ -192,14 +210,16 @@ export default defineComponent({
         title: `Resend Verification Email`,
         okText: "Send Email",
         okType: "primary",
-        async onOk() {
-          try {
-            await User.ResendVerificationEmail(invite.id);
-            message.success("Email sent");
-          } catch (error) {
-            message.error("Failed to send email, try again");
-            return;
-          }
+        onOk() {
+          const { data, isReady, error, isLoading } =
+            User.ResendVerificationEmail(invite.id);
+          watch([data, isReady, error, isLoading], () => {
+            if (isReady && !error.value && !isLoading.value) {
+              message.success("Email sent");
+            } else if (error && error.value) {
+              message.error("Failed to send email, try again");
+            }
+          });
         },
       });
     };
@@ -209,14 +229,18 @@ export default defineComponent({
         content: `Are you sure you want to revoke invitation for ${invite.email} ?`,
         okText: "Yes",
         okType: "danger",
-        async onOk() {
-          try {
-            await User.RevokeInvitation(invite.id);
-            getInvitationList();
-            message.success("Invitation revoked.");
-          } catch (error) {
-            message.error("Unable to revoke invite, please try again");
-          }
+        onOk() {
+          const { data, isReady, error, isLoading } = User.RevokeInvitation(
+            invite.id
+          );
+          watch([data, isReady, error, isLoading], () => {
+            if (isReady && !error.value && !isLoading.value) {
+              getInvitationList();
+              message.success("Invitation revoked.");
+            } else if (error && error.value) {
+              message.error("Unable to revoke invite, please try again");
+            }
+          });
         },
       });
     };

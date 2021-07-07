@@ -1,44 +1,58 @@
 <template>
   <div class="flex flex-wrap gap-1">
-    <template v-for="(tag, index) in tags" :key="index">
-      <a-tooltip v-if="tag.length > 20" :title="tag">
+    <div v-if="!allowUpdate && !tags.length">-</div>
+    <div v-else>
+      <template v-for="(tag, index) in tags" :key="index">
+        <a-tooltip v-if="tag.length > 20" :title="tag">
+          <a-tag
+            :closable="allowUpdate"
+            :key="tag"
+            @close="handleClose(tag)"
+            class="bg-gray-50"
+            :class="[updatingTags?'text-gray-300 pointer-events-none':'']"
+          >{{ `${tag.slice(0, 20)}...` }}</a-tag>
+        </a-tooltip>
         <a-tag
-          :closable="tag.hasOwnProperty('closeable')?tag[closable]:true"
-          :key="tag"
+          :closable="allowUpdate"
+          v-else
           @close="handleClose(tag)"
+          :class="[updatingTags?'text-gray-300 pointer-events-none':'']"
           class="bg-gray-50"
-        >{{ `${tag.slice(0, 20)}...` }}</a-tag>
-      </a-tooltip>
+        >{{ tag }}</a-tag>
+      </template>
+      <a-input
+        v-if="inputVisible"
+        :disabled="updatingTags"
+        ref="inputRef"
+        type="text"
+        size="small"
+        :style="{ width: '78px' }"
+        v-model:value="inputValue"
+        @blur="handleInputConfirm"
+        @keyup.enter="$event.target.blur()"
+      />
       <a-tag
-        :closable="tag.hasOwnProperty('closeable')?tag[closable]:true"
-        v-else
-        @close="handleClose(tag)"
-        class="bg-gray-50"
-      >{{ tag }}</a-tag>
-    </template>
-    <a-input
-      v-if="inputVisible && !disableNewTag"
-      ref="inputRef"
-      type="text"
-      size="small"
-      :style="{ width: '78px' }"
-      v-model:value="inputValue"
-      @blur="handleInputConfirm"
-      @keyup.enter="$event.target.blur()"
-    />
-    <a-tag
-      v-else-if="!disableNewTag"
-      class="bg-white"
-      @click="showInput"
-      style="background: #fff; border-style: dashed"
-    >
-      <fa icon="fal plus" class="pushtop"></fa>New Tag
-    </a-tag>
+        v-else-if="!updatingTags && allowUpdate"
+        class="bg-white"
+        @click="showInput"
+        style="background: #fff; border-style: dashed"
+      >
+        <fa icon="fal plus" class="pushtop"></fa>New Tag
+      </a-tag>
+    </div>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, reactive, toRefs, nextTick, watch } from "vue";
+import {
+  defineComponent,
+  ref,
+  reactive,
+  toRefs,
+  nextTick,
+  watch,
+  computed,
+} from "vue";
 
 export default defineComponent({
   props: {
@@ -46,7 +60,11 @@ export default defineComponent({
       type: Array,
       default: ["Unremovable", "Tag 2", "Tag 3Tag 3Tag 3Tag 3Tag 3Tag 3Tag 3"],
     },
-    disableNewTag: {
+    updatingTags: {
+      type: Boolean,
+      default: false,
+    },
+    allowUpdate: {
       type: Boolean,
       default: false,
     },
@@ -54,17 +72,12 @@ export default defineComponent({
   components: {},
   setup(props, context) {
     const inputRef = ref();
+    const defaultTags = computed(() => props.tags);
     const state = reactive({
-      tags: props.tags,
+      tags: defaultTags,
       inputVisible: false,
       inputValue: "",
     });
-    watch(
-      () => props.tags,
-      () => {
-        state.tags = [...props.tags];
-      }
-    );
     const handleClose = (removedTag: string) => {
       const tags = state.tags.filter((tag) => tag !== removedTag);
       console.log(tags);
@@ -74,7 +87,7 @@ export default defineComponent({
         inputVisible: false,
         inputValue: "",
       });
-      context.emit("updateTags", tags);
+      context.emit("updateTags", removedTag, "remove");
     };
 
     const showInput = () => {
@@ -85,18 +98,29 @@ export default defineComponent({
     };
 
     const handleInputConfirm = () => {
-      const inputValue = state.inputValue;
-      let tags = state.tags;
-      if (inputValue && tags.indexOf(inputValue) === -1) {
-        tags = [...tags, inputValue];
+      if (state.inputValue) {
+        const inputValue = state.inputValue;
+        let tags = state.tags;
+        if (inputValue && tags.indexOf(inputValue) === -1) {
+          tags = [...tags, inputValue];
+        }
+        console.log(tags);
+        context.emit("updateTags", inputValue);
+        watch(
+          () => props.updatingTags,
+          (newValue) => {
+            if (!newValue)
+              Object.assign(state, {
+                tags,
+                inputVisible: false,
+                inputValue: "",
+              });
+          }
+        );
+      } else {
+        state.inputVisible = false;
+        state.inputValue = "";
       }
-      console.log(tags);
-      Object.assign(state, {
-        tags,
-        inputVisible: false,
-        inputValue: "",
-      });
-      context.emit("updateTags", tags);
     };
     return {
       ...toRefs(state),

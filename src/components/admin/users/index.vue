@@ -59,7 +59,7 @@
           </a-button>
         </a-popover>
         <a-button
-          v-if="true || IS_SMTP_CONFIGURED"
+          v-if="loginWithEmailAllowed"
           type="primary"
           class="ml-4"
           size="default"
@@ -71,7 +71,7 @@
     <div>
       <div v-if="listType==='users'">
         <a-table
-          v-if="userList && userList.length && listType === 'users'"
+          v-if="userList && listType === 'users'"
           :dataSource="userList"
           :columns="columns"
           :rowKey="(user) => user.id"
@@ -91,20 +91,6 @@
                 :avatarSize="40"
                 class="mr-2"
               />
-              <!-- <a-avatar
-                v-if="user.name || user.username || user.email"
-                shape="square"
-                class="mr-2 border-2 rounded-lg ant-tag-blue text-primary-500 avatars border-primary-300"
-                :size="40"
-                :src="imageUrl(user.username)"
-              >
-                {{
-                getNameInitials(
-                getNameInTitleCase(user.name || user.uername || user.email)
-                )
-                }}
-              </a-avatar>-->
-
               <div class="cursor-pointer" @click="() => {showUserPreviewDrawer(user);}">
                 <span class="text-gray-900">{{ nameCase(user.name) || "-" }}</span>
                 <p class="mb-0 text-gray-500">@{{ user.username || "-" }}</p>
@@ -146,6 +132,7 @@
             type="link"
             size="default"
             @click="toggleUserInvitationList"
+            :class="{'opacity-0 pointer-events-none':!loginWithEmailAllowed}"
           >View Pending Invitations</a-button>
           <a-pagination
             :total="pagination.total"
@@ -164,13 +151,6 @@
         ref="invitationComponentRef"
       />
     </div>
-    <!--Preview Drawer-->
-    <!-- <UserPreviewDrawer
-    @closePreview="handleClosePreview"
-    :selectedUser="selectedUser"
-    :showUserPreview="showUserPreview"
-    @reloadTable="reloadTable"
-    />-->
     <!-- Change Role Modal-->
     <a-modal
       :visible="showChangeRoleModal"
@@ -179,7 +159,11 @@
       :footer="null"
       @cancel="closeChangeRoleModal"
     >
-      <ChangeRole :user="selectedUser" @updateRole="handleUpdateRole" />
+      <ChangeRole
+        :user="listType==='users'?selectedUser:selectedInvite"
+        :roleList="roleList"
+        @updateRole="handleUpdateRole"
+      />
     </a-modal>
     <a-modal
       :visible="showInviteUserModal"
@@ -193,11 +177,10 @@
   </div>
 </template>
 <script lang="ts">
-import { usePreview } from "~/composables/user/showUserPreview";
+import { useUserPreview } from "~/composables/user/showUserPreview";
 import { defineComponent, ref, reactive, computed, watch } from "vue";
 import { useDebounceFn } from "@vueuse/core";
 import useUsers from "~/composables/user/useUsers";
-import UserPreviewDrawer from "./userPreview/userPreviewDrawer.vue";
 import InvitationListTable from "./invitationListTable.vue";
 import { Modal, message } from "ant-design-vue";
 import { User } from "~/api/auth/user";
@@ -209,17 +192,22 @@ import {
 } from "~/composables//utils/string-operations";
 import ChangeRole from "./changeRole.vue";
 import InviteUsers from "./inviteUsers.vue";
+import useRoles from "~/composables/roles/useRoles";
+import { useTenantStore } from "~/pinia/tenants";
 
 export default defineComponent({
   components: {
-    UserPreviewDrawer,
     InvitationListTable,
     ChangeRole,
     InviteUsers,
     Avatar,
   },
+
   setup() {
-    const IS_SMTP_CONFIGURED = false;
+    const tenantStore = useTenantStore();
+    const loginWithEmailAllowed = ref(
+      tenantStore?.tenant?.loginWithEmailAllowed ?? false
+    );
     let listType = ref("users");
     const searchText = ref("");
     const showChangeRoleModal = ref(false);
@@ -236,6 +224,7 @@ export default defineComponent({
         );
       return activeUserObj;
     });
+    const selectedInvite = ref({});
     const invitationComponentRef = ref(null);
     let userListAPIParams: any = reactive({
       limit: 6,
@@ -252,7 +241,8 @@ export default defineComponent({
     });
     const { userList, filteredUserCount, getUserList, state, STATES } =
       useUsers(userListAPIParams);
-
+    // fetch roles- need this to find role id when changing user/invite role
+    const { roleList } = useRoles();
     const handleSearch = useDebounceFn(() => {
       if (listType.value === "users") searchUserList();
     }, 600);
@@ -334,34 +324,23 @@ export default defineComponent({
     };
     // BEGIN: USER PREVIEW
     const {
+      showPreview,
       showUserPreview: openPreview,
-      closePreview,
       setUserUniqueAttribute,
-      userUpdated,
-      setUserUpdatedFlag,
-      emitPayload,
-    } = usePreview();
+    } = useUserPreview();
     const showUserPreviewDrawer = (user: any) => {
       setUserUniqueAttribute(user.id);
       openPreview();
       selectedUserId.value = user.id;
     };
-    const handleClosePreview = () => {
-      // showUserPreview.value = false;
-      closePreview();
-      setUserUniqueAttribute("");
-      selectedUserId.value = "";
-    };
-    watch(userUpdated, () => {
-      if (userUpdated) {
-        reloadTable();
-        setUserUpdatedFlag(false);
-      }
+    watch(showPreview, () => {
+      if (!showPreview.value) reloadTable();
     });
     // END: USER PREVIEW
     const handleChangeRole = (user: any) => {
       showChangeRoleModal.value = true;
-      selectedUserId.value = user.id;
+      if (listType.value === "users") selectedUserId.value = user.id;
+      else Object.assign(selectedInvite.value, user);
     };
     const closeChangeRoleModal = () => {
       showChangeRoleModal.value = false;
@@ -388,21 +367,27 @@ export default defineComponent({
         okType: user.role !== "admin" ? "danger" : "default",
         async onOk() {
           if (user.role !== "admin") {
-            try {
-              {
-                await User.UpdateUser(user.id, { enabled: !user.enabled });
+            const requestPayload = ref({
+              enabled: !user.enabled,
+            });
+            const { data, isReady, error, isLoading } = User.UpdateUser(
+              user.id,
+              requestPayload
+            );
+            watch([data, isReady, error, isLoading], () => {
+              if (isReady && !error.value && !isLoading.value) {
                 getUserList();
                 message.success(
                   `User ${user.enabled ? "Disabled" : "Enabled"}`
                 );
+              } else if (error && error.value) {
+                message.error(
+                  `Unable to ${
+                    user.enabled ? "disable" : "enable"
+                  } user. Try again.`
+                );
               }
-            } catch (e) {
-              message.error(
-                `Unable to ${
-                  user.enabled ? "disable" : "enable"
-                } user. Try again.`
-              );
-            }
+            });
           } else return;
         },
       });
@@ -504,7 +489,6 @@ export default defineComponent({
       handleSearch,
       handleTableChange,
       showUserPreviewDrawer,
-      handleClosePreview,
       showEnableDisableConfirm,
       toggleUserInvitationList,
       getNameInitials,
@@ -516,7 +500,7 @@ export default defineComponent({
       showUserPreview,
       state,
       STATES,
-      IS_SMTP_CONFIGURED,
+      loginWithEmailAllowed,
       showChangeRoleModal,
       handleChangeRole,
       closeChangeRoleModal,
@@ -535,6 +519,9 @@ export default defineComponent({
       handlePagination,
       filteredUserCount,
       isCurrentUser,
+      showPreview,
+      selectedInvite,
+      roleList,
     };
   },
   data() {

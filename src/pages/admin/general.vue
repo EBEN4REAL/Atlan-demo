@@ -1,6 +1,8 @@
 <template>
   <div>
     <p class="mb-2 text-xl font-normal tracking-tight">General page</p>
+    <p class="text-primary">text primary 500</p>
+    <p class="text-primary">text primary</p>
   </div>
 </template>
 

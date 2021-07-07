@@ -38,22 +38,18 @@
           "
         >Try again</a-button>
       </div>
-      <div v-else-if="searchText&&!filteredMembersCount" class="mt-2">
+      <div v-else-if="searchText && !filteredMembersCount" class="mt-2">
         {{ `No member with name ${searchText} found.` }}
         <!-- <span
-          class="cursor-pointer text-primary-600"
+          class="cursor-pointer text-gray"
           @click="{searchText='';handleSearch();}"
         >Clear</span>-->
       </div>
       <div v-else class="min-h-screen mt-4">
         <div v-for="user in memberList.value" :key="user.id" class="my-2">
           <div class="flex justify-between cursor-pointer">
-            <div class="flex items-center" @click="()=>handleClickUser(user.username)">
-              <a-avatar
-                shape="circle"
-                class="mr-1 ant-tag-blue text-primary-500 avatars"
-                :size="40"
-              >
+            <div class="flex items-center" @click="() => handleClickUser(user.username)">
+              <a-avatar shape="circle" class="mr-1 ant-tag-blue text-gray avatars" :size="40">
                 {{
                 getNameInitials(getNameInTitleCase(`${getUserName(user)}`))
                 }}
@@ -127,7 +123,7 @@ import {
 import { Group } from "~/api/auth/group";
 import { getIsLoadMore } from "~/composables/utils/isLoadMore";
 import AddGroupMembers from "~/components/admin/groups/groupPreview/about/members/addGroupMembers.vue";
-import { usePreview } from "~/composables/user/showUserPreview";
+import { useUserPreview } from "~/composables/user/showUserPreview";
 
 export default defineComponent({
   name: "GroupMembers",
@@ -147,6 +143,7 @@ export default defineComponent({
     const searchText = ref("");
     const showAddMemberModal = ref(false);
     const addMemberLoading = ref(false);
+    const removeMemberLoading = ref(false);
     const selectedUserIds = ref([]);
     const memberListParams = reactive({
       groupId: props.selectedGroup.id,
@@ -193,43 +190,60 @@ export default defineComponent({
         searchText.value ? filteredMembersCount.value : totalMembersCount.value
       );
     });
-    const addMembersToGroup = async () => {
+    const addMembersToGroup = () => {
       const userIds = [...selectedUserIds.value];
-      addMemberLoading.value = true;
-      try {
-        await Group.AddMembers(props.selectedGroup.id, {
-          users: userIds,
-        });
-        memberListParams.params.offset = 0;
-        getGroupMembersList();
-        context.emit("refreshTable");
-        addMemberLoading.value = false;
-        message.success(
-          `${pluralizeString("Member", userIds.length, false)} added`
-        );
-        showGroupMembers.value = true;
-      } catch (e) {
-        addMemberLoading.value = false;
-        message.error("Unable to add members, please try again.");
-      }
+      const requestPayload = ref();
+      requestPayload.value = {
+        users: userIds,
+      };
+      const { data, isReady, error, isLoading } = Group.AddMembers(
+        props.selectedGroup.id,
+        requestPayload
+      );
+      watch(
+        [data, isReady, error, isLoading],
+        () => {
+          addMemberLoading.value = isLoading.value;
+          if (isReady && !error.value && !isLoading.value) {
+            memberListParams.params.offset = 0;
+            getGroupMembersList();
+            context.emit("refreshTable");
+            message.success(
+              `${pluralizeString("Member", userIds.length, false)} added`
+            );
+            showGroupMembers.value = true;
+          } else if (error && error.value) {
+            message.error("Unable to add members, please try again.");
+          }
+        },
+        { immediate: true }
+      );
     };
     const removeUserFromGroup = async (userId: any) => {
       const userIds = [userId];
-      try {
-        await Group.RemoveMembersFromGroup(
-          props.selectedGroup.id,
-          {
-            users: userIds,
-          },
-          {}
-        );
-        memberListParams.params.offset = 0;
-        getGroupMembersList();
-        context.emit("refreshTable");
-        message.success("Member Removed");
-      } catch (error) {
-        message.error("Failed, try again");
-      }
+      const requestPayload = ref();
+      requestPayload.value = {
+        users: userIds,
+      };
+      const { data, isReady, error, isLoading } = Group.RemoveMembersFromGroup(
+        props.selectedGroup.id,
+        requestPayload
+      );
+      watch(
+        [data, isReady, error, isLoading],
+        () => {
+          removeMemberLoading.value = isLoading.value;
+          if (isReady && !error.value && !isLoading.value) {
+            memberListParams.params.offset = 0;
+            getGroupMembersList();
+            context.emit("refreshTable");
+            message.success("Member Removed");
+          } else if (error && error.value) {
+            message.error("Failed, try again");
+          }
+        },
+        { immediate: true }
+      );
     };
     const getUserName = (user: any) => {
       const { first_name } = user;
@@ -251,7 +265,7 @@ export default defineComponent({
       showAddMemberModal.value = false;
     };
     // user preview drawer
-    const { showUserPreview, setUserUniqueAttribute } = usePreview();
+    const { showUserPreview, setUserUniqueAttribute } = useUserPreview();
     const handleClickUser = (username: string) => {
       setUserUniqueAttribute(username, "username");
       showUserPreview({ allowed: ["about"] });
@@ -284,6 +298,7 @@ export default defineComponent({
       showGroupMembers,
       handleShowGroupMembers,
       updateSelectedUsers,
+      removeMemberLoading,
     };
   },
 });

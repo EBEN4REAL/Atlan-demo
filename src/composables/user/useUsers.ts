@@ -1,10 +1,8 @@
 import { ref, watch, computed, ComputedRef, Ref } from "vue";
 import swrvState from "~/composables/utils/swrvState";
-import { useAPI } from "~/api/useAPI";
-import { pluralizeString } from "~/composables/utils/string-operations.ts";
+import { useAPI } from "~/api/useAPIv2";
+import { pluralizeString } from "~/composables/utils/string-operations";
 import { roleMap } from "~/constant/role";
-import { fetcher, getAPIPath, getAxiosClient } from "~/api";
-import useSWRV from "swrv";
 
 const getUserName = (user: any) => {
   const { first_name } = user;
@@ -71,13 +69,15 @@ export const useUser = (userListAPIParams: {
     data,
     error,
     isValidating,
+    isLoading,
     mutate: getUser,
   } = useAPI("GET_USER", "GET", {
+    cache: "",
     params: userListAPIParams,
-    options: {
+    options: ref({
       revalidateOnFocus: false,
       dedupingInterval: 1,
-    },
+    }),
   });
   const { state, STATES } = swrvState(data, error, isValidating);
   let userList = computed(() => {
@@ -95,6 +95,7 @@ export const useUser = (userListAPIParams: {
     getUser,
     state,
     STATES,
+    isLoading,
   };
 };
 export default function useUsers(userListAPIParams: {
@@ -109,25 +110,13 @@ export default function useUsers(userListAPIParams: {
     isValidating,
     mutate: getUserList,
   } = useAPI("LIST_USERS", "GET", {
+    cache: "true",
     params: userListAPIParams,
-    options: {
+    options: ref({
       revalidateOnFocus: false,
       dedupingInterval: 1,
-    },
+    }),
   });
-  //   const {
-  //     data,
-  //     error,
-  //     mutate: getUserList,
-  //     isValidating,
-  //   } = useSWRV(
-  //     [getAPIPath("auth", "/users"), userListAPIParams, {}],
-  //     fetcher,
-  //     {
-  //       revalidateOnFocus: false,
-  //       dedupingInterval: 1,
-  //     }
-  //   );
   const { state, STATES } = swrvState(data, error, isValidating);
   let userList = computed(() => {
     if (data.value && data?.value?.records)

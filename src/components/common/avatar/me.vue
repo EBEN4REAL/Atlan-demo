@@ -26,7 +26,7 @@
         </a-menu-item>
         <a-menu-divider />
         <a-menu-item>
-          <a @click="()=>handleClickUser(username)">View Profile</a>
+          <a @click="() => handleClickUser(username)">View Profile</a>
         </a-menu-item>
         <a-menu-item>
           <a href="javascript:;">Admin Centre</a>
@@ -55,7 +55,7 @@
 
 <script lang="ts">
 import { defineComponent, inject } from "vue";
-import { usePreview } from "~/composables/user/showUserPreview";
+import { useUserPreview } from "~/composables/user/showUserPreview";
 import whoami from "~/composables/user/whoami";
 
 export default defineComponent({
@@ -75,7 +75,7 @@ export default defineComponent({
     };
     const { username, name } = whoami();
     // user preview drawer
-    const { showUserPreview, setUserUniqueAttribute } = usePreview();
+    const { showUserPreview, setUserUniqueAttribute } = useUserPreview();
     const handleClickUser = (username: string) => {
       setUserUniqueAttribute(username, "username");
       showUserPreview();
@@ -98,7 +98,7 @@ export default defineComponent({
 
   .sidebartab {
     :global(.ant-tabs-tab) {
-      @apply text-primary-200 !important;
+      @apply text-primary-muted !important;
       padding: 8px 12px !important;
       max-width: 60px !important;
       //   min-height: 48px !important;
@@ -124,7 +124,7 @@ export default defineComponent({
       margin-right: 0px !important;
     }
     :global(.ant-tabs-tab-active) {
-      @apply bg-primary-100 bg-opacity-5 text-primary-100 !important;
+      @apply bg-primary-100 bg-opacity-5 text-primary-muted !important;
       transition: background-color 0.2s cubic-bezier(0.645, 0.045, 0.355, 1);
     }
   }

@@ -16,21 +16,16 @@
         </span>
       </div>
       <div
-        class="
-          grid grid-cols-2
-          p-6
-          mb-20
-          lg:grid-cols-3
-          xl:grid-cols-3
-          gap-x-12 gap-y-6
-        "
+        class="grid grid-cols-2 p-6 mb-20  lg:grid-cols-3 xl:grid-cols-3 gap-x-12 gap-y-6"
       >
         <div
           v-for="service in servicesNames"
           :key="service"
           class="flex items-center justify-between flex-grow"
         >
-          <span class="text-xl text-gray-500 capitalize">{{ service }}</span>
+          <span class="text-xl text-gray-500 capitalize">{{
+            SERVICES[service]
+          }}</span>
           <Fa
             class="text-xl"
             v-bind="getStatusClass(services[service].value)"
@@ -51,8 +46,8 @@
     </div>
   </div>
 </template>
-  
-  <script lang="ts">
+
+<script lang="ts">
 import { defineComponent } from "vue";
 import { useHealth } from "./useHealth";
 import grafana from "~/assets/images/source/grafana.png";
@@ -65,6 +60,7 @@ export default defineComponent({
       title: "Health",
     });
     const {
+      SERVICES,
       services,
       overallStatusText,
       overallStatus,
@@ -73,6 +69,7 @@ export default defineComponent({
     } = useHealth();
 
     return {
+      SERVICES,
       services,
       overallStatusText,
       overallStatus,
@@ -84,8 +81,8 @@ export default defineComponent({
   },
 });
 </script>
-  
-  <style lang="less" scoped>
+
+<style lang="less" scoped>
 .animate-flipInX {
   backface-visibility: visible !important;
   animation: flipInX 1.2s linear 1;
@@ -147,9 +144,8 @@ export default defineComponent({
   }
 }
 </style>
-  <route lang="yaml">
+<route lang="yaml">
     meta:
     layout: default
     requiresAuth: true
     </route>
-  

@@ -20,7 +20,7 @@
         <div class="flex items-center">
           <div class="mr-2">Mark as default</div>
           <a-tooltip>
-            <template #title>New users will be added to this group by default</template>
+            <template #title>New users will be automatically added to default groups</template>
             <fa icon="fal info-circle" class="text-xs" />
           </a-tooltip>
         </div>
@@ -43,7 +43,14 @@
 <script lang="ts">
 import { Group } from "~/api/auth/group";
 import UserList from "~/components/admin/groups/common/userList.vue";
-import { defineComponent, ref, reactive, computed, UnwrapRef } from "vue";
+import {
+  defineComponent,
+  ref,
+  reactive,
+  computed,
+  UnwrapRef,
+  watch,
+} from "vue";
 import whoami from "~/composables/user/whoami";
 import { message } from "ant-design-vue";
 
@@ -101,32 +108,37 @@ export default defineComponent({
     };
     const handleSubmit = async (event) => {
       event.preventDefault();
-      try {
-        createGroupLoading.value = true;
-        const currentDate = new Date().toISOString();
-        const createdById = username.value;
-        // deliberately switching alias and name so as to keep alias as a unique identifier for the group, for keycloak name is the unique identifier. For us, alias is the unique identifier and different groups with same name can exist.
-        const params = {
-          group: {
-            name: group.alias,
-            attributes: {
-              description: [group.description],
-              alias: [group.name],
-              created_at: [currentDate],
-              created_by: [createdById],
-              image: [""],
-            },
+      const currentDate = new Date().toISOString();
+      const createdBy = username.value;
+      // deliberately switching alias and name so as to keep alias as a unique identifier for the group, for keycloak name is the unique identifier. For us, alias is the unique identifier and different groups with same name can exist.
+      const requestPayload = ref({
+        group: {
+          name: group.alias,
+          attributes: {
+            description: [group.description],
+            alias: [group.name],
+            created_at: [currentDate],
+            created_by: [createdBy],
+            isDefault: [`${isDefault.value}`],
           },
-          users: userIds.value,
-        };
-        await Group.CreateGroup(params);
-        message.success("Group added");
-        context.emit("createGroup");
-        createGroupLoading.value = false;
-      } catch (error) {
-        createGroupLoading.value = false;
-        message.error("Unable to create group, please try again.");
-      }
+        },
+        users: userIds.value,
+      });
+      const { data, isReady, error, isLoading } =
+        Group.CreateGroup(requestPayload);
+      watch(
+        [data, isReady, error, isLoading],
+        () => {
+          createGroupLoading.value = isLoading.value;
+          if (isReady && !error.value && !isLoading.value) {
+            message.success("Group added");
+            context.emit("createGroup");
+          } else if (error && error.value) {
+            message.error("Unable to create group, please try again.");
+          }
+        },
+        { immediate: true }
+      );
     };
     return {
       group,

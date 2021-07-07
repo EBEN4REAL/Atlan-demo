@@ -210,14 +210,16 @@ export default defineComponent({
         title: `Resend Verification Email`,
         okText: "Send Email",
         okType: "primary",
-        async onOk() {
-          try {
-            await User.ResendVerificationEmail(invite.id);
-            message.success("Email sent");
-          } catch (error) {
-            message.error("Failed to send email, try again");
-            return;
-          }
+        onOk() {
+          const { data, isReady, error, isLoading } =
+            User.ResendVerificationEmail(invite.id);
+          watch([data, isReady, error, isLoading], () => {
+            if (isReady && !error.value && !isLoading.value) {
+              message.success("Email sent");
+            } else if (error && error.value) {
+              message.error("Failed to send email, try again");
+            }
+          });
         },
       });
     };
@@ -227,14 +229,18 @@ export default defineComponent({
         content: `Are you sure you want to revoke invitation for ${invite.email} ?`,
         okText: "Yes",
         okType: "danger",
-        async onOk() {
-          try {
-            await User.RevokeInvitation(invite.id);
-            getInvitationList();
-            message.success("Invitation revoked.");
-          } catch (error) {
-            message.error("Unable to revoke invite, please try again");
-          }
+        onOk() {
+          const { data, isReady, error, isLoading } = User.RevokeInvitation(
+            invite.id
+          );
+          watch([data, isReady, error, isLoading], () => {
+            if (isReady && !error.value && !isLoading.value) {
+              getInvitationList();
+              message.success("Invitation revoked.");
+            } else if (error && error.value) {
+              message.error("Unable to revoke invite, please try again");
+            }
+          });
         },
       });
     };

@@ -1,6 +1,9 @@
 <template>
-  <div class="max-h-full">
-    <div v-if="selectedUser && selectedUser.id">
+  <div class="h-full">
+    <div class="flex items-center justify-center h-full" v-if="isLoading">
+      <a-spin />
+    </div>
+    <div v-else-if="selectedUser && selectedUser.id">
       <div class="flex mb-3">
         <avatar
           :imageUrl="imageUrl"
@@ -69,7 +72,7 @@ export default defineComponent({
         $and: [{ email_verified: true }, { username: userUsername.value }],
       };
     else filterObj = { $and: [{ email_verified: true }, { id: userId.value }] };
-    const { userList, getUser } = useUser({
+    const { userList, getUser, isLoading } = useUser({
       limit: 1,
       offset: 0,
       sort: "first_name",
@@ -84,9 +87,6 @@ export default defineComponent({
     let isCurrentUser = computed(() => {
       return username.value === userObj.value.username;
     });
-    // const imageUrl = (username: any) => {
-    //   return `http://localhost:3333/api/auth/tenants/default/avatars/${username}`;
-    // };
     const imageUrl = computed(() => {
       if (userObj.value && userObj.value.username)
         return `http://localhost:3333/api/auth/tenants/default/avatars/${userObj.value.username}`;
@@ -104,6 +104,7 @@ export default defineComponent({
       userId,
       tabs: finalTabs,
       handleUserUpdate,
+      isLoading,
     };
   },
 });

@@ -35,7 +35,7 @@
 </template>
   <script lang="ts">
 import { User } from "~/api/auth/user";
-import { defineComponent, ref, computed } from "vue";
+import { defineComponent, ref, computed, watch } from "vue";
 import useRoles from "~/composables/roles/useRoles";
 import { message } from "ant-design-vue";
 export default defineComponent({
@@ -80,30 +80,34 @@ export default defineComponent({
         roleList.value && roleList.value.length
           ? roleList.value.find((role) => role.code === email.role)
           : {};
-      console.log(roleObj);
+
       return roleObj.id || "";
     };
     const handleSubmit = async (event) => {
-      loading.value = true;
       event.preventDefault();
-      try {
-        const params = {
-          users: emails.value.map((email) => ({
-            email: email.value,
-            roleName: email.role,
-            roleId: getRoleId(email),
-          })),
-        };
-        await User.InviteUsers(params);
-        context.emit("handleInviteSent");
-        message.success("Invites sent");
-        loading.value = false;
-      } catch (error) {
-        console.log(error);
-        loading.value = false;
-        message.error("Failed to send invites, try again");
-        context.emit("close");
-      }
+      const requestPayload = ref({
+        users: emails.value.map((email) => ({
+          email: email.value,
+          roleName: email.role,
+          roleId: getRoleId(email),
+        })),
+      });
+      const { data, isReady, error, isLoading } =
+        User.InviteUsers(requestPayload);
+      watch(
+        [data, isReady, error, isLoading],
+        () => {
+          loading.value = isLoading.value;
+          if (isReady && !error.value && !isLoading.value) {
+            context.emit("handleInviteSent");
+            message.success("Invites sent");
+          } else if (error && error.value) {
+            message.error("Failed to send invites, try again");
+            context.emit("close");
+          }
+        },
+        { immediate: true }
+      );
     };
     return {
       roleList,

@@ -107,7 +107,7 @@
 import { message } from "ant-design-vue";
 import GroupList from "~/components/admin/users/userPreview/groups/groupList.vue";
 import getUserGroups from "~/composables/user/getUserGroups";
-import { defineComponent, computed, reactive, ref } from "vue";
+import { defineComponent, computed, reactive, ref, watch } from "vue";
 import {
   pluralizeString,
   getNameInitials,
@@ -185,47 +185,58 @@ export default defineComponent({
     });
     const addUserToGroups = async () => {
       const groupIds = [...selectedGroupIds.value];
-      addToGroupLoading.value = true;
-      try {
-        await User.AddGroups(props.selectedUser.id, {
-          groups: groupIds,
-        });
-        groupListAPIParams.params.offset = 0;
-        getUserGroupList();
-        context.emit("updatedUser");
-        addToGroupLoading.value = false;
-        message.success(`User added to groups`);
-        // showAddToGroupModal.value = false;
-        showUserGroups.value = true;
-      } catch (e) {
-        addToGroupLoading.value = false;
-        message.error("Unable to add user to groups, please try again.");
-      }
+      const requestPayload = ref({
+        groups: groupIds,
+      });
+      const { data, isReady, error, isLoading } = User.AddGroups(
+        props.selectedUser.id,
+        requestPayload
+      );
+      watch(
+        [data, isReady, error, isLoading],
+        () => {
+          addToGroupLoading.value = isLoading.value;
+          if (isReady && !error.value && !isLoading.value) {
+            groupListAPIParams.params.offset = 0;
+            getUserGroupList();
+            message.success("User added to groups");
+            showUserGroups.value = true;
+          } else if (error && error.value) {
+            message.error("Unable to add user to groups, please try again.");
+          }
+        },
+        { immediate: true }
+      );
     };
 
-    const removeUserFromGroup = async (group: any) => {
+    const removeUserFromGroup = (group: any) => {
       const userIds = [props.selectedUser.id];
-      try {
-        removeFromGroupLoading.value = true;
-        await Group.RemoveMembersFromGroup(
-          group.id,
-          {
-            users: userIds,
-          },
-          {}
-        );
-        getUserGroupList();
-        context.emit("updatedUser");
-        removeFromGroupLoading.value = false;
-        message.success(
-          `${props.selectedUser.name} removed from ${group.name}`
-        );
-      } catch (error) {
-        removeFromGroupLoading.value = false;
-        message.error(
-          `Failed to remove ${props.selectedUser.name} from  ${group.name}, please try again.`
-        );
-      }
+      const requestPayload = ref({
+        users: userIds,
+      });
+      const { data, isReady, error, isLoading } = Group.RemoveMembersFromGroup(
+        group.id,
+        requestPayload
+      );
+      watch(
+        [data, isReady, error, isLoading],
+        () => {
+          removeFromGroupLoading.value = isLoading.value;
+          if (isReady && !error.value && !isLoading.value) {
+            groupListAPIParams.params.offset = 0;
+            getUserGroupList();
+            message.success(
+              `${props.selectedUser.name} removed from ${group.name}`
+            );
+            showUserGroups.value = true;
+          } else if (error && error.value) {
+            message.error(
+              `Failed to remove ${props.selectedUser.name} from  ${group.name}, please try again.`
+            );
+          }
+        },
+        { immediate: true }
+      );
     };
     const handleAddToGroup = () => {
       // showAddToGroupModal.value = true;

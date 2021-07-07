@@ -17,6 +17,7 @@
         <a-button
           @click="$emit('addMembersToGroup')"
           type="primary"
+          :loading="addMemberLoading"
           :disabled="addMemberLoading"
         >
           <fa icon="fal plus" class="mr-2" />Add
@@ -39,27 +40,20 @@
             getUserList();
           }
         "
-        >Try again</a-button
-      >
+      >Try again</a-button>
     </div>
     <div v-else class="mt-4 overflow-auto">
-      <a-checkbox-group
-        v-model:value="selectedIds"
-        @change="handleChange"
-        class="w-full"
-      >
+      <a-checkbox-group v-model:value="selectedIds" @change="handleChange" class="w-full">
         <div class="flex flex-col w-full">
           <template v-for="user in userList.value" :key="user.id">
             <a-checkbox :value="user.id" class="flex items-center w-full">
               <span class="flex justify-between mb-2">
                 <div class="flex items-center">
-                  <a-avatar
-                    shape="circle"
-                    class="mr-1 ant-tag-blue text-gray avatars"
-                    >{{
-                      getNameInitials(getNameInTitleCase(user.name))
-                    }}</a-avatar
-                  >
+                  <a-avatar shape="circle" class="mr-1 ant-tag-blue text-gray avatars">
+                    {{
+                    getNameInitials(getNameInTitleCase(user.name))
+                    }}
+                  </a-avatar>
                   <div class="ml-2">
                     <div>{{ user.name }}</div>
                     <div class="text-xs">@{{ user.username }}</div>

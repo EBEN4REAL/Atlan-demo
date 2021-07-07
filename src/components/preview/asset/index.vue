@@ -24,11 +24,11 @@
         v-model:activeKey="activeKey"
         tabPosition="right"
       >
-        <a-tab-pane :key="item.id" v-for="item in filteredTabList">
+        <a-tab-pane :key="filterItem.id" v-for="filterItem in filteredTabList">
           <template #tab>
-            <a-tooltip :title="item.description" placement="right">
+            <a-tooltip :title="filterItem.description" placement="right">
               <p class="mb-0 text-center">
-                <fa :icon="item.icon" class="mr-1" />
+                <fa :icon="filterItem.icon" class="mr-1" />
               </p> </a-tooltip
           ></template>
           <div class="overflow-y-auto">
@@ -41,7 +41,7 @@
     </div>
   </div>
 </template>
-        
+
 <script lang="ts">
 import { defineAsyncComponent } from "vue";
 import { computed, defineComponent, ref } from "vue";

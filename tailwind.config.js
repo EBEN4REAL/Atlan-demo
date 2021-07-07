@@ -20,6 +20,8 @@ module.exports = {
       },
       colors: {
         primary: {
+          DEFAULT: "#2251cc",
+          muted: "#e6edff",
           100: "#d2d4f6",
           200: "#a6a8ed",
           300: "#797de4",
@@ -30,19 +32,27 @@ module.exports = {
           800: "#0d0f54",
           900: "#06082a",
         },
-        sidebar: "#f7f6f3",
-        dark: {
-          100: "#d2d2d3",
-          200: "#a5a6a7",
-          300: "#79797b",
-          400: "#4c4d4f",
-          500: "#1f2023",
-          600: "#191a1c",
-          700: "#131315",
-          800: "#0c0d0e",
-          900: "#060607",
-        },
         body: "#f8f8fd",
+        gray: {
+          DEFAULT: "#495057",
+          light: "#ced4da",
+          dark: "#28292a"
+        },
+        success: {
+          DEFAULT: "#00a680",
+          muted: "#c9f9ee",
+        },        
+        error: {
+          DEFAULT: "#dc2626",
+          muted: "#f9dcd2",
+        },
+        alert: {
+          DEFAULT: "#ffb119",
+          muted: "#ffefd0"
+        },
+        warning: {
+          DEFAULT: "#ff751f"
+        }
       }
     },
   },

@@ -65,7 +65,7 @@
             </div>
 
             <div class="flex flex-col">
-              <div class="text-base tracking-wide text-dark-400">
+              <div class="text-base tracking-wide text-gray">
                 {{ title(selectedConnector) }}
               </div>
             </div>

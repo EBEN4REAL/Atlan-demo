@@ -10,9 +10,23 @@
         </p>
         <p
           v-if="!isUpdate"
-          class="mb-0 ml-2 text-xs leading-none transition duration-300 ease-in-out delay-100 opacity-0 text-primary-500 group-hover:opacity-100"
+          class="
+            mb-0
+            ml-2
+            text-xs
+            leading-none
+            transition
+            duration-300
+            ease-in-out
+            delay-100
+            opacity-0
+            text-gray
+            group-hover:opacity-100
+          "
           @click="onUpdate"
-        >edit</p>
+        >
+          edit
+        </p>
       </div>
       <div v-if="isUpdate" class="flex flex-col">
         <a-textarea
@@ -29,17 +43,24 @@
               class="px-2 mr-1"
               :disabled="updateLoading"
               @click="handleUpdate"
-            >update</a-button>
-            <a-button type="link" size="small" class="p-0" @click="onCancel">cancel</a-button>
+              >update</a-button
+            >
+            <a-button type="link" size="small" class="p-0" @click="onCancel"
+              >cancel</a-button
+            >
           </div>
           <div>
             <a-spin v-if="updateLoading" size="small" />
-            <a-popover v-else-if="updateErrorMessage || updateSuccess" placement="bottom">
+            <a-popover
+              v-else-if="updateErrorMessage || updateSuccess"
+              placement="bottom"
+            >
               <template #content>{{ updateErrorMessage }}</template>
               <i
                 class
                 :class="{
-                  'far fa-warning text-red-600 cursor-pointer': updateErrorMessage,
+                  'far fa-warning text-red-600 cursor-pointer':
+                    updateErrorMessage,
                   'far fa-check text-green-600': updateSuccess,
                 }"
               />
@@ -47,9 +68,13 @@
           </div>
         </div>
       </div>
-      <div v-else-if="group.description" class="text-gray-500">{{ group.description }}</div>
+      <div v-else-if="group.description" class="text-gray-500">
+        {{ group.description }}
+      </div>
       <div v-else class="text-gray-500">
-        <span class="mb-0 cursor-pointer text-primary" @click="onUpdate">Add a description</span>
+        <span class="mb-0 cursor-pointer text-primary" @click="onUpdate"
+          >Add a description</span
+        >
       </div>
     </div>
   </div>

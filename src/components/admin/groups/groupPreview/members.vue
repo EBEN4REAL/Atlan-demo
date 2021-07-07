@@ -12,10 +12,15 @@
           ></a-input-search>
         </div>
         <div>
-          <a-button type="primary" ghost @click="handleAddMember">Add Member</a-button>
+          <a-button type="primary" ghost @click="handleAddMember"
+            >Add Member</a-button
+          >
         </div>
       </div>
-      <div v-if="!selectedGroup.memberCount" class="flex flex-col items-center justify-center">
+      <div
+        v-if="!selectedGroup.memberCount"
+        class="flex flex-col items-center justify-center"
+      >
         <div class="text-center">
           <p class="text-lg">No members are present in the group.</p>
         </div>
@@ -36,26 +41,30 @@
               getGroupMembersList();
             }
           "
-        >Try again</a-button>
+          >Try again</a-button
+        >
       </div>
-      <div v-else-if="searchText&&!filteredMembersCount" class="mt-2">
+      <div v-else-if="searchText && !filteredMembersCount" class="mt-2">
         {{ `No member with name ${searchText} found.` }}
         <!-- <span
-          class="cursor-pointer text-primary-600"
+          class="cursor-pointer text-gray"
           @click="{searchText='';handleSearch();}"
         >Clear</span>-->
       </div>
       <div v-else class="min-h-screen mt-4">
         <div v-for="user in memberList.value" :key="user.id" class="my-2">
           <div class="flex justify-between cursor-pointer">
-            <div class="flex items-center" @click="()=>handleClickUser(user.username)">
+            <div
+              class="flex items-center"
+              @click="() => handleClickUser(user.username)"
+            >
               <a-avatar
                 shape="circle"
-                class="mr-1 ant-tag-blue text-primary-500 avatars"
+                class="mr-1 ant-tag-blue text-gray avatars"
                 :size="40"
               >
                 {{
-                getNameInitials(getNameInTitleCase(`${getUserName(user)}`))
+                  getNameInitials(getNameInTitleCase(`${getUserName(user)}`))
                 }}
               </a-avatar>
               <div class="ml-2">
@@ -66,7 +75,11 @@
             </div>
             <a-popover trigger="click" placement="bottom">
               <template #content>
-                <span class="text-red-500" @click="() => removeUserFromGroup(user.id)">Remove User</span>
+                <span
+                  class="text-red-500"
+                  @click="() => removeUserFromGroup(user.id)"
+                  >Remove User</span
+                >
               </template>
               <fa icon="fal cog"></fa>
             </a-popover>

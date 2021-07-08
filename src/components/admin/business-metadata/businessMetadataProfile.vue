@@ -1,11 +1,13 @@
 <template>
   <div class="bg-white border rounded">
-    <!-- <ArchiveMetadataModal
+    <ArchiveMetadataModal
       v-if="showArchiveMetadataModal"
       @close="showArchiveMetadataModal = false"
       :businessMetadata="localBm"
       @afterArchive="handleAfterArchive"
-    /> -->
+      @updateBusinessMetadataList="updateBusinessMetadata"
+      :visible="showArchiveMetadataModal"
+    />
     <div class="flex items-center justify-between px-4 py-3 border-b">
       <div>
         <div class="font-bold font-size-h5">
@@ -62,7 +64,7 @@
         </a-button>
         <a-dropdown
           trigger="click"
-          v-if="localBm.guid !== 'new'"
+          v-if="localBm.guid !== 'new' && dropdownOptions.length"
           dropdownMenuClass="mt-1 ml-4"
         >
           <span><fa icon="fal ellipsis-v" class="ml-1 text-xl"></fa></span>
@@ -148,24 +150,25 @@
       <a-collapse
         v-if="attrsearchText ? searchedAttributes.length : localBm.attributeDefs.length"
         :accordion="true"
-        default-active-key="1"
+        :defaultActiveKey="1"
       >
         <a-collapse-panel
           v-for="(attribute, index) in attrsearchText
             ? searchedAttributes
             : localBm.attributeDefs"
-          :key="index + 1"
+          :key="index"
           :header="attribute.options.displayName || 'New attribute'"
           class="advanceConfigCollapse"
         >
-          <span
-            slot="extra"
-            v-if="attribute.isNew"
-            class="cursor-pointer text-red hover-underline font-size-sm"
-            @click.prevent.stop="handleRemoveAttribute(index)"
-          >
-            <i class="mr-1 fa-trash-alt far font-size-xs"></i> Remove
-          </span>
+          <template #extra>
+            <span
+              v-if="attribute.isNew"
+              class="cursor-pointer text-red hover-underline font-size-sm"
+              @click.prevent.stop="handleRemoveAttribute(index)"
+            >
+              <i class="mr-1 fa-trash-alt far font-size-xs"></i> Remove
+            </span>
+          </template>
           <AddAttributeCard
             :ref="`attribute-${index}`"
             :key="attribute.id"
@@ -186,11 +189,11 @@ import { defineComponent } from "vue";
 import { reactive, ref, toRefs, computed, onMounted, nextTick, watch } from "vue";
 // * Utils
 import { generateUUID } from "~/utils/generator";
-import { getErrorMessage } from "~/utils/error";
 import { DEFAULT_ATTRIBUTE } from "~/constant/business_metadata";
 import { DEFAULT_SORT_BY, DEFAULT_SORT_ORDER } from "~/constant/search";
 import AddAttributeCard from "@/admin/business-metadata/addAttributeCard.vue";
 import CreateUpdateInfo from "@/shared/createUpdateInfo.vue";
+import ArchiveMetadataModal from "@/admin/business-metadata/archiveMetadataModal.vue";
 
 // ? composables
 import { useBusinessMetadata } from "@/admin/business-metadata/composables/useBusinessMetadata";
@@ -202,7 +205,7 @@ export default defineComponent({
       required: true,
     },
   },
-  components: { AddAttributeCard, CreateUpdateInfo },
+  components: { AddAttributeCard, CreateUpdateInfo, ArchiveMetadataModal },
   setup(props, context) {
     // * Data
     let localBm = ref({
@@ -219,6 +222,11 @@ export default defineComponent({
     let error = ref(null);
     // * Methods
     const { addNewBusinessMetadata, updateNewBusinessMetadata } = useBusinessMetadata;
+
+    //TODO avoid event bus
+    const updateBusinessMetadata = (data: any) => {
+      context.emit("updateBusinessMetadataInList", data);
+    };
 
     const handleAfterArchive = () => {
       context.emit("afterArchive");
@@ -325,7 +333,6 @@ export default defineComponent({
       watch(
         () => apiResponse.value.data,
         (n, o) => {
-          console.log("n,o", n, o);
           if (
             apiResponse.value.data &&
             apiResponse.value.data.businessMetadataDefs &&
@@ -362,17 +369,22 @@ export default defineComponent({
         }
       );
 
-      watch(apiResponse.value.error, e => {
-        loading.value = false;
-        console.log(
-          "🚀 ~ file: businessMetadataProfile.vue ~ handleAddBusinessMetadata ~ error",
-          e
-        );
-        if (e?.response?.data?.errorMessage) {
-          error.value = e.response.data.errorMessage;
-          console.log(error.value);
+      watch(
+        () => apiResponse.value.error,
+        e => {
+          loading.value = false;
+          console.log(
+            "🚀 ~ file: businessMetadataProfile.vue ~ handleAddBusinessMetadata ~ error",
+            e
+          );
+          if (e?.response?.data?.errorMessage) {
+            error.value = {
+              data: { errorMessage: e.response.data.errorMessage },
+            };
+            console.log(error.value);
+          }
         }
-      });
+      );
     };
 
     const handleAddNewAttribute = () => {
@@ -437,12 +449,12 @@ export default defineComponent({
     // * Computed
     const dropdownOptions = computed(() => {
       return [
-        {
-          title: `Archive metadata`,
-          icon: "fal trash text-red",
-          iconType: "far",
-          handleClick: onShowArchiveMetadataModal,
-        },
+        // {
+        //   title: `Archive metadata`,
+        //   icon: "fal trash text-red",
+        //   iconType: "far",
+        //   handleClick: onShowArchiveMetadataModal,
+        // },
       ];
     });
     const searchedAttributes = computed(() => {
@@ -497,6 +509,7 @@ export default defineComponent({
       onAttributeValuesChange,
       handleRemoveAttribute,
       handleAddNewAttribute,
+      updateBusinessMetadata,
     };
   },
 });

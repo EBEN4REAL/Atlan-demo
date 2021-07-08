@@ -1,15 +1,20 @@
 <template>
   <div class="">
-    <!-- <div
-      v-if="loading"
-      class="flex items-center flex-column justify-content-center font-size-h4"
-      style="min-height: 30rem"
+    <div
+      v-if="isLoading"
+      class="flex items-center place-content-center"
+      style="min-height: 40rem"
     >
-      <loader loadingText="Fetching Business Metadata..." textLarge></loader>
-    </div> -->
+      <div class="">
+        <span class=""
+          >Loading...
+          <i class="fal circle-notch spin 5x"></i>
+        </span>
+      </div>
+    </div>
     <div
       class="grid grid-cols-3 gap-7"
-      v-if="finalBusinessMetadataList && finalBusinessMetadataList.length"
+      v-else-if="finalBusinessMetadataList && finalBusinessMetadataList.length"
     >
       <div class="col-span-3">
         Business Metadata
@@ -114,6 +119,7 @@ import { useBusinessMetadata } from "@/admin/business-metadata/composables/useBu
 import differenceWith from "lodash/differenceWith";
 
 import { ref, defineComponent, computed, nextTick, watch } from "vue";
+import { useHead } from "@vueuse/head";
 
 const DEFAULT_BM = {
   // TODO changes when UUID4 support
@@ -128,11 +134,11 @@ export default defineComponent({
   components: { BusinessMetadataList, BusinessMetadataProfile },
   name: "businessMetadata",
   setup(props, context) {
-    const {
-      data: bmResponse,
-      error,
-      isLoading: loading,
-    } = useBusinessMetadata.getBMList();
+    const { data: bmResponse, error, isLoading } = useBusinessMetadata.getBMList();
+
+    useHead({
+      title: computed(() => "Business Metadata"),
+    });
 
     // * Data
     let selectedBm = ref(null);
@@ -326,9 +332,6 @@ export default defineComponent({
         );
       return [];
     });
-    const businessMetadataListLoading = computed(() => {
-      return !businessMetadataList && !businessMetadataListError;
-    });
 
     const businessMetadataListError = computed(() => {
       if (error) return error.value;
@@ -361,7 +364,7 @@ export default defineComponent({
     return {
       businessMetadataList,
       finalBusinessMetadataList,
-      loading: businessMetadataListLoading,
+      isLoading,
       businessMetadataListError,
       searchedBusinessMetadataList,
       selectedBm,

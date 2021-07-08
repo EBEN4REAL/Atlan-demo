@@ -57,6 +57,9 @@
           </a-checkbox>
         </div>
         <div v-else>
+          <p class="mb-1 text-lg text-gray-500 border-b ">
+            Create Classification
+          </p>
           <a-form
             ref="createClassificationFormRef"
             :model="formState"
@@ -124,7 +127,7 @@
       <p class="mb-1 text-sm tracking-wide text-gray-400">Classifications</p>
       <div class="flex flex-wrap items-center gap-x-1">
         <template
-          v-for="(classification, index) in formattedLinkedClassifications"
+          v-for="(classification, index) in assetLinkedClassifcations"
           :key="'classification-' + classification?.typeName + index"
         >
           <div class="flex m-1 mb-1 rounded-md ">
@@ -144,9 +147,24 @@
             <a-button
               v-if="!classification.hideRemoveButton"
               @click.stop="() => unLinkClassification(classification)"
+              :loading="
+                unlinkClassificationStatus.status === 'loading' &&
+                unlinkClassificationStatus.typeName === classification.typeName
+                  ? true
+                  : false
+              "
               class="flex items-center justify-center p-1 px-2 border-none bg-primary-300 hover:bg-primary-500 hover:text-white bg-opacity-10"
             >
-              <span class="flex items-center justify-center">
+              <span
+                class="flex items-center justify-center"
+                v-if="
+                  unlinkClassificationStatus.status === 'loading' &&
+                  unlinkClassificationStatus.typeName ===
+                    classification.typeName
+                    ? false
+                    : true
+                "
+              >
                 <fa icon="fal times-circle" class="" />
               </span>
             </a-button>
@@ -161,10 +179,7 @@
           </span>
         </a-button>
       </div>
-      <p
-        class="mb-0 text-gray-500"
-        v-if="formattedLinkedClassifications.length < 1"
-      >
+      <p class="mb-0 text-gray-500" v-if="assetLinkedClassifcations.length < 1">
         No classifications added
       </p>
     </div>
@@ -173,16 +188,10 @@
 
 <script lang="ts">
 import { defineComponent, ref, computed, watch, toRaw, reactive } from "vue";
-import StatusBadge from "@common/badge/status/index.vue";
-
-import fetchUserList from "~/composables/user/fetchUserList";
-import fetchGroupList from "~/composables/group/fetchGroupList";
-import updateOwners from "~/composables/asset/updateOwners";
 import { Classification } from "~/api/atlas/classification";
+import { useDiscoveryStore } from "~/pinia/discovery";
 
 export default defineComponent({
-  components: { StatusBadge },
-
   props: {
     item: {
       type: Object,
@@ -193,67 +202,19 @@ export default defineComponent({
     },
   },
   setup(props, { emit }) {
-    let now = ref(true);
-    let linkedClassifications = computed(
-      () => props.item?.classifications ?? []
-    );
+    const store = useDiscoveryStore();
     let asset = computed(() => props.item ?? {});
     const linkClassificationPopover = ref(false);
     const linkClassificationStatus = ref("");
     const linkClassificationStatusError = ref("");
-    const unlinkClassificationStatus = ref("");
-    const unlinkClassificationStatusError = ref("");
+    const unlinkClassificationStatus = ref({
+      status: "",
+      typeName: null,
+    });
+    const unlinkClassificationStatusErrorText = ref("");
     const showCreateClassificationPopover = ref(false);
 
     const createClassificationRef = ref(null);
-
-    let ownerType = ref("user");
-
-    const {
-      list,
-      total,
-      filtered,
-      handleSearch: handleUserSearch,
-    } = fetchUserList(now);
-
-    const {
-      list: listGroup,
-      handleSearch: handleGroupSearch,
-      total: totalGroupCount,
-    } = fetchGroupList(now);
-
-    const {
-      handleCancel,
-      execute,
-      isReady,
-      state,
-      ownerUsers,
-      isCompleted,
-      ownerGroups,
-    } = updateOwners(props.item, ownerType);
-
-    const handleUpdate = () => {
-      execute();
-    };
-
-    const handleSearch = (e) => {
-      if (ownerType.value === "user") {
-        handleUserSearch(e);
-      }
-      if (ownerType.value === "group") {
-        handleGroupSearch(e);
-      }
-    };
-
-    let searchText = ref("");
-    const handleOwnerTypeChange = (e: any) => {
-      searchText.value = "";
-      handleSearch(searchText.value);
-    };
-
-    const handleClassificationClick = () => {
-      console.log("clciked");
-    };
 
     //Todo need to add showAddTagButton props using policy
 
@@ -270,43 +231,35 @@ export default defineComponent({
   });
 };
 */
-    const formattedLinkedClassifications = computed(() => {
-      return linkedClassifications.value.map((classification) => {
-        if (
-          classification &&
-          classification.hasOwnProperty("isAutoClassification") &&
-          classification.isAutoClassification
-        ) {
-          return {
-            ...classification,
-            hideRemoveButton: false,
-          };
-        } else if (
-          classification.propagate &&
-          classification.entityGuid &&
-          asset.value.guid !== classification.entityGuid
-        ) {
-          return {
-            ...classification,
-            hideRemoveButton: true,
-          };
-        }
-        return {
-          ...classification,
-          hideRemoveButton: false,
-        };
-      });
-    });
-
-    console.log(
-      formattedLinkedClassifications,
-      "formattedCLassification",
-      asset.value.guid,
-      asset
+    const assetLinkedClassifcations = computed(
+      () => store.selectedAsset.classifications
     );
+    console.log(assetLinkedClassifcations, "assetLinkedClassifcations");
 
-    const unLinkClassification = (classification) => {
-      emit("unLinkClassification", classification);
+    const unLinkClassification = (classification: any) => {
+      unlinkClassificationStatus.value.status = "loading";
+      unlinkClassificationStatus.value.typeName = classification.typeName;
+      const { typeName, entityGuid } = classification;
+      // No content response
+      const { data, error, isReady } = Classification.archiveClassification({
+        cache: false,
+        typeName,
+        entityGuid,
+      });
+
+      /* Todo show loader during unlinking of classification from asset*/
+      watch([data, error, isReady], () => {
+        if (isReady && !error.value) {
+          unlinkClassificationStatus.value.status = "success";
+          unlinkClassificationStatus.value.typeName = null;
+          store.removeClassificationToSelectedAsset(classification);
+        } else {
+          unlinkClassificationStatus.value.status = "failed";
+          unlinkClassificationStatus.value.typeName = null;
+          unlinkClassificationStatusErrorText.value = "something went wrong";
+          console.error("unling link failed");
+        }
+      });
     };
 
     const openLinkClassificationPopover = () => {
@@ -315,64 +268,18 @@ export default defineComponent({
     };
 
     // fetching classifications
-    let classificationsList = ref(null);
     const fetchClassificationStatus = ref("");
-    const {
-      data: classificationData,
-      error: classificationError,
-    } = Classification.getClassificationList({ cache: false });
-    fetchClassificationStatus.value = "loading";
+    console.log(store.isClassificationsFetched, "fetchedddddd");
 
-    const ShowFetchStatusString = computed(() => {
-      switch (fetchClassificationStatus.value) {
-        case "success": {
-          return "success";
-        }
-        case "error": {
-          return "Something went wrong!";
-        }
-        default: {
-          return "Loading...";
-        }
-      }
+    let availableClassificationsForLink = computed(
+      () => store.availableClassificationsForLink
+    );
+
+    const linkClassificationData = ref({
+      propagate: false,
+      removePropagationsOnEntityDelete: true,
+      typeName: "",
     });
-
-    let availableClassificationsForLink = ref([]);
-
-    watch([classificationData, classificationError], () => {
-      if (classificationData.value) {
-        fetchClassificationStatus.value = "success";
-        let cls = classificationData.value.classificationDefs ?? [];
-        cls = cls.map((classification) => {
-          classification.alias = classification.name;
-          return classification;
-        });
-        classificationsList.value = cls ?? [];
-        console.log(classificationsList.value, "classificationList");
-      } else {
-        fetchClassificationStatus.value = "error";
-        console.log("classification erorr ");
-      }
-    });
-
-    watch([classificationsList, linkedClassifications], () => {
-      if (classificationsList.value && linkedClassifications.value) {
-        let availableClassifications = [];
-        classificationsList.value.forEach((classification) => {
-          let index = linkedClassifications.value.findIndex(
-            (cl) => cl.typeName === classification.name
-          );
-          if (index === -1) availableClassifications.push(classification);
-        });
-        availableClassificationsForLink.value = availableClassifications;
-        console.log(availableClassificationsForLink, "available");
-      }
-    });
-
-    const linkClassificationLocally = (payloadArray) => {
-      const payload = payloadArray.value.shift();
-      linkedClassifications.value.push(payload);
-    };
 
     const handleLinkClassificationPopoverSave = () => {
       const payload = ref([
@@ -386,6 +293,7 @@ export default defineComponent({
           validityPeriods: [],
         },
       ]);
+
       linkClassificationStatus.value = "loading";
       const { data, error, isReady } = Classification.linkClassification({
         cache: undefined,
@@ -397,7 +305,9 @@ export default defineComponent({
         if (isReady && !error.value) {
           linkClassificationStatus.value = "success";
           linkClassificationPopover.value = false;
-          linkClassificationLocally(payload);
+          const classification = payload.value.shift();
+          store.addClassificationToSelectedAsset(classification);
+          selectedClassificationForLink.value = undefined;
         } else {
           console.log("link failed");
           linkClassificationStatus.value = "error";
@@ -410,12 +320,6 @@ export default defineComponent({
 
     const selectedClassificationForLink = ref(undefined);
 
-    const linkClassificationData = ref({
-      propagate: false,
-      removePropagationsOnEntityDelete: true,
-      typeName: "",
-    });
-
     const handleSelectedClassificationForLink = (typeName) => {
       linkClassificationData.value.typeName = typeName;
     };
@@ -426,17 +330,6 @@ export default defineComponent({
 
     const hideCreateClassificationWindow = () => {
       showCreateClassificationPopover.value = false;
-    };
-
-    const modifyClassificationsListLocally = (classification) => {
-      console.log(toRaw(classificationsList.value), classification, "updated");
-      let cl = ...classification;
-      classificationsList.value= [ref(),...classificationsList.value,]
-      console.log(classificationsList.value);
-      // classificationsList.value = [
-      //   ...classificationsList.value,
-      //   classifications,
-      // ];
     };
 
     interface FormState {
@@ -503,7 +396,7 @@ export default defineComponent({
               createClassificationStatus.value = "success";
               formState.name = "";
               formState.description = "";
-              modifyClassificationsListLocally(toRaw(classifications));
+              store.addClassifications(toRaw(classifications));
               hideCreateClassificationWindow();
             } else {
               createClassificationStatus.value = "error";
@@ -519,8 +412,11 @@ export default defineComponent({
         });
     };
 
+    const handleClassificationClick = () => {};
+
     return {
       asset,
+      unlinkClassificationStatus,
       createClassificationStatus,
       createClassificationFormRef,
       showCreateClassificationPopover,
@@ -533,7 +429,7 @@ export default defineComponent({
       openLinkClassificationPopover,
       availableClassificationsForLink,
       linkClassificationPopover,
-      formattedLinkedClassifications,
+      assetLinkedClassifcations,
       unLinkClassification,
       handleClassificationClick,
       createClassificationRef,

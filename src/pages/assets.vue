@@ -11,17 +11,20 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from "vue";
+import { defineComponent, ref, watch } from "vue";
 import AssetDiscovery from "@/discovery/asset/index.vue";
 import AssetPreview from "@/preview/asset/index.vue";
 import { useHead } from "@vueuse/head";
-
+import { Classification } from "~/api/atlas/classification";
+import { useDiscoveryStore } from "~/pinia/discovery";
 export default defineComponent({
   components: {
     AssetPreview,
     AssetDiscovery,
   },
   setup() {
+    const store = useDiscoveryStore();
+
     let selected = ref({});
     useHead({
       title: "Discover assets",
@@ -30,6 +33,25 @@ export default defineComponent({
       selected.value = selectedItem;
       console.log(selected.value, "selected");
     };
+
+    const {
+      data: classificationData,
+      error: classificationError,
+    } = Classification.getClassificationList({ cache: false });
+    watch([classificationData, classificationError], () => {
+      if (classificationData.value) {
+        let classifications = classificationData.value.classificationDefs ?? [];
+        classifications = classifications.map((classification) => {
+          classification.alias = classification.name;
+          return classification;
+        });
+        // setting classifications in store
+        store.setClassifications(classifications);
+      } else {
+        console.log("classification erorr ");
+      }
+    });
+
     return {
       selected,
       handlePreview,

@@ -28,10 +28,7 @@
         @change="handleChange"
         class="w-full"
       >
-        <div
-          class="flex flex-col w-full "
-          v-if="classificationsList && fetchClassificationStatus === 'success'"
-        >
+        <div class="flex flex-col w-full " v-if="classificationsList">
           <div v-if="classificationSearchText === ''">
             <template v-for="item in classificationsList" :key="item?.name">
               <a-checkbox
@@ -75,6 +72,7 @@ import { defineComponent, PropType, ref, watch, computed } from "vue";
 import { Collapse } from "~/types";
 import { Components } from "~/api/atlas/client";
 import { Classification } from "~/api/atlas/classification";
+import { useDiscoveryStore } from "~/pinia/discovery";
 
 export default defineComponent({
   name: "Classifications",
@@ -98,16 +96,10 @@ export default defineComponent({
   mounted() {},
   emits: ["update:modelValue", "change"],
   setup(props, { emit }) {
-    let classificationsList = ref(null);
+    const store = useDiscoveryStore();
+    let classificationsList = computed(() => store.classifications);
     const filteredClassificationList = ref([]);
     const fetchClassificationStatus = ref("");
-
-    // fetching classifications
-    const {
-      data: classificationData,
-      error: classificationError,
-    } = Classification.getClassificationList({ cache: false });
-    fetchClassificationStatus.value = "loading";
 
     // classification Fetch Status
     const ShowFetchStatusString = computed(() => {
@@ -121,22 +113,6 @@ export default defineComponent({
         default: {
           return "Loading...";
         }
-      }
-    });
-
-    watch([classificationData, classificationError], () => {
-      if (classificationData.value) {
-        fetchClassificationStatus.value = "success";
-        let classifications = classificationData.value.classificationDefs ?? [];
-        classifications = classifications.map((classification) => {
-          classification.alias = classification.name;
-          return classification;
-        });
-        classificationsList.value = classifications ?? [];
-        console.log(classificationsList.value, "classification");
-      } else {
-        fetchClassificationStatus.value = "error";
-        console.log("classification erorr ");
       }
     });
 

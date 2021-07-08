@@ -2,11 +2,7 @@
   <div class="flex flex-col px-2 space-y-3">
     <Terms :item="item" :key="item.guid"></Terms>
 
-    <Classifications
-      @unLinkClassification="unLinkClassification"
-      :item="item"
-      :key="item.guid"
-    ></Classifications>
+    <Classifications :item="item" :key="item.guid"></Classifications>
     <!-- <StatusBadge :status="status(item)" :key="item.guid"></StatusBadge> -->
   </div>
 </template>
@@ -28,14 +24,7 @@ export default defineComponent({
       },
     },
   },
-  setup(props, { emit }) {
-    const unLinkClassification = (classification) => {
-      emit("unLinkClassification", classification);
-    };
-    return {
-      unLinkClassification,
-    };
-  },
+  setup(props, { emit }) {},
 });
 </script>
 

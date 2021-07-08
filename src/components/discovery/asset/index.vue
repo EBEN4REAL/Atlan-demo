@@ -1,6 +1,6 @@
 <template>
   <div
-    class="hidden h-full pt-6 pl-4 bg-white  sm:block sm:col-span-4 md:col-span-2 sm"
+    class="hidden h-full pt-6 pl-4 bg-white sm:block sm:col-span-4 md:col-span-2 sm"
   >
     <div class="flex flex-col h-full">
       <div class="mb-3">
@@ -33,7 +33,7 @@
     </div>
   </div>
   <div
-    class="flex flex-col items-stretch h-full col-span-12 pt-6 bg-white  sm:col-span-8 md:col-span-7"
+    class="flex flex-col items-stretch h-full col-span-12 pt-6 bg-white sm:col-span-8 md:col-span-7"
     style="overflow: hidden"
   >
     <div class="flex items-center px-6 gap-x-3">
@@ -134,6 +134,7 @@ import { useDebounceFn } from "@vueuse/core";
 import { Components } from "~/api/atlas/client";
 import { SearchParameters } from "~/types/atlas/attributes";
 import { BaseAttributes, BasicSearchAttributes } from "~/constant/projection";
+import { useDiscoveryStore } from "~/pinia/discovery";
 
 export default defineComponent({
   name: "HelloWorld",
@@ -156,6 +157,8 @@ export default defineComponent({
   },
   emits: ["preview"],
   setup(props, { emit }) {
+    // initializing the discovery store
+    const store = useDiscoveryStore();
     let filterMode = ref("custom");
 
     const now = ref(false);

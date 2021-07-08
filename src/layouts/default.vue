@@ -1,15 +1,26 @@
-s
-
-
 <template>
   <a-layout class="min-h-full">
-    <a-layout-header style="height: 32px; padding: 0 0px; line-height: 32px" class="shadow-sm">
+    <a-layout-header
+      style="height: 32px; padding: 0 0px; line-height: 32px"
+      class="shadow-sm"
+    >
       <div
-        class="flex items-center justify-between px-3 align-middle border-b shadow-sm"
+        class="
+          flex
+          items-center
+          justify-between
+          px-3
+          align-middle
+          border-b
+          shadow-sm
+        "
         :class="$style.topbar"
       >
         <div class="flex items-center align-middle">
-          <img src="https://atlan.com/assets/img/logo.40c9d1d3.svg" class="w-auto h-3 mr-3" />
+          <img
+            src="https://atlan.com/assets/img/logo.40c9d1d3.svg"
+            class="w-auto h-3 mr-3"
+          />
           <!-- <a-input
             style="min-width: 400px"
             placeholder="Click or Cmd/Ctrl+K"
@@ -39,17 +50,25 @@ s
       >
         <div class="flex flex-col h-full">
           <Sidebar class="flex-grow mt-2" />
-          <a-button class="mx-1 mb-3" size="large" type="ghost" @click="handleNewPage">
+          <a-button
+            class="mx-1 mb-3"
+            size="large"
+            type="ghost"
+            @click="handleNewPage"
+          >
             <fa icon="fal plug" class="text-white"></fa>
           </a-button>
         </div>
       </a-layout-sider>
-      <a-layout-content class="overflow-hidden" style="height: calc(100vh - 32px) !important">
+      <a-layout-content
+        class="overflow-hidden"
+        style="height: calc(100vh - 32px) !important"
+      >
         <router-view class="flex-grow" />
       </a-layout-content>
     </a-layout>
   </a-layout>
-  <UserPreviewDrawer v-if="showPreview" />
+  <PreviewDrawer />
   <!-- <div class="mx-auto mt-5" @click="themeToggle">[Default Layout]</div> -->
 </template>
 
@@ -59,9 +78,7 @@ import KeycloakMixin from "~/mixins/keycloak";
 import PageLoader from "@common/loaders/page.vue";
 import Sidebar from "./sidebar/index.vue";
 import UserPersonalAvatar from "~/components/common/avatar/me.vue";
-import UserPreviewDrawer from "~/components/admin/users/userPreview/userPreviewDrawer.vue";
-import { usePreview } from "~/composables/user/showUserPreview";
-import { useStore } from "~/store";
+import PreviewDrawer from "~/components/common/previewDrawer.vue";
 
 export default defineComponent({
   name: "HelloWorld",
@@ -70,11 +87,7 @@ export default defineComponent({
     PageLoader,
     Sidebar,
     UserPersonalAvatar,
-    UserPreviewDrawer,
-  },
-  setup() {
-    const { showPreview } = usePreview();
-    return { showPreview };
+    PreviewDrawer,
   },
   props: {},
   data() {
@@ -127,7 +140,7 @@ export default defineComponent({
   @apply bg-gradient-to-b from-primary-600 via-primary-700 to-primary-800    !important;
   .sidebartab {
     :global(.ant-tabs-tab) {
-      @apply text-primary-200 !important;
+      @apply text-primary-muted !important;
       padding: 8px 12px !important;
       max-width: 60px !important;
     }
@@ -149,7 +162,7 @@ export default defineComponent({
       margin-right: 0px !important;
     }
     :global(.ant-tabs-tab-active) {
-      @apply bg-primary-100 bg-opacity-5 text-primary-100 !important;
+      @apply bg-primary-100 bg-opacity-5 text-primary-muted !important;
       transition: background-color 0.2s cubic-bezier(0.645, 0.045, 0.355, 1);
     }
   }
@@ -163,7 +176,7 @@ export default defineComponent({
 
 //   &:global(.ant-menu-inline-collapsed) {
 //     :global(.ant-menu-item) {
-//       @apply text-primary-100 mb-3 rounded-lg ease-in transition-colors text-center text-xl leading-6 !important;
+//       @apply text-primary-muted mb-3 rounded-lg ease-in transition-colors text-center text-xl leading-6 !important;
 //       padding: 8px 0px !important;
 //       margin-left: 6px !important;
 
@@ -171,7 +184,7 @@ export default defineComponent({
 //       height: inherit !important;
 
 //       &:global(.ant-menu-item-selected) {
-//         @apply bg-gray-50 text-primary-500 !important;
+//         @apply bg-gray-50 text-primary !important;
 //       }
 //     }
 //   }

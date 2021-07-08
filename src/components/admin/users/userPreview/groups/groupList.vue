@@ -14,7 +14,12 @@
         <a-button @click="$emit('showUserGroups')" class="mr-3">
           <fa icon="fal chevron-left" />
         </a-button>
-        <a-button @click="$emit('addUserToGroups')" type="primary" :disabled="addToGroupLoading">
+        <a-button
+          :loading="addToGroupLoading"
+          @click="$emit('addUserToGroups')"
+          type="primary"
+          :disabled="addToGroupLoading"
+        >
           <fa icon="fal plus" class="mr-2" />Add
         </a-button>
       </div>
@@ -30,20 +35,29 @@
         size="large"
         type="primary"
         ghost
-        @click="()=>{getGroupList()}"
-      >Try again</a-button>
+        @click="
+          () => {
+            getGroupList();
+          }
+        "
+        >Try again</a-button
+      >
     </div>
     <div v-else class="mt-4 overflow-auto">
-      <a-checkbox-group v-model:value="selectedIds" @change="handleChange" class="w-full">
+      <a-checkbox-group
+        v-model:value="selectedIds"
+        @change="handleChange"
+        class="w-full"
+      >
         <div class="flex flex-col w-full">
           <template v-for="group in groupList.value" :key="group.id">
             <a-checkbox :value="group.id" class="flex items-center w-full">
               <div class="flex justify-between mb-2">
                 <div class="flex items-center">
-                  <a-avatar
+                  <!-- <a-avatar
                     shape="circle"
-                    class="mr-1 ant-tag-blue text-primary-500 avatars"
-                  >{{ getNameInitials(getNameInTitleCase(group.name)) }}</a-avatar>
+                    class="mr-1 ant-tag-blue text-gray avatars"
+                  >{{ getNameInitials(getNameInTitleCase(group.name)) }}</a-avatar>-->
                   <div class="ml-2">
                     <div>{{ group.name }}</div>
                     <div class="text-xs">@{{ group.alias }}</div>
@@ -57,8 +71,10 @@
       </a-checkbox-group>
       <div
         class="flex justify-center"
-        v-if="[STATES.PENDING].includes(state) ||
-              [STATES.VALIDATING].includes(state)"
+        v-if="
+          [STATES.PENDING].includes(state) ||
+          [STATES.VALIDATING].includes(state)
+        "
       >
         <a-spin></a-spin>
       </div>

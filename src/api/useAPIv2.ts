@@ -1,4 +1,4 @@
-import { Ref, ref } from "vue";
+import { Ref, ref, computed, watch } from "vue";
 import axios, { AxiosRequestConfig, AxiosResponse } from "axios";
 import useSWRV, { IConfig } from "swrv";
 
@@ -40,9 +40,6 @@ export const useAPI = <T>(
   const url = keyMaps[key]({ ...pathVariables });
 
   if (cache) {
-
-
-
     // If using cache, make a generic swrv request
     const getKey = () => {
       if (dependantFetchingKey) {
@@ -75,29 +72,40 @@ export const useAPI = <T>(
   } else {
     console.log("not cached", url);
     function getRequest(): any {
-
       switch (method) {
         case "POST":
-          return getAxiosClient()
-            .post<T>(url, body?.value, { params, ...options?.value });
+          return getAxiosClient().post<T>(url, body?.value, {
+            params,
+            ...options?.value,
+          });
         case "DELETE":
-          return getAxiosClient()
-            .delete<T>(url, { ...options?.value });
+          return getAxiosClient().delete<T>(url, { ...options?.value });
         case "PUT":
-          return getAxiosClient()
-            .put<T>(url, body?.value, { params, ...options?.value });
+          return getAxiosClient().put<T>(url, body?.value, {
+            params,
+            ...options?.value,
+          });
         default:
-          return getAxiosClient()
-            .get<T>(url, { params, ...options?.value });
+          return getAxiosClient().get<T>(url, { params, ...options?.value });
       }
     }
-    const { state, execute, isReady, error } = useAsyncState(() => getRequest(), {}, {
-      immediate: options?.value.immediate
+    const isLoading = ref(true);
+    const { state, execute, isReady, error } = useAsyncState(
+      () => getRequest(),
+      {},
+      {
+        immediate: options?.value?.immediate,
+      }
+    );
+    watch([state, error], () => {
+      if (state || error) isLoading.value = false;
     });
-
-
     return {
-      data: state, mutate: execute, error, isReady
-    }
+      data: state,
+      mutate: execute,
+      error,
+      isReady,
+      isLoading,
+    };
   }
 };

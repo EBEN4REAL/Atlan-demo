@@ -1,12 +1,18 @@
 import { getAPIPath, getAxiosClient } from "~/api";
 import { AxiosRequestConfig } from "axios";
 import { useAPI } from "~/api/useAPI";
+import { useAPI as useAPIv2 } from "~/api/useAPIv2";
 import {
   GET_USER_SESSIONS,
   SIGN_OUT_ALL_SESSIONS,
   SIGN_OUT_SESSION_BY_ID,
   GET_USER_ACCESS_LOGS,
   UPDATE_USER,
+  UPDATE_USER_ROLE,
+  ADD_USER_TO_GROUPS,
+  RESEND_INVITATION_EMAIL,
+  REVOKE_INVITATION,
+  INVITE_USERS,
 } from "~/api/keyMaps/auth/user";
 const serviceAlias = "auth";
 
@@ -28,27 +34,26 @@ const GetUserSessions = (id: string, params?: any, options?: any) => {
     pathVariables: { id },
   });
 };
+
 const SignOutAllSessions = (id: string) => {
-  return getAxiosClient().post(
-    getAPIPath(serviceAlias, `/users/${id}/sessions/delete`)
+  const { data, mutate, error, isReady, isLoading } = useAPIv2(
+    SIGN_OUT_ALL_SESSIONS,
+    "POST",
+    {
+      pathVariables: { id },
+    }
   );
-  // return useAPI(SIGN_OUT_ALL_SESSIONS, "POST", {
-  //   params,
-  //   options,
-  //   pathVariables: { id },
-  //   cache: false,
-  // });
+  return { data, mutate, error, isReady, isLoading };
 };
 const SignOutSessionById = (id: string) => {
-  return getAxiosClient().post(
-    getAPIPath(serviceAlias, `/users/sessions/${id}/delete`)
+  const { data, mutate, error, isReady, isLoading } = useAPIv2(
+    SIGN_OUT_SESSION_BY_ID,
+    "POST",
+    {
+      pathVariables: { id },
+    }
   );
-  // return useAPI(SIGN_OUT_SESSION_BY_ID, "POST", {
-  //   params,
-  //   options,
-  //   pathVariables: { id },
-  //   cache: false,
-  // });
+  return { data, mutate, error, isReady, isLoading };
 };
 const GetUserAccessLogs = (id: string, params?: any, options?: any) => {
   return useAPI(GET_USER_ACCESS_LOGS, "GET", {
@@ -57,60 +62,76 @@ const GetUserAccessLogs = (id: string, params?: any, options?: any) => {
     pathVariables: { id },
   });
 };
-const UpdateUser = (id: string, body?: any, options?: any) => {
+const UpdateUserV1 = (id: string, body?: any, options?: any) => {
   return getAxiosClient().post(
     getAPIPath(serviceAlias, `/users/${id}`),
     body,
     options
   );
 };
-const UpdateUserV2 = (id: string, body) => {
-  const { data, error, isLoading } = useAPI(UPDATE_USER, "POST", {
-    cache: false,
-    body,
-    pathVariables: { id },
-  });
-  return { data, error, isLoading };
-};
-const UpdateUserRole = (id: string, body?: any, options?: any) => {
-  return getAxiosClient().post(
-    getAPIPath(serviceAlias, `/users/${id}/roles/update`),
-    body,
-    options
+const UpdateUser = (id: string, body) => {
+  const { data, mutate, error, isReady, isLoading } = useAPIv2(
+    UPDATE_USER,
+    "POST",
+    {
+      body,
+      pathVariables: { id },
+    }
   );
+  return { data, mutate, error, isReady, isLoading };
 };
-const AddGroups = (userId: string, body: any, options?: AxiosRequestConfig) => {
-  return getAxiosClient().post(
-    getAPIPath(serviceAlias, `/users/${userId}/groups`),
-    body,
-    options
+const UpdateUserRole = (id: string, body?: any) => {
+  const { data, mutate, error, isReady, isLoading } = useAPIv2(
+    UPDATE_USER_ROLE,
+    "POST",
+    {
+      body,
+      pathVariables: { id },
+    }
   );
+  return { data, mutate, error, isReady, isLoading };
 };
-const ResendVerificationEmail = (
-  userId: string,
-  body?: any,
-  options?: AxiosRequestConfig
-) => {
-  return getAxiosClient().post(
-    getAPIPath(serviceAlias, `/users/${userId}/resendinvite`),
-    body,
-    options
+const AddGroups = (id: string, body: any) => {
+  const { data, mutate, error, isReady, isLoading } = useAPIv2(
+    ADD_USER_TO_GROUPS,
+    "POST",
+    {
+      body,
+      pathVariables: { id },
+    }
   );
+  return { data, mutate, error, isReady, isLoading };
 };
-// revoking invitation per se is not possible currently, so we will delete the invited user instead. Important to never use this endpoint for active (enabled/disabled) users. Just using this for invites.
-const RevokeInvitation = (
-  userId: string,
-  body?: any,
-  options?: AxiosRequestConfig
-) => {
-  return getAxiosClient().post(
-    getAPIPath(serviceAlias, `/users/${userId}/delete`),
-    body,
-    options
+const ResendVerificationEmail = (id: string) => {
+  const { data, mutate, error, isReady, isLoading } = useAPIv2(
+    RESEND_INVITATION_EMAIL,
+    "POST",
+    {
+      pathVariables: { id },
+    }
   );
+  return { data, mutate, error, isReady, isLoading };
 };
-const InviteUsers = (body?: any, options?: AxiosRequestConfig) =>
-  getAxiosClient().post(getAPIPath(serviceAlias, `/users`), body, options);
+const RevokeInvitation = (id: string) => {
+  const { data, mutate, error, isReady, isLoading } = useAPIv2(
+    REVOKE_INVITATION,
+    "POST",
+    {
+      pathVariables: { id },
+    }
+  );
+  return { data, mutate, error, isReady, isLoading };
+};
+const InviteUsers = (body: any) => {
+  const { data, mutate, error, isReady, isLoading } = useAPIv2(
+    INVITE_USERS,
+    "POST",
+    {
+      body,
+    }
+  );
+  return { data, mutate, error, isReady, isLoading };
+};
 
 export const User = {
   ListV2,
@@ -124,5 +145,5 @@ export const User = {
   ResendVerificationEmail,
   RevokeInvitation,
   InviteUsers,
-  UpdateUserV2,
+  UpdateUserV1,
 };

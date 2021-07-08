@@ -8,14 +8,17 @@ import group from "~/api/keyMaps/auth/group";
 import avatar from "~/api/keyMaps/auth/avatar";
 import connection from "~/api/keyMaps/auth/connection";
 import glossary from "~/api/keyMaps/glossary";
+import health from "~/api/keyMaps/health";
 import apiKeys from "~/api/keyMaps/auth/apiKeys";
 import role from "~/api/keyMaps/auth/role";
 import search from "~/api/keyMaps/search";
 import classification from "~/api/keyMaps/atlas/classification";
 import image from "~/api/keyMaps/auth/image";
+import policies from "~/api/keyMaps/auth/policies";
 
 export default {
   ...asset,
+  ...health,
   ...user,
   ...tenant,
   ...glossary,
@@ -29,4 +32,5 @@ export default {
   ...avatar,
   ...search,
   ...image,
+  ...policies,
 };

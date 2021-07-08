@@ -8,7 +8,15 @@
         <div class="flex flex-col w-full">
           <div class="flex items-center justify-between mb-0">
             <p
-              class="mb-0 font-semibold leading-none tracking-wide truncate  text-primary-500 hover:underline"
+              class="
+                mb-0
+                font-semibold
+                leading-none
+                tracking-wide
+                truncate
+                text-primary
+                hover:underline
+              "
             >
               {{ title(item) }}
             </p>
@@ -56,10 +64,9 @@
             }}</span>
             rows,
           </span>
-          <span
-            class="font-bold tracking-wide cursor-pointer text-primary-500"
-            >{{ columnCount(item, true) }}</span
-          >
+          <span class="font-bold tracking-wide cursor-pointer text-primary">{{
+            columnCount(item, true)
+          }}</span>
           cols
         </p>
       </div>
@@ -91,7 +98,23 @@
       >
         <div
           v-if="user?.length > 0"
-          class="flex items-center px-2 py-1 mb-1 leading-none text-blue-500 align-middle transition-all bg-blue-500 rounded-md cursor-pointer  bg-opacity-10 hover:bg-opacity-100 hover:text-white"
+          class="
+            flex
+            items-center
+            px-2
+            py-1
+            mb-1
+            leading-none
+            text-blue-500
+            align-middle
+            transition-all
+            bg-blue-500
+            rounded-md
+            cursor-pointer
+            bg-opacity-10
+            hover:bg-opacity-100
+            hover:text-white
+          "
         >
           <fa
             icon="fal user"
@@ -106,7 +129,20 @@
       >
         <div
           v-if="group?.length > 0"
-          class="flex items-center px-2 py-1 mb-1 leading-none text-blue-600 align-middle bg-blue-100 rounded-md cursor-pointer  hover:text-primary-500"
+          class="
+            flex
+            items-center
+            px-2
+            py-1
+            mb-1
+            leading-none
+            text-blue-600
+            align-middle
+            bg-blue-100
+            rounded-md
+            cursor-pointer
+            hover:text-primary
+          "
         >
           <fa icon="fal user-friends" class="mr-1 leading-none pushtop"></fa>
           <div>{{ group }}</div>

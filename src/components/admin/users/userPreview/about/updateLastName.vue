@@ -4,15 +4,31 @@
       <div class="flex flex-row items-center cursor-pointer group">
         <p class="mb-0 text-xs text-gray-500">
           Last Name
-          <span v-if="updateSuccess" class="ml-1">
-            <i class="text-green-600 far fa-check" />
-          </span>
+          <fa
+            icon="fal check"
+            class="ml-1 text-green-600 cursor-pointer"
+            v-if="updateSuccess"
+          ></fa>
         </p>
         <p
           v-if="!isUpdate && allowUpdate"
-          class="mb-0 ml-2 text-xs leading-none transition duration-300 ease-in-out delay-100 opacity-0 text-primary-500 group-hover:opacity-100"
+          class="
+            mb-0
+            ml-2
+            text-xs
+            leading-none
+            transition
+            duration-300
+            ease-in-out
+            delay-100
+            opacity-0
+            text-gray
+            group-hover:opacity-100
+          "
           @click="onUpdate"
-        >edit</p>
+        >
+          edit
+        </p>
       </div>
       <div v-if="isUpdate" class="flex flex-col">
         <a-textarea
@@ -29,25 +45,29 @@
               class="px-2 mr-1"
               :disabled="updateLoading"
               @click="handleUpdate"
-            >update</a-button>
-            <a-button type="link" size="small" class="p-0" @click="onCancel">cancel</a-button>
+              >update</a-button
+            >
+            <a-button type="link" size="small" class="p-0" @click="onCancel"
+              >cancel</a-button
+            >
           </div>
           <div>
             <a-spin v-if="updateLoading" size="small" />
-            <a-popover v-else-if="updateErrorMessage || updateSuccess" placement="bottom">
+            <a-popover
+              v-else-if="updateErrorMessage || updateSuccess"
+              placement="bottom"
+            >
               <template #content>{{ updateErrorMessage }}</template>
-              <i
-                class
-                :class="{
-                  'far fa-warning text-red-600 cursor-pointer': updateErrorMessage,
-                  'far fa-check text-green-600': updateSuccess,
-                }"
-              />
+              <fa
+                icon="fal exclamation-circle"
+                class="text-red-600 cursor-pointer"
+                v-if="updateErrorMessage"
+              ></fa>
             </a-popover>
           </div>
         </div>
       </div>
-      <div v-else class="text-gray-500 capitalize">{{ selectedUser.last_name }}</div>
+      <div v-else class="text-gray-500">{{ selectedUser.last_name }}</div>
     </div>
   </div>
 </template>
@@ -55,8 +75,7 @@
 <script lang="ts">
 import { defineComponent, ref, watch } from "vue";
 import { User } from "~/api/auth/user";
-import { message } from "ant-design-vue";
-import axios, { CancelTokenSource } from "axios";
+
 export default defineComponent({
   name: "UpdateLastName",
   props: {
@@ -71,7 +90,7 @@ export default defineComponent({
   },
   setup(props, context) {
     let isUpdate = ref(false);
-    let lastNameLocal = ref("");
+    let lastNameLocal = ref(props.selectedUser.last_name);
     let updateErrorMessage = ref("");
     let updateSuccess = ref(false);
     let updateLoading = ref(false);
@@ -85,30 +104,27 @@ export default defineComponent({
     const requestPayload = ref();
     const handleUpdate = () => {
       requestPayload.value = {
-        firstName: props.selectedUser.first_name,
         lastName: lastNameLocal.value,
-        attributes: {
-          designation: [props.selectedUser.attributes.designation],
-          mobile_number: [props.selectedUser.attributes.mobile_number],
-        },
       };
-      const { data, isLoading, error } = User.UpdateUserV2(
+      updateLoading.value = true;
+      const { data, isReady, error } = User.UpdateUser(
         props.selectedUser.id,
-        requestPayload.value
+        requestPayload
       );
-      watch([data, isLoading, error], () => {
-        updateLoading = isLoading;
-        if (data) {
+      watch([data, isReady, error], () => {
+        if (isReady && !error.value) {
           context.emit("updatedUser");
+          updateLoading.value = false;
           updateSuccess.value = true;
           updateErrorMessage.value = "";
           isUpdate.value = false;
           setTimeout(() => {
             updateSuccess.value = false;
-          }, 1000);
+          }, 2000);
         } else {
           updateErrorMessage.value =
             "Unable to update last name, please try again.";
+          updateLoading.value = false;
         }
       });
     };

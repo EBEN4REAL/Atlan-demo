@@ -1,4 +1,6 @@
 import { useAPI } from "~/api/useAPI";
+import { useAPI as useAPIV2 } from "~/api/useAPIv2";
+import { Ref } from "vue";
 
 const getClassificationList = ({ cache }: { cache: boolean }) => {
   return useAPI("GET_CLASSIFICATION_LIST", "GET", {
@@ -42,18 +44,42 @@ const updateClassification = ({
 
 const archiveClassification = ({
   cache,
-  classificationName,
+  typeName,
+  entityGuid,
 }: {
-  cache: boolean;
-  classificationName: string;
+  cache: string | undefined;
+  typeName: string;
+  entityGuid: string;
 }) => {
-  return useAPI("ARCHIVE_CLASSIFICATION", "DELETE", {
+  return useAPIV2("ARCHIVE_CLASSIFICATION", "DELETE", {
     cache,
-    pathVariables: { classificationName },
+    pathVariables: { typeName, entityGuid },
   });
 };
 
+const linkClassification = ({
+  cache,
+  entityGuid,
+  payload,
+}: {
+  cache: string | undefined;
+  entityGuid: boolean;
+  payload: Ref<{
+    attributes: Object;
+    propagate: boolean;
+    removePropagationsOnEntityDelete: boolean;
+    typeName: string;
+    validityPeriods: Array<any>;
+  }>;
+}) => {
+  return useAPIV2("LINK_CLASSIFICATION", "POST", {
+    cache,
+    body: payload,
+    pathVariables: { entityGuid },
+  });
+};
 export const Classification = {
+  linkClassification,
   getClassificationList,
   createClassification,
   updateClassification,

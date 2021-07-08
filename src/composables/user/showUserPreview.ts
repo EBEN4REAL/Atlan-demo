@@ -3,8 +3,7 @@ const showPreview = ref(false);
 const userId = ref("");
 const username = ref("");
 const uniqueAttribute = ref("");
-const userUpdated = ref(false);
-const emitPayload = ref({});
+
 const allTabs = [
   {
     //tab name
@@ -44,7 +43,7 @@ const finalTabs = computed(() => {
   return allTabs.filter((tab) => !blacklistedTabs.value.includes(tab.key));
 });
 
-export function usePreview() {
+export function useUserPreview() {
   const showUserPreview = (config?: { allowed?: any; blacklisted?: any }) => {
     blacklistedTabs.value = [...(config?.blacklisted || [])];
     allowedTabs.value = [...(config?.allowed || [])];
@@ -77,10 +76,7 @@ export function usePreview() {
   const setBlackListedTabs = (tabs) => {
     blacklistedTabs.value = [...tabs];
   };
-  const setUserUpdatedFlag = (value, payload = {}) => {
-    userUpdated.value = value;
-    emitPayload.value = payload;
-  };
+
   return {
     showPreview,
     userId,
@@ -92,8 +88,5 @@ export function usePreview() {
     finalTabs,
     showUserPreview,
     closePreview,
-    userUpdated,
-    setUserUpdatedFlag,
-    emitPayload,
   };
 }

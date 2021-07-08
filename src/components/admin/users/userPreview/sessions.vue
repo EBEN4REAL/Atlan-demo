@@ -2,11 +2,11 @@
   <div>
     <div class="flex justify-end">
       <a-button
-        :disabled="!sessionList || !sessionList.length"
         class="mb-3"
         ghost
         type="danger"
         @click="showDeleteAllSessionsConfirm"
+        :loading="signOutAllSessionsLoading"
       >
         <i class="mr-2 fa fa-sign-out" />Sign out all sessions
       </a-button>
@@ -48,7 +48,7 @@
 </template>
   
 <script lang="ts">
-import { defineComponent, computed, reactive, ref } from "vue";
+import { defineComponent, computed, reactive, ref, watch } from "vue";
 import { useTimeAgo } from "@vueuse/core";
 import { User } from "~/api/auth/user";
 import swrvState from "~/composables/utils/swrvState";
@@ -73,8 +73,7 @@ export default defineComponent({
       dedupingInterval: 1,
     });
     const { state, STATES } = swrvState(data, error, isValidating);
-    const signOutAllSessionsLoading = ref(false);
-    const signOutSessionByIdLoading = ref(false);
+    let signOutAllSessionsLoading = ref(false);
     let sessionList = computed(() => {
       if (data.value && data.value.length) {
         return data.value.map((session: any) => {
@@ -89,29 +88,42 @@ export default defineComponent({
       }
       return [];
     });
-    const signOutAllSessions = async () => {
-      try {
-        signOutAllSessionsLoading.value = true;
-        await User.SignOutAllSessions(props.selectedUser.id);
-        await fetchUserSessions();
-        signOutAllSessionsLoading.value = false;
-        message.success("All sessions deleted");
-      } catch (error) {
-        signOutAllSessionsLoading.value = false;
-        message.error("Unable to end all sessions, please try again");
-      }
+    const signOutAllSessions = () => {
+      const {
+        data,
+        isReady,
+        error,
+        isLoading: isLoading,
+      } = User.SignOutAllSessions(props.selectedUser.id);
+      watch(
+        [data, isReady, error, isLoading],
+        () => {
+          signOutAllSessionsLoading.value = isLoading.value;
+          if (isReady && !error.value && !isLoading.value) {
+            fetchUserSessions();
+            message.success("All sessions deleted");
+          } else if (error && error.value) {
+            message.error("Unable to end all sessions, please try again");
+          }
+        },
+        { immediate: true }
+      );
     };
-    const signOutUserSession = async (sessionId: string) => {
-      try {
-        signOutSessionByIdLoading.value = true;
-        await User.SignOutSessionById(sessionId);
-        await fetchUserSessions();
-        signOutSessionByIdLoading.value = false;
-        message.success("User session ended");
-      } catch (error) {
-        signOutSessionByIdLoading.value = false;
-        message.error("Unable to sign user out, please try again");
-      }
+    const signOutUserSession = (sessionId: string) => {
+      const {
+        data,
+        isReady,
+        error,
+        isLoading: signOutSessionByIdLoading,
+      } = User.SignOutSessionById(sessionId);
+      watch([data, isReady, error, signOutSessionByIdLoading], () => {
+        if (isReady && !error.value && !signOutSessionByIdLoading.value) {
+          fetchUserSessions();
+          message.success("User session ended");
+        } else if (error && error.value) {
+          message.error("Unable to sign user out, please try again");
+        }
+      });
     };
     const showDeleteAllSessionsConfirm = () => {
       Modal.confirm({
@@ -152,18 +164,7 @@ export default defineComponent({
         }
       }
     };
-
-    return {
-      state,
-      STATES,
-      sessionList,
-      showDeleteAllSessionsConfirm,
-      handleTableChange,
-      signOutUserSession,
-    };
-  },
-  computed: {
-    columns() {
+    const columns = computed(() => {
       return [
         {
           title: "Last Accessed",
@@ -193,7 +194,17 @@ export default defineComponent({
           slots: { customRender: "actions" },
         },
       ];
-    },
+    });
+    return {
+      state,
+      STATES,
+      sessionList,
+      showDeleteAllSessionsConfirm,
+      handleTableChange,
+      signOutUserSession,
+      columns,
+      signOutAllSessionsLoading,
+    };
   },
 });
 </script>

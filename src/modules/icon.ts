@@ -59,15 +59,15 @@ import { faPencil } from "@fortawesome/pro-light-svg-icons/faPencil";
 import { faEnvelope } from "@fortawesome/pro-light-svg-icons/faEnvelope";
 import { faArrowCircleRight } from "@fortawesome/pro-light-svg-icons/faArrowCircleRight";
 
-import { faUserTag } from "@fortawesome/pro-light-svg-icons/faUserTag"
+import { faUserTag } from "@fortawesome/pro-light-svg-icons/faUserTag";
 
-import { faBell } from "@fortawesome/pro-light-svg-icons/faBell"
+import { faBell } from "@fortawesome/pro-light-svg-icons/faBell";
 
-import { faGift } from "@fortawesome/pro-light-svg-icons/faGift"
+import { faGift } from "@fortawesome/pro-light-svg-icons/faGift";
 
-import { faTag } from "@fortawesome/pro-light-svg-icons/faTag"
-import { faRobot } from "@fortawesome/pro-light-svg-icons/faRobot"
-import { faChartNetwork } from "@fortawesome/pro-light-svg-icons/faChartNetwork"
+import { faTag } from "@fortawesome/pro-light-svg-icons/faTag";
+import { faRobot } from "@fortawesome/pro-light-svg-icons/faRobot";
+import { faChartNetwork } from "@fortawesome/pro-light-svg-icons/faChartNetwork";
 
 import { faTrashAlt } from "@fortawesome/pro-light-svg-icons/faTrashAlt";
 import { faTabletAlt } from "@fortawesome/pro-light-svg-icons/faTabletAlt";
@@ -83,7 +83,6 @@ import { faCopy } from "@fortawesome/pro-light-svg-icons/faCopy";
 import { faUserSlash } from "@fortawesome/pro-light-svg-icons/faUserSlash";
 import { faUserCheck } from "@fortawesome/pro-light-svg-icons/faUserCheck";
 import { faSlidersHSquare } from "@fortawesome/pro-light-svg-icons/faSlidersHSquare";
-
 
 library.add(
   faArrowUp,
@@ -158,8 +157,7 @@ library.add(
   faUserSlash,
   faUserCheck,
   faUserShield,
-  faSlidersHSquare,
-
+  faSlidersHSquare
 );
 
 // Solid Icons
@@ -183,14 +181,13 @@ import { faCode } from "@fortawesome/pro-solid-svg-icons/faCode";
 import { faQuoteLeft } from "@fortawesome/pro-solid-svg-icons/faQuoteLeft";
 import { faUndo } from "@fortawesome/pro-solid-svg-icons/faUndo";
 import { faRedo } from "@fortawesome/pro-solid-svg-icons/faRedo";
-import { faLink as faSolidLink} from "@fortawesome/pro-solid-svg-icons/faLink";
+import { faLink as faSolidLink } from "@fortawesome/pro-solid-svg-icons/faLink";
 // import { faPencil as faPencilDark} from "@fortawesome/pro-solid-svg-icons/faPencil";
 import { faSquare } from "@fortawesome/pro-solid-svg-icons/faSquare";
 import { faAlignLeft } from "@fortawesome/pro-solid-svg-icons/faAlignLeft";
 import { faAlignCenter } from "@fortawesome/pro-solid-svg-icons/faAlignCenter";
 import { faAlignRight } from "@fortawesome/pro-solid-svg-icons/faAlignRight";
 import { faFileImage } from "@fortawesome/pro-solid-svg-icons/faFileImage";
-
 
 library.add(
   faBadgeCheck,

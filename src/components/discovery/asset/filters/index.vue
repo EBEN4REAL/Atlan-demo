@@ -1,6 +1,3 @@
-
-
-
 <template>
   <a-collapse
     v-model:activeKey="activeKey"
@@ -42,7 +39,7 @@
     </a-collapse-panel>
   </a-collapse>
 </template>
-    
+
 <script lang="ts">
 import { defineAsyncComponent, defineComponent, ref } from "vue";
 import { List } from "./filters";
@@ -53,8 +50,11 @@ export default defineComponent({
   components: {
     Status: defineAsyncComponent(() => import("@common/facets/status.vue")),
     Owners: defineAsyncComponent(() => import("@common/facets/owners.vue")),
-    Advanced: defineAsyncComponent(
-      () => import("@common/facets/advanced/index.vue")
+    Classifications: defineAsyncComponent(() =>
+      import("@common/facets/classifications.vue")
+    ),
+    Advanced: defineAsyncComponent(() =>
+      import("@common/facets/advanced/index.vue")
     ),
   },
   props: {},
@@ -175,9 +175,7 @@ export default defineComponent({
   },
 });
 </script>
-    
-    
-    
+
 <style lang="less" module>
 .filter {
   :global(.ant-collapse-item) {
@@ -199,4 +197,3 @@ export default defineComponent({
   }
 }
 </style>
-    

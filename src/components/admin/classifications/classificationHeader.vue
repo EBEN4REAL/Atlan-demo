@@ -4,7 +4,9 @@
       <div class="mb-3 d-flex justify-content-between">
         <div class="d-flex justify-content-start">
           <div>
-            <p class="mb-2 text-sm text-base text-gray-500 text-uppercase">CLASSIFICATION</p>
+            <p class="mb-2 text-sm text-base text-gray-500 text-uppercase">
+              CLASSIFICATION
+            </p>
             <p class="flex items-center mb-2 text-xl text-gray-600">
               <span class="flex items-center mr-2 text-2xl">
                 <fa icon="fal shield text-gray-500  " class="mr-2" />
@@ -16,28 +18,34 @@
                 Created {{ createdAt }} by
                 <span
                   class="underline cursor-pointer"
-                  @click="()=>handleClickUser(createdBy)"
-                >{{ createdBy }}</span>
+                  @click="() => handleClickUser(createdBy)"
+                  >{{ createdBy }}</span
+                >
               </span>
               <span v-if="updatedAt">
                 <span class="px-1">·</span>
                 Updated {{ updatedAt }}
                 <span
                   class="underline cursor-pointer"
-                  @click="()=>handleClickUser(updatedBy)"
-                >by {{ updatedBy }}</span>
+                  @click="() => handleClickUser(updatedBy)"
+                  >by {{ updatedBy }}</span
+                >
               </span>
             </div>
           </div>
         </div>
       </div>
       <div class="mt-3">
-        <p class="mb-1 text-xs text-gray-400 uppercase text-muted">Description</p>
+        <p class="mb-1 text-xs text-gray-400 uppercase text-muted">
+          Description
+        </p>
         <p class="mb-0 text-xs text-gray-500">
-          <span v-if="!selectedClassification.description">Click to add description</span>
-          <span
-            v-else-if="selectedClassification.description"
-          >{{ selectedClassification.description }}</span>
+          <span v-if="!selectedClassification.description"
+            >Click to add description</span
+          >
+          <span v-else-if="selectedClassification.description">{{
+            selectedClassification.description
+          }}</span>
           <span v-else>No description added</span>
         </p>
       </div>
@@ -48,7 +56,7 @@
         <Dropdown
           :options="classificationDropdownOption"
           :isArrow="false"
-          :variant="'link btn-no-focus text-dark p-0 border-0'"
+          :variant="'link btn-no-focus text-gray p-0 border-0'"
           :no-caret="true"
           right
         ></Dropdown>
@@ -73,7 +81,7 @@ import { defineComponent, computed, ref } from "vue";
 import Dropdown from "~/components/admin/classifications/dropdown.vue";
 import UpdateClassificationModal from "./updateClassificationModal.vue";
 import DeleteClassificationModal from "./deleteClassificationModal.vue";
-import { usePreview } from "~/composables/user/showUserPreview";
+import { useUserPreview } from "~/composables/user/showUserPreview";
 import { useTimeAgo } from "@vueuse/core";
 // import moment from "moment";
 
@@ -189,7 +197,7 @@ export default defineComponent({
       isDeleteClassificationModalOpen.value = false;
     };
     // user preview drawer
-    const { showUserPreview, setUserUniqueAttribute } = usePreview();
+    const { showUserPreview, setUserUniqueAttribute } = useUserPreview();
     const handleClickUser = (username: string) => {
       setUserUniqueAttribute(username, "username");
       showUserPreview({ allowed: ["about"] });

@@ -67,7 +67,7 @@ export default defineComponent({
   @apply bg-gradient-to-b from-primary-600 via-primary-800 to-primary-900    !important;
   .sidebartab {
     :global(.ant-tabs-tab) {
-      @apply text-primary-200 !important;
+      @apply text-primary-muted !important;
       padding: 8px 12px !important;
       max-width: 60px !important;
     }
@@ -89,7 +89,7 @@ export default defineComponent({
       margin-right: 0px !important;
     }
     :global(.ant-tabs-tab-active) {
-      @apply bg-primary-100 bg-opacity-5 text-primary-100 !important;
+      @apply bg-primary-100 bg-opacity-5 text-primary-muted !important;
       transition: background-color 0.2s cubic-bezier(0.645, 0.045, 0.355, 1);
     }
   }
@@ -103,7 +103,7 @@ export default defineComponent({
 
 //   &:global(.ant-menu-inline-collapsed) {
 //     :global(.ant-menu-item) {
-//       @apply text-primary-100 mb-3 rounded-lg ease-in transition-colors text-center text-xl leading-6 !important;
+//       @apply text-primary-muted mb-3 rounded-lg ease-in transition-colors text-center text-xl leading-6 !important;
 //       padding: 8px 0px !important;
 //       margin-left: 6px !important;
 
@@ -111,7 +111,7 @@ export default defineComponent({
 //       height: inherit !important;
 
 //       &:global(.ant-menu-item-selected) {
-//         @apply bg-gray-50 text-primary-500 !important;
+//         @apply bg-gray-50 text-primary !important;
 //       }
 //     }
 //   }

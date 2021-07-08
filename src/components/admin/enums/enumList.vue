@@ -5,7 +5,7 @@
         class="p-3 text-gray-500"
         :class="
           item.guid === selected
-            ? 'border-l-4 border-primary-500 bg-blue-100'
+            ? 'border-l-4 border-primary bg-blue-100'
             : 'bg-white'
         "
       >

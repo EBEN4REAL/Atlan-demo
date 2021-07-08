@@ -1,5 +1,6 @@
 <template>
-  <div class="container h-full mx-auto health-container">
+  <p class="text-2xl text-gray">Health Status</p>
+  <div class="container h-full health-container">
     <div class="relative w-full h-full p-12 pt-16 bg-white rounded shadow">
       <div class="flex flex-col items-center mb-6">
         <Fa
@@ -16,7 +17,14 @@
         </span>
       </div>
       <div
-        class="grid grid-cols-2 p-6 mb-20  lg:grid-cols-3 xl:grid-cols-3 gap-x-12 gap-y-6"
+        class="
+          grid grid-cols-2
+          p-6
+          mb-20
+          lg:grid-cols-3
+          xl:grid-cols-3
+          gap-x-12 gap-y-6
+        "
       >
         <div
           v-for="service in servicesNames"

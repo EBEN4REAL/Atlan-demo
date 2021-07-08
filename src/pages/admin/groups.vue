@@ -1,6 +1,6 @@
 <template>
   <div>
-    <p class="mb-2 text-xl font-normal tracking-tight">Manage Groups</p>
+    <p class="text-2xl text-gray">Manage Groups</p>
     <GroupList></GroupList>
   </div>
 </template>

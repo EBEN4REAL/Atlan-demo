@@ -1,18 +1,23 @@
 <template>
   <div class="">
-    <!-- <div
-      v-if="loading"
-      class="flex items-center flex-column justify-content-center font-size-h4"
-      style="min-height: 30rem"
+    <div
+      v-if="isLoading"
+      class="flex items-center place-content-center"
+      style="min-height: 40rem"
     >
-      <loader loadingText="Fetching Business Metadata..." textLarge></loader>
-    </div> -->
+      <div class="">
+        <span class=""
+          >Loading...
+          <i class="fal circle-notch spin 5x"></i>
+        </span>
+      </div>
+    </div>
     <div
       class="grid grid-cols-3 gap-7"
-      v-if="finalBusinessMetadataList && finalBusinessMetadataList.length"
+      v-else-if="finalBusinessMetadataList && finalBusinessMetadataList.length"
     >
       <div class="col-span-3">
-        Business Metadata
+        <p class="text-2xl text-gray mb-0">Business Metadata</p>
       </div>
       <div class="col-span-1">
         <div class="flex justify-between gap-5 mb-5">
@@ -35,7 +40,14 @@
                 <span
                   v-else
                   @click="clearSearchText"
-                  class="bg-white border-0 cursor-pointer input-group-text text-red roundehidden"
+                  class="
+                    bg-white
+                    border-0
+                    cursor-pointer
+                    input-group-text
+                    text-red
+                    roundehidden
+                  "
                 >
                   <i class="far fa-times-circle font-size-h4"></i>
                 </span>
@@ -49,10 +61,12 @@
             >New
           </a-button>
         </div>
-        <div style="height: calc(100vh - 9rem); overflow-y: scroll;">
+        <div style="height: calc(100vh - 9rem); overflow-y: scroll">
           <BusinessMetadataList
             :finalList="
-              searchText ? searchedBusinessMetadataList : finalBusinessMetadataList
+              searchText
+                ? searchedBusinessMetadataList
+                : finalBusinessMetadataList
             "
             :updatedBm="updatedBm"
             :selectedBm="selectedBm"
@@ -74,7 +88,7 @@
           @removeNewBm="discardNewBm"
           @afterArchive="handleAfterArchive"
           @clearNewBm="newBm = null"
-          style="height: calc(100vh - 6rem); overflow: hidden;"
+          style="height: calc(100vh - 6rem); overflow: hidden"
         />
       </div>
     </div>
@@ -83,16 +97,21 @@
       class="flex flex-col items-center place-content-center"
       style="min-height: 50rem"
     >
-      <img :src="EmptyBusinessMetadata" alt="Business Metadata Empty" class="mb-3" />
+      <img
+        :src="EmptyBusinessMetadata"
+        alt="Business Metadata Empty"
+        class="mb-3"
+      />
       <div class="font-bold">No business metadata created yet! 💼</div>
       <span class="mb-3 font-size-14"
-        >Business metadata helps to power asset discovery and access control.</span
+        >Business metadata helps to power asset discovery and access
+        control.</span
       >
       <a-button
         class="flex items-center font-bold border-blue text-blue"
         @click="onCreateNewBmClick"
       >
-        <i class=" far fa-plus"></i>Add Business Metadata
+        <i class="far fa-plus"></i>Add Business Metadata
       </a-button>
     </div>
   </div>
@@ -114,6 +133,7 @@ import { useBusinessMetadata } from "@/admin/business-metadata/composables/useBu
 import differenceWith from "lodash/differenceWith";
 
 import { ref, defineComponent, computed, nextTick, watch } from "vue";
+import { useHead } from "@vueuse/head";
 
 const DEFAULT_BM = {
   // TODO changes when UUID4 support
@@ -131,8 +151,12 @@ export default defineComponent({
     const {
       data: bmResponse,
       error,
-      isLoading: loading,
+      isLoading,
     } = useBusinessMetadata.getBMList();
+
+    useHead({
+      title: computed(() => "Business Metadata"),
+    });
 
     // * Data
     let selectedBm = ref(null);
@@ -151,7 +175,7 @@ export default defineComponent({
         bmResponse.value.businessMetadataDefs.forEach(
           (bm: { attributeDefs: any[]; name: any }) => {
             if (bm.attributeDefs && bm.attributeDefs.length) {
-              bm.attributeDefs.forEach(attr => {
+              bm.attributeDefs.forEach((attr) => {
                 reqBmAttrNames.push(`${bm.name}.${attr.name}`);
               });
             }
@@ -172,11 +196,11 @@ export default defineComponent({
         bmResponse?.value?.businessMetadataDefs &&
         bmResponse.value.businessMetadataDefs.length
       ) {
-        bmResponse.value.businessMetadataDefs.forEach(bm => {
+        bmResponse.value.businessMetadataDefs.forEach((bm) => {
           if (bm.attributeDefs && bm.attributeDefs.length && !bm.isArchived) {
             const reqBmAttrs: any[] = [];
             const selectedBmCollection = appliedBmAttributesToAsset.find(
-              c => c.bm === bm.name
+              (c) => c.bm === bm.name
             );
             let attributesList = [...bm.attributeDefs];
             if (selectedBmCollection && selectedBmCollection.attributes) {
@@ -186,7 +210,7 @@ export default defineComponent({
                 (a: { name: any }, b: { name: any }) => a.name === b.name
               );
             }
-            attributesList.forEach(attr => {
+            attributesList.forEach((attr) => {
               if (attr.options && attr.options.applicableEntityTypes) {
                 try {
                   const applicableEntityTypes = JSON.parse(
@@ -195,7 +219,8 @@ export default defineComponent({
                   if (
                     Array.isArray(applicableEntityTypes) &&
                     applicableEntityTypes.some(
-                      item => types.includes(item) || item.includes("AtlanAsset")
+                      (item) =>
+                        types.includes(item) || item.includes("AtlanAsset")
                     )
                   ) {
                     reqBmAttrs.push(attr);
@@ -223,9 +248,9 @@ export default defineComponent({
         bmResponse?.value?.businessMetadataDefs &&
         bmResponse.value.businessMetadataDefs.length
       ) {
-        bmResponse.value.businessMetadataDefs.forEach(bm => {
+        bmResponse.value.businessMetadataDefs.forEach((bm) => {
           if (bm.attributeDefs && bm.attributeDefs.length && !bm.isArchived) {
-            bm.attributeDefs.forEach(attr => {
+            bm.attributeDefs.forEach((attr) => {
               reqBmAttrNames.push(`${bm.name}.${attr.name}`);
             });
           }
@@ -235,25 +260,23 @@ export default defineComponent({
     };
 
     const businessMetadataAppendToList = (value: { guid: any }) => {
-      bmResponse.value.businessMetadataDefs = bmResponse.value.businessMetadataDefs.map(
-        item => {
+      bmResponse.value.businessMetadataDefs =
+        bmResponse.value.businessMetadataDefs.map((item) => {
           if (item.guid === value.guid) {
             return { ...item, ...value };
           }
           return item;
-        }
-      );
+        });
     };
 
     const updateBusinessMetadataInList = (value: { guid: any }) => {
-      bmResponse.value.businessMetadataDefs = bmResponse.value.businessMetadataDefs.map(
-        (item: { guid: any }) => {
+      bmResponse.value.businessMetadataDefs =
+        bmResponse.value.businessMetadataDefs.map((item: { guid: any }) => {
           if (item.guid === value.guid) {
             return { ...item, ...value };
           }
           return item;
-        }
-      );
+        });
     };
     // !!!!!!!
 
@@ -272,7 +295,9 @@ export default defineComponent({
       searchText.value = "";
     };
     const discardNewBm = () => {
-      const reqIndex = finalBusinessMetadataList.value.findIndex(bm => bm.guid === "new");
+      const reqIndex = finalBusinessMetadataList.value.findIndex(
+        (bm) => bm.guid === "new"
+      );
       if (reqIndex !== -1) {
         newBm.value = null;
         selectedBm.value = finalBusinessMetadataList.value.length
@@ -280,7 +305,7 @@ export default defineComponent({
           : null;
       }
     };
-    const onUpdate = bm => {
+    const onUpdate = (bm) => {
       if (bm.guid === "new") {
         newBm.value = bm;
       } else {
@@ -289,15 +314,22 @@ export default defineComponent({
     };
     const handleAfterArchive = () => {
       nextTick(() => {
-        if (finalBusinessMetadataList.value && finalBusinessMetadataList.value.length) {
-          handleSelectBm(JSON.parse(JSON.stringify(finalBusinessMetadataList.value[0])));
+        if (
+          finalBusinessMetadataList.value &&
+          finalBusinessMetadataList.value.length
+        ) {
+          handleSelectBm(
+            JSON.parse(JSON.stringify(finalBusinessMetadataList.value[0]))
+          );
         } else {
           handleSelectBm(null);
         }
       });
     };
     const onCreateNewBmClick = () => {
-      const reqIndex = finalBusinessMetadataList.value.findIndex(bm => bm.guid === "new");
+      const reqIndex = finalBusinessMetadataList.value.findIndex(
+        (bm) => bm.guid === "new"
+      );
       if (reqIndex === -1) {
         const newBmTemplate = getNewBmTemplate();
         newBm.value = JSON.parse(JSON.stringify(newBmTemplate));
@@ -312,22 +344,25 @@ export default defineComponent({
     const businessMetadataList = computed(() => {
       if (bmResponse?.value?.businessMetadataDefs)
         return bmResponse.value.businessMetadataDefs.map(
-          (bm: { options: { displayName: any }; name: any; attributeDefs: any[] }) => ({
+          (bm: {
+            options: { displayName: any };
+            name: any;
+            attributeDefs: any[];
+          }) => ({
             ...bm,
             options: {
               ...bm?.options,
-              displayName: bm?.options?.displayName ? bm.options.displayName : bm.name,
+              displayName: bm?.options?.displayName
+                ? bm.options.displayName
+                : bm.name,
             },
-            attributeDefs: bm.attributeDefs.map(a => {
+            attributeDefs: bm.attributeDefs.map((a) => {
               if (a.options?.displayName?.length) return a;
               return { ...a, options: { ...a.options, displayName: a.name } };
             }),
           })
         );
       return [];
-    });
-    const businessMetadataListLoading = computed(() => {
-      return !businessMetadataList && !businessMetadataListError;
     });
 
     const businessMetadataListError = computed(() => {
@@ -338,7 +373,9 @@ export default defineComponent({
     const finalBusinessMetadataList = computed(() => [
       ...(newBm.value ? [newBm.value] : []),
       ...(businessMetadataList
-        ? businessMetadataList.value.filter((bm: { isArchived: any }) => !bm.isArchived)
+        ? businessMetadataList.value.filter(
+            (bm: { isArchived: any }) => !bm.isArchived
+          )
         : []),
     ]);
     const searchedBusinessMetadataList = computed(() => {
@@ -354,14 +391,16 @@ export default defineComponent({
 
     watch(finalBusinessMetadataList, (n, o) => {
       if (n.length && !selectedBm.value) {
-        selectedBm.value = JSON.parse(JSON.stringify(finalBusinessMetadataList.value[0]));
+        selectedBm.value = JSON.parse(
+          JSON.stringify(finalBusinessMetadataList.value[0])
+        );
       }
     });
 
     return {
       businessMetadataList,
       finalBusinessMetadataList,
-      loading: businessMetadataListLoading,
+      isLoading,
       businessMetadataListError,
       searchedBusinessMetadataList,
       selectedBm,

@@ -108,12 +108,11 @@ export function useHealth() {
       });
     } else {
       try {
-        if (typeof userServicesError.value?.error?.response?.data) {
-          const errorData = userServicesError.value.error.response.data;
+        if (typeof userServicesError.value?.response?.data) {
+          const errorData = userServicesError.value.response.data;
+          // console.log(errorData);
           setServiceStatus("user", SERVICE_STATES.down);
-          const userServicesNames = getUserServicesNames(
-            userServicesError.value
-          );
+          const userServicesNames = getUserServicesNames(errorData);
           userServicesNames.forEach((serviceName) => {
             setServiceStatus(
               serviceName,

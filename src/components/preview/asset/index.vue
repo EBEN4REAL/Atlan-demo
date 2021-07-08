@@ -24,11 +24,11 @@
         v-model:activeKey="activeKey"
         tabPosition="right"
       >
-        <a-tab-pane :key="item.id" v-for="item in filteredTabList">
+        <a-tab-pane :key="filterItem.id" v-for="filterItem in filteredTabList">
           <template #tab>
-            <a-tooltip :title="item.description" placement="right">
+            <a-tooltip :title="filterItem.description" placement="right">
               <p class="mb-0 text-center">
-                <fa :icon="item.icon" class="mr-1" />
+                <fa :icon="filterItem.icon" class="mr-1" />
               </p> </a-tooltip
           ></template>
           <div class="overflow-y-auto">
@@ -41,13 +41,15 @@
     </div>
   </div>
 </template>
-        
+
 <script lang="ts">
-import { defineAsyncComponent } from "vue";
+import { defineAsyncComponent, watch } from "vue";
 import { computed, defineComponent, ref } from "vue";
 import AssetMixin from "~/mixins/asset";
 // import PreviewTabs from "./tabs/index.vue";
 import { List } from "./list";
+import { useDiscoveryStore } from "~/pinia/discovery";
+import { Policies } from "~/api/auth/policies";
 
 export default defineComponent({
   mixins: [AssetMixin],
@@ -65,11 +67,35 @@ export default defineComponent({
       },
     },
   },
-  setup() {
+  setup(props) {
+    // const store = useDiscoveryStore();
     const activeKey = ref("overview");
     const filteredTabList = computed(() => {
       return List;
     });
+
+    /*Todo: uncomment it after the evaluate/access endpoint is added to user service */
+    // const params = {
+    //   typeName: props?.item.typeName,
+    //   entityGuid: props?.item.guid,
+    // };
+    // const {
+    //   data: accessLevelData,
+    //   error: accessLevelError,
+    // } = Policies.evaluateAssetAccess({
+    //   cache: false,
+    //   body: params,
+    // });
+
+    // watch([accessLevelData, accessLevelError], () => {
+    //   if (accessLevelData.value && accessLevelError.value != undefined) {
+    //     store.selectedAsset.accessLevel = accessLevelData.value.accessType;
+    //     console.log(accessLevelData.value, "accessLevel");
+    //   } else {
+    //     console.log("Access level access api fail");
+    //   }
+    // });
+
     return {
       activeKey,
       filteredTabList,

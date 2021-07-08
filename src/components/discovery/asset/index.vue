@@ -1,6 +1,3 @@
-
-
-
 <template>
   <div
     class="hidden h-full pt-6 pl-4 bg-white  sm:block sm:col-span-4 md:col-span-2 sm"
@@ -113,7 +110,7 @@
     </div>
   </div>
 </template>
-      
+
 <script lang="ts">
 import { computed, defineComponent, reactive, ref, watch } from "vue";
 
@@ -138,6 +135,7 @@ import { useDebounceFn } from "@vueuse/core";
 import { Components } from "~/api/atlas/client";
 import { SearchParameters } from "~/types/atlas/attributes";
 import { BaseAttributes, BasicSearchAttributes } from "~/constant/projection";
+import { useDiscoveryStore } from "~/pinia/discovery";
 
 export default defineComponent({
   name: "HelloWorld",
@@ -160,6 +158,8 @@ export default defineComponent({
   },
   emits: ["preview"],
   setup(props, { emit }) {
+    // initializing the discovery store
+    const store = useDiscoveryStore();
     let filterMode = ref("custom");
 
     const now = ref(false);
@@ -234,10 +234,18 @@ export default defineComponent({
       isAggregate,
       assetTypeMap,
     } = useAssetList(now, assetTypeListString, initialBody, assetType.value);
+    console.log(
+      assetTypeListString,
+      initialBody,
+      assetType.value,
+      "useAssetList type"
+    );
 
     const updateBody = () => {
       initialBody = {
         typeName: assetTypeListString,
+        // includeClassificationAttributes: true,
+        // includeSubClassifications: true,
         limit: limit.value,
         offset: offset.value,
         entityFilters: {},
@@ -464,5 +472,3 @@ export default defineComponent({
   },
 });
 </script>
-      
-      

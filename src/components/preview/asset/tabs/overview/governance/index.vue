@@ -6,11 +6,11 @@
     <!-- <StatusBadge :status="status(item)" :key="item.guid"></StatusBadge> -->
   </div>
 </template>
-            
+
 <script lang="ts">
 import { defineComponent } from "vue";
 
-import Classifications from "./classifications.vue";
+import Classifications from "./classifications/index.vue";
 import Terms from "./terms.vue";
 
 export default defineComponent({
@@ -24,14 +24,8 @@ export default defineComponent({
       },
     },
   },
-  setup(props) {
-    return {};
-  },
+  setup(props, { emit }) {},
 });
 </script>
-  
-  
-     
-<style lang="less" module>
-</style>
-          
+
+<style lang="less" module></style>

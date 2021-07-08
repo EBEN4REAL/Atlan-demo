@@ -4,9 +4,7 @@ import axios from 'axios';
 
 export default function useAssetList(dependentKey?: Ref<any>, typeName?: string, initialBody?: any, cacheSuffx?: string | "") {
 
-
     let cancelTokenSource = ref(axios.CancelToken.source());
-
     const list: Ref<any> = ref([]);
     const { data,
         state,
@@ -34,34 +32,32 @@ export default function useAssetList(dependentKey?: Ref<any>, typeName?: string,
         searchScoreList,
         assetTypeMap,
         assetTypeSum,
-
         replaceBody: refreshAggregation,
     } = useSearchList("Catalog", aggregationList, [], data, aggregationBody, cacheSuffx, false, cancelTokenSource, true);
 
 
+    const isAggregate = ref(true);
     watch(data, () => {
-        //todo remove __typeName filter
-        console.log(body.value.entityFilters);
-        let newCriterion = [...body.value.entityFilters.criterion];
 
-
-        let index = newCriterion.findIndex((item) => item.attributeName === "__typeName");
-        console.log(index);
-        if (index > -1) {
-            newCriterion.splice(index, 1);
-        }
-        console.log(newCriterion);
-        refreshAggregation({
-            limit: 1,
-            query: body.value.query,
-            excludeDeletedEntities: true,
-            aggregationAttributes: ["__typeName.keyword"],
-            typeName: typeName,
-            entityFilters: {
-                condition: body.value.entityFilters.condition,
-                criterion: newCriterion
+        if (isAggregate.value) {
+            let newCriterion = [...body.value.entityFilters.criterion];
+            let index = newCriterion.findIndex((item) => item.attributeName === "__typeName");
+            if (index > -1) {
+                newCriterion.splice(index, 1);
             }
-        });
+            refreshAggregation({
+                limit: 1,
+                query: body.value.query,
+                excludeDeletedEntities: true,
+                aggregationAttributes: ["__typeName.keyword"],
+                typeName: typeName,
+                entityFilters: {
+                    condition: body.value.entityFilters.condition,
+                    criterion: newCriterion
+                }
+            });
+        }
+
     });
 
 
@@ -80,7 +76,8 @@ export default function useAssetList(dependentKey?: Ref<any>, typeName?: string,
         body,
         assetTypeList,
         assetTypeSum,
-        assetTypeMap
+        assetTypeMap,
+        isAggregate
     }
 }
 

@@ -3,31 +3,24 @@
     <div v-if="selectedGroup && selectedGroup.id">
       <div class="flex mb-3">
         <div>
-          <a-avatar
-            shape="square"
-            class="mr-1 ant-tag-blue text-gray avatars"
-            :size="48"
-            >{{
-              getNameInitials(getNameInTitleCase(selectedGroup.name))
-            }}</a-avatar
-          >
+          <a-avatar shape="square" class="mr-1 ant-tag-blue text-gray avatars" :size="48">
+            {{
+            getNameInitials(getNameInTitleCase(selectedGroup.name))
+            }}
+          </a-avatar>
         </div>
         <div class="ml-3">
-          <div class="text-lg font-bold capitalize cursor-pointer text-gray">
-            {{ selectedGroup.name }}
-          </div>
+          <div
+            class="text-lg font-bold capitalize cursor-pointer text-gray"
+          >{{ selectedGroup.name }}</div>
         </div>
       </div>
-      <a-tabs v-model:activeKey="activeKey">
+      <a-tabs :defaultActiveKey="activeKey">
         <a-tab-pane v-for="tab in tabs" :key="tab.key">
           <template #tab>
             <span class="mb-0">{{ tab.name }}</span>
           </template>
-          <component
-            :is="tab.component"
-            :selectedGroup="selectedGroup"
-            @refreshTable="getGroup"
-          />
+          <component :is="tab.component" :selectedGroup="selectedGroup" @refreshTable="getGroup" />
         </a-tab-pane>
       </a-tabs>
     </div>
@@ -37,8 +30,8 @@
 import {
   getNameInitials,
   getNameInTitleCase,
-} from "~/composables//utils/string-operations";
-import { defineComponent, computed, ref } from "vue";
+} from "~/composables/utils/string-operations";
+import { defineComponent, computed } from "vue";
 import About from "./about.vue";
 import Members from "./members.vue";
 import { useGroup } from "~/composables/group/useGroups";
@@ -49,26 +42,10 @@ export default defineComponent({
     About,
     Members,
   },
-  props: {
-    selectedGroup: {
-      type: Object,
-      default: {},
-    },
-    defaultTab: {
-      type: String,
-      default: "members",
-    },
-  },
   setup(props, context) {
-    // const activeKey = ref(props.defaultTab);
-    const {
-      showPreview,
-      groupId,
-      groupAlias,
-      closePreview,
-      uniqueAttribute,
-      finalTabs,
-    } = useGroupPreview();
+    const { groupId, groupAlias, defaultTab, uniqueAttribute, finalTabs } =
+      useGroupPreview();
+    const activeKey = defaultTab;
     let filterObj = {};
     if (uniqueAttribute.value === "groupAlias")
       filterObj = {
@@ -91,7 +68,7 @@ export default defineComponent({
       getNameInTitleCase,
       tabs: finalTabs,
       getGroup,
-      // activeKey,
+      activeKey,
       selectedGroup: groupObj,
     };
   },

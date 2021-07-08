@@ -1,6 +1,7 @@
 <template>
   <div>
-    <p class="text-2xl text-gray">API keys</p>
+    <p class="mb-2 focus-within:text-2xl text-gray">API keys</p>
+    <div class="pb-6 text-sm text-gray-400">Create, delete and access API Keys</div>
     <ListAPIKeys />
   </div>
 </template>

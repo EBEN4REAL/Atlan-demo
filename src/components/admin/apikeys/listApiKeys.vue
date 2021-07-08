@@ -1,13 +1,15 @@
 <template>
-  <div class="flex flex-row items-center justify-between">
-    <a-input-search
-      placeholder="Search API..."
-      style="width: 300px"
-      v-model:value="searchText"
-      @change="handleSearch"
-      allowClear="true"
-    />
-    <a-button type="primary" @click="showAPIKeyModal">Create New API</a-button>
+  <div class="flex flex-row items-center justify-between mb-4 gap-x-5">
+    <div class="flex w-1/4">
+      <a-input-search
+        placeholder="Search API..."
+        style="width: 300px"
+        v-model:value="searchText"
+        @change="handleSearch"
+        allowClear="true"
+      />
+    </div>
+    <a-button type="primary" class="rounded-md" @click="showAPIKeyModal">Create New API</a-button>
   </div>
   <div class="py-6">
     <ErrorView v-if="[STATES.ERROR, STATES.STALE_IF_ERROR].includes(state)"></ErrorView>

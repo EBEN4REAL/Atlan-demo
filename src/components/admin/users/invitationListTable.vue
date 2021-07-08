@@ -51,21 +51,23 @@
         <span>{{ invite.role_object.name }}</span>
       </template>
       <template #actions="{ text: invite }">
-        <a-dropdown :trigger="['click']">
-          <a class="ant-dropdown-link" @click="(e) => e.preventDefault()">
-            <fa icon="fal cog" />
-          </a>
-          <template #overlay>
-            <a-menu>
-              <a-menu-item
-                key="0"
-                @click="showResendInvitationConfirm(invite)"
-              >Resend Verification Email</a-menu-item>
-              <a-menu-item key="1" @click="showRevokeInvitationConfirm(invite)">Revoke Invitation</a-menu-item>
-              <a-menu-item key="2" @click="handleChangeRole(invite)">Change User Role</a-menu-item>
-            </a-menu>
-          </template>
-        </a-dropdown>
+        <div class="flex justify-center">
+          <a-dropdown :trigger="['click']">
+            <a class="ant-dropdown-link" @click="(e) => e.preventDefault()">
+              <fa icon="fal cog" />
+            </a>
+            <template #overlay>
+              <a-menu>
+                <a-menu-item
+                  key="0"
+                  @click="showResendInvitationConfirm(invite)"
+                >Resend Verification Email</a-menu-item>
+                <a-menu-item key="1" @click="showRevokeInvitationConfirm(invite)">Revoke Invitation</a-menu-item>
+                <a-menu-item key="2" @click="handleChangeRole(invite)">Change User Role</a-menu-item>
+              </a-menu>
+            </template>
+          </a-dropdown>
+        </div>
       </template>
     </a-table>
     <div class="flex justify-between max-w-full mt-4">
@@ -289,7 +291,7 @@ export default defineComponent({
         {
           title: "Role",
           key: "role",
-
+          width: 150,
           slots: { customRender: "role" },
         },
         {
@@ -306,4 +308,10 @@ export default defineComponent({
 
 <style lang="less">
 @import "~/styles/admin-page-table.less";
+#invitationList {
+  th.ant-table-row-cell-last {
+    display: flex;
+    justify-content: center;
+  }
+}
 </style>

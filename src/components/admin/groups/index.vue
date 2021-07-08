@@ -324,7 +324,7 @@ export default defineComponent({
         },
         {
           title: "Actions",
-          className: "actions",
+
           slots: { customRender: "actions" },
         },
       ],
@@ -336,7 +336,7 @@ export default defineComponent({
 <style lang="less">
 @import "~/styles/admin-page-table.less";
 #groupList {
-  td.actions {
+  th.ant-table-row-cell-last {
     display: flex;
     justify-content: center;
   }

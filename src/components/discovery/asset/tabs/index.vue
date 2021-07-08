@@ -9,6 +9,10 @@
     <a-tab-pane :key="item.id" v-for="item in assetTypeList">
       <template #tab>
         {{ item.label }}
+
+        <span v-if="item.id === 'Catalog' && total > 0"
+          >({{ numeralFormat(total) }})</span
+        >
         <span v-if="assetTypeMap[item.id] && assetTypeMap[item.id] > 0"
           >({{ numeralFormat(assetTypeMap[item.id]) }})</span
         >
@@ -39,6 +43,13 @@ export default defineComponent({
       required: false,
       default() {
         return {};
+      },
+    },
+    total: {
+      type: Number,
+      required: false,
+      default() {
+        return 0;
       },
     },
     modelValue: {

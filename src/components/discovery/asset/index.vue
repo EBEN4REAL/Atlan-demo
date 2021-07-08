@@ -45,20 +45,20 @@
         v-model:value="queryText"
         @change="handleSearchChange"
       >
-      </a-input>
-      <a-popover placement="bottom">
-        <template #content>
-          <Preferences
-            :defaultProjection="projection"
-            @change="handleChangePreferences"
-            @sort="handleChangeSort"
-          ></Preferences>
+        <template #suffix>
+          <a-popover placement="bottomLeft">
+            <template #content>
+              <Preferences
+                :defaultProjection="projection"
+                @change="handleChangePreferences"
+                @sort="handleChangeSort"
+                @state="handleState"
+              ></Preferences>
+            </template>
+            <fa icon="fal cog"></fa>
+          </a-popover>
         </template>
-        <a-button size="default"
-          ><fa icon="fal cog" class="mr-1"></fa
-          ><fa icon="fal chevron-down" class="text-xs text-primary"></fa
-        ></a-button>
-      </a-popover>
+      </a-input>
     </div>
 
     <div class="flex w-full px-6 mt-3">
@@ -176,6 +176,8 @@ export default defineComponent({
     const offset = ref(0);
     const sortOrder = ref("");
 
+    const state = ref("active");
+
     const assetTypeLabel = computed(() => {
       const found = AssetTypeList.find((item) => {
         return item.id == assetType.value;
@@ -252,6 +254,21 @@ export default defineComponent({
           attributeValue: assetType.value,
           operator: "eq",
         });
+      }
+
+      if (state.value) {
+        if (state.value === "all") {
+          initialBody.excludeDeletedEntities = false;
+        } else if (state.value === "deleted") {
+          initialBody.excludeDeletedEntities = false;
+          initialBody.entityFilters.criterion.push({
+            attributeName: "__state",
+            attributeValue: "DELETED",
+            operator: "eq",
+          });
+        } else {
+          initialBody.excludeDeletedEntities = true;
+        }
       }
 
       let connectorCritera = {
@@ -336,6 +353,12 @@ export default defineComponent({
       updateBody();
     };
 
+    const handleState = (payload: any) => {
+      state.value = payload;
+      isAggregate.value = true;
+      updateBody();
+    };
+
     const handleFilterChange = (payload: any) => {
       filters.value = payload;
       offset.value = 0;
@@ -387,6 +410,7 @@ export default defineComponent({
       isLoadMore,
       loadMore,
       totalSum,
+      handleState,
       // listCount,
       // isLoading,
       // limit,

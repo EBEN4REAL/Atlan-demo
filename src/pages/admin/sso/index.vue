@@ -8,11 +8,11 @@
   </div>
 </template>
 <script lang="ts">
-import { useStore } from "vuex";
 import { defineComponent, computed } from "vue";
 import EmptySSOScreen from "@/admin/sso/configure/emptySSOScreen.vue";
 import DisplaySSO from "@/admin/sso/update/displaySSO.vue";
 import { useHead } from "@vueuse/head";
+import { useTenantStore } from "~/pinia/tenants";
 
 export default defineComponent({
   components: {
@@ -23,13 +23,14 @@ export default defineComponent({
     useHead({
       title: "SSO",
     });
-    const store = useStore();
-    const tenantData = computed(() => store.state.tenant.data);
-    const identityProviders: Array<any> =
-      tenantData.value?.identityProviders || [];
+    const tenantStore = useTenantStore();
+    const tenantData: any = computed(() => tenantStore.tenant);
+    const identityProviders: Array<any> = tenantData?.identityProviders || [];
     const configureSSO = (option: string) => {
       console.log("value from child", option);
     };
+
+    console.log(identityProviders, tenantData);
 
     const providerDetails = computed(() => identityProviders[0] || {});
     return {

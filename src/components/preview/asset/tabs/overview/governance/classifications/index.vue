@@ -316,7 +316,9 @@ export default defineComponent({
       });
     };
 
-    const handleLinkClassificationPopoverCancel = () => {};
+    const handleLinkClassificationPopoverCancel = () => {
+      linkClassificationPopover.value = false;
+    };
 
     const selectedClassificationForLink = ref(undefined);
 

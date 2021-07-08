@@ -1,6 +1,6 @@
 <template>
   <div>
-    <p class="mb-2 text-xl font-normal tracking-tight">API Keys</p>
+    <p class="text-2xl text-gray">API keys</p>
     <ListAPIKeys />
   </div>
 </template>

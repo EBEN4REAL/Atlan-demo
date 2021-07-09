@@ -307,7 +307,6 @@ export default defineComponent({
 </script>
 
 <style lang="less">
-@import "~/styles/admin-page-table.less";
 #invitationList {
   th.ant-table-row-cell-last {
     display: flex;

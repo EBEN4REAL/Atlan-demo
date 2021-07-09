@@ -32,6 +32,7 @@
       </div>
     </div>
   </div>
+
   <div
     class="flex flex-col items-stretch h-full col-span-12 pt-6 bg-white  sm:col-span-8 md:col-span-7"
     style="overflow: hidden"
@@ -39,9 +40,20 @@
     <div class="flex items-center px-6 gap-x-3">
       <a-input
         placeholder="Search"
+        size="large"
         v-model:value="queryText"
         @change="handleSearchChange"
       >
+        <template #prefix>
+          <div class="flex -space-x-2">
+            <template v-for="item in filteredLConnectorist" :key="item.id">
+              <img
+                :src="item.image"
+                class="w-auto h-6 mr-1 bg-white rounded-full border-5"
+              />
+            </template>
+          </div>
+        </template>
         <template #suffix>
           <a-popover placement="bottomLeft">
             <template #content>
@@ -136,6 +148,7 @@ import { Components } from "~/api/atlas/client";
 import { SearchParameters } from "~/types/atlas/attributes";
 import { BaseAttributes, BasicSearchAttributes } from "~/constant/projection";
 import { useDiscoveryStore } from "~/pinia/discovery";
+import { useConnectionsStore } from "~/pinia/connections";
 
 export default defineComponent({
   name: "HelloWorld",
@@ -190,6 +203,13 @@ export default defineComponent({
         return totalSum.value;
       }
       return assetTypeMap.value[assetType.value];
+    });
+
+    const connectorStore = useConnectionsStore();
+    const filteredLConnectorist = computed(() => {
+      return connectorStore.getSourceList?.filter((item) => {
+        return connectorsPayload.value?.connectors?.includes(item.id);
+      });
     });
 
     //Get All Disoverable Asset Types
@@ -419,6 +439,8 @@ export default defineComponent({
       loadMore,
       totalSum,
       handleState,
+      connectorsPayload,
+      filteredLConnectorist,
       // listCount,
       // isLoading,
       // limit,

@@ -32,38 +32,45 @@ module.exports = {
           800: "#0d0f54",
           900: "#06082a",
         },
-        body: "#f8f8fd",
+        body: "#fff",
+
         gray: {
           DEFAULT: "#495057",
           light: "#ced4da",
-          dark: "#28292a"
+          dark: "#28292a",
+          100: "#f8f8fd",
+          400: "#909ca7",
         },
         success: {
           DEFAULT: "#00a680",
           muted: "#c9f9ee",
-        },        
+        },
         error: {
           DEFAULT: "#dc2626",
           muted: "#f9dcd2",
         },
         alert: {
           DEFAULT: "#ffb119",
-          muted: "#ffefd0"
+          muted: "#ffefd0",
         },
         warning: {
-          DEFAULT: "#ff751f"
-        }
-      }
+          DEFAULT: "#ff751f",
+        },
+        blueGray: {
+          light: "#e8e8f8",
+          DEFAULT: "#64748B",
+        },
+      },
     },
   },
   variants: {
     extend: {
-      animation: ['motion-safe'],
-      borderWidth: ['last']
+      animation: ["motion-safe"],
+      borderWidth: ["last"],
     },
-  }, 
+  },
   plugins: [
-    require('@tailwindcss/line-clamp'),
-    require('@tailwindcss/typography'),
+    require("@tailwindcss/line-clamp"),
+    require("@tailwindcss/typography"),
   ],
-}
+};

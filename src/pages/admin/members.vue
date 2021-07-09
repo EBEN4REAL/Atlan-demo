@@ -1,5 +1,4 @@
 <template>
-  <p class="text-2xl text-gray">Manage Members</p>
   <Users></Users>
 </template>
 <script lang="ts">

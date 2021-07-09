@@ -125,20 +125,7 @@ export const useAPI = <T>(
       default:
         break;
     }
-    // console.log("HOHO", data, error, data.value?.records);
-    const test = computed(() => !data.value && !error.value);
     const isLoading = ref(!data && !error);
-    console.log(isLoading, isLoading.value);
-    // watch(test, () => console.log(test));
-    // isLoading.value = !data.value && !error.value;
-    console.log(
-      "HOHO",
-      test,
-      data.value,
-      error.value,
-      !data.value && !error.value,
-      isLoading
-    );
     return { data, error, isLoading };
   }
 };

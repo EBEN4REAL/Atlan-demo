@@ -32,20 +32,20 @@ const getUserRole = (user: any) => {
 const getUserStatus = (user: any) => {
   if (!user.enabled) {
     return {
-      color: "red",
-      icon: "close-circle",
+      color: "text-error",
+      icon: "fal times-circle",
       status: "Disabled",
     };
   } else if (user.isLocked) {
     return {
-      color: "red",
-      icon: "lock",
+      color: "text-error",
+      icon: "fa lock",
       status: "Locked",
     };
   }
   return {
-    color: "green",
-    icon: "check-circle",
+    color: "text-success",
+    icon: "fas check-circle",
     status: "Active",
   };
 };

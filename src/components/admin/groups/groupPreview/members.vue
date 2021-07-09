@@ -62,7 +62,12 @@
             </div>
             <a-popover trigger="click" placement="bottom">
               <template #content>
-                <span class="text-red-500" @click="() => removeUserFromGroup(user.id)">Remove User</span>
+                <div class="flex items-center justify-center text-red-500 cursor-pointer mt-0.5">
+                  <div v-if="removeMemberLoading">
+                    <fa icon="fal circle-notch" class="mr-1 animate-spin" />
+                  </div>
+                  <div @click="() => removeUserFromGroup(user.id)">Remove User</div>
+                </div>
               </template>
               <fa icon="fal cog"></fa>
             </a-popover>
@@ -91,19 +96,6 @@
         :showHeaderButtons="true"
       />
     </div>
-    <!-- <a-modal
-      :visible="showAddMemberModal"
-      title="Add Members"
-      :footer="null"
-      :destroy-on-close="true"
-      @cancel="closeAddGroupModal"
-    >
-      <AddGroupMembers
-        @addMembersToGroup="addMembersToGroup"
-        :addMemberLoading="addMemberLoading"
-        ref="addUsers"
-      />
-    </a-modal>-->
   </div>
 </template>
 

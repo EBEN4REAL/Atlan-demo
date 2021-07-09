@@ -1,6 +1,7 @@
 <template>
   <div>
     <a-table
+      id="invitationList"
       :dataSource="invitationList"
       :columns="columns"
       v-if="invitationList"
@@ -21,20 +22,28 @@
           "
         >
           <div>
-            <a-avatar
+            <avatar
+              :imageUrl="''"
+              :allowUpload="false"
+              :avatarName="invite.username || invite.email"
+              :avatarSize="40"
+              class="mr-2"
+            />
+            <!-- <a-avatar
               v-if="invite.username || invite.email"
               shape="circle"
               class="mr-1 ant-tag-blue text-gray avatars"
-              >{{
-                getNameInitials(
-                  getNameInTitleCase(invite.username || invite.email)
-                )
-              }}</a-avatar
             >
+              {{
+              getNameInitials(
+              getNameInTitleCase(invite.username || invite.email)
+              )
+              }}
+            </a-avatar>-->
           </div>
-          <div>
-            <span>{{ invite.email || "-" }}</span>
-            <p>@{{ invite.username || "-" }}</p>
+          <div class="truncate">
+            <span class="text-primary">{{ invite.email || "-" }}</span>
+            <p class="mb-0 text-gray-400">@{{ invite.username || "-" }}</p>
           </div>
         </div>
       </template>
@@ -42,30 +51,27 @@
         <span>{{ invite.role_object.name }}</span>
       </template>
       <template #actions="{ text: invite }">
-        <a-dropdown :trigger="['click']">
-          <a class="ant-dropdown-link" @click="(e) => e.preventDefault()">
-            <fa icon="fal cog" />
-          </a>
-          <template #overlay>
-            <a-menu>
-              <a-menu-item key="0" @click="showResendInvitationConfirm(invite)"
-                >Resend Verification Email</a-menu-item
-              >
-              <a-menu-item key="1" @click="showRevokeInvitationConfirm(invite)"
-                >Revoke Invitation</a-menu-item
-              >
-              <a-menu-item key="2" @click="handleChangeRole(invite)"
-                >Change User Role</a-menu-item
-              >
-            </a-menu>
-          </template>
-        </a-dropdown>
+        <div class="flex justify-center">
+          <a-dropdown :trigger="['click']">
+            <a class="ant-dropdown-link" @click="(e) => e.preventDefault()">
+              <fa icon="fal cog" />
+            </a>
+            <template #overlay>
+              <a-menu>
+                <a-menu-item
+                  key="0"
+                  @click="showResendInvitationConfirm(invite)"
+                >Resend Verification Email</a-menu-item>
+                <a-menu-item key="1" @click="showRevokeInvitationConfirm(invite)">Revoke Invitation</a-menu-item>
+                <a-menu-item key="2" @click="handleChangeRole(invite)">Change User Role</a-menu-item>
+              </a-menu>
+            </template>
+          </a-dropdown>
+        </div>
       </template>
     </a-table>
     <div class="flex justify-between max-w-full mt-4">
-      <a-button type="link" size="default" @click="$emit('toggleList')"
-        >View Active Users</a-button
-      >
+      <a-button type="link" size="default" @click="$emit('toggleList')">View Active Users</a-button>
       <a-pagination
         :total="pagination.total"
         :current="pagination.current"
@@ -86,6 +92,7 @@ import {
 } from "~/composables//utils/string-operations";
 import { Modal, message } from "ant-design-vue";
 import { User } from "~/api/auth/user";
+import Avatar from "~/components/common/avatar.vue";
 export default defineComponent({
   name: "InvitationListTable",
   props: {
@@ -93,6 +100,9 @@ export default defineComponent({
       type: String,
       deafult: "",
     },
+  },
+  components: {
+    Avatar,
   },
   setup(props, context) {
     let invitationListAPIParams: any = reactive({
@@ -286,7 +296,8 @@ export default defineComponent({
         },
         {
           title: "Actions",
-          width: 120,
+          className: "invitation-list-actions",
+
           slots: { customRender: "actions" },
         },
       ],
@@ -295,5 +306,12 @@ export default defineComponent({
 });
 </script>
 
-<style>
+<style lang="less">
+@import "~/styles/admin-page-table.less";
+#invitationList {
+  th.ant-table-row-cell-last {
+    display: flex;
+    justify-content: center;
+  }
+}
 </style>

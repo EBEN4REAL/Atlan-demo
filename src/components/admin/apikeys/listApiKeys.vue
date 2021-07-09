@@ -11,7 +11,7 @@
     </div>
     <a-button type="primary" class="rounded-md" @click="showAPIKeyModal">Create New API</a-button>
   </div>
-  <div class="py-6">
+  <div>
     <ErrorView v-if="[STATES.ERROR, STATES.STALE_IF_ERROR].includes(state)"></ErrorView>
     <a-table
       :tableLayout="'fixed'"

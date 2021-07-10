@@ -1,6 +1,7 @@
 <template>
   <div>
     <a-table
+      :tableLayout="'fixed'"
       id="invitationList"
       :dataSource="invitationList"
       :columns="columns"
@@ -43,7 +44,7 @@
           </div>
           <div class="truncate">
             <span class="text-primary">{{ invite.email || "-" }}</span>
-            <p class="mb-0 text-gray-400">@{{ invite.username || "-" }}</p>
+            <p class="mb-0 text-gray-400 truncate">@{{ invite.username || "-" }}</p>
           </div>
         </div>
       </template>

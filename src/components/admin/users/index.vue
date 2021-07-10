@@ -22,7 +22,7 @@
         <a-popover placement="bottom">
           <template #content>
             <div class="flex">
-              <div class="pr-3 border-r border-gray-200 border-dashed">
+              <div class="pr-3 border-gray-200">
                 <div class="flex justify-between">
                   <p class="mb-1 text-gray-500">Status</p>
                   <fa
@@ -39,7 +39,7 @@
                   </div>
                 </a-radio-group>
               </div>
-              <div class="pl-3">
+              <!-- <div class="pl-3 border-l border-dashed">
                 <p class="mb-1 text-gray-500">Role</p>
                 <a-radio-group>
                   <div class="flex flex-col space-y-1">
@@ -49,7 +49,7 @@
                     <a-radio>Member</a-radio>
                   </div>
                 </a-radio-group>
-              </div>
+              </div>-->
             </div>
           </template>
           <a-button size="default" class="mr-2 rounded-md text-gray-dark">
@@ -71,6 +71,7 @@
     <div>
       <div v-if="listType==='users'">
         <a-table
+          :tableLayout="'fixed'"
           id="userList"
           v-if="userList && listType === 'users'"
           :dataSource="userList"
@@ -93,7 +94,7 @@
               />
               <div class="truncate cursor-pointer" @click="() => {showUserPreviewDrawer(user);}">
                 <span class="text-primary">{{ nameCase(user.name) || "-" }}</span>
-                <p class="mb-0 text-gray-400">@{{ user.username || "-" }}</p>
+                <p class="mb-0 text-gray-400 truncate">@{{ user.username || "-" }}</p>
               </div>
             </div>
           </template>

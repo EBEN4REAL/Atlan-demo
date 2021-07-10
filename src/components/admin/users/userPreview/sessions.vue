@@ -1,15 +1,38 @@
 <template>
   <div>
     <div class="flex justify-end">
-      <a-button
+      <a-popover
+        title="Sign Out All Sessions"
+        trigger="click"
+        :visible="clicked"
+        @visibleChange="handleClickChange"
+        placement="bottom"
+      >
+        <template #content>
+          <div>
+            <div>Are you sure you want to signout all sessions?</div>
+            <div class="flex justify-end">
+              <a-button @click="hide" class="mr-2">Cancel</a-button>
+              <a-button @click="signOutAllSessions" danger>Yes</a-button>
+            </div>
+          </div>
+        </template>
+        <a-button class="mb-3" type="danger" ghost :loading="signOutAllSessionsLoading">
+          <span class>
+            <fa class="mr-2" icon="sign-out" />Sign out all sessions
+          </span>
+        </a-button>
+      </a-popover>
+      <!-- <a-button
         class="mb-3"
         ghost
-        type="danger"
         @click="showDeleteAllSessionsConfirm"
         :loading="signOutAllSessionsLoading"
       >
-        <i class="mr-2 fa fa-sign-out" />Sign out all sessions
-      </a-button>
+        <span class="text-error">
+          <fa class="mr-2" icon="sign-out" />Sign out all sessions
+        </span>
+      </a-button>-->
     </div>
     <a-table
       :loading="[STATES.PENDING].includes(state) ||
@@ -36,8 +59,8 @@
       <template #actions="{text:session}">
         <a-popover class="cursor-pointer" trigger="click" placement="bottom">
           <template #content>
-            <span class="text-red-600" @click="signOutUserSession(session.id)">
-              <i class="mr-2 fa fa-sign-out" />Sign Out Session
+            <span class="text-error" @click="signOutUserSession(session.id)">
+              <fa class="mr-2" icon="sign-out" />Sign Out Session
             </span>
           </template>
           <fa icon="fal cog" />
@@ -62,6 +85,13 @@ export default defineComponent({
     },
   },
   setup(props, context) {
+    const clicked = ref(false);
+    const hide = () => {
+      clicked.value = false;
+    };
+    const handleClickChange = (visible) => {
+      clicked.value = visible;
+    };
     const sessionParams = reactive({ max: 100, first: 0 });
     const {
       data,
@@ -204,6 +234,10 @@ export default defineComponent({
       signOutUserSession,
       columns,
       signOutAllSessionsLoading,
+      signOutAllSessions,
+      hide,
+      handleClickChange,
+      clicked,
     };
   },
 });

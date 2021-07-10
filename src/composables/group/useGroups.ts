@@ -71,7 +71,7 @@ export default function useGroups(groupListAPIParams: {
   });
   let localGroupsList: Ref<any[]> = ref([]);
   watch(data, () => {
-    if (data && data.value && data.value.records) {
+    if (data && data.value) {
       if (groupListAPIParams.offset > 0) {
         localGroupsList.value = [
           ...localGroupsList.value,

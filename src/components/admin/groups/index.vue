@@ -21,6 +21,7 @@
     </div>
     <a-table
       id="groupList"
+      :tableLayout="'fixed'"
       v-else-if="groupList && groupList.length"
       :dataSource="groupList"
       :columns="columns"
@@ -39,12 +40,12 @@
             }
           "
         >
-          <div class="capitalize truncate cursor-pointer text-primary">
-            {{group.name}}
-            <span
+          <div class="flex capitalize truncate cursor-pointer text-primary">
+            <div class="truncate max-w-3/4">{{group.name}}</div>
+            <div
               class="px-2 py-1 text-xs font-bold bg-blue-100 rounded-full text-gray"
               v-if="group.isDefault === 'true'"
-            >Default</span>
+            >Default</div>
           </div>
           <p class="mb-0 text-gray-400 truncate">{{ group.description }}</p>
         </div>

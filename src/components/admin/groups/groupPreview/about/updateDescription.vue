@@ -38,7 +38,7 @@
                 icon="fal exclamation-circle"
                 class="text-red-600 cursor-pointer"
                 v-if="updateErrorMessage"
-              ></fa>/>
+              ></fa>
             </a-popover>
           </div>
         </div>

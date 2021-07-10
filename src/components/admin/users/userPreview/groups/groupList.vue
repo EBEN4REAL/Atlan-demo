@@ -30,25 +30,23 @@
       v-if="[STATES.ERROR, STATES.STALE_IF_ERROR].includes(state)"
     >
       <ErrorView></ErrorView>
-      <a-button
-        icon="reload"
-        size="large"
-        type="primary"
-        ghost
-        @click="
+      <div class="mt-3">
+        <a-button
+          size="large"
+          type="primary"
+          ghost
+          @click="
           () => {
             getGroupList();
           }
         "
-        >Try again</a-button
-      >
+        >
+          <fa icon="fal sync"></fa>Try again
+        </a-button>
+      </div>
     </div>
     <div v-else class="mt-4 overflow-auto">
-      <a-checkbox-group
-        v-model:value="selectedIds"
-        @change="handleChange"
-        class="w-full"
-      >
+      <a-checkbox-group v-model:value="selectedIds" @change="handleChange" class="w-full">
         <div class="flex flex-col w-full">
           <template v-for="group in groupList.value" :key="group.id">
             <a-checkbox :value="group.id" class="flex items-center w-full">

@@ -134,9 +134,22 @@ export default defineComponent({
     const store = useBusinessMetadataStore();
     const {
       data: BMResponse,
-      error,
-      isLoading: loading,
+      error: BMListError,
+      isLoading: BMListLoading,
     } = useBusinessMetadata.getBMList();
+
+    //FIXME debug this
+    watch(
+      [BMListLoading, BMListError],
+      n => {
+        console.log([BMListLoading, BMListError]);
+        const error = toRaw(BMListError.value);
+        console.log(error);
+        store.setBusinessMetadataListLoading(n[0].value);
+        store.setBusinessMetadataListError(error.response.data.errorMessage);
+      },
+      { deep: true }
+    );
 
     watch(
       () => BMResponse?.value?.businessMetadataDefs,
@@ -166,6 +179,7 @@ export default defineComponent({
     let newBm = ref(null);
     let updatedBm = ref(null);
     // * Methods
+    /**
     const getBusinessMetadataAttributesForTypeNames = (
       types: string | any[],
       appliedBmAttributesToAsset: any[]
@@ -221,6 +235,7 @@ export default defineComponent({
       }
       return reqBms;
     };
+     */
 
     const handleSelectBm = (item: any) => {
       selectedBm.value = item;
@@ -287,7 +302,8 @@ export default defineComponent({
     const finalBusinessMetadataList = computed(() => [
       ...(newBm.value ? [newBm.value] : []),
       ...(businessMetadataList.value
-        ? businessMetadataList.value.filter((bm: { isArchived: any }) => !bm.isArchived)
+        ? //TODO remove archive logic
+          businessMetadataList.value.filter((bm: { isArchived: any }) => !bm.isArchived)
         : []),
     ]);
     const searchedBusinessMetadataList = computed(() => {

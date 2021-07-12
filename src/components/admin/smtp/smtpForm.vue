@@ -1,13 +1,14 @@
 <template>
   <div>
-    <div class="w-2/3 p-12 m-8 text-gray-600 bg-white rounded shadow smtpForm">
+    <p class="text-2xl text-gray">Configure SMTP</p>
+    <div class="w-2/3 p-12 text-gray-600 bg-white rounded shadow smtpForm">
       <div class="w-100">
-        <div class="mb-8">
+        <!-- <div class="mb-8">
           <span class="flex items-center text-2xl">
             <fa icon="fal envelope" class="mr-2" />
             Configure SMTP
           </span>
-        </div>
+        </div> -->
         <a-form
           ref="formRef"
           layout="vertical"

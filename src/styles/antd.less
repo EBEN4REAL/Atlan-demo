@@ -2,7 +2,7 @@
   @font-face {
     font-family: Avenir;
     font-weight: normal;
-    src: url('~/assets/fonts/avenir/avenir-roman.otf') format("opentype");
+    src: url("~/assets/fonts/avenir/avenir-roman.otf") format("opentype");
   }
 }
 
@@ -38,8 +38,8 @@ body {
   }
 }
 
-.ant-btn>i,
-.ant-btn>span {
+.ant-btn > i,
+.ant-btn > span {
   vertical-align: middle;
 }
 
@@ -50,13 +50,8 @@ body {
     .ant-popover-inner-content {
       @apply p-0 !important;
     }
-
   }
 }
-
-
-
-
 
 .ant-input-prefix {
   svg {
@@ -82,7 +77,6 @@ body {
   }
 
   .ant-tree-node-content-wrapper {
-
     height: inherit !important;
     padding-left: 0px !important;
     padding-right: 0px !important;
@@ -137,7 +131,7 @@ body {
   }
 }
 
-.ant-checkbox-wrapper+.ant-checkbox-wrapper {
+.ant-checkbox-wrapper + .ant-checkbox-wrapper {
   margin-left: 0px !important;
 }
 
@@ -145,7 +139,7 @@ body {
   @apply py-2 !important;
 }
 
-.ant-select-multiple .ant-select-selection-item-remove>.anticon {
+.ant-select-multiple .ant-select-selection-item-remove > .anticon {
   vertical-align: 0.2em !important;
 }
 
@@ -162,69 +156,48 @@ body {
   }
 }
 
-
 //Table
+.ant-table-body {
+  border: 2px solid theme("colors.gray.100") !important;
+  border-bottom: 0 !important;
+  border-top-right-radius: 0.7rem !important;
+  border-top-left-radius: 0.7rem !important;
+}
 .ant-table-thead {
   tr {
-    &:first-child {
-      th {
-        &:first-child {
-          border-top-left-radius: 8px !important;
-        }
-      }
-    }
-
-    &:last-child {
-      th {
-        &:last-child {
-          border-top-right-radius: 8px !important;
-        }
-      }
-    }
-
     th {
-      @apply bg-white px-4 py-2 !important;
+      font-weight: 700;
+      color: theme("colors.gray.dark") !important;
+      padding: 1rem !important;
     }
   }
 }
-
 .ant-table-tbody {
   tr {
+    height: 3.5rem !important;
     td {
-      @apply bg-white px-4 py-2 !important;
+      color: theme("colors.gray.dark") !important;
     }
   }
 }
-
-
-// .ant-table-thead>tr:first-child>th:first-child {
-//   border-top-left-radius: 8px !important;
-// }
-
-// .ant-table-thead>tr:last-child>th:last-child {
-//   border-top-right-radius: 8px !important;
-// }
-
-
-
 // Split Panes
-.default-theme.splitpanes--vertical>.splitpanes__splitter:before {
+.default-theme.splitpanes--vertical > .splitpanes__splitter:before {
   width: 0px !important;
 }
 
-.default-theme.splitpanes--vertical>.splitpanes__splitter:after {
+.default-theme.splitpanes--vertical > .splitpanes__splitter:after {
   width: 0px !important;
 }
 
-.default-theme.splitpanes--vertical>.splitpanes__splitter {
+.default-theme.splitpanes--vertical > .splitpanes__splitter {
   width: 0px !important;
 }
 
-.default-theme .splitpanes--horizontal>.splitpanes__splitter:before {
+.default-theme .splitpanes--horizontal > .splitpanes__splitter:before {
   width: 0px !important;
 }
 
-.default-theme .splitpanes--horizontal>.splitpanes__splitter:after {
+.default-theme .splitpanes--horizontal > .splitpanes__splitter:after {
   width: 0px !important;
 }
 
@@ -295,11 +268,14 @@ body {
   --tw-skew-y: 0;
   --tw-scale-x: 1;
   --tw-scale-y: 1;
-  transform: translateX(var(--tw-translate-x)) translateY(var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
-  transition-property: background-color, border-color, color, fill, stroke, opacity, box-shadow, transform;
-  transition-duration: .15s;
-  transition-timing-function: cubic-bezier(.4, 0, .2, 1);
-  transition-duration: .3s;
+  transform: translateX(var(--tw-translate-x)) translateY(var(--tw-translate-y))
+    rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y))
+    scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
+  transition-property: background-color, border-color, color, fill, stroke,
+    opacity, box-shadow, transform;
+  transition-duration: 0.15s;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 0.3s;
 }
 
 .pushtop {
@@ -307,5 +283,5 @@ body {
 }
 
 .text-shadow {
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.10);
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }

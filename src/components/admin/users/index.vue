@@ -1,28 +1,28 @@
 <template>
   <div>
-    <div>
-      <p class="mb-2 text-xl font-normal tracking-tight">
-        Manage Members
-        <span
-          class="inline-flex items-center justify-center px-2 py-1 ml-2 mr-2 text-xs font-bold leading-none text-red-100 bg-indigo-600 rounded-full"
-        >{{filteredUserCount}}</span>
-      </p>
+    <div class="flex items-center">
+      <div class="mb-2 text-2xl text-gray">Manage Members</div>
+      <div
+        class="inline-flex items-center justify-center px-2 py-1 ml-2 mr-2 text-xs font-bold leading-none text-red-100 bg-indigo-600 rounded-full"
+      >{{filteredUserCount}}</div>
     </div>
-    <div class="flex justify-between my-3 gap-x-5">
-      <a-input-search
-        placeholder="Search Members"
-        class="mr-1"
-        size="default"
-        v-model:value="searchText"
-        @change="handleSearch"
-        :allowClear="true"
-      ></a-input-search>
-
+    <div class="pb-6 text-sm text-gray-400">Add, remove and manage their roles</div>
+    <div class="flex justify-between mb-4 gap-x-5">
+      <div class="flex w-1/4">
+        <a-input-search
+          placeholder="Search Members"
+          class="mr-1"
+          size="default"
+          v-model:value="searchText"
+          @change="handleSearch"
+          :allowClear="true"
+        ></a-input-search>
+      </div>
       <div class="flex justify-end">
         <a-popover placement="bottom">
           <template #content>
             <div class="flex">
-              <div class="pr-3 border-r border-gray-200 border-dashed">
+              <div class="pr-3 border-gray-200">
                 <div class="flex justify-between">
                   <p class="mb-1 text-gray-500">Status</p>
                   <fa
@@ -39,7 +39,7 @@
                   </div>
                 </a-radio-group>
               </div>
-              <div class="pl-3">
+              <!-- <div class="pl-3 border-l border-dashed">
                 <p class="mb-1 text-gray-500">Role</p>
                 <a-radio-group>
                   <div class="flex flex-col space-y-1">
@@ -49,11 +49,11 @@
                     <a-radio>Member</a-radio>
                   </div>
                 </a-radio-group>
-              </div>
+              </div>-->
             </div>
           </template>
-          <a-button size="default">
-            <fa icon="fal filter" class="mr-1"></fa>
+          <a-button size="default" class="mr-2 rounded-md text-gray-dark">
+            <fa icon="fal filter" class="mr-1"></fa>Filter users
             <!--TODO: add logic to count filters and show the count here-->
             <span v-if="statusFilterValue">(1)</span>
           </a-button>
@@ -61,7 +61,7 @@
         <a-button
           v-if="loginWithEmailAllowed"
           type="primary"
-          class="ml-4"
+          class="rounded-md"
           size="default"
           @click="handleInviteUsers"
         >Add User</a-button>
@@ -71,13 +71,14 @@
     <div>
       <div v-if="listType==='users'">
         <a-table
+          :tableLayout="'fixed'"
+          id="userList"
           v-if="userList && listType === 'users'"
           :dataSource="userList"
           :columns="columns"
           :rowKey="(user) => user.id"
           @change="handleTableChange"
           :pagination="false"
-          :scroll="{ x: '100%' }"
           :loading="
       [STATES.PENDING].includes(state) || [STATES.VALIDATING].includes(state)
     "
@@ -91,24 +92,37 @@
                 :avatarSize="40"
                 class="mr-2"
               />
-              <div class="cursor-pointer" @click="() => {showUserPreviewDrawer(user);}">
-                <span class="text-gray-900">{{ nameCase(user.name) || "-" }}</span>
-                <p class="mb-0 text-gray-500">@{{ user.username || "-" }}</p>
+              <div class="truncate cursor-pointer" @click="() => {showUserPreviewDrawer(user);}">
+                <span class="text-primary">{{ nameCase(user.name) || "-" }}</span>
+                <p class="mb-0 text-gray-400 truncate">@{{ user.username || "-" }}</p>
               </div>
             </div>
           </template>
-
+          <template #status="{ text: user }">
+            <div class="inline-flex items-center px-2 py-0.5 bg-gray-100 rounded text-gray-dark">
+              <fa
+                :icon="user.status_object.icon"
+                :class="user.status_object.color"
+                class="mr-1 text-xs"
+              ></fa>
+              <div>{{ user.status_object.status }}</div>
+            </div>
+          </template>
           <template #actions="{ text: user }">
             <a-button-group>
               <a-tooltip v-if="user.enabled" placement="bottom">
                 <template #title>
                   <span>Disable User</span>
                 </template>
-                <a-button size="small" @click="showEnableDisableConfirm(user)">
+                <a-button
+                  size="small"
+                  @click="showEnableDisableConfirm(user)"
+                  class="mr-3.5 rounded"
+                >
                   <fa icon="fal user-slash"></fa>
                 </a-button>
               </a-tooltip>
-              <a-tooltip v-if="!user.enabled" placement="bottom">
+              <a-tooltip v-if="!user.enabled" placement="bottom" class="mr-3.5 rounded">
                 <template #title>
                   <span>Enable User</span>
                 </template>
@@ -120,7 +134,12 @@
                 <template #title>
                   <span>Change Role</span>
                 </template>
-                <a-button size="small" v-if="user.enabled" @click="handleChangeRole(user)">
+                <a-button
+                  size="small"
+                  class="rounded"
+                  v-if="user.enabled"
+                  @click="handleChangeRole(user)"
+                >
                   <fa icon="fal user-shield"></fa>
                 </a-button>
               </a-tooltip>
@@ -556,7 +575,7 @@ export default defineComponent({
           title: "Status",
           key: "status",
           slots: { customRender: "status" },
-          dataIndex: "status_object.status",
+          // dataIndex: "status_object.status",
           // filters: [
           //   { text: "Active", value: JSON.stringify({ enabled: true }) },
           //   { text: "Disabled", value: JSON.stringify({ enabled: false }) },
@@ -575,6 +594,3 @@ export default defineComponent({
   },
 });
 </script>
-
-<style lang="less" module>
-</style>

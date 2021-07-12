@@ -83,6 +83,7 @@ import { faCopy } from "@fortawesome/pro-light-svg-icons/faCopy";
 import { faUserSlash } from "@fortawesome/pro-light-svg-icons/faUserSlash";
 import { faUserCheck } from "@fortawesome/pro-light-svg-icons/faUserCheck";
 import { faSlidersHSquare } from "@fortawesome/pro-light-svg-icons/faSlidersHSquare";
+import { faSignOut } from "@fortawesome/pro-light-svg-icons/faSignOut";
 
 library.add(
   faArrowUp,
@@ -157,7 +158,8 @@ library.add(
   faUserSlash,
   faUserCheck,
   faUserShield,
-  faSlidersHSquare
+  faSlidersHSquare,
+  faSignOut
 );
 
 // Solid Icons
@@ -188,7 +190,7 @@ import { faAlignLeft } from "@fortawesome/pro-solid-svg-icons/faAlignLeft";
 import { faAlignCenter } from "@fortawesome/pro-solid-svg-icons/faAlignCenter";
 import { faAlignRight } from "@fortawesome/pro-solid-svg-icons/faAlignRight";
 import { faFileImage } from "@fortawesome/pro-solid-svg-icons/faFileImage";
-
+import { faSpinner } from "@fortawesome/pro-light-svg-icons/faSpinner";
 library.add(
   faBadgeCheck,
   faBadgeSolid,
@@ -215,7 +217,8 @@ library.add(
   faAlignLeft,
   faAlignCenter,
   faAlignRight,
-  faFileImage
+  faFileImage,
+  faSpinner
 );
 
 // import { far } from "@fortawesome/pro-regular-svg-icons";

@@ -3,6 +3,7 @@ const showPreview = ref(false);
 const groupId = ref("");
 const groupAlias = ref("");
 const uniqueAttribute = ref("");
+const defaultTab = ref("about");
 const allTabs = [
   {
     //tab name
@@ -63,6 +64,9 @@ export function useGroupPreview() {
   const setBlackListedTabs = (tabs) => {
     blacklistedTabs.value = [...tabs];
   };
+  const setDefaultTab = (tab) => {
+    defaultTab.value = tab;
+  };
 
   return {
     showPreview,
@@ -75,5 +79,7 @@ export function useGroupPreview() {
     finalTabs,
     showGroupPreview,
     closePreview,
+    defaultTab,
+    setDefaultTab,
   };
 }

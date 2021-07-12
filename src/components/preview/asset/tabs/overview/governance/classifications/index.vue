@@ -33,7 +33,7 @@
               }}</a-select-option>
             </template>
           </a-select>
-          <p class="mt-2 text-xs text-gray-400 ">
+          <p class="mt-2 text-xs text-gray-400">
             Can't find the right classification to link, create a new
             classification from
             <a @click="showCreateClassificationForm">here</a>
@@ -57,7 +57,7 @@
           </a-checkbox>
         </div>
         <div v-else>
-          <p class="mb-1 text-lg text-gray-500 border-b ">
+          <p class="mb-1 text-lg text-gray-500 border-b">
             Create Classification
           </p>
           <a-form
@@ -122,7 +122,7 @@
     </template>
 
     <div
-      class="px-2 py-1 transition duration-500 ease-in-out rounded-lg hover:bg-gray-50 hover:border"
+      class="px-2 py-1 transition duration-500 ease-in-out rounded-lg  hover:bg-gray-50 hover:border"
     >
       <p class="mb-1 text-sm tracking-wide text-gray-400">Classifications</p>
       <div class="flex flex-wrap items-center gap-x-1">
@@ -130,9 +130,9 @@
           v-for="(classification, index) in assetLinkedClassifcations"
           :key="'classification-' + classification?.typeName + index"
         >
-          <div class="flex m-1 mb-1 rounded-md ">
+          <div class="flex m-1 mb-1 rounded-md">
             <div
-              class="flex items-center px-2 py-2 leading-none align-middle cursor-pointer bg-primary-300 text-primary-400 bg-opacity-10 hover:bg-primary-500 hover:text-white drop-shadow-sm"
+              class="flex items-center px-2 py-2 leading-none align-middle cursor-pointer  bg-primary-300 text-primary-400 bg-opacity-10 hover:bg-primary-500 hover:text-white drop-shadow-sm"
               @click.prevent.stop="handleClassificationClick"
             >
               <fa
@@ -153,7 +153,7 @@
                   ? true
                   : false
               "
-              class="flex items-center justify-center p-1 px-2 border-none bg-primary-300 hover:bg-primary-500 hover:text-white bg-opacity-10"
+              class="flex items-center justify-center p-1 px-2 border-none  bg-primary-300 hover:bg-primary-500 hover:text-white bg-opacity-10"
             >
               <span
                 class="flex items-center justify-center"
@@ -172,14 +172,17 @@
         </template>
         <a-button
           @click.stop.prevent="openLinkClassificationPopover"
-          class="flex items-center justify-center p-1 px-2 ml-1 bg-primary-300 hover:bg-primary-500 hover:text-white bg-opacity-10"
+          class="flex items-center justify-center p-1 px-2 ml-1  bg-primary-300 hover:bg-primary-500 hover:text-white bg-opacity-10"
         >
           <span class="flex items-center justify-center">
             <fa icon="fal plus" class="" />
           </span>
         </a-button>
       </div>
-      <p class="mb-0 text-gray-500" v-if="assetLinkedClassifcations.length < 1">
+      <p
+        class="mb-0 text-gray-500"
+        v-if="assetLinkedClassifcations?.length < 1"
+      >
         No classifications added
       </p>
     </div>

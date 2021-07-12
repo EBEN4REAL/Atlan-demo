@@ -32,20 +32,20 @@ const getUserRole = (user: any) => {
 const getUserStatus = (user: any) => {
   if (!user.enabled) {
     return {
-      color: "red",
-      icon: "close-circle",
+      color: "text-error",
+      icon: "fal times-circle",
       status: "Disabled",
     };
   } else if (user.isLocked) {
     return {
-      color: "red",
-      icon: "lock",
+      color: "text-error",
+      icon: "fa lock",
       status: "Locked",
     };
   }
   return {
-    color: "green",
-    icon: "check-circle",
+    color: "text-success",
+    icon: "fas check-circle",
     status: "Active",
   };
 };
@@ -125,16 +125,16 @@ export default function useUsers(userListAPIParams: {
   });
   let localUsersList: Ref<any[]> = ref([]);
   watch(data, () => {
-    if (data && data.value && data.value.records) {
+    if (data && data.value) {
       if (userListAPIParams.offset > 0) {
         localUsersList.value = [
           ...localUsersList.value,
-          ...data.value.records.map((user: any) => getFormattedUser(user)),
+          ...data?.value?.records?.map((user: any) => getFormattedUser(user)),
         ];
       } else {
-        localUsersList.value = data.value.records.map((user: any) =>
-          getFormattedUser(user)
-        );
+        localUsersList.value =
+          data?.value?.records?.map((user: any) => getFormattedUser(user)) ??
+          [];
       }
     }
   });

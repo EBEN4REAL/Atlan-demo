@@ -1,7 +1,7 @@
 <template>
   <div>
     <p class="mb-2 leading-none text-gray-400">Designation</p>
-    <div class="flex">
+    <div class="flex" v-if="designation && designation.length">
       <Tags
         :tags="designation"
         @updateTags="handleUpdateDesignation"
@@ -34,8 +34,9 @@ export default {
   setup(props, context) {
     let updatingDesignation = ref(false);
     const userObj = ref(props.user);
+    // userObj.value = props.user;
     const designation = computed(
-      () => userObj?.value?.attributes?.designation ?? []
+      () => userObj.value?.attributes?.designation ?? []
     );
     const handleUpdateDesignation = async (tag: string, action = "add") => {
       const updatedTags =

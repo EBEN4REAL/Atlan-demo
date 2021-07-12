@@ -48,7 +48,7 @@ export default function useAssetList(dependentKey?: Ref<any>, typeName?: string,
             refreshAggregation({
                 limit: 1,
                 query: body.value.query,
-                excludeDeletedEntities: true,
+                excludeDeletedEntities: body.value.excludeDeletedEntities,
                 aggregationAttributes: ["__typeName.keyword"],
                 typeName: typeName,
                 entityFilters: {

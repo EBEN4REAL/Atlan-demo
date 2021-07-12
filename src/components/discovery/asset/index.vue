@@ -32,6 +32,7 @@
       </div>
     </div>
   </div>
+
   <div
     class="flex flex-col items-stretch h-full col-span-12 pt-6 bg-white  sm:col-span-8 md:col-span-7"
     style="overflow: hidden"
@@ -39,23 +40,34 @@
     <div class="flex items-center px-6 gap-x-3">
       <a-input
         placeholder="Search"
+        size="large"
         v-model:value="queryText"
         @change="handleSearchChange"
       >
-      </a-input>
-      <a-popover placement="bottom">
-        <template #content>
-          <Preferences
-            :defaultProjection="projection"
-            @change="handleChangePreferences"
-            @sort="handleChangeSort"
-          ></Preferences>
+        <template #prefix>
+          <div class="flex -space-x-2">
+            <template v-for="item in filteredLConnectorist" :key="item.id">
+              <img
+                :src="item.image"
+                class="w-auto h-6 mr-1 bg-white rounded-full border-5"
+              />
+            </template>
+          </div>
         </template>
-        <a-button size="default"
-          ><fa icon="fal cog" class="mr-1"></fa
-          ><fa icon="fal chevron-down" class="text-xs text-primary"></fa
-        ></a-button>
-      </a-popover>
+        <template #suffix>
+          <a-popover placement="bottomLeft">
+            <template #content>
+              <Preferences
+                :defaultProjection="projection"
+                @change="handleChangePreferences"
+                @sort="handleChangeSort"
+                @state="handleState"
+              ></Preferences>
+            </template>
+            <fa icon="fal cog"></fa>
+          </a-popover>
+        </template>
+      </a-input>
     </div>
 
     <div class="flex w-full px-6 mt-3">
@@ -136,6 +148,7 @@ import { Components } from "~/api/atlas/client";
 import { SearchParameters } from "~/types/atlas/attributes";
 import { BaseAttributes, BasicSearchAttributes } from "~/constant/projection";
 import { useDiscoveryStore } from "~/pinia/discovery";
+import { useConnectionsStore } from "~/pinia/connections";
 
 export default defineComponent({
   name: "HelloWorld",
@@ -176,6 +189,8 @@ export default defineComponent({
     const offset = ref(0);
     const sortOrder = ref("");
 
+    const state = ref("active");
+
     const assetTypeLabel = computed(() => {
       const found = AssetTypeList.find((item) => {
         return item.id == assetType.value;
@@ -188,6 +203,13 @@ export default defineComponent({
         return totalSum.value;
       }
       return assetTypeMap.value[assetType.value];
+    });
+
+    const connectorStore = useConnectionsStore();
+    const filteredLConnectorist = computed(() => {
+      return connectorStore.getSourceList?.filter((item) => {
+        return connectorsPayload.value?.connectors?.includes(item.id);
+      });
     });
 
     //Get All Disoverable Asset Types
@@ -260,6 +282,21 @@ export default defineComponent({
           attributeValue: assetType.value,
           operator: "eq",
         });
+      }
+
+      if (state.value) {
+        if (state.value === "all") {
+          initialBody.excludeDeletedEntities = false;
+        } else if (state.value === "deleted") {
+          initialBody.excludeDeletedEntities = false;
+          initialBody.entityFilters.criterion.push({
+            attributeName: "__state",
+            attributeValue: "DELETED",
+            operator: "eq",
+          });
+        } else {
+          initialBody.excludeDeletedEntities = true;
+        }
       }
 
       let connectorCritera = {
@@ -344,6 +381,12 @@ export default defineComponent({
       updateBody();
     };
 
+    const handleState = (payload: any) => {
+      state.value = payload;
+      isAggregate.value = true;
+      updateBody();
+    };
+
     const handleFilterChange = (payload: any) => {
       filters.value = payload;
       offset.value = 0;
@@ -395,6 +438,9 @@ export default defineComponent({
       isLoadMore,
       loadMore,
       totalSum,
+      handleState,
+      connectorsPayload,
+      filteredLConnectorist,
       // listCount,
       // isLoading,
       // limit,

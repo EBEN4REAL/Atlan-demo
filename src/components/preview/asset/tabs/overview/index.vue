@@ -71,23 +71,23 @@ export default defineComponent({
   setup(props) {
     const store = useDiscoveryStore();
     let activeKey = ref("details");
-    const { response, error, loading, mutate } = useAsset({
-      entityId: props.item.guid,
-    });
+    // const { response, error, loading, mutate } = useAsset({
+    //   entityId: props.item.guid,
+    // });
 
-    const getAssetEntitites = (data: Ref): any => {
-      if (data.value?.entities.length > 0) return data.value?.entities[0];
-      return {};
-    };
-    watch([response, error], () => {
-      if (response.value && error.value == undefined) {
-        console.log(response.value, "dataRes");
-        const entities = getAssetEntitites(response);
-        store.setSelectedAsset(entities);
-      } else {
-        console.log(error.value, "------ assetInfo failed to fetch ------ ");
-      }
-    });
+    // const getAssetEntitites = (data: Ref): any => {
+    //   if (data.value?.entities.length > 0) return data.value?.entities[0];
+    //   return {};
+    // };
+    // watch([response, error], () => {
+    //   if (response.value && error.value == undefined) {
+    //     console.log(response.value, "dataRes");
+    //     const entities = getAssetEntitites(response);
+    //     store.setSelectedAsset(entities);
+    //   } else {
+    //     console.log(error.value, "------ assetInfo failed to fetch ------ ");
+    //   }
+    // });
 
     return {
       activeKey,

@@ -13,7 +13,7 @@ const groupsMap: Record<string, (...params: any) => string> = {
   [GET_GROUP]: () => getAPIPath("auth", `/groups`),
   [UPDATE_GROUP]: ({ id }) => getAPIPath("auth", `/groups/${id}`),
   [DELETE_GROUP]: ({ id }) => getAPIPath("auth", `/groups/${id}/delete`),
-  [DELETE_GROUP]: ({ id }) => getAPIPath("auth", `/groups/${id}/delete`),
+  [CREATE_GROUP]: () => getAPIPath("auth", `/groups`),
   [REMOVE_MEMBERS_FROM_GROUP]: ({ id }) =>
     getAPIPath("auth", `/groups/${id}/members/remove`),
   [ADD_MEMBERS_TO_GROUP]: ({ id }) =>

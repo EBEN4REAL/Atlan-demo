@@ -4,7 +4,7 @@
       <div class="flex flex-row items-center cursor-pointer group">
         <p class="mb-0 text-xs text-gray-500">
           Group Description
-          <fa icon="fal check" class="ml-1 text-green-600 cursor-pointer" v-if="updateSuccess"></fa>
+          <fa icon="fal check" class="ml-1 text-green-600" v-if="updateSuccess"></fa>
         </p>
         <p
           v-if="!isUpdate"
@@ -38,7 +38,7 @@
                 icon="fal exclamation-circle"
                 class="text-red-600 cursor-pointer"
                 v-if="updateErrorMessage"
-              ></fa>/>
+              ></fa>
             </a-popover>
           </div>
         </div>
@@ -69,6 +69,7 @@ export default defineComponent({
     let updateErrorMessage = ref("");
     let updateSuccess = ref(false);
     const onUpdate = () => {
+      groupDescriptionLocal.value = props.group.description;
       isUpdate.value = true;
     };
     const onCancel = () => {

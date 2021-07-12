@@ -25,22 +25,25 @@
       </div>
     </div>
     <div
-      class="flex items-center h-full align-middle bg-white"
+      class="flex h-full align-middle bg-white flex-column"
       style="min-height: 200px"
       v-if="[STATES.ERROR, STATES.STALE_IF_ERROR].includes(state)"
     >
       <ErrorView></ErrorView>
-      <a-button
-        icon="reload"
-        size="large"
-        type="primary"
-        ghost
-        @click="
+      <div class="mt-3">
+        <a-button
+          size="large"
+          type="primary"
+          ghost
+          @click="
           () => {
             getUserList();
           }
         "
-      >Try again</a-button>
+        >
+          <fa icon="fal sync"></fa>Try again
+        </a-button>
+      </div>
     </div>
     <div v-else class="mt-4 overflow-auto">
       <a-checkbox-group v-model:value="selectedIds" @change="handleChange" class="w-full">
@@ -131,20 +134,19 @@ export default defineComponent({
     } = useUsers(userListAPIParams);
 
     const handleSearch = useDebounceFn(() => {
-      userListAPIParams.filter = searchText.value
-        ? {
-            $and: [
-              { email_verified: true },
-              {
-                $or: [
-                  { first_name: { $ilike: `%${searchText.value}%` } },
-                  { last_name: { $ilike: `%${searchText.value}%` } },
-                  { username: { $ilike: `%${searchText.value}%` } },
-                ],
-              },
+      userListAPIParams.filter = {
+        $and: [
+          { email_verified: true },
+          {
+            $or: [
+              { first_name: { $ilike: `%${searchText.value}%` } },
+              { last_name: { $ilike: `%${searchText.value}%` } },
+              { username: { $ilike: `%${searchText.value}%` } },
             ],
-          }
-        : {};
+          },
+        ],
+      };
+
       userListAPIParams.offset = 0;
       getUserList();
     }, 200);

@@ -40,14 +40,14 @@
         </div>
       </template>
     </a-table>
-    <div class="flex flex-row justify-end w-full mt-3">
-      <a-button
+    <div class="flex flex-row justify-end w-full my-3">
+      <!-- <a-button
         class="mr-2"
         :disabled="accessLogsParams.first === 0"
         @click="paginateLogs('start')"
       >
         <fa icon="fal chevron-double-left"></fa>
-      </a-button>
+      </a-button>-->
       <a-button class="mr-2" :disabled="accessLogsParams.first === 0" @click="paginateLogs('prev')">
         <fa icon="fal chevron-left"></fa>
       </a-button>

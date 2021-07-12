@@ -21,6 +21,7 @@
     </div>
     <a-table
       id="groupList"
+      :tableLayout="'fixed'"
       v-else-if="groupList && groupList.length"
       :dataSource="groupList"
       :columns="columns"
@@ -39,12 +40,12 @@
             }
           "
         >
-          <div class="capitalize truncate cursor-pointer text-primary">
-            {{group.name}}
-            <span
+          <div class="flex capitalize truncate cursor-pointer text-primary">
+            <div class="truncate max-w-3/4">{{group.name}}</div>
+            <div
               class="px-2 py-1 text-xs font-bold bg-blue-100 rounded-full text-gray"
               v-if="group.isDefault === 'true'"
-            >Default</span>
+            >Default</div>
           </div>
           <p class="mb-0 text-gray-400 truncate">{{ group.description }}</p>
         </div>
@@ -62,16 +63,30 @@
                     <fa icon="fal plus" class="mr-2"></fa>Add Members
                   </div>
                 </a-menu-item>
-                <a-menu-item key="1" @click="handleToggleDefault(group)">
+                <a-menu-item key="1">
                   <div class="flex">
-                    <a-checkbox />
-                    {{group.isDefault==='true'?'Unmark':'Mark'}} as default
+                    <div v-if="markAsDefaultLoading">
+                      <fa
+                        style="vertical-align:middle;"
+                        icon="fal circle-notch"
+                        class="mr-1 animate-spin"
+                      />
+                    </div>
+                    <a-checkbox
+                      @change="handleToggleDefault(group)"
+                      :checked="group.isDefault==='true'"
+                    >Mark as default</a-checkbox>
                   </div>
-                  <!-- <a-spin size="small" v-if="markAsDefaultLoading"></a-spin> -->
-                  <!-- <div class="text-xs">New users will be automatically added to default groups</div> -->
                 </a-menu-item>
                 <a-menu-item key="2" @click="() => handleDeleteGroup(group.id)">
                   <div class="flex text-red-600">
+                    <div v-if="deleteGroupLoading">
+                      <fa
+                        style="vertical-align:middle;"
+                        icon="fal circle-notch"
+                        class="mr-1 animate-spin"
+                      />
+                    </div>
                     <fa icon="fal trash-alt" class="mr-2"></fa>Delete
                   </div>
                 </a-menu-item>
@@ -113,6 +128,8 @@ export default defineComponent({
     const defaultTab = ref("about");
     const showGroupPreview = ref(false);
     const markAsDefaultLoading = ref(false);
+    const deleteGroupLoading = ref(false);
+    const showActionsDropdown = ref(false);
     const toggleAddGroupModal = () => {
       isAddGroupModalVisible.value = !isAddGroupModalVisible.value;
     };
@@ -200,6 +217,7 @@ export default defineComponent({
       watch(
         [data, isReady, error, isLoading],
         () => {
+          deleteGroupLoading.value = isLoading.value;
           if (isReady && !error.value && !isLoading.value) {
             getGroupList();
             message.success("Group Removed");
@@ -286,6 +304,8 @@ export default defineComponent({
       defaultTab,
       handleToggleDefault,
       markAsDefaultLoading,
+      deleteGroupLoading,
+      showActionsDropdown,
     };
   },
   data() {

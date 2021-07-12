@@ -125,16 +125,16 @@ export default function useUsers(userListAPIParams: {
   });
   let localUsersList: Ref<any[]> = ref([]);
   watch(data, () => {
-    if (data && data.value && data.value.records) {
+    if (data && data.value) {
       if (userListAPIParams.offset > 0) {
         localUsersList.value = [
           ...localUsersList.value,
-          ...data.value.records.map((user: any) => getFormattedUser(user)),
+          ...data?.value?.records?.map((user: any) => getFormattedUser(user)),
         ];
       } else {
-        localUsersList.value = data.value.records.map((user: any) =>
-          getFormattedUser(user)
-        );
+        localUsersList.value =
+          data?.value?.records?.map((user: any) => getFormattedUser(user)) ??
+          [];
       }
     }
   });

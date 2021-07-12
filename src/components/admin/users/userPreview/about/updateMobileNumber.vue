@@ -4,31 +4,13 @@
       <div class="flex flex-row items-center cursor-pointer group">
         <p class="mb-0 text-xs text-gray-500">
           Mobile Number
-          <fa
-            icon="fal check"
-            class="ml-1 text-green-600 cursor-pointer"
-            v-if="updateSuccess"
-          ></fa>
+          <fa icon="fal check" class="ml-1 text-green-600" v-if="updateSuccess"></fa>
         </p>
         <p
           v-if="!isUpdate && allowUpdate"
-          class="
-            mb-0
-            ml-2
-            text-xs
-            leading-none
-            transition
-            duration-300
-            ease-in-out
-            delay-100
-            opacity-0
-            text-gray
-            group-hover:opacity-100
-          "
+          class="mb-0 ml-2 text-xs leading-none transition duration-300 ease-in-out delay-100 opacity-0 text-gray group-hover:opacity-100"
           @click="onUpdate"
-        >
-          edit
-        </p>
+        >edit</p>
       </div>
       <div v-if="isUpdate" class="flex flex-col">
         <div class="tel-input-custom">
@@ -53,18 +35,12 @@
               class="px-2 mr-1"
               :disabled="updateLoading"
               @click="handleUpdate"
-              >update</a-button
-            >
-            <a-button type="link" size="small" class="p-0" @click="onCancel"
-              >cancel</a-button
-            >
+            >update</a-button>
+            <a-button type="link" size="small" class="p-0" @click="onCancel">cancel</a-button>
           </div>
           <div>
             <a-spin v-if="updateLoading" size="small" />
-            <a-popover
-              v-else-if="updateErrorMessage || updateSuccess"
-              placement="bottom"
-            >
+            <a-popover v-else-if="updateErrorMessage || updateSuccess" placement="bottom">
               <template #content>{{ updateErrorMessage }}</template>
               <fa
                 icon="fal exclamation-circle"
@@ -75,9 +51,7 @@
           </div>
         </div>
       </div>
-      <div v-else class="text-gray-500">
-        {{ selectedUser.attributes.mobile_number[0] || "-" }}
-      </div>
+      <div v-else class="text-gray-500">{{ selectedUser.attributes.mobile_number[0] || "-" }}</div>
     </div>
   </div>
 </template>
@@ -112,6 +86,8 @@ export default defineComponent({
     let updateSuccess = ref(false);
     let updateLoading = ref(false);
     const onUpdate = () => {
+      mobileNumberLocal.value =
+        props?.selectedUser?.attributes?.mobile_number?.[0] ?? "";
       isUpdate.value = true;
     };
     const onInput = (phone, phoneObject) => {

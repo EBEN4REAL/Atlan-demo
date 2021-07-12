@@ -23,31 +23,22 @@
         </div>
       </div>
       <div
-        class="flex flex-col items-center h-full align-middle bg-white"
-        style="min-height: 200px"
-        v-else-if="[STATES.ERROR, STATES.STALE_IF_ERROR].includes(state)"
+        class="flex flex-col items-center justify-center h-full mt-3 bg-white"
+        v-if="[STATES.ERROR, STATES.STALE_IF_ERROR].includes(state)"
       >
-        <ErrorView></ErrorView>
-        <div class="mt-3">
-          <a-button
-            size="large"
-            type="primary"
-            ghost
-            @click="
-              () => {
-                getUserGroupList();
-              }
-            "
-          >
-            <fa icon="fal sync"></fa>Try again
-          </a-button>
-        </div>
+        <ErrorView>
+          <div class="mt-3">
+            <a-button size="large" type="primary" ghost @click="()=>{getUserGroupList();}">
+              <fa icon="fal sync" class="mr-2"></fa>Try again
+            </a-button>
+          </div>
+        </ErrorView>
       </div>
       <div
         v-else-if="searchText && !filteredGroupCount"
         class="mt-2"
       >{{ `No group with name ${searchText} found.` }}</div>
-      <div v-else class="min-h-screen mt-4">
+      <div v-else class="mt-4">
         <div v-for="group in groupList.value" :key="group.id" class="my-2">
           <div class="flex justify-between">
             <div class="flex items-center">

@@ -25,35 +25,22 @@
       </div>
     </div>
     <div
-      class="flex items-center h-full align-middle bg-white"
-      style="min-height: 200px"
+      class="flex flex-col items-center justify-center h-full bg-white"
       v-if="[STATES.ERROR, STATES.STALE_IF_ERROR].includes(state)"
     >
-      <ErrorView></ErrorView>
-      <div class="mt-3">
-        <a-button
-          size="large"
-          type="primary"
-          ghost
-          @click="
-          () => {
-            getGroupList();
-          }
-        "
-        >
-          <fa icon="fal sync"></fa>Try again
-        </a-button>
-      </div>
+      <ErrorView>
+        <div class="mt-3">
+          <a-button size="large" type="primary" ghost @click="()=>{getGroupList();}">
+            <fa icon="fal sync" class="mr-2"></fa>Try again
+          </a-button>
+        </div>
+      </ErrorView>
     </div>
     <div v-else class="mt-4 overflow-auto">
       <a-checkbox-group class="w-full">
         <div class="flex flex-col w-full">
           <template v-for="group in groupList.value" :key="group.id">
-            <a-checkbox
-              :value="group.id"
-              class="flex items-center w-full"
-              @change="handleChange"
-            >
+            <a-checkbox :value="group.id" class="flex items-center w-full" @change="handleChange">
               <div class="flex justify-between mb-2">
                 <div class="flex items-center">
                   <!-- <a-avatar
@@ -153,7 +140,7 @@ export default defineComponent({
         searchText.value ? filteredGroupsCount.value : totalGroupsCount.value
       );
     });
-       const handleChange = (event) => {
+    const handleChange = (event) => {
       if (
         event.target.checked &&
         !selectedIds.value.includes(event.target.value)
@@ -167,7 +154,7 @@ export default defineComponent({
       }
       context.emit("updateSelectedGroups", selectedIds.value);
     };
-   
+
     return {
       searchText,
       showLoadMore,

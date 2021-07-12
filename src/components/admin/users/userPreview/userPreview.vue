@@ -4,10 +4,16 @@
       <a-spin />
     </div>
     <div
-      class="flex items-center justify-center h-full"
+      class="flex flex-col items-center justify-center h-full bg-white"
       v-if="[STATES.ERROR, STATES.STALE_IF_ERROR].includes(state)"
     >
-      <ErrorView></ErrorView>
+      <ErrorView>
+        <div class="mt-3">
+          <a-button size="large" type="primary" ghost @click="()=>{getUser();}">
+            <fa icon="fal sync" class="mr-2"></fa>Try again
+          </a-button>
+        </div>
+      </ErrorView>
     </div>
     <div v-else-if="selectedUser && selectedUser.id">
       <div class="flex mb-3">
@@ -117,6 +123,7 @@ export default defineComponent({
       state,
       STATES,
       activeKey,
+      getUser,
     };
   },
 });

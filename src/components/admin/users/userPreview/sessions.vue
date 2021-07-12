@@ -1,6 +1,18 @@
 <template>
   <div>
-    <div class="flex justify-end">
+    <div
+      class="flex flex-col items-center h-full align-middle bg-white"
+      v-if="[STATES.ERROR, STATES.STALE_IF_ERROR].includes(state)"
+    >
+      <ErrorView>
+        <div class="mt-3">
+          <a-button size="large" type="primary" ghost @click="()=>{fetchUserSessions();}">
+            <fa icon="fal sync" class="mr-2"></fa>Try again
+          </a-button>
+        </div>
+      </ErrorView>
+    </div>
+    <div v-else class="flex justify-end">
       <a-popover
         title="Sign Out All Sessions"
         trigger="click"
@@ -26,51 +38,51 @@
           </span>
         </a-button>
       </a-popover>
-    </div>
-    <a-table
-      :loading="[STATES.PENDING].includes(state) ||
+      <a-table
+        :loading="[STATES.PENDING].includes(state) ||
           [STATES.VALIDATING].includes(state)"
-      :columns="columns"
-      :data-source="sessionList"
-      :row-key="(session) => session.id"
-      :pagination="false"
-      @change="handleTableChange"
-    >
-      <template #time="{text:session}">
-        <a-popover placement="bottom">
-          <template #content>
-            <span class="text-gray-dark">{{ session.last_accessed_string }}</span>
-          </template>
-          {{ session.last_accessed_time_ago }}
-        </a-popover>
-      </template>
-      <template #action="{text:session}">
-        <a-popover placement="bottom">
-          <template #content>
-            <span class="text-gray-dark">{{ session.started_at_string }}</span>
-          </template>
-          {{ session.started_time_ago }}
-        </a-popover>
-      </template>
-      <template #ip_address="{text:session}">{{ session.ipAddress }}</template>
-      <template #actions="{text:session}">
-        <a-popover class="cursor-pointer" trigger="click" placement="bottom">
-          <template #content>
-            <span class="cursor-pointer text-error" @click="signOutUserSession(session.id)">
-              <div v-if="signOutSessionByIdLoading">
-                <fa
-                  style="vertical-align:middle;"
-                  icon="fal circle-notch"
-                  class="mr-1 animate-spin"
-                />
-              </div>
-              <fa class="mr-2" style="vertical-align: middle;" icon="fal sign-out" />Sign Out Session
-            </span>
-          </template>
-          <fa icon="fal cog" />
-        </a-popover>
-      </template>
-    </a-table>
+        :columns="columns"
+        :data-source="sessionList"
+        :row-key="(session) => session.id"
+        :pagination="false"
+        @change="handleTableChange"
+      >
+        <template #time="{text:session}">
+          <a-popover placement="bottom">
+            <template #content>
+              <span class="text-gray-dark">{{ session.last_accessed_string }}</span>
+            </template>
+            {{ session.last_accessed_time_ago }}
+          </a-popover>
+        </template>
+        <template #action="{text:session}">
+          <a-popover placement="bottom">
+            <template #content>
+              <span class="text-gray-dark">{{ session.started_at_string }}</span>
+            </template>
+            {{ session.started_time_ago }}
+          </a-popover>
+        </template>
+        <template #ip_address="{text:session}">{{ session.ipAddress }}</template>
+        <template #actions="{text:session}">
+          <a-popover class="cursor-pointer" trigger="click" placement="bottom">
+            <template #content>
+              <span class="cursor-pointer text-error" @click="signOutUserSession(session.id)">
+                <div v-if="signOutSessionByIdLoading">
+                  <fa
+                    style="vertical-align:middle;"
+                    icon="fal circle-notch"
+                    class="mr-1 animate-spin"
+                  />
+                </div>
+                <fa class="mr-2" style="vertical-align: middle;" icon="fal sign-out" />Sign Out Session
+              </span>
+            </template>
+            <fa icon="fal cog" />
+          </a-popover>
+        </template>
+      </a-table>
+    </div>
   </div>
 </template>
   
@@ -80,6 +92,7 @@ import { useTimeAgo } from "@vueuse/core";
 import { User } from "~/api/auth/user";
 import swrvState from "~/composables/utils/swrvState";
 import { Modal, message } from "ant-design-vue";
+import ErrorView from "@common/error/index.vue";
 export default defineComponent({
   name: "UserPreviewSessions",
   props: {
@@ -87,6 +100,9 @@ export default defineComponent({
       type: Object,
       default: {},
     },
+  },
+  components: {
+    ErrorView,
   },
   setup(props, context) {
     const showDeleteSessionsConfirmPopover = ref(false);
@@ -245,6 +261,7 @@ export default defineComponent({
       handleClickChange,
       showDeleteSessionsConfirmPopover,
       signOutSessionByIdLoading,
+      fetchUserSessions,
     };
   },
 });

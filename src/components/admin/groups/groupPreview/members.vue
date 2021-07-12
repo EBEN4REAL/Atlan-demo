@@ -21,25 +21,16 @@
         </div>
       </div>
       <div
-        class="flex items-center h-full align-middle bg-white"
-        style="min-height: 200px"
+        class="flex flex-col items-center justify-center h-full bg-white"
         v-if="[STATES.ERROR, STATES.STALE_IF_ERROR].includes(state)"
       >
-        <ErrorView></ErrorView>
-        <div class="mt-3">
-          <a-button
-            size="large"
-            type="primary"
-            ghost
-            @click="
-            () => {
-              getGroupMembersList();
-            }
-          "
-          >
-            <fa icon="fal sync"></fa>Try again
-          </a-button>
-        </div>
+        <ErrorView>
+          <div class="mt-3">
+            <a-button size="large" type="primary" ghost @click="()=>{getGroupMembersList();}">
+              <fa icon="fal sync" class="mr-2"></fa>Try again
+            </a-button>
+          </div>
+        </ErrorView>
       </div>
       <div v-else-if="searchText && !filteredMembersCount" class="mt-2">
         {{ `No member with name ${searchText} found.` }}

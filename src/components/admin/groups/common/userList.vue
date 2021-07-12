@@ -25,25 +25,16 @@
       </div>
     </div>
     <div
-      class="flex h-full align-middle bg-white flex-column"
-      style="min-height: 200px"
+      class="flex flex-col items-center h-full align-middle bg-white"
       v-if="[STATES.ERROR, STATES.STALE_IF_ERROR].includes(state)"
     >
-      <ErrorView></ErrorView>
-      <div class="mt-3">
-        <a-button
-          size="large"
-          type="primary"
-          ghost
-          @click="
-          () => {
-            getUserList();
-          }
-        "
-        >
-          <fa icon="fal sync"></fa>Try again
-        </a-button>
-      </div>
+      <ErrorView>
+        <div class="mt-3">
+          <a-button size="large" type="primary" ghost @click="()=>{getUserList();}">
+            <fa icon="fal sync" class="mr-2"></fa>Try again
+          </a-button>
+        </div>
+      </ErrorView>
     </div>
     <div v-else class="mt-4 overflow-auto">
       <a-checkbox-group class="w-full">

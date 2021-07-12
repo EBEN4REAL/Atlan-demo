@@ -67,8 +67,20 @@
         >Add User</a-button>
       </div>
     </div>
+    <div
+      class="flex flex-col items-center h-full align-middle bg-white"
+      v-if="[STATES.ERROR, STATES.STALE_IF_ERROR].includes(state)"
+    >
+      <ErrorView>
+        <div class="mt-3">
+          <a-button size="large" type="primary" ghost @click="()=>{getUserList();}">
+            <fa icon="fal sync" class="mr-2"></fa>Try again
+          </a-button>
+        </div>
+      </ErrorView>
+    </div>
     <!-- Table for users-->
-    <div>
+    <div v-else>
       <div v-if="listType==='users'">
         <a-table
           :tableLayout="'fixed'"
@@ -213,6 +225,7 @@ import ChangeRole from "./changeRole.vue";
 import InviteUsers from "./inviteUsers.vue";
 import useRoles from "~/composables/roles/useRoles";
 import { useTenantStore } from "~/pinia/tenants";
+import ErrorView from "@common/error/index.vue";
 
 export default defineComponent({
   components: {
@@ -220,6 +233,7 @@ export default defineComponent({
     ChangeRole,
     InviteUsers,
     Avatar,
+    ErrorView,
   },
 
   setup() {
@@ -541,6 +555,7 @@ export default defineComponent({
       showPreview,
       selectedInvite,
       roleList,
+      getUserList,
     };
   },
   data() {

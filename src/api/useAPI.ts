@@ -1,16 +1,17 @@
-import { Ref, ref, computed, watch } from "vue";
+import { Ref, ref, watch } from "vue";
 import { AxiosRequestConfig } from "axios";
 import useSWRV, { IConfig } from "swrv";
 
 import { fetcher, fetcherPost, getAxiosClient, deleter, updater } from "~/api";
 import keyMaps from "~/api/keyMaps/index";
+import { AsyncStateOptions, useAsyncState } from "@vueuse/core";
 
 interface useGetAPIParams {
-  cache?: boolean;
+  cache?: string | boolean;
   params?: Record<string, any>;
-  body?: Record<string, any>;
+  body?: Ref<Record<string, any>> | Record<string, any>;
   pathVariables?: Record<string, any>;
-  options?: IConfig & AxiosRequestConfig;
+  options?: Ref<IConfig & AxiosRequestConfig & AsyncStateOptions> | (IConfig & AxiosRequestConfig & AsyncStateOptions);
   dependantFetchingKey?: Ref;
   // swrOptions?: IConfig,
   // axiosOptions?: AxiosRequestConfig
@@ -28,7 +29,7 @@ export const useAPI = <T>(
   key: string,
   method: "GET" | "POST" | "DELETE" | "PUT",
   {
-    cache = true,
+    cache = "",
     params,
     body,
     pathVariables,
@@ -37,108 +38,83 @@ export const useAPI = <T>(
   }: useGetAPIParams
 ) => {
   const url = keyMaps[key]({ ...pathVariables });
+
+  const requestBody = isRef(body) ? body.value : body
+  const requestOptions = isRef(options) ? options.value : options;  
+
   if (cache) {
     // If using cache, make a generic swrv request
     const getKey = () => {
       if (dependantFetchingKey) {
-        return key && dependantFetchingKey.value;
+        return dependantFetchingKey.value ? `${key}_${cache}` : null;
       }
-      return key;
+      return `${key}_${cache}`;
     };
+
     const { data, error, mutate, isValidating } = useSWRV<T>(
       getKey,
       () => {
         // Choose the fetcher function based on the method type
         switch (method) {
           case "GET":
-            return fetcher(url, params, options);
-
+            return fetcher(url, params, requestOptions);
           case "POST":
-            return fetcherPost(url, body, options);
-
+            return fetcherPost(url, requestBody, requestOptions);
           case "DELETE":
-            return deleter(url, options);
-
+            return deleter(url, requestOptions);
           case "PUT":
-            return updater(url, body, options);
+            return updater(url, requestBody, requestOptions);
           default:
-            return fetcher(url, params, options);
+            return fetcher(url, params, requestOptions);
         }
       },
-      options
+      requestOptions
     );
 
     const isLoading = ref(!data && !error);
     return { data, error, isLoading, mutate, isValidating };
   } else {
-    // If not using cache, use Axios
-
-    const data = ref<T>();
-    const error = ref();
-    // const isLoading = ref<boolean>(false);
-
-    switch (method) {
-      case "GET":
-        getAxiosClient()
-          .get<T>(url, { params, ...options })
-          .then((resp) => {
-            data.value = resp as unknown as T;
-          })
-          .catch((e) => {
-            error.value = e;
+    function getRequest(): any {
+      switch (method) {
+        case "POST":
+          return getAxiosClient().post<T>(url, requestBody, {
+            params,
+            ...requestOptions,
           });
-        break;
-
-      case "POST":
-        getAxiosClient()
-          .post<T>(url, body, { ...options })
-          .then((resp) => {
-            data.value = resp as unknown as T;
-          })
-          .catch((e) => {
-            error.value = e;
+        case "DELETE":
+          return getAxiosClient().delete<T>(url, { ...requestOptions });
+        case "PUT":
+          return getAxiosClient().put<T>(url, requestBody, {
+            params,
+            ...requestOptions,
           });
-        break;
-
-      case "DELETE":
-        getAxiosClient()
-          .delete<T>(url, { ...options })
-          .then((resp) => {
-            data.value = resp as unknown as T;
-          })
-          .catch((e) => {
-            error.value = e;
-          });
-        break;
-
-      case "PUT":
-        getAxiosClient()
-          .put<T>(url, body, { ...options })
-          .then((resp) => {
-            data.value = resp as unknown as T;
-          })
-          .catch((e) => {
-            error.value = e;
-          });
-        break;
-
-      default:
-        break;
+        default:
+          return getAxiosClient().get<T>(url, { params, ...requestOptions });
+      }
     }
-    // console.log("HOHO", data, error, data.value?.records);
-    const test = computed(() => !data.value && !error.value);
-    const isLoading = ref(!data && !error);
-    console.log(isLoading, isLoading.value);
-    // watch(test, () => console.log(test));
-    // isLoading.value = !data.value && !error.value;
-    console.log(
-      "HOHO",
-      test,
-      data.value,
-      error.value,
-      !data.value && !error.value,
-      isLoading
+    const isLoading = ref(true);
+    const { state, execute, isReady, error } = useAsyncState<T>(
+      () => getRequest(),
+      <T>{},
+      {
+        immediate: requestOptions?.immediate,
+      }
     );
-    return { data, error, isLoading };
+    
+    watch([state, error], () => {
+      if (state || error) isLoading.value = false;
+    });
+
+    return {
+      data: state,
+      mutate: execute,
+      error,
+      isReady,
+      isLoading,
+    };
   }
 };
+
+function isRef(arg: any): arg is Ref {
+  return arg && arg.value && typeof(arg.value) == 'object';
+}

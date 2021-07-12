@@ -11,47 +11,71 @@
     </div>
     <a-button type="primary" class="rounded-md" @click="showAPIKeyModal">Create New API</a-button>
   </div>
-  <div class="py-6">
+  <div>
     <ErrorView v-if="[STATES.ERROR, STATES.STALE_IF_ERROR].includes(state)"></ErrorView>
-    <a-list
-      v-else
-      item-layout="horizontal"
-      :data-source="apiList"
+    <a-table
+      :tableLayout="'fixed'"
+      id="apiKeysList"
       :pagination="{ pageSize: 7 }"
-      :loading="[STATES.PENDING].includes(state)"
-      class="px-6 py-4 bg-white apiListContainer"
+      :dataSource="apiList"
+      :columns="columns"
+      :rowKey="(key) => key.id"
+      @change="handleTableChange"
+      :loading="
+      [STATES.PENDING].includes(state)
+    "
     >
-      <template #renderItem="{ item }">
-        <a-list-item>
-          <template #extra>
-            <div class="w-32">
-              <div
-                class="flex flex-row items-center justify-end"
-                v-if="item.created_by === currentUserId"
-              >
-                <a-button class="mx-4" shape="circle" @click="copyAPI(item)">
-                  <fa icon="fal copy"></fa>
-                </a-button>
-                <a-button shape="circle" @click="deleteAPI(item.id)">
-                  <fa icon="fal trash-alt" class="text-red-600"></fa>
-                </a-button>
-              </div>
-            </div>
-          </template>
-          <a-list-item-meta>
-            <template #title>{{ item.name }}</template>
-            <template #description>{{ timeAgo(item.created_at) }} ago</template>
-          </a-list-item-meta>
-          <div
-            class="mx-3 cursor-pointer"
-            @click="()=>handleClickUser(item.created_by)"
-          >{{item.created_by}}</div>
-          <div
-            class="overflow-x-hidden text-left w-44 hide-initial"
-          >{{ item.code.slice(item.code.length - 22) }}</div>
-        </a-list-item>
+      <template #name="{ text: key }">
+        <div class="flex items-center align-middle">
+          <div class="truncate">
+            <div class="truncate">{{ key.name }}</div>
+            <p class="mb-0 text-gray-400">{{ timeAgo(key.created_at) }} ago</p>
+          </div>
+        </div>
       </template>
-    </a-list>
+      <template #createdBy="{ text: key }">
+        <div
+          class="truncate cursor-pointer"
+          @click="()=>handleClickUser(key.created_by)"
+        >{{key.created_by}}</div>
+      </template>
+      <template #apiKey="{ text: key }">
+        <div class="inline-flex items-center px-2 py-0.5 bg-gray-100 rounded text-gray-dark">
+          <div>{{ key.code.slice(key.code.length - 22) }}</div>
+        </div>
+      </template>
+      <template #actions="{ text: key }">
+        <a-button-group>
+          <a-tooltip placement="bottom">
+            <template #title>
+              <span>Copy API Key</span>
+            </template>
+            <a-button
+              size="small"
+              @click="copyAPI(key)"
+              class="mr-3.5 rounded"
+              :diasbled="key.created_by !== currentUserId"
+            >
+              <fa icon="fal copy"></fa>
+            </a-button>
+          </a-tooltip>
+
+          <a-tooltip :diasbled="key.created_by !== currentUserId" placement="bottom">
+            <template #title>
+              <span>Delete API Key</span>
+            </template>
+            <a-button
+              size="small"
+              class="rounded"
+              @click="deleteAPI(key.id)"
+              :diasbled="key.created_by !== currentUserId"
+            >
+              <fa icon="fal trash-alt" class="text-red-600"></fa>
+            </a-button>
+          </a-tooltip>
+        </a-button-group>
+      </template>
+    </a-table>
   </div>
   <div>
     <a-modal v-model:visible="isCreateAPI" title="Create API Key">
@@ -87,6 +111,34 @@ import { useUserPreview } from "~/composables/user/showUserPreview";
 
 export default defineComponent({
   components: { ErrorView },
+  data() {
+    return {
+      columns: [
+        {
+          title: "Name",
+          key: "name",
+          width: 200,
+          slots: { customRender: "name" },
+        },
+        {
+          title: "Created By",
+          key: "created_by",
+          width: 150,
+          slots: { customRender: "createdBy" },
+        },
+        {
+          title: "API Key",
+          width: 120,
+          slots: { customRender: "apiKey" },
+        },
+        {
+          width: 100,
+          title: "Actions",
+          slots: { customRender: "actions" },
+        },
+      ],
+    };
+  },
   setup() {
     const keycloak: any = inject("$keycloak");
     const {
@@ -184,19 +236,7 @@ export default defineComponent({
   },
 });
 </script>
-<style lang="less" scoped>
-.apiListContainer {
-  min-height: 350px;
-}
-.hide-initial {
-  content: "";
-  border-top-left-radius: 4px;
-  border-bottom-left-radius: 4px;
-  background: rgb(248, 248, 253);
-  background: linear-gradient(
-    90deg,
-    rgba(248, 248, 253, 1) 56%,
-    rgba(248, 248, 253, 0.7) 100%
-  );
-}
+
+<style lang="less">
+@import "~/styles/admin-page-table.less";
 </style>

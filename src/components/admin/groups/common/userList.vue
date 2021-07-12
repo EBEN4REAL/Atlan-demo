@@ -113,7 +113,7 @@ export default defineComponent({
     const selectedIds = ref([]);
     const searchText = ref("");
     const userListAPIParams = reactive({
-      limit: 1,
+      limit: 10,
       offset: 0,
       sort: "first_name",
       filter: {

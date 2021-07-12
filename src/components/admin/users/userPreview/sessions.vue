@@ -4,35 +4,28 @@
       <a-popover
         title="Sign Out All Sessions"
         trigger="click"
-        :visible="clicked"
+        :visible="showDeleteSessionsConfirmPopover"
         @visibleChange="handleClickChange"
         placement="bottom"
       >
         <template #content>
           <div>
-            <div>Are you sure you want to signout all sessions?</div>
+            <div class="mb-2">Are you sure you want to signout all sessions?</div>
             <div class="flex justify-end">
-              <a-button @click="hide" class="mr-2">Cancel</a-button>
-              <a-button @click="signOutAllSessions" danger>Yes</a-button>
+              <a-button @click="hideDeleteSessionsConfirmPopover" class="mr-2">Cancel</a-button>
+              <a-button
+                @click="()=>{signOutAllSessions();hideDeleteSessionsConfirmPopover();}"
+                type="danger"
+              >Yes</a-button>
             </div>
           </div>
         </template>
         <a-button class="mb-3" type="danger" ghost :loading="signOutAllSessionsLoading">
-          <span class>
-            <fa class="mr-2" icon="sign-out" />Sign out all sessions
+          <span>
+            <fa class="mr-2" style="vertical-align: middle;" icon="fal sign-out" />Sign out all sessions
           </span>
         </a-button>
       </a-popover>
-      <!-- <a-button
-        class="mb-3"
-        ghost
-        @click="showDeleteAllSessionsConfirm"
-        :loading="signOutAllSessionsLoading"
-      >
-        <span class="text-error">
-          <fa class="mr-2" icon="sign-out" />Sign out all sessions
-        </span>
-      </a-button>-->
     </div>
     <a-table
       :loading="[STATES.PENDING].includes(state) ||
@@ -45,13 +38,17 @@
     >
       <template #time="{text:session}">
         <a-popover placement="bottom">
-          <template #content>{{ session.last_accessed_string }}</template>
+          <template #content>
+            <span class="text-gray-dark">{{ session.last_accessed_string }}</span>
+          </template>
           {{ session.last_accessed_time_ago }}
         </a-popover>
       </template>
       <template #action="{text:session}">
         <a-popover placement="bottom">
-          <template #content>{{ session.started_at_string }}</template>
+          <template #content>
+            <span class="text-gray-dark">{{ session.started_at_string }}</span>
+          </template>
           {{ session.started_time_ago }}
         </a-popover>
       </template>
@@ -59,8 +56,15 @@
       <template #actions="{text:session}">
         <a-popover class="cursor-pointer" trigger="click" placement="bottom">
           <template #content>
-            <span class="text-error" @click="signOutUserSession(session.id)">
-              <fa class="mr-2" icon="sign-out" />Sign Out Session
+            <span class="cursor-pointer text-error" @click="signOutUserSession(session.id)">
+              <div v-if="signOutSessionByIdLoading">
+                <fa
+                  style="vertical-align:middle;"
+                  icon="fal circle-notch"
+                  class="mr-1 animate-spin"
+                />
+              </div>
+              <fa class="mr-2" style="vertical-align: middle;" icon="fal sign-out" />Sign Out Session
             </span>
           </template>
           <fa icon="fal cog" />
@@ -85,12 +89,12 @@ export default defineComponent({
     },
   },
   setup(props, context) {
-    const clicked = ref(false);
-    const hide = () => {
-      clicked.value = false;
+    const showDeleteSessionsConfirmPopover = ref(false);
+    const hideDeleteSessionsConfirmPopover = () => {
+      showDeleteSessionsConfirmPopover.value = false;
     };
     const handleClickChange = (visible) => {
-      clicked.value = visible;
+      showDeleteSessionsConfirmPopover.value = visible;
     };
     const sessionParams = reactive({ max: 100, first: 0 });
     const {
@@ -104,6 +108,7 @@ export default defineComponent({
     });
     const { state, STATES } = swrvState(data, error, isValidating);
     let signOutAllSessionsLoading = ref(false);
+    let signOutSessionByIdLoading = ref(false);
     let sessionList = computed(() => {
       if (data.value && data.value.length) {
         return data.value.map((session: any) => {
@@ -140,20 +145,21 @@ export default defineComponent({
       );
     };
     const signOutUserSession = (sessionId: string) => {
-      const {
-        data,
-        isReady,
-        error,
-        isLoading: signOutSessionByIdLoading,
-      } = User.SignOutSessionById(sessionId);
-      watch([data, isReady, error, signOutSessionByIdLoading], () => {
-        if (isReady && !error.value && !signOutSessionByIdLoading.value) {
-          fetchUserSessions();
-          message.success("User session ended");
-        } else if (error && error.value) {
-          message.error("Unable to sign user out, please try again");
-        }
-      });
+      const { data, isReady, error, isLoading } =
+        User.SignOutSessionById(sessionId);
+      watch(
+        [data, isReady, error, isLoading],
+        () => {
+          signOutSessionByIdLoading.value = isLoading.value;
+          if (isReady && !error.value && !signOutSessionByIdLoading.value) {
+            fetchUserSessions();
+            message.success("User session ended");
+          } else if (error && error.value) {
+            message.error("Unable to sign user out, please try again");
+          }
+        },
+        { immediate: true }
+      );
     };
     const showDeleteAllSessionsConfirm = () => {
       Modal.confirm({
@@ -235,9 +241,10 @@ export default defineComponent({
       columns,
       signOutAllSessionsLoading,
       signOutAllSessions,
-      hide,
+      hideDeleteSessionsConfirmPopover,
       handleClickChange,
-      clicked,
+      showDeleteSessionsConfirmPopover,
+      signOutSessionByIdLoading,
     };
   },
 });

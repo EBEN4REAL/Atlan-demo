@@ -1,6 +1,12 @@
 <template>
   <div class="max-h-full">
-    <div v-if="selectedGroup && selectedGroup.id">
+    <div
+      class="flex items-center justify-center h-full"
+      v-if="[STATES.ERROR, STATES.STALE_IF_ERROR].includes(state)"
+    >
+      <ErrorView></ErrorView>
+    </div>
+    <div v-else-if="selectedGroup && selectedGroup.id">
       <div class="flex mb-3">
         <div>
           <a-avatar shape="square" class="mr-1 ant-tag-blue text-gray avatars" :size="48">
@@ -20,7 +26,12 @@
           <template #tab>
             <span class="mb-0">{{ tab.name }}</span>
           </template>
-          <component :is="tab.component" :selectedGroup="selectedGroup" @refreshTable="getGroup" />
+          <component
+            class="overflow-auto component-height"
+            :is="tab.component"
+            :selectedGroup="selectedGroup"
+            @refreshTable="getGroup"
+          />
         </a-tab-pane>
       </a-tabs>
     </div>
@@ -36,11 +47,13 @@ import About from "./about.vue";
 import Members from "./members.vue";
 import { useGroup } from "~/composables/group/useGroups";
 import { useGroupPreview } from "~/composables/drawer/showGroupPreview";
+import ErrorView from "@common/error/index.vue";
 export default defineComponent({
   name: "GroupPreview",
   components: {
     About,
     Members,
+    ErrorView,
   },
   setup(props, context) {
     const { groupId, groupAlias, defaultTab, uniqueAttribute, finalTabs } =
@@ -52,7 +65,7 @@ export default defineComponent({
         $and: [{ name: groupAlias.value }],
       };
     else filterObj = { $and: [{ id: groupId.value }] };
-    const { groupList, getGroup } = useGroup({
+    const { groupList, getGroup, state, STATES } = useGroup({
       limit: 1,
       offset: 0,
       // sort: "alias",
@@ -70,10 +83,16 @@ export default defineComponent({
       getGroup,
       activeKey,
       selectedGroup: groupObj,
+      state,
+      STATES,
     };
   },
 });
 </script>
   
-  <style></style>
+<style lang="less" scoped>
+.component-height {
+  max-height: calc(100vh - 12rem);
+}
+</style>
   

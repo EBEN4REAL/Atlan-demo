@@ -48,7 +48,7 @@
           @click="{searchText='';handleSearch();}"
         >Clear</span>-->
       </div>
-      <div v-else class="min-h-screen mt-4">
+      <div v-else class="mt-4 overflow-y-auto member-list-height">
         <div v-for="user in memberList.value" :key="user.id" class="my-2">
           <div class="flex justify-between cursor-pointer">
             <div class="flex items-center" @click="() => handleClickUser(user.username)">
@@ -303,5 +303,8 @@ export default defineComponent({
 });
 </script>
 
-<style>
+<style lang="less" scoped>
+.member-list-height {
+  max-height: 68vh;
+}
 </style>

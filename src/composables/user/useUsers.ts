@@ -129,7 +129,7 @@ export default function useUsers(userListAPIParams: {
       if (userListAPIParams.offset > 0) {
         localUsersList.value = [
           ...localUsersList.value,
-          ...data.value.records.map((user: any) => getFormattedUser(user)),
+          ...data?.value?.records?.map((user: any) => getFormattedUser(user)),
         ];
       } else {
         localUsersList.value =

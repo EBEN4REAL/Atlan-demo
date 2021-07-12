@@ -3,6 +3,12 @@
     <div class="flex items-center justify-center h-full" v-if="isLoading">
       <a-spin />
     </div>
+    <div
+      class="flex items-center justify-center h-full"
+      v-if="[STATES.ERROR, STATES.STALE_IF_ERROR].includes(state)"
+    >
+      <ErrorView></ErrorView>
+    </div>
     <div v-else-if="selectedUser && selectedUser.id">
       <div class="flex mb-3">
         <avatar
@@ -15,17 +21,16 @@
           class="mr-2"
         />
         <div class="ml-3">
-          <div class="text-lg font-bold capitalize cursor-pointer text-gray">
-            {{ selectedUser.name }}
-          </div>
+          <div class="text-lg font-bold capitalize cursor-pointer text-gray">{{ selectedUser.name }}</div>
         </div>
       </div>
-      <a-tabs>
+      <a-tabs :defaultActiveKey="activeKey">
         <a-tab-pane v-for="tab in tabs" :key="tab.name">
           <template #tab>
             <span class="mb-0">{{ tab.name }}</span>
           </template>
           <component
+            class="overflow-auto component-height"
             :isCurrentUser="isCurrentUser"
             :is="tab.component"
             :selectedUser="selectedUser"
@@ -50,6 +55,7 @@ import whoami from "~/composables/user/whoami";
 import Avatar from "~/components/common/avatar.vue";
 import { useUserPreview } from "~/composables/user/showUserPreview";
 import { useUser } from "~/composables/user/useUsers";
+import ErrorView from "@common/error/index.vue";
 export default defineComponent({
   name: "UserPreview",
   components: {
@@ -58,6 +64,7 @@ export default defineComponent({
     AccessLogs,
     Sessions,
     Avatar,
+    ErrorView,
   },
   setup(props, context) {
     const {
@@ -65,14 +72,16 @@ export default defineComponent({
       username: userUsername,
       uniqueAttribute,
       finalTabs,
+      defaultTab,
     } = useUserPreview();
+    const activeKey = defaultTab;
     let filterObj = {};
     if (uniqueAttribute.value === "username")
       filterObj = {
         $and: [{ email_verified: true }, { username: userUsername.value }],
       };
     else filterObj = { $and: [{ email_verified: true }, { id: userId.value }] };
-    const { userList, getUser, isLoading } = useUser({
+    const { userList, getUser, isLoading, state, STATES } = useUser({
       limit: 1,
       offset: 0,
       sort: "first_name",
@@ -105,10 +114,17 @@ export default defineComponent({
       tabs: finalTabs,
       handleUserUpdate,
       isLoading,
+      state,
+      STATES,
+      activeKey,
     };
   },
 });
 </script>
     
-    <style></style>
+<style lang="less" scoped>
+.component-height {
+  max-height: calc(100vh - 12rem);
+}
+</style>
     

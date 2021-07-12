@@ -63,16 +63,30 @@
                     <fa icon="fal plus" class="mr-2"></fa>Add Members
                   </div>
                 </a-menu-item>
-                <a-menu-item key="1" @click="handleToggleDefault(group)">
+                <a-menu-item key="1">
                   <div class="flex">
-                    <a-checkbox />
-                    {{group.isDefault==='true'?'Unmark':'Mark'}} as default
+                    <div v-if="markAsDefaultLoading">
+                      <fa
+                        style="vertical-align:middle;"
+                        icon="fal circle-notch"
+                        class="mr-1 animate-spin"
+                      />
+                    </div>
+                    <a-checkbox
+                      @change="handleToggleDefault(group)"
+                      :checked="group.isDefault==='true'"
+                    >Mark as default</a-checkbox>
                   </div>
-                  <!-- <a-spin size="small" v-if="markAsDefaultLoading"></a-spin> -->
-                  <!-- <div class="text-xs">New users will be automatically added to default groups</div> -->
                 </a-menu-item>
                 <a-menu-item key="2" @click="() => handleDeleteGroup(group.id)">
                   <div class="flex text-red-600">
+                    <div v-if="deleteGroupLoading">
+                      <fa
+                        style="vertical-align:middle;"
+                        icon="fal circle-notch"
+                        class="mr-1 animate-spin"
+                      />
+                    </div>
                     <fa icon="fal trash-alt" class="mr-2"></fa>Delete
                   </div>
                 </a-menu-item>
@@ -114,6 +128,8 @@ export default defineComponent({
     const defaultTab = ref("about");
     const showGroupPreview = ref(false);
     const markAsDefaultLoading = ref(false);
+    const deleteGroupLoading = ref(false);
+    const showActionsDropdown = ref(false);
     const toggleAddGroupModal = () => {
       isAddGroupModalVisible.value = !isAddGroupModalVisible.value;
     };
@@ -201,6 +217,7 @@ export default defineComponent({
       watch(
         [data, isReady, error, isLoading],
         () => {
+          deleteGroupLoading.value = isLoading.value;
           if (isReady && !error.value && !isLoading.value) {
             getGroupList();
             message.success("Group Removed");
@@ -287,6 +304,8 @@ export default defineComponent({
       defaultTab,
       handleToggleDefault,
       markAsDefaultLoading,
+      deleteGroupLoading,
+      showActionsDropdown,
     };
   },
   data() {

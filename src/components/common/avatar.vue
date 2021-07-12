@@ -8,7 +8,7 @@
         :show-upload-list="false"
       >
         <div
-          class="hidden text-center border-2 rounded-md border-primary-300 bg-primary-muted sm:block"
+          class="hidden text-center border-2 border-white rounded-md bg-primary-muted sm:block"
           :style="{ width: avatarSize + 'px', height: avatarSize + 'px' }"
           v-if="!isReady && uploadStarted"
         >
@@ -23,7 +23,7 @@
           :key="uploadKey"
           :shape="avatarShape"
           :size="avatarSize"
-          class="hidden border-2 rounded-md ant-tag-blue text-primary border-primary-300 bg-primary-muted sm:block"
+          class="hidden border-2 border-white rounded-md ant-tag-blue text-primary bg-primary-muted sm:block"
           :src="updatedImageUrl"
         >{{ getNameInitials(getNameInTitleCase(avatarName)) }}</a-avatar>
       </a-upload>
@@ -33,7 +33,7 @@
         :key="uploadKey"
         :shape="avatarShape"
         :size="avatarSize"
-        class="hidden border-2 rounded-md ant-tag-blue text-primary border-primary-300 bg-primary-muted sm:block"
+        class="hidden border-2 border-white rounded-md ant-tag-blue text-primary bg-primary-muted sm:block"
         :src="updatedImageUrl"
       >{{ getNameInitials(getNameInTitleCase(avatarName)) }}</a-avatar>
     </div>

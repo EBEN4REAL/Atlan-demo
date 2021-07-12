@@ -39,8 +39,9 @@ export const useAPI = <T>(
 ) => {
   const url = keyMaps[key]({ ...pathVariables });
 
-  const requestBody = isRef(body) ? body.value : body
-  const requestOptions = isRef(options) ? options.value : options;  
+  // const requestBody = isRef(body) ? body.value : body
+  // const requestOptions = isRef(options) ? options.value : options;
+  // console.log(requestBody.value, 'what')
 
   if (cache) {
     // If using cache, make a generic swrv request
@@ -57,18 +58,18 @@ export const useAPI = <T>(
         // Choose the fetcher function based on the method type
         switch (method) {
           case "GET":
-            return fetcher(url, params, requestOptions);
+            return fetcher(url, params, isRef(options) ? options.value : options);
           case "POST":
-            return fetcherPost(url, requestBody, requestOptions);
+            return fetcherPost(url, isRef(body) ? body.value : body, isRef(options) ? options.value : options);
           case "DELETE":
-            return deleter(url, requestOptions);
+            return deleter(url, isRef(options) ? options.value : options);
           case "PUT":
-            return updater(url, requestBody, requestOptions);
+            return updater(url, isRef(body) ? body.value : body, isRef(options) ? options.value : options);
           default:
-            return fetcher(url, params, requestOptions);
+            return fetcher(url, params, isRef(options) ? options.value : options);
         }
       },
-      requestOptions
+      isRef(options) ? options.value : options
     );
 
     const isLoading = ref(!data && !error);
@@ -77,19 +78,19 @@ export const useAPI = <T>(
     function getRequest(): any {
       switch (method) {
         case "POST":
-          return getAxiosClient().post<T>(url, requestBody, {
+          return getAxiosClient().post<T>(url, isRef(body) ? body.value : body, {
             params,
-            ...requestOptions,
+            ...(isRef(options) ? options.value : options),
           });
         case "DELETE":
-          return getAxiosClient().delete<T>(url, { ...requestOptions });
+          return getAxiosClient().delete<T>(url, { ...(isRef(options) ? options.value : options) });
         case "PUT":
-          return getAxiosClient().put<T>(url, requestBody, {
+          return getAxiosClient().put<T>(url, isRef(body) ? body.value : body, {
             params,
-            ...requestOptions,
+            ...(isRef(options) ? options.value : options),
           });
         default:
-          return getAxiosClient().get<T>(url, { params, ...requestOptions });
+          return getAxiosClient().get<T>(url, { params, ...(isRef(options) ? options.value : options) });
       }
     }
     const isLoading = ref(true);
@@ -97,10 +98,10 @@ export const useAPI = <T>(
       () => getRequest(),
       <T>{},
       {
-        immediate: requestOptions?.immediate,
+        immediate: (isRef(options) ? options.value : options)?.immediate,
       }
     );
-    
+
     watch([state, error], () => {
       if (state || error) isLoading.value = false;
     });
@@ -116,5 +117,5 @@ export const useAPI = <T>(
 };
 
 function isRef(arg: any): arg is Ref {
-  return arg && arg.value && typeof(arg.value) == 'object';
+  return arg && arg.value && typeof (arg.value) == 'object';
 }

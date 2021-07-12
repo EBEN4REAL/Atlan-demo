@@ -2,7 +2,19 @@
   <div class="flex flex-col px-2 space-y-3">
     <Terms :item="item" :key="item.guid"></Terms>
 
-    <Classifications :item="item" :key="item.guid"></Classifications>
+    <Classifications
+      :item="item"
+      :key="item.guid"
+      :selectedAssetData="selectedAssetData"
+      :availableClassificationsForLink="availableClassificationsForLink"
+      @addClassificationToSelectedAsset="addClassificationToSelectedAsset"
+      @removeClassificationFromSelectedAsset="
+        removeClassificationFromSelectedAsset
+      "
+      @updateAvailableClassificationsForLink="
+        updateAvailableClassificationsForLink
+      "
+    ></Classifications>
     <!-- <StatusBadge :status="status(item)" :key="item.guid"></StatusBadge> -->
   </div>
 </template>
@@ -23,8 +35,37 @@ export default defineComponent({
         return {};
       },
     },
+    selectedAssetData: {
+      type: Object,
+      required: false,
+      default(): any {
+        return {};
+      },
+    },
+    availableClassificationsForLink: {
+      type: Array,
+      required: false,
+      default(): any {
+        return [];
+      },
+    },
   },
-  setup(props, { emit }) {},
+  setup(props, { emit }) {
+    const removeClassificationFromSelectedAsset = () => {
+      emit("removeClassificationFromSelectedAsset");
+    };
+    const addClassificationToSelectedAsset = () => {
+      emit("addClassificationToSelectedAsset");
+    };
+    const updateAvailableClassificationsForLink = () => {
+      emit("updateAvailableClassificationsForLink");
+    };
+    return {
+      updateAvailableClassificationsForLink,
+      addClassificationToSelectedAsset,
+      removeClassificationFromSelectedAsset,
+    };
+  },
 });
 </script>
 

@@ -23,7 +23,18 @@
         </div>
       </template>
       <!-- <Properties :item="item"></Properties> -->
-      <Governance :item="item"></Governance>
+      <Governance
+        :item="item"
+        :selectedAssetData="selectedAssetData"
+        :availableClassificationsForLink="availableClassificationsForLink"
+        @addClassificationToSelectedAsset="addClassificationToSelectedAsset"
+        @removeClassificationFromSelectedAsset="
+          removeClassificationFromSelectedAsset
+        "
+        @updateAvailableClassificationsForLink="
+          updateAvailableClassificationsForLink
+        "
+      ></Governance>
     </a-collapse-panel>
     <a-collapse-panel key="heirarchy" class="bg-transparent">
       <template #header>
@@ -53,10 +64,6 @@ import Details from "./details/index.vue";
 import Heirarchy from "./heirarchy/index.vue";
 import Governance from "./governance/index.vue";
 import Properties from "./properties/index.vue";
-import useAsset from "~/composables/asset/useAsset";
-import { Classification } from "~/api/atlas/classification";
-import { useDiscoveryStore } from "~/pinia/discovery";
-
 export default defineComponent({
   components: { Details, Heirarchy, Governance, Properties },
   props: {
@@ -67,29 +74,36 @@ export default defineComponent({
         return {};
       },
     },
+    selectedAssetData: {
+      type: Object,
+      required: false,
+      default() {
+        return {};
+      },
+    },
+    availableClassificationsForLink: {
+      type: Array,
+      required: false,
+      default(): any {
+        return [];
+      },
+    },
   },
-  setup(props) {
-    const store = useDiscoveryStore();
+  setup(props, { emit }) {
     let activeKey = ref("details");
-    // const { response, error, loading, mutate } = useAsset({
-    //   entityId: props.item.guid,
-    // });
-
-    // const getAssetEntitites = (data: Ref): any => {
-    //   if (data.value?.entities.length > 0) return data.value?.entities[0];
-    //   return {};
-    // };
-    // watch([response, error], () => {
-    //   if (response.value && error.value == undefined) {
-    //     console.log(response.value, "dataRes");
-    //     const entities = getAssetEntitites(response);
-    //     store.setSelectedAsset(entities);
-    //   } else {
-    //     console.log(error.value, "------ assetInfo failed to fetch ------ ");
-    //   }
-    // });
-
+    const removeClassificationFromSelectedAsset = () => {
+      emit("removeClassificationFromSelectedAsset");
+    };
+    const addClassificationToSelectedAsset = () => {
+      emit("addClassificationToSelectedAsset");
+    };
+    const updateAvailableClassificationsForLink = () => {
+      emit("updateAvailableClassificationsForLink");
+    };
     return {
+      addClassificationToSelectedAsset,
+      removeClassificationFromSelectedAsset,
+      updateAvailableClassificationsForLink,
       activeKey,
     };
   },

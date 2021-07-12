@@ -20,9 +20,10 @@
           <p class="mb-1 text-sm text-gray-400">Select classifications</p>
           <a-select
             v-model:value="selectedClassificationForLink"
+            mode="multiple"
             style="width: 100%"
             @change="handleSelectedClassificationForLink"
-            placeholder="Select a classifications"
+            placeholder="Select one or more classifications"
           >
             <template
               v-for="classification in availableClassificationsForLink"
@@ -122,7 +123,7 @@
     </template>
 
     <div
-      class="px-2 py-1 transition duration-500 ease-in-out rounded-lg  hover:bg-gray-50 hover:border"
+      class="px-2 py-1 transition duration-500 ease-in-out rounded-lg hover:bg-gray-50 hover:border"
     >
       <p class="mb-1 text-sm tracking-wide text-gray-400">Classifications</p>
       <div class="flex flex-wrap items-center gap-x-1">
@@ -132,7 +133,7 @@
         >
           <div class="flex m-1 mb-1 rounded-md">
             <div
-              class="flex items-center px-2 py-2 leading-none align-middle cursor-pointer  bg-primary-300 text-primary-400 bg-opacity-10 hover:bg-primary-500 hover:text-white drop-shadow-sm"
+              class="flex items-center px-2 py-2 leading-none align-middle cursor-pointer bg-primary-300 text-primary-400 bg-opacity-10 hover:bg-primary-500 hover:text-white drop-shadow-sm"
               @click.prevent.stop="handleClassificationClick"
             >
               <fa
@@ -153,7 +154,7 @@
                   ? true
                   : false
               "
-              class="flex items-center justify-center p-1 px-2 border-none  bg-primary-300 hover:bg-primary-500 hover:text-white bg-opacity-10"
+              class="flex items-center justify-center p-1 px-2 border-none bg-primary-300 hover:bg-primary-500 hover:text-white bg-opacity-10"
             >
               <span
                 class="flex items-center justify-center"
@@ -172,7 +173,7 @@
         </template>
         <a-button
           @click.stop.prevent="openLinkClassificationPopover"
-          class="flex items-center justify-center p-1 px-2 ml-1  bg-primary-300 hover:bg-primary-500 hover:text-white bg-opacity-10"
+          class="flex items-center justify-center p-1 px-2 ml-1 bg-primary-300 hover:bg-primary-500 hover:text-white bg-opacity-10"
         >
           <span class="flex items-center justify-center">
             <fa icon="fal plus" class="" />
@@ -192,8 +193,7 @@
 <script lang="ts">
 import { defineComponent, ref, computed, watch, toRaw, reactive } from "vue";
 import { Classification } from "~/api/atlas/classification";
-import { useDiscoveryStore } from "~/pinia/discovery";
-
+import { useClassificationStore } from "~/components/admin/classifications/_store";
 export default defineComponent({
   props: {
     item: {
@@ -203,9 +203,24 @@ export default defineComponent({
         return {};
       },
     },
+    selectedAssetData: {
+      type: Object,
+      required: false,
+      default(): any {
+        return {};
+      },
+    },
+    availableClassificationsForLink: {
+      type: Array,
+      required: false,
+      default(): any {
+        return [];
+      },
+    },
   },
   setup(props, { emit }) {
-    const store = useDiscoveryStore();
+    const selectedAsset = computed(() => props.selectedAssetData);
+    const classificationsStore = useClassificationStore();
     let asset = computed(() => props.item ?? {});
     const linkClassificationPopover = ref(false);
     const linkClassificationStatus = ref("");
@@ -235,7 +250,7 @@ export default defineComponent({
 };
 */
     const assetLinkedClassifcations = computed(
-      () => store.selectedAsset.classifications
+      () => selectedAsset.value.classifications
     );
     console.log(assetLinkedClassifcations, "assetLinkedClassifcations");
 
@@ -255,7 +270,7 @@ export default defineComponent({
         if (isReady && !error.value) {
           unlinkClassificationStatus.value.status = "success";
           unlinkClassificationStatus.value.typeName = null;
-          store.removeClassificationToSelectedAsset(classification);
+          emit("removeClassificationFromSelectedAsset", classification);
         } else {
           unlinkClassificationStatus.value.status = "failed";
           unlinkClassificationStatus.value.typeName = null;
@@ -271,11 +286,9 @@ export default defineComponent({
     };
 
     // fetching classifications
-    const fetchClassificationStatus = ref("");
-    console.log(store.isClassificationsFetched, "fetchedddddd");
 
     let availableClassificationsForLink = computed(
-      () => store.availableClassificationsForLink
+      () => props.availableClassificationsForLink
     );
 
     const linkClassificationData = ref({
@@ -309,7 +322,7 @@ export default defineComponent({
           linkClassificationStatus.value = "success";
           linkClassificationPopover.value = false;
           const classification = payload.value.shift();
-          store.addClassificationToSelectedAsset(classification);
+          emit("addClassificationToSelectedAsset", classification);
           selectedClassificationForLink.value = undefined;
         } else {
           console.log("link failed");
@@ -323,10 +336,11 @@ export default defineComponent({
       linkClassificationPopover.value = false;
     };
 
-    const selectedClassificationForLink = ref(undefined);
+    const selectedClassificationForLink = ref([]);
 
     const handleSelectedClassificationForLink = (typeName) => {
-      linkClassificationData.value.typeName = typeName;
+      // linkClassificationData.value.typeName = typeName;
+      console.log(typeName, "typeName");
     };
 
     const showCreateClassificationForm = () => {
@@ -401,7 +415,8 @@ export default defineComponent({
               createClassificationStatus.value = "success";
               formState.name = "";
               formState.description = "";
-              store.addClassifications(toRaw(classifications));
+              classificationsStore.addClassifications(toRaw(classifications));
+              emit("updateAvailableClassificationsForLink", classifications);
               hideCreateClassificationWindow();
             } else {
               createClassificationStatus.value = "error";

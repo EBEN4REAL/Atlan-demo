@@ -1,13 +1,3 @@
-export interface State {
-  classifications: Array<any>;
-  availableClassificationsForLink: Array<any>;
-  selectedAsset: Object;
-  isClassificationsFetched: boolean;
-}
+export interface State {}
 
-export const state: State = {
-  classifications: [],
-  selectedAsset: {},
-  isClassificationsFetched: false,
-  availableClassificationsForLink: [],
-};
+export const state: State = {};

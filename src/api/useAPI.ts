@@ -8,7 +8,7 @@ import { AsyncStateOptions, useAsyncState } from "@vueuse/core";
 
 interface useGetAPIParams {
   cache?: string | boolean;
-  params?: Record<string, any>;
+  params?: Record<string, any> | URLSearchParams;
   body?: Ref<Record<string, any>> | Record<string, any>;
   pathVariables?: Record<string, any>;
   options?: Ref<IConfig & AxiosRequestConfig & AsyncStateOptions> | (IConfig & AxiosRequestConfig & AsyncStateOptions);

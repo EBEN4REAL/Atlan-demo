@@ -4,6 +4,7 @@ import { State } from "./state";
 export interface Actions extends State, Getters {
   resetClassifications(): void;
   setClassifications(params: any): void;
+  setClassificationsStatus(status: string): void;
   filterClassificationTree(searchText: any): void;
   deleteClassificationByName(classificationName: any): void;
   updateClassificationTree(tree: any): void;
@@ -14,16 +15,20 @@ export const actions: Actions = {
   resetClassifications() {
     this.classifications = [];
     this.classificationTree = [];
-    this.classificationsStatus = "";
+    this.fetchClassificationsStatus = "";
   },
   setClassifications(list) {
     try {
       this.classifications = list;
       const classificationTree = this.transformClassificationTreeData;
       this.classificationTree = classificationTree || [];
+      this.filteredClassificationTree = this.classificationTree;
     } catch (error) {
       console.log("WTF: setClassifications -> error", error);
     }
+  },
+  setClassificationsStatus(status) {
+    this.fetchClassificationsStatus = status;
   },
   initializeFilterTree() {
     this.filteredClassificationTree = this.classificationTree;

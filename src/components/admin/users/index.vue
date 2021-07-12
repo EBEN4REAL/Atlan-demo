@@ -593,7 +593,3 @@ export default defineComponent({
   },
 });
 </script>
-
-<style lang="less">
-@import "~/styles/admin-page-table.less";
-</style>

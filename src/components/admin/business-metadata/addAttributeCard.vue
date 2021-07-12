@@ -72,7 +72,8 @@
               :id="`${attributeInput.data.name}-multiValueSelect`"
               :disabled="isEdit"
               :name="`${attributeInput.data.name}-multiValueSelect`"
-              v-model="attributeInput.data.multiValueSelect"
+              v-model:checked="attributeInput.data.multiValueSelect"
+              @change="emitUpdate"
             />
             <label class="ml-1" :for="`${attributeInput.data.name}-multiValueSelect`">{{
               attributeInput.data.multiValueSelect ? "Enabled" : "Disabled"
@@ -245,8 +246,8 @@ export default defineComponent({
     // * Methods
     const normalize = (attribute: {
       typeName: string;
-      multiValueSelect: any;
-      options: { applicableEntityTypes: any };
+      multiValueSelect: boolean;
+      options: { applicableEntityTypes: object[] };
     }) => {
       if (attribute) {
         return {
@@ -279,6 +280,13 @@ export default defineComponent({
         };
       }
       return attribute;
+    };
+
+    const emitUpdate = () => {
+      context.emit(
+        "updateAttribute",
+        normalize(JSON.parse(JSON.stringify(attributeInput.data)))
+      );
     };
     // * hooks
     onMounted(() => {
@@ -319,7 +327,7 @@ export default defineComponent({
               .filter(t => t.id !== "AtlanSavedQuery"),
       };
     });
-
+    // TODO Improve on the watchers
     watch(
       () => attributeInput.data.options.displayName,
       (state, prevState) => {
@@ -415,6 +423,7 @@ export default defineComponent({
       enumsList,
       finalApplicableTypeNamesOptions,
       selectedEnumOptions,
+      emitUpdate,
     };
   },
 });

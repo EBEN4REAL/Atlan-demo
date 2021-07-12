@@ -1,115 +1,121 @@
 <template>
-  <div class="flex items-center content-between">
-    <p class="mb-0 text-muted text-uppercase font-size-xs">
-      Business Metadata
+  <div class="px-2 py-1">
+    <p class="flex mb-1 text-sm tracking-wide text-gray-400">
+      Business Metadata&nbsp;
       <span
         v-if="
           attributesList.length &&
             attributesList.filter(bmCol => bmCol.attributes && bmCol.attributes.length)
               .length
         "
-        >({{ attributesList.length }})
+      >
+        ({{ attributesList.length }})
       </span>
-      <i
-        class="ml-1"
-        :class="{
-          'far circle-notch spin fast text-gray-500':
-            updateBmAttributesStatus === 'loading',
-          'far fa-times text-danger': updateBmAttributesStatus === 'failed',
-          'far fa-check text-success': updateBmAttributesStatus === 'success',
-        }"
-      ></i>
+      <fa
+        icon="fal circle-notch spin"
+        class="ml-2 mr-1 animate-spin text-grey-600"
+        v-if="updateBmAttributesStatus === 'loading'"
+      />
+      <fa
+        icon="fal times"
+        class="ml-2 mr-1 text-red-600"
+        v-else-if="updateBmAttributesStatus === 'failed'"
+      />
+      <fa
+        icon="fal check"
+        class="ml-2 mr-1 text-green-600"
+        v-else-if="updateBmAttributesStatus === 'success'"
+      />
     </p>
-    <p
-      v-if="!isEditBusinessMetadata && accessLevel === 'editor'"
-      class="mb-0 text-gray-500 cursor-pointer font-size-xs text-hover-primary hover-underline"
-      @click="onEditBusinessMetadataAttributes"
-    >
-      {{ attributesList.length ? "Edit" : "Add" }}
-    </p>
-    <div
-      v-else-if="accessLevel === 'editor'"
-      class="flex items-center justify-content-end"
-    >
-      <p
-        class="mb-0 mr-3 cursor-pointer text-danger font-size-xs hover-underline"
-        @click="onDiscardBmAttributeChanges"
-      >
-        Discard
-      </p>
-      <p
-        class="mb-0 cursor-pointer text-primary font-size-xs hover-underline"
-        @click="onSaveBmAttributeChanges"
-      >
-        Update
-      </p>
-    </div>
+    <BusinessMetadataWidget
+      @updateAttribute="handleUpdateAttribute"
+      :class="x !== attributesList.length ? 'mb-2' : ''"
+      v-for="(bm, x) in attributesList"
+      :key="x"
+      :bm="bm"
+      :originalBM="getBMbyName(bm.bm)"
+    />
   </div>
 </template>
 
 <script lang="ts">
 import { ref, defineComponent, computed, nextTick, watch, onMounted } from "vue";
-import { useBusinessMetadata } from "@/admin/business-metadata/composables/useBusinessMetadata";
+import { BusinessMetadata } from "~/api/atlas/businessMetadata";
+import BusinessMetadataWidget from "@/shared/businessMetadataWidget.vue";
+
+// ? Store
+import { useBusinessMetadataStore } from "~/pinia/businessMetadata";
+import { State } from "~/pinia/businessMetadata/state";
 
 export default defineComponent({
   props: {
     item: {
       type: Object,
-      required: false,
+      required: true,
       default(): any {
         return {};
       },
     },
   },
+  components: { BusinessMetadataWidget },
   setup(props, context) {
+    const store = useBusinessMetadataStore();
     const attributesList = ref([]);
     const originalBmAttributesList = ref([]);
-    const updateBmAttributesStatus = ref([]);
+    const updateBmAttributesStatus = ref("");
     const isEditBusinessMetadata = ref(false);
-    const accessLevel = ref("subscriber");
-
-    const {
-      data: bmResponse,
-      error,
-      isLoading: loading,
-    } = useBusinessMetadata.getBMList();
+    const accessLevel = ref("editor");
 
     // * Computed
-    const businessMetadataList = computed(() => {
-      if (bmResponse?.value?.businessMetadataDefs)
-        return bmResponse.value.businessMetadataDefs.map(
-          (bm: { options: { displayName: any }; name: any; attributeDefs: any[] }) => ({
-            ...bm,
-            options: {
-              ...bm?.options,
-              displayName: bm?.options?.displayName ? bm.options.displayName : bm.name,
-            },
-            attributeDefs: bm.attributeDefs.map(a => {
-              if (a.options?.displayName?.length) return a;
-              return { ...a, options: { ...a.options, displayName: a.name } };
-            }),
-          })
-        );
-      return [];
-    });
+    const businessMetadataList = computed(() => store.getBusinessMetadataList);
 
-    // Methods
-    const handleMissingDisplayNameKey = BMlist => {
-      return BMlist.map((bm: { attributeDefs: any[] }) => {
+    // ? Methods
+    const handleMissingDisplayNameKey = (
+      BMlist:
+        | (object[] & ((state: State) => object[] | null))
+        | { attributeDefs: object[] }[]
+    ) => {
+      return BMlist.map(bm => {
         return {
           ...bm,
-          attributeDefs: bm.attributeDefs.map(a => {
-            return {
-              ...a,
-              // displayName: a.options.displayName || a.name,
-              options: {
-                ...a.options,
-                displayName: a.options.displayName || a.name,
-              },
-            };
-          }),
+          attributeDefs: bm.attributeDefs.map(
+            (a: { options: { displayName: string }; name: string }) => {
+              return {
+                ...a,
+                options: {
+                  ...a.options,
+                  displayName: a.options.displayName || a.name,
+                },
+              };
+            }
+          ),
         };
       });
+    };
+
+    const getUpdatePayload = (updateBM: { bm: string }) => {
+      let mappedBM = {};
+      let finalBM = attributesList.value.map(bm => {
+        if (bm.bm === updateBM.bm) return updateBM;
+        return bm;
+      });
+
+      finalBM.forEach(bm => {
+        mappedBM = {
+          ...mappedBM,
+          [bm.bm]: {},
+        };
+        bm.attributes.forEach(
+          (attr: { name: string; typeName: string; value: string }) => {
+            mappedBM[bm.bm] = {
+              ...mappedBM[bm.bm],
+              [attr.name]:
+                attr.typeName === "date" ? parseInt(attr.value, 10) : attr.value,
+            };
+          }
+        );
+      });
+      return mappedBM;
     };
 
     const setAttributesList = () => {
@@ -123,7 +129,7 @@ export default defineComponent({
             const foundAttributeFromList =
               foundBmFromList && foundBmFromList.attributeDefs
                 ? foundBmFromList.attributeDefs.find(
-                    attr => attr.name === attributeKey.split(".")[1]
+                    (attr: { name: string }) => attr.name === attributeKey.split(".")[1]
                   )
                 : null;
             if (
@@ -142,7 +148,7 @@ export default defineComponent({
                 if (
                   attributesList.value[foundAttributeIndex].attributes &&
                   !attributesList.value[foundAttributeIndex].attributes.find(
-                    attr => attr.name === attributeKey.split(".")[1]
+                    (attr: { name: string }) => attr.name === attributeKey.split(".")[1]
                   )
                 ) {
                   // eslint-disable-next-line
@@ -184,6 +190,49 @@ export default defineComponent({
       }
     };
 
+    /**
+     * Find the required from the BM List and return
+     * @param  {String} name Name of the required BM
+     * @return {Object}  The required BM or null
+     */
+    const getBMbyName = (name: string) => {
+      const requiredBM = businessMetadataList.value.find(
+        (bm: object) => name === bm.name
+      );
+      return requiredBM || null;
+    };
+
+    const handleUpdateAttribute = (value: object) => {
+      // ? compute the payload
+      updateBmAttributesStatus.value = "loading";
+      const { error, isReady, isLoading } = BusinessMetadata.saveAssetBMUpdateChanges(
+        props.item.guid,
+        ref(getUpdatePayload(value))
+      );
+
+      watch([() => isLoading.value, error, isReady], n => {
+        if (isLoading.value) {
+          updateBmAttributesStatus.value = "loading";
+        } else if (error.value) {
+          updateBmAttributesStatus.value = "failed";
+        } else if (isReady.value) {
+          updateBmAttributesStatus.value = "success";
+          setTimeout(async () => {
+            // await this.refreshAssetInAssetsList(this.asset.guid);
+            updateBmAttributesStatus.value = "";
+            // this.originalBmAttributesList = JSON.parse(
+            //   JSON.stringify(this.attributesList)
+            // );
+          }, 1000);
+        }
+      });
+
+      // watch([isReady, error], (n, o) => {
+      //   console.log("watching is ready");
+      //   console.log(n);
+      // });
+    };
+
     onMounted(() => {
       setAttributesList();
     });
@@ -194,6 +243,8 @@ export default defineComponent({
       updateBmAttributesStatus,
       isEditBusinessMetadata,
       accessLevel,
+      handleUpdateAttribute,
+      getBMbyName,
     };
   },
 });

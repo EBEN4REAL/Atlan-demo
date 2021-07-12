@@ -1,4 +1,4 @@
-import { Ref, ref } from "vue";
+import { Ref, ref, watch } from "vue";
 import axios, { AxiosRequestConfig, AxiosResponse } from "axios";
 import useSWRV, { IConfig } from "swrv";
 
@@ -91,13 +91,16 @@ export const useAPI = <T>(
             .get<T>(url, { params, ...options?.value });
       }
     }
+    const isLoading = ref(true);
     const { state, execute, isReady, error } = useAsyncState(() => getRequest(), {}, {
       immediate: options?.value.immediate
     });
 
-
+    watch([state, error], () => {
+      if (state || error) isLoading.value = false;
+    });
     return {
-      data: state, mutate: execute, error, isReady
+      data: state, mutate: execute, error, isReady, isLoading
     }
   }
 };

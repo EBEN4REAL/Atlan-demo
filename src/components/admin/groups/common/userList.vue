@@ -46,10 +46,10 @@
       </div>
     </div>
     <div v-else class="mt-4 overflow-auto">
-      <a-checkbox-group v-model:value="selectedIds" @change="handleChange" class="w-full">
+      <a-checkbox-group class="w-full">
         <div class="flex flex-col w-full">
           <template v-for="user in userList.value" :key="user.id">
-            <a-checkbox :value="user.id" class="flex items-center w-full">
+            <a-checkbox :value="user.id" @change="handleChange" class="flex items-center w-full">
               <span class="flex justify-between mb-2">
                 <div class="flex items-center">
                   <a-avatar shape="circle" class="mr-1 ant-tag-blue text-gray avatars">
@@ -113,7 +113,7 @@ export default defineComponent({
     const selectedIds = ref([]);
     const searchText = ref("");
     const userListAPIParams = reactive({
-      limit: 10,
+      limit: 1,
       offset: 0,
       sort: "first_name",
       filter: {
@@ -126,7 +126,6 @@ export default defineComponent({
     });
     const {
       usersListConcatenated: userList,
-      totalUserCount,
       filteredUserCount,
       getUserList,
       state,
@@ -161,17 +160,27 @@ export default defineComponent({
         userList.value.value.length,
         userListAPIParams.offset,
         userListAPIParams.limit,
-        searchText.value ? filteredUserCount.value : totalUserCount.value
+        filteredUserCount.value //filtered value because we are filtering users in the getUsers API call and getting only the users that have email_verified as true.
       );
     });
-    const handleChange = () => {
+    const handleChange = (event) => {
+      if (
+        event.target.checked &&
+        !selectedIds.value.includes(event.target.value)
+      ) {
+        selectedIds.value.push(event.target.value);
+      } else if (!event.target.checked) {
+        const index = selectedIds.value.indexOf(event.target.value);
+        if (index > -1) {
+          selectedIds.value.splice(index, 1);
+        }
+      }
       context.emit("updateSelectedUsers", selectedIds.value);
     };
     return {
       searchText,
       showLoadMore,
       userList,
-      totalUserCount,
       filteredUserCount,
       getUserList,
       handleSearch,

@@ -46,10 +46,14 @@
       </div>
     </div>
     <div v-else class="mt-4 overflow-auto">
-      <a-checkbox-group v-model:value="selectedIds" @change="handleChange" class="w-full">
+      <a-checkbox-group class="w-full">
         <div class="flex flex-col w-full">
           <template v-for="group in groupList.value" :key="group.id">
-            <a-checkbox :value="group.id" class="flex items-center w-full">
+            <a-checkbox
+              :value="group.id"
+              class="flex items-center w-full"
+              @change="handleChange"
+            >
               <div class="flex justify-between mb-2">
                 <div class="flex items-center">
                   <!-- <a-avatar
@@ -149,9 +153,21 @@ export default defineComponent({
         searchText.value ? filteredGroupsCount.value : totalGroupsCount.value
       );
     });
-    const handleChange = () => {
+       const handleChange = (event) => {
+      if (
+        event.target.checked &&
+        !selectedIds.value.includes(event.target.value)
+      ) {
+        selectedIds.value.push(event.target.value);
+      } else if (!event.target.checked) {
+        const index = selectedIds.value.indexOf(event.target.value);
+        if (index > -1) {
+          selectedIds.value.splice(index, 1);
+        }
+      }
       context.emit("updateSelectedGroups", selectedIds.value);
     };
+   
     return {
       searchText,
       showLoadMore,

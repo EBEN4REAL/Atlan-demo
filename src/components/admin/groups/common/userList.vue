@@ -1,7 +1,10 @@
 <template>
   <div>
     <div class="flex flex-row justify-between">
-      <div>
+      <div class="flex">
+        <a-button @click="$emit('showGroupMembers')" class="mr-3">
+          <fa class="text-gray-dark" icon="fal chevron-left" />
+        </a-button>
         <a-input-search
           placeholder="Search Users"
           :allowClear="true"
@@ -11,9 +14,6 @@
         ></a-input-search>
       </div>
       <div v-if="showHeaderButtons">
-        <a-button @click="$emit('showGroupMembers')" class="mr-3">
-          <fa icon="fal chevron-left" />
-        </a-button>
         <a-button
           @click="$emit('addMembersToGroup')"
           type="primary"
@@ -30,28 +30,45 @@
     >
       <ErrorView>
         <div class="mt-3">
-          <a-button size="large" type="primary" ghost @click="()=>{getUserList();}">
+          <a-button
+            size="large"
+            type="primary"
+            ghost
+            @click="
+              () => {
+                getUserList();
+              }
+            "
+          >
             <fa icon="fal sync" class="mr-2"></fa>Try again
           </a-button>
         </div>
       </ErrorView>
     </div>
-    <div v-else class="mt-4 overflow-auto">
+    <div v-else class="pl-4 mt-4 overflow-auto">
       <a-checkbox-group class="w-full">
         <div class="flex flex-col w-full">
           <template v-for="user in userList.value" :key="user.id">
-            <a-checkbox :value="user.id" @change="handleChange" class="flex items-center w-full">
-              <span class="flex justify-between mb-2">
+            <a-checkbox
+              :value="user.id"
+              @change="handleChange"
+              class="flex items-center w-full py-2 border-b border-gray-100"
+            >
+              <span class="flex justify-between ml-3">
                 <div class="flex items-center">
-                  <a-avatar shape="circle" class="mr-1 ant-tag-blue text-gray avatars">
-                    {{
-                    getNameInitials(getNameInTitleCase(user.name))
-                    }}
+                  <a-avatar
+                    shape="circle"
+                    class="mr-1 ant-tag-blue text-gray avatars"
+                  >
+                    {{ getNameInitials(getNameInTitleCase(user.name)) }}
                   </a-avatar>
                   <div class="ml-2">
-                    <div>{{ user.name }}</div>
-                    <div class="text-xs">@{{ user.username }}</div>
-                    <div class="text-xs">{{ user.group_count_string }}</div>
+                    <div class="text-gray">
+                      <span class="mr-2 font-bold">{{ user.name }}</span>
+                      <span class="font-normal"
+                        >({{ user.group_count_string }})</span
+                      >
+                    </div>
                   </div>
                 </div>
               </span>
@@ -60,7 +77,7 @@
         </div>
       </a-checkbox-group>
       <div
-        class="flex justify-center"
+        class="flex justify-center mt-3"
         v-if="
           [STATES.PENDING].includes(state) ||
           [STATES.VALIDATING].includes(state)
@@ -68,7 +85,7 @@
       >
         <a-spin></a-spin>
       </div>
-      <div v-else-if="showLoadMore" class="flex justify-center">
+      <div v-else-if="showLoadMore" class="flex justify-center mt-3">
         <a-button @click="handleLoadMore">load more</a-button>
       </div>
     </div>

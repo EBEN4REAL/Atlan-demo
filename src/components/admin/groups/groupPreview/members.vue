@@ -1,5 +1,5 @@
 <template>
-  <div class="my-3 mr-5">
+  <div class="my-3">
     <div v-if="showGroupMembers">
       <div class="flex flex-row justify-between">
         <div>
@@ -13,7 +13,7 @@
         </div>
         <div>
           <a-button type="primary" ghost @click="handleAddMember"
-            >Add Member</a-button
+            ><fa icon="fal plus" class="mr-2"></fa>Add Member</a-button
           >
         </div>
       </div>
@@ -48,13 +48,13 @@
       </div>
       <div v-else-if="searchText && !filteredMembersCount" class="mt-2">
         {{ `No member with name ${searchText} found.` }}
-        <!-- <span
-          class="cursor-pointer text-gray"
-          @click="{searchText='';handleSearch();}"
-        >Clear</span>-->
       </div>
       <div v-else class="mt-4 overflow-y-auto member-list-height">
-        <div v-for="user in memberList.value" :key="user.id" class="my-2">
+        <div
+          v-for="user in memberList.value"
+          :key="user.id"
+          class="py-2 border-b border-gray-100"
+        >
           <div class="flex justify-between cursor-pointer">
             <div
               class="flex items-center"
@@ -70,41 +70,38 @@
                 }}
               </a-avatar>
               <div class="ml-2">
-                <div>{{ getUserName(user) }}</div>
-                <div>@{{ user.username }}</div>
-                <div>{{ pluralizeString("group", user.group_count) }}</div>
+                <div class="text-gray">
+                  <span class="mr-2 font-bold">{{ getUserName(user) }}</span>
+                  <span class="font-normal">{{
+                    pluralizeString("group", user.group_count)
+                  }}</span>
+                </div>
               </div>
             </div>
-            <a-popover trigger="click" placement="bottom">
-              <template #content>
-                <div
-                  class="
-                    flex
-                    items-center
-                    justify-center
-                    text-error
-                    cursor-pointer
-                    mt-0.5
-                  "
-                >
-                  <div v-if="removeMemberLoading">
-                    <fa
-                      style="vertical-align: middle"
-                      icon="fal circle-notch"
-                      class="mr-1 animate-spin"
-                    />
-                  </div>
-                  <div @click="() => removeUserFromGroup(user.id)">
-                    Remove User
-                  </div>
-                </div>
-              </template>
-              <fa icon="fal cog"></fa>
-            </a-popover>
+            <div class="font-bold">
+              <div
+                class="flex cursor-default text-error-muted"
+                v-if="removeMemberLoading[user.id]"
+              >
+                <fa
+                  style="vertical-align: middle"
+                  icon="fal circle-notch"
+                  class="mr-1 animate-spin"
+                />
+                <div>Removing...</div>
+              </div>
+              <div
+                class="cursor-pointer text-error"
+                v-else
+                @click="() => removeUserFromGroup(user.id)"
+              >
+                Remove
+              </div>
+            </div>
           </div>
         </div>
         <div
-          class="flex justify-center"
+          class="flex justify-center mt-3"
           v-if="
             selectedGroup.memberCount &&
             ([STATES.PENDING].includes(state) ||
@@ -113,7 +110,7 @@
         >
           <a-spin></a-spin>
         </div>
-        <div v-else-if="showLoadMore" class="flex justify-center">
+        <div v-else-if="showLoadMore" class="flex justify-center mt-3">
           <a-button @click="handleLoadMore">load more</a-button>
         </div>
       </div>
@@ -166,7 +163,7 @@ export default defineComponent({
     const searchText = ref("");
     const showAddMemberModal = ref(false);
     const addMemberLoading = ref(false);
-    const removeMemberLoading = ref(false);
+    const removeMemberLoading = ref({});
     const selectedUserIds = ref([]);
     const memberListParams = reactive({
       groupId: props.selectedGroup.id,
@@ -255,7 +252,7 @@ export default defineComponent({
       watch(
         [data, isReady, error, isLoading],
         () => {
-          removeMemberLoading.value = isLoading.value;
+          removeMemberLoading.value[userId] = isLoading.value;
           if (isReady && !error.value && !isLoading.value) {
             memberListParams.params.offset = 0;
             getGroupMembersList();

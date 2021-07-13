@@ -90,7 +90,7 @@
           </div>
         </div>
         <div
-          class="flex justify-center"
+          class="flex justify-center mt-3"
           v-if="
             [STATES.PENDING].includes(state) ||
             [STATES.VALIDATING].includes(state)
@@ -98,7 +98,7 @@
         >
           <a-spin></a-spin>
         </div>
-        <div v-else-if="showLoadMore" class="flex justify-center">
+        <div v-else-if="showLoadMore" class="flex justify-center mt-3">
           <a-button @click="handleLoadMore">load more</a-button>
         </div>
       </div>

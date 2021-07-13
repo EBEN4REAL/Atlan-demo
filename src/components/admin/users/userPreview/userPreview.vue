@@ -1,5 +1,5 @@
 <template>
-  <div class="h-full">
+  <div class="h-full py-6">
     <div class="flex items-center justify-center h-full" v-if="isLoading">
       <a-spin />
     </div>
@@ -10,7 +10,7 @@
       <ErrorView></ErrorView>
     </div>
     <div v-else-if="selectedUser && selectedUser.id">
-      <div class="flex mb-3">
+      <div class="flex px-6 mb-3">
         <avatar
           :imageUrl="imageUrl"
           :allowUpload="isCurrentUser"
@@ -21,23 +21,30 @@
           class="mr-2"
         />
         <div class="ml-3">
-          <div class="text-lg font-bold capitalize text-gray">{{ selectedUser.name }}</div>
+          <div class="text-lg font-bold capitalize text-gray">
+            {{ selectedUser.name }}
+          </div>
           <div class="text-gray-400">
-            <span class="mr-0.25">@{{selectedUser.username}}</span>
+            <span class="mr-0.25">@{{ selectedUser.username }}</span>
             <span v-if="selectedUser.created_at_time_ago">
               |
-              <span class="ml-0.25">Created {{selectedUser.created_at_time_ago}}</span>
+              <span class="ml-0.25"
+                >Created {{ selectedUser.created_at_time_ago }}</span
+              >
             </span>
           </div>
         </div>
       </div>
-      <a-tabs :defaultActiveKey="activeKey">
+      <a-tabs
+        :defaultActiveKey="activeKey"
+        :tabBarStyle="{ paddingLeft: '1rem', paddingRight: '1rem' }"
+      >
         <a-tab-pane v-for="tab in tabs" :key="tab.name">
           <template #tab>
             <span class="mb-0">{{ tab.name }}</span>
           </template>
           <component
-            class="overflow-auto component-height"
+            class="px-6 overflow-auto component-height"
             :isCurrentUser="isCurrentUser"
             :is="tab.component"
             :selectedUser="selectedUser"
@@ -74,6 +81,10 @@ export default defineComponent({
     ErrorView,
   },
   setup(props, context) {
+    const tabBarStyle = {
+      "padding-left": "15rem",
+      "padding-right": "15rem",
+    };
     const {
       userId,
       username: userUsername,
@@ -124,6 +135,7 @@ export default defineComponent({
       state,
       STATES,
       activeKey,
+      tabBarStyle,
     };
   },
 });

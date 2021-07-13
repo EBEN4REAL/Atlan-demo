@@ -1,5 +1,5 @@
 <template>
-  <div class="my-3 mr-5">
+  <div class="my-3">
     <div v-if="showUserGroups">
       <div class="flex flex-row justify-between">
         <div>
@@ -17,7 +17,10 @@
           </a-button>
         </div>
       </div>
-      <div v-if="!selectedUser.group_count" class="flex flex-col items-center justify-center">
+      <div
+        v-if="!selectedUser.group_count"
+        class="flex flex-col items-center justify-center"
+      >
         <div class="text-center">
           <p class="text-lg">This user is not part of any group.</p>
         </div>
@@ -43,40 +46,47 @@
           </a-button>
         </div>
       </div>
-      <div
-        v-else-if="searchText && !filteredGroupCount"
-        class="mt-2"
-      >{{ `No group with name ${searchText} found.` }}</div>
-      <div v-else class="min-h-screen mt-4">
-        <div v-for="group in groupList.value" :key="group.id" class="my-2">
+      <div v-else-if="searchText && !filteredGroupCount" class="mt-2">
+        {{ `No group with name ${searchText} found.` }}
+      </div>
+      <div v-else class="mt-4">
+        <div
+          v-for="group in groupList.value"
+          :key="group.id"
+          class="py-2 border-b border-gray-100"
+        >
           <div class="flex justify-between">
             <div class="flex items-center">
-              <!-- <a-avatar
-                shape="circle"
-                class="mr-1 ant-tag-blue text-gray avatars"
-                :size="40"
-              >{{ getNameInitials(getNameInTitleCase(group.name)) }}</a-avatar>-->
               <div class="ml-2">
-                <div>{{ group.name }}</div>
-                <div>@{{ group.alias }}</div>
-                <div>{{ group.memberCountString }}</div>
+                <div class="text-gray">
+                  <span class="mr-2 font-bold">{{ group.name }}</span>
+                  <span class="font-normal"
+                    >({{ group.memberCountString }})</span
+                  >
+                </div>
+                <div class="text-gray-400">@{{ group.alias }}</div>
               </div>
             </div>
-            <a-popover trigger="click" placement="bottom">
-              <template #content>
-                <div class="flex items-center justify-center cursor-pointer text-error">
-                  <div v-if="removeFromGroupLoading">
-                    <fa
-                      style="vertical-align:middle;"
-                      icon="fal circle-notch"
-                      class="mr-1 animate-spin"
-                    />
-                  </div>
-                  <div @click="() => removeUserFromGroup(group)">Remove User</div>
-                </div>
-              </template>
-              <fa icon="fal cog" class="cursor-pointer"></fa>
-            </a-popover>
+            <div class="font-bold">
+              <div
+                class="flex cursor-default text-error-muted"
+                v-if="removeFromGroupLoading[group.id]"
+              >
+                <fa
+                  style="vertical-align: middle"
+                  icon="fal circle-notch"
+                  class="mr-1 animate-spin"
+                />
+                <div>Removing...</div>
+              </div>
+              <div
+                class="cursor-pointer text-error"
+                v-else
+                @click="() => removeUserFromGroup(group)"
+              >
+                Remove
+              </div>
+            </div>
           </div>
         </div>
         <div
@@ -139,7 +149,7 @@ export default defineComponent({
     const searchText = ref("");
     const showAddToGroupModal = ref(false);
     const addToGroupLoading = ref(false);
-    const removeFromGroupLoading = ref(false);
+    const removeFromGroupLoading = ref({});
     const selectedGroupIds = ref([]);
     const groupListAPIParams = reactive({
       userId: props.selectedUser.id,
@@ -222,7 +232,7 @@ export default defineComponent({
       watch(
         [data, isReady, error, isLoading],
         () => {
-          removeFromGroupLoading.value = isLoading.value;
+          removeFromGroupLoading.value[group.id] = isLoading.value;
           if (isReady && !error.value && !isLoading.value) {
             groupListAPIParams.params.offset = 0;
             getUserGroupList();

@@ -1,41 +1,58 @@
 <template>
   <div>
     <a-table
-      :loading="[STATES.PENDING].includes(state) ||
-          [STATES.VALIDATING].includes(state)"
+      :loading="
+        [STATES.PENDING].includes(state) || [STATES.VALIDATING].includes(state)
+      "
       :columns="columns"
       :data-source="accessLogs"
       :row-key="(log) => log.id"
       :pagination="false"
       @change="handleTableChange"
     >
-      <template #time="{text:log}">
+      <template #time="{ text: log }">
         <span>{{ log.time_ago }}</span>
       </template>
-      <template #action="{text:log}">
+      <template #action="{ text: log }">
         <span>{{ log.type }}</span>
       </template>
-      <template #error="{text:log}">
+      <template #error="{ text: log }">
         <span>{{ log.error || "-" }}</span>
       </template>
-      <template #ip_address="{text:log}">
+      <template #ip_address="{ text: log }">
         <span>{{ log.ipAddress }}</span>
       </template>
-      <template #filterDropdown="{ setSelectedKeys, selectedKeys, confirm, clearFilters }">
+      <template
+        #filterDropdown="{
+          setSelectedKeys,
+          selectedKeys,
+          confirm,
+          clearFilters,
+        }"
+      >
         <div class="p-3">
           <a-input
             :placeholder="'Enter IP Address'"
             :value="selectedKeys[0]"
-            @change="(e) => setSelectedKeys(e.target.value ? [e.target.value] : [])"
-            @pressEnter="() => handleApplyIPAddressFilter(selectedKeys, confirm)"
+            @change="
+              (e) => setSelectedKeys(e.target.value ? [e.target.value] : [])
+            "
+            @pressEnter="
+              () => handleApplyIPAddressFilter(selectedKeys, confirm)
+            "
           />
           <div class="mt-2">
             <a-button
               type="primary"
               size="small"
               @click="() => handleApplyIPAddressFilter(selectedKeys, confirm)"
-            >Apply</a-button>
-            <a-button size="small" @click="() => handleResetIPAddressFilter(clearFilters)">Reset</a-button>
+              >Apply</a-button
+            >
+            <a-button
+              size="small"
+              @click="() => handleResetIPAddressFilter(clearFilters)"
+              >Reset</a-button
+            >
           </div>
         </div>
       </template>
@@ -48,10 +65,17 @@
       >
         <fa icon="fal chevron-double-left"></fa>
       </a-button>-->
-      <a-button class="mr-2" :disabled="accessLogsParams.first === 0" @click="paginateLogs('prev')">
+      <a-button
+        class="mr-2"
+        :disabled="accessLogsParams.first === 0"
+        @click="paginateLogs('prev')"
+      >
         <fa icon="fal chevron-left"></fa>
       </a-button>
-      <a-button :disabled="accessLogs.length < accessLogsParams.max" @click="paginateLogs('next')">
+      <a-button
+        :disabled="accessLogs.length < accessLogsParams.max"
+        @click="paginateLogs('next')"
+      >
         <fa icon="fal chevron-right"></fa>
       </a-button>
     </div>

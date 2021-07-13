@@ -1,7 +1,10 @@
 <template>
   <div>
     <div class="flex flex-row justify-between">
-      <div>
+      <div class="flex">
+        <a-button @click="$emit('showUserGroups')" class="mr-3">
+          <fa class="text-gray-dark" icon="fal chevron-left" />
+        </a-button>
         <a-input-search
           placeholder="Search Groups"
           :allowClear="true"
@@ -11,14 +14,11 @@
         ></a-input-search>
       </div>
       <div>
-        <a-button @click="$emit('showUserGroups')" class="mr-3">
-          <fa icon="fal chevron-left" />
-        </a-button>
         <a-button
           :loading="addToGroupLoading"
           @click="$emit('addUserToGroups')"
           type="primary"
-          :disabled="addToGroupLoading"
+          :disabled="addToGroupLoading || !selectedIds.length"
         >
           <fa icon="fal plus" class="mr-2" />Add
         </a-button>
@@ -36,30 +36,37 @@
           type="primary"
           ghost
           @click="
-          () => {
-            getGroupList();
-          }
-        "
+            () => {
+              getGroupList();
+            }
+          "
         >
           <fa icon="fal sync"></fa>Try again
         </a-button>
       </div>
     </div>
-    <div v-else class="mt-4 overflow-auto">
-      <a-checkbox-group v-model:value="selectedIds" @change="handleChange" class="w-full">
+    <div v-else class="pl-4 mt-4 overflow-auto">
+      <a-checkbox-group
+        v-model:value="selectedIds"
+        @change="handleChange"
+        class="w-full"
+      >
         <div class="flex flex-col w-full">
           <template v-for="group in groupList.value" :key="group.id">
-            <a-checkbox :value="group.id" class="flex items-center w-full">
-              <div class="flex justify-between mb-2">
+            <a-checkbox
+              :value="group.id"
+              class="flex items-center w-full py-2 border-b border-gray-100"
+            >
+              <div class="flex justify-between ml-3">
                 <div class="flex items-center">
-                  <!-- <a-avatar
-                    shape="circle"
-                    class="mr-1 ant-tag-blue text-gray avatars"
-                  >{{ getNameInitials(getNameInTitleCase(group.name)) }}</a-avatar>-->
                   <div class="ml-2">
-                    <div>{{ group.name }}</div>
-                    <div class="text-xs">@{{ group.alias }}</div>
-                    <div class="text-xs">{{ group.memberCountString }}</div>
+                    <div class="text-gray">
+                      <span class="mr-2 font-bold">{{ group.name }}</span>
+                      <span class="font-normal"
+                        >({{ group.memberCountString }})</span
+                      >
+                    </div>
+                    <div class="text-gray-400">@{{ group.alias }}</div>
                   </div>
                 </div>
               </div>
@@ -68,7 +75,7 @@
         </div>
       </a-checkbox-group>
       <div
-        class="flex justify-center"
+        class="flex justify-center mt-3"
         v-if="
           [STATES.PENDING].includes(state) ||
           [STATES.VALIDATING].includes(state)
@@ -76,7 +83,7 @@
       >
         <a-spin></a-spin>
       </div>
-      <div v-else-if="showLoadMore" class="flex justify-center">
+      <div v-else-if="showLoadMore" class="flex justify-center mt-3">
         <a-button @click="handleLoadMore">load more</a-button>
       </div>
     </div>

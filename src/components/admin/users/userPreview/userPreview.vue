@@ -4,10 +4,25 @@
       <a-spin />
     </div>
     <div
-      class="flex items-center justify-center h-full"
+      class="flex flex-col items-center justify-center h-full bg-white"
       v-if="[STATES.ERROR, STATES.STALE_IF_ERROR].includes(state)"
     >
-      <ErrorView></ErrorView>
+      <ErrorView>
+        <div class="mt-3">
+          <a-button
+            size="large"
+            type="primary"
+            ghost
+            @click="
+              () => {
+                getUser();
+              }
+            "
+          >
+            <fa icon="fal sync" class="mr-2"></fa>Try again
+          </a-button>
+        </div>
+      </ErrorView>
     </div>
     <div v-else-if="selectedUser && selectedUser.id">
       <div class="flex px-6 mb-3">
@@ -81,10 +96,6 @@ export default defineComponent({
     ErrorView,
   },
   setup(props, context) {
-    const tabBarStyle = {
-      "padding-left": "15rem",
-      "padding-right": "15rem",
-    };
     const {
       userId,
       username: userUsername,
@@ -135,7 +146,7 @@ export default defineComponent({
       state,
       STATES,
       activeKey,
-      tabBarStyle,
+      getUser,
     };
   },
 });

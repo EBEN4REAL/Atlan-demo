@@ -1,83 +1,107 @@
 <template>
   <div>
-    <a-table
-      :loading="
-        [STATES.PENDING].includes(state) || [STATES.VALIDATING].includes(state)
-      "
-      :columns="columns"
-      :data-source="accessLogs"
-      :row-key="(log) => log.id"
-      :pagination="false"
-      @change="handleTableChange"
+    <div
+      class="flex flex-col items-center h-full align-middle bg-white"
+      v-if="[STATES.ERROR, STATES.STALE_IF_ERROR].includes(state)"
     >
-      <template #time="{ text: log }">
-        <span>{{ log.time_ago }}</span>
-      </template>
-      <template #action="{ text: log }">
-        <span>{{ log.type }}</span>
-      </template>
-      <template #error="{ text: log }">
-        <span>{{ log.error || "-" }}</span>
-      </template>
-      <template #ip_address="{ text: log }">
-        <span>{{ log.ipAddress }}</span>
-      </template>
-      <template
-        #filterDropdown="{
-          setSelectedKeys,
-          selectedKeys,
-          confirm,
-          clearFilters,
-        }"
-      >
-        <div class="p-3">
-          <a-input
-            :placeholder="'Enter IP Address'"
-            :value="selectedKeys[0]"
-            @change="
-              (e) => setSelectedKeys(e.target.value ? [e.target.value] : [])
+      <ErrorView>
+        <div class="mt-3">
+          <a-button
+            size="large"
+            type="primary"
+            ghost
+            @click="
+              () => {
+                fetchLogs();
+              }
             "
-            @pressEnter="
-              () => handleApplyIPAddressFilter(selectedKeys, confirm)
-            "
-          />
-          <div class="mt-2">
-            <a-button
-              type="primary"
-              size="small"
-              @click="() => handleApplyIPAddressFilter(selectedKeys, confirm)"
-              >Apply</a-button
-            >
-            <a-button
-              size="small"
-              @click="() => handleResetIPAddressFilter(clearFilters)"
-              >Reset</a-button
-            >
-          </div>
+          >
+            <fa icon="fal sync" class="mr-2"></fa>Try again
+          </a-button>
         </div>
-      </template>
-    </a-table>
-    <div class="flex flex-row justify-end w-full my-3">
-      <!-- <a-button
+      </ErrorView>
+    </div>
+    <div v-else>
+      <a-table
+        :loading="
+          [STATES.PENDING].includes(state) ||
+          [STATES.VALIDATING].includes(state)
+        "
+        :columns="columns"
+        :data-source="accessLogs"
+        :row-key="(log) => log.id"
+        :pagination="false"
+        @change="handleTableChange"
+      >
+        <template #time="{ text: log }">
+          <span>{{ log.time_ago }}</span>
+        </template>
+        <template #action="{ text: log }">
+          <span>{{ log.type }}</span>
+        </template>
+        <template #error="{ text: log }">
+          <span>{{ log.error || "-" }}</span>
+        </template>
+        <template #ip_address="{ text: log }">
+          <span>{{ log.ipAddress }}</span>
+        </template>
+        <template
+          #filterDropdown="{
+            setSelectedKeys,
+            selectedKeys,
+            confirm,
+            clearFilters,
+          }"
+        >
+          <div class="p-3">
+            <a-input
+              :placeholder="'Enter IP Address'"
+              :value="selectedKeys[0]"
+              @change="
+                (e) => setSelectedKeys(e.target.value ? [e.target.value] : [])
+              "
+              @pressEnter="
+                () => handleApplyIPAddressFilter(selectedKeys, confirm)
+              "
+            />
+            <div class="mt-2">
+              <a-button
+                type="primary"
+                size="small"
+                @click="() => handleApplyIPAddressFilter(selectedKeys, confirm)"
+                >Apply</a-button
+              >
+              <a-button
+                size="small"
+                @click="() => handleResetIPAddressFilter(clearFilters)"
+                >Reset</a-button
+              >
+            </div>
+          </div>
+        </template>
+      </a-table>
+      <div class="flex flex-row justify-end w-full my-3">
+        <!-- <a-button
         class="mr-2"
         :disabled="accessLogsParams.first === 0"
         @click="paginateLogs('start')"
       >
         <fa icon="fal chevron-double-left"></fa>
-      </a-button>-->
-      <a-button
-        class="mr-2"
-        :disabled="accessLogsParams.first === 0"
-        @click="paginateLogs('prev')"
-      >
-        <fa icon="fal chevron-left"></fa>
-      </a-button>
-      <a-button
-        :disabled="accessLogs.length < accessLogsParams.max"
-        @click="paginateLogs('next')"
-      >
-        <fa icon="fal chevron-right"></fa>
-      </a-button>
+        </a-button>-->
+        <a-button
+          class="mr-2"
+          :disabled="accessLogsParams.first === 0"
+          @click="paginateLogs('prev')"
+        >
+          <fa icon="fal chevron-left"></fa>
+        </a-button>
+        <a-button
+          :disabled="accessLogs.length < accessLogsParams.max"
+          @click="paginateLogs('next')"
+        >
+          <fa icon="fal chevron-right"></fa>
+        </a-button>
+      </div>
     </div>
   </div>
 </template>
@@ -87,6 +111,7 @@ import { defineComponent, computed, reactive, ref } from "vue";
 import { useTimeAgo } from "@vueuse/core";
 import { User } from "~/api/auth/user";
 import swrvState from "~/composables/utils/swrvState";
+import ErrorView from "@common/error/index.vue";
 
 export default defineComponent({
   name: "UserPreviewAccessLogsComponent",
@@ -95,6 +120,9 @@ export default defineComponent({
       type: Object,
       default: {},
     },
+  },
+  components: {
+    ErrorView,
   },
   setup(props, context) {
     let accessLogsParams: any = reactive({ max: 10, first: 0 });

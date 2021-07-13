@@ -12,34 +12,39 @@
           ></a-input-search>
         </div>
         <div>
-          <a-button type="primary" ghost @click="handleAddMember">Add Member</a-button>
+          <a-button type="primary" ghost @click="handleAddMember"
+            >Add Member</a-button
+          >
         </div>
       </div>
-      <div v-if="!selectedGroup.memberCount" class="flex flex-col items-center justify-center">
+      <div
+        v-if="!selectedGroup.memberCount"
+        class="flex flex-col items-center justify-center"
+      >
         <div class="text-center">
           <p class="text-lg">No members are present in the group.</p>
         </div>
       </div>
       <div
-        class="flex items-center h-full align-middle bg-white"
-        style="min-height: 200px"
+        class="flex flex-col items-center justify-center h-full bg-white"
         v-if="[STATES.ERROR, STATES.STALE_IF_ERROR].includes(state)"
       >
-        <ErrorView></ErrorView>
-        <div class="mt-3">
-          <a-button
-            size="large"
-            type="primary"
-            ghost
-            @click="
-            () => {
-              getGroupMembersList();
-            }
-          "
-          >
-            <fa icon="fal sync"></fa>Try again
-          </a-button>
-        </div>
+        <ErrorView>
+          <div class="mt-3">
+            <a-button
+              size="large"
+              type="primary"
+              ghost
+              @click="
+                () => {
+                  getGroupMembersList();
+                }
+              "
+            >
+              <fa icon="fal sync" class="mr-2"></fa>Try again
+            </a-button>
+          </div>
+        </ErrorView>
       </div>
       <div v-else-if="searchText && !filteredMembersCount" class="mt-2">
         {{ `No member with name ${searchText} found.` }}
@@ -51,10 +56,17 @@
       <div v-else class="mt-4 overflow-y-auto member-list-height">
         <div v-for="user in memberList.value" :key="user.id" class="my-2">
           <div class="flex justify-between cursor-pointer">
-            <div class="flex items-center" @click="() => handleClickUser(user.username)">
-              <a-avatar shape="circle" class="mr-1 ant-tag-blue text-gray avatars" :size="40">
+            <div
+              class="flex items-center"
+              @click="() => handleClickUser(user.username)"
+            >
+              <a-avatar
+                shape="circle"
+                class="mr-1 ant-tag-blue text-gray avatars"
+                :size="40"
+              >
                 {{
-                getNameInitials(getNameInTitleCase(`${getUserName(user)}`))
+                  getNameInitials(getNameInTitleCase(`${getUserName(user)}`))
                 }}
               </a-avatar>
               <div class="ml-2">
@@ -65,15 +77,26 @@
             </div>
             <a-popover trigger="click" placement="bottom">
               <template #content>
-                <div class="flex items-center justify-center text-error cursor-pointer mt-0.5">
+                <div
+                  class="
+                    flex
+                    items-center
+                    justify-center
+                    text-error
+                    cursor-pointer
+                    mt-0.5
+                  "
+                >
                   <div v-if="removeMemberLoading">
                     <fa
-                      style="vertical-align:middle;"
+                      style="vertical-align: middle"
                       icon="fal circle-notch"
                       class="mr-1 animate-spin"
                     />
                   </div>
-                  <div @click="() => removeUserFromGroup(user.id)">Remove User</div>
+                  <div @click="() => removeUserFromGroup(user.id)">
+                    Remove User
+                  </div>
                 </div>
               </template>
               <fa icon="fal cog"></fa>
@@ -83,8 +106,9 @@
         <div
           class="flex justify-center"
           v-if="
-            [STATES.PENDING].includes(state) ||
-            [STATES.VALIDATING].includes(state)
+            selectedGroup.memberCount &&
+            ([STATES.PENDING].includes(state) ||
+              [STATES.VALIDATING].includes(state))
           "
         >
           <a-spin></a-spin>

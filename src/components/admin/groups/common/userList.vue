@@ -25,31 +25,22 @@
       </div>
     </div>
     <div
-      class="flex h-full align-middle bg-white flex-column"
-      style="min-height: 200px"
+      class="flex flex-col items-center h-full align-middle bg-white"
       v-if="[STATES.ERROR, STATES.STALE_IF_ERROR].includes(state)"
     >
-      <ErrorView></ErrorView>
-      <div class="mt-3">
-        <a-button
-          size="large"
-          type="primary"
-          ghost
-          @click="
-          () => {
-            getUserList();
-          }
-        "
-        >
-          <fa icon="fal sync"></fa>Try again
-        </a-button>
-      </div>
+      <ErrorView>
+        <div class="mt-3">
+          <a-button size="large" type="primary" ghost @click="()=>{getUserList();}">
+            <fa icon="fal sync" class="mr-2"></fa>Try again
+          </a-button>
+        </div>
+      </ErrorView>
     </div>
     <div v-else class="mt-4 overflow-auto">
-      <a-checkbox-group v-model:value="selectedIds" @change="handleChange" class="w-full">
+      <a-checkbox-group class="w-full">
         <div class="flex flex-col w-full">
           <template v-for="user in userList.value" :key="user.id">
-            <a-checkbox :value="user.id" class="flex items-center w-full">
+            <a-checkbox :value="user.id" @change="handleChange" class="flex items-center w-full">
               <span class="flex justify-between mb-2">
                 <div class="flex items-center">
                   <a-avatar shape="circle" class="mr-1 ant-tag-blue text-gray avatars">
@@ -126,7 +117,6 @@ export default defineComponent({
     });
     const {
       usersListConcatenated: userList,
-      totalUserCount,
       filteredUserCount,
       getUserList,
       state,
@@ -161,17 +151,27 @@ export default defineComponent({
         userList.value.value.length,
         userListAPIParams.offset,
         userListAPIParams.limit,
-        searchText.value ? filteredUserCount.value : totalUserCount.value
+        filteredUserCount.value //filtered value because we are filtering users in the getUsers API call and getting only the users that have email_verified as true.
       );
     });
-    const handleChange = () => {
+    const handleChange = (event) => {
+      if (
+        event.target.checked &&
+        !selectedIds.value.includes(event.target.value)
+      ) {
+        selectedIds.value.push(event.target.value);
+      } else if (!event.target.checked) {
+        const index = selectedIds.value.indexOf(event.target.value);
+        if (index > -1) {
+          selectedIds.value.splice(index, 1);
+        }
+      }
       context.emit("updateSelectedUsers", selectedIds.value);
     };
     return {
       searchText,
       showLoadMore,
       userList,
-      totalUserCount,
       filteredUserCount,
       getUserList,
       handleSearch,

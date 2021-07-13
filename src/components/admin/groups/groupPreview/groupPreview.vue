@@ -1,10 +1,25 @@
 <template>
-  <div class="max-h-full py-6">
+  <div class="h-full py-6">
     <div
-      class="flex items-center justify-center h-full"
+      class="flex flex-col items-center justify-center h-full bg-white"
       v-if="[STATES.ERROR, STATES.STALE_IF_ERROR].includes(state)"
     >
-      <ErrorView></ErrorView>
+      <ErrorView>
+        <div class="mt-3">
+          <a-button
+            size="large"
+            type="primary"
+            ghost
+            @click="
+              () => {
+                getGroup();
+              }
+            "
+          >
+            <fa icon="fal sync" class="mr-2"></fa>Try again
+          </a-button>
+        </div>
+      </ErrorView>
     </div>
     <div v-else-if="selectedGroup && selectedGroup.id">
       <div class="flex px-6 mb-3">

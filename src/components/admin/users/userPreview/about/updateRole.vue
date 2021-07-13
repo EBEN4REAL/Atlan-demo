@@ -3,7 +3,7 @@
     <div>
       <div class="flex flex-row items-center cursor-pointer group">
         <p class="mb-0 text-gray-400">
-          Mobile Number
+          Role
           <fa icon="fal check" class="ml-1 text-success" v-if="updateSuccess"></fa>
         </p>
         <p
@@ -13,20 +13,9 @@
         >edit</p>
       </div>
       <div v-if="isUpdate" class="flex flex-col">
-        <div class="tel-input-custom">
-          <!-- v-model on vue-3-tel-input does not work, we need to handle the 2 way binding by listening to input event manually-->
-          <!-- more context: https://stackoverflow.com/questions/67806831/using-vue3-tel-input-why-v-model-directive-doesnt-work-->
-
-          <vue-tel-input
-            id="tel-input-custom"
-            :value="mobileNumberLocal"
-            valid-characters-only
-            mode="international"
-            validate
-            @input="onInput"
-            :inputOptions="{ showDialCode: true }"
-          />
-        </div>
+        <a-select v-model:value="roleLocal" class="min-w-full" :disabled="updateLoading">
+          <a-select-option v-for="(role) in roles" :key="role.id" :value="role.id">{{ role.name }}</a-select-option>
+        </a-select>
         <div class="flex items-center justify-between max-w-full mt-1">
           <div>
             <a-button
@@ -40,30 +29,31 @@
           </div>
           <div>
             <a-spin v-if="updateLoading" size="small" />
-            <a-popover v-else-if="updateErrorMessage || updateSuccess" placement="bottom">
+            <a-popover v-else-if="updateErrorMessage" placement="bottom">
               <template #content>{{ updateErrorMessage }}</template>
               <fa
                 icon="fal exclamation-circle"
-                class="cursor-pointer text-error"
+                class="text-red-600 cursor-pointer"
                 v-if="updateErrorMessage"
               ></fa>
             </a-popover>
           </div>
         </div>
       </div>
-      <div v-else class="text-gray">{{ selectedUser.attributes.mobile_number[0] || "-" }}</div>
+      <div
+        v-else
+        class="text-gray"
+      >{{ selectedUser.role_object.name?selectedUser.role_object.name:'-' }}</div>
     </div>
   </div>
 </template>
 
 <script lang="ts">
-// @ts-ignore
-import { VueTelInput } from "vue3-tel-input";
-import "vue3-tel-input/dist/vue3-tel-input.css";
 import { defineComponent, ref, watch } from "vue";
+import useRoles from "~/composables/roles/useRoles";
 import { User } from "~/api/auth/user";
 export default defineComponent({
-  name: "UpdateMobileNumber",
+  name: "UpdateRole",
   props: {
     selectedUser: {
       type: Object,
@@ -74,41 +64,32 @@ export default defineComponent({
       default: false,
     },
   },
-  components: {
-    VueTelInput,
-  },
   setup(props, context) {
+    let roles = ref([]);
+    const { roleList } = useRoles();
+    watch(roleList, () => {
+      if (roleList && roleList.value) roles.value = roleList.value;
+    });
     let isUpdate = ref(false);
-    let mobileNumberLocal = ref(
-      props?.selectedUser?.attributes?.mobile_number?.[0] ?? ""
-    );
+    let roleLocal = ref(props.selectedUser.role_object.name);
     let updateErrorMessage = ref("");
     let updateSuccess = ref(false);
     let updateLoading = ref(false);
     const onUpdate = () => {
-      mobileNumberLocal.value =
-        props?.selectedUser?.attributes?.mobile_number?.[0] ?? "";
+      roleLocal.value = props.selectedUser.role_object.name;
       updateErrorMessage.value = "";
       isUpdate.value = true;
     };
-    const onInput = (phone, phoneObject) => {
-      if (phone && phoneObject?.formatted) {
-        mobileNumberLocal.value = phoneObject.formatted;
-      } else if (!phone) mobileNumberLocal.value = "";
-    };
     const onCancel = () => {
-      mobileNumberLocal.value = "";
+      roleLocal.value = "";
       isUpdate.value = false;
     };
     const requestPayload = ref();
     const handleUpdate = () => {
       requestPayload.value = {
-        attributes: {
-          mobile_number: [mobileNumberLocal.value],
-        },
+        roleId: roleLocal.value,
       };
-      updateLoading.value = true;
-      const { data, isReady, error, isLoading } = User.UpdateUser(
+      const { data, isReady, error, isLoading } = User.UpdateUserRole(
         props.selectedUser.id,
         requestPayload
       );
@@ -120,48 +101,31 @@ export default defineComponent({
             // context.emit("updatedUser");
             updateSuccess.value = true;
             updateErrorMessage.value = "";
-            props.selectedUser.attributes.mobile_number =
-              mobileNumberLocal.value;
             isUpdate.value = false;
             setTimeout(() => {
               updateSuccess.value = false;
-            }, 1000);
-          } else {
+            }, 2000);
+          } else if (error && error.value) {
             updateErrorMessage.value =
-              "Unable to update mobile number, please try again.";
+              "Unable to update role for the user. Please try again.";
           }
         },
         { immediate: true }
       );
     };
     return {
+      roles,
       updateLoading,
       isUpdate,
-      mobileNumberLocal,
+      roleLocal,
       updateErrorMessage,
       updateSuccess,
       onUpdate,
       onCancel,
       handleUpdate,
-      onInput,
     };
   },
 });
 </script>
 
-<style lang="less">
-#tel-input-custom {
-  border: 1px solid #d9d9d9;
-  &:focus,
-  &:active,
-  &:focus-within {
-    border-color: #4876d9;
-    border-right-width: 1px !important;
-    outline: 0;
-    box-shadow: 0 0 0 2px rgba(34, 81, 204, 0.2);
-  }
-  .vti__dropdown {
-    outline: none !important;
-  }
-}
-</style>
+<style></style>

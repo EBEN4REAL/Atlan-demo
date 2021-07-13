@@ -21,7 +21,14 @@
           class="mr-2"
         />
         <div class="ml-3">
-          <div class="text-lg font-bold capitalize cursor-pointer text-gray">{{ selectedUser.name }}</div>
+          <div class="text-lg font-bold capitalize text-gray">{{ selectedUser.name }}</div>
+          <div class="text-gray-400">
+            <span class="mr-0.25">@{{selectedUser.username}}</span>
+            <span v-if="selectedUser.created_at_time_ago">
+              |
+              <span class="ml-0.25">Created {{selectedUser.created_at_time_ago}}</span>
+            </span>
+          </div>
         </div>
       </div>
       <a-tabs :defaultActiveKey="activeKey">

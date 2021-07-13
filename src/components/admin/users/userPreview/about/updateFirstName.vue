@@ -2,13 +2,13 @@
   <div class>
     <div>
       <div class="flex flex-row items-center cursor-pointer group">
-        <p class="mb-0 text-xs text-gray-500">
+        <p class="mb-0 text-gray-400">
           First Name
-          <fa icon="fal check" class="ml-1 text-green-600" v-if="updateSuccess"></fa>
+          <fa icon="fal check" class="ml-1 text-success" v-if="updateSuccess"></fa>
         </p>
         <p
           v-if="!isUpdate && allowUpdate"
-          class="mb-0 ml-2 text-xs leading-none transition duration-300 ease-in-out delay-100 opacity-0 text-gray group-hover:opacity-100"
+          class="mb-0 ml-2 text-xs leading-none transition duration-300 ease-in-out delay-100 opacity-0 text-primary group-hover:opacity-100"
           @click="onUpdate"
         >edit</p>
       </div>
@@ -36,14 +36,14 @@
               <template #content>{{ updateErrorMessage }}</template>
               <fa
                 icon="fal exclamation-circle"
-                class="text-red-600 cursor-pointer"
+                class="cursor-pointer text-error"
                 v-if="updateErrorMessage"
               ></fa>
             </a-popover>
           </div>
         </div>
       </div>
-      <div v-else class="text-gray-500">{{ selectedUser.first_name }}</div>
+      <div v-else class="text-gray">{{ selectedUser.first_name }}</div>
     </div>
   </div>
 </template>
@@ -71,6 +71,7 @@ export default defineComponent({
     let updateLoading = ref(false);
     const onUpdate = () => {
       firstNameLocal.value = props.selectedUser.first_name;
+      updateErrorMessage.value = "";
       isUpdate.value = true;
     };
     const onCancel = () => {
@@ -82,27 +83,30 @@ export default defineComponent({
       requestPayload.value = {
         firstName: firstNameLocal.value,
       };
-      updateLoading.value = true;
-      const { data, isReady, error } = User.UpdateUser(
+      const { data, isReady, error, isLoading } = User.UpdateUser(
         props.selectedUser.id,
         requestPayload
       );
-      watch([data, isReady, error], () => {
-        if (isReady && !error.value) {
-          context.emit("updatedUser");
-          updateLoading.value = false;
-          updateSuccess.value = true;
-          updateErrorMessage.value = "";
-          isUpdate.value = false;
-          setTimeout(() => {
-            updateSuccess.value = false;
-          }, 2000);
-        } else if (error && error.value) {
-          updateErrorMessage.value =
-            "Unable to update first name, please try again.";
-          updateLoading.value = false;
-        }
-      });
+      watch(
+        [data, isReady, error, isLoading],
+        () => {
+          updateLoading.value = isLoading.value;
+          if (isReady && !error.value && !isLoading.value) {
+            // context.emit("updatedUser");
+            updateSuccess.value = true;
+            updateErrorMessage.value = "";
+            props.selectedUser.first_name = firstNameLocal.value;
+            isUpdate.value = false;
+            setTimeout(() => {
+              updateSuccess.value = false;
+            }, 2000);
+          } else if (error && error.value) {
+            updateErrorMessage.value =
+              "Unable to update first name, please try again.";
+          }
+        },
+        { immediate: true }
+      );
     };
     return {
       updateLoading,

@@ -1,7 +1,6 @@
 import { getAPIPath, getAxiosClient } from "~/api";
 import { AxiosRequestConfig } from "axios";
 import { useAPI } from "~/api/useAPI";
-import { useAPI as useAPIv2 } from "~/api/useAPIv2";
 import {
   GET_USER_SESSIONS,
   SIGN_OUT_ALL_SESSIONS,
@@ -36,7 +35,7 @@ const GetUserSessions = (id: string, params?: any, options?: any) => {
 };
 
 const SignOutAllSessions = (id: string) => {
-  const { data, mutate, error, isReady, isLoading } = useAPIv2(
+  const { data, mutate, error, isReady, isLoading } = useAPI(
     SIGN_OUT_ALL_SESSIONS,
     "POST",
     {
@@ -46,7 +45,7 @@ const SignOutAllSessions = (id: string) => {
   return { data, mutate, error, isReady, isLoading };
 };
 const SignOutSessionById = (id: string) => {
-  const { data, mutate, error, isReady, isLoading } = useAPIv2(
+  const { data, mutate, error, isReady, isLoading } = useAPI(
     SIGN_OUT_SESSION_BY_ID,
     "POST",
     {
@@ -70,7 +69,7 @@ const UpdateUserV1 = (id: string, body?: any, options?: any) => {
   );
 };
 const UpdateUser = (id: string, body) => {
-  const { data, mutate, error, isReady, isLoading } = useAPIv2(
+  const { data, mutate, error, isReady, isLoading } = useAPI(
     UPDATE_USER,
     "POST",
     {
@@ -81,7 +80,7 @@ const UpdateUser = (id: string, body) => {
   return { data, mutate, error, isReady, isLoading };
 };
 const UpdateUserRole = (id: string, body?: any) => {
-  const { data, mutate, error, isReady, isLoading } = useAPIv2(
+  const { data, mutate, error, isReady, isLoading } = useAPI(
     UPDATE_USER_ROLE,
     "POST",
     {
@@ -92,7 +91,7 @@ const UpdateUserRole = (id: string, body?: any) => {
   return { data, mutate, error, isReady, isLoading };
 };
 const AddGroups = (id: string, body: any) => {
-  const { data, mutate, error, isReady, isLoading } = useAPIv2(
+  const { data, mutate, error, isReady, isLoading } = useAPI(
     ADD_USER_TO_GROUPS,
     "POST",
     {
@@ -103,7 +102,7 @@ const AddGroups = (id: string, body: any) => {
   return { data, mutate, error, isReady, isLoading };
 };
 const ResendVerificationEmail = (id: string) => {
-  const { data, mutate, error, isReady, isLoading } = useAPIv2(
+  const { data, mutate, error, isReady, isLoading } = useAPI(
     RESEND_INVITATION_EMAIL,
     "POST",
     {
@@ -113,7 +112,7 @@ const ResendVerificationEmail = (id: string) => {
   return { data, mutate, error, isReady, isLoading };
 };
 const RevokeInvitation = (id: string) => {
-  const { data, mutate, error, isReady, isLoading } = useAPIv2(
+  const { data, mutate, error, isReady, isLoading } = useAPI(
     REVOKE_INVITATION,
     "POST",
     {
@@ -123,7 +122,7 @@ const RevokeInvitation = (id: string) => {
   return { data, mutate, error, isReady, isLoading };
 };
 const InviteUsers = (body: any) => {
-  const { data, mutate, error, isReady, isLoading } = useAPIv2(
+  const { data, mutate, error, isReady, isLoading } = useAPI(
     INVITE_USERS,
     "POST",
     {

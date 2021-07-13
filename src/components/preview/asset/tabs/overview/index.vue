@@ -91,11 +91,11 @@ export default defineComponent({
   },
   setup(props, { emit }) {
     let activeKey = ref("details");
-    const removeClassificationFromSelectedAsset = () => {
-      emit("removeClassificationFromSelectedAsset");
+    const removeClassificationFromSelectedAsset = (data) => {
+      emit("removeClassificationFromSelectedAsset", data);
     };
-    const addClassificationToSelectedAsset = () => {
-      emit("addClassificationToSelectedAsset");
+    const addClassificationToSelectedAsset = (data) => {
+      emit("addClassificationToSelectedAsset", data);
     };
     const updateAvailableClassificationsForLink = () => {
       emit("updateAvailableClassificationsForLink");

@@ -34,6 +34,7 @@
         "
         :is="item.component"
         :item="item"
+        :data="dataMap[item.id]"
         @change="handleChange"
       ></component>
     </a-collapse-panel>
@@ -41,9 +42,10 @@
 </template>
 
 <script lang="ts">
-import { defineAsyncComponent, defineComponent, ref } from "vue";
+import { defineAsyncComponent, defineComponent, ref, computed } from "vue";
 import { List } from "./filters";
 import { Components } from "~/api/atlas/client";
+import { useClassificationStore } from "~/components/admin/classifications/_store";
 
 export default defineComponent({
   name: "HelloWorld",
@@ -71,12 +73,19 @@ export default defineComponent({
   },
   emits: ["refresh"],
   setup(props, { emit }) {
+    const classificationsStore = useClassificationStore();
     const filterMap: { [key: string]: Components.Schemas.FilterCriteria } = {};
     let filters: Components.Schemas.FilterCriteria[] = [];
 
     const dirtyTimestamp = ref("dirty_");
 
     const refMap: { [key: string]: any } = ref({});
+
+    // Mapping of Data to child compoentns
+    const dataMap: { [key: string]: any } = ref({});
+    dataMap.value["classifications"] = {
+      classifications: computed(() => classificationsStore.classifications),
+    };
 
     const refresh = () => {
       filters = [];
@@ -111,6 +120,7 @@ export default defineComponent({
     };
 
     return {
+      dataMap,
       handleChange,
       isFilter,
       dirtyTimestamp,

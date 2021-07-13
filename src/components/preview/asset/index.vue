@@ -172,8 +172,7 @@ export default defineComponent({
         } else if (
           classification.propagate &&
           classification.entityGuid &&
-          selectedAssetData.value.selectedAsset.guid !==
-            classification.entityGuid
+          selectedAssetData.value.guid !== classification.entityGuid
         ) {
           return {
             ...classification,
@@ -186,9 +185,16 @@ export default defineComponent({
         };
       });
     }
-    function addClassificationToSelectedAsset(classification: any) {
+    function addClassificationToSelectedAsset({
+      classifications: selectedClassificationsForLink,
+      multiple,
+    }: {
+      classifications: any;
+      multiple: boolean;
+    }) {
+      console.log(selectedClassificationsForLink, "selected Multiple");
       let classifications = selectedAssetData.value.classifications;
-      classifications = [...classifications, classification];
+      classifications = [...classifications, ...selectedClassificationsForLink];
       selectedAssetData.value.classifications = formattedLinkedClassifications(
         classifications
       );
@@ -197,7 +203,7 @@ export default defineComponent({
         classificationsStore.classifications
       );
     }
-    function updateAvailableClassificationsForLink(classification) {
+    function updateAvailableClassificationsForLink() {
       availableClassificationsForLink.value = getAvailableClassificationsForLink(
         selectedAssetData.value.classifications,
         classificationsStore.classifications

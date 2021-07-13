@@ -28,7 +28,7 @@
         @change="handleChange"
         class="w-full"
       >
-        <div class="flex flex-col w-full " v-if="classificationsList">
+        <div class="flex flex-col w-full ">
           <div v-if="classificationSearchText === ''">
             <template v-for="item in classificationsList" :key="item?.name">
               <a-checkbox
@@ -59,20 +59,15 @@
             </template>
           </div>
         </div>
-        <div v-else class="w-full h-4">
-          <p class="text-center text-gray-500">{{ ShowFetchStatusString }}</p>
-        </div>
       </a-checkbox-group>
     </div>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, PropType, ref, watch, computed } from "vue";
+import { defineComponent, PropType, ref, watch, computed, toRaw } from "vue";
 import { Collapse } from "~/types";
 import { Components } from "~/api/atlas/client";
-import { Classification } from "~/api/atlas/classification";
-import { useDiscoveryStore } from "~/pinia/discovery";
 
 export default defineComponent({
   name: "Classifications",
@@ -80,6 +75,13 @@ export default defineComponent({
   props: {
     item: {
       type: Object as PropType<Collapse>,
+      required: false,
+      default() {
+        return {};
+      },
+    },
+    data: {
+      type: Object,
       required: false,
       default() {
         return {};
@@ -96,26 +98,8 @@ export default defineComponent({
   mounted() {},
   emits: ["update:modelValue", "change"],
   setup(props, { emit }) {
-    const store = useDiscoveryStore();
-    let classificationsList = computed(() => store.classifications);
+    let classificationsList = computed(() => toRaw(props.data.classifications));
     const filteredClassificationList = ref([]);
-    const fetchClassificationStatus = ref("");
-
-    // classification Fetch Status
-    const ShowFetchStatusString = computed(() => {
-      switch (fetchClassificationStatus.value) {
-        case "success": {
-          return "success";
-        }
-        case "error": {
-          return "Something went wrong!";
-        }
-        default: {
-          return "Loading...";
-        }
-      }
-    });
-
     const checkedValues = ref([]);
     checkedValues.value = props.modelValue;
     const handleChange = (checkedValue: string) => {
@@ -168,8 +152,6 @@ export default defineComponent({
     return {
       clear,
       filteredClassificationList,
-      ShowFetchStatusString,
-      fetchClassificationStatus,
       classificationsList,
       checkedValues,
       classificationSearchText,

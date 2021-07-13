@@ -20,6 +20,7 @@
       <ErrorView></ErrorView>
     </div>
     <a-table
+      :scroll="{ y: 'calc(100vh - 20rem)' }"
       id="groupList"
       :tableLayout="'fixed'"
       v-else-if="groupList && groupList.length"
@@ -135,7 +136,7 @@ export default defineComponent({
     };
     let selectedGroupId = ref("");
     const groupListAPIParams = reactive({
-      limit: 6,
+      limit: 15,
       offset: 0,
       filter: {},
       sort: "-created_at",

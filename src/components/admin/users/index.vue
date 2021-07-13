@@ -71,6 +71,7 @@
     <div>
       <div v-if="listType==='users'">
         <a-table
+          :scroll="{ y: 'calc(100vh - 20rem)' }"
           :tableLayout="'fixed'"
           id="userList"
           v-if="userList && listType === 'users'"
@@ -246,7 +247,7 @@ export default defineComponent({
     const selectedInvite = ref({});
     const invitationComponentRef = ref(null);
     let userListAPIParams: any = reactive({
-      limit: 6,
+      limit: 15,
       offset: 0,
       sort: "first_name",
       filter: { $and: [{ email_verified: true }] },

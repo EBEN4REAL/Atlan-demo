@@ -8,13 +8,13 @@
     </div>
     <div v-else-if="selectedGroup && selectedGroup.id">
       <div class="flex mb-3">
-        <div>
+        <!-- <div>
           <a-avatar shape="square" class="mr-1 ant-tag-blue text-gray avatars" :size="48">
             {{
             getNameInitials(getNameInTitleCase(selectedGroup.name))
             }}
           </a-avatar>
-        </div>
+        </div>-->
         <div class="ml-3">
           <div
             class="text-lg font-bold capitalize cursor-pointer text-gray"

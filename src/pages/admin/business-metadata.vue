@@ -1,18 +1,23 @@
 <template>
   <div class="">
-    <!-- <div
+    <div
       v-if="businessMetadataListLoading"
       class="flex items-center flex-column justify-content-center font-size-h4"
       style="min-height: 30rem"
     >
-      <loader loadingText="Fetching Business Metadata..." textLarge></loader>
-    </div> -->
+      <div class="">
+        <span class=""
+          >Loading...
+          <i class="fal circle-notch spin 5x"></i>
+        </span>
+      </div>
+    </div>
     <div
       class="grid grid-cols-3 gap-7"
-      v-if="finalBusinessMetadataList && finalBusinessMetadataList.length"
+      v-else-if="finalBusinessMetadataList && finalBusinessMetadataList.length"
     >
       <div class="col-span-3">
-        Business Metadata
+        <p class="mb-0 text-2xl text-gray">Business Metadata</p>
       </div>
       <div class="col-span-1">
         <div class="flex justify-between gap-5 mb-5">
@@ -49,7 +54,7 @@
             >New
           </a-button>
         </div>
-        <div style="height: calc(100vh - 9rem); overflow-y: scroll;">
+        <div style="height: calc(100vh - 9rem); overflow-y: scroll">
           <BusinessMetadataList
             :finalList="
               searchText ? searchedBusinessMetadataList : finalBusinessMetadataList
@@ -72,7 +77,7 @@
           @removeNewBm="discardNewBm"
           @afterArchive="handleAfterArchive"
           @clearNewBm="newBm = null"
-          style="height: calc(100vh - 6rem); overflow: hidden;"
+          style="height: calc(100vh - 6rem); overflow: hidden"
         />
       </div>
     </div>
@@ -90,7 +95,7 @@
         class="flex items-center font-bold border-blue text-blue"
         @click="onCreateNewBmClick"
       >
-        <i class=" far fa-plus"></i>Add Business Metadata
+        <i class="far fa-plus"></i>Add Business Metadata
       </a-button>
     </div>
   </div>
@@ -116,6 +121,7 @@ import { useBusinessMetadata } from "@/admin/business-metadata/composables/useBu
 import differenceWith from "lodash/differenceWith";
 
 import { ref, defineComponent, computed, nextTick, watch } from "vue";
+import { useHead } from "@vueuse/head";
 
 const DEFAULT_BM = {
   // TODO changes when UUID4 support
@@ -173,6 +179,10 @@ export default defineComponent({
       }
     );
 
+    useHead({
+      title: computed(() => "Business Metadata"),
+    });
+
     // * Data
     let selectedBm = ref(null);
     let searchText = ref("");
@@ -191,11 +201,11 @@ export default defineComponent({
         bmResponse?.value?.businessMetadataDefs &&
         bmResponse.value.businessMetadataDefs.length
       ) {
-        bmResponse.value.businessMetadataDefs.forEach(bm => {
+        bmResponse.value.businessMetadataDefs.forEach((bm) => {
           if (bm.attributeDefs && bm.attributeDefs.length && !bm.isArchived) {
             const reqBmAttrs: any[] = [];
             const selectedBmCollection = appliedBmAttributesToAsset.find(
-              c => c.bm === bm.name
+              (c) => c.bm === bm.name
             );
             let attributesList = [...bm.attributeDefs];
             if (selectedBmCollection && selectedBmCollection.attributes) {
@@ -205,7 +215,7 @@ export default defineComponent({
                 (a: { name: any }, b: { name: any }) => a.name === b.name
               );
             }
-            attributesList.forEach(attr => {
+            attributesList.forEach((attr) => {
               if (attr.options && attr.options.applicableEntityTypes) {
                 try {
                   const applicableEntityTypes = JSON.parse(
@@ -214,7 +224,8 @@ export default defineComponent({
                   if (
                     Array.isArray(applicableEntityTypes) &&
                     applicableEntityTypes.some(
-                      item => types.includes(item) || item.includes("AtlanAsset")
+                      (item) =>
+                        types.includes(item) || item.includes("AtlanAsset")
                     )
                   ) {
                     reqBmAttrs.push(attr);
@@ -306,6 +317,7 @@ export default defineComponent({
           businessMetadataList.value.filter((bm: { isArchived: any }) => !bm.isArchived)
         : []),
     ]);
+
     const searchedBusinessMetadataList = computed(() => {
       if (searchText) {
         return finalBusinessMetadataList.value.filter((bm: { name: string }) =>

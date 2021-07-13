@@ -1,4 +1,4 @@
-import { useAPI } from "~/api/useAPIv2";
+import { useAPI } from "~/api/useAPI";
 
 const pingUser = () => {
   return useAPI("PING_USER", "GET", { cache: "true" });

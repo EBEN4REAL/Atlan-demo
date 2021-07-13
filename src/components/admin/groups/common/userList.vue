@@ -14,24 +14,36 @@
         <a-button @click="$emit('showGroupMembers')" class="mr-3">
           <fa icon="fal chevron-left" />
         </a-button>
-        <a-button @click="$emit('addMembersToGroup')" type="primary" :disabled="addMemberLoading">
+        <a-button
+          @click="$emit('addMembersToGroup')"
+          type="primary"
+          :loading="addMemberLoading"
+          :disabled="addMemberLoading"
+        >
           <fa icon="fal plus" class="mr-2" />Add
         </a-button>
       </div>
     </div>
     <div
-      class="flex items-center h-full align-middle bg-white"
+      class="flex h-full align-middle bg-white flex-column"
       style="min-height: 200px"
       v-if="[STATES.ERROR, STATES.STALE_IF_ERROR].includes(state)"
     >
       <ErrorView></ErrorView>
-      <a-button
-        icon="reload"
-        size="large"
-        type="primary"
-        ghost
-        @click="()=>{getUserList()}"
-      >Try again</a-button>
+      <div class="mt-3">
+        <a-button
+          size="large"
+          type="primary"
+          ghost
+          @click="
+          () => {
+            getUserList();
+          }
+        "
+        >
+          <fa icon="fal sync"></fa>Try again
+        </a-button>
+      </div>
     </div>
     <div v-else class="mt-4 overflow-auto">
       <a-checkbox-group v-model:value="selectedIds" @change="handleChange" class="w-full">
@@ -40,10 +52,11 @@
             <a-checkbox :value="user.id" class="flex items-center w-full">
               <span class="flex justify-between mb-2">
                 <div class="flex items-center">
-                  <a-avatar
-                    shape="circle"
-                    class="mr-1 ant-tag-blue text-primary-500 avatars"
-                  >{{ getNameInitials(getNameInTitleCase(user.name)) }}</a-avatar>
+                  <a-avatar shape="circle" class="mr-1 ant-tag-blue text-gray avatars">
+                    {{
+                    getNameInitials(getNameInTitleCase(user.name))
+                    }}
+                  </a-avatar>
                   <div class="ml-2">
                     <div>{{ user.name }}</div>
                     <div class="text-xs">@{{ user.username }}</div>
@@ -57,8 +70,10 @@
       </a-checkbox-group>
       <div
         class="flex justify-center"
-        v-if="[STATES.PENDING].includes(state) ||
-            [STATES.VALIDATING].includes(state)"
+        v-if="
+          [STATES.PENDING].includes(state) ||
+          [STATES.VALIDATING].includes(state)
+        "
       >
         <a-spin></a-spin>
       </div>
@@ -119,20 +134,19 @@ export default defineComponent({
     } = useUsers(userListAPIParams);
 
     const handleSearch = useDebounceFn(() => {
-      userListAPIParams.filter = searchText.value
-        ? {
-            $and: [
-              { email_verified: true },
-              {
-                $or: [
-                  { first_name: { $ilike: `%${searchText.value}%` } },
-                  { last_name: { $ilike: `%${searchText.value}%` } },
-                  { username: { $ilike: `%${searchText.value}%` } },
-                ],
-              },
+      userListAPIParams.filter = {
+        $and: [
+          { email_verified: true },
+          {
+            $or: [
+              { first_name: { $ilike: `%${searchText.value}%` } },
+              { last_name: { $ilike: `%${searchText.value}%` } },
+              { username: { $ilike: `%${searchText.value}%` } },
             ],
-          }
-        : {};
+          },
+        ],
+      };
+
       userListAPIParams.offset = 0;
       getUserList();
     }, 200);

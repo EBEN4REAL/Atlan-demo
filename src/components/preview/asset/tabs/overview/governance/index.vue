@@ -12,7 +12,7 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 
-import Classifications from "./classifications.vue";
+import Classifications from "./classifications/index.vue";
 import Terms from "./terms.vue";
 import BusinessMetadataContainer from "./businessMetadataContainer.vue";
 
@@ -27,9 +27,7 @@ export default defineComponent({
       },
     },
   },
-  setup(props) {
-    return {};
-  },
+  setup(props, { emit }) {},
 });
 </script>
 

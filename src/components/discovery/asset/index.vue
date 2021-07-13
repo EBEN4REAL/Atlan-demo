@@ -25,6 +25,7 @@
       </div>
     </div>
   </div>
+
   <div
     class="flex flex-col items-stretch h-full col-span-12 pt-6 bg-white sm:col-span-8 md:col-span-7"
     style="overflow: hidden"
@@ -32,23 +33,34 @@
     <div class="flex items-center px-6 gap-x-3">
       <a-input
         placeholder="Search"
+        size="large"
         v-model:value="queryText"
         @change="handleSearchChange"
       >
-      </a-input>
-      <a-popover placement="bottom">
-        <template #content>
-          <Preferences
-            :defaultProjection="projection"
-            @change="handleChangePreferences"
-            @sort="handleChangeSort"
-          ></Preferences>
+        <template #prefix>
+          <div class="flex -space-x-2">
+            <template v-for="item in filteredLConnectorist" :key="item.id">
+              <img
+                :src="item.image"
+                class="w-auto h-6 mr-1 bg-white rounded-full border-5"
+              />
+            </template>
+          </div>
         </template>
-        <a-button size="default"
-          ><fa icon="fal cog" class="mr-1"></fa
-          ><fa icon="fal chevron-down" class="text-xs text-primary-500"></fa
-        ></a-button>
-      </a-popover>
+        <template #suffix>
+          <a-popover placement="bottomLeft">
+            <template #content>
+              <Preferences
+                :defaultProjection="projection"
+                @change="handleChangePreferences"
+                @sort="handleChangeSort"
+                @state="handleState"
+              ></Preferences>
+            </template>
+            <fa icon="fal cog"></fa>
+          </a-popover>
+        </template>
+      </a-input>
     </div>
 
     <div class="flex w-full px-6 mt-3">
@@ -56,13 +68,14 @@
         v-model="assetType"
         :assetTypeList="assetTypeList"
         :assetTypeMap="assetTypeMap"
+        :total="totalSum"
         class="rounded-tr"
       ></AssetTabs>
     </div>
 
     <div
       v-if="list && list.length <= 0 && !isLoading && !isValidating"
-      class="flex-grow mx-6 border rounded"
+      class="flex-grow mx-6 border-b border-l border-r rounded-b-md"
     >
       <EmptyView></EmptyView>
     </div>
@@ -75,8 +88,8 @@
       :isLoading="isLoading || isValidating"
       ref="assetlist"
     ></AssetList>
-    <div class="flex w-full px-6 pb-2" style="min-height: 17px">
-      <div class="flex items-center justify-between w-full px-2 py-2">
+    <div class="flex w-full px-6 py-1" style="height: 24px; min-height: 24px">
+      <div class="flex items-center justify-between w-full">
         <div
           class="flex items-center text-sm leading-none"
           v-if="isLoading || isValidating"
@@ -84,21 +97,20 @@
           <a-spin size="small" class="mr-2 leading-none"></a-spin
           ><span>searching results</span>
         </div>
-        <!--        <AssetPagination
+        <AssetPagination
           v-else
-          :limit="limit"
-          :offset="offset"
+          :label="assetTypeLabel"
+          :listCount="list.length"
           :totalCount="totalCount"
-          :listCount="listCount"
         ></AssetPagination>
 
         <div
-          class="text-sm cursor-pointer text-primary-500"
-          @click="loadMore(limit)"
-          v-if="isLoadMore"
+          class="text-sm cursor-pointer text-primary"
+          @click="loadMore"
+          v-if="isLoadMore && (!isLoading || !isValidating)"
         >
-          Load More...
-        </div> -->
+          load more...
+        </div>
       </div>
     </div>
   </div>
@@ -130,6 +142,8 @@ import { SearchParameters } from "~/types/atlas/attributes";
 import { BaseAttributes, BasicSearchAttributes } from "~/constant/projection";
 import { useBusinessMetadataStore } from "~/pinia/businessMetadata";
 import { useBusinessMetadata } from "@/admin/business-metadata/composables/useBusinessMetadata";
+import { useDiscoveryStore } from "~/pinia/discovery";
+import { useConnectionsStore } from "~/pinia/connections";
 
 export default defineComponent({
   name: "HelloWorld",
@@ -152,6 +166,8 @@ export default defineComponent({
   },
   emits: ["preview"],
   setup(props, { emit }) {
+    // initializing the discovery store
+    const store = useDiscoveryStore();
     let filterMode = ref("custom");
 
     const now = ref(false);
@@ -214,6 +230,28 @@ export default defineComponent({
     const BMAttributeProjection = computed(
       () => store.getBusinessMetadataListProjections
     );
+    const state = ref("active");
+
+    const assetTypeLabel = computed(() => {
+      const found = AssetTypeList.find(item => {
+        return item.id == assetType.value;
+      });
+      return found?.label;
+    });
+
+    const totalCount = computed(() => {
+      if (assetType.value === "Catalog") {
+        return totalSum.value;
+      }
+      return assetTypeMap.value[assetType.value];
+    });
+
+    const connectorStore = useConnectionsStore();
+    const filteredLConnectorist = computed(() => {
+      return connectorStore.getSourceList?.filter(item => {
+        return connectorsPayload.value?.connectors?.includes(item.id);
+      });
+    });
 
     //Get All Disoverable Asset Types
     let assetTypeList = ref([]);
@@ -222,10 +260,28 @@ export default defineComponent({
     });
     const assetTypeListString = assetTypeList.value.map(item => item.id).join(",");
 
+    const totalSum = computed(() => {
+      let sum = 0;
+      assetTypeList.value.forEach(element => {
+        if (assetTypeMap.value[element.id]) {
+          sum = sum + assetTypeMap.value[element.id];
+        }
+      });
+      return sum;
+    });
+
+    const assetTypeListString = assetTypeList.value.map(item => item.id).join(",");
+
     // Push all asset type
     assetTypeList.value.push({
       id: "Catalog",
       label: "All",
+    });
+
+    const assetlist = ref(null);
+
+    const isLoadMore = computed(() => {
+      return totalCount.value > list.value.length;
     });
 
     //TODO - Get Filtered Asset Types based on selected connectors
@@ -235,12 +291,16 @@ export default defineComponent({
       isLoading,
       isValidating,
       searchScoreList,
+      isAggregate,
       assetTypeMap,
     } = useAssetList(now, assetTypeListString, initialBody, assetType.value);
+    console.log(assetTypeListString, initialBody, assetType.value, "useAssetList type");
 
     const updateBody = () => {
       initialBody = {
         typeName: assetTypeListString,
+        // includeClassificationAttributes: true,
+        // includeSubClassifications: true,
         limit: limit.value,
         offset: offset.value,
         entityFilters: {},
@@ -263,7 +323,26 @@ export default defineComponent({
         });
       }
 
+      if (state.value) {
+        if (state.value === "all") {
+          initialBody.excludeDeletedEntities = false;
+        } else if (state.value === "deleted") {
+          initialBody.excludeDeletedEntities = false;
+          initialBody.entityFilters.criterion.push({
+            attributeName: "__state",
+            attributeValue: "DELETED",
+            operator: "eq",
+          });
+        } else {
+          initialBody.excludeDeletedEntities = true;
+        }
+      }
+
       let connectorCritera = {
+        condition: "OR",
+        criterion: [],
+      };
+      let connectionCriteria = {
         condition: "OR",
         criterion: [],
       };
@@ -275,13 +354,14 @@ export default defineComponent({
         });
       });
       connectorsPayload.value?.connections?.forEach((element: any) => {
-        connectorCritera.criterion?.push({
+        connectionCriteria.criterion?.push({
           attributeName: "connectionQualifiedName",
           attributeValue: element,
           operator: "eq",
         });
       });
       initialBody.entityFilters.criterion.push(connectorCritera);
+      initialBody.entityFilters.criterion.push(connectionCriteria);
 
       if (sortOrder.value !== "default") {
         const split = sortOrder.value.split("|");
@@ -299,15 +379,22 @@ export default defineComponent({
       }
 
       replaceBody(initialBody);
+      if (assetlist.value) {
+        assetlist?.value.scrollToItem(0);
+      }
     };
 
     watch(
       [assetType, () => BMAttributeProjection.value.length],
       (n, o) => {
         console.log("asset type changed");
+        isAggregate.value = false;
         // abort();
+        offset.value = 0;
         updateBody();
+
         if (!now.value) {
+          isAggregate.value = true;
           now.value = true;
         }
       },
@@ -316,33 +403,11 @@ export default defineComponent({
       }
     );
 
-    // const assetlist = ref(null);
     const { projection } = useDiscoveryPreferences();
-    // const immediate = ref(true);
-    // const {
-    //   listCount,
-    //   isLoadMore,
-    //   loadMore,
-    //   query,
-    //   filter,
-    //   isLoading,
-    //   limit,
-    //   offset,
-    //   totalCount,
-    //   changeAssetType,
-    //   assetTypeList,
-    //   changeSort,
-    //   changeConnectors,
-    //   savedSearch,
-    // } = fetchAssetDiscover(DISCOVERY_FETCH_LIST, immediate);
 
     const handleSearchChange = useDebounceFn(val => {
+      offset.value = 0;
       updateBody();
-      // query(val.target.value);
-      // if (assetlist.value) {
-      //   console.log("scroll");
-      //   assetlist?.value.scrollToItem(0);
-      // }
     }, 100);
 
     const handleChangePreferences = (payload: any) => {
@@ -351,32 +416,27 @@ export default defineComponent({
 
     const handleChangeSort = (payload: any) => {
       sortOrder.value = payload;
+      isAggregate.value = false;
       updateBody();
+    };
 
-      // changeSort(payload);
+    const handleState = (payload: any) => {
+      state.value = payload;
+      isAggregate.value = true;
+      updateBody();
     };
 
     const handleFilterChange = (payload: any) => {
       filters.value = payload;
+      offset.value = 0;
+      isAggregate.value = true;
       updateBody();
     };
 
-    // const handleSavedSearchChange = (payload: any) => {
-    //   console.log(payload);
-
-    //   if (payload.attributes) {
-    //     let searchParam = JSON.parse(payload?.attributes?.searchParameters);
-    //     console.log(searchParam);
-    //     savedSearch(searchParam);
-    //   }
-    // };
-
-    // const handleChangeAssetType = (payload: any) => {
-    //   changeAssetType(payload);
-    // };
-
     const handleChangeConnectors = (payload: any) => {
       connectorsPayload.value = payload;
+      isAggregate.value = true;
+      offset.value = 0;
       updateBody();
     };
 
@@ -384,12 +444,22 @@ export default defineComponent({
       emit("preview", item);
     };
 
+    const loadMore = () => {
+      if (list.value.length + limit.value < totalCount.value) {
+        offset.value = list.value.length + limit.value;
+      }
+      isAggregate.value = false;
+      updateBody();
+    };
+
     return {
       searchScoreList,
       list,
       assetType,
+      assetTypeLabel,
       assetTypeList,
       assetTypeMap,
+      isAggregate,
       filterMode,
       replaceBody,
       handleSearchChange,
@@ -402,6 +472,14 @@ export default defineComponent({
       handleFilterChange,
       handlePreview,
       queryText,
+      totalCount,
+      assetlist,
+      isLoadMore,
+      loadMore,
+      totalSum,
+      handleState,
+      connectorsPayload,
+      filteredLConnectorist,
       // listCount,
       // isLoading,
       // limit,

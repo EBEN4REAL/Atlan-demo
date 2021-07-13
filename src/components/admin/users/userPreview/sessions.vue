@@ -1,15 +1,31 @@
 <template>
   <div>
     <div class="flex justify-end">
-      <a-button
-        :disabled="!sessionList || !sessionList.length"
-        class="mb-3"
-        ghost
-        type="danger"
-        @click="showDeleteAllSessionsConfirm"
+      <a-popover
+        title="Sign Out All Sessions"
+        trigger="click"
+        :visible="showDeleteSessionsConfirmPopover"
+        @visibleChange="handleClickChange"
+        placement="bottom"
       >
-        <i class="mr-2 fa fa-sign-out" />Sign out all sessions
-      </a-button>
+        <template #content>
+          <div>
+            <div class="mb-2">Are you sure you want to signout all sessions?</div>
+            <div class="flex justify-end">
+              <a-button @click="hideDeleteSessionsConfirmPopover" class="mr-2">Cancel</a-button>
+              <a-button
+                @click="()=>{signOutAllSessions();hideDeleteSessionsConfirmPopover();}"
+                type="danger"
+              >Yes</a-button>
+            </div>
+          </div>
+        </template>
+        <a-button class="mb-3" type="danger" ghost :loading="signOutAllSessionsLoading">
+          <span>
+            <fa class="mr-2" style="vertical-align: middle;" icon="fal sign-out" />Sign out all sessions
+          </span>
+        </a-button>
+      </a-popover>
     </div>
     <a-table
       :loading="[STATES.PENDING].includes(state) ||
@@ -22,13 +38,17 @@
     >
       <template #time="{text:session}">
         <a-popover placement="bottom">
-          <template #content>{{ session.last_accessed_string }}</template>
+          <template #content>
+            <span class="text-gray-dark">{{ session.last_accessed_string }}</span>
+          </template>
           {{ session.last_accessed_time_ago }}
         </a-popover>
       </template>
       <template #action="{text:session}">
         <a-popover placement="bottom">
-          <template #content>{{ session.started_at_string }}</template>
+          <template #content>
+            <span class="text-gray-dark">{{ session.started_at_string }}</span>
+          </template>
           {{ session.started_time_ago }}
         </a-popover>
       </template>
@@ -36,8 +56,15 @@
       <template #actions="{text:session}">
         <a-popover class="cursor-pointer" trigger="click" placement="bottom">
           <template #content>
-            <span class="text-red-600" @click="signOutUserSession(session.id)">
-              <i class="mr-2 fa fa-sign-out" />Sign Out Session
+            <span class="cursor-pointer text-error" @click="signOutUserSession(session.id)">
+              <div v-if="signOutSessionByIdLoading">
+                <fa
+                  style="vertical-align:middle;"
+                  icon="fal circle-notch"
+                  class="mr-1 animate-spin"
+                />
+              </div>
+              <fa class="mr-2" style="vertical-align: middle;" icon="fal sign-out" />Sign Out Session
             </span>
           </template>
           <fa icon="fal cog" />
@@ -48,7 +75,7 @@
 </template>
   
 <script lang="ts">
-import { defineComponent, computed, reactive, ref } from "vue";
+import { defineComponent, computed, reactive, ref, watch } from "vue";
 import { useTimeAgo } from "@vueuse/core";
 import { User } from "~/api/auth/user";
 import swrvState from "~/composables/utils/swrvState";
@@ -62,6 +89,13 @@ export default defineComponent({
     },
   },
   setup(props, context) {
+    const showDeleteSessionsConfirmPopover = ref(false);
+    const hideDeleteSessionsConfirmPopover = () => {
+      showDeleteSessionsConfirmPopover.value = false;
+    };
+    const handleClickChange = (visible) => {
+      showDeleteSessionsConfirmPopover.value = visible;
+    };
     const sessionParams = reactive({ max: 100, first: 0 });
     const {
       data,
@@ -73,8 +107,8 @@ export default defineComponent({
       dedupingInterval: 1,
     });
     const { state, STATES } = swrvState(data, error, isValidating);
-    const signOutAllSessionsLoading = ref(false);
-    const signOutSessionByIdLoading = ref(false);
+    let signOutAllSessionsLoading = ref(false);
+    let signOutSessionByIdLoading = ref(false);
     let sessionList = computed(() => {
       if (data.value && data.value.length) {
         return data.value.map((session: any) => {
@@ -89,29 +123,43 @@ export default defineComponent({
       }
       return [];
     });
-    const signOutAllSessions = async () => {
-      try {
-        signOutAllSessionsLoading.value = true;
-        await User.SignOutAllSessions(props.selectedUser.id);
-        await fetchUserSessions();
-        signOutAllSessionsLoading.value = false;
-        message.success("All sessions deleted");
-      } catch (error) {
-        signOutAllSessionsLoading.value = false;
-        message.error("Unable to end all sessions, please try again");
-      }
+    const signOutAllSessions = () => {
+      const {
+        data,
+        isReady,
+        error,
+        isLoading: isLoading,
+      } = User.SignOutAllSessions(props.selectedUser.id);
+      watch(
+        [data, isReady, error, isLoading],
+        () => {
+          signOutAllSessionsLoading.value = isLoading.value;
+          if (isReady && !error.value && !isLoading.value) {
+            fetchUserSessions();
+            message.success("All sessions deleted");
+          } else if (error && error.value) {
+            message.error("Unable to end all sessions, please try again");
+          }
+        },
+        { immediate: true }
+      );
     };
-    const signOutUserSession = async (sessionId: string) => {
-      try {
-        signOutSessionByIdLoading.value = true;
-        await User.SignOutSessionById(sessionId);
-        await fetchUserSessions();
-        signOutSessionByIdLoading.value = false;
-        message.success("User session ended");
-      } catch (error) {
-        signOutSessionByIdLoading.value = false;
-        message.error("Unable to sign user out, please try again");
-      }
+    const signOutUserSession = (sessionId: string) => {
+      const { data, isReady, error, isLoading } =
+        User.SignOutSessionById(sessionId);
+      watch(
+        [data, isReady, error, isLoading],
+        () => {
+          signOutSessionByIdLoading.value = isLoading.value;
+          if (isReady && !error.value && !signOutSessionByIdLoading.value) {
+            fetchUserSessions();
+            message.success("User session ended");
+          } else if (error && error.value) {
+            message.error("Unable to sign user out, please try again");
+          }
+        },
+        { immediate: true }
+      );
     };
     const showDeleteAllSessionsConfirm = () => {
       Modal.confirm({
@@ -152,18 +200,7 @@ export default defineComponent({
         }
       }
     };
-
-    return {
-      state,
-      STATES,
-      sessionList,
-      showDeleteAllSessionsConfirm,
-      handleTableChange,
-      signOutUserSession,
-    };
-  },
-  computed: {
-    columns() {
+    const columns = computed(() => {
       return [
         {
           title: "Last Accessed",
@@ -193,7 +230,22 @@ export default defineComponent({
           slots: { customRender: "actions" },
         },
       ];
-    },
+    });
+    return {
+      state,
+      STATES,
+      sessionList,
+      showDeleteAllSessionsConfirm,
+      handleTableChange,
+      signOutUserSession,
+      columns,
+      signOutAllSessionsLoading,
+      signOutAllSessions,
+      hideDeleteSessionsConfirmPopover,
+      handleClickChange,
+      showDeleteSessionsConfirmPopover,
+      signOutSessionByIdLoading,
+    };
   },
 });
 </script>

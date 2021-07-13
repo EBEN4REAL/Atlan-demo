@@ -1,49 +1,74 @@
 <template>
   <div>
     <a-table
+      :tableLayout="'fixed'"
+      id="invitationList"
       :dataSource="invitationList"
       :columns="columns"
       v-if="invitationList"
-      :rowKey="(invitation)=>invitation.id"
+      :rowKey="(invitation) => invitation.id"
       :pagination="false"
       @change="handleTableChange"
-      :loading="[STATES.PENDING].includes(state) ||
-          [STATES.VALIDATING].includes(state)"
+      :loading="
+        [STATES.PENDING].includes(state) || [STATES.VALIDATING].includes(state)
+      "
     >
-      <template #invites="{text:invite}">
-        <div class="flex cursor-pointer" @click="() => {handleInvitationClick(invite)}">
+      <template #invites="{ text: invite }">
+        <div
+          class="flex cursor-pointer"
+          @click="
+            () => {
+              handleInvitationClick(invite);
+            }
+          "
+        >
           <div>
-            <a-avatar
-              v-if="invite.username||invite.email"
+            <avatar
+              :imageUrl="''"
+              :allowUpload="false"
+              :avatarName="invite.username || invite.email"
+              :avatarSize="40"
+              class="mr-2"
+            />
+            <!-- <a-avatar
+              v-if="invite.username || invite.email"
               shape="circle"
-              class="mr-1 ant-tag-blue text-primary-500 avatars"
-            >{{getNameInitials(getNameInTitleCase(invite.username||invite.email)) }}</a-avatar>
+              class="mr-1 ant-tag-blue text-gray avatars"
+            >
+              {{
+              getNameInitials(
+              getNameInTitleCase(invite.username || invite.email)
+              )
+              }}
+            </a-avatar>-->
           </div>
-          <div>
-            <span>{{ invite.email || '-' }}</span>
-            <p>@{{ invite.username || '-'}}</p>
+          <div class="truncate">
+            <span class="text-primary">{{ invite.email || "-" }}</span>
+            <p class="mb-0 text-gray-400 truncate">@{{ invite.username || "-" }}</p>
           </div>
         </div>
       </template>
-      <template #role="{text:invite}">
+      <template #role="{ text: invite }">
         <span>{{ invite.role_object.name }}</span>
       </template>
-      <template #actions="{text:invite}">
-        <a-dropdown :trigger="['click']">
-          <a class="ant-dropdown-link" @click="(e) => e.preventDefault()">
-            <fa icon="fal cog" />
-          </a>
-          <template #overlay>
-            <a-menu>
-              <a-menu-item
-                key="0"
-                @click="showResendInvitationConfirm(invite)"
-              >Resend Verification Email</a-menu-item>
-              <a-menu-item key="1" @click="showRevokeInvitationConfirm(invite)">Revoke Invitation</a-menu-item>
-              <a-menu-item key="2" @click="handleChangeRole(invite)">Change User Role</a-menu-item>
-            </a-menu>
-          </template>
-        </a-dropdown>
+      <template #actions="{ text: invite }">
+        <div class="flex justify-center">
+          <a-dropdown :trigger="['click']">
+            <a class="ant-dropdown-link" @click="(e) => e.preventDefault()">
+              <fa icon="fal cog" />
+            </a>
+            <template #overlay>
+              <a-menu>
+                <a-menu-item
+                  key="0"
+                  @click="showResendInvitationConfirm(invite)"
+                >Resend Verification Email</a-menu-item>
+                <a-menu-item key="1" @click="showRevokeInvitationConfirm(invite)">Revoke Invitation</a-menu-item>
+                <a-menu-item key="2" @click="handleChangeRole(invite)">Change User Role</a-menu-item>
+              </a-menu>
+            </template>
+          </a-dropdown>
+        </div>
       </template>
     </a-table>
     <div class="flex justify-between max-w-full mt-4">
@@ -68,6 +93,7 @@ import {
 } from "~/composables//utils/string-operations";
 import { Modal, message } from "ant-design-vue";
 import { User } from "~/api/auth/user";
+import Avatar from "~/components/common/avatar.vue";
 export default defineComponent({
   name: "InvitationListTable",
   props: {
@@ -75,6 +101,9 @@ export default defineComponent({
       type: String,
       deafult: "",
     },
+  },
+  components: {
+    Avatar,
   },
   setup(props, context) {
     let invitationListAPIParams: any = reactive({
@@ -192,14 +221,16 @@ export default defineComponent({
         title: `Resend Verification Email`,
         okText: "Send Email",
         okType: "primary",
-        async onOk() {
-          try {
-            await User.ResendVerificationEmail(invite.id);
-            message.success("Email sent");
-          } catch (error) {
-            message.error("Failed to send email, try again");
-            return;
-          }
+        onOk() {
+          const { data, isReady, error, isLoading } =
+            User.ResendVerificationEmail(invite.id);
+          watch([data, isReady, error, isLoading], () => {
+            if (isReady && !error.value && !isLoading.value) {
+              message.success("Email sent");
+            } else if (error && error.value) {
+              message.error("Failed to send email, try again");
+            }
+          });
         },
       });
     };
@@ -209,14 +240,18 @@ export default defineComponent({
         content: `Are you sure you want to revoke invitation for ${invite.email} ?`,
         okText: "Yes",
         okType: "danger",
-        async onOk() {
-          try {
-            await User.RevokeInvitation(invite.id);
-            getInvitationList();
-            message.success("Invitation revoked.");
-          } catch (error) {
-            message.error("Unable to revoke invite, please try again");
-          }
+        onOk() {
+          const { data, isReady, error, isLoading } = User.RevokeInvitation(
+            invite.id
+          );
+          watch([data, isReady, error, isLoading], () => {
+            if (isReady && !error.value && !isLoading.value) {
+              getInvitationList();
+              message.success("Invitation revoked.");
+            } else if (error && error.value) {
+              message.error("Unable to revoke invite, please try again");
+            }
+          });
         },
       });
     };
@@ -262,7 +297,8 @@ export default defineComponent({
         },
         {
           title: "Actions",
-          width: 120,
+          className: "invitation-list-actions",
+
           slots: { customRender: "actions" },
         },
       ],
@@ -271,5 +307,11 @@ export default defineComponent({
 });
 </script>
 
-<style>
+<style lang="less">
+#invitationList {
+  th.ant-table-row-cell-last {
+    display: flex;
+    justify-content: center;
+  }
+}
 </style>

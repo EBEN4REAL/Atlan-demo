@@ -1,7 +1,7 @@
 <template>
   <div>
-    <div class="flex justify-between my-3 gap-x-5">
-      <div class="flex w-1/2">
+    <div class="flex justify-between mb-4 gap-x-5">
+      <div class="flex w-1/4">
         <a-input-search
           placeholder="Search Groups"
           :allowClear="true"
@@ -10,7 +10,7 @@
           @change="onSearch"
         ></a-input-search>
       </div>
-      <a-button @click="toggleAddGroupModal" type="primary">New Group</a-button>
+      <a-button @click="toggleAddGroupModal" class="rounded-md" type="primary">New Group</a-button>
     </div>
     <div
       class="flex items-center h-full align-middle bg-white"
@@ -20,13 +20,14 @@
       <ErrorView></ErrorView>
     </div>
     <a-table
+      id="groupList"
+      :tableLayout="'fixed'"
       v-else-if="groupList && groupList.length"
       :dataSource="groupList"
       :columns="columns"
       :row-key="(group) => group.id"
       :pagination="pagination"
       @change="handleTableChange"
-      :scroll="{ x: '100%' }"
       :loading="
         [STATES.PENDING].includes(state) || [STATES.VALIDATING].includes(state)
       "
@@ -39,52 +40,60 @@
             }
           "
         >
-          <div class="text-gray-900 capitalize truncate">
-            {{group.name}}
-            <span
-              class="px-2 py-1 text-xs font-bold bg-blue-100 rounded-sm rounded rounded-full text-primary-500"
-              v-if="group.isDefault==='true'"
-            >Default</span>
+          <div class="flex capitalize truncate cursor-pointer text-primary">
+            <div class="truncate max-w-3/4">{{group.name}}</div>
+            <div
+              class="px-2 py-1 text-xs font-bold bg-blue-100 rounded-full text-gray"
+              v-if="group.isDefault === 'true'"
+            >Default</div>
           </div>
-          <p class="mb-0 text-gray-500 truncate">{{ group.description }}</p>
+          <p class="mb-0 text-gray-400 truncate">{{ group.description }}</p>
         </div>
       </template>
-
-      <!-- <template v-slot="actions">...</template> -->
-
       <template #actions="{ text: group }">
-        <a-dropdown :trigger="['click']">
-          <a class="ant-dropdown-link" @click="(e) => e.preventDefault()">
-            <fa icon="fal cog" />
-          </a>
-          <template #overlay>
-            <a-menu>
-              <a-menu-item key="0" @click="() => handleDeleteGroup(group.id)">
-                <div class="flex text-red-600">
-                  <fa icon="fal trash-alt" class="mr-2"></fa>Delete
-                </div>
-              </a-menu-item>
-              <a-menu-item key="1" @click="handleAddMembers(group)" class="flex">
-                <div class="flex">
-                  <fa icon="fal plus" class="mr-2"></fa>Add Members
-                </div>
-              </a-menu-item>
-              <a-menu-item key="2" @click="handleToggleDefault(group)">
-                <div class="flex">
-                  <fa icon="fal plus" class="mr-2"></fa>
-                  {{group.isDefault?'Unmark':'Mark'}} as default
-                </div>
-                <!-- <a-spin size="small" v-if="markAsDefaultLoading"></a-spin> -->
-                <!-- <div class="text-xs">New users will be automatically added to default groups</div> -->
-              </a-menu-item>
-            </a-menu>
-            <!-- <span class="flex items-center text-red-600">
-              <fa icon="fal trash-alt"></fa>
-              <span class="ml-2" @click="() => handleDeleteGroup(group.id)">Delete</span>
-            </span>-->
-          </template>
-          <!-- <fa icon="fal cog"></fa> -->
-        </a-dropdown>
+        <div class="flex justify-center">
+          <a-dropdown :trigger="['click']">
+            <a class="ant-dropdown-link" @click="(e) => e.preventDefault()">
+              <fa icon="fal cog" />
+            </a>
+            <template #overlay>
+              <a-menu>
+                <a-menu-item key="0" @click="handleAddMembers(group)" class="flex">
+                  <div class="flex">
+                    <fa icon="fal plus" class="mr-2"></fa>Add Members
+                  </div>
+                </a-menu-item>
+                <a-menu-item key="1">
+                  <div class="flex">
+                    <div v-if="markAsDefaultLoading">
+                      <fa
+                        style="vertical-align:middle;"
+                        icon="fal circle-notch"
+                        class="mr-1 animate-spin"
+                      />
+                    </div>
+                    <a-checkbox
+                      @change="handleToggleDefault(group)"
+                      :checked="group.isDefault==='true'"
+                    >Mark as default</a-checkbox>
+                  </div>
+                </a-menu-item>
+                <a-menu-item key="2" @click="() => handleDeleteGroup(group.id)">
+                  <div class="flex text-red-600">
+                    <div v-if="deleteGroupLoading">
+                      <fa
+                        style="vertical-align:middle;"
+                        icon="fal circle-notch"
+                        class="mr-1 animate-spin"
+                      />
+                    </div>
+                    <fa icon="fal trash-alt" class="mr-2"></fa>Delete
+                  </div>
+                </a-menu-item>
+              </a-menu>
+            </template>
+          </a-dropdown>
+        </div>
       </template>
     </a-table>
     <a-modal
@@ -96,13 +105,6 @@
     >
       <AddGroup @createGroup="handleCreateGroup" />
     </a-modal>
-    <!-- <GroupPreviewDrawer
-      @closePreview="handleClosePreview"
-      :selectedGroup="selectedGroup"
-      :showGroupPreview="showGroupPreview"
-      @refreshTable="getGroupList"
-      :defaultTab="defaultTab"
-    />-->
   </div>
 </template>
 <script lang="ts">
@@ -126,6 +128,8 @@ export default defineComponent({
     const defaultTab = ref("about");
     const showGroupPreview = ref(false);
     const markAsDefaultLoading = ref(false);
+    const deleteGroupLoading = ref(false);
+    const showActionsDropdown = ref(false);
     const toggleAddGroupModal = () => {
       isAddGroupModalVisible.value = !isAddGroupModalVisible.value;
     };
@@ -134,6 +138,7 @@ export default defineComponent({
       limit: 6,
       offset: 0,
       filter: {},
+      sort: "-created_at",
     });
     const pagination = computed(() => {
       return {
@@ -189,13 +194,11 @@ export default defineComponent({
       getGroupList();
     };
     const handleAddMembers = (group: any) => {
-      defaultTab.value = "members";
-      handleGroupClick(group);
+      showGroupPreviewDrawer(group, "members");
     };
     const handleGroupClick = (group: any) => {
       // showGroupPreview.value = true;
       showGroupPreviewDrawer(group);
-      selectedGroupId.value = group.id;
     };
     const selectedGroup = computed(() => {
       let activeGroupObj = {};
@@ -209,14 +212,21 @@ export default defineComponent({
       defaultTab.value = "about";
       showGroupPreview.value = false;
     };
-    const handleDeleteGroup = async (groupId: string) => {
-      try {
-        await Group.DeleteGroup(groupId);
-        getGroupList();
-        message.success("Group Removed");
-      } catch (error) {
-        message.error("Failed, try again");
-      }
+    const handleDeleteGroup = (groupId: string) => {
+      const { data, isReady, error, isLoading } = Group.DeleteGroup(groupId);
+      watch(
+        [data, isReady, error, isLoading],
+        () => {
+          deleteGroupLoading.value = isLoading.value;
+          if (isReady && !error.value && !isLoading.value) {
+            getGroupList();
+            message.success("Group Removed");
+          } else if (error && error.value) {
+            message.error("Failed, try again");
+          }
+        },
+        { immediate: true }
+      );
     };
     const handleCreateGroup = () => {
       isAddGroupModalVisible.value = false;
@@ -227,8 +237,11 @@ export default defineComponent({
       showPreview,
       showGroupPreview: openPreview,
       setGroupUniqueAttribute,
+      setDefaultTab,
     } = useGroupPreview();
-    const showGroupPreviewDrawer = (group: any) => {
+    const showGroupPreviewDrawer = (group: any, activeTabKey = "about") => {
+      selectedGroupId.value = group.id;
+      setDefaultTab(activeTabKey);
       setGroupUniqueAttribute(group.id);
       openPreview();
     };
@@ -236,35 +249,38 @@ export default defineComponent({
       if (!showPreview.value) getGroupList();
     });
     // END: GROUP PREVIEW
-    const handleToggleDefault = (group) => {
+    const handleToggleDefault = (group: any) => {
       const requestPayload = ref();
       requestPayload.value = {
-        name: group.alias,
         attributes: {
-          isDefault: [`${!group.isDefault}`],
+          isDefault: [`${group.isDefault === "true" ? "false" : "true"}`],
         },
       };
-      const { data, isLoading, error } = Group.UpdateGroupV2(
+      const { data, isReady, error, isLoading } = Group.UpdateGroup(
         group.id,
-        requestPayload.value
+        requestPayload
       );
-      watch([data, isLoading, error], () => {
-        console.log({ data, isLoading, error });
-        markAsDefaultLoading.value = isLoading.value;
-        if (data.value) {
-          message.success(
-            `Group ${group.isDefault ? "unmarked" : "marked"} as default`
-          );
-          getGroupList();
-        } else if (error.value) {
-          markAsDefaultLoading.value = false;
-          message.error(
-            `Unable to ${
-              group.isDefault ? "unmark" : "mark"
-            } group as default, please try again`
-          );
-        }
-      });
+      watch(
+        [data, isReady, error, isLoading],
+        () => {
+          markAsDefaultLoading.value = isLoading.value;
+          if (isReady && !error.value && !isLoading.value) {
+            message.success(
+              `Group ${
+                group.isDefault === "true" ? "unmarked" : "marked"
+              } as default`
+            );
+            getGroupList();
+          } else if (error && error.value) {
+            message.error(
+              `Unable to ${
+                group.isDefault === "true" ? "unmark" : "mark"
+              } group as default, please try again`
+            );
+          }
+        },
+        { immediate: true }
+      );
     };
     return {
       isAddGroupModalVisible,
@@ -288,6 +304,8 @@ export default defineComponent({
       defaultTab,
       handleToggleDefault,
       markAsDefaultLoading,
+      deleteGroupLoading,
+      showActionsDropdown,
     };
   },
   data() {
@@ -326,6 +344,7 @@ export default defineComponent({
         },
         {
           title: "Actions",
+
           slots: { customRender: "actions" },
         },
       ],
@@ -334,3 +353,11 @@ export default defineComponent({
   methods: {},
 });
 </script>
+<style lang="less">
+#groupList {
+  th.ant-table-row-cell-last {
+    display: flex;
+    justify-content: center;
+  }
+}
+</style>

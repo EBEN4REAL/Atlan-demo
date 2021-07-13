@@ -26,34 +26,33 @@
         v-if="[STATES.ERROR, STATES.STALE_IF_ERROR].includes(state)"
       >
         <ErrorView></ErrorView>
-        <a-button
-          icon="reload"
-          size="large"
-          type="primary"
-          ghost
-          @click="
+        <div class="mt-3">
+          <a-button
+            size="large"
+            type="primary"
+            ghost
+            @click="
             () => {
               getGroupMembersList();
             }
           "
-        >Try again</a-button>
+          >
+            <fa icon="fal sync"></fa>Try again
+          </a-button>
+        </div>
       </div>
-      <div v-else-if="searchText&&!filteredMembersCount" class="mt-2">
+      <div v-else-if="searchText && !filteredMembersCount" class="mt-2">
         {{ `No member with name ${searchText} found.` }}
         <!-- <span
-          class="cursor-pointer text-primary-600"
+          class="cursor-pointer text-gray"
           @click="{searchText='';handleSearch();}"
         >Clear</span>-->
       </div>
-      <div v-else class="min-h-screen mt-4">
+      <div v-else class="mt-4 overflow-y-auto member-list-height">
         <div v-for="user in memberList.value" :key="user.id" class="my-2">
           <div class="flex justify-between cursor-pointer">
-            <div class="flex items-center" @click="()=>handleClickUser(user.username)">
-              <a-avatar
-                shape="circle"
-                class="mr-1 ant-tag-blue text-primary-500 avatars"
-                :size="40"
-              >
+            <div class="flex items-center" @click="() => handleClickUser(user.username)">
+              <a-avatar shape="circle" class="mr-1 ant-tag-blue text-gray avatars" :size="40">
                 {{
                 getNameInitials(getNameInTitleCase(`${getUserName(user)}`))
                 }}
@@ -66,7 +65,16 @@
             </div>
             <a-popover trigger="click" placement="bottom">
               <template #content>
-                <span class="text-red-500" @click="() => removeUserFromGroup(user.id)">Remove User</span>
+                <div class="flex items-center justify-center text-error cursor-pointer mt-0.5">
+                  <div v-if="removeMemberLoading">
+                    <fa
+                      style="vertical-align:middle;"
+                      icon="fal circle-notch"
+                      class="mr-1 animate-spin"
+                    />
+                  </div>
+                  <div @click="() => removeUserFromGroup(user.id)">Remove User</div>
+                </div>
               </template>
               <fa icon="fal cog"></fa>
             </a-popover>
@@ -95,19 +103,6 @@
         :showHeaderButtons="true"
       />
     </div>
-    <!-- <a-modal
-      :visible="showAddMemberModal"
-      title="Add Members"
-      :footer="null"
-      :destroy-on-close="true"
-      @cancel="closeAddGroupModal"
-    >
-      <AddGroupMembers
-        @addMembersToGroup="addMembersToGroup"
-        :addMemberLoading="addMemberLoading"
-        ref="addUsers"
-      />
-    </a-modal>-->
   </div>
 </template>
 
@@ -147,6 +142,7 @@ export default defineComponent({
     const searchText = ref("");
     const showAddMemberModal = ref(false);
     const addMemberLoading = ref(false);
+    const removeMemberLoading = ref(false);
     const selectedUserIds = ref([]);
     const memberListParams = reactive({
       groupId: props.selectedGroup.id,
@@ -193,43 +189,60 @@ export default defineComponent({
         searchText.value ? filteredMembersCount.value : totalMembersCount.value
       );
     });
-    const addMembersToGroup = async () => {
+    const addMembersToGroup = () => {
       const userIds = [...selectedUserIds.value];
-      addMemberLoading.value = true;
-      try {
-        await Group.AddMembers(props.selectedGroup.id, {
-          users: userIds,
-        });
-        memberListParams.params.offset = 0;
-        getGroupMembersList();
-        context.emit("refreshTable");
-        addMemberLoading.value = false;
-        message.success(
-          `${pluralizeString("Member", userIds.length, false)} added`
-        );
-        showGroupMembers.value = true;
-      } catch (e) {
-        addMemberLoading.value = false;
-        message.error("Unable to add members, please try again.");
-      }
+      const requestPayload = ref();
+      requestPayload.value = {
+        users: userIds,
+      };
+      const { data, isReady, error, isLoading } = Group.AddMembers(
+        props.selectedGroup.id,
+        requestPayload
+      );
+      watch(
+        [data, isReady, error, isLoading],
+        () => {
+          addMemberLoading.value = isLoading.value;
+          if (isReady && !error.value && !isLoading.value) {
+            memberListParams.params.offset = 0;
+            getGroupMembersList();
+            context.emit("refreshTable");
+            message.success(
+              `${pluralizeString("Member", userIds.length, false)} added`
+            );
+            showGroupMembers.value = true;
+          } else if (error && error.value) {
+            message.error("Unable to add members, please try again.");
+          }
+        },
+        { immediate: true }
+      );
     };
     const removeUserFromGroup = async (userId: any) => {
       const userIds = [userId];
-      try {
-        await Group.RemoveMembersFromGroup(
-          props.selectedGroup.id,
-          {
-            users: userIds,
-          },
-          {}
-        );
-        memberListParams.params.offset = 0;
-        getGroupMembersList();
-        context.emit("refreshTable");
-        message.success("Member Removed");
-      } catch (error) {
-        message.error("Failed, try again");
-      }
+      const requestPayload = ref();
+      requestPayload.value = {
+        users: userIds,
+      };
+      const { data, isReady, error, isLoading } = Group.RemoveMembersFromGroup(
+        props.selectedGroup.id,
+        requestPayload
+      );
+      watch(
+        [data, isReady, error, isLoading],
+        () => {
+          removeMemberLoading.value = isLoading.value;
+          if (isReady && !error.value && !isLoading.value) {
+            memberListParams.params.offset = 0;
+            getGroupMembersList();
+            context.emit("refreshTable");
+            message.success("Member Removed");
+          } else if (error && error.value) {
+            message.error("Failed, try again");
+          }
+        },
+        { immediate: true }
+      );
     };
     const getUserName = (user: any) => {
       const { first_name } = user;
@@ -284,10 +297,14 @@ export default defineComponent({
       showGroupMembers,
       handleShowGroupMembers,
       updateSelectedUsers,
+      removeMemberLoading,
     };
   },
 });
 </script>
 
-<style>
+<style lang="less" scoped>
+.member-list-height {
+  max-height: 68vh;
+}
 </style>

@@ -1,5 +1,3 @@
-
-
 <template>
   <a-checkbox-group
     v-model:value="checkedValues"
@@ -14,9 +12,11 @@
           }}</template>
           <a-checkbox :value="item.id" class="w-full">
             <span class="mb-0 ml-1 text-gray-700 truncated">
-              <fa :icon="item.icon" class="mr-1" :class="item.iconClass" />{{
-                item.label
-              }}
+              <fa
+                :icon="item.icon"
+                class="mr-2 pushtop"
+                :class="item.iconClass"
+              />{{ item.label }}
             </span>
           </a-checkbox>
         </a-tooltip>
@@ -24,7 +24,7 @@
     </div>
   </a-checkbox-group>
 </template>
-    
+
 <script lang="ts">
 import { computed, defineComponent, PropType, ref } from "vue";
 import { Components } from "~/api/atlas/client";
@@ -55,6 +55,7 @@ export default defineComponent({
     });
     const checkedValues = ref([]);
     checkedValues.value = props.modelValue;
+    console.log(checkedValues.value, "model");
     const handleChange = (checkedValue: string) => {
       emit("update:modelValue", checkedValues.value);
 

@@ -11,8 +11,6 @@
             <a-checkbox value="classifications">Classifications</a-checkbox>
             <a-checkbox value="rows">Row/Columns</a-checkbox>
             <a-checkbox value="heirarchy">Heirarchy</a-checkbox>
-          </div>
-          <div class="flex flex-col space-y-1">
             <a-checkbox value="popularity">Popularity Score</a-checkbox>
             <a-checkbox value="searchscore">Relevance Score</a-checkbox>
           </div>
@@ -34,6 +32,15 @@
           <a-radio value="Asset.name.keyword|descending">Name (Z-A)</a-radio>
         </div>
       </a-radio-group>
+
+      <p class="mt-3 mb-1 text-gray-500">State</p>
+      <a-radio-group @change="handleChangeState" v-model:value="state">
+        <div class="flex flex-col space-y-1">
+          <a-radio value="all">All Assets</a-radio>
+          <a-radio value="active">Active Assets</a-radio>
+          <a-radio value="deleted">Deleted Assets</a-radio>
+        </div>
+      </a-radio-group>
     </div>
   </div>
 </template>
@@ -47,7 +54,7 @@ import useDiscoveryPreferences from "~/composables/preference/useDiscoveryPrefer
 
 export default defineComponent({
   components: { ConnectionSelector, ConnectorSelector },
-  emits: ["change", "sort"],
+  emits: ["change", "sort", "state"],
   props: {
     defaultProjection: {
       type: Array,
@@ -56,6 +63,12 @@ export default defineComponent({
       type: String,
       default() {
         return "default";
+      },
+    },
+    defaultState: {
+      type: String,
+      default() {
+        return "active";
       },
     },
   },
@@ -76,11 +89,19 @@ export default defineComponent({
       emit("sort", sorting.value);
     };
 
+    const state = ref("");
+    state.value = props.defaultState || "active";
+    const handleChangeState = () => {
+      emit("state", state.value);
+    };
+
     return {
       projection,
       sorting,
+      state,
       handleChange,
       handeChangeSorting,
+      handleChangeState,
     };
   },
 });

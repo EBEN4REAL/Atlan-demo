@@ -30,13 +30,20 @@
       v-if="[STATES.ERROR, STATES.STALE_IF_ERROR].includes(state)"
     >
       <ErrorView></ErrorView>
-      <a-button
-        icon="reload"
-        size="large"
-        type="primary"
-        ghost
-        @click="()=>{getGroupList()}"
-      >Try again</a-button>
+      <div class="mt-3">
+        <a-button
+          size="large"
+          type="primary"
+          ghost
+          @click="
+          () => {
+            getGroupList();
+          }
+        "
+        >
+          <fa icon="fal sync"></fa>Try again
+        </a-button>
+      </div>
     </div>
     <div v-else class="mt-4 overflow-auto">
       <a-checkbox-group v-model:value="selectedIds" @change="handleChange" class="w-full">
@@ -47,7 +54,7 @@
                 <div class="flex items-center">
                   <!-- <a-avatar
                     shape="circle"
-                    class="mr-1 ant-tag-blue text-primary-500 avatars"
+                    class="mr-1 ant-tag-blue text-gray avatars"
                   >{{ getNameInitials(getNameInTitleCase(group.name)) }}</a-avatar>-->
                   <div class="ml-2">
                     <div>{{ group.name }}</div>
@@ -62,8 +69,10 @@
       </a-checkbox-group>
       <div
         class="flex justify-center"
-        v-if="[STATES.PENDING].includes(state) ||
-              [STATES.VALIDATING].includes(state)"
+        v-if="
+          [STATES.PENDING].includes(state) ||
+          [STATES.VALIDATING].includes(state)
+        "
       >
         <a-spin></a-spin>
       </div>

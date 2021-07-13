@@ -1,4 +1,4 @@
-import { useAPI } from "~/api/useAPIv2";
+import { useAPI } from "~/api/useAPI";
 import { GET_BUSINESS_METADATA } from "~/api/keyMaps/businessMetadata/index";
 import { ADD_BUSINESS_METADATA } from "~/api/keyMaps/businessMetadata/index";
 import { ref } from "vue";

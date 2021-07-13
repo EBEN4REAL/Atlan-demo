@@ -32,20 +32,20 @@ const getUserRole = (user: any) => {
 const getUserStatus = (user: any) => {
   if (!user.enabled) {
     return {
-      color: "red",
-      icon: "close-circle",
+      color: "text-error",
+      icon: "fal times-circle",
       status: "Disabled",
     };
   } else if (user.isLocked) {
     return {
-      color: "red",
-      icon: "lock",
+      color: "text-error",
+      icon: "fa lock",
       status: "Locked",
     };
   }
   return {
-    color: "green",
-    icon: "check-circle",
+    color: "text-success",
+    icon: "fas check-circle",
     status: "Active",
   };
 };
@@ -65,18 +65,19 @@ export const useUser = (userListAPIParams: {
   filter: any;
   sort: string;
 }) => {
-  console.log(userListAPIParams);
   const {
     data,
     error,
     isValidating,
+    isLoading,
     mutate: getUser,
   } = useAPI("GET_USER", "GET", {
+    cache: "",
     params: userListAPIParams,
-    options: {
+    options: ref({
       revalidateOnFocus: false,
       dedupingInterval: 1,
-    },
+    }),
   });
   const { state, STATES } = swrvState(data, error, isValidating);
   let userList = computed(() => {
@@ -94,6 +95,7 @@ export const useUser = (userListAPIParams: {
     getUser,
     state,
     STATES,
+    isLoading,
   };
 };
 export default function useUsers(userListAPIParams: {
@@ -108,25 +110,13 @@ export default function useUsers(userListAPIParams: {
     isValidating,
     mutate: getUserList,
   } = useAPI("LIST_USERS", "GET", {
+    cache: "true",
     params: userListAPIParams,
-    options: {
+    options: ref({
       revalidateOnFocus: false,
       dedupingInterval: 1,
-    },
+    }),
   });
-  //   const {
-  //     data,
-  //     error,
-  //     mutate: getUserList,
-  //     isValidating,
-  //   } = useSWRV(
-  //     [getAPIPath("auth", "/users"), userListAPIParams, {}],
-  //     fetcher,
-  //     {
-  //       revalidateOnFocus: false,
-  //       dedupingInterval: 1,
-  //     }
-  //   );
   const { state, STATES } = swrvState(data, error, isValidating);
   let userList = computed(() => {
     if (data.value && data?.value?.records)
@@ -135,16 +125,16 @@ export default function useUsers(userListAPIParams: {
   });
   let localUsersList: Ref<any[]> = ref([]);
   watch(data, () => {
-    if (data && data.value && data.value.records) {
+    if (data && data.value) {
       if (userListAPIParams.offset > 0) {
         localUsersList.value = [
           ...localUsersList.value,
-          ...data.value.records.map((user: any) => getFormattedUser(user)),
+          ...data?.value?.records?.map((user: any) => getFormattedUser(user)),
         ];
       } else {
-        localUsersList.value = data.value.records.map((user: any) =>
-          getFormattedUser(user)
-        );
+        localUsersList.value =
+          data?.value?.records?.map((user: any) => getFormattedUser(user)) ??
+          [];
       }
     }
   });

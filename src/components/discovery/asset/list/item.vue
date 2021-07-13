@@ -1,6 +1,6 @@
 <template>
   <div class="px-4 py-3 bg-white hover:bg-primary-100 hover:bg-opacity-10">
-    <div class="flex items-center justify-between mb-1 align-middle">
+    <div class="flex items-center justify-between align-middle">
       <div class="flex items-center mr-1 align-middle">
         <div class="">
           <component :is="item.typeName" class="w-auto h-5 mr-2"></component>
@@ -8,7 +8,7 @@
         <div class="flex flex-col w-full">
           <div class="flex items-center justify-between mb-0">
             <p
-              class="mb-0 font-semibold leading-none tracking-wide truncate  text-primary-500 hover:underline"
+              class="mb-0 font-semibold leading-none tracking-wide truncate cursor-pointer  text-primary hover:underline"
             >
               {{ title(item) }}
             </p>
@@ -56,10 +56,9 @@
             }}</span>
             rows,
           </span>
-          <span
-            class="font-bold tracking-wide cursor-pointer text-primary-500"
-            >{{ columnCount(item, true) }}</span
-          >
+          <span class="font-bold tracking-wide cursor-pointer text-primary">{{
+            columnCount(item, true)
+          }}</span>
           cols
         </p>
       </div>
@@ -106,7 +105,7 @@
       >
         <div
           v-if="group?.length > 0"
-          class="flex items-center px-2 py-1 mb-1 leading-none text-blue-600 align-middle bg-blue-100 rounded-md cursor-pointer  hover:text-primary-500"
+          class="flex items-center px-2 py-1 mb-1 leading-none text-blue-600 align-middle bg-blue-100 rounded-md cursor-pointer  hover:text-primary"
         >
           <fa icon="fal user-friends" class="mr-1 leading-none pushtop"></fa>
           <div>{{ group }}</div>

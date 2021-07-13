@@ -1,7 +1,7 @@
 import { getAPIPath, getAxiosClient } from "~/api";
 import axios, { AxiosRequestConfig } from "axios";
 import { SearchParameters } from "~/types/atlas/attributes";
-import { useAPI } from "../useAPIv2";
+import { useAPI } from "../useAPI";
 
 import { BASIC_SEARCH, SAVED_SEARCH } from "~/api/keyMaps/search"
 import { Ref } from "vue";

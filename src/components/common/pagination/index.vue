@@ -1,11 +1,12 @@
 <template>
-  <p class="leading-none mb-0" v-if="listCount === 0">
-    <i class="fal fa-frown-open mr-1"></i>No {{ label }} found
+  <p class="mb-0 leading-none" v-if="listCount === 0">
+    <i class="mr-1 fal fa-frown-open"></i>No {{ label.toLowerCase() }} found
   </p>
-  <p class="leading-none mb-0" v-else>
+  <p class="mb-0 leading-none" v-else>
     showing {{ listCount }} of
     <span class=""
-      >{{ totalCount }}<span v-if="totalCount > 9999">~</span> {{ label }}</span
+      >{{ totalCount }}<span v-if="totalCount > 9999"></span>
+      {{ label.toLowerCase() }}</span
     >
   </p>
 </template>

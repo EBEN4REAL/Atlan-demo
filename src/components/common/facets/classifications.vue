@@ -1,27 +1,70 @@
 <template>
   <div>
-    <a-input
-      ref="searchText"
-      v-model:value="classificationSearchText"
-      @change="handleClassificationsSearch"
-      type="text"
-      class="bg-white shadow-none form-control border-right-0"
-      placeholder="Search classifications"
-    >
-      <template #suffix>
-        <fa
-          v-if="classificationSearchText"
-          @click="clearSearchText"
-          icon="fal times-circle"
-          class="ml-2 mr-1 text-red-600"
-        />
-        <fa
-          v-if="!classificationSearchText"
-          icon="fal search"
-          class="ml-2 mr-1 text-gray-500"
-        />
-      </template>
-    </a-input>
+    <div class="flex mt-1.5">
+      <a-input
+        ref="searchText"
+        v-model:value="classificationSearchText"
+        @change="handleClassificationsSearch"
+        type="text"
+        class="bg-white shadow-none form-control border-right-0"
+        placeholder="Search classifications"
+      >
+        <template #suffix>
+          <fa
+            v-if="classificationSearchText"
+            @click="clearSearchText"
+            icon="fal times-circle"
+            class="ml-2 mr-1 text-red-600"
+          />
+          <fa
+            v-if="!classificationSearchText"
+            icon="fal search"
+            class="ml-2 mr-1 text-gray-500"
+          />
+        </template>
+      </a-input>
+      <a-popover trigger="click" placement="rightTop">
+        <template #content>
+          <div class="flex justify-between mb-2 border-b">
+            <p class="mb-0 text-gray-500 ">Sort by</p>
+          </div>
+          <a-radio-group
+            v-model:value="classificationFilterOptionsData"
+            @change="handleClassificationFilterChange"
+            class="flex flex-col"
+          >
+            <template
+              v-for="item in classificationFilterCheckboxes"
+              :key="item?.value"
+              class="flex flex-col"
+            >
+              <a-radio :value="item.value"
+                ><span class="mb-0 ml-1 text-gray-500 ">
+                  {{ item?.title }}
+                </span></a-radio
+              >
+            </template>
+          </a-radio-group>
+        </template>
+        <div v-if="classificationFilterOptionsData !== null" class="mr-1">
+          <a-badge :dot="classificationFilterOptionsData !== null">
+            <a-button class="px-2 py-1 ml-2 ">
+              <span class="flex items-center justify-center">
+                <fa icon="fal filter" class="hover:text-primary-500" />
+              </span>
+            </a-button>
+          </a-badge>
+        </div>
+        <div v-else class="mr-1">
+          <a-button class="px-2 py-1 ml-2 ">
+            <span class="flex items-center justify-center">
+              <fa icon="fal filter" class="hover:text-primary-500" />
+            </span>
+          </a-button>
+        </div>
+      </a-popover>
+    </div>
+
     <div class="mt-3">
       <a-checkbox-group
         v-model:value="checkedValues"
@@ -29,8 +72,17 @@
         class="w-full"
       >
         <div class="flex flex-col w-full ">
-          <div v-if="classificationSearchText === ''">
-            <template v-for="item in classificationsList" :key="item?.name">
+          <div
+            class="overflow-y-scroll h-36"
+            v-if="classificationSearchText === ''"
+            ref="classificationsScrollContainer"
+          >
+            <template
+              v-for="item in !hideClassifications
+                ? classificationsList
+                : classificationsList?.slice(0, 5)"
+              :key="item?.guid + classificationFilterOptionsData"
+            >
               <a-checkbox
                 :value="item.name"
                 class="w-full mb-2"
@@ -42,10 +94,14 @@
               </a-checkbox>
             </template>
           </div>
-          <div v-else>
+          <div
+            v-else
+            class="overflow-y-scroll h-36"
+            ref="classificationsScrollContainer"
+          >
             <template
               v-for="item in filteredClassificationList"
-              :key="item?.guid"
+              :key="item?.guid + classificationFilterOptionsData"
             >
               <a-checkbox
                 :value="item.guid"
@@ -58,6 +114,23 @@
               </a-checkbox>
             </template>
           </div>
+
+          <div
+            class="flex items-center justify-center w-auto px-2 mt-1 mb-0 font-bold text-center cursor-pointer select-none outlined hover:text-primary-500"
+            v-if="hideClassifications && classificationSearchText === ''"
+            @click="toggleClassifications"
+          >
+            <fa icon="fal chevron-down" class="mr-1" />
+            {{ `Show more + ${classificationsList.length - 5}` }}
+          </div>
+          <div
+            class="flex items-center justify-center w-auto px-2 mt-1 mb-0 font-bold text-center cursor-pointer select-none outlined hover:text-primary-500"
+            v-else-if="!hideClassifications && classificationSearchText === ''"
+            @click="toggleClassifications"
+          >
+            <fa icon="fal chevron-up" class="mr-1 " />
+            {{ `Show less` }}
+          </div>
         </div>
       </a-checkbox-group>
     </div>
@@ -65,7 +138,15 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, PropType, ref, watch, computed, toRaw } from "vue";
+import {
+  defineComponent,
+  PropType,
+  ref,
+  watch,
+  computed,
+  toRaw,
+  watchEffect,
+} from "vue";
 import { Collapse } from "~/types";
 import { Components } from "~/api/atlas/client";
 
@@ -98,10 +179,23 @@ export default defineComponent({
   mounted() {},
   emits: ["update:modelValue", "change"],
   setup(props, { emit }) {
-    let classificationsList = computed(() => toRaw(props.data.classifications));
+    let classificationsList = ref([]);
     const filteredClassificationList = ref([]);
     const checkedValues = ref([]);
     checkedValues.value = props.modelValue;
+    const hideClassifications = ref(true);
+    const classificationFilterOptionsData = ref("asc");
+    const classificationFilterCheckboxes = [
+      {
+        title: "A-Z",
+        value: "asc",
+      },
+      {
+        title: "Z-A",
+        value: "dsc",
+      },
+    ];
+
     const handleChange = (checkedValue: string) => {
       emit("update:modelValue", checkedValues.value);
       console.log(checkedValues.value, "checked");
@@ -128,6 +222,68 @@ export default defineComponent({
         } as Components.Schemas.FilterCriteria,
       });
     };
+    const sortClassificationsByOrder = (
+      sortingOrder: string | null,
+      data: any
+    ) => {
+      console.log(toRaw(data), "hello");
+      let classifications = [];
+      switch (sortingOrder) {
+        case "asc": {
+          classifications = toRaw(data).sort(function(
+            classificationA,
+            classificationB
+          ) {
+            let a = classificationA.displayName;
+            let b = classificationB.displayName;
+            if (a < b) {
+              return -1;
+            }
+            if (a > b) {
+              return 1;
+            }
+            return 0;
+          });
+          break;
+        }
+        case "dsc": {
+          classifications = toRaw(data).sort(function(
+            classificationA,
+            classificationB
+          ) {
+            let a = classificationA.displayName;
+            let b = classificationB.displayName;
+            if (a < b) {
+              return 1;
+            }
+            if (a > b) {
+              return -1;
+            }
+            return 0;
+          });
+          break;
+        }
+        default: {
+          break;
+        }
+      }
+      console.log("classifications", classifications);
+      return classifications;
+    };
+
+    watchEffect(() => {
+      console.log(filteredClassificationList.value.length, "outbox");
+      classificationsList.value = sortClassificationsByOrder(
+        classificationFilterOptionsData.value,
+        props.data.classifications
+      );
+      if (filteredClassificationList.value.length > 0) {
+        filteredClassificationList.value = sortClassificationsByOrder(
+          classificationFilterOptionsData.value,
+          filteredClassificationList.value
+        );
+      }
+    });
 
     // will be called from parent to clear the filter
     const clear = () => {
@@ -149,6 +305,26 @@ export default defineComponent({
       classificationSearchText.value = "";
     };
 
+    const showScrollBar = (el) => {
+      el.value.scrollTop = 1;
+      el.value.scrollTop = 0;
+    };
+
+    const toggleClassifications = () => {
+      hideClassifications.value = !hideClassifications.value;
+      if (hideClassifications.value) {
+        showScrollBar(classificationsScrollContainer);
+      } else {
+        showScrollBar(classificationsScrollContainer);
+      }
+    };
+
+    const classificationsScrollContainer = ref(null);
+
+    const handleClassificationFilterChange = (e) => {
+      const filterValue = e.target.value;
+    };
+
     return {
       clear,
       filteredClassificationList,
@@ -158,6 +334,12 @@ export default defineComponent({
       clearSearchText,
       handleChange,
       handleClassificationsSearch,
+      hideClassifications,
+      classificationFilterCheckboxes,
+      classificationFilterOptionsData,
+      toggleClassifications,
+      classificationsScrollContainer,
+      handleClassificationFilterChange,
     };
   },
 });

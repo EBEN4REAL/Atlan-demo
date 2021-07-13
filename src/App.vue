@@ -13,32 +13,7 @@ import useConnectionsList from "./composables/bots/useConnectionList";
 
 import { CONNECTION_FETCH_LIST } from "./constant/cache";
 import { useTenantStore } from "./pinia/tenants";
-import { Classification } from "~/api/atlas/classification";
 import { useClassificationStore } from "~/components/admin/classifications/_store";
-
-function getClassifications(classificationsStore) {
-  classificationsStore.setClassificationsStatus("loading");
-
-  const {
-    data: classificationData,
-    error: classificationError,
-  } = Classification.getClassificationList({ cache: false });
-
-  watch([classificationData, classificationError], () => {
-    if (classificationData.value) {
-      let classifications = classificationData.value.classificationDefs || [];
-      classifications = classifications.map((classification) => {
-        classification.alias = classification.name;
-        return classification;
-      });
-      classificationsStore.setClassifications(classifications ?? []);
-      classificationsStore.initializeFilterTree();
-      classificationsStore.setClassificationsStatus("success");
-    } else {
-      classificationsStore.setClassificationsStatus("error");
-    }
-  });
-}
 
 export default defineComponent({
   setup(props, context) {
@@ -67,9 +42,7 @@ export default defineComponent({
     };
 
     useConnectionsList(isAuth, initialBody, CONNECTION_FETCH_LIST);
-
-    // get classifications
-    const classificationsStore = useClassificationStore();
+    useClassificationStore();
 
     watch(
       () => tenantStore.isAuthenticated,
@@ -82,7 +55,6 @@ export default defineComponent({
 
     watch(tenantData, () => {
       tenantStore.setData(tenantData.value);
-      getClassifications(classificationsStore);
     });
 
     return {

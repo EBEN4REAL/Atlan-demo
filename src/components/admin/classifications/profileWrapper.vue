@@ -108,6 +108,7 @@ import AssetListWrapper from "~/components/asset/assetListWrapper.vue";
 import { useRouter } from "vue-router";
 import { useClassificationStore } from "./_store";
 import { ValidateErrorEntity } from "ant-design-vue/es/form/interface";
+import { useClassificationStore } from "~/components/admin/classifications/_store";
 import { Classification } from "~/api/atlas/classification";
 
 export default defineComponent({
@@ -156,6 +157,28 @@ export default defineComponent({
         },
       ],
     };
+
+    // get classifications
+    store.setClassificationsStatus("loading");
+    const {
+      data: classificationData,
+      error: classificationError,
+    } = Classification.getClassificationList({ cache: false });
+
+    watch([classificationData, classificationError], () => {
+      if (classificationData.value) {
+        let classifications = classificationData.value.classificationDefs || [];
+        classifications = classifications.map((classification) => {
+          classification.alias = classification.name;
+          return classification;
+        });
+        store.setClassifications(classifications ?? []);
+        store.initializeFilterTree();
+        store.setClassificationsStatus("success");
+      } else {
+        store.setClassificationsStatus("error");
+      }
+    });
 
     const handleSearch = (e) => {
       treeFilterText.value = e.target.value;

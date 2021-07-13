@@ -3,11 +3,7 @@
     placement="left"
     v-model:visible="linkClassificationPopover"
     overlayClassName="inlinepopover"
-    @visibleChange="
-      () => {
-        showCreateClassificationPopover = false;
-      }
-    "
+    @visibleChange="handlePopoverVisibleChange"
     trigger="click"
   >
     <template #content>
@@ -22,6 +18,8 @@
             v-model:value="selectedClassificationForLink"
             mode="multiple"
             style="width: 100%"
+            :allowClear="true"
+            :showSearch="true"
             @change="handleSelectedClassificationForLink"
             placeholder="Select one or more classifications"
           >
@@ -477,6 +475,10 @@ export default defineComponent({
     };
 
     const handleClassificationClick = () => {};
+    const handlePopoverVisibleChange = () => {
+      showCreateClassificationPopover.value = false;
+      selectedClassificationForLink.value = [];
+    };
 
     return {
       asset,
@@ -503,6 +505,7 @@ export default defineComponent({
       rules,
       createErrorText,
       showAddClassificationBtn,
+      handlePopoverVisibleChange,
     };
   },
 });

@@ -12,7 +12,10 @@
       class="bg-transparent"
     >
       <template #header>
-        <div class="flex justify-between" :key="dirtyTimestamp">
+        <div
+          class="flex justify-between user-select-none"
+          :key="dirtyTimestamp"
+        >
           {{ item.label }}
 
           <div

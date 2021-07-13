@@ -15,6 +15,8 @@ import { defineComponent, ref, watch } from "vue";
 import AssetDiscovery from "@/discovery/asset/index.vue";
 import AssetPreview from "@/preview/asset/index.vue";
 import { useHead } from "@vueuse/head";
+import { Classification } from "~/api/atlas/classification";
+import { useClassificationStore } from "~/components/admin/classifications/_store";
 export default defineComponent({
   components: {
     AssetPreview,
@@ -22,6 +24,7 @@ export default defineComponent({
   },
   setup() {
     let selected = ref({});
+    const classificationsStore = useClassificationStore();
     useHead({
       title: "Discover assets",
     });
@@ -29,6 +32,27 @@ export default defineComponent({
       selected.value = selectedItem;
       console.log(selected.value, "selected");
     };
+    // get classifications
+    classificationsStore.setClassificationsStatus("loading");
+    const {
+      data: classificationData,
+      error: classificationError,
+    } = Classification.getClassificationList({ cache: false });
+
+    watch([classificationData, classificationError], () => {
+      if (classificationData.value) {
+        let classifications = classificationData.value.classificationDefs || [];
+        classifications = classifications.map((classification) => {
+          classification.alias = classification.name;
+          return classification;
+        });
+        classificationsStore.setClassifications(classifications ?? []);
+        classificationsStore.initializeFilterTree();
+        classificationsStore.setClassificationsStatus("success");
+      } else {
+        classificationsStore.setClassificationsStatus("error");
+      }
+    });
 
     return {
       selected,

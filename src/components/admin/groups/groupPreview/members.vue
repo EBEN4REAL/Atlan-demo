@@ -26,17 +26,20 @@
         v-if="[STATES.ERROR, STATES.STALE_IF_ERROR].includes(state)"
       >
         <ErrorView></ErrorView>
-        <a-button
-          icon="reload"
-          size="large"
-          type="primary"
-          ghost
-          @click="
+        <div class="mt-3">
+          <a-button
+            size="large"
+            type="primary"
+            ghost
+            @click="
             () => {
               getGroupMembersList();
             }
           "
-        >Try again</a-button>
+          >
+            <fa icon="fal sync"></fa>Try again
+          </a-button>
+        </div>
       </div>
       <div v-else-if="searchText && !filteredMembersCount" class="mt-2">
         {{ `No member with name ${searchText} found.` }}
@@ -45,7 +48,7 @@
           @click="{searchText='';handleSearch();}"
         >Clear</span>-->
       </div>
-      <div v-else class="min-h-screen mt-4">
+      <div v-else class="mt-4 overflow-y-auto member-list-height">
         <div v-for="user in memberList.value" :key="user.id" class="my-2">
           <div class="flex justify-between cursor-pointer">
             <div class="flex items-center" @click="() => handleClickUser(user.username)">
@@ -62,9 +65,13 @@
             </div>
             <a-popover trigger="click" placement="bottom">
               <template #content>
-                <div class="flex items-center justify-center text-red-500 cursor-pointer mt-0.5">
+                <div class="flex items-center justify-center text-error cursor-pointer mt-0.5">
                   <div v-if="removeMemberLoading">
-                    <fa icon="fal circle-notch" class="mr-1 animate-spin" />
+                    <fa
+                      style="vertical-align:middle;"
+                      icon="fal circle-notch"
+                      class="mr-1 animate-spin"
+                    />
                   </div>
                   <div @click="() => removeUserFromGroup(user.id)">Remove User</div>
                 </div>
@@ -296,5 +303,8 @@ export default defineComponent({
 });
 </script>
 
-<style>
+<style lang="less" scoped>
+.member-list-height {
+  max-height: 68vh;
+}
 </style>

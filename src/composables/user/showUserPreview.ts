@@ -3,6 +3,7 @@ const showPreview = ref(false);
 const userId = ref("");
 const username = ref("");
 const uniqueAttribute = ref("");
+const defaultTab = ref("about");
 
 const allTabs = [
   {
@@ -76,6 +77,9 @@ export function useUserPreview() {
   const setBlackListedTabs = (tabs) => {
     blacklistedTabs.value = [...tabs];
   };
+  const setDefaultTab = (tab) => {
+    defaultTab.value = tab;
+  };
 
   return {
     showPreview,
@@ -88,5 +92,7 @@ export function useUserPreview() {
     finalTabs,
     showUserPreview,
     closePreview,
+    defaultTab,
+    setDefaultTab,
   };
 }

@@ -4,7 +4,7 @@
       <div class="flex flex-row items-center cursor-pointer group">
         <p class="mb-0 text-xs text-gray-500">
           Group Alias
-          <fa icon="fal check" class="ml-1 text-green-600 cursor-pointer" v-if="updateSuccess"></fa>
+          <fa icon="fal check" class="ml-1 text-green-600" v-if="updateSuccess"></fa>
         </p>
         <p
           v-if="!isUpdate"
@@ -67,6 +67,7 @@ export default defineComponent({
     let updateErrorMessage = ref("");
     let updateSuccess = ref(false);
     const onUpdate = () => {
+      groupAliasLocal.value = props.group.name;
       isUpdate.value = true;
     };
     const onCancel = () => {

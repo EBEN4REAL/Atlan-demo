@@ -6,14 +6,6 @@
       :item="item"
       :key="item.guid"
       :selectedAssetData="selectedAssetData"
-      :availableClassificationsForLink="availableClassificationsForLink"
-      @addClassificationToSelectedAsset="addClassificationToSelectedAsset"
-      @removeClassificationFromSelectedAsset="
-        removeClassificationFromSelectedAsset
-      "
-      @updateAvailableClassificationsForLink="
-        updateAvailableClassificationsForLink
-      "
     ></Classifications>
     <!-- <StatusBadge :status="status(item)" :key="item.guid"></StatusBadge> -->
   </div>
@@ -42,29 +34,9 @@ export default defineComponent({
         return {};
       },
     },
-    availableClassificationsForLink: {
-      type: Array,
-      required: false,
-      default(): any {
-        return [];
-      },
-    },
   },
   setup(props, { emit }) {
-    const removeClassificationFromSelectedAsset = (data) => {
-      emit("removeClassificationFromSelectedAsset", data);
-    };
-    const addClassificationToSelectedAsset = (data) => {
-      emit("addClassificationToSelectedAsset", data);
-    };
-    const updateAvailableClassificationsForLink = () => {
-      emit("updateAvailableClassificationsForLink");
-    };
-    return {
-      updateAvailableClassificationsForLink,
-      addClassificationToSelectedAsset,
-      removeClassificationFromSelectedAsset,
-    };
+    return {};
   },
 });
 </script>

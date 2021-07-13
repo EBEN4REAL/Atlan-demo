@@ -26,14 +26,6 @@
       <Governance
         :item="item"
         :selectedAssetData="selectedAssetData"
-        :availableClassificationsForLink="availableClassificationsForLink"
-        @addClassificationToSelectedAsset="addClassificationToSelectedAsset"
-        @removeClassificationFromSelectedAsset="
-          removeClassificationFromSelectedAsset
-        "
-        @updateAvailableClassificationsForLink="
-          updateAvailableClassificationsForLink
-        "
       ></Governance>
     </a-collapse-panel>
     <a-collapse-panel key="heirarchy" class="bg-transparent">
@@ -81,29 +73,10 @@ export default defineComponent({
         return {};
       },
     },
-    availableClassificationsForLink: {
-      type: Array,
-      required: false,
-      default(): any {
-        return [];
-      },
-    },
   },
   setup(props, { emit }) {
     let activeKey = ref("details");
-    const removeClassificationFromSelectedAsset = (data) => {
-      emit("removeClassificationFromSelectedAsset", data);
-    };
-    const addClassificationToSelectedAsset = (data) => {
-      emit("addClassificationToSelectedAsset", data);
-    };
-    const updateAvailableClassificationsForLink = () => {
-      emit("updateAvailableClassificationsForLink");
-    };
     return {
-      addClassificationToSelectedAsset,
-      removeClassificationFromSelectedAsset,
-      updateAvailableClassificationsForLink,
       activeKey,
     };
   },

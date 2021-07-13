@@ -223,13 +223,6 @@ export default defineComponent({
         return {};
       },
     },
-    availableClassificationsForLink: {
-      type: Array,
-      required: false,
-      default(): any {
-        return [];
-      },
-    },
   },
   setup(props, { emit }) {
     const selectedAsset = computed(() => props.selectedAssetData);
@@ -238,6 +231,12 @@ export default defineComponent({
     const linkClassificationPopover = ref(false);
     const linkClassificationStatus = ref("");
     const linkClassificationStatusError = ref("");
+    const availableClassificationsForLink = ref(
+      getAvailableClassificationsForLink(
+        selectedAsset.value.classifications,
+        classificationsStore.classifications
+      )
+    );
     const unlinkClassificationStatus = ref({
       status: "",
       typeName: null,
@@ -263,6 +262,90 @@ export default defineComponent({
   });
 };
 */
+
+    /* classifications fxns */
+    function getAvailableClassificationsForLink(
+      selectedAssetClassifications: any,
+      classifications: any
+    ) {
+      let availableClassifications: Array<any> = [];
+      classifications.forEach((classification) => {
+        let index = selectedAssetClassifications.findIndex(
+          (cl) => cl.typeName === classification.name
+        );
+        if (index === -1) availableClassifications.push(classification);
+      });
+
+      return availableClassifications;
+    }
+
+    function removeClassificationFromSelectedAsset(
+      selectedClassification: any
+    ) {
+      const { typeName } = selectedClassification;
+      let classifications = selectedAsset.value.classifications;
+      selectedAsset.value.classifications = classifications.filter(
+        (classification) => classification.typeName !== typeName
+      );
+      availableClassificationsForLink.value = getAvailableClassificationsForLink(
+        selectedAsset.value.classifications,
+        classificationsStore.classifications
+      );
+    }
+
+    function formattedLinkedClassifications(classifications) {
+      return classifications.map((classification) => {
+        if (
+          classification &&
+          classification.hasOwnProperty("isAutoClassification") &&
+          classification.isAutoClassification
+        ) {
+          return {
+            ...classification,
+            hideRemoveButton: false,
+          };
+        } else if (
+          classification.propagate &&
+          classification.entityGuid &&
+          selectedAsset.value.guid !== classification.entityGuid
+        ) {
+          return {
+            ...classification,
+            hideRemoveButton: true,
+          };
+        }
+        return {
+          ...classification,
+          hideRemoveButton: false,
+        };
+      });
+    }
+    function addClassificationToSelectedAsset({
+      classifications: selectedClassificationsForLink,
+      multiple,
+    }: {
+      classifications: any;
+      multiple: boolean;
+    }) {
+      console.log(selectedClassificationsForLink, "selected Multiple");
+      let classifications = selectedAsset.value.classifications;
+      classifications = [...classifications, ...selectedClassificationsForLink];
+      selectedAsset.value.classifications = formattedLinkedClassifications(
+        classifications
+      );
+      availableClassificationsForLink.value = getAvailableClassificationsForLink(
+        selectedAsset.value.classifications,
+        classificationsStore.classifications
+      );
+    }
+    function updateAvailableClassificationsForLink() {
+      availableClassificationsForLink.value = getAvailableClassificationsForLink(
+        selectedAsset.value.classifications,
+        classificationsStore.classifications
+      );
+    }
+    /* ------------------------------- */
+
     const assetLinkedClassifcations = computed(
       () => selectedAsset.value.classifications
     );
@@ -284,7 +367,7 @@ export default defineComponent({
         if (isReady && !error.value) {
           unlinkClassificationStatus.value.status = "success";
           unlinkClassificationStatus.value.typeName = null;
-          emit("removeClassificationFromSelectedAsset", classification);
+          removeClassificationFromSelectedAsset(classification);
         } else {
           unlinkClassificationStatus.value.status = "failed";
           unlinkClassificationStatus.value.typeName = null;
@@ -298,12 +381,6 @@ export default defineComponent({
       console.log("clicked");
       linkClassificationPopover.value = true;
     };
-
-    // fetching classifications
-
-    let availableClassificationsForLink = computed(
-      () => props.availableClassificationsForLink
-    );
 
     const linkClassificationData = ref({
       propagate: false,
@@ -358,7 +435,7 @@ export default defineComponent({
           linkClassificationPopover.value = false;
           const classifications = payload.value;
           console.log(payload.value, "payloaddddd");
-          emit("addClassificationToSelectedAsset", {
+          addClassificationToSelectedAsset({
             classifications,
             multiple: classifications.length > 1,
           });
@@ -458,7 +535,7 @@ export default defineComponent({
               formState.name = "";
               formState.description = "";
               classificationsStore.addClassifications(toRaw(classifications));
-              emit("updateAvailableClassificationsForLink");
+              updateAvailableClassificationsForLink();
               hideCreateClassificationWindow();
             } else {
               createClassificationStatus.value = "error";

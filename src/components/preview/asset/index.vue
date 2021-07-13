@@ -37,16 +37,6 @@
               :item="item"
               :key="item.guid"
               :selectedAssetData="selectedAssetData"
-              :availableClassificationsForLink="availableClassificationsForLink"
-              @addClassificationToSelectedAsset="
-                addClassificationToSelectedAsset
-              "
-              @removeClassificationFromSelectedAsset="
-                removeClassificationFromSelectedAsset
-              "
-              @updateAvailableClassificationsForLink="
-                updateAvailableClassificationsForLink
-              "
             ></component></div></a-tab-pane
       ></a-tabs>
     </div>
@@ -80,7 +70,6 @@ export default defineComponent({
     },
   },
   setup(props) {
-    const classificationsStore = useClassificationStore();
     const activeKey = ref("overview");
     const selectedAssetData = ref({});
     const availableClassificationsForLink = ref([]);
@@ -114,10 +103,6 @@ export default defineComponent({
         console.log(assetData.value, "dataRes");
         const entities = getAssetEntitites(assetData);
         selectedAssetData.value = entities;
-        availableClassificationsForLink.value = getAvailableClassificationsForLink(
-          selectedAssetData.value.classifications,
-          classificationsStore.classifications
-        );
         console.log(availableClassificationsForLink.value, "root Available");
       } else {
         console.log(
@@ -127,94 +112,7 @@ export default defineComponent({
       }
     });
 
-    // selectedAsset Actions
-
-    function getAvailableClassificationsForLink(
-      selectedAssetClassifications: any,
-      classifications: any
-    ) {
-      let availableClassifications: Array<any> = [];
-      classifications.forEach((classification) => {
-        let index = selectedAssetClassifications.findIndex(
-          (cl) => cl.typeName === classification.name
-        );
-        if (index === -1) availableClassifications.push(classification);
-      });
-
-      return availableClassifications;
-    }
-
-    function removeClassificationFromSelectedAsset(
-      selectedClassification: any
-    ) {
-      const { typeName } = selectedClassification;
-      let classifications = selectedAssetData.value.classifications;
-      selectedAssetData.value.classifications = classifications.filter(
-        (classification) => classification.typeName !== typeName
-      );
-      availableClassificationsForLink.value = getAvailableClassificationsForLink(
-        selectedAssetData.value.classifications,
-        classificationsStore.classifications
-      );
-    }
-
-    function formattedLinkedClassifications(classifications) {
-      return classifications.map((classification) => {
-        if (
-          classification &&
-          classification.hasOwnProperty("isAutoClassification") &&
-          classification.isAutoClassification
-        ) {
-          return {
-            ...classification,
-            hideRemoveButton: false,
-          };
-        } else if (
-          classification.propagate &&
-          classification.entityGuid &&
-          selectedAssetData.value.guid !== classification.entityGuid
-        ) {
-          return {
-            ...classification,
-            hideRemoveButton: true,
-          };
-        }
-        return {
-          ...classification,
-          hideRemoveButton: false,
-        };
-      });
-    }
-    function addClassificationToSelectedAsset({
-      classifications: selectedClassificationsForLink,
-      multiple,
-    }: {
-      classifications: any;
-      multiple: boolean;
-    }) {
-      console.log(selectedClassificationsForLink, "selected Multiple");
-      let classifications = selectedAssetData.value.classifications;
-      classifications = [...classifications, ...selectedClassificationsForLink];
-      selectedAssetData.value.classifications = formattedLinkedClassifications(
-        classifications
-      );
-      availableClassificationsForLink.value = getAvailableClassificationsForLink(
-        selectedAssetData.value.classifications,
-        classificationsStore.classifications
-      );
-    }
-    function updateAvailableClassificationsForLink() {
-      availableClassificationsForLink.value = getAvailableClassificationsForLink(
-        selectedAssetData.value.classifications,
-        classificationsStore.classifications
-      );
-    }
-
     return {
-      removeClassificationFromSelectedAsset,
-      addClassificationToSelectedAsset,
-      availableClassificationsForLink,
-      updateAvailableClassificationsForLink,
       selectedAssetData,
       activeKey,
       filteredTabList,

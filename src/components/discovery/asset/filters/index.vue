@@ -46,6 +46,7 @@ import { defineAsyncComponent, defineComponent, ref, computed } from "vue";
 import { List } from "./filters";
 import { Components } from "~/api/atlas/client";
 import { useClassificationStore } from "~/components/admin/classifications/_store";
+import { useDiscoveryStore } from "~/pinia/discovery";
 
 export default defineComponent({
   name: "HelloWorld",
@@ -74,6 +75,7 @@ export default defineComponent({
   emits: ["refresh"],
   setup(props, { emit }) {
     const classificationsStore = useClassificationStore();
+    const discoveryStore = useDiscoveryStore();
     const filterMap: { [key: string]: Components.Schemas.FilterCriteria } = {};
     let filters: Components.Schemas.FilterCriteria[] = [];
 
@@ -94,11 +96,34 @@ export default defineComponent({
       });
       emit("refresh", filters);
     };
+
+    const updateChangesInStore = (value) => {
+      switch (value.id) {
+        case "status": {
+          discoveryStore.setFilterCriterion("status", value.payload);
+          break;
+        }
+        case "classifications": {
+          discoveryStore.setFilterCriterion("classifications", value.payload);
+          break;
+        }
+        case "owners": {
+          discoveryStore.setFilterCriterion("owners", value.payload);
+          break;
+        }
+        case "advanced": {
+          discoveryStore.setFilterCriterion("advanced", value.payload);
+          break;
+        }
+      }
+      console.log(discoveryStore.filters);
+    };
     const handleChange = (value: any) => {
       filterMap[value.id] = value.payload;
       dirtyTimestamp.value = `dirty_${Date.now().toString()}`;
       console.log(dirtyTimestamp.value);
-      refresh();
+      // refresh();
+      updateChangesInStore(value);
     };
 
     const isFilter = (id) => {

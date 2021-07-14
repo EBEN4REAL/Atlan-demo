@@ -117,10 +117,11 @@ export function getDecodedOptionsFromString(router) {
   let encodedQueryString = router.currentRoute.value?.query || "";
   try {
     // due to query object
-    encodedQueryString = Object.keys(encodedQueryString)[0];
+    encodedQueryString = Object.keys(encodedQueryString)[0] ?? "";
   } catch (err) {
     encodedQueryString = "";
   }
+  console.log(encodedQueryString, "errorrrrrr");
   const decodedQueryString = decodeBase64ToString(encodedQueryString);
   const url = new URL(`https://x?${decodedQueryString}`);
   console.log(url.searchParams.get("filters"));

@@ -15,6 +15,7 @@
         :key="asset.guid"
       ></StatusBadge>
     </div>
+    <RelationshipBadge :item="asset" class="mt-1"></RelationshipBadge>
   </div>
 </template>
 <script lang="ts">

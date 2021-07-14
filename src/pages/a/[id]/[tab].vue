@@ -1,5 +1,5 @@
 <template>
-  <LoadingView v-if="isValidating" />
+  <LoadingView v-if="loading" />
   <ErrorView v-else-if="error" :error="error" />
   <div v-else>
     <div class="h-24 p-4">
@@ -24,9 +24,11 @@
 <script lang="ts">
 import { computed, defineComponent, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
+
+import useAsset from "~/composables/asset/useAsset";
+
 import Overview from "~/components/asset/assetProfile/tabs/overview.vue";
 import Lineage from "~/components/asset/assetProfile/tabs/lineage.vue";
-import { Search } from "~/api/atlas/search";
 import AssetHeader from "~/components/asset/assetProfile/assetHeader.vue";
 import LoadingView from "@common/loaders/section.vue";
 import ErrorView from "@common/error/index.vue";
@@ -47,35 +49,9 @@ export default defineComponent({
     const selectedTab = ref(tab.value);
     const router = useRouter();
 
-    const body = {
-      excludeDeletedEntities: true,
-      includeSubClassifications: true,
-      includeSubTypes: true,
-      includeClassificationAttributes: true,
-      entityFilters: {
-        condition: "AND",
-        criterion: [
-          {
-            attributeName: "__guid",
-            operator: "eq",
-            attributeValue: id.value,
-          },
-        ],
-      },
-      tagFilters: null,
-      attributes: ["__guid"],
-      limit: 25,
-      offset: 0,
-      typeName: "AtlanAsset",
-    };
-
-    const { response, error, mutate, isValidating } = Search.BasicSearch(
-      body,
-      {},
-      {
-        revalidateOnFocus: false,
-      }
-    );
+    const { response, error, loading } = useAsset({
+      entityId: id.value,
+    });
 
     const selectTab = (item: any) => {
       selectedTab.value = item.key;
@@ -88,7 +64,7 @@ export default defineComponent({
       selectedTab,
       response,
       error,
-      isValidating,
+      loading,
     };
   },
 });

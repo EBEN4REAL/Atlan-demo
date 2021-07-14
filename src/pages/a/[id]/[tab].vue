@@ -1,7 +1,9 @@
 <template>
-  <div>
-    <div class="h-28 p-4">
-      {{ response?.entities[0].attributes.name || "" }}
+  <LoadingView v-if="isValidating" />
+  <ErrorView v-else-if="error" :error="error" />
+  <div v-else>
+    <div class="h-24 p-4">
+      <AssetHeader :asset="response?.entities[0]" />
     </div>
     <a-menu
       v-model:selectedKeys="current"
@@ -22,13 +24,19 @@
 <script lang="ts">
 import { computed, defineComponent, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
-import Overview from "~/components/assetProfile/tabs/overview.vue";
-import Lineage from "~/components/assetProfile/tabs/lineage.vue";
+import Overview from "~/components/asset/assetProfile/tabs/overview.vue";
+import Lineage from "~/components/asset/assetProfile/tabs/lineage.vue";
 import { Search } from "~/api/atlas/search";
+import AssetHeader from "~/components/asset/assetProfile/assetHeader.vue";
+import LoadingView from "@common/loaders/section.vue";
+import ErrorView from "@common/error/index.vue";
 export default defineComponent({
   components: {
     overview: Overview,
     lineage: Lineage,
+    AssetHeader,
+    LoadingView,
+    ErrorView,
   },
   setup() {
     const route = useRoute();
@@ -61,7 +69,7 @@ export default defineComponent({
       typeName: "AtlanAsset",
     };
 
-    const { response, error, loading, mutate } = Search.BasicSearch(
+    const { response, error, mutate, isValidating } = Search.BasicSearch(
       body,
       {},
       {
@@ -75,12 +83,12 @@ export default defineComponent({
     };
 
     return {
-      id,
-      tab,
       current,
       selectTab,
       selectedTab,
       response,
+      error,
+      isValidating,
     };
   },
 });

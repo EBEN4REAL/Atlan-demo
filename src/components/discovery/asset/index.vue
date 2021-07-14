@@ -167,7 +167,8 @@ export default defineComponent({
   emits: ["preview"],
   setup(props, { emit }) {
     // initializing the discovery store
-    const store = useDiscoveryStore();
+    //! line not needed
+    const storeDiscover = useDiscoveryStore();
     let filterMode = ref("custom");
 
     const now = ref(false);
@@ -269,8 +270,6 @@ export default defineComponent({
       });
       return sum;
     });
-
-    const assetTypeListString = assetTypeList.value.map(item => item.id).join(",");
 
     // Push all asset type
     assetTypeList.value.push({

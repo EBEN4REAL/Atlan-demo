@@ -1,5 +1,5 @@
 import { UPDATE_ASSET_BUSINESS_METADATA } from "~/api/keyMaps/businessMetadata/index";
-import { useAPI } from "../useAPIv2";
+import { useAPI } from "../useAPI";
 
 const saveAssetBMUpdateChanges = (guid: any, payload: any) => {
     return useAPI(UPDATE_ASSET_BUSINESS_METADATA, "POST",

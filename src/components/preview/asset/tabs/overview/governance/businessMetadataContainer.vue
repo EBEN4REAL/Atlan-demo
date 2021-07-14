@@ -1,41 +1,78 @@
 <template>
-  <div class="px-2 py-1">
-    <p class="flex mb-1 text-sm tracking-wide text-gray-400">
-      Business Metadata&nbsp;
-      <span
-        v-if="
-          attributesList.length &&
-            attributesList.filter(bmCol => bmCol.attributes && bmCol.attributes.length)
-              .length
-        "
-      >
-        ({{ attributesList.length }})
-      </span>
-      <fa
-        icon="fal circle-notch spin"
-        class="ml-2 mr-1 animate-spin text-grey-600"
-        v-if="updateBmAttributesStatus === 'loading'"
-      />
-      <fa
-        icon="fal times"
-        class="ml-2 mr-1 text-red-600"
-        v-else-if="updateBmAttributesStatus === 'failed'"
-      />
-      <fa
-        icon="fal check"
-        class="ml-2 mr-1 text-green-600"
-        v-else-if="updateBmAttributesStatus === 'success'"
-      />
-    </p>
-    <BusinessMetadataWidget
-      @updateAttribute="handleUpdateAttribute"
-      :class="x !== attributesList.length ? 'mb-2' : ''"
-      v-for="(bm, x) in attributesList"
-      :key="x"
-      :bm="bm"
-      :originalBM="getBMbyName(bm.bm)"
-    />
-  </div>
+  <a-popover
+    placement="left"
+    v-model:visible="visibility"
+    trigger="none"
+    title="Create Business Metadata Widget"
+  >
+    <template #content>
+      <div class="flex flex-col p-2 overflow-y-auto" style="width: 280px; height: 200px">
+        <p class="mb-1 text-sm text-gray-400">Select Business Metadata</p>
+        <a-select
+          placeholder="Business Metadata"
+          v-model:value="addBusinessMetadata"
+          allowClear
+          mode="multiple"
+          :options="addBMSelectOptions"
+        />
+        <p class="mt-2 text-xs text-gray-400">
+          Can't find the right Business Metadata to add, create a new Business Metadata
+          from
+          <a>here</a>
+        </p>
+        <div
+          class="absolute flex p-2 space-x-2 border-t border-gray-100 bottom-2 right-8"
+        >
+          <a-button size="small" @click="visibility = false">Cancel</a-button>
+          <a-button type="primary" size="small" @click="handleAddWidget">Done</a-button>
+        </div>
+      </div>
+    </template>
+    <div class="px-2 py-1">
+      <p class="flex justify-between mb-2 text-sm tracking-wide text-gray-400">
+        <span
+          >Business Metadata&nbsp;
+          <span
+            v-if="
+              attributesList.length &&
+                attributesList.filter(
+                  bmCol => bmCol.attributes && bmCol.attributes.length
+                ).length
+            "
+          >
+            ({{ attributesList.length }})
+          </span>
+          <fa
+            icon="fal circle-notch spin"
+            class="ml-2 mr-1 animate-spin text-grey-600"
+            v-if="updateBmAttributesStatus === 'loading'"/>
+          <fa
+            icon="fal times"
+            class="ml-2 mr-1 text-red-600"
+            v-else-if="updateBmAttributesStatus === 'failed'"/>
+          <fa
+            icon="fal check"
+            class="ml-2 mr-1 text-green-600"
+            v-else-if="updateBmAttributesStatus === 'success'"
+        /></span>
+        <span
+          class="mr-1 cursor-pointer hover:text-blue-900"
+          @click.stop.prevent="visibility = true"
+          >+ Add</span
+        >
+      </p>
+      <div style="max-height: 300px" class="pr-2 overflow-auto">
+        <BusinessMetadataWidget
+          @updateAttribute="handleUpdateAttribute"
+          :class="x !== attributesList.length ? 'mb-2' : ''"
+          v-for="(bm, x) in attributesList"
+          :key="x"
+          :bm="bm"
+          :originalBM="getBMbyName(bm.bm)"
+        />
+      </div>
+    </div>
+  </a-popover>
 </template>
 
 <script lang="ts">
@@ -52,9 +89,6 @@ export default defineComponent({
     item: {
       type: Object,
       required: true,
-      default(): any {
-        return {};
-      },
     },
   },
   components: { BusinessMetadataWidget },
@@ -65,9 +99,29 @@ export default defineComponent({
     const updateBmAttributesStatus = ref("");
     const isEditBusinessMetadata = ref(false);
     const accessLevel = ref("editor");
+    const visibility = ref(false);
+    const addBusinessMetadata = ref([]);
 
     // * Computed
     const businessMetadataList = computed(() => store.getBusinessMetadataList);
+
+    const availableBM = computed(() => {
+      if (businessMetadataList.value) {
+        return businessMetadataList.value.filter(bm => {
+          if (attributesList.value.find(b => bm.name === b.bm)) {
+            return false;
+          }
+          return true;
+        });
+      }
+    });
+
+    const addBMSelectOptions = computed(() => {
+      return availableBM.value.map(b => ({
+        value: b.name,
+        title: b.options.displayName,
+      }));
+    });
 
     // ? Methods
     const handleMissingDisplayNameKey = (
@@ -190,6 +244,17 @@ export default defineComponent({
       }
     };
 
+    const handleAddWidget = () => {
+      addBusinessMetadata.value.forEach(b => {
+        attributesList.value.push({
+          attributes: [],
+          bm: b,
+          displayName: "",
+        });
+      });
+      visibility.value = false;
+    };
+
     /**
      * Find the required from the BM List and return
      * @param  {String} name Name of the required BM
@@ -243,8 +308,13 @@ export default defineComponent({
       updateBmAttributesStatus,
       isEditBusinessMetadata,
       accessLevel,
+      availableBM,
       handleUpdateAttribute,
       getBMbyName,
+      handleAddWidget,
+      visibility,
+      addBMSelectOptions,
+      addBusinessMetadata,
     };
   },
 });

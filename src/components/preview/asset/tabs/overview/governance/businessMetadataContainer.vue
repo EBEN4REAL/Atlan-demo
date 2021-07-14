@@ -21,7 +21,7 @@
           <a>here</a>
         </p>
         <div
-          class="absolute flex p-2 space-x-2 border-t border-gray-100 bottom-2 right-8"
+          class="absolute flex p-2 space-x-2 border-t border-gray-100 bottom-1 right-3"
         >
           <a-button size="small" @click="visibility = false">Cancel</a-button>
           <a-button type="primary" size="small" @click="handleAddWidget">Done</a-button>
@@ -56,7 +56,7 @@
             v-else-if="updateBmAttributesStatus === 'success'"
         /></span>
         <span
-          class="mr-1 cursor-pointer hover:text-blue-900"
+          class="mr-1 text-xs cursor-pointer hover:text-blue-900"
           @click.stop.prevent="visibility = true"
           >+ Add</span
         >

@@ -56,6 +56,7 @@ import {
 import { defineComponent, computed } from "vue";
 import About from "./about.vue";
 import Members from "./members.vue";
+import Assets from "~/components/admin/users/userPreview/assets.vue";
 import { useGroup } from "~/composables/group/useGroups";
 import { useGroupPreview } from "~/composables/drawer/showGroupPreview";
 import ErrorView from "@common/error/index.vue";
@@ -65,6 +66,7 @@ export default defineComponent({
     About,
     Members,
     ErrorView,
+    Assets,
   },
   setup(props, context) {
     const { groupId, groupAlias, defaultTab, uniqueAttribute, finalTabs } =

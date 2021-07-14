@@ -20,6 +20,7 @@
       <div v-show="filterMode === 'custom'" class="flex-grow h-full">
         <div class="pb-2 mb-2">
           <ConnectorDropdown
+            :data="connectorsPayload"
             @change="handleChangeConnectors"
           ></ConnectorDropdown>
         </div>
@@ -42,7 +43,10 @@
   >
     <div class="flex flex-col h-full mx-6 border rounded-lg">
       <div class="border-b rounded-tl-lg rounded-tr-lg bg-gray-50">
-        <ConnectorDropdown @change="handleChangeConnectors"></ConnectorDropdown>
+        <ConnectorDropdown
+          :data="connectorsPayload"
+          @change="handleChangeConnectors"
+        ></ConnectorDropdown>
       </div>
       <div class="flex items-center mx-3 mt-3">
         <a-input
@@ -166,7 +170,7 @@ import { Components } from "~/api/atlas/client";
 import { SearchParameters } from "~/types/atlas/attributes";
 import { BaseAttributes, BasicSearchAttributes } from "~/constant/projection";
 import { useConnectionsStore } from "~/pinia/connections";
-import { encodeRouterQueryFromFilterOptions } from "~/utils/routerQuery";
+import { getEncodedStringFromOptions } from "~/utils/routerQuery";
 import { useRouter } from "vue-router";
 import { initialFiltersType } from "~/pages/assets.vue";
 
@@ -243,7 +247,7 @@ export default defineComponent({
   setup(props, { emit }) {
     // initializing the discovery store
     const initialFilters = props.initialFilters;
-    console.log("initialFIlters", initialFilters);
+
     const router = useRouter();
     let filterMode = ref("custom");
 
@@ -251,31 +255,31 @@ export default defineComponent({
     let initialBody: SearchParameters = reactive({});
     const assetType = ref("Catalog");
 
-    const queryText = ref(props.initialFilters.searchText);
+    const queryText = ref(initialFilters.searchText);
 
-    const connectorsPayload = ref({});
+    const connectorsPayload = ref(initialFilters.connectorsPayload);
 
-    const filters = ref([]);
+    const filters = ref(initialFilters.initialBodyCriterion);
     const filterMap = ref<filterMapType>({
       status: {
-        condition: props.initialFilters.facetsFilters.status.condition,
-        criterion: props.initialFilters.facetsFilters.status.criterion,
+        condition: initialFilters.facetsFilters.status.condition,
+        criterion: initialFilters.facetsFilters.status.criterion,
       },
       classifications: {
-        condition: props.initialFilters.facetsFilters.classifications.condition,
-        criterion: props.initialFilters.facetsFilters.classifications.criterion,
+        condition: initialFilters.facetsFilters.classifications.condition,
+        criterion: initialFilters.facetsFilters.classifications.criterion,
       },
       owners: {
-        condition: props.initialFilters.facetsFilters.owners.condition,
-        criterion: props.initialFilters.facetsFilters.owners.criterion,
+        condition: initialFilters.facetsFilters.owners.condition,
+        criterion: initialFilters.facetsFilters.owners.criterion,
       },
       advanced: {
-        condition: props.initialFilters.facetsFilters.advanced.condition,
-        criterion: props.initialFilters.facetsFilters.advanced.criterion,
+        condition: initialFilters.facetsFilters.advanced.condition,
+        criterion: initialFilters.facetsFilters.advanced.criterion,
       },
     });
 
-    const limit = ref(props.initialFilters.limit || 20);
+    const limit = ref(initialFilters.limit || 20);
     const offset = ref(0);
     const sortOrder = ref("default");
 
@@ -461,12 +465,8 @@ export default defineComponent({
 
     const handleSearchChange = useDebounceFn((val) => {
       offset.value = 0;
-      const routerOptions = getRouterOptions({
-        filterMap: toRaw(filterMap.value),
-        queryText: queryText.value,
-        limit: limit.value,
-      });
-      const routerQuery = encodeRouterQueryFromFilterOptions(routerOptions);
+      const routerOptions = getRouterOptions();
+      const routerQuery = getEncodedStringFromOptions(routerOptions);
       updateBody();
       pushQueryToRouter(routerQuery);
     }, 100);
@@ -487,10 +487,11 @@ export default defineComponent({
       updateBody();
     };
 
-    const getRouterOptions = ({ filterMap, queryText, limit }) => {
+    const getRouterOptions = () => {
       return {
-        filters: filterMap || {},
-        searchText: queryText || "",
+        filters: filterMap.value || {},
+        searchText: queryText.value || "",
+        connectorsPayload: connectorsPayload.value || {},
         // ...(sortOrder.value !== "default"
         //   ? queryText.value
         //     ? { sortBy: "", sortOrder: "" }
@@ -499,18 +500,12 @@ export default defineComponent({
         //         sortOrder: sortOrder.value.split("|")[1],
         //       }
         //   : { sortBy: "", sortOrder: "" }),
-        limit: limit || 20,
+        limit: limit.value || 20,
       };
     };
 
-    const pushQueryToRouter = (query) => {
-      const queryKeys = Object.keys(query);
-      let pushString = "";
-      queryKeys.forEach((queryKey) => {
-        pushString += `&${queryKey}=${query[queryKey]}`;
-      });
-      pushString = pushString.substring(1);
-      pushString = encodeURI(pushString);
+    const pushQueryToRouter = (pushString) => {
+      console.log(router, "router");
       router.push(`/assets?${pushString}`);
     };
 
@@ -519,12 +514,8 @@ export default defineComponent({
       filters.value = payload;
       offset.value = 0;
       isAggregate.value = true;
-      const routerOptions = getRouterOptions({
-        filterMap: filterMapData,
-        queryText: queryText.value,
-        limit: limit.value,
-      });
-      const routerQuery = encodeRouterQueryFromFilterOptions(routerOptions);
+      const routerOptions = getRouterOptions();
+      const routerQuery = getEncodedStringFromOptions(routerOptions);
       console.log(routerOptions, routerQuery, "routerOptions");
       updateBody();
       pushQueryToRouter(routerQuery);
@@ -532,6 +523,10 @@ export default defineComponent({
 
     const handleChangeConnectors = (payload: any) => {
       connectorsPayload.value = payload;
+      const routerOptions = getRouterOptions();
+      const routerQuery = getEncodedStringFromOptions(routerOptions);
+      pushQueryToRouter(routerQuery);
+      console.log(payload, "connectors");
       isAggregate.value = true;
       offset.value = 0;
       updateBody();
@@ -548,7 +543,7 @@ export default defineComponent({
       isAggregate.value = false;
       updateBody();
     };
-
+    console.log(connectorsPayload, "insise assets");
     return {
       initialFilters,
       searchScoreList,

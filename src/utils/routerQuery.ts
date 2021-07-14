@@ -8,16 +8,14 @@ export interface criterion {
   attributeValue?: string | undefined;
   operator?: string | undefined;
 }
-export function encodeRouterQueryFromFilterOptions(options: any) {
+
+export function getEncodedStringFromOptions(options: any) {
   const routerQuery: {
     searchText: string;
     limit: string;
     filters: string;
-  } = {
-    searchText: "",
-    limit: "",
-    filters: "",
-  };
+    connectorsPayload: string;
+  } = {};
 
   if (options.searchText) {
     routerQuery.searchText = options.searchText;
@@ -81,6 +79,17 @@ export function encodeRouterQueryFromFilterOptions(options: any) {
       routerQuery.filters = filtersString.join(":::");
     }
   }
+  if (options.connectorsPayload) {
+    const payload = options.connectorsPayload;
+    let connectorPyloadStirng = "";
+    if (payload.connector) {
+      connectorPyloadStirng += `connector:${payload.connector}`;
+    }
+    if (payload.connection) {
+      connectorPyloadStirng += `,connection:${payload.connection}`;
+    }
+    routerQuery.connectorsPayload = connectorPyloadStirng;
+  }
 
   // if (options.sortBy) {
   //   routerQuery.sortBy = options.sortBy;
@@ -94,13 +103,34 @@ export function encodeRouterQueryFromFilterOptions(options: any) {
     routerQuery.limit = options.limit;
   }
   console.log("setRouterQuery -> routerQuery", routerQuery);
-  return routerQuery;
+
+  const queryKeys = Object.keys(routerQuery);
+  let str = "";
+  queryKeys.forEach((queryKey) => {
+    str += `&${queryKey}=${routerQuery[queryKey]}`;
+  });
+  str = str.substring(1);
+  let encodedStr = encodeStringToBase64(str);
+  return encodedStr;
 }
-export function decodeRouterQueryFromFilterOptions(router) {
-  const filters = router.currentRoute.value.query?.filters;
-  const searchText = router.currentRoute.value.query?.searchText;
-  const limit = router.currentRoute.value.query?.limit;
+export function getDecodedOptionsFromString(router) {
+  let encodedQueryString = router.currentRoute.value?.query || "";
+  try {
+    // due to query object
+    encodedQueryString = Object.keys(encodedQueryString)[0];
+  } catch (err) {
+    encodedQueryString = "";
+  }
+  const decodedQueryString = decodeBase64ToString(encodedQueryString);
+  const url = new URL(`https://x?${decodedQueryString}`);
+  console.log(url.searchParams.get("filters"));
+  const filters = url.searchParams.get("filters");
+  const searchText = url.searchParams.get("searchText");
+  let connectorsPayloadString = url.searchParams.get("connectorsPayload");
+  let connectorsPayload = {};
+  const limit = url.searchParams.get("limit");
   const facetsFiltersStrings = filters?.split(":::");
+  let initialBodyCriterion: Array<any> = [];
   const facetsFilters: filterMapType = {
     status: {
       checked: [],
@@ -130,6 +160,7 @@ export function decodeRouterQueryFromFilterOptions(router) {
     const facetFilterName = facetFilter[0]; // name
     const facetFilterValuesString = facetFilter[1]; //verified,draft
     let criterion: Array<criterion> = [];
+
     switch (facetFilterName) {
       case "status": {
         const facetFilterValues = facetFilterValuesString.split(",");
@@ -239,10 +270,51 @@ export function decodeRouterQueryFromFilterOptions(router) {
         break;
       }
     }
+
+    if (connectorsPayload) {
+      // const connectorsPayloadCriterion: criterion = [];
+      const connectorValues = connectorsPayloadString.split(",");
+      let conenctorData = {};
+      connectorValues.forEach((connectorValue) => {
+        const subConnectorValues = connectorValue.split(":");
+        console.log(subConnectorValues, "subconector");
+        if (subConnectorValues[0] === "connector") {
+          conenctorData.connector = subConnectorValues[1];
+        } else {
+          conenctorData.connection = subConnectorValues[1];
+        }
+      });
+      connectorsPayload = conenctorData;
+
+      // connectorsPayloadCriterion.push({
+      //   attributeName: "integrationName",
+      //   attributeValue: connectorsPayload.connections,
+      //   operator: "=",
+      // });
+      // connectorsPayloadCriterion.push({
+      //   attributeName: "connectionQualifiedName",
+      //   attributeValue: connectorsPayload.connections,
+      //   operator: "=",
+      // });
+      // criterion = [...criterion, connectorsPayloadCriterion];
+    }
+    initialBodyCriterion.push({
+      condition: "OR",
+      criterion,
+    });
   });
   return {
+    connectorsPayload,
+    initialBodyCriterion,
     facetsFilters,
     searchText,
     limit,
   };
+}
+
+export function encodeStringToBase64(str: string) {
+  return btoa(str);
+}
+export function decodeBase64ToString(str: string) {
+  return atob(str);
 }

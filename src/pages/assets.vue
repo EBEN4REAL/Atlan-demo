@@ -20,7 +20,7 @@ import AssetPreview from "@/preview/asset/index.vue";
 import { useHead } from "@vueuse/head";
 import { Classification } from "~/api/atlas/classification";
 import { useClassificationStore } from "~/components/admin/classifications/_store";
-import { decodeRouterQueryFromFilterOptions } from "~/utils/routerQuery";
+import { getDecodedOptionsFromString } from "~/utils/routerQuery";
 import { useRouter } from "vue-router";
 
 export interface initialFiltersType {
@@ -35,7 +35,7 @@ export default defineComponent({
   },
   setup() {
     const router = useRouter();
-    const initialFilters: initialFiltersType = decodeRouterQueryFromFilterOptions(
+    const initialFilters: initialFiltersType = getDecodedOptionsFromString(
       router
     );
     let selected = ref({});

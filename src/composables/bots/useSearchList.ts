@@ -50,9 +50,6 @@ export default function useSearchList(typeName: string, list: any, attributes: s
     const searchScoreList = ref({});
 
     watch(data, () => {
-
-        console.log("watch", data.value?.entities);
-        console.log("watch", body?.value?.offset);
         if (body?.value?.offset > 0) {
             list.value = list.value.concat(data?.value?.entities);
             searchScoreList.value = {
@@ -61,7 +58,6 @@ export default function useSearchList(typeName: string, list: any, attributes: s
             }
         } else {
             if (data.value?.entities) {
-                console.log("watch replace");
                 list.value = data.value?.entities;
                 searchScoreList.value = {
                     ...data?.value?.searchScore
@@ -99,6 +95,19 @@ export default function useSearchList(typeName: string, list: any, attributes: s
         }
     };
 
+
+    const asyncRefresh = () => {
+        if (cancelTokenSource) {
+            if (([STATES.PENDING].includes(state.value) || [STATES.VALIDATING].includes(state.value)) && cancelTokenSource.value) {
+                cancelTokenSource?.value.cancel("aborted");
+            }
+            cancelTokenSource.value = axios.CancelToken.source();
+            asyncOptions.cancelToken = cancelTokenSource?.value.token;
+        }
+        return mutate();
+    };
+
+
     const query = (queryText: string) => {
         body.value.query = queryText;
         body.value.offset = 0;
@@ -108,6 +117,11 @@ export default function useSearchList(typeName: string, list: any, attributes: s
     const replaceBody = (payload: any) => {
         body.value = payload;
         refresh();
+    }
+
+    const replaceBodyAsync = async (payload: any) => {
+        body.value = payload;
+        await asyncRefresh();
     }
 
     const replaceFilters = (filters: Components.Schemas.FilterCriteria) => {
@@ -160,6 +174,8 @@ export default function useSearchList(typeName: string, list: any, attributes: s
         assetTypeMap,
         assetTypeList,
         assetTypeSum,
+        asyncRefresh,
+        replaceBodyAsync,
         searchScoreList,
     }
 };

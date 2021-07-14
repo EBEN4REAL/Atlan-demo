@@ -30,15 +30,11 @@
   
 <script lang="ts">
 import { defineComponent } from "vue";
-import TreeView from "@common/tree/index.vue";
 import ConnectionMixin from "~/mixins/connection";
 import { Metadata } from "~/api/auth/metadata";
 
 export default defineComponent({
   mixins: [ConnectionMixin],
-  components: {
-    TreeView,
-  },
   props: {
     modelValue: {
       type: Array,

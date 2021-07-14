@@ -30,7 +30,7 @@
         </div>
         <template #overlay>
           <GlossaryContextMenu
-            @glossarContextMenuClick="createGlossaryCategoryTerm"
+            @glossarContextMenuClick="glossaryTreeContextMenuClick"
             :type="type"
             :guid="key"
           />
@@ -44,7 +44,7 @@
       <GlossaryContextMenu
         type="root"
         :guid="key"
-        @glossarContextMenuClick="createGlossaryCategoryTerm"
+        @glossarContextMenuClick="glossaryTreeContextMenuClick"
       />
     </template>
   </a-dropdown>
@@ -105,7 +105,7 @@ export default defineComponent({
       refetchGlossary();
     };
 
-    const createGlossaryCategoryTerm = (context: any) => {
+    const glossaryTreeContextMenuClick = (context: any) => {
       if (context.action === "create") emit("showCreateGlossaryModal", context);
       if (context.action === "update") emit("showUpdateGlossaryModal", context);
       if (context.action === "delete") {
@@ -147,7 +147,7 @@ export default defineComponent({
       expandNode,
       selectNode,
       refreshTree,
-      createGlossaryCategoryTerm,
+      glossaryTreeContextMenuClick,
     };
   },
 });

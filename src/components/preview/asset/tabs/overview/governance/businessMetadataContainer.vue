@@ -18,7 +18,7 @@
         <p class="mt-2 text-xs text-gray-400">
           Can't find the right Business Metadata to add, create a new Business Metadata
           from
-          <a>here</a>
+          <router-link to="/admin/business-metadata">here</router-link>
         </p>
         <div
           class="absolute flex p-2 space-x-2 border-t border-gray-100 bottom-1 right-3"
@@ -56,10 +56,13 @@
             v-else-if="updateBmAttributesStatus === 'success'"
         /></span>
         <span
-          class="mr-1 text-xs cursor-pointer hover:text-blue-900"
+          class="pr-2 mr-1 text-xs cursor-pointer hover:text-blue-900"
           @click.stop.prevent="visibility = true"
           >+ Add</span
         >
+      </p>
+      <p v-if="!attributesList.length" class="text-sm text-gray-500">
+        No Business Metadata Added.
       </p>
       <div style="max-height: 300px" class="pr-2 overflow-auto">
         <BusinessMetadataWidget
@@ -69,6 +72,7 @@
           :key="x"
           :bm="bm"
           :originalBM="getBMbyName(bm.bm)"
+          :assetType="item.typeName"
         />
       </div>
     </div>
@@ -220,7 +224,8 @@ export default defineComponent({
               // eslint-disable-next-line
               attributesList.value.push({
                 bm: attributeKey.split(".")[0],
-                displayName: foundBmFromList.displayName,
+                displayName: foundBmFromList.options.displayName,
+                isNew: false,
                 attributes: [
                   {
                     ...(foundAttributeFromList || {}),
@@ -249,10 +254,11 @@ export default defineComponent({
         attributesList.value.push({
           attributes: [],
           bm: b,
-          displayName: "",
+          isNew: true,
         });
       });
       visibility.value = false;
+      addBusinessMetadata.value = [];
     };
 
     /**
@@ -282,6 +288,8 @@ export default defineComponent({
           updateBmAttributesStatus.value = "failed";
         } else if (isReady.value) {
           updateBmAttributesStatus.value = "success";
+          // ? remove empty attributes on update
+          attributesList.value = attributesList.value.filter(b => b.attributes.length);
           setTimeout(async () => {
             // await this.refreshAssetInAssetsList(this.asset.guid);
             updateBmAttributesStatus.value = "";

@@ -1,13 +1,40 @@
 <template>
   <div class="border border-gray-200 rounded ">
     <div class="mx-2 my-2 border-b border-gray-300 -2">
-      <span>{{ bm.bm }}</span>
+      <div class="flex justify-between">
+        <span>{{ originalBM.options.displayName }}</span>
+        <a-popconfirm
+          :title="`Are you sure remove ${originalBM.options.displayName}?`"
+          placement="left"
+          ok-text="Yes"
+          cancel-text="No"
+          @confirm="removeBm(bm.bm)"
+          ><span
+            ><fa
+              icon="fal times"
+              class="text-gray-400 cursor-pointer hover:text-red-600"
+            /> </span
+        ></a-popconfirm>
+      </div>
     </div>
     <span v-if="bm.attributes.length">
       <div class="px-2 mb-2 " v-for="(a, x) in bm.attributes" :key="x">
-        <span class="text-gray-500 cursor-default whitespace-nowrap"
-          >{{ a.options.displayName }}:</span
-        >
+        <div class="flex justify-between">
+          <span class="text-gray-500 cursor-default whitespace-nowrap"
+            >{{ a.options.displayName }}:</span
+          >
+          <a-popconfirm
+            :title="`Are you sure delete ${a.options.displayName}?`"
+            placement="left"
+            ok-text="Yes"
+            cancel-text="No"
+            @confirm="confirmDeleteAttribute(a.name)"
+            ><span class="cursor-pointer"
+              ><fa
+                icon="fal trash"
+                class="text-xs text-gray-400 hover:text-red-600"/></span
+          ></a-popconfirm>
+        </div>
         <div
           @click="handleEditMode(a.name, getDatatypeOfAttribute(a.typeName))"
           v-if="!a.isEdit"
@@ -18,9 +45,10 @@
         <span v-else class="">
           <input
             v-if="getDatatypeOfAttribute(a.typeName) === 'number'"
+            class="px-2 mr-2 border w-100"
+            style="width:90%"
             type="number"
             v-model="a.value"
-            class=""
             v-on:keyup.enter="() => inputsRefMap[a.name].blur()"
             v-on:blur="
               () => {
@@ -144,7 +172,7 @@
           </div>
           <div
             v-else-if="getDatatypeOfAttribute(a.typeName) === 'array<text>'"
-            class="relative text-center"
+            class="text-center "
           >
             <div class="grid grid-cols-2 mb-2 gap-x-2 gap-y-1">
               <div class="" v-for="(i, n) in multiInputs[a.name]" :key="n">
@@ -232,7 +260,8 @@
             v-else
             type="text"
             v-model="a.value"
-            class=""
+            class="px-2 mr-2 border w-100"
+            style="width:90%"
             v-on:keyup.enter="() => inputsRefMap[a.name].blur()"
             v-on:blur="
               () => {
@@ -253,12 +282,8 @@
         Please add an attribute
       </p>
     </div>
-    <div class="relative text-center">
-      <a-popover
-        class=""
-        title="Choose Attribute"
-        :getPopupContainer="trigger => trigger.parentNode"
-      >
+    <div class="text-center ">
+      <a-popover class="" title="Choose Attribute" placement="left">
         <template #content>
           <div class="" v-if="availableAttributesToAdd.length">
             <div
@@ -274,9 +299,7 @@
             No attributes left.
           </p>
         </template>
-        <span class="relative text-sm cursor-pointer hover:underline"
-          >+ add attribute</span
-        >
+        <span class="text-sm cursor-pointer hover:underline">+ add attribute</span>
       </a-popover>
     </div>
   </div>
@@ -297,6 +320,10 @@ export default defineComponent({
     },
     originalBM: {
       type: Object,
+    },
+    assetType: {
+      type: String,
+      required: true,
     },
   },
   setup(props, { emit }) {
@@ -330,8 +357,9 @@ export default defineComponent({
     const addMoreMultiElement = (name: string) => {
       multiInputs.value[name].push("");
     };
-    const handleInput = e => {
-      console.log(e);
+    const confirmDeleteAttribute = name => {
+      props.bm.attributes = props.bm.attributes.filter(a => a.name !== name);
+      updateAttribute();
     };
 
     const handleMultiInputChange = (
@@ -365,8 +393,13 @@ export default defineComponent({
       nextTick(() => inputsRefMap.value[name].select());
     };
 
+    const removeBm = () => {
+      props.bm.attributes = [];
+      updateAttribute();
+    };
+
     const updateAttribute = () => {
-      emit("updateAttribute", JSON.parse(JSON.stringify(props.bm)));
+      emit("updateAttribute", JSON.parse(JSON.stringify({ ...props.bm, isNew: false })));
     };
 
     const handleEditMode = (name: string, type: string) => {
@@ -427,11 +460,14 @@ export default defineComponent({
     };
 
     const availableAttributesToAdd = computed(() => {
-      // TODO also check for typeName
       const appliedAttributes = props.bm.attributes.map(a => a.name);
       if (props.originalBM?.attributeDefs) {
         return props.originalBM.attributeDefs.filter(a => {
-          if (appliedAttributes.includes(a.name)) return false;
+          if (
+            appliedAttributes.includes(a.name) ||
+            !JSON.parse(a.options.applicableEntityTypes).includes(props.assetType)
+          )
+            return false;
           return true;
         });
       }
@@ -450,8 +486,9 @@ export default defineComponent({
       handleMultiInputChange,
       formatDisplayValue,
       handleDateChange,
-      handleInput,
       enumsList,
+      confirmDeleteAttribute,
+      removeBm,
     };
   },
 });

@@ -1,25 +1,28 @@
 <template>
-  <div class="flex flex-wrap gap-1">
+  <div>
     <div v-if="!allowUpdate && !tags.length">-</div>
-    <div v-else>
-      <template v-for="(tag, index) in tags" :key="index">
+    <div v-else class="flex flex-wrap gap-1">
+      <div v-for="(tag, index) in tags" :key="index">
         <a-tooltip v-if="tag.length > 20" :title="tag">
           <a-tag
             :closable="allowUpdate"
             :key="tag"
             @close="handleClose(tag)"
             class="bg-gray-50"
-            :class="[updatingTags?'text-gray-300 pointer-events-none':'']"
-          >{{ `${tag.slice(0, 20)}...` }}</a-tag>
+            :class="[updatingTags ? 'text-gray-300 pointer-events-none' : '']"
+            >{{ `${tag.slice(0, 20)}...` }}</a-tag
+          >
         </a-tooltip>
         <a-tag
           :closable="allowUpdate"
           v-else
           @close="handleClose(tag)"
-          :class="[updatingTags?'text-gray-300 pointer-events-none':'']"
+          :class="[updatingTags ? 'text-gray-300 pointer-events-none' : '']"
           class="bg-gray-50"
-        >{{ tag }}</a-tag>
-      </template>
+          >{{ tag }}</a-tag
+        >
+      </div>
+
       <a-input
         v-if="inputVisible"
         :disabled="updatingTags"

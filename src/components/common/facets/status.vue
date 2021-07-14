@@ -40,6 +40,13 @@ export default defineComponent({
         return {};
       },
     },
+    data: {
+      type: Object,
+      required: false,
+      default() {
+        return {};
+      },
+    },
     modelValue: {
       type: Array,
       required: false,
@@ -54,7 +61,7 @@ export default defineComponent({
       return List;
     });
     const checkedValues = ref([]);
-    checkedValues.value = props.modelValue;
+    checkedValues.value = [...props.modelValue, ...props.data.checked];
     console.log(checkedValues.value, "model");
     const handleChange = (checkedValue: string) => {
       emit("update:modelValue", checkedValues.value);

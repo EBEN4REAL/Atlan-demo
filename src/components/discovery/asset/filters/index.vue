@@ -46,7 +46,6 @@ import { defineAsyncComponent, defineComponent, ref, computed } from "vue";
 import { List } from "./filters";
 import { Components } from "~/api/atlas/client";
 import { useClassificationStore } from "~/components/admin/classifications/_store";
-import { useDiscoveryStore } from "~/pinia/discovery";
 
 export default defineComponent({
   name: "HelloWorld",
@@ -60,7 +59,15 @@ export default defineComponent({
       import("@common/facets/advanced/index.vue")
     ),
   },
-  props: {},
+  props: {
+    initialFilters: {
+      type: Object,
+      required: false,
+      default() {
+        return {};
+      },
+    },
+  },
   data() {
     return {
       List,
@@ -75,8 +82,27 @@ export default defineComponent({
   emits: ["refresh"],
   setup(props, { emit }) {
     const classificationsStore = useClassificationStore();
-    const discoveryStore = useDiscoveryStore();
-    const filterMap: { [key: string]: Components.Schemas.FilterCriteria } = {};
+    const initialFilterMap = {
+      status: {
+        condition: props.initialFilters.facetsFilters.status.condition,
+        criterion: props.initialFilters.facetsFilters.status.criterion,
+      },
+      classifications: {
+        condition: props.initialFilters.facetsFilters.classifications.condition,
+        criterion: props.initialFilters.facetsFilters.classifications.criterion,
+      },
+      owners: {
+        condition: props.initialFilters.facetsFilters.owners.condition,
+        criterion: props.initialFilters.facetsFilters.owners.criterion,
+      },
+      advanced: {
+        condition: props.initialFilters.facetsFilters.advanced.condition,
+        criterion: props.initialFilters.facetsFilters.advanced.criterion,
+      },
+    };
+    const filterMap: { [key: string]: Components.Schemas.FilterCriteria } = {
+      ...initialFilterMap,
+    };
     let filters: Components.Schemas.FilterCriteria[] = [];
 
     const dirtyTimestamp = ref("dirty_");
@@ -85,8 +111,19 @@ export default defineComponent({
 
     // Mapping of Data to child compoentns
     const dataMap: { [key: string]: any } = ref({});
+    dataMap.value["status"] = {
+      checked: props.initialFilters.facetsFilters.status.checked,
+    };
     dataMap.value["classifications"] = {
       classifications: computed(() => classificationsStore.classifications),
+      checked: props.initialFilters.facetsFilters.classifications.checked,
+    };
+    dataMap.value["owners"] = {
+      userValue: props.initialFilters.facetsFilters.owners.userValue,
+      groupValue: props.initialFilters.facetsFilters.owners.groupValue,
+    };
+    dataMap.value["advanced"] = {
+      list: props.initialFilters.facetsFilters.advanced.list,
     };
 
     const refresh = () => {
@@ -94,36 +131,15 @@ export default defineComponent({
       Object.keys(filterMap).forEach((key) => {
         filters.push(filterMap[key]);
       });
-      emit("refresh", filters);
+      emit("refresh", filters, filterMap);
     };
 
-    const updateChangesInStore = (value) => {
-      switch (value.id) {
-        case "status": {
-          discoveryStore.setFilterCriterion("status", value.payload);
-          break;
-        }
-        case "classifications": {
-          discoveryStore.setFilterCriterion("classifications", value.payload);
-          break;
-        }
-        case "owners": {
-          discoveryStore.setFilterCriterion("owners", value.payload);
-          break;
-        }
-        case "advanced": {
-          discoveryStore.setFilterCriterion("advanced", value.payload);
-          break;
-        }
-      }
-      console.log(discoveryStore.filters);
-    };
     const handleChange = (value: any) => {
       filterMap[value.id] = value.payload;
       dirtyTimestamp.value = `dirty_${Date.now().toString()}`;
       console.log(dirtyTimestamp.value);
-      // refresh();
-      updateChangesInStore(value);
+      refresh();
+      // updateChangesInStore(value);
     };
 
     const isFilter = (id) => {

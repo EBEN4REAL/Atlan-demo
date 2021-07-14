@@ -182,7 +182,8 @@ export default defineComponent({
     let classificationsList = ref([]);
     const filteredClassificationList = ref([]);
     const checkedValues = ref([]);
-    checkedValues.value = props.modelValue;
+    checkedValues.value = [...props.modelValue, ...props.data.checked];
+    console.log(checkedValues.value, "classificaitons checked");
     const hideClassifications = ref(true);
     const classificationFilterOptionsData = ref("asc");
     const classificationFilterCheckboxes = [

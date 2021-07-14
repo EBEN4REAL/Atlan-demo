@@ -1,6 +1,6 @@
 <template>
   <div
-    class="hidden h-full pt-6 pl-4 bg-white  sm:block sm:col-span-4 md:col-span-2 sm"
+    class="hidden h-full pt-6 pl-4 bg-white sm:block sm:col-span-4 md:col-span-2 sm"
   >
     <div class="flex flex-col h-full">
       <div class="mb-3">
@@ -24,7 +24,10 @@
           ></ConnectorDropdown>
         </div>
 
-        <AssetFilters @refresh="handleFilterChange"></AssetFilters>
+        <AssetFilters
+          :initialFilters="initialFilters"
+          @refresh="handleFilterChange"
+        ></AssetFilters>
       </div>
 
       <div v-show="filterMode === 'saved'">
@@ -34,7 +37,7 @@
   </div>
 
   <div
-    class="flex flex-col items-stretch h-full col-span-12 pt-6 bg-white  sm:col-span-8 md:col-span-7"
+    class="flex flex-col items-stretch h-full col-span-12 pt-6 bg-white sm:col-span-8 md:col-span-7"
     style="overflow: hidden"
   >
     <div class="flex items-center px-6 gap-x-3">
@@ -124,7 +127,15 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, reactive, ref, watch } from "vue";
+import {
+  computed,
+  defineComponent,
+  reactive,
+  ref,
+  watch,
+  toRaw,
+  Ref,
+} from "vue";
 
 import AssetFilters from "@/discovery/asset/filters/index.vue";
 import SavedFilters from "@/discovery/asset/saved/index.vue";
@@ -147,8 +158,50 @@ import { useDebounceFn } from "@vueuse/core";
 import { Components } from "~/api/atlas/client";
 import { SearchParameters } from "~/types/atlas/attributes";
 import { BaseAttributes, BasicSearchAttributes } from "~/constant/projection";
-import { useDiscoveryStore } from "~/pinia/discovery";
 import { useConnectionsStore } from "~/pinia/connections";
+import { encodeRouterQueryFromFilterOptions } from "~/utils/routerQuery";
+import { useRouter } from "vue-router";
+import { initialFiltersType } from "~/pages/assets.vue";
+
+export interface filterMapType {
+  status: {
+    checked?: Array<string>;
+    condition: string;
+    criterion: Array<{
+      attributeName: "assetStatus";
+      attributeValue: string;
+      operator: string;
+    }>;
+  };
+  classifications: {
+    checked?: Array<string>;
+    condition: string;
+    criterion: Array<{
+      attributeName: "classifications";
+      attributeValue: string;
+      operator: string;
+    }>;
+  };
+  owners: {
+    userValue?: string;
+    groupValue?: string;
+    condition: string;
+    criterion: Array<{
+      attributeName: string;
+      attributeValue?: string | undefined;
+      operator?: string | undefined;
+    }>;
+  };
+  advanced: {
+    list?: Array<string>;
+    condition: string;
+    criterion: Array<{
+      attributeName: string;
+      attributeValue?: string | undefined;
+      operator?: string | undefined;
+    }>;
+  };
+}
 
 export default defineComponent({
   name: "HelloWorld",
@@ -163,6 +216,15 @@ export default defineComponent({
     Preferences,
     EmptyView,
   },
+  props: {
+    initialFilters: {
+      type: Object as () => initialFiltersType,
+      required: false,
+      default() {
+        return {};
+      },
+    },
+  },
   data() {
     return {
       activeKey: "",
@@ -172,22 +234,42 @@ export default defineComponent({
   emits: ["preview"],
   setup(props, { emit }) {
     // initializing the discovery store
-    const store = useDiscoveryStore();
+    const initialFilters = props.initialFilters;
+    console.log("initialFIlters", initialFilters);
+    const router = useRouter();
     let filterMode = ref("custom");
 
     const now = ref(false);
     let initialBody: SearchParameters = reactive({});
     const assetType = ref("Catalog");
 
-    const queryText = ref("");
+    const queryText = ref(props.initialFilters.searchText);
 
     const connectorsPayload = ref({});
 
     const filters = ref([]);
+    const filterMap = ref<filterMapType>({
+      status: {
+        condition: props.initialFilters.facetsFilters.status.condition,
+        criterion: props.initialFilters.facetsFilters.status.criterion,
+      },
+      classifications: {
+        condition: props.initialFilters.facetsFilters.classifications.condition,
+        criterion: props.initialFilters.facetsFilters.classifications.criterion,
+      },
+      owners: {
+        condition: props.initialFilters.facetsFilters.owners.condition,
+        criterion: props.initialFilters.facetsFilters.owners.criterion,
+      },
+      advanced: {
+        condition: props.initialFilters.facetsFilters.advanced.condition,
+        criterion: props.initialFilters.facetsFilters.advanced.criterion,
+      },
+    });
 
-    const limit = ref(20);
+    const limit = ref(props.initialFilters.limit || 20);
     const offset = ref(0);
-    const sortOrder = ref("");
+    const sortOrder = ref("default");
 
     const state = ref("active");
 
@@ -368,7 +450,14 @@ export default defineComponent({
 
     const handleSearchChange = useDebounceFn((val) => {
       offset.value = 0;
+      const routerOptions = getRouterOptions({
+        filterMap: toRaw(filterMap.value),
+        queryText: queryText.value,
+        limit: limit.value,
+      });
+      const routerQuery = encodeRouterQueryFromFilterOptions(routerOptions);
       updateBody();
+      pushQueryToRouter(routerQuery);
     }, 100);
 
     const handleChangePreferences = (payload: any) => {
@@ -387,11 +476,47 @@ export default defineComponent({
       updateBody();
     };
 
-    const handleFilterChange = (payload: any) => {
+    const getRouterOptions = ({ filterMap, queryText, limit }) => {
+      return {
+        filters: filterMap || {},
+        searchText: queryText || "",
+        // ...(sortOrder.value !== "default"
+        //   ? queryText.value
+        //     ? { sortBy: "", sortOrder: "" }
+        //     : {
+        //         sortBy: sortOrder.value.split("|")[0],
+        //         sortOrder: sortOrder.value.split("|")[1],
+        //       }
+        //   : { sortBy: "", sortOrder: "" }),
+        limit: limit || 20,
+      };
+    };
+
+    const pushQueryToRouter = (query) => {
+      const queryKeys = Object.keys(query);
+      let pushString = "";
+      queryKeys.forEach((queryKey) => {
+        pushString += `&${queryKey}=${query[queryKey]}`;
+      });
+      pushString = pushString.substring(1);
+      pushString = encodeURI(pushString);
+      router.push(`/assets?${pushString}`);
+    };
+
+    const handleFilterChange = (payload: any, filterMapData: filterMapType) => {
+      filterMap.value = filterMapData;
       filters.value = payload;
       offset.value = 0;
       isAggregate.value = true;
+      const routerOptions = getRouterOptions({
+        filterMap: filterMapData,
+        queryText: queryText.value,
+        limit: limit.value,
+      });
+      const routerQuery = encodeRouterQueryFromFilterOptions(routerOptions);
+      console.log(routerOptions, routerQuery, "routerOptions");
       updateBody();
+      pushQueryToRouter(routerQuery);
     };
 
     const handleChangeConnectors = (payload: any) => {
@@ -414,6 +539,7 @@ export default defineComponent({
     };
 
     return {
+      initialFilters,
       searchScoreList,
       list,
       assetType,

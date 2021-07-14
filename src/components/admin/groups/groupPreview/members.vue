@@ -72,10 +72,11 @@
               <div class="ml-2">
                 <div class="text-gray">
                   <span class="mr-2 font-bold">{{ getUserName(user) }}</span>
-                  <span class="font-normal">{{
-                    pluralizeString("group", user.group_count)
-                  }}</span>
+                  <span class="font-normal"
+                    >({{ pluralizeString("group", user.group_count) }})</span
+                  >
                 </div>
+                <div class="text-gray-400">@{{ user.username }}</div>
               </div>
             </div>
             <div class="font-bold">

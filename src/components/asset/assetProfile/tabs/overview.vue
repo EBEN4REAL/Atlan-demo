@@ -1,7 +1,7 @@
 <template>
   <div>
     Overview tab
-    {{ asset }}
+    {{ asset.attributes.name }}
   </div>
 </template>
 <script lang="ts">

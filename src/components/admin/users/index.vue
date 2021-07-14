@@ -3,10 +3,14 @@
     <div class="flex items-center">
       <div class="mb-2 text-2xl text-gray">Manage Members</div>
       <div
-        class="inline-flex items-center justify-center px-2 py-1 ml-2 mr-2 text-xs font-bold leading-none text-red-100 bg-indigo-600 rounded-full"
-      >{{filteredUserCount}}</div>
+        class="inline-flex items-center justify-center px-2 py-1 ml-2 mr-2 text-xs font-bold leading-none text-red-100 bg-indigo-600 rounded-full "
+      >
+        {{ filteredUserCount }}
+      </div>
     </div>
-    <div class="pb-6 text-sm text-gray-400">Add, remove and manage their roles</div>
+    <div class="pb-6 text-sm text-gray-400">
+      Add, remove and manage their roles
+    </div>
     <div class="flex justify-between mb-4 gap-x-5">
       <div class="flex w-1/4">
         <a-input-search
@@ -32,7 +36,10 @@
                     v-if="statusFilterValue"
                   ></fa>
                 </div>
-                <a-radio-group v-model:value="statusFilterValue" @change="handleStatusFilterChange">
+                <a-radio-group
+                  v-model:value="statusFilterValue"
+                  @change="handleStatusFilterChange"
+                >
                   <div class="flex flex-col space-y-1">
                     <a-radio :value="'enabled'">Active Users</a-radio>
                     <a-radio :value="'disabled'">Disabled Users</a-radio>
@@ -64,13 +71,27 @@
           class="rounded-md"
           size="default"
           @click="handleInviteUsers"
-        >Add User</a-button>
+          >Add User</a-button
+        >
       </div>
     </div>
+    <div
+      class="flex flex-col items-center h-full align-middle bg-white"
+      v-if="[STATES.ERROR, STATES.STALE_IF_ERROR].includes(state)"
+    >
+      <ErrorView>
+        <div class="mt-3">
+          <a-button size="large" type="primary" ghost @click="()=>{getUserList();}">
+            <fa icon="fal sync" class="mr-2"></fa>Try again
+          </a-button>
+        </div>
+      </ErrorView>
+    </div>
     <!-- Table for users-->
-    <div>
+    <div v-else>
       <div v-if="listType==='users'">
         <a-table
+          :scroll="{ y: 'calc(100vh - 20rem)' }"
           :tableLayout="'fixed'"
           id="userList"
           v-if="userList && listType === 'users'"
@@ -80,8 +101,9 @@
           @change="handleTableChange"
           :pagination="false"
           :loading="
-      [STATES.PENDING].includes(state) || [STATES.VALIDATING].includes(state)
-    "
+            [STATES.PENDING].includes(state) ||
+            [STATES.VALIDATING].includes(state)
+          "
         >
           <template #name="{ text: user }">
             <div class="flex items-center align-middle">
@@ -92,14 +114,35 @@
                 :avatarSize="40"
                 class="mr-2"
               />
-              <div class="truncate cursor-pointer" @click="() => {showUserPreviewDrawer(user);}">
-                <span class="text-primary">{{ nameCase(user.name) || "-" }}</span>
-                <p class="mb-0 text-gray-400 truncate">@{{ user.username || "-" }}</p>
+              <div
+                class="truncate cursor-pointer"
+                @click="
+                  () => {
+                    showUserPreviewDrawer(user);
+                  }
+                "
+              >
+                <span class="text-primary">{{
+                  nameCase(user.name) || "-"
+                }}</span>
+                <p class="mb-0 text-gray-400 truncate">
+                  @{{ user.username || "-" }}
+                </p>
               </div>
             </div>
           </template>
           <template #status="{ text: user }">
-            <div class="inline-flex items-center px-2 py-0.5 bg-gray-100 rounded text-gray-dark">
+            <div
+              class="
+                inline-flex
+                items-center
+                px-2
+                py-0.5
+                bg-gray-100
+                rounded
+                text-gray-dark
+              "
+            >
               <fa
                 :icon="user.status_object.icon"
                 :class="user.status_object.color"
@@ -122,7 +165,11 @@
                   <fa icon="fal user-slash"></fa>
                 </a-button>
               </a-tooltip>
-              <a-tooltip v-if="!user.enabled" placement="bottom" class="mr-3.5 rounded">
+              <a-tooltip
+                v-if="!user.enabled"
+                placement="bottom"
+                class="mr-3.5 rounded"
+              >
                 <template #title>
                   <span>Enable User</span>
                 </template>
@@ -151,8 +198,9 @@
             type="link"
             size="default"
             @click="toggleUserInvitationList"
-            :class="{'opacity-0 pointer-events-none':!loginWithEmailAllowed}"
-          >View Pending Invitations</a-button>
+            :class="{ 'opacity-0 pointer-events-none': !loginWithEmailAllowed }"
+            >View Pending Invitations</a-button
+          >
           <a-pagination
             :total="pagination.total"
             :current="pagination.current"
@@ -179,7 +227,7 @@
       @cancel="closeChangeRoleModal"
     >
       <ChangeRole
-        :user="listType==='users'?selectedUser:selectedInvite"
+        :user="listType === 'users' ? selectedUser : selectedInvite"
         :roleList="roleList"
         @updateRole="handleUpdateRole"
       />
@@ -191,7 +239,10 @@
       :footer="null"
       @cancel="closeInviteUserModal"
     >
-      <InviteUsers @close="closeInviteUserModal" @handleInviteSent="handleInviteSent" />
+      <InviteUsers
+        @close="closeInviteUserModal"
+        @handleInviteSent="handleInviteSent"
+      />
     </a-modal>
   </div>
 </template>
@@ -213,6 +264,7 @@ import ChangeRole from "./changeRole.vue";
 import InviteUsers from "./inviteUsers.vue";
 import useRoles from "~/composables/roles/useRoles";
 import { useTenantStore } from "~/pinia/tenants";
+import ErrorView from "@common/error/index.vue";
 
 export default defineComponent({
   components: {
@@ -220,6 +272,7 @@ export default defineComponent({
     ChangeRole,
     InviteUsers,
     Avatar,
+    ErrorView,
   },
 
   setup() {
@@ -246,7 +299,7 @@ export default defineComponent({
     const selectedInvite = ref({});
     const invitationComponentRef = ref(null);
     let userListAPIParams: any = reactive({
-      limit: 6,
+      limit: 15,
       offset: 0,
       sort: "first_name",
       filter: { $and: [{ email_verified: true }] },
@@ -541,6 +594,7 @@ export default defineComponent({
       showPreview,
       selectedInvite,
       roleList,
+      getUserList,
     };
   },
   data() {

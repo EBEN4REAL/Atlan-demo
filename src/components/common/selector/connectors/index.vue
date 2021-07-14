@@ -56,7 +56,6 @@ export default defineComponent({
       searchValue.value = inputValue;
     };
     const handleChange = (checkedValues: string) => {
-      connectorsDropdown?.value?.blur();
       emit("update:modelValue", checkedValues);
       emit("change", checkedValues);
     };

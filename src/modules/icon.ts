@@ -171,6 +171,7 @@ import { faMinusCircle } from "@fortawesome/pro-solid-svg-icons/faMinusCircle";
 import { faCheckCircle as faSolidCheckCircle } from "@fortawesome/pro-solid-svg-icons/faCheckCircle";
 import { faKey } from "@fortawesome/pro-solid-svg-icons/faKey";
 import { faLock as faSolidLock } from "@fortawesome/pro-solid-svg-icons/faLock";
+import { faCaretDown } from "@fortawesome/pro-solid-svg-icons/faCaretDown";
 
 import { faBold } from "@fortawesome/pro-solid-svg-icons/faBold";
 import { faItalic } from "@fortawesome/pro-solid-svg-icons/faItalic";
@@ -191,6 +192,8 @@ import { faAlignCenter } from "@fortawesome/pro-solid-svg-icons/faAlignCenter";
 import { faAlignRight } from "@fortawesome/pro-solid-svg-icons/faAlignRight";
 import { faFileImage } from "@fortawesome/pro-solid-svg-icons/faFileImage";
 import { faSpinner } from "@fortawesome/pro-light-svg-icons/faSpinner";
+
+
 library.add(
   faBadgeCheck,
   faBadgeSolid,
@@ -218,7 +221,8 @@ library.add(
   faAlignCenter,
   faAlignRight,
   faFileImage,
-  faSpinner
+  faSpinner,
+  faCaretDown
 );
 
 // import { far } from "@fortawesome/pro-regular-svg-icons";

@@ -1,16 +1,31 @@
 <template>
-  <div class="h-full">
+  <div class="h-full py-6">
     <div class="flex items-center justify-center h-full" v-if="isLoading">
       <a-spin />
     </div>
     <div
-      class="flex items-center justify-center h-full"
+      class="flex flex-col items-center justify-center h-full bg-white"
       v-if="[STATES.ERROR, STATES.STALE_IF_ERROR].includes(state)"
     >
-      <ErrorView></ErrorView>
+      <ErrorView>
+        <div class="mt-3">
+          <a-button
+            size="large"
+            type="primary"
+            ghost
+            @click="
+              () => {
+                getUser();
+              }
+            "
+          >
+            <fa icon="fal sync" class="mr-2"></fa>Try again
+          </a-button>
+        </div>
+      </ErrorView>
     </div>
     <div v-else-if="selectedUser && selectedUser.id">
-      <div class="flex mb-3">
+      <div class="flex px-6 mb-3">
         <avatar
           :imageUrl="imageUrl"
           :allowUpload="isCurrentUser"
@@ -21,16 +36,30 @@
           class="mr-2"
         />
         <div class="ml-3">
-          <div class="text-lg font-bold capitalize cursor-pointer text-gray">{{ selectedUser.name }}</div>
+          <div class="text-lg font-bold capitalize text-gray">
+            {{ selectedUser.name }}
+          </div>
+          <div class="text-gray-400">
+            <span class="mr-0.25">@{{ selectedUser.username }}</span>
+            <span v-if="selectedUser.created_at_time_ago">
+              |
+              <span class="ml-0.25"
+                >Created {{ selectedUser.created_at_time_ago }}</span
+              >
+            </span>
+          </div>
         </div>
       </div>
-      <a-tabs :defaultActiveKey="activeKey">
+      <a-tabs
+        :defaultActiveKey="activeKey"
+        :tabBarStyle="{ paddingLeft: '1rem', paddingRight: '1rem' }"
+      >
         <a-tab-pane v-for="tab in tabs" :key="tab.name">
           <template #tab>
             <span class="mb-0">{{ tab.name }}</span>
           </template>
           <component
-            class="overflow-auto component-height"
+            class="px-6 overflow-auto component-height"
             :isCurrentUser="isCurrentUser"
             :is="tab.component"
             :selectedUser="selectedUser"
@@ -117,6 +146,7 @@ export default defineComponent({
       state,
       STATES,
       activeKey,
+      getUser,
     };
   },
 });

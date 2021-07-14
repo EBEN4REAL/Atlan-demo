@@ -1,39 +1,57 @@
 <template>
   <div class="tab-content-wrapper">
-    <UpdateFirstName
-      :selectedUser="selectedUser"
-      :allowUpdate="isCurrentUser"
-      @updatedUser="$emit('updatedUser')"
-      class="mt-3"
-    />
-    <UpdateLastName
-      :selectedUser="selectedUser"
-      :allowUpdate="isCurrentUser"
-      @updatedUser="$emit('updatedUser')"
-      class="mt-3"
-    />
-    <p class="mt-3 mb-0 text-xs text-gray-500">Display Name</p>
-    <div class="text-gray-500">@{{ selectedUser.username }}</div>
-    <p class="mt-3 mb-0 text-xs text-gray-500">Email</p>
-    <div class="text-gray-500">{{ selectedUser.email }}</div>
-    <UpdateMobileNumber
-      :selectedUser="selectedUser"
-      :allowUpdate="isCurrentUser"
-      @updatedUser="$emit('updatedUser')"
-      class="mt-3"
-    />
-    <UpdateDesignation
-      class="mt-3"
-      @updatedUser="$emit('updatedUser')"
-      :user="selectedUser"
-      :allowUpdate="isCurrentUser"
-    />
-    <UpdateSkills
-      class="mt-3"
-      @updatedUser="$emit('updatedUser')"
-      :user="selectedUser"
-      :allowUpdate="isCurrentUser"
-    />
+    <div class="flex">
+      <UpdateFirstName
+        :selectedUser="selectedUser"
+        :allowUpdate="isCurrentUser"
+        @updatedUser="$emit('updatedUser')"
+        class="flex-1 mr-4"
+      />
+      <UpdateLastName
+        :selectedUser="selectedUser"
+        :allowUpdate="isCurrentUser"
+        @updatedUser="$emit('updatedUser')"
+        class="flex-1"
+      />
+    </div>
+    <div class="flex mt-3">
+      <div class="flex-1 mr-4">
+        <p class="mb-0 text-gray-400">Display Name</p>
+        <div class="text-gray">@{{ selectedUser.username }}</div>
+      </div>
+      <UpdateRole
+        :selectedUser="selectedUser"
+        :allowUpdate="isCurrentUser"
+        @updatedUser="$emit('updatedUser')"
+        class="flex-1"
+      />
+    </div>
+    <div class="flex mt-3">
+      <div class="flex-1 mr-4">
+        <p class="mb-0 text-xs text-gray-400">Email</p>
+        <div class="text-gray">{{ selectedUser.email }}</div>
+      </div>
+      <UpdateMobileNumber
+        :selectedUser="selectedUser"
+        :allowUpdate="isCurrentUser"
+        @updatedUser="$emit('updatedUser')"
+        class="flex-1"
+      />
+    </div>
+    <div class="flex mt-3">
+      <UpdateSkills
+        class="flex-1 mr-4"
+        @updatedUser="$emit('updatedUser')"
+        :user="selectedUser"
+        :allowUpdate="isCurrentUser"
+      />
+      <UpdateDesignation
+        class="flex-1"
+        @updatedUser="$emit('updatedUser')"
+        :user="selectedUser"
+        :allowUpdate="isCurrentUser"
+      />
+    </div>
   </div>
 </template>
   
@@ -45,6 +63,7 @@ import UpdateLastName from "~/components/admin/users/userPreview/about/updateLas
 import UpdateMobileNumber from "~/components/admin/users/userPreview/about/updateMobileNumber.vue";
 import UpdateSkills from "~/components/admin/users/userPreview/about/updateSkills.vue";
 import UpdateDesignation from "~/components/admin/users/userPreview/about/updateDesignation.vue";
+import UpdateRole from "~/components/admin/users/userPreview/about/updateRole.vue";
 export default defineComponent({
   name: "UserPreviewAboutComponent",
   components: {
@@ -54,6 +73,7 @@ export default defineComponent({
     UpdateMobileNumber,
     UpdateSkills,
     UpdateDesignation,
+    UpdateRole,
   },
   props: {
     selectedUser: {

@@ -58,6 +58,8 @@ const getAntDesignVariables = {
   //  overriding table border from antd.less, overriding color from here is not working. 👇
   // "table-border-color": "#ff751f",
   // "table-border-radius-base": "0.7rem",
+  //Drawer
+  "drawer-body-padding": 0,
 };
 
 export default getAntDesignVariables;

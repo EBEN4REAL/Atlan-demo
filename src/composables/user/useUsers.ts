@@ -3,6 +3,7 @@ import swrvState from "~/composables/utils/swrvState";
 import { useAPI } from "~/api/useAPI";
 import { pluralizeString } from "~/composables/utils/string-operations";
 import { roleMap } from "~/constant/role";
+import { useTimeAgo } from "@vueuse/core";
 
 const getUserName = (user: any) => {
   const { first_name } = user;
@@ -56,6 +57,9 @@ const getFormattedUser = (user: any) => {
     group_count_string: pluralizeString("group", user.group_count || 0),
     status_object: getUserStatus(user),
     role_object: getUserRole(user),
+    created_at_time_ago: user.created_timestamp
+      ? useTimeAgo(user.created_timestamp).value
+      : "",
   };
   return localUser;
 };

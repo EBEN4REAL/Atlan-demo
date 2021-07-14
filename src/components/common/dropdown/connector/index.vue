@@ -1,58 +1,55 @@
 <template>
   <div class="">
     <div class="">
-      <div class="flex flex-col">
-        <a-popover placement="right" trigger="click">
+      <div class="flex gap-x-2">
+        <a-popover placement="bottomLeft" trigger="click">
           <template #content>
             <p class="mb-0 text-gray-500">Connector</p>
             <ConnectorSelector
-              v-model:value="connectors"
-              mode="multiple"
-              :maxTagCount="2"
-              :maxTagTextLength="10"
+              v-model:value="connector"
               style="width: 200px"
               placeholder="All Connectors"
               @change="handleConnectorChange"
             ></ConnectorSelector>
             <p class="mt-2 mb-0 text-gray-500">Connections</p>
             <ConnectionSelector
-              v-model:value="connections"
+              v-model:value="connection"
               :disabled="isDisabled"
-              mode="multiple"
-              :maxTagCount="2"
-              :connectors="connectors"
-              :maxTagTextLength="10"
+              :connector="connector"
               style="width: 200px"
               placeholder="All Connections"
               @change="handleConnectionChange"
             ></ConnectionSelector>
           </template>
 
-          <div
-            class="flex flex-col px-3 py-2 border rounded  gap-y-1 hover:bg-gray-50"
-            v-if="connectors.length > 0"
-          >
-            <template v-for="item in connectors" :key="item">
-              <div
-                class="flex items-center justify-between text-base tracking-wide text-gray-900 align-middle "
-              >
-                <div class="flex items-center align-middle">
-                  <img :src="logo(item)" class="w-auto h-4 mr-1" />
-                  <span class="text-sm">{{
-                    item?.charAt(0).toUpperCase() +
-                    item?.substr(1).toLowerCase()
-                  }}</span>
-                </div>
+          <div class="flex px-3 py-2 cursor-pointer" v-if="connector">
+            <div class="flex items-center text-xs text-gray-900 align-middle">
+              <img :src="getImage(connector)" class="w-auto h-4 mr-1" />
+
+              <div class="text-xs" v-if="connectionObject">
+                {{
+                  connectionObject.attributes.displayName ||
+                  connectionObject.attributes.name
+                }}
               </div>
-            </template>
+              <div class="text-xs" v-else-if="connector">
+                {{
+                  connector?.charAt(0).toUpperCase() +
+                  connector?.substr(1).toLowerCase()
+                }}
+              </div>
+              <fa icon="fas caret-down" class="text-primary-500"></fa>
+            </div>
+            <fa icon="fal chevron-right" class="text-xs text-gray-300"></fa>
           </div>
-          <template v-else>
+          <div class="flex px-3 py-2 cursor-pointer" v-else>
             <p
-              class="flex items-center px-3 py-2 mb-0 text-sm tracking-wide text-gray-900 align-middle border rounded  hover:bg-gray-50"
+              class="flex items-center mb-0 text-xs tracking-wide text-gray-900 align-middle  hover:bg-gray-50"
             >
               <fa icon="fal plug" class="mr-1"></fa>All Connectors
+              <fa icon="fas caret-down" class="text-primary-500"></fa>
             </p>
-          </template>
+          </div>
         </a-popover>
       </div>
     </div>
@@ -64,49 +61,65 @@ import { computed, defineComponent, ref } from "vue";
 
 import ConnectionSelector from "@common/selector/connections/index.vue";
 import ConnectorSelector from "@common/selector/connectors/index.vue";
-import SourceMixin from "~/mixins/source";
+import { useConnectionsStore } from "~/pinia/connections";
 
 export default defineComponent({
   components: { ConnectionSelector, ConnectorSelector },
-  mixins: [SourceMixin],
+
   props: {},
   emits: ["change"],
   setup(props, { emit }) {
-    let connectors = ref([]);
-    let connections = ref([]);
+    let connector = ref("");
+    let connection = ref("");
+
+    const store = useConnectionsStore();
+    const getImage = (id: string) => {
+      return store.getImage(id);
+    };
+
+    const connectionObject = computed(() => {
+      return store.getList.find(
+        (item) => item.attributes.qualifiedName === connection.value
+      );
+    });
 
     const isDisabled = computed(() => {
-      if (connectors.value.length > 0) {
+      if (connector.value?.length > 0) {
         return false;
       }
       return true;
     });
 
     const handleConnectorChange = (value) => {
-      if (value) {
-        connections.value = connections.value.filter((item: string) => {
-          return connectors.value.includes(item.split("/")[1]);
-        });
+      if (!value) {
+        connection.value = "";
+      } else {
+        if (connector.value && connection.value) {
+          if (connection?.value.split("/")[0] !== connector.value) {
+            connection.value = "";
+          }
+        }
       }
 
       emit("change", {
-        connectors: connectors.value,
-        connections: connections.value,
+        connectors: connector.value,
+        connections: connection.value,
       });
     };
     const handleConnectionChange = (value) => {
-      console.log(value);
       emit("change", {
-        connectors: connectors.value,
-        connections: connections.value,
+        connector: connector?.value,
+        connection: connection.value,
       });
     };
     return {
-      connectors,
-      connections,
+      connector,
+      connection,
       isDisabled,
       handleConnectorChange,
       handleConnectionChange,
+      getImage,
+      connectionObject,
     };
   },
   computed: {},

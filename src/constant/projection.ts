@@ -139,4 +139,5 @@ export const BasicSearchAttributes = [
   "connectionName",
   "ownerUsers",
   "ownerGroups",
+  "databaseQualifiedName"
 ];

@@ -3,9 +3,7 @@
     <div class="flex flex-row mt-6 mb-5">
       <div class="mr-5">logo</div>
       <div class="flex flex-col">
-        <span class="secondaryHeading"
-          >GLOSSARY</span
-        >
+        <span class="secondaryHeading">GLOSSARY</span>
         <h1 class="text-3xl leading-9 m-0 p-0 text-black font-normal">
           {{ title }}
         </h1>
@@ -16,28 +14,16 @@
         </div>
       </div>
     </div>
+    <a-tabs default-active-key="1" @change="callback">
+      <a-tab-pane key="1" tab="Overview"> <GlossaryProfileOverview :glossary="glossary" /> </a-tab-pane>
+      <a-tab-pane key="2" tab="Terms & Categories">
+        Terms & Categories
+      </a-tab-pane>
+      <a-tab-pane key="3" tab="Activity"> Activity </a-tab-pane>
+      <a-tab-pane key="3" tab="Bots"> Bots </a-tab-pane>
+      <a-tab-pane key="3" tab="Permissions"> Permissions </a-tab-pane>
+    </a-tabs>
     <hr />
-    <div class="mt-8 flex flex-row mb-10">
-      <div class="flex flex-col mr-8">
-        <span class="secondaryHeading">
-          CATEGORIES
-        </span>
-        <span class="mt-2 text-xl leading-4 text-black">8</span>
-      </div>
-      <div class="flex flex-col mr-8">
-        <span class="secondaryHeading">
-          TERMS
-        </span>
-        <span class="mt-2 text-xl leading-4 text-black">{{ termCount }}</span>
-      </div>
-      <div class="flex flex-col mr-8">
-        <span v-if="shortDescription" class="secondaryHeading">
-          SHORT DESCRIPTION
-        </span>
-        <span class="mt-2 text-xs leading-4 text-gray-500">{{shortDescription}}</span>
-      </div>
-    </div>
-    <Readme class="min-w-full" placeholder="Add some details here..." :parentAssetId="id" />
   </div>
 </template>
 
@@ -49,7 +35,8 @@ import useGTCEntity from "~/composables/glossary/useGtcEntity";
 import { watch } from "vue";
 import { onMounted } from "vue";
 
-import Readme from "@/common/readme/index.vue"
+import Readme from "@/common/readme/index.vue";
+import GlossaryProfileOverview from "@/glossary/glossaryProfileOverview.vue";
 
 export default defineComponent({
   props: {
@@ -59,15 +46,15 @@ export default defineComponent({
       default: "",
     },
   },
-  components: {Readme},
+  components: { Readme, GlossaryProfileOverview },
   setup(props) {
     const id = computed(() => props.id);
 
-    const { data, error, isLoading, fetchEntity } = useGTCEntity("glossary");
+    const { data:glossary, error, isLoading, fetchEntity } = useGTCEntity("glossary");
 
-    const title = computed(() => data.value?.name);
-    const shortDescription = computed(() => data.value?.shortDescription);
-    const termCount = computed(() => data.value?.terms?.length ?? 0)
+    const title = computed(() => glossary.value?.name);
+    const shortDescription = computed(() => glossary.value?.shortDescription);
+    const termCount = computed(() => glossary.value?.terms?.length ?? 0);
     onMounted(() => {
       fetchEntity(id.value);
     });
@@ -77,7 +64,7 @@ export default defineComponent({
     });
 
     return {
-      data,
+      glossary,
       title,
       shortDescription,
       termCount,

@@ -169,9 +169,7 @@ import {
 import emptySSOImage from "~/assets/images/emptyCreds.png";
 import ImportMetadataFromXML from "../common/importMetadataFromXML.vue";
 import ImportText from "../common/importText.vue";
-
-import { TENANT_FETCH_DATA } from "~/constant/store_types";
-import { useStore } from "vuex";
+import { useTenantStore } from "~/pinia/tenants";
 
 import {
   topSAMLProviders,
@@ -186,6 +184,9 @@ import { downloadFile } from "~/utils/download";
 
 import { IdentityProvider } from "~/api/auth/identityProvider";
 import { useRouter } from "vue-router";
+import { Tenant } from "~/api2/tenant";
+import { IConfig } from "swrv";
+import { AxiosRequestConfig } from "axios";
 
 interface FormState {
   alias: string;
@@ -198,11 +199,10 @@ export default defineComponent({
   components: { ImportMetadataFromXML, ImportText },
   setup(props, context) {
     console.log(context, "context");
-    const store = useStore();
+    const tenantStore = useTenantStore();
     const router = useRouter();
-    const tenantData = computed(() => store.state.tenant.data);
-    const identityProviders: Array<any> =
-      tenantData.value?.identityProviders || [];
+    const tenantData: any = computed(() => tenantStore.tenant);
+    const identityProviders: Array<any> = tenantData?.identityProviders || [];
     const ssoProvider: any = computed(() => {
       const ssoProviders = identityProviders.filter((idp) => {
         if (idp?.alias === props.alias) return idp;
@@ -262,7 +262,7 @@ export default defineComponent({
         console.log(config);
         await IdentityProvider.updateIDP(props.alias, config);
         isLoading.value = false;
-        await store.dispatch(TENANT_FETCH_DATA);
+        await updateTenant();
         message.success({
           content: "Details Updated",
         });
@@ -300,6 +300,22 @@ export default defineComponent({
       const filename = "AtlanSPMetadata.xml";
       const type = "text/xml";
       downloadFile(data, filename, type);
+    };
+
+    const updateTenant = async () => {
+      const asyncOptions: IConfig & AxiosRequestConfig = {
+        dedupingInterval: 0,
+        shouldRetryOnError: false,
+        revalidateOnFocus: false,
+      };
+
+      const isAuth = ref(false);
+      const {
+        data: tenantData,
+        isValidating,
+        error,
+      } = await Tenant.GetTenant(asyncOptions, ref(""), isAuth);
+      if (!isValidating && !error) tenantStore.setData(tenantData.value);
     };
 
     onMounted(() => {

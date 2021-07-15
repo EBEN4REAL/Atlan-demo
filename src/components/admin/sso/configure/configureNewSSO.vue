@@ -226,8 +226,11 @@ import {
 import ImportMetadataFromXML from "../common/importMetadataFromXML.vue";
 import ImportText from "../common/importText.vue";
 
-import { TENANT_FETCH_DATA } from "~/constant/store_types";
-import { useStore } from "~/store";
+import { Tenant } from "~/api2/tenant";
+import { IConfig } from "swrv";
+import { AxiosRequestConfig } from "axios";
+
+import { useTenantStore } from "~/pinia/tenants";
 
 import {
   topSAMLProviders,
@@ -264,8 +267,8 @@ export default defineComponent({
       displayName: "",
     });
     const isLoading = ref(false);
-    const store = useStore();
-    const tenantData: any = computed(() => store.state.tenant.data);
+    const tenantStore = useTenantStore();
+    const tenantData: any = computed(() => tenantStore.tenant);
 
     const defaultMappers = mapperList;
 
@@ -412,8 +415,7 @@ export default defineComponent({
       }
     };
     const checkAliasPresent = () => {
-      const identityProviders: Array<any> =
-        tenantData?.value?.identityProviders || [];
+      const identityProviders: Array<any> = tenantData?.identityProviders || [];
       const alias = identityProviders.find(
         (provider) => provider.alias === ssoForm.alias
       );
@@ -448,7 +450,7 @@ export default defineComponent({
           mappers.map((mapper) => mapperResponse.push(createMapper(mapper)));
         });
         await Promise.all([...mapperResponse]);
-        await store.dispatch(TENANT_FETCH_DATA);
+        await updateTenant();
         showConfigScreen();
         message.success({
           content: "SSO added!",
@@ -482,6 +484,22 @@ export default defineComponent({
       const filename = "AtlanSPMetadata.xml";
       const type = "text/xml";
       downloadFile(data, filename, type);
+    };
+
+    const updateTenant = async () => {
+      const asyncOptions: IConfig & AxiosRequestConfig = {
+        dedupingInterval: 0,
+        shouldRetryOnError: false,
+        revalidateOnFocus: false,
+      };
+
+      const isAuth = ref(false);
+      const {
+        data: tenantData,
+        isValidating,
+        error,
+      } = await Tenant.GetTenant(asyncOptions, ref(""), isAuth);
+      if (!isValidating && !error) tenantStore.setData(tenantData.value);
     };
 
     onBeforeUnmount(() => {

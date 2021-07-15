@@ -101,8 +101,11 @@ import {
 import { topSAMLProviders, customSamlProvider } from "~/constant/saml";
 import { IdentityProvider } from "~/api/auth/identityProvider";
 import { message } from "ant-design-vue";
-import { TENANT_FETCH_DATA } from "~/constant/store_types";
-import { useStore } from "~/store";
+
+import { useTenantStore } from "~/pinia/tenants";
+import { Tenant } from "~/api2/tenant";
+import { IConfig } from "swrv";
+import { AxiosRequestConfig } from "axios";
 
 export default defineComponent({
   props: ["providerDetails"],
@@ -114,6 +117,7 @@ export default defineComponent({
     });
     const defaultSSO = ref(false);
     const formLoading = ref(false);
+    const tenantStore = useTenantStore();
     const samlProvider = topSAMLProviders.find(
       (data) => data.alias === props.providerDetails?.alias
     );
@@ -221,9 +225,25 @@ export default defineComponent({
       }
     };
 
+    // const getTenant = async () => {
+    //   const store = useStore();
+    //   await store.dispatch(TENANT_FETCH_DATA);
+    // };
+
     const getTenant = async () => {
-      const store = useStore();
-      await store.dispatch(TENANT_FETCH_DATA);
+      const asyncOptions: IConfig & AxiosRequestConfig = {
+        dedupingInterval: 0,
+        shouldRetryOnError: false,
+        revalidateOnFocus: false,
+      };
+
+      const isAuth = ref(false);
+      const {
+        data: tenantData,
+        isValidating,
+        error,
+      } = await Tenant.GetTenant(asyncOptions, ref(""), isAuth);
+      if (!isValidating && !error) tenantStore.setData(tenantData.value);
     };
 
     onMounted(async () => {

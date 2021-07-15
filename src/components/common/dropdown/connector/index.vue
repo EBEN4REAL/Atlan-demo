@@ -6,14 +6,15 @@
           <template #content>
             <p class="mb-0 text-gray-500">Connector</p>
             <ConnectorSelector
-              v-model:value="connector"
+              v-model="connector"
+              :connector="connector"
               style="width: 200px"
               placeholder="All Connectors"
               @change="handleConnectorChange"
             ></ConnectorSelector>
             <p class="mt-2 mb-0 text-gray-500">Connections</p>
             <ConnectionSelector
-              v-model:value="connection"
+              v-model="connection"
               :disabled="isDisabled"
               :connector="connector"
               style="width: 200px"
@@ -29,13 +30,13 @@
               <div class="text-xs" v-if="connectionObject">
                 {{
                   connectionObject.attributes.displayName ||
-                  connectionObject.attributes.name
+                    connectionObject.attributes.name
                 }}
               </div>
               <div class="text-xs" v-else-if="connector">
                 {{
                   connector?.charAt(0).toUpperCase() +
-                  connector?.substr(1).toLowerCase()
+                    connector?.substr(1).toLowerCase()
                 }}
               </div>
               <fa icon="fas caret-down" class="text-primary-500"></fa>
@@ -44,7 +45,7 @@
           </div>
           <div class="flex px-3 py-2 cursor-pointer" v-else>
             <p
-              class="flex items-center mb-0 text-xs tracking-wide text-gray-900 align-middle  hover:bg-gray-50"
+              class="flex items-center mb-0 text-xs tracking-wide text-gray-900 align-middle hover:bg-gray-50"
             >
               <fa icon="fal plug" class="mr-1"></fa>All Connectors
               <fa icon="fas caret-down" class="text-primary-500"></fa>
@@ -55,9 +56,9 @@
     </div>
   </div>
 </template>
-    
+
 <script lang="ts">
-import { computed, defineComponent, ref } from "vue";
+import { computed, defineComponent, ref, watch, toRaw } from "vue";
 
 import ConnectionSelector from "@common/selector/connections/index.vue";
 import ConnectorSelector from "@common/selector/connectors/index.vue";
@@ -66,11 +67,25 @@ import { useConnectionsStore } from "~/pinia/connections";
 export default defineComponent({
   components: { ConnectionSelector, ConnectorSelector },
 
-  props: {},
+  props: {
+    data: {
+      type: Object,
+      required: false,
+      default() {
+        return {};
+      },
+    },
+  },
   emits: ["change"],
   setup(props, { emit }) {
-    let connector = ref("");
-    let connection = ref("");
+    const connectorPayload = props.data;
+
+    watch(connectorPayload, () => {
+      console.log(connectorPayload, "payload");
+    });
+
+    let connector = ref("" || connectorPayload.connector);
+    let connection = ref("" || connectorPayload.connection);
 
     const store = useConnectionsStore();
     const getImage = (id: string) => {
@@ -102,8 +117,8 @@ export default defineComponent({
       }
 
       emit("change", {
-        connectors: connector.value,
-        connections: connection.value,
+        connector: connector.value,
+        connection: connection.value,
       });
     };
     const handleConnectionChange = (value) => {

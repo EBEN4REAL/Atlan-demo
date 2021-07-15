@@ -1,20 +1,12 @@
 <template>
-  <div
-    class="
-      h-full
-      bg-white
-      border border-gray-200
-      divide-y divide-gray-100
-      rounded
-    "
-  >
+  <div class="h-full bg-white divide-y divide-gray-100 rounded">
     <div class="flex flex-col pt-2" v-if="!isNew">
       <div class="flex items-center justify-between px-3">
         <div class="p-4">
-          <p class="m-0 text-lg font-medium text-gray-700">
+          <p class="m-0 text-2xl font-medium text-primary">
             {{ selectedEnum.name }}
           </p>
-          <span class="m-0 text-xs">
+          <span class="m-0 text-sm text-gray-400">
             Created
             {{ timeAgo(selectedEnum.createTime) }} by
             <span
@@ -36,26 +28,23 @@
             v-if="!isEditing"
             shape="circle"
             @click="() => (isEditing = true)"
+            class="rounded-md ant-btn ant-btn-primary"
           >
             <fa icon="fal pen" />
           </a-button>
           <a-button
             v-if="isEditing"
-            type="danger"
-            shape="circle"
-            ghost
             @click="discardChanges"
+            class="rounded-md ant-btn mr-4"
           >
-            <fa icon="fal times" />
+            Cancel
           </a-button>
           <a-button
             v-if="isEditing"
-            type="primary"
-            shape="circle"
-            ghost
             @click="saveChanges"
+            class="rounded-md ant-btn ant-btn-primary"
           >
-            <fa icon="fal check" />
+            Save
           </a-button>
         </div>
       </div>

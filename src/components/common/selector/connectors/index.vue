@@ -34,6 +34,7 @@ export default defineComponent({
   },
   emits: ["update:modelValue", "change"],
   setup(props, { emit }) {
+    console.log(props.modalVale, "modalValue");
     const store = useConnectionsStore();
 
     // let now = ref(true);

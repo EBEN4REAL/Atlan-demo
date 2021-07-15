@@ -1,5 +1,6 @@
 <template>
   <div>
+    <div class="mb-2 text-base font-bold text-gray-dark">Assets Owned</div>
     <div class="flex flex-col h-full border rounded-lg">
       <div class="border-b rounded-tl-lg rounded-tr-lg bg-gray-50">
         <ConnectorDropdown
@@ -26,6 +27,19 @@
               </template>
             </div>
           </template>
+          <template #suffix>
+            <a-popover placement="bottomLeft">
+              <template #content>
+                <Preferences
+                  :defaultProjection="projection"
+                  @change="handleChangePreferences"
+                  @sort="handleChangeSort"
+                  @state="handleState"
+                ></Preferences>
+              </template>
+              <fa icon="fal cog"></fa>
+            </a-popover>
+          </template>
         </a-input>
       </div>
       <div class="flex w-full px-3 mt-3">
@@ -44,11 +58,13 @@
         <EmptyView :showClearFiltersCTA="false"></EmptyView>
       </div>
       <AssetList
+        class="asset-list-height"
         v-else
         :list="list"
         :score="searchScoreList"
         @preview="handlePreview"
         :isLoading="isLoading || isValidating"
+        :projection="projection"
         ref="assetlist"
       ></AssetList>
       <div class="flex w-full px-3 py-1 border-t bg-gray-50 border-gray-50">
@@ -95,6 +111,8 @@ import AssetPagination from "@common/pagination/index.vue";
 import ConnectorDropdown from "@common/dropdown/connector/index.vue";
 import { useConnectionsStore } from "~/pinia/connections";
 import { BaseAttributes, BasicSearchAttributes } from "~/constant/projection";
+import Preferences from "@/discovery/asset/preference/index.vue";
+import useDiscoveryPreferences from "~/composables/preference/useDiscoveryPreference";
 
 export default {
   name: "Assets",
@@ -114,6 +132,7 @@ export default {
     AssetTabs,
     AssetPagination,
     EmptyView,
+    Preferences,
   },
   setup(props) {
     const now = ref(false);
@@ -145,6 +164,8 @@ export default {
         criterion: criterion,
       } as Components.Schemas.FilterCriteria,
     ];
+    const state = ref("active");
+    const sortOrder = ref("default");
     const limit = ref(20);
     const offset = ref(0);
     let assetTypeList = ref([]);
@@ -191,6 +212,21 @@ export default {
           operator: "eq",
         });
       }
+
+      if (state.value) {
+        if (state.value === "all") {
+          initialBody.excludeDeletedEntities = false;
+        } else if (state.value === "deleted") {
+          initialBody.excludeDeletedEntities = false;
+          initialBody.entityFilters.criterion.push({
+            attributeName: "__state",
+            attributeValue: "DELETED",
+            operator: "eq",
+          });
+        } else {
+          initialBody.excludeDeletedEntities = true;
+        }
+      }
       let connectorCritera = {
         condition: "OR",
         criterion: [],
@@ -199,7 +235,7 @@ export default {
         condition: "OR",
         criterion: [],
       };
-      initialBody.query = queryText.value;
+
       if (connectorsPayload.value?.connector) {
         connectorCritera.criterion?.push({
           attributeName: "integrationName",
@@ -216,8 +252,22 @@ export default {
       }
       initialBody.entityFilters.criterion.push(connectorCritera);
       initialBody.entityFilters.criterion.push(connectionCriteria);
+      if (sortOrder.value !== "default") {
+        const split = sortOrder.value.split("|");
+        if (split.length > 1) {
+          initialBody.sortBy = split[0];
+          initialBody.sortOrder = split[1].toUpperCase();
+        }
+      } else {
+        delete initialBody.sortBy;
+        delete initialBody.sortOrder;
+      }
+      if (queryText.value) {
+        initialBody.query = queryText.value;
+      }
       replaceBody(initialBody);
     };
+    const { projection } = useDiscoveryPreferences();
     const handleSearchChange = useDebounceFn((val) => {
       offset.value = 0;
       updateBody();
@@ -265,6 +315,21 @@ export default {
         return connectorsPayload.value?.connector == item.id;
       });
     });
+    const handleChangePreferences = (payload: any) => {
+      projection.value = payload;
+    };
+
+    const handleChangeSort = (payload: any) => {
+      sortOrder.value = payload;
+      isAggregate.value = false;
+      updateBody();
+    };
+
+    const handleState = (payload: any) => {
+      state.value = payload;
+      isAggregate.value = true;
+      updateBody();
+    };
     const handleChangeConnectors = (payload: any) => {
       connectorsPayload.value = payload;
       isAggregate.value = true;
@@ -303,10 +368,17 @@ export default {
       filteredConnectorList,
       assetTypeList,
       assetTypeMap,
+      handleChangePreferences,
+      handleChangeSort,
+      handleState,
+      projection,
     };
   },
 };
 </script>
 
-<style>
+<style lang="less" scoped>
+.asset-list-height {
+  max-height: calc(100vh - 23.5rem);
+}
 </style>

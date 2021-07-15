@@ -4,7 +4,7 @@ import { useAPI } from "~/api/useAPI"
 import { GET_GLOSSARY, GET_CATEGORY, GET_TERM } from "~/api/keyMaps/glossary"
 
 
-const useGTCEntity = () => {
+const useGTCEntity = (type: 'glossary' | 'category' | 'term') => {
     const keyMap = {
         glossary: GET_GLOSSARY,
         category: GET_CATEGORY,
@@ -12,21 +12,20 @@ const useGTCEntity = () => {
     }
 
     const entityGuid = ref<string>();
-    const entityType = ref<'glossary' | 'category' | 'term'>('glossary')
+    const entityType = ref<'glossary' | 'category' | 'term'>(type)
     const pathObject = ref({
         guid: entityGuid
     })
 
-    const { data, error, isLoading, mutate } = useAPI(keyMap[entityType.value], 'GET', {
-        cache: entityGuid.value,
+    const { data, error, isValidating: isLoading, mutate } = useAPI(keyMap[entityType.value], 'GET', {
+        cache: true,
         dependantFetchingKey: entityGuid,
         pathVariables: pathObject,
         // url
         })
 
-    const fetchEntity = (type: 'glossary' | 'category' | 'term', guid: string)  => {
+    const fetchEntity = (guid: string)  => {
         entityGuid.value = guid;
-        entityType.value = type;
         pathObject.value = {guid};
 
         mutate()

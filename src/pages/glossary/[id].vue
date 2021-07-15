@@ -24,14 +24,14 @@ export default defineComponent({
   setup(props) {
     const id = computed(() => props.id);
 
-    const {data, error, isLoading, fetchEntity } = useGTCEntity();
+    const {data, error, isLoading, fetchEntity } = useGTCEntity('glossary');
 
     onMounted(() => {
-      fetchEntity('glossary', id.value)
+      fetchEntity(id.value)
     })
 
     watch(id, (newGuid) => {
-      fetchEntity('glossary', newGuid)
+      fetchEntity(newGuid)
     })
 
     return {

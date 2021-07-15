@@ -122,7 +122,7 @@
         </div>
       </div>
       <div class="flex">
-        <div class="" style="width: 100%;">
+        <div class="relative" style="width: 100%;">
           <label class="mb-0 font-normal font-size-sm">Applicable Entities</label>
           <a-tree-select
             v-model:value="attributeInput.data.options.applicableEntityTypes"
@@ -137,6 +137,7 @@
             :class="isEdit ? 'custom-class-edit' : ''"
             dropdownClassName="type-select-dd"
             maxTagCount="5"
+            :getPopupContainer="target => target.parentNode"
           >
           </a-tree-select>
         </div>
@@ -217,13 +218,14 @@ export default defineComponent({
         const selectedOptions = JSON.parse(
           props.attribute.options.applicableEntityTypes || "[]"
         );
-        options = options.map((option: { id: any }) => ({
+        options = options.map((option: { id: string; label: string }) => ({
           title: option.label,
           key: option.id,
           value: option.id,
           id: option.id,
           disabled: selectedOptions.includes(option.id),
         }));
+        return options;
       }
       return options
         .filter(t => t.id !== "AtlanSavedQuery")

@@ -12,7 +12,6 @@
           placeholder="Business Metadata"
           v-model:value="addBusinessMetadata"
           allowClear
-          mode="multiple"
           :options="addBMSelectOptions"
         />
         <p class="mt-2 text-xs text-gray-400">
@@ -80,9 +79,9 @@
 </template>
 
 <script lang="ts">
-import { ref, defineComponent, computed, nextTick, watch, onMounted } from "vue";
+import { ref, defineComponent, computed, watch, onMounted } from "vue";
 import { BusinessMetadata } from "~/api/atlas/businessMetadata";
-import BusinessMetadataWidget from "@/shared/businessMetadataWidget.vue";
+import BusinessMetadataWidget from "@/common/businessMetadataWidget.vue";
 
 // ? Store
 import { useBusinessMetadataStore } from "~/pinia/businessMetadata";
@@ -128,6 +127,7 @@ export default defineComponent({
     });
 
     // ? Methods
+    // ! NO longer need
     const handleMissingDisplayNameKey = (
       BMlist:
         | (object[] & ((state: State) => object[] | null))
@@ -288,7 +288,11 @@ export default defineComponent({
           updateBmAttributesStatus.value = "failed";
         } else if (isReady.value) {
           updateBmAttributesStatus.value = "success";
-          // ? remove empty attributes on update
+          // ? remove empty attributes on update // add new value of the attribute to state if success update
+          const index = attributesList.value.findIndex(a => a.bm === value.bm);
+          if (index > -1) {
+            attributesList.value[index] = value;
+          }
           attributesList.value = attributesList.value.filter(b => b.attributes.length);
           setTimeout(async () => {
             // await this.refreshAssetInAssetsList(this.asset.guid);

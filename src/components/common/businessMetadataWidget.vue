@@ -8,7 +8,7 @@
           placement="left"
           ok-text="Yes"
           cancel-text="No"
-          @confirm="removeBm(bm.bm)"
+          @confirm="removeBm(localState.bm)"
           ><span
             ><fa
               icon="fal times"
@@ -17,8 +17,8 @@
         ></a-popconfirm>
       </div>
     </div>
-    <span v-if="bm.attributes.length">
-      <div class="px-2 mb-2 " v-for="(a, x) in bm.attributes" :key="x">
+    <span v-if="localState?.attributes?.length">
+      <div class="px-2 mb-2 " v-for="(a, x) in localState.attributes" :key="x">
         <div class="flex justify-between">
           <span class="text-gray-500 cursor-default whitespace-nowrap"
             >{{ a.options.displayName }}:</span
@@ -46,7 +46,7 @@
           <input
             v-if="getDatatypeOfAttribute(a.typeName) === 'number'"
             class="px-2 mr-2 border w-100"
-            style="width:90%"
+            style="width:70%"
             type="number"
             v-model="a.value"
             v-on:keyup.enter="() => inputsRefMap[a.name].blur()"
@@ -64,7 +64,7 @@
           />
           <select
             v-else-if="getDatatypeOfAttribute(a.typeName) === 'boolean'"
-            class="ml-2"
+            class="border "
             v-model="a.value"
             @change="
               () => {
@@ -133,18 +133,9 @@
                   :placeholder="`Value ${n + 1}`"
                   class="mb-1"
                   allowClear
+                  style="width:100%"
                   :value="multiInputs[a.name][n]"
-                  @change="
-                    e =>
-                      handleMultiInputChange(
-                        x,
-                        false,
-                        a.name,
-                        e.target.value,
-                        timestamp,
-                        n
-                      )
-                  "
+                  @change="v => handleMultiInputChange(x, false, a.name, v, n)"
                 />
               </div>
             </div>
@@ -306,7 +297,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, nextTick, computed } from "vue";
+import { defineComponent, ref, nextTick, computed, onMounted, watch } from "vue";
 
 // * Composables
 import useEnums from "@/admin/enums/composables/useEnums";
@@ -329,13 +320,14 @@ export default defineComponent({
   setup(props, { emit }) {
     const inputsRefMap = ref({});
     const multiInputs = ref({});
+    const localState = ref();
     const { enumListData: enumsList } = useEnums();
 
     // ? methods
     const handleDateChange = (timestamp, string, x) => {
-      props.bm.attributes[x].value = timestamp;
+      localState.value.attributes[x].value = timestamp;
       // TODO mutating props directly in many places,
-      props.bm.attributes[x].isEdit = false;
+      localState.value.attributes[x].isEdit = false;
       updateAttribute();
     };
 
@@ -358,7 +350,9 @@ export default defineComponent({
       multiInputs.value[name].push("");
     };
     const confirmDeleteAttribute = name => {
-      props.bm.attributes = props.bm.attributes.filter(a => a.name !== name);
+      localState.value.attributes = localState.value.attributes.filter(
+        a => a.name !== name
+      );
       updateAttribute();
     };
 
@@ -371,13 +365,13 @@ export default defineComponent({
     ) => {
       multiInputs.value[name][localAttrIndex] = value;
       if (isDate) {
-        props.bm.attributes[attributeIndex].value = [
+        localState.value.attributes[attributeIndex].value = [
           ...multiInputs.value[name]
             .map(v => (v !== "" ? parseInt(v) : v))
             .filter(v => !Number.isNaN(v)),
         ];
       } else
-        props.bm.attributes[attributeIndex].value = [
+        localState.value.attributes[attributeIndex].value = [
           ...multiInputs.value[name].filter(
             (v: number | string) => v !== "" && v !== null
           ),
@@ -386,7 +380,7 @@ export default defineComponent({
 
     const selectAddAttribute = (a: object) => {
       if (a.typeName.includes("array")) multiInputs.value[a.name] = ["", ""];
-      props.bm.attributes.push({ ...a, isEdit: true });
+      localState.value.attributes.push({ ...a, isEdit: true });
     };
 
     const setInputFocus = name => {
@@ -394,16 +388,19 @@ export default defineComponent({
     };
 
     const removeBm = () => {
-      props.bm.attributes = [];
+      localState.value.attributes = [];
       updateAttribute();
     };
 
     const updateAttribute = () => {
-      emit("updateAttribute", JSON.parse(JSON.stringify({ ...props.bm, isNew: false })));
+      emit(
+        "updateAttribute",
+        JSON.parse(JSON.stringify({ ...localState.value, isNew: false }))
+      );
     };
 
     const handleEditMode = (name: string, type: string) => {
-      const attribute = props.bm.attributes.find(a => a.name === name);
+      const attribute = localState.value.attributes.find(a => a.name === name);
       attribute.isEdit = true;
       if (typeof type === "object") console.log("enum", type);
       else if (type.includes("array") && attribute?.value.length)
@@ -460,19 +457,36 @@ export default defineComponent({
     };
 
     const availableAttributesToAdd = computed(() => {
-      const appliedAttributes = props.bm.attributes.map(a => a.name);
-      if (props.originalBM?.attributeDefs) {
-        return props.originalBM.attributeDefs.filter(a => {
-          if (
-            appliedAttributes.includes(a.name) ||
-            !JSON.parse(a.options.applicableEntityTypes).includes(props.assetType)
-          )
-            return false;
-          return true;
-        });
+      if (localState.value) {
+        const appliedAttributes = localState.value.attributes.map(a => a.name);
+        if (props.originalBM?.attributeDefs) {
+          return props.originalBM.attributeDefs.filter(a => {
+            if (
+              appliedAttributes.includes(a.name) ||
+              !JSON.parse(a.options.applicableEntityTypes).includes(props.assetType)
+            )
+              return false;
+            return true;
+          });
+        }
       }
       return [];
     });
+
+    onMounted(() => {
+      localState.value = JSON.parse(JSON.stringify(props.bm));
+    });
+
+    watch(
+      () => props.bm,
+      () => {
+        localState.value = JSON.parse(JSON.stringify(props.bm));
+      },
+      {
+        deep: true,
+        immediate: true,
+      }
+    );
 
     return {
       getDatatypeOfAttribute,
@@ -489,6 +503,7 @@ export default defineComponent({
       enumsList,
       confirmDeleteAttribute,
       removeBm,
+      localState,
     };
   },
 });

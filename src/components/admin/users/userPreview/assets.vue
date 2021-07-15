@@ -9,6 +9,7 @@
     />
     <AssetList
       :list="list"
+      :projection="['heirarchy', 'rows']"
       :score="searchScoreList"
       :isLoading="isLoading || isValidating"
       ref="assetlist"

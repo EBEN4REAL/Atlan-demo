@@ -36,6 +36,7 @@
               :is="activeKey"
               :item="item"
               :key="item.guid"
+              :selectedAssetData="selectedAssetData"
             ></component></div></a-tab-pane
       ></a-tabs>
     </div>
@@ -48,8 +49,9 @@ import { computed, defineComponent, ref } from "vue";
 import AssetMixin from "~/mixins/asset";
 // import PreviewTabs from "./tabs/index.vue";
 import { List } from "./list";
-import { useDiscoveryStore } from "~/pinia/discovery";
 import { Policies } from "~/api/auth/policies";
+import useAsset from "~/composables/asset/useAsset";
+import { useClassificationStore } from "~/components/admin/classifications/_store";
 
 export default defineComponent({
   mixins: [AssetMixin],
@@ -68,8 +70,9 @@ export default defineComponent({
     },
   },
   setup(props) {
-    // const store = useDiscoveryStore();
     const activeKey = ref("overview");
+    const selectedAssetData = ref({});
+    const availableClassificationsForLink = ref([]);
     const filteredTabList = computed(() => {
       return List;
     });
@@ -87,16 +90,30 @@ export default defineComponent({
     //   body: params,
     // });
 
-    // watch([accessLevelData, accessLevelError], () => {
-    //   if (accessLevelData.value && accessLevelError.value != undefined) {
-    //     store.selectedAsset.accessLevel = accessLevelData.value.accessType;
-    //     console.log(accessLevelData.value, "accessLevel");
-    //   } else {
-    //     console.log("Access level access api fail");
-    //   }
-    // });
+    const { response: assetData, error: assetError } = useAsset({
+      entityId: props.item.guid,
+    });
+
+    const getAssetEntitites = (data: Ref): any => {
+      if (data.value?.entities.length > 0) return data.value?.entities[0];
+      return {};
+    };
+    watch([assetData, assetError], () => {
+      if (assetData.value && assetError.value == undefined) {
+        console.log(assetData.value, "dataRes");
+        const entities = getAssetEntitites(assetData);
+        selectedAssetData.value = entities;
+        console.log(availableClassificationsForLink.value, "root Available");
+      } else {
+        console.log(
+          assetError.value,
+          "------ assetInfo failed to fetch ------ "
+        );
+      }
+    });
 
     return {
+      selectedAssetData,
       activeKey,
       filteredTabList,
     };

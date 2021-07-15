@@ -2,7 +2,11 @@
   <div class="flex flex-col px-2 space-y-3">
     <Terms :item="item" :key="item.guid"></Terms>
 
-    <Classifications :item="item" :key="item.guid"></Classifications>
+    <Classifications
+      :item="item"
+      :key="item.guid"
+      :selectedAssetData="selectedAssetData"
+    ></Classifications>
     <!-- <StatusBadge :status="status(item)" :key="item.guid"></StatusBadge> -->
   </div>
 </template>
@@ -23,8 +27,17 @@ export default defineComponent({
         return {};
       },
     },
+    selectedAssetData: {
+      type: Object,
+      required: false,
+      default(): any {
+        return {};
+      },
+    },
   },
-  setup(props, { emit }) {},
+  setup(props, { emit }) {
+    return {};
+  },
 });
 </script>
 

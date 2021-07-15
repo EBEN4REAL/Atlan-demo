@@ -13,6 +13,7 @@ import useConnectionsList from "./composables/bots/useConnectionList";
 
 import { CONNECTION_FETCH_LIST } from "./constant/cache";
 import { useTenantStore } from "./pinia/tenants";
+import { useClassificationStore } from "~/components/admin/classifications/_store";
 
 export default defineComponent({
   setup(props, context) {
@@ -41,6 +42,7 @@ export default defineComponent({
     };
 
     useConnectionsList(isAuth, initialBody, CONNECTION_FETCH_LIST);
+    useClassificationStore();
 
     watch(
       () => tenantStore.isAuthenticated,
@@ -61,4 +63,3 @@ export default defineComponent({
   },
 });
 </script>
-

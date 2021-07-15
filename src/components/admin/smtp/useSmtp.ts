@@ -182,6 +182,7 @@ export function useSmtp() {
         watch([isLoading], () => {
           if (!saveSmtpConfigReqError.value) {
             saveSmtpConfigState.value = "SUCCESS";
+            timerMessage(saveSmtpConfigState);
           } else {
             const errorMessage = "";
             saveSmtpConfigState.value = "ERROR";

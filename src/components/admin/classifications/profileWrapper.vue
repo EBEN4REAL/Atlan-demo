@@ -1,79 +1,11 @@
 <template>
   <div>
-    <p class="mb-2 text-2xl atlan-gray-500 text-uppercase">
-      CLASSIFICATION
-    </p>
-    <div class="flex items-center">
-      <p class="flex items-center mb-0 text-sm text-gray-600">
-        <span class="flex items-center text-lg">
-          <fa icon="fal shield text-gray-500  " class="mr-2" />
-        </span>
-        {{ selectedClassification?.displayName }}
-      </p>
-      <div class="ml-5 text-xs text-gray-400 ">
-        <span v-if="createdAt">
-          Created {{ createdAt }} by
-          <span
-            class="underline cursor-pointer text-primary"
-            @click="() => handleClickUser(createdBy)"
-            >{{ createdBy }}</span
-          >
-        </span>
-        <span v-if="updatedAt">
-          <span class="px-1">·</span>
-          Updated {{ updatedAt }}
-          <span
-            class="underline cursor-pointer text-primary"
-            @click="() => handleClickUser(updatedBy)"
-            >by {{ updatedBy }}</span
-          >
-        </span>
-      </div>
-    </div>
-  </div>
-  <splitpanes class="pt-6 default-theme" style="height:'95%'">
-    <pane min-size="25" max-size="50" size="25" class="relative pr-6 bg-white">
-      <a-input
-        ref="searchText"
-        v-model:value="treeFilterText"
-        @input="handleSearch"
-        type="text"
-        class="bg-white shadow-none form-control border-right-0"
-        placeholder="Search classifications"
-      >
-        <template #suffix>
-          <fa
-            v-if="treeFilterText"
-            @click="clearSearchText"
-            icon="fal times-circle"
-            class="ml-2 mr-1 text-red-600"
-          />
-          <fa
-            v-if="!treeFilterText"
-            icon="fal search"
-            class="ml-2 mr-1 text-gray-500"
-          />
-        </template>
-      </a-input>
-      <div class="mt-2 treelist">
-        <CreateClassificationTree
-          :treeData="treeFilterText !== '' ? filteredData : treeData"
-          @nodeEmit="nodeEmit"
-        />
-      </div>
-      <div class="absolute flex justify-center w-full add-classification-btn">
-        <a-button type="primary" @click="toggleModal"
-          >Add Classification</a-button
-        >
-      </div>
-    </pane>
-    <pane size="74" class="flex flex-col pl-6 bg-white">
-      <ClassificationHeader
-        :classification="selectedClassification"
-        v-if="selectedClassification"
-      />
+    <ClassificationHeader
+      :classification="selectedClassification"
+      v-if="selectedClassification"
+    />
 
-      <!-- <AssetListWrapper
+    <!-- <AssetListWrapper
         class="px-0 col-10"
         :key="classificationName"
         :classificationName="classificationName"
@@ -84,53 +16,11 @@
         :showLinkEntityButton="true"
         :selectedClassification="selectedClassification"
       /> -->
-    </pane>
-
-    <a-modal
-      :visible="modalVisible"
-      title="Add Classification"
-      :onCancel="closeModal"
-      :footer="null"
-    >
-      <a-form
-        ref="createClassificationFormRef"
-        :model="formState"
-        :rules="rules"
-        layout="vertical"
-      >
-        <a-form-item ref="name" label="Name" name="name">
-          <a-input v-model:value="formState.name" />
-        </a-form-item>
-        <a-form-item ref="description" label="Description" name="description">
-          <a-textarea v-model:value="formState.description" />
-        </a-form-item>
-        <div class="flex justify-between w-full">
-          <a-button @click="closeModal">Cancel</a-button>
-          <a-button
-            type="primary"
-            @click="createClassification"
-            :loading="createClassificationStatus === 'loading' ? true : false"
-            >Create</a-button
-          >
-        </div>
-      </a-form>
-      <p v-if="createErrorText" class="mt-4 mb-0 text-sm text-red-500">
-        {{ createErrorText }}
-      </p>
-    </a-modal>
-  </splitpanes>
+  </div>
 </template>
 
 <script lang="ts">
-import {
-  defineComponent,
-  reactive,
-  ref,
-  toRaw,
-  UnwrapRef,
-  watch,
-  computed,
-} from "vue";
+import { defineComponent, reactive, ref } from "vue";
 import ConnectionTree from "@/connection/tree/index.vue";
 import Loading from "@common/loaders/section.vue";
 import ErrorView from "@common/error/index.vue";
@@ -139,9 +29,6 @@ import ClassificationHeader from "~/components/admin/classifications/classificat
 import AssetListWrapper from "~/components/asset/assetListWrapper.vue";
 import { useRouter } from "vue-router";
 import { useClassificationStore } from "./_store";
-import { ValidateErrorEntity } from "ant-design-vue/es/form/interface";
-import { Classification } from "~/api/atlas/classification";
-import { useTimeAgo } from "@vueuse/core";
 
 export default defineComponent({
   name: "ClassificationProfileWrapper",
@@ -207,64 +94,6 @@ export default defineComponent({
         ref.value = "";
       }, time);
     };
-    const createClassification = () => {
-      const payload = {
-        classificationDefs: [],
-      };
-      const classificationObj: any = {
-        attributeDefs: [],
-        description: "",
-        name: "",
-        superTypes: [],
-      };
-
-      createClassificationFormRef.value
-        .validate()
-        .then(() => {
-          classificationObj.name = formState.name;
-          classificationObj.description = formState.description;
-          payload.classificationDefs.push(classificationObj);
-          // create classification
-          createClassificationStatus.value = "loading";
-          const {
-            data: createClassificationData,
-            error: createClassificationError,
-          } = Classification.createClassification({ cache: false, payload });
-
-          watch([createClassificationData, createClassificationError], () => {
-            console.log(createClassificationData, createClassificationError);
-            if (createClassificationData.value) {
-              let classifications =
-                createClassificationData.value.classificationDefs ?? [];
-              classifications = [...store.classifications, ...classifications];
-              classifications = classifications.map((classification: any) => {
-                classification.alias = classification.name;
-                return classification;
-              });
-              console.log(
-                "getClassifications -> classifications",
-                classifications
-              );
-              store.classifications = classifications ?? [];
-              const classificationTree = store.transformClassificationTreeData;
-              store.classificationTree = classificationTree ?? [];
-              createClassificationStatus.value = "success";
-              formState.name = "";
-              formState.description = "";
-              closeModal();
-            } else {
-              createClassificationStatus.value = "error";
-              const error = toRaw(createClassificationError.value);
-              console.log("errormessage", error.response.data.errorMessage);
-              createErrorText.value = error.response.data.errorMessage;
-              resetRef(createErrorText, 6000);
-            }
-          });
-        })
-        .catch((error: ValidateErrorEntity<FormState>) => {
-          console.log("error", error);
-        });
-    };
 
     const toggleModal = () => {
       modalVisible.value = !modalVisible.value;
@@ -288,21 +117,6 @@ export default defineComponent({
           (classification.name || "") === decodeURI(props.classificationName)
       );
     });
-    const handleClickUser = (username: string) => {};
-    const createdAt = computed(() => {
-      const timestamp = selectedClassification.value.createTime;
-      return useTimeAgo(timestamp).value || "";
-
-      // return moment(timestamp).fromNow();
-    });
-    const createdBy = computed(() => selectedClassification.value.createdBy);
-    const updatedAt = computed(() => {
-      const timestamp = selectedClassification.value.updateTime;
-      return useTimeAgo(timestamp).value || "";
-      // return moment(timestamp).fromNow();
-    });
-
-    const updatedBy = computed(() => selectedClassification.value.updatedBy);
 
     return {
       createdAt,

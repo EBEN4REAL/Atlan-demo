@@ -128,9 +128,9 @@
             <div class="flex">
               <div
                 v-if="saveSmtpConfigState === 'SUCCESS'"
-                class="px-3 py-2 mr-3 rounded bg-blue-50"
+                class="flex items-center justify-center px-3 py-2 mr-3 rounded bg-blue-50"
               >
-                <i class="mr-2 text-green-600 fal fa-check-circle"></i>
+                <fa icon="fal check-circle" class="mr-2 text-green-600" />
                 Config Saved
               </div>
               <div

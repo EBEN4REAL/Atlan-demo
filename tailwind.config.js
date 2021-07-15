@@ -67,6 +67,7 @@ module.exports = {
     extend: {
       animation: ["motion-safe"],
       borderWidth: ["last"],
+      display: ["group-hover"],
     },
   },
   plugins: [

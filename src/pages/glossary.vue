@@ -21,7 +21,7 @@
         @showUpdateGlossaryModal="handleOpenUpdateModal"
       ></GlossaryTree>
     </pane>
-    <pane :size="74">
+    <pane :size="74" class="bg-white overflow-y-scroll">
         <router-view class="flex-grow" />
     </pane>
   </splitpanes>

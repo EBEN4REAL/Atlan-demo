@@ -1,8 +1,7 @@
 <template>
-  <div class="readme-wrapper w-2/3 h-min-1/2">
+  <div class="readme-wrapper w-2/3 max-w-full h-min-1/2 px-0 mx-0">
     <div
       class="
-        ml-2
         py-2
         px-7
         flex
@@ -16,7 +15,7 @@
     >
       <div>README</div>
       <div v-if="editable" class="flex align-items-center">
-        <a-button class="mr-2">Save</a-button>
+        <a-button class="mr-2" @click="editable = false">Save</a-button>
 
         <a-dropdown :trigger="['click']"
                   v-model:visible="templateNameDropdown"
@@ -68,7 +67,7 @@
       @onEditorContentUpdate="onUpdate"
       ref="editor"
       :placeholder="placeholder"
-      class="rounded-t-none"
+      class="rounded-t-none ml-0"
       :editable="editable"
     />
     <a-modal

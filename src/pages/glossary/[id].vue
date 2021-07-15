@@ -17,7 +17,7 @@
       </div>
     </div>
     <hr />
-    <div class="mt-8 flex flex-row">
+    <div class="mt-8 flex flex-row mb-10">
       <div class="flex flex-col mr-8">
         <span class="secondaryHeading">
           CATEGORIES
@@ -37,6 +37,7 @@
         <span class="mt-2 text-xs leading-4 text-gray-500">{{shortDescription}}</span>
       </div>
     </div>
+    <Readme class="min-w-full" placeholder="Add some details here..." :parentAssetId="id" />
   </div>
 </template>
 
@@ -48,6 +49,8 @@ import useGTCEntity from "~/composables/glossary/useGtcEntity";
 import { watch } from "vue";
 import { onMounted } from "vue";
 
+import Readme from "@/common/readme/index.vue"
+
 export default defineComponent({
   props: {
     id: {
@@ -56,6 +59,7 @@ export default defineComponent({
       default: "",
     },
   },
+  components: {Readme},
   setup(props) {
     const id = computed(() => props.id);
 

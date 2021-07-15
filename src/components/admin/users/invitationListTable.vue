@@ -1,6 +1,7 @@
 <template>
   <div>
     <a-table
+      :scroll="{ y: 'calc(100vh - 20rem)' }"
       :tableLayout="'fixed'"
       id="invitationList"
       :dataSource="invitationList"
@@ -107,7 +108,7 @@ export default defineComponent({
   },
   setup(props, context) {
     let invitationListAPIParams: any = reactive({
-      limit: 6,
+      limit: 15,
       offset: 0,
       sort: "email",
       filter: { $and: [{ email_verified: false }] },

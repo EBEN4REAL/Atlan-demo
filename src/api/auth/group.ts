@@ -1,6 +1,6 @@
 import { getAPIPath, getAxiosClient } from "~/api";
 import { AxiosRequestConfig } from "axios";
-import { useAPI } from "~/api/useAPIv2";
+import { useAPI } from "~/api/useAPI";
 import {
   UPDATE_GROUP,
   REMOVE_MEMBERS_FROM_GROUP,

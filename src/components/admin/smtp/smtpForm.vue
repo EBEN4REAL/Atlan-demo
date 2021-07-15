@@ -1,7 +1,7 @@
 <template>
   <div>
     <p class="text-2xl text-gray">Configure SMTP</p>
-    <div class="w-2/3 p-12 text-gray-600 bg-white rounded shadow smtpForm">
+    <div class="w-2/3 text-gray-600 bg-white rounded smtpForm">
       <div class="w-100">
         <!-- <div class="mb-8">
           <span class="flex items-center text-2xl">
@@ -77,7 +77,7 @@
             <div class="flex items-center">
               <a-button
                 variant="sm"
-                class="mr-3 test-config-button"
+                class="rounded-md ant-btn mr-3 test-config-button"
                 :loading="testSmtpConfigState === 'TESTING'"
                 @click="testSmtpConfig"
               >
@@ -147,7 +147,7 @@
               </div>
               <a-button
                 style="width: 150px"
-                type="primary"
+                class="rounded-md ant-btn ant-btn-primary"
                 @click.prevent="saveSmtpConfig"
                 :loading="saveSmtpConfigState === 'SAVING'"
               >

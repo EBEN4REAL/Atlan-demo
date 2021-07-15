@@ -13,6 +13,7 @@ export type Getters = {
         label: string;
         image: string;
     }[];
+    getImage(): (id: string) => any;
     getSourceTree(): (searchText: string) => TreeDataItem[];
     getStatus(state: State): Status
 };
@@ -30,9 +31,12 @@ export const getters: Getters = {
     getSourceList() {
         return SourceList.filter((s) => this.getSourceMap?.includes(s.id.toLowerCase())).sort((a, b) => (a.label > b.label) ? 1 : ((b.label > a.label) ? -1 : 0))
     },
+    getImage() {
+        return (id) => {
+            return this.getSourceList?.find((item) => item.id === id).image;
+        };
+    },
     getSourceTree() {
-
-
         return (searchText) => {
             console.log("get", searchText);
             let treeData: TreeDataItem[] = [];

@@ -1,8 +1,8 @@
-import { ref, Ref, watch } from 'vue';
-import useSearchList from './useSearchList';
-import axios from 'axios';
+import { ref, Ref, watch } from "vue";
+import useSearchList from "./useSearchList";
+import axios from "axios";
 
-export default function useAssetList(dependentKey?: Ref<any>, typeName?: string, initialBody?: any, cacheSuffx?: string | "") {
+export default function useAssetList(dependentKey?: Ref<any>, typeName?: string, initialBody?: any, cacheSuffx?: string | "", isAggregation?: boolean) {
 
     let cancelTokenSource = ref(axios.CancelToken.source());
     const list: Ref<any> = ref([]);
@@ -16,6 +16,7 @@ export default function useAssetList(dependentKey?: Ref<any>, typeName?: string,
         replaceBody,
         refresh,
         body,
+        assetTypeMap: selfAssetTypeMap,
     } = useSearchList(typeName || "Catalog", list, [], dependentKey, initialBody, cacheSuffx, false, cancelTokenSource, true);
 
 
@@ -33,15 +34,36 @@ export default function useAssetList(dependentKey?: Ref<any>, typeName?: string,
         assetTypeMap,
         assetTypeSum,
         replaceBody: refreshAggregation,
-    } = useSearchList("Catalog", aggregationList, [], data, aggregationBody, cacheSuffx, false, cancelTokenSource, true);
+    } = useSearchList(
+        "Catalog",
+        aggregationList,
+        [],
+        data,
+        aggregationBody,
+        cacheSuffx,
+        false,
+        cancelTokenSource,
+        true
+    );
 
 
-    const isAggregate = ref(true);
+
+
+    const isAggregate = ref(false);
+
+    if (isAggregation) {
+        isAggregate.value = isAggregation;
+    }
+
+
+
+
     watch(data, () => {
-
         if (isAggregate.value) {
-            let newCriterion = [...body.value.entityFilters.criterion];
-            let index = newCriterion.findIndex((item) => item.attributeName === "__typeName");
+            let newCriterion = [...body.value.entityFilters?.criterion];
+            let index = newCriterion.findIndex(
+                (item) => item.attributeName === "__typeName"
+            );
             if (index > -1) {
                 newCriterion.splice(index, 1);
             }
@@ -52,14 +74,13 @@ export default function useAssetList(dependentKey?: Ref<any>, typeName?: string,
                 aggregationAttributes: ["__typeName.keyword"],
                 typeName: typeName,
                 entityFilters: {
-                    condition: body.value.entityFilters.condition,
-                    criterion: newCriterion
-                }
+                    condition: body.value.entityFilters?.condition,
+                    criterion: newCriterion,
+                },
             });
+
         }
-
     });
-
 
     return {
         data,
@@ -77,7 +98,7 @@ export default function useAssetList(dependentKey?: Ref<any>, typeName?: string,
         assetTypeList,
         assetTypeSum,
         assetTypeMap,
-        isAggregate
-    }
+        selfAssetTypeMap,
+        isAggregate,
+    };
 }
-

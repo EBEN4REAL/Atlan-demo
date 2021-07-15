@@ -1,5 +1,5 @@
 import { AxiosRequestConfig } from "axios";
-import { useAPI } from "../useAPIv2";
+import { useAPI } from "../useAPI";
 import { UPLOAD_AVATAR } from "~/api/keyMaps/auth/avatar"
 import { Ref } from "vue";
 import { IConfig } from "swrv";

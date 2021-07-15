@@ -13,13 +13,19 @@
       <a-button @click="toggleAddGroupModal" class="rounded-md" type="primary">New Group</a-button>
     </div>
     <div
-      class="flex items-center h-full align-middle bg-white"
-      style="min-height: 200px"
+      class="flex flex-col items-center h-full align-middle bg-white"
       v-if="[STATES.ERROR, STATES.STALE_IF_ERROR].includes(state)"
     >
-      <ErrorView></ErrorView>
+      <ErrorView>
+        <div class="mt-3">
+          <a-button size="large" type="primary" ghost @click="()=>{getGroupList();}">
+            <fa icon="fal sync" class="mr-2"></fa>Try again
+          </a-button>
+        </div>
+      </ErrorView>
     </div>
     <a-table
+      :scroll="{ y: 'calc(100vh - 20rem)' }"
       id="groupList"
       :tableLayout="'fixed'"
       v-else-if="groupList && groupList.length"
@@ -135,7 +141,7 @@ export default defineComponent({
     };
     let selectedGroupId = ref("");
     const groupListAPIParams = reactive({
-      limit: 6,
+      limit: 15,
       offset: 0,
       filter: {},
       sort: "-created_at",

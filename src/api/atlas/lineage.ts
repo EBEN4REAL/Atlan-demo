@@ -1,4 +1,4 @@
-import { useAPI as useAPIV2 } from "~/api/useAPIv2";
+import { useAPI as useAPIV2 } from "~/api/useAPI";
 
 const getLineageAPI = ({
   cache,

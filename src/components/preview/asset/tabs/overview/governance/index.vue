@@ -2,7 +2,13 @@
   <div class="flex flex-col px-2 space-y-3">
     <Terms :item="item" :key="item.guid"></Terms>
 
-    <Classifications :item="item" :key="item.guid"></Classifications>
+    <BusinessMetadataContainer :item="item" :key="item.guid"></BusinessMetadataContainer>
+
+    <Classifications
+      :item="item"
+      :key="item.guid"
+      :selectedAssetData="selectedAssetData"
+    ></Classifications>
     <!-- <StatusBadge :status="status(item)" :key="item.guid"></StatusBadge> -->
   </div>
 </template>
@@ -12,9 +18,10 @@ import { defineComponent } from "vue";
 
 import Classifications from "./classifications/index.vue";
 import Terms from "./terms.vue";
+import BusinessMetadataContainer from "./businessMetadataContainer.vue";
 
 export default defineComponent({
-  components: { Classifications, Terms },
+  components: { Classifications, Terms, BusinessMetadataContainer },
   props: {
     item: {
       type: Object,
@@ -23,8 +30,17 @@ export default defineComponent({
         return {};
       },
     },
+    selectedAssetData: {
+      type: Object,
+      required: false,
+      default(): any {
+        return {};
+      },
+    },
   },
-  setup(props, { emit }) {},
+  setup(props, { emit }) {
+    return {};
+  },
 });
 </script>
 

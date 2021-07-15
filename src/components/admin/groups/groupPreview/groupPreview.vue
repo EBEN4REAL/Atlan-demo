@@ -1,33 +1,44 @@
 <template>
-  <div class="max-h-full">
+  <div class="h-full py-6">
     <div
-      class="flex items-center justify-center h-full"
+      class="flex flex-col items-center justify-center h-full bg-white"
       v-if="[STATES.ERROR, STATES.STALE_IF_ERROR].includes(state)"
     >
-      <ErrorView></ErrorView>
+      <ErrorView>
+        <div class="mt-3">
+          <a-button
+            size="large"
+            type="primary"
+            ghost
+            @click="
+              () => {
+                getGroup();
+              }
+            "
+          >
+            <fa icon="fal sync" class="mr-2"></fa>Try again
+          </a-button>
+        </div>
+      </ErrorView>
     </div>
     <div v-else-if="selectedGroup && selectedGroup.id">
-      <div class="flex mb-3">
-        <div>
-          <a-avatar shape="square" class="mr-1 ant-tag-blue text-gray avatars" :size="48">
-            {{
-            getNameInitials(getNameInTitleCase(selectedGroup.name))
-            }}
-          </a-avatar>
-        </div>
+      <div class="flex px-6 mb-3">
         <div class="ml-3">
-          <div
-            class="text-lg font-bold capitalize cursor-pointer text-gray"
-          >{{ selectedGroup.name }}</div>
+          <div class="text-lg font-bold capitalize cursor-pointer text-gray">
+            {{ selectedGroup.name }}
+          </div>
         </div>
       </div>
-      <a-tabs :defaultActiveKey="activeKey">
+      <a-tabs
+        :defaultActiveKey="activeKey"
+        :tabBarStyle="{ paddingLeft: '1rem', paddingRight: '1rem' }"
+      >
         <a-tab-pane v-for="tab in tabs" :key="tab.key">
           <template #tab>
             <span class="mb-0">{{ tab.name }}</span>
           </template>
           <component
-            class="overflow-auto component-height"
+            class="px-6 overflow-auto component-height"
             :is="tab.component"
             :selectedGroup="selectedGroup"
             @refreshTable="getGroup"

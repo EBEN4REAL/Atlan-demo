@@ -108,6 +108,7 @@ import AssetListWrapper from "~/components/asset/assetListWrapper.vue";
 import { useRouter } from "vue-router";
 import { useClassificationStore } from "./_store";
 import { ValidateErrorEntity } from "ant-design-vue/es/form/interface";
+import { useClassificationStore } from "~/components/admin/classifications/_store";
 import { Classification } from "~/api/atlas/classification";
 
 export default defineComponent({
@@ -128,7 +129,6 @@ export default defineComponent({
     const router = useRouter();
     const modalVisible = ref(false);
     const createClassificationStatus = ref("");
-    const classificationsStatus = ref("");
     const treeFilterText = ref("");
     const createClassificationFormRef = ref();
     const classificationName = computed(() => props.classificationName);
@@ -157,6 +157,28 @@ export default defineComponent({
         },
       ],
     };
+
+    // get classifications
+    store.setClassificationsStatus("loading");
+    const {
+      data: classificationData,
+      error: classificationError,
+    } = Classification.getClassificationList({ cache: false });
+
+    watch([classificationData, classificationError], () => {
+      if (classificationData.value) {
+        let classifications = classificationData.value.classificationDefs || [];
+        classifications = classifications.map((classification) => {
+          classification.alias = classification.name;
+          return classification;
+        });
+        store.setClassifications(classifications ?? []);
+        store.initializeFilterTree();
+        store.setClassificationsStatus("success");
+      } else {
+        store.setClassificationsStatus("error");
+      }
+    });
 
     const handleSearch = (e) => {
       treeFilterText.value = e.target.value;
@@ -238,27 +260,6 @@ export default defineComponent({
       modalVisible.value = !modalVisible.value;
     };
 
-    // get classifications
-    classificationsStatus.value = "loading";
-
-    const { data: classificationData, error: classificationError } =
-      Classification.getClassificationList({ cache: false });
-
-    watch([classificationData, classificationError], () => {
-      if (classificationData.value) {
-        let classifications = classificationData.value.classificationDefs || [];
-        classifications = classifications.map((classification) => {
-          classification.alias = classification.name;
-          return classification;
-        });
-        store.setClassifications(classifications ?? []);
-        store.initializeFilterTree();
-        classificationsStatus.value = "success";
-      } else {
-        classificationsStatus.value = "error";
-      }
-    });
-
     const handleSelectNode = (node) => {
       console.log(node, "parent");
     };
@@ -279,7 +280,6 @@ export default defineComponent({
     });
 
     return {
-      classificationsStatus,
       createClassificationStatus,
       createErrorText,
       filteredData,

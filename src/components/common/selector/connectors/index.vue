@@ -34,6 +34,7 @@ export default defineComponent({
   },
   emits: ["update:modelValue", "change"],
   setup(props, { emit }) {
+    console.log(props.modalVale, "modalValue");
     const store = useConnectionsStore();
 
     // let now = ref(true);
@@ -56,7 +57,6 @@ export default defineComponent({
       searchValue.value = inputValue;
     };
     const handleChange = (checkedValues: string) => {
-      connectorsDropdown?.value?.blur();
       emit("update:modelValue", checkedValues);
       emit("change", checkedValues);
     };

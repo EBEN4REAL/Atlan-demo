@@ -1,9 +1,9 @@
 <template>
-  <div
-    class="flex flex-col items-center justify-center w-full h-full text-center"
-  >
+  <div class="flex flex-col items-center justify-center w-full h-full text-center">
     <fa icon="fas exclamation-triangle" class="mb-2 text-4xl text-red-500"></fa>
     {{ errorMessage || "Something went wrong. Please try again" }}
+    <!-- Can use this slot for adding retry CTA-->
+    <slot></slot>
   </div>
 </template>
   

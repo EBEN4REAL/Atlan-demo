@@ -13,13 +13,14 @@ import useConnectionsList from "./composables/bots/useConnectionList";
 
 import { CONNECTION_FETCH_LIST } from "./constant/cache";
 import { useTenantStore } from "./pinia/tenants";
+import { useClassificationStore } from "~/components/admin/classifications/_store";
 
 export default defineComponent({
   setup(props, context) {
     //Initalise PostHog
-    posthog.init("phc_nrHzT0y0X5GKUHPzUkhPXqrqxcRQl5JPEUvQ8BqbEiS", {
-      api_host: "https://app.posthog.com",
-    });
+    // posthog.init("phc_nrHzT0y0X5GKUHPzUkhPXqrqxcRQl5JPEUvQ8BqbEiS", {
+    //   api_host: "https://app.posthog.com",
+    // });
 
     const tenantStore = useTenantStore();
     const asyncOptions = {
@@ -41,13 +42,14 @@ export default defineComponent({
     };
 
     useConnectionsList(isAuth, initialBody, CONNECTION_FETCH_LIST);
+    useClassificationStore();
 
     watch(
       () => tenantStore.isAuthenticated,
       () => {
         isAuth.value = true;
-        posthog.identify(tenantStore.token.userId);
-        posthog.people.set({ email: tenantStore.token.email });
+        //posthog.identify(tenantStore.token.userId);
+        //posthog.people.set({ email: tenantStore.token.email });
       }
     );
 
@@ -61,4 +63,3 @@ export default defineComponent({
   },
 });
 </script>
-

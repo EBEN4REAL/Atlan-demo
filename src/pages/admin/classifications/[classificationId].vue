@@ -81,3 +81,8 @@ export default defineComponent({
   content: "*";
 }
 </style>
+<route lang="yaml">
+  meta:
+  layout: default
+  requiresAuth: true
+  </route>

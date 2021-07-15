@@ -1,8 +1,15 @@
 <template>
   <div>
     <p class="mb-2 text-2xl atlan-gray-500 text-uppercase">
-      CLASSIFICATION
+      Classification
     </p>
+    <div class="flex items-center justify-between w-full">
+      <p class="mb-0 text-sm text-gray-400">
+        Manage classification tags to build access policies.
+        <span class="ml-2 text-primary">Documentation</span>
+      </p>
+      <a-button type="primary" class="rounded">+ Add Classification</a-button>
+    </div>
   </div>
   <splitpanes class="pt-6 default-theme" style="height:'95%'">
     <pane min-size="25" max-size="50" size="25" class="relative pr-6 bg-white">
@@ -34,11 +41,12 @@
           @nodeEmit="nodeEmit"
         />
       </div>
-      <div class="absolute flex justify-center w-full add-classification-btn">
-        <a-button type="primary" @click="toggleModal"
-          >Add Classification</a-button
-        >
-      </div>
+      <a-button
+        @click="toggleModal"
+        type="default"
+        class="w-full rounded text-primary"
+        >+ Add Classification</a-button
+      >
     </pane>
     <pane size="74" class="flex flex-col pl-6 bg-white">
       <router-view class="flex-grow" />
@@ -314,3 +322,8 @@ export default defineComponent({
   content: "*";
 }
 </style>
+<route lang="yaml">
+  meta:
+  layout: default
+  requiresAuth: true
+  </route>

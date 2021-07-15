@@ -10,7 +10,7 @@
               </span>
               {{ displayName }}
             </p>
-            <div class="mb-1 text-xs text-gray-400">
+            <div class="mb-1 text-sm text-neutral">
               <span v-if="createdAt">
                 Created {{ createdAt }} by
                 <span

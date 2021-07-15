@@ -1,7 +1,7 @@
 <template>
   <a-dropdown>
     <fa
-      icon="fal ellipsis-h"
+      icon="fal ellipsis-v"
       @click.prevent
       class="text-4xl ant-dropdown-link text-grey-600"
     />

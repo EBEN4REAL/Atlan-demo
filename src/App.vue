@@ -17,9 +17,9 @@ import { useTenantStore } from "./pinia/tenants";
 export default defineComponent({
   setup(props, context) {
     //Initalise PostHog
-    posthog.init("phc_nrHzT0y0X5GKUHPzUkhPXqrqxcRQl5JPEUvQ8BqbEiS", {
-      api_host: "https://app.posthog.com",
-    });
+    // posthog.init("phc_nrHzT0y0X5GKUHPzUkhPXqrqxcRQl5JPEUvQ8BqbEiS", {
+    //   api_host: "https://app.posthog.com",
+    // });
 
     const tenantStore = useTenantStore();
     const asyncOptions = {
@@ -46,8 +46,8 @@ export default defineComponent({
       () => tenantStore.isAuthenticated,
       () => {
         isAuth.value = true;
-        posthog.identify(tenantStore.token.userId);
-        posthog.people.set({ email: tenantStore.token.email });
+        //posthog.identify(tenantStore.token.userId);
+        //posthog.people.set({ email: tenantStore.token.email });
       }
     );
 

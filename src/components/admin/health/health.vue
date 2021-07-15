@@ -1,7 +1,7 @@
 <template>
   <p class="text-2xl text-gray">Health Status</p>
   <div class="container h-full health-container">
-    <div class="relative w-full h-full p-12 pt-16 bg-white rounded shadow">
+    <div class="relative w-full h-full pt-16 bg-white rounded">
       <div class="flex flex-col items-center mb-6">
         <Fa
           class="mb-6 text-5xl"
@@ -29,7 +29,17 @@
         <div
           v-for="service in servicesNames"
           :key="service"
-          class="flex items-center justify-between flex-grow"
+          class="
+            flex
+            items-center
+            justify-between
+            flex-grow
+            p-3
+            pr-5
+            pl-5
+            m-3
+            shadow
+          "
         >
           <span class="text-xl text-gray-500 capitalize">{{
             SERVICES[service]
@@ -41,9 +51,7 @@
           />
         </div>
       </div>
-      <div
-        class="absolute bottom-0 flex items-center justify-center w-full mb-8"
-      >
+      <div class="bottom-0 flex items-center justify-center w-full mb-8">
         <img class="w-5 mx-2" :src="grafana" />
         <span>Need to check logs?&nbsp;</span>
         <a class="text-center" href="/services/monitor">

@@ -13,9 +13,15 @@
       </div>
 
       <div v-show="filterMode === 'custom'" class="flex-grow h-full">
-        <div class="pb-2 mb-2">
-          <ConnectorDropdown @change="handleChangeConnectors"></ConnectorDropdown>
+        <!---     <div class="pb-2 mb-2">
+          <ConnectorDropdown
+            @change="handleChangeConnectors"
+          ></ConnectorDropdown>
         </div>
+
+        <div class="w-full pb-2 mb-2">
+          <HeirarchySelect style="width: 100%"></HeirarchySelect>
+        </div> -->
 
         <AssetFilters @refresh="handleFilterChange"></AssetFilters>
       </div>
@@ -27,89 +33,94 @@
   </div>
 
   <div
-    class="flex flex-col items-stretch h-full col-span-12 pt-6 bg-white sm:col-span-8 md:col-span-7"
+    class="flex flex-col items-stretch col-span-12 my-3 bg-white sm:col-span-8 md:col-span-7"
     style="overflow: hidden"
   >
-    <div class="flex items-center px-6 gap-x-3">
-      <a-input
-        placeholder="Search"
-        size="large"
-        v-model:value="queryText"
-        @change="handleSearchChange"
+    <div class="flex flex-col h-full mx-6 border rounded-lg">
+      <div class="border-b rounded-tl-lg rounded-tr-lg bg-gray-50">
+        <ConnectorDropdown @change="handleChangeConnectors"></ConnectorDropdown>
+      </div>
+      <div class="flex items-center mx-3 mt-3">
+        <a-input
+          placeholder="Search"
+          size="default"
+          class="searchbox"
+          v-model:value="queryText"
+          @change="handleSearchChange"
+        >
+          <template #prefix>
+            <div class="flex -space-x-2">
+              <template v-for="item in filteredConnectorList" :key="item.id">
+                <img
+                  :src="item.image"
+                  class="w-auto h-6 mr-1 bg-white rounded-full border-5"
+                />
+              </template>
+            </div>
+          </template>
+          <template #suffix>
+            <a-popover placement="bottomLeft">
+              <template #content>
+                <Preferences
+                  :defaultProjection="projection"
+                  @change="handleChangePreferences"
+                  @sort="handleChangeSort"
+                  @state="handleState"
+                ></Preferences>
+              </template>
+              <fa icon="fal cog"></fa>
+            </a-popover>
+          </template>
+        </a-input>
+      </div>
+
+      <div class="flex w-full px-3 mt-3">
+        <AssetTabs
+          v-model="assetType"
+          :assetTypeList="assetTypeList"
+          :assetTypeMap="assetTypeMap"
+          :total="totalSum"
+        ></AssetTabs>
+      </div>
+
+      <div
+        v-if="list && list.length <= 0 && !isLoading && !isValidating"
+        class="flex-grow"
       >
-        <template #prefix>
-          <div class="flex -space-x-2">
-            <template v-for="item in filteredLConnectorist" :key="item.id">
-              <img
-                :src="item.image"
-                class="w-auto h-6 mr-1 bg-white rounded-full border-5"
-              />
-            </template>
+        <EmptyView></EmptyView>
+      </div>
+      <AssetList
+        v-else
+        :list="list"
+        :score="searchScoreList"
+        @preview="handlePreview"
+        :projection="projection"
+        :isLoading="isLoading || isValidating"
+        ref="assetlist"
+      ></AssetList>
+      <div class="flex w-full px-3 py-1 border-t bg-gray-50 border-gray-50">
+        <div class="flex items-center justify-between w-full">
+          <div
+            class="flex items-center text-sm leading-none"
+            v-if="isLoading || isValidating"
+          >
+            <a-spin size="small" class="mr-2 leading-none"></a-spin
+            ><span>searching results</span>
           </div>
-        </template>
-        <template #suffix>
-          <a-popover placement="bottomLeft">
-            <template #content>
-              <Preferences
-                :defaultProjection="projection"
-                @change="handleChangePreferences"
-                @sort="handleChangeSort"
-                @state="handleState"
-              ></Preferences>
-            </template>
-            <fa icon="fal cog"></fa>
-          </a-popover>
-        </template>
-      </a-input>
-    </div>
+          <AssetPagination
+            v-else
+            :label="assetTypeLabel"
+            :listCount="list.length"
+            :totalCount="totalCount"
+          ></AssetPagination>
 
-    <div class="flex w-full px-6 mt-3">
-      <AssetTabs
-        v-model="assetType"
-        :assetTypeList="assetTypeList"
-        :assetTypeMap="assetTypeMap"
-        :total="totalSum"
-        class="rounded-tr"
-      ></AssetTabs>
-    </div>
-
-    <div
-      v-if="list && list.length <= 0 && !isLoading && !isValidating"
-      class="flex-grow mx-6 border-b border-l border-r rounded-b-md"
-    >
-      <EmptyView></EmptyView>
-    </div>
-    <AssetList
-      v-else
-      :list="list"
-      :score="searchScoreList"
-      @preview="handlePreview"
-      :projection="projection"
-      :isLoading="isLoading || isValidating"
-      ref="assetlist"
-    ></AssetList>
-    <div class="flex w-full px-6 py-1" style="height: 24px; min-height: 24px">
-      <div class="flex items-center justify-between w-full">
-        <div
-          class="flex items-center text-sm leading-none"
-          v-if="isLoading || isValidating"
-        >
-          <a-spin size="small" class="mr-2 leading-none"></a-spin
-          ><span>searching results</span>
-        </div>
-        <AssetPagination
-          v-else
-          :label="assetTypeLabel"
-          :listCount="list.length"
-          :totalCount="totalCount"
-        ></AssetPagination>
-
-        <div
-          class="text-sm cursor-pointer text-primary"
-          @click="loadMore"
-          v-if="isLoadMore && (!isLoading || !isValidating)"
-        >
-          load more...
+          <div
+            class="text-sm cursor-pointer text-primary"
+            @click="loadMore"
+            v-if="isLoadMore && (!isLoading || !isValidating)"
+          >
+            load more...
+          </div>
         </div>
       </div>
     </div>
@@ -124,6 +135,8 @@ import SavedFilters from "@/discovery/asset/saved/index.vue";
 import AssetList from "@/discovery/asset/list/index.vue";
 import AssetTabs from "@/discovery/asset/tabs/index.vue";
 import AssetPagination from "@common/pagination/index.vue";
+
+import HeirarchySelect from "@common/tree/heirarchy/index.vue";
 import SearchBox from "@common/searchbox/searchlist.vue";
 import ConnectorDropdown from "@common/dropdown/connector/index.vue";
 import EmptyView from "@common/empty/discover.vue";
@@ -157,6 +170,7 @@ export default defineComponent({
     ConnectorDropdown,
     Preferences,
     EmptyView,
+    HeirarchySelect,
   },
   data() {
     return {
@@ -248,9 +262,9 @@ export default defineComponent({
     });
 
     const connectorStore = useConnectionsStore();
-    const filteredLConnectorist = computed(() => {
+    const filteredConnectorList = computed(() => {
       return connectorStore.getSourceList?.filter(item => {
-        return connectorsPayload.value?.connectors?.includes(item.id);
+        return connectorsPayload.value?.connector == item.id;
       });
     });
 
@@ -345,20 +359,23 @@ export default defineComponent({
         condition: "OR",
         criterion: [],
       };
-      connectorsPayload.value?.connectors?.forEach((element: any) => {
+
+      if (connectorsPayload.value?.connector) {
         connectorCritera.criterion?.push({
           attributeName: "integrationName",
-          attributeValue: element,
+          attributeValue: connectorsPayload.value?.connector,
           operator: "eq",
         });
-      });
-      connectorsPayload.value?.connections?.forEach((element: any) => {
-        connectionCriteria.criterion?.push({
+      }
+
+      if (connectorsPayload.value?.connection) {
+        connectorCritera.criterion?.push({
           attributeName: "connectionQualifiedName",
-          attributeValue: element,
+          attributeValue: connectorsPayload.value?.connection,
           operator: "eq",
         });
-      });
+      }
+
       initialBody.entityFilters.criterion.push(connectorCritera);
       initialBody.entityFilters.criterion.push(connectionCriteria);
 
@@ -478,7 +495,7 @@ export default defineComponent({
       totalSum,
       handleState,
       connectorsPayload,
-      filteredLConnectorist,
+      filteredConnectorList,
       // listCount,
       // isLoading,
       // limit,
@@ -527,3 +544,9 @@ export default defineComponent({
   },
 });
 </script>
+
+<style lang="less" scoped>
+.searchbox {
+  @apply rounded-full;
+}
+</style>

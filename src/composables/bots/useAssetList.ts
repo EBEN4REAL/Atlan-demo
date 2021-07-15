@@ -40,7 +40,7 @@ export default function useAssetList(dependentKey?: Ref<any>, typeName?: string,
     watch(data, () => {
 
         if (isAggregate.value) {
-            let newCriterion = [...body.value.entityFilters.criterion];
+            let newCriterion = [...body.value.entityFilters?.criterion];
             let index = newCriterion.findIndex((item) => item.attributeName === "__typeName");
             if (index > -1) {
                 newCriterion.splice(index, 1);
@@ -52,7 +52,7 @@ export default function useAssetList(dependentKey?: Ref<any>, typeName?: string,
                 aggregationAttributes: ["__typeName.keyword"],
                 typeName: typeName,
                 entityFilters: {
-                    condition: body.value.entityFilters.condition,
+                    condition: body.value.entityFilters?.condition,
                     criterion: newCriterion
                 }
             });

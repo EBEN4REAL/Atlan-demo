@@ -1,9 +1,9 @@
 <template>
   <div class="">
-    <div
-      v-if="businessMetadataListLoading"
-      class="flex items-center flex-column justify-content-center font-size-h4"
-      style="min-height: 30rem"
+    <!-- <div
+      v-if="isLoading"
+      class="flex items-center place-content-center"
+      style="min-height: 40rem"
     >
       <div class="">
         <span class=""
@@ -11,13 +11,17 @@
           <i class="fal circle-notch spin 5x"></i>
         </span>
       </div>
-    </div>
-    <div
+    </div> -->
+    <!-- <div
       class="grid grid-cols-3 gap-7"
       v-else-if="finalBusinessMetadataList && finalBusinessMetadataList.length"
-    >
+    > -->
+    <div class="grid grid-cols-3 gap-7">
       <div class="col-span-3">
         <p class="mb-0 text-2xl text-gray">Business Metadata</p>
+        <p class="text-sm text-gray-400">
+          Manage Business Metadata & it's attributes
+        </p>
       </div>
       <div class="col-span-1">
         <div class="flex justify-between gap-5 mb-5">
@@ -49,7 +53,7 @@
           </div>
           <a-button
             variant="primary"
-            class="flex items-center text-sm leading-tight"
+            class="rounded-md ant-btn ant-btn-primary"
             @click="onCreateNewBmClick"
             >New
           </a-button>
@@ -81,8 +85,7 @@
         />
       </div>
     </div>
-    <div
-      v-else
+    <!-- <div
       class="flex flex-col items-center place-content-center"
       style="min-height: 50rem"
     >
@@ -97,7 +100,7 @@
       >
         <i class="far fa-plus"></i>Add Business Metadata
       </a-button>
-    </div>
+    </div> -->
   </div>
 </template>
 <script lang="ts">

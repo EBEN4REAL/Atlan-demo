@@ -9,9 +9,9 @@
         'border-l-4 border-left-color bg-blue-100':
           selectedBm && item.guid === selectedBm.guid,
       }"
-      @click="e => selectBm(item)"
+      @click="(e) => selectBm(item)"
     >
-      <div class="mb-1 font-w700">
+      <div class="mb-1 text-sm text-primary">
         <!-- // TODO {{ isUpdateBmSameAsCurrentBm(item) ? updatedBm.displayName  : item.displayName }} -->
         {{
           isUpdateBmSameAsCurrentBm(item)
@@ -20,11 +20,13 @@
         }}
         <sup
           class=""
-          v-if="isUpdateBmSameAsCurrentBm(item) || (item && item.guid === 'new')"
+          v-if="
+            isUpdateBmSameAsCurrentBm(item) || (item && item.guid === 'new')
+          "
           >*</sup
         >
       </div>
-      <div class="mb-1 font-size-sm">
+      <div class="mb-1 text-sm text-gray-400">
         {{
           isUpdateBmSameAsCurrentBm(item)
             ? updatedBm.description || "-"
@@ -32,7 +34,7 @@
         }}
       </div>
       <div class="font-size-sm">
-        <span class="font-w700"
+        <span class="text-sm text-gray-400"
           >{{
             isUpdateBmSameAsCurrentBm(item)
               ? updatedBm.attributeDefs.length || 0
@@ -63,7 +65,7 @@ export default defineComponent({
       return false;
     };
     // * Methods
-    const selectBm = item => context.emit("selectBm", item);
+    const selectBm = (item) => context.emit("selectBm", item);
     // * Computed
     const finalList = computed(() => props.finalList);
     const selectedBm = computed(() => props.selectedBm);

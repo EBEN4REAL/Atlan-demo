@@ -7,10 +7,11 @@
     v-model:value="selectedKeys"
     @select="selectNode"
     @expand="expandNode"
+    
   >
-    <template #title="{ title, type, key }" class="">
+    <template #title="{ title, type, key }">
       <a-dropdown :trigger="['contextmenu']">
-        <div>
+        <div @click="() => reirectToProfile(type, key)" class="min-w-full">
           <span>
             <emoji
               :data="index"
@@ -26,7 +27,10 @@
               v-if="type === 'category'"
             />
           </span>
-          <span class="text-sm leading-none text-gray-600">{{ title }}</span>
+          <span
+            class="text-sm leading-none text-gray-600"
+            >{{ title }}</span
+          >
         </div>
         <template #overlay>
           <GlossaryContextMenu
@@ -64,6 +68,7 @@ import { Glossary } from "~/api/atlas/glossary";
 
 import GlossaryContextMenu from "./glossaryContextMenu.vue";
 import { MenuInfo } from "ant-design-vue/lib/menu/src/interface";
+import { useRouter } from "vue-router";
 
 export default defineComponent({
   components: { Emoji, GlossaryContextMenu },
@@ -82,19 +87,10 @@ export default defineComponent({
   },
 
   setup(props, { emit }) {
-    const {
-      list,
-      totalCount,
-      listCount,
-      refetchGlossary,
-      response,
-    } = fetchGlossaryList();
-    const {
-      selectedKeys,
-      expandedKeys,
-      expandNode,
-      selectNode,
-    } = handleTreeExpand();
+    const { list, totalCount, listCount, refetchGlossary, response } =
+      fetchGlossaryList();
+    const { selectedKeys, expandedKeys, expandNode, selectNode } =
+      handleTreeExpand();
 
     const index = new EmojiIndex(data);
 
@@ -133,6 +129,12 @@ export default defineComponent({
         });
       }
     };
+    const router = useRouter();
+
+    const reirectToProfile = (type: string, guid: string) => {
+      if (type === "glossary") router.push(`/glossary/${guid}`);
+      else router.push(`/glossary/${type}/${guid}`);
+    };
 
     return {
       index,
@@ -148,6 +150,7 @@ export default defineComponent({
       selectNode,
       refreshTree,
       glossaryTreeContextMenuClick,
+      reirectToProfile,
     };
   },
 });

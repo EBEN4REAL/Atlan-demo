@@ -1,14 +1,45 @@
 <template>
+{{id}}
+{{ isLoading }}
+{{data}}
+{{error}}
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
-
+import { defineComponent, computed } from "vue";
 import { useHead } from "@vueuse/head";
 
-export default defineComponent({
-  setup() {
+import useGTCEntity from '~/composables/glossary/useGtcEntity';
+import { watch } from "vue";
+import { onMounted } from "vue";
 
+export default defineComponent({
+  props:{
+    id: {
+      type: String,
+      required: true,
+      default: ''
+    }
+  },
+  setup(props) {
+    const id = computed(() => props.id);
+
+    const {data, error, isLoading, fetchEntity } = useGTCEntity();
+
+    onMounted(() => {
+      fetchEntity('glossary', id.value)
+    })
+
+    watch(id, (newGuid) => {
+      fetchEntity('glossary', newGuid)
+    })
+
+    return {
+      data,
+      error,
+      isLoading,
+      id
+}
   },
 });
 </script>

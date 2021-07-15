@@ -2,6 +2,8 @@
   <div class="flex flex-col px-2 space-y-3">
     <Terms :item="item" :key="item.guid"></Terms>
 
+    <BusinessMetadataContainer :item="item" :key="item.guid"></BusinessMetadataContainer>
+
     <Classifications
       :item="item"
       :key="item.guid"
@@ -16,9 +18,10 @@ import { defineComponent } from "vue";
 
 import Classifications from "./classifications/index.vue";
 import Terms from "./terms.vue";
+import BusinessMetadataContainer from "./businessMetadataContainer.vue";
 
 export default defineComponent({
-  components: { Classifications, Terms },
+  components: { Classifications, Terms, BusinessMetadataContainer },
   props: {
     item: {
       type: Object,

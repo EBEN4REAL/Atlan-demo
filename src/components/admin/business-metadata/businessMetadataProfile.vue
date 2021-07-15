@@ -244,6 +244,9 @@ import AddAttributeCard from "@/admin/business-metadata/addAttributeCard.vue";
 import CreateUpdateInfo from "@/common/createUpdateInfo.vue";
 import ArchiveMetadataModal from "@/admin/business-metadata/archiveMetadataModal.vue";
 
+// ? Store
+import { useBusinessMetadataStore } from "~/pinia/businessMetadata";
+
 // ? composables
 import { useBusinessMetadata } from "@/admin/business-metadata/composables/useBusinessMetadata";
 
@@ -256,6 +259,7 @@ export default defineComponent({
   },
   components: { AddAttributeCard, CreateUpdateInfo, ArchiveMetadataModal },
   setup(props, context) {
+    const store = useBusinessMetadataStore();
     // * Data
     let localBm = ref({
       name: "",
@@ -390,8 +394,7 @@ export default defineComponent({
             apiResponse.value.data.businessMetadataDefs.length
           ) {
             if (localBm.value.guid === "new") {
-              context.emit(
-                "businessMetadataAppendToList",
+              store.businessMetadataAppendToList(
                 apiResponse.value.data.businessMetadataDefs[0]
               );
               context.emit("clearNewBm");
@@ -402,8 +405,7 @@ export default defineComponent({
                 )
               );
             } else {
-              context.emit(
-                "updateBusinessMetadataInList",
+              store.updateBusinessMetadataInList(
                 apiResponse.value.data.businessMetadataDefs[0]
               );
             }

@@ -3,18 +3,12 @@
     <div class="flex flex-col px-5 py-4 border-b border-gray-200">
       <div class="flex items-center mb-2 align-middle">
         <component :is="item.typeName" class="w-6 h-6 mr-1"></component>
-        <p
-          class="mb-0 text-sm font-bold leading-none truncate text-primary-400"
-        >
+        <p class="mb-0 text-sm font-bold leading-none truncate text-primary-400">
           {{ title(item) }}
         </p>
       </div>
-      <div
-        class="flex items-center text-xs tracking-wider uppercase align-middle"
-      >
-        <img :src="logo(item)" class="w-auto h-4 mr-1" />{{
-          integrationName(item)
-        }}
+      <div class="flex items-center text-xs tracking-wider uppercase align-middle">
+        <img :src="logo(item)" class="w-auto h-4 mr-1" />{{ integrationName(item) }}
       </div>
     </div>
     <div class="flex flex-grow w-full h-full">
@@ -130,6 +124,9 @@ export default defineComponent({
   }
   :global(.ant-tabs-bar) {
     margin-bottom: 0px;
+  }
+  :global(.ant-tabs-content) {
+    padding-right: 0px;
   }
 }
 </style>

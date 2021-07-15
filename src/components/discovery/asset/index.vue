@@ -1,13 +1,8 @@
 <template>
-  <div
-    class="hidden h-full pt-6 pl-4 bg-white sm:block sm:col-span-4 md:col-span-2 sm"
-  >
+  <div class="hidden h-full pt-6 pl-4 bg-white sm:block sm:col-span-4 md:col-span-2 sm">
     <div class="flex flex-col h-full">
       <div class="mb-3">
-        <a-radio-group
-          class="flex w-full text-center"
-          v-model:value="filterMode"
-        >
+        <a-radio-group class="flex w-full text-center" v-model:value="filterMode">
           <a-radio-button class="flex-grow" value="custom"
             ><fa icon="fal filter" class="pushtop"></fa
           ></a-radio-button>
@@ -136,15 +131,7 @@
 </template>
 
 <script lang="ts">
-import {
-  computed,
-  defineComponent,
-  reactive,
-  ref,
-  watch,
-  toRaw,
-  Ref,
-} from "vue";
+import { computed, defineComponent, reactive, ref, watch, toRaw, Ref } from "vue";
 
 import AssetFilters from "@/discovery/asset/filters/index.vue";
 import SavedFilters from "@/discovery/asset/saved/index.vue";
@@ -169,6 +156,9 @@ import { useDebounceFn } from "@vueuse/core";
 import { Components } from "~/api/atlas/client";
 import { SearchParameters } from "~/types/atlas/attributes";
 import { BaseAttributes, BasicSearchAttributes } from "~/constant/projection";
+import { useBusinessMetadataStore } from "~/pinia/businessMetadata";
+import { useBusinessMetadata } from "@/admin/business-metadata/composables/useBusinessMetadata";
+import { useDiscoveryStore } from "~/pinia/discovery";
 import { useConnectionsStore } from "~/pinia/connections";
 import { getEncodedStringFromOptions } from "~/utils/routerQuery";
 import { useRouter } from "vue-router";
@@ -283,10 +273,56 @@ export default defineComponent({
     const offset = ref(0);
     const sortOrder = ref("default");
 
+    // * Get all available BMs and save on store
+    const store = useBusinessMetadataStore();
+    const {
+      data: BMResponse,
+      error: BMListError,
+      isLoading: BMListLoading,
+    } = useBusinessMetadata.getBMList();
+
+    //FIXME debug this
+    watch(
+      [BMListLoading, BMListError],
+      n => {
+        console.log([BMListLoading, BMListError]);
+        const error = toRaw(BMListError.value);
+        console.log(error);
+        store.setBusinessMetadataListLoading(n[0].value);
+        store.setBusinessMetadataListError(error.response.data.errorMessage);
+      },
+      { deep: true }
+    );
+
+    watch(
+      () => BMResponse?.value?.businessMetadataDefs,
+      (n, o) => {
+        if (JSON.stringify(n) !== JSON.stringify(o)) {
+          const list = n.map(
+            (bm: { options: { displayName: any }; name: any; attributeDefs: any[] }) => ({
+              ...bm,
+              options: {
+                ...bm?.options,
+                displayName: bm?.options?.displayName ? bm.options.displayName : bm.name,
+              },
+              attributeDefs: bm.attributeDefs.map(a => {
+                if (a.options?.displayName?.length) return a;
+                return { ...a, options: { ...a.options, displayName: a.name } };
+              }),
+            })
+          );
+          store.setData(list);
+        }
+      }
+    );
+
+    const BMAttributeProjection = computed(
+      () => store.getBusinessMetadataListProjections
+    );
     const state = ref("active");
 
     const assetTypeLabel = computed(() => {
-      const found = AssetTypeList.find((item) => {
+      const found = AssetTypeList.find(item => {
         return item.id == assetType.value;
       });
       return found?.label;
@@ -301,30 +337,27 @@ export default defineComponent({
 
     const connectorStore = useConnectionsStore();
     const filteredConnectorList = computed(() => {
-      return connectorStore.getSourceList?.filter((item) => {
+      return connectorStore.getSourceList?.filter(item => {
         return connectorsPayload.value?.connector == item.id;
       });
     });
 
     //Get All Disoverable Asset Types
     let assetTypeList = ref([]);
-    assetTypeList.value = AssetTypeList.filter((item) => {
+    assetTypeList.value = AssetTypeList.filter(item => {
       return item.isDiscoverable == true;
     });
+    const assetTypeListString = assetTypeList.value.map(item => item.id).join(",");
 
     const totalSum = computed(() => {
       let sum = 0;
-      assetTypeList.value.forEach((element) => {
+      assetTypeList.value.forEach(element => {
         if (assetTypeMap.value[element.id]) {
           sum = sum + assetTypeMap.value[element.id];
         }
       });
       return sum;
     });
-
-    const assetTypeListString = assetTypeList.value
-      .map((item) => item.id)
-      .join(",");
 
     // Push all asset type
     assetTypeList.value.push({
@@ -348,12 +381,7 @@ export default defineComponent({
       isAggregate,
       assetTypeMap,
     } = useAssetList(now, assetTypeListString, initialBody, assetType.value);
-    console.log(
-      assetTypeListString,
-      initialBody,
-      assetType.value,
-      "useAssetList type"
-    );
+    console.log(assetTypeListString, initialBody, assetType.value, "useAssetList type");
 
     const updateBody = () => {
       initialBody = {
@@ -363,7 +391,11 @@ export default defineComponent({
         limit: limit.value,
         offset: offset.value,
         entityFilters: {},
-        attributes: [...BaseAttributes, ...BasicSearchAttributes],
+        attributes: [
+          ...BaseAttributes,
+          ...BasicSearchAttributes,
+          ...BMAttributeProjection.value,
+        ],
         aggregationAttributes: [],
       };
       initialBody.entityFilters = {
@@ -443,8 +475,8 @@ export default defineComponent({
     };
 
     watch(
-      assetType,
-      () => {
+      [assetType, () => BMAttributeProjection.value.length],
+      (n, o) => {
         console.log("asset type changed");
         isAggregate.value = false;
         // abort();
@@ -463,7 +495,7 @@ export default defineComponent({
 
     const { projection } = useDiscoveryPreferences();
 
-    const handleSearchChange = useDebounceFn((val) => {
+    const handleSearchChange = useDebounceFn(val => {
       offset.value = 0;
       const routerOptions = getRouterOptions();
       const routerQuery = getEncodedStringFromOptions(routerOptions);
@@ -504,7 +536,7 @@ export default defineComponent({
       };
     };
 
-    const pushQueryToRouter = (pushString) => {
+    const pushQueryToRouter = pushString => {
       console.log(router, "router");
       router.push(`/assets?${pushString}`);
     };
@@ -532,7 +564,7 @@ export default defineComponent({
       updateBody();
     };
 
-    const handlePreview = (item) => {
+    const handlePreview = item => {
       emit("preview", item);
     };
 
@@ -607,12 +639,7 @@ export default defineComponent({
     };
   },
   methods: {
-    getIsLoadMore(
-      length: number,
-      offset: any,
-      limit: number,
-      totalCount: number
-    ) {
+    getIsLoadMore(length: number, offset: any, limit: number, totalCount: number) {
       if (
         totalCount >= limit &&
         length < totalCount &&

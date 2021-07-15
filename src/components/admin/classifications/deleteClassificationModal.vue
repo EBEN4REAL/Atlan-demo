@@ -70,12 +70,9 @@ export default defineComponent({
     };
     const onDelete = () => {
       const typeName = selectedClassification.value.name;
-      const entityGuid = selectedClassification.value.guid;
-      console.log(typeName, "className");
       const { data, error, isLoading } = Classification.archiveClassification({
         cache: false,
         typeName,
-        entityGuid,
       });
       deleteStatus.value = "loading";
       watch([data, error], () => {
@@ -86,10 +83,16 @@ export default defineComponent({
         } else {
           deleteStatus.value = "error";
           const reqError = toRaw(error.value);
-          deleteErrorText.value = "Failed to delete classification!";
+          deleteErrorText.value =
+            reqError?.response?.data?.errorMessage ??
+            "Failed to delete classification!";
           resetRef(deleteErrorText, 6000);
           // Notify.error("Unable to delete this classification");
-          console.log("WTF: handleDeleteClassification -> error", reqError);
+          console.log(
+            "WTF: handleDeleteClassification -> error",
+
+            reqError?.response?.data
+          );
         }
       });
     };

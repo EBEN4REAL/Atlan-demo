@@ -1,129 +1,116 @@
 <template>
-  <a-layout class="min-h-screen">
-    <!-- <a-layout-header
-      theme="light"
-
-      class="flex items-center px-0 leading-none align-middle text-primary-muted bg-primary-500"
-      style="height: 42px"
-    >
-      <div
-        class="flex items-center h-full px-4 mr-3 align-middle border-r border-primary-400 hover:bg-primary-600"
-        @click="handleBack"
+  <div class="w-full p-10 overflow-y-auto">
+    <div class="flex justify-between">
+      <p class="mb-0 text-2xl ">Projects</p>
+      <a-button type="primary" class="text-white rounded"
+        >Create Project</a-button
       >
-        <fa icon="fal chevron-left" class="text-xl"></fa>
-      </div>
-      <p class="mb-0 leading-none tracking-wide">
-        Personal Workspace
-      </p></a-layout-header
-    > -->
-    <a-layout :hasSider="true">
-      <!-- <a-layout-sider
-        class="border-r"
-        :collapsedWidth="48"
-        :collapsed="true"
-        :style="{
-          overflow: 'auto',
-        }"
-      >
-        <ProjectSidebar class="mt-3"></ProjectSidebar
-      ></a-layout-sider> -->
-      <a-layout-content>
-        <splitpanes class="bg-white default-theme">
-          <pane size="20" class="p-4 bg-white">
-            <a-tabs>
-              <a-tab-pane key="1" tab="All">
-                <a-input-search placeholder="Search projects" />
-                <a-list item-layout="horizontal" :data-source="listData">
-                  <template #renderItem="{ item }">
-                    <a-list-item>
-                      <a-list-item-meta>
-                        <template #title>
-                          <a href="https://www.antdv.com/">{{ item.title }}</a>
-                        </template>
-                        <template #description>
-                          {{ item.description }}
-                        </template>
-                      </a-list-item-meta>
-                    </a-list-item>
+    </div>
+    <div class="grid grid-flow-row gap-8 mt-8 xl:grid-cols-4 2xl:grid-cols-5">
+      <template v-for="project in dummyProjects">
+        <div class="rounded shadow cursor-pointer hover:shadow-lg">
+          <div class="mb-2 overflow-hidden rounded-t shadow md:h-32 lg:h-36 ">
+            <img
+              src="https://picsum.photos/300/150"
+              class="w-full h-auto"
+              alt="Project Image"
+            />
+          </div>
+          <div class="p-4">
+            <p class="mb-2 text-lg text-gray-dark">{{ project.projectName }}</p>
+            <p class="mb-2">{{ project.description }}</p>
+            <div class="flex justify-between mt-6 ">
+              <div>
+                <div class="flex items-center">
+                  <template v-for="view in views">
+                    <img
+                      :src="view.src"
+                      alt="view"
+                      class="w-8 h-8 rounded-full view"
+                    />
                   </template>
-                </a-list>
-              </a-tab-pane>
-              <a-tab-pane key="2" tab="My Queries" force-render
-                >Content of Tab Pane 2</a-tab-pane
+                  +3 Others
+                </div>
+              </div>
+              <a-button
+                type="default"
+                class="flex items-center justify-center rounded "
               >
-              <a-tab-pane key="3" tab="Shared"
-                >Content of Tab Pane 3</a-tab-pane
+                <span class="flex items-center justify-center mr-2">
+                  <fa icon="fal circle"></fa
+                ></span>
+                Active</a-button
               >
-            </a-tabs>
-          </pane>
-          <pane size="80" class="shadow-md">
-            <div class="p-4 m-6 bg-white border rounded">
-              <Editor @run="queryRun" :isQueryRunning="isQueryRunning"></Editor>
             </div>
-            <div
-              class="
-                p-6
-                m-6
-                overflow-x-auto
-                bg-white
-                border
-                rounded
-                table-wrapper
-              "
-            >
-              <!-- {{ queryResult }} -->
-              <a-table
-                class="overflow-x-auto"
-                :dataSource="dataList"
-                :columns="columnList"
-                :scroll="{ x: 500, y: 240 }"
-              />
-            </div>
-          </pane> </splitpanes
-      ></a-layout-content>
-    </a-layout>
-  </a-layout>
+          </div>
+        </div>
+      </template>
+    </div>
+  </div>
 </template>
 
 <script lang="ts">
 import { defineComponent, ref, inject, toRaw, Ref, watch } from "vue";
-import Editor from "@/projects/index.vue";
-import useProject from "~/composables/projects/useProject";
-import ProjectSidebar from "~/layouts/project/index.vue";
 import { useHead } from "@vueuse/head";
 
 export default defineComponent({
-  components: {
-    ProjectSidebar,
-    Editor,
-  },
+  components: {},
   setup() {
     useHead({
       title: "Query Playground",
     });
-
-    const {
-      queryRun,
-      isQueryRunning,
-      handleBack,
-      dataList,
-      columnList,
-      listData,
-    } = useProject();
-
+    const views = [
+      {
+        src: "https://picsum.photos/50/50",
+      },
+      {
+        src: "https://picsum.photos/50/50",
+      },
+      {
+        src: "https://picsum.photos/50/50",
+      },
+    ];
+    const dummyProjects = [
+      {
+        projectName: "Sales churn analysis",
+        description:
+          "This project's focus is on understanding the pitfalls in our sales department and proivde feedback to the team",
+      },
+      {
+        projectName: "Sales churn analysis",
+        description:
+          "This project's focus is on understanding the pitfalls in our sales department and proivde feedback to the team",
+      },
+      {
+        projectName: "Sales churn analysis",
+        description:
+          "This project's focus is on understanding the pitfalls in our sales department and proivde feedback to the team",
+      },
+      {
+        projectName: "Sales churn analysis",
+        description:
+          "This project's focus is on understanding the pitfalls in our sales department and proivde feedback to the team",
+      },
+      {
+        projectName: "Sales churn analysis",
+        description:
+          "This project's focus is on understanding the pitfalls in our sales department and proivde feedback to the team",
+      },
+    ];
     return {
-      isQueryRunning,
-      queryRun,
-      listData,
-      dataList,
-      columnList,
-      handleBack,
+      dummyProjects,
+      views,
     };
   },
 });
 </script>
 
-<style lang="less"></style>
+<style lang="less" scoped>
+.view {
+  border: 3px solid white;
+  margin-left: -8px;
+}
+</style>
 
 <route lang="yaml">
   meta:

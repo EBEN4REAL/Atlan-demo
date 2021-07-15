@@ -46,10 +46,10 @@ let colors = {
   },
 };
 const getAntDesignVariables = {
-  "primary-color": "#2026d2",
-  "link-color": "#2026d2",
-  "heading-color": "#595c97",
-  "text-color": "#595c97",
+  "primary-color": colors.primary["DEFAULT"],
+  "link-color": colors.primary["DEFAULT"],
+  "heading-color": colors.gray["DEFAULT"],
+  "text-color": colors.gray["DEFAULT"],
   //Table
   "table-header-bg": colors.gray[100],
   "table-row-hover-bg": colors.primary["muted"],

@@ -3,7 +3,7 @@
     <fa
       icon="fal ellipsis-v"
       @click.prevent
-      class="text-4xl ant-dropdown-link text-grey-600"
+      class="text-3xl ant-dropdown-link text-grey-600"
     />
 
     <template #overlay>

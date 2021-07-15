@@ -54,7 +54,7 @@ export default defineComponent({
 
     const selectedClassification = computed(() => props.classification);
     const selectedClassificationName = computed(
-      () => props.classification.displayName || props.classification.name
+      () => props.classification.name
     );
     const deleteStatus = ref("");
     const deleteErrorText = ref("");
@@ -69,16 +69,19 @@ export default defineComponent({
       context.emit("close");
     };
     const onDelete = () => {
-      const classificationName = selectedClassification.value.name;
+      const typeName = selectedClassification.value.name;
+      const entityGuid = selectedClassification.value.guid;
+      console.log(typeName, "className");
       const { data, error, isLoading } = Classification.archiveClassification({
         cache: false,
-        classificationName,
+        typeName,
+        entityGuid,
       });
       deleteStatus.value = "loading";
       watch([data, error], () => {
         if (!error.value) {
           deleteStatus.value = "success";
-          store.deleteClassificationByName(classificationName);
+          store.deleteClassificationByName(typeName);
           context.emit("close");
         } else {
           deleteStatus.value = "error";

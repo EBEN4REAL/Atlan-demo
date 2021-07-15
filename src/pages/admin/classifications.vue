@@ -8,10 +8,12 @@
         Manage classification tags to build access policies.
         <span class="ml-2 text-primary">Documentation</span>
       </p>
-      <a-button type="primary" class="rounded">+ Add Classification</a-button>
+      <a-button type="primary" class="rounded" @click="toggleModal"
+        >+ Add Classification</a-button
+      >
     </div>
   </div>
-  <splitpanes class="pt-6 default-theme" style="height:'95%'">
+  <splitpanes class="pt-6 default-theme">
     <pane min-size="25" max-size="50" size="25" class="relative pr-6 bg-white">
       <a-input
         ref="searchText"
@@ -35,7 +37,7 @@
           />
         </template>
       </a-input>
-      <div class="mt-2 treelist">
+      <div class="mt-2 overflow-y-auto treelist">
         <CreateClassificationTree
           :treeData="treeFilterText !== '' ? filteredData : treeData"
           @nodeEmit="nodeEmit"
@@ -44,7 +46,7 @@
       <a-button
         @click="toggleModal"
         type="default"
-        class="w-full rounded text-primary"
+        class="w-full mt-4 rounded text-primary"
         >+ Add Classification</a-button
       >
     </pane>
@@ -145,13 +147,16 @@ export default defineComponent({
     watch([classificationData, classificationError], () => {
       if (classificationData.value) {
         let classifications = classificationData.value.classificationDefs || [];
-        classifications = classifications.map((classification) => {
-          classification.alias = classification.name;
-          return classification;
-        });
         store.setClassifications(classifications ?? []);
         store.initializeFilterTree();
         store.setClassificationsStatus("success");
+        if (store.classificationTree.length > 0) {
+          router.push(
+            `/admin/classifications/${encodeURIComponent(
+              store.classificationTree[0].name
+            )}`
+          );
+        }
       } else {
         store.setClassificationsStatus("error");
       }
@@ -303,9 +308,7 @@ export default defineComponent({
 .treelist {
   height: calc(100vh - 18rem);
 }
-.classification-body {
-  height: calc(100% - 12.5rem);
-}
+
 :global(.ant-form-item-label
     > label.ant-form-item-required:not(.ant-form-item-required-mark-optional)::before) {
   @apply hidden;

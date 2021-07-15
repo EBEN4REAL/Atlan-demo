@@ -4,6 +4,7 @@
       :classification="selectedClassification"
       v-if="selectedClassification"
     />
+    <ClassificationBody />
 
     <!-- <AssetListWrapper
         class="px-0 col-10"
@@ -28,6 +29,7 @@ import CreateClassificationTree from "@common/tree/classification/index.vue";
 import ClassificationHeader from "~/components/admin/classifications/classificationHeader.vue";
 import AssetListWrapper from "~/components/asset/assetListWrapper.vue";
 import { useClassificationStore } from "~/components/admin/classifications/_store";
+import ClassificationBody from "~/components/admin/classifications/classificationBody.vue";
 
 export default defineComponent({
   name: "ClassificationProfileWrapper",
@@ -38,6 +40,7 @@ export default defineComponent({
     CreateClassificationTree,
     ClassificationHeader,
     AssetListWrapper,
+    ClassificationBody,
   },
   props: {
     classificationId: String,

@@ -1,51 +1,53 @@
 <template>
   <div class="grid grid-cols-11 pb-6 bg-white border-b classification-header">
     <div class="col-start-1 col-end-9 px-4 border-right">
-      <div class="mb-3 d-flex justify-content-between">
-        <div class="d-flex justify-content-start">
-          <div>
-            <p class="flex items-center mb-2 text-xl text-gray-600">
-              <span class="flex items-center mr-2 text-2xl">
-                <fa icon="fal shield text-gray-500  " class="mr-2" />
-              </span>
-              {{ displayName }}
+      <div class="flex">
+        <div class="mr-4">
+          <span
+            class="flex items-center justify-center p-1 text-xl border rounded"
+          >
+            <fa icon="fal shield text-gray-500  " class="" />
+          </span>
+        </div>
+        <div>
+          <p class="flex items-center mb-2 text-xl font-black ">
+            {{ displayName }}
+          </p>
+          <div class="mb-1 text-sm text-gray-300">
+            <span v-if="createdAt">
+              Created {{ createdAt }} by
+              <span
+                class="underline cursor-pointer text-primary"
+                @click="() => handleClickUser(createdBy)"
+                >{{ createdBy }}</span
+              >
+            </span>
+            <span v-if="updatedAt">
+              <span class="px-1">·</span>
+              Updated {{ updatedAt }} by
+              <span
+                class="underline cursor-pointer text-primary"
+                @click="() => handleClickUser(updatedBy)"
+              >
+                {{ updatedBy }}</span
+              >
+            </span>
+          </div>
+          <div class="mt-3">
+            <p class="mb-1 text-sm text-gray-300">
+              Description
             </p>
-            <div class="mb-1 text-sm text-neutral">
-              <span v-if="createdAt">
-                Created {{ createdAt }} by
-                <span
-                  class="underline cursor-pointer text-primary"
-                  @click="() => handleClickUser(createdBy)"
-                  >{{ createdBy }}</span
-                >
-              </span>
-              <span v-if="updatedAt">
-                <span class="px-1">·</span>
-                Updated {{ updatedAt }} by
-                <span
-                  class="underline cursor-pointer text-primary"
-                  @click="() => handleClickUser(updatedBy)"
-                >
-                  {{ updatedBy }}</span
-                >
-              </span>
-            </div>
+            <p class="mb-0 text-sm text-gray-400">
+              <span v-if="!selectedClassification.description"
+                >Click to add description</span
+              >
+              <span v-else-if="selectedClassification.description">{{
+                selectedClassification.description
+              }}</span>
+              <span v-else>No description added</span>
+            </p>
           </div>
         </div>
-      </div>
-      <div class="mt-3">
-        <p class="mb-1 text-xs text-gray-400 uppercase text-muted">
-          Description
-        </p>
-        <p class="mb-0 text-xs text-gray-500">
-          <span v-if="!selectedClassification.description"
-            >Click to add description</span
-          >
-          <span v-else-if="selectedClassification.description">{{
-            selectedClassification.description
-          }}</span>
-          <span v-else>No description added</span>
-        </p>
       </div>
     </div>
 

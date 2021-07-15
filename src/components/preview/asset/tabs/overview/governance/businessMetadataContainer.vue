@@ -250,13 +250,14 @@ export default defineComponent({
     };
 
     const handleAddWidget = () => {
-      addBusinessMetadata.value.forEach(b => {
-        attributesList.value.push({
-          attributes: [],
-          bm: b,
-          isNew: true,
-        });
+      // FIXME make this multiple,
+      // addBusinessMetadata.value.forEach(b => {
+      attributesList.value.push({
+        attributes: [],
+        bm: addBusinessMetadata.value,
+        isNew: true,
       });
+      // });
       visibility.value = false;
       addBusinessMetadata.value = [];
     };

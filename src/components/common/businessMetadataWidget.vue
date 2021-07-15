@@ -480,7 +480,9 @@ export default defineComponent({
     watch(
       () => props.bm,
       () => {
-        localState.value = JSON.parse(JSON.stringify(props.bm));
+        // FIXME why localState getting wrong data?
+        if (props.bm.bm !== localState.value?.bm)
+          localState.value = JSON.parse(JSON.stringify(props.bm));
       },
       {
         deep: true,

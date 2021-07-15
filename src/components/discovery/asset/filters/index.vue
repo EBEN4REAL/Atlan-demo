@@ -12,7 +12,7 @@
       class="bg-transparent"
     >
       <template #header>
-        <div class="flex justify-between" :key="dirtyTimestamp">
+        <div class="flex justify-between select-none" :key="dirtyTimestamp">
           {{ item.label }}
 
           <div
@@ -34,6 +34,7 @@
         "
         :is="item.component"
         :item="item"
+        :data="dataMap[item.id]"
         @change="handleChange"
       ></component>
     </a-collapse-panel>
@@ -41,9 +42,10 @@
 </template>
 
 <script lang="ts">
-import { defineAsyncComponent, defineComponent, ref } from "vue";
+import { defineAsyncComponent, defineComponent, ref, computed } from "vue";
 import { List } from "./filters";
 import { Components } from "~/api/atlas/client";
+import { useClassificationStore } from "~/components/admin/classifications/_store";
 
 export default defineComponent({
   name: "HelloWorld",
@@ -57,7 +59,15 @@ export default defineComponent({
       import("@common/facets/advanced/index.vue")
     ),
   },
-  props: {},
+  props: {
+    initialFilters: {
+      type: Object,
+      required: false,
+      default() {
+        return {};
+      },
+    },
+  },
   data() {
     return {
       List,
@@ -71,25 +81,65 @@ export default defineComponent({
   },
   emits: ["refresh"],
   setup(props, { emit }) {
-    const filterMap: { [key: string]: Components.Schemas.FilterCriteria } = {};
+    const classificationsStore = useClassificationStore();
+    const initialFilterMap = {
+      status: {
+        condition: props.initialFilters.facetsFilters.status.condition,
+        criterion: props.initialFilters.facetsFilters.status.criterion,
+      },
+      classifications: {
+        condition: props.initialFilters.facetsFilters.classifications.condition,
+        criterion: props.initialFilters.facetsFilters.classifications.criterion,
+      },
+      owners: {
+        condition: props.initialFilters.facetsFilters.owners.condition,
+        criterion: props.initialFilters.facetsFilters.owners.criterion,
+      },
+      advanced: {
+        condition: props.initialFilters.facetsFilters.advanced.condition,
+        criterion: props.initialFilters.facetsFilters.advanced.criterion,
+      },
+    };
+    const filterMap: { [key: string]: Components.Schemas.FilterCriteria } = {
+      ...initialFilterMap,
+    };
     let filters: Components.Schemas.FilterCriteria[] = [];
 
     const dirtyTimestamp = ref("dirty_");
 
     const refMap: { [key: string]: any } = ref({});
 
+    // Mapping of Data to child compoentns
+    const dataMap: { [key: string]: any } = ref({});
+    dataMap.value["status"] = {
+      checked: props.initialFilters.facetsFilters.status.checked,
+    };
+    dataMap.value["classifications"] = {
+      classifications: computed(() => classificationsStore.classifications),
+      checked: props.initialFilters.facetsFilters.classifications.checked,
+    };
+    dataMap.value["owners"] = {
+      userValue: props.initialFilters.facetsFilters.owners.userValue,
+      groupValue: props.initialFilters.facetsFilters.owners.groupValue,
+    };
+    dataMap.value["advanced"] = {
+      list: props.initialFilters.facetsFilters.advanced.list,
+    };
+
     const refresh = () => {
       filters = [];
       Object.keys(filterMap).forEach((key) => {
         filters.push(filterMap[key]);
       });
-      emit("refresh", filters);
+      emit("refresh", filters, filterMap);
     };
+
     const handleChange = (value: any) => {
       filterMap[value.id] = value.payload;
       dirtyTimestamp.value = `dirty_${Date.now().toString()}`;
       console.log(dirtyTimestamp.value);
       refresh();
+      // updateChangesInStore(value);
     };
 
     const isFilter = (id) => {
@@ -111,6 +161,7 @@ export default defineComponent({
     };
 
     return {
+      dataMap,
       handleChange,
       isFilter,
       dirtyTimestamp,

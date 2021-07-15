@@ -4,7 +4,11 @@
 
     <BusinessMetadataContainer :item="item" :key="item.guid"></BusinessMetadataContainer>
 
-    <Classifications :item="item" :key="item.guid"></Classifications>
+    <Classifications
+      :item="item"
+      :key="item.guid"
+      :selectedAssetData="selectedAssetData"
+    ></Classifications>
     <!-- <StatusBadge :status="status(item)" :key="item.guid"></StatusBadge> -->
   </div>
 </template>
@@ -26,8 +30,17 @@ export default defineComponent({
         return {};
       },
     },
+    selectedAssetData: {
+      type: Object,
+      required: false,
+      default(): any {
+        return {};
+      },
+    },
   },
-  setup(props, { emit }) {},
+  setup(props, { emit }) {
+    return {};
+  },
 });
 </script>
 

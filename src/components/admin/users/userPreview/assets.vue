@@ -1,31 +1,99 @@
 <template>
   <div>
-    <a-input
-      placeholder="Search"
-      size="default"
-      class="searchbox"
-      v-model:value="queryText"
-      @change="handleSearchChange"
-    />
-    <AssetList
-      :list="list"
-      :projection="['heirarchy', 'rows']"
-      :score="searchScoreList"
-      :isLoading="isLoading || isValidating"
-      ref="assetlist"
-    ></AssetList>
+    <div class="flex flex-col h-full border rounded-lg">
+      <div class="border-b rounded-tl-lg rounded-tr-lg bg-gray-50">
+        <ConnectorDropdown
+          :data="connectorsPayload"
+          @change="handleChangeConnectors"
+        ></ConnectorDropdown>
+      </div>
+      <div class="flex items-center mx-3 mt-3">
+        <a-input
+          placeholder="Search"
+          :allowClear="true"
+          size="default"
+          class="rounded-full"
+          v-model:value="queryText"
+          @change="handleSearchChange"
+        >
+          <template #prefix>
+            <div class="flex -space-x-2">
+              <template v-for="item in filteredConnectorList" :key="item.id">
+                <img
+                  :src="item.image"
+                  class="w-auto h-6 mr-1 bg-white rounded-full border-5"
+                />
+              </template>
+            </div>
+          </template>
+        </a-input>
+      </div>
+      <div class="flex w-full px-3 mt-3">
+        <AssetTabs
+          v-model="assetType"
+          :assetTypeList="assetTypeList"
+          :assetTypeMap="assetTypeMap"
+          :total="totalSum"
+        ></AssetTabs>
+      </div>
+
+      <div
+        v-if="list && list.length <= 0 && !isLoading && !isValidating"
+        class="flex-grow"
+      >
+        <EmptyView :showClearFiltersCTA="false"></EmptyView>
+      </div>
+      <AssetList
+        v-else
+        :list="list"
+        :score="searchScoreList"
+        @preview="handlePreview"
+        :isLoading="isLoading || isValidating"
+        ref="assetlist"
+      ></AssetList>
+      <div class="flex w-full px-3 py-1 border-t bg-gray-50 border-gray-50">
+        <div class="flex items-center justify-between w-full">
+          <div
+            class="flex items-center text-sm leading-none"
+            v-if="isLoading || isValidating"
+          >
+            <a-spin size="small" class="mr-2 leading-none"></a-spin
+            ><span>searching results</span>
+          </div>
+          <AssetPagination
+            v-else
+            :label="assetTypeLabel"
+            :listCount="list.length"
+            :totalCount="totalCount"
+          ></AssetPagination>
+
+          <div
+            class="text-sm cursor-pointer text-primary"
+            @click="loadMore"
+            v-if="isLoadMore && (!isLoading || !isValidating)"
+          >
+            load more...
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
 <script lang="ts">
-import { computed, reactive, ref } from "vue";
+import { computed, reactive, ref, watch } from "vue";
 
 import { AssetTypeList } from "~/constant/assetType";
+import EmptyView from "@common/empty/discover.vue";
 import useAssetList from "~/composables/bots/useAssetList";
 import { useDebounceFn } from "@vueuse/core";
 import { SearchParameters } from "~/types/atlas/attributes";
 import { Components } from "~/api/atlas/client";
 import AssetList from "@/discovery/asset/list/index.vue";
+import AssetTabs from "@/discovery/asset/tabs/index.vue";
+import AssetPagination from "@common/pagination/index.vue";
+import ConnectorDropdown from "@common/dropdown/connector/index.vue";
+import { useConnectionsStore } from "~/pinia/connections";
 import { BaseAttributes, BasicSearchAttributes } from "~/constant/projection";
 
 export default {
@@ -42,8 +110,15 @@ export default {
   },
   components: {
     AssetList,
+    ConnectorDropdown,
+    AssetTabs,
+    AssetPagination,
+    EmptyView,
   },
   setup(props) {
+    const now = ref(false);
+    const connectorsPayload = ref({});
+    const assetType = ref("Catalog");
     const activeTab = computed(() => {
       if (Object.keys(props.selectedUser).length) return "user";
       else if (Object.keys(props.selectedGroup).length) return "group";
@@ -81,40 +156,153 @@ export default {
       .join(",");
     let initialBody: SearchParameters = reactive({});
 
-    initialBody = {
-      limit: limit.value,
-      offset: offset.value,
-      typeName: assetTypeListString,
-      excludeDeletedEntities: true,
-      attributes: [...BaseAttributes, ...BasicSearchAttributes],
-      aggregationAttributes: [],
-    };
-    initialBody.entityFilters = {
-      condition: "AND",
-      criterion: [...entityFilterPayload],
-    };
+    assetTypeList.value.push({
+      id: "Catalog",
+      label: "All",
+    });
     const queryText = ref("");
-
-    const { list, replaceBody, isLoading, isValidating, searchScoreList } =
-      useAssetList(ref(true), assetTypeListString, initialBody, "catalog");
+    const {
+      list,
+      replaceBody,
+      isLoading,
+      isValidating,
+      searchScoreList,
+      isAggregate,
+      assetTypeMap,
+    } = useAssetList(now, assetTypeListString, initialBody, assetType.value);
     const updateBody = () => {
-      // if (queryText.value) {
-      initialBody.query = queryText.value;
-      //   }
+      initialBody = {
+        typeName: assetTypeListString,
+        limit: limit.value,
+        offset: offset.value,
+        entityFilters: {},
+        attributes: [...BaseAttributes, ...BasicSearchAttributes],
+        aggregationAttributes: [],
+      };
+      initialBody.entityFilters = {
+        condition: "AND",
+        criterion: [...entityFilterPayload],
+      };
 
+      if (assetType.value !== "Catalog") {
+        initialBody.entityFilters.criterion.push({
+          attributeName: "__typeName",
+          attributeValue: assetType.value,
+          operator: "eq",
+        });
+      }
+      let connectorCritera = {
+        condition: "OR",
+        criterion: [],
+      };
+      let connectionCriteria = {
+        condition: "OR",
+        criterion: [],
+      };
+      initialBody.query = queryText.value;
+      if (connectorsPayload.value?.connector) {
+        connectorCritera.criterion?.push({
+          attributeName: "integrationName",
+          attributeValue: connectorsPayload.value?.connector,
+          operator: "eq",
+        });
+      }
+      if (connectorsPayload.value?.connection) {
+        connectorCritera.criterion?.push({
+          attributeName: "connectionQualifiedName",
+          attributeValue: connectorsPayload.value?.connection,
+          operator: "eq",
+        });
+      }
+      initialBody.entityFilters.criterion.push(connectorCritera);
+      initialBody.entityFilters.criterion.push(connectionCriteria);
       replaceBody(initialBody);
     };
     const handleSearchChange = useDebounceFn((val) => {
       offset.value = 0;
       updateBody();
     }, 100);
+    // const handleClearFilters = () => {
+    //   offset.value = 0;
+    //   queryText.value = "";
+    //   connectorsPayload.value = {};
+    //   updateBody();
+    // };
+    const totalCount = computed(() => {
+      if (assetType.value === "Catalog") {
+        return totalSum.value;
+      }
+      return assetTypeMap.value[assetType.value];
+    });
+    const isLoadMore = computed(() => {
+      return totalCount.value > list.value.length;
+    });
+    const loadMore = () => {
+      if (list.value.length + limit.value < totalCount.value) {
+        offset.value = list.value.length + limit.value;
+      }
+      isAggregate.value = false;
+      updateBody();
+    };
+    const totalSum = computed(() => {
+      let sum = 0;
+      assetTypeList.value.forEach((element) => {
+        if (assetTypeMap.value[element.id]) {
+          sum = sum + assetTypeMap.value[element.id];
+        }
+      });
+      return sum;
+    });
+    const assetTypeLabel = computed(() => {
+      const found = AssetTypeList.find((item) => {
+        return item.id == assetType.value;
+      });
+      return found?.label;
+    });
+    const connectorStore = useConnectionsStore();
+    const filteredConnectorList = computed(() => {
+      return connectorStore.getSourceList?.filter((item) => {
+        return connectorsPayload.value?.connector == item.id;
+      });
+    });
+    const handleChangeConnectors = (payload: any) => {
+      connectorsPayload.value = payload;
+      isAggregate.value = true;
+      offset.value = 0;
+      updateBody();
+    };
+    watch(
+      assetType,
+      () => {
+        isAggregate.value = false;
+        offset.value = 0;
+        updateBody();
+        if (!now.value) {
+          isAggregate.value = true;
+          now.value = true;
+        }
+      },
+      {
+        immediate: true,
+      }
+    );
     return {
+      assetType,
       handleSearchChange,
       isLoading,
       isValidating,
       searchScoreList,
       list,
       queryText,
+      totalCount,
+      isLoadMore,
+      loadMore,
+      totalSum,
+      assetTypeLabel,
+      handleChangeConnectors,
+      filteredConnectorList,
+      assetTypeList,
+      assetTypeMap,
     };
   },
 };

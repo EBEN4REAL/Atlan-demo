@@ -1,6 +1,38 @@
 <template>
-  <splitpanes class="h-full default-theme">
-    <pane min-size="25" max-size="50" size="25" class="relative p-3 bg-white">
+  <div>
+    <p class="mb-2 text-2xl atlan-gray-500 text-uppercase">
+      CLASSIFICATION
+    </p>
+    <div class="flex items-center">
+      <p class="flex items-center mb-0 text-sm text-gray-600">
+        <span class="flex items-center text-lg">
+          <fa icon="fal shield text-gray-500  " class="mr-2" />
+        </span>
+        {{ selectedClassification?.displayName }}
+      </p>
+      <div class="ml-5 text-xs text-gray-400 ">
+        <span v-if="createdAt">
+          Created {{ createdAt }} by
+          <span
+            class="underline cursor-pointer text-primary"
+            @click="() => handleClickUser(createdBy)"
+            >{{ createdBy }}</span
+          >
+        </span>
+        <span v-if="updatedAt">
+          <span class="px-1">·</span>
+          Updated {{ updatedAt }}
+          <span
+            class="underline cursor-pointer text-primary"
+            @click="() => handleClickUser(updatedBy)"
+            >by {{ updatedBy }}</span
+          >
+        </span>
+      </div>
+    </div>
+  </div>
+  <splitpanes class="pt-6 default-theme" style="height:'95%'">
+    <pane min-size="25" max-size="50" size="25" class="relative pr-6 bg-white">
       <a-input
         ref="searchText"
         v-model:value="treeFilterText"
@@ -23,7 +55,7 @@
           />
         </template>
       </a-input>
-      <div class="mt-2 overflow-y-auto treelist">
+      <div class="mt-2 treelist">
         <CreateClassificationTree
           :treeData="treeFilterText !== '' ? filteredData : treeData"
           @nodeEmit="nodeEmit"
@@ -35,7 +67,7 @@
         >
       </div>
     </pane>
-    <pane size="74" class="flex flex-col">
+    <pane size="74" class="flex flex-col pl-6 bg-white">
       <ClassificationHeader
         :classification="selectedClassification"
         v-if="selectedClassification"
@@ -108,8 +140,8 @@ import AssetListWrapper from "~/components/asset/assetListWrapper.vue";
 import { useRouter } from "vue-router";
 import { useClassificationStore } from "./_store";
 import { ValidateErrorEntity } from "ant-design-vue/es/form/interface";
-import { useClassificationStore } from "~/components/admin/classifications/_store";
 import { Classification } from "~/api/atlas/classification";
+import { useTimeAgo } from "@vueuse/core";
 
 export default defineComponent({
   name: "ClassificationProfileWrapper",
@@ -157,28 +189,6 @@ export default defineComponent({
         },
       ],
     };
-
-    // get classifications
-    store.setClassificationsStatus("loading");
-    const {
-      data: classificationData,
-      error: classificationError,
-    } = Classification.getClassificationList({ cache: false });
-
-    watch([classificationData, classificationError], () => {
-      if (classificationData.value) {
-        let classifications = classificationData.value.classificationDefs || [];
-        classifications = classifications.map((classification) => {
-          classification.alias = classification.name;
-          return classification;
-        });
-        store.setClassifications(classifications ?? []);
-        store.initializeFilterTree();
-        store.setClassificationsStatus("success");
-      } else {
-        store.setClassificationsStatus("error");
-      }
-    });
 
     const handleSearch = (e) => {
       treeFilterText.value = e.target.value;
@@ -278,8 +288,28 @@ export default defineComponent({
           (classification.name || "") === decodeURI(props.classificationName)
       );
     });
+    const handleClickUser = (username: string) => {};
+    const createdAt = computed(() => {
+      const timestamp = selectedClassification.value.createTime;
+      return useTimeAgo(timestamp).value || "";
+
+      // return moment(timestamp).fromNow();
+    });
+    const createdBy = computed(() => selectedClassification.value.createdBy);
+    const updatedAt = computed(() => {
+      const timestamp = selectedClassification.value.updateTime;
+      return useTimeAgo(timestamp).value || "";
+      // return moment(timestamp).fromNow();
+    });
+
+    const updatedBy = computed(() => selectedClassification.value.updatedBy);
 
     return {
+      createdAt,
+      createdBy,
+      updatedAt,
+      updatedBy,
+      handleClickUser,
       createClassificationStatus,
       createErrorText,
       filteredData,
@@ -305,7 +335,7 @@ export default defineComponent({
 </script>
 <style lang="less" scoped>
 .treelist {
-  height: calc(100vh - 11rem);
+  height: calc(100vh - 18rem);
 }
 .classification-body {
   height: calc(100% - 12.5rem);

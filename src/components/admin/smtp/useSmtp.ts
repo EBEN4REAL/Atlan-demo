@@ -1,5 +1,4 @@
 import { computed, watch, ref } from "vue";
-import { UPDATE_SMTP_CONFIG } from "~/constant/store_types";
 import { Tenant } from "~/api/auth/tenant";
 import { useTenantStore } from "~/pinia/tenants";
 

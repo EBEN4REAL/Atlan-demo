@@ -1,5 +1,4 @@
 <template>
-  <p class="text-2xl text-gray">Classifications</p>
   <ClassificationProfileWrapper
     :classificationName="classificationName"
   ></ClassificationProfileWrapper>

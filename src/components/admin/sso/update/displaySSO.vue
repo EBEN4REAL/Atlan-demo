@@ -225,11 +225,6 @@ export default defineComponent({
       }
     };
 
-    // const getTenant = async () => {
-    //   const store = useStore();
-    //   await store.dispatch(TENANT_FETCH_DATA);
-    // };
-
     const getTenant = async () => {
       const asyncOptions: IConfig & AxiosRequestConfig = {
         dedupingInterval: 0,

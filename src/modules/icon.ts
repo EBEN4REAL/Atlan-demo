@@ -3,6 +3,7 @@ import { library, dom, config } from "@fortawesome/fontawesome-svg-core";
 
 // Light Icons
 import { faCircle } from "@fortawesome/pro-light-svg-icons";
+import { faExternalLinkAlt } from "@fortawesome/pro-light-svg-icons/faExternalLinkAlt";
 import { faPlus } from "@fortawesome/pro-light-svg-icons/faPlus";
 import { faSearch } from "@fortawesome/pro-light-svg-icons/faSearch";
 import { faUser } from "@fortawesome/pro-light-svg-icons/faUser";
@@ -86,6 +87,7 @@ import { faSlidersHSquare } from "@fortawesome/pro-light-svg-icons/faSlidersHSqu
 import { faSignOut } from "@fortawesome/pro-light-svg-icons/faSignOut";
 
 library.add(
+  faExternalLinkAlt,
   faArrowUp,
   faPlus,
   faPlusCircle,

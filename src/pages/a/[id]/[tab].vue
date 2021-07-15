@@ -2,7 +2,7 @@
   <LoadingView v-if="loading" />
   <ErrorView v-else-if="error" :error="error" />
   <div v-else>
-    <div class="h-24 p-4">
+    <div class="p-4 pb-2 h-18">
       <AssetHeader :asset="response?.entities[0]" />
     </div>
     <a-menu

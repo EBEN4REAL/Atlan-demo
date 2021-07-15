@@ -1,6 +1,6 @@
-import { ref, Ref, watch } from 'vue';
-import useSearchList from './useSearchList';
-import axios from 'axios';
+import { ref, Ref, watch } from "vue";
+import useSearchList from "./useSearchList";
+import axios from "axios";
 
 export default function useAssetList(dependentKey?: Ref<any>, typeName?: string, initialBody?: any, cacheSuffx?: string | "", isAggregation?: boolean) {
 
@@ -34,7 +34,19 @@ export default function useAssetList(dependentKey?: Ref<any>, typeName?: string,
         assetTypeMap,
         assetTypeSum,
         replaceBody: refreshAggregation,
-    } = useSearchList("Catalog", aggregationList, [], data, aggregationBody, cacheSuffx, false, cancelTokenSource, true);
+    } = useSearchList(
+        "Catalog",
+        aggregationList,
+        [],
+        data,
+        aggregationBody,
+        cacheSuffx,
+        false,
+        cancelTokenSource,
+        true
+    );
+
+
 
 
     const isAggregate = ref(false);
@@ -43,11 +55,15 @@ export default function useAssetList(dependentKey?: Ref<any>, typeName?: string,
         isAggregate.value = isAggregation;
     }
 
-    watch(data, () => {
 
+
+
+    watch(data, () => {
         if (isAggregate.value) {
             let newCriterion = [...body.value.entityFilters?.criterion];
-            let index = newCriterion.findIndex((item) => item.attributeName === "__typeName");
+            let index = newCriterion.findIndex(
+                (item) => item.attributeName === "__typeName"
+            );
             if (index > -1) {
                 newCriterion.splice(index, 1);
             }
@@ -59,13 +75,12 @@ export default function useAssetList(dependentKey?: Ref<any>, typeName?: string,
                 typeName: typeName,
                 entityFilters: {
                     condition: body.value.entityFilters?.condition,
-                    criterion: newCriterion
-                }
+                    criterion: newCriterion,
+                },
             });
+
         }
-
     });
-
 
     return {
         data,
@@ -84,7 +99,6 @@ export default function useAssetList(dependentKey?: Ref<any>, typeName?: string,
         assetTypeSum,
         assetTypeMap,
         selfAssetTypeMap,
-        isAggregate
-    }
+        isAggregate,
+    };
 }
-

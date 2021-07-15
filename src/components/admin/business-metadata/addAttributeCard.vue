@@ -72,7 +72,8 @@
               :id="`${attributeInput.data.name}-multiValueSelect`"
               :disabled="isEdit"
               :name="`${attributeInput.data.name}-multiValueSelect`"
-              v-model="attributeInput.data.multiValueSelect"
+              v-model:checked="attributeInput.data.multiValueSelect"
+              @change="emitUpdate"
             />
             <label class="ml-1" :for="`${attributeInput.data.name}-multiValueSelect`">{{
               attributeInput.data.multiValueSelect ? "Enabled" : "Disabled"
@@ -103,7 +104,7 @@
             :async="false"
             placeholder="Select enum"
             :disabled="isEdit"
-            @change="selectEnumType"
+            @change="emitUpdate"
           >
           </a-tree-select>
         </div>
@@ -121,7 +122,7 @@
         </div>
       </div>
       <div class="flex">
-        <div class="" style="width: 100%;">
+        <div class="relative" style="width: 100%;">
           <label class="mb-0 font-normal font-size-sm">Applicable Entities</label>
           <a-tree-select
             v-model:value="attributeInput.data.options.applicableEntityTypes"
@@ -136,6 +137,7 @@
             :class="isEdit ? 'custom-class-edit' : ''"
             dropdownClassName="type-select-dd"
             maxTagCount="5"
+            :getPopupContainer="target => target.parentNode"
           >
           </a-tree-select>
         </div>
@@ -216,13 +218,14 @@ export default defineComponent({
         const selectedOptions = JSON.parse(
           props.attribute.options.applicableEntityTypes || "[]"
         );
-        options = options.map((option: { id: any }) => ({
+        options = options.map((option: { id: string; label: string }) => ({
           title: option.label,
           key: option.id,
           value: option.id,
           id: option.id,
           disabled: selectedOptions.includes(option.id),
         }));
+        return options;
       }
       return options
         .filter(t => t.id !== "AtlanSavedQuery")
@@ -250,8 +253,8 @@ export default defineComponent({
     // * Methods
     const normalize = (attribute: {
       typeName: string;
-      multiValueSelect: any;
-      options: { applicableEntityTypes: any };
+      multiValueSelect: boolean;
+      options: { applicableEntityTypes: object[] };
     }) => {
       if (attribute) {
         return {
@@ -286,7 +289,7 @@ export default defineComponent({
       return attribute;
     };
 
-    const selectEnumType = () => {
+    const emitUpdate = () => {
       context.emit(
         "updateAttribute",
         normalize(JSON.parse(JSON.stringify(attributeInput.data)))
@@ -331,7 +334,7 @@ export default defineComponent({
               .filter(t => t.id !== "AtlanSavedQuery"),
       };
     });
-
+    // TODO Improve on the watchers
     watch(
       () => attributeInput.data.options.displayName,
       (state, prevState) => {
@@ -425,11 +428,10 @@ export default defineComponent({
       finalEnumsList,
       enumType,
       enumTypeOtions,
-      selectEnumType,
       enumsList,
       finalApplicableTypeNamesOptions,
       selectedEnumOptions,
-      isEdit,
+      emitUpdate,
     };
   },
 });

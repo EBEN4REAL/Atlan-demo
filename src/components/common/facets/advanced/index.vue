@@ -1,5 +1,3 @@
-
-
 <template>
   <div class="flex flex-col space-y-2">
     <template v-for="(item, index) in list" :key="item.id">
@@ -31,7 +29,7 @@
     ><fa icon="fal plus"></fa
   ></a-button>
 </template>
-      
+
 <script lang="ts">
 import { computed, defineComponent, PropType, ref } from "vue";
 
@@ -56,6 +54,13 @@ export default defineComponent({
         return {};
       },
     },
+    data: {
+      type: Object,
+      required: false,
+      default() {
+        return [];
+      },
+    },
     modelValue: {
       type: Array,
       required: false,
@@ -66,7 +71,7 @@ export default defineComponent({
   },
   emits: ["update:modelValue", "change"],
   setup(props, { emit }) {
-    let list = ref([]);
+    let list = ref([...props.data.list]);
 
     let options = ref([]);
     AdvancedAttributeList.forEach((item) => {
@@ -111,6 +116,7 @@ export default defineComponent({
 
     const handleChange = () => {
       let criterion: Components.Schemas.FilterCriteria[] = [];
+      console.log(list.value, "listt");
 
       list.value.forEach((element) => {
         console.log(element);

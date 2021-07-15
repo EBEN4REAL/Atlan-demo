@@ -40,7 +40,9 @@ import {
   Badge,
   Tag,
   Timeline,
-  Pagination
+  Pagination,
+  DatePicker,
+  Popconfirm
 } from "ant-design-vue";
 
 // https://github.com/antfu/vite-plugin-pwa#automatic-reload-when-new-content-available
@@ -78,6 +80,8 @@ export const install: UserModule = ({ app }) => {
   app.use(Badge);
   app.use(Tag);
   app.use(Pagination);
+  app.use(DatePicker);
+  app.use(Popconfirm);
 
 
   app.config.globalProperties.$message = message;

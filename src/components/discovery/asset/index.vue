@@ -1,6 +1,6 @@
 <template>
   <div
-    class="hidden h-full pt-6 pl-4 bg-white  sm:block sm:col-span-4 md:col-span-2 sm"
+    class="hidden h-full pt-6 pl-4 bg-white sm:block sm:col-span-4 md:col-span-2 sm"
   >
     <div class="flex flex-col h-full">
       <div class="mb-3">
@@ -38,12 +38,13 @@
   </div>
 
   <div
-    class="flex flex-col items-stretch col-span-12 my-3 bg-white  sm:col-span-8 md:col-span-7"
+    class="flex flex-col items-stretch col-span-12 my-3 bg-white sm:col-span-8 md:col-span-7"
     style="overflow: hidden"
   >
     <div class="flex flex-col h-full mx-6 border rounded-lg">
-      <div class="border-b rounded-tl-lg rounded-tr-lg bg-gray-50">
+      <div class="flex border-b rounded-tl-lg rounded-tr-lg bg-gray-50">
         <ConnectorDropdown @change="handleChangeConnectors"></ConnectorDropdown>
+        <AssetDropdown :connector="filteredConnector" v-if="connectorsPayload.connection"></AssetDropdown>
       </div>
       <div class="flex items-center mx-3 mt-3">
         <a-input
@@ -55,12 +56,12 @@
         >
           <template #prefix>
             <div class="flex -space-x-2">
-              <template v-for="item in filteredConnectorList" :key="item.id">
+            
                 <img
-                  :src="item.image"
+                  :src="filteredConnector?.image"
                   class="w-auto h-6 mr-1 bg-white rounded-full border-5"
                 />
-              </template>
+          
             </div>
           </template>
           <template #suffix>
@@ -144,6 +145,9 @@ import AssetPagination from "@common/pagination/index.vue";
 import HeirarchySelect from "@common/tree/heirarchy/index.vue";
 import SearchBox from "@common/searchbox/searchlist.vue";
 import ConnectorDropdown from "@common/dropdown/connector/index.vue";
+
+import AssetDropdown from "@common/dropdown/asset/index.vue";
+
 import EmptyView from "@common/empty/discover.vue";
 import Preferences from "@/discovery/asset/preference/index.vue";
 // import { useDebounceFn } from "@vueuse/core";
@@ -174,6 +178,7 @@ export default defineComponent({
     Preferences,
     EmptyView,
     HeirarchySelect,
+    AssetDropdown,
   },
   data() {
     return {
@@ -218,10 +223,8 @@ export default defineComponent({
     });
 
     const connectorStore = useConnectionsStore();
-    const filteredConnectorList = computed(() => {
-      return connectorStore.getSourceList?.filter((item) => {
-        return connectorsPayload.value?.connector == item.id;
-      });
+    const filteredConnector = computed(() => {
+      return connectorStore.getSourceList?.find((item) => connectorsPayload.value?.connector == item.id);
     });
 
     //Get All Disoverable Asset Types
@@ -265,7 +268,14 @@ export default defineComponent({
       searchScoreList,
       isAggregate,
       assetTypeMap,
-    } = useAssetList(now, assetTypeListString, initialBody, assetType.value);
+    } = useAssetList(
+      now,
+      assetTypeListString,
+      initialBody,
+      assetType.value,
+      true
+    );
+
     console.log(
       assetTypeListString,
       initialBody,
@@ -455,7 +465,7 @@ export default defineComponent({
       totalSum,
       handleState,
       connectorsPayload,
-      filteredConnectorList,
+      filteredConnector,
       // listCount,
       // isLoading,
       // limit,

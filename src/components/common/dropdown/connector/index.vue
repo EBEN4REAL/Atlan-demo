@@ -26,12 +26,18 @@
             <div class="flex items-center text-xs text-gray-900 align-middle">
               <img :src="getImage(connector)" class="w-auto h-4 mr-1" />
 
+              <fa
+                icon="fal chevron-right"
+                class="text-xs text-gray-300"
+                v-if="connectionObject"
+              ></fa>
               <div class="text-xs" v-if="connectionObject">
                 {{
                   connectionObject.attributes.displayName ||
                   connectionObject.attributes.name
                 }}
               </div>
+
               <div class="text-xs" v-else-if="connector">
                 {{
                   connector?.charAt(0).toUpperCase() +

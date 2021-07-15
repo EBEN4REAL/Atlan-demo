@@ -2,7 +2,7 @@ import { ref, Ref, watch } from 'vue';
 import useSearchList from './useSearchList';
 import axios from 'axios';
 
-export default function useAssetList(dependentKey?: Ref<any>, typeName?: string, initialBody?: any, cacheSuffx?: string | "") {
+export default function useAssetList(dependentKey?: Ref<any>, typeName?: string, initialBody?: any, cacheSuffx?: string | "", isAggregation?: boolean) {
 
     let cancelTokenSource = ref(axios.CancelToken.source());
     const list: Ref<any> = ref([]);
@@ -16,6 +16,7 @@ export default function useAssetList(dependentKey?: Ref<any>, typeName?: string,
         replaceBody,
         refresh,
         body,
+        assetTypeMap: selfAssetTypeMap,
     } = useSearchList(typeName || "Catalog", list, [], dependentKey, initialBody, cacheSuffx, false, cancelTokenSource, true);
 
 
@@ -36,7 +37,12 @@ export default function useAssetList(dependentKey?: Ref<any>, typeName?: string,
     } = useSearchList("Catalog", aggregationList, [], data, aggregationBody, cacheSuffx, false, cancelTokenSource, true);
 
 
-    const isAggregate = ref(true);
+    const isAggregate = ref(false);
+
+    if (isAggregation) {
+        isAggregate.value = isAggregation;
+    }
+
     watch(data, () => {
 
         if (isAggregate.value) {
@@ -77,6 +83,7 @@ export default function useAssetList(dependentKey?: Ref<any>, typeName?: string,
         assetTypeList,
         assetTypeSum,
         assetTypeMap,
+        selfAssetTypeMap,
         isAggregate
     }
 }

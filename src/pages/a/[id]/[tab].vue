@@ -13,7 +13,7 @@
       <a-menu-item key="overview"> Overview </a-menu-item>
       <a-menu-item key="lineage"> Lineage </a-menu-item>
     </a-menu>
-    <div class="p-4">
+    <div class="h-full p-4">
       <component
         :is="selectedTab"
         :asset="response?.entities[0] || {}"

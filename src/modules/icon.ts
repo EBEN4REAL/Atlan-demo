@@ -84,6 +84,7 @@ import { faUserSlash } from "@fortawesome/pro-light-svg-icons/faUserSlash";
 import { faUserCheck } from "@fortawesome/pro-light-svg-icons/faUserCheck";
 import { faSlidersHSquare } from "@fortawesome/pro-light-svg-icons/faSlidersHSquare";
 import { faSignOut } from "@fortawesome/pro-light-svg-icons/faSignOut";
+import { faFont } from "@fortawesome/pro-light-svg-icons/faFont";
 
 library.add(
   faArrowUp,
@@ -159,7 +160,8 @@ library.add(
   faUserCheck,
   faUserShield,
   faSlidersHSquare,
-  faSignOut
+  faSignOut,
+  faFont
 );
 
 // Solid Icons

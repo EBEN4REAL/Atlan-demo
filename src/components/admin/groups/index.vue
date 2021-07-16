@@ -60,15 +60,7 @@
           <div class="flex capitalize truncate cursor-pointer text-primary">
             <div class="truncate max-w-3/4">{{ group.name }}</div>
             <div
-              class="
-                px-2
-                py-1
-                text-xs
-                font-bold
-                bg-blue-100
-                rounded-full
-                text-gray
-              "
+              class="px-2 py-1 text-xs font-bold bg-blue-100 rounded-full  text-gray"
               v-if="group.isDefault === 'true'"
             >
               Default
@@ -128,23 +120,11 @@
         </div>
       </template>
     </a-table>
-    <!-- <a-modal
-      v-model:visible="isAddGroupModalVisible"
-      class="addGroupModal"
-      title="Create New Group"
-      :footer="null"
-      :destroy-on-close="true"
-    >
-      <AddGroup @createGroup="handleCreateGroup" />
-    </a-modal> -->
-    <!-- <router-view></router-view> -->
-    <!-- <AddGroup @createGroup="handleCreateGroup" /> -->
   </div>
 </template>
 <script lang="ts">
 import { ref, reactive, defineComponent, computed, watch } from "vue";
 import useGroups from "~/composables/group/useGroups";
-import AddGroup from "./addGroup.vue";
 import ErrorView from "@common/error/index.vue";
 import GroupPreviewDrawer from "./groupPreview/groupPreviewDrawer.vue";
 import { Group } from "~/api/auth/group";
@@ -154,24 +134,17 @@ import { useGroupPreview } from "~/composables/drawer/showGroupPreview";
 import { useRouter } from "vue-router";
 export default defineComponent({
   components: {
-    AddGroup,
     ErrorView,
     GroupPreviewDrawer,
   },
   setup(props, context) {
     const router = useRouter();
-    const isAddGroupModalVisible = ref(false);
     const defaultTab = ref("about");
     const showGroupPreview = ref(false);
     const markAsDefaultLoading = ref(false);
     const deleteGroupLoading = ref(false);
     const showActionsDropdown = ref(false);
-    const toggleAddGroupModal = () => {
-      // router.push(`/admin/groups/new`);
-      router.push({ path: `/admin/groups/new` });
 
-      // isAddGroupModalVisible.value = !isAddGroupModalVisible.value;
-    };
     let selectedGroupId = ref("");
     const groupListAPIParams = reactive({
       limit: 15,
@@ -267,10 +240,6 @@ export default defineComponent({
         { immediate: true }
       );
     };
-    const handleCreateGroup = () => {
-      isAddGroupModalVisible.value = false;
-      getGroupList();
-    };
     // BEGIN: GROUP PREVIEW
     const {
       showPreview,
@@ -322,8 +291,6 @@ export default defineComponent({
       );
     };
     return {
-      isAddGroupModalVisible,
-      toggleAddGroupModal,
       searchText,
       onSearch,
       groupList,
@@ -337,7 +304,6 @@ export default defineComponent({
       selectedGroup,
       handleClosePreview,
       handleDeleteGroup,
-      handleCreateGroup,
       getGroupList,
       handleAddMembers,
       defaultTab,

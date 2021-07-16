@@ -226,10 +226,6 @@ import {
 import ImportMetadataFromXML from "../common/importMetadataFromXML.vue";
 import ImportText from "../common/importText.vue";
 
-import { Tenant } from "~/api2/tenant";
-import { IConfig } from "swrv";
-import { AxiosRequestConfig } from "axios";
-
 import { useTenantStore } from "~/pinia/tenants";
 
 import {
@@ -245,6 +241,7 @@ import { copyToClipboard } from "~/utils/clipboard";
 import { IdentityProvider } from "~/api/auth/identityProvider";
 // @ts-ignore
 import { downloadFile } from "~/utils/download";
+import { Tenant } from "~/api/auth/tenant";
 
 interface FormState {
   alias: string;
@@ -268,7 +265,7 @@ export default defineComponent({
     });
     const isLoading = ref(false);
     const tenantStore = useTenantStore();
-    const tenantData: any = computed(() => tenantStore.tenant);
+    const identityProviders = computed(() => tenantStore.getIdentityProviders);
 
     const defaultMappers = mapperList;
 
@@ -415,8 +412,7 @@ export default defineComponent({
       }
     };
     const checkAliasPresent = () => {
-      const identityProviders: Array<any> = tenantData?.identityProviders || [];
-      const alias = identityProviders.find(
+      const alias = identityProviders.value.find(
         (provider) => provider.alias === ssoForm.alias
       );
       return alias ? true : false;
@@ -464,6 +460,11 @@ export default defineComponent({
       }
     };
 
+    const updateTenant = async () => {
+      const tenantResponse: any = await Tenant.Get();
+      tenantStore.setData(tenantResponse);
+    };
+
     const copyText = (url: string) => {
       copyToClipboard(url);
       message.success("URL copied");
@@ -484,22 +485,6 @@ export default defineComponent({
       const filename = "AtlanSPMetadata.xml";
       const type = "text/xml";
       downloadFile(data, filename, type);
-    };
-
-    const updateTenant = async () => {
-      const asyncOptions: IConfig & AxiosRequestConfig = {
-        dedupingInterval: 0,
-        shouldRetryOnError: false,
-        revalidateOnFocus: false,
-      };
-
-      const isAuth = ref(false);
-      const {
-        data: tenantData,
-        isValidating,
-        error,
-      } = await Tenant.GetTenant(asyncOptions, ref(""), isAuth);
-      if (!isValidating && !error) tenantStore.setData(tenantData.value);
     };
 
     onBeforeUnmount(() => {

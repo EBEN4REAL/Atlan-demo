@@ -184,9 +184,7 @@ import { downloadFile } from "~/utils/download";
 
 import { IdentityProvider } from "~/api/auth/identityProvider";
 import { useRouter } from "vue-router";
-import { Tenant } from "~/api2/tenant";
-import { IConfig } from "swrv";
-import { AxiosRequestConfig } from "axios";
+import { Tenant } from "~/api/auth/tenant";
 
 interface FormState {
   alias: string;
@@ -201,8 +199,9 @@ export default defineComponent({
     console.log(context, "context");
     const tenantStore = useTenantStore();
     const router = useRouter();
-    const tenantData: any = computed(() => tenantStore.tenant);
-    const identityProviders: Array<any> = tenantData?.identityProviders || [];
+    const tenantData: any = computed(() => tenantStore.getTenant);
+    const identityProviders: Array<any> =
+      tenantData?.value?.identityProviders || [];
     const ssoProvider: any = computed(() => {
       const ssoProviders = identityProviders.filter((idp) => {
         if (idp?.alias === props.alias) return idp;
@@ -303,19 +302,8 @@ export default defineComponent({
     };
 
     const updateTenant = async () => {
-      const asyncOptions: IConfig & AxiosRequestConfig = {
-        dedupingInterval: 0,
-        shouldRetryOnError: false,
-        revalidateOnFocus: false,
-      };
-
-      const isAuth = ref(false);
-      const {
-        data: tenantData,
-        isValidating,
-        error,
-      } = await Tenant.GetTenant(asyncOptions, ref(""), isAuth);
-      if (!isValidating && !error) tenantStore.setData(tenantData.value);
+      const tenantResponse: any = await Tenant.Get();
+      tenantStore.setData(tenantResponse);
     };
 
     onMounted(() => {

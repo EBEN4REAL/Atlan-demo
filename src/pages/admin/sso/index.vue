@@ -2,9 +2,9 @@
   <div class="w-4/5 p-12 px-12 mx-auto my-8 text-gray-600 bg-white rounded">
     <DisplaySSO
       v-if="identityProviders.length"
-      :providerDetails="providerDetails"
+      :providerDetails="identityProviders[0] || {}"
     />
-    <EmptySSOScreen v-else @configureSSO="configureSSO" />
+    <EmptySSOScreen v-else />
   </div>
 </template>
 <script lang="ts">
@@ -24,20 +24,9 @@ export default defineComponent({
       title: "SSO",
     });
     const tenantStore = useTenantStore();
-    const tenantData: any = computed(() => tenantStore.tenant);
-    const identityProviders: Array<any> = tenantData?.identityProviders || [];
-    const configureSSO = (option: string) => {
-      console.log("value from child", option);
-    };
 
-    console.log(identityProviders, tenantData);
-
-    const providerDetails = computed(() => identityProviders[0] || {});
     return {
-      tenantData,
-      identityProviders,
-      configureSSO,
-      providerDetails,
+      identityProviders: computed(() => tenantStore.getIdentityProviders),
     };
   },
 });

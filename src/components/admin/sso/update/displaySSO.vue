@@ -83,7 +83,9 @@
           <a-button class="mx-2" @click="showDeleteSSOModal"> Cancel </a-button>
         </div>
         <div>
-          <a-button type="danger" @click="deleteSSO"> Delete </a-button>
+          <a-button type="danger" :loading="isDeleting" @click="deleteSSO">
+            Delete
+          </a-button>
         </div>
       </div>
     </a-modal>
@@ -103,14 +105,13 @@ import { IdentityProvider } from "~/api/auth/identityProvider";
 import { message } from "ant-design-vue";
 
 import { useTenantStore } from "~/pinia/tenants";
-import { Tenant } from "~/api2/tenant";
-import { IConfig } from "swrv";
-import { AxiosRequestConfig } from "axios";
+import { Tenant } from "~/api/auth/tenant";
 
 export default defineComponent({
   props: ["providerDetails"],
   setup(props) {
     const showDeleteModal = ref(false);
+    const isDeleting = ref(false);
     const ssoForm = reactive({
       enabled: false,
       enforceSSO: false,
@@ -187,7 +188,7 @@ export default defineComponent({
         ssoForm?.enabled !== props.providerDetails?.enabled &&
           (await enableSSO());
         ssoForm?.enforceSSO !== defaultSSO.value && (await changeEnforceSSO());
-        await getTenant();
+        await updateTenant();
         await setConfig();
         message.success({
           content: "SSO updated!",
@@ -207,6 +208,7 @@ export default defineComponent({
     };
     const deleteSSO = async () => {
       try {
+        isDeleting.value = true;
         await IdentityProvider.deleteIDP(props.providerDetails?.alias);
         defaultSSO.value &&
           (await IdentityProvider.deleteDefaultIDP(
@@ -215,8 +217,9 @@ export default defineComponent({
         message.success({
           content: "Provider removed.",
         });
-        await getTenant();
+        await updateTenant();
         showDeleteSSOModal();
+        isDeleting.value = false;
       } catch (error) {
         console.error("Unable to delete SSO::", error.message);
         message.error({
@@ -225,20 +228,9 @@ export default defineComponent({
       }
     };
 
-    const getTenant = async () => {
-      const asyncOptions: IConfig & AxiosRequestConfig = {
-        dedupingInterval: 0,
-        shouldRetryOnError: false,
-        revalidateOnFocus: false,
-      };
-
-      const isAuth = ref(false);
-      const {
-        data: tenantData,
-        isValidating,
-        error,
-      } = await Tenant.GetTenant(asyncOptions, ref(""), isAuth);
-      if (!isValidating && !error) tenantStore.setData(tenantData.value);
+    const updateTenant = async () => {
+      const tenantResponse: any = await Tenant.Get();
+      tenantStore.setData(tenantResponse);
     };
 
     onMounted(async () => {
@@ -261,6 +253,7 @@ export default defineComponent({
       isChangesDone,
       formLoading,
       submitForm,
+      isDeleting,
     };
   },
 });

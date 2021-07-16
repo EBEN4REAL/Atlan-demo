@@ -12,10 +12,14 @@ export type Getters = {
 const RESTRICTED_CLASSIFICATION_PREFIX = "atlan_";
 
 const orderTreeNodesAsc = (node0, node1) => {
-  const compareStrings = (a, b) => {
-    a = a.toLowerCase();
-    b = b.toLowerCase();
-    return a < b ? -1 : a > b ? 1 : 0;
+  const compareStrings = (a: string, b: string) => {
+    if (a < b) {
+      return -1;
+    }
+    if (a > b) {
+      return 1;
+    }
+    return 0;
   };
   return compareStrings(node0.title, node1.title);
 };

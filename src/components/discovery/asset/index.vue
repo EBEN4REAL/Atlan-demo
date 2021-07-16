@@ -506,9 +506,8 @@ export default defineComponent({
     };
 
     watch(
-      [assetType, () => BMAttributeProjection.value.length],
+      [assetType],
       (n, o) => {
-        console.log("asset type changed");
         isAggregate.value = false;
         // abort();
         offset.value = 0;

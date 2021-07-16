@@ -5,7 +5,6 @@
       Add, remove and manage their members
     </div>
     <GroupList></GroupList>
-    <router-view></router-view>
   </div>
 </template>
 

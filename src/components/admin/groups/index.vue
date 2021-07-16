@@ -355,11 +355,6 @@ export default defineComponent({
       ],
     };
   },
-  methods: {
-    addNew() {
-      this.$router.push("/admin/groups/new");
-    },
-  },
 });
 </script>
 <style lang="less">

@@ -67,19 +67,10 @@
                     :avatarSize="40"
                     class="mr-2"
                   />
-                  <!-- <a-avatar
-                    shape="square"
-                    class="mr-1 ant-tag-blue text-gray avatars"
-                  >
-                    {{ getNameInitials(getNameInTitleCase(user.name)) }}
-                  </a-avatar> -->
                   <div class="ml-2">
                     <div class="text-gray">
                       <div class="mr-2 font-bold">{{ user.name }}</div>
                       <div class="mr-2 text-gray-400">{{ user.email }}</div>
-                      <!-- <span class="font-normal"
-                        >({{ user.group_count_string }})</span
-                      > -->
                     </div>
                   </div>
                 </div>

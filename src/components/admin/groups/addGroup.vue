@@ -9,8 +9,8 @@
           :labelCol="{ span: 5 }"
           :wrapperCol="{ span: 9 }"
         >
-          <div class="">
-            <div class="">
+          <div>
+            <div>
               <div>
                 <a-form-item label="Name" name="name">
                   <a-input v-model:value="group.name" @input="setGroupAlias" />
@@ -178,7 +178,6 @@ export default defineComponent({
           if (isReady && !error.value && !isLoading.value) {
             message.success("Group added");
             router.push(`/admin/groups`);
-            // context.emit("createGroup");
           } else if (error && error.value) {
             message.error("Unable to create group, please try again.");
           }
@@ -212,9 +211,5 @@ export default defineComponent({
   overflow-y: auto;
 }
 </style>
-<route lang="yaml">
-  meta:
-    layout: default
-    requiresAuth: true
-</route>
+
 

@@ -53,6 +53,7 @@ export default defineComponent({
     Overview: defineAsyncComponent(() => import("./tabs/overview/index.vue")),
     Audit: defineAsyncComponent(() => import("./tabs/audit/index.vue")),
     Columns: defineAsyncComponent(() => import("./tabs/columns/index.vue")),
+    Lineage: defineAsyncComponent(() => import("./tabs/lineage/index.vue")),
   },
   props: {
     item: {

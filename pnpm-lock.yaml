@@ -8,6 +8,7 @@ overrides:
 
 specifiers:
   '@babel/core': ^7.14.6
+  '@dagrejs/graphlib': ^2.1.4
   '@fortawesome/fontawesome-svg-core': ^1.2.35
   '@fortawesome/pro-light-svg-icons': ^5.15.3
   '@fortawesome/pro-solid-svg-icons': ^5.15.3
@@ -118,6 +119,7 @@ specifiers:
   workbox-routing: ^6.1.5
 
 dependencies:
+  '@dagrejs/graphlib': 2.1.4
   '@fortawesome/fontawesome-svg-core': 1.2.35
   '@fortawesome/pro-light-svg-icons': 5.15.3
   '@fortawesome/pro-solid-svg-icons': 5.15.3
@@ -1501,6 +1503,12 @@ packages:
   /@ctrl/tinycolor/3.4.0:
     resolution: {integrity: sha512-JZButFdZ1+/xAfpguQHoabIXkcqRRKpMrWKBkpEZZyxfY9C1DpADFB8PEqGSTeFr135SaTRfKqGKx5xSCLI7ZQ==}
     engines: {node: '>=10'}
+    dev: false
+
+  /@dagrejs/graphlib/2.1.4:
+    resolution: {integrity: sha512-QCg9sL4uhjn468FDEsb/S9hS2xUZSrv/+dApb1Ze5VKO96pTXKNJZ6MGhIpgWkc1TVhbVGH9/7rq/Mf8/jWicw==}
+    dependencies:
+      lodash: 4.17.21
     dev: false
 
   /@emmetio/abbreviation/2.2.2:

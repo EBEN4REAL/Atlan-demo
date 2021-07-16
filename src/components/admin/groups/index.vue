@@ -10,7 +10,9 @@
           @change="onSearch"
         ></a-input-search>
       </div>
-      <a-button @click="toggleAddGroupModal" class="rounded-md" type="primary">New Group</a-button>
+      <router-link to="/admin/groups/new">
+        <a-button class="rounded-md" type="primary">New Group</a-button>
+      </router-link>
     </div>
     <div
       class="flex flex-col items-center h-full align-middle bg-white"
@@ -18,7 +20,16 @@
     >
       <ErrorView>
         <div class="mt-3">
-          <a-button size="large" type="primary" ghost @click="()=>{getGroupList();}">
+          <a-button
+            size="large"
+            type="primary"
+            ghost
+            @click="
+              () => {
+                getGroupList();
+              }
+            "
+          >
             <fa icon="fal sync" class="mr-2"></fa>Try again
           </a-button>
         </div>
@@ -47,11 +58,21 @@
           "
         >
           <div class="flex capitalize truncate cursor-pointer text-primary">
-            <div class="truncate max-w-3/4">{{group.name}}</div>
+            <div class="truncate max-w-3/4">{{ group.name }}</div>
             <div
-              class="px-2 py-1 text-xs font-bold bg-blue-100 rounded-full text-gray"
+              class="
+                px-2
+                py-1
+                text-xs
+                font-bold
+                bg-blue-100
+                rounded-full
+                text-gray
+              "
               v-if="group.isDefault === 'true'"
-            >Default</div>
+            >
+              Default
+            </div>
           </div>
           <p class="mb-0 text-gray-400 truncate">{{ group.description }}</p>
         </div>
@@ -64,7 +85,11 @@
             </a>
             <template #overlay>
               <a-menu>
-                <a-menu-item key="0" @click="handleAddMembers(group)" class="flex">
+                <a-menu-item
+                  key="0"
+                  @click="handleAddMembers(group)"
+                  class="flex"
+                >
                   <div class="flex">
                     <fa icon="fal plus" class="mr-2"></fa>Add Members
                   </div>
@@ -73,22 +98,23 @@
                   <div class="flex">
                     <div v-if="markAsDefaultLoading">
                       <fa
-                        style="vertical-align:middle;"
+                        style="vertical-align: middle"
                         icon="fal circle-notch"
                         class="mr-1 animate-spin"
                       />
                     </div>
                     <a-checkbox
                       @change="handleToggleDefault(group)"
-                      :checked="group.isDefault==='true'"
-                    >Mark as default</a-checkbox>
+                      :checked="group.isDefault === 'true'"
+                      >Mark as default</a-checkbox
+                    >
                   </div>
                 </a-menu-item>
                 <a-menu-item key="2" @click="() => handleDeleteGroup(group.id)">
                   <div class="flex text-red-600">
                     <div v-if="deleteGroupLoading">
                       <fa
-                        style="vertical-align:middle;"
+                        style="vertical-align: middle"
                         icon="fal circle-notch"
                         class="mr-1 animate-spin"
                       />
@@ -102,7 +128,7 @@
         </div>
       </template>
     </a-table>
-    <a-modal
+    <!-- <a-modal
       v-model:visible="isAddGroupModalVisible"
       class="addGroupModal"
       title="Create New Group"
@@ -110,7 +136,9 @@
       :destroy-on-close="true"
     >
       <AddGroup @createGroup="handleCreateGroup" />
-    </a-modal>
+    </a-modal> -->
+    <!-- <router-view></router-view> -->
+    <!-- <AddGroup @createGroup="handleCreateGroup" /> -->
   </div>
 </template>
 <script lang="ts">
@@ -123,6 +151,7 @@ import { Group } from "~/api/auth/group";
 import { message } from "ant-design-vue";
 import { useDebounceFn } from "@vueuse/core";
 import { useGroupPreview } from "~/composables/drawer/showGroupPreview";
+import { useRouter } from "vue-router";
 export default defineComponent({
   components: {
     AddGroup,
@@ -130,6 +159,7 @@ export default defineComponent({
     GroupPreviewDrawer,
   },
   setup(props, context) {
+    const router = useRouter();
     const isAddGroupModalVisible = ref(false);
     const defaultTab = ref("about");
     const showGroupPreview = ref(false);
@@ -137,7 +167,10 @@ export default defineComponent({
     const deleteGroupLoading = ref(false);
     const showActionsDropdown = ref(false);
     const toggleAddGroupModal = () => {
-      isAddGroupModalVisible.value = !isAddGroupModalVisible.value;
+      // router.push(`/admin/groups/new`);
+      router.push({ path: `/admin/groups/new` });
+
+      // isAddGroupModalVisible.value = !isAddGroupModalVisible.value;
     };
     let selectedGroupId = ref("");
     const groupListAPIParams = reactive({
@@ -356,7 +389,11 @@ export default defineComponent({
       ],
     };
   },
-  methods: {},
+  methods: {
+    addNew() {
+      this.$router.push("/admin/groups/new");
+    },
+  },
 });
 </script>
 <style lang="less">
@@ -367,3 +404,8 @@ export default defineComponent({
   }
 }
 </style>
+<route lang="yaml">
+  meta:
+    layout: default
+    requiresAuth: true
+</route>

@@ -1,48 +1,93 @@
 <template>
   <div>
-    <a-form :model="group" :rules="validations" layout="vertical" @submit="handleSubmit">
-      <div class="flex justify-between">
-        <div class="w-1/2">
-          <a-form-item label="Group Name" name="name">
-            <a-input v-model:value="group.name" @input="setGroupAlias" />
-          </a-form-item>
-        </div>
-        <div>
-          <a-form-item label="Group Alias" name="alias">
-            <a-input v-model:value="group.alias" @input="restrictGroupAlias" />
-          </a-form-item>
-        </div>
+    <div class="form-height">
+      <div class="max-w-2xl">
+        <a-form
+          :labelAlign="'right'"
+          :model="group"
+          :rules="validations"
+          :labelCol="{ span: 5 }"
+          :wrapperCol="{ span: 9 }"
+        >
+          <div class="">
+            <div class="">
+              <div>
+                <a-form-item label="Name" name="name">
+                  <a-input v-model:value="group.name" @input="setGroupAlias" />
+                </a-form-item>
+              </div>
+              <div>
+                <a-form-item label="Alias" name="alias">
+                  <a-input
+                    v-model:value="group.alias"
+                    @input="restrictGroupAlias"
+                  />
+                </a-form-item>
+              </div>
+            </div>
+            <a-form-item
+              :wrapperCol="{ span: 12 }"
+              label="Description"
+              name="description"
+            >
+              <a-textarea v-model:value="group.description" :rows="2" />
+            </a-form-item>
+            <a-form-item :labelCol="{ span: 5 }" :wrapperCol="{ span: 15 }">
+              <template #label>
+                <span class="">Mark as default</span>
+                <a-tooltip
+                  :title="'New users will be automatically added to default groups'"
+                  placement="right"
+                  ><span class="ml-1"
+                    ><fa icon="fal info-circle" class="pushtop"></fa></span
+                ></a-tooltip>
+              </template>
+              <a-switch v-model:checked="isDefault" />
+              <span v-if="isDefault" class="ml-2"
+                >All new users will be automatically added to this group</span
+              >
+            </a-form-item>
+            <div class="mt-4 border-b"></div>
+            <div class="mt-3 ml-2">
+              <div class="mb-2">
+                <span class="mr-2">Select users</span
+                ><span class="text-gray-400">(Optional)</span>
+              </div>
+              <UserList
+                userListHeaderClass="min-w-full"
+                :userListStyle="{ maxHeight: 'calc(100vh - 35rem)' }"
+                @updateSelectedUsers="updateUserList"
+              />
+            </div>
+          </div>
+        </a-form>
       </div>
-      <a-form-item label="Group Description" name="description">
-        <a-textarea v-model:value="group.description" :rows="3" />
-      </a-form-item>
-      <a-checkbox class="flex items-center mb-2" v-model:checked="isDefault">
-        <div class="flex items-center">
-          <div class="mr-2">Mark as default</div>
-          <a-tooltip>
-            <template #title>New users will be automatically added to default groups</template>
-            <fa icon="fal info-circle" class="text-xs" />
-          </a-tooltip>
-        </div>
-      </a-checkbox>
-      <UserList class="max-h-48" @updateSelectedUsers="updateUserList" />
-      <div class="flex justify-end mt-6">
-        <div>
-          <a-button
-            type="primary"
-            size="large"
-            html-type="submit"
-            :disabled="isSubmitDisabled"
-            :loading="createGroupLoading"
-          >Create Group</a-button>
-        </div>
+    </div>
+    <div class="flex justify-end max-w-2xl mt-4">
+      <div class="flex items-center text-xl">
+        <a-button
+          type="link"
+          @click="routeToGroups"
+          class="mr-3 font-bold cursor-pointer text-gray-dark"
+          >Cancel</a-button
+        >
+        <a-button
+          type="primary"
+          size="large"
+          html-type="submit"
+          @click="handleSubmit"
+          :disabled="isSubmitDisabled"
+          :loading="createGroupLoading"
+          >Create Group</a-button
+        >
       </div>
-    </a-form>
+    </div>
   </div>
 </template>
 <script lang="ts">
 import { Group } from "~/api/auth/group";
 import UserList from "~/components/admin/groups/common/userList.vue";
+import { useRouter } from "vue-router";
 import {
   defineComponent,
   ref,
@@ -72,6 +117,7 @@ export default defineComponent({
   },
   components: { UserList },
   setup(props, context) {
+    const router = useRouter();
     const createGroupLoading = ref(false);
     const isDefault = ref(false);
     const group: UnwrapRef<Group> = reactive({
@@ -106,8 +152,7 @@ export default defineComponent({
     const updateUserList = (list) => {
       userIds.value = list;
     };
-    const handleSubmit = async (event) => {
-      event.preventDefault();
+    const handleSubmit = () => {
       const currentDate = new Date().toISOString();
       const createdBy = username.value;
       // deliberately switching alias and name so as to keep alias as a unique identifier for the group, for keycloak name is the unique identifier. For us, alias is the unique identifier and different groups with same name can exist.
@@ -132,7 +177,8 @@ export default defineComponent({
           createGroupLoading.value = isLoading.value;
           if (isReady && !error.value && !isLoading.value) {
             message.success("Group added");
-            context.emit("createGroup");
+            router.push(`/admin/groups`);
+            // context.emit("createGroup");
           } else if (error && error.value) {
             message.error("Unable to create group, please try again.");
           }
@@ -140,6 +186,10 @@ export default defineComponent({
         { immediate: true }
       );
     };
+    const routeToGroups = () => {
+      router.push(`/admin/groups`);
+    };
+
     return {
       group,
       isSubmitDisabled,
@@ -150,15 +200,21 @@ export default defineComponent({
       restrictGroupAlias,
       updateUserList,
       isDefault,
+      routeToGroups,
     };
   },
 });
 </script>
-<style lang="less">
-.addGroupModal {
-  .ant-modal {
-    top: 70px !important;
-  }
+
+<style lang="less" scoped>
+.form-height {
+  max-height: calc(100vh - 13rem) !important;
+  overflow-y: auto;
 }
 </style>
+<route lang="yaml">
+  meta:
+    layout: default
+    requiresAuth: true
+</route>
 

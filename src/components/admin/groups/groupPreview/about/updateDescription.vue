@@ -3,7 +3,7 @@
     <div>
       <div class="flex flex-row items-center cursor-pointer group">
         <p class="mb-0 text-gray-400">
-          Group Description
+          Description
           <fa
             icon="fal check"
             class="ml-1 text-success"

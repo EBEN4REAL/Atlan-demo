@@ -1,3 +1,7 @@
+
+/**
+ * @desc default template for new BM attribute
+ */
 export const DEFAULT_ATTRIBUTE = {
   cardinality: "SINGLE",
   includeInNotification: false,
@@ -9,16 +13,21 @@ export const DEFAULT_ATTRIBUTE = {
     /* applicableEntityTypes's value needs to be send stringified when adding/updating in Atlas */
     applicableEntityTypes: [],
     maxStrLength: "50",
-    displayName: "New Attribute"
+    displayName: "",
+    isEnum: false,
+    isMultiValued: false,
+    enumType: ""
   },
   searchWeight: 3,
   typeName: "string",
   valuesMaxCount: 1,
   valuesMinCount: 0,
-  multiValueSelect: false,
   isNew: true
 };
 
+/**
+ * @desc rules for BM attribute card form fields,
+ */
 export const ATTRIBUTE_INPUT_VALIDATION_RULES = {
   options: {
     displayName: [
@@ -28,11 +37,23 @@ export const ATTRIBUTE_INPUT_VALIDATION_RULES = {
         trigger: "change"
       }
     ],
+    enumType: [
+      {
+        required: true,
+        message: "Please select Enum type",
+        trigger: "change"
+      }
+    ],
     maxStrLength: [
       {
         required: true,
         type: 'integer',
-        message: "Please input attribute max length",
+        message: "Please add attribute max length",
+        trigger: "change"
+      },
+      {
+        min: 1,
+        message: "Max String Length must be greater than 0",
         trigger: "change"
       }
     ],
@@ -40,7 +61,7 @@ export const ATTRIBUTE_INPUT_VALIDATION_RULES = {
       {
         required: true,
         type: 'array',
-        message: "Please input applicable asset types for this attribute.",
+        message: "Please add applicable asset types for this attribute.",
         trigger: "change"
       }
     ],
@@ -52,13 +73,7 @@ export const ATTRIBUTE_INPUT_VALIDATION_RULES = {
       trigger: "change"
     }
   ],
-  enumType: [
-    {
-      required: true,
-      message: "Please select Enum type",
-      trigger: "change"
-    }
-  ],
+
   searchWeight: [
     {
       required: true,
@@ -70,11 +85,13 @@ export const ATTRIBUTE_INPUT_VALIDATION_RULES = {
 
 };
 
+/**
+ * @desc all supported BM attribute types defined
+ */
 export const ATTRIBUTE_TYPES = [
   {
     label: "String",
     id: "string",
-    multiValueType: "array<string>",
     extraAttributeOptions: {
       maxStrLength: "50"
     }
@@ -82,32 +99,26 @@ export const ATTRIBUTE_TYPES = [
   {
     label: "Integer",
     id: "int",
-    multiValueType: "array<int>"
   },
   {
     label: "Float",
     id: "float",
-    multiValueType: "array<float>"
   },
   {
     label: "Double",
     id: "double",
-    multiValueType: "array<double>"
   },
   {
     label: "Long",
     id: "long",
-    multiValueType: "array<long>"
   },
   {
     label: "Short",
     id: "short",
-    multiValueType: "array<short>"
   },
   {
     label: "Date",
     id: "date",
-    multiValueType: "array<date>"
   },
   {
     label: "Boolean",
@@ -117,6 +128,5 @@ export const ATTRIBUTE_TYPES = [
   {
     label: "Enum",
     id: "enum",
-    multiValueType: "array<enum>"
   }
 ];

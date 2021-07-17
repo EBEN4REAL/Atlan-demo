@@ -58,7 +58,7 @@
         >
           Save
         </a-button>
-        <a-button v-else variant="alt-primary px-3"> Edit </a-button>
+        <a-button v-else variant="alt-primary px-3"> Saved </a-button>
         <a-dropdown
           trigger="click"
           v-if="localBm.guid !== 'new' && dropdownOptions.length"
@@ -295,10 +295,13 @@ export default defineComponent({
       if (isInvalid) {
         return;
       }
+      // ? extract getting payload into function
       const tempBm = JSON.parse(JSON.stringify(localBm.value));
       if (!tempBm.description.length) tempBm.description = "-";
+      if (!tempBm.name) tempBm.name = tempBm.options.displayName;
       if (tempBm && tempBm.attributeDefs.length) {
         tempBm.attributeDefs.forEach((attribute, index) => {
+          //! is id needed?
           delete tempBm.attributeDefs[index].id;
           // eslint-disable-next-line
           if (tempBm.attributeDefs[index].hasOwnProperty("isNew")) {

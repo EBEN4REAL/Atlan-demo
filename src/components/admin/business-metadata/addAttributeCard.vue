@@ -6,10 +6,12 @@
           type="text"
           v-model:value="attributeInput.data.options.displayName"
           class=""
+          @change="handleFieldChange"
         />
       </a-form-item>
       <a-form-item class="" name="searchWeight">
         <template #label>
+          <span>Search Weight</span>
           <a-popover>
             <template #content>
               <div class="flex flex-col items-center">
@@ -29,11 +31,15 @@
                 <div class="font-size-14">Suggestion: <b>8 - 10</b></div>
               </div>
             </template>
-            <span>Search Weight</span>
+
             <fa icon="fal question-circle" class="ml-2 text-xs"></fa>
           </a-popover>
         </template>
-        <a-select class="" v-model:value="attributeInput.data.searchWeight">
+        <a-select
+          class=""
+          v-model:value="attributeInput.data.searchWeight"
+          @change="handleFieldChange"
+        >
           <a-select-option v-for="n in 10" :key="n" :value="n">{{ n }}</a-select-option>
         </a-select>
       </a-form-item>
@@ -44,6 +50,7 @@
           show-search
           v-model:value="attributeInput.data.typeName"
           :disabled="isEdit"
+          @change="handleTypeNameChange"
           :getPopupContainer="target => target.parentNode"
         >
           <a-select-option
@@ -58,16 +65,17 @@
       <div class="w-full" v-if="attributeInput.data.typeName !== 'boolean'">
         <a-form-item label="Multivalues">
           <div class="mb-1 ">
-            <a-checkbox
+            <a-switch
               class=""
-              :id="`${attributeInput.data.name}-multiValueSelect`"
+              :id="`${attributeInput.data.name}-isMultiValued`"
               :disabled="isEdit"
-              :name="`${attributeInput.data.name}-multiValueSelect`"
-              v-model:checked="attributeInput.data.multiValueSelect"
-              @change="emitUpdate"
+              :name="`${attributeInput.data.name}-isMultiValued`"
+              v-model:checked="attributeInput.data.options.isMultiValued"
+              @change="handleFieldChange"
+              size="small"
             />
-            <label class="ml-1" :for="`${attributeInput.data.name}-multiValueSelect`">{{
-              attributeInput.data.multiValueSelect ? "Enabled" : "Disabled"
+            <label class="ml-1" :for="`${attributeInput.data.name}-isMultiValued`">{{
+              attributeInput.data.options.isMultiValued ? "Enabled" : "Disabled"
             }}</label>
           </div>
         </a-form-item>
@@ -81,27 +89,28 @@
         :name="['options', 'maxStrLength']"
       >
         <a-input-number
+          @change="handleFieldChange"
           v-model:value="attributeInput.data.options.maxStrLength"
           :min="1"
           style="width: 200px"
         />
       </a-form-item>
     </div>
-    <div class="" v-if="attributeInput.data.typeName === 'enum'">
-      <a-form-item class="mb-3" label="Choose Enum" name="enumType">
+    <div class="" v-if="attributeInput.data.options.isEnum.toString() === 'true'">
+      <a-form-item class="mb-3" label="Choose Enum" :name="['options', 'enumType']">
         <a-tree-select
-          v-model:value="enumType"
+          v-model:value="attributeInput.data.options.enumType"
           noResultsText="No enum found"
           :tree-data="finalEnumsList"
           :multiple="false"
           :async="false"
           placeholder="Select enum"
           :disabled="isEdit"
-          @change="emitUpdate"
+          @change="handleFieldChange"
         >
         </a-tree-select>
       </a-form-item>
-      <div class="" v-show="selectedEnumOptions.length">
+      <div class="" v-show="selectedEnumOptions?.length">
         <div class="mb-2 font-normal font-size-sm">Enum options:</div>
         <p>
           <a-tag v-for="(e, x) in selectedEnumOptions" class="mb-1" :key="x">{{
@@ -112,10 +121,20 @@
     </div>
     <div class="flex">
       <div class="relative" style="width: 100%;">
-        <a-form-item
-          :name="['options', 'applicableEntityTypes']"
-          label="Applicable Asset Types"
-        >
+        <a-form-item :name="['options', 'applicableEntityTypes']" class="mb-0">
+          <template #label>
+            <span>Applicable Asset type</span>
+            <a-popover>
+              <template #content>
+                <div class="flex flex-col items-center w-60">
+                  Applicable Asset type once saved cannot be removed, you can still add
+                  new Applicable Asset type if available.
+                </div>
+              </template>
+
+              <fa icon="fal info-circle" class="ml-2 text-xs"></fa>
+            </a-popover>
+          </template>
           <a-tree-select
             v-model:value="attributeInput.data.options.applicableEntityTypes"
             noResultsText="No entities found"
@@ -124,14 +143,23 @@
             :multiple="true"
             :async="false"
             tree-checkable
-            :allowClear="!isEdit"
-            placeholder="Select entity types"
-            :class="isEdit ? 'custom-class-edit' : ''"
+            :placeholder="isEdit ? 'Add more types' : 'Select entity types'"
             dropdownClassName="type-select-dd"
             :maxTagCount="5"
             :getPopupContainer="target => target.parentNode"
+            @change="handleFieldChange"
+            class="mb-2"
+            :allowClear="true"
           >
           </a-tree-select>
+          <div class="" v-show="addedEntityTypes?.length">
+            <div class="mb-2 font-normal font-size-sm">Previously added:</div>
+            <p>
+              <a-tag v-for="(t, x) in addedEntityTypes" class="mb-1" :key="x">{{
+                t
+              }}</a-tag>
+            </p>
+          </div>
         </a-form-item>
       </div>
     </div>
@@ -139,7 +167,7 @@
 </template>
 <script lang="ts">
 import { defineComponent } from "vue";
-import { reactive, ref, toRefs, computed, onMounted, nextTick, watch } from "vue";
+import { reactive, ref, computed, onMounted } from "vue";
 import {
   DEFAULT_ATTRIBUTE,
   ATTRIBUTE_INPUT_VALIDATION_RULES,
@@ -150,6 +178,7 @@ import {
 // * Utils
 import { generateUUID } from "~/utils/generator";
 import _ from "lodash";
+import Object from "splitpanes";
 
 // * Composables
 import useEnums from "@/admin/enums/composables/useEnums";
@@ -177,14 +206,15 @@ export default defineComponent({
     };
     // * Data
     const formRef = ref();
-    // !!!!!
     let attributeInput = reactive({
       data: JSON.parse(JSON.stringify(getDefaultAttributeTemplate())),
     });
+
     let rules = reactive(JSON.parse(JSON.stringify(ATTRIBUTE_INPUT_VALIDATION_RULES)));
     let attributesTypes = reactive(JSON.parse(JSON.stringify(ATTRIBUTE_TYPES)));
-    let enumType = ref(null);
+
     let enumTypeOtions = ref(null);
+
     // * Composables
     const { enumListData: enumsList } = useEnums();
     const { getApplicableEntitiesForBmAttributes } = useAssetQualifiedName();
@@ -199,33 +229,29 @@ export default defineComponent({
       }
       return [];
     });
+
+    const addedEntityTypes = ref([]);
+
+    /** @desc all applicable entities available to be attached
+     * if not new attribute, dont show already added attribute
+     * display already added attirbutes in tags
+     */
     const finalApplicableTypeNamesOptions = computed(() => {
       let options = getApplicableEntitiesForBmAttributes();
-      if (
-        props.isEdit &&
-        props.attribute.options &&
-        props.attribute.options.applicableEntityTypes
-      ) {
-        const selectedOptions = JSON.parse(
-          props.attribute.options.applicableEntityTypes || "[]"
-        );
-        options = options.map((option: { id: string; label: string }) => ({
-          title: option.label,
-          key: option.id,
-          value: option.id,
-          id: option.id,
-          disabled: selectedOptions.includes(option.id),
-        }));
-        return options;
-      }
-      return options
-        .filter(t => t.id !== "AtlanSavedQuery")
-        .map(o => ({ title: o.label, value: o.id, key: o.id }));
+      if (props.attribute?.options?.applicableEntityTypes)
+        return options
+          .filter(t => !addedEntityTypes.value.includes(t.id))
+          .map(o => ({ title: o.label, value: o.id, key: o.id }));
     });
-
+    /**
+     * @desc list of the options of the selected enum
+     * make it function
+     */
     const selectedEnumOptions = computed(() => {
-      if (enumType.value) {
-        const reqIndex = enumsList.value.findIndex(item => item.name === enumType.value);
+      if (attributeInput.data.options.isEnum) {
+        const reqIndex = enumsList.value.findIndex(
+          item => item.name === attributeInput.data.options.enumType
+        );
         if (
           reqIndex > -1 &&
           enumsList.value[reqIndex].elementDefs &&
@@ -242,198 +268,102 @@ export default defineComponent({
       return null;
     });
     // * Methods
-    const normalize = (attribute: {
-      typeName: string;
-      multiValueSelect: boolean;
-      options: { applicableEntityTypes: object[] };
-    }) => {
-      if (attribute) {
-        return {
-          ...attribute,
-          // eslint-disable-next-line
-          ...(attribute.typeName === "enum" && enumType.value
-            ? {
-                typeName: attribute.multiValueSelect
-                  ? `array<${enumType.value}>`
-                  : enumType.value,
-              }
-            : attribute.multiValueSelect
-            ? {
-                typeName:
-                  typeof ATTRIBUTE_TYPES.find(
-                    (type: { id: string }) => type.id === attribute.typeName
-                  ) !== "undefined"
-                    ? ATTRIBUTE_TYPES.find(
-                        (type: { id: string }) => type.id === attribute.typeName
-                      ).multiValueType
-                    : attribute.typeName,
-              }
-            : {}),
-          options: {
-            ...attribute.options,
-            applicableEntityTypes: JSON.stringify(
-              attribute.options.applicableEntityTypes
-            ),
-          },
-        };
-      }
-      return attribute;
+
+    const handleTypeNameChange = (value: string) => {
+      // ? check if enum
+      if (value === "enum") {
+        attributeInput.data.options.isEnum = true;
+      } else attributeInput.data.options.isEnum = false;
+      handleFieldChange();
     };
 
-    const emitUpdate = () => {
-      context.emit(
-        "updateAttribute",
-        normalize(JSON.parse(JSON.stringify(attributeInput.data)))
-      );
+    /**
+     * @param {Object} data attribute data object
+     * @desc formats some attributes of the object based on the user config, ex. if multivalued ,
+     *       type === array<type>
+     * @returns {Object} modifed attribute data object
+     */
+    const normalize = (data: object) => {
+      const temp = JSON.parse(JSON.stringify(data));
+      // ? stringify applicable type
+      temp.options.applicableEntityTypes = JSON.stringify([
+        ...addedEntityTypes.value,
+        ...temp.options.applicableEntityTypes,
+      ]);
+
+      // ? add enum types as typeName
+      if (temp.typeName === "enum") temp.typeName = temp.options.enumType;
+
+      // ? modify typeName for multivalued
+      if (temp.options.isMultiValued) {
+        temp.typeName = `array<${temp.typeName}>`;
+      }
+
+      // ? remove not-required data
+      if (!temp.typeName.toLowerCase().includes("string")) {
+        if (temp.options.maxStrLength) delete temp.options.maxStrLength;
+      }
+
+      return temp;
     };
+
+    /**
+     * @desc since props is shallow copied, emit the latest changes to parent
+     */
+    const handleFieldChange = () => {
+      context.emit("updateAttribute", normalize(attributeInput.data));
+    };
+
     // * hooks
+
     onMounted(() => {
+      // ? make a local state of the attribute
+      // ? multiValueSelect if type name contains array, needed for multivalued check default.
       if (props.attribute) {
-        attributeInput.data = JSON.parse(
-          JSON.stringify({
-            ...props.attribute,
-            multiValueSelect:
-              props.attribute.typeName && props.attribute.typeName.includes("array"),
-          })
+        attributeInput.data = JSON.parse(JSON.stringify(props.attribute));
+      }
+      // ? By default append all applicable types if is new // also emit?
+      if (props.attribute.isNew) {
+        attributeInput.data.options.applicableEntityTypes = finalApplicableTypeNamesOptions.value.map(
+          t => t.value
         );
-        if (props.attribute.typeName && props.attribute.typeName.includes("array")) {
-          // eslint-disable-next-line
-          const tempTypename = props.attribute.typeName.substring(6).split(">")[0];
-          if (
-            ATTRIBUTE_TYPES.map((item: { id: any }) => item.id).includes(tempTypename)
-          ) {
-            attributeInput.data.typeName = tempTypename;
-          } else {
-            attributeInput.data.typeName = "enum";
-            enumType.value = tempTypename;
-          }
-        } else if (
-          !ATTRIBUTE_TYPES.map((item: { id: any }) => item.id).includes(
-            props.attribute.typeName
-          )
-        ) {
-          enumType.value = JSON.parse(JSON.stringify(props.attribute.typeName));
+      } else {
+        // ? Display added entity types separately
+        addedEntityTypes.value = JSON.parse(
+          attributeInput.data.options.applicableEntityTypes
+        );
+        attributeInput.data.options.applicableEntityTypes = [];
+
+        // ? parse the original type name if multivalued
+        if (attributeInput.data.options.isEnum === "true") {
           attributeInput.data.typeName = "enum";
+        } else if (attributeInput.data.options.isMultiValued === "true") {
+          attributeInput.data.typeName = attributeInput.data.typeName
+            .split("<")[1]
+            .split(">")[0];
         }
       }
-      attributeInput.data.options = {
-        ...attributeInput.data.options,
-        applicableEntityTypes: props.isEdit.value
-          ? JSON.parse(attributeInput.data.options.applicableEntityTypes || "[]")
-          : getApplicableEntitiesForBmAttributes()
-              .map(type => type.id)
-              .filter(t => t.id !== "AtlanSavedQuery"),
-      };
     });
-    // TODO Improve on the watchers
-    watch(
-      () => attributeInput.data.options.displayName,
-      (state, prevState) => {
-        if (prevState !== state && prevState !== undefined) {
-          context.emit(
-            "updateAttribute",
-            normalize(JSON.parse(JSON.stringify(attributeInput.data)))
-          );
-        }
-      }
-    );
-    watch(
-      () => attributeInput.data.searchWeight,
-      (state, prevState) => {
-        if (prevState !== state) {
-          context.emit(
-            "updateAttribute",
-            normalize(JSON.parse(JSON.stringify(attributeInput.data)))
-          );
-        }
-      }
-    );
-
-    watch(
-      () => attributeInput.data.options.applicableEntityTypes,
-      (state, prevState) => {
-        if (prevState.length !== state.length) {
-          context.emit(
-            "updateAttribute",
-            normalize(JSON.parse(JSON.stringify(attributeInput.data)))
-          );
-        }
-      }
-    );
-
-    watch(
-      () => attributeInput.data.options.maxStrLength,
-      (state, prevState) => {
-        if (prevState !== state && prevState !== undefined) {
-          context.emit(
-            "updateAttribute",
-            normalize(JSON.parse(JSON.stringify(attributeInput.data)))
-          );
-        }
-      }
-    );
-
-    watch(
-      () => attributeInput.data.typeName,
-      (state, prevState) => {
-        if (prevState) {
-          const reqIndexOld = ATTRIBUTE_TYPES.findIndex(type => type.id === prevState);
-          if (reqIndexOld > -1 && ATTRIBUTE_TYPES[reqIndexOld].extraAttributeOptions) {
-            Object.keys(ATTRIBUTE_TYPES[reqIndexOld].extraAttributeOptions).forEach(
-              key => {
-                delete attributeInput.data.options[key];
-              }
-            );
-          }
-        }
-
-        if (state) {
-          const reqIndexNew = ATTRIBUTE_TYPES.findIndex(type => type.id === state);
-          if (reqIndexNew > -1 && ATTRIBUTE_TYPES[reqIndexNew].extraAttributeOptions) {
-            attributeInput.data = {
-              ...attributeInput.data,
-              options: {
-                ...attributeInput.data.options,
-                ...ATTRIBUTE_TYPES[reqIndexNew].extraAttributeOptions,
-              },
-              ...(state === "boolean"
-                ? {
-                    multiValueSelect: false,
-                  }
-                : {}),
-            };
-          } else if (state === "boolean") {
-            attributeInput.data = {
-              ...attributeInput.data,
-              multiValueSelect: false,
-            };
-          }
-        }
-      }
-    );
 
     return {
       attributeInput,
       rules,
       attributesTypes,
       finalEnumsList,
-      enumType,
       enumTypeOtions,
       enumsList,
       finalApplicableTypeNamesOptions,
       selectedEnumOptions,
-      emitUpdate,
       formRef,
+      handleFieldChange,
+      handleTypeNameChange,
+      addedEntityTypes,
     };
   },
 });
 </script>
 
 <style lang="less">
-.custom-class-edit .ant-select-selection-item-remove {
-  display: none !important;
-}
-
 .type-select-dd {
   max-height: 30vh !important;
 }

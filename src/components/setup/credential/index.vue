@@ -131,7 +131,7 @@
     </div>
 
     <div
-      class="grid grid-cols-12 px-3 pt-3 border border-gray-200 rounded  flex-nowrap bg-gray-50"
+      class="grid grid-cols-12 gap-2 px-3 pt-3 border border-gray-200 rounded  flex-nowrap bg-gray-50"
     >
       <div class="col-span-12">
         <p class="mb-2 text-sm font-normal text-gray-400">Advanced</p>
@@ -335,7 +335,7 @@ export default defineComponent({
       [key: string]: any;
     } = reactive({
       displayName: "",
-      host: hostLocal.value.default,
+      host: hostLocal.value?.default,
       port: parseInt(portLocal?.value?.default),
       database: databaseLocal?.value?.default,
       connType: props.item?.attributes?.integrationName,
@@ -430,6 +430,7 @@ export default defineComponent({
     };
 
     const handleTest = () => {
+      console.log("handle Test");
       handleNetworkTest();
       handleCredentialTest();
     };

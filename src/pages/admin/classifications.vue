@@ -1,6 +1,20 @@
 <template>
-  <splitpanes class="h-full default-theme">
-    <pane min-size="25" max-size="50" size="25" class="relative p-3 bg-white">
+  <div>
+    <p class="mb-2 text-2xl atlan-gray-500 text-uppercase">
+      Classification
+    </p>
+    <div class="flex items-center justify-between w-full">
+      <p class="mb-0 text-sm text-gray-400">
+        Manage classification tags to build access policies.
+        <span class="ml-2 text-primary">Documentation</span>
+      </p>
+      <a-button type="primary" class="rounded" @click="toggleModal"
+        >+ Add Classification</a-button
+      >
+    </div>
+  </div>
+  <splitpanes class="pt-6 default-theme">
+    <pane min-size="25" max-size="50" size="25" class="relative pr-6 bg-white">
       <a-input
         ref="searchText"
         v-model:value="treeFilterText"
@@ -29,29 +43,15 @@
           @nodeEmit="nodeEmit"
         />
       </div>
-      <div class="absolute flex justify-center w-full add-classification-btn">
-        <a-button type="primary" @click="toggleModal"
-          >Add Classification</a-button
-        >
-      </div>
+      <a-button
+        @click="toggleModal"
+        type="default"
+        class="w-full mt-4 rounded text-primary"
+        >+ Add Classification</a-button
+      >
     </pane>
-    <pane size="74" class="flex flex-col">
-      <ClassificationHeader
-        :classification="selectedClassification"
-        v-if="selectedClassification"
-      />
-
-      <!-- <AssetListWrapper
-        class="px-0 col-10"
-        :key="classificationName"
-        :classificationName="classificationName"
-        :assetListStyle="'height: calc(100vh - 20.3rem);'"
-        style="height: calc(100% - 12.5rem);"
-        :showTermsAssetToggle="true"
-        :type="'classification'"
-        :showLinkEntityButton="true"
-        :selectedClassification="selectedClassification"
-      /> -->
+    <pane size="74" class="flex flex-col pl-6 bg-white">
+      <router-view class="flex-grow" />
     </pane>
 
     <a-modal
@@ -103,10 +103,9 @@ import ConnectionTree from "@/connection/tree/index.vue";
 import Loading from "@common/loaders/section.vue";
 import ErrorView from "@common/error/index.vue";
 import CreateClassificationTree from "@common/tree/classification/index.vue";
-import ClassificationHeader from "~/components/admin/classifications/classificationHeader.vue";
-import AssetListWrapper from "~/components/asset/assetListWrapper.vue";
 import { useRouter } from "vue-router";
-import { useClassificationStore } from "./_store";
+import { useClassificationStore } from "~/components/admin/classifications/_store";
+
 import { ValidateErrorEntity } from "ant-design-vue/es/form/interface";
 import { Classification } from "~/api/atlas/classification";
 
@@ -117,8 +116,6 @@ export default defineComponent({
     Loading,
     ErrorView,
     CreateClassificationTree,
-    ClassificationHeader,
-    AssetListWrapper,
   },
   props: {
     classificationName: String,
@@ -128,7 +125,6 @@ export default defineComponent({
     const router = useRouter();
     const modalVisible = ref(false);
     const createClassificationStatus = ref("");
-    const classificationsStatus = ref("");
     const treeFilterText = ref("");
     const createClassificationFormRef = ref();
     const classificationName = computed(() => props.classificationName);
@@ -140,6 +136,31 @@ export default defineComponent({
     const treeData = computed(() => store.classificationTree);
 
     const filteredData = computed(() => store.filteredClassificationTree);
+
+    // get classifications
+    store.setClassificationsStatus("loading");
+    const {
+      data: classificationData,
+      error: classificationError,
+    } = Classification.getClassificationList({ cache: false });
+
+    watch([classificationData, classificationError], () => {
+      if (classificationData.value) {
+        let classifications = classificationData.value.classificationDefs || [];
+        store.setClassifications(classifications ?? []);
+        store.initializeFilterTree();
+        store.setClassificationsStatus("success");
+        if (store.classificationTree.length > 0) {
+          router.push(
+            `/admin/classifications/${encodeURIComponent(
+              store.classificationTree[0].name
+            )}`
+          );
+        }
+      } else {
+        store.setClassificationsStatus("error");
+      }
+    });
     const nodeEmit = (node) => {
       router.push(`/admin/classifications/${encodeURIComponent(node.name)}`);
     };
@@ -238,27 +259,6 @@ export default defineComponent({
       modalVisible.value = !modalVisible.value;
     };
 
-    // get classifications
-    classificationsStatus.value = "loading";
-
-    const { data: classificationData, error: classificationError } =
-      Classification.getClassificationList({ cache: false });
-
-    watch([classificationData, classificationError], () => {
-      if (classificationData.value) {
-        let classifications = classificationData.value.classificationDefs || [];
-        classifications = classifications.map((classification) => {
-          classification.alias = classification.name;
-          return classification;
-        });
-        store.setClassifications(classifications ?? []);
-        store.initializeFilterTree();
-        classificationsStatus.value = "success";
-      } else {
-        classificationsStatus.value = "error";
-      }
-    });
-
     const handleSelectNode = (node) => {
       console.log(node, "parent");
     };
@@ -277,9 +277,10 @@ export default defineComponent({
           (classification.name || "") === decodeURI(props.classificationName)
       );
     });
+    const handleClickUser = (username: string) => {};
 
     return {
-      classificationsStatus,
+      handleClickUser,
       createClassificationStatus,
       createErrorText,
       filteredData,
@@ -305,11 +306,9 @@ export default defineComponent({
 </script>
 <style lang="less" scoped>
 .treelist {
-  height: calc(100vh - 11rem);
+  height: calc(100vh - 18rem);
 }
-.classification-body {
-  height: calc(100% - 12.5rem);
-}
+
 :global(.ant-form-item-label
     > label.ant-form-item-required:not(.ant-form-item-required-mark-optional)::before) {
   @apply hidden;
@@ -326,3 +325,8 @@ export default defineComponent({
   content: "*";
 }
 </style>
+<route lang="yaml">
+  meta:
+  layout: default
+  requiresAuth: true
+  </route>

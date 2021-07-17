@@ -7,14 +7,19 @@ export type Getters = {
   getClassificationTree(state: State): any;
   getFilteredClassifications(state: State): any;
   getFilteredClassificationsBySeach(searchText: string): any;
+  sortClassifications(sortingOrder: string): any;
 };
 const RESTRICTED_CLASSIFICATION_PREFIX = "atlan_";
 
 const orderTreeNodesAsc = (node0, node1) => {
-  const compareStrings = (a, b) => {
-    a = a.toLowerCase();
-    b = b.toLowerCase();
-    return a < b ? -1 : a > b ? 1 : 0;
+  const compareStrings = (a: string, b: string) => {
+    if (a < b) {
+      return -1;
+    }
+    if (a > b) {
+      return 1;
+    }
+    return 0;
   };
   return compareStrings(node0.title, node1.title);
 };
@@ -104,5 +109,44 @@ export const getters: Getters = {
       (obj) =>
         !obj.name.toLowerCase().startsWith(RESTRICTED_CLASSIFICATION_PREFIX)
     );
+  },
+
+  sortClassifications: (state) => (sortingOrder: string) => {
+    let classifications = [];
+    switch (sortingOrder) {
+      case "asc": {
+        classifications = state.classifications.sort(function(
+          classificationA,
+          classificationB
+        ) {
+          let a = classificationA.displayName;
+          let b = classificationB.displayName;
+          if (a < b) {
+            return -1;
+          }
+          if (a > b) {
+            return 1;
+          }
+          return 0;
+        });
+        break;
+      }
+      case "dsc": {
+        classifications = state.classifications.sort(function(
+          classificationA,
+          classificationB
+        ) {
+          let a = classificationA.displayName;
+          let b = classificationB.displayName;
+          return a < b;
+        });
+        break;
+      }
+      default: {
+        break;
+      }
+    }
+    console.log("classifications", classifications);
+    return classifications;
   },
 };

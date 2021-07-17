@@ -1,4 +1,5 @@
 import { projection } from "~/api/atlas/utils";
+import { BaseAttributes, BasicSearchAttributes } from '~/constant/projection';
 import { Search } from "~/api/atlas/search";
 import { watch, ref } from "vue";
 
@@ -40,12 +41,15 @@ export default function useAsset({
       "extra",
       "metadata",
       "commits",
+      "assetStatus",
+      ...BaseAttributes,
+      ...BasicSearchAttributes
     ],
     entityFilters,
   };
   console.log("here", options, Search.BasicSearch);
 
-  const { response, error, loading, mutate } = Search.BasicSearch(
+  const { response, error, mutate, isValidating } = Search.BasicSearch(
     options,
     {},
     {
@@ -55,7 +59,7 @@ export default function useAsset({
   return {
     response,
     error,
-    loading,
+    loading: isValidating,
     mutate,
   };
 }

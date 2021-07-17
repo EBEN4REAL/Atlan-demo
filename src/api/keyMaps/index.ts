@@ -13,6 +13,7 @@ import apiKeys from "~/api/keyMaps/auth/apiKeys";
 import role from "~/api/keyMaps/auth/role";
 import search from "~/api/keyMaps/search";
 import classification from "~/api/keyMaps/atlas/classification";
+import lineage from "~/api/keyMaps/atlas/lineage";
 import image from "~/api/keyMaps/auth/image";
 import policies from "~/api/keyMaps/auth/policies";
 
@@ -28,6 +29,7 @@ export default {
   ...apiKeys,
   BASIC_SEARCH: () => getAPIPath("auth/atlas", "/search/basic"),
   ...classification,
+  ...lineage,
   ...role,
   ...avatar,
   ...search,

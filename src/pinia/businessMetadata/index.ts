@@ -4,10 +4,10 @@ import { getters } from "./getters";
 
 import { defineStore } from "pinia";
 
-export const useDiscoveryStore = defineStore({
+export const useBusinessMetadataStore = defineStore({
   // name of the store
   // it is used in devtools and allows restoring state
-  id: "discovery",
+  id: "businessMetadata",
   // a function that returns a fresh state
   state: () => state,
 

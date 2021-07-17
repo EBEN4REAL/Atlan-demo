@@ -1,6 +1,6 @@
 // tailwind.config.js
 
-module.exports = {
+export default {
   jit: true,
   important: true,
   purge: {
@@ -32,41 +32,44 @@ module.exports = {
           800: "#0d0f54",
           900: "#06082a",
         },
-        body: "#fff",
-
-        gray: {
-          DEFAULT: "#495057",
-          light: "#ced4da",
-          dark: "#28292a",
-          100: "#f8f8fd",
-          400: "#909ca7",
-        },
-        success: {
-          DEFAULT: "#00a680",
-          muted: "#c9f9ee",
-        },
-        error: {
-          DEFAULT: "#dc2626",
-          muted: "#f9dcd2",
-        },
-        alert: {
-          DEFAULT: "#ffb119",
-          muted: "#ffefd0",
-        },
-        warning: {
-          DEFAULT: "#ff751f",
-        },
-        blueGray: {
-          light: "#e8e8f8",
-          DEFAULT: "#64748B",
-        },
+      body: "#fff",
+      gray: {
+        DEFAULT: "#3E4359",
+        light: "#ced4da",
+        dark: "#28292a",
+        disabled: "#CED4DA",
+        bg: "E5E6EB",
+        description: "#6F7590",
+        100: "#f8f8fd",
+        400: "#909ca7",
       },
+      success: {
+        DEFAULT: "#00a680",
+        muted: "#c9f9ee",
+      },
+      error: {
+        DEFAULT: "#dc2626",
+        muted: "#f9dcd2",
+      },
+      alert: {
+        DEFAULT: "#ffb119",
+        muted: "#ffefd0",
+      },
+      warning: {
+        DEFAULT: "#ff751f",
+      },
+      blueGray: {
+        light: "#e8e8f8",
+        DEFAULT: "#64748B",
+      },
+      }
     },
   },
   variants: {
     extend: {
       animation: ["motion-safe"],
       borderWidth: ["last"],
+      display: ["group-hover"],
     },
   },
   plugins: [

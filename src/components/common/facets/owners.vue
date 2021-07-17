@@ -1,6 +1,3 @@
-
-
-
 <template>
   <div>
     <p class="mb-1 text-xs text-gray-500">Users</p>
@@ -11,7 +8,7 @@
     <Groups @change="handleGroupsChange" v-model:value="groupValue"></Groups>
   </div>
 </template>
-      
+
 <script lang="ts">
 import { defineComponent, PropType, ref } from "vue";
 import Groups from "@common/selector/groups/index.vue";
@@ -40,6 +37,13 @@ export default defineComponent({
         return "";
       },
     },
+    data: {
+      type: Object,
+      required: false,
+      default() {
+        return {};
+      },
+    },
     group: {
       type: String,
       required: false,
@@ -52,10 +56,9 @@ export default defineComponent({
   emits: ["change"],
   setup(props, { emit }) {
     const userValue = ref("");
-    userValue.value = props.user;
-
+    userValue.value = props.user || props.data.userValue;
     const groupValue = ref("");
-    groupValue.value = props.group;
+    groupValue.value = props.group || props.data.groupValue;
 
     const handleUsersChange = (selectedValues: string) => {
       emit("update:user", selectedValues);
@@ -108,9 +111,5 @@ export default defineComponent({
   },
 });
 </script>
-      
-      
-      
-<style lang="less" module>
-</style>
-      
+
+<style lang="less" module></style>

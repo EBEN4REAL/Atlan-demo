@@ -65,9 +65,9 @@
                   <div class="ml-2">
                     <div class="text-gray">
                       <span class="mr-2 font-bold">{{ user.name }}</span>
-                      <span class="font-normal"
+                      <!-- <span class="font-normal"
                         >({{ user.group_count_string }})</span
-                      >
+                      > -->
                     </div>
                   </div>
                 </div>

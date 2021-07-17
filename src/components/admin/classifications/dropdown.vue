@@ -1,9 +1,9 @@
 <template>
   <a-dropdown>
     <fa
-      icon="fal ellipsis-h"
+      icon="fal ellipsis-v"
       @click.prevent
-      class="mr-1 text-4xl ant-dropdown-link text-grey-600"
+      class="text-3xl ant-dropdown-link text-grey-600"
     />
 
     <template #overlay>

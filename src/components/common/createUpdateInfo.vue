@@ -1,7 +1,7 @@
 <template>
   <component
     :is="rootComponent"
-    class="mb-0 text-muted font-size-sm"
+    class="mb-0 text-sm text-gray-400"
     style="word-break: break-word"
   >
     <span v-if="createdAtString || createdByUserObject">
@@ -102,7 +102,8 @@ export default defineComponent({
       filter: { $and: [{ email_verified: true }] },
     });
 
-    const { userList, getUserList, state, STATES } = useUsers(userListAPIParams);
+    const { userList, getUserList, state, STATES } =
+      useUsers(userListAPIParams);
     const { user: currentUser } = whoami();
 
     // ? Methods

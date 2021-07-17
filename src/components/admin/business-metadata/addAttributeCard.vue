@@ -1,25 +1,22 @@
 <template>
-  <div>
-    <div class="flex flex-col ">
-      <div class="grid grid-cols-2 gap-4 mb-3">
-        <div class="">
-          <label class="mb-0 font-normal font-size-sm"
-            >Name<sup class="text-red">*</sup></label
-          >
-          <input
-            type="text"
-            v-model="attributeInput.data.options.displayName"
-            class="block w-full px-2 py-1 mb-1 text-base leading-normal bg-white border rounded appearance-none text-grey-darker border-grey"
-          />
-        </div>
-        <div class="">
-          <label class="mb-0 font-normal font-size-sm">Search Weight </label>
+  <a-form layout="vertical" :rules="rules" :model="attributeInput.data" ref="formRef">
+    <div class="grid grid-cols-2 gap-4 ">
+      <a-form-item label="Name" :name="['options', 'displayName']" class="">
+        <a-input
+          type="text"
+          v-model:value="attributeInput.data.options.displayName"
+          class=""
+        />
+      </a-form-item>
+      <a-form-item class="" name="searchWeight">
+        <template #label>
           <a-popover>
             <template #content>
               <div class="flex flex-col items-center">
-                <div class="mb-2 font-size-14">
+                <div class="mb-2 text-center font-size-14">
                   <fa icon="fal arrow-up" class="mr-1"></fa>
                   the search weight for the attribute,
+                  <br />
                   <fa icon="fal arrow-up" class="mx-1"></fa>
                   the entity in the topmost
                   <br />
@@ -32,41 +29,35 @@
                 <div class="font-size-14">Suggestion: <b>8 - 10</b></div>
               </div>
             </template>
-            <fa
-              icon="fal question-circle"
-              class="ml-2 text-xs"
-              id="search-weight-tooltip"
-            ></fa>
+            <span>Search Weight</span>
+            <fa icon="fal question-circle" class="ml-2 text-xs"></fa>
           </a-popover>
-
-          <select
-            id="search-weight"
-            class="block w-full px-2 py-1 mb-1 text-base leading-normal bg-white border rounded appearance-none text-grey-darker border-grey"
-            v-model="attributeInput.data.searchWeight"
+        </template>
+        <a-select class="" v-model:value="attributeInput.data.searchWeight">
+          <a-select-option v-for="n in 10" :key="n" :value="n">{{ n }}</a-select-option>
+        </a-select>
+      </a-form-item>
+    </div>
+    <div class="flex items-center justify-around w-full gap-4">
+      <a-form-item class="w-full" name="typeName" label="Type">
+        <a-select
+          show-search
+          v-model:value="attributeInput.data.typeName"
+          :disabled="isEdit"
+          :getPopupContainer="target => target.parentNode"
+        >
+          <a-select-option
+            v-for="type in attributesTypes"
+            :key="type.id"
+            :value="type.id"
           >
-            <option v-for="n in 10" :key="n" :value="n">{{ n }}</option>
-          </select>
-        </div>
-      </div>
-
-      <div class="flex items-center justify-around w-full gap-4 mb-3">
-        <div class="w-full">
-          <label class="mb-0 font-normal font-size-sm">Type</label>
-          <select
-            id="typeName"
-            show-search
-            class="block w-full px-2 py-1 mb-1 text-base leading-normal bg-white border rounded appearance-none text-grey-darker border-grey"
-            v-model="attributeInput.data.typeName"
-            :disabled="isEdit"
-          >
-            <option v-for="type in attributesTypes" :key="type.id" :value="type.id">
-              {{ type.label }}
-            </option>
-          </select>
-        </div>
-        <div class="w-full" v-if="attributeInput.data.typeName !== 'boolean'">
-          <label class="mb-0 font-normal font-size-sm">Multivalues</label>
-          <div class="pt-2 mb-1">
+            {{ type.label }}
+          </a-select-option>
+        </a-select>
+      </a-form-item>
+      <div class="w-full" v-if="attributeInput.data.typeName !== 'boolean'">
+        <a-form-item label="Multivalues">
+          <div class="mb-1 ">
             <a-checkbox
               class=""
               :id="`${attributeInput.data.name}-multiValueSelect`"
@@ -79,51 +70,52 @@
               attributeInput.data.multiValueSelect ? "Enabled" : "Disabled"
             }}</label>
           </div>
-        </div>
+        </a-form-item>
       </div>
+    </div>
 
-      <div class="mb-3" v-if="attributeInput.data.typeName === 'string'">
-        <label class="mb-0 font-normal font-size-sm">Max. String Length</label>
-        <input
-          type="number"
-          class="block w-full px-2 py-1 mb-3 text-base leading-normal bg-white border rounded appearance-none text-grey-darker border-grey"
-          v-model="attributeInput.data.options.maxStrLength"
+    <div class="mb-2" v-if="attributeInput.data.typeName === 'string'">
+      <a-form-item
+        class=""
+        label="Max. String Length"
+        :name="['options', 'maxStrLength']"
+      >
+        <a-input-number
+          v-model:value="attributeInput.data.options.maxStrLength"
           :min="1"
+          style="width: 200px"
         />
+      </a-form-item>
+    </div>
+    <div class="" v-if="attributeInput.data.typeName === 'enum'">
+      <a-form-item class="mb-3" label="Choose Enum" name="enumType">
+        <a-tree-select
+          v-model:value="enumType"
+          noResultsText="No enum found"
+          :tree-data="finalEnumsList"
+          :multiple="false"
+          :async="false"
+          placeholder="Select enum"
+          :disabled="isEdit"
+          @change="emitUpdate"
+        >
+        </a-tree-select>
+      </a-form-item>
+      <div class="" v-show="selectedEnumOptions.length">
+        <div class="mb-2 font-normal font-size-sm">Enum options:</div>
+        <p>
+          <a-tag v-for="(e, x) in selectedEnumOptions" class="mb-1" :key="x">{{
+            e.title
+          }}</a-tag>
+        </p>
       </div>
-      <div class="flex flex-wrap" v-if="attributeInput.data.typeName === 'enum'">
-        <div class="">
-          <label class="mb-0 font-normal font-size-sm"
-            >Choose Enum<sup class="text-red">*</sup></label
-          >
-          <a-tree-select
-            v-model:value="enumType"
-            noResultsText="No enum found"
-            :tree-data="finalEnumsList"
-            :multiple="false"
-            :async="false"
-            placeholder="Select enum"
-            :disabled="isEdit"
-            @change="emitUpdate"
-          >
-          </a-tree-select>
-        </div>
-        <div class="pl-3">
-          <label class="mb-0 font-normal font-size-sm">Options</label>
-          <a-tree-select
-            :value="
-              selectedEnumOptions ? selectedEnumOptions.map(item => item.value) : null
-            "
-            :tree-data="selectedEnumOptions"
-            :multiple="true"
-            :disabled="true"
-          >
-          </a-tree-select>
-        </div>
-      </div>
-      <div class="flex">
-        <div class="relative" style="width: 100%;">
-          <label class="mb-0 font-normal font-size-sm">Applicable Entities</label>
+    </div>
+    <div class="flex">
+      <div class="relative" style="width: 100%;">
+        <a-form-item
+          :name="['options', 'applicableEntityTypes']"
+          label="Applicable Asset Types"
+        >
           <a-tree-select
             v-model:value="attributeInput.data.options.applicableEntityTypes"
             noResultsText="No entities found"
@@ -136,14 +128,14 @@
             placeholder="Select entity types"
             :class="isEdit ? 'custom-class-edit' : ''"
             dropdownClassName="type-select-dd"
-            maxTagCount="5"
+            :maxTagCount="5"
             :getPopupContainer="target => target.parentNode"
           >
           </a-tree-select>
-        </div>
+        </a-form-item>
       </div>
     </div>
-  </div>
+  </a-form>
 </template>
 <script lang="ts">
 import { defineComponent } from "vue";
@@ -162,6 +154,7 @@ import _ from "lodash";
 // * Composables
 import useEnums from "@/admin/enums/composables/useEnums";
 import useAssetQualifiedName from "~/composables/asset/useAssetQualifiedName";
+
 export default defineComponent({
   props: {
     attribute: {
@@ -183,8 +176,8 @@ export default defineComponent({
       // return { ...DEFAULT_ATTRIBUTE, name: uuid4 };
     };
     // * Data
+    const formRef = ref();
     // !!!!!
-    // const { isEdit, attribute } = toRefs(props);
     let attributeInput = reactive({
       data: JSON.parse(JSON.stringify(getDefaultAttributeTemplate())),
     });
@@ -195,8 +188,6 @@ export default defineComponent({
     // * Composables
     const { enumListData: enumsList } = useEnums();
     const { getApplicableEntitiesForBmAttributes } = useAssetQualifiedName();
-    // * Computed
-    const isEdit = computed(() => props.isEdit);
     const finalEnumsList = computed(() => {
       if (enumsList.value && enumsList.value.length) {
         return enumsList.value.map(item => ({
@@ -432,6 +423,7 @@ export default defineComponent({
       finalApplicableTypeNamesOptions,
       selectedEnumOptions,
       emitUpdate,
+      formRef,
     };
   },
 });

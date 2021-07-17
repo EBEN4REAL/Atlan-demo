@@ -1,26 +1,26 @@
 <template>
   <div class="bg-white border rounded">
-    <ArchiveMetadataModal
+    <!-- <ArchiveMetadataModal
       v-if="showArchiveMetadataModal"
       @close="showArchiveMetadataModal = false"
       :businessMetadata="localBm"
       @afterArchive="handleAfterArchive"
       @updateBusinessMetadataList="updateBusinessMetadata"
       :visible="showArchiveMetadataModal"
-    />
+    /> -->
     <div class="flex items-center justify-between px-4 py-3 border-b">
       <div>
         <div class="text-2xl text-primary">
           {{ (localBm.options && localBm.options.displayName) || localBm.name }}
         </div>
         <div>
-          <CreateUpdateInfo
+          <!-- <CreateUpdateInfo
             :createdAt="localBm.createTime"
             :updatedAt="localBm.updateTime"
             :createdBy="localBm.createdBy"
             :updatedBy="localBm.updatedBy"
             :entityType="`bm-localBm-${localBm.guid}`"
-          />
+          /> -->
         </div>
       </div>
       <div class="flex items-center">
@@ -30,12 +30,13 @@
               {{
                 `Unable to ${
                   localBm.guid !== "new" ? "update" : "create"
-                } business metadata, please check your config. ${
-                  (error && error.data && error.data.errorMessage) || ""
-                }`
+                } business metadata, please check your config. ${(error &&
+                  error.data &&
+                  error.data.errorMessage) ||
+                  ""}`
               }}
-            </span></template
-          >
+            </span>
+          </template>
           <span type="primary">
             <fa v-if="error" icon="fal info-circle" class="mr-3 text-red"></fa>
           </span>
@@ -43,7 +44,7 @@
 
         <a-button
           v-if="isUpdated"
-          class="rounded-md ant-btn mr-2"
+          class="mr-2 rounded-md ant-btn"
           @keyup="handleDiscardChanges"
         >
           Discard
@@ -57,7 +58,7 @@
         >
           Save
         </a-button>
-        <a-button v-else variant="alt-primary px-3"> Saved </a-button>
+        <a-button v-else variant="alt-primary px-3"> Edit </a-button>
         <a-dropdown
           trigger="click"
           v-if="localBm.guid !== 'new' && dropdownOptions.length"
@@ -86,21 +87,7 @@
           </label>
           <input
             type="text"
-            class="
-              block
-              w-full
-              px-2
-              py-1
-              mb-1
-              text-base
-              leading-normal
-              bg-white
-              border
-              rounded
-              appearance-none
-              text-grey-darker
-              border-grey
-            "
+            class="block w-full px-2 py-1 mb-1 text-base leading-normal bg-white border rounded appearance-none text-grey-darker border-grey"
             id="name"
             name="Name"
             v-model="localBm.options.displayName"
@@ -111,21 +98,7 @@
           <label for="description" class="mb-1">Description</label>
           <textarea
             placeholder="Add some details about this metadata."
-            class="
-              block
-              w-full
-              px-2
-              py-1
-              mb-1
-              text-base
-              leading-normal
-              bg-white
-              border
-              rounded
-              appearance-none
-              text-grey-darker
-              border-grey
-            "
+            class="block w-full px-2 py-1 mb-1 text-base leading-normal bg-white border rounded appearance-none text-grey-darker border-grey"
             id="description"
             name="Description"
             v-model="localBm.description"
@@ -134,22 +107,10 @@
           ></textarea>
         </div>
       </div>
-      <label class="block mb-2"
-        >Attributes ({{ localBm.attributeDefs.length }})</label
-      >
+      <label class="block mb-2">Attributes ({{ localBm.attributeDefs.length }})</label>
       <div class="flex items-center mb-4">
         <div class="mr-4">
-          <div
-            class="
-              relative
-              flex
-              items-stretch
-              w-full
-              overflow-hidden
-              border
-              rounded
-            "
-          >
+          <div class="relative flex items-stretch w-full overflow-hidden border rounded ">
             <input
               ref="searchinput"
               v-model="attrsearchText"
@@ -184,11 +145,7 @@
       </div>
 
       <a-collapse
-        v-if="
-          attrsearchText
-            ? searchedAttributes.length
-            : localBm.attributeDefs.length
-        "
+        v-if="attrsearchText ? searchedAttributes.length : localBm.attributeDefs.length"
         :accordion="true"
         :defaultActiveKey="1"
       >
@@ -203,7 +160,7 @@
           <template #extra>
             <span
               v-if="attribute.isNew"
-              class="cursor text-gray-400"
+              class="text-gray-400 cursor"
               @click.prevent.stop="handleRemoveAttribute(index)"
             >
               Remove
@@ -216,8 +173,7 @@
             :isEdit="!localBm.guid !== 'new' && !attribute.isNew"
             @remove="handleRemoveAttribute(index)"
             @updateAttribute="
-              (updatedAttribute) =>
-                onAttributeValuesChange(updatedAttribute, index)
+              updatedAttribute => onAttributeValuesChange(updatedAttribute, index)
             "
           />
         </a-collapse-panel>
@@ -227,15 +183,7 @@
 </template>
 <script lang="ts">
 import { defineComponent } from "vue";
-import {
-  reactive,
-  ref,
-  toRefs,
-  computed,
-  onMounted,
-  nextTick,
-  watch,
-} from "vue";
+import { reactive, ref, toRefs, computed, onMounted, nextTick, watch } from "vue";
 // * Utils
 import { generateUUID } from "~/utils/generator";
 import { DEFAULT_ATTRIBUTE } from "~/constant/business_metadata";
@@ -274,8 +222,7 @@ export default defineComponent({
     let loading = ref(false);
     let error = ref(null);
     // * Methods
-    const { addNewBusinessMetadata, updateNewBusinessMetadata } =
-      useBusinessMetadata;
+    const { addNewBusinessMetadata, updateNewBusinessMetadata } = useBusinessMetadata;
 
     //TODO avoid event bus
     const updateBusinessMetadata = (data: any) => {
@@ -315,8 +262,11 @@ export default defineComponent({
       error.value = null;
       context.emit("clearUpdatedBm");
     };
+    /**
+     * @desc action for @save event, validates the data and/or makes the api call,
+     *       Also updates the BM Store with the updated data
+     */
     const handleAddBusinessMetadata = async () => {
-      console.trace({ handleAddBusinessMetadata });
       error.value = null;
       let isInvalid = false;
       // ! turn this back to displayName
@@ -324,8 +274,7 @@ export default defineComponent({
         isInvalid = true;
       }
       // * if creating new BM append displayName to name,
-      if (!localBm.value.name)
-        localBm.value.name = localBm.value.options.displayName;
+      if (!localBm.value.name) localBm.value.name = localBm.value.options.displayName;
       if (localBm.value && localBm.value.attributeDefs.length) {
         // eslint-disable-next-line
         for (let i = 0; i < localBm.value.attributeDefs.length; i++) {
@@ -400,9 +349,7 @@ export default defineComponent({
               context.emit("clearNewBm");
               context.emit(
                 "selectBm",
-                JSON.parse(
-                  JSON.stringify(apiResponse.value.data.businessMetadataDefs[0])
-                )
+                JSON.parse(JSON.stringify(apiResponse.value.data.businessMetadataDefs[0]))
               );
             } else {
               store.updateBusinessMetadataInList(
@@ -415,18 +362,14 @@ export default defineComponent({
             );
             context.emit("clearUpdatedBm");
           }
-          // this.fetchAssets();
-          // this.loading = false;
-          // context.nextTick(() => {
-          //   this.isUpdated = false;
-          // });
+
           loading.value = false;
         }
       );
 
       watch(
         () => apiResponse.value.error,
-        (e) => {
+        e => {
           loading.value = false;
           console.log(
             "🚀 ~ file: businessMetadataProfile.vue ~ handleAddBusinessMetadata ~ error",
@@ -452,6 +395,10 @@ export default defineComponent({
       ];
       onUpdate();
     };
+    /**
+     * @desc watchers from add attribute card is emitting this which updates the local BM attributes
+     *
+     */
     const onAttributeValuesChange = (_uAttribute: any, uIndex: number) => {
       localBm.value.attributeDefs = localBm.value.attributeDefs.map(
         (attribute: object, index: number) => {
@@ -466,43 +413,13 @@ export default defineComponent({
       );
       onUpdate();
     };
-    const handleRemoveAttribute = (index) => {
-      const tempAttributes = JSON.parse(
-        JSON.stringify(localBm.value.attributeDefs)
-      );
+    const handleRemoveAttribute = index => {
+      const tempAttributes = JSON.parse(JSON.stringify(localBm.value.attributeDefs));
       tempAttributes.splice(index, 1);
       localBm.value.attributeDefs = tempAttributes;
       onUpdate();
     };
 
-    // const fetchAssets = async (isAppend = false) => {
-    //   setAssetsStatus("loading");
-    //   const paginateOptions = {
-    //     filters: filters || {},
-    //     limit: limit || 20,
-    //     skip: skip || 0,
-    //     searchText: searchText || "",
-    //     sortBy: sortBy || DEFAULT_SORT_BY,
-    //     sortOrder: sortOrder || DEFAULT_SORT_ORDER,
-    //     showOwnedByMe: showOwnedByMe || false,
-    //     showBookmarkedAssets: showBookmarkedAssets || false,
-    //   };
-    //   setAssetListPaginateOptions(paginateOptions);
-    //   const options = {
-    //     staticOptions: {
-    //       searchType: "BASIC",
-    //       typeName: "AtlanAsset",
-    //       excludeDeletedEntities: true,
-    //       includeClassificationAttributes: true,
-    //       includeSubClassifications: true,
-    //       includeSubTypes: true,
-    //     },
-    //     ...paginateOptions,
-    //     isAppend,
-    //   };
-    //   console.log("fetchAssets -> options", options);
-    //   getAssets(options);
-    // };
     // * Computed
     const dropdownOptions = computed(() => {
       return [
@@ -516,27 +433,24 @@ export default defineComponent({
     });
     const searchedAttributes = computed(() => {
       if (attrsearchText.value) {
-        return localBm.value.attributeDefs.filter((attr) =>
+        return localBm.value.attributeDefs.filter((attr: { name: string }) =>
           attr.name.toUpperCase().includes(attrsearchText.value.toUpperCase())
         );
       }
       return localBm.value.attributeDefs;
     });
-    // ...mapState({
-    //   bmList: state => state.businessMetadata.list,
-    //   limit: state => state.asset.paginateOptions.limit,
-    //   filters: state => state.asset.paginateOptions.filters,
-    //   skip: state => state.asset.paginateOptions.skip,
-    //   sortBy: state => state.asset.paginateOptions.sortBy,
-    //   sortOrder: state => state.asset.paginateOptions.sortOrder,
-    //   paginateOptions: state => state.asset.paginateOptions
-    // });
+
     const keymap = computed(() => {
       return {
         esc: handleClose,
       };
     });
     // * Lifecycle hooks
+    /**
+     * @desc if a BM is select on the BM list, make a local copy
+     *       is Selected BM is a new template, enable editMode
+     *       also add an empty attribute for the new BM
+     */
     onMounted(() => {
       if (props.selectedBm && props.selectedBm.guid) {
         localBm.value = JSON.parse(JSON.stringify(props.selectedBm));

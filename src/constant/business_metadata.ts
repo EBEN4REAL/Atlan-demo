@@ -20,13 +20,31 @@ export const DEFAULT_ATTRIBUTE = {
 };
 
 export const ATTRIBUTE_INPUT_VALIDATION_RULES = {
-  name: [
-    {
-      required: true,
-      message: "Please provide attribute name",
-      trigger: "change"
-    }
-  ],
+  options: {
+    displayName: [
+      {
+        required: true,
+        message: "Please provide attribute name",
+        trigger: "change"
+      }
+    ],
+    maxStrLength: [
+      {
+        required: true,
+        type: 'integer',
+        message: "Please input attribute max length",
+        trigger: "change"
+      }
+    ],
+    applicableEntityTypes: [
+      {
+        required: true,
+        type: 'array',
+        message: "Please input applicable asset types for this attribute.",
+        trigger: "change"
+      }
+    ],
+  },
   typeName: [
     {
       required: true,
@@ -34,20 +52,22 @@ export const ATTRIBUTE_INPUT_VALIDATION_RULES = {
       trigger: "change"
     }
   ],
+  enumType: [
+    {
+      required: true,
+      message: "Please select Enum type",
+      trigger: "change"
+    }
+  ],
   searchWeight: [
     {
       required: true,
+      type: 'integer',
       message: "Please select search weight",
       trigger: "change"
     }
   ],
-  "options.maxStrLength": [
-    {
-      required: true,
-      message: "Please input attribute max length",
-      trigger: "change"
-    }
-  ]
+
 };
 
 export const ATTRIBUTE_TYPES = [

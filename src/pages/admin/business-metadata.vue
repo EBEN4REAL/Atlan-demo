@@ -192,64 +192,6 @@ export default defineComponent({
     let newBm = ref(null);
     let updatedBm = ref(null);
     // * Methods
-    /**
-    const getBusinessMetadataAttributesForTypeNames = (
-      types: string | any[],
-      appliedBmAttributesToAsset: any[]
-    ) => {
-      const reqBms: any[] = [];
-      if (
-        types &&
-        types.length &&
-        bmResponse?.value?.businessMetadataDefs &&
-        bmResponse.value.businessMetadataDefs.length
-      ) {
-        bmResponse.value.businessMetadataDefs.forEach((bm) => {
-          if (bm.attributeDefs && bm.attributeDefs.length && !bm.isArchived) {
-            const reqBmAttrs: any[] = [];
-            const selectedBmCollection = appliedBmAttributesToAsset.find(
-              (c) => c.bm === bm.name
-            );
-            let attributesList = [...bm.attributeDefs];
-            if (selectedBmCollection && selectedBmCollection.attributes) {
-              attributesList = differenceWith(
-                bm.attributeDefs,
-                selectedBmCollection.attributes,
-                (a: { name: any }, b: { name: any }) => a.name === b.name
-              );
-            }
-            attributesList.forEach((attr) => {
-              if (attr.options && attr.options.applicableEntityTypes) {
-                try {
-                  const applicableEntityTypes = JSON.parse(
-                    attr.options.applicableEntityTypes
-                  );
-                  if (
-                    Array.isArray(applicableEntityTypes) &&
-                    applicableEntityTypes.some(
-                      (item) =>
-                        types.includes(item) || item.includes("AtlanAsset")
-                    )
-                  ) {
-                    reqBmAttrs.push(attr);
-                  }
-                } catch (error) {
-                  console.log("error", error);
-                }
-              }
-            });
-            if (reqBmAttrs && reqBmAttrs.length) {
-              reqBms.push({
-                ...bm,
-                attributeDefs: reqBmAttrs,
-              });
-            }
-          }
-        });
-      }
-      return reqBms;
-    };
-     */
 
     const handleSelectBm = (item: any) => {
       selectedBm.value = item;
@@ -274,13 +216,17 @@ export default defineComponent({
           : null;
       }
     };
-    const onUpdate = bm => {
+    /**
+     * @desc if an existing bm is being updated, set updated bm to
+     */
+    const onUpdate = (bm: { guid: string } | null) => {
       if (bm.guid === "new") {
         newBm.value = bm;
       } else {
-        updatedBm = bm;
+        updatedBm.value = bm;
       }
     };
+
     const handleAfterArchive = () => {
       nextTick(() => {
         if (finalBusinessMetadataList.value && finalBusinessMetadataList.value.length) {
@@ -322,7 +268,7 @@ export default defineComponent({
     ]);
 
     const searchedBusinessMetadataList = computed(() => {
-      if (searchText) {
+      if (searchText.value) {
         return finalBusinessMetadataList.value.filter((bm: { name: string }) =>
           bm.name.toUpperCase().includes(searchText.value.toUpperCase())
         );

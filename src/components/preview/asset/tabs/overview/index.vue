@@ -4,9 +4,8 @@
     :class="$style.filter"
     defaultActiveKey="details"
     :accordion="false"
+    class="bg-transparent"
     v-model:activeKey="activeKey"
-    style="height: calc(100% - 125px)"
-    class="pr-0 mt-2 overflow-y-auto bg-transparent"
   >
     <a-collapse-panel key="details" class="bg-transparent" forceRender>
       <template #header>
@@ -87,14 +86,9 @@ export default defineComponent({
 .filter {
   :global(.ant-collapse-item) {
     @apply border-none;
-    // padding: 8px 12px !important;
-    // max-width: 60px !important;
-    //   min-height: 48px !important;
-    //   line-height: 40px;
   }
 
   :global(.ant-collapse-content-box) {
-    @apply px-1 py-0;
   }
 }
 </style>

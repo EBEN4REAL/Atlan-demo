@@ -1,5 +1,5 @@
 <template>
-  <div class="w-full p-10 overflow-y-auto">
+  <div class="w-full min-h-screen px-10 py-5 overflow-y-auto">
     <div class="flex justify-between">
       <p class="mb-0 text-2xl ">Projects</p>
       <a-button type="primary" class="text-white rounded"
@@ -7,8 +7,11 @@
       >
     </div>
     <div class="grid grid-flow-row gap-8 mt-8 xl:grid-cols-4 2xl:grid-cols-5">
-      <template v-for="project in dummyProjects">
-        <div class="rounded shadow cursor-pointer hover:shadow-lg">
+      <template v-for="project in dummyProjects" :key="project.id">
+        <div
+          class="rounded shadow cursor-pointer hover:shadow-lg"
+          @click="onProjectClick"
+        >
           <div class="mb-2 overflow-hidden rounded-t shadow md:h-32 lg:h-36 ">
             <img
               src="https://picsum.photos/300/150"
@@ -18,11 +21,11 @@
           </div>
           <div class="p-4">
             <p class="mb-2 text-lg text-gray-dark">{{ project.projectName }}</p>
-            <p class="mb-2">{{ project.description }}</p>
+            <p class="mb-2 text-gray-400">{{ project.description }}</p>
             <div class="flex justify-between mt-6 ">
               <div>
-                <div class="flex items-center">
-                  <template v-for="view in views">
+                <div class="flex items-center text-gray-dark">
+                  <template v-for="view in views" :key="view.id">
                     <img
                       :src="view.src"
                       alt="view"
@@ -52,52 +55,59 @@
 <script lang="ts">
 import { defineComponent, ref, inject, toRaw, Ref, watch } from "vue";
 import { useHead } from "@vueuse/head";
+import { useRouter } from "vue-router";
 
 export default defineComponent({
   components: {},
   setup() {
     useHead({
-      title: "Query Playground",
+      title: "Project Home",
     });
+    const router = useRouter();
     const views = [
-      {
-        src: "https://picsum.photos/50/50",
-      },
-      {
-        src: "https://picsum.photos/50/50",
-      },
-      {
-        src: "https://picsum.photos/50/50",
-      },
+      { id: 1, src: "https://picsum.photos/50/50" },
+      { id: 2, src: "https://picsum.photos/50/50" },
+      { id: 3, src: "https://picsum.photos/50/50" },
     ];
     const dummyProjects = [
       {
+        id: 1,
         projectName: "Sales churn analysis",
         description:
           "This project's focus is on understanding the pitfalls in our sales department and proivde feedback to the team",
       },
       {
+        id: 2,
         projectName: "Sales churn analysis",
         description:
           "This project's focus is on understanding the pitfalls in our sales department and proivde feedback to the team",
       },
       {
+        id: 3,
         projectName: "Sales churn analysis",
         description:
           "This project's focus is on understanding the pitfalls in our sales department and proivde feedback to the team",
       },
       {
+        id: 4,
         projectName: "Sales churn analysis",
         description:
           "This project's focus is on understanding the pitfalls in our sales department and proivde feedback to the team",
       },
       {
+        id: 5,
         projectName: "Sales churn analysis",
         description:
           "This project's focus is on understanding the pitfalls in our sales department and proivde feedback to the team",
       },
     ];
+
+    const onProjectClick = (projectID: string) => {
+      // router.push(`/projects/${projectID}`);
+      router.push(`/projects/project1`);
+    };
     return {
+      onProjectClick,
       dummyProjects,
       views,
     };

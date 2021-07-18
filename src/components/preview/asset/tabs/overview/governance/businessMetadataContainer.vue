@@ -3,21 +3,20 @@
     placement="left"
     v-model:visible="visibility"
     trigger="none"
-    title="Create Business Metadata Widget"
+    title="Create Custom Metadata Widget"
   >
     <template #content>
       <div class="flex flex-col p-2 overflow-y-auto" style="width: 280px; height: 200px">
-        <p class="mb-1 text-sm text-gray-400">Select Business Metadata</p>
+        <p class="mb-1 text-sm text-gray-400">Select Custom Metadata</p>
         <a-select
-          placeholder="Business Metadata"
+          placeholder="Custom Metadata"
           v-model:value="addBusinessMetadata"
           allowClear
           :options="addBMSelectOptions"
         />
         <p class="mt-2 text-xs text-gray-400">
-          Can't find the right Business Metadata to add, create a new Business Metadata
-          from
-          <router-link to="/admin/business-metadata">here</router-link>
+          Can't find the right Custom Metadata to add, create a new Custom Metadata from
+          <router-link to="/admin/custom-metadata">here</router-link>
         </p>
         <div
           class="absolute flex p-2 space-x-2 border-t border-gray-100 bottom-1 right-3"
@@ -30,7 +29,7 @@
     <div class="px-2 py-1">
       <p class="flex justify-between mb-2 text-sm tracking-wide text-gray-400">
         <span
-          >Business Metadata&nbsp;
+          >Custom Metadata&nbsp;
           <span
             v-if="
               attributesList.length &&
@@ -61,7 +60,7 @@
         >
       </p>
       <p v-if="!attributesList.length" class="text-sm text-gray-500">
-        No Business Metadata Added.
+        No Custom Metadata Added.
       </p>
       <div style="max-height: 300px" class="pr-2 overflow-auto">
         <BusinessMetadataWidget
@@ -80,7 +79,7 @@
 
 <script lang="ts">
 import { ref, defineComponent, computed, watch, onMounted } from "vue";
-import { BusinessMetadata } from "~/api/atlas/businessMetadata";
+import { BusinessMetadataService } from "~/api/atlas/businessMetadata";
 import BusinessMetadataWidget from "@/common/businessMetadataWidget.vue";
 
 // ? Store
@@ -277,7 +276,11 @@ export default defineComponent({
     const handleUpdateAttribute = (value: object) => {
       // ? compute the payload
       updateBmAttributesStatus.value = "loading";
-      const { error, isReady, isLoading } = BusinessMetadata.saveAssetBMUpdateChanges(
+      const {
+        error,
+        isReady,
+        isLoading,
+      } = BusinessMetadataService.saveAssetBMUpdateChanges(
         props.item.guid,
         ref(getUpdatePayload(value))
       );

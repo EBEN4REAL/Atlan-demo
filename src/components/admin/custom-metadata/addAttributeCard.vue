@@ -96,7 +96,7 @@
         />
       </a-form-item>
     </div>
-    <div class="" v-if="attributeInput.data.options.isEnum.toString() === 'true'">
+    <div class="" v-if="attributeInput.data.options?.isEnum?.toString() === 'true'">
       <a-form-item class="mb-3" label="Choose Enum" :name="['options', 'enumType']">
         <a-tree-select
           v-model:value="attributeInput.data.options.enumType"
@@ -218,6 +218,8 @@ export default defineComponent({
     // * Composables
     const { enumListData: enumsList } = useEnums();
     const { getApplicableEntitiesForBmAttributes } = useAssetQualifiedName();
+
+    /** @return all enum list data formatted of the component */
     const finalEnumsList = computed(() => {
       if (enumsList.value && enumsList.value.length) {
         return enumsList.value.map(item => ({
@@ -268,7 +270,10 @@ export default defineComponent({
       return null;
     });
     // * Methods
-
+    /**
+     * @param {String} value new type name selected
+     * @desc set enum boolean in options & emit changes
+     */
     const handleTypeNameChange = (value: string) => {
       // ? check if enum
       if (value === "enum") {
@@ -283,7 +288,7 @@ export default defineComponent({
      *       type === array<type>
      * @returns {Object} modifed attribute data object
      */
-    const normalize = (data: object) => {
+    const normalize = (data: object): object => {
       const temp = JSON.parse(JSON.stringify(data));
       // ? stringify applicable type
       temp.options.applicableEntityTypes = JSON.stringify([
@@ -315,9 +320,7 @@ export default defineComponent({
     };
 
     // * hooks
-
-    onMounted(() => {
-      // ? make a local state of the attribute
+    const setAttributeData = () => {
       // ? multiValueSelect if type name contains array, needed for multivalued check default.
       if (props.attribute) {
         attributeInput.data = JSON.parse(JSON.stringify(props.attribute));
@@ -343,21 +346,25 @@ export default defineComponent({
             .split(">")[0];
         }
       }
+    };
+    onMounted(() => {
+      // ? make a local state of the attribute
+      setAttributeData();
     });
 
     return {
+      addedEntityTypes,
       attributeInput,
-      rules,
       attributesTypes,
-      finalEnumsList,
       enumTypeOtions,
       enumsList,
       finalApplicableTypeNamesOptions,
-      selectedEnumOptions,
+      finalEnumsList,
       formRef,
       handleFieldChange,
       handleTypeNameChange,
-      addedEntityTypes,
+      rules,
+      selectedEnumOptions,
     };
   },
 });

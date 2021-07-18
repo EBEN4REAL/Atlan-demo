@@ -30,7 +30,7 @@
               {{
                 `Unable to ${
                   localBm.guid !== "new" ? "update" : "create"
-                } business metadata, please check your config. ${(error &&
+                } custom metadata, please check your config. ${(error &&
                   error.data &&
                   error.data.errorMessage) ||
                   ""}`
@@ -45,7 +45,7 @@
         <a-button
           v-if="isUpdated"
           class="mr-2 rounded-md ant-btn"
-          @keyup="handleDiscardChanges"
+          @click="handleDiscardChanges"
         >
           Discard
         </a-button>
@@ -110,29 +110,22 @@
       <label class="block mb-2">Attributes ({{ localBm.attributeDefs.length }})</label>
       <div class="flex items-center mb-4">
         <div class="mr-4">
-          <div class="relative flex items-stretch w-full overflow-hidden border rounded ">
-            <input
-              ref="searchinput"
-              v-model="attrsearchText"
-              type="text"
-              class="w-full h-8 px-2 pl-2 font-size-h6"
+          <div class="relative flex items-stretch w-full overflow-hidden ">
+            <a-input
+              v-model:value="attrsearchText"
+              class="w-full h-8 px-2 pl-2"
               :placeholder="'Search attribute'"
-            />
-            <!-- <div class="input-group-append">
-              <span
-                v-if="!attrsearchText"
-                class="pr-4 bg-white border-0 input-group-text roundehidden"
-              >
-                <i class="fal fa-search font-size-h4"></i>
-              </span>
-              <span
-                v-else
-                @click="clearSearchText"
-                class="pr-4 bg-white border-0 cursor-pointer input-group-text text-red roundehidden"
-              >
-                <i class="far fa-times-circle font-size-h4"></i>
-              </span>
-            </div> -->
+            >
+              <template #suffix>
+                <fa v-if="!attrsearchText" icon="fal search" class="text-gray-500"></fa>
+                <fa
+                  v-else
+                  icon="fal times-circle"
+                  class="text-red-600 cursor-pointer"
+                  @click="clearSearchText"
+                ></fa>
+              </template>
+            </a-input>
           </div>
         </div>
         <a-button
@@ -147,20 +140,19 @@
       <a-collapse
         v-if="attrsearchText ? searchedAttributes.length : localBm.attributeDefs.length"
         :accordion="true"
-        :defaultActiveKey="1"
       >
         <a-collapse-panel
           v-for="(attribute, index) in attrsearchText
             ? searchedAttributes
             : localBm.attributeDefs"
-          :key="index"
+          :key="index + 1"
           :header="attribute.options.displayName || 'New attribute'"
           class="advanceConfigCollapse"
         >
           <template #extra>
             <span
               v-if="attribute.isNew"
-              class="text-gray-400 cursor"
+              class="text-gray-400 hover:text-red-600 cursor"
               @click.prevent.stop="handleRemoveAttribute(index)"
             >
               Remove
@@ -183,20 +175,25 @@
 </template>
 <script lang="ts">
 import { defineComponent } from "vue";
-import { reactive, ref, toRefs, computed, onMounted, nextTick, watch } from "vue";
-// * Utils
-import { generateUUID } from "~/utils/generator";
-import { DEFAULT_ATTRIBUTE } from "~/constant/business_metadata";
-import { DEFAULT_SORT_BY, DEFAULT_SORT_ORDER } from "~/constant/search";
-import AddAttributeCard from "@/admin/business-metadata/addAttributeCard.vue";
+import { ref, computed, onMounted, watch, Ref } from "vue";
+import { cloneDeep } from "lodash";
+
+// ? Components
+import AddAttributeCard from "@/admin/custom-metadata/addAttributeCard.vue";
 import CreateUpdateInfo from "@/common/createUpdateInfo.vue";
-import ArchiveMetadataModal from "@/admin/business-metadata/archiveMetadataModal.vue";
+import ArchiveMetadataModal from "@/admin/custom-metadata/archiveMetadataModal.vue";
+import { BusinessMetadataService } from "~/api/atlas/businessMetadata";
 
 // ? Store
 import { useBusinessMetadataStore } from "~/pinia/businessMetadata";
 
 // ? composables
-import { useBusinessMetadata } from "@/admin/business-metadata/composables/useBusinessMetadata";
+import useBusinessMetadata from "@/admin/custom-metadata/composables/useBusinessMetadata";
+
+interface attributeDefs {
+  name: string;
+  options: { displayName: string };
+}
 
 export default defineComponent({
   props: {
@@ -214,159 +211,112 @@ export default defineComponent({
       description: "",
       options: { displayName: "" },
       guid: "",
-      attributeDefs: <any>[],
+      attributeDefs: <attributeDefs[]>[],
     });
+
     let attrsearchText = ref("");
+    let panelModel = ref(1);
     let isUpdated = ref(false);
     let showArchiveMetadataModal = ref(false);
     let loading = ref(false);
-    let error = ref(null);
-    // * Methods
-    const { addNewBusinessMetadata, updateNewBusinessMetadata } = useBusinessMetadata;
+    let error = ref("");
 
-    //TODO avoid event bus
-    const updateBusinessMetadata = (data: any) => {
-      context.emit("updateBusinessMetadataInList", data);
-    };
+    const {
+      getDefaultAttributeTemplate,
+      getUpdatePayload,
+      validatePayload,
+    } = useBusinessMetadata();
 
-    const handleAfterArchive = () => {
-      context.emit("afterArchive");
-      // fetchAssets();
-    };
-    const getDefaultAttributeTemplate = () => {
-      const uuid4 = generateUUID();
-      // TODO changes when UUID4 support
-      return { ...DEFAULT_ATTRIBUTE };
-      // return { ...DEFAULT_ATTRIBUTE, name: uuid4 };
-    };
-    const onShowArchiveMetadataModal = () => {
-      showArchiveMetadataModal.value = true;
-    };
     const clearSearchText = () => {
       attrsearchText.value = "";
     };
-    const handleClose = () => {
-      context.emit("close");
-    };
+
     const onUpdate = () => {
       isUpdated.value = true;
-      context.emit("update", JSON.parse(JSON.stringify(localBm.value)));
+      context.emit("update", cloneDeep(localBm.value));
     };
+
+    /**
+     * @desc resets all local state to before edit
+     */
     const handleDiscardChanges = () => {
       if (props.selectedBm && props.selectedBm.guid === "new")
         context.emit("removeNewBm");
-      if (props.selectedBm && props.selectedBm.guid) {
-        localBm.value = JSON.parse(JSON.stringify(props.selectedBm));
+      else if (props.selectedBm && props.selectedBm.guid) {
+        localBm.value = cloneDeep(props.selectedBm);
       }
       isUpdated.value = false;
       error.value = null;
       context.emit("clearUpdatedBm");
     };
+
+    /**
+     * @param {Array} serviceResponse - BM data return after successfull create/update BM
+     * @desc update stale BM in store
+     */
+    const handleBmUpdateSuccess = (serviceResponse: any[]) => {
+      if (localBm.value.guid === "new") {
+        store.businessMetadataAppendToList(serviceResponse[0]);
+        context.emit("clearNewBm");
+        context.emit("selectBm", cloneDeep(serviceResponse[0]));
+      } else {
+        store.updateBusinessMetadataInList(serviceResponse[0]);
+      }
+      // eslint-disable-next-line
+      localBm.value = cloneDeep(serviceResponse[0]);
+      context.emit("clearUpdatedBm");
+    };
+
     /**
      * @desc action for @save event, validates the data and/or makes the api call,
      *       Also updates the BM Store with the updated data
      */
     const handleAddBusinessMetadata = async () => {
       error.value = null;
-      let isInvalid = false;
-      // ! turn this back to displayName
-      if (!localBm.value.options.displayName) {
-        isInvalid = true;
-      }
-      // * if creating new BM append displayName to name,
-      if (!localBm.value.name) localBm.value.name = localBm.value.options.displayName;
-      if (localBm.value && localBm.value.attributeDefs.length) {
-        // eslint-disable-next-line
-        for (let i = 0; i < localBm.value.attributeDefs.length; i++) {
-          const attribute = localBm.value.attributeDefs[i];
-          //TODO change back to displayName
-          if (!attribute.options.displayName) {
-            error.value = {
-              data: { errorMessage: "Attribute names cannot be empty" },
-            };
-            isInvalid = true;
-            break;
-          } else if (!attribute.name) {
-            // * if creating new BM attribtue <> append displayName to name,
-            attribute.name = attribute.options.displayName;
-          }
-        }
-      }
-      if (isInvalid) {
+      const validatedBm = validatePayload(localBm.value);
+
+      if (validatedBm.error) {
+        error.value = validatedBm.error;
         return;
       }
-      // ? extract getting payload into function
-      const tempBm = JSON.parse(JSON.stringify(localBm.value));
-      if (!tempBm.description.length) tempBm.description = "-";
-      if (!tempBm.name) tempBm.name = tempBm.options.displayName;
-      if (tempBm && tempBm.attributeDefs.length) {
-        tempBm.attributeDefs.forEach((attribute, index) => {
-          //! is id needed?
-          delete tempBm.attributeDefs[index].id;
+      if (!validatedBm.data.description.length) validatedBm.data.description = "-";
+      if (validatedBm.data && validatedBm.data.attributeDefs.length) {
+        validatedBm.data.attributeDefs.forEach((attribute, index) => {
+          delete validatedBm.data.attributeDefs[index].id;
           // eslint-disable-next-line
-          if (tempBm.attributeDefs[index].hasOwnProperty("isNew")) {
-            delete tempBm.attributeDefs[index].isNew;
+          if (validatedBm.data.attributeDefs[index].hasOwnProperty("isNew")) {
+            delete validatedBm.data.attributeDefs[index].isNew;
           }
         });
       }
+
       loading.value = true;
-      const payload = {
-        businessMetadataDefs: [
-          {
-            ...(tempBm.guid === "new"
-              ? {
-                  category: "BUSINESS_METADATA",
-                  typeVersion: "1.1",
-                  version: 1,
-                  attributeDefs: tempBm.attributeDefs,
-                  description: tempBm.description,
-                  name: tempBm.name,
-                  options: tempBm.options,
-                }
-              : tempBm),
-          },
-        ],
-        classificationDefs: [],
-        entityDefs: [],
-        enumDefs: [],
-        structDefs: [],
-      };
       let apiResponse = ref();
+      if (validatedBm.guid === "new")
+        apiResponse.value = BusinessMetadataService.addNewBusinessMetadata(
+          getUpdatePayload(validatedBm.data)
+        );
+      else
+        apiResponse.value = BusinessMetadataService.updateNewBusinessMetadata(
+          getUpdatePayload(validatedBm.data)
+        );
 
-      if (tempBm.guid === "new") {
-        apiResponse.value = addNewBusinessMetadata(ref(payload));
-      } else apiResponse.value = updateNewBusinessMetadata(ref(payload));
-
+      handleUpdateBMResponse(apiResponse);
+    };
+    /**
+     * @param {Object} apiResponse - object return from update api call
+     * @desc - handles success and error for update
+     */
+    const handleUpdateBMResponse = (apiResponse: Ref) => {
       watch(
         () => apiResponse.value.data,
         (n, o) => {
-          if (
-            apiResponse.value.data &&
-            apiResponse.value.data.businessMetadataDefs &&
-            apiResponse.value.data.businessMetadataDefs.length
-          ) {
-            if (localBm.value.guid === "new") {
-              store.businessMetadataAppendToList(
-                apiResponse.value.data.businessMetadataDefs[0]
-              );
-              context.emit("clearNewBm");
-              context.emit(
-                "selectBm",
-                JSON.parse(JSON.stringify(apiResponse.value.data.businessMetadataDefs[0]))
-              );
-            } else {
-              store.updateBusinessMetadataInList(
-                apiResponse.value.data.businessMetadataDefs[0]
-              );
-            }
-            // eslint-disable-next-line
-            localBm.value = JSON.parse(
-              JSON.stringify(apiResponse.value.data.businessMetadataDefs[0])
-            );
-            context.emit("clearUpdatedBm");
+          if (apiResponse.value?.data?.businessMetadataDefs.length) {
+            handleBmUpdateSuccess(apiResponse.value.data.businessMetadataDefs);
           }
 
           loading.value = false;
+          isUpdated.value = false;
         }
       );
 
@@ -391,18 +341,19 @@ export default defineComponent({
     const handleAddNewAttribute = () => {
       localBm.value.attributeDefs = [
         {
-          ...JSON.parse(JSON.stringify(getDefaultAttributeTemplate())),
+          ...cloneDeep(getDefaultAttributeTemplate()),
           id: Date.now(),
         },
         ...localBm.value.attributeDefs,
       ];
       onUpdate();
     };
+
     /**
      * @desc watchers from add attribute card is emitting this which updates the local BM attributes
      *
      */
-    const onAttributeValuesChange = (_uAttribute: any, uIndex: number) => {
+    const onAttributeValuesChange = (_uAttribute: {}, uIndex: number) => {
       localBm.value.attributeDefs = localBm.value.attributeDefs.map(
         (attribute: object, index: number) => {
           if (index === uIndex) {
@@ -416,8 +367,13 @@ export default defineComponent({
       );
       onUpdate();
     };
-    const handleRemoveAttribute = index => {
-      const tempAttributes = JSON.parse(JSON.stringify(localBm.value.attributeDefs));
+
+    /**
+     * @param {Number} index - index of the newly added attribute
+     * @desc removes newly added attribute if not saved
+     */
+    const handleRemoveAttribute = (index: number) => {
+      const tempAttributes = cloneDeep(localBm.value.attributeDefs);
       tempAttributes.splice(index, 1);
       localBm.value.attributeDefs = tempAttributes;
       onUpdate();
@@ -434,6 +390,7 @@ export default defineComponent({
         // },
       ];
     });
+
     const searchedAttributes = computed(() => {
       if (attrsearchText.value) {
         return localBm.value.attributeDefs.filter((attr: { name: string }) =>
@@ -443,11 +400,6 @@ export default defineComponent({
       return localBm.value.attributeDefs;
     });
 
-    const keymap = computed(() => {
-      return {
-        esc: handleClose,
-      };
-    });
     // * Lifecycle hooks
     /**
      * @desc if a BM is select on the BM list, make a local copy
@@ -456,7 +408,7 @@ export default defineComponent({
      */
     onMounted(() => {
       if (props.selectedBm && props.selectedBm.guid) {
-        localBm.value = JSON.parse(JSON.stringify(props.selectedBm));
+        localBm.value = cloneDeep(props.selectedBm);
         if (props.selectedBm.guid === "new") {
           isUpdated.value = true;
           if (!props.selectedBm.attributeDefs.length) {
@@ -466,24 +418,22 @@ export default defineComponent({
       }
     });
     return {
-      localBm,
-      onUpdate,
-      searchedAttributes,
-      dropdownOptions,
       attrsearchText,
-      isUpdated,
-      showArchiveMetadataModal,
-      loading,
-      error,
-      keymap,
-      handleAfterArchive,
       clearSearchText,
-      handleDiscardChanges,
+      dropdownOptions,
+      error,
       handleAddBusinessMetadata,
-      onAttributeValuesChange,
-      handleRemoveAttribute,
       handleAddNewAttribute,
-      updateBusinessMetadata,
+      handleDiscardChanges,
+      handleRemoveAttribute,
+      isUpdated,
+      loading,
+      localBm,
+      onAttributeValuesChange,
+      onUpdate,
+      panelModel,
+      searchedAttributes,
+      showArchiveMetadataModal,
     };
   },
 });

@@ -131,7 +131,16 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, reactive, ref, watch, toRaw, Ref } from "vue";
+import {
+  computed,
+  defineComponent,
+  reactive,
+  ref,
+  watch,
+  toRaw,
+  Ref,
+  onMounted,
+} from "vue";
 
 import AssetFilters from "@/discovery/asset/filters/index.vue";
 import SavedFilters from "@/discovery/asset/saved/index.vue";
@@ -157,7 +166,7 @@ import { Components } from "~/api/atlas/client";
 import { SearchParameters } from "~/types/atlas/attributes";
 import { BaseAttributes, BasicSearchAttributes } from "~/constant/projection";
 import { useBusinessMetadataStore } from "~/pinia/businessMetadata";
-import { useBusinessMetadata } from "@/admin/business-metadata/composables/useBusinessMetadata";
+import useBusinessMetadata from "@/admin/custom-metadata/composables/useBusinessMetadata";
 import { useDiscoveryStore } from "~/pinia/discovery";
 import { useConnectionsStore } from "~/pinia/connections";
 import { getEncodedStringFromOptions } from "~/utils/routerQuery";
@@ -275,46 +284,42 @@ export default defineComponent({
 
     // * Get all available BMs and save on store
     const store = useBusinessMetadataStore();
-    const {
-      data: BMResponse,
-      error: BMListError,
-      isLoading: BMListLoading,
-    } = useBusinessMetadata.getBMList();
+    const { fetchBMonStore } = useBusinessMetadata();
 
-    //FIXME debug this
-    watch(
-      [BMListLoading, BMListError],
-      n => {
-        console.log([BMListLoading, BMListError]);
-        const error = toRaw(BMListError.value);
-        console.log(error);
-        store.setBusinessMetadataListLoading(n[0].value);
-        store.setBusinessMetadataListError(error.response.data.errorMessage);
-      },
-      { deep: true }
-    );
+    // //FIXME debug this
+    // watch(
+    //   [BMListLoading, BMListError],
+    //   n => {
+    //     console.log([BMListLoading, BMListError]);
+    //     const error = toRaw(BMListError.value);
+    //     console.log(error);
+    //     store.setBusinessMetadataListLoading(n[0].value);
+    //     store.setBusinessMetadataListError(error.response.data.errorMessage);
+    //   },
+    //   { deep: true }
+    // );
 
-    watch(
-      () => BMResponse?.value?.businessMetadataDefs,
-      (n, o) => {
-        if (JSON.stringify(n) !== JSON.stringify(o)) {
-          const list = n.map(
-            (bm: { options: { displayName: any }; name: any; attributeDefs: any[] }) => ({
-              ...bm,
-              options: {
-                ...bm?.options,
-                displayName: bm?.options?.displayName ? bm.options.displayName : bm.name,
-              },
-              attributeDefs: bm.attributeDefs.map(a => {
-                if (a.options?.displayName?.length) return a;
-                return { ...a, options: { ...a.options, displayName: a.name } };
-              }),
-            })
-          );
-          store.setData(list);
-        }
-      }
-    );
+    // watch(
+    //   () => BMResponse?.value?.businessMetadataDefs,
+    //   (n, o) => {
+    //     if (JSON.stringify(n) !== JSON.stringify(o)) {
+    //       const list = n.map(
+    //         (bm: { options: { displayName: any }; name: any; attributeDefs: any[] }) => ({
+    //           ...bm,
+    //           options: {
+    //             ...bm?.options,
+    //             displayName: bm?.options?.displayName ? bm.options.displayName : bm.name,
+    //           },
+    //           attributeDefs: bm.attributeDefs.map(a => {
+    //             if (a.options?.displayName?.length) return a;
+    //             return { ...a, options: { ...a.options, displayName: a.name } };
+    //           }),
+    //         })
+    //       );
+    //       store.setData(list);
+    //     }
+    //   }
+    // );
 
     const BMAttributeProjection = computed(
       () => store.getBusinessMetadataListProjections
@@ -576,6 +581,11 @@ export default defineComponent({
       updateBody();
     };
     console.log(connectorsPayload, "insise assets");
+
+    onMounted(() => {
+      fetchBMonStore();
+    });
+
     return {
       initialFilters,
       searchScoreList,

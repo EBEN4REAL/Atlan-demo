@@ -25,6 +25,14 @@ export const DEFAULT_ATTRIBUTE = {
   isNew: true
 };
 
+export const DEFAULT_BM = {
+  name: "",
+  options: { displayName: "New Business Metadata" },
+  description: "",
+  guid: "new",
+  attributeDefs: [],
+};
+
 /**
  * @desc rules for BM attribute card form fields,
  */

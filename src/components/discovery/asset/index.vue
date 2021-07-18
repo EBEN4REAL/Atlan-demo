@@ -286,41 +286,6 @@ export default defineComponent({
     const store = useBusinessMetadataStore();
     const { fetchBMonStore } = useBusinessMetadata();
 
-    // //FIXME debug this
-    // watch(
-    //   [BMListLoading, BMListError],
-    //   n => {
-    //     console.log([BMListLoading, BMListError]);
-    //     const error = toRaw(BMListError.value);
-    //     console.log(error);
-    //     store.setBusinessMetadataListLoading(n[0].value);
-    //     store.setBusinessMetadataListError(error.response.data.errorMessage);
-    //   },
-    //   { deep: true }
-    // );
-
-    // watch(
-    //   () => BMResponse?.value?.businessMetadataDefs,
-    //   (n, o) => {
-    //     if (JSON.stringify(n) !== JSON.stringify(o)) {
-    //       const list = n.map(
-    //         (bm: { options: { displayName: any }; name: any; attributeDefs: any[] }) => ({
-    //           ...bm,
-    //           options: {
-    //             ...bm?.options,
-    //             displayName: bm?.options?.displayName ? bm.options.displayName : bm.name,
-    //           },
-    //           attributeDefs: bm.attributeDefs.map(a => {
-    //             if (a.options?.displayName?.length) return a;
-    //             return { ...a, options: { ...a.options, displayName: a.name } };
-    //           }),
-    //         })
-    //       );
-    //       store.setData(list);
-    //     }
-    //   }
-    // );
-
     const BMAttributeProjection = computed(
       () => store.getBusinessMetadataListProjections
     );

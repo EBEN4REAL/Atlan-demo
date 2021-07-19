@@ -84,8 +84,16 @@ export default defineComponent({
     const activeKey = ref("overview");
     const selectedAssetData = ref({});
     const availableClassificationsForLink = ref([]);
+
     const filteredTabList = computed(() => {
-      return List;
+      return List.filter((item) => {
+        if (item.typeNames) {
+          if (!item.typeNames.includes(props.item.typeName)) {
+            return false;
+          }
+        }
+        return true;
+      });
     });
 
     /*Todo: uncomment it after the evaluate/access endpoint is added to user service */

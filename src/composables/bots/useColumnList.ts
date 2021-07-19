@@ -58,7 +58,7 @@ export default function useColumnList(dependentKey?: Ref<any>, initialBody?: any
 
     const totalCount = computed(() => {
 
-        return data.value.approximateCount;
+        return data.value?.approximateCount;
     });
 
 

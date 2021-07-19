@@ -27,6 +27,8 @@ export const dataTypeList = [
       "DOUBLE",
       "DOUBLE PRECISION",
       "REAL",
+      "int4",
+      "int2"
     ],
     image: number,
   },
@@ -56,6 +58,7 @@ export const dataTypeList = [
       "TEXT",
       "BINARY",
       "VARBINARY",
+      "bpchar",
     ],
     image: string,
   },

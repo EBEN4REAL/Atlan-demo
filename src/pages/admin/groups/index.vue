@@ -1,7 +1,9 @@
 <template>
   <div class="bg-white">
     <p class="mb-2 text-2xl text-gray">Manage Groups</p>
-    <div class="pb-6 text-sm text-gray-400">Add, remove and manage their members</div>
+    <div class="pb-6 text-sm text-gray-400">
+      Add, remove and manage their members
+    </div>
     <GroupList></GroupList>
   </div>
 </template>
@@ -26,4 +28,4 @@ export default defineComponent({
   meta:
     layout: default
     requiresAuth: true
-  </route>
+</route>

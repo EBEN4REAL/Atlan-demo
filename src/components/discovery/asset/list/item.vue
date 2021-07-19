@@ -41,6 +41,17 @@
     </p>
 
     <div
+      class="flex items-center mt-1 mb-0 text-xs"
+      v-if="item.typeName.toLowerCase() === 'column'"
+    >
+      <component
+        :is="dataTypeImage(item)"
+        class="w-5 h-5 mr-1 text-gray-500"
+      ></component>
+      <div class="leading-none">{{ dataType(item) }}</div>
+    </div>
+
+    <div
       class="flex items-center justify-between align-middle"
       v-if="projection?.includes('rows') || projection?.includes('popularity')"
     >

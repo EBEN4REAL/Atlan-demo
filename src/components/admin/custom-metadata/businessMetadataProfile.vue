@@ -11,22 +11,22 @@
     <div class="flex items-center justify-between px-4 py-3 border-b">
       <div>
         <div class="text-2xl text-primary">
-          {{ (localBm.options && localBm.options.displayName) || localBm.name }}
+          {{ localBm.options && localBm.options.displayName }}
         </div>
         <div>
-          <!-- <CreateUpdateInfo
+          <CreateUpdateInfo
             :createdAt="localBm.createTime"
             :updatedAt="localBm.updateTime"
             :createdBy="localBm.createdBy"
             :updatedBy="localBm.updatedBy"
             :entityType="`bm-localBm-${localBm.guid}`"
-          /> -->
+          />
         </div>
       </div>
       <div class="flex items-center">
-        <a-popover title="Error">
+        <a-popover title="Error" placement="left">
           <template #content>
-            <span>
+            <div style="max-width:450px">
               {{
                 `Unable to ${
                   localBm.guid !== "new" ? "update" : "create"
@@ -35,10 +35,10 @@
                   error.data.errorMessage) ||
                   ""}`
               }}
-            </span>
+            </div>
           </template>
-          <span type="primary">
-            <fa v-if="error" icon="fal info-circle" class="mr-3 text-red"></fa>
+          <span type="primary" class="text-warning">
+            <fa v-if="error" icon="fal info-circle" class="mr-3"></fa>
           </span>
         </a-popover>
 
@@ -278,16 +278,6 @@ export default defineComponent({
       if (validatedBm.error) {
         error.value = validatedBm.error;
         return;
-      }
-      if (!validatedBm.data.description.length) validatedBm.data.description = "-";
-      if (validatedBm.data && validatedBm.data.attributeDefs.length) {
-        validatedBm.data.attributeDefs.forEach((attribute, index) => {
-          delete validatedBm.data.attributeDefs[index].id;
-          // eslint-disable-next-line
-          if (validatedBm.data.attributeDefs[index].hasOwnProperty("isNew")) {
-            delete validatedBm.data.attributeDefs[index].isNew;
-          }
-        });
       }
 
       loading.value = true;

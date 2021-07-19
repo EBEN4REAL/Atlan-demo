@@ -96,7 +96,7 @@
         />
       </a-form-item>
     </div>
-    <div class="" v-if="attributeInput.data.options?.isEnum?.toString() === 'true'">
+    <div class="" v-if="attributeInput.data.options?.isEnum">
       <a-form-item class="mb-3" label="Choose Enum" :name="['options', 'enumType']">
         <a-tree-select
           v-model:value="attributeInput.data.options.enumType"
@@ -324,6 +324,15 @@ export default defineComponent({
       // ? multiValueSelect if type name contains array, needed for multivalued check default.
       if (props.attribute) {
         attributeInput.data = JSON.parse(JSON.stringify(props.attribute));
+        // ? FIX boolean value on saving turns to string
+        if (typeof attributeInput.data.options.isEnum === "string")
+          attributeInput.data.options.isEnum = JSON.parse(
+            attributeInput.data.options.isEnum
+          );
+        if (typeof attributeInput.data.options.isMultiValued === "string")
+          attributeInput.data.options.isMultiValued = JSON.parse(
+            attributeInput.data.options.isMultiValued
+          );
       }
       // ? By default append all applicable types if is new // also emit?
       if (props.attribute.isNew) {
@@ -338,9 +347,9 @@ export default defineComponent({
         attributeInput.data.options.applicableEntityTypes = [];
 
         // ? parse the original type name if multivalued
-        if (attributeInput.data.options.isEnum === "true") {
+        if (attributeInput.data.options.isEnum) {
           attributeInput.data.typeName = "enum";
-        } else if (attributeInput.data.options.isMultiValued === "true") {
+        } else if (attributeInput.data.options.isMultiValued) {
           attributeInput.data.typeName = attributeInput.data.typeName
             .split("<")[1]
             .split(">")[0];

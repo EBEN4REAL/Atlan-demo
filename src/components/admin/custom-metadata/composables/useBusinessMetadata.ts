@@ -203,8 +203,8 @@ export default function useBusinessMetadata() {
             error: null,
             data: null,
         };
-
         temp.data = cloneDeep(BmObject);
+        if (!temp.data.description.length) temp.data.description = "-";
         if (!temp.data.options.displayName) {
             temp.error = {
                 data: { errorMessage: "Custom Metadata name cannot be empty" },
@@ -216,6 +216,7 @@ export default function useBusinessMetadata() {
         if (temp.data && temp.data.attributeDefs.length) {
             // eslint-disable-next-line
             for (let i = 0; i < temp.data.attributeDefs.length; i++) {
+                delete temp.data.attributeDefs[i].id;
                 const attribute = temp.data.attributeDefs[i];
                 if (!attribute.options.displayName) {
                     temp.error = {
@@ -226,6 +227,12 @@ export default function useBusinessMetadata() {
                     // * if creating new BM attribtue <> append displayName to name,
                     temp.data.attributeDefs[i].name = attribute.options.displayName;
                 }
+                if (temp.data.attributeDefs[i].hasOwnProperty("isNew")) {
+                    delete temp.data.attributeDefs[i].isNew;
+                }
+                // if (temp.data.attributeDefs[i].hasOwnProperty("isEditing")) {
+                //     delete temp.data.attributeDefs[i].isEditing;
+                // }
             }
         }
         return temp;

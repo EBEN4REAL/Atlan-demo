@@ -81,6 +81,7 @@ specifiers:
   rollup-plugin-visualizer: ^5.5.0
   splitpanes: ^3.0.4
   sql-formatter: ^4.0.2
+  sql-highlight: ^4.0.0
   store: ^2.0.12
   stylelint: ^13.13.1
   stylelint-config-recommended: ^5.0.0
@@ -172,6 +173,7 @@ dependencies:
   qs: 6.10.1
   splitpanes: 3.0.4
   sql-formatter: 4.0.2
+  sql-highlight: 4.0.0
   store: 2.0.12
   swrv: 1.0.0-beta.8_vue@3.1.4
   tippy.js: 6.3.1
@@ -9420,6 +9422,10 @@ packages:
     hasBin: true
     dependencies:
       argparse: 2.0.1
+    dev: false
+
+  /sql-highlight/4.0.0:
+    resolution: {integrity: sha512-Pa1iHt6sGI0KmhF3k4MjJxbJATic4a5kjyNfqOk2rFzc0KhOix4Mud7D3zSOzF9aw43Rd+JmBmgOp9WHIPE40Q==}
     dev: false
 
   /stable/0.1.8:

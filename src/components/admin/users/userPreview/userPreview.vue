@@ -80,6 +80,7 @@ import About from "./about.vue";
 import Groups from "./groups.vue";
 import AccessLogs from "./accessLogs.vue";
 import Sessions from "./sessions.vue";
+import Assets from "./assets.vue";
 import whoami from "~/composables/user/whoami";
 import Avatar from "~/components/common/avatar.vue";
 import { useUserPreview } from "~/composables/user/showUserPreview";
@@ -92,6 +93,7 @@ export default defineComponent({
     Groups,
     AccessLogs,
     Sessions,
+    Assets,
     Avatar,
     ErrorView,
   },

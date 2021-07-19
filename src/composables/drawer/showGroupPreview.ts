@@ -16,6 +16,12 @@ const allTabs = [
     key: "about",
   },
   {
+    name: "Assets",
+    iconClass: "",
+    component: "Assets",
+    key: "assets",
+  },
+  {
     name: "Members",
     iconClass: "",
     component: "Members",

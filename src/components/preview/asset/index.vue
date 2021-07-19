@@ -1,38 +1,54 @@
 <template>
-  <div class="flex flex-col">
-    <div class="flex flex-col px-5 py-4 border-b border-gray-200">
+  <div class="flex flex-col h-full">
+    <div class="px-5 py-4 border-b border-gray-200">
       <div class="flex items-center mb-2 align-middle">
         <component :is="item.typeName" class="w-6 h-6 mr-1"></component>
-        <p class="mb-0 text-sm font-bold leading-none truncate text-primary-400">
+        <p
+          class="mb-0 text-sm font-bold leading-none truncate text-primary-400"
+        >
           {{ title(item) }}
         </p>
       </div>
-      <div class="flex items-center text-xs tracking-wider uppercase align-middle">
-        <img :src="logo(item)" class="w-auto h-4 mr-1" />{{ integrationName(item) }}
+      <div
+        class="flex items-center text-xs tracking-wider uppercase align-middle"
+      >
+        <img :src="logo(item)" class="w-auto h-4 mr-1" />{{
+          integrationName(item)
+        }}
       </div>
     </div>
     <div class="flex flex-grow w-full h-full">
-      <a-tabs
-        class="w-full"
-        :class="$style.previewtab"
-        v-model:activeKey="activeKey"
-        tabPosition="right"
-      >
-        <a-tab-pane :key="filterItem.id" v-for="filterItem in filteredTabList">
-          <template #tab>
-            <a-tooltip :title="filterItem.description" placement="right">
-              <p class="mb-0 text-center">
-                <fa :icon="filterItem.icon" class="mr-1" />
-              </p> </a-tooltip
-          ></template>
-          <div class="overflow-y-auto">
-            <component
-              :is="activeKey"
-              :item="item"
-              :key="item.guid"
-              :selectedAssetData="selectedAssetData"
-            ></component></div></a-tab-pane
-      ></a-tabs>
+      <div class="flex w-full h-full">
+        <div
+          class="flex-grow w-full overflow-y-auto"
+          style="height: calc(100% - 80px)"
+        >
+          <component
+            :is="activeKey"
+            :item="item"
+            :key="item.guid"
+            :selectedAssetData="selectedAssetData"
+          ></component>
+        </div>
+        <a-tabs
+          :class="$style.previewtab"
+          v-model:activeKey="activeKey"
+          tabPosition="right"
+        >
+          <a-tab-pane
+            :key="filterItem.id"
+            v-for="filterItem in filteredTabList"
+          >
+            <template #tab>
+              <a-tooltip :title="filterItem.description" placement="right">
+                <p class="mb-0 leading-none text-center">
+                  <fa :icon="filterItem.icon" class="" />
+                </p> </a-tooltip
+            ></template>
+
+            <div class=""></div> </a-tab-pane
+        ></a-tabs>
+      </div>
     </div>
   </div>
 </template>
@@ -53,6 +69,7 @@ export default defineComponent({
     Overview: defineAsyncComponent(() => import("./tabs/overview/index.vue")),
     Audit: defineAsyncComponent(() => import("./tabs/audit/index.vue")),
     Columns: defineAsyncComponent(() => import("./tabs/columns/index.vue")),
+    Lineage: defineAsyncComponent(() => import("./tabs/lineage/index.vue")),
   },
   props: {
     item: {
@@ -117,10 +134,12 @@ export default defineComponent({
 
 <style lang="less" module>
 .previewtab {
+  width: 50px;
+
   :global(.ant-tabs-tab) {
-    padding: 6px 8px !important;
+    padding: 8px 12px !important;
     max-width: 60px !important;
-    margin-right: 4px !important;
+    margin-right: 0px !important;
   }
   :global(.ant-tabs-bar) {
     margin-bottom: 0px;

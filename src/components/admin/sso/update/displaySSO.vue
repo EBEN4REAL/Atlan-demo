@@ -83,7 +83,9 @@
           <a-button class="mx-2" @click="showDeleteSSOModal"> Cancel </a-button>
         </div>
         <div>
-          <a-button type="danger" @click="deleteSSO"> Delete </a-button>
+          <a-button type="danger" :loading="isDeleting" @click="deleteSSO">
+            Delete
+          </a-button>
         </div>
       </div>
     </a-modal>
@@ -101,19 +103,22 @@ import {
 import { topSAMLProviders, customSamlProvider } from "~/constant/saml";
 import { IdentityProvider } from "~/api/auth/identityProvider";
 import { message } from "ant-design-vue";
-import { TENANT_FETCH_DATA } from "~/constant/store_types";
-import { useStore } from "~/store";
+
+import { useTenantStore } from "~/pinia/tenants";
+import { Tenant } from "~/api/auth/tenant";
 
 export default defineComponent({
   props: ["providerDetails"],
   setup(props) {
     const showDeleteModal = ref(false);
+    const isDeleting = ref(false);
     const ssoForm = reactive({
       enabled: false,
       enforceSSO: false,
     });
     const defaultSSO = ref(false);
     const formLoading = ref(false);
+    const tenantStore = useTenantStore();
     const samlProvider = topSAMLProviders.find(
       (data) => data.alias === props.providerDetails?.alias
     );
@@ -183,7 +188,7 @@ export default defineComponent({
         ssoForm?.enabled !== props.providerDetails?.enabled &&
           (await enableSSO());
         ssoForm?.enforceSSO !== defaultSSO.value && (await changeEnforceSSO());
-        await getTenant();
+        await updateTenant();
         await setConfig();
         message.success({
           content: "SSO updated!",
@@ -203,6 +208,7 @@ export default defineComponent({
     };
     const deleteSSO = async () => {
       try {
+        isDeleting.value = true;
         await IdentityProvider.deleteIDP(props.providerDetails?.alias);
         defaultSSO.value &&
           (await IdentityProvider.deleteDefaultIDP(
@@ -211,8 +217,9 @@ export default defineComponent({
         message.success({
           content: "Provider removed.",
         });
-        await getTenant();
+        await updateTenant();
         showDeleteSSOModal();
+        isDeleting.value = false;
       } catch (error) {
         console.error("Unable to delete SSO::", error.message);
         message.error({
@@ -221,9 +228,9 @@ export default defineComponent({
       }
     };
 
-    const getTenant = async () => {
-      const store = useStore();
-      await store.dispatch(TENANT_FETCH_DATA);
+    const updateTenant = async () => {
+      const tenantResponse: any = await Tenant.Get();
+      tenantStore.setData(tenantResponse);
     };
 
     onMounted(async () => {
@@ -246,6 +253,7 @@ export default defineComponent({
       isChangesDone,
       formLoading,
       submitForm,
+      isDeleting,
     };
   },
 });

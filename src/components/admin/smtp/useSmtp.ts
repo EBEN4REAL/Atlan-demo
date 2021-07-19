@@ -1,10 +1,11 @@
 import { computed, watch, ref } from "vue";
-import { useStore } from "~/store";
-import { UPDATE_SMTP_CONFIG } from "~/constant/store_types";
 import { Tenant } from "~/api/auth/tenant";
+import { useTenantStore } from "~/pinia/tenants";
 
 export function useSmtp() {
-  const store = useStore();
+  const store = useTenantStore();
+  const piniaStore = useTenantStore();
+  console.log(piniaStore, "piniStore");
   const formRef = ref();
   const userFieldRef = ref();
   const rules = {
@@ -28,18 +29,6 @@ export function useSmtp() {
       },
     ],
     replyTo: [
-      {
-        type: "email",
-        message: "Please enter a valid email address",
-        trigger: "blur",
-      },
-    ],
-    envelopeFrom: [
-      {
-        required: true,
-        message: "Envelope From is required",
-        trigger: "blur",
-      },
       {
         type: "email",
         message: "Please enter a valid email address",
@@ -81,12 +70,6 @@ export function useSmtp() {
       label: "Reply To",
     },
     {
-      id: "envelopeFrom",
-      label: "Envelope From",
-      helperText: "Email address used for bounces",
-      required: true,
-    },
-    {
       id: "ssl",
       type: "switch",
       label: "Enable SSL",
@@ -108,8 +91,9 @@ export function useSmtp() {
   const saveSmtpConfigError = ref("");
   const passwordReentered = ref(false);
 
-  const smtpServer = computed(() => store.state.tenant.data.smtpServer);
-  const tenant = computed(() => store.state.tenant.data);
+  const smtpServer = computed(() => store.tenant.smtpServer);
+  const tenant = computed(() => store.tenant);
+  console.log(smtpServer.value.host, "SmtpServer");
 
   const timerMessage = (
     ref: any,
@@ -134,7 +118,8 @@ export function useSmtp() {
       ...smtpServer.value,
       [key]: value,
     };
-    store.commit(UPDATE_SMTP_CONFIG, payload);
+    console.log(payload, "payload");
+    store.updateSmtpConfig(payload);
   };
 
   const testSmtpConfig = async () => {
@@ -165,14 +150,10 @@ export function useSmtp() {
     testSmtpConfigState.value = "TESTING";
 
     watch([testSmtpConfigReqData, testSmtpConfigReqError], () => {
-      if (testSmtpConfigReqData.value) {
+      if (testSmtpConfigReqData.value && !testSmtpConfigReqError.value) {
         testSmtpConfigState.value = "VALID";
         timerMessage(testSmtpConfigState);
-      } else if (testSmtpConfigReqError.value) {
-        console.log(
-          testSmtpConfigReqError.value.message,
-          testSmtpConfigReqError
-        );
+      } else {
         const errorMessage = testSmtpConfigReqError.value.response.data.error;
         testSmtpConfigState.value = "INVALID";
         testSmtpConfigError.value = `Error - ${errorMessage}`;
@@ -193,20 +174,17 @@ export function useSmtp() {
         const {
           data: saveSmtpConfigReqData,
           error: saveSmtpConfigReqError,
+          isLoading,
         } = Tenant.Update({
           cache: false,
           body: { smtpServer: smtpServer.value },
         });
-        watch([saveSmtpConfigReqData, saveSmtpConfigReqError], () => {
-          if (saveSmtpConfigReqData.value) {
+        watch([isLoading], () => {
+          if (!saveSmtpConfigReqError.value) {
             saveSmtpConfigState.value = "SUCCESS";
-          } else if (saveSmtpConfigReqError.value) {
-            console.log(
-              saveSmtpConfigReqError.value.message,
-              saveSmtpConfigReqError
-            );
-            const errorMessage =
-              saveSmtpConfigReqError.value.response.data.error;
+            timerMessage(saveSmtpConfigState);
+          } else {
+            const errorMessage = "";
             saveSmtpConfigState.value = "ERROR";
             saveSmtpConfigError.value = `${errorMessage}`;
             timerMessage(saveSmtpConfigState);

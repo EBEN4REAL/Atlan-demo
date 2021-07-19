@@ -17,16 +17,6 @@
       </p></a-layout-header
     > -->
     <a-layout :hasSider="true">
-      <!-- <a-layout-sider
-        class="border-r"
-        :collapsedWidth="48"
-        :collapsed="true"
-        :style="{
-          overflow: 'auto',
-        }"
-      >
-        <ProjectSidebar class="mt-3"></ProjectSidebar
-      ></a-layout-sider> -->
       <a-layout-content>
         <splitpanes class="bg-white default-theme">
           <pane size="20" class="p-4 bg-white">
@@ -61,15 +51,7 @@
               <Editor @run="queryRun" :isQueryRunning="isQueryRunning"></Editor>
             </div>
             <div
-              class="
-                p-6
-                m-6
-                overflow-x-auto
-                bg-white
-                border
-                rounded
-                table-wrapper
-              "
+              class="p-6 m-6 overflow-x-auto bg-white border rounded  table-wrapper"
             >
               <!-- {{ queryResult }} -->
               <a-table

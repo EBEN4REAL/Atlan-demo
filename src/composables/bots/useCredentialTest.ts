@@ -8,12 +8,13 @@ import useSWRVState from '~/api2/useSWRVState';
 
 export default function useCredentialTest(dependentKey?: Ref<any>, initialBody?: any, cacheSuffx?: string | "") {
 
-    const asyncOptions: Ref<IConfig & AxiosRequestConfig> = ref({
+    const asyncOptions = {
         dedupingInterval: 0,
         shouldRetryOnError: false,
         revalidateOnFocus: false,
         revalidateDebounce: 0,
-    });
+
+    };
     let body = ref({
         ...initialBody
     });
@@ -57,6 +58,9 @@ export default function useCredentialTest(dependentKey?: Ref<any>, initialBody?:
 
 
     const errorMessage = computed(() => {
+        if (error.value?.message === "timeout") {
+            return "Request timed out. Please check your host/port"
+        }
         return error.value?.response?.data?.message;
     });
 

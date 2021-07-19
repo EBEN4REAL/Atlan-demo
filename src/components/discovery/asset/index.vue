@@ -13,13 +13,6 @@
       </div>
 
       <div v-show="filterMode === 'custom'" class="flex-grow h-full">
-        <div class="pb-2 mb-2">
-          <ConnectorDropdown
-            :data="connectorsPayload"
-            @change="handleChangeConnectors"
-          ></ConnectorDropdown>
-        </div>
-
         <AssetFilters
           :initialFilters="initialFilters"
           @refresh="handleFilterChange"
@@ -37,11 +30,15 @@
     style="overflow: hidden"
   >
     <div class="flex flex-col h-full mx-6 border rounded-lg">
-      <div class="border-b rounded-tl-lg rounded-tr-lg bg-gray-50">
+      <div class="flex border-b rounded-tl-lg rounded-tr-lg bg-gray-50">
         <ConnectorDropdown
           :data="connectorsPayload"
           @change="handleChangeConnectors"
         ></ConnectorDropdown>
+        <AssetDropdown
+          :connector="filteredConnector"
+          v-if="connectorsPayload.connection"
+        ></AssetDropdown>
       </div>
       <div class="flex items-center mx-3 mt-3">
         <a-input
@@ -53,12 +50,10 @@
         >
           <template #prefix>
             <div class="flex -space-x-2">
-              <template v-for="item in filteredConnectorList" :key="item.id">
-                <img
-                  :src="item.image"
-                  class="w-auto h-6 mr-1 bg-white rounded-full border-5"
-                />
-              </template>
+              <img
+                :src="filteredConnector?.image"
+                class="w-auto h-6 mr-1 bg-white rounded-full border-5"
+              />
             </div>
           </template>
           <template #suffix>
@@ -151,6 +146,9 @@ import AssetPagination from "@common/pagination/index.vue";
 import HeirarchySelect from "@common/tree/heirarchy/index.vue";
 import SearchBox from "@common/searchbox/searchlist.vue";
 import ConnectorDropdown from "@common/dropdown/connector/index.vue";
+
+import AssetDropdown from "@common/dropdown/asset/index.vue";
+
 import EmptyView from "@common/empty/discover.vue";
 import Preferences from "@/discovery/asset/preference/index.vue";
 // import { useDebounceFn } from "@vueuse/core";
@@ -226,6 +224,7 @@ export default defineComponent({
     Preferences,
     EmptyView,
     HeirarchySelect,
+    AssetDropdown,
   },
   props: {
     initialFilters: {
@@ -306,10 +305,10 @@ export default defineComponent({
     });
 
     const connectorStore = useConnectionsStore();
-    const filteredConnectorList = computed(() => {
-      return connectorStore.getSourceList?.filter(item => {
-        return connectorsPayload.value?.connector == item.id;
-      });
+    const filteredConnector = computed(() => {
+      return connectorStore.getSourceList?.find(
+        item => connectorsPayload.value?.connector == item.id
+      );
     });
 
     //Get All Disoverable Asset Types
@@ -341,7 +340,6 @@ export default defineComponent({
       return totalCount.value > list.value.length;
     });
 
-    //TODO - Get Filtered Asset Types based on selected connectors
     const {
       list,
       replaceBody,
@@ -350,10 +348,12 @@ export default defineComponent({
       searchScoreList,
       isAggregate,
       assetTypeMap,
-    } = useAssetList(now, assetTypeListString, initialBody, assetType.value);
+    } = useAssetList(now, assetTypeListString, initialBody, assetType.value, true);
+
     console.log(assetTypeListString, initialBody, assetType.value, "useAssetList type");
 
     const updateBody = () => {
+      console.trace("updateBody");
       initialBody = {
         typeName: assetTypeListString,
         // includeClassificationAttributes: true,
@@ -445,9 +445,8 @@ export default defineComponent({
     };
 
     watch(
-      [assetType, () => BMAttributeProjection.value.length],
+      [assetType, BMAttributeProjection],
       (n, o) => {
-        console.log("asset type changed");
         isAggregate.value = false;
         // abort();
         offset.value = 0;
@@ -579,7 +578,7 @@ export default defineComponent({
       totalSum,
       handleState,
       connectorsPayload,
-      filteredConnectorList,
+      filteredConnector,
       // listCount,
       // isLoading,
       // limit,
@@ -612,19 +611,6 @@ export default defineComponent({
       // // handleChangeAssetType,
       // projection,
     };
-  },
-  methods: {
-    getIsLoadMore(length: number, offset: any, limit: number, totalCount: number) {
-      if (
-        totalCount >= limit &&
-        length < totalCount &&
-        offset + limit <= totalCount &&
-        offset + limit < 10000
-      ) {
-        return true;
-      }
-      return false;
-    },
   },
 });
 </script>

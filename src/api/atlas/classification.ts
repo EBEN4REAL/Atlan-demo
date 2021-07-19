@@ -44,15 +44,13 @@ const updateClassification = ({
 const archiveClassification = ({
   cache,
   typeName,
-  entityGuid,
 }: {
   cache: string | undefined;
   typeName: string;
-  entityGuid: string;
 }) => {
   return useAPI("ARCHIVE_CLASSIFICATION", "DELETE", {
     cache,
-    pathVariables: { typeName, entityGuid },
+    pathVariables: { typeName },
   });
 };
 

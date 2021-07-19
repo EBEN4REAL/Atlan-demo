@@ -50,7 +50,7 @@ export default function useColumnList(dependentKey?: Ref<any>, initialBody?: any
 
     const getDataTypeImage = (dataType: any) => {
         const found = dataTypeList.find((item) => {
-            return item.type.includes(dataType);
+            return item.type.includes(dataType.toLowerCase());
         });
         return found?.image;
     };

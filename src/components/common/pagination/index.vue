@@ -3,7 +3,7 @@
     <i class="mr-1 fal fa-frown-open"></i>No {{ label.toLowerCase() }} found
   </p>
   <p class="mb-0 leading-none" v-else>
-    showing {{ listCount }} of
+    {{ listCount }} of
     <span class=""
       >{{ totalCount }}<span v-if="totalCount > 9999"></span>
       {{ label.toLowerCase() }}</span

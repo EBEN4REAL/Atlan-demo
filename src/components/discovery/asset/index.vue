@@ -1,128 +1,128 @@
 <template>
-  <div
-    class="hidden h-full pt-6 pl-4 bg-white  sm:block sm:col-span-4 md:col-span-2 sm"
-  >
-    <div class="flex flex-col h-full">
-      <div class="mb-3">
-        <a-radio-group
-          class="flex w-full text-center"
-          v-model:value="filterMode"
-        >
-          <a-radio-button class="flex-grow" value="custom"
-            ><fa icon="fal filter" class="pushtop"></fa
-          ></a-radio-button>
-          <a-radio-button class="flex-grow" value="saved"
-            ><fa icon="fal list-alt" class="pushtop"></fa
-          ></a-radio-button>
-        </a-radio-group>
-      </div>
+  <div class="flex w-full">
+    <div class="w-1/3 h-full pt-6 pl-4 bg-white">
+      <div class="flex flex-col">
+        <div class="mb-3">
+          <a-radio-group
+            class="flex w-full text-center"
+            v-model:value="filterMode"
+          >
+            <a-radio-button class="flex-grow" value="custom"
+              ><fa icon="fal filter" class="pushtop"></fa
+            ></a-radio-button>
+            <a-radio-button class="flex-grow" value="saved"
+              ><fa icon="fal list-alt" class="pushtop"></fa
+            ></a-radio-button>
+          </a-radio-group>
+        </div>
 
-      <div v-show="filterMode === 'custom'" class="flex-grow h-full">
-        <AssetFilters
-          :initialFilters="initialFilters"
-          @refresh="handleFilterChange"
-        ></AssetFilters>
-      </div>
+        <div v-show="filterMode === 'custom'" class="flex-grow">
+          <AssetFilters
+            :initialFilters="initialFilters"
+            @refresh="handleFilterChange"
+          ></AssetFilters>
+        </div>
 
-      <div v-show="filterMode === 'saved'">
-        <!--     <SavedFilters @refresh="handleSavedSearchChange"></SavedFilters> -->
+        <div v-show="filterMode === 'saved'">
+          <!--     <SavedFilters @refresh="handleSavedSearchChange"></SavedFilters> -->
+        </div>
       </div>
     </div>
-  </div>
 
-  <div
-    class="flex flex-col items-stretch col-span-12 my-3 bg-white  sm:col-span-8 md:col-span-7"
-    style="overflow: hidden"
-  >
-    <div class="flex flex-col h-full mx-6 border rounded-lg">
-      <div class="flex border-b rounded-tl-lg rounded-tr-lg bg-gray-50">
-        <ConnectorDropdown
-          :data="connectorsPayload"
-          @change="handleChangeConnectors"
-        ></ConnectorDropdown>
-        <AssetDropdown
-          :connector="filteredConnector"
-          v-if="connectorsPayload.connection"
-        ></AssetDropdown>
-      </div>
-      <div class="flex items-center mx-3 mt-3">
-        <a-input
-          placeholder="Search"
-          size="default"
-          class="searchbox"
-          v-model:value="queryText"
-          @change="handleSearchChange"
+    <div
+      class="flex flex-col items-stretch w-2/3 w-full mt-3 mb-1 bg-white"
+      style="overflow: hidden"
+    >
+      <div class="flex flex-col h-full mx-6">
+        <div class="flex">
+          <ConnectorDropdown
+            :data="connectorsPayload"
+            @change="handleChangeConnectors"
+          ></ConnectorDropdown>
+          <AssetDropdown
+            :connector="filteredConnector"
+            v-if="connectorsPayload.connection"
+          ></AssetDropdown>
+        </div>
+        <div class="flex items-center mx-3 mt-1">
+          <a-input
+            placeholder="Search"
+            size="default"
+            class="searchbox"
+            v-model:value="queryText"
+            @change="handleSearchChange"
+          >
+            <template #prefix>
+              <div class="flex -space-x-2">
+                <img
+                  :src="filteredConnector?.image"
+                  class="w-auto h-6 mr-1 bg-white rounded-full border-5"
+                />
+              </div>
+            </template>
+            <template #suffix>
+              <a-popover placement="bottomLeft">
+                <template #content>
+                  <Preferences
+                    :defaultProjection="projection"
+                    @change="handleChangePreferences"
+                    @sort="handleChangeSort"
+                    @state="handleState"
+                  ></Preferences>
+                </template>
+                <fa icon="fal cog"></fa>
+              </a-popover>
+            </template>
+          </a-input>
+        </div>
+
+        <div class="flex w-full px-3 mt-3">
+          <AssetTabs
+            v-model="assetType"
+            :assetTypeList="assetTypeList"
+            :assetTypeMap="assetTypeMap"
+            :total="totalSum"
+          ></AssetTabs>
+        </div>
+
+        <div
+          v-if="list && list.length <= 0 && !isLoading && !isValidating"
+          class="flex-grow"
         >
-          <template #prefix>
-            <div class="flex -space-x-2">
-              <img
-                :src="filteredConnector?.image"
-                class="w-auto h-6 mr-1 bg-white rounded-full border-5"
-              />
+          <EmptyView></EmptyView>
+        </div>
+        <AssetList
+          v-else
+          :list="list"
+          :score="searchScoreList"
+          @preview="handlePreview"
+          :projection="projection"
+          :isLoading="isLoading || isValidating"
+          ref="assetlist"
+        ></AssetList>
+        <div class="flex w-full px-3 py-1">
+          <div class="flex items-center justify-between w-full">
+            <div
+              class="flex items-center text-sm leading-none"
+              v-if="isLoading || isValidating"
+            >
+              <a-spin size="small" class="mr-2 leading-none"></a-spin
+              ><span>searching results</span>
             </div>
-          </template>
-          <template #suffix>
-            <a-popover placement="bottomLeft">
-              <template #content>
-                <Preferences
-                  :defaultProjection="projection"
-                  @change="handleChangePreferences"
-                  @sort="handleChangeSort"
-                  @state="handleState"
-                ></Preferences>
-              </template>
-              <fa icon="fal cog"></fa>
-            </a-popover>
-          </template>
-        </a-input>
-      </div>
+            <AssetPagination
+              v-else
+              :label="assetTypeLabel"
+              :listCount="list.length"
+              :totalCount="totalCount"
+            ></AssetPagination>
 
-      <div class="flex w-full px-3 mt-3">
-        <AssetTabs
-          v-model="assetType"
-          :assetTypeList="assetTypeList"
-          :assetTypeMap="assetTypeMap"
-          :total="totalSum"
-        ></AssetTabs>
-      </div>
-
-      <div
-        v-if="list && list.length <= 0 && !isLoading && !isValidating"
-        class="flex-grow"
-      >
-        <EmptyView></EmptyView>
-      </div>
-      <AssetList
-        v-else
-        :list="list"
-        :score="searchScoreList"
-        @preview="handlePreview"
-        :projection="projection"
-        :isLoading="isLoading || isValidating"
-        ref="assetlist"
-      ></AssetList>
-      <div class="flex w-full px-3 py-1 border-t bg-gray-50 border-gray-50">
-        <div class="flex items-center justify-between w-full">
-          <div
-            class="flex items-center text-sm leading-none"
-            v-if="isLoading || isValidating"
-          >
-            <a-spin size="small" class="mr-2 leading-none"></a-spin
-            ><span>searching results</span>
-          </div>
-          <AssetPagination
-            v-else
-            :label="assetTypeLabel"
-            :listCount="list.length"
-            :totalCount="totalCount"
-          ></AssetPagination>
-
-          <div
-            class="text-sm cursor-pointer text-primary"
-            @click="loadMore"
-            v-if="isLoadMore && (!isLoading || !isValidating)"
-          >
-            load more...
+            <div
+              class="text-sm cursor-pointer text-primary"
+              @click="loadMore"
+              v-if="isLoadMore && (!isLoading || !isValidating)"
+            >
+              load more...
+            </div>
           </div>
         </div>
       </div>
@@ -672,7 +672,4 @@ export default defineComponent({
 </script>
 
 <style lang="less" scoped>
-.searchbox {
-  @apply rounded-full;
-}
 </style>

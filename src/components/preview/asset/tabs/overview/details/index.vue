@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-col px-2 space-y-3">
+  <div class="flex flex-col space-y-3">
     <div
       class="px-2"
       v-if="
@@ -21,7 +21,7 @@
             <template #content>
               <div
                 class="overflow-y-auto"
-                style="max-width: 350px; max-height: 250px"
+                style="max-width: 350px; max-height: 250px; min-width: 100px"
               >
                 <span
                   v-html="getSQLHighlighted(item?.attributes.viewDefinition)"

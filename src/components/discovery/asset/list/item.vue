@@ -7,7 +7,7 @@
         </div>
         <div class="flex flex-col w-full">
           <div class="flex items-center justify-between mb-0">
-            <router-link :to="`/a/${item.guid}/overview`">
+            <router-link :to="`/assets/${item.guid}/overview`">
               <a
                 class="mb-0 font-semibold leading-none tracking-wide truncate cursor-pointer  text-primary hover:underline"
               >

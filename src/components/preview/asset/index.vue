@@ -44,9 +44,7 @@
                 <p class="mb-0 leading-none text-center">
                   <fa :icon="filterItem.icon" class="" />
                 </p> </a-tooltip
-            ></template>
-
-            <div class=""></div> </a-tab-pane
+            ></template> </a-tab-pane
         ></a-tabs>
       </div>
     </div>
@@ -142,7 +140,7 @@ export default defineComponent({
 
 <style lang="less" module>
 .previewtab {
-  width: 50px;
+  width: 42px;
 
   :global(.ant-tabs-tab) {
     padding: 8px 12px !important;

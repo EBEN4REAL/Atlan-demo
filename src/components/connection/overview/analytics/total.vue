@@ -26,12 +26,12 @@
     </div>
   </div>
 </template>
-  
+
 <script lang="ts">
 import { defineComponent, PropType, reactive, ref, watch } from "vue";
 import { ConnectionType } from "~/types/atlas/connection";
 
-import useCatalogList from "~/composables/bots/useCatalogList";
+import useColumnList from "~/composables/bots/useColumnList";
 import LoadingView from "@common/loaders/section.vue";
 import ErrorView from "@common/error/index.vue";
 
@@ -53,7 +53,7 @@ export default defineComponent({
       limit: 1,
       aggregationAttributes: ["__typeName.keyword"],
     });
-    const { assetTypeList, isLoading, refresh, assetTypeSum } = useCatalogList(
+    const { assetTypeList, isLoading, refresh, assetTypeSum } = useColumnList(
       now,
       defaultBody
     );

@@ -74,13 +74,13 @@ export default defineComponent({
     };
     initialBody.entityFilters = props.filters;
 
-    watch(
-      () => props.filters,
-      () => {
-        initialBody.entityFilters = props.filters;
-        replaceBody(initialBody);
-      }
-    );
+    // watch(
+    //   () => props.filters,
+    //   () => {
+    //     initialBody.entityFilters = props.filters;
+    //     replaceBody(initialBody);
+    //   }
+    // );
 
     const { list, replaceBody, selfAssetTypeMap } = useAssetList(
       now,

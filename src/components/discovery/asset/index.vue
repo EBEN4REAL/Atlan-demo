@@ -34,13 +34,14 @@
       style="overflow: hidden"
     >
       <div class="flex flex-col h-full mx-6">
-        <div class="flex">
+        <div class="flex px-3">
           <ConnectorDropdown
             :data="connectorsPayload"
             @change="handleChangeConnectors"
           ></ConnectorDropdown>
           <AssetDropdown
             :connector="filteredConnector"
+            :data="connectorsPayload"
             v-if="connectorsPayload.connection"
           ></AssetDropdown>
         </div>

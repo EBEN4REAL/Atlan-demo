@@ -9,7 +9,7 @@
         'border-l-4 border-left-color bg-blue-100':
           selectedBm && item.guid === selectedBm.guid,
       }"
-      @click="(e) => selectBm(item)"
+      @click="e => selectBm(item)"
     >
       <div class="mb-1 text-sm text-primary">
         <!-- // TODO {{ isUpdateBmSameAsCurrentBm(item) ? updatedBm.displayName  : item.displayName }} -->
@@ -20,9 +20,7 @@
         }}
         <sup
           class=""
-          v-if="
-            isUpdateBmSameAsCurrentBm(item) || (item && item.guid === 'new')
-          "
+          v-if="isUpdateBmSameAsCurrentBm(item) || (item && item.guid === 'new')"
           >*</sup
         >
       </div>
@@ -53,19 +51,29 @@
   </div>
 </template>
 <script lang="ts">
-import { reactive, Ref, toRefs, computed } from "vue";
+import { computed } from "vue";
 import { defineComponent } from "vue";
 export default defineComponent({
   props: ["finalList", "selectedBm", "updatedBm"],
   setup(props, context) {
-    const isUpdateBmSameAsCurrentBm = (item: { guid: any }) => {
-      if (item && updatedBm && updatedBm.guid && updatedBm.guid === item.guid) {
+    /**
+     *
+     */
+    const isUpdateBmSameAsCurrentBm = (item: { guid: string }) => {
+      if (
+        item &&
+        props.updatedBm &&
+        props.updatedBm.guid &&
+        props.updatedBm.guid === item.guid
+      ) {
         return true;
       }
       return false;
     };
+
     // * Methods
-    const selectBm = (item) => context.emit("selectBm", item);
+    const selectBm = (item: object) => context.emit("selectBm", item);
+
     // * Computed
     const finalList = computed(() => props.finalList);
     const selectedBm = computed(() => props.selectedBm);

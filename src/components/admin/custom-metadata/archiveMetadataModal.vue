@@ -51,7 +51,7 @@ import { reactive, ref, toRefs, computed, onMounted, nextTick, watch } from "vue
 import { getErrorMessage } from "~/utils/error";
 
 // ? composables
-import { useBusinessMetadata } from "@/admin/business-metadata/composables/useBusinessMetadata";
+import useBusinessMetadata from "@/admin/custom-metadata/composables/useBusinessMetadata";
 
 export default defineComponent({
   props: {
@@ -78,7 +78,7 @@ export default defineComponent({
       context.emit("close");
     };
 
-    const { updateNewBusinessMetadata } = useBusinessMetadata;
+    const { updateNewBusinessMetadata } = useBusinessMetadata();
 
     const handleArchive = () => {
       deleteLoading.value = true;

@@ -3,10 +3,7 @@
     <div class="w-1/3 h-full pt-6 pl-4 bg-white">
       <div class="flex flex-col">
         <div class="mb-3">
-          <a-radio-group
-            class="flex w-full text-center"
-            v-model:value="filterMode"
-          >
+          <a-radio-group class="flex w-full text-center" v-model:value="filterMode">
             <a-radio-button class="flex-grow" value="custom"
               ><fa icon="fal filter" class="pushtop"></fa
             ></a-radio-button>
@@ -140,6 +137,7 @@ import {
   watch,
   toRaw,
   Ref,
+  onMounted,
 } from "vue";
 
 import AssetFilters from "@/discovery/asset/filters/index.vue";
@@ -169,7 +167,7 @@ import { Components } from "~/api/atlas/client";
 import { SearchParameters } from "~/types/atlas/attributes";
 import { BaseAttributes, BasicSearchAttributes } from "~/constant/projection";
 import { useBusinessMetadataStore } from "~/pinia/businessMetadata";
-import { useBusinessMetadata } from "@/admin/business-metadata/composables/useBusinessMetadata";
+import useBusinessMetadata from "@/admin/custom-metadata/composables/useBusinessMetadata";
 import { useDiscoveryStore } from "~/pinia/discovery";
 import { useConnectionsStore } from "~/pinia/connections";
 import { getEncodedStringFromOptions } from "~/utils/routerQuery";
@@ -288,52 +286,7 @@ export default defineComponent({
 
     // * Get all available BMs and save on store
     const store = useBusinessMetadataStore();
-    const {
-      data: BMResponse,
-      error: BMListError,
-      isLoading: BMListLoading,
-    } = useBusinessMetadata.getBMList();
-
-    //FIXME debug this
-    watch(
-      [BMListLoading, BMListError],
-      (n) => {
-        console.log([BMListLoading, BMListError]);
-        const error = toRaw(BMListError.value);
-        console.log(error);
-        store.setBusinessMetadataListLoading(n[0].value);
-        store.setBusinessMetadataListError(error.response.data.errorMessage);
-      },
-      { deep: true }
-    );
-
-    watch(
-      () => BMResponse?.value?.businessMetadataDefs,
-      (n, o) => {
-        if (JSON.stringify(n) !== JSON.stringify(o)) {
-          const list = n.map(
-            (bm: {
-              options: { displayName: any };
-              name: any;
-              attributeDefs: any[];
-            }) => ({
-              ...bm,
-              options: {
-                ...bm?.options,
-                displayName: bm?.options?.displayName
-                  ? bm.options.displayName
-                  : bm.name,
-              },
-              attributeDefs: bm.attributeDefs.map((a) => {
-                if (a.options?.displayName?.length) return a;
-                return { ...a, options: { ...a.options, displayName: a.name } };
-              }),
-            })
-          );
-          store.setData(list);
-        }
-      }
-    );
+    const { fetchBMonStore } = useBusinessMetadata();
 
     const BMAttributeProjection = computed(
       () => store.getBusinessMetadataListProjections
@@ -341,7 +294,7 @@ export default defineComponent({
     const state = ref("active");
 
     const assetTypeLabel = computed(() => {
-      const found = AssetTypeList.find((item) => {
+      const found = AssetTypeList.find(item => {
         return item.id == assetType.value;
       });
       return found?.label;
@@ -357,22 +310,20 @@ export default defineComponent({
     const connectorStore = useConnectionsStore();
     const filteredConnector = computed(() => {
       return connectorStore.getSourceList?.find(
-        (item) => connectorsPayload.value?.connector == item.id
+        item => connectorsPayload.value?.connector == item.id
       );
     });
 
     //Get All Disoverable Asset Types
     let assetTypeList = ref([]);
-    assetTypeList.value = AssetTypeList.filter((item) => {
+    assetTypeList.value = AssetTypeList.filter(item => {
       return item.isDiscoverable == true;
     });
-    const assetTypeListString = assetTypeList.value
-      .map((item) => item.id)
-      .join(",");
+    const assetTypeListString = assetTypeList.value.map(item => item.id).join(",");
 
     const totalSum = computed(() => {
       let sum = 0;
-      assetTypeList.value.forEach((element) => {
+      assetTypeList.value.forEach(element => {
         if (assetTypeMap.value[element.id]) {
           sum = sum + assetTypeMap.value[element.id];
         }
@@ -400,22 +351,11 @@ export default defineComponent({
       searchScoreList,
       isAggregate,
       assetTypeMap,
-    } = useAssetList(
-      now,
-      assetTypeListString,
-      initialBody,
-      assetType.value,
-      true
-    );
+    } = useAssetList(now, assetTypeListString, initialBody, assetType.value, true);
 
-    console.log(
-      assetTypeListString,
-      initialBody,
-      assetType.value,
-      "useAssetList type"
-    );
+    console.log(assetTypeListString, initialBody, assetType.value, "useAssetList type");
 
-    const updateBody = (dontScroll) => {
+    const updateBody = dontScroll => {
       initialBody = {
         typeName: assetTypeListString,
         // includeClassificationAttributes: true,
@@ -505,10 +445,10 @@ export default defineComponent({
         assetlist?.value.scrollToItem(0);
       }
     };
-
     watch(
-      [assetType],
+      [assetType, BMAttributeProjection],
       (n, o) => {
+        // ? Should these run only when all attributes are loaded? like BMAttributeProjection
         isAggregate.value = false;
         // abort();
         offset.value = 0;
@@ -526,7 +466,7 @@ export default defineComponent({
 
     const { projection } = useDiscoveryPreferences();
 
-    const handleSearchChange = useDebounceFn((val) => {
+    const handleSearchChange = useDebounceFn(val => {
       offset.value = 0;
       const routerOptions = getRouterOptions();
       const routerQuery = getEncodedStringFromOptions(routerOptions);
@@ -567,7 +507,7 @@ export default defineComponent({
       };
     };
 
-    const pushQueryToRouter = (pushString) => {
+    const pushQueryToRouter = pushString => {
       console.log(router, "router");
       router.push(`/assets?${pushString}`);
     };
@@ -595,7 +535,7 @@ export default defineComponent({
       updateBody();
     };
 
-    const handlePreview = (item) => {
+    const handlePreview = item => {
       emit("preview", item);
     };
 
@@ -607,6 +547,11 @@ export default defineComponent({
       updateBody(true);
     };
     console.log(connectorsPayload, "insise assets");
+
+    onMounted(() => {
+      fetchBMonStore();
+    });
+
     return {
       initialFilters,
       searchScoreList,
@@ -672,5 +617,4 @@ export default defineComponent({
 });
 </script>
 
-<style lang="less" scoped>
-</style>
+<style lang="less" scoped></style>

@@ -69,6 +69,7 @@
       <a-checkbox-group
         v-model:value="checkedValues"
         @change="handleChange"
+        v-if="classificationsList.length > 0"
         class="w-full"
       >
         <div class="flex flex-col w-full ">
@@ -117,7 +118,11 @@
 
           <div
             class="flex items-center justify-center w-auto px-2 mt-1 mb-0 font-bold text-center cursor-pointer select-none outlined hover:text-primary-500"
-            v-if="hideClassifications && classificationSearchText === ''"
+            v-if="
+              hideClassifications &&
+                classificationSearchText === '' &&
+                classificationsList.length > 5
+            "
             @click="toggleClassifications"
           >
             <fa icon="fal chevron-down" class="mr-1" />
@@ -133,6 +138,7 @@
           </div>
         </div>
       </a-checkbox-group>
+      <p class="text-center text-gray-300 " v-else>No Classifications</p>
     </div>
   </div>
 </template>

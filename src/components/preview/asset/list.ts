@@ -7,12 +7,14 @@ export const List: MenuArray = [
     description: "Information",
     icon: "fal info-circle",
     url: "/",
+
   },
   {
     id: "columns",
     label: "Columns",
     description: "Columns",
     icon: "fal columns",
+    typeNames: ["Table", "View", "TablePartition", "MaterialisedView"],
   },
   {
     id: "chat",
@@ -42,6 +44,7 @@ export const List: MenuArray = [
     description: "Lineage",
     icon: "fal project-diagram",
     url: "/admin",
+    typeNames: ["Table", "View", "Column"],
   },
   {
     id: "actions",

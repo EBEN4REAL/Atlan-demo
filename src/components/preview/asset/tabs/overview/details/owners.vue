@@ -82,41 +82,16 @@
         </div>
       </template>
       <div
-        class="
-          px-2
-          py-1
-          transition
-          duration-500
-          ease-in-out
-          rounded-lg
-          hover:bg-gray-50
-          hover:border
-        "
+        class="px-2 py-1 transition duration-500 ease-in-out rounded-lg  hover:bg-gray-50 hover:border"
       >
-        <p class="mb-1 text-sm tracking-wide text-gray-400">Owners</p>
+        <p class="mb-0 text-sm tracking-wide text-gray-400">Owners</p>
         <div class="flex flex-wrap gap-x-1">
           <template
             v-for="user in item?.attributes?.ownerUsers?.split(',')"
             :key="user"
           >
             <div
-              class="
-                flex
-                items-center
-                px-2
-                py-1
-                mb-1
-                leading-none
-                text-blue-500
-                align-middle
-                transition-all
-                bg-blue-500
-                rounded-md
-                cursor-pointer
-                bg-opacity-10
-                hover:bg-opacity-100
-                hover:text-white
-              "
+              class="flex items-center px-2 py-1 mb-1 leading-none text-blue-500 align-middle transition-all bg-blue-500 rounded-md cursor-pointer  bg-opacity-10 hover:bg-opacity-100 hover:text-white"
               @click.prevent.stop="() => handleClickUser(user)"
             >
               <fa
@@ -131,20 +106,7 @@
             :key="group"
           >
             <div
-              class="
-                flex
-                items-center
-                px-2
-                py-1
-                mb-1
-                leading-none
-                text-blue-600
-                align-middle
-                bg-blue-100
-                rounded-md
-                cursor-pointer
-                hover:text-primary
-              "
+              class="flex items-center px-2 py-1 mb-1 leading-none text-blue-600 align-middle bg-blue-100 rounded-md cursor-pointer  hover:text-primary"
               @click.prevent.stop="handleClickGroup"
             >
               <fa

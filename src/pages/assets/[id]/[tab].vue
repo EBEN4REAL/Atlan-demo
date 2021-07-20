@@ -55,7 +55,7 @@ export default defineComponent({
 
     const selectTab = (item: any) => {
       selectedTab.value = item.key;
-      router.replace(`/a/${id.value}/${item.key}`);
+      router.replace(`/assets/${id.value}/${item.key}`);
     };
 
     return {

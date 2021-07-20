@@ -4,7 +4,7 @@
     :class="$style.filter"
     defaultActiveKey="details"
     :accordion="false"
-    class="bg-transparent"
+    class="mt-2 bg-transparent"
     v-model:activeKey="activeKey"
   >
     <a-collapse-panel key="details" class="bg-transparent" forceRender>
@@ -89,6 +89,15 @@ export default defineComponent({
   }
 
   :global(.ant-collapse-content-box) {
+    @apply px-2;
+  }
+
+  :global(.ant-collapse-arrow) {
+    left: 12px !important;
+  }
+
+  :global(.ant-collapse-header) {
+    padding-left: 32px !important;
   }
 }
 </style>

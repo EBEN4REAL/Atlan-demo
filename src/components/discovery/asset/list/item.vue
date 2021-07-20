@@ -7,7 +7,7 @@
         </div>
         <div class="flex flex-col w-full">
           <div class="flex items-center justify-between mb-0">
-            <router-link :to="`/a/${item.guid}/overview`">
+            <router-link :to="`/assets/${item.guid}/overview`">
               <a
                 class="mb-0 font-semibold leading-none tracking-wide truncate cursor-pointer  text-primary hover:underline"
               >
@@ -62,7 +62,7 @@
             item.typeName.toLowerCase() === 'view')
         "
       >
-        <p class="mb-0 text-gray-600">
+        <p class="mb-0 text-xs text-gray-500">
           <span v-if="item?.typeName.toLowerCase() === 'table'">
             <span class="font-bold tracking-wide">{{
               rowCount(item, true)

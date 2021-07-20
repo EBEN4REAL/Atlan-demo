@@ -23,7 +23,7 @@
             ></ConnectionSelector>
           </template>
 
-          <div class="flex px-3 py-2 cursor-pointer" v-if="connector">
+          <div class="flex py-2 cursor-pointer" v-if="connector">
             <div class="flex items-center text-xs text-gray-900 align-middle">
               <img :src="getImage(connector)" class="w-auto h-4 mr-1" />
 
@@ -35,23 +35,27 @@
               <div class="text-xs" v-if="connectionObject">
                 {{
                   connectionObject.attributes.displayName ||
-                    connectionObject.attributes.name
+                  connectionObject.attributes.name
                 }}
               </div>
 
-              <div class="text-xs" v-else-if="connector">
+              <div class="text-xs tracking-wide" v-else-if="connector">
                 {{
                   connector?.charAt(0).toUpperCase() +
-                    connector?.substr(1).toLowerCase()
+                  connector?.substr(1).toLowerCase()
                 }}
               </div>
               <fa icon="fas caret-down" class="text-primary-500"></fa>
             </div>
-            <fa icon="fal chevron-right" class="text-xs text-gray-300"></fa>
+            <fa
+              icon="fal chevron-right"
+              class="text-xs text-gray-300"
+              v-if="connectionObject"
+            ></fa>
           </div>
-          <div class="flex px-3 py-2 cursor-pointer" v-else>
+          <div class="flex py-2 cursor-pointer" v-else>
             <p
-              class="flex items-center mb-0 text-xs tracking-wide text-gray-900 align-middle hover:bg-gray-50"
+              class="flex items-center mb-0 text-xs tracking-wide text-gray-900 align-middle  hover:bg-gray-50"
             >
               <fa icon="fal plug" class="mr-1"></fa>All Connectors
               <fa icon="fas caret-down" class="text-primary-500"></fa>

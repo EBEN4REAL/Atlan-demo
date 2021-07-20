@@ -414,7 +414,7 @@ export default defineComponent({
       "useAssetList type"
     );
 
-    const updateBody = () => {
+    const updateBody = (dontScroll) => {
       initialBody = {
         typeName: assetTypeListString,
         // includeClassificationAttributes: true,
@@ -500,7 +500,7 @@ export default defineComponent({
       }
 
       replaceBody(initialBody);
-      if (assetlist.value) {
+      if (assetlist.value && !dontScroll) {
         assetlist?.value.scrollToItem(0);
       }
     };
@@ -603,7 +603,7 @@ export default defineComponent({
         offset.value = list.value.length + limit.value;
       }
       isAggregate.value = false;
-      updateBody();
+      updateBody(true);
     };
     console.log(connectorsPayload, "insise assets");
     return {

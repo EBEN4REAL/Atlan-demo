@@ -22,7 +22,13 @@
           class="absolute flex p-2 space-x-2 border-t border-gray-100 bottom-1 right-3"
         >
           <a-button size="small" @click="visibility = false">Cancel</a-button>
-          <a-button type="primary" size="small" @click="handleAddWidget">Done</a-button>
+          <a-button
+            type="primary"
+            size="small"
+            :disabled="!addBusinessMetadata"
+            @click="handleAddWidget"
+            >Done</a-button
+          >
         </div>
       </div>
     </template>
@@ -102,7 +108,7 @@ export default defineComponent({
     const isEditBusinessMetadata = ref(false);
     const accessLevel = ref("editor");
     const visibility = ref(false);
-    const addBusinessMetadata = ref([]);
+    const addBusinessMetadata = ref("");
 
     // * Computed
     const businessMetadataList = computed(() => store.getBusinessMetadataList);
@@ -273,7 +279,17 @@ export default defineComponent({
       return requiredBM || null;
     };
 
+    /** @param {Object} value - object of the BM with attrs to get updated of an widget
+     * @desc makes api call to update, also updates the local list
+     */
     const handleUpdateAttribute = (value: object) => {
+      // ? remove empty widget if newly added without making network call
+      const bmExists = attributesList.value.find(b => b.bm === value.bm);
+      if (value.isNew && !value.attributes.length && !bmExists.attributes.length) {
+        attributesList.value = attributesList.value.filter(b => value.bm !== b.bm);
+        return;
+      }
+
       // ? compute the payload
       updateBmAttributesStatus.value = "loading";
       const {
@@ -292,12 +308,15 @@ export default defineComponent({
           updateBmAttributesStatus.value = "failed";
         } else if (isReady.value) {
           updateBmAttributesStatus.value = "success";
-          // ? remove empty attributes on update // add new value of the attribute to state if success update
+          // * add new value of the attribute to state if success update
           const index = attributesList.value.findIndex(a => a.bm === value.bm);
-          if (index > -1) {
+          if (index > -1 && value.attributes.length) {
             attributesList.value[index] = value;
+          } else {
+            // ? if remove a BM completely, delete the bm from list
+            attributesList.value = attributesList.value.filter(b => value.bm !== b.bm);
           }
-          attributesList.value = attributesList.value.filter(b => b.attributes.length);
+
           setTimeout(async () => {
             // await this.refreshAssetInAssetsList(this.asset.guid);
             updateBmAttributesStatus.value = "";
@@ -307,11 +326,6 @@ export default defineComponent({
           }, 1000);
         }
       });
-
-      // watch([isReady, error], (n, o) => {
-      //   console.log("watching is ready");
-      //   console.log(n);
-      // });
     };
 
     onMounted(() => {

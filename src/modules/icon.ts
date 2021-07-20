@@ -45,6 +45,7 @@ import { faCertificate } from "@fortawesome/pro-light-svg-icons/faCertificate";
 import { faUserShield } from "@fortawesome/pro-light-svg-icons/faUserShield";
 import { faShield } from "@fortawesome/pro-light-svg-icons/faShield";
 import { faUserEdit } from "@fortawesome/pro-light-svg-icons/faUserEdit";
+import { faPencilAlt } from "@fortawesome/pro-light-svg-icons/faPencilAlt";
 import { faSync } from "@fortawesome/pro-light-svg-icons/faSync";
 import { faChevronDoubleLeft } from "@fortawesome/pro-light-svg-icons/faChevronDoubleLeft";
 
@@ -135,6 +136,7 @@ library.add(
   faUserShield,
   faShield,
   faPlug,
+  faPencilAlt,
   faUserEdit,
   faSync,
   faGlobe,
@@ -194,7 +196,6 @@ import { faAlignCenter } from "@fortawesome/pro-solid-svg-icons/faAlignCenter";
 import { faAlignRight } from "@fortawesome/pro-solid-svg-icons/faAlignRight";
 import { faFileImage } from "@fortawesome/pro-solid-svg-icons/faFileImage";
 import { faSpinner } from "@fortawesome/pro-light-svg-icons/faSpinner";
-
 
 library.add(
   faBadgeCheck,

@@ -1,38 +1,12 @@
 <template>
   <div class="w-full pt-4 overflow-y-auto rounded container-height">
-    <div class="flex items-stretch">
-      <div class="flex">
-        <div
-          class="flex items-center justify-center py-0.5 px-1.5 border rounded mr-2"
-        >
-          <img
-            src="https://img.icons8.com/ios/50/000000/notion.png"
-            alt="notion"
-            class="w-6 h-6 mr-2"
-          />
-          <p class="mb-0 text-gray-500">Notion</p>
-        </div>
-      </div>
-      <div class="flex">
-        <div
-          class="flex items-center justify-center py-1 px-1.5 border rounded mr-2"
-        >
-          <img
-            src="https://img.icons8.com/ios/50/000000/notion.png"
-            alt="notion"
-            class="w-6 h-6 mr-2"
-          />
-          <p class="mb-0 text-gray-500">Project Gdrive</p>
-        </div>
-      </div>
-      <div class="">
-        <a-button class="h-full px-2.5 rounded p-2">
-          <span class="flex items-center justify-center">
-            <fa icon="fal plus"></fa
-          ></span>
-        </a-button>
-      </div>
-    </div>
+    <Bookmark
+      :links="links"
+      :showOverflowFade="true"
+      @handleUpdateBookmark="handleUpdateBookmark"
+      @handleDeleteBookmark="handleDeleteBookmark"
+      @handleBookmarAdd="handleBookmarAdd"
+    />
     <div class="mt-8 border rounded h-80">
       <p class="px-4 py-2 text-lg border-b text-gray-dark">Project Overview</p>
     </div>
@@ -49,10 +23,11 @@
 
 <script lang="ts">
 import { defineComponent, ref, inject, toRaw, Ref, watch } from "vue";
+import Bookmark from "@common/bookmark/index.vue";
 import { useHead } from "@vueuse/head";
 
 export default defineComponent({
-  components: {},
+  components: { Bookmark },
   props: {
     id: String,
   },
@@ -61,7 +36,69 @@ export default defineComponent({
       title: "Project Home",
     });
 
-    return {};
+    const links = ref([
+      {
+        faviconURL: "https://img.icons8.com/ios/50/000000/notion.png",
+        title: "notion",
+        key: "1",
+        altText: "notion",
+        url: "https:notion.com",
+      },
+      {
+        faviconURL:
+          "https://s2.googleusercontent.com/s2/favicons?domain_url=https://hashnode.com",
+        title: "Hasnode",
+        key: "2",
+        altText: "hashnode",
+        url: "https://hashnode.com",
+      },
+      {
+        faviconURL:
+          "https://s2.googleusercontent.com/s2/favicons?domain_url=https://hashnode.com",
+        title: "Hasnode",
+        key: "2",
+        altText: "hashnode",
+        url: "https://hashnode.com",
+      },
+      {
+        faviconURL:
+          "https://s2.googleusercontent.com/s2/favicons?domain_url=https://hashnode.com",
+        title: "Hasnode",
+        key: "2",
+        altText: "hashnode",
+        url: "https://hashnode.com",
+      },
+    ]);
+    const bookmarkBarStyle = {
+      width: "65vw",
+    };
+    const handleUpdateBookmark = (linkData: any) => {
+      console.log(linkData, "update");
+      const index = links.value.findIndex((link) => link.key === linkData.key);
+      if (index !== -1) links.value[index] = linkData;
+    };
+    const handleDeleteBookmark = (linkData: any) => {
+      console.log(linkData, "delete");
+      const index = links.value.findIndex((link) => link.key === linkData.key);
+      links.value.splice(index, 1);
+    };
+    const handleBookmarAdd = (linkData: any) => {
+      console.log(linkData, "add");
+      const timeStamp = new Date();
+      links.value.push({
+        ...linkData,
+        key: timeStamp,
+        alt: "link",
+      });
+    };
+
+    return {
+      handleBookmarAdd,
+      handleDeleteBookmark,
+      handleUpdateBookmark,
+      bookmarkBarStyle,
+      links,
+    };
   },
 });
 </script>

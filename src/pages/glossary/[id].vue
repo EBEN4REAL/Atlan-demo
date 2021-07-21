@@ -1,7 +1,9 @@
 <template>
-  <div class="px-12">
+  <div class="px-12 mb-12">
     <div class="flex flex-row mt-6 mb-5">
-      <div class="mr-5">logo</div>
+      <div class="mr-5">
+        <GlossarySvg />
+      </div>
       <div class="flex flex-col">
         <span class="secondaryHeading">GLOSSARY</span>
         <h1 class="text-3xl leading-9 m-0 p-0 text-black font-normal">
@@ -14,16 +16,22 @@
         </div>
       </div>
     </div>
-    <a-tabs default-active-key="1" @change="callback">
-      <a-tab-pane key="1" tab="Overview"> <GlossaryProfileOverview :glossary="glossary" /> </a-tab-pane>
-      <a-tab-pane key="2" tab="Terms & Categories">
-        Terms & Categories
-      </a-tab-pane>
-      <a-tab-pane key="3" tab="Activity"> Activity </a-tab-pane>
-      <a-tab-pane key="3" tab="Bots"> Bots </a-tab-pane>
-      <a-tab-pane key="3" tab="Permissions"> Permissions </a-tab-pane>
-    </a-tabs>
-    <hr />
+    <div class="flex flex-row">
+      <a-tabs default-active-key="1" @change="callback" class="border-0">
+        <a-tab-pane key="1" tab="Overview">
+          <GlossaryProfileOverview :glossary="glossary" />
+        </a-tab-pane>
+        <a-tab-pane key="2" tab="Terms & Categories">
+          Terms & Categories
+        </a-tab-pane>
+        <a-tab-pane key="3" tab="Activity"> Activity </a-tab-pane>
+        <a-tab-pane key="3" tab="Bots"> Bots </a-tab-pane>
+        <a-tab-pane key="3" tab="Permissions"> Permissions </a-tab-pane>
+      </a-tabs>
+      <GlossaryTopTerms v-if="glossaryTerms?.length" :terms="glossaryTerms" />
+    </div>
+
+    <!-- <hr /> -->
   </div>
 </template>
 
@@ -32,11 +40,14 @@ import { defineComponent, computed } from "vue";
 import { useHead } from "@vueuse/head";
 
 import useGTCEntity from "~/composables/glossary/useGtcEntity";
+import useGlossaryTerms from "~/composables/glossary/useGlossaryTerms";
 import { watch } from "vue";
 import { onMounted } from "vue";
 
 import Readme from "@/common/readme/index.vue";
 import GlossaryProfileOverview from "@/glossary/glossaryProfileOverview.vue";
+import GlossaryTopTerms from "@/glossary/glossaryTopTerms.vue";
+import GlossarySvg from "~/assets/images/glossary/glossary.svg";
 
 export default defineComponent({
   props: {
@@ -46,21 +57,34 @@ export default defineComponent({
       default: "",
     },
   },
-  components: { Readme, GlossaryProfileOverview },
+  components: { Readme, GlossaryProfileOverview, GlossaryTopTerms,GlossarySvg },
   setup(props) {
     const id = computed(() => props.id);
 
-    const { data:glossary, error, isLoading, fetchEntity } = useGTCEntity("glossary");
+    const {
+      data: glossary,
+      error,
+      isLoading,
+      fetchEntity,
+    } = useGTCEntity("glossary");
+    const {
+      data: glossaryTerms,
+      termsError,
+      termsLoading,
+      fetchGlossaryTerms,
+    } = useGlossaryTerms();
 
     const title = computed(() => glossary.value?.name);
     const shortDescription = computed(() => glossary.value?.shortDescription);
     const termCount = computed(() => glossary.value?.terms?.length ?? 0);
     onMounted(() => {
       fetchEntity(id.value);
+      fetchGlossaryTerms(id.value);
     });
 
     watch(id, (newGuid) => {
       fetchEntity(newGuid);
+      fetchGlossaryTerms(newGuid)
     });
 
     return {
@@ -71,6 +95,7 @@ export default defineComponent({
       error,
       isLoading,
       id,
+      glossaryTerms,
     };
   },
 });

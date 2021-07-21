@@ -3,7 +3,10 @@
     <div class="w-1/3 h-full pt-6 pl-4 bg-white">
       <div class="flex flex-col">
         <div class="mb-3">
-          <a-radio-group class="flex w-full text-center" v-model:value="filterMode">
+          <a-radio-group
+            class="flex w-full text-center"
+            v-model:value="filterMode"
+          >
             <a-radio-button class="flex-grow" value="custom"
               ><fa icon="fal filter" class="pushtop"></fa
             ></a-radio-button>
@@ -173,6 +176,8 @@ import { useConnectionsStore } from "~/pinia/connections";
 import { getEncodedStringFromOptions } from "~/utils/routerQuery";
 import { useRouter } from "vue-router";
 import { initialFiltersType } from "~/pages/assets.vue";
+import useTracking from "~/modules/tracking";
+import { EVENT_ASSET_SEARCH } from "~/constant/analytics";
 
 export interface filterMapType {
   status: {
@@ -250,6 +255,7 @@ export default defineComponent({
     const initialFilters = props.initialFilters;
 
     const router = useRouter();
+    const tracking = useTracking();
     let filterMode = ref("custom");
 
     const now = ref(false);
@@ -294,7 +300,7 @@ export default defineComponent({
     const state = ref("active");
 
     const assetTypeLabel = computed(() => {
-      const found = AssetTypeList.find(item => {
+      const found = AssetTypeList.find((item) => {
         return item.id == assetType.value;
       });
       return found?.label;
@@ -310,20 +316,22 @@ export default defineComponent({
     const connectorStore = useConnectionsStore();
     const filteredConnector = computed(() => {
       return connectorStore.getSourceList?.find(
-        item => connectorsPayload.value?.connector == item.id
+        (item) => connectorsPayload.value?.connector == item.id
       );
     });
 
     //Get All Disoverable Asset Types
     let assetTypeList = ref([]);
-    assetTypeList.value = AssetTypeList.filter(item => {
+    assetTypeList.value = AssetTypeList.filter((item) => {
       return item.isDiscoverable == true;
     });
-    const assetTypeListString = assetTypeList.value.map(item => item.id).join(",");
+    const assetTypeListString = assetTypeList.value
+      .map((item) => item.id)
+      .join(",");
 
     const totalSum = computed(() => {
       let sum = 0;
-      assetTypeList.value.forEach(element => {
+      assetTypeList.value.forEach((element) => {
         if (assetTypeMap.value[element.id]) {
           sum = sum + assetTypeMap.value[element.id];
         }
@@ -351,11 +359,22 @@ export default defineComponent({
       searchScoreList,
       isAggregate,
       assetTypeMap,
-    } = useAssetList(now, assetTypeListString, initialBody, assetType.value, true);
+    } = useAssetList(
+      now,
+      assetTypeListString,
+      initialBody,
+      assetType.value,
+      true
+    );
 
-    console.log(assetTypeListString, initialBody, assetType.value, "useAssetList type");
+    console.log(
+      assetTypeListString,
+      initialBody,
+      assetType.value,
+      "useAssetList type"
+    );
 
-    const updateBody = dontScroll => {
+    const updateBody = (dontScroll) => {
       initialBody = {
         typeName: assetTypeListString,
         // includeClassificationAttributes: true,
@@ -466,12 +485,15 @@ export default defineComponent({
 
     const { projection } = useDiscoveryPreferences();
 
-    const handleSearchChange = useDebounceFn(val => {
+    const handleSearchChange = useDebounceFn((val) => {
       offset.value = 0;
       const routerOptions = getRouterOptions();
       const routerQuery = getEncodedStringFromOptions(routerOptions);
       updateBody();
       pushQueryToRouter(routerQuery);
+      tracking.trackEvent("posthog", EVENT_ASSET_SEARCH, {
+        trigger: "discover",
+      });
     }, 100);
 
     const handleChangePreferences = (payload: any) => {
@@ -507,7 +529,7 @@ export default defineComponent({
       };
     };
 
-    const pushQueryToRouter = pushString => {
+    const pushQueryToRouter = (pushString) => {
       console.log(router, "router");
       router.push(`/assets?${pushString}`);
     };
@@ -535,7 +557,7 @@ export default defineComponent({
       updateBody();
     };
 
-    const handlePreview = item => {
+    const handlePreview = (item) => {
       emit("preview", item);
     };
 

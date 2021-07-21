@@ -46,7 +46,14 @@ router.beforeEach(async (to, from, next) => {
         const auth = await timeout(fn(), 10000);
         const tenantStore = useTenantStore();
         if (auth) {
-          tenantStore.setIsAuthenticated(true, app.config.globalProperties.$keycloak.tokenParsed);
+          tenantStore.setIsAuthenticated(
+            true,
+            app.config.globalProperties.$keycloak.tokenParsed
+          );
+          if (app.config.globalProperties?.$posthog?.capture) {
+            // TODO why capturing page view throw error on first load?
+            // app.config.globalProperties.$posthog.capture("$pageview");
+          }
           next();
         } else {
           tenantStore.setIsAuthenticated(false, null);
@@ -65,6 +72,13 @@ router.beforeEach(async (to, from, next) => {
       }
     } else {
       if (app.config.globalProperties.$keycloak.authenticated) {
+        // Manually capturing pageview coz posthog does not capture pageviews if user changes tab/page in Atlan
+        if (
+          Boolean(import.meta.env.VITE_ENABLE_EVENTS_TRACKING) &&
+          app.config.globalProperties?.$posthog?.capture
+        ) {
+          app.config.globalProperties.$posthog.capture("$pageview");
+        }
         next();
       } else {
         window.location.replace(

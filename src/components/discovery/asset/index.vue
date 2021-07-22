@@ -177,7 +177,6 @@ import { getEncodedStringFromOptions } from "~/utils/routerQuery";
 import { useRouter } from "vue-router";
 import { initialFiltersType } from "~/pages/assets.vue";
 import useTracking from "~/modules/tracking";
-import { EVENT_ASSET_SEARCH } from "~/constant/analytics";
 
 export interface filterMapType {
   status: {
@@ -256,6 +255,7 @@ export default defineComponent({
 
     const router = useRouter();
     const tracking = useTracking();
+    const events = tracking.getEventsName();
     let filterMode = ref("custom");
 
     const now = ref(false);
@@ -491,7 +491,7 @@ export default defineComponent({
       const routerQuery = getEncodedStringFromOptions(routerOptions);
       updateBody();
       pushQueryToRouter(routerQuery);
-      tracking.trackEvent("posthog", EVENT_ASSET_SEARCH, {
+      tracking.trackEvent(events.EVENT_ASSET_SEARCH, {
         trigger: "discover",
       });
     }, 100);

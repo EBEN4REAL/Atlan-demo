@@ -50,11 +50,11 @@ router.beforeEach(async (to, from, next) => {
             true,
             app.config.globalProperties.$keycloak.tokenParsed
           );
+          next();
           if (app.config.globalProperties?.$posthog?.capture) {
             // TODO why capturing page view throw error on first load?
             // app.config.globalProperties.$posthog.capture("$pageview");
           }
-          next();
         } else {
           tenantStore.setIsAuthenticated(false, null);
           window.location.replace(

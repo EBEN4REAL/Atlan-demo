@@ -226,7 +226,7 @@ import {
 import ImportMetadataFromXML from "../common/importMetadataFromXML.vue";
 import ImportText from "../common/importText.vue";
 
-import { useTenantStore } from "~/pinia/tenants";
+import { useTenantStore } from "~/store/tenants";
 
 import {
   topSAMLProviders,

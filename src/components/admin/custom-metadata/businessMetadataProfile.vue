@@ -185,7 +185,7 @@ import ArchiveMetadataModal from "@/admin/custom-metadata/archiveMetadataModal.v
 import { BusinessMetadataService } from "~/api/atlas/businessMetadata";
 
 // ? Store
-import { useBusinessMetadataStore } from "~/pinia/businessMetadata";
+import { useBusinessMetadataStore } from "~/store/businessMetadata";
 
 // ? composables
 import useBusinessMetadata from "@/admin/custom-metadata/composables/useBusinessMetadata";

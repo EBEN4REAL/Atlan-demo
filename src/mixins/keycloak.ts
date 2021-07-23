@@ -1,5 +1,5 @@
 import { defineComponent, getCurrentInstance, computed, inject } from 'vue';
-import { useTenantStore } from '~/pinia/tenants';
+import { useTenantStore } from '~/store/tenants';
 
 export default defineComponent({
     setup() {

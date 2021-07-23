@@ -98,24 +98,24 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, inject, computed, ref } from 'vue'
+    import { defineComponent, inject, computed, ref } from 'vue';
 
-    import PageLoader from '@common/loaders/page.vue'
-    import SearchBox from '@common/searchbox/searchlist.vue'
+    import PageLoader from '@common/loaders/page.vue';
+    import SearchBox from '@common/searchbox/searchlist.vue';
 
-    import SavedList from '@/home/saved/index.vue'
+    import SavedList from '@/home/saved/index.vue';
 
-    import Tags from '@common/badge/tags/index.vue'
+    import Tags from '@common/badge/tags/index.vue';
 
-    import { useHead } from '@vueuse/head'
+    import { useHead } from '@vueuse/head';
 
-    import { useUser } from '~/composables/user/useUsers'
+    import { useUser } from '~/composables/user/useUsers';
 
-    import Avatar from '~/components/common/avatar.vue'
+    import Avatar from '~/components/common/avatar.vue';
 
-    import UpdateSkills from '~/components/admin/users/userPreview/about/updateSkills.vue'
-    import UpdateDesignation from '~/components/admin/users/userPreview/about/updateDesignation.vue'
-    import { useTenantStore } from '~/pinia/tenants'
+    import UpdateSkills from '~/components/admin/users/userPreview/about/updateSkills.vue';
+    import UpdateDesignation from '~/components/admin/users/userPreview/about/updateDesignation.vue';
+    import { useTenantStore } from '~/store/tenants';
 
     export default defineComponent({
         name: 'HelloWorld',
@@ -135,40 +135,42 @@
             },
         },
         setup() {
-            const keycloak = inject('$keycloak')
-            const tenantStore = useTenantStore()
+            const keycloak = inject('$keycloak');
+            const tenantStore = useTenantStore();
 
-            let username = keycloak.tokenParsed.preferred_username || ''
+            let username = keycloak.tokenParsed.preferred_username || '';
 
             const fullName = computed(() => {
-                let firstName = keycloak.tokenParsed.given_name || ''
-                let lastName = keycloak.tokenParsed.family_name || ''
+                let firstName = keycloak.tokenParsed.given_name || '';
+                let lastName = keycloak.tokenParsed.family_name || '';
                 return `${firstName.charAt(0).toUpperCase() +
                     firstName.substr(1).toLowerCase()} ${lastName
                     .charAt(0)
-                    .toUpperCase() + lastName.substr(1).toLowerCase()}`
-            })
+                    .toUpperCase() + lastName.substr(1).toLowerCase()}`;
+            });
             useHead({
                 title: `Welcome - ${fullName.value} `,
-            })
+            });
             let imageUrl = ref(
                 `http://localhost:3333/api/auth/tenants/default/avatars/${username}`
-            )
-            const filterObj = { $and: [{ email_verified: true }, { username }] }
+            );
+            const filterObj = {
+                $and: [{ email_verified: true }, { username }],
+            };
             const { userList, getUser, state, STATES } = useUser({
                 limit: 1,
                 offset: 0,
                 sort: 'first_name',
                 filter: filterObj,
-            })
+            });
             const handleUpdateUser = async () => {
-                await getUser()
-            }
+                await getUser();
+            };
             const userObj = computed(() => {
                 return userList && userList.value && userList.value.length
                     ? userList.value[0]
-                    : []
-            })
+                    : [];
+            });
 
             return {
                 fullName,
@@ -186,9 +188,9 @@
                 STATES,
                 userObj,
                 handleUpdateUser,
-            }
+            };
         },
-    })
+    });
 </script>
 
 <route lang="yaml">

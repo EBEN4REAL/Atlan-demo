@@ -263,7 +263,7 @@ import {
 import ChangeRole from "./changeRole.vue";
 import InviteUsers from "./inviteUsers.vue";
 import useRoles from "~/composables/roles/useRoles";
-import { useTenantStore } from "~/pinia/tenants";
+import { useTenantStore } from "~/store/tenants";
 import ErrorView from "@common/error/index.vue";
 
 export default defineComponent({

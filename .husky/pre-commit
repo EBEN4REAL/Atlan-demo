@@ -13,8 +13,7 @@ files=$(git diff-index --name-only --diff-filter=ACM HEAD | grep src) || echo  "
 )
  echo "\n Running Eslint...\n"
 pnpx eslint $files --fix || (
-
-		echo '\n Eslint says that is some weak code! \n Make the required changes listed above, add changes and try to commit again.\n'
+	echo '\n Eslint says that is some weak code! \n Make the required changes listed above, add changes and try to commit again.\n'
 	)
 
 git add -A

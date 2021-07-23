@@ -52,8 +52,8 @@ router.beforeEach(async (to, from, next) => {
           );
           next();
           if (app.config.globalProperties?.$posthog?.capture) {
-            // TODO why capturing page view throw error on first load?
-            // app.config.globalProperties.$posthog.capture("$pageview");
+            // Manually capturing pageview coz posthog does not capture pageviews if user changes tab/page in Atlan
+            app.config.globalProperties.$posthog.capture("$pageview");
           }
         } else {
           tenantStore.setIsAuthenticated(false, null);

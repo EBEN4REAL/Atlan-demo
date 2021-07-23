@@ -46,8 +46,15 @@ router.beforeEach(async (to, from, next) => {
         const auth = await timeout(fn(), 10000);
         const tenantStore = useTenantStore();
         if (auth) {
-          tenantStore.setIsAuthenticated(true, app.config.globalProperties.$keycloak.tokenParsed);
+          tenantStore.setIsAuthenticated(
+            true,
+            app.config.globalProperties.$keycloak.tokenParsed
+          );
           next();
+          if (app.config.globalProperties?.$posthog?.capture) {
+            // Manually capturing pageview coz posthog does not capture pageviews if user changes tab/page in Atlan
+            app.config.globalProperties.$posthog.capture("$pageview");
+          }
         } else {
           tenantStore.setIsAuthenticated(false, null);
           window.location.replace(
@@ -65,6 +72,13 @@ router.beforeEach(async (to, from, next) => {
       }
     } else {
       if (app.config.globalProperties.$keycloak.authenticated) {
+        // Manually capturing pageview coz posthog does not capture pageviews if user changes tab/page in Atlan
+        if (
+          Boolean(import.meta.env.VITE_ENABLE_EVENTS_TRACKING) &&
+          app.config.globalProperties?.$posthog?.capture
+        ) {
+          app.config.globalProperties.$posthog.capture("$pageview");
+        }
         next();
       } else {
         window.location.replace(

@@ -56,13 +56,14 @@
 import { defineComponent, ref, inject, toRaw, Ref, watch } from "vue";
 import { useHead } from "@vueuse/head";
 import { useRouter } from "vue-router";
-
+// import initalize from "~/utils/tracking";
 export default defineComponent({
   components: {},
   setup() {
     useHead({
       title: "Project Home",
     });
+    // initalize();
     const router = useRouter();
     const views = [
       { id: 1, src: "https://picsum.photos/50/50" },

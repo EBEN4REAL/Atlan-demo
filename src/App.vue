@@ -3,9 +3,8 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, watch } from "vue";
+import { defineComponent, ref, watch, inject } from "vue";
 import LocalStorageCache from "swrv/dist/cache/adapters/localStorage";
-import posthog from "posthog-js";
 import { Tenant } from "./api2/tenant";
 
 import { useConnectionsStore } from "./pinia/connections";
@@ -14,14 +13,11 @@ import useConnectionsList from "./composables/bots/useConnectionList";
 import { CONNECTION_FETCH_LIST } from "./constant/cache";
 import { useTenantStore } from "./pinia/tenants";
 import { useClassificationStore } from "~/components/admin/classifications/_store";
+import useTracking from "~/modules/tracking";
 
 export default defineComponent({
   setup(props, context) {
-    //Initalise PostHog
-    // posthog.init("phc_nrHzT0y0X5GKUHPzUkhPXqrqxcRQl5JPEUvQ8BqbEiS", {
-    //   api_host: "https://app.posthog.com",
-    // });
-
+    const tracking = useTracking();
     const tenantStore = useTenantStore();
     const asyncOptions = {
       dedupingInterval: 0,
@@ -48,8 +44,16 @@ export default defineComponent({
       () => tenantStore.isAuthenticated,
       () => {
         isAuth.value = true;
-        //posthog.identify(tenantStore.token.userId);
-        //posthog.people.set({ email: tenantStore.token.email });
+        tracking.initialize({
+          analyticsName: "posthog",
+          user: {
+            userId: tenantStore?.token?.userId,
+            email: tenantStore?.token?.email ?? "",
+            name: tenantStore?.token?.name ?? "",
+            username: tenantStore?.token?.username ?? "",
+            roleCode: tenantStore?.token?.roleCode ?? "",
+          },
+        });
       }
     );
 

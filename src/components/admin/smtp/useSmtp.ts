@@ -1,6 +1,6 @@
 import { computed, watch, ref } from "vue";
 import { Tenant } from "~/api/auth/tenant";
-import { useTenantStore } from "~/pinia/tenants";
+import { useTenantStore } from "~/store/tenants";
 
 export function useSmtp() {
   const store = useTenantStore();

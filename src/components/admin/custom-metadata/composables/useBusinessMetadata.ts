@@ -1,9 +1,9 @@
-import { ref, watch, toRaw, computed } from "vue";
-import { DEFAULT_ATTRIBUTE, DEFAULT_BM } from "~/constant/business_metadata";
-import { generateUUID } from "~/utils/generator";
-import { cloneDeep } from "lodash";
-import { useBusinessMetadataStore } from "~/pinia/businessMetadata";
-import { BusinessMetadataService } from "~/api/atlas/businessMetadata";
+import { ref, watch, toRaw, computed } from 'vue';
+import { DEFAULT_ATTRIBUTE, DEFAULT_BM } from '~/constant/business_metadata';
+import { generateUUID } from '~/utils/generator';
+import { cloneDeep } from 'lodash';
+import { useBusinessMetadataStore } from '~/store/businessMetadata';
+import { BusinessMetadataService } from '~/api/atlas/businessMetadata';
 
 interface attributeDefs {
     name: string;
@@ -26,9 +26,9 @@ export default function useBusinessMetadata() {
     };
 
     /**
-       * @param {Object} BmObject - BM object to be edited
-       * @return returns modfied ref object as per api format
-       */
+     * @param {Object} BmObject - BM object to be edited
+     * @return returns modfied ref object as per api format
+     */
     const getUpdatePayload = (BmObject: {
         attributeDefs: [];
         description: string;
@@ -40,16 +40,16 @@ export default function useBusinessMetadata() {
         const payload = {
             businessMetadataDefs: [
                 {
-                    ...(tempBm.guid === "new"
+                    ...(tempBm.guid === 'new'
                         ? {
-                            category: "BUSINESS_METADATA",
-                            typeVersion: "1.1",
-                            version: 1,
-                            attributeDefs: tempBm.attributeDefs,
-                            description: tempBm.description,
-                            name: tempBm.name,
-                            options: tempBm.options,
-                        }
+                              category: 'BUSINESS_METADATA',
+                              typeVersion: '1.1',
+                              version: 1,
+                              attributeDefs: tempBm.attributeDefs,
+                              description: tempBm.description,
+                              name: tempBm.name,
+                              options: tempBm.options,
+                          }
                         : tempBm),
                 },
             ],
@@ -61,12 +61,11 @@ export default function useBusinessMetadata() {
         return ref(payload);
     };
 
-
     // * Get all available BMs and save on store
     const store = useBusinessMetadataStore();
 
     const fetchBMonStore = () => {
-        console.log('fetching BM list...')
+        console.log('fetching BM list...');
         const {
             data: BMResponse,
             error: BMListError,
@@ -76,12 +75,14 @@ export default function useBusinessMetadata() {
         //FIXME debug this
         watch(
             [BMListLoading, BMListError],
-            n => {
+            (n) => {
                 console.log([BMListLoading, BMListError]);
                 const error = toRaw(BMListError.value);
                 console.log(error);
                 store.setBusinessMetadataListLoading(n[0].value);
-                store.setBusinessMetadataListError(error.response.data.errorMessage);
+                store.setBusinessMetadataListError(
+                    error.response.data.errorMessage
+                );
             },
             { deep: true }
         );
@@ -94,16 +95,29 @@ export default function useBusinessMetadata() {
                         (bm: {
                             options: { displayName: string };
                             name: string;
-                            attributeDefs: [{ name: string; options: { displayName: string } }];
+                            attributeDefs: [
+                                {
+                                    name: string;
+                                    options: { displayName: string };
+                                }
+                            ];
                         }) => ({
                             ...bm,
                             options: {
                                 ...bm?.options,
-                                displayName: bm?.options?.displayName ? bm.options.displayName : bm.name,
+                                displayName: bm?.options?.displayName
+                                    ? bm.options.displayName
+                                    : bm.name,
                             },
-                            attributeDefs: bm.attributeDefs.map(a => {
+                            attributeDefs: bm.attributeDefs.map((a) => {
                                 if (a.options?.displayName?.length) return a;
-                                return { ...a, options: { ...a.options, displayName: a.name } };
+                                return {
+                                    ...a,
+                                    options: {
+                                        ...a.options,
+                                        displayName: a.name,
+                                    },
+                                };
                             }),
                         })
                     );
@@ -111,11 +125,11 @@ export default function useBusinessMetadata() {
                 }
             }
         );
-    }
+    };
 
     // * Data
     let selectedBm = ref(null);
-    let searchText = ref("");
+    let searchText = ref('');
     let newBm = ref(null);
     let updatedBm = ref(null);
     // * Methods
@@ -132,10 +146,12 @@ export default function useBusinessMetadata() {
         return { ...DEFAULT_BM };
     };
     const clearSearchText = () => {
-        searchText.value = "";
+        searchText.value = '';
     };
     const discardNewBm = () => {
-        const reqIndex = finalBusinessMetadataList.value.findIndex(bm => bm.guid === "new");
+        const reqIndex = finalBusinessMetadataList.value.findIndex(
+            (bm) => bm.guid === 'new'
+        );
         if (reqIndex !== -1) {
             newBm.value = null;
             selectedBm.value = finalBusinessMetadataList.value.length
@@ -147,7 +163,7 @@ export default function useBusinessMetadata() {
      * @desc if an existing bm is being updated, set updated bm to
      */
     const onUpdate = (bm: { guid: string } | null) => {
-        if (bm.guid === "new") {
+        if (bm.guid === 'new') {
             newBm.value = bm;
         } else {
             updatedBm.value = bm;
@@ -155,7 +171,9 @@ export default function useBusinessMetadata() {
     };
 
     const onCreateNewBmClick = () => {
-        const reqIndex = finalBusinessMetadataList.value.findIndex(bm => bm.guid === "new");
+        const reqIndex = finalBusinessMetadataList.value.findIndex(
+            (bm) => bm.guid === 'new'
+        );
         if (reqIndex === -1) {
             const newBmTemplate = getNewBmTemplate();
             newBm.value = JSON.parse(JSON.stringify(newBmTemplate));
@@ -172,7 +190,9 @@ export default function useBusinessMetadata() {
     const businessMetadataListError = computed(() => {
         return store.businessMetadataListError;
     });
-    const handleAfterArchive = () => { console.log("handleAfterArchive") }
+    const handleAfterArchive = () => {
+        console.log('handleAfterArchive');
+    };
 
     const finalBusinessMetadataList = computed(() => [
         ...(newBm.value ? [newBm.value] : []),
@@ -181,7 +201,7 @@ export default function useBusinessMetadata() {
 
     const searchedBusinessMetadataList = computed(() => {
         if (searchText.value) {
-            return finalBusinessMetadataList.value.filter(bm =>
+            return finalBusinessMetadataList.value.filter((bm) =>
                 bm.name.toUpperCase().includes(searchText.value.toUpperCase())
             );
         }
@@ -204,10 +224,10 @@ export default function useBusinessMetadata() {
             data: null,
         };
         temp.data = cloneDeep(BmObject);
-        if (!temp.data.description.length) temp.data.description = "-";
+        if (!temp.data.description.length) temp.data.description = '-';
         if (!temp.data.options.displayName) {
             temp.error = {
-                data: { errorMessage: "Custom Metadata name cannot be empty" },
+                data: { errorMessage: 'Custom Metadata name cannot be empty' },
             };
             return temp;
         }
@@ -220,14 +240,17 @@ export default function useBusinessMetadata() {
                 const attribute = temp.data.attributeDefs[i];
                 if (!attribute.options.displayName) {
                     temp.error = {
-                        data: { errorMessage: "Attribute names cannot be empty" },
+                        data: {
+                            errorMessage: 'Attribute names cannot be empty',
+                        },
                     };
                     return temp;
                 } else if (!attribute.name) {
                     // * if creating new BM attribtue <> append displayName to name,
-                    temp.data.attributeDefs[i].name = attribute.options.displayName;
+                    temp.data.attributeDefs[i].name =
+                        attribute.options.displayName;
                 }
-                if (temp.data.attributeDefs[i].hasOwnProperty("isNew")) {
+                if (temp.data.attributeDefs[i].hasOwnProperty('isNew')) {
                     delete temp.data.attributeDefs[i].isNew;
                 }
                 // if (temp.data.attributeDefs[i].hasOwnProperty("isEditing")) {
@@ -242,7 +265,9 @@ export default function useBusinessMetadata() {
 
     watch(finalBusinessMetadataList, (n, o) => {
         if (n.length && !selectedBm.value) {
-            selectedBm.value = JSON.parse(JSON.stringify(finalBusinessMetadataList.value[0]));
+            selectedBm.value = JSON.parse(
+                JSON.stringify(finalBusinessMetadataList.value[0])
+            );
         }
     });
 
@@ -264,7 +289,6 @@ export default function useBusinessMetadata() {
         searchedBusinessMetadataList,
         selectedBm,
         updatedBm,
-        validatePayload
-    }
+        validatePayload,
+    };
 }
-

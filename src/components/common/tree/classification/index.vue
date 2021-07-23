@@ -32,7 +32,6 @@
 <script lang="ts">
 import { defineComponent, ref, computed, toRaw } from "vue";
 import handleTreeExpand from "~/composables/tree/handleTreeExpand";
-import { useStore } from "~/store";
 
 export default defineComponent({
   props: {
@@ -51,7 +50,6 @@ export default defineComponent({
     },
   },
   setup(props, { emit }) {
-    const store = useStore();
     const treeData = computed(() => {
       return props.treeData;
     });

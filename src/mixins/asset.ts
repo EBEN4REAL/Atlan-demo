@@ -1,6 +1,5 @@
 import { defineComponent, PropType } from "vue";
 import { Components } from "~/api/atlas/client";
-import { useStore } from "~/store";
 import { AtlanTableAttributes } from "~/types/asset";
 import dayjs from "dayjs";
 
@@ -33,7 +32,6 @@ export default defineComponent({
       return this.attributes(item)?.assetStatus;
     },
     assetType(item: any) {
-      const store = useStore();
       return item.typeName;
     },
     description(item: any): string {

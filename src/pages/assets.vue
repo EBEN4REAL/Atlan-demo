@@ -59,8 +59,9 @@ export default defineComponent({
     //   const id = route.params.id;
     // });
 
-    const initialFilters: initialFiltersType =
-      getDecodedOptionsFromString(router);
+    const initialFilters: initialFiltersType = getDecodedOptionsFromString(
+      router
+    );
     let selected = ref({});
     useHead({
       title: "Discover assets",
@@ -107,4 +108,5 @@ export default defineComponent({
 meta:
   layout: default
   requiresAuth: true
+  middleware: [routePrint]
 </route>

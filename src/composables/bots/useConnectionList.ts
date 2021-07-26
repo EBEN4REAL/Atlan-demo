@@ -1,14 +1,18 @@
 import { ref, Ref, watch } from 'vue';
 import { ConnectionAttributes } from '~/constant/projection';
-import { useConnectionsStore } from '~/pinia/connections';
+import { useConnectionsStore } from '~/store/connections';
 import { ConnectionType } from '~/types/atlas/connection';
 import useSearchList from './useSearchList';
 
-export default function useConnectionsList(dependentKey?: Ref<any>, initialBody?: any, cacheSuffx?: string | "") {
-
+export default function useConnectionsList(
+    dependentKey?: Ref<any>,
+    initialBody?: any,
+    cacheSuffx?: string | ''
+) {
     const store = useConnectionsStore();
     const list: Ref<ConnectionType[]> = ref([]);
-    const { data,
+    const {
+        data,
         state,
         STATES,
         isLoading,
@@ -16,7 +20,16 @@ export default function useConnectionsList(dependentKey?: Ref<any>, initialBody?
         query,
         refresh,
         error,
-        body } = useSearchList("Connection", list, ConnectionAttributes, dependentKey, initialBody, cacheSuffx, true);
+        body,
+    } = useSearchList(
+        'Connection',
+        list,
+        ConnectionAttributes,
+        dependentKey,
+        initialBody,
+        cacheSuffx,
+        true
+    );
 
     watch(state, () => {
         store.setStatus({
@@ -43,6 +56,6 @@ export default function useConnectionsList(dependentKey?: Ref<any>, initialBody?
         query,
         refresh,
         body,
-        error
-    }
+        error,
+    };
 }

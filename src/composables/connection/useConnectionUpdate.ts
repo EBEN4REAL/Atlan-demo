@@ -1,6 +1,6 @@
 import { reactive, Ref } from 'vue';
 import { Search } from '~/api2/search';
-import { useConnectionsStore } from '~/pinia/connections';
+import { useConnectionsStore } from '~/store/connections';
 import { SearchParameters } from '~/types/atlas/attributes';
 
 export default function useConnectionInit() {

@@ -90,8 +90,8 @@ import { BusinessMetadataService } from "~/api/atlas/businessMetadata";
 import BusinessMetadataWidget from "@/common/businessMetadataWidget.vue";
 
 // ? Store
-import { useBusinessMetadataStore } from "~/pinia/businessMetadata";
-import { State } from "~/pinia/businessMetadata/state";
+import { useBusinessMetadataStore } from "~/store/businessMetadata";
+import { State } from "~/store/businessMetadata/state";
 
 export default defineComponent({
   props: {

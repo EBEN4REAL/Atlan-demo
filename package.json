@@ -7,7 +7,7 @@
     "build": "vite build",
     "preview": "vite preview --port 8080",
     "preview-https": "serve dist",
-    "lint":"npx eslint --fix "
+    "lint": "npx eslint --fix "
   },
   "dependencies": {
     "@dagrejs/graphlib": "^2.1.4",
@@ -105,7 +105,6 @@
     "eslint-plugin-prettier": "^3.4.0",
     "eslint-plugin-vue": "^7.14.0",
     "https-localhost": "^4.6.5",
-    "husky": "^7.0.1",
     "jest": "^27.0.6",
     "openapi-typescript-codegen": "^0.9.3",
     "pnpm": "^6.10.0",

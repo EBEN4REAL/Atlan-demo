@@ -225,8 +225,10 @@
               "
               @change="
                 () => {
-                  updateAttribute();
-                  if (!getDatatypeOfAttribute(a.typeName).isMultivalues) a.isEdit = false;
+                  if (!getDatatypeOfAttribute(a.typeName).isMultivalues) {
+                    a.isEdit = false;
+                    updateAttribute();
+                  }
                 }
               "
             />
@@ -238,6 +240,7 @@
                 class="mr-0 bg-white cursor-pointer"
                 @click="
                   () => {
+                    updateAttribute();
                     a.isEdit = false;
                   }
                 "
@@ -297,7 +300,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, nextTick, computed, onMounted, watch } from "vue";
+import { defineComponent, ref, nextTick, computed, onMounted, watch, Ref } from "vue";
 
 // * Composables
 import useEnums from "@/admin/enums/composables/useEnums";
@@ -324,9 +327,11 @@ export default defineComponent({
     const { enumListData: enumsList } = useEnums();
 
     // ? methods
-    const handleDateChange = (timestamp, string, x) => {
+    /** @param {Number} timestamp - integer value of the date selected in timestap
+     * @desc handling date change separetely because of type conversion requirements string <> int
+     */
+    const handleDateChange = (timestamp: string, string: string, x: string | number) => {
       localState.value.attributes[x].value = timestamp;
-      // TODO mutating props directly in many places,
       localState.value.attributes[x].isEdit = false;
       updateAttribute();
     };
@@ -368,7 +373,7 @@ export default defineComponent({
         localState.value.attributes[attributeIndex].value = [
           ...multiInputs.value[name]
             .map(v => (v !== "" ? parseInt(v) : v))
-            .filter(v => !Number.isNaN(v)),
+            .filter(v => !Number.isNaN(v) && v !== ""),
         ];
       } else
         localState.value.attributes[attributeIndex].value = [
@@ -382,8 +387,11 @@ export default defineComponent({
       if (a.typeName.includes("array")) multiInputs.value[a.name] = ["", ""];
       localState.value.attributes.push({ ...a, isEdit: true });
     };
-
-    const setInputFocus = name => {
+    /**
+     * @param {String} name - ref of the input element
+     * @desc sets focus to input elements that on edit
+     */
+    const setInputFocus = (name: string) => {
       nextTick(() => inputsRefMap.value[name].select());
     };
 
@@ -393,12 +401,13 @@ export default defineComponent({
     };
 
     const updateAttribute = () => {
-      emit(
-        "updateAttribute",
-        JSON.parse(JSON.stringify({ ...localState.value, isNew: false }))
-      );
+      emit("updateAttribute", JSON.parse(JSON.stringify({ ...localState.value })));
     };
-
+    /**
+     * @param {String} name - name of the attribute being edited
+     * @param {String} type - type of the attribute being edited
+     * @desc - handles edit mode, loads/maps default values of multi input elements as using different state
+     */
     const handleEditMode = (name: string, type: string) => {
       const attribute = localState.value.attributes.find(a => a.name === name);
       attribute.isEdit = true;

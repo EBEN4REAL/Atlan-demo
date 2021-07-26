@@ -1,7 +1,8 @@
 <template>
     <div class="grid grid-cols-11 pb-6 bg-white border-b classification-header">
-        <div class="col-start-1 col-end-9 px-4 border-right">
+        <div class="col-start-1 col-end-9 pr-4 border-right">
             <div class="flex">
+                <!-- Shield Icon-->
                 <div class="mr-4">
                     <span
                         class="flex items-center justify-center p-1 text-xl border rounded"

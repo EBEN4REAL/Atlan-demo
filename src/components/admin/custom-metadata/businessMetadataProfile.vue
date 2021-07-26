@@ -176,7 +176,6 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import { ref, computed, onMounted, watch, Ref } from "vue";
-import { cloneDeep } from "lodash";
 
 // ? Components
 import AddAttributeCard from "@/admin/custom-metadata/addAttributeCard.vue";
@@ -233,7 +232,7 @@ export default defineComponent({
 
     const onUpdate = () => {
       isUpdated.value = true;
-      context.emit("update", cloneDeep(localBm.value));
+      context.emit("update", JSON.parse(JSON.stringify(localBm.value)));
     };
 
     /**
@@ -243,7 +242,7 @@ export default defineComponent({
       if (props.selectedBm && props.selectedBm.guid === "new")
         context.emit("removeNewBm");
       else if (props.selectedBm && props.selectedBm.guid) {
-        localBm.value = cloneDeep(props.selectedBm);
+        localBm.value = JSON.parse(JSON.stringify(props.selectedBm));
       }
       isUpdated.value = false;
       error.value = null;
@@ -258,12 +257,12 @@ export default defineComponent({
       if (localBm.value.guid === "new") {
         store.businessMetadataAppendToList(serviceResponse[0]);
         context.emit("clearNewBm");
-        context.emit("selectBm", cloneDeep(serviceResponse[0]));
+        context.emit("selectBm", JSON.parse(JSON.stringify(serviceResponse[0])));
       } else {
         store.updateBusinessMetadataInList(serviceResponse[0]);
       }
       // eslint-disable-next-line
-      localBm.value = cloneDeep(serviceResponse[0]);
+      localBm.value = JSON.parse(JSON.stringify(serviceResponse[0]));
       context.emit("clearUpdatedBm");
     };
 
@@ -331,7 +330,7 @@ export default defineComponent({
     const handleAddNewAttribute = () => {
       localBm.value.attributeDefs = [
         {
-          ...cloneDeep(getDefaultAttributeTemplate()),
+          ...JSON.parse(JSON.stringify(getDefaultAttributeTemplate())),
           id: Date.now(),
         },
         ...localBm.value.attributeDefs,
@@ -363,7 +362,7 @@ export default defineComponent({
      * @desc removes newly added attribute if not saved
      */
     const handleRemoveAttribute = (index: number) => {
-      const tempAttributes = cloneDeep(localBm.value.attributeDefs);
+      const tempAttributes = JSON.parse(JSON.stringify(localBm.value.attributeDefs));
       tempAttributes.splice(index, 1);
       localBm.value.attributeDefs = tempAttributes;
       onUpdate();
@@ -398,7 +397,7 @@ export default defineComponent({
      */
     onMounted(() => {
       if (props.selectedBm && props.selectedBm.guid) {
-        localBm.value = cloneDeep(props.selectedBm);
+        localBm.value = JSON.parse(JSON.stringify(props.selectedBm));
         if (props.selectedBm.guid === "new") {
           isUpdated.value = true;
           if (!props.selectedBm.attributeDefs.length) {

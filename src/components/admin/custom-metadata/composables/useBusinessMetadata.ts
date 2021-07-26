@@ -1,7 +1,6 @@
 import { ref, watch, toRaw, computed } from 'vue';
 import { DEFAULT_ATTRIBUTE, DEFAULT_BM } from '~/constant/business_metadata';
 import { generateUUID } from '~/utils/generator';
-import { cloneDeep } from 'lodash';
 import { useBusinessMetadataStore } from '~/store/businessMetadata';
 import { BusinessMetadataService } from '~/api/atlas/businessMetadata';
 
@@ -36,20 +35,20 @@ export default function useBusinessMetadata() {
         options: [];
         guid: string;
     }) => {
-        const tempBm = cloneDeep(BmObject);
+        const tempBm = JSON.parse(JSON.stringify(BmObject));
         const payload = {
             businessMetadataDefs: [
                 {
                     ...(tempBm.guid === 'new'
                         ? {
-                              category: 'BUSINESS_METADATA',
-                              typeVersion: '1.1',
-                              version: 1,
-                              attributeDefs: tempBm.attributeDefs,
-                              description: tempBm.description,
-                              name: tempBm.name,
-                              options: tempBm.options,
-                          }
+                            category: 'BUSINESS_METADATA',
+                            typeVersion: '1.1',
+                            version: 1,
+                            attributeDefs: tempBm.attributeDefs,
+                            description: tempBm.description,
+                            name: tempBm.name,
+                            options: tempBm.options,
+                        }
                         : tempBm),
                 },
             ],
@@ -223,7 +222,7 @@ export default function useBusinessMetadata() {
             error: null,
             data: null,
         };
-        temp.data = cloneDeep(BmObject);
+        temp.data = JSON.parse(JSON.stringify(BmObject));
         if (!temp.data.description.length) temp.data.description = '-';
         if (!temp.data.options.displayName) {
             temp.error = {

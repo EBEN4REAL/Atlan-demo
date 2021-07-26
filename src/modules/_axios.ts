@@ -2,7 +2,6 @@ import { UserModule } from "~/types/vitessg";
 import { getEnv } from "~/modules/__env";
 import axios, { AxiosInstance, AxiosRequestConfig } from "axios";
 import VueAxios from "vue-axios";
-import { cacheAdapterEnhancer } from "axios-extensions";
 
 const authInterceptor = (app: any) => {
   return (config: AxiosRequestConfig) => {

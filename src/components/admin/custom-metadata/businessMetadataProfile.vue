@@ -19,7 +19,6 @@
             :updatedAt="localBm.updateTime"
             :createdBy="localBm.createdBy"
             :updatedBy="localBm.updatedBy"
-            :entityType="`bm-localBm-${localBm.guid}`"
           />
         </div>
       </div>

@@ -12,6 +12,7 @@
           placeholder="Custom Metadata"
           v-model:value="addBusinessMetadata"
           allowClear
+          mode="multiple"
           :options="addBMSelectOptions"
         />
         <p class="mt-2 text-xs text-gray-400">
@@ -25,7 +26,7 @@
           <a-button
             type="primary"
             size="small"
-            :disabled="!addBusinessMetadata"
+            :disabled="!addBusinessMetadata.length"
             @click="handleAddWidget"
             >Done</a-button
           >
@@ -108,7 +109,7 @@ export default defineComponent({
     const isEditBusinessMetadata = ref(false);
     const accessLevel = ref("editor");
     const visibility = ref(false);
-    const addBusinessMetadata = ref("");
+    const addBusinessMetadata = ref([]);
 
     // * Computed
     const businessMetadataList = computed(() => store.getBusinessMetadataList);
@@ -156,6 +157,10 @@ export default defineComponent({
       });
     };
 
+    /**
+     * @param {Object} updateBM BM object from widget for operation
+     * @return {Obeect} formatted BM object supported by api
+     */
     const getUpdatePayload = (updateBM: { bm: string }) => {
       let mappedBM = {};
       let finalBM = attributesList.value.map(bm => {
@@ -181,6 +186,9 @@ export default defineComponent({
       return mappedBM;
     };
 
+    /**
+     * @desc parses all the attached bm from the asset payload and forms the initial attribute list
+     */
     const setAttributesList = () => {
       // Setting attributesList
       if (props.item && props.item.attributes) {
@@ -255,14 +263,13 @@ export default defineComponent({
     };
 
     const handleAddWidget = () => {
-      // FIXME make this multiple,
-      // addBusinessMetadata.value.forEach(b => {
-      attributesList.value.push({
-        attributes: [],
-        bm: addBusinessMetadata.value,
-        isNew: true,
+      addBusinessMetadata.value.forEach(b => {
+        attributesList.value.push({
+          attributes: [],
+          bm: b,
+          isNew: true,
+        });
       });
-      // });
       visibility.value = false;
       addBusinessMetadata.value = [];
     };

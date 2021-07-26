@@ -60,6 +60,7 @@ specifiers:
   event-source-polyfill: ^1.0.24
   highlight.js: ^11.0.1
   https-localhost: ^4.6.5
+  husky: ^7.0.1
   jest: ^27.0.6
   keycloak-js: ^14.0.0
   less: ^4.1.1
@@ -150,6 +151,7 @@ dependencies:
   emoji-mart-vue-fast: 10.0.1_vue@3.1.4
   event-source-polyfill: 1.0.24
   highlight.js: 11.0.1
+  husky: 7.0.1
   keycloak-js: 14.0.0
   less: 4.1.1
   monaco-editor: 0.25.2
@@ -5789,6 +5791,12 @@ packages:
     resolution: {integrity: sha512-B4FFZ6q/T2jhhksgkbEW3HBvWIfDW85snkQgawt07S7J5QXTk6BkNV+0yAeZrM5QpMAdYlocGoljn0sJ/WQkFw==}
     engines: {node: '>=10.17.0'}
     dev: true
+
+  /husky/7.0.1:
+    resolution: {integrity: sha512-gceRaITVZ+cJH9sNHqx5tFwbzlLCVxtVZcusME8JYQ8Edy5mpGDOqD8QBCdMhpyo9a+JXddnujQ4rpY2Ff9SJA==}
+    engines: {node: '>=12'}
+    hasBin: true
+    dev: false
 
   /iconv-lite/0.4.24:
     resolution: {integrity: sha512-v3MXnZAcvnywkTUEZomIActle7RXXeedOR31wwl7VlyoXO4Qi9arvSenNQWne1TcRwhCL1HwLI21bEqdpj8/rA==}

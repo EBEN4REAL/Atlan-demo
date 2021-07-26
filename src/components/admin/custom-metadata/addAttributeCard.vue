@@ -177,7 +177,6 @@ import {
 
 // * Utils
 import { generateUUID } from "~/utils/generator";
-import _ from "lodash";
 
 // * Composables
 import useEnums from "@/admin/enums/composables/useEnums";

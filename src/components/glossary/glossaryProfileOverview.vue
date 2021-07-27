@@ -1,5 +1,5 @@
 <template>
-  <div class="m-0 p-0">
+  <div class="mb-6 p-0 w-11/12">
       <h2 class="text-gray-500 text-xl leading-7 mt-5 p-0">About</h2>
     <div class="mt-2 flex flex-row mb-10">
       <div class="flex flex-col mr-8">
@@ -24,13 +24,12 @@
     <Readme
       class="min-w-full"
       placeholder="Add some details here..."
-      :parentAssetId="id"
+      :parentAssetId="guid"
     />
   </div>
 </template>
 <script lang="ts">
 import { defineComponent, computed } from "vue";
-import { useHead } from "@vueuse/head";
 
 import { Components } from "~/api/atlas/client";
 
@@ -49,11 +48,12 @@ export default defineComponent({
     const categoryCount = computed(
       () => props.glossary?.categories?.length ?? 0
     );
-
+    const guid = computed(() => props.glossary?.guid)
     return {
       shortDescription,
       termCount,
       categoryCount,
+      guid
     };
   },
 });

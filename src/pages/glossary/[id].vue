@@ -17,7 +17,7 @@
       </div>
     </div>
     <div>
-      <a-tabs default-active-key="1" @change="callback" class="border-0">
+      <a-tabs default-active-key="1" class="border-0">
         <a-tab-pane key="1" tab="Overview">
           <div class="flex flex-row m-0 p-0">
             <GlossaryProfileOverview :glossary="glossary" />
@@ -60,21 +60,19 @@ import GlossaryTopTerms from "@/glossary/glossaryTopTerms.vue";
 import GlossaryContinueSettingUp from "@/glossary/glossaryContinueSettingUp.vue";
 import GlossarySvg from "~/assets/images/gtc/glossary/glossary.png";
 
+interface Proptype{
+  id: string;
+}
+
 export default defineComponent({
-  props: {
-    id: {
-      type: String,
-      required: true,
-      default: "",
-    },
-  },
+  props: ['id'],
   components: {
     Readme,
     GlossaryProfileOverview,
     GlossaryTopTerms,
     GlossaryContinueSettingUp,
   },
-  setup(props) {
+  setup(props:Proptype) {
     const id = computed(() => props.id);
 
     const {

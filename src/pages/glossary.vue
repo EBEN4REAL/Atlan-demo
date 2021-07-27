@@ -22,7 +22,7 @@
       ></GlossaryTree>
     </pane>
     <pane :size="74" class="bg-white overflow-y-scroll">
-        <router-view class="flex-grow" />
+        <router-view  />
     </pane>
   </splitpanes>
 </template>
@@ -37,6 +37,7 @@ import { useHead } from "@vueuse/head";
 
 export default defineComponent({
   components: { GlossaryTree, CreateGlossaryModal, UpdateGlossaryModal },
+  props:['id', 'class'],
   setup() {
     useHead({
       title: "Glossary",

@@ -1,7 +1,7 @@
 <template>
   <div class="my-8">
     <h2 class="text-xl leading-7">Coninue Setting up GLossary</h2>
-    <a-tabs default-active-key="1" @change="callback" class="border-0">
+    <a-tabs default-active-key="1" class="border-0">
       <a-tab-pane key="1" tab="Add Owners">
         Add Owners
         <br />
@@ -21,7 +21,7 @@
   </div>
 </template>
 <script lang="ts">
-import { defineComponent, computed, Component } from "vue";
+import { defineComponent, computed } from "vue";
 
 import { Components } from "~/api/atlas/client";
 

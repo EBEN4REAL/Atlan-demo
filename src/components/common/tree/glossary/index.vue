@@ -47,7 +47,7 @@
     <template #overlay>
       <GlossaryContextMenu
         type="root"
-        :guid="key"
+        guid=""
         @glossarContextMenuClick="glossaryTreeContextMenuClick"
       />
     </template>

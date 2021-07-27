@@ -1,8 +1,8 @@
 <template>
-  <div class="ml-9 py-6 pr-6 w-1/2 flex flex-col text-left">
-    <h2 class="text-gray-700 text-xl leading-7 ml-6"> Top Terms</h2>
-    <div v-for="term in termsList.slice(0, numberOfTerms)" :key="term.guid" class=" border-l-2 pl-6">
-        <TermPreviewCard :term="term" />
+  <div class="ml-9 py-6 w-1/2 flex flex-col text-left">
+    <h2 class="text-gray-700 text-xl leading-7 ml-6 "> Top Terms</h2>
+    <div v-for="(term, index) in termsList.slice(0, numberOfTerms)" :key="term.guid" class=" border-l">
+        <TermPreviewCard :class="{'border-b': index !== numberOfTerms-1}" :term="term" />
     </div>
     <div class="items-start">
     <a-button type="link">See all {{termCount}} terms -></a-button>

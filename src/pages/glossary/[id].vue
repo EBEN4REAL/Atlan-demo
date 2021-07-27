@@ -1,8 +1,8 @@
 <template>
-  <div class="px-12 mb-12">
+  <div class="px-12 pr-0 mb-12">
     <div class="flex flex-row mt-6 mb-5">
       <div class="mr-5">
-        <GlossarySvg />
+        <img :src="GlossarySvg"/>
       </div>
       <div class="flex flex-col">
         <span class="secondaryHeading">GLOSSARY</span>
@@ -16,21 +16,30 @@
         </div>
       </div>
     </div>
-    <div class="flex flex-row">
+    <div>
       <a-tabs default-active-key="1" @change="callback" class="border-0">
         <a-tab-pane key="1" tab="Overview">
-          <GlossaryProfileOverview :glossary="glossary" />
+          <div class="flex flex-row m-0 p-0">
+            <GlossaryProfileOverview :glossary="glossary" />
+            <GlossaryTopTerms
+              v-if="glossaryTerms?.length"
+              :terms="glossaryTerms"
+            />
+          </div>
+          <hr>
+          <GlossaryContinueSettingUp
+            :terms="glossaryTerms"
+            :categories="glossaryCategories"
+          />
         </a-tab-pane>
         <a-tab-pane key="2" tab="Terms & Categories">
           Terms & Categories
         </a-tab-pane>
         <a-tab-pane key="3" tab="Activity"> Activity </a-tab-pane>
-        <a-tab-pane key="3" tab="Bots"> Bots </a-tab-pane>
-        <a-tab-pane key="3" tab="Permissions"> Permissions </a-tab-pane>
+        <a-tab-pane key="4" tab="Bots"> Bots </a-tab-pane>
+        <a-tab-pane key="5" tab="Permissions"> Permissions </a-tab-pane>
       </a-tabs>
-      <GlossaryTopTerms v-if="glossaryTerms?.length" :terms="glossaryTerms" />
     </div>
-    <GlossaryContinueSettingUp :terms="glossaryTerms" :categories="glossaryCategories" />
     <!-- <hr /> -->
   </div>
 </template>
@@ -49,7 +58,7 @@ import Readme from "@/common/readme/index.vue";
 import GlossaryProfileOverview from "@/glossary/glossaryProfileOverview.vue";
 import GlossaryTopTerms from "@/glossary/glossaryTopTerms.vue";
 import GlossaryContinueSettingUp from "@/glossary/glossaryContinueSettingUp.vue";
-import GlossarySvg from "~/assets/images/glossary/glossary.svg";
+import GlossarySvg from "~/assets/images/gtc/glossary/glossary.png";
 
 export default defineComponent({
   props: {
@@ -59,7 +68,12 @@ export default defineComponent({
       default: "",
     },
   },
-  components: { Readme, GlossaryProfileOverview, GlossaryTopTerms, GlossaryContinueSettingUp, GlossarySvg },
+  components: {
+    Readme,
+    GlossaryProfileOverview,
+    GlossaryTopTerms,
+    GlossaryContinueSettingUp,
+  },
   setup(props) {
     const id = computed(() => props.id);
 
@@ -71,14 +85,14 @@ export default defineComponent({
     } = useGTCEntity("glossary");
     const {
       data: glossaryTerms,
-      error:termsError,
-      loading:termsLoading,
+      error: termsError,
+      loading: termsLoading,
       fetchGlossaryTerms,
     } = useGlossaryTerms();
     const {
       data: glossaryCategories,
-     error:categoriesError,
-      loading:categoriesLoading,
+      error: categoriesError,
+      loading: categoriesLoading,
       fetchGlossaryCategories,
     } = useGlossaryCategories();
 
@@ -88,13 +102,13 @@ export default defineComponent({
     onMounted(() => {
       fetchEntity(id.value);
       fetchGlossaryTerms(id.value);
-      fetchGlossaryCategories(id.value)
+      fetchGlossaryCategories(id.value);
     });
 
     watch(id, (newGuid) => {
       fetchEntity(newGuid);
-      fetchGlossaryTerms(newGuid)
-      fetchGlossaryCategories(newGuid)
+      fetchGlossaryTerms(newGuid);
+      fetchGlossaryCategories(newGuid);
     });
 
     return {
@@ -104,9 +118,10 @@ export default defineComponent({
       termCount,
       error,
       isLoading,
+      GlossarySvg,
       id,
       glossaryTerms,
-      glossaryCategories
+      glossaryCategories,
     };
   },
 });

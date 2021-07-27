@@ -1,5 +1,5 @@
 <template>
-  <div class="my-12">
+  <div class="my-8">
     <h2 class="text-xl leading-7">Coninue Setting up GLossary</h2>
     <a-tabs default-active-key="1" @change="callback" class="border-0">
       <a-tab-pane key="1" tab="Add Owners">
@@ -25,8 +25,6 @@ import { defineComponent, computed, Component } from "vue";
 
 import { Components } from "~/api/atlas/client";
 
-import * as TermSvg from "~/assets/images/glossary/term.svg";
-
 interface PropsType {
   terms: Components.Schemas.AtlasGlossaryTerm[];
   categories: Components.Schemas.AtlasGlossaryCategory[];
@@ -34,7 +32,6 @@ interface PropsType {
 
 export default defineComponent({
   props: ["terms", "categories"],
-  components: { TermSvg },
   setup(props: PropsType) {
     const categories = computed(() => props.categories ?? []);
     const terms = computed(() => props.terms ?? []);

@@ -26,26 +26,28 @@ const getNodeTypeText = {
  * @returns {String}
  */
 export const getNodeTypeIcon = {
-  Table: "far fa-table text-table",
-  Column: "far fa-columns text-column",
-  View: "far fa-th-list text-view",
-  Database: "far fa-database",
-  Schema: "far fa-box",
-  "BI Dashboard": "far fa-user-chart",
-  "Bi Collection": "far fa-folder",
-  "Bi Widget": "far fa-chart-pie-alt",
-  "Bi Model": "far fa-compass",
-  "Bi Explore": "far fa-eye",
-  Process: "far fa-code",
-  Integration: "far fa-link text-database",
-  Query: "far fa-code",
+  Table: "fal table text-table",
+  Column: "fal columns text-column",
+  View: "fal th-list text-view",
+  Database: "fal database",
+  Schema: "fal box",
+  "BI Dashboard": "fal user-chart",
+  "Bi Collection": "fal folder",
+  "Bi Widget": "fal chart-pie-alt",
+  "Bi Model": "fal compass",
+  "Bi Explore": "fal eye",
+  Process: "fal code-light",
+  Integration: "fal link text-database",
+  Query: "fal code-light",
 };
 
 /**
  * Fetches the Icon source value for a BI tool
  * @returns {String}
  */
-export { SourceList };
+export const getIcon = (val) => {
+  return SourceList[val];
+};
 
 /**
  * Gets the type of the node
@@ -188,8 +190,8 @@ export function getBaseEntity(graph, baseEntityGuid, baseEntity = null) {
 export function getPredecessors(
   graph,
   baseEntityGuid,
-  showProcessNodes,
-  direction,
+  showProcessNodes = false,
+  direction = "BOTH",
   isGetPath = null
 ) {
   const show = direction === "BOTH" || direction === "INPUT";
@@ -253,8 +255,8 @@ export function getPredecessors(
 export function getSuccessors(
   graph,
   baseEntityGuid,
-  showProcessNodes,
-  direction,
+  showProcessNodes = false,
+  direction = "BOTH",
   isGetPath = null
 ) {
   const show = direction === "BOTH" || direction === "OUTPUT";

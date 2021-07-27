@@ -51,7 +51,7 @@ import {
 } from "vue";
 // Composables
 import useLineage from "~/composables/lineage/useLineage";
-import useLineageCompute from "~/composables/lineage/useLineageCompute";
+import * as useLineageCompute from "~/composables/lineage/useLineageCompute";
 import useLineageFilters from "~/composables/lineage/useLineageFilters";
 // Components
 import Stream from "./stream/index.vue";
@@ -100,7 +100,10 @@ export default defineComponent({
       const { data } = useLineage(item.value.guid, depth.value, "BOTH");
       watch(data, () => {
         lineage.value = data.value as object;
-        lineageList.value = useLineageCompute(lineage);
+        lineageList.value = useLineageCompute.computeGraphRelations(
+          lineage,
+          "widget"
+        );
         filter();
       });
     };

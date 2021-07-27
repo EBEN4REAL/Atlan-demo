@@ -62,12 +62,14 @@ specifiers:
   https-localhost: ^4.6.5
   jest: ^27.0.6
   keycloak-js: ^14.0.0
+  leader-line-new: ^1.1.9
   less: ^4.1.1
   monaco-editor: ^0.25.2
   numeral: 2.0.6
   openapi-client-axios: ^4.0.0
   openapi-client-axios-ts: ^3.9.9
   openapi-typescript-codegen: ^0.9.3
+  panzoom: ^9.4.2
   pinia: ^2.0.0-beta.5
   pluralize: ^8.0.0
   pnpm: ^6.10.0
@@ -151,11 +153,13 @@ dependencies:
   event-source-polyfill: 1.0.24
   highlight.js: 11.0.1
   keycloak-js: 14.0.0
+  leader-line-new: 1.1.9
   less: 4.1.1
   monaco-editor: 0.25.2
   numeral: 2.0.6
   openapi-client-axios: 4.0.0_axios@0.21.1
   openapi-client-axios-ts: 3.9.9
+  panzoom: 9.4.2
   pinia: 2.0.0-beta.5_typescript@4.3.5
   pluralize: 8.0.0
   posthog-js: 1.11.4
@@ -3273,6 +3277,12 @@ packages:
       uri-js: 4.4.1
     dev: true
 
+  /amator/1.1.0:
+    resolution: {integrity: sha1-CMa2C8k67Cthu/wMTWd9MDI8wPE=}
+    dependencies:
+      bezier-easing: 2.1.0
+    dev: false
+
   /ansi-align/3.0.0:
     resolution: {integrity: sha512-ZpClVKqXN3RGBmKibdfWzqCY4lnjEuoNzU5T0oEFpfd/z5qJHVarukridD4juLO2FXMiwUQxr9WqQtaYa8XRYw==}
     dependencies:
@@ -3658,6 +3668,10 @@ packages:
 
   /bath-es5/3.0.3:
     resolution: {integrity: sha512-PdCioDToH3t84lP40kUFCKWCOCH389Dl1kbC8FGoqOwamxsmqxxnJSXdkTOsPoNHXjem4+sJ+bbNoQm5zeCqxg==}
+    dev: false
+
+  /bezier-easing/2.1.0:
+    resolution: {integrity: sha1-wE3+i5JtbsrKGBPWn/F5t8ICXYY=}
     dev: false
 
   /big.js/5.2.2:
@@ -7023,6 +7037,10 @@ packages:
       package-json: 6.5.0
     dev: true
 
+  /leader-line-new/1.1.9:
+    resolution: {integrity: sha512-x56aRYaqJTA4aAS2fgbSpvWKY3IxRXDSFeGkNBmCQ3LX44B3F1HEjcBTkCiK5I3W0nPWeUTWe7dTt59VtdfFWw==}
+    dev: false
+
   /less/4.1.1:
     resolution: {integrity: sha512-w09o8tZFPThBscl5d0Ggp3RcrKIouBoQscnOMgFH3n5V3kN/CXGHNfCkRPtxJk6nKryDXaV9aHLK55RXuH4sAw==}
     engines: {node: '>=6'}
@@ -7575,6 +7593,10 @@ packages:
     resolution: {integrity: sha512-Yd3UES5mWCSqR+qNT93S3UoYUkqAZ9lLg8a7g9rimsWmYGK8cVToA4/sF3RrshdyV3sAGMXVUmpMYOw+dLpOuw==}
     dev: true
 
+  /ngraph.events/1.2.1:
+    resolution: {integrity: sha512-D4C+nXH/RFxioGXQdHu8ELDtC6EaCiNsZtih0IvyGN81OZSUby4jXoJ5+RNWasfsd0FnKxxpAROyUMzw64QNsw==}
+    dev: false
+
   /no-case/3.0.4:
     resolution: {integrity: sha512-fgAN3jGAh+RoxUGZHTSOLJIqUc2wmoBwGR4tbpNAKmmovFoWq0OdRkb0VkldReO2a2iBT/OEulG9XSUc10r3zg==}
     dependencies:
@@ -7910,6 +7932,14 @@ packages:
       registry-url: 5.1.0
       semver: 6.3.0
     dev: true
+
+  /panzoom/9.4.2:
+    resolution: {integrity: sha512-sQLr0t6EmNFXpZHag0HQVtOKqF9xjF7iZdgWg3Ss1o7uh2QZLvcrz7S0Cl8M0d2TkPZ69JfPJdknXN3I0e/2aQ==}
+    dependencies:
+      amator: 1.1.0
+      ngraph.events: 1.2.1
+      wheel: 1.0.0
+    dev: false
 
   /param-case/3.0.4:
     resolution: {integrity: sha512-RXlj7zCYokReqWpOPH9oYivUzLYZ5vAPIfEmCTNViosC78F8F0H9y7T7gG2M39ymgutxF5gcFEsyZQSph9Bp3A==}
@@ -11044,6 +11074,10 @@ packages:
       tr46: 2.1.0
       webidl-conversions: 6.1.0
     dev: true
+
+  /wheel/1.0.0:
+    resolution: {integrity: sha512-XiCMHibOiqalCQ+BaNSwRoZ9FDTAvOsXxGHXChBugewDj7HC8VBIER71dEOiRH1fSdLbRCQzngKTSiZ06ZQzeA==}
+    dev: false
 
   /which-boxed-primitive/1.0.2:
     resolution: {integrity: sha512-bwZdv0AKLpplFY2KZRX6TvyuN7ojjr7lwkg6ml0roIy9YeuSr7JS372qlNW18UQYzgYK9ziGcerWqZOmEn9VNg==}

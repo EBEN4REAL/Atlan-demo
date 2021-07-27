@@ -15,7 +15,7 @@
     </div>
     <div
       class="flex flex-col w-1/4 h-full bg-white border-l"
-      style="overflow: hidden"
+      style="overflow: hidden; z-index: 99"
     >
       <AssetPreview :item="selected" v-if="selected?.guid"></AssetPreview>
     </div>
@@ -59,9 +59,8 @@ export default defineComponent({
     //   const id = route.params.id;
     // });
 
-    const initialFilters: initialFiltersType = getDecodedOptionsFromString(
-      router
-    );
+    const initialFilters: initialFiltersType =
+      getDecodedOptionsFromString(router);
     let selected = ref({});
     useHead({
       title: "Discover assets",

@@ -1,5 +1,5 @@
 <template>
-  <div class="p-4 overview-container">
+  <div class="h-full p-4 overflow-y-auto overview-container">
     <div class="p-2">
       <Readme
         placeholder="Add some details about the Table"
@@ -8,7 +8,10 @@
       />
     </div>
     <div class="flex flex-col items-center w-full p-2">
-      <TableColumn :asset="asset" />
+      <TableColumn
+        v-if="['Table', 'View'].includes(asset.typeName)"
+        :asset="asset"
+      />
     </div>
   </div>
 </template>

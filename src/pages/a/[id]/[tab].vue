@@ -1,7 +1,7 @@
 <template>
   <LoadingView v-if="loading" />
   <ErrorView v-else-if="error" :error="error" />
-  <div v-else>
+  <div v-else class="h-screen">
     <div class="p-4 pb-2 h-18">
       <AssetHeader :asset="response?.entities[0]" />
     </div>
@@ -13,7 +13,7 @@
       <a-menu-item key="overview"> Overview </a-menu-item>
       <a-menu-item key="lineage"> Lineage </a-menu-item>
     </a-menu>
-    <div class="h-full p-4">
+    <div class="p-4 overflow-y-scroll h-4/5">
       <component
         :is="selectedTab"
         :asset="response?.entities[0] || {}"

@@ -20,7 +20,10 @@
         <img :src="logo(asset)" class="w-auto h-4 mr-2" />
         <RelationshipBadge :item="asset"></RelationshipBadge>
       </p>
-      <p class="mb-0 text-gray-600">
+      <p
+        v-if="['table', 'view'].includes(asset?.typeName.toLowerCase())"
+        class="mb-0 text-gray-600"
+      >
         <span v-if="asset?.typeName.toLowerCase() === 'table'">
           <span class="font-bold tracking-wide text-gray-700"
             >~{{ rowCount(asset, true) }}</span

@@ -9,7 +9,11 @@
           >{{ data.displayText }}</router-link
         ></span
       >
-      <Description :item="data" :key="data.guid"></Description>
+      <Description
+        class="cursor-pointer"
+        :item="data"
+        :key="data.guid"
+      ></Description>
     </div>
   </div>
 </template>

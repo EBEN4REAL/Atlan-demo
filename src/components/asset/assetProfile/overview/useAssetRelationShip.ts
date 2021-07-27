@@ -14,7 +14,8 @@ export default function useAPuseAssetRelationShip(guid: string, config?: IConfig
         "metadata",
         "relativePinOrder",
         "primary key",
-        "foreign key"
+        "foreign key",
+        "tenantId"
     ]
     const paramsObj: any = {
         limit: 1000,

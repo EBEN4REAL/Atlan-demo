@@ -108,7 +108,6 @@
 <script lang="ts">
 import { defineComponent, computed, watch, ref } from "vue";
 import { Asset } from "~/api/atlas/asset";
-import { useStore } from "~/store";
 import {
   DEFAULT_ASSET_TYPES,
   SEARCH_RELEVANCE_MIN_SCORE,
@@ -176,7 +175,6 @@ export default defineComponent({
   },
 
   setup(props, context) {
-    const store = useStore();
     const state = ref({
       isShowTermsList: false,
       filters: {},
@@ -416,7 +414,7 @@ export default defineComponent({
           cache: false,
           options: {
             ...options,
-            filters: store.getters.getActualFilters(options.filters) || {},
+            filters: {},
           },
         });
         watch([assetsData, assetsError], () => {

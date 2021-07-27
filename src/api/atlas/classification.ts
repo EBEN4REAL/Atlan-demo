@@ -1,5 +1,4 @@
 import { useAPI } from "~/api/useAPI";
-import { useAPI as useAPIV2 } from "~/api/useAPIv2";
 import { Ref } from "vue";
 
 const getClassificationList = ({ cache }: { cache: boolean }) => {
@@ -45,15 +44,13 @@ const updateClassification = ({
 const archiveClassification = ({
   cache,
   typeName,
-  entityGuid,
 }: {
   cache: string | undefined;
   typeName: string;
-  entityGuid: string;
 }) => {
-  return useAPIV2("ARCHIVE_CLASSIFICATION", "DELETE", {
+  return useAPI("ARCHIVE_CLASSIFICATION", "DELETE", {
     cache,
-    pathVariables: { typeName, entityGuid },
+    pathVariables: { typeName },
   });
 };
 
@@ -72,7 +69,7 @@ const linkClassification = ({
     validityPeriods: Array<any>;
   }>;
 }) => {
-  return useAPIV2("LINK_CLASSIFICATION", "POST", {
+  return useAPI("LINK_CLASSIFICATION", "POST", {
     cache,
     body: payload,
     pathVariables: { entityGuid },

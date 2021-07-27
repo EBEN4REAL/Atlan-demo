@@ -54,7 +54,7 @@ export default defineComponent({
 
     const selectedClassification = computed(() => props.classification);
     const selectedClassificationName = computed(
-      () => props.classification.displayName || props.classification.name
+      () => props.classification.name
     );
     const deleteStatus = ref("");
     const deleteErrorText = ref("");
@@ -69,24 +69,30 @@ export default defineComponent({
       context.emit("close");
     };
     const onDelete = () => {
-      const classificationName = selectedClassification.value.name;
+      const typeName = selectedClassification.value.name;
       const { data, error, isLoading } = Classification.archiveClassification({
         cache: false,
-        classificationName,
+        typeName,
       });
       deleteStatus.value = "loading";
       watch([data, error], () => {
         if (!error.value) {
           deleteStatus.value = "success";
-          store.deleteClassificationByName(classificationName);
+          store.deleteClassificationByName(typeName);
           context.emit("close");
         } else {
           deleteStatus.value = "error";
           const reqError = toRaw(error.value);
-          deleteErrorText.value = "Failed to delete classification!";
+          deleteErrorText.value =
+            reqError?.response?.data?.errorMessage ??
+            "Failed to delete classification!";
           resetRef(deleteErrorText, 6000);
           // Notify.error("Unable to delete this classification");
-          console.log("WTF: handleDeleteClassification -> error", reqError);
+          console.log(
+            "WTF: handleDeleteClassification -> error",
+
+            reqError?.response?.data
+          );
         }
       });
     };

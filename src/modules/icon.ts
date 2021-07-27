@@ -2,7 +2,21 @@ import { UserModule } from "~/types";
 import { library, dom, config } from "@fortawesome/fontawesome-svg-core";
 
 // Light Icons
-import { faCircle } from "@fortawesome/pro-light-svg-icons";
+import { faTable } from "@fortawesome/pro-light-svg-icons/faTable";
+import { faThList } from "@fortawesome/pro-light-svg-icons/faThList";
+import { faDatabase } from "@fortawesome/pro-light-svg-icons/faDatabase";
+import { faBox } from "@fortawesome/pro-light-svg-icons/faBox";
+import { faUserChart } from "@fortawesome/pro-light-svg-icons/faUserChart";
+import { faFolder } from "@fortawesome/pro-light-svg-icons/faFolder";
+import { faChartPieAlt } from "@fortawesome/pro-light-svg-icons/faChartPieAlt";
+import { faCompass } from "@fortawesome/pro-light-svg-icons/faCompass";
+import { faCode as faCodeLight } from "@fortawesome/pro-light-svg-icons/faCode";
+import { faCircle } from "@fortawesome/pro-light-svg-icons/faCircle";
+import { faExternalLinkAlt } from "@fortawesome/pro-light-svg-icons/faExternalLinkAlt";
+import { faSearchMinus } from "@fortawesome/pro-light-svg-icons/faSearchMinus";
+import { faSearchPlus } from "@fortawesome/pro-light-svg-icons/faSearchPlus";
+import { faExpandArrows } from "@fortawesome/pro-light-svg-icons/faExpandArrows";
+import { faCompressAlt } from "@fortawesome/pro-light-svg-icons/faCompressAlt";
 import { faPlus } from "@fortawesome/pro-light-svg-icons/faPlus";
 import { faSearch } from "@fortawesome/pro-light-svg-icons/faSearch";
 import { faUser } from "@fortawesome/pro-light-svg-icons/faUser";
@@ -44,6 +58,7 @@ import { faCertificate } from "@fortawesome/pro-light-svg-icons/faCertificate";
 import { faUserShield } from "@fortawesome/pro-light-svg-icons/faUserShield";
 import { faShield } from "@fortawesome/pro-light-svg-icons/faShield";
 import { faUserEdit } from "@fortawesome/pro-light-svg-icons/faUserEdit";
+import { faPencilAlt } from "@fortawesome/pro-light-svg-icons/faPencilAlt";
 import { faSync } from "@fortawesome/pro-light-svg-icons/faSync";
 import { faChevronDoubleLeft } from "@fortawesome/pro-light-svg-icons/faChevronDoubleLeft";
 
@@ -87,6 +102,20 @@ import { faSignOut } from "@fortawesome/pro-light-svg-icons/faSignOut";
 import { faFont } from "@fortawesome/pro-light-svg-icons/faFont";
 
 library.add(
+  faTable,
+  faThList,
+  faDatabase,
+  faBox,
+  faUserChart,
+  faFolder,
+  faChartPieAlt,
+  faCompass,
+  faCodeLight,
+  faExternalLinkAlt,
+  faSearchMinus,
+  faSearchPlus,
+  faExpandArrows,
+  faCompressAlt,
   faArrowUp,
   faPlus,
   faPlusCircle,
@@ -134,6 +163,7 @@ library.add(
   faUserShield,
   faShield,
   faPlug,
+  faPencilAlt,
   faUserEdit,
   faSync,
   faGlobe,
@@ -165,6 +195,10 @@ library.add(
 );
 
 // Solid Icons
+import { faCaretLeft } from "@fortawesome/pro-solid-svg-icons/faCaretLeft";
+import { faCaretRight } from "@fortawesome/pro-solid-svg-icons/faCaretRight";
+import { faSlidersV } from "@fortawesome/pro-solid-svg-icons/faSlidersV";
+import { faSync as faSyncSolid } from "@fortawesome/pro-solid-svg-icons/faSync";
 import { faBadgeCheck } from "@fortawesome/pro-solid-svg-icons/faBadgeCheck";
 import { faBadge as faBadgeSolid } from "@fortawesome/pro-solid-svg-icons/faBadge";
 import { faTrash as faTrashSolid } from "@fortawesome/pro-solid-svg-icons/faTrash";
@@ -173,6 +207,7 @@ import { faMinusCircle } from "@fortawesome/pro-solid-svg-icons/faMinusCircle";
 import { faCheckCircle as faSolidCheckCircle } from "@fortawesome/pro-solid-svg-icons/faCheckCircle";
 import { faKey } from "@fortawesome/pro-solid-svg-icons/faKey";
 import { faLock as faSolidLock } from "@fortawesome/pro-solid-svg-icons/faLock";
+import { faCaretDown } from "@fortawesome/pro-solid-svg-icons/faCaretDown";
 
 import { faBold } from "@fortawesome/pro-solid-svg-icons/faBold";
 import { faItalic } from "@fortawesome/pro-solid-svg-icons/faItalic";
@@ -193,7 +228,12 @@ import { faAlignCenter } from "@fortawesome/pro-solid-svg-icons/faAlignCenter";
 import { faAlignRight } from "@fortawesome/pro-solid-svg-icons/faAlignRight";
 import { faFileImage } from "@fortawesome/pro-solid-svg-icons/faFileImage";
 import { faSpinner } from "@fortawesome/pro-light-svg-icons/faSpinner";
+
 library.add(
+  faCaretLeft,
+  faCaretRight,
+  faSlidersV,
+  faSyncSolid,
   faBadgeCheck,
   faBadgeSolid,
   faTrashSolid,
@@ -220,7 +260,8 @@ library.add(
   faAlignCenter,
   faAlignRight,
   faFileImage,
-  faSpinner
+  faSpinner,
+  faCaretDown
 );
 
 // import { far } from "@fortawesome/pro-regular-svg-icons";

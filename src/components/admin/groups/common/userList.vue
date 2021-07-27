@@ -1,9 +1,16 @@
 <template>
   <div>
     <div class="flex flex-row justify-between">
-      <div>
+      <div class="flex" :class="userListHeaderClass">
+        <a-button
+          v-if="showHeaderButtons"
+          @click="$emit('showGroupMembers')"
+          class="mr-3"
+        >
+          <fa class="text-gray-dark" icon="fal chevron-left" />
+        </a-button>
         <a-input-search
-          placeholder="Search Users"
+          placeholder="Search users"
           :allowClear="true"
           class="mr-1"
           v-model:value="searchText"
@@ -11,9 +18,6 @@
         ></a-input-search>
       </div>
       <div v-if="showHeaderButtons">
-        <a-button @click="$emit('showGroupMembers')" class="mr-3">
-          <fa icon="fal chevron-left" />
-        </a-button>
         <a-button
           @click="$emit('addMembersToGroup')"
           type="primary"
@@ -25,42 +29,49 @@
       </div>
     </div>
     <div
-      class="flex h-full align-middle bg-white flex-column"
-      style="min-height: 200px"
+      class="flex flex-col items-center h-full align-middle bg-white"
       v-if="[STATES.ERROR, STATES.STALE_IF_ERROR].includes(state)"
     >
-      <ErrorView></ErrorView>
-      <div class="mt-3">
-        <a-button
-          size="large"
-          type="primary"
-          ghost
-          @click="
-          () => {
-            getUserList();
-          }
-        "
-        >
-          <fa icon="fal sync"></fa>Try again
-        </a-button>
-      </div>
+      <ErrorView>
+        <div class="mt-3">
+          <a-button
+            size="large"
+            type="primary"
+            ghost
+            @click="
+              () => {
+                getUserList();
+              }
+            "
+          >
+            <fa icon="fal sync" class="mr-2"></fa>Try again
+          </a-button>
+        </div>
+      </ErrorView>
     </div>
-    <div v-else class="mt-4 overflow-auto">
-      <a-checkbox-group v-model:value="selectedIds" @change="handleChange" class="w-full">
-        <div class="flex flex-col w-full">
+    <div v-else class="pl-4 mt-2 overflow-auto">
+      <a-checkbox-group class="w-full">
+        <div class="flex flex-col w-full" :style="userListStyle">
           <template v-for="user in userList.value" :key="user.id">
-            <a-checkbox :value="user.id" class="flex items-center w-full">
-              <span class="flex justify-between mb-2">
+            <a-checkbox
+              :value="user.id"
+              @change="handleChange"
+              class="flex items-center w-full py-2 border-b border-gray-100"
+            >
+              <span class="flex justify-between ml-3">
                 <div class="flex items-center">
-                  <a-avatar shape="circle" class="mr-1 ant-tag-blue text-gray avatars">
-                    {{
-                    getNameInitials(getNameInTitleCase(user.name))
-                    }}
-                  </a-avatar>
+                  <avatar
+                    :imageUrl="imageUrl(user.username)"
+                    :allowUpload="false"
+                    :avatarName="user.name || user.uername || user.email"
+                    :avatarSize="40"
+                    class="mr-2"
+                  />
                   <div class="ml-2">
-                    <div>{{ user.name }}</div>
-                    <div class="text-xs">@{{ user.username }}</div>
-                    <div class="text-xs">{{ user.group_count_string }}</div>
+                    <div class="text-gray">
+                      <div class="mr-2 font-bold">{{ user.name }}</div>
+                      <div class="mr-2 text-gray-400">{{ user.email }}</div>
+                    </div>
                   </div>
                 </div>
               </span>
@@ -69,7 +80,7 @@
         </div>
       </a-checkbox-group>
       <div
-        class="flex justify-center"
+        class="flex justify-center mt-3"
         v-if="
           [STATES.PENDING].includes(state) ||
           [STATES.VALIDATING].includes(state)
@@ -77,7 +88,7 @@
       >
         <a-spin></a-spin>
       </div>
-      <div v-else-if="showLoadMore" class="flex justify-center">
+      <div v-else-if="showLoadMore" class="flex justify-center mt-3">
         <a-button @click="handleLoadMore">load more</a-button>
       </div>
     </div>
@@ -94,10 +105,12 @@ import {
 } from "~/composables/utils/string-operations";
 import { getIsLoadMore } from "~/composables/utils/isLoadMore";
 import useUsers from "~/composables/user/useUsers";
+import Avatar from "~/components/common/avatar.vue";
 export default defineComponent({
   name: "Users",
   components: {
     ErrorView,
+    Avatar,
   },
   props: {
     addMemberLoading: {
@@ -107,6 +120,14 @@ export default defineComponent({
     showHeaderButtons: {
       type: Boolean,
       default: false,
+    },
+    userListHeaderClass: {
+      type: String,
+      default: "",
+    },
+    userListStyle: {
+      type: Object,
+      default: {},
     },
   },
   setup(props, context) {
@@ -126,7 +147,6 @@ export default defineComponent({
     });
     const {
       usersListConcatenated: userList,
-      totalUserCount,
       filteredUserCount,
       getUserList,
       state,
@@ -161,17 +181,30 @@ export default defineComponent({
         userList.value.value.length,
         userListAPIParams.offset,
         userListAPIParams.limit,
-        searchText.value ? filteredUserCount.value : totalUserCount.value
+        filteredUserCount.value //filtered value because we are filtering users in the getUsers API call and getting only the users that have email_verified as true.
       );
     });
-    const handleChange = () => {
+    const handleChange = (event) => {
+      if (
+        event.target.checked &&
+        !selectedIds.value.includes(event.target.value)
+      ) {
+        selectedIds.value.push(event.target.value);
+      } else if (!event.target.checked) {
+        const index = selectedIds.value.indexOf(event.target.value);
+        if (index > -1) {
+          selectedIds.value.splice(index, 1);
+        }
+      }
       context.emit("updateSelectedUsers", selectedIds.value);
+    };
+    const imageUrl = (username: any) => {
+      return `http://localhost:3333/api/auth/tenants/default/avatars/${username}`;
     };
     return {
       searchText,
       showLoadMore,
       userList,
-      totalUserCount,
       filteredUserCount,
       getUserList,
       handleSearch,
@@ -183,9 +216,14 @@ export default defineComponent({
       pluralizeString,
       handleChange,
       selectedIds,
+      imageUrl,
     };
   },
 });
 </script>
   
-<style></style>
+<style lang="less" scoped>
+.userlist-height {
+  max-height: calc(100vh - 35rem);
+}
+</style>

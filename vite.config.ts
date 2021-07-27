@@ -6,7 +6,7 @@ import Layouts from "vite-plugin-vue-layouts";
 import { resolve } from "path";
 import commonjs from "@rollup/plugin-commonjs";
 import getAntDesignVariables from "./src/styles/antd_variables";
-
+import postcss from './postcss.config.js'
 import VueI18n from "@intlify/vite-plugin-vue-i18n";
 import styleImport from "vite-plugin-style-import";
 import svgLoader from "vite-svg-loader";
@@ -29,6 +29,7 @@ export default defineConfig(({ mode }) => {
       "process.env": process.env,
     },
     css: {
+      postcss,
       preprocessorOptions: {
         less: {
           modifyVars: getAntDesignVariables,
@@ -68,8 +69,8 @@ export default defineConfig(({ mode }) => {
       svgLoader(),
     ],
     optimizeDeps: {
-      include: ["vue", "vue-router", "@vueuse/core"],
-      exclude: [],
+      //include: ["vue", "vue-router", "@vueuse/core"],
+      exclude: ["monaco-editor"],
     },
     server: {
       proxy: {

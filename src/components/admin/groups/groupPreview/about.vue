@@ -1,25 +1,47 @@
 <template>
-  <div>
-    <UpdateName :group="selectedGroup" @refreshTable="$emit('refreshTable')" class="mt-3" />
-    <UpdateAlias :group="selectedGroup" @refreshTable="$emit('refreshTable')" class="mt-3" />
-    <UpdateDescription :group="selectedGroup" @refreshTable="$emit('refreshTable')" class="mt-3" />
-    <div class="mt-3">
-      <div class="flex items-center">
-        <p class="mb-0 text-xs text-gray-500">Members</p>
-      </div>
-      <div class="text-gray-500 capitalize">{{ selectedGroup.memberCount }}</div>
+  <div class="tab-content-wrapper">
+    <div class="flex">
+      <UpdateName
+        :group="selectedGroup"
+        @refreshTable="$emit('refreshTable')"
+        class="flex-1 mr-4"
+      />
+      <UpdateAlias
+        :group="selectedGroup"
+        @refreshTable="$emit('refreshTable')"
+        class="flex-1"
+      />
     </div>
-    <div class="mt-3">
-      <div class="flex items-center">
-        <p class="mb-0 text-xs text-gray-500">Created By</p>
+    <div class="flex mt-3">
+      <UpdateDescription
+        :group="selectedGroup"
+        @refreshTable="$emit('refreshTable')"
+        class="flex-1 mr-4"
+      />
+      <div class="flex-1">
+        <div class="flex items-center">
+          <p class="mb-0 text-gray-400">Members</p>
+        </div>
+        <div class="text-gray">
+          {{ selectedGroup.memberCount }}
+        </div>
       </div>
-      <div class="text-gray-500">{{ selectedGroup.createdBy }}</div>
     </div>
-    <div class="mt-3">
-      <div class="flex items-center">
-        <p class="mb-0 text-xs text-gray-500">Created</p>
+    <div class="flex mt-3">
+      <div class="flex-1 mr-4">
+        <div class="flex items-center">
+          <p class="mb-0 text-gray-400">Created By</p>
+        </div>
+        <div class="text-gray">{{ selectedGroup.createdBy }}</div>
       </div>
-      <div class="text-gray-500 capitalize">{{ selectedGroup.createdAtTimeAgo }}</div>
+      <div class="flex-1">
+        <div class="flex items-center">
+          <p class="mb-0 text-gray-400">Created</p>
+        </div>
+        <div class="capitalize text-gray">
+          {{ selectedGroup.createdAtTimeAgo }}
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -45,5 +67,9 @@ export default defineComponent({
 });
 </script>
   
-  <style></style>
+<style lang="less" scoped>
+.tab-content-wrapper {
+  min-height: calc(100vh - 10rem) !important;
+}
+</style>
   

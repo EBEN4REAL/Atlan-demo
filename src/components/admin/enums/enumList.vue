@@ -9,11 +9,11 @@
             : 'bg-white'
         "
       >
-        <p class="mb-1 font-medium text-gray-700">{{ item.name }}</p>
-        <p class="mb-1 font-medium">
+        <p class="mb-1 text-sm text-primary">{{ item.name }}</p>
+        <p class="mb-1 text-sm text-gray-400">
           {{ item.elementDefs.length }} elements(s)
         </p>
-        <p class="mb-0 font-light">
+        <p class="mb-0 text-sm text-gray-400">
           Updated {{ updateTime(item.updateTime) }} by
           {{ item.updatedBy }}
         </p>

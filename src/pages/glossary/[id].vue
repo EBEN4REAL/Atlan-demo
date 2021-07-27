@@ -30,7 +30,7 @@
       </a-tabs>
       <GlossaryTopTerms v-if="glossaryTerms?.length" :terms="glossaryTerms" />
     </div>
-
+    <GlossaryContinueSettingUp :terms="glossaryTerms" :categories="glossaryCategories" />
     <!-- <hr /> -->
   </div>
 </template>
@@ -41,12 +41,14 @@ import { useHead } from "@vueuse/head";
 
 import useGTCEntity from "~/composables/glossary/useGtcEntity";
 import useGlossaryTerms from "~/composables/glossary/useGlossaryTerms";
+import useGlossaryCategories from "~/composables/glossary/useGlossaryCategories";
 import { watch } from "vue";
 import { onMounted } from "vue";
 
 import Readme from "@/common/readme/index.vue";
 import GlossaryProfileOverview from "@/glossary/glossaryProfileOverview.vue";
 import GlossaryTopTerms from "@/glossary/glossaryTopTerms.vue";
+import GlossaryContinueSettingUp from "@/glossary/glossaryContinueSettingUp.vue";
 import GlossarySvg from "~/assets/images/glossary/glossary.svg";
 
 export default defineComponent({
@@ -57,7 +59,7 @@ export default defineComponent({
       default: "",
     },
   },
-  components: { Readme, GlossaryProfileOverview, GlossaryTopTerms,GlossarySvg },
+  components: { Readme, GlossaryProfileOverview, GlossaryTopTerms, GlossaryContinueSettingUp, GlossarySvg },
   setup(props) {
     const id = computed(() => props.id);
 
@@ -69,10 +71,16 @@ export default defineComponent({
     } = useGTCEntity("glossary");
     const {
       data: glossaryTerms,
-      termsError,
-      termsLoading,
+      error:termsError,
+      loading:termsLoading,
       fetchGlossaryTerms,
     } = useGlossaryTerms();
+    const {
+      data: glossaryCategories,
+     error:categoriesError,
+      loading:categoriesLoading,
+      fetchGlossaryCategories,
+    } = useGlossaryCategories();
 
     const title = computed(() => glossary.value?.name);
     const shortDescription = computed(() => glossary.value?.shortDescription);
@@ -80,11 +88,13 @@ export default defineComponent({
     onMounted(() => {
       fetchEntity(id.value);
       fetchGlossaryTerms(id.value);
+      fetchGlossaryCategories(id.value)
     });
 
     watch(id, (newGuid) => {
       fetchEntity(newGuid);
       fetchGlossaryTerms(newGuid)
+      fetchGlossaryCategories(newGuid)
     });
 
     return {
@@ -96,6 +106,7 @@ export default defineComponent({
       isLoading,
       id,
       glossaryTerms,
+      glossaryCategories
     };
   },
 });

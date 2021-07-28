@@ -1,7 +1,7 @@
 <template>
     <div class="ml-9 py-6 w-1/2">
         <h2 class="text-gray-700 text-xl leading-7 ml-6">Top Terms</h2>
-        <div class="h-80 overflow-y-scroll flex flex-col text-left">
+        <div class="max-h-80 overflow-y-scroll flex flex-col text-left">
             <div
                 v-for="(term, index) in termsList.slice(0, numberOfTerms)"
                 :key="term.guid"

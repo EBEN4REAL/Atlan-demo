@@ -1,45 +1,108 @@
 <template>
-{{id}}
-{{ isLoading }}
-{{data}}
-{{error}}
+<div class="px-12 pr-0 mb-12">
+    <div class="flex flex-row mt-6 mb-5">
+      <div class="mr-5">
+        <img :src="CategorySvg"/>
+      </div>
+      <div class="flex flex-col">
+        <span class="secondaryHeading">CATEGORY</span>
+        <h1 class="text-3xl leading-9 m-0 p-0 text-black font-normal">
+          {{ title }}
+        </h1>
+        <div class="text-sm leading-6 text-gray-400 font-normal">
+          <span class="mr-3">Cerated 2 weeks ago by @anshul</span>
+          <span>&bull;</span>
+          <span class="ml-3">Edited 1 week ago by @anshul</span>
+        </div>
+      </div>
+    </div>
+    <div>
+      <a-tabs default-active-key="1" class="border-0">
+        <a-tab-pane key="1" tab="Overview">
+          <div class="flex flex-row m-0 p-0">
+            <GlossaryProfileOverview :entity="category" :showCategoryCount="false"/>
+            <GlossaryTopTerms
+              v-if="categoryTerms?.length"
+              :terms="categoryTerms"
+            />
+          </div>
+        </a-tab-pane>
+        <a-tab-pane key="2" tab="Linked Terms">
+          Linked Terms
+        </a-tab-pane>
+      </a-tabs>
+    </div>
+    <!-- <hr /> -->
+  </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, computed } from "vue";
+import { defineComponent, computed, watch, onMounted } from "vue";
 import { useHead } from "@vueuse/head";
 
-import useGTCEntity from '~/composables/glossary/useGtcEntity';
-import { watch } from "vue";
-import { onMounted } from "vue";
+import useGTCEntity from "~/composables/glossary/useGtcEntity";
+import useCategoryTerms from "~/composables/glossary/useCategoryTerms";
+
+import Readme from "@/common/readme/index.vue";
+import GlossaryProfileOverview from "@/glossary/glossaryProfileOverview.vue";
+import GlossaryTopTerms from "@/glossary/glossaryTopTerms.vue";
+import GlossaryContinueSettingUp from "@/glossary/glossaryContinueSettingUp.vue";
+
+import CategorySvg from "~/assets/images/gtc/category/category.png";
+
+interface Proptype{
+  id: string;
+}
 
 export default defineComponent({
-  props:{
-    id: {
-      type: String,
-      required: true,
-      default: ''
-    }
+  props: ['id'],
+  components: {
+    Readme,
+    GlossaryProfileOverview,
+    GlossaryTopTerms,
+    GlossaryContinueSettingUp,
   },
-  setup(props) {
+  setup(props:Proptype) {
     const id = computed(() => props.id);
 
-    const {data, error, isLoading, fetchEntity } = useGTCEntity('category');
-
-    onMounted(() => {
-      fetchEntity(id.value)
-    })
-
-    watch(id, (newGuid) => {
-      fetchEntity(newGuid)
-    })
-
-    return {
-      data,
+    const {
+      data: category,
       error,
       isLoading,
-      id
-}
+      fetchEntity,
+    } = useGTCEntity("category");
+
+    const {
+      data: categoryTerms,
+      error: termsError,
+      loading: termsLoading,
+      fetchCategoryTerms,
+    } = useCategoryTerms();
+
+    const title = computed(() => category.value?.name);
+    const shortDescription = computed(() => category.value?.shortDescription);
+    const termCount = computed(() => category.value?.terms?.length ?? 0);
+    onMounted(() => {
+      fetchEntity(id.value);
+      fetchCategoryTerms(id.value)
+    });
+
+    watch(id, (newGuid) => {
+      fetchEntity(newGuid);
+      fetchCategoryTerms(newGuid)
+    });
+
+    return {
+      category,
+      categoryTerms,
+      title,
+      shortDescription,
+      termCount,
+      error,
+      isLoading,
+      CategorySvg,
+      id,
+    };
   },
 });
 </script>

@@ -2,7 +2,7 @@
   <div class="mb-6 p-0 w-11/12">
       <h2 class="text-gray-500 text-xl leading-7 mt-5 p-0">About</h2>
     <div class="mt-2 flex flex-row mb-10">
-      <div class="flex flex-col mr-8">
+      <div class="flex flex-col mr-8" v-if="showCategoryCount">
         <span class="secondaryHeading"> CATEGORIES </span>
         <span class="mt-2 text-xl leading-4 text-black">{{
           categoryCount
@@ -36,24 +36,27 @@ import { Components } from "~/api/atlas/client";
 import Readme from "@/common/readme/index.vue";
 
 interface PropsType {
-  glossary: Components.Schemas.AtlasGlossary;
+  entity: Components.Schemas.AtlasGlossary;
+  showCategoryCount: boolean;
 }
 
 export default defineComponent({
-  props: ["glossary"],
+  props: ["entity", 'showCategoryCount'],
   components: { Readme },
   setup(props: PropsType) {
-    const shortDescription = computed(() => props.glossary?.shortDescription);
-    const termCount = computed(() => props.glossary?.terms?.length ?? 0);
+    const shortDescription = computed(() => props.entity?.shortDescription);
+    const termCount = computed(() => props.entity?.terms?.length ?? 0);
     const categoryCount = computed(
-      () => props.glossary?.categories?.length ?? 0
+      () => props.entity?.categories?.length ?? 0
     );
-    const guid = computed(() => props.glossary?.guid)
+    const guid = computed(() => props.entity?.guid)
+    const showCategoryCount = computed(() => props.showCategoryCount ?? true)
     return {
       shortDescription,
       termCount,
       categoryCount,
-      guid
+      guid,
+      showCategoryCount
     };
   },
 });

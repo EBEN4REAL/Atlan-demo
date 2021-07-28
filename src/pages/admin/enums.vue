@@ -9,8 +9,8 @@
     <div class="flex items-center justify-between">
       <p class="text-sm text-gray-400">Create & manage Enumerations</p>
       <a-button
-        @click="toggleAddModal(true)"
         class="rounded-md ant-btn ant-btn-primary"
+        @click="toggleAddModal(true)"
       >
         New
       </a-button>
@@ -18,13 +18,13 @@
 
     <div v-if="selectedId" class="flex flex-grow py-4 overflow-y-auto">
       <div class="flex-shrink-0 overflow-y-auto w-80">
-        <EnumList :list="enumListData" v-model:selected="selectedId" />
+        <EnumList v-model:selected="selectedId" :list="enumListData" />
       </div>
       <div class="flex-grow ml-4 overflow-y-auto">
         <EnumDetails
-          v-model:selectedEnum="selectedEnum"
           v-if="selectedId"
           :key="selectedId"
+          v-model:selectedEnum="selectedEnum"
         />
         <span v-else>No Enum Selected</span>
       </div>

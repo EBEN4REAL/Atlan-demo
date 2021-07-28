@@ -1,8 +1,8 @@
 <template>
   <div>
     <ClassificationHeader
-      :classification="selectedClassification"
       v-if="selectedClassification"
+      :classification="selectedClassification"
     />
     <ClassificationBody />
 

@@ -1,6 +1,6 @@
 <template>
   <div class="flex pb-3 mb-3 text-2xl border-b text-gray">
-    <div @click="routeToGroups" class="flex mr-3 cursor-pointer">
+    <div class="flex mr-3 cursor-pointer" @click="routeToGroups">
       <fa icon="fal chevron-left" />
     </div>
     <div>Create Group</div>

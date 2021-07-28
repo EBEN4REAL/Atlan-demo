@@ -53,11 +53,11 @@
         </div>
         <div style="height: calc(100vh - 9rem); overflow-y: scroll">
           <BusinessMetadataList
-            :finalList="
+            :final-list="
               searchText ? searchedBusinessMetadataList : finalBusinessMetadataList
             "
-            :updatedBm="updatedBm"
-            :selectedBm="selectedBm"
+            :updated-bm="updatedBm"
+            :selected-bm="selectedBm"
             @selectBm="handleSelectBm"
           />
         </div>
@@ -67,14 +67,14 @@
         <BusinessMetadataProfile
           v-if="selectedBm"
           :key="selectedBm && selectedBm.guid"
-          :selectedBm="selectedBm"
+          :selected-bm="selectedBm"
+          style="height: calc(100vh - 6rem); overflow: hidden"
           @selectBm="handleSelectBm"
           @update="onUpdate"
           @clearUpdatedBm="updatedBm = null"
           @removeNewBm="discardNewBm"
           @afterArchive="handleAfterArchive"
           @clearNewBm="newBm = null"
-          style="height: calc(100vh - 6rem); overflow: hidden"
         />
       </div>
     </div>
@@ -102,17 +102,17 @@ import BusinessMetadataList from "@/admin/custom-metadata/businessMetadataList.v
 import BusinessMetadataProfile from "@/admin/custom-metadata/businessMetadataProfile.vue";
 
 // ? Media
-import EmptyBusinessMetadata from "~/assets/images/illustrations/empty_business_metadata.svg";
 
 // ? Composables
 import useBusinessMetadata from "@/admin/custom-metadata/composables/useBusinessMetadata";
 
 import { defineComponent, computed, onMounted } from "vue";
 import { useHead } from "@vueuse/head";
+import EmptyBusinessMetadata from "~/assets/images/illustrations/empty_business_metadata.svg";
 
 export default defineComponent({
+  name: "BusinessMetadata",
   components: { BusinessMetadataList, BusinessMetadataProfile },
-  name: "businessMetadata",
   setup(props, context) {
     useHead({
       title: computed(() => "Custom Metadata"),

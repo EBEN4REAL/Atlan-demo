@@ -1,13 +1,56 @@
 <template>
-    <div class="my-8">
+    <div class="my-8" v-if="missingOwners.length || missingDescription.length || missingLinkedAssets.length">
         <h2 class="text-xl leading-7">Coninue Setting up GLossary</h2>
-        <a-tabs default-active-key="2" class="border-0">
-            <a-tab-pane key="1" tab="Add Owners">
-                Add Owners
-                <br />
-                {{ missingOwners }}
+        <a-tabs default-active-key="1" class="border-0">
+            <a-tab-pane key="1" v-if="missingOwners.length" tab="Add Owners">
+                <a-table
+                    :columns="ownersTableColumns"
+                    :data-source="missingOwners"
+                    :pagination="false"
+                    rowKey="guid"
+                >
+                    <template #name="{ record }">
+                        <div class="flex align-middle">
+                            <span class="mr-2">
+                                <img
+                                    v-if="record.type === 'term'"
+                                    :src="TermSvg"
+                                    width="20"
+                                />
+                                <img
+                                    v-if="record.type === 'category'"
+                                    :src="CategorySvg"
+                                    width="20"
+                                />
+                            </span>
+                            <span>{{ record.name }}</span>
+                        </div>
+                    </template>
+                    <template #description="{ record }">
+                        <span v-if="record.shortDescription">{{
+                            record.shortDescription
+                        }}</span>
+                        <span v-else class="text-gray-400">- NA -</span>
+                    </template>
+                    <template #owners="{record}">
+                        <a-select
+                            mode="multiple"
+                            placeholder="Please select"
+                            style="width: 200px"
+                        >
+                            <a-select-option
+                                v-for="i in 25"
+                                :key="(i + 9).toString(36) + i"
+                            >
+                                {{ (i + 9).toString(36) + i }}
+                            </a-select-option>
+                        </a-select>
+                        <!-- <Owners :item="record" :key="record.guid" /> -->
+                    </template>
+                </a-table>
             </a-tab-pane>
-            <a-tab-pane key="2" tab="Add Descriptions">
+
+            <a-tab-pane key="2" v-if="missingDescription.length" tab="Add Descriptions">
                 <a-table
                     :columns="descriptionTableColumns"
                     :data-source="missingDescription"
@@ -22,16 +65,22 @@
                                     :src="TermSvg"
                                     width="20"
                                 />
+                                <img
+                                    v-if="record.type === 'category'"
+                                    :src="CategorySvg"
+                                    width="20"
+                                />
                             </span>
                             <span>{{ record.name }}</span>
                         </div>
                     </template>
                     <template #description="{ record }">
-                       <glossaryAddDescriptionCard :entity="record" />
+                        <GlossaryAddDescriptionCard :entity="record" />
                     </template>
                 </a-table>
             </a-tab-pane>
-            <a-tab-pane key="3" tab="Link Assets">
+
+            <a-tab-pane key="3" v-if="missingLinkedAssets.length" tab="Link Assets">
                 Link Assets
                 <br />
                 {{ missingLinkedAssets }}
@@ -45,7 +94,9 @@ import { defineComponent, computed } from 'vue'
 import { Components } from '~/api/atlas/client'
 
 import TermSvg from '~/assets/images/gtc/term/term.png'
-import glossaryAddDescriptionCard from '@/glossary/glossaryAddDescriptionCard.vue';
+import CategorySvg from '~/assets/images/gtc/category/category.png'
+import GlossaryAddDescriptionCard from '@/glossary/glossaryAddDescriptionCard.vue'
+import Owners from '@/preview/asset/tabs/overview/details/owners.vue'
 
 interface PropsType {
     terms: Components.Schemas.AtlasGlossaryTerm[]
@@ -54,7 +105,7 @@ interface PropsType {
 
 export default defineComponent({
     props: ['terms', 'categories'],
-    components: {glossaryAddDescriptionCard},
+    components: { GlossaryAddDescriptionCard, Owners },
     setup(props: PropsType) {
         const categories = computed(
             () =>
@@ -69,17 +120,20 @@ export default defineComponent({
 
         const missingDescription = computed(() => {
             const entities = [...terms.value, ...categories.value]
-            return entities.filter((entity) => !entity.shortDescription).map((entity) => ({...entity, shortDescription: ''}))
+            return entities
+                .filter((entity) => !entity.shortDescription)
+                .map((entity) => ({ ...entity, shortDescription: '' }))
+                .slice(0, 5)
         })
 
         const missingLinkedAssets = computed(() => {
-            return terms.value.filter((term) => !term.assignedEntities?.length)
+            return terms.value.filter((term) => !term.assignedEntities?.length).slice(0,5)
         })
 
         const missingOwners = computed(() => {
             return [...terms.value, ...categories.value].filter(
                 (entity) => !entity?.owners?.length
-            )
+            ).slice(0,5)
         })
 
         const descriptionTableColumns = [
@@ -95,19 +149,38 @@ export default defineComponent({
                 key: 'description',
                 slots: { customRender: 'description' },
             },
-        ];
-        const descriptionChange = (value, entity) => {
-          console.log(value.target.value, entity)
-        }
+        ]
+
+        const ownersTableColumns = [
+            {
+                title: 'Term/Category',
+                dataIndex: 'name',
+                key: 'name',
+                slots: { customRender: 'name' },
+            },
+            {
+                title: 'Description',
+                dataIndex: 'description',
+                key: 'description',
+                slots: { customRender: 'description' },
+            },
+            {
+                title: 'Assign Owner',
+                dataIndex: 'owners',
+                key: 'owners',
+                slots: { customRender: 'owners' },
+            },
+        ]
         return {
             TermSvg,
+            CategorySvg,
             categories,
             terms,
             missingDescription,
             missingLinkedAssets,
             missingOwners,
             descriptionTableColumns,
-            descriptionChange
+            ownersTableColumns,
         }
     },
 })

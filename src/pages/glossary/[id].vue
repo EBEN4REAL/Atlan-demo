@@ -58,6 +58,7 @@ import Readme from "@/common/readme/index.vue";
 import GlossaryProfileOverview from "@/glossary/glossaryProfileOverview.vue";
 import GlossaryTopTerms from "@/glossary/glossaryTopTerms.vue";
 import GlossaryContinueSettingUp from "@/glossary/glossaryContinueSettingUp.vue";
+
 import GlossarySvg from "~/assets/images/gtc/glossary/glossary.png";
 
 interface Proptype{

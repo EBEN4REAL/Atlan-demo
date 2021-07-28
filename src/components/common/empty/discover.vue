@@ -4,7 +4,9 @@
   >
     <img :src="image" class="w-1/3 h-auto" />
     <p class="mt-2 mb-2">No Assets Found</p>
-    <a-button @click="handleClick" class="mt-3">Clear all filters</a-button>
+    <a-button v-if="showClearFiltersCTA" @click="handleClick" class="mt-3"
+      >Clear all filters</a-button
+    >
   </div>
 </template>
   
@@ -27,6 +29,10 @@ export default defineComponent({
       default() {
         return "";
       },
+    },
+    showClearFiltersCTA: {
+      type: Boolean,
+      default: true,
     },
   },
   emits: ["event"],

@@ -8,15 +8,7 @@
       class="shadow-sm"
     >
       <div
-        class="
-          flex
-          items-center
-          justify-between
-          px-3
-          align-middle
-          border-b
-          shadow-sm
-        "
+        class="flex items-center justify-between px-3 align-middle border-b shadow-sm "
         :class="$style.topbar"
       >
         <div class="flex items-center align-middle">
@@ -81,7 +73,6 @@ import KeycloakMixin from "~/mixins/keycloak";
 import PageLoader from "@common/loaders/page.vue";
 import Sidebar from "./sidebar/index.vue";
 import UserPersonalAvatar from "~/components/common/avatar/me.vue";
-import { useStore } from "~/store";
 
 export default defineComponent({
   name: "HelloWorld",

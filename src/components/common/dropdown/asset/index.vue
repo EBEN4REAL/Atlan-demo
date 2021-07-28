@@ -1,0 +1,166 @@
+<template>
+    <div class="">
+        <div class="">
+            <div class="flex gap-x-2">
+                <a-popover placement="bottomLeft" trigger="click">
+                    <template #content>
+                        <div class="flex flex-col space-y-2">
+                            <template
+                                v-for="(item, index) in list"
+                                :key="item.typeName"
+                            >
+                                <div>
+                                    <p class="mb-0 text-gray-500">
+                                        {{ item.name }}
+                                    </p>
+                                    <AssetSelector
+                                        :key="getKey(index)"
+                                        @change="handleChange"
+                                        v-model:value="asset[item.attribute]"
+                                        :typeName="item.typeName"
+                                        :filters="getFilter(index)"
+                                        :disabled="isDisabled(index)"
+                                        style="width: 200px"
+                                    ></AssetSelector>
+                                </div>
+                            </template>
+                        </div>
+                    </template>
+                    <div class="flex py-2 pr-3 cursor-pointer">
+                        <p
+                            class="flex items-center mb-0 text-xs tracking-wide text-gray-900 align-middle hover:bg-gray-50"
+                            v-if="list?.length > 0"
+                        >
+                            <component
+                                :is="list[0].typeName"
+                                class="w-auto h-3 mr-1"
+                            ></component
+                            >All {{ list[0].name }}s
+                            <fa
+                                icon="fas caret-down"
+                                class="text-primary-500"
+                            ></fa>
+                        </p>
+                    </div>
+                </a-popover>
+            </div>
+        </div>
+    </div>
+</template>
+
+<script lang="ts">
+    import { computed, defineComponent, ref } from 'vue';
+    import { useConnectionsStore } from '~/store/connections';
+
+    import AssetSelector from '@common/selector/asset/index.vue';
+
+    export default defineComponent({
+        components: { AssetSelector },
+        props: {
+            connector: {
+                type: Object,
+                required: false,
+            },
+            data: {
+                type: Object,
+                required: false,
+                default() {
+                    return {};
+                },
+            },
+        },
+        emits: ['change'],
+        setup(props, { emit }) {
+            let asset: { [key: string]: any } = ref({});
+
+            let assetDirty: { [key: string]: any } = ref({});
+
+            const list = computed(() => {
+                return (
+                    props.connector?.hierarchy.filter((item) => {
+                        return item.level < 3;
+                    }) || []
+                );
+            });
+
+            const isDisabled = (index) => {
+                if (index == 0 && props.data?.connection) {
+                    return false;
+                }
+                if (index > 0) {
+                    const item = list.value[index - 1];
+                    if (asset.value[item.attribute]) {
+                        return false;
+                    }
+                }
+                return true;
+            };
+
+            const getFilter = (index) => {
+                let baseFilter = {
+                    condition: 'AND',
+                    criterion: [
+                        {
+                            attributeName: 'connectionQualifiedName',
+                            attributeValue: props.data?.connection,
+                            operator: 'eq',
+                        },
+                    ],
+                };
+
+                if (index > 0) {
+                    const item = list.value[index - 1];
+                    if (asset.value[item.attribute]) {
+                        baseFilter.criterion.push({
+                            attributeName: item.attribute,
+                            attributeValue: asset.value[item.attribute],
+                            operator: 'eq',
+                        });
+                    }
+                }
+                return baseFilter;
+                // if (index > 0) {
+                //   const item = list.value[index - 1];
+                //   if (item) {
+                //     return {
+                //       condition: "AND",
+                //       criterion: [
+                //         {
+                //           attributeName: "connectionQualifiedName",
+                //           attributeValue: props.data?.connection,
+                //           operator: "eq",
+                //         },
+                //       ],
+                //     };
+                //   }
+                // }
+            };
+
+            const getKey = (index) => {
+                if (index > 0) {
+                    const item = list.value[index - 1];
+                    return `${item.typeName}_${asset.value[item.attribute]}`;
+                }
+                return 'default';
+            };
+
+            const dirtyTimestamp = ref('');
+            const handleChange = () => {
+                console.log(asset);
+                // assetDirty[index] = Date.now().toString();
+                // dirtyTimestamp.value = Date.now().toString();
+            };
+
+            return {
+                list,
+                asset,
+                getFilter,
+                handleChange,
+                dirtyTimestamp,
+                isDisabled,
+                getKey,
+                assetDirty,
+            };
+        },
+    });
+</script>

@@ -1,12 +1,16 @@
 <template>
   <div>
     <div class="flex flex-row justify-between">
-      <div class="flex">
-        <a-button @click="$emit('showGroupMembers')" class="mr-3">
+      <div class="flex" :class="userListHeaderClass">
+        <a-button
+          v-if="showHeaderButtons"
+          @click="$emit('showGroupMembers')"
+          class="mr-3"
+        >
           <fa class="text-gray-dark" icon="fal chevron-left" />
         </a-button>
         <a-input-search
-          placeholder="Search Users"
+          placeholder="Search users"
           :allowClear="true"
           class="mr-1"
           v-model:value="searchText"
@@ -45,9 +49,9 @@
         </div>
       </ErrorView>
     </div>
-    <div v-else class="pl-4 mt-4 overflow-auto">
+    <div v-else class="pl-4 mt-2 overflow-auto">
       <a-checkbox-group class="w-full">
-        <div class="flex flex-col w-full">
+        <div class="flex flex-col w-full" :style="userListStyle">
           <template v-for="user in userList.value" :key="user.id">
             <a-checkbox
               :value="user.id"
@@ -56,18 +60,17 @@
             >
               <span class="flex justify-between ml-3">
                 <div class="flex items-center">
-                  <a-avatar
-                    shape="circle"
-                    class="mr-1 ant-tag-blue text-gray avatars"
-                  >
-                    {{ getNameInitials(getNameInTitleCase(user.name)) }}
-                  </a-avatar>
+                  <avatar
+                    :imageUrl="imageUrl(user.username)"
+                    :allowUpload="false"
+                    :avatarName="user.name || user.uername || user.email"
+                    :avatarSize="40"
+                    class="mr-2"
+                  />
                   <div class="ml-2">
                     <div class="text-gray">
-                      <span class="mr-2 font-bold">{{ user.name }}</span>
-                      <span class="font-normal"
-                        >({{ user.group_count_string }})</span
-                      >
+                      <div class="mr-2 font-bold">{{ user.name }}</div>
+                      <div class="mr-2 text-gray-400">{{ user.email }}</div>
                     </div>
                   </div>
                 </div>
@@ -102,10 +105,12 @@ import {
 } from "~/composables/utils/string-operations";
 import { getIsLoadMore } from "~/composables/utils/isLoadMore";
 import useUsers from "~/composables/user/useUsers";
+import Avatar from "~/components/common/avatar.vue";
 export default defineComponent({
   name: "Users",
   components: {
     ErrorView,
+    Avatar,
   },
   props: {
     addMemberLoading: {
@@ -115,6 +120,14 @@ export default defineComponent({
     showHeaderButtons: {
       type: Boolean,
       default: false,
+    },
+    userListHeaderClass: {
+      type: String,
+      default: "",
+    },
+    userListStyle: {
+      type: Object,
+      default: {},
     },
   },
   setup(props, context) {
@@ -185,6 +198,9 @@ export default defineComponent({
       }
       context.emit("updateSelectedUsers", selectedIds.value);
     };
+    const imageUrl = (username: any) => {
+      return `http://localhost:3333/api/auth/tenants/default/avatars/${username}`;
+    };
     return {
       searchText,
       showLoadMore,
@@ -200,9 +216,14 @@ export default defineComponent({
       pluralizeString,
       handleChange,
       selectedIds,
+      imageUrl,
     };
   },
 });
 </script>
   
-<style></style>
+<style lang="less" scoped>
+.userlist-height {
+  max-height: calc(100vh - 35rem);
+}
+</style>

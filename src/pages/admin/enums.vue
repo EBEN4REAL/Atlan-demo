@@ -7,8 +7,13 @@
     />
     <p class="text-2xl text-gray mb-0">Enumerations</p>
     <div class="flex items-center justify-between">
-      <p>Search Enumerations</p>
-      <a-button @click="toggleAddModal(true)" type="primary"> + New </a-button>
+      <p class="text-sm text-gray-400">Create & manage Enumerations</p>
+      <a-button
+        @click="toggleAddModal(true)"
+        class="rounded-md ant-btn ant-btn-primary"
+      >
+        New
+      </a-button>
     </div>
 
     <div v-if="selectedId" class="flex flex-grow py-4 overflow-y-auto">

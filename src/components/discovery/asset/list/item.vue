@@ -7,11 +7,13 @@
         </div>
         <div class="flex flex-col w-full">
           <div class="flex items-center justify-between mb-0">
-            <p
-              class="mb-0 font-semibold leading-none tracking-wide truncate cursor-pointer  text-primary hover:underline"
-            >
-              {{ title(item) }}
-            </p>
+            <router-link :to="`/assets/${item.guid}/overview`">
+              <a
+                class="mb-0 font-semibold leading-none tracking-wide truncate cursor-pointer  text-primary hover:underline"
+              >
+                {{ title(item) }}
+              </a>
+            </router-link>
             <StatusBadge
               :statusId="item?.attributes?.assetStatus"
               class="ml-1"
@@ -39,6 +41,17 @@
     </p>
 
     <div
+      class="flex items-center mt-1 mb-0 text-xs"
+      v-if="item.typeName.toLowerCase() === 'column'"
+    >
+      <component
+        :is="dataTypeImage(item)"
+        class="w-5 h-5 mr-1 text-gray-500"
+      ></component>
+      <div class="leading-none">{{ dataType(item) }}</div>
+    </div>
+
+    <div
       class="flex items-center justify-between align-middle"
       v-if="projection?.includes('rows') || projection?.includes('popularity')"
     >
@@ -49,7 +62,7 @@
             item.typeName.toLowerCase() === 'view')
         "
       >
-        <p class="mb-0 text-gray-600">
+        <p class="mb-0 text-xs text-gray-500">
           <span v-if="item?.typeName.toLowerCase() === 'table'">
             <span class="font-bold tracking-wide">{{
               rowCount(item, true)

@@ -1,7 +1,7 @@
 <template>
-  <div>
-    <p class="text-2xl text-gray">Configure SMTP</p>
-    <div class="w-2/3 p-12 text-gray-600 bg-white rounded shadow smtpForm">
+  <div class="h-screen overflow-y-auto">
+    <p class="text-2xl atlan-gray-500">Configure SMTP</p>
+    <div class="w-2/3 text-gray-600 bg-white rounded smtpForm">
       <div class="w-100">
         <!-- <div class="mb-8">
           <span class="flex items-center text-2xl">
@@ -23,7 +23,7 @@
             :required="config.required"
             :label="config.label"
             :name="config.id"
-            class="w-full"
+            class="w-full text-gray-300"
             :key="config.id"
           >
             <a-switch
@@ -77,7 +77,7 @@
             <div class="flex items-center">
               <a-button
                 variant="sm"
-                class="mr-3 test-config-button"
+                class="mr-3 rounded-md ant-btn test-config-button"
                 :loading="testSmtpConfigState === 'TESTING'"
                 @click="testSmtpConfig"
               >
@@ -128,9 +128,9 @@
             <div class="flex">
               <div
                 v-if="saveSmtpConfigState === 'SUCCESS'"
-                class="px-3 py-2 mr-3 rounded bg-blue-50"
+                class="flex items-center justify-center px-3 py-2 mr-3 rounded bg-blue-50"
               >
-                <i class="mr-2 text-green-600 fal fa-check-circle"></i>
+                <fa icon="fal check-circle" class="mr-2 text-green-600" />
                 Config Saved
               </div>
               <div
@@ -147,7 +147,7 @@
               </div>
               <a-button
                 style="width: 150px"
-                type="primary"
+                class="rounded-md ant-btn ant-btn-primary"
                 @click.prevent="saveSmtpConfig"
                 :loading="saveSmtpConfigState === 'SAVING'"
               >

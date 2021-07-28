@@ -50,7 +50,7 @@ import EmptyView from "@common/empty/index.vue";
 import ErrorView from "@common/error/index.vue";
 import LoadingView from "@common/loaders/section.vue";
 import { useRouter } from "vue-router";
-import { useConnectionsStore } from "~/pinia/connections";
+import { useConnectionsStore } from "~/store/connections";
 import useConnectionsList from "~/composables/bots/useConnectionList";
 import { CONNECTION_FETCH_LIST } from "~/constant/cache";
 

@@ -13,14 +13,8 @@ const classificationMap: Record<string, (...params: any) => string> = {
   [CREATE_CLASSIFICATION]: () => getAPIPath("auth/atlas", "/types/typedefs"),
   [BASIC_SEARCH]: () => getAPIPath("auth/atlas", "/search/basic"),
   [UPDATE_CLASSIFICATION]: () => getAPIPath("auth/atlas", "/types/typedefs"),
-  [ARCHIVE_CLASSIFICATION]: ({
-    typeName,
-    entityGuid,
-  }: Record<string, string>) =>
-    getAPIPath(
-      "auth/atlas",
-      `/entity/guid/${entityGuid}/classification/${typeName}`
-    ),
+  [ARCHIVE_CLASSIFICATION]: ({ typeName }: Record<string, string>) =>
+    getAPIPath("auth/atlas", `/types/typedef/name/${typeName}`),
   [LINK_CLASSIFICATION]: ({ entityGuid }: Record<string, string>) =>
     getAPIPath("auth/atlas", `/entity/guid/${entityGuid}/classifications`),
 };

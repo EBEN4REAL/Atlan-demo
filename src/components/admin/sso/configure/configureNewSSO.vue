@@ -226,8 +226,7 @@ import {
 import ImportMetadataFromXML from "../common/importMetadataFromXML.vue";
 import ImportText from "../common/importText.vue";
 
-import { TENANT_FETCH_DATA } from "~/constant/store_types";
-import { useStore } from "~/store";
+import { useTenantStore } from "~/store/tenants";
 
 import {
   topSAMLProviders,
@@ -242,6 +241,7 @@ import { copyToClipboard } from "~/utils/clipboard";
 import { IdentityProvider } from "~/api/auth/identityProvider";
 // @ts-ignore
 import { downloadFile } from "~/utils/download";
+import { Tenant } from "~/api/auth/tenant";
 
 interface FormState {
   alias: string;
@@ -264,8 +264,8 @@ export default defineComponent({
       displayName: "",
     });
     const isLoading = ref(false);
-    const store = useStore();
-    const tenantData: any = computed(() => store.state.tenant.data);
+    const tenantStore = useTenantStore();
+    const identityProviders = computed(() => tenantStore.getIdentityProviders);
 
     const defaultMappers = mapperList;
 
@@ -412,9 +412,7 @@ export default defineComponent({
       }
     };
     const checkAliasPresent = () => {
-      const identityProviders: Array<any> =
-        tenantData?.value?.identityProviders || [];
-      const alias = identityProviders.find(
+      const alias = identityProviders.value.find(
         (provider) => provider.alias === ssoForm.alias
       );
       return alias ? true : false;
@@ -448,7 +446,7 @@ export default defineComponent({
           mappers.map((mapper) => mapperResponse.push(createMapper(mapper)));
         });
         await Promise.all([...mapperResponse]);
-        await store.dispatch(TENANT_FETCH_DATA);
+        await updateTenant();
         showConfigScreen();
         message.success({
           content: "SSO added!",
@@ -460,6 +458,11 @@ export default defineComponent({
           content: "Unsuccessfull!",
         });
       }
+    };
+
+    const updateTenant = async () => {
+      const tenantResponse: any = await Tenant.Get();
+      tenantStore.setData(tenantResponse);
     };
 
     const copyText = (url: string) => {

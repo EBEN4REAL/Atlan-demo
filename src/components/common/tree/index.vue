@@ -12,7 +12,7 @@
   >
     <template #title="{ title, image, isLeaf }" class="">
       <div class="flex align-center" v-if="!isLeaf">
-        <span><img :src="image" class="float-left w-auto h-4 mr-1" /></span>
+        <span><img :src="image" class="float-left w-auto h-4 mr-1"/></span>
 
         <span class="tracking-wider text-gray-700">{{ title }}</span>
       </div>
@@ -20,7 +20,6 @@
     </template>
   </a-tree>
 </template>
-
 
 <script lang="ts">
 import { TreeDataItem } from "ant-design-vue/lib/tree/Tree";

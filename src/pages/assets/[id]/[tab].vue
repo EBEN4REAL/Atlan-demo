@@ -1,7 +1,7 @@
 <template>
   <LoadingView v-if="loading" />
   <ErrorView v-else-if="error" :error="error" />
-  <div v-else>
+  <div v-else class="w-full">
     <div class="h-24 p-4">
       <AssetHeader :asset="response?.entities[0]" />
     </div>
@@ -13,7 +13,7 @@
       <a-menu-item key="overview"> Overview </a-menu-item>
       <a-menu-item key="lineage"> Lineage </a-menu-item>
     </a-menu>
-    <div class="p-4">
+    <div>
       <component
         :is="selectedTab"
         :asset="response?.entities[0] || {}"
@@ -71,6 +71,6 @@ export default defineComponent({
 </script>
 <route lang="yaml">
 meta:
-    layout: default
-    requiresAuth: true
+  layout: default
+  requiresAuth: true
 </route>

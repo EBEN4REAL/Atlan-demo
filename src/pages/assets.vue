@@ -23,12 +23,11 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, watch, computed } from 'vue'
+import { defineComponent, ref, computed } from 'vue'
 import AssetDiscovery from '@/discovery/asset/index.vue'
 import AssetPreview from '@/preview/asset/index.vue'
 import { useHead } from '@vueuse/head'
-import { Classification } from '~/api/atlas/classification'
-import { useClassificationStore } from '~/components/admin/classifications/_store'
+
 import { getDecodedOptionsFromString } from '~/utils/routerQuery'
 import { useRoute, useRouter } from 'vue-router'
 
@@ -59,16 +58,16 @@ export default defineComponent({
         //   const id = route.params.id;
         // });
 
-        const initialFilters: initialFiltersType =
-            getDecodedOptionsFromString(router)
-        let selected = ref({})
-        useHead({
-            title: 'Discover assets',
-        })
-        const handlePreview = (selectedItem: any) => {
-            selected.value = selectedItem
-            console.log(selected.value, 'selected')
-        }
+    const initialFilters: initialFiltersType =
+      getDecodedOptionsFromString(router);
+    let selected = ref({});
+    useHead({
+      title: "Discover assets",
+    });
+    const handlePreview = (selectedItem: any) => {
+      selected.value = selectedItem;
+      console.log(selected.value, "selected");
+    };
 
         // TODO - Move classification fetch
         // const classificationsStore = useClassificationStore()

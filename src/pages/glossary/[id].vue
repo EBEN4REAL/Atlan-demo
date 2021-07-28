@@ -82,17 +82,18 @@ export default defineComponent({
       isLoading,
       fetchEntity,
     } = useGTCEntity("glossary");
+    // const {
+    //   data: glossaryTerms,
+    //   error: termsError,
+    //   loading: termsLoading,
+    //   fetchGlossaryTerms,
+    // } = useGlossaryTerms();
     const {
-      data: glossaryTerms,
-      error: termsError,
-      loading: termsLoading,
-      fetchGlossaryTerms,
-    } = useGlossaryTerms();
-    const {
-      data: glossaryCategories,
+      categories: glossaryCategories,
       error: categoriesError,
       loading: categoriesLoading,
       fetchGlossaryCategories,
+      fetchGlossaryCategoriesPaginated
     } = useGlossaryCategories();
 
     const title = computed(() => glossary.value?.name);
@@ -100,14 +101,16 @@ export default defineComponent({
     const termCount = computed(() => glossary.value?.terms?.length ?? 0);
     onMounted(() => {
       fetchEntity(id.value);
-      fetchGlossaryTerms(id.value);
-      fetchGlossaryCategories(id.value);
+      // fetchGlossaryTerms(id.value);
+      fetchGlossaryCategoriesPaginated({guid: id.value, offset: 4});
     });
 
     watch(id, (newGuid) => {
       fetchEntity(newGuid);
-      fetchGlossaryTerms(newGuid);
-      fetchGlossaryCategories(newGuid);
+      // fetchGlossaryTerms(newGuid);
+      // fetchGlossaryCategories(newGuid);
+      fetchGlossaryCategoriesPaginated({guid: newGuid, refreshSamePage: true})
+
     });
 
     return {
@@ -119,7 +122,7 @@ export default defineComponent({
       isLoading,
       GlossarySvg,
       id,
-      glossaryTerms,
+      // glossaryTerms,
       glossaryCategories,
     };
   },

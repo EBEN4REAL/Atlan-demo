@@ -39,7 +39,7 @@ const groupsMap: Record<string, (...params:any) => string> = {
     [UPDATE_GLOSSARY_CATEGORY]: ({ guid }: Record<string, string>) => getAPIPath('auth/atlas', `/glossary/category/${guid}/partial`),
     [UPDATE_GLOSSARY_TERM]: ({ guid }: Record<string, string>) => getAPIPath('auth/atlas', `/glossary/term/${guid}/partial`),
 
-    [GET_GLOSSARY_CATEGORIES]: ({ guid }: Record<string, string>) => getAPIPath('auth/atlas', `/glossary/${guid}/categories`),
+    [GET_GLOSSARY_CATEGORIES]: ({ guid, limit, offset }: Record<string, any>) => getAPIPath('auth/atlas', `/glossary/${guid}/categories?limit=${limit ?? -1}${!!offset  ? `&offset=${offset}` : ''}`),
     [GET_GLOSSARY_TERMS]: ({ guid }: Record<string, string>) => getAPIPath('auth/atlas', `/glossary/${guid}/terms`),
 
     [GET_CATEGORY_TERMS]: ({ guid }: Record<string, string>) => getAPIPath('auth/atlas', `/glossary/category/${guid}/terms`),

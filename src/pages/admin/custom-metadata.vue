@@ -113,7 +113,7 @@ import EmptyBusinessMetadata from "~/assets/images/illustrations/empty_business_
 export default defineComponent({
   name: "BusinessMetadata",
   components: { BusinessMetadataList, BusinessMetadataProfile },
-  setup(props, context) {
+  setup() {
     useHead({
       title: computed(() => "Custom Metadata"),
     });

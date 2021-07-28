@@ -1,13 +1,8 @@
 
-import { computed, reactive, Ref, ref, watch } from 'vue';
-import { SearchParameters } from '~/types/atlas/attributes';
-import { BaseAttributes, BotsAttributes } from '~/constant/projection';
+import { computed, Ref, ref } from 'vue';
 import axios, { AxiosRequestConfig, CancelTokenSource } from 'axios';
-import { BotsType } from '~/types/atlas/bots';
-import { Search } from '~/api2/search';
 import { IConfig } from 'swrv';
-import { Components } from '~/api/atlas/client';
-import { Workflow } from '~/api2/workflow';
+import { Run } from '~/api2/run';
 
 
 export default function useWorkflowList(dependentKey?: Ref<any>, initialParams?: any, cacheSuffx?: string | "") {
@@ -15,7 +10,6 @@ export default function useWorkflowList(dependentKey?: Ref<any>, initialParams?:
     let cancelTokenSource: Ref<CancelTokenSource> = ref(axios.CancelToken.source());
     let asyncOptions: IConfig & AxiosRequestConfig = {
         dedupingInterval: 0,
-        refreshInterval: 5000,
         shouldRetryOnError: false,
         revalidateOnFocus: false,
         revalidateDebounce: 0,
@@ -24,11 +18,11 @@ export default function useWorkflowList(dependentKey?: Ref<any>, initialParams?:
         asyncOptions.cancelToken = cancelTokenSource.value.token
     }
 
-
-
+  
+  
     let cachekey = ref(`${cacheSuffx}`)
     const { data, STATES,
-        state, mutate } = Workflow.List(initialParams, asyncOptions, cachekey, dependentKey);
+        state, mutate } = Run.List(initialParams, asyncOptions, cachekey, dependentKey);
 
 
     const isLoading = computed(() => {
@@ -55,12 +49,15 @@ export default function useWorkflowList(dependentKey?: Ref<any>, initialParams?:
 
 
 
+
+
     return {
         data,
         state,
         STATES,
         isLoading,
         isValidating,
+
         refresh,
     }
 };

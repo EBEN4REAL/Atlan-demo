@@ -1,7 +1,8 @@
 import { AxiosRequestConfig } from "axios";
 import { IConfig } from "swrv";
 import { Ref } from "vue";
-import { WORKFLOW_LIST } from "../keymap/workflow";
+import { RUN_ARCHIVED_LIST } from "../keymap/run";
+
 import { useAPI } from "../useAPI";
 
 const List = (
@@ -10,7 +11,7 @@ const List = (
     cacheSuffix?: Ref<string>,
     dependantFetchingKey?: Ref<any>
 ) => {
-    return useAPI<any>(WORKFLOW_LIST, "GET", {
+    return useAPI<any>(RUN_ARCHIVED_LIST, "GET", {
         params,
         options,
         cacheSuffix,
@@ -26,6 +27,6 @@ const List = (
 //   };
 
 
-export const Workflow = {
+export const Run = {
     List,
 };

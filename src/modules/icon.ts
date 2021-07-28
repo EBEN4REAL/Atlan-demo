@@ -87,6 +87,11 @@ import { faUserCheck } from "@fortawesome/pro-light-svg-icons/faUserCheck";
 import { faSlidersHSquare } from "@fortawesome/pro-light-svg-icons/faSlidersHSquare";
 import { faSignOut } from "@fortawesome/pro-light-svg-icons/faSignOut";
 
+
+import { faHourglassStart } from "@fortawesome/pro-light-svg-icons/faHourglassStart";
+import { faHourglassEnd } from "@fortawesome/pro-light-svg-icons/faHourglassEnd";
+import { faCalendarAlt } from "@fortawesome/pro-light-svg-icons/faCalendarAlt";
+
 library.add(
   faExternalLinkAlt,
   faArrowUp,
@@ -163,7 +168,8 @@ library.add(
   faUserCheck,
   faUserShield,
   faSlidersHSquare,
-  faSignOut
+  faSignOut,faHourglassStart,faHourglassEnd,faCalendarAlt
+
 );
 
 // Solid Icons

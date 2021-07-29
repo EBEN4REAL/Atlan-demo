@@ -8,7 +8,7 @@
                     categoryCount
                 }}</span>
             </div>
-            <div class="flex flex-col mr-8">
+            <div v-if="showTermCountComputed" class="flex flex-col mr-8">
                 <span class="secondaryHeading"> TERMS </span>
                 <span class="mt-2 text-xl leading-4 text-black">{{
                     termCount
@@ -39,12 +39,13 @@ import { Components } from '~/api/atlas/client'
 
 interface PropsType {
     entity: Components.Schemas.AtlasGlossary
-    showCategoryCount: boolean
+    showCategoryCount: boolean;
+    showTermCount: boolean;
 }
 
 export default defineComponent({
     components: { Readme },
-    props: ['entity', 'showCategoryCount'],
+    props: ['entity', 'showCategoryCount', 'showTermCount'],
     setup(props: PropsType) {
         const shortDescription = computed(() => props.entity?.shortDescription)
         const termCount = computed(() => props.entity?.terms?.length ?? 0)
@@ -54,6 +55,9 @@ export default defineComponent({
         const guid = computed(() => props.entity?.guid)
         const showCategoryCountComputed = computed(
             () => props.showCategoryCount ?? true
+        );
+                const showTermCountComputed = computed(
+            () => props.showTermCount ?? true
         )
         return {
             shortDescription,
@@ -61,6 +65,7 @@ export default defineComponent({
             categoryCount,
             guid,
             showCategoryCountComputed,
+            showTermCountComputed
         }
     },
 })

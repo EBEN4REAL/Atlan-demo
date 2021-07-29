@@ -24,7 +24,7 @@
                             :entity="category"
                             :show-category-count="false"
                         />
-                        <div class="flex flex-column w-1/2 ml-9 border-l">
+                        <div v-if="termCount" class="flex flex-column w-1/2 ml-9 border-l">
                             <GlossaryTopTerms
                                 v-if="categoryTerms?.length"
                                 :terms="categoryTerms"

@@ -21,7 +21,7 @@
                 <a-tab-pane key="1" tab="Overview">
                     <div class="flex flex-row m-0 p-0">
                         <GlossaryProfileOverview :entity="glossary" />
-                        <div class="flex flex-column w-1/2 ml-9 border-l">
+                        <div v-if="termCount" class="flex flex-column w-1/2 ml-9 border-l">
                             <GlossaryTopTerms
                                 v-if="glossaryTerms?.length"
                                 :terms="glossaryTerms"
@@ -103,6 +103,7 @@ export default defineComponent({
             () => glossary.value?.shortDescription
         )
         const termCount = computed(() => glossary.value?.terms?.length ?? 0)
+        const categoryCount = computed(() => glossary.value?.categories?.length ?? 0)
         onMounted(() => {
             fetchEntity(guid.value)
             fetchGlossaryTermsPaginated({ guid: guid.value, offset: 0 })
@@ -126,6 +127,7 @@ export default defineComponent({
             title,
             shortDescription,
             termCount,
+            categoryCount,
             error,
             isLoading,
             GlossarySvg,

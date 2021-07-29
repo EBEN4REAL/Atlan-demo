@@ -201,7 +201,7 @@
                     store.setClassificationsStatus('error');
                 }
             });
-            const nodeEmit = (node) => {
+            const nodeEmit = node => {
                 router.push(
                     `/admin/classifications/${encodeURIComponent(node.name)}`
                 );
@@ -213,18 +213,20 @@
                 name: '',
                 description: '',
             });
-
+            const urlValidationRegex = new RegExp('^[a-zA-Z]*$', 'g');
             const rules = {
                 name: [
                     {
                         required: true,
-                        message: 'Please input Classification name',
+                        pattern: urlValidationRegex,
+                        message:
+                            'Names must consist of a letter followed by a sequence of letter, number, space, or _ characters',
                         trigger: 'blur',
                     },
                 ],
             };
 
-            const handleSearch = (e) => {
+            const handleSearch = e => {
                 treeFilterText.value = e.target.value;
                 store.filterClassificationTree(treeFilterText.value);
             };
@@ -350,7 +352,7 @@
                 modalVisible.value = !modalVisible.value;
             };
 
-            const handleSelectNode = (node) => {
+            const handleSelectNode = node => {
                 console.log(node, 'parent');
             };
 
@@ -364,7 +366,7 @@
                     return {};
                 }
                 return classifications.value.find(
-                    (classification) =>
+                    classification =>
                         (classification.name || '') ===
                         decodeURI(props.classificationName)
                 );

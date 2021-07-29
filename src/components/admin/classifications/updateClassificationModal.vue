@@ -74,6 +74,7 @@
             }
             const store = useClassificationStore();
             const updateClassificationStatus = ref('');
+            const urlValidationRegex = new RegExp('^[a-zA-Z]*$', 'g');
 
             const selectedClassification = computed(() => {
                 return props.classification;
@@ -110,7 +111,9 @@
                 displayName: [
                     {
                         required: true,
-                        message: 'Please input Classification name',
+                        pattern: urlValidationRegex,
+                        message:
+                            'Names must consist of a letter followed by a sequence of letter, number, space, or _ characters',
                         trigger: 'blur',
                     },
                 ],

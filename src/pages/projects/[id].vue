@@ -29,7 +29,7 @@
           </p>
         </div>
         <div>
-          <a-tabs v-model:activeKey="activeKey" :tabBarStyle="tabBarStyle">
+          <a-tabs v-model:activeKey="activeKey" :tab-bar-style="tabBarStyle">
             <a-tab-pane v-for="tab in tabs" :key="tab.id" :tab="tab.name">
               <component
                 :is="tab.component"

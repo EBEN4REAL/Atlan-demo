@@ -1,8 +1,8 @@
 <template>
     <div class="h-full">
         <div
-            class="flex items-center justify-center w-full h-full align-middle bg-white "
             v-if="current === 3"
+            class="flex items-center justify-center w-full h-full align-middle bg-white "
         >
             <StatusView
                 :item="selectedConnector"
@@ -29,8 +29,8 @@
                     New Connection
                 </p>
                 <a-steps
-                    size="default"
                     v-model:current="current"
+                    size="default"
                     direction="vertical"
                     progress-dot
                     class="flex-grow"
@@ -38,8 +38,8 @@
                     <a-step
                         class
                         disabled
-                        @click="handleStepClick(0)"
                         description="Select your connector"
+                        @click="handleStepClick(0)"
                     >
                         <template #title>
                             <div class="text-tight">Connectors</div>
@@ -47,8 +47,8 @@
                     </a-step>
                     <a-step
                         disabled
-                        @click="handleStepClick(1)"
                         description="Enter your credentials"
+                        @click="handleStepClick(1)"
                     >
                         <template #title>
                             <div class="text-tight">Credential</div>
@@ -56,8 +56,8 @@
                     </a-step>
                     <a-step
                         disabled
-                        @click="handleStepClick(2)"
                         description="One last step"
+                        @click="handleStepClick(2)"
                     >
                         <template #title>
                             <div class="text-tight">Settings</div>
@@ -73,15 +73,15 @@
             </div>
             <div class="flex flex-col w-full h-full shadow-md">
                 <div
-                    class="px-6 py-4 bg-transparent border-b"
                     v-if="current !== 0"
+                    class="px-6 py-4 bg-transparent border-b"
                 >
                     <div class="flex items-center justify-between align-middle">
                         <div class="flex items-center align-middle">
                             <div class="flex items-center align-middle">
                                 <p
-                                    @click="handlePrevious"
                                     class="px-1 mb-0 mr-2 text-xl leading-none text-gray-500 "
+                                    @click="handlePrevious"
                                 >
                                     <fa icon="fal chevron-left"></fa>
                                 </p>
@@ -112,17 +112,17 @@
                             @select="handleConnectorSelect"
                         ></ConnectorList>
                         <CredentialView
-                            class="px-8 py-4"
+                            v-else-if="current === 1"
                             ref="credentialView"
                             :key="selectedConnector.guid"
+                            class="px-8 py-4"
                             :item="selectedConnector"
                             @verified="handleVerified"
-                            v-else-if="current === 1"
                         ></CredentialView>
                         <Settings
-                            class="px-8 py-4"
-                            ref="settingsView"
                             v-else-if="current === 2"
+                            ref="settingsView"
+                            class="px-8 py-4"
                             :item="selectedConnector"
                             :credential="selectedCredential"
                         ></Settings>
@@ -130,14 +130,14 @@
                 </div>
 
                 <div
-                    class="flex justify-between px-8 py-5 align-middle bg-white border-t "
                     v-if="current !== 0"
+                    class="flex justify-between px-8 py-5 align-middle bg-white border-t "
                 >
                     <a-button
                         :type="nextType"
-                        @click="handleNext"
                         :loading="loadingNext"
                         class="px-8"
+                        @click="handleNext"
                     >
                         {{ nextTitle }}
                         <fa icon="fal chevron-right" class="ml-1"></fa>
@@ -147,111 +147,109 @@
         </div>
     </div>
 </template>
-        
-        
+
 <script lang="ts">
-import { defineComponent } from 'vue'
-import CredentialView from '@/setup/credential/index.vue'
-import ConnectorList from '@/setup/connectors/list.vue'
-import StatusView from '@/setup/status/index.vue'
-import Settings from '@/setup/settings/index.vue'
-import ConnectorMixin from '~/mixins/connector'
+    import { defineComponent } from 'vue'
+    import CredentialView from '@/setup/credential/index.vue'
+    import ConnectorList from '@/setup/connectors/list.vue'
+    import StatusView from '@/setup/status/index.vue'
+    import Settings from '@/setup/settings/index.vue'
+    import ConnectorMixin from '~/mixins/connector'
 
-export default defineComponent({
-    mixins: [ConnectorMixin],
-    components: { ConnectorList, CredentialView, Settings, StatusView },
-    data() {
-        return {
-            current: 0,
-            selectedConnector: null,
-            selectedCredential: null,
-            selectedJob: null,
-            loadingNext: false,
-            nextTitle: 'Test & Continue',
-            nextType: 'default',
-            loading: false,
-            error: '',
-        }
-    },
-    mounted() {},
-    methods: {
-        handleError() {
-            this.current = 2
+    export default defineComponent({
+        components: { ConnectorList, CredentialView, Settings, StatusView },
+        mixins: [ConnectorMixin],
+        data() {
+            return {
+                current: 0,
+                selectedConnector: null,
+                selectedCredential: null,
+                selectedJob: null,
+                loadingNext: false,
+                nextTitle: 'Test & Continue',
+                nextType: 'default',
+                loading: false,
+                error: '',
+            }
         },
-        handleBack() {
-            this.$router.push('/connections')
-        },
-        handleStepClick(value: number) {
-            if (value > this.current) {
-                if (value === 2) {
-                    this.handleNext()
+        mounted() {},
+        methods: {
+            handleError() {
+                this.current = 2
+            },
+            handleBack() {
+                this.$router.push('/connections')
+            },
+            handleStepClick(value: number) {
+                if (value > this.current) {
+                    if (value === 2) {
+                        this.handleNext()
+                    }
+                } else if (value < this.current) {
+                    this.current = value
                 }
-            } else if (value < this.current) {
-                this.current = value
-            }
-        },
-        handleConnectorSelect(item: any) {
-            this.selectedConnector = item
-            this.current = this.current + 1
-        },
-        handlePrevious() {
-            this.current = this.current - 1
-            if (this.current === 0) {
-                const query = {}
-                this.$router.replace({ query })
-            } else if (this.current === 1) {
-                this.nextTitle = 'Test & Continue'
-                this.nextType = 'default'
-            } else if (this.current === 2) {
-                this.nextTitle = 'Setup & Run'
-                this.nextType = 'primary'
-            }
-        },
+            },
+            handleConnectorSelect(item: any) {
+                this.selectedConnector = item
+                this.current += 1
+            },
+            handlePrevious() {
+                this.current -= 1
+                if (this.current === 0) {
+                    const query = {}
+                    this.$router.replace({ query })
+                } else if (this.current === 1) {
+                    this.nextTitle = 'Test & Continue'
+                    this.nextType = 'default'
+                } else if (this.current === 2) {
+                    this.nextTitle = 'Setup & Run'
+                    this.nextType = 'primary'
+                }
+            },
 
-        handleVerified(credential) {
-            if (credential && this.loadingNext) {
-                this.loadingNext = false
-                this.selectedCredential = credential
-                this.current = this.current + 1
-                this.nextTitle = 'Setup & Run'
-                this.nextType = 'primary'
-            } else {
-                this.loadingNext = false
-            }
-        },
-        async handleNext() {
-            try {
-                if (this.current === 1) {
-                    this.loadingNext = true
-                    if (this.$refs.credentialView) {
-                        const res =
-                            await this.$refs.credentialView.getCredential()
-                        if (!res) {
-                            this.loadingNext = false
-                        }
-                    }
-                }
-                if (this.current === 2) {
-                    this.loadingNext = true
-                    if (this.$refs.settingsView) {
-                        this.selectedJob = this.$refs.settingsView.getJob()
-                        console.log(this.selectedJob)
-                        this.current = this.current + 1
-                    }
+            handleVerified(credential) {
+                if (credential && this.loadingNext) {
+                    this.loadingNext = false
+                    this.selectedCredential = credential
+                    this.current += 1
+                    this.nextTitle = 'Setup & Run'
+                    this.nextType = 'primary'
+                } else {
                     this.loadingNext = false
                 }
-            } catch (err) {
-                this.loadingNext = false
-            }
+            },
+            async handleNext() {
+                try {
+                    if (this.current === 1) {
+                        this.loadingNext = true
+                        if (this.$refs.credentialView) {
+                            const res =
+                                await this.$refs.credentialView.getCredential()
+                            if (!res) {
+                                this.loadingNext = false
+                            }
+                        }
+                    }
+                    if (this.current === 2) {
+                        this.loadingNext = true
+                        if (this.$refs.settingsView) {
+                            this.selectedJob = this.$refs.settingsView.getJob()
+                            console.log(this.selectedJob)
+                            this.current += 1
+                        }
+                        this.loadingNext = false
+                    }
+                } catch (err) {
+                    this.loadingNext = false
+                }
+            },
+            handleConnectionSetup() {},
         },
-        async handleConnectionSetup() {},
-    },
-})
+    })
 </script>
-        
-              
+
 <route lang="yaml">
-  meta:
+meta:
     layout: default
     requiresAuth: true
 </route>

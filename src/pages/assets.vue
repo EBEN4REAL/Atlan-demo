@@ -1,14 +1,14 @@
 <template>
     <div class="flex w-full h-full">
-        <div class="w-3/4 item-stretch" v-show="!isItem">
+        <div v-show="!isItem" class="w-3/4 item-stretch">
             <div class="flex w-full h-full">
                 <AssetDiscovery
-                    :initialFilters="initialFilters"
+                    :initial-filters="initialFilters"
                     @preview="handlePreview"
                 ></AssetDiscovery>
             </div>
         </div>
-        <div class="w-3/4 item-stretch" v-show="isItem">
+        <div v-show="isItem" class="w-3/4 item-stretch">
             <div class="flex w-full h-full">
                 <router-view></router-view>
             </div>
@@ -17,7 +17,7 @@
             class="flex flex-col w-1/4 h-full bg-white border-l"
             style="overflow: hidden"
         >
-            <AssetPreview :item="selected" v-if="selected?.guid"></AssetPreview>
+            <AssetPreview v-if="selected?.guid" :item="selected"></AssetPreview>
         </div>
     </div>
 </template>
@@ -28,8 +28,8 @@ import AssetDiscovery from '@/discovery/asset/index.vue'
 import AssetPreview from '@/preview/asset/index.vue'
 import { useHead } from '@vueuse/head'
 
-import { getDecodedOptionsFromString } from '~/utils/routerQuery'
 import { useRoute, useRouter } from 'vue-router'
+import { getDecodedOptionsFromString } from '~/utils/routerQuery'
 
 export interface initialFiltersType {
     facetsFilters: any
@@ -45,9 +45,7 @@ export default defineComponent({
         const router = useRouter()
         const route = useRoute()
 
-        const id = computed(() => {
-            return route.params.id
-        })
+        const id = computed(() => route.params.id)
         const isItem = computed(() => {
             if (route.params.id) {
                 return true
@@ -60,7 +58,7 @@ export default defineComponent({
 
     const initialFilters: initialFiltersType =
       getDecodedOptionsFromString(router);
-    let selected = ref({});
+    const selected = ref({});
     useHead({
       title: "Discover assets",
     });

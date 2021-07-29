@@ -23,17 +23,17 @@
             <a-input
                 ref="searchText"
                 v-model:value="treeFilterText"
-                @input="handleSearch"
                 type="text"
                 class="bg-white shadow-none form-control border-right-0"
                 placeholder="Search classifications"
+                @input="handleSearch"
             >
                 <template #suffix>
                     <fa
                         v-if="treeFilterText"
-                        @click="clearSearchText"
                         icon="fal times-circle"
                         class="ml-2 mr-1 text-red-600"
+                        @click="clearSearchText"
                     />
                     <fa
                         v-if="!treeFilterText"
@@ -44,14 +44,14 @@
             </a-input>
             <div class="mt-2 overflow-y-auto treelist">
                 <CreateClassificationTree
-                    :treeData="treeFilterText !== '' ? filteredData : treeData"
+                    :tree-data="treeFilterText !== '' ? filteredData : treeData"
                     @nodeEmit="nodeEmit"
                 />
             </div>
             <a-button
-                @click="toggleModal"
                 type="default"
                 class="w-full mt-4 rounded text-primary"
+                @click="toggleModal"
                 >+ Add Classification</a-button
             >
         </pane>
@@ -62,7 +62,7 @@
         <a-modal
             :visible="modalVisible"
             title="Add Classification"
-            :onCancel="closeModal"
+            :on-cancel="closeModal"
             :footer="null"
         >
             <a-form
@@ -85,12 +85,12 @@
                     <a-button @click="closeModal">Cancel</a-button>
                     <a-button
                         type="primary"
-                        @click="createClassification"
                         :loading="
                             createClassificationStatus === 'loading'
                                 ? true
                                 : false
                         "
+                        @click="createClassification"
                         >Create</a-button
                     >
                 </div>
@@ -117,9 +117,9 @@
     import ErrorView from '@common/error/index.vue'
     import CreateClassificationTree from '@common/tree/classification/index.vue'
     import { useRouter } from 'vue-router'
+    import { ValidateErrorEntity } from 'ant-design-vue/es/form/interface'
     import { useClassificationStore } from '~/components/admin/classifications/_store'
 
-    import { ValidateErrorEntity } from 'ant-design-vue/es/form/interface'
     import { Classification } from '~/api/atlas/classification'
 
     export default defineComponent({
@@ -159,7 +159,7 @@
 
             watch([classificationData, classificationError], () => {
                 if (classificationData.value) {
-                    let classifications =
+                    const classifications =
                         classificationData.value.classificationDefs || []
                     store.setClassifications(classifications ?? [])
                     store.initializeFilterTree()

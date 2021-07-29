@@ -75,6 +75,7 @@
             :visible="modalVisible"
             title="Add"
             :onCancel="closeModal"
+            :destroyOnClose="true"
             :footer="null"
         >
             <a-form
@@ -237,6 +238,8 @@
 
             const closeModal = () => {
                 modalVisible.value = false;
+                formState.name = '';
+                formState.description = '';
             };
             const resetRef = (ref, time) => {
                 setTimeout(() => {

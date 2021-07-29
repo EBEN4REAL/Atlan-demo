@@ -17,7 +17,7 @@
             </div>
         </div>
         <div>
-            <a-tabs default-active-key="1" class="border-0">
+            <a-tabs default-active-key="2" class="border-0">
                 <a-tab-pane key="1" tab="Overview">
                     <div class="flex flex-row m-0 p-0">
                         <GlossaryProfileOverview :entity="glossary" />
@@ -35,7 +35,7 @@
                     />
                 </a-tab-pane>
                 <a-tab-pane key="2" tab="Terms & Categories">
-                    Terms & Categories
+                    <GlossaryTermsAndCategoriesTab :qualified-name="qualifiedName" />
                 </a-tab-pane>
                 <a-tab-pane key="3" tab="Activity"> Activity </a-tab-pane>
                 <a-tab-pane key="4" tab="Bots"> Bots </a-tab-pane>
@@ -52,6 +52,7 @@ import { defineComponent, computed, watch, onMounted } from 'vue'
 import GlossaryProfileOverview from '@/glossary/glossaryProfileOverview.vue'
 import GlossaryTopTerms from '@/glossary/glossaryTopTerms.vue'
 import GlossaryContinueSettingUp from '@/glossary/glossaryContinueSettingUp.vue'
+import GlossaryTermsAndCategoriesTab from '@/glossary/glossaryTermsAndCategoriesTab.vue'
 
 import useGTCEntity from '~/composables/glossary/useGtcEntity'
 import useGlossaryTerms from '~/composables/glossary/useGlossaryTerms'
@@ -68,6 +69,7 @@ export default defineComponent({
         GlossaryProfileOverview,
         GlossaryTopTerms,
         GlossaryContinueSettingUp,
+        GlossaryTermsAndCategoriesTab
     },
     props: {
         id: {
@@ -104,6 +106,8 @@ export default defineComponent({
         )
         const termCount = computed(() => glossary.value?.terms?.length ?? 0)
         const categoryCount = computed(() => glossary.value?.categories?.length ?? 0)
+        const qualifiedName = computed(() => glossary.value?.qualifiedName ?? '');
+
         onMounted(() => {
             fetchEntity(guid.value)
             fetchGlossaryTermsPaginated({ guid: guid.value, offset: 0 })
@@ -134,6 +138,7 @@ export default defineComponent({
             guid,
             glossaryTerms,
             glossaryCategories,
+            qualifiedName,
         }
     },
 })

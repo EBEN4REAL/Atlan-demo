@@ -48,14 +48,12 @@ export default function useTermLinkedAssets() {
     }
   })
 
-  const fetchLinkedAssets = (termName:string) => {
+  const fetchLinkedAssets = (termName: string) => {
     body.value.termName = termName;
     termQualifiedName.value = termName;
-    
-    console.log('yololo', termName)
 
-      if(termName)
-    mutate();
+    if (termName)
+      mutate();
   }
 
   return {

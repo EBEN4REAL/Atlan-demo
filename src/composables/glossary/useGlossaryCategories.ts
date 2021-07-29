@@ -8,13 +8,14 @@ interface pathVariables {
     guid?: string;
     offset?: number;
     limit?: number;
+    searchText?: string;
 }
 
 const useGlossaryCategories = () => {
     const entityGuid = ref<string>();
     const requestOffset = ref(0);
     const defaultLimit = 20;
-
+    
     const pathObject: Ref<pathVariables> = ref({
         guid: entityGuid
     })
@@ -52,7 +53,7 @@ const useGlossaryCategories = () => {
 
 
 
-    const fetchGlossaryCategoriesPaginated = ({ guid, offset, limit, refreshSamePage }: { guid?: string, offset?: number, limit?: number, refreshSamePage?: boolean }) => {
+    const fetchGlossaryCategoriesPaginated = ({ guid, offset, limit, refreshSamePage, searchText }: { guid?: string, offset?: number, limit?: number, searchText?: string, refreshSamePage?: boolean }) => {
         if(guid) categories.value = [];
         entityGuid.value = guid;
 
@@ -62,7 +63,8 @@ const useGlossaryCategories = () => {
         pathObject.value = {
             guid,
             offset: requestOffset.value,
-            limit: limit ?? defaultLimit
+            limit: limit ?? defaultLimit,
+            searchText: searchText ?? ''
         };
 
         mutate();

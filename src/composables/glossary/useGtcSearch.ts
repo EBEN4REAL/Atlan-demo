@@ -39,6 +39,8 @@ export default function useGtcSearch() {
             "metadata",
             "assetStatus",
             "shortDescription",
+            "parentCategory",
+            "categories",
             ...BaseAttributes,
             ...BasicSearchAttributes
         ],

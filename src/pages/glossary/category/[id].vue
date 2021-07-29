@@ -17,7 +17,7 @@
             </div>
         </div>
         <div>
-            <a-tabs default-active-key="1" class="border-0">
+            <a-tabs default-active-key="2" class="border-0">
                 <a-tab-pane key="1" tab="Overview">
                     <div class="flex flex-row m-0 p-0">
                         <GlossaryProfileOverview
@@ -32,8 +32,8 @@
                         </div>
                     </div>
                 </a-tab-pane>
-                <a-tab-pane key="2" tab="Linked Terms">
-                    Linked Terms
+                <a-tab-pane key="2" tab="Terms & Categories">
+                    <CategoryTermsAndCategoriesTab :category-guid="guid" :qualified-name="parentGlossaryQualifiedName" />
                 </a-tab-pane>
             </a-tabs>
         </div>
@@ -47,6 +47,7 @@ import { defineComponent, computed, watch, onMounted } from 'vue'
 import GlossaryProfileOverview from '@/glossary/glossaryProfileOverview.vue'
 import GlossaryTopTerms from '@/glossary/glossaryTopTerms.vue'
 
+import CategoryTermsAndCategoriesTab from '@/glossary/categoryProfile/categoryTermsAndCategoriesTab.vue'
 import useGTCEntity from '~/composables/glossary/useGtcEntity'
 import useCategoryTerms from '~/composables/glossary/useCategoryTerms'
 
@@ -60,6 +61,7 @@ export default defineComponent({
     components: {
         GlossaryProfileOverview,
         GlossaryTopTerms,
+        CategoryTermsAndCategoriesTab,
     },
     props: {
         id: {
@@ -90,6 +92,9 @@ export default defineComponent({
             () => category.value?.shortDescription
         )
         const termCount = computed(() => category.value?.terms?.length ?? 0)
+
+        const parentGlossaryQualifiedName = computed(() => category.value?.qualifiedName?.split('@')[1] ?? '')
+
         onMounted(() => {
             fetchEntity(guid.value)
             fetchCategoryTermsPaginated({ guid: guid.value, offset: 0 })
@@ -109,6 +114,7 @@ export default defineComponent({
             title,
             shortDescription,
             termCount,
+            parentGlossaryQualifiedName,
             error,
             isLoading,
             CategorySvg,

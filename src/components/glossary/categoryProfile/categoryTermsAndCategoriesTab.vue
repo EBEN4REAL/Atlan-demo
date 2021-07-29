@@ -31,7 +31,7 @@
                     </a-tab-pane>
                     <a-tab-pane
                         key="3"
-                        :tab="`Categories (${categories.length})`"
+                        :tab="`Sub-Categories (${categories.length})`"
                     >
                         <div v-for="asset in categories" :key="asset.guid">
                             <GtcEntityCard
@@ -54,25 +54,30 @@
 </template>
 
 <script lang="ts">
+// Logic will change when /categories/full?searchText="lorem" is active
 import { defineComponent, computed, ref, watch, onMounted } from 'vue'
 import { useDebounceFn } from '@vueuse/core'
 
 import AssetPreview from '@/preview/asset/index.vue'
 import Overview from '@/preview/asset/tabs/overview/index.vue'
-import GtcEntityCard from './gtcEntityCard.vue'
+import GtcEntityCard from '../gtcEntityCard.vue'
 
 import useGtcSearch from '~/composables/glossary/useGtcSearch'
 
-
-
 interface Proptype {
     qualifiedName: string
+    categoryGuid: string
 }
 
 export default defineComponent({
     components: { GtcEntityCard, AssetPreview, Overview },
     props: {
         qualifiedName: {
+            type: String,
+            required: true,
+            default: '',
+        },
+        categoryGuid: {
             type: String,
             required: true,
             default: '',
@@ -92,17 +97,37 @@ export default defineComponent({
 
         const terms = computed(
             () =>
-                assets.value?.entities?.filter(
-                    (entity) => entity.typeName === 'AtlasGlossaryTerm'
-                ) ?? []
+                assets.value?.entities?.filter((entity) => {
+                    let parentCategory = false
+                    if (entity?.attributes?.categories?.length) {
+                        if (
+                            entity?.attributes?.categories?.find(
+                                (category) =>
+                                    category.guid === props.categoryGuid
+                            )
+                        )
+                            parentCategory = true
+                    }
+
+                    return (
+                        entity.typeName === 'AtlasGlossaryTerm' &&
+                        parentCategory
+                    )
+                }) ?? []
         )
         const categories = computed(
             () =>
-                assets.value?.entities?.filter(
-                    (entity) => entity.typeName === 'AtlasGlossaryCategory'
-                ) ?? []
+                assets.value?.entities?.filter((entity) => {
+                    if (entity?.attributes?.parentCategory)
+                        return (
+                            entity.typeName === 'AtlasGlossaryCategory' &&
+                            entity?.attributes?.parentCategory?.guid ===
+                                props.categoryGuid
+                        )
+                    return false
+                }) ?? []
         )
-        const all = computed(() => assets.value?.entities ?? [])
+        const all = computed(() => [...terms.value, ...categories.value])
         onMounted(() => {
             fetchAssets(name.value ?? '')
         })

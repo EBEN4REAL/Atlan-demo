@@ -12,5 +12,9 @@ export const RunstatusList = [
     {
         id: "Failed",
         label: "Failed",
+    }, 
+    {
+        id: "Error",
+        label: "Error",
     }
 ];

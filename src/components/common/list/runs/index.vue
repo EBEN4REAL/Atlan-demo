@@ -4,15 +4,11 @@
       class="flex justify-between w-full px-4 py-3 rounded-tl-md rounded-tr-md"
     >
       <div class="flex space-x-3">
-        <Runstatus
-          style="min-width: 100px"
-          v-model:value="phase"
-          @change="handlePhaseChange"
-        ></Runstatus>
         <WorkflowTypeSelector style="min-width: 150px"></WorkflowTypeSelector>
         <ConnectionSelector
           style="min-width: 150px"
-          v-model:value="connectionGuid"
+          v-model:value="connectionQf"
+          :showAll="true"
           @change="handleConnectionChange"
         ></ConnectionSelector>
       </div>
@@ -29,12 +25,16 @@
       <div
         class="flex items-center h-full align-middle bg-white"
         style="min-height: 200px"
-        v-else-if="
-          [STATES.PENDING].includes(state) ||
-          [STATES.VALIDATING].includes(state)
-        "
+        v-else-if="isLoading"
       >
         <LoadingView></LoadingView>
+      </div>
+      <div
+        class="flex items-center h-full align-middle bg-white"
+        style="min-height: 200px"
+        v-else-if="!data.items"
+      >
+        <EmptyView empty="No running jobs"></EmptyView>
       </div>
 
       <table class="table w-full mx-auto overflow-x-hidden table-report" v-else>
@@ -45,25 +45,18 @@
         </tbody>
       </table>
     </div>
-    <div
-      class="flex items-center px-4 py-2 align-middle  bg-gray-50 rounded-bl-md rounded-br-md"
-    >
-      <!-- <a-button-group class="mr-3">
-        <a-button size="small"><fa icon="fal chevron-left"></fa></a-button>
-        <a-button size="small"><fa icon="fal chevron-right"></fa></a-button>
-      </a-button-group> -->
-    </div>
   </div>
 </template>
-          
+
 <script lang="ts">
 import { defineComponent, ref } from "vue";
 
 import ItemView from "./item.vue";
-import fetchWorkflowList from "~/composables/workflow/fetchWorkflowList";
+import useWorkflowList from "~/composables/bots/useWorkflowList";
 
 import LoadingView from "@common/loaders/section.vue";
 import ErrorView from "@common/error/index.vue";
+import EmptyView from "@common/empty/index.vue";
 
 import WorkflowTypeSelector from "@common/selector/workflowtype/index.vue";
 import ConnectionSelector from "@common/selector/connections/index.vue";
@@ -73,6 +66,7 @@ export default defineComponent({
   components: {
     ItemView,
     ErrorView,
+    EmptyView,
     LoadingView,
     WorkflowTypeSelector,
     ConnectionSelector,
@@ -93,29 +87,33 @@ export default defineComponent({
     let now = ref(true);
     let params = ref({}) as { [key: string]: any };
 
-    let connectionGuid = ref("");
-    let botTemplateName = ref("");
-    let phase = ref("");
+    let connectionQf = ref();
+    let botTemplateName = ref();
+    let phase = ref();
+
+    const projection =
+      "metadata,items.metadata.uid,items.metadata.name,items.metadata.namespace,items.metadata.creationTimestamp,items.metadata.labels,items.status.phase,items.status.message,items.status.finishedAt,items.status.startedAt,items.status.estimatedDuration,items.status.progress,items.spec.suspend";
 
     params.value = {
       "listOptions.limit": 50,
-      "listOptions.labelSelector": "category=metadata",
+      "listOptions.labelSelector": "workflows.argoproj.io/phase=Running",
+      fields: projection,
     };
 
-    const { data, mutate, state, STATES } = fetchWorkflowList(
-      "archived_list",
-      now,
-      params,
-      false
-    );
+    const { data, refresh, state, STATES, isLoading, isValidating } =
+      useWorkflowList(now, params, "archived_list");
 
     const updateLabel = () => {
       let labels = [];
-      if (phase.value) {
-        labels.push(`workflows.argoproj.io/phase=${phase.value}`);
-      }
-      if (connectionGuid.value) {
-        labels.push(`connection-guid=${connectionGuid.value}`);
+      labels.push(`workflows.argoproj.io/phase=Running`);
+
+      if (connectionQf.value) {
+        labels.push(
+          `connection-qualified-name=${connectionQf?.value.replaceAll(
+            "/",
+            ".."
+          )}`
+        );
       }
       if (botTemplateName.value) {
         labels.push(`category=${botTemplateName.value}`);
@@ -125,49 +123,35 @@ export default defineComponent({
 
     const handlePhaseChange = () => {
       updateLabel();
-      mutate();
+      refresh();
     };
     const handleConnectionChange = () => {
       updateLabel();
-      mutate();
+      refresh();
+    };
+    const handleRefresh = () => {
+      refresh();
     };
 
     return {
       data,
       state,
       STATES,
+      isLoading,
+      isValidating,
       phase,
-      mutate,
+      handleRefresh,
       handlePhaseChange,
-      connectionGuid,
+      connectionQf,
       handleConnectionChange,
     };
   },
   mounted() {},
-  methods: {
-    handleRefresh() {
-      this.mutate();
-    },
-    // async fetchData() {
-    //   try {
-    //     const response = await Workflows.List({
-    //       "listOptions.limit": 10,
-    //       "listOptions.labelSelector": "bot-template-name=atlan-jdbc-crawler",
-    //     });
-    //     this.list = response.items;
-    //     this.listenEvents();
-    //     console.log(this.list);
-    //   } catch (error) {
-    //     console.log(error);
-    //   }
-    // },
-  },
 });
 </script>
 
 <style lang="less" scoped>
 .table-report {
   border-spacing: 0 2px;
-  border-collapse: separate;
 }
 </style>

@@ -1,14 +1,13 @@
 <template>
-    <div class="ml-9 py-6 w-1/2">
+    <div class="py-6 w-full">
         <h2 class="text-gray-700 text-xl leading-7 ml-6">Top Terms</h2>
         <div class="max-h-80 overflow-y-scroll flex flex-col text-left">
             <div
                 v-for="(term, index) in termsList.slice(0, numberOfTerms)"
                 :key="term.guid"
-                class="border-l"
             >
                 <TermPreviewCard
-                    :class="{ 'border-b': index !== numberOfTerms - 1 }"
+                    :class="{ 'border-b': index !== numberOfTerms - 1 && index !== termsList.length - 1 }"
                     :term="term"
                 />
             </div>

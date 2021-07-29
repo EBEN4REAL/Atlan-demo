@@ -18,7 +18,7 @@ const useGTCEntity = (type: 'glossary' | 'category' | 'term') => {
         guid: entityGuid
     })
 
-    const { data, error, isValidating: isLoading, mutate } = useAPI<Components.Schemas.AtlasGlossary>(keyMap[entityType.value], 'GET', {
+    const { data, error, isValidating: isLoading, mutate } = useAPI<Components.Schemas.AtlasGlossary | Components.Schemas.AtlasGlossary>(keyMap[entityType.value], 'GET', {
         cache: true,
         dependantFetchingKey: entityGuid,
         pathVariables: pathObject,

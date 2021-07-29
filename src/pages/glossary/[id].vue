@@ -21,10 +21,12 @@
                 <a-tab-pane key="1" tab="Overview">
                     <div class="flex flex-row m-0 p-0">
                         <GlossaryProfileOverview :entity="glossary" />
-                        <GlossaryTopTerms
-                            v-if="glossaryTerms?.length"
-                            :terms="glossaryTerms"
-                        />
+                        <div class="flex flex-column w-1/2 ml-9 border-l">
+                            <GlossaryTopTerms
+                                v-if="glossaryTerms?.length"
+                                :terms="glossaryTerms"
+                            />
+                        </div>
                     </div>
                     <hr />
                     <GlossaryContinueSettingUp
@@ -45,7 +47,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, computed, watch, onMounted  } from 'vue'
+import { defineComponent, computed, watch, onMounted } from 'vue'
 
 import GlossaryProfileOverview from '@/glossary/glossaryProfileOverview.vue'
 import GlossaryTopTerms from '@/glossary/glossaryTopTerms.vue'
@@ -67,7 +69,13 @@ export default defineComponent({
         GlossaryTopTerms,
         GlossaryContinueSettingUp,
     },
-    props: ['id'],
+    props: {
+        id: {
+            type: String,
+            required: true,
+            default: '',
+        },
+    },
     setup(props: Proptype) {
         const guid = computed(() => props.id)
 

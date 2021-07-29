@@ -25,12 +25,22 @@ const useGlossaryCategories = () => {
         cache: true,
         dependantFetchingKey: entityGuid,
         pathVariables: pathObject,
+        options: {
+            revalidateOnFocus: false,
+        }
         // url
     })
 
     watch(data, (newData) => {
-        if (newData?.length)
-            categories.value = [...categories.value, ...newData]
+        if (newData?.length){
+            categories.value = [...categories.value];
+            newData.forEach((entity) => {
+                if(!categories.value.find((category) => category.guid === entity.guid)){
+                    categories.value.push(entity)
+                }
+            })
+
+        }
     })
 
     const fetchGlossaryCategories = (guid: string, limit?: number) => {
@@ -42,7 +52,8 @@ const useGlossaryCategories = () => {
 
 
 
-    const fetchGlossaryCategoriesPaginated = ({ guid, offset, limit, refreshSamePage }: { guid: string, offset?: number, limit?: number, refreshSamePage?: boolean }) => {
+    const fetchGlossaryCategoriesPaginated = ({ guid, offset, limit, refreshSamePage }: { guid?: string, offset?: number, limit?: number, refreshSamePage?: boolean }) => {
+        if(guid) categories.value = [];
         entityGuid.value = guid;
 
         if (offset) requestOffset.value = offset;

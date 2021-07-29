@@ -1,17 +1,20 @@
 <template>
-{{id}}
+<div>
+  {{guid}}
 {{ isLoading }}
 {{data}}
 {{error}}
+</div>
 </template>
 
 <script lang="ts">
-import { defineComponent, computed } from "vue";
-import { useHead } from "@vueuse/head";
+import { defineComponent, computed, watch, onMounted } from "vue";
 
 import useGTCEntity from '~/composables/glossary/useGtcEntity';
-import { watch } from "vue";
-import { onMounted } from "vue";
+
+interface PropsType {
+  id: string;
+}
 
 export default defineComponent({
   props:{
@@ -21,16 +24,16 @@ export default defineComponent({
       default: ''
     }
   },
-  setup(props) {
-    const id = computed(() => props.id);
+  setup(props: PropsType) {
+    const guid = computed(() => props.id);
 
     const {data, error, isLoading, fetchEntity } = useGTCEntity('term');
 
     onMounted(() => {
-      fetchEntity(id.value)
+      fetchEntity(guid.value)
     })
 
-    watch(id, (newGuid) => {
+    watch(guid, (newGuid) => {
       fetchEntity(newGuid)
     })
 
@@ -38,7 +41,7 @@ export default defineComponent({
       data,
       error,
       isLoading,
-      id
+      guid
 }
   },
 });

@@ -1,5 +1,5 @@
 module.exports = {
-    semi: true,
+    semi: false,
     singleQuote: true,
     bracketSpacing: true,
     useTabs: false,
@@ -7,4 +7,4 @@ module.exports = {
     tabWidth: 4,
     trailingComma: 'es5',
     vueIndentScriptAndStyle: true,
-}
+};

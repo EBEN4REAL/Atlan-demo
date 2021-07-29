@@ -5,31 +5,20 @@
             v-if="selectedClassification"
         />
         <ClassificationBody :classification="selectedClassification" />
-
-        <!-- <AssetListWrapper
-        class="px-0 col-10"
-        :key="classificationName"
-        :classificationName="classificationName"
-        :assetListStyle="'height: calc(100vh - 20.3rem);'"
-        style="height: calc(100% - 12.5rem);"
-        :showTermsAssetToggle="true"
-        :type="'classification'"
-        :showLinkEntityButton="true"
-        :selectedClassification="selectedClassification"
-      /> -->
     </div>
 </template>
 
 <script lang="ts">
-    import { defineComponent, computed } from 'vue';
-    import ConnectionTree from '@/connection/tree/index.vue';
-    import Loading from '@common/loaders/section.vue';
-    import ErrorView from '@common/error/index.vue';
-    import CreateClassificationTree from '@common/tree/classification/index.vue';
-    import ClassificationHeader from '~/components/admin/classifications/classificationHeader.vue';
-    import AssetListWrapper from '~/components/asset/assetListWrapper.vue';
-    import { useClassificationStore } from '~/components/admin/classifications/_store';
-    import ClassificationBody from '~/components/admin/classifications/classificationBody.vue';
+    import { defineComponent, computed } from 'vue'
+    import ConnectionTree from '@/connection/tree/index.vue'
+    import Loading from '@common/loaders/section.vue'
+    import ErrorView from '@common/error/index.vue'
+    import CreateClassificationTree from '@common/tree/classification/index.vue'
+    import ClassificationHeader from '~/components/admin/classifications/classificationHeader.vue'
+    import AssetListWrapper from '~/components/asset/assetListWrapper.vue'
+    import { useClassificationStore } from '~/components/admin/classifications/_store'
+    import ClassificationBody from '~/components/admin/classifications/classificationBody.vue'
+    import { classification } from '../classifications.vue'
 
     export default defineComponent({
         name: 'ClassificationProfileWrapper',
@@ -46,27 +35,27 @@
             classificationId: String,
         },
         setup(props, context) {
-            const store = useClassificationStore();
-            const classifications = computed(() => store.classifications);
+            const store = useClassificationStore()
+            const classifications = computed(() => store.classifications)
             const selectedClassification: any = computed(() => {
                 if (!props.classificationId) {
-                    return {};
+                    return {}
                 }
-                if (classifications.length === 0) {
-                    return {};
+                if (classifications.value.length === 0) {
+                    return {}
                 }
                 return classifications.value.find(
-                    (classification) =>
+                    (classification: classification) =>
                         (classification.name || '') ===
-                        decodeURI(props.classificationId)
-                );
-            });
+                        decodeURI(props.classificationId as string)
+                )
+            })
 
             return {
                 selectedClassification,
-            };
+            }
         },
-    });
+    })
 </script>
 <style lang="less" scoped>
     :global(.ant-form-item-label

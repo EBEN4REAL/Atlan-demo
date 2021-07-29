@@ -82,12 +82,12 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, computed, ref } from 'vue';
-    import Dropdown from '~/components/admin/classifications/dropdown.vue';
-    import UpdateClassificationModal from './updateClassificationModal.vue';
-    import DeleteClassificationModal from './deleteClassificationModal.vue';
-    import { useUserPreview } from '~/composables/user/showUserPreview';
-    import { useTimeAgo } from '@vueuse/core';
+    import { defineComponent, computed, ref } from 'vue'
+    import Dropdown from '~/components/admin/classifications/dropdown.vue'
+    import UpdateClassificationModal from './updateClassificationModal.vue'
+    import DeleteClassificationModal from './deleteClassificationModal.vue'
+    import { useUserPreview } from '~/composables/user/showUserPreview'
+    import { useTimeAgo } from '@vueuse/core'
     export default defineComponent({
         name: 'ClassificationHeader',
         components: {
@@ -119,71 +119,65 @@
             },
         },
         setup(props, context) {
-            const isDeleteClassificationModalOpen = ref(false);
-            const isEditClassificationModalOpen = ref(false);
-            const selectedClassification = computed(() => {
-                return props.classification;
-            });
+            const isDeleteClassificationModalOpen = ref(false)
+            const isEditClassificationModalOpen = ref(false)
+            const selectedClassification: any = computed(() => {
+                return props.classification
+            })
             const displayName = computed(() => {
-                return selectedClassification.value.displayName;
-            });
-            const truncate = computed((string, length) => {
-                return string.substring(0, length);
-            });
+                return selectedClassification.value.displayName
+            })
             const createdAt = computed(() => {
-                const timestamp = selectedClassification.value.createTime;
-                return useTimeAgo(timestamp).value || '';
+                const timestamp = selectedClassification.value.createTime
+                return useTimeAgo(timestamp).value || ''
                 // return moment(timestamp).fromNow();
-            });
+            })
             const createdBy = computed(
                 () => selectedClassification.value.createdBy
-            );
+            )
             const updatedAt = computed(() => {
-                const timestamp = selectedClassification.value.updateTime;
-                return useTimeAgo(timestamp).value || '';
+                const timestamp = selectedClassification.value.updateTime
+                return useTimeAgo(timestamp).value || ''
                 // return moment(timestamp).fromNow();
-            });
+            })
             const updatedBy = computed(
                 () => selectedClassification.value.updatedBy
-            );
+            )
             const classificationDropdownOption = computed(() => {
-                const dpOpArray = [];
+                const dpOpArray = []
                 dpOpArray.push({
                     title: `Edit`,
                     icon: 'pencil',
                     iconType: 'fal',
                     handleClick: editClassification,
-                });
+                })
                 dpOpArray.push({
                     title: `Delete`,
                     icon: 'trash-alt',
                     iconType: 'fal',
                     class: ['text-danger'],
                     handleClick: deleteClassification,
-                });
-                return dpOpArray;
-            });
+                })
+                return dpOpArray
+            })
             const deleteClassification = () => {
-                isDeleteClassificationModalOpen.value = true;
-            };
+                isDeleteClassificationModalOpen.value = true
+            }
             const editClassification = () => {
-                isEditClassificationModalOpen.value = true;
-            };
+                isEditClassificationModalOpen.value = true
+            }
             const closeEditClassificationModal = () => {
-                isEditClassificationModalOpen.value = false;
-            };
+                isEditClassificationModalOpen.value = false
+            }
             const closeDeleteClassificationModal = () => {
-                isDeleteClassificationModalOpen.value = false;
-            };
+                isDeleteClassificationModalOpen.value = false
+            }
             // user preview drawer
-            const {
-                showUserPreview,
-                setUserUniqueAttribute,
-            } = useUserPreview();
+            const { showUserPreview, setUserUniqueAttribute } = useUserPreview()
             const handleClickUser = (username: string) => {
-                setUserUniqueAttribute(username, 'username');
-                showUserPreview({ allowed: ['about'] });
-            };
+                setUserUniqueAttribute(username, 'username')
+                showUserPreview({ allowed: ['about'] })
+            }
             return {
                 isDeleteClassificationModalOpen,
                 closeDeleteClassificationModal,
@@ -193,15 +187,14 @@
                 deleteClassification,
                 selectedClassification,
                 displayName,
-                truncate,
                 createdAt,
                 updatedAt,
                 updatedBy,
                 createdBy,
                 handleClickUser,
-            };
+            }
         },
-    });
+    })
 </script>
 <style lang="less" scoped>
     .three-dots {

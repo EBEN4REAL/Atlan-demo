@@ -44,17 +44,10 @@
 </template>
 
 <script lang="ts">
-    import {
-        defineComponent,
-        computed,
-        ref,
-        UnwrapRef,
-        reactive,
-        watch,
-        toRaw,
-    } from 'vue';
-    import { useClassificationStore } from './_store';
-    import { Classification } from '~/api/atlas/classification';
+    import { defineComponent, computed, ref, Ref, watch, toRaw } from 'vue'
+    import { useClassificationStore } from './_store'
+    import { Classification } from '~/api/atlas/classification'
+    import { classification } from '~/pages/admin/classifications.vue'
 
     export default defineComponent({
         name: 'UpdateClassification',
@@ -69,21 +62,21 @@
 
         setup(props, context) {
             interface FormState {
-                displayName: string;
-                description: string;
+                displayName: string
+                description: string
             }
-            const store = useClassificationStore();
-            const updateClassificationStatus = ref('');
-            const urlValidationRegex = new RegExp('^[a-zA-Z]*$', 'g');
+            const store = useClassificationStore()
+            const updateClassificationStatus = ref('')
+            const urlValidationRegex = new RegExp('^[a-zA-Z]*$', 'g')
 
-            const selectedClassification = computed(() => {
-                return props.classification;
-            });
-            const showEditModal = computed(() => props.open);
+            const selectedClassification: any = computed(() => {
+                return props.classification
+            })
+            const showEditModal = computed(() => props.open)
 
             //edit modal
-            const updateClassificationErrorText = ref('');
-            const editClassificationFormRef = ref(null);
+            const updateClassificationErrorText = ref('')
+            const editClassificationFormRef: any = ref({})
 
             // let editFormState: UnwrapRef<FormState> = computed(() => {
             //   return {
@@ -94,19 +87,19 @@
             //   };
             // });
 
-            let editFormState: UnwrapRef<FormState> = ref({
+            let editFormState: Ref<FormState> = ref({
                 displayName:
                     selectedClassification.value.displayName ||
                     selectedClassification.value.name,
                 description: selectedClassification.value.description,
-            });
+            })
 
             watch(selectedClassification, () => {
                 editFormState.value.displayName =
-                    selectedClassification.value.displayName;
+                    selectedClassification.value.displayName
                 editFormState.value.description =
-                    selectedClassification.value.description;
-            });
+                    selectedClassification.value.description
+            })
             const editClassificationRules = {
                 displayName: [
                     {
@@ -117,17 +110,17 @@
                         trigger: 'blur',
                     },
                 ],
-            };
+            }
 
             const closeEditModal = () => {
-                context.emit('close');
-            };
+                context.emit('close')
+            }
 
-            const resetRef = (ref, time) => {
+            const resetRef = (ref: Ref<string>, time: number) => {
                 setTimeout(() => {
-                    ref.value = '';
-                }, time);
-            };
+                    ref.value = ''
+                }, time)
+            }
             const updateClassification = () => {
                 editClassificationFormRef.value
                     .validate()
@@ -139,17 +132,17 @@
                             superTypes: selectedClassification.value.superTypes,
                             displayName: editFormState.value.displayName,
                             name: selectedClassification.value.name,
-                        };
+                        }
                         //update classification
 
-                        updateClassificationStatus.value = 'loading';
+                        updateClassificationStatus.value = 'loading'
                         const {
                             data: updateClassificationData,
                             error: updateClassificationError,
                         } = Classification.updateClassification({
                             cache: false,
                             params,
-                        });
+                        })
 
                         watch(
                             [
@@ -160,9 +153,9 @@
                                 console.log(
                                     updateClassificationData,
                                     updateClassificationError
-                                );
+                                )
                                 if (updateClassificationData.value) {
-                                    const classificationObject: any = updateClassificationData;
+                                    const classificationObject: any = updateClassificationData
                                     const classification =
                                         classificationObject &&
                                         classificationObject.value
@@ -173,49 +166,48 @@
                                             .classificationDefs[0]
                                             ? classificationObject.value
                                                   .classificationDefs[0]
-                                            : {};
+                                            : {}
                                     const classificationIndex = store.classifications.findIndex(
-                                        (c: any) =>
+                                        (c: classification) =>
                                             c.guid === classification.guid
-                                    );
+                                    )
                                     if (classificationIndex === -1) {
-                                        return;
+                                        return
                                     }
                                     store.classifications[
                                         classificationIndex
-                                    ] = classification;
+                                    ] = classification
                                     store.classifications = [
                                         ...store.classifications,
-                                    ];
+                                    ]
                                     const classificationTree =
-                                        store.transformClassificationTreeData;
-                                    store.classificationTree = classificationTree;
-                                    updateClassificationStatus.value =
-                                        'success';
-                                    context.emit('close');
+                                        store.transformClassificationTreeData
+                                    store.classificationTree = classificationTree
+                                    updateClassificationStatus.value = 'success'
+                                    context.emit('close')
                                 } else if (updateClassificationError.value) {
-                                    updateClassificationStatus.value = 'error';
+                                    updateClassificationStatus.value = 'error'
                                     const error = toRaw(
                                         updateClassificationError.value
-                                    );
+                                    )
                                     updateClassificationErrorText.value =
-                                        error.response.data.errorMessage;
+                                        error.response.data.errorMessage
                                     resetRef(
                                         updateClassificationErrorText,
                                         6000
-                                    );
+                                    )
                                     console.log(
                                         'WTF: handleUpdateDescription -> error',
                                         error
-                                    );
+                                    )
                                 }
                             }
-                        );
+                        )
                     })
-                    .catch((error: ValidateErrorEntity<FormState>) => {
-                        console.log('error', error);
-                    });
-            };
+                    .catch((error: any) => {
+                        console.log('error', error)
+                    })
+            }
 
             return {
                 updateClassificationErrorText,
@@ -227,8 +219,8 @@
                 editClassificationRules,
                 closeEditModal,
                 selectedClassification,
-            };
+            }
         },
-    });
+    })
 </script>
 <style lang="less" scoped></style>

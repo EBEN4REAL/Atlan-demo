@@ -93,22 +93,14 @@
 </template>
 
 <script lang="ts">
-    import {
-        defineComponent,
-        computed,
-        ref,
-        ComputedRef,
-        toRaw,
-        watch,
-        Ref,
-    } from 'vue';
-    import Preferences from '@/discovery/asset/preference/index.vue';
-    import LinkedTermList from '@/common/list/linkedTerms/index.vue';
-    import AssetTabs from '@/discovery/asset/tabs/index.vue';
-    import EmptyView from '@common/empty/discover.vue';
-    import { Components } from '~/api/atlas/client';
-    import useAssetList from '~/composables/bots/useAssetList';
-    import Footer from '@common/assets/footer/index.vue';
+    import { defineComponent, computed, ref, toRaw, watch, Ref } from 'vue'
+    import Preferences from '@/discovery/asset/preference/index.vue'
+    import LinkedTermList from '@/common/list/linkedTerms/index.vue'
+    import AssetTabs from '@/discovery/asset/tabs/index.vue'
+    import EmptyView from '@common/empty/discover.vue'
+    import { Components } from '~/api/atlas/client'
+    import useAssetList from '~/composables/bots/useAssetList'
+    import Footer from '@common/assets/footer/index.vue'
 
     export default defineComponent({
         name: 'LinkedTerms',
@@ -125,36 +117,39 @@
             },
         },
         setup(props, { emit }) {
-            const queryText = ref('');
-            const activeKey = ref('Catalog');
-            const assetType = ref('AtlasGlossaryTerm');
-            const assetTypeListString = 'AtlasGlossaryTerm';
-            const filteredList = ref([]);
-            const assetTypeList = ref([]);
-            const totalCount = ref(0);
-            const assetTypeLabel = ref('terms');
+            const queryText = ref('')
+            const activeKey = ref('Catalog')
+            const assetType = ref('AtlasGlossaryTerm')
+            const assetTypeListString = 'AtlasGlossaryTerm'
+            const filteredList = ref([])
+            const assetTypeList: Ref<Array<{
+                id: string
+                label: string
+            }>> = ref([])
+            const totalCount = ref(0)
+            const assetTypeLabel = ref('terms')
             const selectedClassification = computed(
                 () => props.selectedClassification
-            );
+            )
             assetTypeList.value.push({
                 id: 'Catalog',
                 label: 'Terms',
-            });
-            const sorting = ref('ascending');
+            })
+            const sorting = ref('ascending')
 
             const handleChangePreferences = (e: {
-                [index: string]: string;
+                [index: string]: string
             }) => {
-                console.log('handleChangePreferences', e);
-                emit('handleChangePreferences', e);
-            };
+                console.log('handleChangePreferences', e)
+                emit('handleChangePreferences', e)
+            }
             const handleChangeSort = (e: string) => {
-                emit('handleChangeSort', e);
-            };
+                emit('handleChangeSort', e)
+            }
             const handleState = (e: string) => {
-                emit('handleState', e);
-            };
-            let criterion: Components.Schemas.FilterCriteria[] = [];
+                emit('handleState', e)
+            }
+            let criterion: Components.Schemas.FilterCriteria[] = []
             const entityFilterPayload = {
                 condition: 'AND',
                 criterion: [
@@ -163,17 +158,17 @@
                         criterion,
                     },
                 ],
-            };
+            }
             criterion.push({
                 attributeName: '__classificationNames',
                 attributeValue: props.selectedClassification,
                 operator: 'eq',
-            });
+            })
             criterion.push({
                 attributeName: '__propagatedClassificationNames',
                 attributeValue: props.selectedClassification,
                 operator: 'eq',
-            });
+            })
             const initialBody = {
                 attributes: ['anchor', 'shortDescription'],
                 entityFilters: entityFilterPayload,
@@ -186,7 +181,7 @@
                 termName: null,
                 offset: 0,
                 typeName: assetType.value,
-            };
+            }
 
             const {
                 list,
@@ -202,79 +197,85 @@
                 assetTypeListString,
                 initialBody,
                 assetType.value
-            );
+            )
             const filterListByQueryText = (query: string) => {
-                filteredList.value = list.value.filter((item) =>
+                filteredList.value = list.value.filter((item: any) =>
                     item?.attributes.name.includes(query)
-                );
-            };
-            const handleSearchChange = (e: Event) => {
-                console.log(e, 'handleSearch');
-                queryText.value = e.target.value;
-                filterListByQueryText(queryText.value);
-            };
+                )
+            }
+            const handleSearchChange = (e: any) => {
+                console.log(e, 'handleSearch')
+                queryText.value = e.target.value
+                filterListByQueryText(queryText.value)
+            }
 
-            const handlePreview = () => {};
-            const projection = ref([]);
-            console.log(assetTypeList.value);
+            const handlePreview = () => {}
+            const projection: Ref<Array<string>> = ref([])
+            console.log(assetTypeList.value)
 
             const sortClassificationsByOrder = (
                 sortingOrder: string | null,
                 data: any
             ) => {
-                console.log(toRaw(data), 'hello');
-                let list = [];
+                console.log(toRaw(data), 'hello')
+                let list = []
                 switch (sortingOrder) {
                     case 'ascending': {
-                        list = data.value.sort(function(listA, listB) {
-                            let a = listA.attributes.name;
-                            let b = listB.attributes.name;
+                        list = data.value.sort(function(
+                            listA: any,
+                            listB: any
+                        ) {
+                            let a = listA.attributes.name
+                            let b = listB.attributes.name
                             if (a < b) {
-                                return -1;
+                                return -1
                             }
                             if (a > b) {
-                                return 1;
+                                return 1
                             }
-                            return 0;
-                        });
-                        break;
+                            return 0
+                        })
+                        break
                     }
                     case 'descending': {
-                        list = data.value.sort(function(listA, listB) {
-                            let a = listA.attributes.name;
-                            let b = listB.attributes.name;
+                        list = data.value.sort(function(
+                            listA: any,
+                            listB: any
+                        ) {
+                            let a = listA.attributes.name
+                            let b = listB.attributes.name
                             if (a < b) {
-                                return 1;
+                                return 1
                             }
                             if (a > b) {
-                                return -1;
+                                return -1
                             }
-                            return 0;
-                        });
-                        break;
+                            return 0
+                        })
+                        break
                     }
                     default: {
-                        break;
+                        break
                     }
                 }
-                console.log('classifications', list);
-                return list;
-            };
+                console.log('classifications', list)
+                return list
+            }
 
             watch([list], () => {
-                totalCount.value = data.value.approximateCount;
-                list.value = sortClassificationsByOrder(sorting.value, list);
-                filteredList.value = list.value;
-            });
+                totalCount.value = data.value.approximateCount
+                list.value = sortClassificationsByOrder(sorting.value, list)
+                filteredList.value = list.value
+            })
             const isLoadMore = computed(() => {
-                if (totalCount.value > list.value.length) return true;
-                else false;
-            });
+                if (totalCount.value > list.value.length) return true
+                else false
+            })
 
             const loadMore = () => {
-                const offset = ref(0);
+                const offset = ref(0)
                 if (list.value.length + 10 < totalCount.value) {
-                    offset.value = list.value.length + 10;
+                    offset.value = list.value.length + 10
                 }
                 replaceBody({
                     attributes: ['anchor', 'shortDescription'],
@@ -288,8 +289,8 @@
                     termName: null,
                     offset: offset.value,
                     typeName: assetType.value,
-                });
-            };
+                })
+            }
             const updateBody = (
                 entityFilterPayload: Components.Schemas.FilterCriteria
             ) => {
@@ -305,11 +306,11 @@
                     termName: null,
                     offset: 0,
                     typeName: assetType.value,
-                });
-            };
+                })
+            }
             watch(selectedClassification, () => {
                 if (selectedClassification.value) {
-                    let criterion: Components.Schemas.FilterCriteria[] = [];
+                    let criterion: Components.Schemas.FilterCriteria[] = []
                     const entityFilterPayload = {
                         condition: 'AND',
                         criterion: [
@@ -318,28 +319,28 @@
                                 criterion,
                             },
                         ],
-                    };
+                    }
                     criterion.push({
                         attributeName: '__classificationNames',
                         attributeValue: selectedClassification.value,
                         operator: 'eq',
-                    });
+                    })
                     criterion.push({
                         attributeName: '__propagatedClassificationNames',
                         attributeValue: selectedClassification.value,
                         operator: 'eq',
-                    });
+                    })
 
-                    updateBody(entityFilterPayload);
+                    updateBody(entityFilterPayload)
                 }
-            });
+            })
             const handeChangeFilterSorting = () => {
-                list.value = sortClassificationsByOrder(sorting.value, list);
-            };
+                list.value = sortClassificationsByOrder(sorting.value, list)
+            }
             const handlePreferenceCheckboxChange = () => {
-                projection.value = preferenceCheckbox.value;
-            };
-            const preferenceCheckbox: Ref<any[]> = ref([]);
+                projection.value = preferenceCheckbox.value
+            }
+            const preferenceCheckbox: Ref<any[]> = ref([])
 
             return {
                 sorting,
@@ -368,12 +369,8 @@
                 queryText,
                 filteredList,
                 totalCount,
-            };
+            }
         },
-    });
+    })
 </script>
-<style lang="less" scoped>
-    .asset-list-height {
-        // max-height: calc(100vh - 22rem);
-    }
-</style>
+<style lang="less" scoped></style>

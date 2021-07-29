@@ -10,8 +10,8 @@
                                 selectedClassification?.name
                             "
                             :ref="
-                                (el) => {
-                                    assetWrapperRef = el;
+                                el => {
+                                    assetWrapperRef = el
                                 }
                             "
                         />
@@ -39,10 +39,10 @@
         ComputedRef,
         watch,
         Ref,
-    } from 'vue';
-    import AssetsWrapper from '@common/assets/index.vue';
-    import { Components } from '~/api/atlas/client';
-    import LinkedTerms from './LinkedTerms.vue';
+    } from 'vue'
+    import AssetsWrapper from '@common/assets/index.vue'
+    import { Components } from '~/api/atlas/client'
+    import LinkedTerms from './LinkedTerms.vue'
 
     export default defineComponent({
         name: 'ClassificationHeader',
@@ -54,47 +54,47 @@
             classification: Object,
         },
         setup(props, context) {
-            const assetSearchText = ref('');
-            const assetWrapperRef: Ref<any> = ref(null);
+            const assetSearchText = ref('')
+            const assetWrapperRef: Ref<any> = ref(null)
             const selectedClassification: ComputedRef<any> = computed(() => {
-                return props.classification;
-            });
-            const handleAssetSearch = (e: Event) => {
-                assetSearchText.value = e.target.value;
-            };
-            const activeTabKey = ref('1');
+                return props.classification
+            })
+            const handleAssetSearch = (e: any) => {
+                assetSearchText.value = e.target.value
+            }
+            const activeTabKey = ref('1')
             watch(selectedClassification, () => {
                 if (selectedClassification.value) {
-                    let criterion: Components.Schemas.FilterCriteria[] = [];
+                    let criterion: Components.Schemas.FilterCriteria[] = []
                     const entityFilterPayload = [
                         {
                             condition: 'OR',
                             criterion: criterion,
                         } as Components.Schemas.FilterCriteria,
-                    ];
+                    ]
                     criterion.push({
                         attributeName: '__classificationNames',
                         attributeValue: selectedClassification.value.name,
                         operator: 'eq',
-                    });
+                    })
                     criterion.push({
                         attributeName: '__propagatedClassificationNames',
                         attributeValue: selectedClassification.value.name,
                         operator: 'eq',
-                    });
+                    })
 
-                    assetWrapperRef.value?.updateBody(entityFilterPayload);
+                    assetWrapperRef.value?.updateBody(entityFilterPayload)
                 }
-            });
+            })
             return {
                 assetWrapperRef,
                 selectedClassification,
                 activeTabKey,
                 assetSearchText,
                 handleAssetSearch,
-            };
+            }
         },
-    });
+    })
 </script>
 <style lang="less" scoped>
     .three-dots {

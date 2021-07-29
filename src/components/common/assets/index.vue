@@ -51,7 +51,7 @@
 </template>
 
 <script lang="ts">
-    import { computed, reactive, ref, watch } from 'vue';
+    import { computed, reactive, ref, watch, ComputedRef } from 'vue';
 
     import { AssetTypeList } from '~/constant/assetType';
     import EmptyView from '@common/empty/discover.vue';
@@ -83,6 +83,9 @@
                 type: Object,
                 default: {},
             },
+            selectedClassification: {
+                type: String,
+            },
             className: {
                 type: String,
                 default: '',
@@ -100,6 +103,10 @@
         setup(props) {
             const now = ref(false);
             const connectorsPayload = ref({});
+            const selectedClassification: ComputedRef<string> = computed(() => {
+                console.log('inside Props');
+                return props.selectedClassification;
+            });
             const assetType = ref('Catalog');
             const activeTab = computed(() => {
                 if (Object.keys(props.selectedUser).length) return 'user';
@@ -108,6 +115,19 @@
                 return '';
             });
             let criterion: Components.Schemas.FilterCriteria[] = [];
+            if (selectedClassification.value) {
+                criterion.push({
+                    attributeName: '__classificationNames',
+                    attributeValue: selectedClassification.value,
+                    operator: 'eq',
+                });
+                criterion.push({
+                    attributeName: '__propagatedClassificationNames',
+                    attributeValue: selectedClassification.value,
+                    operator: 'eq',
+                });
+                console.log(criterion, 'classifications');
+            }
 
             if (activeTab.value === 'user') {
                 criterion.push({
@@ -160,7 +180,7 @@
                 initialBody,
                 assetType.value
             );
-            const updateBody = () => {
+            const updateBody = (entityFilterData?: any) => {
                 initialBody = {
                     typeName: assetTypeListString,
                     limit: limit.value,
@@ -169,10 +189,17 @@
                     attributes: [...BaseAttributes, ...BasicSearchAttributes],
                     aggregationAttributes: [],
                 };
-                initialBody.entityFilters = {
-                    condition: 'AND',
-                    criterion: [...entityFilterPayload],
-                };
+                if (entityFilterData?.length > 0) {
+                    initialBody.entityFilters = {
+                        condition: 'AND',
+                        criterion: [...entityFilterData],
+                    };
+                } else {
+                    initialBody.entityFilters = {
+                        condition: 'AND',
+                        criterion: [...entityFilterPayload],
+                    };
+                }
 
                 if (assetType.value !== 'Catalog') {
                     initialBody.entityFilters.criterion.push({
@@ -327,6 +354,7 @@
                     immediate: true,
                 }
             );
+
             return {
                 handlePreview,
                 connectorsPayload,
@@ -351,6 +379,7 @@
                 handleChangeSort,
                 handleState,
                 projection,
+                updateBody,
             };
         },
     };

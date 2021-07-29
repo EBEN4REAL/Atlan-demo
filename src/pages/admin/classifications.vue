@@ -3,17 +3,20 @@
         <p class="mb-2 text-2xl atlan-gray-500 text-uppercase">
             Classification
         </p>
-        <div class="flex items-center justify-between w-full">
+        <div class="relative flex items-center justify-between w-full">
             <p class="mb-0 text-sm text-gray-400">
                 Manage classification tags to build access policies.
-                <span class="ml-2 text-primary">Documentation</span>
+                <!-- <span class="ml-2 text-primary">Documentation</span> -->
             </p>
-            <a-button type="primary" class="rounded" @click="toggleModal"
+            <a-button
+                type="primary"
+                class="absolute right-0 rounded add-classification-btn"
+                @click="toggleModal"
                 >+ Add Classification</a-button
             >
         </div>
     </div>
-    <splitpanes class="pt-6 default-theme">
+    <splitpanes class="h-auto pt-6 default-theme">
         <pane
             min-size="25"
             max-size="50"
@@ -43,10 +46,25 @@
                 </template>
             </a-input>
             <div class="mt-2 overflow-y-auto treelist">
-                <CreateClassificationTree
+                <!-- <CreateClassificationTree
                     :treeData="treeFilterText !== '' ? filteredData : treeData"
                     @nodeEmit="nodeEmit"
-                />
+                /> -->
+                <div
+                    v-for="item in treeFilterText !== ''
+                        ? filteredData
+                        : treeData"
+                    class="flex px-4 py-2 mb-1 rounded cursor-pointer tree-item"
+                    :class="
+                        selectedClassificationNameFromRoute === item.name
+                            ? 'tree-item-active'
+                            : ''
+                    "
+                    :key="item.guid"
+                    @click="() => nodeEmit(item)"
+                >
+                    <span class="truncate ...">{{ item.title }}</span>
+                </div>
             </div>
         </pane>
         <pane size="74" class="flex flex-col pl-6 bg-white">
@@ -55,7 +73,7 @@
 
         <a-modal
             :visible="modalVisible"
-            title="Add Classification"
+            title="Add"
             :onCancel="closeModal"
             :footer="null"
         >
@@ -75,8 +93,8 @@
                 >
                     <a-textarea v-model:value="formState.description" />
                 </a-form-item>
-                <div class="flex justify-between w-full">
-                    <a-button @click="closeModal">Cancel</a-button>
+                <div class="flex justify-end w-full">
+                    <a-button @click="closeModal" class="mr-4">Cancel</a-button>
                     <a-button
                         type="primary"
                         @click="createClassification"
@@ -141,6 +159,17 @@
                 description: string;
             }
             const treeData = computed(() => store.classificationTree);
+            store.setSelectedClassification(
+                router?.currentRoute.value?.params?.classificationId as string
+            );
+            const selectedClassificationNameFromRoute = computed(
+                () => store.selectedClassification
+            );
+            console.log(
+                router?.currentRoute.value?.params?.classificationId,
+                'route',
+                router
+            );
 
             const filteredData = computed(
                 () => store.filteredClassificationTree
@@ -166,6 +195,7 @@
                                 store.classificationTree[0].name
                             )}`
                         );
+                        console.log(router, 'router1');
                     }
                 } else {
                     store.setClassificationsStatus('error');
@@ -175,6 +205,9 @@
                 router.push(
                     `/admin/classifications/${encodeURIComponent(node.name)}`
                 );
+                store.setSelectedClassification(node.name);
+
+                console.log(node.name);
             };
             const formState: UnwrapRef<FormState> = reactive({
                 name: '',
@@ -245,7 +278,15 @@
                                     createClassificationData,
                                     createClassificationError
                                 );
-                                if (createClassificationData.value) {
+                                if (
+                                    createClassificationData.value &&
+                                    !createClassificationError.value
+                                ) {
+                                    console.log(
+                                        'in errror',
+                                        createClassificationData.value,
+                                        createClassificationError.value
+                                    );
                                     let classifications =
                                         createClassificationData.value
                                             .classificationDefs ?? [];
@@ -275,6 +316,15 @@
                                     formState.name = '';
                                     formState.description = '';
                                     closeModal();
+                                    // set this classification in view
+                                    store.setSelectedClassification(
+                                        classificationObj.name
+                                    );
+                                    router.push(
+                                        `/admin/classifications/${encodeURIComponent(
+                                            classificationObj.name
+                                        )}`
+                                    );
                                 } else {
                                     createClassificationStatus.value = 'error';
                                     const error = toRaw(
@@ -286,7 +336,7 @@
                                     );
                                     createErrorText.value =
                                         error.response.data.errorMessage;
-                                    resetRef(createErrorText, 6000);
+                                    resetRef(createErrorText, 8000);
                                 }
                             }
                         );
@@ -322,6 +372,7 @@
             const handleClickUser = (username: string) => {};
 
             return {
+                selectedClassificationNameFromRoute,
                 handleClickUser,
                 createClassificationStatus,
                 createErrorText,
@@ -350,7 +401,14 @@
     .treelist {
         height: calc(100vh - 14rem);
     }
-
+    .tree-item:hover {
+        background-color: #e9eefa;
+        color: #2251cc;
+    }
+    .tree-item-active {
+        background-color: #e9eefa;
+        color: #2251cc;
+    }
     :global(.ant-form-item-label
             > label.ant-form-item-required:not(.ant-form-item-required-mark-optional)::before) {
         @apply hidden;
@@ -365,6 +423,9 @@
         font-family: SimSun, sans-serif;
         line-height: 1;
         content: '*';
+    }
+    .add-classification-btn {
+        top: -50%;
     }
 </style>
 <route lang="yaml">

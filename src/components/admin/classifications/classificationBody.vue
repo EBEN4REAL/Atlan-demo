@@ -1,12 +1,30 @@
 <template>
-    <div class="pt-6">
+    <div class="">
         <div class="flex w-full">
             <a-tabs v-model:activeKey="activeTabKey" class="w-full">
-                <a-tab-pane key="1" tab="Linked Assets (56)">
-                    <div class="w-full mt-2 border rounded asset-list"></div>
+                <a-tab-pane key="1" tab="Linked Assets">
+                    <div class="w-full rounded asset-list">
+                        <AssetsWrapper
+                            v-if="selectedClassification?.name"
+                            :selectedClassification="
+                                selectedClassification?.name
+                            "
+                            :ref="
+                                (el) => {
+                                    assetWrapperRef = el;
+                                }
+                            "
+                        />
+                    </div>
                 </a-tab-pane>
-                <a-tab-pane key="2" tab="Linked Terms (6)">
-                    <div class="w-full mt-2 border rounded asset-list"></div>
+                <a-tab-pane key="2" tab="Linked Terms">
+                    <div class="w-full mt-1 rounded asset-list">
+                        <LinkedTerms
+                            :selectedClassification="
+                                selectedClassification?.name
+                            "
+                        />
+                    </div>
                 </a-tab-pane>
             </a-tabs>
         </div>
@@ -14,18 +32,63 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, computed, ref } from 'vue';
+    import {
+        defineComponent,
+        computed,
+        ref,
+        ComputedRef,
+        watch,
+        Ref,
+    } from 'vue';
+    import AssetsWrapper from '@common/assets/index.vue';
+    import { Components } from '~/api/atlas/client';
+    import LinkedTerms from './LinkedTerms.vue';
+
     export default defineComponent({
         name: 'ClassificationHeader',
-        components: {},
-        props: {},
+        components: {
+            AssetsWrapper,
+            LinkedTerms,
+        },
+        props: {
+            classification: Object,
+        },
         setup(props, context) {
             const assetSearchText = ref('');
-            const handleAssetSearch = (e) => {
+            const assetWrapperRef: Ref<any> = ref(null);
+            const selectedClassification: ComputedRef<any> = computed(() => {
+                return props.classification;
+            });
+            const handleAssetSearch = (e: Event) => {
                 assetSearchText.value = e.target.value;
             };
             const activeTabKey = ref('1');
+            watch(selectedClassification, () => {
+                if (selectedClassification.value) {
+                    let criterion: Components.Schemas.FilterCriteria[] = [];
+                    const entityFilterPayload = [
+                        {
+                            condition: 'OR',
+                            criterion: criterion,
+                        } as Components.Schemas.FilterCriteria,
+                    ];
+                    criterion.push({
+                        attributeName: '__classificationNames',
+                        attributeValue: selectedClassification.value.name,
+                        operator: 'eq',
+                    });
+                    criterion.push({
+                        attributeName: '__propagatedClassificationNames',
+                        attributeValue: selectedClassification.value.name,
+                        operator: 'eq',
+                    });
+
+                    assetWrapperRef.value?.updateBody(entityFilterPayload);
+                }
+            });
             return {
+                assetWrapperRef,
+                selectedClassification,
                 activeTabKey,
                 assetSearchText,
                 handleAssetSearch,
@@ -46,6 +109,6 @@
         color: #2251cc;
     }
     .asset-list {
-        height: calc(100vh - 26rem);
+        height: calc(100vh - 23rem);
     }
 </style>

@@ -1,24 +1,26 @@
 <template>
-    <div class="grid grid-cols-11 pb-6 bg-white border-b classification-header">
+    <div class="grid grid-cols-11 bg-white classification-header">
         <div class="col-start-1 col-end-9 pr-4 border-right">
             <div class="flex">
                 <!-- Shield Icon-->
-                <div class="mr-4">
+                <!-- <div class="mr-4">
                     <span
                         class="flex items-center justify-center p-1 text-xl border rounded"
                     >
                         <fa icon="fal shield text-gray-500  " class="" />
                     </span>
-                </div>
+                </div> -->
                 <div>
-                    <p class="flex items-center mb-2 text-xl font-black ">
-                        {{ displayName }}
-                    </p>
+                    <div
+                        class="flex items-center mb-2 text-xl font-black max-text-width "
+                    >
+                        <span class="truncate ...">{{ displayName }}</span>
+                    </div>
                     <div class="mb-1 text-sm text-gray-300">
                         <span v-if="createdAt">
                             Created {{ createdAt }} by
                             <span
-                                class="underline cursor-pointer text-primary"
+                                class="text-gray-400 border-b border-dotted cursor-pointer"
                                 @click="() => handleClickUser(createdBy)"
                                 >{{ createdBy }}</span
                             >
@@ -27,7 +29,7 @@
                             <span class="px-1">·</span>
                             Updated {{ updatedAt }} by
                             <span
-                                class="underline cursor-pointer text-primary"
+                                class="text-gray-400 border-b border-dotted cursor-pointer"
                                 @click="() => handleClickUser(updatedBy)"
                             >
                                 {{ updatedBy }}</span
@@ -38,16 +40,17 @@
                         <p class="mb-1 text-sm text-gray-300">
                             Description
                         </p>
-                        <p class="mb-0 text-sm text-gray-400">
+                        <div class="flex mb-0 text-sm text-gray-400">
                             <span v-if="!selectedClassification.description"
                                 >Click to add description</span
                             >
                             <span
                                 v-else-if="selectedClassification.description"
+                                class="break-words"
                                 >{{ selectedClassification.description }}</span
                             >
                             <span v-else>No description added</span>
-                        </p>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -85,7 +88,6 @@
     import DeleteClassificationModal from './deleteClassificationModal.vue';
     import { useUserPreview } from '~/composables/user/showUserPreview';
     import { useTimeAgo } from '@vueuse/core';
-    // import moment from "moment";
     export default defineComponent({
         name: 'ClassificationHeader',
         components: {
@@ -147,13 +149,13 @@
             const classificationDropdownOption = computed(() => {
                 const dpOpArray = [];
                 dpOpArray.push({
-                    title: `Edit classification`,
+                    title: `Edit`,
                     icon: 'pencil',
                     iconType: 'fal',
                     handleClick: editClassification,
                 });
                 dpOpArray.push({
-                    title: `Delete classification`,
+                    title: `Delete`,
                     icon: 'trash-alt',
                     iconType: 'fal',
                     class: ['text-danger'],
@@ -205,5 +207,8 @@
     .three-dots {
         height: fit-content;
         cursor: pointer;
+    }
+    .max-text-width {
+        max-width: calc(100vw - 48rem);
     }
 </style>

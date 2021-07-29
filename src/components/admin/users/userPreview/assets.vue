@@ -12,10 +12,10 @@
 </template>
 
 <script lang="ts">
-    import { computed, reactive, ref, watch } from 'vue';
+    import { defineComponent } from 'vue';
     import AssetsWrapper from '@common/assets/index.vue';
 
-    export default {
+    export default defineComponent({
         name: 'Assets',
         props: {
             selectedUser: {
@@ -35,7 +35,7 @@
                 props,
             };
         },
-    };
+    });
 </script>
 
 <style lang="less" scoped>

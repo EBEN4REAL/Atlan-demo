@@ -6,8 +6,8 @@
             </div>
             <div class="flex flex-col">
                 <span class="secondaryHeading">TERM</span>
-                <h1 class="text-3xl leading-9 m-0 p-0 text-black font-normal">
-                    {{ title }}
+                <h1 class="text-2xl leading-8 m-0 p-0 text-black font-normal">
+                   <span v-if="parentGlossaryName" class="text-gray-400">{{ parentGlossaryName }} / </span>{{ title }}
                 </h1>
                 <EntityHistory :created-at="term?.createTime" :created-by="term?.createdBy" :updated-at="term?.updateTime" :updated-by="term?.updatedBy" />
             </div>
@@ -31,8 +31,6 @@
                 </a-tab-pane>
             </a-tabs>
         </div>
-        <!-- {{ term }} -->
-
     </div>
 </template>
 
@@ -75,7 +73,8 @@ export default defineComponent({
         const title = computed(() => term.value?.name)
         const shortDescription = computed(() => term.value?.shortDescription)
         const qualifiedName = computed(() => term.value?.qualifiedName)
-        
+        const parentGlossaryName = computed(() => term.value?.qualifiedName?.split('@')[1] ?? '')
+
         const linkedAssetsCount = computed(() => term.value?.assignedEntities?.length ?? 0)
 
         onMounted(() => {
@@ -95,7 +94,8 @@ export default defineComponent({
             title,
             shortDescription,
             qualifiedName,
-            linkedAssetsCount
+            linkedAssetsCount,
+            parentGlossaryName
         }
     },
 })

@@ -7,7 +7,7 @@
             <div class="flex flex-col">
                 <span class="secondaryHeading">CATEGORY</span>
                 <h1 class="text-3xl leading-9 m-0 p-0 text-black font-normal">
-                    {{ title }}
+                    <span v-if="parentGlossaryQualifiedName" class="text-gray-400">{{ parentGlossaryQualifiedName }} / </span> {{ title }}
                 </h1>
                 <EntityHistory :created-at="category?.createTime" :created-by="category?.createdBy" :updated-at="category?.updateTime" :updated-by="category?.updatedBy" />
             </div>

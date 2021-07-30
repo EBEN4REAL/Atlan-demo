@@ -1,88 +1,80 @@
 <template>
-    <div>
-        <div class="flex flex-row items-center mb-0">
-            <component :is="asset.typeName" class="w-auto h-6 mr-2"></component>
-            <p
-                class="mb-0 text-xl font-semibold leading-none tracking-wide text-gray-700 "
-            >
-                {{ title(asset) }}
-            </p>
-            <StatusBadge
-                :statusId="asset?.attributes?.assetStatus"
-                class="w-8 ml-2"
-                :key="asset.guid"
-            ></StatusBadge>
-        </div>
-        <div
-            class="flex flex-row items-start content-center w-full p-2 mt-4 space-x-4  justify-items-start"
-        >
-            <p class="flex items-center content-center">
-                <img :src="logo(asset)" class="w-auto h-4 mr-2" />
-                <RelationshipBadge :item="asset"></RelationshipBadge>
-            </p>
-            <p
-                v-if="['table', 'view'].includes(asset?.typeName.toLowerCase())"
-                class="mb-0 text-gray-600"
-            >
-                <span v-if="asset?.typeName.toLowerCase() === 'table'">
-                    <span class="font-bold tracking-wide text-gray-700"
-                        >~{{ rowCount(asset, true) }}</span
-                    >
-                    rows,
-                </span>
-                <span class="font-bold tracking-wide text-gray-700">{{
-                    columnCount(asset, true)
-                }}</span>
-                cols
-            </p>
-            <div class="flex flex-col">
-                <span class="text-gray-500">
-                    Created:
-                    <span class="text-gray-700">
-                        {{ dayjs().from(asset?.attributes?.__timestamp, true) }}
-                        ago,
-                        {{ asset?.attributes?.__createdBy }}
-                    </span>
-                </span>
-                <span class="text-gray-500">
-                    Last updated:
-                    <span class="text-gray-700">
-                        {{
-                            dayjs().from(
-                                asset?.attributes?.__modificationTimestamp,
-                                true
-                            )
-                        }}
-                        ago,
-                        {{ asset?.attributes?.__modifiedBy }}
-                    </span>
-                </span>
+    <div class="flex items-center">
+        <component :is="asset.typeName" class="w-auto h-10 mr-2"></component>
+        <div>
+            <div class="mb-2 text-2xl font-bold">
+                {{ asset.attributes.name }}
             </div>
-            <div class="text-xs text-gray-500">
-                <fa icon="fal analytics" class="pushtop"></fa>
-                {{
-                    numeralFormat(asset?.attributes?.popularityScore, '0[.]00')
-                }}
+            <div class="flex text-xs text-gray-600 font-extralight">
+                <span class="mr-4">{{ asset.typeName }}</span>
+                <span class="flex items-center mr-4"
+                    ><img :src="integrationIcon" class="w-auto h-3 mr-1" />
+                    {{ asset.attributes.integrationName }}</span
+                >
+                <span class="flex items-center mr-4"
+                    ><component is="Database" class="w-auto h-3 mr-1" />{{
+                        asset.attributes.databaseName
+                    }}</span
+                >
+                <span class="flex items-center mr-4"
+                    ><component is="Schema" class="w-auto h-3 mr-1" />{{
+                        asset.attributes.schemaName
+                    }}</span
+                >
+                <span class="mr-4">~{{ asset.attributes.rowCount }} rows</span>
+                <span class="mr-4"
+                    >{{ asset.attributes.columnCount }} columns</span
+                >
+
+                <span class="mr-4"
+                    >last crawled
+                    {{ timeStamp('lc') }}
+                </span>
+                <span class="mr-4"
+                    >last updated
+                    {{ timeStamp('lu') }}
+                </span>
             </div>
         </div>
     </div>
 </template>
-<script lang="ts">
-import { defineComponent } from 'vue'
-import AssetMixin from '~/mixins/asset'
-import StatusBadge from '@common/badge/status/index.vue'
-import RelationshipBadge from '@common/badge/relationship/index.vue'
-import dayjs from 'dayjs'
 
-export default defineComponent({
-    mixins: [AssetMixin],
-    props: ['asset'],
-    components: { StatusBadge, RelationshipBadge },
-    setup(props) {
-        return {
-            asset: props.asset,
-            dayjs,
-        }
-    },
-})
+<script lang="ts">
+    // Vue
+    import { defineComponent, ToRefs, toRefs, computed } from 'vue'
+    // Lib
+    import dayjs from 'dayjs'
+    // Util
+    import { SourceList } from '~/constant/source'
+
+    export default defineComponent({
+        props: ['asset'],
+        setup(props) {
+            /** DATA */
+            const { asset }: ToRefs = toRefs(props)
+
+            /** COMPUTED */
+            const integrationIcon = computed(() => {
+                const item = SourceList.find(
+                    (src: { id: string }) =>
+                        src.id === asset.value.attributes.integrationName
+                )
+                return item?.image
+            })
+
+            /** METHODS */
+            const timeStamp = (val: string) => {
+                const attr = asset.value.attributes
+                return val === 'lc'
+                    ? dayjs().from(attr.__timestamp, true)
+                    : dayjs().from(attr.__modificationTimestamp, true) + ' ago'
+            }
+
+            return {
+                asset: props.asset,
+                integrationIcon,
+                timeStamp,
+            }
+        },
+    })
 </script>

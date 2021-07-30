@@ -1,6 +1,6 @@
 <template>
-    <div v-if="isLoading" class="" >
-        <LoadingView/>
+    <div v-if="isLoading" class="">
+        <LoadingView />
     </div>
     <div v-else class="px-12 pr-0 mb-12">
         <div class="flex flex-row mt-6 mb-5">
@@ -10,9 +10,22 @@
             <div class="flex flex-col">
                 <span class="secondaryHeading">CATEGORY</span>
                 <h1 class="text-3xl leading-9 m-0 p-0 text-black font-normal">
-                    <span v-if="parentGlossaryQualifiedName" class="text-gray-400">{{ parentGlossaryQualifiedName }} / </span> {{ title }}
+                    <span
+                        v-if="parentGlossaryQualifiedName"
+                        class="text-gray-400"
+                        >{{ parentGlossaryQualifiedName }} /
+                    </span>
+                    {{ title }}
                 </h1>
-                <EntityHistory :created-at="category?.createTime" :created-by="category?.createdBy" :updated-at="category?.updateTime" :updated-by="category?.updatedBy" />
+                <EntityHistory
+                    :created-at="category?.createTime"
+                    :created-by="category?.createdBy"
+                    :updated-at="category?.updateTime"
+                    :updated-by="category?.updatedBy"
+                />
+                <span class="mt-2 text-xs w-1/2 leading-4 text-gray-500">{{
+                    shortDescription
+                }}</span>
             </div>
         </div>
         <div>
@@ -23,7 +36,10 @@
                             :entity="category"
                             :show-category-count="false"
                         />
-                        <div v-if="termCount" class="flex flex-column w-1/2 ml-9 border-l">
+                        <div
+                            v-if="termCount"
+                            class="flex flex-column w-1/2 ml-9 border-l"
+                        >
                             <GlossaryTopTerms
                                 v-if="categoryTerms?.length && !termsLoading"
                                 :terms="categoryTerms"
@@ -32,7 +48,10 @@
                     </div>
                 </a-tab-pane>
                 <a-tab-pane key="2" tab="Terms & Categories">
-                    <CategoryTermsAndCategoriesTab :category-guid="guid" :qualified-name="parentGlossaryQualifiedName" />
+                    <CategoryTermsAndCategoriesTab
+                        :category-guid="guid"
+                        :qualified-name="parentGlossaryQualifiedName"
+                    />
                 </a-tab-pane>
             </a-tabs>
         </div>
@@ -47,7 +66,7 @@ import GlossaryProfileOverview from '@/glossary/glossaryProfileOverview.vue'
 import GlossaryTopTerms from '@/glossary/glossaryTopTerms.vue'
 import EntityHistory from '@/glossary/entityHistory.vue'
 import CategoryTermsAndCategoriesTab from '@/glossary/categoryProfile/categoryTermsAndCategoriesTab.vue'
-import LoadingView from "@common/loaders/section.vue";
+import LoadingView from '@common/loaders/section.vue'
 
 import useGTCEntity from '~/composables/glossary/useGtcEntity'
 import useCategoryTerms from '~/composables/glossary/useCategoryTerms'
@@ -96,7 +115,9 @@ export default defineComponent({
         )
         const termCount = computed(() => category.value?.terms?.length ?? 0)
 
-        const parentGlossaryQualifiedName = computed(() => category.value?.qualifiedName?.split('@')[1] ?? '')
+        const parentGlossaryQualifiedName = computed(
+            () => category.value?.qualifiedName?.split('@')[1] ?? ''
+        )
 
         onMounted(() => {
             fetchEntity(guid.value)

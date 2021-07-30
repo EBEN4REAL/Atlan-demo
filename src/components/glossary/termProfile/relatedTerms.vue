@@ -1,5 +1,5 @@
 <template>
-    <div class="py-6 w-full">
+    <div v-if="availableRelatedTerms?.length" class="py-6 w-full">
         <h2 class="text-gray-700 text-xl leading-7 ml-6">Related Terms</h2>
 
         <div class="max-h-80 pl-6 overflow-y-scroll flex flex-col text-left">
@@ -71,8 +71,8 @@ export default defineComponent({
 
         const availableRelatedTerms = computed(() => {
             return Object.keys(currentTerm.value).filter((key) =>
-                list.find((item) => item === key)
-            )
+                list.find((item) => item === key) 
+            ) ?? []
         })
 
         return {

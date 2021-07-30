@@ -2,7 +2,7 @@
         <div v-if="isLoading" class="w-full  min-h-full justify-center" >
             <LoadingView/>
         </div>
-    <div v-else class="px-12 pr-0 mb-12">
+    <div v-else class="px-12 pr-0 mb-0">
 
             <div class="flex flex-row mt-6 mb-5">
             <div class="mr-5">
@@ -14,6 +14,9 @@
                    <span v-if="parentGlossaryName" class="text-gray-400">{{ parentGlossaryName }} / </span>{{ title }}
                 </h1>
                 <EntityHistory :created-at="term?.createTime" :created-by="term?.createdBy" :updated-at="term?.updateTime" :updated-by="term?.updatedBy" />
+                                <span class="mt-2 text-xs w-1/2 leading-4 text-gray-500">{{
+                    shortDescription
+                }}</span>
             </div>
         </div>
         <div>
@@ -25,7 +28,7 @@
                             :show-category-count="false"
                             :show-term-count="false"
                         />
-                        <div v-if="linkedAssetsCount || term?.guid" class="w-3/4 ml-9 border-l">
+                        <div v-if="linkedAssetsCount || term?.guid" class="w-3/4 sidebar overflow-y-scroll ml-9 border-l">
                             <TopAssets v-if="linkedAssetsCount" :term-qualified-name="qualifiedName" />
                             <RelatedTerms v-if="term?.guid" :term="term"/>
                         </div>
@@ -106,6 +109,11 @@ export default defineComponent({
     },
 })
 </script>
+<style>
+.sidebar{
+     max-height: 70vh
+}
+</style>
 
 <route lang="yaml">
   meta:

@@ -1,6 +1,6 @@
 <template>
-    <div v-if="isLoading" class="w-full  min-h-full justify-center" >
-        <LoadingView/>
+    <div v-if="isLoading" class="w-full min-h-full justify-center">
+        <LoadingView />
     </div>
     <div v-else class="px-12 pr-0 mb-12">
         <div class="flex flex-row mt-6 mb-5">
@@ -12,7 +12,15 @@
                 <h1 class="text-3xl leading-9 m-0 p-0 text-black font-normal">
                     {{ title }}
                 </h1>
-                <EntityHistory :created-at="glossary?.createTime" :created-by="glossary?.createdBy" :updated-at="glossary?.updateTime" :updated-by="glossary?.updatedBy" />
+                <EntityHistory
+                    :created-at="glossary?.createTime"
+                    :created-by="glossary?.createdBy"
+                    :updated-at="glossary?.updateTime"
+                    :updated-by="glossary?.updatedBy"
+                />
+                <span class="mt-2 text-xs w-1/2 leading-4 text-gray-500">{{
+                    shortDescription
+                }}</span>
             </div>
         </div>
         <div>
@@ -20,7 +28,10 @@
                 <a-tab-pane key="1" tab="Overview">
                     <div class="flex flex-row m-0 p-0">
                         <GlossaryProfileOverview :entity="glossary" />
-                        <div v-if="termCount" class="flex flex-column w-1/2 ml-9 border-l">
+                        <div
+                            v-if="termCount"
+                            class="flex flex-column w-1/2 ml-9 border-l"
+                        >
                             <GlossaryTopTerms
                                 v-if="glossaryTerms?.length && !termsLoading"
                                 :terms="glossaryTerms"
@@ -36,7 +47,9 @@
                     />
                 </a-tab-pane>
                 <a-tab-pane key="2" tab="Terms & Categories">
-                    <GlossaryTermsAndCategoriesTab :qualified-name="qualifiedName" />
+                    <GlossaryTermsAndCategoriesTab
+                        :qualified-name="qualifiedName"
+                    />
                 </a-tab-pane>
                 <a-tab-pane key="3" tab="Activity"> Activity </a-tab-pane>
                 <a-tab-pane key="4" tab="Bots"> Bots </a-tab-pane>
@@ -55,7 +68,7 @@ import GlossaryTopTerms from '@/glossary/glossaryTopTerms.vue'
 import GlossaryContinueSettingUp from '@/glossary/glossaryContinueSettingUp.vue'
 import GlossaryTermsAndCategoriesTab from '@/glossary/glossaryTermsAndCategoriesTab.vue'
 import EntityHistory from '@/glossary/entityHistory.vue'
-import LoadingView from "@common/loaders/section.vue";
+import LoadingView from '@common/loaders/section.vue'
 
 import useGTCEntity from '~/composables/glossary/useGtcEntity'
 import useGlossaryTerms from '~/composables/glossary/useGlossaryTerms'
@@ -74,7 +87,7 @@ export default defineComponent({
         GlossaryContinueSettingUp,
         GlossaryTermsAndCategoriesTab,
         EntityHistory,
-        LoadingView
+        LoadingView,
     },
     props: {
         id: {
@@ -110,8 +123,12 @@ export default defineComponent({
             () => glossary.value?.shortDescription
         )
         const termCount = computed(() => glossary.value?.terms?.length ?? 0)
-        const categoryCount = computed(() => glossary.value?.categories?.length ?? 0)
-        const qualifiedName = computed(() => glossary.value?.qualifiedName ?? '');
+        const categoryCount = computed(
+            () => glossary.value?.categories?.length ?? 0
+        )
+        const qualifiedName = computed(
+            () => glossary.value?.qualifiedName ?? ''
+        )
 
         onMounted(() => {
             fetchEntity(guid.value)
@@ -132,12 +149,14 @@ export default defineComponent({
         })
 
         const refreshCategoryTermList = (type: string) => {
-            if(type === 'category'){
-                glossaryCategories.value = [];
-                fetchGlossaryCategoriesPaginated({ guid: guid.value, offset: 0 })
-            }
-            else if(type === 'term'){
-                glossaryTerms.value =[];
+            if (type === 'category') {
+                glossaryCategories.value = []
+                fetchGlossaryCategoriesPaginated({
+                    guid: guid.value,
+                    offset: 0,
+                })
+            } else if (type === 'term') {
+                glossaryTerms.value = []
                 fetchGlossaryTermsPaginated({ guid: guid.value, offset: 0 })
             }
         }
@@ -156,7 +175,7 @@ export default defineComponent({
             glossaryTerms,
             glossaryCategories,
             qualifiedName,
-            refreshCategoryTermList
+            refreshCategoryTermList,
         }
     },
 })

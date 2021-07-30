@@ -9,11 +9,7 @@
                 <h1 class="text-3xl leading-9 m-0 p-0 text-black font-normal">
                     {{ title }}
                 </h1>
-                <div class="text-sm leading-6 text-gray-400 font-normal">
-                    <span class="mr-3">Cerated 2 weeks ago by @anshul</span>
-                    <span>&bull;</span>
-                    <span class="ml-3">Edited 1 week ago by @anshul</span>
-                </div>
+                <EntityHistory :created-at="category?.createTime" :created-by="category?.createdBy" :updated-at="category?.updateTime" :updated-by="category?.updatedBy" />
             </div>
         </div>
         <div>
@@ -46,8 +42,9 @@ import { defineComponent, computed, watch, onMounted } from 'vue'
 
 import GlossaryProfileOverview from '@/glossary/glossaryProfileOverview.vue'
 import GlossaryTopTerms from '@/glossary/glossaryTopTerms.vue'
-
+import EntityHistory from '@/glossary/entityHistory.vue'
 import CategoryTermsAndCategoriesTab from '@/glossary/categoryProfile/categoryTermsAndCategoriesTab.vue'
+
 import useGTCEntity from '~/composables/glossary/useGtcEntity'
 import useCategoryTerms from '~/composables/glossary/useCategoryTerms'
 
@@ -62,6 +59,7 @@ export default defineComponent({
         GlossaryProfileOverview,
         GlossaryTopTerms,
         CategoryTermsAndCategoriesTab,
+        EntityHistory,
     },
     props: {
         id: {

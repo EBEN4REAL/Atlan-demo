@@ -32,6 +32,7 @@
                         v-if="!isLoading"
                         :terms="glossaryTerms"
                         :categories="glossaryCategories"
+                        @updateDescription="refreshCategoryTermList"
                     />
                 </a-tab-pane>
                 <a-tab-pane key="2" tab="Terms & Categories">
@@ -130,6 +131,17 @@ export default defineComponent({
             })
         })
 
+        const refreshCategoryTermList = (type: string) => {
+            if(type === 'category'){
+                glossaryCategories.value = [];
+                fetchGlossaryCategoriesPaginated({ guid: guid.value, offset: 0 })
+            }
+            else if(type === 'term'){
+                glossaryTerms.value =[];
+                fetchGlossaryTermsPaginated({ guid: guid.value, offset: 0 })
+            }
+        }
+
         return {
             glossary,
             title,
@@ -144,6 +156,7 @@ export default defineComponent({
             glossaryTerms,
             glossaryCategories,
             qualifiedName,
+            refreshCategoryTermList
         }
     },
 })

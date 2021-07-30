@@ -36,9 +36,9 @@ const groupsMap: Record<string, (...params:any) => string> = {
     [DELETE_GLOSSARY_CATEGORY]: ({ guid }: Record<string, string>) => getAPIPath('auth/atlas', `/glossary/category/${guid}`),
     [DELETE_GLOSSARY_TERM]: ({ guid }: Record<string, string>) => getAPIPath('auth/atlas', `/glossary/term/${guid}`),
 
-    [UPDATE_GLOSSARY]: ({ guid }: Record<string, string>) => getAPIPath('auth/atlas', `/glossary/${guid}/partial`),
-    [UPDATE_GLOSSARY_CATEGORY]: ({ guid }: Record<string, string>) => getAPIPath('auth/atlas', `/glossary/category/${guid}/partial`),
-    [UPDATE_GLOSSARY_TERM]: ({ guid }: Record<string, string>) => getAPIPath('auth/atlas', `/glossary/term/${guid}/partial`),
+    [UPDATE_GLOSSARY]: ({ guid }: Record<string, string>) => getAPIPath('auth/atlas', `/glossary/${guid}`),
+    [UPDATE_GLOSSARY_CATEGORY]: ({ guid }: Record<string, string>) => getAPIPath('auth/atlas', `/glossary/category/${guid}`),
+    [UPDATE_GLOSSARY_TERM]: ({ guid }: Record<string, string>) => getAPIPath('auth/atlas', `/glossary/term/${guid}`),
 
     [GET_GLOSSARY_CATEGORIES]: ({ guid, limit, offset, searchText }: Record<string, any>) => getAPIPath('auth/atlas', `/glossary/${guid}/categories?limit=${limit ?? -1}${offset  ? `&offset=${offset}` : ''}${searchText ? `&searchText=${searchText}` : ''}`),
     [GET_GLOSSARY_TERMS]: ({ guid }: Record<string, string>) => getAPIPath('auth/atlas', `/glossary/${guid}/terms`),

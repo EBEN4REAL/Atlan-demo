@@ -22,6 +22,9 @@ const useGTCEntity = (type: 'glossary' | 'category' | 'term') => {
         cache: true,
         dependantFetchingKey: entityGuid,
         pathVariables: pathObject,
+        options: {
+            revalidateOnFocus: false
+        }
         // url
     })
 

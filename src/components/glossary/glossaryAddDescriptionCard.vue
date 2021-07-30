@@ -5,9 +5,11 @@
     </div>
 </template>
 <script lang="ts">
-import { defineComponent, computed, ref } from 'vue'
+import { defineComponent, computed, ref, watch } from 'vue'
 
 import { Components } from '~/api/atlas/client'
+
+import useUpdateGtcEntity from '~/composables/glossary/useUpdateGtcEntity'
 
 
 interface PropsType {
@@ -16,20 +18,32 @@ interface PropsType {
 
 export default defineComponent({
     props: ['entity'],
-    setup(props: PropsType) {
+    emits: ['updateDescription'],
+    setup(props: PropsType, context) {
       
 
-        const entity = computed(() => {
-           return props.entity
-        })
+        const entity = computed(() => props.entity)
         const description = ref('')
      
-        const onSubmit = () => {
+        const { data, isLoading, error, updateEntity } = useUpdateGtcEntity(props.entity?.type)
 
+        const onSubmit = () => {
+            updateEntity(entity.value.guid, {
+                ...entity.value,
+                shortDescription: description.value,
+                owners: ['nitya']
+            })
         }
+
+        watch(data, (newData) => {
+            if(newData?.guid){
+                context.emit('updateDescription', props.entity?.type)
+            }
+        })
 
         return {
           description,
+          data, 
           entity,
           onSubmit
         }

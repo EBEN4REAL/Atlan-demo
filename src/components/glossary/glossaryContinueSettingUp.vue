@@ -1,8 +1,8 @@
 <template>
-    <div class="my-8" v-if="missingOwners.length || missingDescription.length || missingLinkedAssets.length">
+    <div v-if="missingOwners.length || missingDescription.length || missingLinkedAssets.length" class="my-8" >
         <h2 class="text-xl leading-7">Coninue Setting up GLossary</h2>
-        <a-tabs default-active-key="1" class="border-0">
-            <a-tab-pane key="1" v-if="missingOwners.length" tab="Add Owners">
+        <a-tabs default-active-key="2" class="border-0">
+            <a-tab-pane v-if="missingOwners.length" key="1" tab="Add Owners">
                 <a-table
                     :columns="ownersTableColumns"
                     :data-source="missingOwners"
@@ -75,7 +75,7 @@
                         </div>
                     </template>
                     <template #description="{ record }">
-                        <GlossaryAddDescriptionCard :entity="record" />
+                        <GlossaryAddDescriptionCard @updateDescription="(type) => $emit('updateDescription', type)" :entity="record" />
                     </template>
                 </a-table>
             </a-tab-pane>
@@ -104,8 +104,9 @@ interface PropsType {
 }
 
 export default defineComponent({
-    props: ['terms', 'categories'],
     components: { GlossaryAddDescriptionCard, Owners },
+    props: ['terms', 'categories'],
+    emits:['updateDescription'],
     setup(props: PropsType) {
         const categories = computed(
             () =>

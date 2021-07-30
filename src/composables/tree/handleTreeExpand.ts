@@ -1,71 +1,75 @@
-import { Ref, ref, toRaw } from "vue";
-import store from "~/utils/storage";
+import { Ref, ref, toRaw, watch } from 'vue'
+import store from '~/utils/storage'
 
-export default function handleTreeExpand(emit: any, cacheKey?: string): any {
-  const selectedKeys = ref([]) as Ref<string[]>;
-  let expandedKeys = ref([]) as Ref<string[]>;
+export default function handleTreeExpand(
+    emit: any,
+    cacheKey?: string,
+    isAccordion?: boolean
+): any {
+    const selectedCacheKey = `${cacheKey}_selected`
+    const expandedCacheKey = `${cacheKey}_expanded`
+    const selectedKeys = ref([]) as Ref<string[]>
+    const expandedKeys = ref(store.get(expandedCacheKey)) as Ref<string[]>
 
-  const selectedCacheKey = `${cacheKey}_selected`;
-  const expandedCacheKey = `${cacheKey}_expanded`;
-  const localSelected = store.get(selectedCacheKey);
-  const localExpanded = store.get(expandedCacheKey);
-  if (cacheKey && localSelected && localSelected.length >= 0) {
-    selectedKeys.value = store.get(selectedCacheKey);
-  }
-  if (cacheKey && localExpanded && localExpanded.length >= 0) {
-    expandedKeys.value = store.get(expandedCacheKey);
-  }
+    const selectedCache = store.get(selectedCacheKey)
+    const expandedCache = store.get(expandedCacheKey)
 
-  const expandNode = (expanded: string[], node: any) => {
-    if (expanded.includes("_node_select_")) {
-      const key: string = node.node.eventKey;
-      const isExpanded = expandedKeys.value.includes(key);
-      if (!isExpanded) {
-        expandedKeys.value.push(key);
-      } else if (isExpanded) {
-        const index = expandedKeys.value.indexOf(key);
-        expandedKeys.value.splice(index, 1);
-      }
-      expandedKeys.value = [...expandedKeys.value];
+    const expandNode = (expanded: string[], event: any) => {
+        // triggered by select
+        if (!event.node.isLeaf && event.event === 'select') {
+            const key: string = event.node.eventKey
+            const isExpanded = expandedKeys.value.includes(key)
+            if (!isExpanded) {
+                if (isAccordion && event.node.dataRef.isRoot) {
+                    expandedKeys.value = []
+                }
+                expandedKeys.value.push(key)
+            } else if (isExpanded) {
+                const index = expandedKeys.value.indexOf(key)
+                expandedKeys.value.splice(index, 1)
+            }
+            expandedKeys.value = [...expandedKeys.value]
+        }
+        store.set(expandedCacheKey, expandedKeys.value)
+        return
     }
-    node.node.dataRef.isOpen = !!node.expanded;
-    store.set(`${cacheKey}_expanded`, expandedKeys.value);
-    return;
-  };
-  const selectNode = (selected: any, node) => {
-    if (selectedKeys.value.includes(selected)) {
-      selectedKeys.value = [];
-    } else {
-      selectedKeys.value = selected;
+    const selectNode = (selected: any, event: any) => {
+        if (!event.node.isLeaf) {
+            expandNode([], event)
+            selectedKeys.value = []
+        } else {
+            if (selectedKeys.value.includes(selected)) {
+                selectedKeys.value = []
+            } else {
+                selectedKeys.value = selected
+            }
+            emit('select', event.node.eventKey)
+        }
+        store.set(selectedCacheKey, selectedKeys.value)
+        return
     }
-    if (node.node.dataRef?.isRoot) {
-      expandNode(["_node_select_"], node);
-    } else {
-      emit("select", node.node.eventKey);
-    }
-    store.set(`${cacheKey}_selected`, selectedKeys.value);
-    return;
-  };
 
-  const classificationSelectNode = (selected: any, node) => {
-    if (selectedKeys.value.includes(selected)) {
-      selectedKeys.value = [];
-    } else {
-      selectedKeys.value = selected;
+    const classificationSelectNode = (selected: any, node) => {
+        if (selectedKeys.value.includes(selected)) {
+            selectedKeys.value = []
+        } else {
+            selectedKeys.value = selected
+        }
+        if (node.node.dataRef?.isRoot) {
+            expandNode([], node)
+        } else {
+            emit('nodeEmit', toRaw(node.node.dataRef))
+        }
+        return
     }
-    if (node.node.dataRef?.isRoot) {
-      expandNode(["_node_select_"], node);
-    } else {
-      emit("nodeEmit", toRaw(node.node.dataRef));
-    }
-    return;
-  };
 
-  return {
-    selectedKeys,
-    expandedKeys,
-    expandNode,
-    selectNode,
-    classificationSelectNode,
-  };
+    return {
+        selectedKeys,
+        expandedKeys,
+        selectedCache,
+        expandedCache,
+        expandNode,
+        selectNode,
+        classificationSelectNode,
+    }
 }

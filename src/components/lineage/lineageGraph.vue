@@ -15,7 +15,7 @@
                 'cursor-grabbing': panStarted,
                 'cursor-wait': columnsListLoading,
             }"
-            @dblclick="_getPath(null)"
+            @dblclick="get_path(null)"
         >
             <div
                 ref="lineage_graph_container_ref"
@@ -83,7 +83,7 @@
                                     v-if="group.type !== 'Process'"
                                     class="relative p-0 overflow-hidden"
                                     :style="
-                                        _getContentHeight(
+                                        get_content_height(
                                             group.groupId,
                                             group.fields.length
                                         )
@@ -93,7 +93,7 @@
                                         v-for="(node, index) in group.fields"
                                         :key="'node' + String(index)"
                                         class="w-full h-full cursor-pointer"
-                                        @click.stop="_getPath(node.guid)"
+                                        @click.stop="get_path(node.guid)"
                                     >
                                         <div
                                             v-if="group.type !== 'Process'"
@@ -109,7 +109,7 @@
                                             :class="{
                                                 'bg-success-muted': group.base,
                                                 'bg-primary-muted border-primary':
-                                                    _isHighlightedNode(
+                                                    is_highlighted_node(
                                                         node.guid
                                                     ),
                                             }"
@@ -135,7 +135,7 @@
                                                         ],
                                                 }"
                                                 @click.stop="
-                                                    _fetchColumnsList(
+                                                    fetch_columns_list(
                                                         group.groupId,
                                                         node.guid
                                                     )
@@ -162,7 +162,7 @@
                             v-if="group.type === 'Process'"
                             class="flex items-center justify-center w-12 p-0 overflow-hidden bg-transparent "
                             :style="
-                                _getContentHeight(
+                                get_content_height(
                                     group.groupId,
                                     group.fields.length
                                 )
@@ -173,18 +173,17 @@
                                 :key="'node' + String(index)"
                                 class="w-full h-full cursor-pointer"
                                 :class="{
-                                    'border border-primary': _isHighlightedNode(
-                                        node.guid
-                                    ),
+                                    'border border-primary':
+                                        is_highlighted_node(node.guid),
                                 }"
                                 :style="
-                                    _getItemTopPosition(
+                                    get_item_top_position(
                                         group.type,
                                         group.groupId,
                                         index
                                     )
                                 "
-                                @click.stop="_getPath(node.guid)"
+                                @click.stop="get_path(node.guid)"
                             >
                                 <div
                                     v-if="group.type === 'Process'"
@@ -276,8 +275,123 @@
             // const header=computed((type,))
             /** METHODS */
 
-            // _computeGraphRelations
-            const _computeGraphRelations = async () => {
+            // compute_graph_relations
+            // restartComputation
+            const _restartComputation = () => {
+                useLineageCompute.restartComputation(
+                    compute_graph_relations,
+                    lines,
+                    layoutColumns,
+                    glGraph
+                )
+            }
+
+            // get_path
+            const get_path = (guid) => {
+                useLineageLines.getPath(guid, pathGuid, selectedPathGuids)
+                if (pathGuid.value && hasLineage.value) {
+                    const { selectedPathGuids: f } =
+                        useLineageLines.highlightLines(
+                            glGraph,
+                            pathGuid,
+                            lines,
+                            showProcessNodes,
+                            direction
+                        )
+                    selectedPathGuids.value = f
+                }
+            }
+
+            // update_lines
+            const update_lines = () => {
+                useLineageLines.updateLines(lines)
+            }
+
+            // is_highlighted_node
+            const is_highlighted_node = (guid) =>
+                useLineageLines.isHighlightedNode(guid, selectedPathGuids)
+
+            // center_node
+            const center_node = () => {
+                useLineageDOM.centerNode(
+                    lineage.value.baseEntityGuid,
+                    layoutColumns,
+                    panZoomInstance
+                )
+            }
+
+            // handle_zoom
+            const handle_zoom = (val) => {
+                useLineagePanZoom.handleZoom(val, panZoomInstance)
+            }
+
+            // handle_fullscreen
+            const handle_fullscreen = (lineage_graph_wrapper_ref) =>
+                useLineagePanZoom.handleFullscreen(
+                    update_lines,
+                    lineage_graph_wrapper_ref
+                )
+
+            // get_item_top_position
+            const get_item_top_position = (type, groupId, currNodeIndex) =>
+                useLineageDOM.getItemTopPosition(
+                    type,
+                    groupId,
+                    currNodeIndex,
+                    expandedNodes
+                )
+
+            // get_content_height
+            const get_content_height = (groupId, length) =>
+                useLineageDOM.getContentHeight(groupId, length, expandedNodes)
+
+            // get_expanded_node_height
+            const get_expanded_node_height = () => {
+                const { expandedNodes: e } =
+                    useLineageDOM.getExpandedNodeHeight(
+                        layoutColumns,
+                        refs,
+                        update_lines
+                    )
+                expandedNodes.value = e
+            }
+
+            // set_pan_zoom_event
+            const set_pan_zoom_event = async () => {
+                const { panStarted: g, panZoomInstance: h } =
+                    await useLineagePanZoom.setPanZoomEvent(
+                        lineage_graph_container_ref,
+                        update_lines
+                    )
+                panStarted.value = g.value
+                panZoomInstance.value = h.value
+            }
+
+            // pause_pan_zoom_event
+            const pause_pan_zoom_event = (val) => {
+                useLineagePanZoom.pausePanZoomEvent(val, panZoomInstance)
+            }
+
+            // fetch_columns_list
+            const fetch_columns_list = async (groupId, guid) => {
+                columnsListLoading.value = true
+                const { expandedNodeGroups: _expandedNodeGroups } =
+                    await useLineageColumns.fetchColumnsList(
+                        groupId,
+                        guid,
+                        expandedNodes,
+                        pause_pan_zoom_event,
+                        get_expanded_node_height
+                    )
+                expandedNodeGroups.value = _expandedNodeGroups
+                columnsListLoading.value = false
+            }
+
+            const handleExpandIcon = () => {
+                update_lines()
+            }
+
+            const compute_graph_relations = async () => {
                 const {
                     glGraph: a,
                     layoutColumns: b,
@@ -300,7 +414,7 @@
                 setSearchItems(searchItems)
 
                 // getExpandedNodeHeight
-                _getExpandedNodeHeight()
+                get_expanded_node_height()
 
                 // drawLines
                 if (hasLineage.value) {
@@ -312,141 +426,16 @@
                 }
 
                 // setPanZoomEvent
-                await _setPanZoomEvent()
+                await set_pan_zoom_event()
 
                 // centerNode
-                _centerNode()
+                center_node()
             }
 
-            // restartComputation
-            const _restartComputation = () => {
-                useLineageCompute.restartComputation(
-                    _computeGraphRelations,
-                    lines,
-                    layoutColumns,
-                    glGraph
-                )
-            }
-
-            // _getPath
-            const _getPath = (guid) => {
-                useLineageLines.getPath(guid, pathGuid, selectedPathGuids)
-                if (pathGuid.value && hasLineage.value) {
-                    const { selectedPathGuids: f } =
-                        useLineageLines.highlightLines(
-                            glGraph,
-                            pathGuid,
-                            lines,
-                            showProcessNodes,
-                            direction
-                        )
-                    selectedPathGuids.value = f
-                }
-            }
-
-            // _updateLines
-            const _updateLines = () => {
-                useLineageLines.updateLines(lines)
-            }
-
-            // _isHighlightedNode
-            const _isHighlightedNode = (guid) => {
-                return useLineageLines.isHighlightedNode(
-                    guid,
-                    selectedPathGuids
-                )
-            }
-
-            // _centerNode
-            const _centerNode = () => {
-                useLineageDOM.centerNode(
-                    lineage.value.baseEntityGuid,
-                    layoutColumns,
-                    panZoomInstance
-                )
-            }
-
-            // _handleZoom
-            const _handleZoom = (val) => {
-                useLineagePanZoom.handleZoom(val, panZoomInstance)
-            }
-
-            // _handleFullscreen
-            const _handleFullscreen = (lineage_graph_wrapper_ref) => {
-                useLineagePanZoom.handleFullscreen(
-                    _updateLines,
-                    lineage_graph_wrapper_ref
-                )
-            }
-
-            // _getItemTopPosition
-            const _getItemTopPosition = (type, groupId, currNodeIndex) => {
-                return useLineageDOM.getItemTopPosition(
-                    type,
-                    groupId,
-                    currNodeIndex,
-                    expandedNodes
-                )
-            }
-
-            // _getContentHeight
-            const _getContentHeight = (groupId, length) => {
-                return useLineageDOM.getContentHeight(
-                    groupId,
-                    length,
-                    expandedNodes
-                )
-            }
-
-            // _getExpandedNodeHeight
-            const _getExpandedNodeHeight = () => {
-                const { expandedNodes: e } =
-                    useLineageDOM.getExpandedNodeHeight(
-                        layoutColumns,
-                        refs,
-                        _updateLines
-                    )
-                expandedNodes.value = e
-            }
-
-            // _setPanZoomEvent
-            const _setPanZoomEvent = async () => {
-                const { panStarted: g, panZoomInstance: h } =
-                    await useLineagePanZoom.setPanZoomEvent(
-                        lineage_graph_container_ref,
-                        _updateLines
-                    )
-                panStarted.value = g.value
-                panZoomInstance.value = h.value
-            }
-
-            // _pausePanZoomEvent
-            const _pausePanZoomEvent = (val) => {
-                useLineagePanZoom.pausePanZoomEvent(val, panZoomInstance)
-            }
-
-            // _fetchColumnsList
-            const _fetchColumnsList = async (groupId, guid) => {
-                columnsListLoading.value = true
-                const { expandedNodeGroups: _expandedNodeGroups } =
-                    await useLineageColumns.fetchColumnsList(
-                        groupId,
-                        guid,
-                        expandedNodes,
-                        _pausePanZoomEvent,
-                        _getExpandedNodeHeight
-                    )
-                expandedNodeGroups.value = _expandedNodeGroups
-                columnsListLoading.value = false
-            }
-
-            const handleExpandIcon = () => {
-                _updateLines()
-            }
             /** LIFECYCLE */
             // onMounted
             onMounted(() => {
-                _computeGraphRelations()
+                compute_graph_relations()
             })
 
             // onBeforeUnmount
@@ -473,14 +462,14 @@
                 getIcon,
                 isCyclic: false, //
                 showColumns: false, //
-                _getItemTopPosition,
-                _getContentHeight,
-                _handleZoom,
-                _handleFullscreen,
-                _getPath,
+                get_item_top_position,
+                get_content_height,
+                handle_zoom,
+                handle_fullscreen,
+                get_path,
                 _restartComputation,
-                _isHighlightedNode,
-                _fetchColumnsList,
+                is_highlighted_node,
+                fetch_columns_list,
                 handleExpandIcon,
                 panelActiveKey,
             }

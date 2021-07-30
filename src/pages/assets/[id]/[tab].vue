@@ -22,7 +22,7 @@
   </div>
 </template>
 <script lang="ts">
-import { computed, defineComponent, ref } from "vue";
+import { computed, defineComponent, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 
 import useAsset from "~/composables/asset/useAsset";
@@ -40,7 +40,7 @@ export default defineComponent({
     LoadingView,
     ErrorView,
   },
-  setup() {
+  setup(_,context) {
     const route = useRoute();
     const id = computed(() => route?.params?.id || "");
     const tab = computed(() => route?.params?.tab || "");
@@ -57,6 +57,14 @@ export default defineComponent({
       selectedTab.value = item.key;
       router.replace(`/assets/${id.value}/${item.key}`);
     };
+
+    watch(response, () => {
+            if (response.value?.entities?.length)
+                context.emit(
+                    'updateAssetPreview',
+                    response.value?.entities[0] ?? []
+                )
+    })
 
     return {
       current,

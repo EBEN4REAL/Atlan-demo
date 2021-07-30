@@ -1,84 +1,122 @@
 <template>
-  <LoadingView v-if="loading" />
-  <ErrorView v-else-if="error" :error="error" />
-  <div v-else class="w-full">
-    <div class="h-24 p-4">
-      <AssetHeader :asset="response?.entities[0]" />
+    <LoadingView v-if="loading" />
+    <ErrorView v-else-if="error" :error="error" />
+    <div v-else class="w-full bg-gray-100">
+        <div class="h-24 p-4 bg-white">
+            <AssetHeader :asset="response?.entities[0]" />
+        </div>
+        <div class="asset-profile">
+            <a-tabs v-model="activeKey" @change="selectTab($event)">
+                <a-tab-pane v-for="tab in tabs" :key="tab.id" :tab="tab.name">
+                    <component
+                        :is="tab.component"
+                        :ref="
+                            (el) => {
+                                refs[tab.id] = el
+                            }
+                        "
+                        :asset="response?.entities[0] || {}"
+                    ></component>
+                </a-tab-pane>
+            </a-tabs>
+        </div>
     </div>
-    <a-menu
-      v-model:selectedKeys="current"
-      mode="horizontal"
-      @select="selectTab"
-    >
-      <a-menu-item key="overview"> Overview </a-menu-item>
-      <a-menu-item key="lineage"> Lineage </a-menu-item>
-    </a-menu>
-    <div>
-      <component
-        :is="selectedTab"
-        :asset="response?.entities[0] || {}"
-      ></component>
-    </div>
-  </div>
 </template>
 <script lang="ts">
-import { computed, defineComponent, ref, watch } from "vue";
-import { useRoute, useRouter } from "vue-router";
+    // Vue
+    import {
+        computed,
+        defineComponent,
+        ref,
+        defineAsyncComponent,
+        watch,
+    } from 'vue'
+    import { useRoute, useRouter } from 'vue-router'
 
-import useAsset from "~/composables/asset/useAsset";
+    // Components
+    import LoadingView from '@common/loaders/section.vue'
+    import ErrorView from '@common/error/index.vue'
+    import AssetHeader from '~/components/asset/assetProfile/assetHeader.vue'
+    import useAsset from '~/composables/asset/useAsset'
 
-import Overview from "~/components/asset/assetProfile/tabs/overview.vue";
-import Lineage from "~/components/asset/assetProfile/tabs/lineage.vue";
-import AssetHeader from "~/components/asset/assetProfile/assetHeader.vue";
-import LoadingView from "@common/loaders/section.vue";
-import ErrorView from "@common/error/index.vue";
-export default defineComponent({
-  components: {
-    overview: Overview,
-    lineage: Lineage,
-    AssetHeader,
-    LoadingView,
-    ErrorView,
-  },
-  setup(_,context) {
-    const route = useRoute();
-    const id = computed(() => route?.params?.id || "");
-    const tab = computed(() => route?.params?.tab || "");
+    export default defineComponent({
+        components: {
+            AssetHeader,
+            LoadingView,
+            ErrorView,
+            overview: defineAsyncComponent(
+                () =>
+                    import('~/components/asset/assetProfile/tabs/overview.vue')
+            ),
+            lineage: defineAsyncComponent(
+                () => import('~/components/asset/assetProfile/tabs/lineage.vue')
+            ),
+        },
+        setup(_, context) {
+            /** DATA */
+            const activeKey = ref('1')
+            const refs: { [key: string]: any } = ref({})
+            const tabs = [
+                {
+                    id: '1',
+                    name: 'Overview',
+                    component: 'overview',
+                },
+                {
+                    id: '2',
+                    name: 'Lineage',
+                    component: 'lineage',
+                },
+            ]
 
-    const current = ref([tab.value]);
-    const selectedTab = ref(tab.value);
-    const router = useRouter();
+            /** UTILS */
+            const router = useRouter()
+            const route = useRoute()
 
-    const { response, error, loading } = useAsset({
-      entityId: id.value,
-    });
+            /** COMPUTED */
+            const id = computed(() => route?.params?.id || '')
 
-    const selectTab = (item: any) => {
-      selectedTab.value = item.key;
-      router.replace(`/assets/${id.value}/${item.key}`);
-    };
-
-    watch(response, () => {
-            if (response.value?.entities?.length)
-                context.emit(
-                    'updateAssetPreview',
-                    response.value?.entities[0] ?? []
+            /** METHODS */
+            const selectTab = (activeKey: string) => {
+                const selectedTab = tabs.find((i) => i.id === activeKey)
+                router.replace(
+                    `/assets/${id.value}/${selectedTab?.name.toLowerCase()}`
                 )
-    })
+            }
+            const { response, error, loading } = useAsset({
+                entityId: id.value,
+            })
 
-    return {
-      current,
-      selectTab,
-      selectedTab,
-      response,
-      error,
-      loading,
-    };
-  },
-});
+            watch(response, () => {
+                if (response.value?.entities?.length)
+                    context.emit(
+                        'updateAssetPreview',
+                        response.value?.entities[0] ?? []
+                    )
+            })
+
+            return {
+                activeKey,
+                tabs,
+                refs,
+                selectTab,
+                response,
+                error,
+                loading,
+            }
+        },
+    })
 </script>
 <route lang="yaml">
 meta:
-  layout: default
-  requiresAuth: true
+    layout: default
+    requiresAuth: true
 </route>
+
+<style lang="less">
+    .asset-profile {
+        .ant-tabs-bar {
+            @apply px-4 bg-white  !important;
+        }
+    }
+</style>

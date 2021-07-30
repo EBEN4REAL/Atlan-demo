@@ -1,5 +1,8 @@
 <template>
-    <div class="px-12 pr-0 mb-12">
+    <div v-if="isLoading" class="" >
+        <LoadingView/>
+    </div>
+    <div v-else class="px-12 pr-0 mb-12">
         <div class="flex flex-row mt-6 mb-5">
             <div class="mr-5">
                 <img :src="CategorySvg" />
@@ -22,7 +25,7 @@
                         />
                         <div v-if="termCount" class="flex flex-column w-1/2 ml-9 border-l">
                             <GlossaryTopTerms
-                                v-if="categoryTerms?.length"
+                                v-if="categoryTerms?.length && !termsLoading"
                                 :terms="categoryTerms"
                             />
                         </div>
@@ -44,6 +47,7 @@ import GlossaryProfileOverview from '@/glossary/glossaryProfileOverview.vue'
 import GlossaryTopTerms from '@/glossary/glossaryTopTerms.vue'
 import EntityHistory from '@/glossary/entityHistory.vue'
 import CategoryTermsAndCategoriesTab from '@/glossary/categoryProfile/categoryTermsAndCategoriesTab.vue'
+import LoadingView from "@common/loaders/section.vue";
 
 import useGTCEntity from '~/composables/glossary/useGtcEntity'
 import useCategoryTerms from '~/composables/glossary/useCategoryTerms'
@@ -60,6 +64,7 @@ export default defineComponent({
         GlossaryTopTerms,
         CategoryTermsAndCategoriesTab,
         EntityHistory,
+        LoadingView,
     },
     props: {
         id: {
@@ -115,6 +120,7 @@ export default defineComponent({
             parentGlossaryQualifiedName,
             error,
             isLoading,
+            termsLoading,
             CategorySvg,
             guid,
         }

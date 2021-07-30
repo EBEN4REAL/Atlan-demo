@@ -9,43 +9,54 @@
                 @change="onSearch"
             ></a-input-search>
         </div>
-                <a-tabs type="card" default-active-key="1" class="border-0">
-                    <a-tab-pane key="1" :tab="`All (${assets?.length})`">
-                            <div class="flex w-full h-full">
-            <div class="w-full item-stretch">
-                <div class="h-full">
-                    <div
-                        v-if="
-                            list &&
-                            list.length <= 0 &&
-                            !isLoading &&
-                            !isValidating
-                        "
-                        class="flex-grow"
-                    >
-                        <EmptyView></EmptyView>
+        <a-tabs
+            v-if="assets?.length"
+            type="card"
+            default-active-key="1"
+            class="border-0"
+        >
+            <a-tab-pane key="1" :tab="`All (${assets?.length})`">
+                <div class="flex w-full h-full">
+                    <div class="w-full item-stretch">
+                        <div class="h-full">
+                            <div
+                                v-if="
+                                    list &&
+                                    list.length <= 0 &&
+                                    !isLoading &&
+                                    !isValidating
+                                "
+                                class="flex-grow"
+                            >
+                                <EmptyView></EmptyView>
+                            </div>
+                            <AssetList
+                                v-else
+                                :list="assets"
+                                :projection="[
+                                    'heirarchy',
+                                    'description',
+                                    'owners',
+                                ]"
+                                :is-loading="isLoading"
+                                @preview="handlePreview"
+                            ></AssetList>
+                        </div>
                     </div>
-                    <AssetList
-                        v-else
-                        :list="assets"
-                        :projection="['heirarchy', 'description', 'owners']"
-                        :is-loading="isLoading"
-                        @preview="handlePreview"
-                    ></AssetList>
+                    <div
+                        v-if="selected?.guid"
+                        class="flex flex-col w-1/2 h-full bg-white border-l"
+                        style="overflow: hidden; z-index: 99"
+                    >
+                        <AssetPreview :item="selected"></AssetPreview>
+                    </div>
                 </div>
-            </div>
-            <div
-                v-if="selected?.guid"
-                class="flex flex-col w-1/2 h-full bg-white border-l"
-                style="overflow: hidden; z-index: 99"
-            >
-                <AssetPreview :item="selected"></AssetPreview>
-            </div>
+            </a-tab-pane>
+        </a-tabs>
+        <div v-else class="mt-24">
+            <EmptyView :showClearFiltersCTA="false" />
         </div>
-                        </a-tab-pane>
-</a-tabs>
-  
-  </div>
+    </div>
 </template>
 <script lang="ts">
 import { defineComponent, computed, onMounted, watch, ref } from 'vue'
@@ -53,6 +64,7 @@ import { useDebounceFn } from '@vueuse/core'
 
 import AssetList from '@/discovery/asset/list/index.vue'
 import AssetPreview from '@/preview/asset/index.vue'
+import EmptyView from '@common/empty/discover.vue'
 
 import useTermLinkedAssets from '~/composables/glossary/useTermLinkedAssets'
 
@@ -62,7 +74,7 @@ interface PropsType {
 }
 
 export default defineComponent({
-    components: { AssetList, AssetPreview },
+    components: { AssetList, AssetPreview, EmptyView },
     props: ['termQualifiedName', 'termCount'],
     setup(props: PropsType) {
         const termName = computed(() => props.termQualifiedName)

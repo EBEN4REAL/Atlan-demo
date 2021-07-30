@@ -1,6 +1,10 @@
 <template>
-    <div class="px-12 pr-0 mb-12">
-        <div class="flex flex-row mt-6 mb-5">
+        <div v-if="isLoading" class="w-full  min-h-full justify-center" >
+            <LoadingView/>
+        </div>
+    <div v-else class="px-12 pr-0 mb-12">
+
+            <div class="flex flex-row mt-6 mb-5">
             <div class="mr-5">
                 <img :src="TermSvg" />
             </div>
@@ -22,7 +26,7 @@
                             :show-term-count="false"
                         />
                         <div v-if="linkedAssetsCount" class="flex flex-column w-3/4 ml-9 border-l">
-                            <TopAssets  :term-qualified-name="qualifiedName" />
+                            <TopAssets :term-qualified-name="qualifiedName" />
                         </div>
                     </div>
                 </a-tab-pane>
@@ -41,7 +45,7 @@ import GlossaryProfileOverview from '@/glossary/glossaryProfileOverview.vue'
 import TopAssets from '@/glossary/termProfile/topAssets.vue'
 import LinkedAssetsTab from '@/glossary/termProfile/linkedAssetsTab.vue'
 import EntityHistory from '@/glossary/entityHistory.vue'
-
+import LoadingView from "@common/loaders/section.vue";
 
 import useGTCEntity from '~/composables/glossary/useGtcEntity'
 
@@ -52,7 +56,7 @@ interface PropsType {
 }
 
 export default defineComponent({
-  components: {GlossaryProfileOverview, TopAssets, LinkedAssetsTab, EntityHistory},
+  components: {GlossaryProfileOverview, TopAssets, LinkedAssetsTab, EntityHistory, LoadingView},
     props: {
         id: {
             type: String,

@@ -8,7 +8,7 @@
                 @change="onSearch"
             ></a-input-search>
         </div>
-        <div class="flex flex-row w-full">
+        <div v-if="all?.length" class="flex flex-row w-full">
             <div class="w-full border-r">
                 <a-tabs type="card" default-active-key="1" class="border-0">
                     <a-tab-pane key="1" :tab="`All (${all.length})`">
@@ -50,6 +50,9 @@
                 ></Overview>
             </div> -->
         </div>
+        <div v-else class="mt-24">
+            <EmptyView :showClearFiltersCTA="false" />
+        </div>
     </div>
 </template>
 
@@ -60,6 +63,7 @@ import { useDebounceFn } from '@vueuse/core'
 
 import AssetPreview from '@/preview/asset/index.vue'
 import Overview from '@/preview/asset/tabs/overview/index.vue'
+import EmptyView from '@common/empty/discover.vue'
 import GtcEntityCard from '../gtcEntityCard.vue'
 
 import useGtcSearch from '~/composables/glossary/useGtcSearch'
@@ -70,7 +74,7 @@ interface Proptype {
 }
 
 export default defineComponent({
-    components: { GtcEntityCard, AssetPreview, Overview },
+    components: { GtcEntityCard, AssetPreview, Overview, EmptyView },
     props: {
         qualifiedName: {
             type: String,

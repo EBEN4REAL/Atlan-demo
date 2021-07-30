@@ -1,5 +1,8 @@
 <template>
-    <div class="px-12 pr-0 mb-12">
+    <div v-if="isLoading" class="w-full  min-h-full justify-center" >
+        <LoadingView/>
+    </div>
+    <div v-else class="px-12 pr-0 mb-12">
         <div class="flex flex-row mt-6 mb-5">
             <div class="mr-5">
                 <img :src="GlossarySvg" />
@@ -19,13 +22,14 @@
                         <GlossaryProfileOverview :entity="glossary" />
                         <div v-if="termCount" class="flex flex-column w-1/2 ml-9 border-l">
                             <GlossaryTopTerms
-                                v-if="glossaryTerms?.length"
+                                v-if="glossaryTerms?.length && !termsLoading"
                                 :terms="glossaryTerms"
                             />
                         </div>
                     </div>
                     <hr />
                     <GlossaryContinueSettingUp
+                        v-if="!isLoading"
                         :terms="glossaryTerms"
                         :categories="glossaryCategories"
                     />
@@ -50,6 +54,7 @@ import GlossaryTopTerms from '@/glossary/glossaryTopTerms.vue'
 import GlossaryContinueSettingUp from '@/glossary/glossaryContinueSettingUp.vue'
 import GlossaryTermsAndCategoriesTab from '@/glossary/glossaryTermsAndCategoriesTab.vue'
 import EntityHistory from '@/glossary/entityHistory.vue'
+import LoadingView from "@common/loaders/section.vue";
 
 import useGTCEntity from '~/composables/glossary/useGtcEntity'
 import useGlossaryTerms from '~/composables/glossary/useGlossaryTerms'
@@ -68,6 +73,7 @@ export default defineComponent({
         GlossaryContinueSettingUp,
         GlossaryTermsAndCategoriesTab,
         EntityHistory,
+        LoadingView
     },
     props: {
         id: {
@@ -132,6 +138,7 @@ export default defineComponent({
             categoryCount,
             error,
             isLoading,
+            termsLoading,
             GlossarySvg,
             guid,
             glossaryTerms,

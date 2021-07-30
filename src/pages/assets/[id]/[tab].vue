@@ -24,7 +24,13 @@
 </template>
 <script lang="ts">
     // Vue
-    import { computed, defineComponent, ref, defineAsyncComponent } from 'vue'
+    import {
+        computed,
+        defineComponent,
+        ref,
+        defineAsyncComponent,
+        watch,
+    } from 'vue'
     import { useRoute, useRouter } from 'vue-router'
 
     // Components
@@ -46,7 +52,7 @@
                 () => import('~/components/asset/assetProfile/tabs/lineage.vue')
             ),
         },
-        setup() {
+        setup(_, context) {
             /** DATA */
             const activeKey = ref('1')
             const refs: { [key: string]: any } = ref({})
@@ -71,14 +77,22 @@
             const id = computed(() => route?.params?.id || '')
 
             /** METHODS */
-            const selectTab = (activeKey) => {
+            const selectTab = (activeKey: string) => {
                 const selectedTab = tabs.find((i) => i.id === activeKey)
                 router.replace(
-                    `/assets/${id.value}/${selectedTab.name.toLowerCase()}`
+                    `/assets/${id.value}/${selectedTab?.name.toLowerCase()}`
                 )
             }
             const { response, error, loading } = useAsset({
                 entityId: id.value,
+            })
+
+            watch(response, () => {
+                if (response.value?.entities?.length)
+                    context.emit(
+                        'updateAssetPreview',
+                        response.value?.entities[0] ?? []
+                    )
             })
 
             return {

@@ -112,9 +112,6 @@
         watch,
         computed,
     } from 'vue'
-    import ConnectionTree from '@/connection/tree/index.vue'
-    import Loading from '@common/loaders/section.vue'
-    import ErrorView from '@common/error/index.vue'
     import CreateClassificationTree from '@common/tree/classification/index.vue'
     import { useRouter } from 'vue-router'
     import { ValidateErrorEntity } from 'ant-design-vue/es/form/interface'
@@ -125,15 +122,12 @@
     export default defineComponent({
         name: 'ClassificationProfileWrapper',
         components: {
-            ConnectionTree,
-            Loading,
-            ErrorView,
             CreateClassificationTree,
         },
         props: {
             classificationName: String,
         },
-        setup(props, context) {
+        setup(props) {
             const store = useClassificationStore()
             const router = useRouter()
             const modalVisible = ref(false)
@@ -322,7 +316,7 @@
                         decodeURI(props.classificationName)
                 )
             })
-            const handleClickUser = (username: string) => {}
+            const handleClickUser = () => {}
 
             return {
                 handleClickUser,

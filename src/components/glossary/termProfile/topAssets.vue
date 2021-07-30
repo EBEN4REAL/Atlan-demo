@@ -20,20 +20,19 @@ import { defineComponent, computed, onMounted, watch } from 'vue'
 import Item from '@/discovery/asset/list/item.vue'
 import useTermLinkedAssets from '~/composables/glossary/useTermLinkedAssets'
 
-// import TermPreviewCard from '@/glossary/termProfile/termPreviewCard.vue'
 
 interface PropsType {
-    termQuallifiedName: string;
+    termQualifiedName: string;
     termCount: number;
 }
 
 export default defineComponent({
     components: { Item },
-    props: ['termQuallifiedName', 'termCount'],
+    props: ['termQualifiedName', 'termCount'],
     setup(props: PropsType) {
-        const termName = computed(() => props.termQuallifiedName)
+        const termName = computed(() => props.termQualifiedName)
 
-        const { linkedAssets, isLoading, error, fetchLinkedAssets} = useTermLinkedAssets(termName.value);
+        const { linkedAssets, isLoading, error, fetchLinkedAssets} = useTermLinkedAssets();
 
         const assets = computed(( ) => linkedAssets.value?.entities)
         const assetCount = computed(() => assets.value?.length ?? 0)

@@ -21,12 +21,12 @@
 import { defineComponent, computed, onMounted } from 'vue'
 import { useHead } from '@vueuse/head'
 
-import { Components } from '~/api/atlas/client'
+import TermPreviewCard from '@/glossary/termPreviewCard.vue'
 
+import { Components } from '~/api/atlas/client'
 import useGlossaryTerms from '~/composables/glossary/useGlossaryTerms'
 
-import Readme from '@/common/readme/index.vue'
-import TermPreviewCard from '@/glossary/termPreviewCard.vue'
+
 
 interface PropsType {
     terms?: Components.Schemas.AtlasGlossaryTerm[]
@@ -35,8 +35,8 @@ interface PropsType {
 }
 
 export default defineComponent({
+    components: { TermPreviewCard },
     props: ['terms', 'numberOfTerms'],
-    components: { Readme, TermPreviewCard },
     setup(props: PropsType) {
         const terms = computed(() => props.terms)
         const glossaryGuid = computed(() => props.glossaryGuid)

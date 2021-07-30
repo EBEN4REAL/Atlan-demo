@@ -26,12 +26,12 @@
                             :show-term-count="false"
                         />
                         <div v-if="linkedAssetsCount" class="flex flex-column w-3/4 ml-9 border-l">
-                            <TopAssets  :term-quallified-name="qualifiedName" />
+                            <TopAssets  :term-qualified-name="qualifiedName" />
                         </div>
                     </div>
                 </a-tab-pane>
                 <a-tab-pane key="2" tab="Linked Terms">
-                    Linked Terms
+                   <LinkedAssetsTab :term-qualified-name="qualifiedName" />
                 </a-tab-pane>
             </a-tabs>
         </div>
@@ -45,6 +45,7 @@ import { defineComponent, computed, watch, onMounted } from 'vue'
 
 import GlossaryProfileOverview from '@/glossary/glossaryProfileOverview.vue'
 import TopAssets from '@/glossary/termProfile/topAssets.vue'
+import LinkedAssetsTab from '@/glossary/termProfile/linkedAssetsTab.vue'
 
 
 import useGTCEntity from '~/composables/glossary/useGtcEntity'
@@ -56,7 +57,7 @@ interface PropsType {
 }
 
 export default defineComponent({
-  components: {GlossaryProfileOverview, TopAssets},
+  components: {GlossaryProfileOverview, TopAssets, LinkedAssetsTab},
     props: {
         id: {
             type: String,

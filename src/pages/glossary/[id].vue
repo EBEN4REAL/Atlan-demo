@@ -17,7 +17,7 @@
             </div>
         </div>
         <div>
-            <a-tabs default-active-key="2" class="border-0">
+            <a-tabs default-active-key="1" class="border-0">
                 <a-tab-pane key="1" tab="Overview">
                     <div class="flex flex-row m-0 p-0">
                         <GlossaryProfileOverview :entity="glossary" />

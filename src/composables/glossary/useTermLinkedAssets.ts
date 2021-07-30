@@ -10,6 +10,7 @@ import { Components } from '~/api/atlas/client'
 
 export default function useTermLinkedAssets() {
   const termQualifiedName = ref<string>();
+  const requestQuery = ref<string>();
 
   const body = ref({
     termName: termQualifiedName.value,
@@ -23,20 +24,21 @@ export default function useTermLinkedAssets() {
       //   ...BUSINESS_METADATA_GET_ATTRIBUTE_PROJECTION,
       //   ...CUSTOM_RELATIONSHIP_ATTRIBUTES_TABLE,
       //   ...CUSTOM_RELATIONSHIP_ATTRIBUTES_COLUMN,
-      "files",
-      "table",
-      "database",
+      // "files",
+      // "table",
+      // "database",
       "atlanSchema",
-      "profileSchedule",
-      "isProfileScheduled",
-      "order",
-      "extra",
-      "metadata",
-      "commits",
+      // "profileSchedule",
+      // "isProfileScheduled",
+      // "order",
+      // "extra",
+      // "metadata",
+      // "commits",
       "assetStatus",
       ...BaseAttributes,
       ...BasicSearchAttributes
     ],
+    query: requestQuery
   });
 
   const { data: linkedAssets, error, isValidating: isLoading, mutate } = useAPI<Components.Schemas.AtlasSearchResult>(GET_TERM_LINKED_ASSETS, 'POST', {
@@ -48,11 +50,14 @@ export default function useTermLinkedAssets() {
     }
   })
 
-  const fetchLinkedAssets = (termName: string) => {
+  const fetchLinkedAssets = (termName: string, query?:string) => {
     body.value.termName = termName;
     termQualifiedName.value = termName;
 
-    if (termName)
+    body.value.query =  query ?? '';
+    requestQuery.value = query ?? '';
+
+    if (termName || query)
       mutate();
   }
 

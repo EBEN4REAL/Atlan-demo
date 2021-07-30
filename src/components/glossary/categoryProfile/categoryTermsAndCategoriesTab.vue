@@ -142,7 +142,7 @@ export default defineComponent({
 
         const onSearch = useDebounceFn(() => {
             fetchAssets(name.value, `*${searchQuery.value}*`)
-        }, 400)
+        }, 0)
 
         return {
             name,

@@ -38,6 +38,11 @@ export default defineComponent({
         const creationTime = computed(() => useTimeAgo(props.createdAt).value)
         const updationTime = computed(() => useTimeAgo(props.updatedAt).value)
 
+        // Placeholder for demo
+        const createdBy = computed(() => props.createdBy ?? 'nitya')
+        const updatedBy = computed(() => props.updatedBy ?? 'nitya')
+
+
         const { showUserPreview, setUserUniqueAttribute } = useUserPreview()
         const handleClickUser = (username: string) => {
             setUserUniqueAttribute(username, 'username')
@@ -47,6 +52,8 @@ export default defineComponent({
         return {
             creationTime,
             updationTime,
+            createdBy,
+            updatedBy,
             handleClickUser,
         }
     },

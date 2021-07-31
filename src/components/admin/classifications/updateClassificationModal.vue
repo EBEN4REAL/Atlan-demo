@@ -47,7 +47,7 @@
     import { defineComponent, computed, ref, Ref, watch, toRaw } from 'vue'
     import { useClassificationStore } from './_store'
     import { Classification } from '~/api/atlas/classification'
-    import { classification } from '~/pages/admin/classifications.vue'
+    import { classificationInterface } from '~/types/classifications/classification.interface'
 
     export default defineComponent({
         name: 'UpdateClassification',
@@ -155,7 +155,8 @@
                                     updateClassificationError
                                 )
                                 if (updateClassificationData.value) {
-                                    const classificationObject: any = updateClassificationData
+                                    const classificationObject: any =
+                                        updateClassificationData
                                     const classification =
                                         classificationObject &&
                                         classificationObject.value
@@ -167,22 +168,23 @@
                                             ? classificationObject.value
                                                   .classificationDefs[0]
                                             : {}
-                                    const classificationIndex = store.classifications.findIndex(
-                                        (c: classification) =>
-                                            c.guid === classification.guid
-                                    )
+                                    const classificationIndex =
+                                        store.classifications.findIndex(
+                                            (c: classificationInterface) =>
+                                                c.guid === classification.guid
+                                        )
                                     if (classificationIndex === -1) {
                                         return
                                     }
-                                    store.classifications[
-                                        classificationIndex
-                                    ] = classification
+                                    store.classifications[classificationIndex] =
+                                        classification
                                     store.classifications = [
                                         ...store.classifications,
                                     ]
                                     const classificationTree =
                                         store.transformClassificationTreeData
-                                    store.classificationTree = classificationTree
+                                    store.classificationTree =
+                                        classificationTree
                                     updateClassificationStatus.value = 'success'
                                     context.emit('close')
                                 } else if (updateClassificationError.value) {

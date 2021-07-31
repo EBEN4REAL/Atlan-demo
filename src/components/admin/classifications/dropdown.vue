@@ -31,7 +31,14 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, computed, ref } from 'vue'
+    import { defineComponent, computed, ref, PropType } from 'vue'
+
+    type option = {
+        title: string
+        icon: string
+        iconType: string
+        handleClick: Function
+    }
 
     export default defineComponent({
         name: 'Dropdown',
@@ -41,7 +48,7 @@
              * { title: string, icon: string, iconType: string, handleClick: Function }
              */
             options: {
-                type: Array,
+                type: Array as PropType<option[]>,
                 default: () => [],
             },
             /**
@@ -131,7 +138,7 @@
             const isHiddenEventToBeHandled = computed(
                 () => props.isHiddenEventToBeHandled
             )
-            const { options } = props
+            const options = props.options
 
             const handleMenuItemClick = (option: any) => {
                 option.handleClick()
@@ -163,7 +170,7 @@
             /**
              * Returns icon class based on icon and icon type
              */
-            const getIconClass = (option: any) => {
+            const getIconClass = (option: option) => {
                 if (option && option.icon) {
                     switch (option.iconType) {
                         case 'at':

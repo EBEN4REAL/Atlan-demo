@@ -2,11 +2,9 @@
     <div class="flex flex-col h-full rounded-lg">
         <div class="flex items-center mx-3 mb-1">
             <a-input
-                :placeholder="
-                    `Search ${
-                        queryText == '' ? list.length : filteredList.length
-                    } linked glossary`
-                "
+                :placeholder="`Search ${
+                    queryText == '' ? list.length : filteredList.length
+                } linked glossary`"
                 :allowClear="true"
                 size="default"
                 class="rounded-full"
@@ -18,7 +16,7 @@
                         <template #content>
                             <div class="flex">
                                 <div
-                                    class="px-3 border-r border-gray-200 border-dashed"
+                                    class="px-3 border-r border-gray-200 border-dashed "
                                 >
                                     <p class="mb-1 text-gray-500">Show/Hide</p>
                                     <a-checkbox-group
@@ -63,14 +61,14 @@
         <div
             v-if="
                 (list && list.length <= 0 && !isLoading && !isValidating) ||
-                    (queryText !== '' && filteredList.length <= 0)
+                (queryText !== '' && filteredList.length <= 0)
             "
             class="flex-grow"
         >
             <EmptyView :showClearFiltersCTA="false" type="Terms"></EmptyView>
         </div>
         <LinkedTermList
-            class=" asset-list-height"
+            class="asset-list-height"
             v-else
             :list="queryText == '' ? list : filteredList"
             :score="searchScoreList"
@@ -122,10 +120,12 @@
             const assetType = ref('AtlasGlossaryTerm')
             const assetTypeListString = 'AtlasGlossaryTerm'
             const filteredList = ref([])
-            const assetTypeList: Ref<Array<{
-                id: string
-                label: string
-            }>> = ref([])
+            const assetTypeList: Ref<
+                Array<{
+                    id: string
+                    label: string
+                }>
+            > = ref([])
             const totalCount = ref(0)
             const assetTypeLabel = ref('terms')
             const selectedClassification = computed(
@@ -203,11 +203,12 @@
                     item?.attributes.name.includes(query)
                 )
             }
-            const handleSearchChange = (e: any) => {
+            const handleSearchChange = (e: Event) => {
                 console.log(e, 'handleSearch')
-                queryText.value = e.target.value
+                queryText.value = (<HTMLInputElement>e.target).value
                 filterListByQueryText(queryText.value)
             }
+            //zxs
 
             const handlePreview = () => {}
             const projection: Ref<Array<string>> = ref([])
@@ -221,7 +222,7 @@
                 let list = []
                 switch (sortingOrder) {
                     case 'ascending': {
-                        list = data.value.sort(function(
+                        list = data.value.sort(function (
                             listA: any,
                             listB: any
                         ) {
@@ -238,7 +239,7 @@
                         break
                     }
                     case 'descending': {
-                        list = data.value.sort(function(
+                        list = data.value.sort(function (
                             listA: any,
                             listB: any
                         ) {
@@ -319,7 +320,7 @@
                                 criterion,
                             },
                         ],
-                    }
+                    } as Components.Schemas.FilterCriteria
                     criterion.push({
                         attributeName: '__classificationNames',
                         attributeValue: selectedClassification.value,
@@ -340,7 +341,7 @@
             const handlePreferenceCheckboxChange = () => {
                 projection.value = preferenceCheckbox.value
             }
-            const preferenceCheckbox: Ref<any[]> = ref([])
+            const preferenceCheckbox: Ref<string[]> = ref([])
 
             return {
                 sorting,

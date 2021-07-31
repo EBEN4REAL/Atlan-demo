@@ -118,6 +118,7 @@
 <script lang="ts">
     import {
         defineComponent,
+        PropType,
         reactive,
         ref,
         toRaw,
@@ -135,24 +136,8 @@
 
     import { ValidateErrorEntity } from 'ant-design-vue/es/form/interface'
     import { Classification } from '~/api/atlas/classification'
-
-    export interface classification {
-        attributeDefs: Array<any>
-        category: string
-        createTime: number
-        createdBy: string
-        description: string
-        displayName: string
-        entityTypes: Array<any>
-        guid: string
-        name: string
-        subTypes: Array<any>
-        superTypes: Array<any>
-        typeVersion: string
-        updateTime: number
-        updatedBy: string
-        version: number
-    }
+    import { classificationInterface } from '~/types/classifications/classification.interface'
+    import { typedefsInterface } from '~/types/typedefs/typedefs.interface'
 
     export default defineComponent({
         name: 'ClassificationProfileWrapper',
@@ -163,7 +148,9 @@
             CreateClassificationTree,
         },
         props: {
-            classificationName: String,
+            classificationName: {
+                type: String as PropType<String>,
+            },
         },
         setup(props, context) {
             const store = useClassificationStore()
@@ -197,10 +184,10 @@
 
             // get classifications
             store.setClassificationsStatus('loading')
-            const {
-                data: classificationData,
-                error: classificationError,
-            } = Classification.getClassificationList({ cache: false })
+            const { data: classificationData, error: classificationError } =
+                Classification.getClassificationList<typedefsInterface>({
+                    cache: false,
+                })
 
             watch([classificationData, classificationError], () => {
                 if (classificationData.value) {
@@ -221,7 +208,7 @@
                     store.setClassificationsStatus('error')
                 }
             })
-            const nodeEmit = (node: classification) => {
+            const nodeEmit = (node: classificationInterface) => {
                 router.push(
                     `/admin/classifications/${encodeURIComponent(node.name)}`
                 )
@@ -246,8 +233,8 @@
                 ],
             }
 
-            const handleSearch = (e: any) => {
-                treeFilterText.value = e.target.value
+            const handleSearch = (e: Event) => {
+                treeFilterText.value = (<HTMLInputElement>e.target).value
                 store.filterClassificationTree(treeFilterText.value)
             }
 
@@ -267,26 +254,16 @@
             }
             const createClassification = () => {
                 const payload: {
-                    classificationDefs: Array<{
-                        attributeDefs: Array<any>
-                        description: string
-                        name: string
-                        superTypes: Array<any>
-                    }>
+                    classificationDefs: classificationInterface[]
                 } = {
                     classificationDefs: [],
                 }
-                const classificationObj: {
-                    attributeDefs: Array<any>
-                    description: string
-                    name: string
-                    superTypes: Array<any>
-                } = {
+                const classificationObj = {
                     attributeDefs: [],
                     description: '',
                     name: '',
                     superTypes: [],
-                }
+                } as unknown as classificationInterface
 
                 createClassificationFormRef.value
                     .validate()
@@ -299,10 +276,12 @@
                         const {
                             data: createClassificationData,
                             error: createClassificationError,
-                        } = Classification.createClassification({
-                            cache: false,
-                            payload,
-                        })
+                        } = Classification.createClassification<typedefsInterface>(
+                            {
+                                cache: false,
+                                payload,
+                            }
+                        )
 
                         watch(
                             [
@@ -323,24 +302,13 @@
                                         createClassificationData.value,
                                         createClassificationError.value
                                     )
-                                    let classifications =
+                                    let classifications: classificationInterface[] =
                                         createClassificationData.value
-                                            .classificationDefs ?? []
+                                            .classificationDefs
                                     classifications = [
                                         ...store.classifications,
                                         ...classifications,
                                     ]
-                                    classifications = classifications.map(
-                                        (classification: any) => {
-                                            classification.alias =
-                                                classification.name
-                                            return classification
-                                        }
-                                    )
-                                    console.log(
-                                        'getClassifications -> classifications',
-                                        classifications
-                                    )
                                     store.classifications =
                                         classifications ?? []
                                     const classificationTree =
@@ -385,7 +353,7 @@
                 modalVisible.value = !modalVisible.value
             }
 
-            const handleSelectNode = (node: classification) => {
+            const handleSelectNode = (node: classificationInterface) => {
                 console.log(node, 'parent')
             }
 
@@ -399,7 +367,7 @@
                     return {}
                 }
                 return classifications.value.find(
-                    (classification: classification) =>
+                    (classification: classificationInterface) =>
                         (classification.name || '') ===
                         decodeURI(props.classificationName as string)
                 )
@@ -464,7 +432,7 @@
     }
 </style>
 <route lang="yaml">
-  meta:
-  layout: default
-  requiresAuth: true
-  </route>
+meta:
+layout: default
+requiresAuth: true
+</route>

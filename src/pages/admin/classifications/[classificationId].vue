@@ -1,10 +1,13 @@
 <template>
     <div>
         <ClassificationHeader
-            :classification="selectedClassification"
             v-if="selectedClassification"
+            :classification="selectedClassification"
         />
-        <ClassificationBody :classification="selectedClassification" />
+        <ClassificationBody
+            v-if="selectedClassification"
+            :classification="selectedClassification"
+        />
     </div>
 </template>
 
@@ -18,7 +21,7 @@
     import AssetListWrapper from '~/components/asset/assetListWrapper.vue'
     import { useClassificationStore } from '~/components/admin/classifications/_store'
     import ClassificationBody from '~/components/admin/classifications/classificationBody.vue'
-    import { classification } from '../classifications.vue'
+    import { classificationInterface } from '~/types/classifications/classification.interface'
 
     export default defineComponent({
         name: 'ClassificationProfileWrapper',
@@ -34,22 +37,24 @@
         props: {
             classificationId: String,
         },
-        setup(props, context) {
+        setup(props) {
             const store = useClassificationStore()
             const classifications = computed(() => store.classifications)
-            const selectedClassification: any = computed(() => {
-                if (!props.classificationId) {
-                    return {}
+            const selectedClassification = computed(
+                (): classificationInterface | undefined => {
+                    if (!props.classificationId) {
+                        return undefined
+                    }
+                    if (classifications.value.length === 0) {
+                        return undefined
+                    }
+                    return classifications.value.find(
+                        (classification) =>
+                            (classification.name || '') ===
+                            decodeURI(props.classificationId as string)
+                    )
                 }
-                if (classifications.value.length === 0) {
-                    return {}
-                }
-                return classifications.value.find(
-                    (classification: classification) =>
-                        (classification.name || '') ===
-                        decodeURI(props.classificationId as string)
-                )
-            })
+            )
 
             return {
                 selectedClassification,
@@ -75,7 +80,7 @@
     }
 </style>
 <route lang="yaml">
-  meta:
-  layout: default
-  requiresAuth: true
-  </route>
+meta:
+layout: default
+requiresAuth: true
+</route>

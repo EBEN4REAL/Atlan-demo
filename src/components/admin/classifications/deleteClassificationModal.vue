@@ -35,10 +35,19 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, computed, ref, toRaw, watch, Ref } from 'vue'
+    import {
+        defineComponent,
+        computed,
+        ref,
+        toRaw,
+        watch,
+        Ref,
+        PropType,
+    } from 'vue'
     import { useClassificationStore } from './_store'
     import { Classification } from '~/api/atlas/classification'
     import { useRouter } from 'vue-router'
+    import { classificationInterface } from '~/types/classifications/classification.interface'
 
     export default defineComponent({
         name: 'DeleteClassificationModal',
@@ -47,7 +56,8 @@
                 type: Boolean,
             },
             classification: {
-                type: Object,
+                type: Object as PropType<classificationInterface>,
+                required: true,
             },
         },
 
@@ -57,9 +67,7 @@
             const store = useClassificationStore()
             const showDeleteModal = computed(() => props.open)
 
-            const selectedClassification: any = computed(
-                () => props.classification
-            )
+            const selectedClassification = computed(() => props.classification)
             const selectedClassificationName = computed(
                 () => props.classification.name
             )
@@ -76,7 +84,7 @@
                 context.emit('close')
             }
             const onDelete = () => {
-                const typeName: string | any = selectedClassification.value.name
+                const typeName: string = selectedClassification.value.name
                 const { data, error } = Classification.archiveClassification({
                     cache: undefined,
                     typeName,

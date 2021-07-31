@@ -10,7 +10,7 @@
                                 selectedClassification?.name
                             "
                             :ref="
-                                el => {
+                                (el) => {
                                     assetWrapperRef = el
                                 }
                             "
@@ -32,17 +32,11 @@
 </template>
 
 <script lang="ts">
-    import {
-        defineComponent,
-        computed,
-        ref,
-        ComputedRef,
-        watch,
-        Ref,
-    } from 'vue'
+    import { defineComponent, computed, ref, PropType, Ref, watch } from 'vue'
     import AssetsWrapper from '@common/assets/index.vue'
     import { Components } from '~/api/atlas/client'
     import LinkedTerms from './LinkedTerms.vue'
+    import { classificationInterface } from '~/types/classifications/classification.interface'
 
     export default defineComponent({
         name: 'ClassificationHeader',
@@ -51,12 +45,15 @@
             LinkedTerms,
         },
         props: {
-            classification: Object,
+            classification: {
+                type: Object as PropType<classificationInterface>,
+                required: true,
+            },
         },
-        setup(props, context) {
+        setup(props) {
             const assetSearchText = ref('')
             const assetWrapperRef: Ref<any> = ref(null)
-            const selectedClassification: ComputedRef<any> = computed(() => {
+            const selectedClassification = computed(() => {
                 return props.classification
             })
             const handleAssetSearch = (e: any) => {

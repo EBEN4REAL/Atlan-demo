@@ -12,7 +12,7 @@
                 </div> -->
                 <div>
                     <div
-                        class="flex items-center mb-2 text-xl font-black max-text-width "
+                        class="flex items-center mb-2 text-xl font-black  max-text-width"
                     >
                         <span class="truncate ...">{{ displayName }}</span>
                     </div>
@@ -20,7 +20,7 @@
                         <span v-if="createdAt">
                             Created {{ createdAt }} by
                             <span
-                                class="text-gray-400 border-b border-dotted cursor-pointer"
+                                class="text-gray-400 border-b border-dotted cursor-pointer "
                                 @click="() => handleClickUser(createdBy)"
                                 >{{ createdBy }}</span
                             >
@@ -29,7 +29,7 @@
                             <span class="px-1">·</span>
                             Updated {{ updatedAt }} by
                             <span
-                                class="text-gray-400 border-b border-dotted cursor-pointer"
+                                class="text-gray-400 border-b border-dotted cursor-pointer "
                                 @click="() => handleClickUser(updatedBy)"
                             >
                                 {{ updatedBy }}</span
@@ -37,9 +37,7 @@
                         </span>
                     </div>
                     <div class="mt-3">
-                        <p class="mb-1 text-sm text-gray-300">
-                            Description
-                        </p>
+                        <p class="mb-1 text-sm text-gray-300">Description</p>
                         <div class="flex mb-0 text-sm text-gray-400">
                             <span v-if="!selectedClassification.description"
                                 >Click to add description</span
@@ -82,12 +80,14 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, computed, ref } from 'vue'
+    import { defineComponent, computed, ref, PropType } from 'vue'
     import Dropdown from '~/components/admin/classifications/dropdown.vue'
     import UpdateClassificationModal from './updateClassificationModal.vue'
     import DeleteClassificationModal from './deleteClassificationModal.vue'
     import { useUserPreview } from '~/composables/user/showUserPreview'
     import { useTimeAgo } from '@vueuse/core'
+    import { classificationInterface } from '~/types/classifications/classification.interface'
+
     export default defineComponent({
         name: 'ClassificationHeader',
         components: {
@@ -96,7 +96,10 @@
             DeleteClassificationModal,
         },
         props: {
-            classification: Object,
+            classification: {
+                type: Object as PropType<classificationInterface>,
+                required: true,
+            },
             createdAt: {
                 type: [Number, String],
                 default: 0,
@@ -118,19 +121,20 @@
                 default: '',
             },
         },
-        setup(props, context) {
+        setup(props) {
             const isDeleteClassificationModalOpen = ref(false)
             const isEditClassificationModalOpen = ref(false)
-            const selectedClassification: any = computed(() => {
-                return props.classification
-            })
+            const selectedClassification = computed(
+                (): classificationInterface => {
+                    return props.classification
+                }
+            )
             const displayName = computed(() => {
                 return selectedClassification.value.displayName
             })
             const createdAt = computed(() => {
                 const timestamp = selectedClassification.value.createTime
                 return useTimeAgo(timestamp).value || ''
-                // return moment(timestamp).fromNow();
             })
             const createdBy = computed(
                 () => selectedClassification.value.createdBy
@@ -138,7 +142,6 @@
             const updatedAt = computed(() => {
                 const timestamp = selectedClassification.value.updateTime
                 return useTimeAgo(timestamp).value || ''
-                // return moment(timestamp).fromNow();
             })
             const updatedBy = computed(
                 () => selectedClassification.value.updatedBy

@@ -10,7 +10,7 @@
         </div>
         <div class="w-3/4 item-stretch" v-show="isItem">
             <div class="flex w-full h-full">
-                <router-view></router-view>
+                <router-view @updateAssetPreview="handlePreview"></router-view>
             </div>
         </div>
         <div

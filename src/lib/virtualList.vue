@@ -48,6 +48,16 @@
         dataKey: string
     }
 
+    /**
+     * Usage:
+     * ```
+     *  <VirtualList :data="list" :data-key="keyField">
+     *      <template #default="{ item, index }">
+     *
+     *      </template>
+     *  </VirtualList>
+     * ```
+     */
     export default defineComponent({
         name: 'VirtualList',
         props: {

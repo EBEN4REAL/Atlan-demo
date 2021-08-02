@@ -1,13 +1,9 @@
 import { TreeDataItem } from 'ant-design-vue/lib/tree/Tree';
-import { computed, ComputedRef, ref, Ref, toRefs, watch } from 'vue';
+import { ComputedRef, ref, watch } from 'vue';
 import { Components } from '~/api/atlas/client';
 import { Glossary } from '~/api/atlas/glossary'
-import { Search } from '~/api/atlas/search';
 
-import BasicSearch from '~/composables/common/basicsearch';
-import { BaseAttributes, GlossaryAttributes } from '~/constant/projection';
 import { GlossaryType } from '~/types/atlas/glossary';
-import axios from "axios";
 
 export default function useGlossaryTree(list: ComputedRef<GlossaryType[] | undefined>,) {
 

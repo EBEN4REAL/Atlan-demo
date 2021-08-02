@@ -116,7 +116,6 @@ specifiers:
   vue-numerals: ^4.0.6
   vue-router: ^4.0.8
   vue-tsc: ^0.2.0
-  vue-virtual-scroll-list: ^2.3.2
   vue3-tel-input: ^1.0.4
   vue3-timepicker: ^1.0.0-beta.2
   vue3-virtual-scroller: 0.2.1
@@ -189,7 +188,6 @@ dependencies:
   vue-linkify: 1.0.1
   vue-numerals: 4.0.6_numeral@2.0.6+vue@3.1.4
   vue-router: 4.0.8_vue@3.1.4
-  vue-virtual-scroll-list: 2.3.2
   vue3-tel-input: 1.0.4
   vue3-timepicker: 1.0.0-beta.2
   vue3-virtual-scroller: 0.2.1_vue@3.1.4
@@ -11192,10 +11190,6 @@ packages:
     dependencies:
       is-plain-object: 3.0.1
       vue: 3.1.4
-    dev: false
-
-  /vue-virtual-scroll-list/2.3.2:
-    resolution: {integrity: sha512-afm5bYgjJRK160KXlvs03dsPixEL/gS8sV5DKxEDRjPQKMXjIBmTMN/hMTEyazsPl+G4tXQs/msYK7p7tNVogQ==}
     dev: false
 
   /vue-virtual-scroller/1.0.10_vue@3.1.4:

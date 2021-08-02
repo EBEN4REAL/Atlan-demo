@@ -1,108 +1,72 @@
 <template>
-    <DynamicScroller
-        ref="itemscroll"
-        :items="list"
-        :keyField="keyField"
-        :minItemSize="minItemSize"
-        class="scroller"
-        :class="{ 'opacity-50': isLoading }"
-        :buffer="1000"
-    >
-        <template v-slot="{ item, index, active }">
-            <DynamicScrollerItem
-                :item="item"
-                :active="active"
-                :data-index="index"
-                class="border-b border-gray-200"
-            >
+    <!-- TODO: Add loading state -->
+    <VirtualList :data="list" :data-key="keyField">
+        <template #default="{ item }">
+            <div class="border-b border-gray-200">
                 <ListItem
                     :item="item"
                     :score="score[item.guid]"
-                    @click="handlePreview(item)"
                     :projection="projection"
+                    @click="handlePreview(item)"
                 ></ListItem>
-            </DynamicScrollerItem>
+            </div>
         </template>
-    </DynamicScroller>
+    </VirtualList>
 </template>
 
 <script lang="ts">
-    import { defineComponent, PropType } from 'vue';
-    import ListItem from './item.vue';
+    import { defineComponent, SetupContext } from 'vue'
+    import ListItem from './item.vue'
+    import VirtualList from '~/lib/virtualList.vue'
 
     export default defineComponent({
         components: {
             ListItem,
+            VirtualList,
         },
         props: {
             list: {
                 type: Array,
                 required: false,
                 default() {
-                    return [];
+                    return []
                 },
             },
             score: {
                 type: Object,
                 required: false,
                 default() {
-                    return {};
-                },
-            },
-            itemSize: {
-                type: Number,
-                required: false,
-                default() {
-                    return null;
-                },
-            },
-            minItemSize: {
-                type: Number,
-                required: false,
-                default() {
-                    return 100;
+                    return {}
                 },
             },
             keyField: {
                 type: String,
                 required: false,
                 default() {
-                    return 'guid';
+                    return 'guid'
                 },
             },
             projection: {
                 type: Array,
                 required: false,
                 default() {
-                    return [];
+                    return []
                 },
             },
             isLoading: {
                 type: Boolean,
                 required: false,
                 default() {
-                    return false;
+                    return false
                 },
             },
         },
         emits: ['preview'],
-        methods: {
-            handlePreview(item) {
-                this.$emit('preview', item);
-            },
-            scrollToItem() {
-                if (this.$refs.itemscroll) {
-                    console.log('scrol');
-                    this.$refs.itemscroll.scrollToItem(0);
-                }
-            },
+        setup(props, ctx: SetupContext) {
+            function handlePreview(item: any) {
+                ctx.emit('preview', item)
+            }
+            return { handlePreview }
         },
-    });
+    })
 </script>
-
-<style lang="less">
-    .scroller {
-        height: 100%;
-        overflow-y: auto;
-    }
-</style>

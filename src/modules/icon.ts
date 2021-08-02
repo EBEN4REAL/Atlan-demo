@@ -99,6 +99,7 @@ import { faUserSlash } from '@fortawesome/pro-light-svg-icons/faUserSlash'
 import { faUserCheck } from '@fortawesome/pro-light-svg-icons/faUserCheck'
 import { faSlidersHSquare } from '@fortawesome/pro-light-svg-icons/faSlidersHSquare'
 import { faSignOut } from '@fortawesome/pro-light-svg-icons/faSignOut'
+import { faFileAlt } from '@fortawesome/pro-light-svg-icons/faFileAlt'
 import { faFont } from '@fortawesome/pro-light-svg-icons/faFont'
 
 import { faHourglassStart } from '@fortawesome/pro-light-svg-icons/faHourglassStart'
@@ -194,6 +195,7 @@ library.add(
     faUserCheck,
     faUserShield,
     faSlidersHSquare,
+    faFileAlt,
     faSignOut,
     faFont,
     faSignOut,

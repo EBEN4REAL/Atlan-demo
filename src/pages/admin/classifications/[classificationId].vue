@@ -4,32 +4,36 @@
             v-if="selectedClassification"
             :classification="selectedClassification"
         />
-        <ClassificationBody />
 
-        <!-- <AssetListWrapper
-        class="px-0 col-10"
-        :key="classificationName"
-        :classificationName="classificationName"
-        :assetListStyle="'height: calc(100vh - 20.3rem);'"
-        style="height: calc(100% - 12.5rem);"
-        :showTermsAssetToggle="true"
-        :type="'classification'"
-        :showLinkEntityButton="true"
-        :selectedClassification="selectedClassification"
-      /> -->
+        <ClassificationBody
+            v-if="selectedClassification"
+            :classification="selectedClassification"
+        />
     </div>
 </template>
 
 <script lang="ts">
     import { defineComponent, computed } from 'vue'
+
+    import ConnectionTree from '@/connection/tree/index.vue'
+    import Loading from '@common/loaders/section.vue'
+    import ErrorView from '@common/error/index.vue'
+    import CreateClassificationTree from '@common/tree/classification/index.vue'
     import ClassificationHeader from '~/components/admin/classifications/classificationHeader.vue'
+    import AssetListWrapper from '~/components/asset/assetListWrapper.vue'
     import { useClassificationStore } from '~/components/admin/classifications/_store'
     import ClassificationBody from '~/components/admin/classifications/classificationBody.vue'
+    import { classificationInterface } from '~/types/classifications/classification.interface'
 
     export default defineComponent({
         name: 'ClassificationProfileWrapper',
         components: {
+            ConnectionTree,
+            Loading,
+            ErrorView,
+            CreateClassificationTree,
             ClassificationHeader,
+            AssetListWrapper,
             ClassificationBody,
         },
         props: {
@@ -38,19 +42,22 @@
         setup(props) {
             const store = useClassificationStore()
             const classifications = computed(() => store.classifications)
-            const selectedClassification: any = computed(() => {
-                if (!props.classificationId) {
-                    return {}
+
+            const selectedClassification = computed(
+                (): classificationInterface | undefined => {
+                    if (!props.classificationId) {
+                        return undefined
+                    }
+                    if (classifications.value.length === 0) {
+                        return undefined
+                    }
+                    return classifications.value.find(
+                        (classification) =>
+                            (classification.name || '') ===
+                            decodeURI(props.classificationId as string)
+                    )
                 }
-                if (classifications.length === 0) {
-                    return {}
-                }
-                return classifications.value.find(
-                    (classification) =>
-                        (classification.name || '') ===
-                        decodeURI(props.classificationId)
-                )
-            })
+            )
 
             return {
                 selectedClassification,

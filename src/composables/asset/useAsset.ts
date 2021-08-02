@@ -42,6 +42,7 @@ export default function useAsset({
       "metadata",
       "commits",
       "assetStatus",
+      "__modifiedBy",
       ...BaseAttributes,
       ...BasicSearchAttributes
     ],

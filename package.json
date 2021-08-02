@@ -7,7 +7,8 @@
     "build": "vite build",
     "preview": "vite preview --port 8080",
     "preview-https": "serve dist",
-    "lint": "npx eslint --fix "
+    "lint": "npx eslint --fix --ext .js,.vue,.ts ",
+    "prepare": "husky install"
   },
   "dependencies": {
     "@dagrejs/graphlib": "^2.1.4",
@@ -75,10 +76,8 @@
     "vue-linkify": "^1.0.1",
     "vue-numerals": "^4.0.6",
     "vue-router": "^4.0.8",
-    "vue-virtual-scroll-list": "^2.3.2",
     "vue3-tel-input": "^1.0.4",
-    "vue3-timepicker": "^1.0.0-beta.2",
-    "vue3-virtual-scroller": "0.2.1"
+    "vue3-timepicker": "^1.0.0-beta.2"
   },
   "devDependencies": {
     "@babel/core": "^7.14.6",

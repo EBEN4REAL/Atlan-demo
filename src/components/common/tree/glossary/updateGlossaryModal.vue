@@ -57,6 +57,8 @@ export default defineComponent({
 
     const handleCloseModal = () => {
       emit("closeModal");
+      name.value = "";
+      description.value = "";
     };
 
     let body = ref<Record<string, any>>({});

@@ -26,7 +26,6 @@ export default function fetchGlossaryList(
     query: query,
     entityFilters: filters,
   };
-  console.log(body, "body");
   const { response, error, loading, mutate } = Search.BasicSearch(
     body,
     {},

@@ -1,73 +1,111 @@
 <template>
-  <div class="pt-6">
-    <div class="flex items-center justify-between">
-      <a-input
-        ref="searchText"
-        v-model:value="assetSearchText"
-        @input="handleAssetSearch"
-        type="text"
-        class="bg-white shadow-none form-control border-right-0 search-input"
-        placeholder="Search assets"
-      >
-        <template #suffix>
-          <fa
-            v-if="treeFilterText"
-            @click="clearSearchText"
-            icon="fal times-circle"
-            class="ml-2 mr-1 text-red-600"
-          />
-          <fa
-            v-if="!treeFilterText"
-            icon="fal search"
-            class="ml-2 mr-1 text-gray-500"
-          />
-        </template>
-      </a-input>
-      <a-button type="default" class="text-gray-500 rounded">
-        <fa icon="fal filter" class="mr-2 text-gray-500" />
-        Filter</a-button
-      >
+    <div class="">
+        <div class="flex w-full">
+            <a-tabs v-model:activeKey="activeTabKey" class="w-full">
+                <a-tab-pane key="1" tab="Linked Assets">
+                    <div class="w-full rounded asset-list">
+                        <AssetsWrapper
+                            v-if="selectedClassification?.name"
+                            :selectedClassification="
+                                selectedClassification?.name
+                            "
+                            :ref="
+                                (el) => {
+                                    assetWrapperRef = el
+                                }
+                            "
+                        />
+                    </div>
+                </a-tab-pane>
+                <a-tab-pane key="2" tab="Linked Terms">
+                    <div class="w-full mt-1 rounded asset-list">
+                        <LinkedTerms
+                            :selectedClassification="
+                                selectedClassification?.name
+                            "
+                        />
+                    </div>
+                </a-tab-pane>
+            </a-tabs>
+        </div>
     </div>
-    <div class="flex mt-6">
-      <div class="px-3 py-2 mr-2 text-center rounded linked-btn-active">
-        <p class="mb-0">Linked Assets (56)</p>
-      </div>
-      <div class="p-2 text-center rounded">
-        <p class="mb-0">Linked Terms (6)</p>
-      </div>
-    </div>
-    <div class="w-full mt-6 border rounded h-80"></div>
-  </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, computed, ref } from "vue";
-export default defineComponent({
-  name: "ClassificationHeader",
-  components: {},
-  props: {},
-  setup(props, context) {
-    const assetSearchText = ref("");
-    const handleAssetSearch = (e) => {
-      assetSearchText.value = e.target.value;
-    };
-    return {
-      assetSearchText,
-      handleAssetSearch,
-    };
-  },
-});
+    import { defineComponent, computed, ref, PropType, Ref, watch } from 'vue'
+    import AssetsWrapper from '@common/assets/index.vue'
+    import { Components } from '~/api/atlas/client'
+    import LinkedTerms from './LinkedTerms.vue'
+    import { classificationInterface } from '~/types/classifications/classification.interface'
+
+    export default defineComponent({
+        name: 'ClassificationHeader',
+        components: {
+            AssetsWrapper,
+            LinkedTerms,
+        },
+        props: {
+            classification: {
+                type: Object as PropType<classificationInterface>,
+                required: true,
+            },
+        },
+        setup(props) {
+            const assetSearchText = ref('')
+            const assetWrapperRef: Ref<any> = ref(null)
+            const selectedClassification = computed(() => {
+                return props.classification
+            })
+            const handleAssetSearch = (e: any) => {
+                assetSearchText.value = e.target.value
+            }
+            const activeTabKey = ref('1')
+            watch(selectedClassification, () => {
+                if (selectedClassification.value) {
+                    let criterion: Components.Schemas.FilterCriteria[] = []
+                    const entityFilterPayload = [
+                        {
+                            condition: 'OR',
+                            criterion: criterion,
+                        } as Components.Schemas.FilterCriteria,
+                    ]
+                    criterion.push({
+                        attributeName: '__classificationNames',
+                        attributeValue: selectedClassification.value.name,
+                        operator: 'eq',
+                    })
+                    criterion.push({
+                        attributeName: '__propagatedClassificationNames',
+                        attributeValue: selectedClassification.value.name,
+                        operator: 'eq',
+                    })
+
+                    assetWrapperRef.value?.updateBody(entityFilterPayload)
+                }
+            })
+            return {
+                assetWrapperRef,
+                selectedClassification,
+                activeTabKey,
+                assetSearchText,
+                handleAssetSearch,
+            }
+        },
+    })
 </script>
 <style lang="less" scoped>
-.three-dots {
-  height: fit-content;
-  cursor: pointer;
-}
-.search-input {
-  max-width: 30%;
-}
-.linked-btn-active {
-  background-color: #e9eefa;
-  color: #2251cc;
-}
+    .three-dots {
+        height: fit-content;
+        cursor: pointer;
+    }
+    .search-input {
+        max-width: 30%;
+    }
+    .linked-btn-active {
+        background-color: #e9eefa;
+        color: #2251cc;
+    }
+    .asset-list {
+        height: calc(100vh - 23rem);
+    }
 </style>

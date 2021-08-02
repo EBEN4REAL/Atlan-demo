@@ -3,7 +3,10 @@ import { getAPIPath } from "~/api";
 export const CREATE_GLOSSARY = 'CREATE_GLOSSARY';
 export const CREATE_GLOSSARY_CATEGORY = 'CREATE_GLOSSARY_CATEGORY';
 export const CREATE_GLOSSARY_TERM = 'CREATE_GLOSSARY_TERM';
+
+export const GET_GLOSSARY = 'GET_GLOSSARY';
 export const GET_CATEGORY = 'GET_CATEGORY';
+export const GET_TERM = 'GET_TERM';
 
 export const DELETE_GLOSSARY = 'DELETE_GLOSSARY';
 export const DELETE_GLOSSARY_CATEGORY = 'DELETE_GLOSSARY_CATEGORY';
@@ -13,12 +16,18 @@ export const UPDATE_GLOSSARY = 'UPDATE_GLOSSARY';
 export const UPDATE_GLOSSARY_CATEGORY = 'UPDATE_GLOSSARY_CATEGORY';
 export const UPDATE_GLOSSARY_TERM = 'UPDATE_GLOSSARY_TERM';
 
+export const GET_GLOSSARY_TERMS = 'GET_GLOSSARY_TERMS';
+export const GET_GLOSSARY_CATEGORIES = 'GET_GLOSSARY_CATEGORIES';
+
 
 const groupsMap: Record<string, (...params:any) => string> = {
     [CREATE_GLOSSARY]: () => getAPIPath('auth/atlas', "/glossary"),
     [CREATE_GLOSSARY_CATEGORY]: () => getAPIPath('auth/atlas', "/glossary/category"),
     [CREATE_GLOSSARY_TERM]: () => getAPIPath('auth/atlas', "/glossary/term"),
+    
+    [GET_GLOSSARY]: ({ guid }: Record<string, string>) => getAPIPath('auth/atlas', `/glossary/${guid}`),
     [GET_CATEGORY]: ({ guid }: Record<string, string>) => getAPIPath('auth/atlas', `/glossary/category/${guid}`),
+    [GET_TERM]: ({ guid }: Record<string, string>) => getAPIPath('auth/atlas', `/glossary/term/${guid}`),
   
     [DELETE_GLOSSARY]: ({ guid }: Record<string, string>) => getAPIPath('auth/atlas', `/glossary/${guid}`),
     [DELETE_GLOSSARY_CATEGORY]: ({ guid }: Record<string, string>) => getAPIPath('auth/atlas', `/glossary/category/${guid}`),
@@ -27,6 +36,10 @@ const groupsMap: Record<string, (...params:any) => string> = {
     [UPDATE_GLOSSARY]: ({ guid }: Record<string, string>) => getAPIPath('auth/atlas', `/glossary/${guid}/partial`),
     [UPDATE_GLOSSARY_CATEGORY]: ({ guid }: Record<string, string>) => getAPIPath('auth/atlas', `/glossary/category/${guid}/partial`),
     [UPDATE_GLOSSARY_TERM]: ({ guid }: Record<string, string>) => getAPIPath('auth/atlas', `/glossary/term/${guid}/partial`),
+
+    [GET_GLOSSARY_CATEGORIES]: ({ guid }: Record<string, string>) => getAPIPath('auth/atlas', `/glossary/${guid}/categories`),
+    [GET_GLOSSARY_TERMS]: ({ guid }: Record<string, string>) => getAPIPath('auth/atlas', `/glossary/${guid}/terms`),
+
 }
 
 export default groupsMap;

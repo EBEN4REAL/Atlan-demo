@@ -57,19 +57,24 @@ export default defineComponent({
 
     const handleCloseModal = () => {
       emit("closeModal");
+      name.value = "";
+      description.value = ""
     };
 
     let body = ref<Record<string, any>>({});
 
-    watch(
-      [eventContext, name, description],
-      async ([_, newName, newDescription]) => {
-        body.value = {
-          longDescription: "",
-          name: newName,
-          shortDescription: newDescription,
-        };
+    watch([name, description], ([newName, newDescription]) => {
+      body.value = {
+        ...body.value,
+        longDescription: "",
+        name: newName,
+        shortDescription: newDescription,
+      };
+    });
 
+    watch(
+      eventContext,
+      async () => {
         if (props.eventContext.parentType === "glossary") {
           body.value = {
             ...body.value,

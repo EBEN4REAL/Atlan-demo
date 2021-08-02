@@ -1,68 +1,106 @@
 <template>
     <LoadingView v-if="loading" />
     <ErrorView v-else-if="error" :error="error" />
-    <div v-else class="w-full">
-        <div class="h-24 p-4">
+
+    <div v-else class="w-full bg-gray-100">
+        <div class="h-24 p-4 bg-white">
             <AssetHeader :asset="response?.entities[0]" />
         </div>
-        <a-menu
-            v-model:selectedKeys="current"
-            mode="horizontal"
-            @select="selectTab"
-        >
-            <a-menu-item key="overview"> Overview </a-menu-item>
-            <a-menu-item key="lineage"> Lineage </a-menu-item>
-        </a-menu>
-        <div>
-            <component
-                :is="selectedTab"
-                :asset="response?.entities[0] || {}"
-            ></component>
+        <div class="asset-profile">
+            <a-tabs v-model="activeKey" @change="selectTab($event)">
+                <a-tab-pane v-for="tab in tabs" :key="tab.id" :tab="tab.name">
+                    <component
+                        :is="tab.component"
+                        :ref="
+                            (el) => {
+                                refs[tab.id] = el
+                            }
+                        "
+                        :asset="response?.entities[0] || {}"
+                    ></component>
+                </a-tab-pane>
+            </a-tabs>
         </div>
     </div>
 </template>
 <script lang="ts">
-    import { computed, defineComponent, ref } from 'vue'
+    // Vue
+    import {
+        computed,
+        defineComponent,
+        ref,
+        defineAsyncComponent,
+        watch,
+    } from 'vue'
     import { useRoute, useRouter } from 'vue-router'
 
+    // Components
     import LoadingView from '@common/loaders/section.vue'
     import ErrorView from '@common/error/index.vue'
-    import useAsset from '~/composables/asset/useAsset'
-
-    import Overview from '~/components/asset/assetProfile/tabs/overview.vue'
-    import Lineage from '~/components/asset/assetProfile/tabs/lineage.vue'
     import AssetHeader from '~/components/asset/assetProfile/assetHeader.vue'
+    import useAsset from '~/composables/asset/useAsset'
 
     export default defineComponent({
         components: {
-            overview: Overview,
-            lineage: Lineage,
             AssetHeader,
             LoadingView,
             ErrorView,
+            overview: defineAsyncComponent(
+                () =>
+                    import('~/components/asset/assetProfile/tabs/overview.vue')
+            ),
+            lineage: defineAsyncComponent(
+                () => import('~/components/asset/assetProfile/tabs/lineage.vue')
+            ),
         },
-        setup() {
-            const route = useRoute()
-            const id = computed(() => route?.params?.id || '')
-            const tab = computed(() => route?.params?.tab || '')
+        setup(_, context) {
+            /** DATA */
+            const activeKey = ref('1')
+            const refs: { [key: string]: any } = ref({})
+            const tabs = [
+                {
+                    id: '1',
+                    name: 'Overview',
+                    component: 'overview',
+                },
+                {
+                    id: '2',
+                    name: 'Lineage',
+                    component: 'lineage',
+                },
+            ]
 
-            const current = ref([tab.value])
-            const selectedTab = ref(tab.value)
+            /** UTILS */
             const router = useRouter()
+            const route = useRoute()
 
+            /** COMPUTED */
+            const id = computed(() => route?.params?.id || '')
+
+            /** METHODS */
+            const selectTab = (activeKey: string) => {
+                const selectedTab = tabs.find((i) => i.id === activeKey)
+                router.replace(
+                    `/assets/${id.value}/${selectedTab?.name.toLowerCase()}`
+                )
+            }
             const { response, error, loading } = useAsset({
                 entityId: id.value,
             })
 
-            const selectTab = (item: any) => {
-                selectedTab.value = item.key
-                router.replace(`/assets/${id.value}/${item.key}`)
-            }
+            watch(response, () => {
+                if (response.value?.entities?.length)
+                    context.emit(
+                        'updateAssetPreview',
+                        response.value?.entities[0] ?? []
+                    )
+            })
 
             return {
-                current,
+                activeKey,
+                tabs,
+                refs,
                 selectTab,
-                selectedTab,
                 response,
                 error,
                 loading,
@@ -75,3 +113,11 @@ meta:
     layout: default
     requiresAuth: true
 </route>
+
+<style lang="less">
+    .asset-profile {
+        .ant-tabs-bar {
+            @apply px-4 bg-white  !important;
+        }
+    }
+</style>

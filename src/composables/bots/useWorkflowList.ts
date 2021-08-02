@@ -12,20 +12,23 @@ import { Workflow } from '~/api2/workflow';
 
 export default function useWorkflowList(dependentKey?: Ref<any>, initialParams?: any, cacheSuffx?: string | "") {
 
-
-    console.log(initialParams);
     let cancelTokenSource: Ref<CancelTokenSource> = ref(axios.CancelToken.source());
-    const asyncOptions: Ref<IConfig & AxiosRequestConfig> = ref({
+    let asyncOptions: IConfig & AxiosRequestConfig = {
         dedupingInterval: 0,
+        refreshInterval: 5000,
         shouldRetryOnError: false,
         revalidateOnFocus: false,
         revalidateDebounce: 0,
-    });
-    let params = ref({
-        ...initialParams
-    });
+    }
+    if (cancelTokenSource) {
+        asyncOptions.cancelToken = cancelTokenSource.value.token
+    }
+
+
+
+    let cachekey = ref(`${cacheSuffx}`)
     const { data, STATES,
-        state, mutate } = Workflow.List(params, asyncOptions, `${cacheSuffx}`, dependentKey);
+        state, mutate } = Workflow.List(initialParams, asyncOptions, cachekey, dependentKey);
 
 
     const isLoading = computed(() => {
@@ -36,21 +39,19 @@ export default function useWorkflowList(dependentKey?: Ref<any>, initialParams?:
     });
 
     const refresh = () => {
-        if ([STATES.PENDING].includes(state.value) || [STATES.VALIDATING].includes(state.value)) {
-            cancelTokenSource.value.cancel();
-            cancelTokenSource.value = axios.CancelToken.source();
-            asyncOptions.cancelToken = cancelTokenSource.value.token;
+        if (cancelTokenSource) {
+            if (
+                ([STATES.PENDING].includes(state.value) ||
+                    [STATES.VALIDATING].includes(state.value)) &&
+                cancelTokenSource.value
+            ) {
+                cancelTokenSource?.value.cancel('aborted')
+            }
+            cancelTokenSource.value = axios.CancelToken.source()
+            asyncOptions.cancelToken = cancelTokenSource?.value.token
         }
         mutate();
     };
-
-
-    const replaceParams = (payload: any) => {
-        console.log("replace", params.value, payload);
-        params.value = { ...payload }
-        console.log("replace", params);
-        // refresh();
-    }
 
 
 
@@ -60,7 +61,6 @@ export default function useWorkflowList(dependentKey?: Ref<any>, initialParams?:
         STATES,
         isLoading,
         isValidating,
-        replaceParams,
         refresh,
     }
 };

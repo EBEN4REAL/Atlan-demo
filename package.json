@@ -7,7 +7,8 @@
     "build": "vite build",
     "preview": "vite preview --port 8080",
     "preview-https": "serve dist",
-    "lint": "npx eslint --fix "
+    "lint": "npx eslint --fix --ext .js,.vue,.ts ",
+    "prepare": "husky install"
   },
   "dependencies": {
     "@dagrejs/graphlib": "^2.1.4",
@@ -47,6 +48,7 @@
     "emoji-mart-vue-fast": "^10.0.1",
     "event-source-polyfill": "^1.0.24",
     "highlight.js": "^11.0.1",
+    "husky": "^7.0.1",
     "keycloak-js": "^14.0.0",
     "leader-line-new": "^1.1.9",
     "less": "^4.1.1",

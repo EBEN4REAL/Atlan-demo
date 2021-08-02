@@ -5,7 +5,7 @@ import { WORKFLOW_LIST } from "../keymap/workflow";
 import { useAPI } from "../useAPI";
 
 const List = (
-    params?: any,
+    params?: Ref,
     options?: IConfig & AxiosRequestConfig,
     cacheSuffix?: Ref<string>,
     dependantFetchingKey?: Ref<any>

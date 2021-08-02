@@ -40,7 +40,9 @@ export default defineComponent({
     };
   },
   mounted() {
-    this.list = RunstatusList;
+    this.list = RunstatusList.filter(
+      (item) => item.id.toLowerCase() !== "running"
+    );
   },
   emits: ["update:modelValue", "change"],
   methods: {

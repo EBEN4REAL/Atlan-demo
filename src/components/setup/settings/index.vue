@@ -82,7 +82,6 @@
       >
         <a-input
           required
-          :maxlength="9"
           v-model:value="job.cronString"
           @change="handleCronStringChange"
         ></a-input>
@@ -248,14 +247,13 @@ export default defineComponent({
         const options = {
           tz: this.job.cronTimezone,
         };
-        this.isCronError = false;
+        // this.isCronError = false;
         let cronTemp = e.target.value.replace(/ /g, "");
+        // // console.log(cronTemp);
+        // cronTemp = cronTemp.split("").join(" ");
         // console.log(cronTemp);
-        cronTemp = cronTemp.split("").join(" ");
-        // console.log(cronTemp);
-        this.job.cronString = cronTemp;
+        this.job.cronString = e.target.value;
 
-        console.log(cronTemp);
         parser.parseExpression(cronTemp, options);
         this.job.isCron = true;
         this.updateCronEval();

@@ -28,17 +28,17 @@
             <a-input
                 ref="searchText"
                 v-model:value="treeFilterText"
-                @input="handleSearch"
                 type="text"
                 class="bg-white shadow-none form-control border-right-0"
                 placeholder="Search classifications"
+                @input="handleSearch"
             >
                 <template #suffix>
                     <fa
                         v-if="treeFilterText"
-                        @click="clearSearchText"
                         icon="fal times-circle"
                         class="ml-2 mr-1 text-red-600"
+                        @click="clearSearchText"
                     />
                     <fa
                         v-if="!treeFilterText"
@@ -56,13 +56,13 @@
                     v-for="item in treeFilterText !== ''
                         ? filteredData
                         : treeData"
+                    :key="item.guid"
                     class="flex px-4 py-2 mb-1 rounded cursor-pointer tree-item"
                     :class="
                         selectedClassificationNameFromRoute === item.name
                             ? 'tree-item-active'
                             : ''
                     "
-                    :key="item.guid"
                     @click="() => nodeEmit(item)"
                 >
                     <span class="truncate ...">{{ item.title }}</span>
@@ -76,8 +76,8 @@
         <a-modal
             :visible="modalVisible"
             title="Add"
-            :onCancel="closeModal"
-            :destroyOnClose="true"
+            :on-cancel="closeModal"
+            :destroy-on-close="true"
             :footer="null"
         >
             <a-form
@@ -98,15 +98,15 @@
                 </a-form-item>
 
                 <div class="flex justify-end w-full">
-                    <a-button @click="closeModal" class="mr-4">Cancel</a-button>
+                    <a-button class="mr-4" @click="closeModal">Cancel</a-button>
                     <a-button
                         type="primary"
-                        @click="createClassification"
                         :loading="
                             createClassificationStatus === 'loading'
                                 ? true
                                 : false
                         "
+                        @click="createClassification"
                         >Create</a-button
                     >
                 </div>
@@ -119,308 +119,290 @@
 </template>
 
 <script lang="ts">
-       import {
-           defineComponent,
-           PropType,
-    development
-           reactive,
-           ref,
-           toRaw,
-           UnwrapRef,
-           watch,
+    import {
+        defineComponent,
+        PropType,
+        reactive,
+        ref,
+        toRaw,
+        UnwrapRef,
+        watch,
+        Ref,
+        computed,
+    } from 'vue'
 
-           Ref,
-           computed,
-       } from 'vue'
-       import ConnectionTree from '@/connection/tree/index.vue'
-       import Loading from '@common/loaders/section.vue'
-       import ErrorView from '@common/error/index.vue'
-       import CreateClassificationTree from '@common/tree/classification/index.vue'
-       import { useRouter } from 'vue-router'
-       import { useClassificationStore } from '~/components/admin/classifications/_store'
+    import { useRouter } from 'vue-router'
+    import { ValidateErrorEntity } from 'ant-design-vue/es/form/interface'
+    import { useClassificationStore } from '~/components/admin/classifications/_store'
 
-       import { ValidateErrorEntity } from 'ant-design-vue/es/form/interface'
-       import { Classification } from '~/api/atlas/classification'
-       import { classificationInterface } from '~/types/classifications/classification.interface'
-       import { typedefsInterface } from '~/types/typedefs/typedefs.interface'
+    import { Classification } from '~/api/atlas/classification'
+    import { classificationInterface } from '~/types/classifications/classification.interface'
+    import { typedefsInterface } from '~/types/typedefs/typedefs.interface'
 
+    export default defineComponent({
+        name: 'ClassificationProfileWrapper',
 
-       export default defineComponent({
-           name: 'ClassificationProfileWrapper',
-           components: {
+        props: {
+            classificationName: {
+                type: String as PropType<String>,
+            },
+        },
+        setup(props) {
+            const store = useClassificationStore()
+            const router = useRouter()
+            const modalVisible = ref(false)
+            const createClassificationStatus = ref('')
+            const treeFilterText = ref('')
+            const createClassificationFormRef = ref()
+            const classificationName = computed(() => props.classificationName)
+            const createErrorText = ref('')
+            interface FormState {
+                name: string
+                description: string
+            }
+            const treeData = computed(() => store.classificationTree)
 
-               ConnectionTree,
-               Loading,
-               ErrorView,
-               CreateClassificationTree,
-           },
-           props: {
-               classificationName: {
-                   type: String as PropType<String>,
-               },
-           },
-           setup(props, context) {
-               const store = useClassificationStore()
-               const router = useRouter()
-               const modalVisible = ref(false)
-               const createClassificationStatus = ref('')
-               const treeFilterText = ref('')
-               const createClassificationFormRef = ref()
-               const classificationName = computed(() => props.classificationName)
-               const createErrorText = ref('')
-               interface FormState {
-                   name: string
-                   description: string
-               }
-               const treeData = computed(() => store.classificationTree)
+            store.setSelectedClassification(
+                router?.currentRoute.value?.params?.classificationId as string
+            )
+            const selectedClassificationNameFromRoute = computed(
+                () => store.selectedClassification
+            )
+            console.log(
+                router?.currentRoute.value?.params?.classificationId,
+                'route',
+                router
+            )
 
-               store.setSelectedClassification(
-                   router?.currentRoute.value?.params?.classificationId as string
-               )
-               const selectedClassificationNameFromRoute = computed(
-                   () => store.selectedClassification
-               )
-               console.log(
-                   router?.currentRoute.value?.params?.classificationId,
-                   'route',
-                   router
-               )
+            const filteredData = computed(
+                () => store.filteredClassificationTree
+            )
 
-               const filteredData = computed(
-                   () => store.filteredClassificationTree
-               )
+            // get classifications
+            store.setClassificationsStatus('loading')
+            const { data: classificationData, error: classificationError } =
+                Classification.getClassificationList<typedefsInterface>({
+                    cache: false,
+                })
 
-               // get classifications
-               store.setClassificationsStatus('loading')
-               const { data: classificationData, error: classificationError } =
+            watch([classificationData, classificationError], () => {
+                if (classificationData.value) {
+                    const classifications =
+                        classificationData.value.classificationDefs || []
+                    store.setClassifications(classifications ?? [])
+                    store.initializeFilterTree()
+                    store.setClassificationsStatus('success')
+                    if (store.classificationTree.length > 0) {
+                        router.push(
+                            `/admin/classifications/${encodeURIComponent(
+                                store.classificationTree[0].name
+                            )}`
+                        )
+                        //                        //                        console.log(router, 'router1')
+                    }
+                } else {
+                    store.setClassificationsStatus('error')
+                }
+            })
 
-                   Classification.getClassificationList<typedefsInterface>({
-                       cache: false,
-                   })
+            const nodeEmit = (node: classificationInterface) => {
+                router.push(
+                    `/admin/classifications/${encodeURIComponent(node.name)}`
+                )
+                store.setSelectedClassification(node.name)
 
-               watch([classificationData, classificationError], () => {
-                   if (classificationData.value) {
-                       let classifications =
-                           classificationData.value.classificationDefs || []
-                       store.setClassifications(classifications ?? [])
-                       store.initializeFilterTree()
-                       store.setClassificationsStatus('success')
-                       if (store.classificationTree.length > 0) {
-                           router.push(
-                               `/admin/classifications/${encodeURIComponent(
-                                   store.classificationTree[0].name
-                               )}`
-                           )
-                           console.log(router, 'router1')
-                       }
-                   } else {
-                       store.setClassificationsStatus('error')
-                   }
-               })
+                //                //                console.log(node.name)
+            }
+            const formState: UnwrapRef<FormState> = reactive({
+                name: '',
+                description: '',
+            })
+            const urlValidationRegex = new RegExp('^[a-zA-Z]*$', 'g')
+            const rules = {
+                name: [
+                    {
+                        required: true,
 
-               const nodeEmit = (node: classificationInterface) => {
-                   router.push(
-                       `/admin/classifications/${encodeURIComponent(node.name)}`
-                   )
-                   store.setSelectedClassification(node.name)
+                        pattern: urlValidationRegex,
+                        message:
+                            'Names must consist of a letter followed by a sequence of letter, number, space, or _ characters',
 
-                   console.log(node.name)
-               }
-               const formState: UnwrapRef<FormState> = reactive({
-                   name: '',
-                   description: '',
-               })
-               const urlValidationRegex = new RegExp('^[a-zA-Z]*$', 'g')
-               const rules = {
-                   name: [
-                       {
-                           required: true,
+                        trigger: 'blur',
+                    },
+                ],
+            }
 
-                           pattern: urlValidationRegex,
-                           message:
-                               'Names must consist of a letter followed by a sequence of letter, number, space, or _ characters',
+            const handleSearch = (e: Event) => {
+                treeFilterText.value = (<HTMLInputElement>e.target).value
+                store.filterClassificationTree(treeFilterText.value)
+            }
 
-                           trigger: 'blur',
-                       },
-                   ],
-               }
+            const clearSearchText = () => {
+                treeFilterText.value = ''
+            }
 
+            const closeModal = () => {
+                modalVisible.value = false
 
-               const handleSearch = (e: Event) => {
-                   treeFilterText.value = (<HTMLInputElement>e.target).value
-                   store.filterClassificationTree(treeFilterText.value)
-               }
+                formState.name = ''
+                formState.description = ''
+            }
+            const resetRef = (ref: Ref<string>, time: number) => {
+                setTimeout(() => {
+                    ref.value = ''
+                }, time)
+            }
+            const createClassification = () => {
+                const payload: {
+                    classificationDefs: classificationInterface[]
+                } = {
+                    classificationDefs: [],
+                }
+                const classificationObj = {
+                    attributeDefs: [],
+                    description: '',
+                    name: '',
+                    superTypes: [],
+                } as unknown as classificationInterface
 
-               const clearSearchText = () => {
-                   treeFilterText.value = ''
-               }
+                createClassificationFormRef.value
+                    .validate()
+                    .then(() => {
+                        classificationObj.name = formState.name
+                        classificationObj.description = formState.description
+                        payload.classificationDefs.push(classificationObj)
+                        // create classification
+                        createClassificationStatus.value = 'loading'
+                        const {
+                            data: createClassificationData,
+                            error: createClassificationError,
+                        } = Classification.createClassification<typedefsInterface>(
+                            {
+                                cache: false,
+                                payload,
+                            }
+                        )
 
-               const closeModal = () => {
-                   modalVisible.value = false
+                        watch(
+                            [
+                                createClassificationData,
+                                createClassificationError,
+                            ],
+                            () => {
+                                console.log(
+                                    createClassificationData,
+                                    createClassificationError
+                                )
 
-                   formState.name = ''
-                   formState.description = ''
-               }
-               const resetRef = (ref: Ref<string>, time: number) => {
-                   setTimeout(() => {
-                       ref.value = ''
-                   }, time)
-               }
-               const createClassification = () => {
+                                if (
+                                    createClassificationData.value &&
+                                    !createClassificationError.value
+                                ) {
+                                    console.log(
+                                        'in errror',
+                                        createClassificationData.value,
+                                        createClassificationError.value
+                                    )
+                                    let classifications: classificationInterface[] =
+                                        createClassificationData.value
+                                            .classificationDefs
+                                    classifications = [
+                                        ...store.classifications,
+                                        ...classifications,
+                                    ]
 
-                   const payload: {
-                       classificationDefs: classificationInterface[]
-                   } = {
-                       classificationDefs: [],
-                   }
-                   const classificationObj = {
-                       attributeDefs: [],
-                       description: '',
-                       name: '',
-                       superTypes: [],
+                                    store.classifications =
+                                        classifications ?? []
+                                    const classificationTree =
+                                        store.transformClassificationTreeData
+                                    store.classificationTree =
+                                        classificationTree ?? []
+                                    createClassificationStatus.value = 'success'
+                                    formState.name = ''
+                                    formState.description = ''
+                                    closeModal()
+                                    // set this classification in view
+                                    store.setSelectedClassification(
+                                        classificationObj.name
+                                    )
+                                    router.push(
+                                        `/admin/classifications/${encodeURIComponent(
+                                            classificationObj.name
+                                        )}`
+                                    )
+                                } else {
+                                    createClassificationStatus.value = 'error'
+                                    const error = toRaw(
+                                        createClassificationError.value
+                                    )
+                                    console.log(
+                                        'errormessage',
+                                        error.response.data.errorMessage
+                                    )
+                                    createErrorText.value =
+                                        error.response.data.errorMessage
 
-                   } as unknown as classificationInterface
+                                    resetRef(createErrorText, 8000)
+                                }
+                            }
+                        )
+                    })
+                    .catch((error: ValidateErrorEntity<FormState>) => {
+                        //                        //                        console.log('error', error)
+                    })
+            }
 
-                   createClassificationFormRef.value
-                       .validate()
-                       .then(() => {
-                           classificationObj.name = formState.name
-                           classificationObj.description = formState.description
-                           payload.classificationDefs.push(classificationObj)
-                           // create classification
-                           createClassificationStatus.value = 'loading'
-                           const {
-                               data: createClassificationData,
-                               error: createClassificationError,
+            const toggleModal = () => {
+                modalVisible.value = !modalVisible.value
+            }
 
-                           } = Classification.createClassification<typedefsInterface>(
-                               {
-                                   cache: false,
-                                   payload,
-                               }
-                           )
+            const handleSelectNode = (node: classificationInterface) => {
+                //                //                console.log(node, 'parent')
+            }
 
-                           watch(
-                               [
-                                   createClassificationData,
-                                   createClassificationError,
-                               ],
-                               () => {
-                                   console.log(
-                                       createClassificationData,
-                                       createClassificationError
-                                   )
+            const classifications = computed(() => store.classifications)
 
-                                   if (
-                                       createClassificationData.value &&
-                                       !createClassificationError.value
-                                   ) {
-                                       console.log(
-                                           'in errror',
-                                           createClassificationData.value,
-                                           createClassificationError.value
-                                       )
-                                       let classifications: classificationInterface[] =
-                                           createClassificationData.value
-                                               .classificationDefs
-                                       classifications = [
-                                           ...store.classifications,
-                                           ...classifications,
-                                       ]
+            const selectedClassification: any = computed(() => {
+                if (!props.classificationName) {
+                    return {}
+                }
 
-                                       store.classifications =
-                                           classifications ?? []
-                                       const classificationTree =
-                                           store.transformClassificationTreeData
-                                       store.classificationTree =
-                                           classificationTree ?? []
-                                       createClassificationStatus.value = 'success'
-                                       formState.name = ''
-                                       formState.description = ''
-                                       closeModal()
-                                       // set this classification in view
-                                       store.setSelectedClassification(
-                                           classificationObj.name
-                                       )
-                                       router.push(
-                                           `/admin/classifications/${encodeURIComponent(
-                                               classificationObj.name
-                                           )}`
-                                       )
-                                   } else {
-                                       createClassificationStatus.value = 'error'
-                                       const error = toRaw(
-                                           createClassificationError.value
-                                       )
-                                       console.log(
-                                           'errormessage',
-                                           error.response.data.errorMessage
-                                       )
-                                       createErrorText.value =
-                                           error.response.data.errorMessage
+                if (classifications.value.length === 0) {
+                    return {}
+                }
+                return classifications.value.find(
+                    (classification: classificationInterface) =>
+                        (classification.name || '') ===
+                        decodeURI(props.classificationName as string)
+                )
+            })
+            const handleClickUser = () => {}
 
-                                       resetRef(createErrorText, 8000)
-                                   }
-                               }
-                           )
-                       })
-                       .catch((error: ValidateErrorEntity<FormState>) => {
-                           console.log('error', error)
-                       })
-               }
-
-               const toggleModal = () => {
-                   modalVisible.value = !modalVisible.value
-               }
-
-
-               const handleSelectNode = (node: classificationInterface) => {
-                   console.log(node, 'parent')
-               }
-
-               const classifications = computed(() => store.classifications)
-
-               const selectedClassification: any = computed(() => {
-                   if (!props.classificationName) {
-                       return {}
-                   }
-
-                   if (classifications.value.length === 0) {
-                       return {}
-                   }
-                   return classifications.value.find(
-                       (classification: classificationInterface) =>
-                           (classification.name || '') ===
-                           decodeURI(props.classificationName as string)
-                   )
-               })
-               const handleClickUser = (username: string) => {}
-
-               return {
-                   selectedClassificationNameFromRoute,
-                   handleClickUser,
-                   createClassificationStatus,
-                   createErrorText,
-                   filteredData,
-                   treeData,
-                   clearSearchText,
-                   handleSearch,
-                   treeFilterText,
-                   modalVisible,
-                   classificationName,
-                   selectedClassification,
-                   nodeEmit,
-                   closeModal,
-                   createClassification,
-                   toggleModal,
-                   createClassificationFormRef,
-                   other: '',
-                   formState,
-                   rules,
-                   handleSelectNode,
-               }
-           },
-       })
+            return {
+                selectedClassificationNameFromRoute,
+                handleClickUser,
+                createClassificationStatus,
+                createErrorText,
+                filteredData,
+                treeData,
+                clearSearchText,
+                handleSearch,
+                treeFilterText,
+                modalVisible,
+                classificationName,
+                selectedClassification,
+                nodeEmit,
+                closeModal,
+                createClassification,
+                toggleModal,
+                createClassificationFormRef,
+                other: '',
+                formState,
+                rules,
+                handleSelectNode,
+            }
+        },
+    })
 </script>
 <style lang="less" scoped>
     .treelist {

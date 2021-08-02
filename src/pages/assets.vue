@@ -27,10 +27,10 @@
     import AssetDiscovery from '@/discovery/asset/index.vue'
     import AssetPreview from '@/preview/asset/index.vue'
     import { useHead } from '@vueuse/head'
+    import { useRoute, useRouter } from 'vue-router'
     import { Classification } from '~/api/atlas/classification'
     import { useClassificationStore } from '~/components/admin/classifications/_store'
     import { getDecodedOptionsFromString } from '~/utils/routerQuery'
-    import { useRoute, useRouter } from 'vue-router'
 
     export interface initialFiltersType {
         facetsFilters: any
@@ -46,9 +46,7 @@
             const router = useRouter()
             const route = useRoute()
 
-            const id = computed(() => {
-                return route.params.id
-            })
+            const id = computed(() => route.params.id)
             const isItem = computed(() => {
                 if (route.params.id) {
                     return true
@@ -61,13 +59,13 @@
 
             const initialFilters: initialFiltersType =
                 getDecodedOptionsFromString(router)
-            let selected = ref({})
+            const selected = ref({})
             useHead({
                 title: 'Discover assets',
             })
             const handlePreview = (selectedItem: any) => {
                 selected.value = selectedItem
-                console.log(selected.value, 'selected')
+                //                //                console.log(selected.value, 'selected')
             }
 
             /* Making the network request here to fetch the latest changes of classifications. 

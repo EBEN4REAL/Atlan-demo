@@ -1,8 +1,8 @@
-import { fetcherPost, getAPIPath, getAxiosClient } from "~/api";
 import { AxiosRequestConfig } from "axios";
-import { Components } from "./client";
 import useSWRV, { IConfig, } from "swrv";
 import { reactive, ref, Ref, toRef, toRefs } from "vue";
+import { Components } from "./client";
+import { fetcherPost, getAPIPath, getAxiosClient } from "~/api";
 import { SearchParameters } from "~/types/atlas/attributes";
 
 const serviceAlias = "auth/atlas";
@@ -10,13 +10,11 @@ const serviceAlias = "auth/atlas";
 const Basic = (
   body?: SearchParameters,
   options?: AxiosRequestConfig,
-) => {
-  return getAxiosClient().post(
+) => getAxiosClient().post(
     getAPIPath(serviceAlias, "/search/basic"),
     body,
     options
   );
-};
 
 
 const BasicSearch = (
@@ -29,7 +27,7 @@ const BasicSearch = (
   const response = data as Ref<Components.Schemas.AtlasSearchResult>
   return {
     response,
-    error: error,
+    error,
     mutate,
     isValidating
   }

@@ -34,10 +34,11 @@
   <!-- </a-form> -->
 </template>
   <script lang="ts">
-import { User } from "~/api/auth/user";
 import { defineComponent, ref, computed, watch } from "vue";
-import useRoles from "~/composables/roles/useRoles";
 import { message } from "ant-design-vue";
+import { User } from "~/api/auth/user";
+import useRoles from "~/composables/roles/useRoles";
+
 export default defineComponent({
   name: "InviteUsersModal",
   setup(props, context) {

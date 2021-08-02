@@ -58,7 +58,7 @@
             <div class="flex items-start border rounded three-dots">
                 <Dropdown
                     :options="classificationDropdownOption"
-                    :isArrow="false"
+                    :is-arrow="false"
                     :variant="'link btn-no-focus text-gray p-0 border-0'"
                     :no-caret="true"
                     right
@@ -67,25 +67,25 @@
         </div>
         <UpdateClassificationModal
             :classification="{ ...selectedClassification }"
-            @close="closeEditClassificationModal"
             :open="isEditClassificationModalOpen"
+            @close="closeEditClassificationModal"
         />
 
         <DeleteClassificationModal
             :classification="{ ...selectedClassification }"
-            @close="closeDeleteClassificationModal"
             :open="isDeleteClassificationModalOpen"
+            @close="closeDeleteClassificationModal"
         />
     </div>
 </template>
 
 <script lang="ts">
     import { defineComponent, computed, ref, PropType } from 'vue'
+    import { useTimeAgo } from '@vueuse/core'
     import Dropdown from '~/components/admin/classifications/dropdown.vue'
     import UpdateClassificationModal from './updateClassificationModal.vue'
     import DeleteClassificationModal from './deleteClassificationModal.vue'
     import { useUserPreview } from '~/composables/user/showUserPreview'
-    import { useTimeAgo } from '@vueuse/core'
     import { classificationInterface } from '~/types/classifications/classification.interface'
 
     export default defineComponent({
@@ -125,13 +125,9 @@
             const isDeleteClassificationModalOpen = ref(false)
             const isEditClassificationModalOpen = ref(false)
             const selectedClassification = computed(
-                (): classificationInterface => {
-                    return props.classification
-                }
+                (): classificationInterface => props.classification
             )
-            const displayName = computed(() => {
-                return selectedClassification.value.displayName
-            })
+            const displayName = computed(() => selectedClassification.value.displayName)
             const createdAt = computed(() => {
                 const timestamp = selectedClassification.value.createTime
                 return useTimeAgo(timestamp).value || ''

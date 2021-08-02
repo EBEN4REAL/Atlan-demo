@@ -4,8 +4,6 @@ Use fontawesome for Icon
 
 */
 
-import { updater } from "./../api/index";
-import { UserModule } from "~/types/vitessg";
 import {
   Button,
   Input,
@@ -45,6 +43,8 @@ import {
   Popconfirm,
   Empty
 } from "ant-design-vue";
+import { updater } from "../api/index";
+import { UserModule } from "~/types/vitessg";
 
 // https://github.com/antfu/vite-plugin-pwa#automatic-reload-when-new-content-available
 export const install: UserModule = ({ app }) => {

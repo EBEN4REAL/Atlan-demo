@@ -1,9 +1,9 @@
 <template>
-  <div class="column-list" v-if="columnsList.length > 0">
+  <div v-if="columnsList.length > 0" class="column-list">
     <div
-      class="column-list__item"
       v-for="(item, index) in columnsList"
       :key="index"
+      class="column-list__item"
     >
       {{ item.displayText }}
     </div>

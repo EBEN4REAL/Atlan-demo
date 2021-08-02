@@ -1,13 +1,13 @@
 <template>
   <a-collapse
+    v-model:activeKey="activeKey"
     :bordered="false"
     :class="$style.filter"
-    defaultActiveKey="details"
+    default-active-key="details"
     :accordion="false"
     class="mt-2 bg-transparent"
-    v-model:activeKey="activeKey"
   >
-    <a-collapse-panel key="details" class="bg-transparent" forceRender>
+    <a-collapse-panel key="details" class="bg-transparent" force-render>
       <template #header>
         <div class="flex items-center justify-between">
           <div>Details</div>
@@ -24,7 +24,7 @@
       <!-- <Properties :item="item"></Properties> -->
       <Governance
         :item="item"
-        :selectedAssetData="selectedAssetData"
+        :selected-asset-data="selectedAssetData"
       ></Governance>
     </a-collapse-panel>
     <a-collapse-panel key="heirarchy" class="bg-transparent">
@@ -55,6 +55,7 @@ import Details from "./details/index.vue";
 import Heirarchy from "./heirarchy/index.vue";
 import Governance from "./governance/index.vue";
 import Properties from "./properties/index.vue";
+
 export default defineComponent({
   components: { Details, Heirarchy, Governance, Properties },
   props: {
@@ -74,7 +75,7 @@ export default defineComponent({
     },
   },
   setup(props, { emit }) {
-    let activeKey = ref("details");
+    const activeKey = ref("details");
     return {
       activeKey,
     };

@@ -17,13 +17,13 @@ export const setPanZoomEvent = async (element, updateLines) => {
     panZoomInstance.value = panzoom(element.value, options);
 
     // set event notifications
-    panZoomInstance.value.on("transform", function () {
+    panZoomInstance.value.on("transform", () => {
       updateLines();
     });
-    panZoomInstance.value.on("panstart", function () {
+    panZoomInstance.value.on("panstart", () => {
       panStarted.value = true;
     });
-    panZoomInstance.value.on("panend", function () {
+    panZoomInstance.value.on("panend", () => {
       panStarted.value = false;
     });
   });

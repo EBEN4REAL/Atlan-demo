@@ -4,8 +4,8 @@
       <div class="flex flex-col">
         <div class="mb-3">
           <a-radio-group
-            class="flex w-full text-center"
             v-model:value="filterMode"
+            class="flex w-full text-center"
           >
             <a-radio-button class="flex-grow" value="custom"
               ><fa icon="fal filter" class="pushtop"></fa
@@ -18,7 +18,7 @@
 
         <div v-show="filterMode === 'custom'" class="flex-grow">
           <AssetFilters
-            :initialFilters="initialFilters"
+            :initial-filters="initialFilters"
             @refresh="handleFilterChange"
           ></AssetFilters>
         </div>
@@ -40,17 +40,17 @@
             @change="handleChangeConnectors"
           ></ConnectorDropdown>
           <AssetDropdown
+            v-if="connectorsPayload.connection"
             :connector="filteredConnector"
             :data="connectorsPayload"
-            v-if="connectorsPayload.connection"
           ></AssetDropdown>
         </div>
         <div class="flex items-center mx-3 mt-1">
           <a-input
+            v-model:value="queryText"
             placeholder="Search"
             size="default"
             class="searchbox"
-            v-model:value="queryText"
             @change="handleSearchChange"
           >
             <template #prefix>
@@ -65,7 +65,7 @@
               <a-popover placement="bottomLeft">
                 <template #content>
                   <Preferences
-                    :defaultProjection="projection"
+                    :default-projection="projection"
                     @change="handleChangePreferences"
                     @sort="handleChangeSort"
                     @state="handleState"
@@ -80,8 +80,8 @@
         <div class="flex w-full px-3 mt-3">
           <AssetTabs
             v-model="assetType"
-            :assetTypeList="assetTypeList"
-            :assetTypeMap="assetTypeMap"
+            :asset-type-list="assetTypeList"
+            :asset-type-map="assetTypeMap"
             :total="totalSum"
           ></AssetTabs>
         </div>
@@ -94,18 +94,18 @@
         </div>
         <AssetList
           v-else
+          ref="assetlist"
           :list="list"
           :score="searchScoreList"
-          @preview="handlePreview"
           :projection="projection"
-          :isLoading="isLoading || isValidating"
-          ref="assetlist"
+          :is-loading="isLoading || isValidating"
+          @preview="handlePreview"
         ></AssetList>
         <div class="flex w-full px-3 py-1">
           <div class="flex items-center justify-between w-full">
             <div
-              class="flex items-center text-sm leading-none"
               v-if="isLoading || isValidating"
+              class="flex items-center text-sm leading-none"
             >
               <a-spin size="small" class="mr-2 leading-none"></a-spin
               ><span>searching results</span>
@@ -113,14 +113,14 @@
             <AssetPagination
               v-else
               :label="assetTypeLabel"
-              :listCount="list.length"
-              :totalCount="totalCount"
+              :list-count="list.length"
+              :total-count="totalCount"
             ></AssetPagination>
 
             <div
+              v-if="isLoadMore && (!isLoading || !isValidating)"
               class="text-sm cursor-pointer text-primary"
               @click="loadMore"
-              v-if="isLoadMore && (!isLoading || !isValidating)"
             >
               load more...
             </div>
@@ -159,22 +159,22 @@ import EmptyView from "@common/empty/discover.vue";
 import Preferences from "@/discovery/asset/preference/index.vue";
 // import { useDebounceFn } from "@vueuse/core";
 // import fetchAssetDiscover from "~/composables/asset/fetchAssetDiscover";
+import { useDebounceFn } from "@vueuse/core";
+import useBusinessMetadata from "@/admin/custom-metadata/composables/useBusinessMetadata";
+import { useRouter } from "vue-router";
 import useDiscoveryPreferences from "~/composables/preference/useDiscoveryPreference";
 // import { DISCOVERY_FETCH_LIST } from "~/constant/cache";
 // import { Components } from "~/api/atlas/client";
 
 import useAssetList from "~/composables/bots/useAssetList";
 import { AssetTypeList } from "~/constant/assetType";
-import { useDebounceFn } from "@vueuse/core";
 import { Components } from "~/api/atlas/client";
 import { SearchParameters } from "~/types/atlas/attributes";
 import { BaseAttributes, BasicSearchAttributes } from "~/constant/projection";
 import { useBusinessMetadataStore } from "~/store/businessMetadata";
-import useBusinessMetadata from "@/admin/custom-metadata/composables/useBusinessMetadata";
 import { useDiscoveryStore } from "~/store/discovery";
 import { useConnectionsStore } from "~/store/connections";
 import { getEncodedStringFromOptions } from "~/utils/routerQuery";
-import { useRouter } from "vue-router";
 import { initialFiltersType } from "~/pages/assets.vue";
 import useTracking from "~/modules/tracking";
 
@@ -242,21 +242,15 @@ export default defineComponent({
       },
     },
   },
-  data() {
-    return {
-      activeKey: "",
-      debounce: null,
-    };
-  },
   emits: ["preview"],
   setup(props, { emit }) {
     // initializing the discovery store
-    const initialFilters = props.initialFilters;
+    const {initialFilters} = props;
 
     const router = useRouter();
     const tracking = useTracking();
     const events = tracking.getEventsName();
-    let filterMode = ref("custom");
+    const filterMode = ref("custom");
 
     const now = ref(false);
     let initialBody: SearchParameters = reactive({});
@@ -300,9 +294,7 @@ export default defineComponent({
     const state = ref("active");
 
     const assetTypeLabel = computed(() => {
-      const found = AssetTypeList.find((item) => {
-        return item.id == assetType.value;
-      });
+      const found = AssetTypeList.find((item) => item.id == assetType.value);
       return found?.label;
     });
 
@@ -314,17 +306,13 @@ export default defineComponent({
     });
 
     const connectorStore = useConnectionsStore();
-    const filteredConnector = computed(() => {
-      return connectorStore.getSourceList?.find(
+    const filteredConnector = computed(() => connectorStore.getSourceList?.find(
         (item) => connectorsPayload.value?.connector == item.id
-      );
-    });
+      ));
 
-    //Get All Disoverable Asset Types
-    let assetTypeList = ref([]);
-    assetTypeList.value = AssetTypeList.filter((item) => {
-      return item.isDiscoverable == true;
-    });
+    // Get All Disoverable Asset Types
+    const assetTypeList = ref([]);
+    assetTypeList.value = AssetTypeList.filter((item) => item.isDiscoverable == true);
     const assetTypeListString = assetTypeList.value
       .map((item) => item.id)
       .join(",");
@@ -333,7 +321,7 @@ export default defineComponent({
       let sum = 0;
       assetTypeList.value.forEach((element) => {
         if (assetTypeMap.value[element.id]) {
-          sum = sum + assetTypeMap.value[element.id];
+          sum += assetTypeMap.value[element.id];
         }
       });
       return sum;
@@ -347,9 +335,7 @@ export default defineComponent({
 
     const assetlist = ref(null);
 
-    const isLoadMore = computed(() => {
-      return totalCount.value > list.value.length;
-    });
+    const isLoadMore = computed(() => totalCount.value > list.value.length);
 
     const {
       list,
@@ -416,11 +402,11 @@ export default defineComponent({
         }
       }
 
-      let connectorCritera = {
+      const connectorCritera = {
         condition: "OR",
         criterion: [],
       };
-      let connectionCriteria = {
+      const connectionCriteria = {
         condition: "OR",
         criterion: [],
       };
@@ -512,8 +498,7 @@ export default defineComponent({
       updateBody();
     };
 
-    const getRouterOptions = () => {
-      return {
+    const getRouterOptions = () => ({
         filters: filterMap.value || {},
         searchText: queryText.value || "",
         connectorsPayload: connectorsPayload.value || {},
@@ -526,8 +511,7 @@ export default defineComponent({
         //       }
         //   : { sortBy: "", sortOrder: "" }),
         limit: limit.value || 20,
-      };
-    };
+      });
 
     const pushQueryToRouter = (pushString) => {
       console.log(router, "router");
@@ -634,6 +618,12 @@ export default defineComponent({
       // // handleChangePreferences,
       // // handleChangeAssetType,
       // projection,
+    };
+  },
+  data() {
+    return {
+      activeKey: "",
+      debounce: null,
     };
   },
 });

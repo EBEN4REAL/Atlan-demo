@@ -2,7 +2,7 @@
   <a-select
     :value="modelValue"
     :show-search="true"
-    :autoClearSearchValue="true"
+    :auto-clear-search-value="true"
     @search="handleSearch"
     @change="handleChange"
   >
@@ -24,18 +24,19 @@ import { Day } from "~/constant/day";
 
 export default defineComponent({
   name: "HelloWorld",
+  components: {
+    Select,
+  },
   props: {
     modelValue: {
       type: String,
       required: false,
     },
   },
-  components: {
-    Select,
-  },
+  emits: ["update:modelValue", "change"],
   computed: {
     list() {
-      let temp = [];
+      const temp = [];
       Day.forEach((item) => {
         temp.push({
           id: item.id,
@@ -52,16 +53,13 @@ export default defineComponent({
     //   this.selected = Intl.DateTimeFormat().resolvedOptions().timeZone;
     // }
   },
-  emits: ["update:modelValue", "change"],
   methods: {
     handleChange(checkedValues) {
       this.$emit("update:modelValue", checkedValues);
       this.$emit("change", checkedValues);
     },
     handleSearch(input: string) {
-      this.list.filter((item) => {
-        return item.label.toLowerCase().indexOf(input.toLowerCase()) >= 0;
-      });
+      this.list.filter((item) => item.label.toLowerCase().indexOf(input.toLowerCase()) >= 0);
     },
     clear() {},
   },

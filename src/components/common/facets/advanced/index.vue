@@ -4,9 +4,9 @@
       <div class="flex flex-col border-gray-200 space-y-1border-b">
         <div class="flex items-center mb-1">
           <a-cascader
+            v-model:value="item.operator"
             :options="options"
             placeholder="Please select"
-            v-model:value="item.operator"
             @change="handleOperatorChange(index)"
           />
           <div
@@ -17,15 +17,15 @@
           </div>
         </div>
         <DynamicInput
-          :dataType="item.type"
           v-if="item.isInput"
           v-model="item.operand"
+          :data-type="item.type"
           @change="handleOperandChange(index)"
         ></DynamicInput>
       </div>
     </template>
   </div>
-  <a-button block size="small" @click="handleAdd" class="mt-2"
+  <a-button block size="small" class="mt-2" @click="handleAdd"
     ><fa icon="fal plus"></fa
   ></a-button>
 </template>
@@ -71,11 +71,11 @@ export default defineComponent({
   },
   emits: ["update:modelValue", "change"],
   setup(props, { emit }) {
-    let list = ref([...props.data.list]);
+    const list = ref([...props.data.list]);
 
-    let options = ref([]);
+    const options = ref([]);
     AdvancedAttributeList.forEach((item) => {
-      let temp = item;
+      const temp = item;
       temp.children = OperatorList.filter((op) =>
         op.allowedType.includes(item.type)
       );
@@ -92,7 +92,7 @@ export default defineComponent({
     };
 
     const handleOperatorChange = (index) => {
-      let selected = list.value[index].operator;
+      const selected = list.value[index].operator;
 
       if (selected?.length > 0) {
         const found = options.value.find((op) => op.value === selected[0]);
@@ -109,13 +109,13 @@ export default defineComponent({
 
     const handleOperandChange = (index) => {
       console.log(list.value[index]);
-      let selected = list.value[index].operand;
+      const selected = list.value[index].operand;
       console.log(selected);
       handleChange();
     };
 
     const handleChange = () => {
-      let criterion: Components.Schemas.FilterCriteria[] = [];
+      const criterion: Components.Schemas.FilterCriteria[] = [];
       console.log(list.value, "listt");
 
       list.value.forEach((element) => {
@@ -125,22 +125,20 @@ export default defineComponent({
             attributeName: element.operator[0],
             operator: element.operator[1],
           });
-        } else {
-          if (element.operand !== "") {
+        } else if (element.operand !== "") {
             criterion.push({
               attributeName: element.operator[0],
               operator: element.operator[1],
               attributeValue: element.operand,
             });
           }
-        }
       });
 
       emit("change", {
         id: props.item.id,
         payload: {
           condition: "AND",
-          criterion: criterion,
+          criterion,
         } as Components.Schemas.FilterCriteria,
       });
     };

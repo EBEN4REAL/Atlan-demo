@@ -5,8 +5,8 @@
 </template>
 
 <script lang="ts">
-//https://github.com/vitejs/vite/discussions/1791
-//https://github.com/vitejs/vite/issues/1927#issuecomment-805803918
+// https://github.com/vitejs/vite/discussions/1791
+// https://github.com/vitejs/vite/issues/1927#issuecomment-805803918
 
 import {
   defineComponent,
@@ -16,7 +16,6 @@ import {
   onUnmounted,
   computed,
 } from "vue";
-import fetchColumnList from "~/composables/columns/fetchColumnList";
 
 import savedQuery from "@/projects/monaco/savedQuery";
 import sqlKeywords from "@/projects/monaco/sqlKeywords";
@@ -25,8 +24,9 @@ import columnSuggestion from "@/projects/monaco/columnSuggestion";
 import { languageTokens } from "@/projects/monaco/sqlTokens";
 import TurndownService from "turndown";
 import * as monaco from "monaco-editor";
+import fetchColumnList from "~/composables/columns/fetchColumnList";
 
-let turndownService = new TurndownService({});
+const turndownService = new TurndownService({});
 
 // @ts-ignore
 self.MonacoEnvironment = {
@@ -34,7 +34,7 @@ self.MonacoEnvironment = {
     return new Worker("./monaco-editor/esm/vs/projects/editor.worker", {
       type: "module",
     });
-    //return new EditorWorker();
+    // return new EditorWorker();
   },
 };
 
@@ -43,7 +43,7 @@ export default defineComponent({
     const monacoRoot = ref<HTMLElement>();
     let editor: monaco.editor.IStandaloneCodeEditor;
 
-    let entityFilters = {
+    const entityFilters = {
       condition: "OR",
       criterion: [
         {
@@ -75,7 +75,7 @@ export default defineComponent({
       }
     };
 
-    let now = ref(true);
+    const now = ref(true);
     const { list } = fetchColumnList("", now, entityFilters, [
       "Column.dataType.keyword",
     ]);
@@ -86,8 +86,8 @@ export default defineComponent({
     monaco.languages.setMonarchTokensProvider("atlansql", languageTokens);
 
     monaco.languages.registerCompletionItemProvider("atlansql", {
-      provideCompletionItems: function () {
-        //For object properties https://microsoft.github.io/monaco-editor/api/interfaces/monaco.languages.completionitem.html
+      provideCompletionItems () {
+        // For object properties https://microsoft.github.io/monaco-editor/api/interfaces/monaco.languages.completionitem.html
         return {
           suggestions: [
             ...savedQuery(),
@@ -99,9 +99,9 @@ export default defineComponent({
     });
 
     monaco.languages.registerHoverProvider("atlansql", {
-      provideHover: function (model, position, token) {
+      provideHover (model, position, token) {
         const hoveredWord = model.getWordAtPosition(position).word;
-        //ignore whitespace
+        // ignore whitespace
         if (
           model.getLineContent(position.lineNumber).trim() !== "" &&
           isSelectedWordIsTableName(hoveredWord)

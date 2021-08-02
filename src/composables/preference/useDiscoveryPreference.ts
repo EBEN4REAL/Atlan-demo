@@ -4,7 +4,7 @@ import store from "../utils/local-storage";
 
 export default function useDiscoveryPreferences() {
 
-    let localProjection: Ref<any[]> = ref([]);
+    const localProjection: Ref<any[]> = ref([]);
     const projection = computed({
         get: () => {
             if (localProjection.value.length > 0) {
@@ -19,10 +19,10 @@ export default function useDiscoveryPreferences() {
     });
 
 
-    let localAssetType: Ref<string> = ref("Table");
+    const localAssetType: Ref<string> = ref("Table");
     const assetType = computed({
         get: () => {
-            if (localAssetType) {
+            if (localAssetType.value) {
                 return localAssetType.value;
             }
             return store.get('discovery_assettype') || "Table";
@@ -34,7 +34,7 @@ export default function useDiscoveryPreferences() {
     });
 
 
-    let localFilterCriteria: Ref<Components.Schemas.FilterCriteria> = ref();
+    const localFilterCriteria: Ref<Components.Schemas.FilterCriteria> = ref();
     const filterCritera = computed({
         get: () => {
             if (localFilterCriteria?.value) {

@@ -1,15 +1,15 @@
 <template>
   <a-drawer
     :visible="showGroupPreview"
-    :destroyOnClose="true"
+    :destroy-on-close="true"
     width="40%"
     placement="right"
     :body-style="{ height: '100%' }"
     @close="handleClose"
   >
     <GroupPreview
-      :defaultTab="defaultTab"
-      :selectedGroup="selectedGroup"
+      :default-tab="defaultTab"
+      :selected-group="selectedGroup"
       @refreshTable="$emit('refreshTable')"
     />
   </a-drawer>

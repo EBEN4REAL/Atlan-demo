@@ -7,8 +7,8 @@
     <div class="px-4 py-2 overflow-x-hidden overflow-y-auto h-80 w-72">
       <ColumnItem
         v-for="(data, index) in relationship?.entities || []"
-        :data="data"
         :key="index"
+        :data="data"
       />
     </div>
   </div>
@@ -19,8 +19,8 @@ import useAssetRelationShip from "./useAssetRelationShip";
 import ColumnItem from "./columnItem.vue";
 
 export default defineComponent({
-  props: ["asset"],
   components: { ColumnItem },
+  props: ["asset"],
   setup(props) {
     const { relationship, mutate, state, STATES } = useAssetRelationShip(
       props.asset?.guid || "",

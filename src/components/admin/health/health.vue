@@ -4,14 +4,14 @@
     <div class="relative w-full h-full pt-16 bg-white rounded">
       <div class="flex flex-col items-center mb-6">
         <Fa
-          class="mb-6 text-5xl"
           v-bind="getOverallStatusIconClass"
           :key="overallStatus"
+          class="mb-6 text-5xl"
         />
         <span class="text-2xl font-bold text-gray-600">
           {{ overallStatusText }}
         </span>
-        <span class="mt-1 text-gray-500" v-if="overallStatus === 'down'">
+        <span v-if="overallStatus === 'down'" class="mt-1 text-gray-500">
           Facing issues? Reach out to us at
           <a href="mailto:support@atlan.com">support@atlan.com</a>
         </span>
@@ -45,9 +45,9 @@
             SERVICES[service]
           }}</span>
           <Fa
-            class="text-xl"
             v-bind="getStatusClass(services[service].value)"
             :key="service + services[service].value"
+            class="text-xl"
           />
         </div>
       </div>
@@ -65,9 +65,9 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
+import { useHead } from "@vueuse/head";
 import { useHealth } from "./useHealth";
 import grafana from "~/assets/images/source/grafana.png";
-import { useHead } from "@vueuse/head";
 
 export default defineComponent({
   name: "HealthStatus",

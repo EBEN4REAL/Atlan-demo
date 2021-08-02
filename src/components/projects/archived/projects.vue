@@ -16,7 +16,7 @@
         Personal Workspace
       </p></a-layout-header
     > -->
-    <a-layout :hasSider="true">
+    <a-layout :has-sider="true">
       <a-layout-content>
         <splitpanes class="bg-white default-theme">
           <pane size="20" class="p-4 bg-white">
@@ -48,7 +48,7 @@
           </pane>
           <pane size="80" class="shadow-md">
             <div class="p-4 m-6 bg-white border rounded">
-              <Editor @run="queryRun" :isQueryRunning="isQueryRunning"></Editor>
+              <Editor :is-query-running="isQueryRunning" @run="queryRun"></Editor>
             </div>
             <div
               class="p-6 m-6 overflow-x-auto bg-white border rounded  table-wrapper"
@@ -56,7 +56,7 @@
               <!-- {{ queryResult }} -->
               <a-table
                 class="overflow-x-auto"
-                :dataSource="dataList"
+                :data-source="dataList"
                 :columns="columnList"
                 :scroll="{ x: 500, y: 240 }"
               />
@@ -70,9 +70,9 @@
 <script lang="ts">
 import { defineComponent, ref, inject, toRaw, Ref, watch } from "vue";
 import Editor from "@/projects/index.vue";
+import { useHead } from "@vueuse/head";
 import useProject from "~/composables/projects/useProject";
 import ProjectSidebar from "~/layouts/project/index.vue";
-import { useHead } from "@vueuse/head";
 
 export default defineComponent({
   components: {

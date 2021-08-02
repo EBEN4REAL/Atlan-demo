@@ -1,9 +1,9 @@
 import { computed, ComputedRef, Ref, ref, watch } from "vue";
+import axios, { CancelTokenSource } from "axios";
 import { SearchParameters } from "~/types/atlas/attributes";
 
 import { SearchBasic } from "~/api/atlas/searchbasic";
 import { BaseAttributes, BotsAttributes } from "~/constant/projection";
-import axios, { CancelTokenSource } from "axios";
 
 import swrvState from "../utils/swrvState";
 import { Components } from "~/api/atlas/client";
@@ -12,19 +12,19 @@ import { BotsType } from "~/types/atlas/bots";
 import { Avatar } from "~/api/auth/avatar";
 
 export default function uploadAvatar() {
-  let cancelTokenSource: Ref<CancelTokenSource> = ref(
+  const cancelTokenSource: Ref<CancelTokenSource> = ref(
     axios.CancelToken.source()
   );
-  let options = ref({
+  const options = ref({
     cancelToken: cancelTokenSource?.value.token,
     revalidateOnFocus: false,
     dedupingInterval: 1,
     immediate: false,
     resetOnExecute: false,
   });
-  let formData = ref();
+  const formData = ref();
 
-  let uploadKey = ref(Date.now().toString());
+  const uploadKey = ref(Date.now().toString());
 
   const { data, mutate, isReady, error } = Avatar.UploadAvatar(
     "",

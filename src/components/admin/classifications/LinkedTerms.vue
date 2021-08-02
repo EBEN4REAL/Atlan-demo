@@ -2,13 +2,13 @@
     <div class="flex flex-col h-full rounded-lg">
         <div class="flex items-center mx-3 mb-1">
             <a-input
+                v-model:value="queryText"
                 :placeholder="`Search ${
                     queryText == '' ? list.length : filteredList.length
                 } linked glossary`"
-                :allowClear="true"
+                :allow-clear="true"
                 size="default"
                 class="rounded-full"
-                v-model:value="queryText"
                 @change="handleSearchChange"
             >
                 <template #suffix>
@@ -37,8 +37,8 @@
                                 <div class="pl-3">
                                     <p class="mb-1 text-gray-500">Order</p>
                                     <a-radio-group
-                                        @change="handeChangeFilterSorting"
                                         v-model:value="sorting"
+                                        @change="handeChangeFilterSorting"
                                     >
                                         <div class="flex flex-col space-y-1">
                                             <a-radio value="ascending"
@@ -65,26 +65,26 @@
             "
             class="flex-grow"
         >
-            <EmptyView :showClearFiltersCTA="false" type="Terms"></EmptyView>
+            <EmptyView :show-clear-filters-c-t-a="false" type="Terms"></EmptyView>
         </div>
         <LinkedTermList
-            class="asset-list-height"
             v-else
+            ref="assetlist"
+            class="asset-list-height"
             :list="queryText == '' ? list : filteredList"
             :score="searchScoreList"
-            @preview="handlePreview"
-            :isLoading="isLoading || isValidating"
+            :is-loading="isLoading || isValidating"
             :projection="projection"
-            ref="assetlist"
+            @preview="handlePreview"
         ></LinkedTermList>
         <!--Body end-->
         <Footer
-            :isLoading="isLoading"
-            :isValidating="isValidating"
-            :isLoadMore="isLoadMore"
-            :listCount="list.length"
-            :totalCount="totalCount"
-            :assetTypeLabel="assetTypeLabel"
+            :is-loading="isLoading"
+            :is-validating="isValidating"
+            :is-load-more="isLoadMore"
+            :list-count="list.length"
+            :total-count="totalCount"
+            :asset-type-label="assetTypeLabel"
             @loadMore="loadMore"
         />
     </div>
@@ -96,9 +96,9 @@
     import LinkedTermList from '@/common/list/linkedTerms/index.vue'
     import AssetTabs from '@/discovery/asset/tabs/index.vue'
     import EmptyView from '@common/empty/discover.vue'
+    import Footer from '@common/assets/footer/index.vue'
     import { Components } from '~/api/atlas/client'
     import useAssetList from '~/composables/bots/useAssetList'
-    import Footer from '@common/assets/footer/index.vue'
 
     export default defineComponent({
         name: 'LinkedTerms',
@@ -149,7 +149,7 @@
             const handleState = (e: string) => {
                 emit('handleState', e)
             }
-            let criterion: Components.Schemas.FilterCriteria[] = []
+            const criterion: Components.Schemas.FilterCriteria[] = []
             const entityFilterPayload = {
                 condition: 'AND',
                 criterion: [
@@ -208,7 +208,7 @@
                 queryText.value = (<HTMLInputElement>e.target).value
                 filterListByQueryText(queryText.value)
             }
-            //zxs
+            // zxs
 
             const handlePreview = () => {}
             const projection: Ref<Array<string>> = ref([])
@@ -222,12 +222,12 @@
                 let list = []
                 switch (sortingOrder) {
                     case 'ascending': {
-                        list = data.value.sort(function (
+                        list = data.value.sort((
                             listA: any,
                             listB: any
-                        ) {
-                            let a = listA.attributes.name
-                            let b = listB.attributes.name
+                        ) => {
+                            const a = listA.attributes.name
+                            const b = listB.attributes.name
                             if (a < b) {
                                 return -1
                             }
@@ -239,12 +239,12 @@
                         break
                     }
                     case 'descending': {
-                        list = data.value.sort(function (
+                        list = data.value.sort((
                             listA: any,
                             listB: any
-                        ) {
-                            let a = listA.attributes.name
-                            let b = listB.attributes.name
+                        ) => {
+                            const a = listA.attributes.name
+                            const b = listB.attributes.name
                             if (a < b) {
                                 return 1
                             }
@@ -270,7 +270,7 @@
             })
             const isLoadMore = computed(() => {
                 if (totalCount.value > list.value.length) return true
-                else false
+                false
             })
 
             const loadMore = () => {
@@ -311,7 +311,7 @@
             }
             watch(selectedClassification, () => {
                 if (selectedClassification.value) {
-                    let criterion: Components.Schemas.FilterCriteria[] = []
+                    const criterion: Components.Schemas.FilterCriteria[] = []
                     const entityFilterPayload = {
                         condition: 'AND',
                         criterion: [

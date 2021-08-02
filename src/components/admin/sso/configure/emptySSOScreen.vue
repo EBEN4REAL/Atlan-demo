@@ -24,7 +24,7 @@
     </section>
     <ConfigureNewSSO
       v-else
-      :selectedProvider="selectedOption"
+      :selected-provider="selectedOption"
       @showConfigScreen="showConfigScreen"
     />
   </div>
@@ -33,6 +33,7 @@
 import { defineComponent, ref } from "vue";
 import emptySSOImage from "~/assets/images/emptyCreds.png";
 import ConfigureNewSSO from "./configureNewSSO.vue";
+
 export default defineComponent({
   components: { ConfigureNewSSO },
   setup() {

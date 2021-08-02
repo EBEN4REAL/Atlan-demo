@@ -1,18 +1,18 @@
 <template>
   <div>
     <a-table
-      :scroll="{ y: 'calc(100vh - 20rem)' }"
-      :tableLayout="'fixed'"
-      id="invitationList"
-      :dataSource="invitationList"
-      :columns="columns"
       v-if="invitationList"
-      :rowKey="(invitation) => invitation.id"
+      id="invitationList"
+      :scroll="{ y: 'calc(100vh - 20rem)' }"
+      :table-layout="'fixed'"
+      :data-source="invitationList"
+      :columns="columns"
+      :row-key="(invitation) => invitation.id"
       :pagination="false"
-      @change="handleTableChange"
       :loading="
         [STATES.PENDING].includes(state) || [STATES.VALIDATING].includes(state)
       "
+      @change="handleTableChange"
     >
       <template #invites="{ text: invite }">
         <div
@@ -25,10 +25,10 @@
         >
           <div>
             <avatar
-              :imageUrl="''"
-              :allowUpload="false"
-              :avatarName="invite.username || invite.email"
-              :avatarSize="40"
+              :image-url="''"
+              :allow-upload="false"
+              :avatar-name="invite.username || invite.email"
+              :avatar-size="40"
               class="mr-2"
             />
             <!-- <a-avatar
@@ -77,7 +77,7 @@
       <a-pagination
         :total="pagination.total"
         :current="pagination.current"
-        :pageSize="pagination.pageSize"
+        :page-size="pagination.pageSize"
         @change="handlePagination"
       />
     </div>
@@ -87,40 +87,39 @@
 <script lang="ts">
 import { defineComponent, ref, reactive, computed, watch } from "vue";
 import { useDebounceFn } from "@vueuse/core";
+import { Modal, message } from "ant-design-vue";
 import useInvitations from "~/composables/user/useInvitations";
 import {
   getNameInitials,
   getNameInTitleCase,
 } from "~/composables//utils/string-operations";
-import { Modal, message } from "ant-design-vue";
 import { User } from "~/api/auth/user";
 import Avatar from "~/components/common/avatar.vue";
+
 export default defineComponent({
   name: "InvitationListTable",
+  components: {
+    Avatar,
+  },
   props: {
     searchText: {
       type: String,
       deafult: "",
     },
   },
-  components: {
-    Avatar,
-  },
   setup(props, context) {
-    let invitationListAPIParams: any = reactive({
+    const invitationListAPIParams: any = reactive({
       limit: 15,
       offset: 0,
       sort: "email",
       filter: { $and: [{ email_verified: false }] },
     });
-    const pagination = computed(() => {
-      return {
+    const pagination = computed(() => ({
         total: filteredInvitationCount.value,
         pageSize: invitationListAPIParams.limit,
         current:
           invitationListAPIParams.offset / invitationListAPIParams.limit + 1,
-      };
-    });
+      }));
     const {
       userList: invitationList,
       filteredUserCount: filteredInvitationCount,
@@ -134,11 +133,11 @@ export default defineComponent({
     watch(() => props.searchText, handleSearch);
 
     const searchInvitationList = () => {
-      let localFilterParams = invitationListAPIParams.filter.$and;
-      let searchFilterIndex = localFilterParams.findIndex((filter: any) => {
+      const localFilterParams = invitationListAPIParams.filter.$and;
+      const searchFilterIndex = localFilterParams.findIndex((filter: any) => 
         // eslint-disable-next-line no-prototype-builtins
-        return filter.hasOwnProperty("$or");
-      });
+         filter.hasOwnProperty("$or")
+      );
       if (searchFilterIndex > -1) {
         localFilterParams.splice(searchFilterIndex, 1);
       }
@@ -163,24 +162,24 @@ export default defineComponent({
         };
       }
       getInvitationList();
-      //TODO: fetch roles
+      // TODO: fetch roles
       // getRolesList();
     };
     const handleTableChange = (pagination: any, filters: any, sorter: any) => {
-      //add filters
-      let allFilters: any = [];
+      // add filters
+      const allFilters: any = [];
       if (Object.keys(filters).length) {
-        let filterKeys = Object.keys(filters);
+        const filterKeys = Object.keys(filters);
         filterKeys.forEach((key) => {
           filters[key].forEach((value: any) =>
             allFilters.push(JSON.parse(value))
           );
         });
-        let localFilterParams = [...invitationListAPIParams.filter.$and];
-        let enabledFilterIndex = localFilterParams.findIndex((filter) => {
+        const localFilterParams = [...invitationListAPIParams.filter.$and];
+        const enabledFilterIndex = localFilterParams.findIndex((filter) => 
           // eslint-disable-next-line no-prototype-builtins
-          return filter.hasOwnProperty("enabled");
-        });
+           filter.hasOwnProperty("enabled")
+        );
         if (enabledFilterIndex > -1) {
           localFilterParams.splice(enabledFilterIndex, 1);
         }
@@ -195,7 +194,7 @@ export default defineComponent({
           };
         }
       }
-      //add sort
+      // add sort
       if (Object.keys(sorter).length) {
         let sortValue = "first_name";
         if (sorter.order && sorter.column && sorter.column.sortKey)
@@ -204,7 +203,7 @@ export default defineComponent({
           }`;
         invitationListAPIParams.sort = sortValue;
       }
-      //modify offset
+      // modify offset
       const offset = (pagination.current - 1) * invitationListAPIParams.limit;
       invitationListAPIParams.offset = offset;
       // fetch groups
@@ -257,7 +256,7 @@ export default defineComponent({
       });
     };
     const handlePagination = (page) => {
-      //modify offset
+      // modify offset
       const offset = (page - 1) * invitationListAPIParams.limit;
       invitationListAPIParams.offset = offset;
       getInvitationList();

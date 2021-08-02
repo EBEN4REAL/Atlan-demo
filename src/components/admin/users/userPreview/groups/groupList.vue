@@ -2,31 +2,31 @@
   <div>
     <div class="flex flex-row justify-between">
       <div class="flex">
-        <a-button @click="$emit('showUserGroups')" class="mr-3">
+        <a-button class="mr-3" @click="$emit('showUserGroups')">
           <fa class="text-gray-dark" icon="fal chevron-left" />
         </a-button>
         <a-input-search
-          placeholder="Search Groups"
-          :allowClear="true"
-          class="mr-1"
           v-model:value="searchText"
+          placeholder="Search Groups"
+          :allow-clear="true"
+          class="mr-1"
           @change="handleSearch"
         ></a-input-search>
       </div>
       <div>
         <a-button
           :loading="addToGroupLoading"
-          @click="$emit('addUserToGroups')"
           type="primary"
           :disabled="addToGroupLoading || !selectedIds.length"
+          @click="$emit('addUserToGroups')"
         >
           <fa icon="fal plus" class="mr-2" />Add
         </a-button>
       </div>
     </div>
     <div
-      class="flex flex-col items-center justify-center h-full bg-white"
       v-if="[STATES.ERROR, STATES.STALE_IF_ERROR].includes(state)"
+      class="flex flex-col items-center justify-center h-full bg-white"
     >
       <ErrorView>
         <div class="mt-3">
@@ -51,8 +51,8 @@
           <template v-for="group in groupList.value" :key="group.id">
             <a-checkbox
               :value="group.id"
-              @change="handleChange"
               class="flex items-center w-full py-2 border-b border-gray-100"
+              @change="handleChange"
             >
               <div class="flex justify-between ml-3">
                 <div class="flex items-center">
@@ -72,11 +72,11 @@
         </div>
       </a-checkbox-group>
       <div
-        class="flex justify-center mt-3"
         v-if="
           [STATES.PENDING].includes(state) ||
           [STATES.VALIDATING].includes(state)
         "
+        class="flex justify-center mt-3"
       >
         <a-spin></a-spin>
       </div>
@@ -140,19 +140,16 @@ export default defineComponent({
       getGroupList();
     }, 200);
     const handleLoadMore = () => {
-      groupListAPIParams.offset =
-        groupListAPIParams.offset + groupListAPIParams.limit;
+      groupListAPIParams.offset += groupListAPIParams.limit;
       getGroupList();
     };
-    let showLoadMore = computed(() => {
-      return getIsLoadMore(
+    const showLoadMore = computed(() => getIsLoadMore(
         // TODO: check if there's a better way access memberList and not use ref in a ref
         groupList.value.value.length,
         groupListAPIParams.offset,
         groupListAPIParams.limit,
         searchText.value ? filteredGroupsCount.value : totalGroupsCount.value
-      );
-    });
+      ));
     const handleChange = (event) => {
       if (
         event.target.checked &&

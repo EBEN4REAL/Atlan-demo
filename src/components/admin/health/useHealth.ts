@@ -43,7 +43,7 @@ function getUserServicesNames(services: { [key: string]: string }): string[] {
 }
 
 export function useHealth() {
-  let services: {
+  const services: {
     [k: string]: string;
   } = reactive({
     user: "loading",
@@ -69,12 +69,12 @@ export function useHealth() {
         icon: "fal check-circle",
         class: "animate-flipInX text-green-500",
       };
-    } else if (status === SERVICE_STATES.down) {
+    } if (status === SERVICE_STATES.down) {
       return {
         icon: "fal times-circle",
         class: "animate-tada text-red-500",
       };
-    } else if (status === SERVICE_STATES.loading) {
+    } if (status === SERVICE_STATES.loading) {
       return {
         icon: "fal circle-notch",
         class: "animate-spin text-yellow-400",
@@ -136,17 +136,17 @@ export function useHealth() {
     const states = Object.values(services);
     if (states.some((status) => status === SERVICE_STATES.down))
       return SERVICE_STATES.down;
-    else if (states.every((status) => status === SERVICE_STATES.up))
+    if (states.every((status) => status === SERVICE_STATES.up))
       return SERVICE_STATES.up;
-    else return SERVICE_STATES.loading;
+    return SERVICE_STATES.loading;
   });
 
   const overallStatusText = computed(() => {
     if (overallStatus.value === SERVICE_STATES.up) {
       return "Atlan is up and running";
-    } else if (overallStatus.value === SERVICE_STATES.down) {
+    } if (overallStatus.value === SERVICE_STATES.down) {
       return "Some services are down";
-    } else if (overallStatus.value === SERVICE_STATES.loading) {
+    } if (overallStatus.value === SERVICE_STATES.loading) {
       return "Checking status";
     }
     return "";

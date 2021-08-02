@@ -12,10 +12,10 @@
         class="mt-2 overflow-y-hidden bg-transparent"
     >
         <a-collapse-panel
+            v-for="stream in streams"
             :key="stream.key"
             class="bg-transparent border-0"
-            forceRender
-            v-for="stream in streams"
+            force-render
         >
             <template #header>
                 <div class="flex items-center justify-between">
@@ -55,12 +55,12 @@
         computed,
     } from 'vue'
     // Composables
+    import LoadingView from '@common/loaders/section.vue'
     import useLineage from '~/composables/lineage/useLineage'
     import * as useLineageCompute from '~/composables/lineage/useLineageCompute'
     import useLineageFilters from '~/composables/lineage/useLineageFilters'
     // Components
     import Stream from './stream/index.vue'
-    import LoadingView from '@common/loaders/section.vue'
 
     export default defineComponent({
         components: { Stream, LoadingView },
@@ -97,9 +97,7 @@
             const updateDepth = (val: number) => (depth.value = val)
             const searchQuery = (val: string) => (query.value = val)
             const updateFilters = (val: Ref<string[]>) => (filters.value = val)
-            const filtersLength = computed(() => {
-                return filters.value.length
-            })
+            const filtersLength = computed(() => filters.value.length)
 
             const fetch = () => {
                 const { data } = useLineage(

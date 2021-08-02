@@ -1,7 +1,7 @@
 
 import { computed, ref, WritableComputedRef, watch } from 'vue';
-import updateAsset from '../utils/updateAsset';
 import mitt from "mitt";
+import updateAsset from '../utils/updateAsset';
 import whoami from '../user/whoami';
 
 export default function updateDescription(item: any) {
@@ -15,8 +15,7 @@ export default function updateDescription(item: any) {
     const isLoading = ref(false);
 
 
-    const getBody = () => {
-        return {
+    const getBody = () => ({
             entities: [
                 {
                     guid: item.guid,
@@ -29,15 +28,12 @@ export default function updateDescription(item: any) {
                     },
                 },
             ],
-        };
-    };
+        });
     const description: WritableComputedRef<string> = computed({
-        get: () => {
-            return (
+        get: () => (
                 item?.attributes?.userDescription ||
                 item?.attributes?.description
-            );
-        },
+            ),
         set: (newValue: string) => {
             localDescription.value = newValue;
             body.value = getBody();

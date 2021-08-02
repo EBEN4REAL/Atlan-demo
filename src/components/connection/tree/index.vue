@@ -3,11 +3,11 @@
     <ErrorView v-else-if="isError"></ErrorView>
     <a-tree
         v-else
-        :class="$style.connectionTree"
-        :treeData="treeData"
-        :blockNode="true"
         v-model:expandedKeys="expandedKeys"
         v-model:selectedKeys="selectedKeys"
+        :class="$style.connectionTree"
+        :tree-data="treeData"
+        :block-node="true"
         @select="selectNode"
         @expand="expandNode"
     >
@@ -15,9 +15,9 @@
             <a-dropdown :trigger="['contextmenu']">
                 <div class="flex items-center w-full align-middle">
                     <img
+                        v-if="type === 'connector'"
                         :src="image"
                         class="w-4 h-auto mr-2"
-                        v-if="type === 'connector'"
                     />
                     <div
                         class="flex justify-between w-full text-sm leading-4 text-gray-600 "
@@ -49,11 +49,11 @@
 
 <script lang="ts">
     import { defineComponent, ref, watch } from 'vue'
-    import handleTreeExpand from '~/composables/tree/handleTreeExpand'
     import EmptyView from '@common/empty/index.vue'
     import ErrorView from '@common/error/index.vue'
     import LoadingView from '@common/loaders/section.vue'
     import { useRouter } from 'vue-router'
+    import handleTreeExpand from '~/composables/tree/handleTreeExpand'
 
     export default defineComponent({
         components: { EmptyView, ErrorView, LoadingView },
@@ -96,7 +96,7 @@
             const handleEvent = () => {
                 router.push('/setup')
             }
-            let cacheKey = 'connection_tree'
+            const cacheKey = 'connection_tree'
             const {
                 expandedKeys,
                 expandedCache,

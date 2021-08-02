@@ -7,11 +7,11 @@
     </div>
     <div class="flex items-center mx-3 mt-3">
         <a-input
+            v-model:value="queryText"
             placeholder="Search"
-            :allowClear="true"
+            :allow-clear="true"
             size="default"
             class="rounded-full"
-            v-model:value="queryText"
             @change="handleSearchChange"
         >
             <template #prefix>
@@ -31,7 +31,7 @@
                 <a-popover placement="bottomLeft">
                     <template #content>
                         <Preferences
-                            :defaultProjection="props.projection"
+                            :default-projection="props.projection"
                             @change="handleChangePreferences"
                             @sort="handleChangeSort"
                             @state="handleState"
@@ -55,6 +55,10 @@
     }
 
     export default defineComponent({
+        components: {
+            ConnectorDropdown,
+            Preferences,
+        },
         props: {
             connectorsPayload: {
                 type: Object,
@@ -77,10 +81,6 @@
                     return [];
                 },
             },
-        },
-        components: {
-            ConnectorDropdown,
-            Preferences,
         },
         setup(props, { emit }) {
             const queryText = ref('');

@@ -19,7 +19,7 @@ export const actions: Actions = {
     this.status = status;
   },
   getFilteredTreeList() {
-    let treeData: TreeDataItem[] = [];
+    const treeData: TreeDataItem[] = [];
 
     console.log(this.getSourceList);
 

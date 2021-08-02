@@ -34,16 +34,14 @@ export const getters: Getters = {
         ).sort((a, b) => (a.label > b.label ? 1 : b.label > a.label ? -1 : 0))
     },
     getImage() {
-        return (id) => {
-            return this.getSourceList?.find((item) => item.id === id)?.image
-        }
+        return (id) => this.getSourceList?.find((item) => item.id === id)?.image
     },
     getSourceTree() {
         return (searchText) => {
-            let treeData: TreeDataItem[] = []
+            const treeData: TreeDataItem[] = []
 
             this.getSourceList?.forEach((src) => {
-                let children = this.getList
+                const children = this.getList
                     .filter((item) => {
                         if (searchText && searchText !== '') {
                             return (
@@ -55,20 +53,18 @@ export const getters: Getters = {
                                         ?.toLowerCase()
                                         .includes(searchText?.toLowerCase()))
                             )
-                        } else {
+                        } 
                             return item.attributes.integrationName === src.id
-                        }
+                        
                     })
-                    .map((item) => {
-                        return {
+                    .map((item) => ({
                             key: item.guid,
                             title:
                                 item.attributes.displayName ||
                                 item.attributes.name,
                             type: 'connection',
                             isLeaf: true,
-                        }
-                    })
+                        }))
                     .sort((a, b) =>
                         a.title > b.title ? 1 : b.title > a.title ? -1 : 0
                     )
@@ -78,7 +74,7 @@ export const getters: Getters = {
                         key: src.id,
                         title: src.label,
                         image: src?.image,
-                        children: children,
+                        children,
                         count: children?.length,
                         type: 'connector',
                         isRoot: true,

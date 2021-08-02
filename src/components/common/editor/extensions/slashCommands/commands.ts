@@ -341,7 +341,7 @@ export default Extension.create({
                     onStart: (props: SuggestionProps) => {
                         component = new VueRenderer(CommandsList, {
                             editor: props.editor,
-                            props: props,
+                            props,
                         })
 
                         popup = tippy('body', {

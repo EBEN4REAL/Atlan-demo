@@ -4,10 +4,10 @@
         :value="modelValue"
         placeholder="Connections"
         :show-search="true"
-        :autoClearSearchValue="true"
+        :auto-clear-search-value="true"
+        :allow-clear="true"
+        :filter-option="false"
         @search="handleSearch"
-        :allowClear="true"
-        :filterOption="false"
         @change="handleChange"
     >
         <template v-for="item in filteredList" :key="item.id">
@@ -41,8 +41,8 @@
 
             // let now = ref(true);
 
-            let connectorsDropdown = ref(null);
-            let searchValue = ref('');
+            const connectorsDropdown = ref(null);
+            const searchValue = ref('');
             // const { list } = fetchConnectionList(now);
             // const sourceMap = computed(() => {
             //   return [
@@ -50,13 +50,11 @@
             //   ];
             // });
 
-            const filteredList = computed(() => {
-                return store.getSourceList?.filter((item) =>
+            const filteredList = computed(() => store.getSourceList?.filter((item) =>
                     item.id
                         .toLowerCase()
                         .includes(searchValue.value.toLowerCase())
-                );
-            });
+                ));
             const handleSearch = (inputValue: string) => {
                 searchValue.value = inputValue;
             };

@@ -1,9 +1,9 @@
 // eslint-disable-next-line import/no-cycle
 
+import { GettersTree } from 'pinia'
 import { State } from './state'
 import { classificationInterface } from '~/types/classifications/classification.interface'
 import { treeClassificationInterface } from '~/types/classifications/treeClassification.interface'
-import { GettersTree } from 'pinia'
 
 export interface Getters {
     transformClassificationTreeData(state: State): treeClassificationInterface[]
@@ -46,8 +46,7 @@ export const getters: GettersTree<State> & Getters = {
         //
         const getClassificationNodeObj = (
             classification: classificationInterface
-        ) => {
-            return {
+        ) => ({
                 title: classification.displayName || classification.name,
                 name: classification.name,
                 key: classification.guid,
@@ -56,8 +55,7 @@ export const getters: GettersTree<State> & Getters = {
                     ...classification,
                     type: 'classification',
                 },
-            }
-        }
+            })
 
         // resolves children recursively looking at the hashmap
         const getResolvedChildren = (nameArr: string[]) => {
@@ -110,26 +108,18 @@ export const getters: GettersTree<State> & Getters = {
         transformedClassifications.sort(orderTreeNodesAsc)
         return transformedClassifications
     },
-    getClassificationTree: (state: State): treeClassificationInterface[] => {
-        return state.classificationTree
-    },
+    getClassificationTree: (state: State): treeClassificationInterface[] => state.classificationTree,
     getFilteredClassificationsBySeach:
         (state: State) =>
-        (searchText: string): treeClassificationInterface[] => {
-            return state.classificationTree.filter((classification: any) => {
-                return classification.title
+        (searchText: string): treeClassificationInterface[] => state.classificationTree.filter((classification: any) => classification.title
                     .toLowerCase()
-                    .includes(searchText.toLocaleLowerCase())
-            })
-        },
-    getFilteredClassifications: (state: State): classificationInterface[] => {
-        return state.classifications.filter(
+                    .includes(searchText.toLocaleLowerCase())),
+    getFilteredClassifications: (state: State): classificationInterface[] => state.classifications.filter(
             (obj) =>
                 !obj.name
                     .toLowerCase()
                     .startsWith(RESTRICTED_CLASSIFICATION_PREFIX)
-        )
-    },
+        ),
 
     sortClassifications:
         (state: State) =>
@@ -137,12 +127,12 @@ export const getters: GettersTree<State> & Getters = {
             let classifications: classificationInterface[] = []
             switch (sortingOrder) {
                 case 'asc': {
-                    classifications = state.classifications.sort(function (
+                    classifications = state.classifications.sort((
                         classificationA: classificationInterface,
                         classificationB: classificationInterface
-                    ) {
-                        let a = classificationA.displayName
-                        let b = classificationB.displayName
+                    ) => {
+                        const a = classificationA.displayName
+                        const b = classificationB.displayName
                         if (a < b) {
                             return -1
                         }
@@ -154,12 +144,12 @@ export const getters: GettersTree<State> & Getters = {
                     break
                 }
                 case 'dsc': {
-                    classifications = state.classifications.sort(function (
+                    classifications = state.classifications.sort((
                         classificationA: classificationInterface,
                         classificationB: classificationInterface
-                    ) {
-                        let a = classificationA.displayName
-                        let b = classificationB.displayName
+                    ) => {
+                        const a = classificationA.displayName
+                        const b = classificationB.displayName
                         if (a > b) {
                             return -1
                         }

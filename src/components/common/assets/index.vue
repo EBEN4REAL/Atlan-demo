@@ -1,8 +1,8 @@
 <template>
     <div class="flex flex-col h-full rounded-lg" :class="props.className">
         <Header
-            :connectorsPayload="connectorsPayload"
-            :filteredConnectorList="filteredConnectorList"
+            :connectors-payload="connectorsPayload"
+            :filtered-connector-list="filteredConnectorList"
             :projection="projection"
             @handleChangeConnectors="handleChangeConnectors"
             @handleSearchChange="handleSearchChange"
@@ -14,8 +14,8 @@
         <div class="flex w-full px-3 mt-3">
             <AssetTabs
                 v-model="assetType"
-                :assetTypeList="assetTypeList"
-                :assetTypeMap="assetTypeMap"
+                :asset-type-list="assetTypeList"
+                :asset-type-map="assetTypeMap"
                 :total="totalSum"
             ></AssetTabs>
         </div>
@@ -24,27 +24,27 @@
             v-if="list && list.length <= 0 && !isLoading && !isValidating"
             class="flex-grow"
         >
-            <EmptyView :showClearFiltersCTA="false"></EmptyView>
+            <EmptyView :show-clear-filters-c-t-a="false"></EmptyView>
         </div>
         <AssetList
-            class="asset-list-height"
             v-else
+            ref="assetlist"
+            class="asset-list-height"
             :list="list"
             :score="searchScoreList"
-            @preview="handlePreview"
-            :isLoading="isLoading || isValidating"
+            :is-loading="isLoading || isValidating"
             :projection="projection"
-            ref="assetlist"
+            @preview="handlePreview"
         ></AssetList>
         <!--Body end-->
 
         <Footer
-            :isLoading="isLoading"
-            :isValidating="isValidating"
-            :isLoadMore="isLoadMore"
-            :listCount="list.length"
-            :totalCount="totalCount"
-            :assetTypeLabel="assetTypeLabel"
+            :is-loading="isLoading"
+            :is-validating="isValidating"
+            :is-load-more="isLoadMore"
+            :list-count="list.length"
+            :total-count="totalCount"
+            :asset-type-label="assetTypeLabel"
             @loadMore="loadMore"
         />
     </div>
@@ -53,27 +53,36 @@
 <script lang="ts">
     import { computed, reactive, ref, watch, ComputedRef } from 'vue';
 
-    import { AssetTypeList } from '~/constant/assetType';
     import EmptyView from '@common/empty/discover.vue';
-    import useAssetList from '~/composables/bots/useAssetList';
     import { useDebounceFn } from '@vueuse/core';
-    import { SearchParameters } from '~/types/atlas/attributes';
-    import { Components } from '~/api/atlas/client';
     import AssetList from '@/discovery/asset/list/index.vue';
     import AssetTabs from '@/discovery/asset/tabs/index.vue';
     import ConnectorDropdown from '@common/dropdown/connector/index.vue';
+    import Preferences from '@/discovery/asset/preference/index.vue';
+    import { AssetTypeList } from '~/constant/assetType';
+    import useAssetList from '~/composables/bots/useAssetList';
+    import { SearchParameters } from '~/types/atlas/attributes';
+    import { Components } from '~/api/atlas/client';
     import { useConnectionsStore } from '~/store/connections';
     import {
         BaseAttributes,
         BasicSearchAttributes,
     } from '~/constant/projection';
-    import Preferences from '@/discovery/asset/preference/index.vue';
     import useDiscoveryPreferences from '~/composables/preference/useDiscoveryPreference';
     import Footer from './footer/index.vue';
     import Header from './header/index.vue';
 
     export default {
         name: 'Assets',
+        components: {
+            AssetList,
+            ConnectorDropdown,
+            AssetTabs,
+            Footer,
+            EmptyView,
+            Preferences,
+            Header,
+        },
         props: {
             selectedUser: {
                 type: Object,
@@ -91,15 +100,6 @@
                 default: '',
             },
         },
-        components: {
-            AssetList,
-            ConnectorDropdown,
-            AssetTabs,
-            Footer,
-            EmptyView,
-            Preferences,
-            Header,
-        },
         setup(props) {
             const now = ref(false);
             const connectorsPayload = ref({});
@@ -110,11 +110,11 @@
             const assetType = ref('Catalog');
             const activeTab = computed(() => {
                 if (Object.keys(props.selectedUser).length) return 'user';
-                else if (Object.keys(props.selectedGroup).length)
+                if (Object.keys(props.selectedGroup).length)
                     return 'group';
                 return '';
             });
-            let criterion: Components.Schemas.FilterCriteria[] = [];
+            const criterion: Components.Schemas.FilterCriteria[] = [];
             if (selectedClassification.value) {
                 criterion.push({
                     attributeName: '__classificationNames',
@@ -145,17 +145,15 @@
             const entityFilterPayload = [
                 {
                     condition: 'OR',
-                    criterion: criterion,
+                    criterion,
                 } as Components.Schemas.FilterCriteria,
             ];
             const state = ref('active');
             const sortOrder = ref('default');
             const limit = ref(20);
             const offset = ref(0);
-            let assetTypeList = ref([]);
-            assetTypeList.value = AssetTypeList.filter((item) => {
-                return item.isDiscoverable == true;
-            });
+            const assetTypeList = ref([]);
+            assetTypeList.value = AssetTypeList.filter((item) => item.isDiscoverable == true);
             const assetTypeListString = assetTypeList.value
                 .map((item) => item.id)
                 .join(',');
@@ -223,11 +221,11 @@
                         initialBody.excludeDeletedEntities = true;
                     }
                 }
-                let connectorCritera = {
+                const connectorCritera = {
                     condition: 'OR',
                     criterion: [],
                 };
-                let connectionCriteria = {
+                const connectionCriteria = {
                     condition: 'OR',
                     criterion: [],
                 };
@@ -283,9 +281,7 @@
                 }
                 return assetTypeMap.value[assetType.value];
             });
-            const isLoadMore = computed(() => {
-                return totalCount.value > list.value.length;
-            });
+            const isLoadMore = computed(() => totalCount.value > list.value.length);
             const loadMore = () => {
                 console.log('called');
                 if (list.value.length + limit.value < totalCount.value) {
@@ -298,23 +294,17 @@
                 let sum = 0;
                 assetTypeList.value.forEach((element) => {
                     if (assetTypeMap.value[element.id]) {
-                        sum = sum + assetTypeMap.value[element.id];
+                        sum += assetTypeMap.value[element.id];
                     }
                 });
                 return sum;
             });
             const assetTypeLabel = computed(() => {
-                const found = AssetTypeList.find((item) => {
-                    return item.id == assetType.value;
-                });
+                const found = AssetTypeList.find((item) => item.id == assetType.value);
                 return found?.label;
             });
             const connectorStore = useConnectionsStore();
-            const filteredConnectorList = computed(() => {
-                return connectorStore.getSourceList?.filter((item) => {
-                    return connectorsPayload.value?.connector == item.id;
-                });
-            });
+            const filteredConnectorList = computed(() => connectorStore.getSourceList?.filter((item) => connectorsPayload.value?.connector == item.id));
             const handleChangePreferences = (payload: any) => {
                 projection.value = payload;
             };

@@ -40,7 +40,7 @@
     <a-layout class="h-full">
       <a-layout-sider
         :collapsed="true"
-        :collapsedWidth="60"
+        :collapsed-width="60"
         :class="$style.sidebar"
         :collapsible="false"
       >
@@ -69,19 +69,19 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import KeycloakMixin from "~/mixins/keycloak";
 import PageLoader from "@common/loaders/page.vue";
+import KeycloakMixin from "~/mixins/keycloak";
 import Sidebar from "./sidebar/index.vue";
 import UserPersonalAvatar from "~/components/common/avatar/me.vue";
 
 export default defineComponent({
   name: "HelloWorld",
-  mixins: [KeycloakMixin],
   components: {
     PageLoader,
     Sidebar,
     UserPersonalAvatar,
   },
+  mixins: [KeycloakMixin],
   props: {},
   data() {
     return {};

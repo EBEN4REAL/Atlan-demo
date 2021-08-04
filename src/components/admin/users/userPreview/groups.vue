@@ -4,10 +4,10 @@
       <div class="flex flex-row justify-between">
         <div>
           <a-input-search
-            placeholder="Search Groups"
-            :allowClear="true"
-            class="mr-1"
             v-model:value="searchText"
+            placeholder="Search Groups"
+            :allow-clear="true"
+            class="mr-1"
             @change="handleSearch"
           ></a-input-search>
         </div>
@@ -26,8 +26,8 @@
         </div>
       </div>
       <div
-        class="flex flex-col items-center justify-center h-full mt-3 bg-white"
         v-if="[STATES.ERROR, STATES.STALE_IF_ERROR].includes(state)"
+        class="flex flex-col items-center justify-center h-full mt-3 bg-white"
       >
         <ErrorView>
           <div class="mt-3">
@@ -69,8 +69,8 @@
             </div>
             <div class="font-bold">
               <div
-                class="flex cursor-default text-error-muted"
                 v-if="removeFromGroupLoading[group.id]"
+                class="flex cursor-default text-error-muted"
               >
                 <fa
                   style="vertical-align: middle"
@@ -80,8 +80,8 @@
                 <div>Removing...</div>
               </div>
               <div
-                class="cursor-pointer text-error"
                 v-else
+                class="cursor-pointer text-error"
                 @click="() => removeUserFromGroup(group)"
               >
                 Remove
@@ -90,11 +90,11 @@
           </div>
         </div>
         <div
-          class="flex justify-center mt-3"
           v-if="
             [STATES.PENDING].includes(state) ||
             [STATES.VALIDATING].includes(state)
           "
+          class="flex justify-center mt-3"
         >
           <a-spin></a-spin>
         </div>
@@ -105,10 +105,10 @@
     </div>
     <div v-else-if="!showUserGroups">
       <GroupList
+        :add-to-group-loading="addToGroupLoading"
         @updateSelectedGroups="updateSelectedGroups"
         @showUserGroups="handleShowUserGroups"
         @addUserToGroups="addUserToGroups"
-        :addToGroupLoading="addToGroupLoading"
       />
     </div>
   </div>
@@ -116,33 +116,33 @@
   
 <script lang='ts'>
 import { message } from "ant-design-vue";
+import { defineComponent, computed, reactive, ref, watch } from "vue";
+import { useDebounceFn } from "@vueuse/core";
+import ErrorView from "@common/error/index.vue";
 import GroupList from "~/components/admin/users/userPreview/groups/groupList.vue";
 import getUserGroups from "~/composables/user/getUserGroups";
-import { defineComponent, computed, reactive, ref, watch } from "vue";
 import {
   pluralizeString,
   getNameInitials,
   getNameInTitleCase,
 } from "~/composables//utils/string-operations";
 import { getIsLoadMore } from "~/composables/utils/isLoadMore";
-import { useDebounceFn } from "@vueuse/core";
-import ErrorView from "@common/error/index.vue";
 import { Group } from "~/api/auth/group";
 import { User } from "~/api/auth/user";
 import AddToGroup from "~/components/admin/users/userPreview/groups/addUserToGroups.vue";
 
 export default defineComponent({
   name: "UserPreviewGroups",
+  components: {
+    AddToGroup,
+    ErrorView,
+    GroupList,
+  },
   props: {
     selectedUser: {
       type: Object,
       default: {},
     },
-  },
-  components: {
-    AddToGroup,
-    ErrorView,
-    GroupList,
   },
   setup(props, context) {
     const showUserGroups = ref(true);
@@ -185,15 +185,13 @@ export default defineComponent({
         groupListAPIParams.params.offset + groupListAPIParams.params.limit;
       getUserGroupList();
     };
-    let showLoadMore = computed(() => {
-      return getIsLoadMore(
+    const showLoadMore = computed(() => getIsLoadMore(
         // TODO: check if there's a better way access memberList and not use ref in a ref
         groupList.value.length,
         groupListAPIParams.params.offset,
         groupListAPIParams.params.limit,
         searchText.value ? filteredGroupCount.value : totalGroupCount.value
-      );
-    });
+      ));
     const addUserToGroups = async () => {
       const groupIds = [...selectedGroupIds.value];
       const requestPayload = ref({

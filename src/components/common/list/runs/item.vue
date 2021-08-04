@@ -4,21 +4,21 @@
       <div class="flex items-center align-middle">
         <a-tooltip :title="phase" placement="left">
           <fa
+            v-if="phase == 'Succeeded'"
             icon="fas check-circle"
             class="text-xl text-green-500"
-            v-if="phase == 'Succeeded'"
           ></fa>
           <fa
+            v-else-if="phase == 'Failed' || phase === 'Error'"
             icon="fas exclamation-triangle"
             class="text-xl text-red-500"
-            v-else-if="phase == 'Failed' || phase === 'Error'"
           ></fa>
           <a-spin v-else-if="phase == 'Running'"></a-spin>
 
           <fa
+            v-else
             icon="fas exclamation-circle"
             class="text-xl text-yellow-500"
-            v-else
           ></fa>
         </a-tooltip>
       </div>
@@ -41,7 +41,7 @@
     </td>
     <td class="text-gray-500" style="min-width: 50px">
       <a-tooltip title="Scheduled" placement="left">
-        <fa icon="fal calendar-alt" v-if="isCron"></fa>
+        <fa v-if="isCron" icon="fal calendar-alt"></fa>
       </a-tooltip>
     </td>
     <td class="text-xs text-gray-500" style="min-width: 140px">
@@ -51,9 +51,9 @@
           >{{ startedAt(true) }} ago
         </a-tooltip>
         <a-tooltip
+          v-if="finishedAt(true)"
           placement="left"
           :title="finishedAt(false)"
-          v-if="finishedAt(true)"
         >
           <fa icon="fal hourglass-end" class="mr-1 pushtop"></fa
           >{{ finishedAt(true) }} ago
@@ -64,9 +64,9 @@
     <td class="text-xs text-gray-500" style="min-width: 160px">
       {{ duration(item) }}
       <a-progress
+        v-if="phase == 'Running'"
         :percent="progressPercent(item)"
         size="small"
-        v-if="phase == 'Running'"
       >
         <template #format="percent, successPercent">
           {{ progress(item) }}
@@ -100,7 +100,6 @@
 <script lang="ts">
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
-dayjs.extend(relativeTime);
 import { defineComponent, computed } from "vue";
 import { SourceList } from "~/constant/source";
 import WorkflowMixin from "~/mixins/workflow";
@@ -108,9 +107,11 @@ import { useConnectionsStore } from "~/store/connections";
 
 import titlecase from "~/utils/titlecase";
 
+dayjs.extend(relativeTime);
+
 export default defineComponent({
-  mixins: [WorkflowMixin],
   components: {},
+  mixins: [WorkflowMixin],
   props: {
     item: {
       type: Object,
@@ -121,9 +122,7 @@ export default defineComponent({
     },
   },
   setup(props) {
-    const phase = computed(() => {
-      return props.item?.status?.phase;
-    });
+    const phase = computed(() => props.item?.status?.phase);
 
     const titleCase = (text: string, delimiter: string) => {
       if (text) {
@@ -138,19 +137,15 @@ export default defineComponent({
       return text;
     };
 
-    const category = computed(() => {
-      return (
-        titleCase(props.item?.metadata?.labels["category"], " ") ||
+    const category = computed(() => (
+        titleCase(props.item?.metadata?.labels.category, " ") ||
         props.item.metadata.name
-      );
-    });
+      ));
 
-    const creator = computed(() => {
-      return (
+    const creator = computed(() => (
         props.item?.metadata?.labels["created-by"] ||
         props.item?.metadata?.labels["workflows.argoproj.io/creator"]
-      );
-    });
+      ));
 
     const startedAt = (relative: boolean) => {
       if (props.item.status.startedAt) {

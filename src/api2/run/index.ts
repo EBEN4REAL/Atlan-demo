@@ -10,14 +10,12 @@ const List = (
     options?: IConfig & AxiosRequestConfig,
     cacheSuffix?: Ref<string>,
     dependantFetchingKey?: Ref<any>
-) => {
-    return useAPI<any>(RUN_ARCHIVED_LIST, "GET", {
+) => useAPI<any>(RUN_ARCHIVED_LIST, "GET", {
         params,
         options,
         cacheSuffix,
         dependantFetchingKey
     });
-};
 
 // const List = (params?: any, options?: AxiosRequestConfig) => {
 //     return getAxiosClient().get(getAPIPath(serviceAlias, URL.WorkflowList), {

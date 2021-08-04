@@ -2,9 +2,9 @@
   <a-select
     :value="modelValue"
     :show-search="true"
-    :filterOption="true"
+    :filter-option="true"
     style="width: 100%"
-    :allowClear="true"
+    :allow-clear="true"
     @change="handleChange"
     @search="handleSearch"
   >
@@ -41,13 +41,9 @@ export default defineComponent({
       required: false,
     },
   },
-  data() {
-    return {};
-  },
-  computed: {},
   emits: ["update:modelValue", "change"],
   setup(props, { emit }) {
-    let now = ref(true);
+    const now = ref(true);
 
     // this is needed as there are multiple keys with the same param name
     const { list, handleSearch } = fetchUserList(now);
@@ -66,6 +62,10 @@ export default defineComponent({
       handleChange,
     };
   },
+  data() {
+    return {};
+  },
+  computed: {},
 });
 </script>
       

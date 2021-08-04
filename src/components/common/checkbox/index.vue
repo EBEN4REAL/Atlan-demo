@@ -3,13 +3,13 @@
 <template>
   <a-checkbox-group
     v-model:value="localSelected"
-    @change="handleChange"
     class="w-full"
+    @change="handleChange"
   >
     <div class="flex flex-col w-full">
       <template v-for="item in list" :key="item.id">
         <a-tooltip placement="right">
-          <template #title v-if="item.description">{{
+          <template v-if="item.description" #title>{{
             item.description
           }}</template>
           <a-checkbox :value="item.id" class="w-full">
@@ -48,16 +48,6 @@ export default defineComponent({
       },
     },
   },
-  data() {
-    return {
-      localSelected: [],
-    };
-  },
-  mounted() {
-    if (this.defaultSelected.length > 0) {
-      this.localSelected = this.defaultSelected;
-    }
-  },
   // computed: {
   //   selected: {
   //     get(): string[] {
@@ -72,6 +62,16 @@ export default defineComponent({
   //     },
   //   },
   emits: ["change", "clear"],
+  data() {
+    return {
+      localSelected: [],
+    };
+  },
+  mounted() {
+    if (this.defaultSelected.length > 0) {
+      this.localSelected = this.defaultSelected;
+    }
+  },
   methods: {
     handleChange() {
       this.$emit("change", this.localSelected);

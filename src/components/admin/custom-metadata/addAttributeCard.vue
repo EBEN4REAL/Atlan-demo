@@ -1,10 +1,10 @@
 <template>
-  <a-form layout="vertical" :rules="rules" :model="attributeInput.data" ref="formRef">
+  <a-form ref="formRef" layout="vertical" :rules="rules" :model="attributeInput.data">
     <div class="grid grid-cols-2 gap-4 ">
       <a-form-item label="Name" :name="['options', 'displayName']" class="">
         <a-input
-          type="text"
           v-model:value="attributeInput.data.options.displayName"
+          type="text"
           class=""
           @change="handleFieldChange"
         />
@@ -36,8 +36,8 @@
           </a-popover>
         </template>
         <a-select
-          class=""
           v-model:value="attributeInput.data.searchWeight"
+          class=""
           @change="handleFieldChange"
         >
           <a-select-option v-for="n in 10" :key="n" :value="n">{{ n }}</a-select-option>
@@ -47,11 +47,11 @@
     <div class="flex items-center justify-around w-full gap-4">
       <a-form-item class="w-full" name="typeName" label="Type">
         <a-select
-          show-search
           v-model:value="attributeInput.data.typeName"
+          show-search
           :disabled="isEdit"
+          :get-popup-container="target => target.parentNode"
           @change="handleTypeNameChange"
-          :getPopupContainer="target => target.parentNode"
         >
           <a-select-option
             v-for="type in attributesTypes"
@@ -62,17 +62,17 @@
           </a-select-option>
         </a-select>
       </a-form-item>
-      <div class="w-full" v-if="attributeInput.data.typeName !== 'boolean'">
+      <div v-if="attributeInput.data.typeName !== 'boolean'" class="w-full">
         <a-form-item label="Multivalues">
           <div class="mb-1 ">
             <a-switch
-              class=""
               :id="`${attributeInput.data.name}-isMultiValued`"
+              v-model:checked="attributeInput.data.options.isMultiValued"
+              class=""
               :disabled="isEdit"
               :name="`${attributeInput.data.name}-isMultiValued`"
-              v-model:checked="attributeInput.data.options.isMultiValued"
-              @change="handleFieldChange"
               size="small"
+              @change="handleFieldChange"
             />
             <label class="ml-1" :for="`${attributeInput.data.name}-isMultiValued`">{{
               attributeInput.data.options.isMultiValued ? "Enabled" : "Disabled"
@@ -82,25 +82,25 @@
       </div>
     </div>
 
-    <div class="mb-2" v-if="attributeInput.data.typeName === 'string'">
+    <div v-if="attributeInput.data.typeName === 'string'" class="mb-2">
       <a-form-item
         class=""
         label="Max. String Length"
         :name="['options', 'maxStrLength']"
       >
         <a-input-number
-          @change="handleFieldChange"
           v-model:value="attributeInput.data.options.maxStrLength"
           :min="1"
           style="width: 200px"
+          @change="handleFieldChange"
         />
       </a-form-item>
     </div>
-    <div class="" v-if="attributeInput.data.options?.isEnum">
+    <div v-if="attributeInput.data.options?.isEnum" class="">
       <a-form-item class="mb-3" label="Choose Enum" :name="['options', 'enumType']">
         <a-tree-select
           v-model:value="attributeInput.data.options.enumType"
-          noResultsText="No enum found"
+          no-results-text="No enum found"
           :tree-data="finalEnumsList"
           :multiple="false"
           :async="false"
@@ -110,10 +110,10 @@
         >
         </a-tree-select>
       </a-form-item>
-      <div class="" v-show="selectedEnumOptions?.length">
+      <div v-show="selectedEnumOptions?.length" class="">
         <div class="mb-2 font-normal font-size-sm">Enum options:</div>
         <p>
-          <a-tag v-for="(e, x) in selectedEnumOptions" class="mb-1" :key="x">{{
+          <a-tag v-for="(e, x) in selectedEnumOptions" :key="x" class="mb-1">{{
             e.title
           }}</a-tag>
         </p>
@@ -137,25 +137,25 @@
           </template>
           <a-tree-select
             v-model:value="attributeInput.data.options.applicableEntityTypes"
-            noResultsText="No entities found"
+            no-results-text="No entities found"
             style="width: 100%"
             :tree-data="finalApplicableTypeNamesOptions"
             :multiple="true"
             :async="false"
             tree-checkable
             :placeholder="isEdit ? 'Add more types' : 'Select entity types'"
-            dropdownClassName="type-select-dd"
-            :maxTagCount="5"
-            :getPopupContainer="target => target.parentNode"
-            @change="handleFieldChange"
+            dropdown-class-name="type-select-dd"
+            :max-tag-count="5"
+            :get-popup-container="target => target.parentNode"
             class="mb-2"
-            :allowClear="true"
+            :allow-clear="true"
+            @change="handleFieldChange"
           >
           </a-tree-select>
-          <div class="" v-show="addedEntityTypes?.length">
+          <div v-show="addedEntityTypes?.length" class="">
             <div class="mb-2 font-normal font-size-sm">Previously added:</div>
             <p>
-              <a-tag v-for="(t, x) in addedEntityTypes" class="mb-1" :key="x">{{
+              <a-tag v-for="(t, x) in addedEntityTypes" :key="x" class="mb-1">{{
                 t
               }}</a-tag>
             </p>
@@ -166,8 +166,9 @@
   </a-form>
 </template>
 <script lang="ts">
-import { defineComponent } from "vue";
-import { reactive, ref, computed, onMounted } from "vue";
+import { defineComponent , reactive, ref, computed, onMounted } from "vue";
+
+import useEnums from "@/admin/enums/composables/useEnums";
 import {
   DEFAULT_ATTRIBUTE,
   ATTRIBUTE_INPUT_VALIDATION_RULES,
@@ -179,10 +180,10 @@ import {
 import { generateUUID } from "~/utils/generator";
 
 // * Composables
-import useEnums from "@/admin/enums/composables/useEnums";
 import useAssetQualifiedName from "~/composables/asset/useAssetQualifiedName";
 
 export default defineComponent({
+  components: {},
   props: {
     attribute: {
       type: Object,
@@ -193,25 +194,24 @@ export default defineComponent({
       default: false,
     },
   },
-  components: {},
   setup(props, context) {
     // * Methods
-    const getDefaultAttributeTemplate = () => {
+    const getDefaultAttributeTemplate = () => 
       // const uuid4 = generateUUID();
       // TODO change back to uuid4
-      return { ...DEFAULT_ATTRIBUTE };
+       ({ ...DEFAULT_ATTRIBUTE })
       // return { ...DEFAULT_ATTRIBUTE, name: uuid4 };
-    };
+    ;
     // * Data
     const formRef = ref();
-    let attributeInput = reactive({
+    const attributeInput = reactive({
       data: JSON.parse(JSON.stringify(getDefaultAttributeTemplate())),
     });
 
-    let rules = reactive(JSON.parse(JSON.stringify(ATTRIBUTE_INPUT_VALIDATION_RULES)));
-    let attributesTypes = reactive(JSON.parse(JSON.stringify(ATTRIBUTE_TYPES)));
+    const rules = reactive(JSON.parse(JSON.stringify(ATTRIBUTE_INPUT_VALIDATION_RULES)));
+    const attributesTypes = reactive(JSON.parse(JSON.stringify(ATTRIBUTE_TYPES)));
 
-    let enumTypeOtions = ref(null);
+    const enumTypeOtions = ref(null);
 
     // * Composables
     const { enumListData: enumsList } = useEnums();
@@ -237,7 +237,7 @@ export default defineComponent({
      * display already added attirbutes in tags
      */
     const finalApplicableTypeNamesOptions = computed(() => {
-      let options = getApplicableEntitiesForBmAttributes();
+      const options = getApplicableEntitiesForBmAttributes();
       if (props.attribute?.options?.applicableEntityTypes)
         return options
           .filter(t => !addedEntityTypes.value.includes(t.id))

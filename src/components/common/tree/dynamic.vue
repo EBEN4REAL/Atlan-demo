@@ -1,22 +1,22 @@
 <template>
   <a-tree
     v-model:expandedKeys="expandedKeys"
-    :blockNode="blockNode"
-    :checkable="checkable"
-    :tree-data="list"
     v-model:checkedKeys="checkedKeys"
     v-model:selectedKeys="selectedKeys"
+    :block-node="blockNode"
+    :checkable="checkable"
+    :tree-data="list"
+    :disabled="disabled"
     @expand="handleExpand"
     @select="handleNodeSelect"
-    :disabled="disabled"
   >
     <template #title="{ title, image, isLeaf }" class="">
-      <div class="flex align-center" v-if="!isLeaf">
+      <div v-if="!isLeaf" class="flex align-center">
         <span><img :src="image" class="float-left w-auto h-4 mr-1" /></span>
 
         <span class="tracking-wider text-gray-700">{{ title }}</span>
       </div>
-      <span class="text-sm leading-none text-gray-600" v-else>{{ title }}</span>
+      <span v-else class="text-sm leading-none text-gray-600">{{ title }}</span>
     </template>
   </a-tree>
 </template>
@@ -52,6 +52,7 @@ export default defineComponent({
       },
     },
   },
+  emits: ["select"],
   data() {
     return {
       expandedKeys: [],
@@ -60,7 +61,6 @@ export default defineComponent({
       selectedKeys: [],
     };
   },
-  emits: ["select"],
   methods: {
     handleNodeSelect(selectedKeys, { selected, node }) {
       //   console.log("load select");
@@ -73,7 +73,7 @@ export default defineComponent({
       }
 
       if (!node.isLeaf) {
-        this.handleExpand(["_node_select_"], { node: node });
+        this.handleExpand(["_node_select_"], { node });
       }
       if (selected) {
         this.$emit("select", node.dataRef);
@@ -99,7 +99,7 @@ export default defineComponent({
           this.expandedKeys = [...this.expandedKeys];
         }
       }
-      return;
+      
     },
   },
 });

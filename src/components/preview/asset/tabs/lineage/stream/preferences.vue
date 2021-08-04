@@ -8,9 +8,9 @@
       >
         <div class="flex flex-col space-y-1">
           <a-checkbox
-            :value="type"
             v-for="(type, index) in assetTypesFiltered"
             :key="index"
+            :value="type"
             >{{ type }} ({{
               assetTypesLengthMapInjection[activeKeyInjection][type] || 0
             }})</a-checkbox
@@ -47,14 +47,8 @@ export default defineComponent({
     const depthInjection = inject("updateDepth");
     const filterInjection = inject("updateFilters");
 
-    const assetTypesLengthMap = computed(() => {
-      return assetTypesLengthMapInjection.value?.[activeKeyInjection.value];
-    });
-    const assetTypesFiltered = computed(() => {
-      return assetTypes.filter((type) => {
-        return assetTypesLengthMap.value?.[type];
-      });
-    });
+    const assetTypesLengthMap = computed(() => assetTypesLengthMapInjection.value?.[activeKeyInjection.value]);
+    const assetTypesFiltered = computed(() => assetTypes.filter((type) => assetTypesLengthMap.value?.[type]));
 
     assetTypesSelected.value = assetTypesFiltered.value;
 

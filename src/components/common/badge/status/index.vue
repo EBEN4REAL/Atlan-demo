@@ -4,14 +4,14 @@
       <div class="mr-1">
         <fa :class="iconClass" :icon="icon" class="pushtop" />
       </div>
-      <p class="mb-0 text-gray-700" v-if="showLabel">
+      <p v-if="showLabel" class="mb-0 text-gray-700">
         {{ label }}
       </p>
     </div>
 
     <p
-      class="mt-1 mb-0 text-xs leading-none text-gray-500"
       v-if="showLabel && statusId"
+      class="mt-1 mb-0 text-xs leading-none text-gray-500"
     >
       {{ dayjs().from(statusUpdatedAt, true) }}
       ago by
@@ -69,14 +69,13 @@ export default defineComponent({
       },
     },
   },
+  emits: ["change"],
   data() {
     return {
       dayjs,
       List,
     };
   },
-  emits: ["change"],
-  mounted() {},
   computed: {
     statusObject(): Checkbox {
       let found = List.find((item) => item.id === this.statusId);
@@ -95,5 +94,6 @@ export default defineComponent({
       return this.statusObject?.label;
     },
   },
+  mounted() {},
 });
 </script>

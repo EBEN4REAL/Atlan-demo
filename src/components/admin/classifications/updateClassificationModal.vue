@@ -1,9 +1,9 @@
 <template>
     <a-modal
         :visible="showEditModal"
-        :destroyOnClose="true"
+        :destroy-on-close="true"
         :title="`Edit`"
-        :onCancel="closeEditModal"
+        :on-cancel="closeEditModal"
         :footer="null"
     >
         <a-form
@@ -26,10 +26,10 @@
                 <a-button @click="closeEditModal">Cancel</a-button>
                 <a-button
                     type="primary"
-                    @click="updateClassification"
                     :loading="
                         updateClassificationStatus === 'loading' ? true : false
                     "
+                    @click="updateClassification"
                     >Update</a-button
                 >
             </div>
@@ -69,12 +69,10 @@
             const updateClassificationStatus = ref('')
             const urlValidationRegex = new RegExp('^[a-zA-Z]*$', 'g')
 
-            const selectedClassification: any = computed(() => {
-                return props.classification
-            })
+            const selectedClassification: any = computed(() => props.classification)
             const showEditModal = computed(() => props.open)
 
-            //edit modal
+            // edit modal
             const updateClassificationErrorText = ref('')
             const editClassificationFormRef: any = ref({})
 
@@ -87,7 +85,7 @@
             //   };
             // });
 
-            let editFormState: Ref<FormState> = ref({
+            const editFormState: Ref<FormState> = ref({
                 displayName:
                     selectedClassification.value.displayName ||
                     selectedClassification.value.name,
@@ -125,7 +123,7 @@
                 editClassificationFormRef.value
                     .validate()
                     .then(() => {
-                        let params = {
+                        const params = {
                             description: editFormState.value.description ?? '-',
                             attributeDefs:
                                 selectedClassification.value.attributeDefs,
@@ -133,7 +131,7 @@
                             displayName: editFormState.value.displayName,
                             name: selectedClassification.value.name,
                         }
-                        //update classification
+                        // update classification
 
                         updateClassificationStatus.value = 'loading'
                         const {

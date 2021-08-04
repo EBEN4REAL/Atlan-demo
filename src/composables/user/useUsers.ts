@@ -1,9 +1,9 @@
 import { ref, watch, computed, ComputedRef, Ref } from "vue";
+import { useTimeAgo } from "@vueuse/core";
 import swrvState from "~/composables/utils/swrvState";
 import { useAPI } from "~/api/useAPI";
 import { pluralizeString } from "~/composables/utils/string-operations";
 import { roleMap } from "~/constant/role";
-import { useTimeAgo } from "@vueuse/core";
 
 const getUserName = (user: any) => {
   const { first_name } = user;
@@ -37,7 +37,7 @@ const getUserStatus = (user: any) => {
       icon: "fal times-circle",
       status: "Disabled",
     };
-  } else if (user.isLocked) {
+  } if (user.isLocked) {
     return {
       color: "text-error",
       icon: "fa lock",
@@ -84,13 +84,13 @@ export const useUser = (userListAPIParams: {
     }),
   });
   const { state, STATES } = swrvState(data, error, isValidating);
-  let userList = computed(() => {
+  const userList = computed(() => {
     if (data.value && data?.value?.records)
       return data?.value.records.map((user: any) => getFormattedUser(user));
     return [];
   });
-  let totalUserCount = computed(() => data?.value?.total_record ?? 0);
-  let filteredUserCount = computed(() => data?.value?.filter_record ?? 0);
+  const totalUserCount = computed(() => data?.value?.total_record ?? 0);
+  const filteredUserCount = computed(() => data?.value?.filter_record ?? 0);
   return {
     userList,
     totalUserCount,
@@ -122,12 +122,12 @@ export default function useUsers(userListAPIParams: {
     }),
   });
   const { state, STATES } = swrvState(data, error, isValidating);
-  let userList = computed(() => {
+  const userList = computed(() => {
     if (data.value && data?.value?.records)
       return data?.value.records.map((user: any) => getFormattedUser(user));
     return [];
   });
-  let localUsersList: Ref<any[]> = ref([]);
+  const localUsersList: Ref<any[]> = ref([]);
   watch(data, () => {
     if (data && data.value) {
       if (userListAPIParams.offset > 0) {
@@ -143,10 +143,10 @@ export default function useUsers(userListAPIParams: {
     }
   });
   const usersListConcatenated: ComputedRef<any> = computed(
-    () => localUsersList || []
+    () => localUsersList.value || []
   );
-  let totalUserCount = computed(() => data?.value?.total_record ?? 0);
-  let filteredUserCount = computed(() => data?.value?.filter_record ?? 0);
+  const totalUserCount = computed(() => data?.value?.total_record ?? 0);
+  const filteredUserCount = computed(() => data?.value?.filter_record ?? 0);
 
   return {
     userList,

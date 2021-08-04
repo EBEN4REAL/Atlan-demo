@@ -1,9 +1,9 @@
 <template>
   <div
     class="px-4 py-3 mb-3 bg-white rounded asset-item position-relative"
-    @click="onAssetClick"
     :class="{ active: isSelected, 'cursor-pointer': isAssetAccessible }"
     :style="{ opacity: !isAssetAccessible ? 0.8 : 1 }"
+    @click="onAssetClick"
   >
     <div class="w-100">
       <div class="mb-2 d-flex align-items-center">
@@ -17,7 +17,7 @@
           >
             <span>{{ name }}</span>
 
-            <span class="ml-2" :id="`status-icon-${asset.guid}`" v-if="statusIcon"
+            <span v-if="statusIcon" :id="`status-icon-${asset.guid}`" class="ml-2"
               ><i :class="[statusIcon]"></i
             ></span>
             <!-- <StatusDetailPopover
@@ -28,18 +28,18 @@
           </nuxt-link>
           <span v-else class="mb-0 asset-title font-w700">
             <span>{{ name }}</span>
-            <span class="ml-2" v-if="statusIcon" v-b-popover.hover.right="statusMessage"
+            <span v-if="statusIcon" v-b-popover.hover.right="statusMessage" class="ml-2"
               ><i :class="[statusIcon]"></i
             ></span>
           </span>
           <p v-if="type === 'table' || type === 'view'" class="mb-0 font-size-sm">
             <template v-if="isAssetAccessible">
               <span
+                v-if="tableRowCount"
                 v-b-popover.hover.bottom="
                   'Row count might be different from underlying store'
                 "
                 class="pr-2"
-                v-if="tableRowCount"
                 ><span class="font-w700">{{ rowCountString }}</span> {{ rowString }}</span
               >
 
@@ -56,7 +56,7 @@
                 <span class="font-w700 text-capitalize">{{ columnDataType }}</span></span
               >
               <a-tooltip v-if="columnIsPrimary">
-                <template slot="title">Primary Key</template>
+                <template #title>Primary Key</template>
                 <i class="mr-3 far fa-key text-warning" />
               </a-tooltip>
               <span class="">synced {{ lastSyncedAt }}</span>
@@ -78,8 +78,8 @@
           </p>
           <div
             v-else-if="formattedSql"
-            class="mb-1 prism-fade-effect"
             :id="`query-preview-${asset.guid}`"
+            class="mb-1 prism-fade-effect"
           >
             <!-- <Prism :code="formattedSql" /> -->
             <!-- <SavedQueryPopover
@@ -91,8 +91,8 @@
           <div class="d-flex justify-content-between align-items-center font-size-sm">
             <div
               v-show="description && showDescription"
-              class="text-ellipsis"
               v-b-popover.hover.bottom="description"
+              class="text-ellipsis"
             >
               {{ description }}
             </div>
@@ -104,7 +104,7 @@
           :asset="asset"
           class="pl-6 ml-1"
           :class="{ invisible: hideParentsList }"
-          :qualifiedNameCharacterCountToDisplay="qualifiedNameCharacterCountToDisplay"
+          :qualified-name-character-count-to-display="qualifiedNameCharacterCountToDisplay"
         ></asset-item-parents-list>
         <span
           v-if="type === 'query' && isQueryPrivate"
@@ -151,12 +151,6 @@ export default defineComponent({
       type: Boolean,
       default: false,
     },
-  },
-  data() {
-    return {
-      copiedLink: false,
-      queryPopoverPlacement: "bottom",
-    };
   },
 
   setup(props, context) {
@@ -214,15 +208,9 @@ export default defineComponent({
       return getSourceImage(integration);
     };
 
-    const columnString = computed(() => {
-      return pluralize("column", tableColumnsCount);
-    });
-    const rowCountString = computed(() => {
-      return getRowCountString(tableRowCount);
-    });
-    const rowString = computed(() => {
-      return pluralize("row", tableRowCount);
-    });
+    const columnString = computed(() => pluralize("column", tableColumnsCount));
+    const rowCountString = computed(() => getRowCountString(tableRowCount));
+    const rowString = computed(() => pluralize("row", tableRowCount));
     const hideParentsList = computed(() => {
       if (type.value === "query") {
         if (props.asset.attributes) {
@@ -257,6 +245,12 @@ export default defineComponent({
       isAssetAccessible,
       tableRowCount,
       tableColumnsCount,
+    };
+  },
+  data() {
+    return {
+      copiedLink: false,
+      queryPopoverPlacement: "bottom",
     };
   },
 });

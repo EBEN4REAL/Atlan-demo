@@ -1,10 +1,10 @@
 import { ref, Ref, watch } from "vue";
-import useSearchList from "./useSearchList";
 import axios from "axios";
+import useSearchList from "./useSearchList";
 
 export default function useAssetList(dependentKey?: Ref<any>, typeName?: string, initialBody?: any, cacheSuffx?: string | "", isAggregation?: boolean) {
 
-    let cancelTokenSource = ref(axios.CancelToken.source());
+    const cancelTokenSource = ref(axios.CancelToken.source());
     const list: Ref<any> = ref([]);
     const { data,
         state,
@@ -26,7 +26,7 @@ export default function useAssetList(dependentKey?: Ref<any>, typeName?: string,
         query: body.value.query,
         excludeDeletedEntities: true,
         aggregationAttributes: ["__typeName.keyword"],
-        typeName: typeName,
+        typeName,
     };
     const {
         assetTypeList,
@@ -60,8 +60,8 @@ export default function useAssetList(dependentKey?: Ref<any>, typeName?: string,
 
     watch(data, () => {
         if (isAggregate.value) {
-            let newCriterion = [...body.value.entityFilters?.criterion];
-            let index = newCriterion.findIndex(
+            const newCriterion = [...body.value.entityFilters?.criterion];
+            const index = newCriterion.findIndex(
                 (item) => item.attributeName === "__typeName"
             );
             if (index > -1) {
@@ -72,7 +72,7 @@ export default function useAssetList(dependentKey?: Ref<any>, typeName?: string,
                 query: body.value.query,
                 excludeDeletedEntities: body.value.excludeDeletedEntities,
                 aggregationAttributes: ["__typeName.keyword"],
-                typeName: typeName,
+                typeName,
                 entityFilters: {
                     condition: body.value.entityFilters?.condition,
                     criterion: newCriterion,

@@ -2,9 +2,9 @@ import { Ref, ref, watch, watchEffect } from "vue";
 import { AxiosRequestConfig } from "axios";
 import useSWRV, { IConfig } from "swrv";
 
+import { AsyncStateOptions, useAsyncState } from "@vueuse/core";
 import { fetcher, fetcherPost, getAxiosClient, deleter, updater } from "~/api";
 import keyMaps from "~/api/keyMaps/index";
-import { AsyncStateOptions, useAsyncState } from "@vueuse/core";
 
 interface useGetAPIParams {
   cache?: string | boolean;
@@ -17,7 +17,7 @@ interface useGetAPIParams {
   // axiosOptions?: AxiosRequestConfig
 }
 
-/***
+/** *
  * @param key - Used as an identifier for the cache when making requests with SWRV
  * @param method - The HTTP reqeust method to use
  * @param param - The query params to send while making a `GET` request
@@ -76,7 +76,7 @@ export const useAPI = <T>(
 
     const isLoading = ref(!data.value && !error.value);
     return { data, error, isLoading, mutate, isValidating };
-  } else {
+  } 
     function getRequest(): any {
       switch (method) {
         case "POST":
@@ -115,9 +115,9 @@ export const useAPI = <T>(
       isReady,
       isLoading,
     };
-  }
+  
 };
 
 function isRef(arg: any): arg is Ref {
-  return arg && arg.value && typeof (arg.value) == 'object';
+  return arg && arg.value && typeof (arg.value) === 'object';
 }

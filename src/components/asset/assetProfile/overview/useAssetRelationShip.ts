@@ -1,6 +1,6 @@
+import useSWRV, { IConfig } from "swrv";
 import swrvState from "~/composables/utils/swrvState";
 import { fetcher, getAPIPath } from "~/api";
-import useSWRV, { IConfig } from "swrv";
 
 export default function useAPuseAssetRelationShip(guid: string, config?: IConfig) {
     const attributes = [

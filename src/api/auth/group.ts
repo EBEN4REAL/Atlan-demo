@@ -1,5 +1,5 @@
-import { getAPIPath, getAxiosClient } from "~/api";
 import { AxiosRequestConfig } from "axios";
+import { getAPIPath, getAxiosClient } from "~/api";
 import { useAPI } from "~/api/useAPI";
 import {
   UPDATE_GROUP,
@@ -8,18 +8,17 @@ import {
   DELETE_GROUP,
   CREATE_GROUP,
 } from "~/api/keyMaps/auth/group";
+
 const serviceAlias = "auth";
 
 export const URL = {
   GroupList: "/groups",
 };
 
-const ListV2 = (params?: any, options?: AxiosRequestConfig) => {
-  return getAxiosClient().get(getAPIPath(serviceAlias, URL.GroupList), {
+const ListV2 = (params?: any, options?: AxiosRequestConfig) => getAxiosClient().get(getAPIPath(serviceAlias, URL.GroupList), {
     params,
     ...options,
   });
-};
 const DeleteGroup = (id: string) => {
   const { data, mutate, error, isReady, isLoading } = useAPI(
     DELETE_GROUP,

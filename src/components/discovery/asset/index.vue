@@ -57,14 +57,7 @@
                             <div class="flex -space-x-2">
                                 <img
                                     :src="filteredConnector?.image"
-                                    class="
-                                        w-auto
-                                        h-6
-                                        mr-1
-                                        bg-white
-                                        rounded-full
-                                        border-5
-                                    "
+                                    class="w-auto h-6 mr-1 bg-white rounded-full  border-5"
                                 />
                             </div>
                         </template>

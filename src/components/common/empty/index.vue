@@ -3,7 +3,7 @@
     class="flex flex-col items-center justify-center w-full h-full text-center"
   >
     {{ empty }}
-    <a-button @click="handleClick" class="mt-2">{{ buttonText }}</a-button>
+    <a-button class="mt-2" @click="handleClick">{{ buttonText }}</a-button>
   </div>
 </template>
   

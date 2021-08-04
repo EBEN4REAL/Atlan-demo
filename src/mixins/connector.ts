@@ -12,7 +12,7 @@ export default defineComponent({
             return this.attributes(item)?.name;
         },
         logo(item: any): string {
-            let found = SourceList.find(
+            const found = SourceList.find(
                 (src) => src.id === this.attributes(item)?.integrationName
             );
             let logo = this.attributes(item)?.logo;
@@ -36,14 +36,14 @@ export default defineComponent({
             return this.attributes(item).supportLink;
         },
         authTypes(item: any) {
-            let temp: any[] = [];
+            const temp: any[] = [];
             item?.attributes?.config?.attributes?.credential?.attributes?.auth.forEach(
                 (e: { attributes: any }) => temp.push(e.attributes)
             );
             return temp;
         },
         host(item: any) {
-            let temp =
+            const temp =
                 item?.attributes?.config?.attributes?.credential?.attributes
                     ?.host?.attributes;
             console.log(temp);
@@ -71,12 +71,12 @@ export default defineComponent({
             return temp;
         },
         port(item: any) {
-            let temp: any[] = [];
+            const temp: any[] = [];
             return item?.attributes?.config?.attributes?.credential?.attributes
                 ?.port?.attributes;
         },
         extraAttributes(item: any) {
-            let attr: any[] = [];
+            const attr: any[] = [];
             item?.attributes?.config?.attributes?.credential?.attributes?.extra.forEach(
                 (e: { attributes: any }) => {
                     attr.push(e.attributes);
@@ -85,11 +85,9 @@ export default defineComponent({
             return attr;
         },
         authAttributes(item: any, authType: string) {
-            let attr: any[] = [];
+            const attr: any[] = [];
             if (authType) {
-                const found = this.authTypes(item).find((item) => {
-                    return item.id === authType;
-                });
+                const found = this.authTypes(item).find((item) => item.id === authType);
                 if (found) {
                     found.config?.forEach((e: { attributes: any }) => {
                         attr.push(e.attributes);
@@ -99,7 +97,7 @@ export default defineComponent({
             return attr;
         },
         enumAttributes(authAttr: any) {
-            let attr: any[] = [];
+            const attr: any[] = [];
             if (authAttr) {
                 authAttr?.enumConfig.forEach((element) => {
                     attr.push({

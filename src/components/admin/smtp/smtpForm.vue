@@ -12,19 +12,19 @@
         <a-form
           ref="formRef"
           layout="vertical"
-          labelAlign="left"
+          label-align="left"
           :rules="rules"
-          :labelCol="{ span: 6 }"
+          :label-col="{ span: 6 }"
           :model="smtpServer"
-          :wrapperCol="{ span: 14, offset: 4 }"
+          :wrapper-col="{ span: 14, offset: 4 }"
         >
           <a-form-item
             v-for="config in smtpConfig"
+            :key="config.id"
             :required="config.required"
             :label="config.label"
             :name="config.id"
             class="w-full text-gray-300"
-            :key="config.id"
           >
             <a-switch
               v-if="config.type === 'switch'"
@@ -40,15 +40,15 @@
               :key="config.id"
               :type="config.type"
               :placeholder="config.placeholder"
-              :defaultValue="smtpServer[config.id]"
+              :default-value="smtpServer[config.id]"
               @input="updateSmtpProperty(config.id, $event.target.value)"
             />
           </a-form-item>
 
           <div v-if="smtpServer.auth === 'true'">
             <a-form-item
-              name="user"
               ref="userFieldRef"
+              name="user"
               label="Username"
               :rules="{
                 required: true,
@@ -66,7 +66,7 @@
 
             <a-form-item label="Password" name="password">
               <a-input-password
-                :defaultValue="smtpServer.password"
+                :default-value="smtpServer.password"
                 :value="smtpServer.password"
                 @input="updateSmtpProperty('password', $event.target.value)"
               />
@@ -148,8 +148,8 @@
               <a-button
                 style="width: 150px"
                 class="rounded-md ant-btn ant-btn-primary"
-                @click.prevent="saveSmtpConfig"
                 :loading="saveSmtpConfigState === 'SAVING'"
+                @click.prevent="saveSmtpConfig"
               >
                 <span v-if="saveSmtpConfigState === 'SAVING'">Saving...</span>
                 <span v-else>Save</span>
@@ -167,7 +167,7 @@ import { defineComponent } from "vue";
 import { useSmtp } from "@/admin/smtp/useSmtp.ts";
 
 export default defineComponent({
-  name: "smtpForm",
+  name: "SmtpForm",
   setup() {
     const {
       formRef,

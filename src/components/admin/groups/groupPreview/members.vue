@@ -4,10 +4,10 @@
       <div class="flex flex-row justify-between">
         <div>
           <a-input-search
-            placeholder="Search Members"
-            :allowClear="true"
-            class="mr-1"
             v-model:value="searchText"
+            placeholder="Search Members"
+            :allow-clear="true"
+            class="mr-1"
             @change="handleSearch"
           ></a-input-search>
         </div>
@@ -26,8 +26,8 @@
         </div>
       </div>
       <div
-        class="flex flex-col items-center justify-center h-full bg-white"
         v-if="[STATES.ERROR, STATES.STALE_IF_ERROR].includes(state)"
+        class="flex flex-col items-center justify-center h-full bg-white"
       >
         <ErrorView>
           <div class="mt-3">
@@ -81,8 +81,8 @@
             </div>
             <div class="font-bold">
               <div
-                class="flex cursor-default text-error-muted"
                 v-if="removeMemberLoading[user.id]"
+                class="flex cursor-default text-error-muted"
               >
                 <fa
                   style="vertical-align: middle"
@@ -92,8 +92,8 @@
                 <div>Removing...</div>
               </div>
               <div
-                class="cursor-pointer text-error"
                 v-else
+                class="cursor-pointer text-error"
                 @click="() => removeUserFromGroup(user.id)"
               >
                 Remove
@@ -102,12 +102,12 @@
           </div>
         </div>
         <div
-          class="flex justify-center mt-3"
           v-if="
             selectedGroup.memberCount &&
             ([STATES.PENDING].includes(state) ||
               [STATES.VALIDATING].includes(state))
           "
+          class="flex justify-center mt-3"
         >
           <a-spin></a-spin>
         </div>
@@ -118,11 +118,11 @@
     </div>
     <div v-else-if="!showGroupMembers">
       <UserList
+        :add-member-loading="addMemberLoading"
+        :show-header-buttons="true"
         @updateSelectedUsers="updateSelectedUsers"
         @showGroupMembers="handleShowGroupMembers"
         @addMembersToGroup="addMembersToGroup"
-        :addMemberLoading="addMemberLoading"
-        :showHeaderButtons="true"
       />
     </div>
   </div>
@@ -131,11 +131,11 @@
 
 <script lang="ts">
 import { message } from "ant-design-vue";
-import UserList from "~/components/admin/groups/common/userList.vue";
 import { ref, reactive, defineComponent, computed, watch } from "vue";
-import useGroupMembers from "~/composables/group/useGroupMembers";
 import ErrorView from "@common/error/index.vue";
 import { useDebounceFn } from "@vueuse/core";
+import useGroupMembers from "~/composables/group/useGroupMembers";
+import UserList from "~/components/admin/groups/common/userList.vue";
 import {
   pluralizeString,
   getNameInitials,
@@ -148,16 +148,16 @@ import { useUserPreview } from "~/composables/user/showUserPreview";
 
 export default defineComponent({
   name: "GroupMembers",
+  components: {
+    ErrorView,
+    AddGroupMembers,
+    UserList,
+  },
   props: {
     selectedGroup: {
       type: Object,
       default: {},
     },
-  },
-  components: {
-    ErrorView,
-    AddGroupMembers,
-    UserList,
   },
   setup(props, context) {
     const showGroupMembers = ref(true);
@@ -202,15 +202,13 @@ export default defineComponent({
         memberListParams.params.offset + memberListParams.params.limit;
       getGroupMembersList();
     };
-    let showLoadMore = computed(() => {
-      return getIsLoadMore(
+    const showLoadMore = computed(() => getIsLoadMore(
         // TODO: check if there's a better way access memberList and not use ref in a ref
         memberList.value.value.length,
         memberListParams.params.offset,
         memberListParams.params.limit,
         searchText.value ? filteredMembersCount.value : totalMembersCount.value
-      );
-    });
+      ));
     const addMembersToGroup = () => {
       const userIds = [...selectedUserIds.value];
       const requestPayload = ref();

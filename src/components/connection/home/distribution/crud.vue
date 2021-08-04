@@ -61,25 +61,25 @@
 <script lang="ts">
 import { defineComponent, ref } from "vue";
 
-import fetchAssetAggregation from "~/composables/asset/fetchAssetAggregation";
 import LoadingView from "@common/loaders/section.vue";
 import ErrorView from "@common/error/index.vue";
+import fetchAssetAggregation from "~/composables/asset/fetchAssetAggregation";
 import { Components } from "~/api/atlas/client";
 // import EmptyView from "@common/empty/index.vue";
 import { CRUD_AGGREGATION } from "~/constant/cache";
 
 export default defineComponent({
-  mixins: [],
   components: { LoadingView, ErrorView },
+  mixins: [],
   props: {},
   setup(props) {
-    let timeMode = ref("last30");
+    const timeMode = ref("last30");
 
-    let now = ref(true);
+    const now = ref(true);
     const typeNameAttribute = "__typeName.keyword";
     const integrationNameAttribute = "integrationName";
 
-    let last7 = new Date(
+    const last7 = new Date(
       new Date().setDate(new Date().getDate() - 7)
     ).getTime();
 
@@ -87,7 +87,7 @@ export default defineComponent({
     // var hourago = new Date(today.getTime() - 1000 * 60 * 60).getTime();
     // console.log(hourago);
 
-    let entityFilters = ref({
+    const entityFilters = ref({
       condition: "OR" as Components.Schemas.Condition,
       criterion: [
         {
@@ -97,7 +97,7 @@ export default defineComponent({
         },
       ],
     });
-    let entityFiltersUpdate = ref({
+    const entityFiltersUpdate = ref({
       condition: "AND" as Components.Schemas.Condition,
       criterion: [
         {
@@ -124,9 +124,7 @@ export default defineComponent({
       now
     );
 
-    const getCRUDUpdateValue = (id) => {
-      return updateAggregationArray(typeNameAttribute).find((i) => i.id == id);
-    };
+    const getCRUDUpdateValue = (id) => updateAggregationArray(typeNameAttribute).find((i) => i.id == id);
 
     return {
       timeMode,

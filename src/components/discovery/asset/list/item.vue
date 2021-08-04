@@ -18,9 +18,9 @@
                             </a>
                         </router-link>
                         <StatusBadge
-                            :statusId="item?.attributes?.assetStatus"
-                            class="ml-1"
                             :key="item.guid"
+                            :status-id="item?.attributes?.assetStatus"
+                            class="ml-1"
                         ></StatusBadge>
                     </div>
                     <div class="flex items-center">
@@ -37,15 +37,15 @@
             <img :src="logo(item)" class="w-auto h-4" />
         </div>
         <p
-            class="mb-0 text-xs text-gray-500"
             v-if="projection?.includes('description')"
+            class="mb-0 text-xs text-gray-500"
         >
             {{ description(item) }}
         </p>
 
         <div
-            class="flex items-center mt-1 mb-0 text-xs"
             v-if="item.typeName.toLowerCase() === 'column'"
+            class="flex items-center mt-1 mb-0 text-xs"
         >
             <component
                 :is="dataTypeImage(item)"
@@ -55,11 +55,11 @@
         </div>
 
         <div
-            class="flex items-center justify-between align-middle"
             v-if="
                 projection?.includes('rows') ||
                     projection?.includes('popularity')
             "
+            class="flex items-center justify-between align-middle"
         >
             <div
                 v-if="
@@ -83,26 +83,26 @@
                 </p>
             </div>
             <div
-                class="text-xs text-gray-500"
                 v-if="
                     projection?.includes('popularity') &&
                         item?.attributes?.popularityScore > 0
                 "
+                class="text-xs text-gray-500"
             >
                 <fa icon="fal analytics" class="pushtop"></fa>
                 {{ numeralFormat(item?.attributes?.popularityScore, '0[.]00') }}
             </div>
         </div>
         <div
-            class="text-xs text-gray-500"
             v-if="projection?.includes('searchscore')"
+            class="text-xs text-gray-500"
         >
             <fa icon="fal search" class="pushtop"></fa>
             {{ numeralFormat(score, '0[.]000000') }}
         </div>
         <div
-            class="flex flex-wrap mt-1 gap-x-1"
             v-if="projection?.includes('owners')"
+            class="flex flex-wrap mt-1 gap-x-1"
         >
             <template
                 v-for="user in item?.attributes?.ownerUsers?.split(',')"
@@ -136,27 +136,27 @@
             </template>
         </div>
         <RelationshipBadge
+            v-if="projection?.includes('heirarchy')"
             :item="item"
             class="mt-1"
-            v-if="projection?.includes('heirarchy')"
         ></RelationshipBadge>
     </div>
 </template>
 
 <script lang="ts">
     import { defineComponent, PropType } from 'vue';
-    import AssetMixin from '~/mixins/asset';
 
     import StatusBadge from '@common/badge/status/index.vue';
     import RelationshipBadge from '@common/badge/relationship/index.vue';
+    import AssetMixin from '~/mixins/asset';
     import { Components } from '~/api/atlas/client';
 
     export default defineComponent({
-        mixins: [AssetMixin],
         components: {
             StatusBadge,
             RelationshipBadge,
         },
+        mixins: [AssetMixin],
         props: {
             item: {
                 type: Object as PropType<Components.Schemas.AtlasEntityHeader>,

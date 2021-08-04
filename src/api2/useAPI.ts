@@ -2,10 +2,10 @@ import { Ref, ref } from "vue";
 import axios, { AxiosRequestConfig, CancelTokenSource } from "axios";
 import useSWRV, { IConfig } from "swrv";
 
+import { AsyncStateOptions, useAsyncState } from "@vueuse/core";
 import { fetcher, fetcherPost, deleter, updater } from "./index";
 import keyMaps from "./keymap/index";
 import useSWRVState from "./useSWRVState";
-import { AsyncStateOptions, useAsyncState } from "@vueuse/core";
 
 interface useGetAPIParams {
   cacheSuffix?: Ref<string>;
@@ -24,7 +24,7 @@ const STATES = {
   STALE_IF_ERROR: 'STALE_IF_ERROR',
 }
 
-/***
+/** *
  * @param key - Used as an identifier for the cache when making requests with SWRV
  * @param method - The HTTP reqeust method to use
  * @param param - The query params to send while making a `GET` request
@@ -44,14 +44,10 @@ export const useAPI = <T>(
   }: useGetAPIParams
 ) => {
   const url = keyMaps[key]({ ...pathVariables });
-  const getKey = () => {
-    return dependantFetchingKey?.value ? `${key}_${cacheSuffix?.value}` : null;
-  };
+  const getKey = () => dependantFetchingKey?.value ? `${key}_${cacheSuffix?.value}` : null;
   const { data, error, mutate, isValidating } = useSWRV<T>(
     getKey,
-    () => {
-      return getRequest(method, url, body?.value, params?.value, options);
-    },
+    () => getRequest(method, url, body?.value, params?.value, options),
     options
   )
   const { state, STATES } = useSWRVState(data, error, isValidating);

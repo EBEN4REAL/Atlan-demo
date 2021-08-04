@@ -19,7 +19,7 @@ export default defineComponent({
         },
         logo(item) {
             console.log(item);
-            let found = SourceList.find(
+            const found = SourceList.find(
                 (src) => src.id == this.integrationName(item)
             );
             console.log(found);

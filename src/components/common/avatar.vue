@@ -4,16 +4,16 @@
       <a-upload
         accept="image/*"
         class="cursor-pointer"
-        :customRequest="handleUploadAvatar"
+        :custom-request="handleUploadAvatar"
         :show-upload-list="false"
       >
         <div
+          v-if="!isReady && uploadStarted"
           class="hidden text-center border-2 border-white rounded-md bg-primary-muted sm:block"
           :style="{ width: avatarSize + 'px', height: avatarSize + 'px' }"
-          v-if="!isReady && uploadStarted"
         >
           <a-spin
-            wrapperClassName="test"
+            wrapper-class-name="test"
             size="small"
             class="flex items-center justify-center w-full h-full"
           ></a-spin>
@@ -47,8 +47,9 @@ import {
   getNameInTitleCase,
 } from "~/composables//utils/string-operations";
 import uploadAvatar from "~/composables/avatar/uploadAvatar";
+
 export default {
-  name: "avatar",
+  name: "Avatar",
   props: {
     avatarName: {
       type: String,
@@ -72,7 +73,7 @@ export default {
     },
   },
   setup(props, context) {
-    let uploadStarted = ref(false);
+    const uploadStarted = ref(false);
     const updatedImageUrl = ref(props.imageUrl);
 
     watch(
@@ -86,7 +87,7 @@ export default {
       console.log("handle Upload", uploaded);
       upload(uploaded.file);
       uploadStarted.value = true;
-      updatedImageUrl.value = updatedImageUrl.value + "?" + uploadKey.value;
+      updatedImageUrl.value = `${updatedImageUrl.value  }?${  uploadKey.value}`;
 
       return true;
     };

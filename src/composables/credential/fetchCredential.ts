@@ -10,7 +10,7 @@ import swrvState from '../utils/swrvState';
 export default function fetchCredentialList(cache?: string, dependentKey?: Ref<any>, paramEntityFilters?: Components.Schemas.FilterCriteria) {
 
 
-    let cancelTokenSource: Ref<CancelTokenSource> = ref(axios.CancelToken.source());
+    const cancelTokenSource: Ref<CancelTokenSource> = ref(axios.CancelToken.source());
 
     let entityFilters: Components.Schemas.FilterCriteria = {};
 
@@ -43,7 +43,7 @@ export default function fetchCredentialList(cache?: string, dependentKey?: Ref<a
     });
 
 
-    let options = ref({
+    const options = ref({
         cancelToken: cancelTokenSource?.value.token,
         revalidateOnFocus: false,
         dedupingInterval: 1,
@@ -56,29 +56,17 @@ export default function fetchCredentialList(cache?: string, dependentKey?: Ref<a
     watch(data, () => {
         if (body?.value?.offset > 0) {
             list.value = list.value.concat(data?.value?.entities);
-        } else {
-            if (data.value?.entities) {
+        } else if (data.value?.entities) {
                 list.value = data.value?.entities;
             } else {
                 list.value = [];
             }
-        }
     });
-    const listCount: ComputedRef<any> = computed(() => {
-        return list.value.length;
-    });
-    const limit: ComputedRef<any> = computed(() => {
-        return body.value.limit;
-    });
-    const offset: ComputedRef<any> = computed(() => {
-        return body.value.offset;
-    });
-    const totalCount: ComputedRef<any> = computed(() => {
-        return data?.value?.approximateCount;
-    });
-    const aggregations: ComputedRef<any[]> = computed(() => {
-        return data?.value?.aggregations;
-    });
+    const listCount: ComputedRef<any> = computed(() => list.value.length);
+    const limit: ComputedRef<any> = computed(() => body.value.limit);
+    const offset: ComputedRef<any> = computed(() => body.value.offset);
+    const totalCount: ComputedRef<any> = computed(() => data?.value?.approximateCount);
+    const aggregations: ComputedRef<any[]> = computed(() => data?.value?.aggregations);
 
 
     const refresh = () => {

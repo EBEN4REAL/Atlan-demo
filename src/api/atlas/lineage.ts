@@ -10,12 +10,10 @@ const getLineageAPI = ({
   guid: string;
   depth: number;
   direction: string;
-}) => {
-  return useAPIV2("GET_LINEAGE", "GET", {
+}) => useAPIV2("GET_LINEAGE", "GET", {
     cache,
     pathVariables: { guid, depth, direction },
   });
-};
 
 export const Lineage = {
   getLineageAPI,

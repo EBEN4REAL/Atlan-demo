@@ -18,8 +18,8 @@
               </span>
               <span
                 v-else
-                @click="clearSearchText"
                 class="pr-4 bg-white border-0 cursor-pointer input-group-text text-danger rounded-0"
+                @click="clearSearchText"
               >
                 <i class="far fa-times-circle"></i>
               </span>
@@ -72,25 +72,25 @@
       @refresh="handleTermsRefresh"
     /> -->
     <AssetList
-      :listStyle="assetListStyle"
-      :assetList="state.assets"
-      :loadingStatus="state.assetsStatus"
-      @loadmore="setSkip(state.skip + state.limit)"
       v-show="!state.isShowTermsList"
-      :listComplete="state.isEndOfPaginate"
-      :onCardClick="onCardClick"
+      :list-style="assetListStyle"
+      :asset-list="state.assets"
+      :loading-status="state.assetsStatus"
+      :list-complete="state.isEndOfPaginate"
+      :on-card-click="onCardClick"
       :limit="state.limit"
-      :fetchedAssetCountInOneBatch="0"
+      :fetched-asset-count-in-one-batch="0"
+      :show-asset-actions-dropdown="showAssetActionsDropdown"
+      :un-link-asset-status="unLinkAssetStatus"
+      :qualified-name-character-count-to-display="50"
+      :show-description="true"
+      @loadmore="setSkip(state.skip + state.limit)"
       @unlinkAsset="handleUnlinkAssets"
-      :showAssetActionsDropdown="showAssetActionsDropdown"
-      :unLinkAssetStatus="unLinkAssetStatus"
-      :qualifiedNameCharacterCountToDisplay="50"
-      :showDescription="true"
     >
       <div
-        class="text-center"
-        slot="emptyCopy"
         v-if="!assets.length && !searchText"
+        slot="emptyCopy"
+        class="text-center"
       >
         <p class="mb-2 font-w700">
           The {{ classificationName ? "classification" : "term" }} hasn't been
@@ -201,7 +201,7 @@ export default defineComponent({
       assetListFilters: {},
     });
 
-    const selectedTerm = props.selectedTerm;
+    const {selectedTerm} = props;
     const classificationName = computed(() => props.classificationName);
     const placeholderString = () => {
       if (state.value.isShowTermsList || props.showTermsOnly) {
@@ -361,7 +361,7 @@ export default defineComponent({
                       termName: [selectedTerm.qualifiedName],
                     }
                   : {}),
-                ...(classificationName
+                ...(classificationName.value
                   ? { classification: [classificationName] }
                   : {}),
               },

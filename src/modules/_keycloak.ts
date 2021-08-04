@@ -1,6 +1,6 @@
+import Keycloak from "keycloak-js";
 import { UserModule } from "~/types/vitessg";
 
-import Keycloak from "keycloak-js";
 import { getEnv, getBasePath } from "./__env";
 
 
@@ -11,15 +11,15 @@ export const install: UserModule = async ({ app }) => {
   const defaultRealm = getEnv().DEFAULT_REALM;
   const clientId = getEnv().DEFAULT_CLIENT_ID;
 
-  let initOptions = {
+  const initOptions = {
     url: `${devBaseUrl}/auth`,
     realm: defaultRealm,
-    clientId: clientId,
+    clientId,
     onLoad: "check-sso",
-    silentCheckSsoRedirectUri: window.location.origin + '/public/check-sso.html'
+    silentCheckSsoRedirectUri: `${window.location.origin  }/public/check-sso.html`
   };
 
-  let keycloak = Keycloak(initOptions);
+  const keycloak = Keycloak(initOptions);
   app.config.globalProperties.$keycloak = keycloak;
   app.provide("$keycloak", keycloak);
 

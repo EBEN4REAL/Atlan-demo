@@ -14,13 +14,7 @@
             </div>
         </div>
         <div
-            class="
-                flex flex-col
-                h-full
-                bg-white
-                border-l
-                asset-preview-container
-            "
+            class="flex flex-col h-full bg-white border-l  asset-preview-container"
             style="overflow: hidden"
         >
             <AssetPreview
@@ -40,6 +34,7 @@
     import { Classification } from '~/api/atlas/classification'
     import { useClassificationStore } from '~/components/admin/classifications/_store'
     import { getDecodedOptionsFromString } from '~/utils/routerQuery'
+
     import { typedefsInterface } from '~/types/typedefs/typedefs.interface'
     import { assetInterface } from '~/types/assets/asset.interface'
 
@@ -70,7 +65,9 @@
 
             const initialFilters: initialFiltersType =
                 getDecodedOptionsFromString(router)
+
             const selected: Ref<assetInterface | undefined> = ref(undefined)
+
             useHead({
                 title: 'Discover assets',
             })
@@ -92,6 +89,7 @@
                 if (classificationData.value) {
                     const classifications =
                         classificationData.value.classificationDefs || []
+
                     classificationsStore.setClassifications(
                         classifications ?? []
                     )

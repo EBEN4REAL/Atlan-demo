@@ -2,7 +2,7 @@
   <div class="w-full pt-4 overflow-y-auto rounded container-height">
     <Bookmark
       :links="links"
-      :showOverflowFade="true"
+      :show-overflow-fade="true"
       @handleUpdateBookmark="handleUpdateBookmark"
       @handleDeleteBookmark="handleDeleteBookmark"
       @handleBookmarAdd="handleBookmarAdd"

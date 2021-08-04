@@ -107,9 +107,9 @@
         computed,
         watch,
     } from 'vue';
+    import { message } from 'ant-design-vue';
     import { topSAMLProviders, customSamlProvider } from '~/constant/saml';
     import { IdentityProvider } from '~/api/auth/identityProvider';
-    import { message } from 'ant-design-vue';
 
     import { useTenantStore } from '~/store/tenants';
     import { Tenant } from '~/api/auth/tenant';

@@ -10,14 +10,12 @@ const BasicSearch = (
     options?: IConfig & AxiosRequestConfig,
     cacheSuffix?: Ref<string>,
     dependantFetchingKey?: Ref<any>
-) => {
-    return useAPI<any>(BASIC_SEARCH, "POST", {
+) => useAPI<any>(BASIC_SEARCH, "POST", {
         body,
         options,
         cacheSuffix,
         dependantFetchingKey
     });
-};
 
 
 

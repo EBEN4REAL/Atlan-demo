@@ -1,29 +1,25 @@
+import { AxiosResponse } from "axios";
 import { getEnv } from "~/modules/__env";
 import { axiosClient } from "~/modules/_axios";
-import { AxiosResponse } from "axios";
 
 export const getAPIPath = (serviceName: string, path = "") => {
   const realm = getEnv().DEFAULT_REALM;
   return `${serviceName}/tenants/${realm}${path}`;
 };
 
-export const getHealthPath = (serviceName: string, path = "") => {
-  return `${serviceName}${path}`;
-};
+export const getHealthPath = (serviceName: string, path = "") => `${serviceName}${path}`;
 
-export const getAxiosClient = () => {
-  return axiosClient;
-};
+export const getAxiosClient = () => axiosClient;
 
 export const fetcher = (
   url,
   params,
   options
-): Promise<AxiosResponse["data"]> => {
+): Promise<AxiosResponse["data"]> => 
   // replacing params:{...params} with params
   // params won't necessarily be a destructurable object ex- URLSearchParams - getting used in ~/components/admin/users/userPreview/accessLogs.vue
-  return getAxiosClient().get(url, { params, ...options });
-};
+   getAxiosClient().get(url, { params, ...options })
+;
 
 export const fetcherPost = (
   url,
@@ -34,13 +30,9 @@ export const fetcherPost = (
   return getAxiosClient().post(url, body, options);
 };
 
-export const updater = (url, body, options): Promise<AxiosResponse["data"]> => {
-  return getAxiosClient().put(url, body, options);
-};
+export const updater = (url, body, options): Promise<AxiosResponse["data"]> => getAxiosClient().put(url, body, options);
 
-export const deleter = (url, options): Promise<AxiosResponse["data"]> => {
-  return getAxiosClient().delete(url, options);
-};
+export const deleter = (url, options): Promise<AxiosResponse["data"]> => getAxiosClient().delete(url, options);
 
 // export const ServiceURLWithoutTenant = (serviceName, path = "") => {
 //   return `${getApiPath(serviceName)}${path}`;

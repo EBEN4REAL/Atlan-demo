@@ -7,11 +7,11 @@
     <table class="w-full table-auto">
       <tbody>
         <tr
+          v-for="(asset, index) in lineageList"
           class="border-b"
           :class="{
             'border-none': index === lineageList.length - 1,
           }"
-          v-for="(asset, index) in lineageList"
         >
           <td
             class="flex items-center justify-between p-1 px-3 cursor-pointer  hover:bg-primary-100 hover:bg-opacity-20"
@@ -47,8 +47,8 @@ export default defineComponent({
     },
   },
   setup() {
-    let imgSrc = (source: string) => {
-      let item = SourceList.find((src) => src.id === source.toLowerCase());
+    const imgSrc = (source: string) => {
+      const item = SourceList.find((src) => src.id === source.toLowerCase());
       return item?.image || "";
     };
 

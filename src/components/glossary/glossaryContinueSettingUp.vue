@@ -1,13 +1,13 @@
 <template>
-    <div class="my-8" v-if="missingOwners.length || missingDescription.length || missingLinkedAssets.length">
+    <div v-if="missingOwners.length || missingDescription.length || missingLinkedAssets.length" class="my-8">
         <h2 class="text-xl leading-7">Coninue Setting up GLossary</h2>
         <a-tabs default-active-key="1" class="border-0">
-            <a-tab-pane key="1" v-if="missingOwners.length" tab="Add Owners">
+            <a-tab-pane v-if="missingOwners.length" key="1" tab="Add Owners">
                 <a-table
                     :columns="ownersTableColumns"
                     :data-source="missingOwners"
                     :pagination="false"
-                    rowKey="guid"
+                    row-key="guid"
                 >
                     <template #name="{ record }">
                         <div class="flex align-middle">
@@ -50,12 +50,12 @@
                 </a-table>
             </a-tab-pane>
 
-            <a-tab-pane key="2" v-if="missingDescription.length" tab="Add Descriptions">
+            <a-tab-pane v-if="missingDescription.length" key="2" tab="Add Descriptions">
                 <a-table
                     :columns="descriptionTableColumns"
                     :data-source="missingDescription"
                     :pagination="false"
-                    rowKey="guid"
+                    row-key="guid"
                 >
                     <template #name="{ record }">
                         <div class="flex align-middle">
@@ -80,7 +80,7 @@
                 </a-table>
             </a-tab-pane>
 
-            <a-tab-pane key="3" v-if="missingLinkedAssets.length" tab="Link Assets">
+            <a-tab-pane v-if="missingLinkedAssets.length" key="3" tab="Link Assets">
                 Link Assets
                 <br />
                 {{ missingLinkedAssets }}
@@ -91,12 +91,12 @@
 <script lang="ts">
 import { defineComponent, computed } from 'vue'
 
+import GlossaryAddDescriptionCard from '@/glossary/glossaryAddDescriptionCard.vue'
+import Owners from '@/preview/asset/tabs/overview/details/owners.vue'
 import { Components } from '~/api/atlas/client'
 
 import TermSvg from '~/assets/images/gtc/term/term.png'
 import CategorySvg from '~/assets/images/gtc/category/category.png'
-import GlossaryAddDescriptionCard from '@/glossary/glossaryAddDescriptionCard.vue'
-import Owners from '@/preview/asset/tabs/overview/details/owners.vue'
 
 interface PropsType {
     terms: Components.Schemas.AtlasGlossaryTerm[]
@@ -104,8 +104,8 @@ interface PropsType {
 }
 
 export default defineComponent({
-    props: ['terms', 'categories'],
     components: { GlossaryAddDescriptionCard, Owners },
+    props: ['terms', 'categories'],
     setup(props: PropsType) {
         const categories = computed(
             () =>
@@ -126,15 +126,11 @@ export default defineComponent({
                 .slice(0, 5)
         })
 
-        const missingLinkedAssets = computed(() => {
-            return terms.value.filter((term) => !term.assignedEntities?.length).slice(0,5)
-        })
+        const missingLinkedAssets = computed(() => terms.value.filter((term) => !term.assignedEntities?.length).slice(0,5))
 
-        const missingOwners = computed(() => {
-            return [...terms.value, ...categories.value].filter(
+        const missingOwners = computed(() => [...terms.value, ...categories.value].filter(
                 (entity) => !entity?.owners?.length
-            ).slice(0,5)
-        })
+            ).slice(0,5))
 
         const descriptionTableColumns = [
             {

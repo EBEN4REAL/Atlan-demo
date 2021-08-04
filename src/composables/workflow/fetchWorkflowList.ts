@@ -1,5 +1,5 @@
-import swrvState from '../utils/swrvState';
 import useSWRV from 'swrv';
+import swrvState from '../utils/swrvState';
 import { Workflows, URL } from '~/api/argo/workflow';
 
 export default function fetchWorkflowList(cachekey: string, dependent: any, paramsdefault: any, isArchive: boolean) {
@@ -7,20 +7,18 @@ export default function fetchWorkflowList(cachekey: string, dependent: any, para
         if (dependent.value && isArchive) {
             return Workflows.ArchivedList(paramsdefault.value);
         }
-        else if (dependent.value) {
+        if (dependent.value) {
             return Workflows.List(paramsdefault.value);
         }
-        else {
+        
             return {}
-        }
+        
     }, {
         revalidateOnFocus: false,
         dedupingInterval: 1,
     });
 
-    const phase = (item: any) => {
-        return item?.status?.phase;
-    };
+    const phase = (item: any) => item?.status?.phase;
 
     const { state, STATES } = swrvState(data, error, isValidating);
     return {

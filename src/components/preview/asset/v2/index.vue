@@ -1,12 +1,14 @@
 <template>
     <div class="px-4 py-4">
-        <div class="flex items-center justify-between text-sm mb-3.5">
+        <div class="flex items-center justify-between mt-2 mb-4 text-sm">
             <div class="flex">
                 <component
                     :is="selectedAsset.typeName"
                     class="w-5 h-5 mr-2"
                 ></component>
-                <span class="text-gray-description">Table</span>
+                <span class="text-gray-description">{{
+                    assetTypeLabel(selectedAsset)
+                }}</span>
             </div>
             <div class="flex">
                 <div class="flex px-1.5 py-0.5 mx-2 _bg-primary-light rounded">
@@ -32,13 +34,30 @@
                 ></StatusBadge>
             </div>
         </div>
-        <div class="flex mb-4">
-            <div class="flex items-center text-xs tracking-wider">
-                <img :src="logo(selectedAsset)" class="w-auto h-4 mr-1" />{{
-                    integrationName(selectedAsset)
-                }}
+        <!-- <div class="flex mb-4 text-xs tracking-wider">
+            <div class="flex items-center flex-1">
+                <img :src="logo(selectedAsset)" class="w-auto h-4 mr-1" />
+                <span
+                    class="flex-1 overflow-hidden overflow-ellipsis whitespace-nowrap"
+                    >{{ integrationName(selectedAsset) }}</span
+                >
             </div>
-        </div>
+            <div class="flex items-center flex-1 ml-2">
+                <img :src="logo(selectedAsset)" class="w-auto h-4 mr-1" />
+                <span
+                    class="flex-1 overflow-hidden overflow-ellipsis whitespace-nowrap"
+                    >{{ selectedAsset.attributes.databaseName }}</span
+                >
+            </div>
+            <div class="flex items-center flex-1 ml-2">
+                <img :src="logo(selectedAsset)" class="w-auto h-4 mr-1" />
+                <span
+                    class="flex-1 overflow-hidden overflow-ellipsis whitespace-nowrap"
+                    >{{ selectedAsset.attributes.schemaName }}</span
+                >
+            </div>
+        </div> -->
+        <HierarchyBar :selectedAsset="selectedAsset" />
         <div class="">
             <a-tabs v-model:activeKey="activeKey" :class="$style.previewtab">
                 <a-tab-pane v-for="tab in tabs" :key="tab.id" :tab="tab.name">
@@ -65,6 +84,7 @@
     import { assetInterface } from '~/types/assets/asset.interface'
     import AssetMixin from '~/mixins/asset'
     import { tabList as tabs } from './tabList'
+    import HierarchyBar from './hierarchy.vue'
 
     export default defineComponent({
         mixins: [AssetMixin],
@@ -77,6 +97,7 @@
         },
         components: {
             StatusBadge,
+            HierarchyBar,
             info: defineAsyncComponent(() => import('./tabs/info/index.vue')),
             columns: defineAsyncComponent(
                 () => import('./tabs/columns/index.vue')

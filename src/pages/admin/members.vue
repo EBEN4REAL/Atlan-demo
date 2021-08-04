@@ -5,6 +5,7 @@
 import { defineComponent } from "vue";
 import Users from "@/admin/users/index.vue";
 import { useHead } from "@vueuse/head";
+
 export default defineComponent({
   components: {
     Users,

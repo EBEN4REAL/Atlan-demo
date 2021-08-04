@@ -1,11 +1,11 @@
 import { computed, ComputedRef, Ref } from 'vue';
 
+import useSWRV from 'swrv';
+import { CancelTokenSource } from 'axios';
 import { SearchBasic } from '~/api/atlas/searchbasic';
 
 import swrvState from '../utils/swrvState';
-import useSWRV from 'swrv';
 
-import { CancelTokenSource } from 'axios';
 
 import { SearchParameters } from '~/types/atlas/attributes';
 
@@ -19,37 +19,29 @@ export default function fetchSearchList(dependent: any, body: Ref<SearchParamete
                 cancelToken: paramCancelToken?.value.token
             });
         }
-        else {
+        
             return {}
-        }
+        
     }, {
         revalidateOnFocus: false,
         dedupingInterval: 1,
     });
 
     const { state, STATES } = swrvState(data, error, isValidating);
-    const totalCount = computed(() => {
-        return data.value?.approximateCount;
-    })
-    const listCount = computed(() => {
-        return data?.value?.entities?.length;
-    });
+    const totalCount = computed(() => data.value?.approximateCount)
+    const listCount = computed(() => data?.value?.entities?.length);
 
-    const aggregations = computed(() => {
-        return data?.value?.aggregations;
-    });
+    const aggregations = computed(() => data?.value?.aggregations);
 
     const errorMessage = computed(() => {
         if (error?.value.response?.data?.errorMessage) {
             return error?.value.response?.data?.errorMessage;
-        } else {
+        } 
             return "Something went wrong.";
-        }
+        
     });
 
-    const list: ComputedRef = computed(() => {
-        return data?.value?.entities || [];
-    });
+    const list: ComputedRef = computed(() => data?.value?.entities || []);
 
     return {
         data,

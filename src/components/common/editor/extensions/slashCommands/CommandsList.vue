@@ -1,5 +1,6 @@
 <template>
   <div
+    v-if="items.length"
     class="
       shadow-lg
       bg-white
@@ -11,7 +12,6 @@
       border
       w-72
     "
-    v-if="items.length"
   >
     <div
       v-for="(category, categoryIndex) in items"
@@ -21,13 +21,13 @@
         {{ category.categoryTitle }}
       </p>
       <div
+        v-for="(item, index) in category.content"
+        :key="item.title"
         class="item w-64"
         :class="{
           'is-selected':
             index === selectedIndex && categoryIndex === selectedCategoryIndex,
         }"
-        v-for="(item, index) in category.content"
-        :key="item.title"
         @click="selectItem(categoryIndex, index)"
       >
         <div class="flex">

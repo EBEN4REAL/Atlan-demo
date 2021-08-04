@@ -1,14 +1,15 @@
 import { defineComponent, PropType } from "vue";
+import dayjs from "dayjs";
+import relativeTime from "dayjs/plugin/relativeTime";
 import { Components } from "~/api/atlas/client";
 import { AtlanTableAttributes } from "~/types/asset";
-import dayjs from "dayjs";
 
 
-import relativeTime from "dayjs/plugin/relativeTime";
-dayjs.extend(relativeTime);
 import { SourceList } from "~/constant/source";
 import { AssetTypeList } from "~/constant/assetType";
 import { dataTypeList } from "~/constant/datatype";
+
+dayjs.extend(relativeTime);
 
 
 export default defineComponent({
@@ -20,9 +21,7 @@ export default defineComponent({
       return this.attributes(item)?.dataType;
     },
     dataTypeImage(item: any) {
-      const found = dataTypeList.find((d) => {
-        return d.type.includes(this.dataType(item));
-      });
+      const found = dataTypeList.find((d) => d.type.includes(this.dataType(item)));
       return found?.image;
     },
     title(item: any): string {
@@ -94,7 +93,7 @@ export default defineComponent({
     },
     logo(item: any): string {
       let img = "";
-      let found = SourceList.find(
+      const found = SourceList.find(
         (src) => src.id === this.attributes(item).integrationName
       );
       if (found) {

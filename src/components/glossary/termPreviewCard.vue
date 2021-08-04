@@ -23,8 +23,8 @@ interface PropsType {
 }
 
 export default defineComponent({
-  props: ["term"],
   components: {},
+  props: ["term"],
   setup(props: PropsType) {
     const term = computed(() => props.term);
     return {

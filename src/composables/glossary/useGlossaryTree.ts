@@ -12,19 +12,17 @@ export default function useGlossaryTree(list: ComputedRef<GlossaryType[] | undef
     watch(list, async (newValue, oldValue) => {
         // If orignal tree is empty, just append the list of glossary
         if (!treeData.value.length) {
-            treeData.value = list.value?.map((item, index) => {
-                return {
+            treeData.value = list.value?.map((item, index) => ({
                     key: item.guid,
                     title: item.attributes.name,
                     type: "glossary",
                     isRoot: true,
-                };
-            }) as TreeDataItem[];
+                })) as TreeDataItem[];
         } else {
             const updatedTreeData: TreeDataItem[] = [];
             if (newValue) {
                 // use `for-of` loop, since we want to await for any promises to resolve before going to the next iteration
-                for (let currentElement of newValue) {
+                for (const currentElement of newValue) {
                     // Check if the currentElement already exists in the tree or not
                     const newNode = treeData.value.find((treeNode: TreeDataItem) => treeNode.key === currentElement.guid);
 
@@ -110,7 +108,7 @@ export default function useGlossaryTree(list: ComputedRef<GlossaryType[] | undef
 
                             // We don't need to check for terms since they are updated by their respective parents
                         } else {
-                            return
+                            
                         }
                     }
                   
@@ -149,7 +147,7 @@ export default function useGlossaryTree(list: ComputedRef<GlossaryType[] | undef
     const onLoadData = async (treeNode: any) => {
         treeNode.dataRef.isOpen = true;
         if (treeNode.dataRef.children) {
-            return;
+            
         }
         else if (treeNode.dataRef.type === "glossary") {
             try {
@@ -179,10 +177,8 @@ export default function useGlossaryTree(list: ComputedRef<GlossaryType[] | undef
                 console.log(error);
             }
         } else if (treeNode.dataRef.type === "category") {
-            //find all categories which are children
-            const children = categoryMap[treeNode.dataRef.glossaryID]?.filter((item) => {
-                return item.parentCategoryGuid === treeNode.dataRef.key
-            });
+            // find all categories which are children
+            const children = categoryMap[treeNode.dataRef.glossaryID]?.filter((item) => item.parentCategoryGuid === treeNode.dataRef.key);
             children?.forEach((child) => {
                 if (!treeNode.dataRef.children) {
                     treeNode.dataRef.children = [];

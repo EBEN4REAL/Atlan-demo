@@ -20,10 +20,10 @@ export default function fetchGlossaryList(
     includeClassificationAttributes: true,
     includeSubClassifications: true,
     includeSubTypes: false,
-    limit: limit,
-    offset: offset,
+    limit,
+    offset,
     attributes: [...BaseAttributes, ...GlossaryAttributes],
-    query: query,
+    query,
     entityFilters: filters,
   };
   const { response, error, loading, mutate } = Search.BasicSearch(
@@ -34,15 +34,9 @@ export default function fetchGlossaryList(
     }
   );
 
-  const list: ComputedRef<GlossaryType[] | undefined> = computed(() => {
-    return response.value?.entities;
-  });
-  const totalCount = computed(() => {
-    return response.value?.approximateCount;
-  });
-  const listCount = computed(() => {
-    return response?.value?.entities?.length;
-  });
+  const list: ComputedRef<GlossaryType[] | undefined> = computed(() => response.value?.entities);
+  const totalCount = computed(() => response.value?.approximateCount);
+  const listCount = computed(() => response?.value?.entities?.length);
 
   const refetchGlossary = () => {
     const { data, error, isLoading } = useAPI<

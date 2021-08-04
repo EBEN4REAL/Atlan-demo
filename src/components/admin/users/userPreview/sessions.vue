@@ -1,8 +1,8 @@
 <template>
   <div>
     <div
-      class="flex flex-col items-center h-full align-middle bg-white"
       v-if="[STATES.ERROR, STATES.STALE_IF_ERROR].includes(state)"
+      class="flex flex-col items-center h-full align-middle bg-white"
     >
       <ErrorView>
         <div class="mt-3">
@@ -27,8 +27,8 @@
           title="Sign Out All Sessions"
           trigger="click"
           :visible="showDeleteSessionsConfirmPopover"
-          @visibleChange="handleClickChange"
           placement="bottom"
+          @visibleChange="handleClickChange"
         >
           <template #content>
             <div>
@@ -36,17 +36,17 @@
                 Are you sure you want to signout all sessions?
               </div>
               <div class="flex justify-end">
-                <a-button @click="hideDeleteSessionsConfirmPopover" class="mr-2"
+                <a-button class="mr-2" @click="hideDeleteSessionsConfirmPopover"
                   >Cancel</a-button
                 >
                 <a-button
+                  type="danger"
                   @click="
                     () => {
                       signOutAllSessions();
                       hideDeleteSessionsConfirmPopover();
                     }
                   "
-                  type="danger"
                   >Yes</a-button
                 >
               </div>
@@ -134,20 +134,21 @@
 <script lang="ts">
 import { defineComponent, computed, reactive, ref, watch } from "vue";
 import { useTimeAgo } from "@vueuse/core";
-import { User } from "~/api/auth/user";
-import swrvState from "~/composables/utils/swrvState";
 import { Modal, message } from "ant-design-vue";
 import ErrorView from "@common/error/index.vue";
+import { User } from "~/api/auth/user";
+import swrvState from "~/composables/utils/swrvState";
+
 export default defineComponent({
   name: "UserPreviewSessions",
+  components: {
+    ErrorView,
+  },
   props: {
     selectedUser: {
       type: Object,
       default: {},
     },
-  },
-  components: {
-    ErrorView,
   },
   setup(props, context) {
     const showDeleteSessionsConfirmPopover = ref(false);
@@ -168,19 +169,17 @@ export default defineComponent({
       dedupingInterval: 1,
     });
     const { state, STATES } = swrvState(data, error, isValidating);
-    let signOutAllSessionsLoading = ref(false);
-    let signOutSessionByIdLoading = ref(false);
-    let sessionList = computed(() => {
+    const signOutAllSessionsLoading = ref(false);
+    const signOutSessionByIdLoading = ref(false);
+    const sessionList = computed(() => {
       if (data.value && data.value.length) {
-        return data.value.map((session: any) => {
-          return {
+        return data.value.map((session: any) => ({
             ...session,
             started_at_string: new Date(session.start).toLocaleString(),
             last_accessed_string: new Date(session.lastAccess).toLocaleString(),
             started_time_ago: useTimeAgo(session.start).value,
             last_accessed_time_ago: useTimeAgo(session.lastAccess).value,
-          };
-        });
+          }));
       }
       return [];
     });
@@ -189,7 +188,7 @@ export default defineComponent({
         data,
         isReady,
         error,
-        isLoading: isLoading,
+        isLoading,
       } = User.SignOutAllSessions(props.selectedUser.id);
       watch(
         [data, isReady, error, isLoading],
@@ -236,33 +235,24 @@ export default defineComponent({
     const handleTableChange = (pagination: any, filters: any, sorter: any) => {
       if (sorter && sorter.columnKey === "last_accessed") {
         if (sorter.order === "descend") {
-          sessionList.value.sort((sessionA, sessionB) => {
-            return (
+          sessionList.value.sort((sessionA, sessionB) => (
               new Date(sessionB.lastAccess) - new Date(sessionA.lastAccess)
-            );
-          });
+            ));
         } else if (sorter.order === "ascend") {
-          sessionList.value.sort((sessionA, sessionB) => {
-            return (
+          sessionList.value.sort((sessionA, sessionB) => (
               new Date(sessionA.lastAccess) - new Date(sessionB.lastAccess)
-            );
-          });
+            ));
         }
       }
       if (sorter && sorter.columnKey === "session_started") {
         if (sorter.order === "descend") {
-          sessionList.value.sort((sessionA: any, sessionB: any) => {
-            return new Date(sessionB.start) - new Date(sessionA.start);
-          });
+          sessionList.value.sort((sessionA: any, sessionB: any) => new Date(sessionB.start) - new Date(sessionA.start));
         } else if (sorter.order === "ascend") {
-          sessionList.value.sort((sessionA, sessionB) => {
-            return new Date(sessionA.start) - new Date(sessionB.start);
-          });
+          sessionList.value.sort((sessionA, sessionB) => new Date(sessionA.start) - new Date(sessionB.start));
         }
       }
     };
-    const columns = computed(() => {
-      return [
+    const columns = computed(() => [
         {
           title: "Last Accessed",
           key: "last_accessed",
@@ -290,8 +280,7 @@ export default defineComponent({
           width: 120,
           slots: { customRender: "actions" },
         },
-      ];
-    });
+      ]);
     return {
       state,
       STATES,

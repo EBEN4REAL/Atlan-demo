@@ -31,10 +31,10 @@
 import { defineComponent, computed } from "vue";
 
 // ? Composables
+import { useTimeAgo } from "@vueuse/core";
 import { useUserPreview } from "~/composables/user/showUserPreview";
 
 // ? Utils
-import { useTimeAgo } from "@vueuse/core";
 
 export default defineComponent({
   props: {

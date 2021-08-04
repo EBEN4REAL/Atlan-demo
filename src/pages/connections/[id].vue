@@ -1,7 +1,7 @@
 <template>
     <Loader v-if="loading"></Loader>
     <ErrorView v-else-if="!loading && error" :error="error"></ErrorView>
-    <div class="flex flex-col w-full h-full" v-else>
+    <div v-else class="flex flex-col w-full h-full">
         <div class="px-4 pt-3 bg-white">
             <div class="">
                 <div class="flex items-center align-middle">
@@ -20,7 +20,7 @@
                 </div>
             </div>
             <div>
-                <a-tabs :class="$style.topbar" v-model:activeKey="selectedTab">
+                <a-tabs v-model:activeKey="selectedTab" :class="$style.topbar">
                     <a-tab-pane key="overview" tab="Overview"></a-tab-pane>
                     <a-tab-pane key="workflows" tab="Workflows"></a-tab-pane>
                     <a-tab-pane key="assets" tab="Assets"></a-tab-pane>
@@ -43,30 +43,24 @@
 </template>
 
 <script lang="ts">
-    import { computed, defineComponent, reactive, ref, watch } from 'vue';
-    import Loader from '@common/loaders/page.vue';
-    import ErrorView from '@common/error/index.vue';
-    import SourceMixin from '~/mixins/source';
+    import { computed, defineComponent, reactive, ref, watch } from 'vue'
+    import Loader from '@common/loaders/page.vue'
+    import ErrorView from '@common/error/index.vue'
 
-    import Overview from '@/connection/overview/index.vue';
-    import Workflows from '@/connection/workflows/index.vue';
-    import Assets from '@/connection/assets/index.vue';
-    import Policies from '@/connection/policies/index.vue';
+    import Overview from '@/connection/overview/index.vue'
+    import Workflows from '@/connection/workflows/index.vue'
+    import Assets from '@/connection/assets/index.vue'
+    import Policies from '@/connection/policies/index.vue'
 
-    import { useRoute } from 'vue-router';
+    import { useRoute } from 'vue-router'
+    import SourceMixin from '~/mixins/source'
 
-    import useBotList from '~/composables/bots/useBotList';
-    import useCredentialList from '~/composables/bots/useCredentialList';
+    import useBotCredentialList from '~/composables/bots/useBotCredentialList'
 
-    import useBotCredentialList from '~/composables/bots/useBotCredentialList';
-
-    import { useConnectionsStore } from '~/store/connections';
-    import { Components } from '~/api/atlas/client';
-    import useConnectionsList from '~/composables/bots/useConnectionList';
-    import useConnectionRefresh from '~/composables/bots/useConnectionRefresh';
+    import { useConnectionsStore } from '~/store/connections'
+    import { Components } from '~/api/atlas/client'
 
     export default defineComponent({
-        mixins: [SourceMixin],
         components: {
             Loader,
             ErrorView,
@@ -75,31 +69,18 @@
             Assets,
             Policies,
         },
-        data() {
-            return {
-                loading: false,
-                error: '',
-                selectedTab: 'overview',
-                cancelToken: null,
-            };
-        },
-        setup(props, { emit }) {
-            const route = useRoute();
-            const store = useConnectionsStore();
-            const item = computed(() => {
-                return store.getList?.find(
-                    (item) => item.guid === route.params.id
-                );
-            });
+        mixins: [SourceMixin],
+        setup() {
+            const route = useRoute()
+            const store = useConnectionsStore()
+            const item = computed(() =>
+                store.getList?.find((item) => item.guid === route.params.id)
+            )
 
-            const now = ref(false);
-            let defaultBody = reactive({});
-            const {
-                list,
-                replaceFilters,
-                isLoading,
-                isValidating,
-            } = useBotCredentialList(now, defaultBody, 'FETCH_BOTS_ITEM');
+            const now = ref(false)
+            const defaultBody = reactive({})
+            const { list, replaceFilters, isLoading, isValidating } =
+                useBotCredentialList(now, defaultBody, 'FETCH_BOTS_ITEM')
 
             watch(
                 () => route.params.id,
@@ -121,23 +102,21 @@
                                         .integrationCredentialQualifiedName,
                             },
                         ],
-                    });
+                    })
                     if (!now.value) {
-                        now.value = true;
+                        now.value = true
                     }
                 },
                 { immediate: true }
-            );
+            )
 
-            const bot = computed(() => {
-                return list.value.find((item) => item.typeName === 'Bot');
-            });
+            const bot = computed(() =>
+                list.value.find((item) => item.typeName === 'Bot')
+            )
 
-            const credential = computed(() => {
-                return list.value.find(
-                    (item) => item.typeName === 'Credential'
-                );
-            });
+            const credential = computed(() =>
+                list.value.find((item) => item.typeName === 'Credential')
+            )
 
             return {
                 item,
@@ -148,17 +127,25 @@
                 list,
                 isLoading,
                 isValidating,
-            };
+            }
+        },
+        data() {
+            return {
+                loading: false,
+                error: '',
+                selectedTab: 'overview',
+                cancelToken: null,
+            }
         },
         computed: {},
         mounted() {},
         methods: {
             handleBack() {
-                this.$router.push('/connections');
+                this.$router.push('/connections')
             },
             handlePreview(selectedItem: any) {},
         },
-    });
+    })
 </script>
 
 <style lang="less" module>

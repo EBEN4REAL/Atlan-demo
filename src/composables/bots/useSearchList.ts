@@ -1,12 +1,12 @@
 import { computed, reactive, Ref, ref, watch } from 'vue'
+import axios, { AxiosRequestConfig, CancelTokenSource } from 'axios'
+import { IConfig } from 'swrv'
+import LocalStorageCache from 'swrv/dist/cache/adapters/localStorage'
 import { SearchParameters } from '~/types/atlas/attributes'
 import { BaseAttributes, BotsAttributes } from '~/constant/projection'
-import axios, { AxiosRequestConfig, CancelTokenSource } from 'axios'
 import { Search } from '~/api2/search'
-import { IConfig } from 'swrv'
 import { Components } from '~/api/atlas/client'
 import { AssetTypeList } from '~/constant/assetType'
-import LocalStorageCache from 'swrv/dist/cache/adapters/localStorage'
 
 export default function useSearchList(
     typeName: string,
@@ -19,7 +19,7 @@ export default function useSearchList(
     cancelTokenSource?: Ref<CancelTokenSource>,
     quickChange?: boolean
 ) {
-    let asyncOptions: IConfig & AxiosRequestConfig = {
+    const asyncOptions: IConfig & AxiosRequestConfig = {
         dedupingInterval: 0,
         shouldRetryOnError: false,
         revalidateOnFocus: false,
@@ -32,8 +32,8 @@ export default function useSearchList(
         asyncOptions.cancelToken = cancelTokenSource.value.token
     }
 
-    let body = ref({
-        typeName: typeName,
+    const body = ref({
+        typeName,
         excludeDeletedEntities: true,
         includeClassificationAttributes: false,
         includeSubClassifications: false,
@@ -46,7 +46,7 @@ export default function useSearchList(
         ...initialBody,
     })
 
-    let cachekey = ref(`${cacheSuffx}`)
+    const cachekey = ref(`${cacheSuffx}`)
     const { data, mutate, state, STATES, error } = Search.BasicSearch(
         body,
         asyncOptions,
@@ -63,8 +63,7 @@ export default function useSearchList(
                 ...searchScoreList.value,
                 ...data?.value?.searchScore,
             }
-        } else {
-            if (data.value?.entities) {
+        } else if (data.value?.entities) {
                 list.value = data.value?.entities
                 searchScoreList.value = {
                     ...data?.value?.searchScore,
@@ -73,25 +72,18 @@ export default function useSearchList(
                 list.value = []
                 searchScoreList.value = {}
             }
-        }
     })
 
-    const isLoading = computed(() => {
-        return (
+    const isLoading = computed(() => (
             ([STATES.PENDING].includes(state.value) ||
                 [STATES.VALIDATING].includes(state.value)) &&
             !data
-        )
-    })
-    const isValidating = computed(() => {
-        return [STATES.VALIDATING].includes(state.value)
-    })
-    const isError = computed(() => {
-        return (
+        ))
+    const isValidating = computed(() => [STATES.VALIDATING].includes(state.value))
+    const isError = computed(() => (
             [STATES.ERROR].includes(state.value) ||
             [STATES.STALE_IF_ERROR].includes(state.value)
-        )
-    })
+        ))
 
     const refresh = () => {
         if (cancelTokenSource) {
@@ -165,10 +157,8 @@ export default function useSearchList(
         return tempList
     })
     const assetTypeSum = computed(() => {
-        let initialValue = 0
-        let sum = assetTypeList.value.reduce((accumulator, currentValue) => {
-            return accumulator + currentValue.count
-        }, initialValue)
+        const initialValue = 0
+        const sum = assetTypeList.value.reduce((accumulator, currentValue) => accumulator + currentValue.count, initialValue)
         return sum
     })
 

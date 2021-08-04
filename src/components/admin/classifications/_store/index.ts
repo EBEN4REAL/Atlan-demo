@@ -1,8 +1,8 @@
+import { defineStore } from 'pinia'
 import { state } from './state'
 import { actions } from './actions'
 import { getters } from './getters'
 
-import { defineStore } from 'pinia'
 
 export const useClassificationStore = defineStore({
     // name of the store
@@ -11,7 +11,7 @@ export const useClassificationStore = defineStore({
     // a function that returns a fresh state
     state: () => state,
     // optional getters
-    getters: getters,
+    getters,
     // optional actions
-    actions: actions,
+    actions,
 })

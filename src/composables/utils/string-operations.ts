@@ -6,7 +6,7 @@ export const pluralizeString = (
   if (string) {
     if (includeCountInString)
       return count === 1 ? `${count} ${string}` : `${count} ${string}s`;
-    else return count === 1 ? `${string}` : `${string}s`;
+    return count === 1 ? `${string}` : `${string}s`;
   }
 };
 export const getNameInTitleCase = (name: string, delimiter = " ") => {

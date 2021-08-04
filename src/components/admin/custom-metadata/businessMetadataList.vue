@@ -19,8 +19,8 @@
             : item.options.displayName || item.name
         }}
         <sup
-          class=""
           v-if="isUpdateBmSameAsCurrentBm(item) || (item && item.guid === 'new')"
+          class=""
           >*</sup
         >
       </div>
@@ -51,8 +51,8 @@
   </div>
 </template>
 <script lang="ts">
-import { computed } from "vue";
-import { defineComponent } from "vue";
+import { computed , defineComponent } from "vue";
+
 export default defineComponent({
   props: ["finalList", "selectedBm", "updatedBm"],
   setup(props, context) {

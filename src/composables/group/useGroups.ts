@@ -1,8 +1,8 @@
-//useGroups
+// useGroups
 
 import { ref, watch, computed, ComputedRef, Ref } from "vue";
-import { fetcher, getAPIPath } from "~/api";
 import useSWRV from "swrv";
+import { fetcher, getAPIPath } from "~/api";
 import swrvState from "~/composables/utils/swrvState";
 import { getFormattedGroup } from "~/composables/group/formatGroup";
 import { useAPI } from "~/api/useAPI";
@@ -26,13 +26,13 @@ export const useGroup = (groupListAPIParams: {
     },
   });
   const { state, STATES } = swrvState(data, error, isValidating);
-  let groupList = computed(() => {
+  const groupList = computed(() => {
     if (data.value && data?.value?.records)
       return data?.value.records.map((group: any) => getFormattedGroup(group));
     return [];
   });
-  let totalGroupCount = computed(() => data?.value?.total_record ?? 0);
-  let filteredGroupCount = computed(() => data?.value?.filter_record ?? 0);
+  const totalGroupCount = computed(() => data?.value?.total_record ?? 0);
+  const filteredGroupCount = computed(() => data?.value?.filter_record ?? 0);
   return {
     groupList,
     totalGroupCount,
@@ -49,7 +49,7 @@ export default function useGroups(groupListAPIParams: {
   filter: any;
   sort: string;
 }) {
-  //API to get groups based on params groupListAPIParams
+  // API to get groups based on params groupListAPIParams
   const {
     data,
     error,
@@ -64,12 +64,12 @@ export default function useGroups(groupListAPIParams: {
     }
   );
   const { state, STATES } = swrvState(data, error, isValidating);
-  let groupList = computed(() => {
+  const groupList = computed(() => {
     if (data.value && data.value.records)
       return data.value.records.map((group: any) => getFormattedGroup(group));
     return [];
   });
-  let localGroupsList: Ref<any[]> = ref([]);
+  const localGroupsList: Ref<any[]> = ref([]);
   watch(data, () => {
     if (data && data.value) {
       if (groupListAPIParams.offset > 0) {
@@ -85,10 +85,10 @@ export default function useGroups(groupListAPIParams: {
     }
   });
   const groupListConcatenated: ComputedRef<any> = computed(
-    () => localGroupsList || []
+    () => localGroupsList.value || []
   );
-  let totalGroupsCount = computed(() => data?.value?.total_record ?? 0);
-  let filteredGroupsCount = computed(() => data?.value?.filter_record ?? 0);
+  const totalGroupsCount = computed(() => data?.value?.total_record ?? 0);
+  const filteredGroupsCount = computed(() => data?.value?.filter_record ?? 0);
   return {
     groupList,
     totalGroupsCount,

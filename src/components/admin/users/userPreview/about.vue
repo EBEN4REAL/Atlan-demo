@@ -2,16 +2,16 @@
   <div class="tab-content-wrapper">
     <div class="flex">
       <UpdateFirstName
-        :selectedUser="selectedUser"
-        :allowUpdate="isCurrentUser"
-        @updatedUser="$emit('updatedUser')"
+        :selected-user="selectedUser"
+        :allow-update="isCurrentUser"
         class="flex-1 mr-4"
+        @updatedUser="$emit('updatedUser')"
       />
       <UpdateLastName
-        :selectedUser="selectedUser"
-        :allowUpdate="isCurrentUser"
-        @updatedUser="$emit('updatedUser')"
+        :selected-user="selectedUser"
+        :allow-update="isCurrentUser"
         class="flex-1"
+        @updatedUser="$emit('updatedUser')"
       />
     </div>
     <div class="flex mt-3">
@@ -20,10 +20,10 @@
         <div class="text-gray">@{{ selectedUser.username }}</div>
       </div>
       <UpdateRole
-        :selectedUser="selectedUser"
-        :allowUpdate="isCurrentUser"
-        @updatedUser="$emit('updatedUser')"
+        :selected-user="selectedUser"
+        :allow-update="isCurrentUser"
         class="flex-1"
+        @updatedUser="$emit('updatedUser')"
       />
     </div>
     <div class="flex mt-3">
@@ -32,24 +32,24 @@
         <div class="text-gray">{{ selectedUser.email }}</div>
       </div>
       <UpdateMobileNumber
-        :selectedUser="selectedUser"
-        :allowUpdate="isCurrentUser"
-        @updatedUser="$emit('updatedUser')"
+        :selected-user="selectedUser"
+        :allow-update="isCurrentUser"
         class="flex-1"
+        @updatedUser="$emit('updatedUser')"
       />
     </div>
     <div class="flex mt-3">
       <UpdateSkills
         class="flex-1 mr-4"
-        @updatedUser="$emit('updatedUser')"
         :user="selectedUser"
-        :allowUpdate="isCurrentUser"
+        :allow-update="isCurrentUser"
+        @updatedUser="$emit('updatedUser')"
       />
       <UpdateDesignation
         class="flex-1"
-        @updatedUser="$emit('updatedUser')"
         :user="selectedUser"
-        :allowUpdate="isCurrentUser"
+        :allow-update="isCurrentUser"
+        @updatedUser="$emit('updatedUser')"
       />
     </div>
   </div>
@@ -64,6 +64,7 @@ import UpdateMobileNumber from "~/components/admin/users/userPreview/about/updat
 import UpdateSkills from "~/components/admin/users/userPreview/about/updateSkills.vue";
 import UpdateDesignation from "~/components/admin/users/userPreview/about/updateDesignation.vue";
 import UpdateRole from "~/components/admin/users/userPreview/about/updateRole.vue";
+
 export default defineComponent({
   name: "UserPreviewAboutComponent",
   components: {

@@ -3,20 +3,20 @@
     <a-modal
       v-if="visible"
       v-model:visible="visible"
-      okText="Update"
+      ok-text="Update"
       :width="600"
-      :maskClosable="false"
+      :mask-closable="false"
       :centered="true"
-      @ok="handleUpdate"
       :closable="false"
+      @ok="handleUpdate"
     >
       <div class="overflow-y-auto" style="height: 500px">
         <Credential
           ref="credentialView"
           :item="bot"
-          :isEdit="true"
-          :defaultConnection="item"
-          :defaultCredential="credential"
+          :is-edit="true"
+          :default-connection="item"
+          :default-credential="credential"
         ></Credential>
       </div>
     </a-modal>
@@ -53,11 +53,11 @@
             </div>
           </div>
           <div
-            class=""
             v-if="
               bot?.attributes?.config?.attributes?.credential?.attributes.port
                 .attributes.isVisible
             "
+            class=""
           >
             <p class="mb-0 text-sm text-gray-400">
               {{
@@ -106,13 +106,13 @@
                     ?.credential?.attributes?.extra"
                   :key="extra.id"
                 >
-                  <div class="col-span-4" v-if="extra.attributes.isVisible">
+                  <div v-if="extra.attributes.isVisible" class="col-span-4">
                     <p class="mb-0 text-sm text-gray-400">
                       {{ extra.attributes.label }}
                     </p>
                     <div
-                      class="tracking-wider text-gray-900 uppercase"
                       v-if="credential?.attributes?.extra"
+                      class="tracking-wider text-gray-900 uppercase"
                     >
                       <span
                         v-if="
@@ -138,7 +138,7 @@
                 Test Authentication</a-button
               >
               <div class="flex space-x-2">
-                <div class="mr-1" v-if="testingNetworkStatus">
+                <div v-if="testingNetworkStatus" class="mr-1">
                   <a-alert
                     :type="testingNetworkStatus"
                     show-icon
@@ -161,7 +161,7 @@
                     </template>
                   </a-alert>
                 </div>
-                <div class="" v-if="testCredStatus">
+                <div v-if="testCredStatus" class="">
                   <a-alert
                     :type="testCredStatus"
                     show-icon
@@ -209,8 +209,8 @@
       </div>
     </div>
     <div class="col-span-3 pl-6 border-l border-dashed">
-      <Lastrun :item="item" :key="item.guid"></Lastrun>
-      <TotalView class="mt-6" :item="item" :key="item.guid"></TotalView>
+      <Lastrun :key="item.guid" :item="item"></Lastrun>
+      <TotalView :key="item.guid" class="mt-6" :item="item"></TotalView>
     </div>
   </div>
   <div class="p-6 mt-4 bg-white border rounded shadow-sm">
@@ -222,25 +222,25 @@
 import dayjs from "dayjs";
 // import { ValidateErrorEntity } from "ant-design-vue/es/form/interface";
 import { defineComponent, PropType, ref } from "vue";
-import { ConnectionType } from "~/types/atlas/connection";
 import QueryView from "@/connection/overview/query.vue";
-import SourceMixin from "~/mixins/source";
-import { BotsType } from "~/types/atlas/bots";
-import { CredentialType } from "~/types/atlas/credential";
 import TotalView from "@/connection/overview/analytics/total.vue";
 import Lastrun from "@/connection/overview/lastrun/index.vue";
 
 import LoadingView from "@/common/loaders/section.vue";
 
 import Credential from "@/setup/credential/index.vue";
+import { CredentialType } from "~/types/atlas/credential";
+import { BotsType } from "~/types/atlas/bots";
+import SourceMixin from "~/mixins/source";
+import { ConnectionType } from "~/types/atlas/connection";
 import useBotModel from "~/composables/connection/useBotModel";
 import updateCredential from "~/composables/credential/updateCredential";
 import { Connection } from "~/api/auth/connection";
 import { Credential as CredentialService } from "~/api/auth/credential";
 
 export default defineComponent({
-  mixins: [SourceMixin],
   components: { Credential, TotalView, QueryView, Lastrun, LoadingView },
+  mixins: [SourceMixin],
   props: {
     item: {
       type: Object as PropType<ConnectionType>,
@@ -270,12 +270,6 @@ export default defineComponent({
       type: Boolean,
     },
   },
-  data() {
-    return {
-      dayjs,
-    };
-  },
-  mounted() {},
   setup(props) {
     const visible = ref(false);
     const defaultCredential = ref({});
@@ -308,9 +302,9 @@ export default defineComponent({
       handleCredentialTest();
     };
 
-    let testingNetworkStatus = ref("");
-    let testingNetworkMessage = ref("");
-    let testingNetworkError = ref("");
+    const testingNetworkStatus = ref("");
+    const testingNetworkMessage = ref("");
+    const testingNetworkError = ref("");
     const handleNetworkTest = async () => {
       try {
         testingNetworkStatus.value = "info";
@@ -337,9 +331,9 @@ export default defineComponent({
       }
     };
 
-    let testCredStatus = ref("");
-    let testCredMessage = ref("");
-    let testCredError = ref("");
+    const testCredStatus = ref("");
+    const testCredMessage = ref("");
+    const testCredError = ref("");
 
     const handleCredentialTest = async () => {
       try {
@@ -381,6 +375,11 @@ export default defineComponent({
       testCredMessage,
     };
   },
+  data() {
+    return {
+      dayjs,
+    };
+  },
   computed: {
     // authAttributesLocal(): any {
     //   let found =
@@ -400,6 +399,7 @@ export default defineComponent({
     //   return attr;
     // },
   },
+  mounted() {},
   methods: {},
 });
 </script>

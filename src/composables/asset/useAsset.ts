@@ -1,7 +1,7 @@
+import { watch, ref } from "vue";
 import { projection } from "~/api/atlas/utils";
 import { BaseAttributes, BasicSearchAttributes } from '~/constant/projection';
 import { Search } from "~/api/atlas/search";
-import { watch, ref } from "vue";
 
 export default function useAsset({
   entityId,

@@ -1,5 +1,6 @@
 
 import { computed, ComputedRef, Ref, ref, watch } from 'vue';
+import axios, { CancelTokenSource } from 'axios';
 import { SearchParameters } from '~/types/atlas/attributes';
 import { SearchBasic } from '~/api/atlas/searchbasic';
 // import axios, { CancelTokenSource } from 'axios';
@@ -7,7 +8,6 @@ import { SearchBasic } from '~/api/atlas/searchbasic';
 // import fetchAssetAggregation from './fetchAssetAggregation';
 
 
-import axios, { CancelTokenSource } from 'axios';
 
 import swrvState from '../utils/swrvState';
 import { Components } from '~/api/atlas/client';
@@ -17,7 +17,7 @@ import { AssetTypeList } from '~/constant/assetType';
 
 export default function fetchAssetAggregation(assetType: string, aggregationAttributes: string[], paramEntityFilters?: Components.Schemas.FilterCriteria, cache?: string, dependentKey?: Ref<any>) {
 
-    let cancelTokenSource: Ref<CancelTokenSource> = ref(axios.CancelToken.source());
+    const cancelTokenSource: Ref<CancelTokenSource> = ref(axios.CancelToken.source());
 
 
     let entityFilters: Components.Schemas.FilterCriteria = {};
@@ -45,10 +45,10 @@ export default function fetchAssetAggregation(assetType: string, aggregationAttr
             ...entityFilters,
             criterion: entityFilters.criterion
         },
-        aggregationAttributes: aggregationAttributes,
+        aggregationAttributes,
     });
 
-    let options = ref({
+    const options = ref({
         cancelToken: cancelTokenSource?.value.token,
         revalidateOnFocus: false,
         dedupingInterval: 1,
@@ -58,9 +58,7 @@ export default function fetchAssetAggregation(assetType: string, aggregationAttr
     const { state, STATES } = swrvState(data, error, isValidating);
 
 
-    const aggregations: ComputedRef<{ [key: string]: any }> = computed(() => {
-        return data?.value?.aggregations;
-    });
+    const aggregations: ComputedRef<{ [key: string]: any }> = computed(() => data?.value?.aggregations);
 
     const refresh = () => {
         if ([STATES.PENDING].includes(state.value) || [STATES.VALIDATING].includes(state.value)) {
@@ -84,7 +82,7 @@ export default function fetchAssetAggregation(assetType: string, aggregationAttr
 
 
     const aggregationArray = (val: string) => {
-        let temp: { id: string, value: any }[] = [];
+        const temp: { id: string, value: any }[] = [];
         if (aggregations?.value) {
             Object.keys(aggregations?.value[val]).forEach((key) => {
                 temp.push({
@@ -119,13 +117,9 @@ export default function fetchAssetAggregation(assetType: string, aggregationAttr
         return false;
     });
 
-    const source = (integratioName: string) => {
-        return SourceList.find((item) => item.id == integratioName);
-    };
+    const source = (integratioName: string) => SourceList.find((item) => item.id == integratioName);
 
-    const assetTypeObject = (type: string) => {
-        return AssetTypeList.find((item) => item.id == type);
-    };
+    const assetTypeObject = (type: string) => AssetTypeList.find((item) => item.id == type);
 
 
     return {

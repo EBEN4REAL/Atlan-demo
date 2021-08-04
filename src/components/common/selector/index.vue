@@ -1,18 +1,18 @@
 <template>
   <a-select
     :show-search="true"
-    :filterOption="true"
+    :filter-option="true"
     :placeholder="placeholder"
-    :allowClear="allowClear"
-    :autoClearSearchValue="true"
+    :allow-clear="allowClear"
+    :auto-clear-search-value="true"
     :autofocus="autofocus"
     :bordered="bordered"
     :disabled="disabled"
-    :maxTagCount="maxTagCount"
+    :max-tag-count="maxTagCount"
     :mode="mode"
-    optionLabelProp="id"
+    option-label-prop="id"
     :loading="loading"
-    :maxTagTextLength="maxTagTextLength"
+    :max-tag-text-length="maxTagTextLength"
     @search="handleSearch"
     @change="handleChange"
   >
@@ -128,6 +128,7 @@ export default defineComponent({
       },
     },
   },
+  emits: ["change"],
   data() {
     return {
       forceClear: false,
@@ -139,13 +140,10 @@ export default defineComponent({
   mounted() {
     if (this.multiple) {
       this.selected = this.default;
-    } else {
-      if (this.default.length > 0) {
+    } else if (this.default.length > 0) {
         this.selected = this.default[0];
       }
-    }
   },
-  emits: ["change"],
   methods: {
     handleSearch(value: any) {
       if (this.listAsync) {

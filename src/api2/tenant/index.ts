@@ -8,13 +8,11 @@ const GetTenant = (
     options?: IConfig & AxiosRequestConfig,
     cacheSuffix?: Ref<string>,
     dependantFetchingKey?: Ref<any>
-) => {
-    return useAPI<any>(GET_TENANT, "GET", {
+) => useAPI<any>(GET_TENANT, "GET", {
         options,
         cacheSuffix,
         dependantFetchingKey
     });
-};
 
 export const Tenant = {
     GetTenant,

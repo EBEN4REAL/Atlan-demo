@@ -1,13 +1,13 @@
 import { ref, onMounted, watch, computed, Ref, ComputedRef } from "vue";
-import { fetcher, getAPIPath, getAxiosClient } from "~/api";
 import useSWRV from "swrv";
+import { fetcher, getAPIPath, getAxiosClient } from "~/api";
 import swrvState from "~/composables/utils/swrvState";
 
 export default function useGroupsMembers(memberListParams: {
   groupId: string;
   params: { limit: number; offset: number; filter: any; sort: string };
 }) {
-  let localMembersList: Ref<any[]> = ref([]);
+  const localMembersList: Ref<any[]> = ref([]);
   const {
     data,
     error,
@@ -36,9 +36,9 @@ export default function useGroupsMembers(memberListParams: {
     }
   });
   const { state, STATES } = swrvState(data, error, isValidating);
-  const memberList: ComputedRef<any> = computed(() => localMembersList || []);
-  let totalMembersCount = computed(() => data?.value?.total_record ?? 0);
-  let filteredMembersCount = computed(() => data?.value?.filter_record ?? 0);
+  const memberList: ComputedRef<any> = computed(() => localMembersList.value || []);
+  const totalMembersCount = computed(() => data?.value?.total_record ?? 0);
+  const filteredMembersCount = computed(() => data?.value?.filter_record ?? 0);
   return {
     memberList,
     totalMembersCount,

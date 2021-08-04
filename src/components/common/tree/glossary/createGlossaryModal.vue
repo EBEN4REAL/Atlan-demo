@@ -5,10 +5,10 @@
     @cancel="handleCloseModal"
     @ok="handleSubmit"
   >
-    <a-input class="m-1" v-model:value="name" placeholder="Name" />
+    <a-input v-model:value="name" class="m-1" placeholder="Name" />
     <a-input
-      class="m-1"
       v-model:value="description"
+      class="m-1"
       placeholder="Description"
     />
     <p v-if="showSuccessMessage">
@@ -61,7 +61,7 @@ export default defineComponent({
       description.value = ""
     };
 
-    let body = ref<Record<string, any>>({});
+    const body = ref<Record<string, any>>({});
 
     watch([name, description], ([newName, newDescription]) => {
       body.value = {

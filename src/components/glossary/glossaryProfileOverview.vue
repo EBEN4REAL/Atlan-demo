@@ -24,24 +24,24 @@
     <Readme
       class="min-w-full"
       placeholder="Add some details here..."
-      :parentAssetId="guid"
+      :parent-asset-id="guid"
     />
   </div>
 </template>
 <script lang="ts">
 import { defineComponent, computed } from "vue";
 
+import Readme from "@/common/readme/index.vue";
 import { Components } from "~/api/atlas/client";
 
-import Readme from "@/common/readme/index.vue";
 
 interface PropsType {
   glossary: Components.Schemas.AtlasGlossary;
 }
 
 export default defineComponent({
-  props: ["glossary"],
   components: { Readme },
+  props: ["glossary"],
   setup(props: PropsType) {
     const shortDescription = computed(() => props.glossary?.shortDescription);
     const termCount = computed(() => props.glossary?.terms?.length ?? 0);

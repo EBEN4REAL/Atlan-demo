@@ -2,9 +2,9 @@
   <a-select
     :value="modelValue"
     :show-search="true"
-    :filterOption="true"
+    :filter-option="true"
     style="width: 100%"
-    :allowClear="true"
+    :allow-clear="true"
     @change="handleChange"
     @search="handleSearch"
   >
@@ -32,13 +32,9 @@ export default defineComponent({
       required: false,
     },
   },
-  data() {
-    return {};
-  },
-  computed: {},
   emits: ["update:modelValue", "change"],
   setup(props, { emit }) {
-    let now = ref(true);
+    const now = ref(true);
     const { list, handleSearch } = fetchGroupList(now);
     const handleChange = (checkedValues: string) => {
       emit("update:modelValue", checkedValues);
@@ -50,6 +46,10 @@ export default defineComponent({
       handleChange,
     };
   },
+  data() {
+    return {};
+  },
+  computed: {},
 });
 </script>
       

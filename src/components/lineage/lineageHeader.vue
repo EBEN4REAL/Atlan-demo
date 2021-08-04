@@ -31,9 +31,9 @@
                     @change="changeDirection($event.target.value)"
                   >
                     <a-radio
-                      class="vertical-radio"
                       v-for="item in lineageDirections"
                       :key="item.id"
+                      class="vertical-radio"
                       :value="item.id"
                     >
                       {{ item.label }}

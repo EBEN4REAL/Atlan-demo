@@ -4,7 +4,7 @@
       <div class="flex flex-row items-center cursor-pointer group">
         <p class="mb-0 text-gray-400">
           Mobile Number
-          <fa icon="fal check" class="ml-1 text-success" v-if="updateSuccess"></fa>
+          <fa v-if="updateSuccess" icon="fal check" class="ml-1 text-success"></fa>
         </p>
         <p
           v-if="!isUpdate && allowUpdate"
@@ -23,8 +23,8 @@
             valid-characters-only
             mode="international"
             validate
+            :input-options="{ showDialCode: true }"
             @input="onInput"
-            :inputOptions="{ showDialCode: true }"
           />
         </div>
         <div class="flex items-center justify-between max-w-full mt-1">
@@ -43,9 +43,9 @@
             <a-popover v-else-if="updateErrorMessage || updateSuccess" placement="bottom">
               <template #content>{{ updateErrorMessage }}</template>
               <fa
+                v-if="updateErrorMessage"
                 icon="fal exclamation-circle"
                 class="cursor-pointer text-error"
-                v-if="updateErrorMessage"
               ></fa>
             </a-popover>
           </div>
@@ -62,8 +62,12 @@ import { VueTelInput } from "vue3-tel-input";
 import "vue3-tel-input/dist/vue3-tel-input.css";
 import { defineComponent, ref, watch } from "vue";
 import { User } from "~/api/auth/user";
+
 export default defineComponent({
   name: "UpdateMobileNumber",
+  components: {
+    VueTelInput,
+  },
   props: {
     selectedUser: {
       type: Object,
@@ -74,17 +78,14 @@ export default defineComponent({
       default: false,
     },
   },
-  components: {
-    VueTelInput,
-  },
   setup(props, context) {
-    let isUpdate = ref(false);
-    let mobileNumberLocal = ref(
+    const isUpdate = ref(false);
+    const mobileNumberLocal = ref(
       props?.selectedUser?.attributes?.mobile_number?.[0] ?? ""
     );
-    let updateErrorMessage = ref("");
-    let updateSuccess = ref(false);
-    let updateLoading = ref(false);
+    const updateErrorMessage = ref("");
+    const updateSuccess = ref(false);
+    const updateLoading = ref(false);
     const onUpdate = () => {
       mobileNumberLocal.value =
         props?.selectedUser?.attributes?.mobile_number?.[0] ?? "";

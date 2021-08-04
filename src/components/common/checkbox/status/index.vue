@@ -7,8 +7,8 @@
   
 <script lang="ts">
 import { defineComponent } from "vue";
-import { List } from "~/constant/status";
 import Checkbox from "@common/checkbox/index.vue";
+import { List } from "~/constant/status";
 
 export default defineComponent({
   name: "StatusCheckbox",
@@ -16,13 +16,13 @@ export default defineComponent({
     Checkbox,
   },
   props: {},
+  emits: ["change"],
   data() {
     return {
       List,
       selected: [],
     };
   },
-  emits: ["change"],
   mounted() {},
   methods: {
     handleChange(value: any) {

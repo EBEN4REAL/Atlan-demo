@@ -42,10 +42,10 @@
                             expand-icon-position="right"
                             :bordered="false"
                             :accordion="true"
-                            :expandIcon="handleExpandIcon"
-                            activeKey="1"
+                            :expand-icon="handleExpandIcon"
+                            active-key="1"
                         >
-                            <a-collapse-panel key="1" :forceRender="true">
+                            <a-collapse-panel key="1" :force-render="true">
                                 <!-- header -->
                                 <template #header>
                                     <div

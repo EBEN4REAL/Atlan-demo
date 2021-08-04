@@ -23,7 +23,7 @@
                         ></ConnectionSelector>
                     </template>
 
-                    <div class="flex py-2 cursor-pointer" v-if="connector">
+                    <div v-if="connector" class="flex py-2 cursor-pointer">
                         <div
                             class="flex items-center text-xs text-gray-900 align-middle"
                         >
@@ -33,11 +33,11 @@
                             />
 
                             <fa
+                                v-if="connectionObject"
                                 icon="fal chevron-right"
                                 class="text-xs text-gray-300"
-                                v-if="connectionObject"
                             ></fa>
-                            <div class="text-xs" v-if="connectionObject">
+                            <div v-if="connectionObject" class="text-xs">
                                 {{
                                     connectionObject.attributes.displayName ||
                                         connectionObject.attributes.name
@@ -45,8 +45,8 @@
                             </div>
 
                             <div
-                                class="text-xs tracking-wide"
                                 v-else-if="connector"
+                                class="text-xs tracking-wide"
                             >
                                 {{
                                     connector?.charAt(0).toUpperCase() +
@@ -59,12 +59,12 @@
                             ></fa>
                         </div>
                         <fa
+                            v-if="connectionObject"
                             icon="fal chevron-right"
                             class="text-xs text-gray-300"
-                            v-if="connectionObject"
                         ></fa>
                     </div>
-                    <div class="flex py-2 cursor-pointer" v-else>
+                    <div v-else class="flex py-2 cursor-pointer">
                         <p
                             class="flex items-center mb-0 text-xs tracking-wide text-gray-900 align-middle hover:bg-gray-50"
                         >
@@ -108,19 +108,15 @@
                 console.log(connectorPayload, 'payload');
             });
 
-            let connector = ref('' || connectorPayload.connector);
-            let connection = ref('' || connectorPayload.connection);
+            const connector = ref('' || connectorPayload.connector);
+            const connection = ref('' || connectorPayload.connection);
 
             const store = useConnectionsStore();
-            const getImage = (id: string) => {
-                return store.getImage(id);
-            };
+            const getImage = (id: string) => store.getImage(id);
 
-            const connectionObject = computed(() => {
-                return store.getList.find(
+            const connectionObject = computed(() => store.getList.find(
                     (item) => item.attributes.qualifiedName === connection.value
-                );
-            });
+                ));
 
             const isDisabled = computed(() => {
                 if (connector.value?.length > 0) {
@@ -132,15 +128,13 @@
             const handleConnectorChange = (value) => {
                 if (!value) {
                     connection.value = '';
-                } else {
-                    if (connector.value && connection.value) {
+                } else if (connector.value && connection.value) {
                         if (
                             connection?.value.split('/')[0] !== connector.value
                         ) {
                             connection.value = '';
                         }
                     }
-                }
 
                 emit('change', {
                     connector: connector.value,

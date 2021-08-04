@@ -1,10 +1,10 @@
 <template>
   <a-popover
-    placement="left"
     v-model:visible="isCompleted"
-    overlayClassName="inlinepopover"
-    @visibleChange="handleVisibleChange"
+    placement="left"
+    overlay-class-name="inlinepopover"
     trigger="click"
+    @visibleChange="handleVisibleChange"
   >
     <template #content>
       <a-textarea
@@ -21,8 +21,8 @@
         <a-button
           type="primary"
           size="small"
-          @click="handleUpdate"
           :loading="isLoading"
+          @click="handleUpdate"
           >Update</a-button
         >
       </div>
@@ -31,18 +31,18 @@
       class="px-2 py-1 transition duration-500 ease-in-out rounded-lg  hover:bg-gray-50 hover:border"
     >
       <p class="mb-0 text-sm tracking-wide text-gray-400">Description</p>
-      <p class="mb-0 text-gray-900" v-if="description">
+      <p v-if="description" class="mb-0 text-gray-900">
         {{ description }}
       </p>
-      <p class="mb-0 text-gray-500" v-else>No description available</p>
+      <p v-else class="mb-0 text-gray-500">No description available</p>
     </div>
   </a-popover>
 </template>
               
 <script lang="ts">
 import { defineComponent, nextTick, ref, watch } from "vue";
-import updateDescription from "~/composables/asset/updateDescription";
 import { useMagicKeys } from "@vueuse/core";
+import updateDescription from "~/composables/asset/updateDescription";
 
 export default defineComponent({
   props: {
@@ -80,7 +80,7 @@ export default defineComponent({
     };
 
     const keys = useMagicKeys();
-    const esc = keys["Escape"];
+    const esc = keys.Escape;
 
     watch(esc, (v) => {
       if (v) {

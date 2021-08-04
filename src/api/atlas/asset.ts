@@ -1,5 +1,6 @@
 import { useAPI } from "~/api/useAPI";
 import { getBasicQuery } from "~/api/atlas/utils";
+
 const basicSearch = ({
   cache,
   options = {

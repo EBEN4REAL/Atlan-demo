@@ -4,16 +4,14 @@
 import * as monaco from 'monaco-editor';
 
 const columSuggestion = (list:any) => {
-    let listFormat = JSON.parse(JSON.stringify(list));
-    let columnList = listFormat.map((data) => {
-     return {
+    const listFormat = JSON.parse(JSON.stringify(list));
+    const columnList = listFormat.map((data) => ({
       label: data.displayText,
       detail: data.attributes.dataType,
       kind: monaco.languages.CompletionItemKind.Field,
       documentation: "Some description or Classification",
-      insertText: "'" + data.attributes.name + "'"
-     }
-    });
+      insertText: `'${  data.attributes.name  }'`
+     }));
     return  columnList;
 }
 

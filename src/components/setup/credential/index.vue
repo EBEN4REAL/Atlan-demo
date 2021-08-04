@@ -1,5 +1,5 @@
 <template>
-  <a-form :model="credential" layout="vertical" ref="form">
+  <a-form ref="form" :model="credential" layout="vertical">
     <a-form-item
       label="Connection name"
       name="displayName"
@@ -25,16 +25,16 @@
           </template>
           <DynamicInput
             v-model="credential.host"
-            dataType="string"
+            data-type="string"
             :placeholder="hostLocal?.placeholder"
-            :defaultValue="hostLocal?.default"
+            :default-value="hostLocal?.default"
             :prefix="hostLocal?.prefix"
             :suffix="hostLocal?.suffix"
           ></DynamicInput>
         </a-form-item>
       </div>
 
-      <div class="col-span-3" v-show="portLocal?.isVisible">
+      <div v-show="portLocal?.isVisible" class="col-span-3">
         <a-form-item name="port" :has-feedback="true">
           <template #label>
             <span>{{ portLocal?.label }}</span>
@@ -48,9 +48,9 @@
           </template>
           <DynamicInput
             v-model="credential.port"
-            dataType="number"
+            data-type="number"
             :placeholder="portLocal?.placeholder"
-            :defaultValue="portLocal?.default"
+            :default-value="portLocal?.default"
             :prefix="portLocal?.prefix"
             :suffix="portLocal?.suffix"
           ></DynamicInput>
@@ -59,13 +59,13 @@
     </div>
 
     <a-form-item
+      v-if="authTypes.length > 1"
       label="Authentication Mode"
       name="name"
-      v-if="authTypes.length > 1"
     >
       <RadioButton
-        :list="authTypes"
         v-model="credential.authType"
+        :list="authTypes"
         @change="handleAuthTypeChange"
       ></RadioButton>
     </a-form-item>
@@ -89,13 +89,13 @@
               ></a-tooltip>
             </template>
             <DynamicInput
-              name="username"
               v-model="credential[attr.id]"
-              :dataType="attr.type"
+              name="username"
+              :data-type="attr.type"
               :placeholder="attr.placeholder"
               :prefix="attr.prefix"
               :suffix="attr.suffix"
-              :defaultValue="attr.default"
+              :default-value="attr.default"
             ></DynamicInput>
           </a-form-item>
         </div>
@@ -120,12 +120,12 @@
           ></a-tooltip>
         </template>
         <DynamicInput
-          :name="databaseLocal?.id"
           v-model="credential.database"
-          :dataType="databaseLocal?.type"
+          :name="databaseLocal?.id"
+          :data-type="databaseLocal?.type"
           :placeholder="databaseLocal?.placeholder"
           :prefix="databaseLocal?.prefix"
-          :defaultValue="databaseLocal?.default"
+          :default-value="databaseLocal?.default"
         ></DynamicInput>
       </a-form-item>
     </div>
@@ -153,13 +153,13 @@
 
             <DynamicInput
               v-model="credential.extra[attr.id]"
-              :dataType="attr?.type"
+              :data-type="attr?.type"
               :placeholder="attr?.placeholder"
               :prefix="attr?.prefix"
               :suffix="attr?.suffix"
-              :enumList="enumAttributes(attr)"
-              :enumAllowCustom="attr?.allowCustom"
-              :defaultValue="attr?.default"
+              :enum-list="enumAttributes(attr)"
+              :enum-allow-custom="attr?.allowCustom"
+              :default-value="attr?.default"
             ></DynamicInput>
           </a-form-item>
         </div>
@@ -177,10 +177,10 @@
         >Test Authentication</a-button
       >
       <div
-        class=""
         v-if="
           (isNetworkTestSuccess || isNetworkTestError) && !isNetworkTestLoading
         "
+        class=""
       >
         <a-alert :type="networkAlertType" show-icon class="leading-none">
           <template #message>
@@ -202,12 +202,12 @@
       </div>
 
       <div
-        class=""
         v-if="
           (!isEdit || credential.login || credential.password) &&
           (isCredTestSuccess || isCredTestError) &&
           !isCredTestLoading
         "
+        class=""
       >
         <a-alert :type="credAlertType" show-icon class="leading-none">
           <template #message>
@@ -227,7 +227,6 @@
       </div>
 
       <div
-        class=""
         v-if="
           isEdit &&
           !credential.login &&
@@ -235,6 +234,7 @@
           (isCredIdTestSuccess || isCredIdTestError) &&
           !isCredIdTestLoading
         "
+        class=""
       >
         <a-alert :type="credIdAlertType" show-icon class="leading-none">
           <template #message>
@@ -254,8 +254,8 @@
       </div>
     </div>
     <div
-      class="p-2 mt-2 text-sm text-gray-500 bg-yellow-200 rounded"
       v-if="isEdit"
+      class="p-2 mt-2 text-sm text-gray-500 bg-yellow-200 rounded"
     >
       Sensitive credentials are not displayed for security reasons.
     </div>
@@ -305,17 +305,6 @@ export default defineComponent({
         return {};
       },
     },
-  },
-  data() {
-    return {
-      nameRules: [
-        {
-          required: true,
-          message: "Name of the connection is mandatory",
-          trigger: "blur",
-        },
-      ],
-    };
   },
   emits: ["verified"],
   setup(props, { emit }) {
@@ -451,15 +440,13 @@ export default defineComponent({
               emit("verified", null);
             }
           }
-        } else {
-          if (!isNetworkTestLoading.value && !isCredTestLoading.value) {
+        } else if (!isNetworkTestLoading.value && !isCredTestLoading.value) {
             if (isCredTestSuccess.value && isNetworkTestSuccess.value) {
               emit("verified", credential);
             } else if (isNetworkTestError.value || isCredTestError.value) {
               emit("verified", null);
             }
           }
-        }
       }
     );
 
@@ -470,7 +457,7 @@ export default defineComponent({
         return true;
       } catch (err) {
         console.log("error", err);
-        return;
+        
       }
     };
 
@@ -514,6 +501,17 @@ export default defineComponent({
       credIdAlertMessage,
       credIdErrorMessage,
       replaceCredID,
+    };
+  },
+  data() {
+    return {
+      nameRules: [
+        {
+          required: true,
+          message: "Name of the connection is mandatory",
+          trigger: "blur",
+        },
+      ],
     };
   },
   methods: {},

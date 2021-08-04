@@ -14,33 +14,27 @@ export default function useConnectionTest(dependentKey?: Ref<any>, initialBody?:
         revalidateOnFocus: false,
         revalidateDebounce: 0,
     };
-    let body = ref({
+    const body = ref({
         ...initialBody
     });
 
 
-    let cancelTokenSource: Ref<CancelTokenSource> = ref(axios.CancelToken.source());
+    const cancelTokenSource: Ref<CancelTokenSource> = ref(axios.CancelToken.source());
     const { data,
         mutate, error, state, STATES, isValidating } = Connection.TestNetwork(body, asyncOptions, `${cacheSuffx}`, dependentKey);
 
 
-    const isLoading = computed(() => {
-        return (([STATES.PENDING].includes(state.value) || [STATES.VALIDATING].includes(state.value)) && dependentKey?.value)
-            || isValidating.value && dependentKey?.value;
-    });
+    const isLoading = computed(() => (([STATES.PENDING].includes(state.value) || [STATES.VALIDATING].includes(state.value)) && dependentKey?.value)
+            || isValidating.value && dependentKey?.value);
 
-    const isSuccess = computed(() => {
-        return ([STATES.SUCCESS].includes(state.value));
-    });
+    const isSuccess = computed(() => ([STATES.SUCCESS].includes(state.value)));
 
-    const isError = computed(() => {
-        return [STATES.ERROR].includes(state.value) || [STATES.STALE_IF_ERROR].includes(state.value);
-    });
+    const isError = computed(() => [STATES.ERROR].includes(state.value) || [STATES.STALE_IF_ERROR].includes(state.value));
 
     const alertType = computed(() => {
         if (isSuccess.value) {
             return "success"
-        } else if (isError.value) {
+        } if (isError.value) {
             return "error"
         }
         return "info";
@@ -50,7 +44,7 @@ export default function useConnectionTest(dependentKey?: Ref<any>, initialBody?:
     const alertMessage = computed(() => {
         if (isSuccess.value) {
             return "Connection successful"
-        } else if (isError.value) {
+        } if (isError.value) {
             return "Connection failed"
         }
         return "Connecting...";

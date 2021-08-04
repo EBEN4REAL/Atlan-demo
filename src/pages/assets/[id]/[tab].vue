@@ -1,6 +1,7 @@
 <template>
     <LoadingView v-if="loading" />
     <ErrorView v-else-if="error" :error="error" />
+
     <div v-else class="w-full bg-gray-100">
         <div class="h-24 p-4 bg-white">
             <AssetHeader :asset="response?.entities[0]" />

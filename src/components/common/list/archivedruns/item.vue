@@ -4,21 +4,21 @@
       <div class="flex items-center align-middle">
         <a-tooltip :title="phase" placement="left">
           <fa
+            v-if="phase == 'Succeeded'"
             icon="fas check-circle"
             class="text-xl text-green-500"
-            v-if="phase == 'Succeeded'"
           ></fa>
           <fa
+            v-else-if="phase == 'Failed' || phase === 'Error'"
             icon="fas exclamation-triangle"
             class="text-xl text-red-500"
-            v-else-if="phase == 'Failed' || phase === 'Error'"
           ></fa>
           <a-spin v-else-if="phase == 'Running'"></a-spin>
 
           <fa
+            v-else
             icon="fas exclamation-circle"
             class="text-xl text-yellow-500"
-            v-else
           ></fa>
         </a-tooltip>
       </div>
@@ -41,15 +41,15 @@
     </td>
     <td class="text-gray-500" style="min-width: 50px">
       <a-tooltip title="Scheduled" placement="left">
-        <fa icon="fal calendar-alt" v-if="isCron"></fa>
+        <fa v-if="isCron" icon="fal calendar-alt"></fa>
       </a-tooltip>
     </td>
     <td class="text-xs text-gray-500" style="min-width: 140px">
       <div class="flex flex-col space-y-1">
         <a-tooltip
+          v-if="finishedAt(true)"
           placement="left"
           :title="finishedAt(false)"
-          v-if="finishedAt(true)"
         >
           <fa icon="fal hourglass-end" class="mr-1 pushtop"></fa
           >{{ finishedAt(true) }} ago
@@ -91,10 +91,11 @@
 <script lang="ts">
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
-dayjs.extend(relativeTime);
 import { defineComponent, computed } from "vue";
 
 import { useConnectionsStore } from "~/store/connections";
+
+dayjs.extend(relativeTime);
 
 export default defineComponent({
   components: {},
@@ -108,9 +109,7 @@ export default defineComponent({
     },
   },
   setup(props) {
-    const phase = computed(() => {
-      return props.item?.phase;
-    });
+    const phase = computed(() => props.item?.phase);
 
     const titleCase = (text: string, delimiter: string) => {
       if (text) {
@@ -125,16 +124,12 @@ export default defineComponent({
       return text;
     };
 
-    const category = computed(() => {
-      return titleCase(props.item?.labels["category"], " ") || props.item.name;
-    });
+    const category = computed(() => titleCase(props.item?.labels.category, " ") || props.item.name);
 
-    const creator = computed(() => {
-      return (
+    const creator = computed(() => (
         props.item?.labels["created-by"] ||
         props.item?.labels["workflows.argoproj.io/creator"]
-      );
-    });
+      ));
 
     const startedAt = (relative: boolean) => {
       if (props.item.started_at) {
@@ -167,7 +162,7 @@ export default defineComponent({
 
     const duration = computed(() => {
       if (props.item?.started_at && props.item?.finished_at) {
-        let sec = dayjs(props?.item?.finished_at).diff(
+        const sec = dayjs(props?.item?.finished_at).diff(
           props.item?.started_at,
           "second"
         );

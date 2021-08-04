@@ -18,7 +18,7 @@ import {
 } from "@fortawesome/fontawesome-svg-core";
 
 export default defineComponent({
-  name: "icon",
+  name: "Icon",
   props: {
     icon: {
       type: String,

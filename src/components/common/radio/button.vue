@@ -24,8 +24,8 @@ export default defineComponent({
       },
     },
   },
-  computed: {},
   emits: ["update:modelValue", "change"],
+  computed: {},
   methods: {
     handleChange(e: any) {
       let val = e;

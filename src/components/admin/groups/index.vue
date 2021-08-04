@@ -3,10 +3,10 @@
     <div class="flex justify-between mb-4 gap-x-5">
       <div class="flex w-1/4">
         <a-input-search
-          placeholder="Search Groups"
-          :allowClear="true"
-          class="mr-1"
           v-model:value="searchText"
+          placeholder="Search Groups"
+          :allow-clear="true"
+          class="mr-1"
           @change="onSearch"
         ></a-input-search>
       </div>
@@ -15,8 +15,8 @@
       </router-link>
     </div>
     <div
-      class="flex flex-col items-center h-full align-middle bg-white"
       v-if="[STATES.ERROR, STATES.STALE_IF_ERROR].includes(state)"
+      class="flex flex-col items-center h-full align-middle bg-white"
     >
       <ErrorView>
         <div class="mt-3">
@@ -36,18 +36,18 @@
       </ErrorView>
     </div>
     <a-table
-      :scroll="{ y: 'calc(100vh - 20rem)' }"
-      id="groupList"
-      :tableLayout="'fixed'"
       v-else-if="groupList && groupList.length"
-      :dataSource="groupList"
+      id="groupList"
+      :scroll="{ y: 'calc(100vh - 20rem)' }"
+      :table-layout="'fixed'"
+      :data-source="groupList"
       :columns="columns"
       :row-key="(group) => group.id"
       :pagination="pagination"
-      @change="handleTableChange"
       :loading="
         [STATES.PENDING].includes(state) || [STATES.VALIDATING].includes(state)
       "
+      @change="handleTableChange"
     >
       <template #name="{ text: group }">
         <div
@@ -60,8 +60,8 @@
           <div class="flex capitalize truncate cursor-pointer text-primary">
             <div class="truncate max-w-3/4">{{ group.name }}</div>
             <div
-              class="px-2 py-1 text-xs font-bold bg-blue-100 rounded-full  text-gray"
               v-if="group.isDefault === 'true'"
+              class="px-2 py-1 text-xs font-bold bg-blue-100 rounded-full  text-gray"
             >
               Default
             </div>
@@ -79,8 +79,8 @@
               <a-menu>
                 <a-menu-item
                   key="0"
-                  @click="handleAddMembers(group)"
                   class="flex"
+                  @click="handleAddMembers(group)"
                 >
                   <div class="flex">
                     <fa icon="fal plus" class="mr-2"></fa>Add Members
@@ -96,8 +96,8 @@
                       />
                     </div>
                     <a-checkbox
-                      @change="handleToggleDefault(group)"
                       :checked="group.isDefault === 'true'"
+                      @change="handleToggleDefault(group)"
                       >Mark as default</a-checkbox
                     >
                   </div>
@@ -124,14 +124,15 @@
 </template>
 <script lang="ts">
 import { ref, reactive, defineComponent, computed, watch } from "vue";
-import useGroups from "~/composables/group/useGroups";
 import ErrorView from "@common/error/index.vue";
-import GroupPreviewDrawer from "./groupPreview/groupPreviewDrawer.vue";
-import { Group } from "~/api/auth/group";
 import { message } from "ant-design-vue";
 import { useDebounceFn } from "@vueuse/core";
-import { useGroupPreview } from "~/composables/drawer/showGroupPreview";
 import { useRouter } from "vue-router";
+import useGroups from "~/composables/group/useGroups";
+import GroupPreviewDrawer from "./groupPreview/groupPreviewDrawer.vue";
+import { Group } from "~/api/auth/group";
+import { useGroupPreview } from "~/composables/drawer/showGroupPreview";
+
 export default defineComponent({
   components: {
     ErrorView,
@@ -145,22 +146,20 @@ export default defineComponent({
     const deleteGroupLoading = ref(false);
     const showActionsDropdown = ref(false);
 
-    let selectedGroupId = ref("");
+    const selectedGroupId = ref("");
     const groupListAPIParams = reactive({
       limit: 15,
       offset: 0,
       filter: {},
       sort: "-created_at",
     });
-    const pagination = computed(() => {
-      return {
+    const pagination = computed(() => ({
         total: Object.keys(groupListAPIParams.filter).length
           ? filteredGroupsCount.value
           : totalGroupsCount.value,
         pageSize: groupListAPIParams.limit,
         current: groupListAPIParams.offset / groupListAPIParams.limit + 1,
-      };
-    });
+      }));
     const {
       groupList,
       totalGroupsCount,
@@ -169,7 +168,7 @@ export default defineComponent({
       state,
       STATES,
     } = useGroups(groupListAPIParams);
-    //Logic for search input
+    // Logic for search input
     const searchText = ref<string>("");
     const onSearch = useDebounceFn(() => {
       groupListAPIParams.filter = searchText.value
@@ -189,7 +188,7 @@ export default defineComponent({
       getGroupList();
     }, 600);
     const handleTableChange = (pagination: any, filters: any, sorter: any) => {
-      //add sort
+      // add sort
       if (Object.keys(sorter).length) {
         let sortValue = "-created_at";
         if (sorter.order && sorter.column && sorter.column.sortKey)
@@ -199,7 +198,7 @@ export default defineComponent({
         groupListAPIParams.sort = sortValue;
         groupListAPIParams.offset = 0;
       }
-      //modify offset
+      // modify offset
       const offset = (pagination.current - 1) * groupListAPIParams.limit;
       groupListAPIParams.offset = offset;
       // fetch groups

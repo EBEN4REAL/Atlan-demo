@@ -2,16 +2,16 @@
     <a-dropdown>
         <fa
             icon="fal ellipsis-v"
-            @click.prevent
             class="text-3xl ant-dropdown-link text-grey-600"
+            @click.prevent
         />
 
         <template #overlay>
             <a-menu>
                 <a-menu-item
                     v-for="(option, index) in options"
-                    class="flex items-center"
                     :key="index"
+                    class="flex items-center"
                 >
                     <div
                         class="flex justify-between item-center"
@@ -138,7 +138,7 @@
             const isHiddenEventToBeHandled = computed(
                 () => props.isHiddenEventToBeHandled
             )
-            const options = props.options
+            const {options} = props
 
             const handleMenuItemClick = (option: any) => {
                 option.handleClick()
@@ -152,12 +152,12 @@
                 open.value = !open.value
             }
             const handleDropdownShown = () => {
-                if (isShownEventToBeHandled) {
+                if (isShownEventToBeHandled.value) {
                     context.emit('handleDropdownShown')
                 }
             }
             const handleDropdownHidden = () => {
-                if (isHiddenEventToBeHandled) {
+                if (isHiddenEventToBeHandled.value) {
                     context.emit('handleDropdownHidden')
                 }
             }

@@ -26,8 +26,8 @@
                 </svg>
             </div>
             <p
-                class="px-3 mt-3 mb-0 rounded"
                 v-if="loadingText"
+                class="px-3 mt-3 mb-0 rounded"
                 :class="[textLarge ? 'font-size-h3' : '', loadingTextClass]"
                 v-html="loadingText"
             ></p>

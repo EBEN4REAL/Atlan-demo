@@ -1,6 +1,7 @@
+import { watch, computed } from "vue";
 import swrvState from "~/composables/utils/swrvState";
 import { useAPI } from "~/api/useAPI";
-import { watch, computed } from "vue";
+
 let memberCountList = [];
 
 const getMemberCount = (id) => {

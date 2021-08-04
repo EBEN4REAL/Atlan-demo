@@ -13,7 +13,7 @@ export default function useProject() {
       key: any;
     }
   ]> = ref([]);
-  let dataList = ref([]);
+  const dataList = ref([]);
   const isQueryRunning = ref("");
 
   const listData = [
@@ -75,11 +75,11 @@ export default function useProject() {
   const queryRun = () => {
     isQueryRunning.value = "loading";
     dataList.value = [];
-    let query = btoa('select * from "WEB_SALES" limit 100');
-    let url =
-      `https://alpha.atlan.com/heka/api/query/tenants/default/sql/stream?sql=` +
-      query +
-      "&defaultSchema=SNOWFLAKE_SAMPLE_DATA.TPCDS_SF10TCL&dataSourceName=default%2Fsnowflake%2Fp1sj4mk7g&length=16";
+    const query = btoa('select * from "WEB_SALES" limit 100');
+    const url =
+      `https://alpha.atlan.com/heka/api/query/tenants/default/sql/stream?sql=${ 
+      query 
+      }&defaultSchema=SNOWFLAKE_SAMPLE_DATA.TPCDS_SF10TCL&dataSourceName=default%2Fsnowflake%2Fp1sj4mk7g&length=16`;
 
     const { data: sse, error, isLoading } = useSSE({
       url,

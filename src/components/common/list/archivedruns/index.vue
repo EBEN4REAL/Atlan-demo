@@ -5,15 +5,15 @@
     >
       <div class="flex space-x-3">
         <Runstatus
-          style="min-width: 100px"
           v-model:value="phase"
+          style="min-width: 100px"
           @change="handlePhaseChange"
         ></Runstatus>
         <!-- <WorkflowTypeSelector style="min-width: 150px"></WorkflowTypeSelector> -->
         <ConnectionSelector
-          style="min-width: 150px"
           v-model:value="connectionQf"
-          :showAll="true"
+          style="min-width: 150px"
+          :show-all="true"
           @change="handleConnectionChange"
         ></ConnectionSelector>
       </div>
@@ -21,24 +21,24 @@
     </div>
     <div class="w-full overflow-auto min-h-10">
       <div
+        v-if="[STATES.ERROR, STATES.STALE_IF_ERROR].includes(state)"
         class="flex items-center h-full align-middle bg-white"
         style="min-height: 200px"
-        v-if="[STATES.ERROR, STATES.STALE_IF_ERROR].includes(state)"
       >
         <ErrorView></ErrorView>
       </div>
       <div
-        class="flex items-center h-full align-middle bg-white"
-        style="min-height: 200px"
         v-else-if="
           [STATES.PENDING].includes(state) ||
           [STATES.VALIDATING].includes(state)
         "
+        class="flex items-center h-full align-middle bg-white"
+        style="min-height: 200px"
       >
         <LoadingView></LoadingView>
       </div>
 
-      <table class="table w-full mx-auto overflow-x-hidden table-report" v-else>
+      <table v-else class="table w-full mx-auto overflow-x-hidden table-report">
         <tbody class="rounded-md">
           <template v-for="item in data.records" :key="item.uid">
             <ItemView :item="item"></ItemView>
@@ -52,14 +52,14 @@
 <script lang="ts">
 import { defineComponent, ref } from "vue";
 
-import ItemView from "./item.vue";
-import useRunList from "~/composables/bots/useRunList";
 
 import LoadingView from "@common/loaders/section.vue";
 import ErrorView from "@common/error/index.vue";
 
 import WorkflowTypeSelector from "@common/selector/workflowtype/index.vue";
 import ConnectionSelector from "@common/selector/connections/index.vue";
+import useRunList from "~/composables/bots/useRunList";
+import ItemView from "./item.vue";
 import Runstatus from "../../selector/runstatus/index.vue";
 
 export default defineComponent({
@@ -76,18 +76,12 @@ export default defineComponent({
       type: Boolean,
     },
   },
-  data() {
-    return {
-      list: [],
-      msgServer: null,
-    };
-  },
   setup(props) {
-    let now = ref(true);
-    let params = ref({});
+    const now = ref(true);
+    const params = ref({});
 
-    let connectionQf = ref();
-    let phase = ref();
+    const connectionQf = ref();
+    const phase = ref();
 
     const urlparam = new URLSearchParams();
     urlparam.append("limit", "10");
@@ -152,6 +146,12 @@ export default defineComponent({
       handlePhaseChange,
       connectionQf,
       handleConnectionChange,
+    };
+  },
+  data() {
+    return {
+      list: [],
+      msgServer: null,
     };
   },
   mounted() {},

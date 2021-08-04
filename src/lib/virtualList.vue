@@ -5,6 +5,7 @@
             class="flex flex-col virtual-list-scroll"
             :style="wrapperStyle"
         >
+            <!-- This element is only rendered when the virtual list does not start from 0th element -->
             <div
                 v-if="listIndices[0]"
                 ref="loadTop"
@@ -20,6 +21,7 @@
             >
                 <slot :item="item" :index="idx + listIndices[0]"></slot>
             </div>
+            <!-- This element is only rendered when the virtual list does not end at last element -->
             <div
                 v-if="listIndices[1] != data.length"
                 ref="loadBottom"
@@ -74,13 +76,31 @@
             const { data } = toRefs(props)
             const root = ref<Element | null>(null)
             const wrapper = ref<Element | null>(null)
+
+            /**
+             * Top/Bottom most element of the virtual list that
+             * is watched by the intersection observer. We hide
+             * them with v-if when not needed and check for
+             * intersection and recalculate/rerender the virtual list.
+             */
             const loadBottom = ref<Element | null>(null)
             const loadTop = ref<Element | null>(null)
 
+            /** Arbitrary size of a single batch */
             const GROUP_SIZE = 20
 
+            /**
+             * Array containing the height from which the
+             * i-th elemnent start inside the scroll container
+             */
             const listSize = [0]
+
+            /**
+             * It containes the highest [1] and lowest [0] index of the current visible buffer
+             */
             const listIndices = ref([0, 0])
+
+            // We dynamically change these css property to give the illusion of scroll
             const wrapperStyle = reactive({
                 height: 'auto',
             })
@@ -88,35 +108,18 @@
                 height: 'auto',
             })
 
+            /** Slice of the data that is actually rendered on the screen */
             const pool = computed(() =>
                 data.value.slice(listIndices.value[0], listIndices.value[1])
             )
 
-            watch(
-                listIndices,
-                () => {
-                    const index = listIndices.value
-                    // Set it to 1 if ref="loadTop" element is visible
-                    const offset = index[0] ? 1 : 0
+            let iObserver: IntersectionObserver
 
-                    // Keep recording the height of the elements
-                    // TODO: Account for the spacer elements
-                    while (
-                        listSize.length < index[1] + offset &&
-                        wrapper.value?.childElementCount
-                    ) {
-                        const nthChild = listSize.length - index[0] + offset
-                        const size =
-                            listSize[listSize.length - 1] +
-                            wrapper.value?.children[nthChild].clientHeight
-                        listSize.push(size)
-                    }
-                },
-                { flush: 'post' }
-            )
-
+            /**
+             * Does a binary search on `arr` and return the highest value less than `height`.
+             */
             function calculateIndexFromHeight(arr: number[], height: number) {
-                // DO a binary search on the list
+                // Do a binary search on the list
                 let low = 0
                 let high = Array.isArray(arr)
                     ? arr.length - 1
@@ -139,6 +142,11 @@
                 return mid
             }
 
+            /**
+             * Does all the calculations and sets the appropriate indices
+             * for the visible buffer and also sets the proper height
+             * of the containers.
+             */
             function handleIntersection() {
                 const range: number[] = []
                 range[0] = calculateIndexFromHeight(
@@ -167,6 +175,12 @@
                 entries: IntersectionObserverEntry[],
                 observer: IntersectionObserver
             ) {
+                /**
+                 * Checks if any of the visible observed elements are
+                 * intersecting, if yes run the calculations. Something
+                 * to note here is that either or any of `loadTop` and
+                 * `loadBottom` might not be visible, so we do this check.
+                 */
                 const intersecting = entries.reduce(
                     (acc, elem) => acc || elem.isIntersecting,
                     false
@@ -177,15 +191,46 @@
                     nextTick(() => observeThreshold(observer))
                 }
             }
-            onMounted(async () => {
+
+            /**
+             * Initializes/resets the internal state of the component
+             */
+            async function init() {
+                listSize.splice(1)
                 listIndices.value = [0, Math.min(GROUP_SIZE, data.value.length)]
-                const observer = new IntersectionObserver(observationCallback, {
+                topStyle.height = 'auto'
+                wrapperStyle.height = 'auto'
+                iObserver = new IntersectionObserver(observationCallback, {
                     root: root.value,
                     threshold: [0],
                 })
                 await nextTick()
-                observeThreshold(observer)
-            })
+                observeThreshold(iObserver)
+            }
+
+            onMounted(init)
+
+            watch(
+                listIndices,
+                () => {
+                    const index = listIndices.value
+                    // Set it to 1 if ref="loadTop" element is visible
+                    const offset = index[0] ? 1 : 0
+
+                    // Keep recording the height of the elements
+                    // TODO: Account for the spacer elements
+                    while (listSize.length < index[1] + offset) {
+                        const nthChild = listSize.length - (index[0] + offset)
+                        const size =
+                            listSize[listSize.length - 1] +
+                            wrapper.value?.children[nthChild].clientHeight
+                        listSize.push(size)
+                    }
+                },
+                { flush: 'post' }
+            )
+
+            watch(data, init)
 
             return {
                 pool,

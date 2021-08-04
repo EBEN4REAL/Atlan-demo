@@ -7,7 +7,9 @@
 import { computed, defineComponent } from "vue";
 import { useRoute } from "vue-router";
 import UpdateSSOConfig from "~/components/admin/sso/update/updateSSOConfig.vue";
+
 export default defineComponent({
+  components: { UpdateSSOConfig },
   setup() {
     const route = useRoute();
     const alias = computed(() => route?.params?.alias || "");
@@ -15,7 +17,6 @@ export default defineComponent({
       alias,
     };
   },
-  components: { UpdateSSOConfig },
 });
 </script>
   <route lang="yaml">

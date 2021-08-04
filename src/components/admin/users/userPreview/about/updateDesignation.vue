@@ -1,23 +1,24 @@
 <template>
   <div>
     <p class="mb-2 leading-none text-gray-400">Designation</p>
-    <div class="flex" v-if="designation && designation.length">
+    <div v-if="designation && designation.length" class="flex">
       <Tags
         :tags="designation"
+        :updating-tags="updatingDesignation"
+        :allow-update="allowUpdate"
         @updateTags="handleUpdateDesignation"
-        :updatingTags="updatingDesignation"
-        :allowUpdate="allowUpdate"
       ></Tags>
-      <a-spin size="small" class="ml-2" v-if="updatingDesignation"></a-spin>
+      <a-spin v-if="updatingDesignation" size="small" class="ml-2"></a-spin>
     </div>
   </div>
 </template>
 
 <script lang="ts">
 import { computed, ref, watch } from "vue";
-import { User } from "~/api/auth/user";
 import Tags from "@common/badge/tags/index.vue";
 import { message } from "ant-design-vue";
+import { User } from "~/api/auth/user";
+
 export default {
   name: "UpdateDesignation",
   components: { Tags },
@@ -32,7 +33,7 @@ export default {
     },
   },
   setup(props, context) {
-    let updatingDesignation = ref(false);
+    const updatingDesignation = ref(false);
     const userObj = ref(props.user);
     // userObj.value = props.user;
     const designation = computed(

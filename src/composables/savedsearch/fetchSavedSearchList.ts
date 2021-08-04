@@ -1,9 +1,9 @@
 import { computed, ComputedRef, Ref, ref, watch } from 'vue';
+import axios, { CancelTokenSource } from 'axios';
 import { SearchParameters } from '~/types/atlas/attributes';
 
 import { SearchBasic } from '~/api/atlas/searchbasic';
 import { BaseAttributes, BotsAttributes, SavedSearchAttribute } from '~/constant/projection';
-import axios, { CancelTokenSource } from 'axios';
 
 import swrvState from '../utils/swrvState';
 import { Components } from '~/api/atlas/client';
@@ -13,7 +13,7 @@ import { BotsType } from '~/types/atlas/bots';
 
 export default function fetchBotsList(cache?: string, dependentKey?: Ref<any>, paramEntityFilters?: Components.Schemas.FilterCriteria) {
 
-    let cancelTokenSource: Ref<CancelTokenSource> = ref(axios.CancelToken.source());
+    const cancelTokenSource: Ref<CancelTokenSource> = ref(axios.CancelToken.source());
 
     let entityFilters: Components.Schemas.FilterCriteria = {};
 
@@ -44,7 +44,7 @@ export default function fetchBotsList(cache?: string, dependentKey?: Ref<any>, p
         },
         aggregationAttributes: [],
     });
-    let options = ref({
+    const options = ref({
         cancelToken: cancelTokenSource?.value.token,
         revalidateOnFocus: false,
         dedupingInterval: 1,
@@ -57,30 +57,18 @@ export default function fetchBotsList(cache?: string, dependentKey?: Ref<any>, p
     watch(data, () => {
         if (body?.value?.offset > 0) {
             list.value = list.value.concat(data?.value?.entities);
-        } else {
-            if (data.value?.entities) {
+        } else if (data.value?.entities) {
                 list.value = data.value?.entities;
             } else {
                 list.value = [];
             }
-        }
     });
 
-    const listCount: ComputedRef<any> = computed(() => {
-        return list.value.length;
-    });
-    const limit: ComputedRef<any> = computed(() => {
-        return body.value.limit;
-    });
-    const offset: ComputedRef<any> = computed(() => {
-        return body.value.offset;
-    });
-    const totalCount: ComputedRef<any> = computed(() => {
-        return data?.value?.approximateCount;
-    });
-    const aggregations: ComputedRef<any[]> = computed(() => {
-        return data?.value?.aggregations;
-    });
+    const listCount: ComputedRef<any> = computed(() => list.value.length);
+    const limit: ComputedRef<any> = computed(() => body.value.limit);
+    const offset: ComputedRef<any> = computed(() => body.value.offset);
+    const totalCount: ComputedRef<any> = computed(() => data?.value?.approximateCount);
+    const aggregations: ComputedRef<any[]> = computed(() => data?.value?.aggregations);
 
     const refresh = () => {
         if ([STATES.PENDING].includes(state.value) || [STATES.VALIDATING].includes(state.value)) {

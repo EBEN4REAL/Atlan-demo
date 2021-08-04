@@ -3,29 +3,29 @@
     <p class="mb-2 text-xs font-semibold leading-tight text-gray-500 uppercase">
       Last Refresh
     </p>
-    <div class="" v-if="isLoading || isValidating">
+    <div v-if="isLoading || isValidating" class="">
       <a-spin size="small"></a-spin>
     </div>
-    <div class="" v-else-if="data?.items === null">N/A</div>
+    <div v-else-if="data?.items === null" class="">N/A</div>
     <div
-      class="flex flex-col"
       v-for="item in data?.items"
-      :key="item.name"
       v-else
+      :key="item.name"
+      class="flex flex-col"
     >
       <!-- {{ item }} -->
       <div class="flex">
         <a-spin v-if="item?.status?.phase == 'Running'" class="mr-2"></a-spin>
         <fa
+          v-if="item?.status?.phase == 'Succeeded'"
           icon="fas check-circle"
           style="display: inline-block; vertical-align: middle"
           class="mr-1 text-xl text-green-500"
-          v-if="item?.status?.phase == 'Succeeded'"
         ></fa>
         <fa
+          v-else-if="item?.status?.phase == 'Failed'"
           icon="fas exclamation-triangle"
           class="inline-block mr-1 text-xl text-red-500 align-middle"
-          v-else-if="item?.status?.phase == 'Failed'"
         ></fa>
 
         {{ item?.status?.phase }}
@@ -77,12 +77,6 @@ export default defineComponent({
       },
     },
   },
-  mounted() {},
-  data() {
-    return {
-      list: [],
-    };
-  },
   setup(props) {
     const now = ref(true);
     let params = reactive({
@@ -114,5 +108,11 @@ export default defineComponent({
       isValidating,
     };
   },
+  data() {
+    return {
+      list: [],
+    };
+  },
+  mounted() {},
 });
 </script>

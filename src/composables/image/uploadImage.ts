@@ -26,7 +26,7 @@ interface uploadImageData {
 
 export default function useUploadImage() {
 
-    let formData = ref();
+    const formData = ref();
 
     const { data, isLoading, error, mutate } = useAPI<uploadImageData>(UPLOAD_IMAGE, "POST", {
         cache: 'image',

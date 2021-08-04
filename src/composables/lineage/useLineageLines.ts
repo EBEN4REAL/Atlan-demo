@@ -1,11 +1,11 @@
 import { nextTick } from "vue";
+import LeaderLine from "leader-line-new";
 import {
   graphRelations,
   getPredecessors,
   getSuccessors,
   graphRelations,
 } from "~/components/lineage/util";
-import LeaderLine from "leader-line-new";
 
 export const getPath = (guid, pathGuid, selectedPathGuids) => {
   if (!guid || guid === pathGuid) {
@@ -14,9 +14,7 @@ export const getPath = (guid, pathGuid, selectedPathGuids) => {
   } else pathGuid.value = guid;
 };
 
-export const isHighlightedNode = (guid, selectedPathGuids) => {
-  return selectedPathGuids.value.find((i) => i === guid);
-};
+export const isHighlightedNode = (guid, selectedPathGuids) => selectedPathGuids.value.find((i) => i === guid);
 
 export const highlightLines = (
   glGraph,
@@ -107,11 +105,11 @@ export const drawLines = (refs, linesWrapper) => {
     const rectWrapper = linesWrapper.value.getBoundingClientRect();
 
     linesWrapper.value.style.transform =
-      "translate(-" +
-      (rectWrapper.left + window.pageXOffset) +
-      "px, -" +
-      (rectWrapper.top + window.pageYOffset) +
-      "px)";
+      `translate(-${ 
+      rectWrapper.left + window.pageXOffset 
+      }px, -${ 
+      rectWrapper.top + window.pageYOffset 
+      }px)`;
 
     // linesElements.forEach((l) => {
     //   linesWrapper.value.appendChild(l);

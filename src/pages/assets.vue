@@ -14,23 +14,29 @@
             </div>
         </div>
         <div
-            class="flex flex-col w-1/4 h-full bg-white border-l"
+            class="flex flex-col h-full bg-white border-l  asset-preview-container"
             style="overflow: hidden"
         >
-            <AssetPreview v-if="selected?.guid" :item="selected"></AssetPreview>
+            <AssetPreview
+                v-if="selected"
+                :selected-asset="selected"
+            ></AssetPreview>
         </div>
     </div>
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref, watch, computed } from 'vue'
+    import { defineComponent, ref, watch, computed, Ref } from 'vue'
     import AssetDiscovery from '@/discovery/asset/index.vue'
-    import AssetPreview from '@/preview/asset/index.vue'
+    import AssetPreview from '@/preview/asset/v2/index.vue'
     import { useHead } from '@vueuse/head'
     import { useRoute, useRouter } from 'vue-router'
     import { Classification } from '~/api/atlas/classification'
     import { useClassificationStore } from '~/components/admin/classifications/_store'
     import { getDecodedOptionsFromString } from '~/utils/routerQuery'
+
+    import { typedefsInterface } from '~/types/typedefs/typedefs.interface'
+    import { assetInterface } from '~/types/assets/asset.interface'
 
     export interface initialFiltersType {
         facetsFilters: any
@@ -59,13 +65,14 @@
 
             const initialFilters: initialFiltersType =
                 getDecodedOptionsFromString(router)
-            const selected = ref({})
+
+            const selected: Ref<assetInterface | undefined> = ref(undefined)
+
             useHead({
                 title: 'Discover assets',
             })
-            const handlePreview = (selectedItem: any) => {
+            const handlePreview = (selectedItem: assetInterface) => {
                 selected.value = selectedItem
-                //                //                console.log(selected.value, 'selected')
             }
 
             /* Making the network request here to fetch the latest changes of classifications. 
@@ -74,16 +81,15 @@
             const classificationsStore = useClassificationStore()
             classificationsStore.setClassificationsStatus('loading')
             const { data: classificationData, error: classificationError } =
-                Classification.getClassificationList({ cache: false })
+                Classification.getClassificationList<typedefsInterface>({
+                    cache: false,
+                })
 
             watch([classificationData, classificationError], () => {
                 if (classificationData.value) {
-                    let classifications =
+                    const classifications =
                         classificationData.value.classificationDefs || []
-                    classifications = classifications.map((classification) => {
-                        classification.alias = classification.name
-                        return classification
-                    })
+
                     classificationsStore.setClassifications(
                         classifications ?? []
                     )
@@ -104,7 +110,11 @@
         },
     })
 </script>
-
+<style lang="less" scoped>
+    .asset-preview-container {
+        width: 30%;
+    }
+</style>
 <route lang="yaml">
 meta:
     layout: default

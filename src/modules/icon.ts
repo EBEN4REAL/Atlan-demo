@@ -2,6 +2,7 @@ import { library, dom, config } from '@fortawesome/fontawesome-svg-core'
 
 // Light Icons
 import { faTable } from '@fortawesome/pro-light-svg-icons/faTable'
+import { faBookmark } from '@fortawesome/pro-light-svg-icons/faBookmark'
 import { faThList } from '@fortawesome/pro-light-svg-icons/faThList'
 import { faDatabase } from '@fortawesome/pro-light-svg-icons/faDatabase'
 import { faBox } from '@fortawesome/pro-light-svg-icons/faBox'
@@ -153,6 +154,7 @@ import Icon from '~/components/common/icon/index.vue'
 
 library.add(
     faTable,
+    faBookmark,
     faThList,
     faDatabase,
     faBox,

@@ -4,7 +4,6 @@
         :bordered="false"
         class="bg-transparent"
         :class="$style.filter"
-        :accordion="true"
     >
         <a-collapse-panel
             v-for="item in List"

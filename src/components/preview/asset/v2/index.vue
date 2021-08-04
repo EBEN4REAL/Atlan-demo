@@ -1,57 +1,80 @@
 <template>
-    <div class="px-4 py-4">
-        <div class="flex items-center justify-between mt-2 mb-4 text-sm">
-            <div class="flex">
-                <component
-                    :is="selectedAsset.typeName"
-                    class="w-5 h-5 mr-2"
-                ></component>
-                <span class="text-gray-description">{{
-                    assetTypeLabel(selectedAsset)
-                }}</span>
-            </div>
-            <div class="flex">
-                <div class="flex px-1.5 py-0.5 mx-2 _bg-primary-light rounded">
-                    <fa class="text-xs text-primary" icon="fal bookmark" />
-                </div>
-                <div class="flex px-1.5 py-0.5 mx-2 _bg-primary-light rounded">
-                    <span class="flex mr-2"
-                        ><fa class="text-xs text-primary" icon="fal share"
-                    /></span>
-                    <span class="text-sm text-primary">Share</span>
-                </div>
-            </div>
-        </div>
-        <div class="flex items-center mb-2">
-            <span class="mb-0 text-lg text-gray font-bold truncate ...">
-                {{ title(selectedAsset) }}</span
-            >
-            <div class="flex items-center">
-                <StatusBadge
-                    :key="selectedAsset.guid"
-                    :status-id="selectedAsset?.attributes?.assetStatus"
-                    class="ml-1.5"
-                ></StatusBadge>
-            </div>
-        </div>
-        <HierarchyBar :selectedAsset="selectedAsset" />
-        <div class="">
-            <a-tabs v-model:activeKey="activeKey" :class="$style.previewtab">
-                <a-tab-pane v-for="tab in tabs" :key="tab.id" :tab="tab.name">
+    <div class="py-4">
+        <div class="px-4">
+            <div class="flex items-center justify-between mt-2 mb-4 text-sm">
+                <div class="flex">
                     <component
-                        :is="tab.component"
-                        :ref="
-                            (el) => {
-                                refMap[tab.id] = el
-                            }
-                        "
-                        :componentData="dataMap[tab.id]"
-                        :selectedAsset="selectedAsset"
-                        @change="handleChange"
+                        :is="selectedAsset.typeName"
+                        class="w-5 h-5 mr-2"
                     ></component>
-                </a-tab-pane>
-            </a-tabs>
+                    <span class="text-gray-description">{{
+                        assetTypeLabel(selectedAsset)
+                    }}</span>
+                </div>
+                <div class="flex">
+                    <div
+                        class="
+                            flex
+                            px-1.5
+                            py-0.5
+                            mx-2
+                            _bg-primary-light
+                            rounded
+                        "
+                    >
+                        <fa class="text-xs text-primary" icon="fal bookmark" />
+                    </div>
+                    <div
+                        class="
+                            flex
+                            px-1.5
+                            py-0.5
+                            mx-2
+                            _bg-primary-light
+                            rounded
+                        "
+                    >
+                        <span class="flex mr-2"
+                            ><fa class="text-xs text-primary" icon="fal share"
+                        /></span>
+                        <span class="text-sm text-primary">Share</span>
+                    </div>
+                </div>
+            </div>
+            <div class="flex items-center mb-2">
+                <span class="mb-0 text-lg text-gray font-bold truncate ...">
+                    {{ title(selectedAsset) }}</span
+                >
+                <div class="flex items-center">
+                    <StatusBadge
+                        :key="selectedAsset.guid"
+                        :status-id="selectedAsset?.attributes?.assetStatus"
+                        class="ml-1.5"
+                    ></StatusBadge>
+                </div>
+            </div>
+            <HierarchyBar :selectedAsset="selectedAsset" />
         </div>
+        <a-tabs v-model:activeKey="activeKey" :class="$style.previewtab">
+            <a-tab-pane
+                class="px-4 py-2"
+                v-for="tab in tabs"
+                :key="tab.id"
+                :tab="tab.name"
+            >
+                <component
+                    :is="tab.component"
+                    :ref="
+                        (el) => {
+                            refMap[tab.id] = el
+                        }
+                    "
+                    :componentData="dataMap[tab.id]"
+                    :selectedAsset="selectedAsset"
+                    @change="handleChange"
+                ></component>
+            </a-tab-pane>
+        </a-tabs>
     </div>
 </template>
 
@@ -114,10 +137,16 @@
 <style lang="less" module>
     .previewtab {
         :global(.ant-tabs-tab) {
-            padding: 8px 12px !important;
-            margin-right: 0px !important;
+            @apply pb-3 px-0;
+            @apply mx-2;
             @apply text-gray-description;
             @apply text-xs;
+        }
+        :global(.ant-tabs-tab:first-child) {
+            @apply ml-4;
+        }
+        :global(.ant-tabs-nav-container-scrolling .ant-tabs-tab:first-child) {
+            @apply ml-0;
         }
         :global(.ant-tabs-tab-active) {
             @apply text-gray;
@@ -128,6 +157,9 @@
         }
         :global(.ant-tabs-content) {
             padding-right: 0px;
+        }
+        :global(.ant-tabs-ink-bar) {
+            @apply rounded-t-sm;
         }
     }
 </style>

@@ -40,12 +40,17 @@
         PropType,
     } from 'vue'
     import { List } from './List'
+    import { assetInterface } from '~/types/assets/asset.interface'
 
     export default defineComponent({
         props: {
             id: String,
             componentData: {
                 type: Object as PropType<any>,
+            },
+            selectedAsset: {
+                type: Object as PropType<assetInterface>,
+                required: true,
             },
         },
         components: {

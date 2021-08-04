@@ -49,8 +49,8 @@
                                 refMap[tab.id] = el
                             }
                         "
-                        :component-data="dataMap[tab.id]"
-                        :selected-asset="selectedAsset"
+                        :componentData="dataMap[tab.id]"
+                        :selectedAsset="selectedAsset"
                         @change="handleChange"
                     ></component>
                 </a-tab-pane>

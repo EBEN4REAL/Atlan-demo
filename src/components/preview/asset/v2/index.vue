@@ -34,29 +34,6 @@
                 ></StatusBadge>
             </div>
         </div>
-        <!-- <div class="flex mb-4 text-xs tracking-wider">
-            <div class="flex items-center flex-1">
-                <img :src="logo(selectedAsset)" class="w-auto h-4 mr-1" />
-                <span
-                    class="flex-1 overflow-hidden overflow-ellipsis whitespace-nowrap"
-                    >{{ integrationName(selectedAsset) }}</span
-                >
-            </div>
-            <div class="flex items-center flex-1 ml-2">
-                <img :src="logo(selectedAsset)" class="w-auto h-4 mr-1" />
-                <span
-                    class="flex-1 overflow-hidden overflow-ellipsis whitespace-nowrap"
-                    >{{ selectedAsset.attributes.databaseName }}</span
-                >
-            </div>
-            <div class="flex items-center flex-1 ml-2">
-                <img :src="logo(selectedAsset)" class="w-auto h-4 mr-1" />
-                <span
-                    class="flex-1 overflow-hidden overflow-ellipsis whitespace-nowrap"
-                    >{{ selectedAsset.attributes.schemaName }}</span
-                >
-            </div>
-        </div> -->
         <HierarchyBar :selectedAsset="selectedAsset" />
         <div class="">
             <a-tabs v-model:activeKey="activeKey" :class="$style.previewtab">
@@ -141,6 +118,10 @@
             margin-right: 0px !important;
             @apply text-gray-description;
             @apply text-xs;
+        }
+        :global(.ant-tabs-tab-active) {
+            @apply text-gray;
+            @apply font-bold;
         }
         :global(.ant-tabs-bar) {
             margin-bottom: 0px;

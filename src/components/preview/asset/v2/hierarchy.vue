@@ -24,7 +24,7 @@
         toRefs,
         watch,
     } from 'vue'
-    import useAssetInfo from './useAssetInfo'
+    import useAssetInfo from '~/composables/asset/useAssetInfo'
     import { assetInterface } from '~/types/assets/asset.interface'
 
     interface dataChips {

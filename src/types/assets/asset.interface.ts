@@ -23,6 +23,7 @@ export interface assetInterface {
         __customAttributes: string
         __guid: string
         __modificationTimestamp: number
+        __timestamp: number
         __modifiedBy: string
         __state: string
     }

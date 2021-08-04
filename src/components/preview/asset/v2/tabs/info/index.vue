@@ -25,6 +25,7 @@
                 "
                 :item="item"
                 :data="dataMap[item.id]"
+                :selectedAsset="selectedAsset"
                 @change="handleChange"
             ></component>
         </a-collapse-panel>

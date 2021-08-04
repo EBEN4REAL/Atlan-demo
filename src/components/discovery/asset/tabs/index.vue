@@ -1,12 +1,12 @@
 <template>
   <a-tabs
-    class="w-full"
     v-model:activeKey="assetType"
+    class="w-full"
     :class="$style.assetbar"
-    @change="handleChange"
     type="card"
+    @change="handleChange"
   >
-    <a-tab-pane :key="item.id" v-for="item in assetTypeList">
+    <a-tab-pane v-for="item in assetTypeList" :key="item.id">
       <template #tab>
         {{ item.label }}
 
@@ -75,7 +75,7 @@ export default defineComponent({
       emit("update:modelValue", assetType.value);
     };
 
-    let testMapping = [
+    const testMapping = [
       {
         id: "Table",
         label: "Table",
@@ -111,7 +111,7 @@ export default defineComponent({
     watch(
       () => props.assetTypeList,
       () => {
-        //check if the current assetType exists in assetTypeList
+        // check if the current assetType exists in assetTypeList
         const found = props.assetTypeList.find(
           (item) => item.id === assetType.value
         );

@@ -25,19 +25,19 @@
         >
           <component
             :is="activeKey"
-            :item="item"
             :key="item.guid"
-            :selectedAssetData="selectedAssetData"
+            :item="item"
+            :selected-asset-data="selectedAssetData"
           ></component>
         </div>
         <a-tabs
-          :class="$style.previewtab"
           v-model:activeKey="activeKey"
-          tabPosition="right"
+          :class="$style.previewtab"
+          tab-position="right"
         >
           <a-tab-pane
-            :key="filterItem.id"
             v-for="filterItem in filteredTabList"
+            :key="filterItem.id"
           >
             <template #tab>
               <a-tooltip :title="filterItem.description" placement="right">
@@ -52,8 +52,8 @@
 </template>
 
 <script lang="ts">
-import { defineAsyncComponent, watch } from "vue";
-import { computed, defineComponent, ref } from "vue";
+import { defineAsyncComponent, watch , computed, defineComponent, ref } from "vue";
+
 import AssetMixin from "~/mixins/asset";
 // import PreviewTabs from "./tabs/index.vue";
 import { List } from "./list";
@@ -83,18 +83,16 @@ export default defineComponent({
     const selectedAssetData = ref({});
     const availableClassificationsForLink = ref([]);
 
-    const filteredTabList = computed(() => {
-      return List.filter((item) => {
+    const filteredTabList = computed(() => List.filter((item) => {
         if (item.typeNames) {
           if (!item.typeNames.includes(props.item.typeName)) {
             return false;
           }
         }
         return true;
-      });
-    });
+      }));
 
-    /*Todo: uncomment it after the evaluate/access endpoint is added to user service */
+    /* Todo: uncomment it after the evaluate/access endpoint is added to user service */
     // const params = {
     //   typeName: props?.item.typeName,
     //   entityGuid: props?.item.guid,

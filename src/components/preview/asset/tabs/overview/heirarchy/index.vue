@@ -12,10 +12,10 @@
         :style="{ backgroundImage: `url(${dottedUrl})` }"
       />
       <div :class="$style.itemPicContainer">
-        <div :class="$style.itemPic" class="border" v-if="index === 0">
+        <div v-if="index === 0" :class="$style.itemPic" class="border">
           <img :src="logo(item)" :class="$style.itemType" />
         </div>
-        <div :class="$style.itemPic" v-else class="border">
+        <div v-else :class="$style.itemPic" class="border">
           <component :is="path.id" :class="$style.itemType"></component>
         </div>
       </div>
@@ -23,7 +23,7 @@
         <div class="flex flex-col max-w-full">
           <p class="mb-0 text-sm text-blue-600 truncate lh-sm">
             <a-tooltip placement="left">
-              <template slot="title">
+              <template #title>
                 {{ path.value }}
               </template>
               {{ path.value }}

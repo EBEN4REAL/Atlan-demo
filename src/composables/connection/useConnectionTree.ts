@@ -13,26 +13,22 @@ export default function useConnectionTree(query?: string) {
         body,
         mutate } = fetchConnectionList();
 
-    let treeData = ref<TreeDataItem[]>([]);
+    const treeData = ref<TreeDataItem[]>([]);
     watch(list, () => {
         console.log("watch changes");
         treeData.value = [];
         sourceList.value?.forEach((src) => {
-            const children = list.value?.filter((item) => {
-                return item.attributes.integrationName === src.id;
-            }).map((item) => {
-                return {
+            const children = list.value?.filter((item) => item.attributes.integrationName === src.id).map((item) => ({
                     key: item.guid,
                     title: item.attributes.name,
                     type: "connection"
-                };
-            });
+                }));
 
-            let found = SourceList.find((item) => item.id == src.id)
+            const found = SourceList.find((item) => item.id == src.id)
             treeData.value.push({
                 key: src.id,
                 title: src.label,
-                children: children,
+                children,
                 image: found?.image,
                 type: "connector",
                 isRoot: true,

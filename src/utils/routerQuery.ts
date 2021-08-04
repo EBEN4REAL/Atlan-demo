@@ -29,7 +29,7 @@ export function getEncodedStringFromOptions(options: any) {
       switch (filterKey) {
         case "classifications": {
           filterKeyValue = options.filters[filterKey].criterion;
-          let tempNames: Array<string | undefined> = [];
+          const tempNames: Array<string | undefined> = [];
           filterKeyValue.forEach((e: criterion) => {
             if (e.attributeName === "__classificationNames") {
               tempNames.push(e.attributeValue);
@@ -57,9 +57,9 @@ export function getEncodedStringFromOptions(options: any) {
           filterKeyValue = filterKeyValue
             .map(
               (e: criterion) =>
-                (e.attributeName ? e.attributeName + ":" : "") +
-                (e.attributeValue ? e.attributeValue + ":" : "") +
-                (e.operator ? e.operator + ":" : "")
+                (e.attributeName ? `${e.attributeName  }:` : "") +
+                (e.attributeValue ? `${e.attributeValue  }:` : "") +
+                (e.operator ? `${e.operator  }:` : "")
             )
             .join(",");
           filterKeyValue = filterKeyValue.slice(0, -1);
@@ -110,7 +110,7 @@ export function getEncodedStringFromOptions(options: any) {
     str += `&${queryKey}=${routerQuery[queryKey]}`;
   });
   str = str.substring(1);
-  let encodedStr = encodeStringToBase64(str);
+  const encodedStr = encodeStringToBase64(str);
   return encodedStr;
 }
 export function getDecodedOptionsFromString(router) {
@@ -127,11 +127,11 @@ export function getDecodedOptionsFromString(router) {
   console.log(url.searchParams.get("filters"));
   const filters = url.searchParams.get("filters");
   const searchText = url.searchParams.get("searchText");
-  let connectorsPayloadString = url.searchParams.get("connectorsPayload");
+  const connectorsPayloadString = url.searchParams.get("connectorsPayload");
   let connectorsPayload = {};
   const limit = url.searchParams.get("limit");
   const facetsFiltersStrings = filters?.split(":::");
-  let initialBodyCriterion: Array<any> = [];
+  const initialBodyCriterion: Array<any> = [];
   const facetsFilters: filterMapType = {
     status: {
       checked: [],
@@ -159,8 +159,8 @@ export function getDecodedOptionsFromString(router) {
   facetsFiltersStrings?.forEach((facetFilterString: string) => {
     const facetFilter = facetFilterString.split("::");
     const facetFilterName = facetFilter[0]; // name
-    const facetFilterValuesString = facetFilter[1]; //verified,draft
-    let criterion: Array<criterion> = [];
+    const facetFilterValuesString = facetFilter[1]; // verified,draft
+    const criterion: Array<criterion> = [];
 
     switch (facetFilterName) {
       case "status": {
@@ -220,9 +220,9 @@ export function getDecodedOptionsFromString(router) {
       }
       case "advanced": {
         const facetFilterValues = facetFilterValuesString.split(",");
-        let options: Array<any> = [];
+        const options: Array<any> = [];
         AdvancedAttributeList.forEach((item) => {
-          let temp = item;
+          const temp = item;
           temp.children = OperatorList.filter((op) =>
             op.allowedType.includes(item.type)
           );
@@ -238,7 +238,7 @@ export function getDecodedOptionsFromString(router) {
           facetFilterValues.forEach((facetFilterValue) => {
             tmp = { isInput: false, operand: "", type: "", operator: [] };
             const subFacetFilterValues = facetFilterValue.split(":");
-            let attributeName: string, attributeValue: any, operator: any;
+            let attributeName: string; let attributeValue: any; let operator: any;
             attributeName = subFacetFilterValues[0];
             if (subFacetFilterValues.length > 0)
               attributeValue = subFacetFilterValues[1];
@@ -252,7 +252,7 @@ export function getDecodedOptionsFromString(router) {
             );
             tmp.isInput = foundOperator?.isInput;
             tmp.operand = attributeValue;
-            let operatorArray = [];
+            const operatorArray = [];
             operatorArray.push(attributeName);
             if (operator) operatorArray.push(operator);
             tmp.operator = operatorArray;
@@ -275,7 +275,7 @@ export function getDecodedOptionsFromString(router) {
     if (connectorsPayload) {
       // const connectorsPayloadCriterion: criterion = [];
       const connectorValues = connectorsPayloadString.split(",");
-      let conenctorData = {};
+      const conenctorData = {};
       connectorValues.forEach((connectorValue) => {
         const subConnectorValues = connectorValue.split(":");
         console.log(subConnectorValues, "subconector");

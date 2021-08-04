@@ -15,10 +15,10 @@
         </div>
         <div>
           <CreateUpdateInfo
-            :createdAt="localBm.createTime"
-            :updatedAt="localBm.updateTime"
-            :createdBy="localBm.createdBy"
-            :updatedBy="localBm.updatedBy"
+            :created-at="localBm.createTime"
+            :updated-at="localBm.updateTime"
+            :created-by="localBm.createdBy"
+            :updated-by="localBm.updatedBy"
           />
         </div>
       </div>
@@ -51,17 +51,17 @@
         <a-button
           v-if="isUpdated || localBm.guid === 'new'"
           class="rounded-md ant-btn ant-btn-primary"
-          @click="handleAddBusinessMetadata"
           :loading="loading"
-          :loadingText="'Saving...'"
+          :loading-text="'Saving...'"
+          @click="handleAddBusinessMetadata"
         >
           Save
         </a-button>
         <a-button v-else variant="alt-primary px-3"> Saved </a-button>
         <a-dropdown
-          trigger="click"
           v-if="localBm.guid !== 'new' && dropdownOptions.length"
-          dropdownMenuClass="mt-1 ml-4"
+          trigger="click"
+          dropdown-menu-class="mt-1 ml-4"
         >
           <span><fa icon="fal ellipsis-v" class="ml-1 text-xl"></fa></span>
           <template #overlay>
@@ -85,24 +85,24 @@
             <sup class="text-red">*</sup>
           </label>
           <input
+            id="name"
+            v-model="localBm.options.displayName"
             type="text"
             class="block w-full px-2 py-1 mb-1 text-base leading-normal bg-white border rounded appearance-none text-grey-darker border-grey"
-            id="name"
             name="Name"
-            v-model="localBm.options.displayName"
             @input="onUpdate"
           />
         </div>
         <div>
           <label for="description" class="mb-1">Description</label>
           <textarea
+            id="description"
+            v-model="localBm.description"
             placeholder="Add some details about this metadata."
             class="block w-full px-2 py-1 mb-1 text-base leading-normal bg-white border rounded appearance-none text-grey-darker border-grey"
-            id="description"
             name="Description"
-            v-model="localBm.description"
-            @input="onUpdate"
             :rows="2"
+            @input="onUpdate"
           ></textarea>
         </div>
       </div>
@@ -161,7 +161,7 @@
             :ref="`attribute-${index}`"
             :key="attribute.id"
             :attribute="attribute"
-            :isEdit="!localBm.guid !== 'new' && !attribute.isNew"
+            :is-edit="!localBm.guid !== 'new' && !attribute.isNew"
             @remove="handleRemoveAttribute(index)"
             @updateAttribute="
               updatedAttribute => onAttributeValuesChange(updatedAttribute, index)
@@ -173,20 +173,20 @@
   </div>
 </template>
 <script lang="ts">
-import { defineComponent } from "vue";
-import { ref, computed, onMounted, watch, Ref } from "vue";
+import { defineComponent , ref, computed, onMounted, watch, Ref } from "vue";
+
 
 // ? Components
 import AddAttributeCard from "@/admin/custom-metadata/addAttributeCard.vue";
 import CreateUpdateInfo from "@/common/createUpdateInfo.vue";
 import ArchiveMetadataModal from "@/admin/custom-metadata/archiveMetadataModal.vue";
+import useBusinessMetadata from "@/admin/custom-metadata/composables/useBusinessMetadata";
 import { BusinessMetadataService } from "~/api/atlas/businessMetadata";
 
 // ? Store
 import { useBusinessMetadataStore } from "~/store/businessMetadata";
 
 // ? composables
-import useBusinessMetadata from "@/admin/custom-metadata/composables/useBusinessMetadata";
 
 interface attributeDefs {
   name: string;
@@ -194,17 +194,17 @@ interface attributeDefs {
 }
 
 export default defineComponent({
+  components: { AddAttributeCard, CreateUpdateInfo, ArchiveMetadataModal },
   props: {
     selectedBm: {
       type: Object,
       required: true,
     },
   },
-  components: { AddAttributeCard, CreateUpdateInfo, ArchiveMetadataModal },
   setup(props, context) {
     const store = useBusinessMetadataStore();
     // * Data
-    let localBm = ref({
+    const localBm = ref({
       name: "",
       description: "",
       options: { displayName: "" },
@@ -212,12 +212,12 @@ export default defineComponent({
       attributeDefs: <attributeDefs[]>[],
     });
 
-    let attrsearchText = ref("");
-    let panelModel = ref(1);
-    let isUpdated = ref(false);
-    let showArchiveMetadataModal = ref(false);
-    let loading = ref(false);
-    let error = ref("");
+    const attrsearchText = ref("");
+    const panelModel = ref(1);
+    const isUpdated = ref(false);
+    const showArchiveMetadataModal = ref(false);
+    const loading = ref(false);
+    const error = ref("");
 
     const {
       getDefaultAttributeTemplate,
@@ -279,7 +279,7 @@ export default defineComponent({
       }
 
       loading.value = true;
-      let apiResponse = ref();
+      const apiResponse = ref();
       if (validatedBm.guid === "new")
         apiResponse.value = BusinessMetadataService.addNewBusinessMetadata(
           getUpdatePayload(validatedBm.data)
@@ -368,16 +368,14 @@ export default defineComponent({
     };
 
     // * Computed
-    const dropdownOptions = computed(() => {
-      return [
+    const dropdownOptions = computed(() => [
         // {
         //   title: `Archive metadata`,
         //   icon: "fal trash text-red",
         //   iconType: "far",
         //   handleClick: onShowArchiveMetadataModal,
         // },
-      ];
-    });
+      ]);
 
     const searchedAttributes = computed(() => {
       if (attrsearchText.value) {

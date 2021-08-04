@@ -1,12 +1,12 @@
 import { ref, Ref, watch } from 'vue';
-import useSearchList from './useSearchList';
 import axios from 'axios';
 import { TreeDataItem } from 'ant-design-vue/lib/tree/Tree';
+import useSearchList from './useSearchList';
 import { BaseAttributes, BasicSearchAttributes } from "~/constant/projection";
 
 export default function useAssetTree(dependentKey?: Ref<any>, typeName?: string, initialBody?: any, cacheSuffx?: string | "") {
 
-    let cancelTokenSource = ref(axios.CancelToken.source());
+    const cancelTokenSource = ref(axios.CancelToken.source());
     const list: Ref<any> = ref([]);
     const { data,
         state,
@@ -23,7 +23,7 @@ export default function useAssetTree(dependentKey?: Ref<any>, typeName?: string,
 
     const treeList: Ref<any> = ref([]);
     const loadNow = ref(true);
-    let cancelTokenSource2 = ref(axios.CancelToken.source());
+    const cancelTokenSource2 = ref(axios.CancelToken.source());
     const childBody = {
         limit: 0,
         attributes: [...BaseAttributes, ...BasicSearchAttributes],
@@ -34,8 +34,7 @@ export default function useAssetTree(dependentKey?: Ref<any>, typeName?: string,
     watch(list, (newValue, oldValue) => {
         // If orignal tree is empty, just append the list of glossary
         if (!treeData.value.length) {
-            treeData.value = list.value?.map((item, index) => {
-                return {
+            treeData.value = list.value?.map((item, index) => ({
                     id: `${item.attributes.qualifiedName}`,
                     key: `${item.guid}_${index}`,
                     rootPId: `${item.attributes.qualifiedName}`,
@@ -48,8 +47,7 @@ export default function useAssetTree(dependentKey?: Ref<any>, typeName?: string,
                     slots: {
                         title: "title"
                     }
-                };
-            }) as TreeDataItem[];
+                })) as TreeDataItem[];
         } else {
 
         }
@@ -70,7 +68,7 @@ export default function useAssetTree(dependentKey?: Ref<any>, typeName?: string,
         //     loadNow.value = true;
         // }
 
-        let childBody = treeChildBody.value;
+        const childBody = treeChildBody.value;
         childBody.limit = 100;
         childBody.entityFilters = {
             condition: "AND",

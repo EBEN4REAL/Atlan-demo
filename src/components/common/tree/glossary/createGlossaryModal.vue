@@ -5,10 +5,10 @@
     @cancel="handleCloseModal"
     @ok="handleSubmit"
   >
-    <a-input class="m-1" v-model:value="name" placeholder="Name" />
+    <a-input v-model:value="name" class="m-1" placeholder="Name" />
     <a-input
-      class="m-1"
       v-model:value="description"
+      class="m-1"
       placeholder="Description"
     />
     <p v-if="showSuccessMessage">
@@ -57,19 +57,24 @@ export default defineComponent({
 
     const handleCloseModal = () => {
       emit("closeModal");
+      name.value = "";
+      description.value = ""
     };
 
-    let body = ref<Record<string, any>>({});
+    const body = ref<Record<string, any>>({});
+
+    watch([name, description], ([newName, newDescription]) => {
+      body.value = {
+        ...body.value,
+        longDescription: "",
+        name: newName,
+        shortDescription: newDescription,
+      };
+    });
 
     watch(
-      [eventContext, name, description],
-      async ([_, newName, newDescription]) => {
-        body.value = {
-          longDescription: "",
-          name: newName,
-          shortDescription: newDescription,
-        };
-
+      eventContext,
+      async () => {
         if (props.eventContext.parentType === "glossary") {
           body.value = {
             ...body.value,

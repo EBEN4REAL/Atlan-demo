@@ -19,7 +19,7 @@
     </div>
     <div class="pl-3">
       <p class="mb-1 text-gray-500">Order</p>
-      <a-radio-group @change="handeChangeSorting" v-model:value="sorting">
+      <a-radio-group v-model:value="sorting" @change="handeChangeSorting">
         <div class="flex flex-col space-y-1">
           <a-radio value="default">Relevance</a-radio>
           <a-radio value="Catalog.popularityScore|descending"
@@ -34,7 +34,7 @@
       </a-radio-group>
 
       <p class="mt-3 mb-1 text-gray-500">State</p>
-      <a-radio-group @change="handleChangeState" v-model:value="state">
+      <a-radio-group v-model:value="state" @change="handleChangeState">
         <div class="flex flex-col space-y-1">
           <a-radio value="all">All Assets</a-radio>
           <a-radio value="active">Active Assets</a-radio>
@@ -54,7 +54,6 @@ import useDiscoveryPreferences from "~/composables/preference/useDiscoveryPrefer
 
 export default defineComponent({
   components: { ConnectionSelector, ConnectorSelector },
-  emits: ["change", "sort", "state"],
   props: {
     defaultProjection: {
       type: Array,
@@ -72,6 +71,7 @@ export default defineComponent({
       },
     },
   },
+  emits: ["change", "sort", "state"],
   setup(props, { emit }) {
     const projection: Ref<any[]> = ref([]);
     if (props.defaultProjection?.length > 0) {

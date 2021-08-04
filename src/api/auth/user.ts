@@ -1,5 +1,5 @@
-import { getAPIPath, getAxiosClient } from "~/api";
 import { AxiosRequestConfig } from "axios";
+import { getAPIPath, getAxiosClient } from "~/api";
 import { useAPI } from "~/api/useAPI";
 import {
   GET_USER_SESSIONS,
@@ -13,26 +13,23 @@ import {
   REVOKE_INVITATION,
   INVITE_USERS,
 } from "~/api/keyMaps/auth/user";
+
 const serviceAlias = "auth";
 
 export const URL = {
   UserList: "/users",
 };
 
-const ListV2 = (params?: any, options?: AxiosRequestConfig) => {
-  return getAxiosClient().get(getAPIPath(serviceAlias, URL.UserList), {
+const ListV2 = (params?: any, options?: AxiosRequestConfig) => getAxiosClient().get(getAPIPath(serviceAlias, URL.UserList), {
     params,
     ...options,
   });
-};
-//Sessions
-const GetUserSessions = (id: string, params?: any, options?: any) => {
-  return useAPI(GET_USER_SESSIONS, "GET", {
+// Sessions
+const GetUserSessions = (id: string, params?: any, options?: any) => useAPI(GET_USER_SESSIONS, "GET", {
     params,
     options,
     pathVariables: { id },
   });
-};
 
 const SignOutAllSessions = (id: string) => {
   const { data, mutate, error, isReady, isLoading } = useAPI(
@@ -54,20 +51,16 @@ const SignOutSessionById = (id: string) => {
   );
   return { data, mutate, error, isReady, isLoading };
 };
-const GetUserAccessLogs = (id: string, params?: any, options?: any) => {
-  return useAPI(GET_USER_ACCESS_LOGS, "GET", {
+const GetUserAccessLogs = (id: string, params?: any, options?: any) => useAPI(GET_USER_ACCESS_LOGS, "GET", {
     params,
     options,
     pathVariables: { id },
   });
-};
-const UpdateUserV1 = (id: string, body?: any, options?: any) => {
-  return getAxiosClient().post(
+const UpdateUserV1 = (id: string, body?: any, options?: any) => getAxiosClient().post(
     getAPIPath(serviceAlias, `/users/${id}`),
     body,
     options
   );
-};
 const UpdateUser = (id: string, body) => {
   const { data, mutate, error, isReady, isLoading } = useAPI(
     UPDATE_USER,

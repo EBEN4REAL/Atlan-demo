@@ -1,4 +1,5 @@
 import { ref, computed } from "vue";
+
 const showPreview = ref(false);
 const groupId = ref("");
 const groupAlias = ref("");
@@ -6,11 +7,11 @@ const uniqueAttribute = ref("");
 const defaultTab = ref("about");
 const allTabs = [
   {
-    //tab name
+    // tab name
     name: "About",
-    //tab icon
+    // tab icon
     iconClass: "",
-    //component name in groupPreview.vue
+    // component name in groupPreview.vue
     component: "About",
     // unique id for tab - the one that'll get passed from different components
     key: "about",
@@ -29,8 +30,8 @@ const allTabs = [
   },
 ];
 
-let blacklistedTabs = ref([]);
-let allowedTabs = ref([]);
+const blacklistedTabs = ref([]);
+const allowedTabs = ref([]);
 const finalTabs = computed(() => {
   if (allowedTabs.value && allowedTabs.value.length)
     return allTabs.filter((tab) => allowedTabs.value.includes(tab.key));

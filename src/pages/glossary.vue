@@ -1,12 +1,12 @@
 <template>
   <CreateGlossaryModal
-    :eventContext="eventContext"
+    :event-context="eventContext"
     :visible="createGlossaryModalVisble"
     @success="handleSuccess"
     @closeModal="handleCloseModal"
   />
   <UpdateGlossaryModal
-    :eventContext="eventContext"
+    :event-context="eventContext"
     :visible="updateGlossaryModalVisble"
     @success="handleSuccess"
     @closeModal="handleCloseModal"
@@ -21,7 +21,9 @@
         @showUpdateGlossaryModal="handleOpenUpdateModal"
       ></GlossaryTree>
     </pane>
-    <pane :size="74"> </pane>
+    <pane :size="74" class="bg-white overflow-y-scroll">
+        <router-view  />
+    </pane>
   </splitpanes>
 </template>
 
@@ -35,6 +37,7 @@ import { useHead } from "@vueuse/head";
 
 export default defineComponent({
   components: { GlossaryTree, CreateGlossaryModal, UpdateGlossaryModal },
+  props:['id', 'class'],
   setup() {
     useHead({
       title: "Glossary",

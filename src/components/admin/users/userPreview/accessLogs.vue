@@ -1,8 +1,8 @@
 <template>
   <div>
     <div
-      class="flex flex-col items-center h-full align-middle bg-white"
       v-if="[STATES.ERROR, STATES.STALE_IF_ERROR].includes(state)"
+      class="flex flex-col items-center h-full align-middle bg-white"
     >
       <ErrorView>
         <div class="mt-3">
@@ -109,28 +109,28 @@
 <script lang="ts">
 import { defineComponent, computed, reactive, ref } from "vue";
 import { useTimeAgo } from "@vueuse/core";
+import ErrorView from "@common/error/index.vue";
 import { User } from "~/api/auth/user";
 import swrvState from "~/composables/utils/swrvState";
-import ErrorView from "@common/error/index.vue";
 
 export default defineComponent({
   name: "UserPreviewAccessLogsComponent",
+  components: {
+    ErrorView,
+  },
   props: {
     selectedUser: {
       type: Object,
       default: {},
     },
   },
-  components: {
-    ErrorView,
-  },
   setup(props, context) {
-    let accessLogsParams: any = reactive({ max: 10, first: 0 });
-    let params = new URLSearchParams({ max: "10", first: "0" });
+    const accessLogsParams: any = reactive({ max: 10, first: 0 });
+    const params = new URLSearchParams({ max: "10", first: "0" });
 
     const fetchLogs = () => {
-      //reset query params
-      for (let key of params.keys()) {
+      // reset query params
+      for (const key of params.keys()) {
         params.delete(key);
       }
       Object.keys(accessLogsParams).forEach((param) => {
@@ -154,14 +154,12 @@ export default defineComponent({
       dedupingInterval: 1,
     });
     const { state, STATES } = swrvState(data, error, isValidating);
-    let accessLogs = computed(() => {
+    const accessLogs = computed(() => {
       if (data.value && data.value.length) {
-        return data.value.map((log: any) => {
-          return {
+        return data.value.map((log: any) => ({
             ...log,
             time_ago: useTimeAgo(log.time).value,
-          };
-        });
+          }));
       }
       return [];
     });
@@ -182,7 +180,7 @@ export default defineComponent({
     };
     const handleApplyIPAddressFilter = (searchValues, confirm) => {
       confirm();
-      let searchText = searchValues[0];
+      const searchText = searchValues[0];
       accessLogsParams.first = 0;
       applyIPAddressFilter(searchText);
     };
@@ -205,10 +203,10 @@ export default defineComponent({
         fetchLogs();
       }
       if (value === "prev") {
-        accessLogsParams.first = accessLogsParams.first - accessLogsParams.max;
+        accessLogsParams.first -= accessLogsParams.max;
         fetchLogs();
       } else if (value === "next") {
-        accessLogsParams.first = accessLogsParams.first + accessLogsParams.max;
+        accessLogsParams.first += accessLogsParams.max;
         fetchLogs();
       }
     };

@@ -272,12 +272,10 @@ export default function useAssetQualifiedName() {
     return [];
   };
 
-  const getApplicableEntitiesForBmAttributes = () => {
-    return (
+  const getApplicableEntitiesForBmAttributes = () => (
       ASSET_TYPES_LIST.filter(entity => entity.id !== "AtlasServer") ||
       []
-    );
-  }
+    )
 
   return {
     ASSET_TYPES_LIST, getAssetNameFromQualfiedName, getAssetParents, getApplicableEntitiesForBmAttributes

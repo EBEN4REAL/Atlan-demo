@@ -52,8 +52,7 @@ export default defineComponent({
         SQL,
         Commands.configure({
           suggestion: {
-            items: (query) => {
-              return [
+            items: (query) => [
                 {
                   title: "SQL",
                   command: ({ editor, range }) => {
@@ -113,8 +112,7 @@ export default defineComponent({
                 .filter((item) =>
                   item.title.toLowerCase().startsWith(query.toLowerCase())
                 )
-                .slice(0, 10);
-            },
+                .slice(0, 10),
             render: () => {
               let component;
               let popup;

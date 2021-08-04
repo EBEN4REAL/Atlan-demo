@@ -59,106 +59,112 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref } from 'vue'
+        import { defineComponent, ref } from 'vue'
 
-    import ItemView from './item.vue'
-    import useWorkflowList from '~/composables/bots/useWorkflowList'
+        import ItemView from './item.vue'
+        import useWorkflowList from '~/composables/bots/useWorkflowList'
 
-    import LoadingView from '@common/loaders/section.vue'
-    import ErrorView from '@common/error/index.vue'
-    import EmptyView from '@common/empty/index.vue'
+        import LoadingView from '@common/loaders/section.vue'
+        import ErrorView from '@common/error/index.vue'
+        import EmptyView from '@common/empty/index.vue'
 
-    import WorkflowTypeSelector from '@common/selector/workflowtype/index.vue'
-    import ConnectionSelector from '@common/selector/connections/index.vue'
-    import Runstatus from '../../selector/runstatus/index.vue'
+        import WorkflowTypeSelector from '@common/selector/workflowtype/index.vue'
+        import ConnectionSelector from '@common/selector/connections/index.vue'
+        import Runstatus from '../../selector/runstatus/index.vue'
 
-    export default defineComponent({
-        components: {
-            ItemView,
-            ErrorView,
-            EmptyView,
-            LoadingView,
-            WorkflowTypeSelector,
-            ConnectionSelector,
-            Runstatus,
-        },
-        props: {
-            isArchived: {
-                type: Boolean,
+        export default defineComponent({
+            components: {
+                ItemView,
+                ErrorView,
+                EmptyView,
+                LoadingView,
+                WorkflowTypeSelector,
+                ConnectionSelector,
+                Runstatus,
             },
-        },
-        data() {
-            return {
-                list: [],
-                msgServer: null,
-            }
-        },
-        setup(props) {
-            let now = ref(true)
-            let params = ref({}) as { [key: string]: any }
-
-            let connectionQf = ref()
-            let botTemplateName = ref()
-            let phase = ref()
-
-            const projection =
-                'metadata,items.metadata.uid,items.metadata.name,items.metadata.namespace,items.metadata.creationTimestamp,items.metadata.labels,items.status.phase,items.status.message,items.status.finishedAt,items.status.startedAt,items.status.estimatedDuration,items.status.progress,items.spec.suspend'
-
-            params.value = {
-                'listOptions.limit': 50,
-                'listOptions.labelSelector':
-                    'workflows.argoproj.io/phase=Running',
-                fields: projection,
-            }
-
-            const { data, refresh, state, STATES, isLoading, isValidating } =
-                useWorkflowList(now, params, 'archived_list')
-
-            const updateLabel = () => {
-                let labels = []
-                labels.push(`workflows.argoproj.io/phase=Running`)
-
-                if (connectionQf.value) {
-                    labels.push(
-                        `connection-qualified-name=${connectionQf?.value.replaceAll(
-                            '/',
-                            '..'
-                        )}`
-                    )
+            props: {
+                isArchived: {
+                    type: Boolean,
+                },
+            },
+            data() {
+                return {
+                    list: [],
+                    msgServer: null,
                 }
-                if (botTemplateName.value) {
-                    labels.push(`category=${botTemplateName.value}`)
+            },
+            setup(props) {
+                let now = ref(true)
+                let params = ref({}) as { [key: string]: any }
+
+                let connectionQf = ref()
+                let botTemplateName = ref()
+                let phase = ref()
+
+                const projection =
+                    'metadata,items.metadata.uid,items.metadata.name,items.metadata.namespace,items.metadata.creationTimestamp,items.metadata.labels,items.status.phase,items.status.message,items.status.finishedAt,items.status.startedAt,items.status.estimatedDuration,items.status.progress,items.spec.suspend'
+
+                params.value = {
+                    'listOptions.limit': 50,
+                    'listOptions.labelSelector':
+                        'workflows.argoproj.io/phase=Running',
+                    fields: projection,
                 }
-                params.value['listOptions.labelSelector'] = labels.join(',')
-            }
 
-            const handlePhaseChange = () => {
-                updateLabel()
-                refresh()
-            }
-            const handleConnectionChange = () => {
-                updateLabel()
-                refresh()
-            }
-            const handleRefresh = () => {
-                refresh()
-            }
+                const { data, refresh, state, STATES, isLoading, isValidating } =
+                    useWorkflowList(now, params, 'archived_list')
 
-            return {
-                data,
-                state,
-                STATES,
-                isLoading,
-                isValidating,
-                phase,
-                handleRefresh,
-                handlePhaseChange,
-                connectionQf,
-                handleConnectionChange,
-            }
-        },
-        mounted() {},
-    })
+    <<<<<<< HEAD
+                const updateLabel = () => {
+                    let labels = []
+                    labels.push(`workflows.argoproj.io/phase=Running`)
+    =======
+        const updateLabel = () => {
+          const labels = [];
+          labels.push(`workflows.argoproj.io/phase=Running`);
+    >>>>>>> 53d453cb38d6afcac00c66ed0b77b85fbeed4f90
+
+                    if (connectionQf.value) {
+                        labels.push(
+                            `connection-qualified-name=${connectionQf?.value.replaceAll(
+                                '/',
+                                '..'
+                            )}`
+                        )
+                    }
+                    if (botTemplateName.value) {
+                        labels.push(`category=${botTemplateName.value}`)
+                    }
+                    params.value['listOptions.labelSelector'] = labels.join(',')
+                }
+
+                const handlePhaseChange = () => {
+                    updateLabel()
+                    refresh()
+                }
+                const handleConnectionChange = () => {
+                    updateLabel()
+                    refresh()
+                }
+                const handleRefresh = () => {
+                    refresh()
+                }
+
+                return {
+                    data,
+                    state,
+                    STATES,
+                    isLoading,
+                    isValidating,
+                    phase,
+                    handleRefresh,
+                    handlePhaseChange,
+                    connectionQf,
+                    handleConnectionChange,
+                }
+            },
+            mounted() {},
+        })
 </script>
 
 <style lang="less" scoped>

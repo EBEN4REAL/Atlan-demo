@@ -4,20 +4,21 @@
     <div class="flex">
       <Tags
         :tags="skills"
+        :updating-tags="updatingSkills"
+        :allow-update="allowUpdate"
         @updateTags="handleUpdateSkills"
-        :updatingTags="updatingSkills"
-        :allowUpdate="allowUpdate"
       ></Tags>
-      <a-spin size="small" class="ml-2" v-if="updatingSkills"></a-spin>
+      <a-spin v-if="updatingSkills" size="small" class="ml-2"></a-spin>
     </div>
   </div>
 </template>
 
 <script lang="ts">
 import { computed, ref, watch } from "vue";
-import { User } from "~/api/auth/user";
 import Tags from "@common/badge/tags/index.vue";
 import { message } from "ant-design-vue";
+import { User } from "~/api/auth/user";
+
 export default {
   name: "UpdateSkills",
   components: { Tags },
@@ -32,7 +33,7 @@ export default {
     },
   },
   setup(props, context) {
-    let updatingSkills = ref(false);
+    const updatingSkills = ref(false);
     const userObj = ref(props.user);
     const skills = computed(() => userObj?.value?.attributes?.skills ?? []);
     const handleUpdateSkills = async (tag: string, action = "add") => {

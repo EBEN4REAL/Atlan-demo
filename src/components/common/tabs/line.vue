@@ -3,11 +3,11 @@
 
 <template>
   <a-tabs
-    :tabPosition="tabPosition"
     v-model:activeKey="activeKey"
+    :tab-position="tabPosition"
     @change="handleChange"
   >
-    <a-tab-pane :key="item.id" v-for="item in list">
+    <a-tab-pane v-for="item in list" :key="item.id">
       <template #tab>
         <a-tooltip :title="item.description" placement="right">
           <p class="mb-0 text-2xl text-center">
@@ -18,8 +18,8 @@
 </template>
     
   <script lang="ts">
-import { MenuArray } from "~/types";
 import { defineComponent, PropType } from "vue";
+import { MenuArray } from "~/types";
 
 export default defineComponent({
   props: {
@@ -45,6 +45,7 @@ export default defineComponent({
       },
     },
   },
+  emits: ["change"],
   data() {
     return {
       localActiveKey: "",
@@ -64,7 +65,6 @@ export default defineComponent({
       },
     },
   },
-  emits: ["change"],
   methods: {
     handleChange(activeKey: string) {
       this.$emit("change", activeKey);

@@ -4,13 +4,13 @@
       class="flex items-stretch mr-3 overflow-x-auto flex-nowrap bookmark-bar "
     >
       <div
-        class="flex bookmark-bar-child "
         v-for="(link, index) in links"
         :key="link.key"
+        class="flex bookmark-bar-child "
       >
         <a-dropdown
-          :trigger="['click']"
           v-model:visible="showBookmarkDropdownArray[index]"
+          :trigger="['click']"
           @visibleChange="hideEditBookmarkDropdown"
         >
           <div
@@ -30,10 +30,10 @@
             />
             <p class="mb-0 text-gray-500">{{ link.title }}</p>
           </div>
-          <template #overlay v-if="selectedBookmarkId === link.key">
+          <template v-if="selectedBookmarkId === link.key" #overlay>
             <div
-              class="px-4 py-2 bg-white rounded shadow "
               v-if="!editSelectedBookmark"
+              class="px-4 py-2 bg-white rounded shadow "
               @click.prevent
             >
               <p
@@ -65,8 +65,8 @@
               </p>
             </div>
             <div
-              class="w-64 px-4 py-4 bg-white rounded shadow add-bookmark"
               v-else
+              class="w-64 px-4 py-4 bg-white rounded shadow add-bookmark"
               @click.prevent
             >
               <div class="flex items-center justify-between mb-3">
@@ -97,9 +97,9 @@
                   />
                 </a-form-item>
                 <a-form-item
+                  v-if="editShowTitle"
                   label="Title"
                   name="title"
-                  v-if="editShowTitle"
                   class="mb-4"
                 >
                   <a-input
@@ -120,7 +120,7 @@
                     </template>
                   </a-input>
                 </a-form-item>
-                <div class="flex justify-end" v-if="editShowTitle">
+                <div v-if="editShowTitle" class="flex justify-end">
                   <a-button
                     type="primary"
                     class="rounded"
@@ -136,24 +136,24 @@
       </div>
     </div>
     <div
-      class="absolute right-0 w-24 h-8 right-fade"
       v-if="showOverflowFade"
+      class="absolute right-0 w-24 h-8 right-fade"
     ></div>
     <div>
-      <a-dropdown :trigger="['click']" v-model:visible="showDropdown">
+      <a-dropdown v-model:visible="showDropdown" :trigger="['click']">
         <a-button
+          v-if="links.length > 0"
           class="h-full p-2 px-2 rounded"
           @click="toggleDropDown"
-          v-if="links.length > 0"
         >
           <span class="flex items-center justify-center">
             <fa icon="fal plus"></fa
           ></span>
         </a-button>
         <a-button
+          v-else
           class="flex items-center h-full px-3 py-2 text-sm rounded text-gray"
           @click="toggleDropDown"
-          v-else
         >
           <span class="flex items-center justify-center mr-2">
             <fa icon="fal plus"></fa
@@ -176,16 +176,16 @@
             >
               <a-form-item label="Link" name="url" class="mb-3">
                 <a-input
-                  v-input-focus
                   v-model:value="addBookmarkState.url"
+                  v-input-focus
                   placeholder="eg: https://notion.so"
                   @change="handleInputChange"
                 />
               </a-form-item>
               <a-form-item
+                v-if="showTitle"
                 label="Title"
                 name="title"
-                v-if="showTitle"
                 class="mb-4"
               >
                 <a-input
@@ -200,7 +200,7 @@
                   </template>
                 </a-input>
               </a-form-item>
-              <div class="flex justify-end" v-if="showTitle">
+              <div v-if="showTitle" class="flex justify-end">
                 <a-button
                   type="primary"
                   class="rounded"
@@ -220,6 +220,7 @@
 <script lang="ts">
 import { defineComponent, ref, Ref, watch, computed, ComputedRef } from "vue";
 import { useHead } from "@vueuse/head";
+
 interface link {
   [index: string]: {
     key: string | number;
@@ -270,7 +271,7 @@ export default defineComponent({
     const links: ComputedRef<link[]> = computed(() => props.links);
     const addBtnLoading = computed(() => props.addBtnLoading);
     const updateBtnLoading = computed(() => props.updateBtnLoading);
-    let showBookmarkDropdownArray = ref(links.value.map((e) => false));
+    const showBookmarkDropdownArray = ref(links.value.map((e) => false));
     watch(links, () => {
       showBookmarkDropdownArray.value = links.value.map((e) => false);
     });
@@ -414,13 +415,13 @@ export default defineComponent({
         (link) => link.key === selectedBookmarkId.value
       );
       navigator.clipboard.writeText(selectedLink.url).then(
-        function() {
+        () => {
           console.log(
             "Async: Copying to clipboard was successful!",
             selectedLink.url
           );
         },
-        function(err) {
+        (err) => {
           console.error("Async: Could not copy text: ", err);
         }
       );

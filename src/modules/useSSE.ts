@@ -1,6 +1,6 @@
-import { UserModule } from "~/types";
 import { EventSourcePolyfill } from "event-source-polyfill";
 import { useAsyncState } from "@vueuse/core";
+import { UserModule } from "~/types";
 
 interface useSSEParams {
   url: any;
@@ -45,7 +45,7 @@ function addParamsToUrl(
   url: Record<string, any>,
   params: Record<string, any>
 ): any {
-  let urlParams: string = new URLSearchParams(params).toString();
+  const urlParams: string = new URLSearchParams(params).toString();
   if (urlParams) return `${url}?${urlParams}`;
 
   return url;
@@ -62,7 +62,7 @@ function formatters(formatKey: string, e: any) {
   }
 }
 
-/***
+/** *
  * @param url - Path for making the network request
  * @param includeAuthHeader - Boolean to include the authroization header or not
  * @param config - config object
@@ -98,7 +98,7 @@ export function useSSE({
     ...headers,
   };
 
-  let cfg = {
+  const cfg = {
     withCredentials: false,
     format: "JSON",
     ...config,
@@ -111,10 +111,10 @@ export function useSSE({
     };
   }
 
-  let URL: any = addParamsToUrl(url, params);
+  const URL: any = addParamsToUrl(url, params);
   let eventSource: eventSrcObj;
 
-  let promise = new Promise<useSSEReturnObj>((resolve, reject) => {
+  const promise = new Promise<useSSEReturnObj>((resolve, reject) => {
     eventSource = new EventSourcePolyfill(URL, {
       headers: reqHeaders,
       withCredentials: cfg.withCredentials,

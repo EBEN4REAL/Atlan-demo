@@ -1,6 +1,6 @@
 // tailwind.config.js
 
-export default {
+module.exports =  {
   jit: true,
   important: true,
   purge: {

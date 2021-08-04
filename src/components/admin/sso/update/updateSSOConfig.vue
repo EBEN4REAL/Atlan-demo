@@ -164,8 +164,8 @@
                             <a-button
                                 class="px-6"
                                 type="primary"
-                                @click="updateSSO"
                                 :loading="isLoading"
+                                @click="updateSSO"
                             >
                                 Update
                             </a-button>
@@ -203,6 +203,8 @@
         onMounted,
         toRaw,
     } from 'vue';
+    import { message } from 'ant-design-vue';
+    import { useRouter } from 'vue-router';
     import emptySSOImage from '~/assets/images/emptyCreds.png';
     import ImportMetadataFromXML from '../common/importMetadataFromXML.vue';
     import ImportText from '../common/importText.vue';
@@ -213,14 +215,12 @@
         customSamlProvider,
         downloadMetadata,
     } from '~/constant/saml';
-    import { message } from 'ant-design-vue';
     import { getEnv } from '~/modules/__env';
     import { copyToClipboard } from '~/utils/clipboard';
     // @ts-ignore
     import { downloadFile } from '~/utils/download';
 
     import { IdentityProvider } from '~/api/auth/identityProvider';
-    import { useRouter } from 'vue-router';
     import { Tenant } from '~/api/auth/tenant';
 
     interface FormState {
@@ -230,8 +230,8 @@
     }
 
     export default defineComponent({
-        props: ['alias'],
         components: { ImportMetadataFromXML, ImportText },
+        props: ['alias'],
         setup(props, context) {
             console.log(context, 'context');
             const tenantStore = useTenantStore();

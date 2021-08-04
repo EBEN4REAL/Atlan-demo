@@ -4,17 +4,17 @@
       <a-input
         ref="searchText"
         v-model:value="classificationSearchText"
-        @change="handleClassificationsSearch"
         type="text"
         class="bg-white shadow-none form-control border-right-0"
         placeholder="Search classifications"
+        @change="handleClassificationsSearch"
       >
         <template #suffix>
           <fa
             v-if="classificationSearchText"
-            @click="clearSearchText"
             icon="fal times-circle"
             class="ml-2 mr-1 text-red-600"
+            @click="clearSearchText"
           />
           <fa
             v-if="!classificationSearchText"
@@ -30,8 +30,8 @@
           </div>
           <a-radio-group
             v-model:value="classificationFilterOptionsData"
-            @change="handleClassificationFilterChange"
             class="flex flex-col"
+            @change="handleClassificationFilterChange"
           >
             <template
               v-for="item in classificationFilterCheckboxes"
@@ -67,16 +67,16 @@
 
     <div class="mt-3">
       <a-checkbox-group
-        v-model:value="checkedValues"
-        @change="handleChange"
         v-if="classificationsList.length > 0"
+        v-model:value="checkedValues"
         class="w-full"
+        @change="handleChange"
       >
         <div class="flex flex-col w-full ">
           <div
-            class="overflow-y-scroll h-36"
             v-if="classificationSearchText === ''"
             ref="classificationsScrollContainer"
+            class="overflow-y-scroll h-36"
           >
             <template
               v-for="item in !hideClassifications
@@ -85,9 +85,9 @@
               :key="item?.guid + classificationFilterOptionsData"
             >
               <a-checkbox
+                v-if="item?.displayName"
                 :value="item.name"
                 class="w-full mb-2"
-                v-if="item?.displayName"
               >
                 <span class="mb-0 ml-1 text-gray-500 truncated">
                   {{ item?.displayName }}
@@ -97,17 +97,17 @@
           </div>
           <div
             v-else
-            class="overflow-y-scroll h-36"
             ref="classificationsScrollContainer"
+            class="overflow-y-scroll h-36"
           >
             <template
               v-for="item in filteredClassificationList"
               :key="item?.guid + classificationFilterOptionsData"
             >
               <a-checkbox
+                v-if="item?.displayName"
                 :value="item.guid"
                 class="w-full mb-2"
-                v-if="item?.displayName"
               >
                 <span class="mb-0 ml-1 text-gray-500 truncated">
                   {{ item?.displayName }}
@@ -117,20 +117,20 @@
           </div>
 
           <div
-            class="flex items-center justify-center w-auto px-2 mt-1 mb-0 font-bold text-center cursor-pointer select-none outlined hover:text-primary-500"
             v-if="
               hideClassifications &&
                 classificationSearchText === '' &&
                 classificationsList.length > 5
             "
+            class="flex items-center justify-center w-auto px-2 mt-1 mb-0 font-bold text-center cursor-pointer select-none outlined hover:text-primary-500"
             @click="toggleClassifications"
           >
             <fa icon="fal chevron-down" class="mr-1" />
             {{ `Show more + ${classificationsList.length - 5}` }}
           </div>
           <div
-            class="flex items-center justify-center w-auto px-2 mt-1 mb-0 font-bold text-center cursor-pointer select-none outlined hover:text-primary-500"
             v-else-if="!hideClassifications && classificationSearchText === ''"
+            class="flex items-center justify-center w-auto px-2 mt-1 mb-0 font-bold text-center cursor-pointer select-none outlined hover:text-primary-500"
             @click="toggleClassifications"
           >
             <fa icon="fal chevron-up" class="mr-1 " />
@@ -138,7 +138,7 @@
           </div>
         </div>
       </a-checkbox-group>
-      <p class="text-center text-gray-300 " v-else>No Classifications</p>
+      <p v-else class="text-center text-gray-300 ">No Classifications</p>
     </div>
   </div>
 </template>
@@ -182,10 +182,9 @@ export default defineComponent({
       },
     },
   },
-  mounted() {},
   emits: ["update:modelValue", "change"],
   setup(props, { emit }) {
-    let classificationsList = ref([]);
+    const classificationsList = ref([]);
     const filteredClassificationList = ref([]);
     const checkedValues = ref([]);
     checkedValues.value = [...props.modelValue, ...props.data.checked];
@@ -207,7 +206,7 @@ export default defineComponent({
       emit("update:modelValue", checkedValues.value);
       console.log(checkedValues.value, "checked");
 
-      let criterion: Components.Schemas.FilterCriteria[] = [];
+      const criterion: Components.Schemas.FilterCriteria[] = [];
       checkedValues.value.forEach((val) => {
         criterion.push({
           attributeName: "__classificationNames",
@@ -225,7 +224,7 @@ export default defineComponent({
         id: props.item.id,
         payload: {
           condition: "OR",
-          criterion: criterion,
+          criterion,
         } as Components.Schemas.FilterCriteria,
       });
     };
@@ -237,12 +236,12 @@ export default defineComponent({
       let classifications = [];
       switch (sortingOrder) {
         case "asc": {
-          classifications = toRaw(data).sort(function(
+          classifications = toRaw(data).sort((
             classificationA,
             classificationB
-          ) {
-            let a = classificationA.displayName;
-            let b = classificationB.displayName;
+          ) => {
+            const a = classificationA.displayName;
+            const b = classificationB.displayName;
             if (a < b) {
               return -1;
             }
@@ -254,12 +253,12 @@ export default defineComponent({
           break;
         }
         case "dsc": {
-          classifications = toRaw(data).sort(function(
+          classifications = toRaw(data).sort((
             classificationA,
             classificationB
-          ) {
-            let a = classificationA.displayName;
-            let b = classificationB.displayName;
+          ) => {
+            const a = classificationA.displayName;
+            const b = classificationB.displayName;
             if (a < b) {
               return 1;
             }
@@ -301,7 +300,7 @@ export default defineComponent({
     // classification Search
     const classificationSearchText = ref("");
     const handleClassificationsSearch = (e: any) => {
-      let searchText = e.target.value;
+      const searchText = e.target.value;
       filteredClassificationList.value = classificationsList.value.filter(
         (classification) =>
           classification.displayName.toLowerCase().includes(searchText)
@@ -349,6 +348,7 @@ export default defineComponent({
       handleClassificationFilterChange,
     };
   },
+  mounted() {},
 });
 </script>
 

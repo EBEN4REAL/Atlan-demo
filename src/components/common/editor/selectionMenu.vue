@@ -15,15 +15,15 @@
   >
     <a-button-group class="flex flex-wrap">
       <a-popover
-        placement="bottom"
         v-for="menuItem in menuData"
         :key="menuItem.key"
+        placement="bottom"
       >
         <a-dropdown
           v-if="menuItem.key === 'image'"
+          v-model:visible="showImageDropdown"
           :trigger="['click']"
           placement="bottomCenter"
-          v-model:visible="showImageDropdown"
         >
           <a-button
             class="border-0"
@@ -44,8 +44,8 @@
                   <label>By Url</label>
                   <div class="flex">
                     <a-input
-                      type="url"
                       v-model:value="imageLink"
+                      type="url"
                       focused
                       @keydown.enter="() => menuItem.onClick(editor)"
                     />
@@ -74,9 +74,9 @@
                     <a-upload-dragger
                       class="mx-5 justify-center content-center"
                       name="file"
-                      listType="picture"
+                      list-type="picture"
                       :multiple="false"
-                      :customRequest="uploadImage"
+                      :custom-request="uploadImage"
                     >
                       <fa icon="fal plus" />
                       <div class="text-sm">
@@ -117,7 +117,7 @@
       :title="null"
       :closable="true"
       :mask="false"
-      :maskClosable="true"
+      :mask-closable="true"
       width="50vw"
       :footer="null"
       @cancel="() => (showLinkModal = false)"
@@ -126,8 +126,8 @@
         <label>Link</label>
         <div class="flex">
           <a-input
-            type="url"
             v-model:value="link"
+            type="url"
             focused
             placeholder="https://"
             @keydown.esc="showLinkModal = false"
@@ -141,8 +141,8 @@
             Apply
           </a-button>
           <a-button
-            type="default"
             v-if="editor.isActive('link')"
+            type="default"
             @click="() => unLink(editor)"
           >
             Remove
@@ -379,7 +379,7 @@ export default defineComponent({
         icon: "fa redo",
         onClick: (editor) => editor.chain().focus().redo().run(),
       },
-      //table
+      // table
     ];
 
     const setLink = (editor: Editor) => {

@@ -4,7 +4,7 @@
       <div class="flex flex-row items-center cursor-pointer group">
         <p class="mb-0 text-gray-400">
           Last Name
-          <fa icon="fal check" class="ml-1 text-success" v-if="updateSuccess"></fa>
+          <fa v-if="updateSuccess" icon="fal check" class="ml-1 text-success"></fa>
         </p>
         <p
           v-if="!isUpdate && allowUpdate"
@@ -35,9 +35,9 @@
             <a-popover v-else-if="updateErrorMessage || updateSuccess" placement="bottom">
               <template #content>{{ updateErrorMessage }}</template>
               <fa
+                v-if="updateErrorMessage"
                 icon="fal exclamation-circle"
                 class="cursor-pointer text-error"
-                v-if="updateErrorMessage"
               ></fa>
             </a-popover>
           </div>
@@ -65,11 +65,11 @@ export default defineComponent({
     },
   },
   setup(props, context) {
-    let isUpdate = ref(false);
-    let lastNameLocal = ref(props.selectedUser.last_name);
-    let updateErrorMessage = ref("");
-    let updateSuccess = ref(false);
-    let updateLoading = ref(false);
+    const isUpdate = ref(false);
+    const lastNameLocal = ref(props.selectedUser.last_name);
+    const updateErrorMessage = ref("");
+    const updateSuccess = ref(false);
+    const updateLoading = ref(false);
     const onUpdate = () => {
       lastNameLocal.value = props.selectedUser.last_name;
       isUpdate.value = true;

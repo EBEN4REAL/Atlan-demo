@@ -2,21 +2,21 @@
   <tr class="mb-3 bg-white border rounded shadow-sm">
     <td class="w-3 pr-0 rounded-tl-md rounded-bl-md">
       <fa
+        v-if="status == 'Succeeded'"
         icon="fas check-circle"
         class="text-xl text-green-500"
-        v-if="status == 'Succeeded'"
       ></fa>
       <fa
+        v-else-if="status == 'Failed'"
         icon="fas exclamation-circle"
         class="text-xl text-red-500"
-        v-else-if="status == 'Failed'"
       ></fa>
       <a-spin v-else-if="status == 'Running'"></a-spin>
 
       <fa
+        v-else
         icon="fas exclamation-circle"
         class="text-xl text-yellow-500"
-        v-else
       ></fa>
     </td>
     <td class="">
@@ -41,9 +41,9 @@
     <td class="text-center text-gray-500">
       {{ duration(item) }}
       <a-progress
+        v-if="status == 'Running'"
         :percent="progressPercent(item)"
         size="small"
-        v-if="status == 'Running'"
       >
         <template #format="percent, successPercent">
           {{ progress(item) }}
@@ -59,8 +59,8 @@ import { SourceList } from "~/constant/source";
 import WorkflowMixin from "~/mixins/workflow";
 
 export default defineComponent({
-  mixins: [WorkflowMixin],
   components: {},
+  mixins: [WorkflowMixin],
   props: {
     item: {
       type: Object,
@@ -78,8 +78,8 @@ export default defineComponent({
   mounted() {},
   methods: {
     sourceLabel() {
-      let integrationName = this.source(this.item);
-      let found = SourceList.find((src) => src.id == integrationName);
+      const integrationName = this.source(this.item);
+      const found = SourceList.find((src) => src.id == integrationName);
       let title = integrationName;
       if (found) {
         title = found.label;
@@ -88,14 +88,14 @@ export default defineComponent({
     },
     sourceImage() {
       console.log(this.item);
-      let integrationName = this.source(this.item);
+      const integrationName = this.source(this.item);
       console.log(integrationName);
-      let found = SourceList.find((src) => src.id === integrationName);
+      const found = SourceList.find((src) => src.id === integrationName);
       console.log(found);
       if (found) {
         return found.image;
       }
-      return;
+      
     },
   },
 });

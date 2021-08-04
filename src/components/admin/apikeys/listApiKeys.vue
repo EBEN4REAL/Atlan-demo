@@ -2,11 +2,11 @@
   <div class="flex flex-row items-center justify-between mb-4 gap-x-5">
     <div class="flex w-1/4">
       <a-input-search
+        v-model:value="searchText"
         placeholder="Search API..."
         style="width: 300px"
-        v-model:value="searchText"
+        allow-clear="true"
         @change="handleSearch"
-        allowClear="true"
       />
     </div>
     <a-button type="primary" class="rounded-md" @click="showAPIKeyModal">Create New API</a-button>
@@ -14,16 +14,16 @@
   <div>
     <ErrorView v-if="[STATES.ERROR, STATES.STALE_IF_ERROR].includes(state)"></ErrorView>
     <a-table
-      :tableLayout="'fixed'"
       id="apiKeysList"
+      :table-layout="'fixed'"
       :pagination="{ pageSize: 7 }"
-      :dataSource="apiList"
+      :data-source="apiList"
       :columns="columns"
-      :rowKey="(key) => key.id"
-      @change="handleTableChange"
+      :row-key="(key) => key.id"
       :loading="
       [STATES.PENDING].includes(state)
     "
+      @change="handleTableChange"
     >
       <template #name="{ text: key }">
         <div class="flex items-center align-middle">
@@ -52,9 +52,9 @@
             </template>
             <a-button
               size="small"
-              @click="copyAPI(key)"
               class="mr-3.5 rounded"
               :diasbled="key.created_by !== currentUserId"
+              @click="copyAPI(key)"
             >
               <fa icon="fal copy"></fa>
             </a-button>
@@ -67,8 +67,8 @@
             <a-button
               size="small"
               class="rounded"
-              @click="deleteAPI(key.id)"
               :diasbled="key.created_by !== currentUserId"
+              @click="deleteAPI(key.id)"
             >
               <fa icon="fal trash-alt" class="text-red-600"></fa>
             </a-button>
@@ -87,8 +87,8 @@
           key="submit"
           type="primary"
           :disabled="!apiName.length"
-          @click="createAPIKey"
           :loading="isAPILoading"
+          @click="createAPIKey"
         >Create</a-button>
       </template>
     </a-modal>
@@ -98,47 +98,20 @@
 // Todo: Add createdBy user name for each API Key
 
 import { defineComponent, inject, onMounted, ref } from "vue";
-import useAPIKeys from "./useAPIKeys";
-import { copyToClipboard } from "~/utils/clipboard";
 import { message, Modal } from "ant-design-vue";
 import ErrorView from "@common/error/index.vue";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
-dayjs.extend(relativeTime);
+import { copyToClipboard } from "~/utils/clipboard";
+import useAPIKeys from "./useAPIKeys";
 import { APIKeyService } from "~/api/auth/apiKeys";
 import { debounce } from "~/composables/utils/debounce";
 import { useUserPreview } from "~/composables/user/showUserPreview";
 
+dayjs.extend(relativeTime);
+
 export default defineComponent({
   components: { ErrorView },
-  data() {
-    return {
-      columns: [
-        {
-          title: "Name",
-          key: "name",
-          width: 200,
-          slots: { customRender: "name" },
-        },
-        {
-          title: "Created By",
-          key: "created_by",
-          width: 150,
-          slots: { customRender: "createdBy" },
-        },
-        {
-          title: "API Key",
-          width: 120,
-          slots: { customRender: "apiKey" },
-        },
-        {
-          width: 100,
-          title: "Actions",
-          slots: { customRender: "actions" },
-        },
-      ],
-    };
-  },
   setup() {
     const keycloak: any = inject("$keycloak");
     const {
@@ -232,6 +205,34 @@ export default defineComponent({
       searchText,
       handleSearch,
       handleClickUser,
+    };
+  },
+  data() {
+    return {
+      columns: [
+        {
+          title: "Name",
+          key: "name",
+          width: 200,
+          slots: { customRender: "name" },
+        },
+        {
+          title: "Created By",
+          key: "created_by",
+          width: 150,
+          slots: { customRender: "createdBy" },
+        },
+        {
+          title: "API Key",
+          width: 120,
+          slots: { customRender: "apiKey" },
+        },
+        {
+          width: 100,
+          title: "Actions",
+          slots: { customRender: "actions" },
+        },
+      ],
     };
   },
 });

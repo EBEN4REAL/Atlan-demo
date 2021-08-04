@@ -1,15 +1,15 @@
 <template>
   <div>
     <a-popover
-      placement="left"
       v-model:visible="isCompleted"
-      overlayClassName="inlinepopover"
+      placement="left"
+      overlay-class-name="inlinepopover"
       trigger="click"
     >
       <template #content>
         <div class="flex flex-col" style="width: 300px">
           <div class="">
-            <a-radio-group class="w-full py-3" v-model:value="statusId">
+            <a-radio-group v-model:value="statusId" class="w-full py-3">
               <div class="flex flex-col">
                 <a-radio
                   v-for="item in List"
@@ -43,33 +43,33 @@
           <a-button
             type="primary"
             size="small"
-            @click="handleUpdate"
             :loading="isLoading"
+            @click="handleUpdate"
             >Update</a-button
           >
         </div>
       </template>
       <div
-        class="px-2 py-1 transition duration-500 ease-in-out rounded-lg  hover:bg-gray-50 hover:border"
         ref="animationPoint"
+        class="px-2 py-1 transition duration-500 ease-in-out rounded-lg  hover:bg-gray-50 hover:border"
       >
         <p class="mb-0 text-sm tracking-wide text-gray-400">Status</p>
         <StatusBadge
           :key="item.guid"
-          :statusId="item?.attributes?.assetStatus"
-          :statusMessage="item?.attributes?.assetStatusMessage"
-          :statusUpdatedAt="item?.attributes?.assetStatusUpdatedAt"
-          :statusUpdatedBy="item?.attributes?.assetStatusUpdatedBy"
-          :showNoStatus="true"
-          :showLabel="true"
+          :status-id="item?.attributes?.assetStatus"
+          :status-message="item?.attributes?.assetStatusMessage"
+          :status-updated-at="item?.attributes?.assetStatusUpdatedAt"
+          :status-updated-by="item?.attributes?.assetStatusUpdatedBy"
+          :show-no-status="true"
+          :show-label="true"
         ></StatusBadge>
       </div>
     </a-popover>
     <div v-if="item?.attributes?.assetStatusMessage" class="px-2 mt-1">
       <p
+        v-linkified
         class="mb-0 text-xs font-semibold text-gray-500"
         v-html="statusMessage"
-        v-linkified
       ></p>
     </div>
   </div>
@@ -134,7 +134,7 @@ export default defineComponent({
     });
 
     const keys = useMagicKeys();
-    const esc = keys["Escape"];
+    const esc = keys.Escape;
 
     watch(esc, (v) => {
       if (v) {

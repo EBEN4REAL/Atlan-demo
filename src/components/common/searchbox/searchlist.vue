@@ -9,13 +9,14 @@
     @input="handleInputChange"
   >
     <template #suffix>
-      <a-spin size="small" v-if="loading" class="ml-1"></a-spin>
+      <a-spin v-if="loading" size="small" class="ml-1"></a-spin>
     </template>
   </a-input>
 </template>
   
 <script lang="ts">
 import { defineComponent } from "vue";
+
 export default defineComponent({
   props: {
     size: {
@@ -40,12 +41,12 @@ export default defineComponent({
       },
     },
   },
+  emits: ["change"],
   data() {
     return {
       localSearchText: "",
     };
   },
-  emits: ["change"],
   methods: {
     handleInputChange() {
       this.$emit("change", this.localSearchText);

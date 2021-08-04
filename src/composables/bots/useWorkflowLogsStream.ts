@@ -77,7 +77,7 @@ export default function useWorkflowLogsStream() {
     // dataList.value = [];
     
     // let query = btoa('select * from "WEB_SALES" limit 100');
-    let url = `http://localhost:3333/api/auth/argo/tenants/default/workflows/default/atlan-init-tgx7h/log?logOptions.container=main&grep=&logOptions.follow=true`;
+    const url = `http://localhost:3333/api/auth/argo/tenants/default/workflows/default/atlan-init-tgx7h/log?logOptions.container=main&grep=&logOptions.follow=true`;
     const { data: sse, error, isLoading } = useSSE({
       url,
       includeAuthHeader: true,

@@ -3,29 +3,29 @@
         <editor-menu :editable="editable" :editor="editor" />
 
         <bubble-menu
+            v-if="editor"
             key="imageWidth"
             :editor="editor"
-            v-if="editor"
             @blur="showImageBubble = false"
         >
             <div
-                class="flex flex-col w-48 px-5 py-3 bg-white rounded shadow-xl"
                 v-if="editable && showImageBubble"
+                class="flex flex-col w-48 px-5 py-3 bg-white rounded shadow-xl"
             >
                 <a-radio-group
-                    class="flex flex-col"
                     v-model:value="widthOption"
+                    class="flex flex-col"
                 >
                     <a-radio :value="1">Orignal Size</a-radio>
                     <div class="flex flex-col pt-4">
                         <a-radio class="pb-2" :value="2">Width</a-radio>
                         <div class="flex p-0 m-0">
                             <a-input-number
+                                v-model:value="customWidth"
                                 class="w-48 ml-2 rounded-r-none"
                                 :min="5"
                                 :max="200"
                                 :disabled="widthOption === 1"
-                                v-model:value="customWidth"
                             />
                             <span
                                 class="
@@ -130,23 +130,19 @@
                         ...this.parent?.(),
                         imageWidth: {
                             default: 100,
-                            renderHTML: (attributes) => {
-                                return {
+                            renderHTML: (attributes) => ({
                                     imageWidth: attributes.imageWidth,
-                                }
-                            },
+                                }),
                         },
                         style: {
                             default: null,
-                            renderHTML: (attributes) => {
-                                return {
+                            renderHTML: (attributes) => ({
                                     style: `width: ${
                                         attributes.imageWidth
                                     }% !important; ${
                                         attributes.style ? attributes.style : ''
                                     }`,
-                                }
-                            },
+                                }),
                         },
                     }
                 },

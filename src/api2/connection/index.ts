@@ -14,33 +14,27 @@ const TestNetwork = (
     options?: IConfig & AxiosRequestConfig,
     cacheSuffix?: Ref<string>,
     dependantFetchingKey?: Ref<any>
-) => {
-    return useAPI<any>(CONNECTION_TEST_NETWORK, "POST", {
+) => useAPI<any>(CONNECTION_TEST_NETWORK, "POST", {
         body,
         options,
         cacheSuffix,
         dependantFetchingKey
     });
-};
 
 const Setup = (
     body?: Ref<Components.Schemas.ConnectionSetup>,
     options?: IConfig & AxiosRequestConfig,
     cacheSuffix?: Ref<string>,
     dependantFetchingKey?: Ref<any>
-) => {
-
-    return useAPI<any>(CONNECTION_SETUP, "POST", {
+) => useAPI<any>(CONNECTION_SETUP, "POST", {
         body,
         options,
         cacheSuffix,
         dependantFetchingKey
     });
-};
 
 const Archive = (id: string, options?: Ref<IConfig & AxiosRequestConfig>, cacheSuffix?: string,
-    dependantFetchingKey?: Ref<any>) => {
-    return useAPI<any>(CONNECTION_ARCHIVE, "POST", {
+    dependantFetchingKey?: Ref<any>) => useAPI<any>(CONNECTION_ARCHIVE, "POST", {
         pathVariables: {
             id
         },
@@ -48,7 +42,6 @@ const Archive = (id: string, options?: Ref<IConfig & AxiosRequestConfig>, cacheS
         cacheSuffix,
         dependantFetchingKey
     });
-};
 
 
 

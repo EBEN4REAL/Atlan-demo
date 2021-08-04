@@ -8,8 +8,8 @@
                 <a-button class="mr-2">Save</a-button>
 
                 <a-dropdown
-                    :trigger="['click']"
                     v-model:visible="templateNameDropdown"
+                    :trigger="['click']"
                 >
                     <a-button
                         v-if="editorContent && editorContent !== '<p></p>'"
@@ -29,8 +29,8 @@
                                     <label>Template Name</label>
                                     <div class="flex">
                                         <a-input
-                                            type="url"
                                             v-model:value="newTemplateName"
+                                            type="url"
                                             focused
                                             @keydown.enter="saveAsTemplate"
                                         />
@@ -50,9 +50,9 @@
                 <a-button
                     type="link"
                     :variant="'btn btn-sm btn-link mb-0 btn-no-focus font-w700 text-muted'"
-                    @click="onCancel"
                     :loading="false"
-                    :loadingText="'Cancelling...'"
+                    :loading-text="'Cancelling...'"
+                    @click="onCancel"
                     >Cancel</a-button
                 >
             </div>
@@ -62,11 +62,11 @@
             </a-button>
         </div>
         <Editor
-            @onEditorContentUpdate="onUpdate"
             ref="editor"
             :placeholder="placeholder"
             class="rounded-b"
             :editable="editable"
+            @onEditorContentUpdate="onUpdate"
         />
         <a-modal
             class="mt-16 border-gray-700"
@@ -74,7 +74,7 @@
             :title="null"
             :closable="true"
             :mask="true"
-            :maskClosable="true"
+            :mask-closable="true"
             width="50vw"
             :footer="null"
             @cancel="() => (showTemplatesModal = false)"

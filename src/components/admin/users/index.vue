@@ -171,7 +171,7 @@
                     </template>
                     <template #actions="{ text: user }">
                         <a-button-group>
-                            <a-tooltip v-if="user.enabled" placement="bottom">
+                            <a-tooltip v-if="user.enabled" placement="top">
                                 <template #title>
                                     <span>Disable User</span>
                                 </template>
@@ -203,7 +203,7 @@
                             </a-tooltip>
                             <a-tooltip
                                 v-if="!user.enabled"
-                                placement="bottom"
+                                placement="top"
                                 class="mr-3.5 rounded"
                             >
                                 <template #title>
@@ -231,18 +231,34 @@
                                         ></fa> </a-button
                                 ></a-popconfirm>
                             </a-tooltip>
-                            <a-tooltip v-if="user.enabled" placement="bottom">
+                            <a-tooltip v-if="user.enabled" placement="top">
                                 <template #title>
                                     <span>Change Role</span>
                                 </template>
-                                <a-button
-                                    v-if="user.enabled"
-                                    size="small"
-                                    class="rounded"
-                                    @click="handleChangeRole(user)"
-                                >
-                                    <fa icon="fal user-shield"></fa>
-                                </a-button>
+                                <a-popover placement="leftTop" trigger="click"
+                                    ><template #title>
+                                        <span>Change Role</span>
+                                    </template>
+                                    <template #content>
+                                        <ChangeRole
+                                            :user="
+                                                listType === 'users'
+                                                    ? selectedUser
+                                                    : selectedInvite
+                                            "
+                                            :role-list="roleList"
+                                            @updateRole="handleUpdateRole"
+                                        />
+                                    </template>
+                                    <a-button
+                                        v-if="user.enabled"
+                                        size="small"
+                                        class="rounded"
+                                        @click="handleChangeRole(user)"
+                                    >
+                                        <fa icon="fal user-shield"></fa>
+                                    </a-button>
+                                </a-popover>
                             </a-tooltip>
                         </a-button-group>
                     </template>
@@ -275,20 +291,7 @@
                 @changeRole="handleChangeRole"
             />
         </div>
-        <!-- Change Role Modal-->
-        <a-modal
-            :visible="showChangeRoleModal"
-            :destroy-on-close="true"
-            title="Change Role"
-            :footer="null"
-            @cancel="closeChangeRoleModal"
-        >
-            <ChangeRole
-                :user="listType === 'users' ? selectedUser : selectedInvite"
-                :role-list="roleList"
-                @updateRole="handleUpdateRole"
-            />
-        </a-modal>
+
         <a-modal
             :visible="showInviteUserModal"
             :destroy-on-close="true"
@@ -306,7 +309,7 @@
 <script lang="ts">
     import { defineComponent, ref, reactive, computed, watch } from 'vue'
     import { useDebounceFn } from '@vueuse/core'
-    import { Modal, message } from 'ant-design-vue'
+    import { message } from 'ant-design-vue'
     import ErrorView from '@common/error/index.vue'
     import { useUserPreview } from '~/composables/user/showUserPreview'
     import useUsers from '~/composables/user/useUsers'
@@ -339,7 +342,7 @@
             )
             const listType = ref('users')
             const searchText = ref('')
-            const showChangeRoleModal = ref(false)
+            const showChangeRolePopover = ref<boolean>(false)
             const showInviteUserModal = ref(false)
             const showUserPreview = ref(false)
             const statusFilterValue = ref<string>('')
@@ -482,12 +485,13 @@
             })
             // END: USER PREVIEW
             const handleChangeRole = (user: any) => {
-                showChangeRoleModal.value = true
                 if (listType.value === 'users') selectedUserId.value = user.id
                 else Object.assign(selectedInvite.value, user)
+
+                showChangeRolePopover.value = true
             }
             const closeChangeRoleModal = () => {
-                showChangeRoleModal.value = false
+                showChangeRolePopover.value = false
                 selectedUserId.value = ''
             }
             const handleInviteUsers = (user: any) => {
@@ -649,7 +653,7 @@
                 state,
                 STATES,
                 loginWithEmailAllowed,
-                showChangeRoleModal,
+                showChangeRolePopover,
                 handleChangeRole,
                 closeChangeRoleModal,
                 handleUpdateRole,
@@ -726,3 +730,12 @@
         },
     })
 </script>
+
+<style lang="less" scoped>
+    :global(.ant-popover-content) {
+        --tw-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
+            0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000),
+            var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
+    }
+</style>

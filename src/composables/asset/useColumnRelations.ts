@@ -1,6 +1,7 @@
 import { useAsyncState } from '@vueuse/core'
 import { Ref, watch, ref, computed } from 'vue'
 import { fetcher, getAPIPath } from '~/api'
+import { dataTypeList } from '~/constant/datatype'
 
 const serviceAlias = 'auth/atlas'
 
@@ -41,6 +42,8 @@ function constructRequest(guid: string) {
 
 export function useColumns(id: Ref<string>) {
     const searchTerm = ref('')
+    const filters: Ref<string[]> = ref([])
+
     const { execute, state, isReady, error } = useAsyncState(
         () => {
             const params = constructRequest(id.value)
@@ -55,19 +58,38 @@ export function useColumns(id: Ref<string>) {
     )
 
     const filteredList = computed(() => {
-        if (searchTerm.value && state.value?.entities) {
-            const keyword = searchTerm.value.toLowerCase()
+        const allowedTypes = dataTypeList
+            .filter((typeList) => filters.value.includes(typeList.id))
+            .reduce((acc: string[], dt) => [...acc, ...dt.type], [])
+            .map((type) => type.toLowerCase())
 
-            return state.value.entities.filter((item) =>
-                item.displayText.toLowerCase().includes(keyword)
-            )
-        }
-        return state.value?.entities || []
+        const keyword = searchTerm.value.toLowerCase()
+
+        return (
+            state.value.entities.filter(
+                (item) =>
+                    (keyword
+                        ? item.displayText.toLowerCase().includes(keyword)
+                        : true) &&
+                    (filters.value.length
+                        ? allowedTypes.includes(
+                              item.attributes.dataType.toLowerCase()
+                          )
+                        : true)
+            ) || []
+        )
     })
 
     watch(id, (newId, oldId) => {
         if (newId !== oldId) execute()
     })
 
-    return { columnList: state, isReady, error, searchTerm, filteredList }
+    return {
+        columnList: state,
+        isReady,
+        error,
+        searchTerm,
+        filteredList,
+        filters,
+    }
 }

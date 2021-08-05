@@ -39,6 +39,7 @@
     import { assetInterface } from '~/types/assets/asset.interface'
     import { useColumns } from '~/composables/asset/useColumnRelations'
     import useAssetInfo from '~/composables/asset/useAssetInfo'
+    import { dataTypeList } from '~/constant/datatype'
 
     export default defineComponent({
         components: {},
@@ -66,6 +67,7 @@
                 dataTypeImage,
                 isReady,
                 error,
+                dataTypeList,
             }
         },
     })

@@ -137,7 +137,7 @@
 <style lang="less" module>
     .previewtab {
         :global(.ant-tabs-tab) {
-            @apply pb-3 px-0;
+            @apply pb-3 px-1;
             @apply mx-2;
             @apply text-gray-description;
             @apply text-xs;

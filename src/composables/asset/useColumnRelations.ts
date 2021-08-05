@@ -1,9 +1,9 @@
 import { useAsyncState } from '@vueuse/core'
 import { Ref, watch, ref, computed } from 'vue'
-import { fetcher, getAPIPath } from '~/api'
+import { fetcher } from '~/api'
+import { GET_ASSET_RELATIONSHIP } from '~/api/keyMaps/asset'
+import keyMaps from '~/api/keyMaps'
 import { dataTypeList } from '~/constant/datatype'
-
-const serviceAlias = 'auth/atlas'
 
 function constructRequest(guid: string) {
     const finalParams = new URLSearchParams()
@@ -47,11 +47,7 @@ export function useColumns(id: Ref<string>) {
     const { execute, state, isReady, error } = useAsyncState(
         () => {
             const params = constructRequest(id.value)
-            return fetcher(
-                getAPIPath(serviceAlias, '/search/relationship'),
-                params,
-                {}
-            )
+            return fetcher(keyMaps[GET_ASSET_RELATIONSHIP](), params, {})
         },
         { entities: [] },
         { resetOnExecute: true }
@@ -66,7 +62,7 @@ export function useColumns(id: Ref<string>) {
         const keyword = searchTerm.value.toLowerCase()
 
         return (
-            state.value.entities.filter(
+            state.value?.entities?.filter(
                 (item) =>
                     (keyword
                         ? item.displayText.toLowerCase().includes(keyword)

@@ -3,20 +3,20 @@
     <div class="flex">
       <UpdateName
         :group="selectedGroup"
-        @refreshTable="$emit('refreshTable')"
         class="flex-1 mr-4"
+        @refreshTable="$emit('refreshTable')"
       />
       <UpdateAlias
         :group="selectedGroup"
-        @refreshTable="$emit('refreshTable')"
         class="flex-1"
+        @refreshTable="$emit('refreshTable')"
       />
     </div>
     <div class="flex mt-3">
       <UpdateDescription
         :group="selectedGroup"
-        @refreshTable="$emit('refreshTable')"
         class="flex-1 mr-4"
+        @refreshTable="$emit('refreshTable')"
       />
       <div class="flex-1">
         <div class="flex items-center">
@@ -51,18 +51,19 @@ import { defineComponent } from "vue";
 import UpdateName from "~/components/admin/groups/groupPreview/about/updateName.vue";
 import UpdateAlias from "~/components/admin/groups/groupPreview/about/updateAlias.vue";
 import UpdateDescription from "~/components/admin/groups/groupPreview/about/updateDescription.vue";
+
 export default defineComponent({
   name: "About",
+  components: {
+    UpdateName,
+    UpdateAlias,
+    UpdateDescription,
+  },
   props: {
     selectedGroup: {
       type: Object,
       default: {},
     },
-  },
-  components: {
-    UpdateName,
-    UpdateAlias,
-    UpdateDescription,
   },
 });
 </script>

@@ -8,8 +8,8 @@
     <a-button
       type="default"
       class="text-white bg-red-500 border-red-500"
-      @click="handleDelete"
       :loading="isReady"
+      @click="handleDelete"
       >Delete this Connection</a-button
     >
   </div>
@@ -23,8 +23,8 @@ import deleteConnection from "~/composables/connection/deleteConnection";
 import { ConnectionType } from "~/types/atlas/connection";
 
 export default defineComponent({
-  mixins: [],
   components: {},
+  mixins: [],
   props: {
     item: {
       type: Object as PropType<ConnectionType>,
@@ -37,7 +37,7 @@ export default defineComponent({
   setup(props) {
     console.log(props.item.guid);
 
-    let id = ref(props.item.guid);
+    const id = ref(props.item.guid);
     const { execute, res, isReady } = deleteConnection(id.value, {
       immediate: false,
     });

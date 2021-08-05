@@ -12,22 +12,18 @@ export default function updateAssetStatus(item: any) {
     const body: { [key: string]: any } = ref({});
 
     const statusId: WritableComputedRef<string> = computed({
-        get: () => {
-            return (
+        get: () => (
                 assetStatus.value.id || item?.attributes?.assetStatus || "is_null"
-            );
-        },
+            ),
         set: (newValue: string) => {
             assetStatus.value.id = newValue;
             body.value = getBody();
         },
     });
     const statusMessage: WritableComputedRef<string> = computed({
-        get: () => {
-            return (
+        get: () => (
                 item?.attributes?.assetStatusMessage
-            );
-        },
+            ),
         set: (newValue: string) => {
             assetStatus.value.message = newValue;
             body.value = getBody();
@@ -35,8 +31,7 @@ export default function updateAssetStatus(item: any) {
     });
 
 
-    const getBody = () => {
-        return {
+    const getBody = () => ({
             entities: [
                 {
                     guid: item.guid,
@@ -52,8 +47,7 @@ export default function updateAssetStatus(item: any) {
                     },
                 },
             ],
-        };
-    };
+        });
 
     const update = () => {
         isLoading.value = true;

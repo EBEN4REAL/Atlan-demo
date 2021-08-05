@@ -4,7 +4,7 @@
       <div class="flex flex-row items-center cursor-pointer group">
         <p class="mb-0 text-gray-400">
           Role
-          <fa icon="fal check" class="ml-1 text-success" v-if="updateSuccess"></fa>
+          <fa v-if="updateSuccess" icon="fal check" class="ml-1 text-success"></fa>
         </p>
         <p
           v-if="!isUpdate && allowUpdate"
@@ -32,9 +32,9 @@
             <a-popover v-else-if="updateErrorMessage" placement="bottom">
               <template #content>{{ updateErrorMessage }}</template>
               <fa
+                v-if="updateErrorMessage"
                 icon="fal exclamation-circle"
                 class="text-red-600 cursor-pointer"
-                v-if="updateErrorMessage"
               ></fa>
             </a-popover>
           </div>
@@ -52,6 +52,7 @@
 import { defineComponent, ref, watch } from "vue";
 import useRoles from "~/composables/roles/useRoles";
 import { User } from "~/api/auth/user";
+
 export default defineComponent({
   name: "UpdateRole",
   props: {
@@ -65,16 +66,16 @@ export default defineComponent({
     },
   },
   setup(props, context) {
-    let roles = ref([]);
+    const roles = ref([]);
     const { roleList } = useRoles();
     watch(roleList, () => {
       if (roleList && roleList.value) roles.value = roleList.value;
     });
-    let isUpdate = ref(false);
-    let roleLocal = ref(props.selectedUser.role_object.name);
-    let updateErrorMessage = ref("");
-    let updateSuccess = ref(false);
-    let updateLoading = ref(false);
+    const isUpdate = ref(false);
+    const roleLocal = ref(props.selectedUser.role_object.name);
+    const updateErrorMessage = ref("");
+    const updateSuccess = ref(false);
+    const updateLoading = ref(false);
     const onUpdate = () => {
       roleLocal.value = props.selectedUser.role_object.name;
       updateErrorMessage.value = "";

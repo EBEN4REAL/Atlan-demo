@@ -2,8 +2,8 @@
     <div class="flex w-full px-3 py-1 border-t bg-gray-50 border-gray-50">
         <div class="flex items-center justify-between w-full">
             <div
-                class="flex items-center text-sm leading-none"
                 v-if="props.isLoading || props.isValidating"
+                class="flex items-center text-sm leading-none"
             >
                 <a-spin size="small" class="mr-2 leading-none"></a-spin
                 ><span>searching results</span>
@@ -11,17 +11,17 @@
             <AssetPagination
                 v-else
                 :label="props.assetTypeLabel"
-                :listCount="props.listCount"
-                :totalCount="props.totalCount"
+                :list-count="props.listCount"
+                :total-count="props.totalCount"
             ></AssetPagination>
 
             <div
-                class="text-sm cursor-pointer text-primary"
-                @click="loadMore"
                 v-if="
                     props.isLoadMore &&
                         (!props.isLoading || !props.isValidating)
                 "
+                class="text-sm cursor-pointer text-primary"
+                @click="loadMore"
             >
                 load more...
             </div>
@@ -34,6 +34,9 @@
 
     export default {
         name: 'Footer',
+        components: {
+            AssetPagination,
+        },
         props: {
             isLoading: {
                 type: Boolean,
@@ -58,9 +61,6 @@
                 type: Number,
                 default: 0,
             },
-        },
-        components: {
-            AssetPagination,
         },
         setup(props, { emit }) {
             const loadMore = (e) => {

@@ -1,3 +1,4 @@
+import { nextTick } from "vue";
 import {
   buildGraph,
   buildLayoutColumns,
@@ -7,7 +8,6 @@ import {
   searchItems,
 } from "~/components/lineage/util";
 
-import { nextTick } from "vue";
 
 export const computeGraphRelations = (
   lineage,
@@ -22,15 +22,15 @@ export const computeGraphRelations = (
   let predecessors = [];
   let successors = [];
   let layoutColumns = [];
-  let layoutColumnsList: any = [];
-  let lineageList: any = {};
-  let cycles = [];
+  const layoutColumnsList: any = [];
+  const lineageList: any = {};
+  const cycles = [];
 
   // Check for Empty lineage
   if (lineage.value?.relations.length === 0) {
     if (type === "widget") {
       return { upstream: [], downstream: [] };
-    } else {
+    } 
       const baseEntity = getBaseEntity(null, null, asset.value);
       const baseEntityData = {
         type: baseEntity.type,
@@ -54,7 +54,7 @@ export const computeGraphRelations = (
         searchItems,
         cycles,
       };
-    }
+    
   }
 
   // Compute graph
@@ -98,15 +98,15 @@ export const computeGraphRelations = (
   if (type === "widget") {
     if (Object.keys(lineageList).length === 0)
       return { upstream: [], downstream: [] };
-    else return lineageList;
-  } else {
+    return lineageList;
+  } 
     return {
       glGraph,
       layoutColumns,
       searchItems,
       cycles,
     };
-  }
+  
 };
 
 export const restartComputation = (

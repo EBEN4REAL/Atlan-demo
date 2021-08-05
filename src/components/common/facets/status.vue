@@ -1,13 +1,13 @@
 <template>
   <a-checkbox-group
     v-model:value="checkedValues"
-    @change="handleChange"
     class="w-full"
+    @change="handleChange"
   >
     <div class="flex flex-col w-full">
       <template v-for="item in list" :key="item.id">
         <a-tooltip placement="right">
-          <template #title v-if="item.description">{{
+          <template v-if="item.description" #title>{{
             item.description
           }}</template>
           <a-checkbox :value="item.id" class="w-full">
@@ -57,16 +57,14 @@ export default defineComponent({
   },
   emits: ["update:modelValue", "change"],
   setup(props, { emit }) {
-    const list = computed(() => {
-      return List;
-    });
+    const list = computed(() => List);
     const checkedValues = ref([]);
     checkedValues.value = [...props.modelValue, ...props.data.checked];
     console.log(checkedValues.value, "model");
     const handleChange = (checkedValue: string) => {
       emit("update:modelValue", checkedValues.value);
 
-      let criterion: Components.Schemas.FilterCriteria[] = [];
+      const criterion: Components.Schemas.FilterCriteria[] = [];
       checkedValues.value.forEach((val) => {
         criterion.push({
           attributeName: "assetStatus",
@@ -79,7 +77,7 @@ export default defineComponent({
         id: props.item.id,
         payload: {
           condition: "OR",
-          criterion: criterion,
+          criterion,
         } as Components.Schemas.FilterCriteria,
       });
     };

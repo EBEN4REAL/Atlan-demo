@@ -1,11 +1,11 @@
 <template>
     <div class="h-full py-6">
-        <div class="flex items-center justify-center h-full" v-if="isLoading">
+        <div v-if="isLoading" class="flex items-center justify-center h-full">
             <a-spin />
         </div>
         <div
-            class="flex flex-col items-center justify-center h-full bg-white"
             v-if="[STATES.ERROR, STATES.STALE_IF_ERROR].includes(state)"
+            class="flex flex-col items-center justify-center h-full bg-white"
         >
             <ErrorView>
                 <div class="mt-3">
@@ -27,14 +27,14 @@
         <div v-else-if="selectedUser && selectedUser.id">
             <div class="flex px-6 mb-3">
                 <avatar
-                    :imageUrl="imageUrl"
-                    :allowUpload="isCurrentUser"
-                    :avatarName="
+                    :image-url="imageUrl"
+                    :allow-upload="isCurrentUser"
+                    :avatar-name="
                         selectedUser.name ||
                             selectedUser.uername ||
                             selectedUser.email
                     "
-                    :avatarSize="48"
+                    :avatar-size="48"
                     class="mr-2"
                 />
                 <div class="ml-3">
@@ -56,18 +56,18 @@
                 </div>
             </div>
             <a-tabs
-                :defaultActiveKey="activeKey"
-                :tabBarStyle="{ paddingLeft: '1rem', paddingRight: '1rem' }"
+                :default-active-key="activeKey"
+                :tab-bar-style="{ paddingLeft: '1rem', paddingRight: '1rem' }"
             >
                 <a-tab-pane v-for="tab in tabs" :key="tab.name">
                     <template #tab>
                         <span class="mb-0">{{ tab.name }}</span>
                     </template>
                     <component
-                        class="px-6 overflow-auto component-height"
-                        :isCurrentUser="isCurrentUser"
                         :is="tab.component"
-                        :selectedUser="selectedUser"
+                        class="px-6 overflow-auto component-height"
+                        :is-current-user="isCurrentUser"
+                        :selected-user="selectedUser"
                         @updatedUser="handleUserUpdate"
                     />
                 </a-tab-pane>
@@ -76,11 +76,12 @@
     </div>
 </template>
 <script lang="ts">
+    import { defineComponent, ref, computed } from 'vue';
+    import ErrorView from '@common/error/index.vue';
     import {
         getNameInitials,
         getNameInTitleCase,
     } from '~/composables/utils/string-operations';
-    import { defineComponent, ref, computed } from 'vue';
     import About from './about.vue';
     import Groups from './groups.vue';
     import AccessLogs from './accessLogs.vue';
@@ -90,7 +91,7 @@
     import Avatar from '~/components/common/avatar.vue';
     import { useUserPreview } from '~/composables/user/showUserPreview';
     import { useUser } from '~/composables/user/useUsers';
-    import ErrorView from '@common/error/index.vue';
+
     export default defineComponent({
         name: 'UserPreview',
         components: {
@@ -129,15 +130,11 @@
                 sort: 'first_name',
                 filter: filterObj,
             });
-            const userObj = computed(() => {
-                return userList && userList.value && userList.value.length
+            const userObj = computed(() => userList && userList.value && userList.value.length
                     ? userList.value[0]
-                    : [];
-            });
+                    : []);
             const { username } = whoami();
-            let isCurrentUser = computed(() => {
-                return username.value === userObj.value.username;
-            });
+            const isCurrentUser = computed(() => username.value === userObj.value.username);
             const imageUrl = computed(() => {
                 if (userObj.value && userObj.value.username)
                     return `http://localhost:3333/api/auth/tenants/default/avatars/${userObj.value.username}`;

@@ -1,15 +1,15 @@
-import swrvState from '../utils/swrvState';
 import useSWRV from 'swrv';
+import { computed, ref } from 'vue';
+import LocalStorageCache from 'swrv/dist/cache/adapters/localStorage';
+import swrvState from '../utils/swrvState';
 import { Components } from '~/api/auth/client';
 
 import { User, URL } from '~/api/auth/user';
-import { computed, ref } from 'vue';
-import LocalStorageCache from 'swrv/dist/cache/adapters/localStorage';
 
 export default function fetchUserList(dependent: any) {
 
 
-    let params = ref({});
+    const params = ref({});
     // this is needed as there are multiple keys with the same param name
     const urlparam = new URLSearchParams();
     urlparam.append("limit", "20");
@@ -24,9 +24,9 @@ export default function fetchUserList(dependent: any) {
         if (dependent.value) {
             return User.ListV2(params?.value);
         }
-        else {
+        
             return {}
-        }
+        
     }, {
         revalidateOnFocus: false,
         cache: new LocalStorageCache(),
@@ -35,15 +35,9 @@ export default function fetchUserList(dependent: any) {
     });
     const { state, STATES } = swrvState(data, error, isValidating);
 
-    const list = computed(() => {
-        return data.value?.records;
-    });
-    const total = computed(() => {
-        return data.value?.total_record;
-    });
-    const filtered = computed(() => {
-        return data.value?.filter_record;
-    });
+    const list = computed(() => data.value?.records);
+    const total = computed(() => data.value?.total_record);
+    const filtered = computed(() => data.value?.filter_record);
 
     let debounce: any = null;
     const handleSearch = (val: string) => {

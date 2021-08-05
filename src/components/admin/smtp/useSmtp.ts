@@ -105,11 +105,9 @@ export function useSmtp() {
     }, milliseconds);
   };
 
-  const finalTestSmtpConfigError = computed(() => {
-    return testSmtpConfigError.value && testSmtpConfigError.value.length < 40
+  const finalTestSmtpConfigError = computed(() => testSmtpConfigError.value && testSmtpConfigError.value.length < 40
       ? testSmtpConfigError.value
-      : "SMTP config are incorrect";
-  });
+      : "SMTP config are incorrect");
 
   const updateSmtpProperty = (key: string, value: string) => {
     if (key === "password") passwordReentered.value = true;

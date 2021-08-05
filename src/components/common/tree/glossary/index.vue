@@ -1,35 +1,35 @@
 <template>
     <a-tree
-        :treeData="treeData"
-        :load-data="onLoadData"
-        :blockNode="true"
         v-model:expandedKeys="expandedKeys"
         v-model:value="selectedKeys"
+        :tree-data="treeData"
+        :load-data="onLoadData"
+        :block-node="true"
         @select="selectNode"
         @expand="expandNode"
     >
         <template #title="{ title, type, key }">
             <a-dropdown :trigger="['contextmenu']">
                 <div
-                    @click="() => reirectToProfile(type, key)"
                     class="min-w-full"
+                    @click="() => reirectToProfile(type, key)"
                 >
                     <div class="flex align-middle">
                         <span class="mr-1">
                             <img
+                                v-if="type === 'glossary'"
                                 :src="GlossarySvg"
                                 :width="15"
-                                v-if="type === 'glossary'"
                             />
                             <img
+                                v-if="type === 'category'"
                                 :src="CategorySvg"
                                 :width="15"
-                                v-if="type === 'category'"
                             />
                             <img
+                                v-if="type === 'term'"
                                 :src="TermSvg"
                                 :width="12"
-                                v-if="type === 'term'"
                             />
                         </span>
                         <span class="text-sm leading-none text-gray-600">{{
@@ -39,9 +39,9 @@
                 </div>
                 <template #overlay>
                     <GlossaryContextMenu
-                        @glossarContextMenuClick="glossaryTreeContextMenuClick"
                         :type="type"
                         :guid="key"
+                        @glossarContextMenuClick="glossaryTreeContextMenuClick"
                     />
                 </template>
             </a-dropdown>
@@ -66,6 +66,8 @@ import { Emoji, EmojiIndex } from 'emoji-mart-vue-fast/src'
 import { Modal } from 'ant-design-vue'
 
 import { defineComponent, watch } from 'vue'
+import { MenuInfo } from 'ant-design-vue/lib/menu/src/interface'
+import { useRouter } from 'vue-router'
 import fetchGlossaryList from '~/composables/glossary/fetchGlossaryList'
 import useGlossaryTree from '~/composables/glossary/useGlossaryTree'
 import handleTreeExpand from '~/composables/tree/handleTreeExpand'
@@ -75,8 +77,6 @@ import GlossarySvg from '~/assets/images/gtc/glossary/glossary.png'
 import CategorySvg from '~/assets/images/gtc/category/category.png'
 import TermSvg from '~/assets/images/gtc/term/term.png'
 
-import { MenuInfo } from 'ant-design-vue/lib/menu/src/interface'
-import { useRouter } from 'vue-router'
 
 export default defineComponent({
     components: { Emoji, GlossaryContextMenu },
@@ -90,9 +90,6 @@ export default defineComponent({
         },
     },
     emits: ['showCreateGlossaryModal', 'showUpdateGlossaryModal', 'success'],
-    data() {
-        return {}
-    },
 
     setup(props, { emit }) {
         const { list, totalCount, listCount, refetchGlossary, response } =
@@ -167,6 +164,9 @@ export default defineComponent({
             CategorySvg,
             TermSvg,
         }
+    },
+    data() {
+        return {}
     },
 })
 </script>

@@ -1,17 +1,13 @@
-import { UserModule } from "~/types/vitessg";
-import { getEnv } from "~/modules/__env";
 import axios, { AxiosInstance, AxiosRequestConfig } from "axios";
 import VueAxios from "vue-axios";
+import { UserModule } from "~/types/vitessg";
+import { getEnv } from "~/modules/__env";
 
-const authInterceptor = (app: any) => {
-  return (config: AxiosRequestConfig) => {
-    config.headers[
-      "Authorization"
-    ] = `Bearer ${app.config.globalProperties.$keycloak.token}
+const authInterceptor = (app: any) => (config: AxiosRequestConfig) => {
+    config.headers.Authorization = `Bearer ${app.config.globalProperties.$keycloak.token}
     `;
     return config;
   };
-};
 
 export let axiosClient: AxiosInstance = null;
 
@@ -35,7 +31,7 @@ const errorInterceptor = (error: any) => {
 };
 
 // Interceptor for responses
-const responseInterceptor = (response: any) => {
+const responseInterceptor = (response: any) => 
   // switch (response.status) {
   //   case 200:
   //     // yay!
@@ -45,8 +41,8 @@ const responseInterceptor = (response: any) => {
   //   // default case
   // }
 
-  return response.data;
-};
+   response.data
+;
 
 // export function getBasePath() {
 //   const env = process.env.NODE_ENV;

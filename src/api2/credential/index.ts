@@ -14,14 +14,12 @@ const TestCredential = (
     options?: IConfig & AxiosRequestConfig,
     cacheSuffix?: Ref<string>,
     dependantFetchingKey?: Ref<any>
-) => {
-    return useAPI<any>(CREDENTIAL_TEST, "POST", {
+) => useAPI<any>(CREDENTIAL_TEST, "POST", {
         body,
         options,
         cacheSuffix,
         dependantFetchingKey
     });
-};
 
 
 const TestCredentialByID = (

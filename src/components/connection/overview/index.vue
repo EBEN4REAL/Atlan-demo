@@ -17,7 +17,7 @@
 
     <!-- <RunsView :item="item" :credential="credential" :bot="bot"></RunsView> -->
 
-    <DeleteView :item="item" class="mt-4" :key="item.guid"></DeleteView>
+    <DeleteView :key="item.guid" :item="item" class="mt-4"></DeleteView>
   </div>
 </template>
         
@@ -29,11 +29,11 @@ import RunsView from "@common/list/runs/index.vue";
 import DetailsView from "@/connection/overview/details.vue";
 
 import TotalView from "@/connection/overview/analytics/total.vue";
+import DeleteView from "@/connection/overview/delete.vue";
 import { ConnectionType } from "~/types/atlas/connection";
 import { CredentialType } from "~/types/atlas/credential";
 import { BotsType } from "~/types/atlas/bots";
 
-import DeleteView from "@/connection/overview/delete.vue";
 export default defineComponent({
   name: "HelloWorld",
   components: { DetailsView, RunsView, DeleteView, TotalView },

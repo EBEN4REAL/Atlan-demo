@@ -16,7 +16,7 @@ interface useGetAPIParams {
   // axiosOptions?: AxiosRequestConfig
 }
 
-/***
+/** *
  * @deprecated
  * @param key - Used as an identifier for the cache when making requests with SWRV
  * @param method - The HTTP reqeust method to use
@@ -71,7 +71,7 @@ export const useAPI = <T>(
 
     const isLoading = ref(!data && !error);
     return { data, error, isLoading, mutate, isValidating };
-  } else {
+  } 
     // If not using cache, use Axios
 
     const data = ref<T>();
@@ -128,7 +128,7 @@ export const useAPI = <T>(
     }
     // console.log("HOHO", data, error, data.value?.records);
     const test = computed(() => !data.value && !error.value);
-    const isLoading = ref(!data && !error);
+    const isLoading = ref(!data.value && !error.value);
     console.log(isLoading, isLoading.value);
     // watch(test, () => console.log(test));
     // isLoading.value = !data.value && !error.value;
@@ -141,5 +141,5 @@ export const useAPI = <T>(
       isLoading
     );
     return { data, error, isLoading };
-  }
+  
 };

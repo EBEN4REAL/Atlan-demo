@@ -90,9 +90,7 @@ export const getFormattedSearchQuery = (originalQuery) => {
 
     const pattern = searchQuery
       .split(" ")
-      .map((x) => {
-        return `(*${x}*)`;
-      })
+      .map((x) => `(*${x}*)`)
       .join("");
     return `${pattern}`;
   }
@@ -203,13 +201,11 @@ export const getBasicQuery = (params, savingFilter = false) => {
     condition: "OR",
     criterion: [],
   };
-  typeNameFilterObj.criterion = typeNameFilter.map((typeName) => {
-    return {
+  typeNameFilterObj.criterion = typeNameFilter.map((typeName) => ({
       attributeName: "typeName",
       attributeValue: typeName,
       operator: "eq",
-    };
-  });
+    }));
   if (typeNameFilterObj.criterion.length) {
     entityFilters.criterion.push(typeNameFilterObj);
   }
@@ -266,18 +262,14 @@ export const getBasicQuery = (params, savingFilter = false) => {
         if (savingFilter) {
           // ? using the attributeValues filed to keep track of Bm and Bm. attribute while saving
           filterValuesObj.attributeName = "BM";
-          const BMNames = filterValues.map((v) => {
-            return { bm: v.bm, attr: v.attributes[0].name };
-          });
+          const BMNames = filterValues.map((v) => ({ bm: v.bm, attr: v.attributes[0].name }));
           filterValuesObj.attributeValue = JSON.stringify(BMNames);
         }
-        filterValuesObj.criterion = filterValues.map((filterValue) => {
-          return {
+        filterValuesObj.criterion = filterValues.map((filterValue) => ({
             attributeName: `${filterValue.bm}.${filterValue.attributes[0].name}`,
             attributeValue: filterValue.attributes[0].value,
             operator: filterValue.attributes[0].operator,
-          };
-        });
+          }));
       } else {
         let filterValue = filterValues || [];
         // Edge case assets have status as undefined and some has status set NO_STATUS so need to search both in filter

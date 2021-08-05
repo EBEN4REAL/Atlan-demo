@@ -12,10 +12,10 @@ export default function fetchJobList(dependent: any, query?: string, filters?: a
         includeClassificationAttributes: true,
         includeSubClassifications: true,
         includeSubTypes: false,
-        limit: limit,
-        offset: offset,
+        limit,
+        offset,
         attributes: [...BaseAttributes, ...JobsAttributes],
-        query: query,
+        query,
         entityFilters: filters,
     });
 
@@ -28,9 +28,7 @@ export default function fetchJobList(dependent: any, query?: string, filters?: a
         errorMessage,
         mutate } = fetchSearchList(dependent, body)
 
-    const list: ComputedRef<any[] | undefined> = computed(() => {
-        return <any[] | undefined>data.value?.entities;
-    });
+    const list: ComputedRef<any[] | undefined> = computed(() => <any[] | undefined>data.value?.entities);
     const item: ComputedRef<BotsType | undefined> = computed(() => {
         if (list.value) {
             if (list.value.length > 0) {

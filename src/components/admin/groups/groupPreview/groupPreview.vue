@@ -1,8 +1,8 @@
 <template>
   <div class="h-full py-6">
     <div
-      class="flex flex-col items-center justify-center h-full bg-white"
       v-if="[STATES.ERROR, STATES.STALE_IF_ERROR].includes(state)"
+      class="flex flex-col items-center justify-center h-full bg-white"
     >
       <ErrorView>
         <div class="mt-3">
@@ -30,17 +30,17 @@
         </div>
       </div>
       <a-tabs
-        :defaultActiveKey="activeKey"
-        :tabBarStyle="{ paddingLeft: '1rem', paddingRight: '1rem' }"
+        :default-active-key="activeKey"
+        :tab-bar-style="{ paddingLeft: '1rem', paddingRight: '1rem' }"
       >
         <a-tab-pane v-for="tab in tabs" :key="tab.key">
           <template #tab>
             <span class="mb-0">{{ tab.name }}</span>
           </template>
           <component
-            class="px-6 overflow-auto component-height"
             :is="tab.component"
-            :selectedGroup="selectedGroup"
+            class="px-6 overflow-auto component-height"
+            :selected-group="selectedGroup"
             @refreshTable="getGroup"
           />
         </a-tab-pane>
@@ -49,17 +49,18 @@
   </div>
 </template>
 <script lang="ts">
+import { defineComponent, computed } from "vue";
+import ErrorView from "@common/error/index.vue";
 import {
   getNameInitials,
   getNameInTitleCase,
 } from "~/composables/utils/string-operations";
-import { defineComponent, computed } from "vue";
 import About from "./about.vue";
 import Members from "./members.vue";
 import Assets from "~/components/admin/users/userPreview/assets.vue";
 import { useGroup } from "~/composables/group/useGroups";
 import { useGroupPreview } from "~/composables/drawer/showGroupPreview";
-import ErrorView from "@common/error/index.vue";
+
 export default defineComponent({
   name: "GroupPreview",
   components: {
@@ -84,11 +85,9 @@ export default defineComponent({
       // sort: "alias",
       filter: filterObj,
     });
-    const groupObj = computed(() => {
-      return groupList && groupList.value && groupList.value.length
+    const groupObj = computed(() => groupList && groupList.value && groupList.value.length
         ? groupList.value[0]
-        : [];
-    });
+        : []);
     return {
       getNameInitials,
       getNameInTitleCase,

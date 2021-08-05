@@ -201,8 +201,8 @@
             <a-button
               class="px-6"
               type="primary"
-              @click="onSubmit"
               :loading="isLoading"
+              @click="onSubmit"
             >
               Save
             </a-button>
@@ -223,6 +223,7 @@ import {
   computed,
 } from "vue";
 
+import { message } from "ant-design-vue";
 import ImportMetadataFromXML from "../common/importMetadataFromXML.vue";
 import ImportText from "../common/importText.vue";
 
@@ -234,7 +235,6 @@ import {
   mapperList,
   downloadMetadata,
 } from "~/constant/saml";
-import { message } from "ant-design-vue";
 import { getEnv } from "~/modules/__env";
 import { copyToClipboard } from "~/utils/clipboard";
 
@@ -251,9 +251,9 @@ interface FormState {
 }
 
 export default defineComponent({
+  components: { ImportMetadataFromXML, ImportText },
   props: ["selectedProvider"],
   emits: ["showConfigScreen"],
-  components: { ImportMetadataFromXML, ImportText },
   setup(props, context) {
     const alias = ref(props.selectedProvider);
     const isAliasPresent = ref(alias.value !== "custom");
@@ -269,7 +269,7 @@ export default defineComponent({
 
     const defaultMappers = mapperList;
 
-    var mapperLists = ref(defaultMappers);
+    const mapperLists = ref(defaultMappers);
     const mappers: {
       name: any;
       identityProviderAlias: string;
@@ -415,7 +415,7 @@ export default defineComponent({
       const alias = identityProviders.value.find(
         (provider) => provider.alias === ssoForm.alias
       );
-      return alias ? true : false;
+      return !!alias;
     };
 
     const onSubmit = async () => {

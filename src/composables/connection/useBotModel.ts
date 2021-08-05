@@ -4,7 +4,7 @@ import { BotsType } from '~/types/atlas/bots';
 export default function useBotModel(item: BotsType) {
 
     const host = computed(() => {
-        let temp =
+        const temp =
             item?.attributes?.config?.attributes?.credential?.attributes?.host
                 ?.attributes;
         if (temp) {
@@ -23,18 +23,14 @@ export default function useBotModel(item: BotsType) {
     });
 
 
-    const port = computed(() => {
-        return item?.attributes?.config?.attributes?.credential?.attributes?.port
-            ?.attributes;
-    });
+    const port = computed(() => item?.attributes?.config?.attributes?.credential?.attributes?.port
+            ?.attributes);
 
-    const database = computed(() => {
-        return item?.attributes?.config?.attributes?.credential?.attributes?.database
-            ?.attributes;
-    });
+    const database = computed(() => item?.attributes?.config?.attributes?.credential?.attributes?.database
+            ?.attributes);
 
     const extraAttributes = computed(() => {
-        let attr: any[] = [];
+        const attr: any[] = [];
         item?.attributes?.config?.attributes?.credential?.attributes?.extra.forEach(
             (e: { attributes: any }) => {
                 attr.push(e.attributes);
@@ -46,7 +42,7 @@ export default function useBotModel(item: BotsType) {
     });
 
     const authTypes = computed(() => {
-        let temp: any[] = [];
+        const temp: any[] = [];
         item?.attributes?.config?.attributes?.credential?.attributes?.auth.forEach(
             (e) => {
                 console.log(e);
@@ -57,11 +53,9 @@ export default function useBotModel(item: BotsType) {
     });
 
     const authAttributes = (selectedAuthType: any) => {
-        let attr: any[] = [];
-        if (authTypes) {
-            const found = authTypes.value.find((i) => {
-                return i.id === selectedAuthType;
-            });
+        const attr: any[] = [];
+        if (authTypes.value) {
+            const found = authTypes.value.find((i) => i.id === selectedAuthType);
             if (found) {
                 found.config?.forEach((e: { attributes: any }) => {
                     attr.push(e.attributes);
@@ -73,7 +67,7 @@ export default function useBotModel(item: BotsType) {
 
 
     const enumAttributes = (authAttr: any) => {
-        let attr: any[] = [];
+        const attr: any[] = [];
         if (authAttr) {
             authAttr?.enumConfig.forEach((element) => {
                 attr.push({

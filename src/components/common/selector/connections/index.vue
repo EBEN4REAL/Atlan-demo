@@ -3,10 +3,10 @@
     :value="modelValue"
     placeholder="Connections"
     :show-search="true"
-    :autoClearSearchValue="true"
+    :auto-clear-search-value="true"
+    :allow-clear="true"
+    :filter-option="false"
     @search="handleSearch"
-    :allowClear="true"
-    :filterOption="false"
     @change="handleChange"
   >
     <template v-for="item in filteredList" :key="item.guid">
@@ -43,12 +43,11 @@ export default defineComponent({
   emits: ["update:modelValue", "change"],
   setup(props, { emit }) {
     const store = useConnectionsStore();
-    let searchValue = ref("");
-    let connectionsDropdown = ref(null);
-    let localValue = ref();
+    const searchValue = ref("");
+    const connectionsDropdown = ref(null);
+    const localValue = ref();
 
-    const filteredList = computed(() => {
-      return store.getList
+    const filteredList = computed(() => store.getList
         ?.filter((item) => {
           if (!props.showAll) {
             if (props.connector) {
@@ -59,11 +58,11 @@ export default defineComponent({
               }
             }
             return false;
-          } else {
+          } 
             return item.attributes.displayName
               .toLowerCase()
               .includes(searchValue.value.toLowerCase());
-          }
+          
         })
         .sort((a, b) =>
           a.attributes.displayName?.toLowerCase() >
@@ -73,12 +72,9 @@ export default defineComponent({
               a.attributes.displayName?.toLowerCase()
             ? -1
             : 0
-        );
-    });
+        ));
 
-    const getImage = (id: string) => {
-      return store.getImage(id);
-    };
+    const getImage = (id: string) => store.getImage(id);
 
     const handleSearch = (inputValue: string) => {
       searchValue.value = inputValue;

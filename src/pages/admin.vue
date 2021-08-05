@@ -53,7 +53,7 @@ export default defineComponent({
   setup() {
     const router = useRouter();
     const handleClick = (e: Event) => {
-      router.push("/admin/" + e.key);
+      router.push(`/admin/${  e.key}`);
     };
 
     return {

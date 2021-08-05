@@ -1,9 +1,9 @@
-import { Editor, Extension, Range } from '@tiptap/core'
+import { Editor, Extension, Range , Node, mergeAttributes } from '@tiptap/core'
 import { VueRenderer } from '@tiptap/vue-3'
 
 import { Plugin } from 'prosemirror-state'
 import { Slice, Fragment } from 'prosemirror-model'
-import { Node, mergeAttributes } from '@tiptap/core'
+
 
 
 interface commandsProps {

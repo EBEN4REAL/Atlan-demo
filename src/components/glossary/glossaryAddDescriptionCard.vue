@@ -19,9 +19,7 @@ export default defineComponent({
     setup(props: PropsType) {
       
 
-        const entity = computed(() => {
-           return props.entity
-        })
+        const entity = computed(() => props.entity)
         const description = ref('')
      
         const onSubmit = () => {

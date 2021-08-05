@@ -10,9 +10,9 @@
         ></span
       >
       <Description
+        :key="data.guid"
         class="cursor-pointer"
         :item="data"
-        :key="data.guid"
       ></Description>
     </div>
   </div>
@@ -22,8 +22,8 @@ import { defineComponent } from "vue";
 import Description from "@/preview/asset/tabs/overview/details/description.vue";
 
 export default defineComponent({
-  props: ["data"],
   components: { Description },
+  props: ["data"],
   setup(props) {
     return {
       data: props.data,

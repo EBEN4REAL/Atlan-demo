@@ -17,27 +17,21 @@ export default function useCredentialTestbyID(dependentKey?: Ref<any>, id?: any,
 
     const paramId = ref(id);
 
-    let cancelTokenSource: Ref<CancelTokenSource> = ref(axios.CancelToken.source());
+    const cancelTokenSource: Ref<CancelTokenSource> = ref(axios.CancelToken.source());
     const { data, state, STATES,
         mutate, error, isValidating } = Credential.TestCredentialByID(paramId.value, asyncOptions, `${cacheSuffx}`, dependentKey);
 
-    const isLoading = computed(() => {
-        return (([STATES.PENDING].includes(state.value) || [STATES.VALIDATING].includes(state.value)) && dependentKey?.value)
-            || isValidating.value && dependentKey?.value;
-    });
+    const isLoading = computed(() => (([STATES.PENDING].includes(state.value) || [STATES.VALIDATING].includes(state.value)) && dependentKey?.value)
+            || isValidating.value && dependentKey?.value);
 
-    const isSuccess = computed(() => {
-        return ([STATES.SUCCESS].includes(state.value));
-    });
+    const isSuccess = computed(() => ([STATES.SUCCESS].includes(state.value)));
 
-    const isError = computed(() => {
-        return [STATES.ERROR].includes(state.value) || [STATES.STALE_IF_ERROR].includes(state.value);
-    });
+    const isError = computed(() => [STATES.ERROR].includes(state.value) || [STATES.STALE_IF_ERROR].includes(state.value));
 
     const alertType = computed(() => {
         if (isSuccess.value) {
             return "success"
-        } else if (isError.value) {
+        } if (isError.value) {
             return "error"
         }
         return "info";
@@ -47,16 +41,14 @@ export default function useCredentialTestbyID(dependentKey?: Ref<any>, id?: any,
     const alertMessage = computed(() => {
         if (isSuccess.value) {
             return "Authentication successful"
-        } else if (isError.value) {
+        } if (isError.value) {
             return "Authentication failed"
         }
         return "Connecting...";
     });
 
 
-    const errorMessage = computed(() => {
-        return error.value?.response?.data?.message;
-    });
+    const errorMessage = computed(() => error.value?.response?.data?.message);
 
 
     const replaceId = (id: any) => {
@@ -69,7 +61,7 @@ export default function useCredentialTestbyID(dependentKey?: Ref<any>, id?: any,
         if ([STATES.PENDING].includes(state.value) || [STATES.VALIDATING].includes(state.value)) {
             cancelTokenSource.value.cancel();
             cancelTokenSource.value = axios.CancelToken.source();
-            asyncOptions.cancelToken = cancelTokenSource.value.token;
+            asyncOptions.value.cancelToken = cancelTokenSource.value.token;
         }
         mutate();
     };

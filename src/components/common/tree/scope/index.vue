@@ -4,26 +4,26 @@
       tree-checkable
       style="width: 100%"
       :disabled="isLoading"
-      showCheckedStrategy="SHOW_PARENT"
-      :treeData="treeData"
-      :maxTagCount="10"
-      @change="handleChange"
+      show-checked-strategy="SHOW_PARENT"
+      :tree-data="treeData"
+      :max-tag-count="10"
       :dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"
       placeholder="Please select"
+      @change="handleChange"
     >
       <template #title="{ title, image, isLeaf }" class="flex">
         <span v-if="!isLeaf"
           ><img :src="image" class="float-left w-auto h-4 mr-1"
         /></span>
-        <span class="text-base leading-none text-gray" v-if="!isLeaf">{{
+        <span v-if="!isLeaf" class="text-base leading-none text-gray">{{
           title
         }}</span>
-        <span class="text-sm leading-none text-gray" v-if="isLeaf">{{
+        <span v-if="isLeaf" class="text-sm leading-none text-gray">{{
           title
         }}</span>
       </template>
     </a-tree-select>
-    <a-spin size="small" v-if="isLoading" class="mt-2 ml-2"></a-spin>
+    <a-spin v-if="isLoading" size="small" class="mt-2 ml-2"></a-spin>
   </div>
 </template>
   
@@ -51,6 +51,7 @@ export default defineComponent({
       },
     },
   },
+  emits: ["update:modelValue", "change"],
   data() {
     return { treeData: [], isLoading: false };
   },
@@ -63,7 +64,6 @@ export default defineComponent({
   mounted() {
     this.getTreeData();
   },
-  emits: ["update:modelValue", "change"],
   methods: {
     handleLoadData() {
       console.log("load data");
@@ -95,7 +95,7 @@ export default defineComponent({
 
           if (list) {
             Object.keys(list).forEach((key) => {
-              let children = [];
+              const children = [];
 
               list[key].forEach((element, index) => {
                 children.push({
@@ -108,11 +108,11 @@ export default defineComponent({
                 });
               });
               temp.push({
-                key: key,
+                key,
                 value: `${key}`,
                 title: key,
                 type: "AtlanDatabase",
-                children: children,
+                children,
               });
             });
           }

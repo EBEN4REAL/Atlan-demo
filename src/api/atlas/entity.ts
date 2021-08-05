@@ -1,9 +1,9 @@
 
-import { fetcherPost, getAPIPath, getAxiosClient } from "~/api";
 import { AxiosRequestConfig } from "axios";
-import { Components } from "./client";
 import useSWRV, { IConfig, } from "swrv";
 import { reactive, ref, Ref, toRef, toRefs } from "vue";
+import { Components } from "./client";
+import { fetcherPost, getAPIPath, getAxiosClient } from "~/api";
 
 const serviceAlias = "auth/atlas";
 

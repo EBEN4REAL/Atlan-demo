@@ -31,7 +31,7 @@ export default function handleTreeExpand(
             expandedKeys.value = [...expandedKeys.value]
         }
         store.set(expandedCacheKey, expandedKeys.value)
-        return
+        
     }
     const selectNode = (selected: any, event: any) => {
         if (!event.node.isLeaf) {
@@ -46,7 +46,7 @@ export default function handleTreeExpand(
             emit('select', event.node.eventKey)
         }
         store.set(selectedCacheKey, selectedKeys.value)
-        return
+        
     }
 
     const classificationSelectNode = (selected: any, node) => {
@@ -60,7 +60,7 @@ export default function handleTreeExpand(
         } else {
             emit('nodeEmit', toRaw(node.node.dataRef))
         }
-        return
+        
     }
 
     return {

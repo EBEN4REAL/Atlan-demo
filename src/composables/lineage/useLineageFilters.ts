@@ -6,22 +6,18 @@ export default function useLineageFilters(
   query: Ref<string>,
   direction: Ref<string>
 ) {
-  let lineageListValue = JSON.parse(JSON.stringify(lineageList.value));
+  const lineageListValue = JSON.parse(JSON.stringify(lineageList.value));
   const assetTypes: [] = [];
   const assetTypesLengthMap = {};
 
   lineageListValue[direction.value] = lineageListValue[direction.value]
-    .filter((asset) => {
-      return filters.value.some((filter) => {
-        return asset.typeName === filter;
-      });
-    })
+    .filter((asset) => filters.value.some((filter) => asset.typeName === filter))
     .filter((asset) => {
       if (query.value)
         return asset.displayText
           .toLowerCase()
           .includes(query.value.toLowerCase());
-      else return asset;
+      return asset;
     });
 
   lineageList.value[direction.value].forEach((asset) => {

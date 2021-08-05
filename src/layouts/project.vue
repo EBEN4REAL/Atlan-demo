@@ -5,17 +5,17 @@
 
 <script lang="ts">
     import { defineComponent } from 'vue';
-    import KeycloakMixin from '~/mixins/keycloak';
     import PageLoader from '@common/loaders/page.vue';
+    import KeycloakMixin from '~/mixins/keycloak';
     import UserPersonalAvatar from '~/components/common/avatar/me.vue';
 
     export default defineComponent({
         name: 'HelloWorld',
-        mixins: [KeycloakMixin],
         components: {
             PageLoader,
             UserPersonalAvatar,
         },
+        mixins: [KeycloakMixin],
         props: {},
         data() {
             return {};

@@ -1,8 +1,8 @@
 <template>
-  <p class="mb-0 leading-none" v-if="listCount === 0">
+  <p v-if="listCount === 0" class="mb-0 leading-none">
     <i class="mr-1 fal fa-frown-open"></i>No {{ label.toLowerCase() }} found
   </p>
-  <p class="mb-0 leading-none" v-else>
+  <p v-else class="mb-0 leading-none">
     {{ listCount }} of
     <span class=""
       >{{ totalCount }}<span v-if="totalCount > 9999"></span>

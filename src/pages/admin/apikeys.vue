@@ -7,8 +7,9 @@
 </template>
 <script lang="ts">
 import { defineComponent } from "vue";
-import ListAPIKeys from "~/components/admin/apikeys/listApiKeys.vue";
 import { useHead } from "@vueuse/head";
+import ListAPIKeys from "~/components/admin/apikeys/listApiKeys.vue";
+
 export default defineComponent({
   components: { ListAPIKeys },
   setup() {

@@ -1,10 +1,10 @@
 import { ref, onMounted, watch, computed, toRefs } from "vue";
+import useSWRV from "swrv";
 import swrvState from "~/composables/utils/swrvState";
 import { useAPI } from "~/api/useAPI";
 import { pluralizeString } from "~/composables/utils/string-operations.ts";
 import { roleMap } from "~/constant/role";
 import { fetcher, getAPIPath, getAxiosClient } from "~/api";
-import useSWRV from "swrv";
 
 const getUserName = (user: any) => {
   const { first_name } = user;
@@ -37,7 +37,7 @@ const getUserStatus = (user: any) => {
       icon: "close-circle",
       status: "Disabled",
     };
-  } else if (user.isLocked) {
+  } if (user.isLocked) {
     return {
       color: "red",
       icon: "lock",
@@ -93,13 +93,13 @@ export default function useUsers(userListAPIParams: {
   //   );
   const { state, STATES } = swrvState(data, error, isValidating);
 
-  let userList = computed(() => {
+  const userList = computed(() => {
     if (data.value && data?.value?.records)
       return data?.value.records.map((user: any) => getFormattedUser(user));
     return [];
   });
-  let totalUserCount = computed(() => data?.value?.total_record ?? 0);
-  let filteredUserCount = computed(() => data?.value?.filter_record ?? 0);
+  const totalUserCount = computed(() => data?.value?.total_record ?? 0);
+  const filteredUserCount = computed(() => data?.value?.filter_record ?? 0);
 
   return {
     userList,

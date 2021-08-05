@@ -1,12 +1,12 @@
 <template>
     <a-tree
-        :treeData="treeData"
-        :blockNode="true"
         v-model:expandedKeys="expandedKeys"
         v-model:value="selectedKeys"
+        :tree-data="treeData"
+        :block-node="true"
+        class="pt-3 pb-3"
         @select="classificationSelectNode"
         @expand="expandNode"
-        class="pt-3 pb-3"
     >
         <!-- <template #switcherIcon="{selectable}">
       {{ selectable }}
@@ -52,9 +52,7 @@
             },
         },
         setup(props, { emit }) {
-            const treeData = computed(() => {
-                return props.treeData;
-            });
+            const treeData = computed(() => props.treeData);
             console.log(toRaw(treeData.value), 'tree');
             const addClassificationIcon = ref(false);
             const hoveredClassificationKey = ref(null);

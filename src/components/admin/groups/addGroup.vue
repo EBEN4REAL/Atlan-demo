@@ -3,11 +3,11 @@
     <div class="form-height">
       <div class="max-w-2xl">
         <a-form
-          :labelAlign="'right'"
+          :label-align="'right'"
           :model="group"
           :rules="validations"
-          :labelCol="{ span: 5 }"
-          :wrapperCol="{ span: 9 }"
+          :label-col="{ span: 5 }"
+          :wrapper-col="{ span: 9 }"
         >
           <div>
             <div>
@@ -26,13 +26,13 @@
               </div>
             </div>
             <a-form-item
-              :wrapperCol="{ span: 12 }"
+              :wrapper-col="{ span: 12 }"
               label="Description"
               name="description"
             >
               <a-textarea v-model:value="group.description" :rows="2" />
             </a-form-item>
-            <a-form-item :labelCol="{ span: 5 }" :wrapperCol="{ span: 15 }">
+            <a-form-item :label-col="{ span: 5 }" :wrapper-col="{ span: 15 }">
               <template #label>
                 <span class="">Mark as default</span>
                 <a-tooltip
@@ -54,8 +54,8 @@
                 ><span class="text-gray-400">(Optional)</span>
               </div>
               <UserList
-                userListHeaderClass="min-w-full"
-                :userListStyle="{ maxHeight: 'calc(100vh - 35rem)' }"
+                user-list-header-class="min-w-full"
+                :user-list-style="{ maxHeight: 'calc(100vh - 35rem)' }"
                 @updateSelectedUsers="updateUserList"
               />
             </div>
@@ -67,17 +67,17 @@
       <div class="flex items-center text-xl">
         <a-button
           type="link"
-          @click="routeToGroups"
           class="mr-3 font-bold cursor-pointer text-gray-dark"
+          @click="routeToGroups"
           >Cancel</a-button
         >
         <a-button
           type="primary"
           size="large"
           html-type="submit"
-          @click="handleSubmit"
           :disabled="isSubmitDisabled"
           :loading="createGroupLoading"
+          @click="handleSubmit"
           >Create Group</a-button
         >
       </div>
@@ -85,8 +85,6 @@
   </div>
 </template>
 <script lang="ts">
-import { Group } from "~/api/auth/group";
-import UserList from "~/components/admin/groups/common/userList.vue";
 import { useRouter } from "vue-router";
 import {
   defineComponent,
@@ -96,8 +94,10 @@ import {
   UnwrapRef,
   watch,
 } from "vue";
-import whoami from "~/composables/user/whoami";
 import { message } from "ant-design-vue";
+import { Group } from "~/api/auth/group";
+import UserList from "~/components/admin/groups/common/userList.vue";
+import whoami from "~/composables/user/whoami";
 
 interface Group {
   name: String;
@@ -106,15 +106,6 @@ interface Group {
 }
 export default defineComponent({
   name: "AddGroup",
-  data() {
-    return {
-      group: {
-        name: "",
-        alias: "",
-        description: "",
-      },
-    };
-  },
   components: { UserList },
   setup(props, context) {
     const router = useRouter();
@@ -134,18 +125,16 @@ export default defineComponent({
     const userIds = ref([]);
     const isSubmitDisabled = computed(() => {
       const { name, alias } = group;
-      return name == "" || alias == "" ? true : false;
+      return !!(name == "" || alias == "");
     });
     const setGroupAlias = () => {
       group.alias = getAliasFromName(group.name);
     };
-    const getAliasFromName = (title) => {
-      return title
+    const getAliasFromName = (title) => title
         .trim()
         .toLowerCase()
         .replace(/[!:;@#$%^&*'"<>,/.\\(){}[\]|`~?+=-]+/g, "")
         .replace(/[ ]+/g, "_");
-    };
     const restrictGroupAlias = () => {
       group.alias = getAliasFromName(group.alias);
     };
@@ -200,6 +189,15 @@ export default defineComponent({
       updateUserList,
       isDefault,
       routeToGroups,
+    };
+  },
+  data() {
+    return {
+      group: {
+        name: "",
+        alias: "",
+        description: "",
+      },
     };
   },
 });

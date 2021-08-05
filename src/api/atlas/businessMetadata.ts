@@ -1,17 +1,15 @@
-import { UPDATE_ASSET_BUSINESS_METADATA } from "~/api/keyMaps/businessMetadata/index";
-import { GET_BUSINESS_METADATA } from "~/api/keyMaps/businessMetadata/index";
-import { ADD_BUSINESS_METADATA } from "~/api/keyMaps/businessMetadata/index";
-import { useAPI } from "../useAPI";
 import { ref } from "vue";
+import { UPDATE_ASSET_BUSINESS_METADATA , GET_BUSINESS_METADATA , ADD_BUSINESS_METADATA } from "~/api/keyMaps/businessMetadata/index";
 
-const saveAssetBMUpdateChanges = (guid: any, payload: any) => {
-    return useAPI(UPDATE_ASSET_BUSINESS_METADATA, "POST",
+
+import { useAPI } from "../useAPI";
+
+const saveAssetBMUpdateChanges = (guid: any, payload: any) => useAPI(UPDATE_ASSET_BUSINESS_METADATA, "POST",
         { params: { isOverwrite: true }, pathVariables: { guid }, cache: undefined, body: payload }
     )
-}
 
 const getBMList = () => {
-    let options = ref({
+    const options = ref({
         revalidateOnFocus: false,
         shouldRetryOnError: false,
         dedupingInterval: 1,

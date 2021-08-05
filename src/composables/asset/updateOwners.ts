@@ -19,7 +19,7 @@ export default function updateOwners(item: any, type: Ref<string>) {
 
     const getBody = () => {
 
-        let val = { ownerUsers: "", ownerGroups: "" };
+        const val = { ownerUsers: "", ownerGroups: "" };
 
         if (localOwnerUsers.value.length > 0) {
             val.ownerUsers = localOwnerUsers.value.join(",");
@@ -49,9 +49,7 @@ export default function updateOwners(item: any, type: Ref<string>) {
     };
 
     const ownerUsers: WritableComputedRef<string[]> = computed({
-        get: () => {
-            return localOwnerUsers.value;
-        },
+        get: () => localOwnerUsers.value,
         set: (newValue: string[]) => {
             localOwnerUsers.value = newValue;
             body.value = getBody();
@@ -59,9 +57,7 @@ export default function updateOwners(item: any, type: Ref<string>) {
     });
 
     const ownerGroups: WritableComputedRef<string[]> = computed({
-        get: () => {
-            return localOwnerGroups.value;
-        },
+        get: () => localOwnerGroups.value,
         set: (newValue: string[]) => {
             localOwnerGroups.value = newValue;
             body.value = getBody();

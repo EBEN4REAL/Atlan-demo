@@ -15,8 +15,8 @@
         <a-radio-button value="last1h">1 hr</a-radio-button>
       </a-radio-group>
       <a-spin
-        size="small"
         v-if="isLoadingDelete || isLoadingUpdate || isLoadingCreate"
+        size="small"
       ></a-spin>
     </div>
 
@@ -189,36 +189,36 @@
 <script lang="ts">
 import { defineComponent, ref } from "vue";
 
-import fetchAssetAggregation from "~/composables/asset/fetchAssetAggregation";
 import LoadingView from "@common/loaders/section.vue";
 import ErrorView from "@common/error/index.vue";
+import fetchAssetAggregation from "~/composables/asset/fetchAssetAggregation";
 
 import { CONNECTIONWISE_AGGREGATION, CRUD_AGGREGATION } from "~/constant/cache";
 import { Components } from "~/api/atlas/client";
 // import EmptyView from "@common/empty/index.vue";
 
 export default defineComponent({
-  mixins: [],
   components: { LoadingView, ErrorView },
+  mixins: [],
   props: {},
   setup(props) {
-    let timeMode = ref("last30");
+    const timeMode = ref("last30");
 
-    let period = ref(
+    const period = ref(
       new Date(new Date().setDate(new Date().getDate() - 30)).getTime()
     );
 
     // Created Aggregations
-    let entityFiltersCreate = ref({
+    const entityFiltersCreate = ref({
       condition: "AND" as Components.Schemas.Condition,
       criterion: [],
     });
 
-    let entityFiltersUpdate = ref({
+    const entityFiltersUpdate = ref({
       condition: "AND" as Components.Schemas.Condition,
       criterion: [],
     });
-    let entityFiltersDelete = ref({
+    const entityFiltersDelete = ref({
       condition: "AND" as Components.Schemas.Condition,
       criterion: [],
     });
@@ -308,7 +308,7 @@ export default defineComponent({
     };
     handleModeChange(false);
 
-    let now = ref(true);
+    const now = ref(true);
     const typeNameAttribute = "__typeName.keyword";
     const integrationNameAttribute = "Catalog.integrationName.keyword";
     const {
@@ -353,17 +353,11 @@ export default defineComponent({
       now
     );
 
-    const getCreateValue = (id, attribute) => {
-      return createAggregationArray(attribute).find((i) => i.id == id);
-    };
+    const getCreateValue = (id, attribute) => createAggregationArray(attribute).find((i) => i.id == id);
 
-    const getUpdateValue = (id, attribute) => {
-      return updateAggregationArray(attribute).find((i) => i.id == id);
-    };
+    const getUpdateValue = (id, attribute) => updateAggregationArray(attribute).find((i) => i.id == id);
 
-    const getDeleteValue = (id, attribute) => {
-      return deleteAggregationArray(attribute).find((i) => i.id == id);
-    };
+    const getDeleteValue = (id, attribute) => deleteAggregationArray(attribute).find((i) => i.id == id);
 
     return {
       timeMode,

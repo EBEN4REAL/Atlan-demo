@@ -14,7 +14,7 @@ export interface Actions extends StateTree {
 
 export const actions: Actions = {
     addClassifications(classification) {
-        const classifications = this.classifications
+        const {classifications} = this
         this.classifications = [...classifications, ...classification]
         this.classifications = this.sortClassifications('asc')
     },
@@ -44,7 +44,7 @@ export const actions: Actions = {
         this.filteredClassificationTree = this.classificationTree
     },
     deleteClassificationByName(classificationName) {
-        const classifications = this.classifications
+        const {classifications} = this
         const filteredClassifications = classifications.filter(
             (classification: any) => classification.name !== classificationName
         )

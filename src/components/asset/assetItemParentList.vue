@@ -6,13 +6,13 @@
                     !checkIfAssetIntegrationOrServer &&
                     asset.typeName !== 'AtlasGlossary'
             "
-            class="p-1 mb-0 cursor-pointer asset-qf d-flex align-items-start"
+            ref="copyLink"
             v-b-popover.hover.bottom="
                 copiedLink
                     ? 'Identifier copied!'
                     : `Asset unique identifier: ${qualifiedName}`
             "
-            ref="copyLink"
+            class="p-1 mb-0 cursor-pointer asset-qf d-flex align-items-start"
             :aria-label="qualifiedName"
         >
             <i class="pt-1 mr-2 far fa-code-branch"></i>
@@ -44,7 +44,7 @@
             v-else-if="asset.typeName === 'AtlasGlossary'"
             class="p-0 mb-0 cursor-pointer asset-qf d-flex align-items-start"
         >
-            <nuxt-link :to="`/glossary/${this.asset.guid}`">
+            <nuxt-link :to="`/glossary/${asset.guid}`">
                 <i class="pt-1 mr-2 far fa-certificate text-pink"></i>
                 <span>
                     {{
@@ -86,6 +86,9 @@
             <span
                 v-for="(parent, index) in assetParents"
                 :key="index"
+                v-b-popover.hover.bottom="
+                    showTypeInPopover ? `${parent.parentType}` : ''
+                "
                 class="padding-left-asset-tag"
                 :class="[
                     `${
@@ -98,9 +101,6 @@
                 @click="
                     isAssetParentSelectable &&
                         getEntityByQualifiedName(parent.parentType)
-                "
-                v-b-popover.hover.bottom="
-                    showTypeInPopover ? `${parent.parentType}` : ''
                 "
             >
                 <i
@@ -126,11 +126,11 @@
     </span>
     <span
         v-else
-        class="font-size-sm"
         v-b-popover.hover.bottom="
             `It seems you do not have access to this ${type}. Request your admin to give
                   you access.`
         "
+        class="font-size-sm"
     >
         <i class="mr-1 far fa-lock-alt"></i> Access Restricted
     </span>

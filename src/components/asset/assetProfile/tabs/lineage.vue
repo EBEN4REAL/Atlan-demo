@@ -1,7 +1,7 @@
 <template>
   <div
-    class="wrapper"
     ref="lineage_graph_wrapper_ref"
+    class="wrapper"
     :style="{
       height: lineageFullscreen ? 'calc(100vh - 10px)' : 'calc(100vh - 150px)',
     }"
@@ -18,10 +18,10 @@
       <LineageHeader v-if="!loadingLineage" />
 
       <!-- Lineage Graph Lines -->
-      <div ref="lineage_lines_wrapper_ref" id="lines-wrapper"></div>
+      <div id="lines-wrapper" ref="lineage_lines_wrapper_ref"></div>
 
       <!-- Lineage Graph View - DOM -->
-      <LineageGraph ref="lineage_graph_comp_ref" v-if="!loadingLineage" />
+      <LineageGraph v-if="!loadingLineage" ref="lineage_graph_comp_ref" />
 
       <!-- Lineage Legend -->
       <div
@@ -95,9 +95,9 @@ import {
 } from "vue";
 
 // Components
+import LoadingView from "@common/loaders/section.vue";
 import LineageGraph from "~/components/lineage/lineageGraph.vue";
 import LineageHeader from "~/components/lineage/lineageHeader.vue";
-import LoadingView from "@common/loaders/section.vue";
 
 // Composables
 import useLineage from "~/composables/lineage/useLineage";

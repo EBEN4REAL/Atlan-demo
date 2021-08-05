@@ -3,9 +3,9 @@
         <div class="mb-2 text-base font-bold text-gray-dark">Assets Owned</div>
         <div class="flex flex-col h-full border rounded-lg">
             <AssetsWrapper
-                className="border"
-                :selectedUser="props.selectedUser"
-                :selectedGroup="props.selectedGroup"
+                class-name="border"
+                :selected-user="props.selectedUser"
+                :selected-group="props.selectedGroup"
             />
         </div>
     </div>
@@ -17,6 +17,9 @@
 
     export default defineComponent({
         name: 'Assets',
+        components: {
+            AssetsWrapper,
+        },
         props: {
             selectedUser: {
                 type: Object,
@@ -26,9 +29,6 @@
                 type: Object,
                 default: {},
             },
-        },
-        components: {
-            AssetsWrapper,
         },
         setup(props) {
             return {

@@ -1,7 +1,7 @@
 <template>
   <a-popover
-    placement="left"
     v-model:visible="visibility"
+    placement="left"
     trigger="none"
     title="Create Custom Metadata Widget"
   >
@@ -9,9 +9,9 @@
       <div class="flex flex-col p-2 overflow-y-auto" style="width: 280px; height: 200px">
         <p class="mb-1 text-sm text-gray-400">Select Custom Metadata</p>
         <a-select
-          placeholder="Custom Metadata"
           v-model:value="addBusinessMetadata"
-          allowClear
+          placeholder="Custom Metadata"
+          allow-clear
           mode="multiple"
           :options="addBMSelectOptions"
         />
@@ -48,17 +48,17 @@
             ({{ attributesList.length }})
           </span>
           <fa
+            v-if="updateBmAttributesStatus === 'loading'"
             icon="fal circle-notch spin"
-            class="ml-2 mr-1 animate-spin text-grey-600"
-            v-if="updateBmAttributesStatus === 'loading'"/>
+            class="ml-2 mr-1 animate-spin text-grey-600"/>
           <fa
+            v-else-if="updateBmAttributesStatus === 'failed'"
             icon="fal times"
-            class="ml-2 mr-1 text-red-600"
-            v-else-if="updateBmAttributesStatus === 'failed'"/>
+            class="ml-2 mr-1 text-red-600"/>
           <fa
+            v-else-if="updateBmAttributesStatus === 'success'"
             icon="fal check"
             class="ml-2 mr-1 text-green-600"
-            v-else-if="updateBmAttributesStatus === 'success'"
         /></span>
         <span
           class="pr-2 mr-1 text-xs cursor-pointer hover:text-blue-900"
@@ -71,13 +71,13 @@
       </p>
       <div style="max-height: 300px" class="pr-2 overflow-auto">
         <BusinessMetadataWidget
-          @updateAttribute="handleUpdateAttribute"
-          :class="x !== attributesList.length ? 'mb-2' : ''"
           v-for="(bm, x) in attributesList"
           :key="x"
+          :class="x !== attributesList.length ? 'mb-2' : ''"
           :bm="bm"
-          :originalBM="getBMbyName(bm.bm)"
-          :assetType="item.typeName"
+          :original-b-m="getBMbyName(bm.bm)"
+          :asset-type="item.typeName"
+          @updateAttribute="handleUpdateAttribute"
         />
       </div>
     </div>
@@ -86,21 +86,21 @@
 
 <script lang="ts">
 import { ref, defineComponent, computed, watch, onMounted } from "vue";
-import { BusinessMetadataService } from "~/api/atlas/businessMetadata";
 import BusinessMetadataWidget from "@/common/businessMetadataWidget.vue";
+import { BusinessMetadataService } from "~/api/atlas/businessMetadata";
 
 // ? Store
 import { useBusinessMetadataStore } from "~/store/businessMetadata";
 import { State } from "~/store/businessMetadata/state";
 
 export default defineComponent({
+  components: { BusinessMetadataWidget },
   props: {
     item: {
       type: Object,
       required: true,
     },
   },
-  components: { BusinessMetadataWidget },
   setup(props, context) {
     const store = useBusinessMetadataStore();
     const attributesList = ref([]);
@@ -125,12 +125,10 @@ export default defineComponent({
       }
     });
 
-    const addBMSelectOptions = computed(() => {
-      return availableBM.value.map(b => ({
+    const addBMSelectOptions = computed(() => availableBM.value.map(b => ({
         value: b.name,
         title: b.options.displayName,
-      }));
-    });
+      })));
 
     // ? Methods
     // ! NO longer need
@@ -138,24 +136,18 @@ export default defineComponent({
       BMlist:
         | (object[] & ((state: State) => object[] | null))
         | { attributeDefs: object[] }[]
-    ) => {
-      return BMlist.map(bm => {
-        return {
+    ) => BMlist.map(bm => ({
           ...bm,
           attributeDefs: bm.attributeDefs.map(
-            (a: { options: { displayName: string }; name: string }) => {
-              return {
+            (a: { options: { displayName: string }; name: string }) => ({
                 ...a,
                 options: {
                   ...a.options,
                   displayName: a.options.displayName || a.name,
                 },
-              };
-            }
+              })
           ),
-        };
-      });
-    };
+        }));
 
     /**
      * @param {Object} updateBM BM object from widget for operation
@@ -163,7 +155,7 @@ export default defineComponent({
      */
     const getUpdatePayload = (updateBM: { bm: string }) => {
       let mappedBM = {};
-      let finalBM = attributesList.value.map(bm => {
+      const finalBM = attributesList.value.map(bm => {
         if (bm.bm === updateBM.bm) return updateBM;
         return bm;
       });

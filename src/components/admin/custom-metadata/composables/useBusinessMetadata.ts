@@ -71,7 +71,7 @@ export default function useBusinessMetadata() {
             isLoading: BMListLoading,
         } = BusinessMetadataService.getBMList();
 
-        //FIXME debug this
+        // FIXME debug this
         watch(
             [BMListLoading, BMListError],
             (n) => {
@@ -127,10 +127,10 @@ export default function useBusinessMetadata() {
     };
 
     // * Data
-    let selectedBm = ref(null);
-    let searchText = ref('');
-    let newBm = ref(null);
-    let updatedBm = ref(null);
+    const selectedBm = ref(null);
+    const searchText = ref('');
+    const newBm = ref(null);
+    const updatedBm = ref(null);
     // * Methods
 
     const handleSelectBm = (item: any) => {
@@ -186,9 +186,7 @@ export default function useBusinessMetadata() {
     // * Computed
     const businessMetadataList = computed(() => store.getBusinessMetadataList);
 
-    const businessMetadataListError = computed(() => {
-        return store.businessMetadataListError;
-    });
+    const businessMetadataListError = computed(() => store.businessMetadataListError);
     const handleAfterArchive = () => {
         console.log('handleAfterArchive');
     };
@@ -244,7 +242,7 @@ export default function useBusinessMetadata() {
                         },
                     };
                     return temp;
-                } else if (!attribute.name) {
+                } if (!attribute.name) {
                     // * if creating new BM attribtue <> append displayName to name,
                     temp.data.attributeDefs[i].name =
                         attribute.options.displayName;

@@ -2,79 +2,37 @@
 <template>
     <div class="w-full px-10 py-4 overflow-y-auto" style="height: 600px">
         <!--Asset Summary -->
-        <div class="mb-8">
-            <div
-                class="flex items-center w-full py-2 text-base bg-white border rounded-t  px-7"
-            >
-                Summary
-            </div>
-            <div
-                class="w-full h-full py-6 bg-white border border-t-0 rounded-b  px-7"
-            >
-                <!-- Description Component -->
-                <div class="mb-8">
-                    <div
-                        v-if="description"
-                        class="flex items-center justify-between"
-                    >
-                        <p class="m-0 truncate overflow-ellipsis">
-                            {{ description }}
-                        </p>
-                        <span class="ml-2">.</span>
-                        <a-button type="link" @click="showModal">
-                            Edit description
-                        </a-button>
-                    </div>
-                    <div v-else class="text-gray-400">
-                        No Description Found
-                        <span class="ml-2">.</span>
-                        <a-button type="link" @click="showModal">
-                            Add description
-                        </a-button>
-                    </div>
-                </div>
-
-                <!-- Edit description modal -->
-                <!-- eslint-disable-next-line vue/no-v-model-argument -->
-                <a-modal v-model:visible="visible" @ok="handleOk">
-                    <template #title
-                        ><p v-if="description">Edit description</p>
-                        <p v-else>Add description</p></template
-                    >
-                    <template #footer>
-                        <a-button key="back" @click="handleCancelModal"
-                            >Cancel</a-button
-                        >
-                        <a-button
-                            key="submit"
-                            type="primary"
-                            :loading="isLoading"
-                            @click="handleOk"
-                            >Update</a-button
-                        >
-                    </template>
-                    <!-- eslint-disable-next-line vue/no-v-model-argument -->
-                    <a-textarea
-                        v-model:value="description"
-                        placeholder="Description"
-                    >
-                    </a-textarea>
-                </a-modal>
-
-                <!-- Table Component -->
-                <a-table
-                    bordered
-                    :columns="columns"
-                    :data-source="data"
-                    :pagination="false"
+        <div class="flex items-center justify-between w-full mb-8">
+            <div class="w-full mr-8">
+                <div
+                    class="flex items-center w-full py-2 text-base bg-white border rounded-t  px-7"
                 >
-                </a-table>
+                    Summary
+                </div>
+                <div
+                    class="w-full h-full py-6 bg-white border border-t-0 rounded-b  px-7"
+                >
+                    <!-- Description Component -->
+                    <DescriptionWidget :asset="asset" />
+
+                    <!-- Table Component -->
+                    <a-table
+                        bordered
+                        :columns="columns"
+                        :data-source="data"
+                        :pagination="false"
+                    >
+                    </a-table>
+                </div>
+            </div>
+            <!-- Column widget -->
+            <div>
+                <TableColumn :asset="asset" />
             </div>
         </div>
         <!-- Asset ReadMe -->
-        <div>
-            <!-- ReadMe Component -->
-            <Readme class="w-full m-h-48" />
+        <div class="min-h-full">
+            <Readme class="w-full h-32" />
         </div>
     </div>
 </template>
@@ -84,51 +42,16 @@
 
     // Components
     import Readme from '@/common/readme/index.vue'
-
-    // composables
-    import updateDescription from '~/composables/asset/updateDescription'
+    import TableColumn from '@/asset/assetProfile/overview/tableColumn.vue'
+    import DescriptionWidget from '@/asset/assetProfile/overview/descriptionWidget.vue'
 
     export default defineComponent({
-        components: { Readme },
+        components: { Readme, TableColumn, DescriptionWidget },
         setup(props, context) {
             const asset = ref(context.attrs.asset)
 
-            const visible = ref<boolean>(false)
-            const {
-                isLoading,
-                update,
-                handleCancel,
-                isReady,
-                state,
-                description,
-                isCompleted,
-            } = updateDescription(asset.value)
-
-            const showModal = () => {
-                visible.value = true
-            }
-
-            const handleCancelModal = async () => {
-                await handleCancel()
-                visible.value = false
-            }
-
-            const handleOk = async () => {
-                await update()
-                if (!isCompleted.value) visible.value = false
-            }
             return {
-                showModal,
-                handleOk,
-                visible,
-                isLoading,
                 asset,
-                handleCancel,
-                isReady,
-                state,
-                description,
-                isCompleted,
-                handleCancelModal,
                 columns: [
                     {
                         title: 'Date',

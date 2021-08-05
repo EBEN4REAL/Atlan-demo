@@ -289,7 +289,14 @@
                 @toggleList="toggleUserInvitationList"
                 @showPreview="showUserPreviewDrawer"
                 @changeRole="handleChangeRole"
-            />
+                ><template v-slot:changeRoleContent
+                    ><ChangeRole
+                        :user="
+                            listType === 'users' ? selectedUser : selectedInvite
+                        "
+                        :role-list="roleList"
+                        @updateRole="handleUpdateRole" /></template
+            ></InvitationListTable>
         </div>
 
         <a-modal

@@ -170,7 +170,7 @@
                             >
                         </div>
                     </template>
-                    <div class="flex flex-wrap items-stretch items-center gap-x-2">
+                    <div class="inline-flex flex-wrap items-stretch items-center gap-x-2">
                     <template
                         v-for="(
                             classification, index

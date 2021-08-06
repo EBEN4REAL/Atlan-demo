@@ -7,7 +7,7 @@
                 :key="index"
             >
                 <span class="text-xs text-gray-description">{{ key }}</span>
-                <span class="text-gray">{{ value }}</span>
+                <span class="text-gray">{{ numFormatter(value) }}</span>
             </div>
         </div>
         <div class="flex w-full pt-4 text-xs text-gray-description">
@@ -240,6 +240,7 @@
     import Description from './description.vue'
     import Status from './status.vue'
     import Owners from './_owners.vue'
+    import { numFormatter } from '~/utils/numberFormatter'
     // import XOwners from './owners.vue'
 
     export default defineComponent({
@@ -283,6 +284,7 @@
                 showOwnersDropdown,
                 toggleOwnersDropdown,
                 selectedAsset,
+                numFormatter,
             }
         },
     })

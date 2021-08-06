@@ -47,25 +47,25 @@
             function init() {
                 const {
                     integrationName,
-                    // databaseName,
-                    // schemaName,
+                    databaseName,
+                    schemaName,
                     logo,
-                    // databaseLogo,
-                    // schemaLogo,
+                    databaseLogo,
+                    schemaLogo,
                 } = useAssetInfo()
                 hierarchyInfo.value = []
                 hierarchyInfo.value.push({
                     text: integrationName(selectedAsset.value),
                     img: logo(selectedAsset.value),
                 })
-                // hierarchyInfo.value.push({
-                //     text: databaseName(selectedAsset.value),
-                //     img: databaseLogo(selectedAsset.value),
-                // })
-                // hierarchyInfo.value.push({
-                //     text: schemaName(selectedAsset.value),
-                //     img: schemaLogo(selectedAsset.value),
-                // })
+                hierarchyInfo.value.push({
+                    text: databaseName(selectedAsset.value),
+                    img: databaseLogo(selectedAsset.value),
+                })
+                hierarchyInfo.value.push({
+                    text: schemaName(selectedAsset.value),
+                    img: schemaLogo(selectedAsset.value),
+                })
             }
 
             watch(selectedAsset, init)

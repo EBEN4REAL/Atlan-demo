@@ -1,10 +1,6 @@
 import { assetInterface } from '~/types/assets/asset.interface'
 import { SourceList } from '~/constant/source'
 import { AssetTypeList } from '~/constant/assetType'
-<<<<<<< HEAD
-=======
-import { dataTypeList } from '~/constant/datatype'
->>>>>>> development
 import { useTimeAgo } from '@vueuse/core'
 
 export default function useAssetInfo() {
@@ -39,7 +35,6 @@ export default function useAssetInfo() {
 
         return img
     }
-<<<<<<< HEAD
     const databaseLogo = (asset: assetInterface) => {
         let img = ''
         const found = SourceList.find(
@@ -65,20 +60,6 @@ export default function useAssetInfo() {
             if (schema?.image) img = schema?.image
         }
         return img
-=======
-
-    const dataType = (asset: assetInterface) => {
-        return attributes(asset)?.dataType
-    }
-
-    const dataTypeImage = (asset: assetInterface) => {
-        const found = dataTypeList.find((d) =>
-            d.type.find(
-                (type) => type.toLowerCase() === dataType(asset).toLowerCase()
-            )
-        )
-        return found?.image
->>>>>>> development
     }
 
     const integrationName = (asset: assetInterface) => {
@@ -92,15 +73,12 @@ export default function useAssetInfo() {
     const columnCount = (asset: assetInterface) => {
         return attributes(asset).columnCount
     }
-<<<<<<< HEAD
     const schemaName = (asset: assetInterface) => {
         return attributes(asset).schemaName
     }
     const databaseName = (asset: assetInterface) => {
         return attributes(asset).databaseName
     }
-=======
->>>>>>> development
     const createdAt = (asset: assetInterface) => {
         return useTimeAgo(attributes(asset).__timestamp).value
     }
@@ -113,23 +91,15 @@ export default function useAssetInfo() {
     }
 
     return {
-<<<<<<< HEAD
         databaseLogo,
         schemaLogo,
         databaseName,
         schemaName,
-=======
->>>>>>> development
         attributes,
         title,
         status,
         assetType,
         description,
-<<<<<<< HEAD
-=======
-        dataType,
-        dataTypeImage,
->>>>>>> development
         logo,
         integrationName,
         assetTypeLabel,

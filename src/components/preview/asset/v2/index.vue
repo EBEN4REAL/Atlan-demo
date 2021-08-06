@@ -53,7 +53,7 @@
                     ></StatusBadge>
                 </div>
             </div>
-            <HierarchyBar :selectedAsset="selectedAsset" />
+            <HierarchyBar class="mb-4" :selectedAsset="selectedAsset" />
         </div>
         <a-tabs v-model:activeKey="activeKey" :class="$style.previewtab">
             <a-tab-pane
@@ -92,7 +92,7 @@
     import StatusBadge from '@common/badge/status/index.vue'
     import { assetInterface } from '~/types/assets/asset.interface'
     import { tabList as tabs } from './tabList'
-    import HierarchyBar from './hierarchy.vue'
+    import HierarchyBar from '@common/badge/hierarchy.vue'
     import useAsset from '~/composables/asset/useAsset'
     import useAssetInfo from '~/composables/asset/useAssetInfo'
 
@@ -178,31 +178,31 @@
     }
 </style>
 <style lang="less" module>
-    .previewtab {
-        :global(.ant-tabs-tab) {
-            @apply pb-3 px-1;
-            @apply mx-2;
-            @apply text-gray-description;
-            @apply text-xs;
-        }
-        :global(.ant-tabs-tab:first-child) {
-            @apply ml-4;
-        }
-        :global(.ant-tabs-nav-container-scrolling .ant-tabs-tab:first-child) {
-            @apply ml-0;
-        }
-        :global(.ant-tabs-tab-active) {
-            @apply text-gray;
-            @apply font-bold;
-        }
-        :global(.ant-tabs-bar) {
-            margin-bottom: 0px;
-        }
-        :global(.ant-tabs-content) {
-            padding-right: 0px;
-        }
-        :global(.ant-tabs-ink-bar) {
-            @apply rounded-t-sm;
-        }
-    }
+    // .previewtab {
+    //     :global(.ant-tabs-tab) {
+    //         @apply pb-3 px-1;
+    //         @apply mx-2;
+    //         @apply text-gray-description;
+    //         @apply text-xs;
+    //     }
+    //     :global(.ant-tabs-tab:first-child) {
+    //         @apply ml-4;
+    //     }
+    //     :global(.ant-tabs-nav-container-scrolling .ant-tabs-tab:first-child) {
+    //         @apply ml-0;
+    //     }
+    //     :global(.ant-tabs-tab-active) {
+    //         @apply text-gray;
+    //         @apply font-bold;
+    //     }
+    //     :global(.ant-tabs-bar) {
+    //         margin-bottom: 0px;
+    //     }
+    //     :global(.ant-tabs-content) {
+    //         padding-right: 0px;
+    //     }
+    //     :global(.ant-tabs-ink-bar) {
+    //         @apply rounded-t-sm;
+    //     }
+    // }
 </style>

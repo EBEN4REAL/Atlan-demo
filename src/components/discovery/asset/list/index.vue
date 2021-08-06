@@ -1,14 +1,12 @@
 <template>
     <VirtualList :data="list" :data-key="keyField">
         <template #default="{ item }">
-            <div class="border-b border-primary-200">
-                <ListItem
-                    :item="item"
-                    :score="score[item.guid]"
-                    :projection="projection"
-                    @click="handlePreview(item)"
-                ></ListItem>
-            </div>
+            <ListItem
+                :item="item"
+                :score="score[item.guid]"
+                :projection="projection"
+                @click="handlePreview(item)"
+            ></ListItem>
         </template>
     </VirtualList>
     <!-- TODO: Add loading state -->

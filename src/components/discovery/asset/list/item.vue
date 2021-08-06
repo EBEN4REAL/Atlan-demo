@@ -1,189 +1,232 @@
 <template>
-    <div class="px-4 py-3 bg-white hover:bg-primary-100 hover:bg-opacity-10">
-        <div class="flex items-center justify-between align-middle">
-            <div class="flex items-center mr-1 align-middle">
-                <div class="">
-                    <component
-                        :is="item.typeName"
-                        class="w-auto h-5 mr-2"
-                    ></component>
+    <div
+        class="flex px-4 py-6 bg-white  hover:bg-primary-100 hover:bg-opacity-10 text-gray"
+    >
+        <component
+            :is="item.typeName"
+            class="flex-none w-auto h-6 mr-2"
+        ></component>
+
+        <div class="flex flex-col flex-grow pr-16">
+            <!-- Title bar -->
+            <div class="flex items-center mb-0">
+                <router-link
+                    :to="`/assets/${item.guid}/overview`"
+                    class="mb-0 text-xl font-bold leading-6 tracking-wide truncate cursor-pointer  text-gray hover:underline"
+                >
+                    {{ title(item) }}
+                </router-link>
+                <StatusBadge
+                    :key="item.guid"
+                    :showNoStatus="true"
+                    :status-id="status(item)"
+                    class="ml-2"
+                ></StatusBadge>
+                <router-link
+                    class="ml-1"
+                    :to="`/assets/${item.guid}/overview`"
+                    target="_blank"
+                >
+                    <Fa class="w-auto h-3" icon="fal external-link-alt" />
+                </router-link>
+            </div>
+            <!-- Row?Col/Owner bar -->
+            <div class="flex items-center">
+                <!-- Owners -->
+                <div
+                    v-if="projection?.includes('owners')"
+                    class="flex flex-wrap pt-1"
+                >
+                    <template
+                        v-for="user in item?.attributes?.ownerUsers?.split(',')"
+                        :key="user"
+                    >
+                        <div
+                            v-if="user?.length > 0"
+                            class="mr-1 text-xs tracking-wide  text-gray-description"
+                        >
+                            <Fa
+                                icon="fal user"
+                                class="mr-1 text-xs leading-none  pushtop text-shadow"
+                            />
+                            <span class="">{{ user }}</span>
+                        </div>
+                    </template>
+                    <template
+                        v-for="group in item?.attributes?.ownerGroups?.split(
+                            ','
+                        )"
+                        :key="group"
+                    >
+                        <div
+                            v-if="group?.length > 0"
+                            class="mr-1 text-xs tracking-wide  text-gray-description"
+                        >
+                            <Fa
+                                icon="fal user-friends"
+                                class="mr-1 leading-none pushtop"
+                            />
+                            <span>{{ group }}</span>
+                        </div>
+                    </template>
                 </div>
-                <div class="flex flex-col w-full">
-                    <div class="flex items-center justify-between mb-0">
-                        <router-link :to="`/assets/${item.guid}/overview`">
-                            <a
-                                class="mb-0 font-semibold leading-none tracking-wide truncate cursor-pointer text-primary hover:underline"
+                <!-- Row/Col/popularity count -->
+                <div
+                    v-if="
+                        projection?.includes('rows') ||
+                        projection?.includes('popularity')
+                    "
+                    class="flex items-center"
+                >
+                    <!-- Row/Col-->
+                    <div
+                        class="flex items-center pt-1 mr-2"
+                        v-if="
+                            projection?.includes('rows') &&
+                            (item.typeName.toLowerCase() === 'table' ||
+                                item.typeName.toLowerCase() === 'view')
+                        "
+                    >
+                        <div
+                            class="mr-2"
+                            v-if="item?.typeName.toLowerCase() === 'table'"
+                        >
+                            <span
+                                class="mr-1 text-xs tracking-wide  text-gray-description"
+                                >Rows</span
                             >
-                                {{ title(item) }}
-                            </a>
-                        </router-link>
-                        <StatusBadge
-                            :key="item.guid"
-                            :status-id="item?.attributes?.assetStatus"
-                            class="ml-1"
-                        ></StatusBadge>
-                    </div>
-                    <div class="flex items-center">
-                        <div>
-                            <!-- <StatusBadge
-              :status="status(item)"
-              class="ml-1"
-              :key="item.guid"
-            ></StatusBadge> -->
+                            <span class="text-sm font-bold tracking-wide">{{
+                                rowCount(item, true)
+                            }}</span>
+                        </div>
+                        <div class="mr-2">
+                            <span
+                                class="mr-1 text-xs tracking-wide  text-gray-description"
+                                >Cols</span
+                            >
+                            <span class="text-sm font-bold tracking-wide">{{
+                                columnCount(item, true)
+                            }}</span>
                         </div>
                     </div>
-                </div>
-            </div>
-            <img :src="logo(item)" class="w-auto h-4" />
-        </div>
-        <p
-            v-if="projection?.includes('description')"
-            class="mb-0 text-xs text-gray-500"
-        >
-            {{ description(item) }}
-        </p>
-
-        <div
-            v-if="item.typeName.toLowerCase() === 'column'"
-            class="flex items-center mt-1 mb-0 text-xs"
-        >
-            <component
-                :is="dataTypeImage(item)"
-                class="w-5 h-5 mr-1 text-gray-500"
-            ></component>
-            <div class="leading-none">{{ dataType(item) }}</div>
-        </div>
-
-        <div
-            v-if="
-                projection?.includes('rows') ||
-                    projection?.includes('popularity')
-            "
-            class="flex items-center justify-between align-middle"
-        >
-            <div
-                v-if="
-                    projection?.includes('rows') &&
-                        (item.typeName.toLowerCase() === 'table' ||
-                            item.typeName.toLowerCase() === 'view')
-                "
-            >
-                <p class="mb-0 text-xs text-gray-500">
-                    <span v-if="item?.typeName.toLowerCase() === 'table'">
-                        <span class="font-bold tracking-wide">{{
-                            rowCount(item, true)
-                        }}</span>
-                        rows,
-                    </span>
-                    <span
-                        class="font-bold tracking-wide cursor-pointer text-primary"
-                        >{{ columnCount(item, true) }}</span
+                    <!-- Popularity -->
+                    <div
+                        class="pt-1 mr-2"
+                        v-if="
+                            projection?.includes('popularity') &&
+                            item?.attributes?.popularityScore > 0
+                        "
                     >
-                    cols
-                </p>
+                        <Fa icon="fal analytics" class="w-auto h-3" />
+                        <span class="ml-1 text-sm font-bold tracking-wide">
+                            {{
+                                numeralFormat(
+                                    item?.attributes?.popularityScore,
+                                    '0[.]00'
+                                )
+                            }}
+                        </span>
+                    </div>
+                    <!-- Search score -->
+                    <div
+                        v-if="projection?.includes('searchscore')"
+                        class="pt-1 mr-2"
+                    >
+                        <Fa icon="fal search" class="w-auto h-3 pushtop" />
+                        <span class="ml-1 text-sm font-bold tracking-wide">
+                            {{ numeralFormat(score, '0[.]000000') }}
+                        </span>
+                    </div>
+                </div>
             </div>
+            <!-- Column data type -->
             <div
-                v-if="
-                    projection?.includes('popularity') &&
-                        item?.attributes?.popularityScore > 0
-                "
-                class="text-xs text-gray-500"
+                v-if="item.typeName.toLowerCase() === 'column'"
+                class="flex items-center mt-1 mb-0 text-xs"
             >
-                <fa icon="fal analytics" class="pushtop"></fa>
-                {{ numeralFormat(item?.attributes?.popularityScore, '0[.]00') }}
+                <component
+                    :is="dataTypeImage(item)"
+                    class="w-5 h-5 mr-1"
+                ></component>
+                <div class="leading-none">{{ dataType(item) }}</div>
             </div>
-        </div>
-        <div
-            v-if="projection?.includes('searchscore')"
-            class="text-xs text-gray-500"
-        >
-            <fa icon="fal search" class="pushtop"></fa>
-            {{ numeralFormat(score, '0[.]000000') }}
-        </div>
-        <div
-            v-if="projection?.includes('owners')"
-            class="flex flex-wrap mt-1 gap-x-1"
-        >
-            <template
-                v-for="user in item?.attributes?.ownerUsers?.split(',')"
-                :key="user"
+            <!-- Description -->
+            <span
+                v-if="projection?.includes('description')"
+                class="mt-1 text-xs leading-relaxed whitespace-pre-line"
             >
-                <div
-                    v-if="user?.length > 0"
-                    class="flex items-center px-2 py-1 mb-1 leading-none text-blue-500 align-middle transition-all bg-blue-500 rounded-md cursor-pointer bg-opacity-10 hover:bg-opacity-100 hover:text-white"
-                >
-                    <fa
-                        icon="fal user"
-                        class="mr-1 text-xs leading-none pushtop text-shadow"
-                    ></fa>
-                    <div class="">{{ user }}</div>
-                </div>
-            </template>
-            <template
-                v-for="group in item?.attributes?.ownerGroups?.split(',')"
-                :key="group"
-            >
-                <div
-                    v-if="group?.length > 0"
-                    class="flex items-center px-2 py-1 mb-1 leading-none text-blue-600 align-middle bg-blue-100 rounded-md cursor-pointer hover:text-primary"
-                >
-                    <fa
-                        icon="fal user-friends"
-                        class="mr-1 leading-none pushtop"
-                    ></fa>
-                    <div>{{ group }}</div>
-                </div>
-            </template>
+                {{ description(item) || 'No description' }}
+            </span>
+            <!-- Hierarchy bar -->
+            <HierarchyBar
+                class="py-1 mt-1"
+                v-if="projection?.includes('heirarchy')"
+                :selectedAsset="item"
+            ></HierarchyBar>
         </div>
-        <RelationshipBadge
-            v-if="projection?.includes('heirarchy')"
-            :item="item"
-            class="mt-1"
-        ></RelationshipBadge>
+
+        <img :src="logo(item)" class="flex-none w-auto h-6" />
     </div>
 </template>
 
 <script lang="ts">
-    import { defineComponent, PropType } from 'vue';
+    import { defineComponent, PropType } from 'vue'
 
-    import StatusBadge from '@common/badge/status/index.vue';
-    import RelationshipBadge from '@common/badge/relationship/index.vue';
-    import AssetMixin from '~/mixins/asset';
-    import { Components } from '~/api/atlas/client';
+    import StatusBadge from '@common/badge/status/index.vue'
+    import HierarchyBar from '@common/badge/hierarchy.vue'
+    import { Components } from '~/api/atlas/client'
+    import useAssetInfo from '~/composables/asset/useAssetInfo'
 
     export default defineComponent({
         components: {
             StatusBadge,
-            RelationshipBadge,
+            HierarchyBar,
         },
-        mixins: [AssetMixin],
         props: {
             item: {
                 type: Object as PropType<Components.Schemas.AtlasEntityHeader>,
                 required: false,
                 default(): Components.Schemas.AtlasEntityHeader {
-                    return {};
+                    return {}
                 },
             },
             score: {
                 type: Number,
                 required: false,
                 default() {
-                    return 0;
+                    return 0
                 },
             },
             projection: {
                 type: Array,
                 required: false,
                 default() {
-                    return [];
+                    return []
                 },
             },
         },
+        setup(props) {
+            const {
+                description,
+                logo,
+                dataTypeImage,
+                dataType,
+                title,
+                status,
+                rowCount,
+                columnCount,
+            } = useAssetInfo()
 
-        data() {
-            return {};
+            return {
+                description,
+                logo,
+                dataTypeImage,
+                dataType,
+                title,
+                status,
+                rowCount,
+                columnCount,
+            }
         },
-        methods: {},
-    });
+    })
 </script>

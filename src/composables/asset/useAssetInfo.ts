@@ -2,6 +2,8 @@ import { assetInterface } from '~/types/assets/asset.interface'
 import { SourceList } from '~/constant/source'
 import { AssetTypeList } from '~/constant/assetType'
 import { useTimeAgo } from '@vueuse/core'
+import { dataTypeList } from '~/constant/datatype'
+import { getCountString } from '~/composables/asset/useFormat'
 
 export default function useAssetInfo() {
     const attributes = (asset: assetInterface) => {
@@ -68,10 +70,10 @@ export default function useAssetInfo() {
     }
 
     const rowCount = (asset: assetInterface) => {
-        return attributes(asset).rowCount
+        return getCountString(attributes(asset).rowCount)
     }
     const columnCount = (asset: assetInterface) => {
-        return attributes(asset).columnCount
+        return getCountString(attributes(asset).columnCount)
     }
     const schemaName = (asset: assetInterface) => {
         return attributes(asset).schemaName
@@ -90,6 +92,18 @@ export default function useAssetInfo() {
         return useTimeAgo(attributes(asset).connectionLastSyncedAt).value
     }
 
+    const dataType = (asset: assetInterface) => {
+        return attributes(asset)?.dataType
+    }
+
+    const dataTypeImage = (asset: assetInterface) => {
+        const found = dataTypeList.find((d) =>
+            d.type.find(
+                (type) => type.toLowerCase() === dataType(asset).toLowerCase()
+            )
+        )
+        return found?.image
+    }
     return {
         databaseLogo,
         schemaLogo,
@@ -99,6 +113,8 @@ export default function useAssetInfo() {
         title,
         status,
         assetType,
+        dataType,
+        dataTypeImage,
         description,
         logo,
         integrationName,

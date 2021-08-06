@@ -1,5 +1,5 @@
 <template>
-    <div class="flex mb-4 text-xs tracking-wider">
+    <div class="flex text-xs tracking-wider">
         <div
             v-for="(data, index) in hierarchyInfo"
             :key="index"

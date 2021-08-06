@@ -35,6 +35,32 @@ export default function useAssetInfo() {
 
         return img
     }
+    const databaseLogo = (asset: assetInterface) => {
+        let img = ''
+        const found = SourceList.find(
+            (src) => src.id === attributes(asset).integrationName
+        )
+        if (found) {
+            const database = found.hierarchy.find(
+                (src) => src.typeName === 'Database'
+            )
+            if (database?.image) img = database?.image
+        }
+        return img
+    }
+    const schemaLogo = (asset: assetInterface) => {
+        let img = ''
+        const found = SourceList.find(
+            (src) => src.id === attributes(asset).integrationName
+        )
+        if (found) {
+            const schema = found.hierarchy.find(
+                (src) => src.typeName === 'Schema'
+            )
+            if (schema?.image) img = schema?.image
+        }
+        return img
+    }
 
     const integrationName = (asset: assetInterface) => {
         const name = attributes(asset).integrationName
@@ -46,6 +72,12 @@ export default function useAssetInfo() {
     }
     const columnCount = (asset: assetInterface) => {
         return attributes(asset).columnCount
+    }
+    const schemaName = (asset: assetInterface) => {
+        return attributes(asset).schemaName
+    }
+    const databaseName = (asset: assetInterface) => {
+        return attributes(asset).databaseName
     }
     const createdAt = (asset: assetInterface) => {
         return useTimeAgo(attributes(asset).__timestamp).value
@@ -59,6 +91,10 @@ export default function useAssetInfo() {
     }
 
     return {
+        databaseLogo,
+        schemaLogo,
+        databaseName,
+        schemaName,
         attributes,
         title,
         status,

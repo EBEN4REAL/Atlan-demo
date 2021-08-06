@@ -3,13 +3,12 @@
         <div
             v-for="(data, index) in hierarchyInfo"
             :key="index"
-            class="flex items-center flex-1"
+            class="flex items-center mr-3.5"
         >
             <img :src="data.img" class="w-auto h-4 mr-1" />
-            <span
-                class="flex-1 overflow-hidden  overflow-ellipsis whitespace-nowrap"
-                >{{ data.text }}</span
-            >
+            <span class="overflow-hidden overflow-ellipsis whitespace-nowrap">{{
+                data.text
+            }}</span>
         </div>
     </div>
 </template>
@@ -46,12 +45,27 @@
             const hierarchyInfo: Ref<dataChips[]> = ref([])
 
             function init() {
-                const { integrationName, logo } = useAssetInfo()
+                const {
+                    integrationName,
+                    // databaseName,
+                    // schemaName,
+                    logo,
+                    // databaseLogo,
+                    // schemaLogo,
+                } = useAssetInfo()
                 hierarchyInfo.value = []
                 hierarchyInfo.value.push({
                     text: integrationName(selectedAsset.value),
                     img: logo(selectedAsset.value),
                 })
+                // hierarchyInfo.value.push({
+                //     text: databaseName(selectedAsset.value),
+                //     img: databaseLogo(selectedAsset.value),
+                // })
+                // hierarchyInfo.value.push({
+                //     text: schemaName(selectedAsset.value),
+                //     img: schemaLogo(selectedAsset.value),
+                // })
             }
 
             watch(selectedAsset, init)

@@ -12,6 +12,10 @@
         </div>
         <div class="flex w-full pt-4 text-xs text-gray-description">
             <div class="w-7/12 mr-2">
+                <!-- <Owners
+                    @toggleOwnersDropdown="toggleOwnersDropdown"
+                    :showOwnersDropdown="showOwnersDropdown"
+                /> -->
                 <p class="mb-0">Owners</p>
                 <div class="" @click="toggleOwnersDropdown">
                     <a-dropdown
@@ -82,32 +86,101 @@
                                         <fa icon="fal search" />
                                     </template> -->
                                 </a-input>
-                                <div
-                                    class="flex items-center w-full px-1 py-1 mt-2 rounded cursor-pointer  hover_bg-primary-light"
-                                >
-                                    <img
-                                        src="https://picsum.photos/id/237/50/50"
-                                        alt="view"
-                                        class="w-4 h-4 mr-1 rounded-full"
-                                    /><span class="text-gray truncate ..."
-                                        >Sarbik Betal</span
+                                <div class="w-full h-56 overflow-y-auto">
+                                    <div
+                                        class="flex items-center w-full px-1 py-1 mt-2 rounded cursor-pointer  hover_bg-primary-light"
                                     >
-                                </div>
-                                <div
-                                    class="flex items-center w-full px-1 py-1 mt-2 rounded cursor-pointer  hover_bg-primary-light"
-                                >
-                                    <img
-                                        src="https://picsum.photos/id/239/50/50"
-                                        alt="view"
-                                        class="w-4 h-4 mr-1 rounded-full"
-                                    /><span class="text-gray truncate ..."
-                                        >Shubhankar Khare</span
+                                        <img
+                                            src="https://picsum.photos/id/237/50/50"
+                                            alt="view"
+                                            class="w-4 h-4 mr-1 rounded-full"
+                                        /><span class="text-gray truncate ..."
+                                            >Sarbik Betal</span
+                                        >
+                                    </div>
+                                    <div
+                                        class="flex items-center w-full px-1 py-1 mt-2 rounded cursor-pointer  hover_bg-primary-light"
                                     >
+                                        <img
+                                            src="https://picsum.photos/id/237/50/50"
+                                            alt="view"
+                                            class="w-4 h-4 mr-1 rounded-full"
+                                        /><span class="text-gray truncate ..."
+                                            >Sarbik Betal</span
+                                        >
+                                    </div>
+                                    <div
+                                        class="flex items-center w-full px-1 py-1 mt-2 rounded cursor-pointer  hover_bg-primary-light"
+                                    >
+                                        <img
+                                            src="https://picsum.photos/id/237/50/50"
+                                            alt="view"
+                                            class="w-4 h-4 mr-1 rounded-full"
+                                        /><span class="text-gray truncate ..."
+                                            >Sarbik Betal</span
+                                        >
+                                    </div>
+                                    <div
+                                        class="flex items-center w-full px-1 py-1 mt-2 rounded cursor-pointer  hover_bg-primary-light"
+                                    >
+                                        <img
+                                            src="https://picsum.photos/id/237/50/50"
+                                            alt="view"
+                                            class="w-4 h-4 mr-1 rounded-full"
+                                        /><span class="text-gray truncate ..."
+                                            >Sarbik Betal</span
+                                        >
+                                    </div>
+                                    <div
+                                        class="flex items-center w-full px-1 py-1 mt-2 rounded cursor-pointer  hover_bg-primary-light"
+                                    >
+                                        <img
+                                            src="https://picsum.photos/id/239/50/50"
+                                            alt="view"
+                                            class="w-4 h-4 mr-1 rounded-full"
+                                        /><span class="text-gray truncate ..."
+                                            >Shubhankar Khare</span
+                                        >
+                                    </div>
+                                    <div
+                                        class="flex items-center w-full px-1 py-1 mt-2 rounded cursor-pointer  hover_bg-primary-light"
+                                    >
+                                        <img
+                                            src="https://picsum.photos/id/239/50/50"
+                                            alt="view"
+                                            class="w-4 h-4 mr-1 rounded-full"
+                                        /><span class="text-gray truncate ..."
+                                            >Shubhankar Khare</span
+                                        >
+                                    </div>
+                                    <div
+                                        class="flex items-center w-full px-1 py-1 mt-2 rounded cursor-pointer  hover_bg-primary-light"
+                                    >
+                                        <img
+                                            src="https://picsum.photos/id/239/50/50"
+                                            alt="view"
+                                            class="w-4 h-4 mr-1 rounded-full"
+                                        /><span class="text-gray truncate ..."
+                                            >Shubhankar Khare</span
+                                        >
+                                    </div>
+                                    <div
+                                        class="flex items-center w-full px-1 py-1 mt-2 rounded cursor-pointer  hover_bg-primary-light"
+                                    >
+                                        <img
+                                            src="https://picsum.photos/id/239/50/50"
+                                            alt="view"
+                                            class="w-4 h-4 mr-1 rounded-full"
+                                        /><span class="text-gray truncate ..."
+                                            >Shubhankar Khare</span
+                                        >
+                                    </div>
                                 </div>
                             </div>
                         </template>
                     </a-dropdown>
                 </div>
+                <!-- <XOwners /> -->
             </div>
             <div class="w-5/12">
                 <p class="flex-1 mb-0">Experts</p>
@@ -166,6 +239,8 @@
     import { getCountString } from '~/composables/asset/useFormat'
     import Description from './description.vue'
     import Status from './status.vue'
+    import Owners from './_owners.vue'
+    // import XOwners from './owners.vue'
 
     export default defineComponent({
         name: 'AssetDetails',
@@ -177,7 +252,9 @@
         },
         components: {
             Description,
+            // XOwners,
             Status,
+            Owners,
         },
         setup(props) {
             const { selectedAsset } = toRefs(props)

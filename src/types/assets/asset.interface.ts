@@ -12,6 +12,7 @@ export interface assetInterface {
         connectionLastSyncedAt: number
         connectionName: string
         connectionQualifiedName: string
+        dataType: string
         databaseName: string
         databaseQualifiedName: string
         description: string

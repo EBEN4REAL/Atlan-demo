@@ -85,7 +85,8 @@ export const install: UserModule = ({ app }) => {
   app.use(Popconfirm);
   app.use(Empty);
 
-
+ 
   app.config.globalProperties.$message = message;
   app.config.globalProperties.$error = Modal.error;
+  app.config.globalProperties.$confirm = Modal.confirm;
 };

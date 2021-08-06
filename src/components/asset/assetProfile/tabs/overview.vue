@@ -1,39 +1,38 @@
+/* eslint-disable vue/no-v-model-argument */
 <template>
-    <div class="w-full h-full px-10 pt-4 overflow-y-auto">
+    <div class="w-full px-10 py-4 overflow-y-auto" style="height: 600px">
         <!--Asset Summary -->
-        <div class="mb-8">
-            <div
-                class="flex items-center w-full py-2 text-base bg-white border rounded-t  px-7"
-            >
-                Summary
-            </div>
-            <div
-                class="w-full h-full py-6 bg-white border border-t-0 rounded-b  px-7"
-            >
-                <!-- Description Component -->
-                <div class="mb-8">
-                    <p v-if="asset.attributes.description">
-                        {{ asset.attributes.description }}
-                        <span class="ml-2">.</span>
-                        <a-button type="link"> Edit description </a-button>
-                    </p>
-                    <p v-else class="text-gray-400">No Description Found</p>
-                </div>
-
-                <!-- Table Component -->
-                <a-table
-                    bordered
-                    :columns="columns"
-                    :data-source="data"
-                    :pagination="false"
+        <div class="flex items-center justify-between w-full mb-8">
+            <div class="w-full mr-8">
+                <div
+                    class="flex items-center w-full py-2 text-base bg-white border rounded-t  px-7"
                 >
-                </a-table>
+                    Summary
+                </div>
+                <div
+                    class="w-full h-full py-6 bg-white border border-t-0 rounded-b  px-7"
+                >
+                    <!-- Description Component -->
+                    <DescriptionWidget :asset="asset" />
+
+                    <!-- Table Component -->
+                    <a-table
+                        bordered
+                        :columns="columns"
+                        :data-source="data"
+                        :pagination="false"
+                    >
+                    </a-table>
+                </div>
+            </div>
+            <!-- Column widget -->
+            <div>
+                <TableColumn :asset="asset" />
             </div>
         </div>
         <!-- Asset ReadMe -->
-        <div>
-            <!-- ReadMe Component -->
-            <Readme class="w-full m-h-48" />
+        <div class="min-h-full">
+            <Readme class="w-full h-32" />
         </div>
     </div>
 </template>
@@ -43,9 +42,11 @@
 
     // Components
     import Readme from '@/common/readme/index.vue'
+    import TableColumn from '@/asset/assetProfile/overview/tableColumn.vue'
+    import DescriptionWidget from '@/asset/assetProfile/overview/descriptionWidget.vue'
 
     export default defineComponent({
-        components: { Readme },
+        components: { Readme, TableColumn, DescriptionWidget },
         setup(props, context) {
             const asset = ref(context.attrs.asset)
 

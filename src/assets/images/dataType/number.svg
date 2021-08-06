@@ -1,1 +1,8 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><g id="Layer_2" data-name="Layer 2"><g id="Numeric"><path d="M13,7V5.5H10.5V3H9V5.5H7V3H5.5V5.5H3V7H5.5V9H3v1.5H5.5V13H7V10.5H9V13h1.5V10.5H13V9H10.5V7ZM9,9H7V7H9Z" style="fill:#adb5bd"/><rect id="Transparent_path" data-name="Transparent path" width="16" height="16" style="fill:none"/></g></g></svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16">
+    <g id="Layer_2" data-name="Layer 2">
+        <g id="Numeric">
+            <path d="M13,7V5.5H10.5V3H9V5.5H7V3H5.5V5.5H3V7H5.5V9H3v1.5H5.5V13H7V10.5H9V13h1.5V10.5H13V9H10.5V7ZM9,9H7V7H9Z" style="fill:#6F7590"/>
+            <rect id="Transparent_path" data-name="Transparent path" width="16" height="16" style="fill:none"/>
+        </g>
+    </g>
+</svg>

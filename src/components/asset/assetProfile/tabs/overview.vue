@@ -78,7 +78,7 @@
             watch([data, error], () => {
                 if (data.value && error.value == undefined) {
                     // convert data from API in Antd-table format
-                    data.value.columns.map((col) => {
+                    data.value.columns.forEach((col) => {
                         const obj = {
                             title: col.columnName,
                             dataIndex: col.label,
@@ -87,9 +87,9 @@
                         }
                         tableColumns.value.push(obj)
                     })
-                    data.value.results.map((val, index) => {
+                    data.value.results.forEach((val, index) => {
                         let obj = {}
-                        data.value.columns.map((col, i) => {
+                        data.value.columns.forEach((col, i) => {
                             obj[col.columnName] = val[i]
                         })
                         // add key to object

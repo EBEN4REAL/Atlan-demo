@@ -283,7 +283,6 @@
                 showOwnersDropdown,
                 toggleOwnersDropdown,
                 selectedAsset,
-                numFormatter,
             }
         },
     })

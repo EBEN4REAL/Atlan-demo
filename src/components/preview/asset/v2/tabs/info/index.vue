@@ -1,34 +1,47 @@
 <template>
-    <a-collapse
-        v-model:activeKey="activeKey"
-        :bordered="false"
-        class="bg-transparent"
-        :class="$style.filter"
-        :accordion="true"
-    >
-        <a-collapse-panel
-            v-for="item in List"
-            :key="item.id"
+    <div class="">
+        <a-collapse
+            v-model:activeKey="activeKey"
+            :bordered="false"
             class="bg-transparent"
+            :class="$style.filter"
         >
-            <template #header>
-                <div :key="item.id" class="flex justify-between select-none">
-                    {{ item.label }}
-                </div>
+            <template #expandIcon="{ isActive }">
+                <fa
+                    icon="fas chevron-right"
+                    class="text-primary"
+                    v-if="!isActive"
+                />
+                <fa icon="fas chevron-down" class="text-primary" v-else />
             </template>
-            <component
-                :is="item.component"
-                :ref="
-                    (el) => {
-                        refMap[item.id] = el
-                    }
-                "
-                :item="item"
-                :data="dataMap[item.id]"
-                @change="handleChange"
-            ></component>
-        </a-collapse-panel>
-    </a-collapse>
+            <a-collapse-panel
+                v-for="item in List"
+                :key="item.id"
+                class="bg-transparent"
+            >
+                <template #header>
+                    <div
+                        :key="item.id"
+                        class="flex justify-between text-sm select-none"
+                    >
+                        {{ item.label }}
+                    </div>
+                </template>
+                <component
+                    :is="item.component"
+                    :ref="
+                        (el) => {
+                            refMap[item.id] = el
+                        }
+                    "
+                    :item="item"
+                    :data="dataMap[item.id]"
+                    :selectedAsset="selectedAsset"
+                    @change="handleChange"
+                ></component>
+            </a-collapse-panel>
+        </a-collapse>
+    </div>
 </template>
 
 <script lang="ts">
@@ -57,11 +70,11 @@
             assetDetails: defineAsyncComponent(
                 () => import('./assetDetails/index.vue')
             ),
-            metaData: defineAsyncComponent(
-                () => import('./metaData/index.vue')
+            properties: defineAsyncComponent(
+                () => import('./properties/index.vue')
             ),
             linkedAsset: defineAsyncComponent(
-                () => import('./linkedAsset/index.vue')
+                () => import('./governance/index.vue')
             ),
             heirarchy: defineAsyncComponent(
                 () => import('./heirarchy/index.vue')
@@ -96,9 +109,11 @@
         :global(.ant-collapse-header) {
             padding-left: 18px !important;
             padding-right: 0px !important;
+            @apply flex items-center !important;
         }
         :global(.ant-collapse-arrow) {
             left: 0px !important;
+            @apply text-primary !important;
         }
 
         :global(.ant-collapse-content-box) {

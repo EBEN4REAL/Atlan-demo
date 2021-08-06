@@ -1,7 +1,6 @@
 import { assetInterface } from '~/types/assets/asset.interface'
 import { SourceList } from '~/constant/source'
 import { AssetTypeList } from '~/constant/assetType'
-import { dataTypeList } from '~/constant/datatype'
 import { useTimeAgo } from '@vueuse/core'
 
 export default function useAssetInfo() {
@@ -36,18 +35,31 @@ export default function useAssetInfo() {
 
         return img
     }
-
-    const dataType = (asset: assetInterface) => {
-        return attributes(asset)?.dataType
-    }
-
-    const dataTypeImage = (asset: assetInterface) => {
-        const found = dataTypeList.find((d) =>
-            d.type.find(
-                (type) => type.toLowerCase() === dataType(asset).toLowerCase()
-            )
+    const databaseLogo = (asset: assetInterface) => {
+        let img = ''
+        const found = SourceList.find(
+            (src) => src.id === attributes(asset).integrationName
         )
-        return found?.image
+        if (found) {
+            const database = found.hierarchy.find(
+                (src) => src.typeName === 'Database'
+            )
+            if (database?.image) img = database?.image
+        }
+        return img
+    }
+    const schemaLogo = (asset: assetInterface) => {
+        let img = ''
+        const found = SourceList.find(
+            (src) => src.id === attributes(asset).integrationName
+        )
+        if (found) {
+            const schema = found.hierarchy.find(
+                (src) => src.typeName === 'Schema'
+            )
+            if (schema?.image) img = schema?.image
+        }
+        return img
     }
 
     const integrationName = (asset: assetInterface) => {
@@ -61,6 +73,12 @@ export default function useAssetInfo() {
     const columnCount = (asset: assetInterface) => {
         return attributes(asset).columnCount
     }
+    const schemaName = (asset: assetInterface) => {
+        return attributes(asset).schemaName
+    }
+    const databaseName = (asset: assetInterface) => {
+        return attributes(asset).databaseName
+    }
     const createdAt = (asset: assetInterface) => {
         return useTimeAgo(attributes(asset).__timestamp).value
     }
@@ -73,13 +91,15 @@ export default function useAssetInfo() {
     }
 
     return {
+        databaseLogo,
+        schemaLogo,
+        databaseName,
+        schemaName,
         attributes,
         title,
         status,
         assetType,
         description,
-        dataType,
-        dataTypeImage,
         logo,
         integrationName,
         assetTypeLabel,

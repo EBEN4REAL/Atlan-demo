@@ -1,16 +1,16 @@
 <template>
     <div class="w-full">
-        <Heirarchy :selectedAsset="selectedAsset" />
+        <Properties :selectedAsset="selectedAsset" />
     </div>
 </template>
 
 <script lang="ts">
     import { defineComponent, PropType } from 'vue'
-    import Heirarchy from './heirarchy.vue'
     import { assetInterface } from '~/types/assets/asset.interface'
+    import Properties from './properties.vue'
 
     export default defineComponent({
-        components: { Heirarchy },
+        components: { Properties },
         props: {
             selectedAsset: {
                 type: Object as PropType<assetInterface>,

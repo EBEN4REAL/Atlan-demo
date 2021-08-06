@@ -1,6 +1,12 @@
+import { classificationInterface } from '~/types/classifications/classification.interface'
+
 export interface assetInterface {
     attributes: {
         assetStatus?: string
+        assetStatusMessage: string
+        assetStatusUpdatedBy: string
+        ownerUsers: string
+        ownerGroups: string
         assetStatusUpdatedAt: number
         columnCount: number
         connectionLastSyncedAt: number
@@ -10,7 +16,7 @@ export interface assetInterface {
         databaseQualifiedName: string
         description: string
         integrationName: string
-        meanings: string[]
+        meanings: { displayText: string }[]
         name: string
         popularityScore: number
         qualifiedName: string
@@ -28,12 +34,13 @@ export interface assetInterface {
         __state: string
     }
     classificationNames: string[]
+    classifications: classificationInterface[]
     displayText: string
     guid: string
     isIncomplete: false
     labels: string[]
     meaningNames: string[]
-    meanings: string[]
+    meanings: { displayText: string }[]
     status: string
     typeName?: string
 }

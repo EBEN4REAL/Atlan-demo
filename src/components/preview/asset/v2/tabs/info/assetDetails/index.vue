@@ -13,7 +13,7 @@
         <div class="flex w-full pt-4 text-xs text-gray-description">
             <div class="w-7/12 mr-2">
                 <p class="mb-0">Owners</p>
-                <div @click="toggleOwnersDropdown">
+                <div class="" @click="toggleOwnersDropdown">
                     <a-dropdown
                         :trigger="['click']"
                         v-model:visible="showOwnersDropdown"
@@ -58,24 +58,50 @@
                                         _bg-primary-light
                                     "
                                 >
-                                    +3
+                                    +3 Others
                                 </span>
                             </div>
                         </div>
                         <template #overlay>
-                            <div class="p-2.5 bg-white rounded shadow">
+                            <div
+                                class="
+                                    p-2.5
+                                    bg-white
+                                    rounded
+                                    shadow
+                                    flex
+                                    items-center
+                                    flex-col
+                                "
+                            >
                                 <a-input
-                                    class="mx-1"
                                     v-input-focus
                                     placeholder="Search Owners"
-                                />
-                                <div class="flex items-center px-1 py-1.5 mb-2">
+                                >
+                                    <!-- <template #prefix>
+                                        <fa icon="fal search" />
+                                    </template> -->
+                                </a-input>
+                                <div
+                                    class="flex items-center w-full px-1 py-1 mt-2 rounded cursor-pointer  hover_bg-primary-light"
+                                >
                                     <img
-                                        src="https://picsum.photos/id/238/50/50"
+                                        src="https://picsum.photos/id/237/50/50"
                                         alt="view"
                                         class="w-4 h-4 mr-1 rounded-full"
                                     /><span class="text-gray truncate ..."
-                                        >@shreyas</span
+                                        >Sarbik Betal</span
+                                    >
+                                </div>
+                                <div
+                                    class="flex items-center w-full px-1 py-1 mt-2 rounded cursor-pointer  hover_bg-primary-light"
+                                >
+                                    <img
+                                        src="https://picsum.photos/id/239/50/50"
+                                        alt="view"
+                                        class="w-4 h-4 mr-1 rounded-full"
+                                    /><span class="text-gray truncate ..."
+                                        >Shubhankar Khare</span
                                     >
                                 </div>
                             </div>
@@ -109,7 +135,7 @@
                 </div>
             </div>
         </div>
-        <div class="w-full pt-2 text-xs text-gray-description">
+        <!-- <div class="w-full pt-2 text-xs text-gray-description">
             <p class="mb-1">Description</p>
             <p class="mb-0 text-sm text-gray">
                 Transaction table stores all the information required for a trip
@@ -119,7 +145,9 @@
                     >show more</span
                 >
             </p>
-        </div>
+        </div> -->
+        <Description :selectedAsset="selectedAsset" />
+        <Status :selectedAsset="selectedAsset" />
     </div>
 </template>
 
@@ -136,6 +164,8 @@
     import { assetInterface } from '~/types/assets/asset.interface'
     import useAssetInfo from '~/composables/asset/useAssetInfo'
     import { getCountString } from '~/composables/asset/useFormat'
+    import Description from './description.vue'
+    import Status from './status.vue'
 
     export default defineComponent({
         name: 'AssetDetails',
@@ -145,6 +175,10 @@
                 required: true,
             },
         },
+        components: {
+            Description,
+            Status,
+        },
         setup(props) {
             const { selectedAsset } = toRefs(props)
             const details: Ref = ref({})
@@ -153,7 +187,7 @@
             function init() {
                 const { rowCount, columnCount, lastCrawled, updatedAt } =
                     useAssetInfo()
-
+                console.log(selectedAsset.value, 'selectedAsset')
                 details.value = {
                     Rows: getCountString(rowCount(selectedAsset.value)),
                     Columns: getCountString(columnCount(selectedAsset.value)),
@@ -167,12 +201,20 @@
 
             watch(selectedAsset, init)
             onMounted(init)
-            return { details, showOwnersDropdown, toggleOwnersDropdown }
+            return {
+                details,
+                showOwnersDropdown,
+                toggleOwnersDropdown,
+                selectedAsset,
+            }
         },
     })
 </script>
 <style lang="less" scoped>
     ._bg-primary-light {
+        background: rgba(34, 81, 204, 0.05);
+    }
+    .hover_bg-primary-light:hover {
         background: rgba(34, 81, 204, 0.05);
     }
 </style>

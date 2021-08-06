@@ -5,7 +5,11 @@ export interface classificationInterface {
     createdBy: string
     description: string
     displayName: string
+    typeName: string
+    isAutoClassification: boolean
+    propagate: boolean
     entityTypes: Array<any>
+    entityGuid: string
     guid: string
     name: string
     subTypes: Array<any>

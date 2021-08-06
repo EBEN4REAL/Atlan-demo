@@ -11,17 +11,17 @@ export const List: previewFactesType[] = [
     },
     {
         id: 'linkedAsset',
-        label: 'Linked Asset',
+        label: 'Governance',
         component: 'linkedAsset',
-    },
-    {
-        id: 'metaData',
-        label: 'Meta Data',
-        component: 'metaData',
     },
     {
         id: 'heirarchy',
         label: 'Heirarchy',
         component: 'heirarchy',
+    },
+    {
+        id: 'properties',
+        label: 'Properties',
+        component: 'properties',
     },
 ]

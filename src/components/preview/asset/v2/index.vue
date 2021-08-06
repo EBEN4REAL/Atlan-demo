@@ -57,7 +57,7 @@
         </div>
         <a-tabs v-model:activeKey="activeKey" :class="$style.previewtab">
             <a-tab-pane
-                class="px-4 py-2"
+                class="px-4 py-2 overflow-y-auto tab-height"
                 v-for="tab in tabs"
                 :key="tab.id"
                 :tab="tab.name"
@@ -79,16 +79,24 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, PropType, ref, defineAsyncComponent } from 'vue'
+    import {
+        defineComponent,
+        PropType,
+        ref,
+        defineAsyncComponent,
+        Ref,
+        onMounted,
+        watch,
+        toRefs,
+    } from 'vue'
     import StatusBadge from '@common/badge/status/index.vue'
     import { assetInterface } from '~/types/assets/asset.interface'
-    import AssetMixin from '~/mixins/asset'
     import { tabList as tabs } from './tabList'
     import HierarchyBar from './hierarchy.vue'
+    import useAsset from '~/composables/asset/useAsset'
+    import useAssetInfo from '~/composables/asset/useAssetInfo'
 
     export default defineComponent({
-        mixins: [AssetMixin],
-
         props: {
             selectedAsset: {
                 type: Object as PropType<assetInterface>,
@@ -114,12 +122,44 @@
             ),
         },
         setup(props, { emit }) {
+            const { assetTypeLabel, title } = useAssetInfo()
+            const { selectedAsset } = toRefs(props)
+
             const activeKey = ref('1')
             const refMap: { [key: string]: any } = ref({})
             const dataMap: { [id: string]: any } = ref({})
             const handleChange = (value: any) => {}
+            const infoTabData: Ref<any> = ref({})
+
+            function getAssetEntitity(data: Ref): any {
+                if (data.value?.entities.length > 0)
+                    return data.value?.entities[0]
+                return {}
+            }
+
+            function init() {
+                const { data, error } = useAsset({
+                    entityId: selectedAsset.value.guid,
+                })
+                watch([data, error], () => {
+                    if (data.value && error.value == undefined) {
+                        const entitiy = getAssetEntitity(data)
+                        infoTabData.value = entitiy
+                        console.log(infoTabData.value, 'info tab Data')
+                    } else {
+                        console.log(
+                            error.value,
+                            '------ assetInfo failed to fetch ------ '
+                        )
+                    }
+                })
+            }
+            watch(selectedAsset, init)
+            onMounted(init)
 
             return {
+                title,
+                assetTypeLabel,
                 dataMap,
                 activeKey,
                 tabs,
@@ -132,6 +172,9 @@
 <style lang="less" scoped>
     ._bg-primary-light {
         background: rgba(34, 81, 204, 0.05);
+    }
+    .tab-height {
+        height: calc(100vh - 14rem);
     }
 </style>
 <style lang="less" module>

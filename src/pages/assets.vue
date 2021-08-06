@@ -19,7 +19,7 @@
         >
             <AssetPreview
                 v-if="selected"
-                :selected-asset="selected"
+                :selectedAsset="selected"
             ></AssetPreview>
         </div>
     </div>

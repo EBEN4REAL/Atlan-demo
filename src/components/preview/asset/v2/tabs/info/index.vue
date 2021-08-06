@@ -70,11 +70,11 @@
             assetDetails: defineAsyncComponent(
                 () => import('./assetDetails/index.vue')
             ),
-            metaData: defineAsyncComponent(
-                () => import('./metaData/index.vue')
+            properties: defineAsyncComponent(
+                () => import('./properties/index.vue')
             ),
             linkedAsset: defineAsyncComponent(
-                () => import('./linkedAsset/index.vue')
+                () => import('./governance/index.vue')
             ),
             heirarchy: defineAsyncComponent(
                 () => import('./heirarchy/index.vue')

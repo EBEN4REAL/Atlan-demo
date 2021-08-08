@@ -25,7 +25,6 @@ const useGTCEntity = (type: 'glossary' | 'category' | 'term') => {
         options: {
             revalidateOnFocus: false
         }
-        // url
     })
 
     const fetchEntity = (guid: string) => {

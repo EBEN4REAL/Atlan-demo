@@ -10,7 +10,7 @@ interface pathVariables {
     limit?: number;
 }
 
-const useGlossaryTerms = () => {
+const useCategoryTerms = () => {
     const entityGuid = ref<string>();
     const requestOffset = ref(0);
     const defaultLimit = 20;
@@ -71,4 +71,4 @@ const useGlossaryTerms = () => {
     return { data, error, isLoading, fetchCategoryTerms, fetchCategoryTermsPaginated }
 }
 
-export default useGlossaryTerms;
+export default useCategoryTerms;

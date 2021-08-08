@@ -115,9 +115,9 @@ export default defineComponent({
             fetchAssets(newName)
         })
 
-        watch(searchQuery, (newQuery) => {
-            fetchAssets(name.value, `*${newQuery}*`)
-        })
+        // watch(searchQuery, (newQuery) => {
+        //     fetchAssets(name.value, `*${newQuery}*`)
+        // })
 
         const onSearch = useDebounceFn(() => {
             fetchAssets(name.value, `*${searchQuery.value}*`)

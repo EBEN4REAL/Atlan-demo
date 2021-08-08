@@ -95,7 +95,7 @@ import { Components } from '~/api/atlas/client'
 
 import TermSvg from '~/assets/images/gtc/term/term.png'
 import CategorySvg from '~/assets/images/gtc/category/category.png'
-import GlossaryAddDescriptionCard from '@/glossary/glossaryAddDescriptionCard.vue'
+import GlossaryAddDescriptionCard from '~/components/glossary/continueSettingUp/glossaryAddDescriptionCard.vue'
 import Owners from '@/preview/asset/tabs/overview/details/owners.vue'
 
 interface PropsType {

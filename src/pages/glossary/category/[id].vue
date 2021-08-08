@@ -62,9 +62,9 @@
 <script lang="ts">
 import { defineComponent, computed, watch, onMounted } from 'vue'
 
-import GlossaryProfileOverview from '@/glossary/glossaryProfileOverview.vue'
-import GlossaryTopTerms from '@/glossary/glossaryTopTerms.vue'
-import EntityHistory from '@/glossary/entityHistory.vue'
+import GlossaryProfileOverview from '~/components/glossary/common/glossaryProfileOverview.vue'
+import GlossaryTopTerms from '~/components/glossary/common/glossaryTopTerms.vue'
+import EntityHistory from '~/components/glossary/common/entityHistory.vue'
 import CategoryTermsAndCategoriesTab from '@/glossary/categoryProfile/categoryTermsAndCategoriesTab.vue'
 import LoadingView from '@common/loaders/section.vue'
 

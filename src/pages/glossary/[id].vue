@@ -63,11 +63,11 @@
 <script lang="ts">
 import { defineComponent, computed, watch, onMounted } from 'vue'
 
-import GlossaryProfileOverview from '@/glossary/glossaryProfileOverview.vue'
-import GlossaryTopTerms from '@/glossary/glossaryTopTerms.vue'
-import GlossaryContinueSettingUp from '@/glossary/glossaryContinueSettingUp.vue'
+import GlossaryProfileOverview from '~/components/glossary/common/glossaryProfileOverview.vue'
+import GlossaryTopTerms from '~/components/glossary/common/glossaryTopTerms.vue'
+import GlossaryContinueSettingUp from '~/components/glossary/continueSettingUp/glossaryContinueSettingUp.vue'
 import GlossaryTermsAndCategoriesTab from '@/glossary/glossaryTermsAndCategoriesTab.vue'
-import EntityHistory from '@/glossary/entityHistory.vue'
+import EntityHistory from '~/components/glossary/common/entityHistory.vue'
 import LoadingView from '@common/loaders/section.vue'
 
 import useGTCEntity from '~/composables/glossary/useGtcEntity'

@@ -45,10 +45,10 @@
 <script lang="ts">
 import { defineComponent, computed, watch, onMounted } from 'vue'
 
-import GlossaryProfileOverview from '@/glossary/glossaryProfileOverview.vue'
+import GlossaryProfileOverview from '~/components/glossary/common/glossaryProfileOverview.vue'
 import TopAssets from '@/glossary/termProfile/topAssets.vue'
 import LinkedAssetsTab from '@/glossary/termProfile/linkedAssetsTab.vue'
-import EntityHistory from '@/glossary/entityHistory.vue'
+import EntityHistory from '~/components/glossary/common/entityHistory.vue'
 import LoadingView from "@common/loaders/section.vue";
 import RelatedTerms from '@/glossary/termProfile/relatedTerms.vue'
 

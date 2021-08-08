@@ -1,22 +1,28 @@
 <template>
     <div class="text-sm leading-6 text-gray-400 font-normal">
-        <span class="mr-3"
+        <span v-if="createdAt" class="mr-3"
             >Created {{ creationTime }} ago<span v-if="createdBy">
                 by
-                <a-button type="link" class="p-0 m-0" @click="() => handleClickUser(createdBy)"
+                <a-button
+                    type="link"
+                    class="p-0 m-0"
+                    @click="() => handleClickUser(createdBy)"
                     >@{{ createdBy }}</a-button
                 ></span
-            ></span
-        >
-        <span>&bull;</span>
-        <span class="ml-3"
+            >
+        </span>
+        <span v-if="createdAt">&bull;</span>
+        <span v-if="updatedAt" class="ml-3"
             >Edited {{ updationTime }} ago<span v-if="updatedBy"
                 >by
-                <a-button type="link" class="p-0 m-0" @click="() => handleClickUser(updatedBy)"
+                <a-button
+                    type="link"
+                    class="p-0 m-0"
+                    @click="() => handleClickUser(updatedBy)"
                     >@{{ updatedBy }}</a-button
                 ></span
-            ></span
-        >
+            >
+        </span>
     </div>
 </template>
 <script lang="ts">
@@ -41,7 +47,6 @@ export default defineComponent({
         // Placeholder for demo
         const createdBy = computed(() => props.createdBy ?? 'nitya')
         const updatedBy = computed(() => props.updatedBy ?? 'nitya')
-
 
         const { showUserPreview, setUserUniqueAttribute } = useUserPreview()
         const handleClickUser = (username: string) => {

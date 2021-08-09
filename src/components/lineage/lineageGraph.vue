@@ -29,24 +29,25 @@
                     <div
                         v-for="(group, index) in layoutColumn"
                         :key="'group' + String(index)"
-                        class="z-10 mb-16 mr-24 text-xs border"
+                        class="z-10 mb-16 mr-24 text-xs"
                         :class="{
                             'w-12': group.type === 'Process',
-                            'border-success border-2': group.base,
                             'w-80 bg-white': group.type !== 'Process',
                         }"
                     >
-                        <!-- group accordian starts here  -->
+                        <!-- group accordion starts here  -->
                         <a-collapse
                             v-if="group.type !== 'Process'"
                             expand-icon-position="right"
                             :bordered="false"
                             :accordion="true"
-                            :expandIcon="handleExpandIcon"
-                            activeKey="1"
+                            :active-key="group.groupId"
                         >
-                            <a-collapse-panel key="1" :forceRender="true">
-                                <!-- header -->
+                            <a-collapse-panel
+                                :key="group.groupId"
+                                :forceRender="true"
+                            >
+                                <!-- group header starts here -->
                                 <template #header>
                                     <div
                                         :id="group.groupId"
@@ -57,7 +58,10 @@
                                                     : refs
                                             }
                                         "
-                                        class="flex items-center w-full h-full p-3 text-sm font-bold bg-white "
+                                        class="flex items-center w-full h-full p-3 text-sm font-bold bg-white border border-b-0 border-gray-300 rounded-t "
+                                        :class="{
+                                            'border-success': group.base,
+                                        }"
                                     >
                                         <img
                                             :src="getIcon(group.source)"
@@ -76,97 +80,201 @@
                                         </div>
                                     </div>
                                 </template>
-                                <!-- header ends here -->
 
                                 <!-- group content starts here  -->
                                 <div
                                     v-if="group.type !== 'Process'"
-                                    class="relative p-0 overflow-hidden"
-                                    :style="
-                                        get_content_height(
-                                            group.groupId,
-                                            group.fields.length
-                                        )
-                                    "
+                                    class="relative p-0 overflow-hidden bg-transparent "
+                                    :style="`height: ${
+                                        contentHeights[group.groupId] ||
+                                        38 * group.fields.length
+                                    }px`"
                                 >
                                     <div
                                         v-for="(node, index) in group.fields"
+                                        :id="'group-content-' + node.guid"
                                         :key="'node' + String(index)"
-                                        class="w-full h-full cursor-pointer"
+                                        :ref="
+                                            (el) => {
+                                                el
+                                                    ? (refs[
+                                                          'group-content-' +
+                                                              node.guid
+                                                      ] = el)
+                                                    : refs
+                                            }
+                                        "
+                                        class="absolute w-full cursor-pointer"
+                                        :style="getTopPosition(node.guid)"
                                         @click.stop="get_path(node.guid)"
                                     >
-                                        <div
-                                            v-if="group.type !== 'Process'"
-                                            :id="node.guid"
-                                            :ref="
-                                                (el) => {
-                                                    el
-                                                        ? (refs[node.guid] = el)
-                                                        : refs
-                                                }
+                                        <!-- node accordion starts here -->
+                                        <a-collapse
+                                            expand-icon-position="left"
+                                            :bordered="false"
+                                            :accordion="true"
+                                            @change="
+                                                handleExpand(
+                                                    group.groupId,
+                                                    group.fields.length,
+                                                    node.guid
+                                                )
                                             "
-                                            class="relative flex items-center h-full px-5 text-sm lowercase bg-white border cursor-pointer  hover:border-primary justify-space-between"
-                                            :class="{
-                                                'bg-success-muted': group.base,
-                                                'bg-primary-muted border-primary':
-                                                    is_highlighted_node(
-                                                        node.guid
-                                                    ),
-                                            }"
                                         >
-                                            <!-- Node display text -->
-                                            <span
-                                                class="overflow-hidden  overflow-ellipsis whitespace-nowrap"
-                                                :style="{
-                                                    width: showColumns
-                                                        ? '10rem'
-                                                        : '100%',
-                                                }"
+                                            <a-collapse-panel
+                                                :key="node.guid"
+                                                :forceRender="true"
                                             >
-                                                {{ node.displayText }}
-                                            </span>
-                                            <button
-                                                v-if="showColumns"
-                                                :class="{
-                                                    'cursor-wait':
-                                                        columnsListLoading &&
-                                                        expandedNodeGroups[
-                                                            group.groupId
-                                                        ],
-                                                }"
-                                                @click.stop="
-                                                    fetch_columns_list(
-                                                        group.groupId,
+                                                <!-- node header starts here -->
+                                                <template #header>
+                                                    <div
+                                                        v-if="
+                                                            group.type !==
+                                                            'Process'
+                                                        "
+                                                        :id="node.guid"
+                                                        :ref="
+                                                            (el) => {
+                                                                el
+                                                                    ? (refs[
+                                                                          node.guid
+                                                                      ] = el)
+                                                                    : refs
+                                                            }
+                                                        "
+                                                        class="relative flex items-center h-full py-2 pl-10 pr-5 text-sm lowercase bg-white border border-gray-300 cursor-pointer  hover:border-primary justify-space-between"
+                                                        :class="{
+                                                            'bg-success-muted border-success':
+                                                                group.base,
+                                                            'bg-primary-muted border-primary':
+                                                                is_highlighted_node(
+                                                                    node.guid
+                                                                ),
+                                                        }"
+                                                    >
+                                                        <!-- Node display text -->
+                                                        <span
+                                                            class="overflow-hidden  overflow-ellipsis whitespace-nowrap"
+                                                            :style="{
+                                                                width: showColumns
+                                                                    ? '10rem'
+                                                                    : '100%',
+                                                            }"
+                                                        >
+                                                            {{
+                                                                node.displayText
+                                                            }}
+                                                        </span>
+                                                    </div>
+                                                </template>
+                                                <!-- node content starts here -->
+                                                <div
+                                                    :id="
+                                                        'node-content-' +
                                                         node.guid
-                                                    )
-                                                "
-                                            >
-                                                <fa
-                                                    v-if="
-                                                        expandedNodeGroups[
-                                                            group.groupId
-                                                        ] === node.guid
                                                     "
-                                                    icon="fal minus"
-                                                ></fa>
-                                                <fa v-else icon="fal plus"></fa>
-                                            </button>
-                                        </div>
+                                                    :ref="
+                                                        (el) => {
+                                                            el
+                                                                ? (refs[
+                                                                      'node-content-' +
+                                                                          node.guid
+                                                                  ] = el)
+                                                                : refs
+                                                        }
+                                                    "
+                                                >
+                                                    <!-- Columns List -->
+                                                    <ul class="pl-3">
+                                                        <li class="my-3">
+                                                            1 Country
+                                                        </li>
+                                                        <li class="mb-3">
+                                                            2 City
+                                                        </li>
+                                                        <li class="mb-3">
+                                                            3 State
+                                                        </li>
+                                                        <li class="mb-3">
+                                                            4 Order_id
+                                                        </li>
+                                                        <li class="mb-3">
+                                                            5 Country
+                                                        </li>
+                                                        <li class="mb-3">
+                                                            6 City
+                                                        </li>
+                                                        <li class="mb-3">
+                                                            7 State
+                                                        </li>
+                                                        <li class="mb-3">
+                                                            8 Order_id
+                                                        </li>
+                                                        <li class="mb-3">
+                                                            9 Country
+                                                        </li>
+                                                        <li class="mb-3">
+                                                            10 City
+                                                        </li>
+                                                        <li class="mb-3">
+                                                            11 City
+                                                        </li>
+                                                        <li class="mb-3">
+                                                            12 City
+                                                        </li>
+                                                        <li class="mb-3">
+                                                            13 City
+                                                        </li>
+                                                        <li class="mb-3">
+                                                            14 City
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                            </a-collapse-panel>
+                                        </a-collapse>
+                                    </div>
+                                    <!-- dummy -->
+                                    <div
+                                        class="absolute hidden w-full cursor-pointer "
+                                    >
+                                        <a-collapse
+                                            expand-icon-position="left"
+                                            :bordered="false"
+                                            :accordion="true"
+                                        >
+                                            <a-collapse-panel
+                                                key="test"
+                                                :forceRender="true"
+                                            >
+                                                <template #header>
+                                                    <div
+                                                        class="relative flex items-center h-full py-2 pl-10 pr-5 text-sm lowercase bg-white border border-gray-300 cursor-pointer  hover:border-primary justify-space-between"
+                                                    >
+                                                        <span
+                                                            class="overflow-hidden  overflow-ellipsis whitespace-nowrap"
+                                                            :style="{
+                                                                width: showColumns
+                                                                    ? '10rem'
+                                                                    : '100%',
+                                                            }"
+                                                        >
+                                                            test dummy node
+                                                        </span>
+                                                    </div>
+                                                </template>
+                                            </a-collapse-panel>
+                                        </a-collapse>
                                     </div>
                                 </div>
                             </a-collapse-panel>
                         </a-collapse>
-                        <!-- accordion ends here -->
                         <!-- accordion is not needed if process node -->
                         <div
                             v-if="group.type === 'Process'"
                             class="flex items-center justify-center w-12 p-0 overflow-hidden bg-transparent "
-                            :style="
-                                get_content_height(
-                                    group.groupId,
-                                    group.fields.length
-                                )
-                            "
+                            :style="`{
+                                    height: 5px;
+                                }`"
                         >
                             <div
                                 v-for="(node, index) in group.fields"
@@ -176,13 +284,7 @@
                                     'border border-primary':
                                         is_highlighted_node(node.guid),
                                 }"
-                                :style="
-                                    get_item_top_position(
-                                        group.type,
-                                        group.groupId,
-                                        index
-                                    )
-                                "
+                                :style="{ top: `${0}px` }"
                                 @click.stop="get_path(node.guid)"
                             >
                                 <div
@@ -265,19 +367,16 @@
             const pathGuid = ref(null)
             const panStarted = ref(false)
             const panZoomInstance = ref({})
-            const expandedNodes = ref([])
-            const expandedNodeGroups = ref({})
             const columnsListLoading = ref(false)
+            const contentHeights = ref({})
             const hasLineage = computed(
                 () => lineage.value?.relations.length !== 0
             )
-            const panelActiveKey = ref('1')
-            // const header=computed((type,))
+
             /** METHODS */
 
-            // compute_graph_relations
             // restartComputation
-            const _restartComputation = () => {
+            const restart_computation = () => {
                 useLineageCompute.restartComputation(
                     compute_graph_relations,
                     lines,
@@ -332,30 +431,6 @@
                     lineage_graph_wrapper_ref
                 )
 
-            // get_item_top_position
-            const get_item_top_position = (type, groupId, currNodeIndex) =>
-                useLineageDOM.getItemTopPosition(
-                    type,
-                    groupId,
-                    currNodeIndex,
-                    expandedNodes
-                )
-
-            // get_content_height
-            const get_content_height = (groupId, length) =>
-                useLineageDOM.getContentHeight(groupId, length, expandedNodes)
-
-            // get_expanded_node_height
-            const get_expanded_node_height = () => {
-                const { expandedNodes: e } =
-                    useLineageDOM.getExpandedNodeHeight(
-                        layoutColumns,
-                        refs,
-                        update_lines
-                    )
-                expandedNodes.value = e
-            }
-
             // set_pan_zoom_event
             const set_pan_zoom_event = async () => {
                 const { panStarted: g, panZoomInstance: h } =
@@ -372,25 +447,7 @@
                 useLineagePanZoom.pausePanZoomEvent(val, panZoomInstance)
             }
 
-            // fetch_columns_list
-            const fetch_columns_list = async (groupId, guid) => {
-                columnsListLoading.value = true
-                const { expandedNodeGroups: _expandedNodeGroups } =
-                    await useLineageColumns.fetchColumnsList(
-                        groupId,
-                        guid,
-                        expandedNodes,
-                        pause_pan_zoom_event,
-                        get_expanded_node_height
-                    )
-                expandedNodeGroups.value = _expandedNodeGroups
-                columnsListLoading.value = false
-            }
-
-            const handleExpandIcon = () => {
-                update_lines()
-            }
-
+            // compute_graph_relations
             const compute_graph_relations = async () => {
                 const {
                     glGraph: a,
@@ -413,9 +470,6 @@
                 // setSearchItems
                 setSearchItems(searchItems)
 
-                // getExpandedNodeHeight
-                get_expanded_node_height()
-
                 // drawLines
                 if (hasLineage.value) {
                     const { lines: f } = useLineageLines.drawLines(
@@ -430,6 +484,34 @@
 
                 // centerNode
                 center_node()
+            }
+
+            // handleExpand
+            const handleExpand = (groupId, groupHeadersLength, guid) => {
+                setTimeout(() => {
+                    let groupHeadersHeight = 38 * groupHeadersLength
+                    let groupContentHeight =
+                        refs.value[`node-content-${guid}`].clientHeight > 0
+                            ? refs.value[`node-content-${guid}`].clientHeight +
+                              24
+                            : refs.value[`node-content-${guid}`].clientHeight
+
+                    contentHeights.value[groupId] =
+                        groupHeadersHeight + groupContentHeight
+
+                    update_lines()
+                }, 400)
+            }
+
+            // getTopPosition
+            const getTopPosition = (guid) => {
+                nextTick(() => {
+                    const currEle = refs.value[`group-content-${guid}`]
+                    // const prevEle = currEle.previousSibling
+                    // console.log('currEle T:', currEle.clientTop)
+                    // console.log('currEle H:', currEle.clientHeight)
+                    return { top: `${0}px` }
+                })
             }
 
             /** LIFECYCLE */
@@ -457,31 +539,22 @@
                 layoutColumns,
                 searchItems,
                 cycles,
-                expandedNodeGroups,
                 pathGuid,
                 getIcon,
+                contentHeights,
                 isCyclic: false, //
                 showColumns: false, //
-                get_item_top_position,
-                get_content_height,
                 handle_zoom,
                 handle_fullscreen,
                 get_path,
-                _restartComputation,
+                restart_computation,
                 is_highlighted_node,
-                fetch_columns_list,
-                handleExpandIcon,
-                panelActiveKey,
+                handleExpand,
+                getTopPosition,
             }
         },
     })
 </script>
-
-<style>
-    .leader-line {
-        /* z-index: 9 !important; */
-    }
-</style>
 
 <style lang="less" scoped>
     .top-0 {
@@ -521,9 +594,20 @@
     }
 
     :global(.ant-collapse-content-box) {
-        @apply p-0 !important;
+        @apply p-0 bg-transparent !important;
     }
     :global(.ant-collapse-header) {
-        @apply font-bold bg-white p-0 !important;
+        @apply font-bold bg-white p-0 border-0 border-b-0 !important;
+    }
+    :global(.ant-collapse-borderless > .ant-collapse-item) {
+        @apply border-b-0 !important;
+    }
+
+    :global(.anticon) {
+        @apply z-10 !important;
+    }
+
+    :global(.ant-collapse-content) {
+        @apply bg-white !important;
     }
 </style>

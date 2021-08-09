@@ -6,10 +6,10 @@ export const getItemTopPosition = (
     currNodeIndex,
     expandedNodes
 ) => {
-    const top = 20 * (currNodeIndex * 2 + 1)
-    if (type === 'Process') {
-        return { top: `${top}px` }
-    }
+    // const top = 45 * (currNodeIndex * 2 + 1)
+    const top = 45 * currNodeIndex
+    if (type === 'Process') return { top: `${top}px` }
+
     let total
     const item = expandedNodes.value.filter((node) => node?.groupId === groupId)
     const _groupId = item[0]?.groupId
@@ -24,19 +24,20 @@ export const getItemTopPosition = (
 }
 
 export const getContentHeight = (groupId, length, expandedNodes) => {
-    let height = 20
+    if (!expandedNodes.value.length > 0) return { height: `2px` }
+
+    let height = 0
     const item = expandedNodes.value.filter((node) => node?.groupId === groupId)
 
     const _groupId = item[0]?.groupId
     const _height = item[0]?.height
 
-    for (let i = 1; i <= length; i += 1) height += 40
-    if (_height && _groupId) height = height + _height - 25
+    for (let i = 1; i <= length; i += 1) height += 38
+    if (_height && _groupId) height = height + _height + 24
 
-    // TODO : remove this next line. It's a temp fix till calculations are not made to support columns
-    height = 39
     return { height: `${height}px` }
 }
+// get_content_height(group.groupId, group.fields.length)
 
 export const getExpandedNodeHeight = (layoutColumns, refs, updateLines) => {
     const expandedNodes = []
@@ -45,9 +46,24 @@ export const getExpandedNodeHeight = (layoutColumns, refs, updateLines) => {
         layoutColumns.value.forEach((lc) => {
             lc.forEach((lci) => {
                 lci.fields.forEach((f, index) => {
-                    const height = refs.value[f.guid].parentElement.clientHeight
-
-                    if (height !== 29 && height !== 28 && height !== 0)
+                    // console.log(
+                    //     'parentElement:',
+                    //     refs.value[f.guid].parentElement
+                    // )
+                    const height = refs.value[`content-${f.guid}`].offsetHeight
+                    // console.log('parentElement height:', height)
+                    // console.log('header:', refs.value[`${f.guid}`])
+                    // console.log(
+                    //     'header height:',
+                    //     refs.value[`${f.guid}`].offsetHeight
+                    // )
+                    // console.log('content:', refs.value[`content-${f.guid}`])
+                    // console.log(
+                    //     'content height:',
+                    //     refs.value[`content-${f.guid}`].offsetHeight
+                    // )
+                    // if (height !== 29 && height !== 28 && height !== 0)
+                    if (height !== 0)
                         expandedNodes.push({
                             groupId: lci.groupId,
                             height,

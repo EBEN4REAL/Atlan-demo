@@ -1,18 +1,18 @@
 <template>
     <div
-        class="flex px-4 py-6 bg-white  hover:bg-primary-100 hover:bg-opacity-10 text-gray"
+        class="flex max-w-2xl px-4 py-6 mx-auto bg-white  hover:bg-primary-100 hover:bg-opacity-10 text-gray"
     >
         <component
             :is="item.typeName"
             class="flex-none w-auto h-6 mr-2"
         ></component>
 
-        <div class="flex flex-col flex-grow pr-16">
+        <div class="box-border flex flex-col flex-1 pr-16 overflow-hidden">
             <!-- Title bar -->
             <div class="flex items-center mb-0">
                 <router-link
                     :to="`/assets/${item.guid}/overview`"
-                    class="mb-0 text-xl font-bold leading-6 tracking-wide truncate cursor-pointer  text-gray hover:underline"
+                    class="flex-shrink mb-0 overflow-hidden text-xl font-bold leading-6 tracking-wide truncate cursor-pointer  text-gray hover:underline overflow-ellipsis whitespace-nowrap"
                 >
                     {{ title(item) }}
                 </router-link>
@@ -20,10 +20,10 @@
                     :key="item.guid"
                     :showNoStatus="true"
                     :status-id="status(item)"
-                    class="ml-2"
+                    class="flex-none ml-2"
                 ></StatusBadge>
                 <router-link
-                    class="ml-1"
+                    class="flex-none ml-1"
                     :to="`/assets/${item.guid}/overview`"
                     target="_blank"
                 >
@@ -33,6 +33,7 @@
             <!-- Row?Col/Owner bar -->
             <div class="flex items-center">
                 <!-- Owners -->
+                <!-- TODO: Needs improvements -->
                 <div
                     v-if="projection?.includes('owners')"
                     class="flex flex-wrap pt-1"
@@ -96,7 +97,7 @@
                                 >Rows</span
                             >
                             <span class="text-sm font-bold tracking-wide">{{
-                                rowCount(item, true)
+                                rowCount(item, false)
                             }}</span>
                         </div>
                         <div class="mr-2">
@@ -105,7 +106,7 @@
                                 >Cols</span
                             >
                             <span class="text-sm font-bold tracking-wide">{{
-                                columnCount(item, true)
+                                columnCount(item, false)
                             }}</span>
                         </div>
                     </div>

@@ -69,11 +69,15 @@ export default function useAssetInfo() {
         return name.charAt(0).toUpperCase() + name.slice(1)
     }
 
-    const rowCount = (asset: assetInterface) => {
-        return getCountString(attributes(asset).rowCount)
+    const rowCount = (asset: assetInterface, raw: boolean = false) => {
+        return raw
+            ? attributes(asset).rowCount.toLocaleString()
+            : getCountString(attributes(asset).rowCount)
     }
-    const columnCount = (asset: assetInterface) => {
-        return getCountString(attributes(asset).columnCount)
+    const columnCount = (asset: assetInterface, raw: boolean = false) => {
+        return raw
+            ? attributes(asset).columnCount.toLocaleString()
+            : getCountString(attributes(asset).columnCount)
     }
     const schemaName = (asset: assetInterface) => {
         return attributes(asset).schemaName
@@ -104,6 +108,11 @@ export default function useAssetInfo() {
         )
         return found?.image
     }
+
+    const tableInfo = (asset: assetInterface) => {
+        return attributes(asset)?.table
+    }
+
     return {
         databaseLogo,
         schemaLogo,
@@ -124,5 +133,6 @@ export default function useAssetInfo() {
         createdAt,
         updatedAt,
         lastCrawled,
+        tableInfo,
     }
 }

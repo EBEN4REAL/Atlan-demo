@@ -1,6 +1,6 @@
 <template>
     <div class="flex items-center">
-        <component :is="asset.typeName" class="w-auto h-10 mr-2"></component>
+        <!-- <component :is="asset.typeName" class="w-auto h-10 mr-2"></component> -->
         <div>
             <div class="mb-2 text-2xl font-bold">
                 {{ asset.attributes.name }}
@@ -67,7 +67,7 @@
                 const attr = asset.value.attributes
                 return val === 'lc'
                     ? dayjs().from(attr.__timestamp, true)
-                    : `${dayjs().from(attr.__modificationTimestamp, true)  } ago`
+                    : `${dayjs().from(attr.__modificationTimestamp, true)} ago`
             }
 
             return {

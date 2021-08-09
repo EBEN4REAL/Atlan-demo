@@ -33,7 +33,7 @@
             class="flex flex-col items-stretch w-2/3 w-full mt-3 mb-1 bg-white"
             style="overflow: hidden"
         >
-            <div class="flex flex-col h-full mx-6">
+            <div class="flex flex-col h-full">
                 <div class="flex px-3">
                     <ConnectorDropdown
                         :data="connectorsPayload"

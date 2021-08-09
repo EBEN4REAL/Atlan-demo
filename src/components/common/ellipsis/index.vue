@@ -2,6 +2,7 @@
     <a-tooltip
         :title="truncated ? tooltipText : undefined"
         placement="topRight"
+        :overlay-style="{ maxWidth: width }"
     >
         <a-typography-paragraph
             :style="{ width: '85%' }"
@@ -12,11 +13,6 @@
             :content="tooltipText"
         />
     </a-tooltip>
-    <!--  <a-typography-paragraph
-        :style="{ width: '85%' }"
-        :ellipsis="{ rows, tooltip: tooltipText }"
-        :content="tooltipText"
-    /> -->
 </template>
 
 <script lang="ts">
@@ -31,6 +27,10 @@
             rows: {
                 type: Number,
                 default: 1,
+            },
+            width: {
+                type: String,
+                default: 'intial',
             },
         },
         setup() {

@@ -3,10 +3,9 @@
     <div>
         <div class="mb-8">
             <div v-if="description" class="flex items-center justify-between">
-                <p class="m-0 truncate overflow-ellipsis">
-                    {{ description }}
-                </p>
-                <span class="ml-2">.</span>
+                <!-- ToolTip for Truncated Text -->
+                <EllipsisTooltip :tooltipText="description" />
+
                 <a-button type="link" @click="showModal">
                     Edit description
                 </a-button>
@@ -53,9 +52,15 @@
     import updateDescription from '~/composables/asset/updateDescription'
 
     import { useMagicKeys } from '@vueuse/core'
+    import EllipsisTooltip from '@common/ellipsis/index.vue'
 
     export default defineComponent({
         props: ['asset'],
+
+        components: {
+            EllipsisTooltip,
+        },
+
         setup(props) {
             const visible = ref<boolean>(false)
             const {

@@ -33,10 +33,7 @@ import { faTrash } from '@fortawesome/pro-light-svg-icons/faTrash'
 import { faQuestionCircle } from '@fortawesome/pro-light-svg-icons/faQuestionCircle'
 import { faInfo } from '@fortawesome/pro-light-svg-icons/faInfo'
 import { faInfoCircle } from '@fortawesome/pro-light-svg-icons/faInfoCircle'
-import { faChevronRight } from '@fortawesome/pro-light-svg-icons/faChevronRight'
 import { faChevronLeft } from '@fortawesome/pro-light-svg-icons/faChevronLeft'
-import { faChevronDown } from '@fortawesome/pro-light-svg-icons/faChevronDown'
-import { faChevronUp } from '@fortawesome/pro-light-svg-icons/faChevronUp'
 import { faCommentsAlt } from '@fortawesome/pro-light-svg-icons/faCommentsAlt'
 import { faShare } from '@fortawesome/pro-light-svg-icons/faShare'
 import { faComment } from '@fortawesome/pro-light-svg-icons/faComment'
@@ -109,6 +106,9 @@ import { faCalendarAlt } from '@fortawesome/pro-light-svg-icons/faCalendarAlt'
 // Solid Icons
 import { faCaretLeft } from '@fortawesome/pro-solid-svg-icons/faCaretLeft'
 import { faCaretRight } from '@fortawesome/pro-solid-svg-icons/faCaretRight'
+import { faChevronDown } from '@fortawesome/pro-solid-svg-icons/faChevronDown'
+import { faChevronUp } from '@fortawesome/pro-solid-svg-icons/faChevronUp'
+import { faChevronRight } from '@fortawesome/pro-solid-svg-icons/faChevronRight'
 import { faSlidersV } from '@fortawesome/pro-solid-svg-icons/faSlidersV'
 import { faSync as faSyncSolid } from '@fortawesome/pro-solid-svg-icons/faSync'
 import { faBadgeCheck } from '@fortawesome/pro-solid-svg-icons/faBadgeCheck'
@@ -189,8 +189,6 @@ library.add(
     faInfoCircle,
     faChevronRight,
     faChevronLeft,
-    faChevronDown,
-    faChevronUp,
     faExclamationCircle,
     faListAlt,
     faPlug,
@@ -254,6 +252,9 @@ library.add(
 library.add(
     faCaretLeft,
     faCaretRight,
+    faChevronRight,
+    faChevronDown,
+    faChevronUp,
     faSlidersV,
     faSyncSolid,
     faBadgeCheck,

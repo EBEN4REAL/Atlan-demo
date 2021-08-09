@@ -235,9 +235,18 @@
                                 <template #title>
                                     <span>Change Role</span>
                                 </template>
-                                <a-popover placement="leftTop" trigger="click"
-                                    ><template #title>
-                                        <span>Change Role</span>
+                                <a-popover
+                                    placement="leftTop"
+                                    trigger="click"
+                                    :destroy-tooltip-on-hide="true"
+                                    :visible="selectedUserId === user.id"
+                                    ><template #title
+                                        ><div class="flex justify-between py-1">
+                                            <span>Change Role</span
+                                            ><a @click="closeChangeRolePopover"
+                                                ><fa icon="fal times"></fa
+                                            ></a>
+                                        </div>
                                     </template>
                                     <template #content>
                                         <ChangeRole
@@ -497,7 +506,7 @@
 
                 showChangeRolePopover.value = true
             }
-            const closeChangeRoleModal = () => {
+            const closeChangeRolePopover = () => {
                 showChangeRolePopover.value = false
                 selectedUserId.value = ''
             }
@@ -562,7 +571,7 @@
             }
             const handleUpdateRole = () => {
                 message.success('User role updated.')
-                closeChangeRoleModal()
+                closeChangeRolePopover()
                 reloadTable()
             }
             const handleInviteSent = () => {
@@ -662,7 +671,7 @@
                 loginWithEmailAllowed,
                 showChangeRolePopover,
                 handleChangeRole,
-                closeChangeRoleModal,
+                closeChangeRolePopover,
                 handleUpdateRole,
                 invitationComponentRef,
                 closeInviteUserModal,
@@ -684,6 +693,7 @@
                 getUserList,
                 getEnableDisablePopoverContent,
                 confirmEnableDisablePopover,
+                selectedUserId,
             }
         },
         data() {

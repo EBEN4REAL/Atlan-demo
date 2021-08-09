@@ -77,9 +77,12 @@
                                     key="1"
                                     @click="showRevokeInvitationConfirm(invite)"
                                     >Revoke Invitation</a-menu-item
-                                ><a-popover placement="leftTop" trigger="click"
+                                ><a-popover
+                                    placement="leftTop"
+                                    trigger="click"
+                                    :destroy-tooltip-on-hide="true"
                                     ><template #title>
-                                        <span>Change Role</span>
+                                        <div class="py-1">Change Role</div>
                                     </template>
                                     <template #content>
                                         <slot name="changeRoleContent"></slot>

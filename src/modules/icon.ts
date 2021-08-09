@@ -1,8 +1,8 @@
-import { UserModule } from '~/types'
 import { library, dom, config } from '@fortawesome/fontawesome-svg-core'
 
 // Light Icons
 import { faTable } from '@fortawesome/pro-light-svg-icons/faTable'
+import { faBookmark } from '@fortawesome/pro-light-svg-icons/faBookmark'
 import { faThList } from '@fortawesome/pro-light-svg-icons/faThList'
 import { faDatabase } from '@fortawesome/pro-light-svg-icons/faDatabase'
 import { faBox } from '@fortawesome/pro-light-svg-icons/faBox'
@@ -33,10 +33,7 @@ import { faTrash } from '@fortawesome/pro-light-svg-icons/faTrash'
 import { faQuestionCircle } from '@fortawesome/pro-light-svg-icons/faQuestionCircle'
 import { faInfo } from '@fortawesome/pro-light-svg-icons/faInfo'
 import { faInfoCircle } from '@fortawesome/pro-light-svg-icons/faInfoCircle'
-import { faChevronRight } from '@fortawesome/pro-light-svg-icons/faChevronRight'
 import { faChevronLeft } from '@fortawesome/pro-light-svg-icons/faChevronLeft'
-import { faChevronDown } from '@fortawesome/pro-light-svg-icons/faChevronDown'
-import { faChevronUp } from '@fortawesome/pro-light-svg-icons/faChevronUp'
 import { faCommentsAlt } from '@fortawesome/pro-light-svg-icons/faCommentsAlt'
 import { faShare } from '@fortawesome/pro-light-svg-icons/faShare'
 import { faComment } from '@fortawesome/pro-light-svg-icons/faComment'
@@ -106,8 +103,58 @@ import { faHourglassStart } from '@fortawesome/pro-light-svg-icons/faHourglassSt
 import { faHourglassEnd } from '@fortawesome/pro-light-svg-icons/faHourglassEnd'
 import { faCalendarAlt } from '@fortawesome/pro-light-svg-icons/faCalendarAlt'
 
+// Solid Icons
+import { faCaretLeft } from '@fortawesome/pro-solid-svg-icons/faCaretLeft'
+import { faCaretRight } from '@fortawesome/pro-solid-svg-icons/faCaretRight'
+import { faChevronDown } from '@fortawesome/pro-solid-svg-icons/faChevronDown'
+import { faChevronUp } from '@fortawesome/pro-solid-svg-icons/faChevronUp'
+import { faChevronRight } from '@fortawesome/pro-solid-svg-icons/faChevronRight'
+import { faSlidersV } from '@fortawesome/pro-solid-svg-icons/faSlidersV'
+import { faSync as faSyncSolid } from '@fortawesome/pro-solid-svg-icons/faSync'
+import { faBadgeCheck } from '@fortawesome/pro-solid-svg-icons/faBadgeCheck'
+import { faBadge as faBadgeSolid } from '@fortawesome/pro-solid-svg-icons/faBadge'
+import { faTrash as faTrashSolid } from '@fortawesome/pro-solid-svg-icons/faTrash'
+import { faExclamationTriangle } from '@fortawesome/pro-solid-svg-icons/faExclamationTriangle'
+import { faMinusCircle } from '@fortawesome/pro-solid-svg-icons/faMinusCircle'
+import { faCheckCircle as faSolidCheckCircle } from '@fortawesome/pro-solid-svg-icons/faCheckCircle'
+import { faKey } from '@fortawesome/pro-solid-svg-icons/faKey'
+import { faLock as faSolidLock } from '@fortawesome/pro-solid-svg-icons/faLock'
+import { faCaretDown } from '@fortawesome/pro-solid-svg-icons/faCaretDown'
+
+import { faBold } from '@fortawesome/pro-solid-svg-icons/faBold'
+import { faItalic } from '@fortawesome/pro-solid-svg-icons/faItalic'
+import { faStrikethrough } from '@fortawesome/pro-solid-svg-icons/faStrikethrough'
+import { faParagraph } from '@fortawesome/pro-solid-svg-icons/faParagraph'
+import { faUnderline } from '@fortawesome/pro-solid-svg-icons/faUnderline'
+import { faListOl } from '@fortawesome/pro-solid-svg-icons/faListOl'
+import { faListUl } from '@fortawesome/pro-solid-svg-icons/faListUl'
+import { faCode } from '@fortawesome/pro-solid-svg-icons/faCode'
+import { faQuoteLeft } from '@fortawesome/pro-solid-svg-icons/faQuoteLeft'
+import { faUndo } from '@fortawesome/pro-solid-svg-icons/faUndo'
+import { faRedo } from '@fortawesome/pro-solid-svg-icons/faRedo'
+import { faLink as faSolidLink } from '@fortawesome/pro-solid-svg-icons/faLink'
+// import { faPencil as faPencilDark} from "@fortawesome/pro-solid-svg-icons/faPencil";
+import { faSquare } from '@fortawesome/pro-solid-svg-icons/faSquare'
+import { faAlignLeft } from '@fortawesome/pro-solid-svg-icons/faAlignLeft'
+import { faAlignCenter } from '@fortawesome/pro-solid-svg-icons/faAlignCenter'
+import { faAlignRight } from '@fortawesome/pro-solid-svg-icons/faAlignRight'
+import { faFileImage } from '@fortawesome/pro-solid-svg-icons/faFileImage'
+import { faSpinner } from '@fortawesome/pro-light-svg-icons/faSpinner'
+import { UserModule } from '~/types'
+
+// You can add your icons directly in this plugin. See other examples for how you
+// can add other styles or just individual icons.
+
+// library.add(fal);
+// library.add(far);
+
+// import { faCoffee } from '@fortawesome/free-solid-svg-icons/faCoffee'
+// import { faSpinner } from '@fortawesome/pro-light-svg-icons/faSpinner'
+import Icon from '~/components/common/icon/index.vue'
+
 library.add(
     faTable,
+    faBookmark,
     faThList,
     faDatabase,
     faBox,
@@ -142,8 +189,6 @@ library.add(
     faInfoCircle,
     faChevronRight,
     faChevronLeft,
-    faChevronDown,
-    faChevronUp,
     faExclamationCircle,
     faListAlt,
     faPlug,
@@ -204,44 +249,12 @@ library.add(
     faCalendarAlt
 )
 
-// Solid Icons
-import { faCaretLeft } from '@fortawesome/pro-solid-svg-icons/faCaretLeft'
-import { faCaretRight } from '@fortawesome/pro-solid-svg-icons/faCaretRight'
-import { faSlidersV } from '@fortawesome/pro-solid-svg-icons/faSlidersV'
-import { faSync as faSyncSolid } from '@fortawesome/pro-solid-svg-icons/faSync'
-import { faBadgeCheck } from '@fortawesome/pro-solid-svg-icons/faBadgeCheck'
-import { faBadge as faBadgeSolid } from '@fortawesome/pro-solid-svg-icons/faBadge'
-import { faTrash as faTrashSolid } from '@fortawesome/pro-solid-svg-icons/faTrash'
-import { faExclamationTriangle } from '@fortawesome/pro-solid-svg-icons/faExclamationTriangle'
-import { faMinusCircle } from '@fortawesome/pro-solid-svg-icons/faMinusCircle'
-import { faCheckCircle as faSolidCheckCircle } from '@fortawesome/pro-solid-svg-icons/faCheckCircle'
-import { faKey } from '@fortawesome/pro-solid-svg-icons/faKey'
-import { faLock as faSolidLock } from '@fortawesome/pro-solid-svg-icons/faLock'
-import { faCaretDown } from '@fortawesome/pro-solid-svg-icons/faCaretDown'
-
-import { faBold } from '@fortawesome/pro-solid-svg-icons/faBold'
-import { faItalic } from '@fortawesome/pro-solid-svg-icons/faItalic'
-import { faStrikethrough } from '@fortawesome/pro-solid-svg-icons/faStrikethrough'
-import { faParagraph } from '@fortawesome/pro-solid-svg-icons/faParagraph'
-import { faUnderline } from '@fortawesome/pro-solid-svg-icons/faUnderline'
-import { faListOl } from '@fortawesome/pro-solid-svg-icons/faListOl'
-import { faListUl } from '@fortawesome/pro-solid-svg-icons/faListUl'
-import { faCode } from '@fortawesome/pro-solid-svg-icons/faCode'
-import { faQuoteLeft } from '@fortawesome/pro-solid-svg-icons/faQuoteLeft'
-import { faUndo } from '@fortawesome/pro-solid-svg-icons/faUndo'
-import { faRedo } from '@fortawesome/pro-solid-svg-icons/faRedo'
-import { faLink as faSolidLink } from '@fortawesome/pro-solid-svg-icons/faLink'
-// import { faPencil as faPencilDark} from "@fortawesome/pro-solid-svg-icons/faPencil";
-import { faSquare } from '@fortawesome/pro-solid-svg-icons/faSquare'
-import { faAlignLeft } from '@fortawesome/pro-solid-svg-icons/faAlignLeft'
-import { faAlignCenter } from '@fortawesome/pro-solid-svg-icons/faAlignCenter'
-import { faAlignRight } from '@fortawesome/pro-solid-svg-icons/faAlignRight'
-import { faFileImage } from '@fortawesome/pro-solid-svg-icons/faFileImage'
-import { faSpinner } from '@fortawesome/pro-light-svg-icons/faSpinner'
-
 library.add(
     faCaretLeft,
     faCaretRight,
+    faChevronRight,
+    faChevronDown,
+    faChevronUp,
     faSlidersV,
     faSyncSolid,
     faBadgeCheck,
@@ -278,16 +291,6 @@ library.add(
 
 // This is important, we are going to let Nuxt.js worry about the CSS
 config.autoAddCss = false
-
-// You can add your icons directly in this plugin. See other examples for how you
-// can add other styles or just individual icons.
-
-// library.add(fal);
-// library.add(far);
-
-// import { faCoffee } from '@fortawesome/free-solid-svg-icons/faCoffee'
-// import { faSpinner } from '@fortawesome/pro-light-svg-icons/faSpinner'
-import Icon from '~/components/common/icon/index.vue'
 
 // dom.watch();
 // // Register the component globally

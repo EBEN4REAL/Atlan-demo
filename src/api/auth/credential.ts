@@ -1,6 +1,7 @@
-import { getAPIPath, getAxiosClient } from "~/api";
 import { AxiosRequestConfig } from "axios";
+import { getAPIPath, getAxiosClient } from "~/api";
 import { Components } from "./client";
+
 const serviceAlias = "auth";
 
 export const URL = {
@@ -13,34 +14,28 @@ const UpdateCredential = (
   id: String,
   body?: any,
   options?: AxiosRequestConfig
-) => {
-  return getAxiosClient().post(
+) => getAxiosClient().post(
     getAPIPath(serviceAlias, `${URL.UPDATECRDENTIAL}/${id}`),
     body,
     options
   );
-};
 
 const TestCredential = (
   body?: any,
   options?: AxiosRequestConfig
-) => {
-  return getAxiosClient().post(
+) => getAxiosClient().post(
     getAPIPath(serviceAlias, `${URL.TESTCREDENTIAL}`),
     body,
     options
   );
-};
 
 const TestCredentialByID = (
   id?: any,
   options?: AxiosRequestConfig
-) => {
-  return getAxiosClient().post(
+) => getAxiosClient().post(
     getAPIPath(serviceAlias, `${URL.TESTCREDENTIALBYGUID}/${id}/test`),
     options
   );
-};
 
 
 

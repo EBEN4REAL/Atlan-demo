@@ -1,7 +1,7 @@
-import { fetcher, getAPIPath, getAxiosClient } from "~/api";
 import { AxiosRequestConfig } from "axios";
 import useSWRV, { IConfig } from "swrv";
 import { Ref, toRefs } from "vue";
+import { fetcher, getAPIPath, getAxiosClient } from "~/api";
 import { Components } from "./client";
 
 import { CREATE_GLOSSARY, CREATE_GLOSSARY_CATEGORY, CREATE_GLOSSARY_TERM, DELETE_GLOSSARY, DELETE_GLOSSARY_CATEGORY, DELETE_GLOSSARY_TERM, GET_CATEGORY, UPDATE_GLOSSARY, UPDATE_GLOSSARY_CATEGORY, UPDATE_GLOSSARY_TERM } from "~/api/keyMaps/glossary"

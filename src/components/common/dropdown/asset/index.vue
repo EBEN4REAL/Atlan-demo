@@ -15,12 +15,12 @@
                                     </p>
                                     <AssetSelector
                                         :key="getKey(index)"
-                                        @change="handleChange"
                                         v-model:value="asset[item.attribute]"
-                                        :typeName="item.typeName"
+                                        :type-name="item.typeName"
                                         :filters="getFilter(index)"
                                         :disabled="isDisabled(index)"
                                         style="width: 200px"
+                                        @change="handleChange"
                                     ></AssetSelector>
                                 </div>
                             </template>
@@ -28,8 +28,8 @@
                     </template>
                     <div class="flex py-2 pr-3 cursor-pointer">
                         <p
-                            class="flex items-center mb-0 text-xs tracking-wide text-gray-900 align-middle hover:bg-gray-50"
                             v-if="list?.length > 0"
+                            class="flex items-center mb-0 text-xs tracking-wide text-gray-900 align-middle hover:bg-gray-50"
                         >
                             <component
                                 :is="list[0].typeName"
@@ -50,9 +50,9 @@
 
 <script lang="ts">
     import { computed, defineComponent, ref } from 'vue';
+    import AssetSelector from '@common/selector/asset/index.vue';
     import { useConnectionsStore } from '~/store/connections';
 
-    import AssetSelector from '@common/selector/asset/index.vue';
 
     export default defineComponent({
         components: { AssetSelector },
@@ -71,17 +71,13 @@
         },
         emits: ['change'],
         setup(props, { emit }) {
-            let asset: { [key: string]: any } = ref({});
+            const asset: { [key: string]: any } = ref({});
 
-            let assetDirty: { [key: string]: any } = ref({});
+            const assetDirty: { [key: string]: any } = ref({});
 
-            const list = computed(() => {
-                return (
-                    props.connector?.hierarchy.filter((item) => {
-                        return item.level < 3;
-                    }) || []
-                );
-            });
+            const list = computed(() => (
+                    props.connector?.hierarchy.filter((item) => item.level < 3) || []
+                ));
 
             const isDisabled = (index) => {
                 if (index == 0 && props.data?.connection) {
@@ -97,7 +93,7 @@
             };
 
             const getFilter = (index) => {
-                let baseFilter = {
+                const baseFilter = {
                     condition: 'AND',
                     criterion: [
                         {

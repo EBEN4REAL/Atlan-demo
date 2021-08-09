@@ -12,8 +12,8 @@
     <LoadingView v-if="isLoading || isValidating"></LoadingView>
 
     <div
-      class="grid items-center grid-cols-12 gap-2 px-6 py-4 align-middle"
       v-else
+      class="grid items-center grid-cols-12 gap-2 px-6 py-4 align-middle"
     >
       <template v-for="item in list" :key="item.guid">
         <ItemView :item="item" @click="handleSelect(item)"></ItemView>
@@ -24,17 +24,17 @@
             
 <script lang="ts">
 import { defineComponent, reactive, ref, watch } from "vue";
-import ItemView from "./item.vue";
 
 import LoadingView from "@common/loaders/section.vue";
 import ErrorView from "@common/error/index.vue";
 import EmptyView from "@common/empty/index.vue";
 
+import { useDebounceFn } from "@vueuse/core";
+import { useRoute, useRouter } from "vue-router";
 import useBotList from "~/composables/bots/useBotList";
 
 import { Components } from "~/api/atlas/client";
-import { useDebounceFn } from "@vueuse/core";
-import { useRoute, useRouter } from "vue-router";
+import ItemView from "./item.vue";
 import { BotsType } from "~/types/atlas/bots";
 
 export default defineComponent({
@@ -46,7 +46,7 @@ export default defineComponent({
   },
   emits: ["select"],
   setup(props, { emit }) {
-    let now = ref(true);
+    const now = ref(true);
 
     const defaultBody = reactive({
       entityFilters: {
@@ -76,7 +76,7 @@ export default defineComponent({
         isSample = route.query.sample == "true";
       }
       if (route.query.connector) {
-        let found = list?.value?.find(
+        const found = list?.value?.find(
           (item) =>
             item.attributes.integrationName == route.query.connector &&
             item.attributes.isSample === isSample

@@ -16,17 +16,17 @@
       </a-form-item>
     </div>
 
-    <div class="flex" v-if="job.cron != 'none'">
+    <div v-if="job.cron != 'none'" class="flex">
       <a-form-item
+        v-if="job.cron == 'weekly' || job.cron == 'daily'"
         label="Start Time"
         name="cron"
         class="mr-3"
-        v-if="job.cron == 'weekly' || job.cron == 'daily'"
       >
         <!-- <a-time-picker format="HH:mm" v-model:value="job.startTime" /> -->
         <TimePicker
-          :hideDropDown="true"
           v-model="job.startTime"
+          :hide-drop-down="true"
           format="HH:mm"
           hour-label="Hour"
           hide-clear-button
@@ -38,30 +38,30 @@
       </a-form-item>
 
       <a-form-item
+        v-if="job.cron == 'weekly'"
         label="Day of the Week"
         name="timezone"
         class="mr-3"
-        v-if="job.cron == 'weekly'"
       >
         <DaySelector v-model="job.day" @change="handleDayChange"></DaySelector>
       </a-form-item>
 
       <a-form-item
+        v-if="job.cron == 'advanced'"
         label="Cron String"
         name="cronString"
         class="mr-3"
-        :hasFeedback="true"
-        :validateStatus="isCronError ? 'error' : 'success'"
-        v-if="job.cron == 'advanced'"
+        :has-feedback="true"
+        :validate-status="isCronError ? 'error' : 'success'"
       >
         <a-input
+          v-model:value="job.cronString"
           required
           :maxlength="9"
-          v-model:value="job.cronString"
           @change="handleCronStringChange"
         ></a-input>
       </a-form-item>
-      <div class="mb-3" v-if="job.isCron && !isCronError">
+      <div v-if="job.isCron && !isCronError" class="mb-3">
         <p class="mb-0">Next Schedule Runs</p>
         <div v-if="job.isCron">
           <p
@@ -73,7 +73,7 @@
           </p>
         </div>
       </div>
-      <div class="mb-3" v-if="isCronError">
+      <div v-if="isCronError" class="mb-3">
         <p class="mb-0">Next Schedule Runs</p>
         <a-alert
           show-icon
@@ -157,7 +157,7 @@ export default defineComponent({
         this.updateCronEval();
       } catch (err) {
         this.isCronError = true;
-        console.log("Error: " + err.message);
+        console.log(`Error: ${  err.message}`);
       }
     },
     hangeCronChange() {
@@ -186,7 +186,7 @@ export default defineComponent({
         this.evaluatedCron.push("N/A");
         this.evaluatedCron.push("N/A");
 
-        console.log("Error: " + err.message);
+        console.log(`Error: ${  err.message}`);
       }
     },
     handleTimeChange(time) {
@@ -195,7 +195,7 @@ export default defineComponent({
           tz: this.job.cronTimezone,
         };
         const interval = parser.parseExpression(this.job.cronString, options);
-        var fields = JSON.parse(JSON.stringify(interval.fields));
+        const fields = JSON.parse(JSON.stringify(interval.fields));
         if (time.data.HH) {
           fields.hour = [parseInt(time.data.HH)];
         }
@@ -214,7 +214,7 @@ export default defineComponent({
           tz: this.job.cronTimezone,
         };
         const interval = parser.parseExpression(this.job.cronString, options);
-        var fields = JSON.parse(JSON.stringify(interval.fields));
+        const fields = JSON.parse(JSON.stringify(interval.fields));
         if (day) {
           fields.dayOfWeek = [parseInt(day)];
         }

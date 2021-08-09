@@ -7,7 +7,7 @@
       </a-radio-group>
     </a-form-item>
 
-    <div class="grid grid-cols-12" v-if="job.scope === 'custom'">
+    <div v-if="job.scope === 'custom'" class="grid grid-cols-12">
       <a-form-item label="Include Metadata" name="include" class="col-span-6">
         <ScopeSelector
           v-model="job.include"
@@ -42,17 +42,17 @@
       </a-form-item>
     </div>
 
-    <div class="flex" v-if="job.cron != 'none'">
+    <div v-if="job.cron != 'none'" class="flex">
       <a-form-item
+        v-if="job.cron == 'weekly' || job.cron == 'daily'"
         label="Start Time"
         name="cron"
         class="mr-3"
-        v-if="job.cron == 'weekly' || job.cron == 'daily'"
       >
         <!-- <a-time-picker format="HH:mm" v-model:value="job.startTime" /> -->
         <TimePicker
-          :hideDropDown="true"
           v-model="job.startTime"
+          :hide-drop-down="true"
           format="HH:mm"
           hour-label="Hour"
           hide-clear-button
@@ -64,29 +64,29 @@
       </a-form-item>
 
       <a-form-item
+        v-if="job.cron == 'weekly'"
         label="Day of the Week"
         name="timezone"
         class="mr-3"
-        v-if="job.cron == 'weekly'"
       >
         <DaySelector v-model="job.day" @change="handleDayChange"></DaySelector>
       </a-form-item>
 
       <a-form-item
+        v-if="job.cron == 'advanced'"
         label="Cron String"
         name="cronString"
         class="mr-3"
-        :hasFeedback="true"
-        :validateStatus="isCronError ? 'error' : 'success'"
-        v-if="job.cron == 'advanced'"
+        :has-feedback="true"
+        :validate-status="isCronError ? 'error' : 'success'"
       >
         <a-input
-          required
           v-model:value="job.cronString"
+          required
           @change="handleCronStringChange"
         ></a-input>
       </a-form-item>
-      <div class="mb-3" v-if="job.isCron && !isCronError">
+      <div v-if="job.isCron && !isCronError" class="mb-3">
         <p class="mb-0">Next Schedule Runs</p>
         <div v-if="job.isCron">
           <p
@@ -98,7 +98,7 @@
           </p>
         </div>
       </div>
-      <div class="mb-3" v-if="isCronError">
+      <div v-if="isCronError" class="mb-3">
         <p class="mb-0">Next Schedule Runs</p>
         <a-alert
           show-icon
@@ -131,8 +131,8 @@
             ></a-tooltip>
           </template>
           <a-input-number
-            :min="1000"
             v-model:value="job.rowLimit"
+            :min="1000"
           ></a-input-number>
         </a-form-item>
         <a-form-item name="name">
@@ -208,11 +208,11 @@ export default defineComponent({
   },
   methods: {
     handleScopeSelector(attr) {
-      let databases: any[] = [];
+      const databases: any[] = [];
       if (this.job[attr]) {
         if (this.job[attr].includes("all")) {
           return JSON.stringify({});
-        } else {
+        } 
           this.job[attr].forEach((item) => {
             if (!item.startsWith("AtlanSchema$")) {
               databases.push(item);
@@ -220,11 +220,11 @@ export default defineComponent({
               databases.push(item.split("$")[1]);
             }
           });
-          let unique = [...new Set(databases)];
-          let scopeMap: { [key: string]: any } = {};
+          const unique = [...new Set(databases)];
+          const scopeMap: { [key: string]: any } = {};
           unique.forEach((db) => {
-            let prefix = `AtlanSchema$${db}$`;
-            let filtered = this.job.include.filter((item) =>
+            const prefix = `AtlanSchema$${db}$`;
+            const filtered = this.job.include.filter((item) =>
               item.startsWith(prefix)
             );
             scopeMap[db] = [];
@@ -234,7 +234,7 @@ export default defineComponent({
             });
           });
           return JSON.stringify(scopeMap);
-        }
+        
       }
       return "";
     },
@@ -248,7 +248,7 @@ export default defineComponent({
           tz: this.job.cronTimezone,
         };
         // this.isCronError = false;
-        let cronTemp = e.target.value.replace(/ /g, "");
+        const cronTemp = e.target.value.replace(/ /g, "");
         // // console.log(cronTemp);
         // cronTemp = cronTemp.split("").join(" ");
         // console.log(cronTemp);
@@ -259,7 +259,7 @@ export default defineComponent({
         this.updateCronEval();
       } catch (err) {
         this.isCronError = true;
-        console.log("Error: " + err.message);
+        console.log(`Error: ${  err.message}`);
       }
     },
     hangeCronChange() {
@@ -297,7 +297,7 @@ export default defineComponent({
         this.evaluatedCron.push("N/A");
         this.evaluatedCron.push("N/A");
 
-        console.log("Error: " + err.message);
+        console.log(`Error: ${  err.message}`);
       }
     },
     handleTimeChange(time) {
@@ -306,7 +306,7 @@ export default defineComponent({
           tz: this.job.cronTimezone,
         };
         const interval = parser.parseExpression(this.job.cronString, options);
-        var fields = JSON.parse(JSON.stringify(interval.fields));
+        const fields = JSON.parse(JSON.stringify(interval.fields));
         if (time.data.HH) {
           fields.hour = [parseInt(time.data.HH)];
         }
@@ -325,7 +325,7 @@ export default defineComponent({
           tz: this.job.cronTimezone,
         };
         const interval = parser.parseExpression(this.job.cronString, options);
-        var fields = JSON.parse(JSON.stringify(interval.fields));
+        const fields = JSON.parse(JSON.stringify(interval.fields));
         if (day) {
           fields.dayOfWeek = [parseInt(day)];
         }
@@ -335,7 +335,7 @@ export default defineComponent({
         this.updateCronEval();
       }
     },
-    //updateCronEval is declared twice. Check and remove
+    // updateCronEval is declared twice. Check and remove
     // updateCronEval() {
     //   console.log(this.job);
     //   this.isCronError = false;

@@ -23,7 +23,7 @@ export default defineComponent({
         if (this.error.response) {
           if (this.error.response.status === 503) {
             return "Service is unavailable. Please try again";
-          } else if (this.error.response.status === 400) {
+          } if (this.error.response.status === 400) {
             if (this.error.response.data) {
               if (this.error.response.data.errorMessage) {
                 return this.error.response.data.errorMessage;

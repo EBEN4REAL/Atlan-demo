@@ -1,9 +1,9 @@
 <template>
     <a-tree-select
-        :blockNode="true"
+        :block-node="true"
         :tree-data="treeData"
         :load-data="onLoadData"
-        treeDataSimpleMode
+        tree-data-simple-mode
         :dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"
     >
         <template #title="{ key, value, titleText, type, connector }">
@@ -19,8 +19,8 @@
 </template>
 
 <script lang="ts">
-    import { ref } from 'vue';
-    import { defineComponent } from 'vue';
+    import { ref , defineComponent } from 'vue';
+    
     import useAssetTree from '~/composables/bots/useAssetTree';
     import {
         BaseAttributes,
@@ -31,16 +31,11 @@
 
     export default defineComponent({
         components: {},
-        data() {
-            return {};
-        },
         setup(props, { emit }) {
             const store = useConnectionsStore();
 
-            const getSourceImage = (id: any) => {
-                return store.getSourceList?.find((src: any) => src.id == id)
+            const getSourceImage = (id: any) => store.getSourceList?.find((src: any) => src.id == id)
                     ?.image;
-            };
 
             const now = ref(true);
             const intialBody: SearchParameters = {
@@ -56,6 +51,9 @@
                 'dsasd'
             );
             return { treeData, getSourceImage, onLoadData };
+        },
+        data() {
+            return {};
         },
     });
 </script>

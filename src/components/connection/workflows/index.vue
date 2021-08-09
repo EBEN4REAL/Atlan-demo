@@ -12,9 +12,9 @@
       </div>
       <div class="flex flex-col space-y-3">
         <div
-          class="px-6 py-2 bg-white border rounded"
           v-for="job in jobList"
           :key="job?.guid"
+          class="px-6 py-2 bg-white border rounded"
         >
           job
         </div>
@@ -54,11 +54,11 @@
           
 <script lang="ts">
 import { defineAsyncComponent, defineComponent, PropType, ref } from "vue";
+import WorkflowTypeSelector from "@common/selector/workflowtype/index.vue";
 import { BotsType } from "~/types/atlas/bots";
 import { ConnectionType } from "~/types/atlas/connection";
 import { CredentialType } from "~/types/atlas/credential";
 
-import WorkflowTypeSelector from "@common/selector/workflowtype/index.vue";
 import fetchJobList from "~/composables/jobs/fetchJobList";
 
 import { Components } from "~/api/auth/atlas";
@@ -94,7 +94,7 @@ export default defineComponent({
     },
   },
   setup(props) {
-    let now = ref(true);
+    const now = ref(true);
     const activeKey = ref(["1"]);
 
     // const entityFilters = {

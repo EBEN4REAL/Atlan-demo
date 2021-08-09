@@ -3,10 +3,10 @@
     :value="modelValue"
     placeholder="Type"
     :show-search="true"
-    :autoClearSearchValue="true"
+    :auto-clear-search-value="true"
+    :allow-clear="true"
+    :filter-option="false"
     @search="handleSearch"
-    :allowClear="true"
-    :filterOption="false"
     @change="handleChange"
   >
     <template v-for="item in list" :key="item.id">
@@ -24,25 +24,25 @@ import Select from "@common/selector/index.vue";
 import { WorkflowTypeList } from "~/constant/workflowtype";
 
 export default defineComponent({
+  components: {
+    Select,
+  },
   props: {
     modelValue: {
       type: String,
       required: false,
     },
   },
-  components: {
-    Select,
-  },
-  computed: {},
+  emits: ["update:modelValue", "change"],
   data() {
     return {
       list: [] as any[],
     };
   },
+  computed: {},
   mounted() {
     this.list = WorkflowTypeList;
   },
-  emits: ["update:modelValue", "change"],
   methods: {
     handleChange(checkedValues: string) {
       this.$emit("update:modelValue", checkedValues);
@@ -51,9 +51,7 @@ export default defineComponent({
     handleSearch(inputValue) {
       if (inputValue) {
         this.list = [
-          ...ConnectorCategoryList.filter((item: any) => {
-            return item.label.toLoweCase().includes(inputValue.toLowerCase());
-          }),
+          ...ConnectorCategoryList.filter((item: any) => item.label.toLoweCase().includes(inputValue.toLowerCase())),
         ];
       }
     },

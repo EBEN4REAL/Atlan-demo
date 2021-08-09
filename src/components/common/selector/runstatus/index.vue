@@ -3,10 +3,10 @@
     :value="modelValue"
     placeholder="Status"
     :show-search="true"
-    :autoClearSearchValue="true"
+    :auto-clear-search-value="true"
+    :allow-clear="true"
+    :filter-option="false"
     @search="handleSearch"
-    :allowClear="true"
-    :filterOption="false"
     @change="handleChange"
   >
     <template v-for="item in list" :key="item.id">
@@ -24,27 +24,27 @@ import Select from "@common/selector/index.vue";
 import { RunstatusList } from "~/constant/runstatus";
 
 export default defineComponent({
+  components: {
+    Select,
+  },
   props: {
     modelValue: {
       type: String,
       required: false,
     },
   },
-  components: {
-    Select,
-  },
-  computed: {},
+  emits: ["update:modelValue", "change"],
   data() {
     return {
       list: [] as any[],
     };
   },
+  computed: {},
   mounted() {
     this.list = RunstatusList.filter(
       (item) => item.id.toLowerCase() !== "running"
     );
   },
-  emits: ["update:modelValue", "change"],
   methods: {
     handleChange(checkedValues) {
       this.$emit("update:modelValue", checkedValues);
@@ -53,9 +53,7 @@ export default defineComponent({
     handleSearch(inputValue) {
       if (inputValue) {
         this.list = [
-          ...RunstatusList.filter((item: any) => {
-            return item.label.toLoweCase().includes(inputValue.toLowerCase());
-          }),
+          ...RunstatusList.filter((item: any) => item.label.toLoweCase().includes(inputValue.toLowerCase())),
         ];
       }
     },

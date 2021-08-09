@@ -2,9 +2,9 @@
   <a-select
     :value="modelValue"
     :show-search="true"
-    :filterOption="true"
+    :filter-option="true"
     style="width: 100%"
-    :allowClear="true"
+    :allow-clear="true"
     @change="handleChange"
     @search="handleSearch"
   >
@@ -31,14 +31,12 @@
       
 <script lang="ts">
 import { defineComponent, ref, watch } from "vue";
-import useAssetList from "~/composables/bots/useAssetList";
 import { useDebounceFn } from "@vueuse/core";
+import useAssetList from "~/composables/bots/useAssetList";
 
 export default defineComponent({
   components: {
-    VNodes: (_, { attrs }) => {
-      return attrs.vnodes;
-    },
+    VNodes: (_, { attrs }) => attrs.vnodes,
   },
   props: {
     modelValue: {
@@ -54,15 +52,11 @@ export default defineComponent({
       required: false,
     },
   },
-  data() {
-    return {};
-  },
-  computed: {},
   emits: ["update:modelValue", "change"],
   setup(props, { emit }) {
-    let now = ref(true);
+    const now = ref(true);
 
-    let initialBody = {
+    const initialBody = {
       typeName: props.typeName,
       limit: 100,
       offset: 0,
@@ -105,6 +99,10 @@ export default defineComponent({
       selfAssetTypeMap,
     };
   },
+  data() {
+    return {};
+  },
+  computed: {},
 });
 </script>
       

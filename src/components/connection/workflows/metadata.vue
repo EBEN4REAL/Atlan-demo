@@ -9,7 +9,7 @@
         </a-radio-group>
       </a-form-item>
 
-      <div class="grid grid-cols-12" v-if="job.scope === 'custom'">
+      <div v-if="job.scope === 'custom'" class="grid grid-cols-12">
         <a-form-item label="Include Metadata" name="include" class="col-span-6">
           <ScopeSelector v-model:value="job.include"></ScopeSelector>
         </a-form-item>

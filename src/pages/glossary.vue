@@ -1,12 +1,12 @@
 <template>
   <CreateGlossaryModal
-    :eventContext="eventContext"
+    :event-context="eventContext"
     :visible="createGlossaryModalVisble"
     @success="handleSuccess"
     @closeModal="handleCloseModal"
   />
   <UpdateGlossaryModal
-    :eventContext="eventContext"
+    :event-context="eventContext"
     :visible="updateGlossaryModalVisble"
     @success="handleSuccess"
     @closeModal="handleCloseModal"

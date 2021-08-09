@@ -124,9 +124,7 @@ function addRelation(
     path,
     relationType = 'graph'
 ) {
-    const index = relations.findIndex((gr) => {
-        return gr.relationshipId === `${fromEntityId}@${toEntityId}`
-    })
+    const index = relations.findIndex((gr) => gr.relationshipId === `${fromEntityId}@${toEntityId}`)
     if (index === -1)
         relations.push({
             fromEntityId,

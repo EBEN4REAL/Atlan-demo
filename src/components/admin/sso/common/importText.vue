@@ -6,7 +6,7 @@
     name="file"
     accept=".txt, .doc,.docx,application/msword"
     :multiple="false"
-    :showUploadList="false"
+    :show-upload-list="false"
     @change="handleChange"
   >
     <a-button class="p-0" type="link">Import</a-button>

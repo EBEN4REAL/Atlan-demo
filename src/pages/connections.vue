@@ -4,9 +4,9 @@
       <div class="p-3">
         <div class="flex">
           <a-input-search
+            v-model:value="searchText"
             placeholder="Search"
             @change="handleSearchTextChange"
-            v-model:value="searchText"
           >
           </a-input-search>
           <a-button type="primary" class="ml-2" @click="handleNewConnector">
@@ -16,12 +16,12 @@
       </div>
       <div style="height: calc(100% - 60px)" class="px-3 overflow-y-auto">
         <ConnectionTree
-          @select="handleSelect"
-          :treeData="treeData"
-          :isLoading="isLoading"
-          :isValidating="isValidating"
+          :tree-data="treeData"
+          :is-loading="isLoading"
+          :is-validating="isValidating"
           :error="error"
-          :isError="isError"
+          :is-error="isError"
+          @select="handleSelect"
         ></ConnectionTree>
       </div>
     </div>
@@ -37,10 +37,10 @@ import { watch, defineComponent, ref, computed } from "vue";
 import ConnectionTree from "@/connection/tree/index.vue";
 import { useRouter } from "vue-router";
 import { useHead } from "@vueuse/head";
+import { useDebounceFn } from "@vueuse/core";
 import useConnectionsList from "~/composables/bots/useConnectionList";
 import { CONNECTION_FETCH_LIST } from "~/constant/cache";
 import { useConnectionsStore } from "~/store/connections";
-import { useDebounceFn } from "@vueuse/core";
 
 export default defineComponent({
   components: { ConnectionTree },
@@ -68,7 +68,7 @@ export default defineComponent({
       router.push(`/connections/${key}`);
     };
 
-    let treeData = ref();
+    const treeData = ref();
     const store = useConnectionsStore();
     watch(data, () => {
       treeData.value = store.getSourceTree(searchText.value);
@@ -77,12 +77,8 @@ export default defineComponent({
       treeData.value = store.getSourceTree(searchText.value);
     }, 200);
 
-    const isError = computed(() => {
-      return store.getStatus.isLoading;
-    });
-    const error = computed(() => {
-      return store.getStatus.error;
-    });
+    const isError = computed(() => store.getStatus.isLoading);
+    const error = computed(() => store.getStatus.error);
 
     return {
       searchText,

@@ -5,22 +5,22 @@
       class="search-input"
       :value="query"
       placeholder="Search"
+      allow-clear
       @change="setQuery"
       @blur="onBlur"
       @focus="onFocus"
-      allowClear
     />
     <!-- Search Results -->
-    <div class="search-results" v-if="showResults">
+    <div v-if="showResults" class="search-results">
       <div class="search-results__count">
         {{ filteredItems.length }} results found
       </div>
       <div
         v-for="(item, index) in filteredItems"
         :key="index"
-        @click="setSearchItem(item.guid)"
         class="search-results__item"
         :class="{ selected: searchItem === item.guid }"
+        @click="setSearchItem(item.guid)"
       >
         <!-- <span> -->
         <fa

@@ -1,5 +1,5 @@
 <script>
-//https://github.com/phoenixwong/vue3-timepicker/issues/1
+// https://github.com/phoenixwong/vue3-timepicker/issues/1
 import { nextTick } from "vue";
 
 const CONFIG = {
@@ -83,6 +83,16 @@ export default {
     debugMode: { type: Boolean, default: false },
   },
 
+  emits: [
+    "update:modelValue",
+    "change",
+    "open",
+    "close",
+    "focus",
+    "blur",
+    "error",
+  ],
+
   data() {
     return {
       timeValue: {},
@@ -117,19 +127,9 @@ export default {
     };
   },
 
-  emits: [
-    "update:modelValue",
-    "change",
-    "open",
-    "close",
-    "focus",
-    "blur",
-    "error",
-  ],
-
   computed: {
     opts() {
-      const options = Object.assign({}, DEFAULT_OPTIONS);
+      const options = { ...DEFAULT_OPTIONS};
 
       if (this.format && this.format.length) {
         options.format = String(this.format);
@@ -266,12 +266,10 @@ export default {
         this.getTokenByType(type)
       );
       // Sort types and tokens by their sequence in the "format" string
-      typesInUse.sort((l, r) => {
-        return (
+      typesInUse.sort((l, r) => (
           this.formatString.indexOf(this.getTokenByType(l) || null) -
           this.formatString.indexOf(this.getTokenByType(r) || null)
-        );
-      });
+        ));
       const tokensInUse = typesInUse.map((type) => this.getTokenByType(type));
       return {
         hour: !!this.hourType,
@@ -414,9 +412,7 @@ export default {
           }
         }
       });
-      range.sort((l, r) => {
-        return l - r;
-      });
+      range.sort((l, r) => l - r);
       return range;
     },
 
@@ -430,7 +426,7 @@ export default {
         const range = this.hourRangeIn24HrFormat.map((value) => {
           if (value === 12) {
             return "12p";
-          } else if (value === 24 || value === 0) {
+          } if (value === 24 || value === 0) {
             return "12a";
           }
           return value > 12 ? `${value % 12}p` : `${value}a`;
@@ -460,9 +456,7 @@ export default {
           }
           return list;
         }
-        list = this.restrictedHourRange.map((hr) => {
-          return this.formatValue(this.hourType, hr);
-        });
+        list = this.restrictedHourRange.map((hr) => this.formatValue(this.hourType, hr));
         if (list.length > 1 && list[0] && list[0] === "24") {
           // Make '24' the last item in k/kk
           list.push(list.shift());
@@ -565,7 +559,7 @@ export default {
       );
 
       const tokenChunks = [];
-      for (let tkMatch of tokensMatchAll) {
+      for (const tkMatch of tokensMatchAll) {
         const rawToken = tkMatch[0];
         const tokenMatchItem = {
           index: tkMatch.index,
@@ -591,14 +585,12 @@ export default {
         return false;
       }
       if (!this.needsPosCalibrate) {
-        return this.tokenChunks.map((chk) => {
-          return {
+        return this.tokenChunks.map((chk) => ({
             token: chk.token,
             type: chk.type,
             start: chk.index,
             end: chk.index + chk.len,
-          };
-        });
+          }));
       }
       const list = [];
       let calibrateLen = 0;
@@ -708,13 +700,13 @@ export default {
   },
 
   watch: {
-    "opts.format"(newValue) {
+    "opts.format": function(newValue) {
       this.renderFormat(newValue);
     },
-    "opts.minuteInterval"(newInteval) {
+    "opts.minuteInterval": function(newInteval) {
       this.renderList("minute", newInteval);
     },
-    "opts.secondInterval"(newInteval) {
+    "opts.secondInterval": function(newInteval) {
       this.renderList("second", newInteval);
     },
     value: {
@@ -737,13 +729,26 @@ export default {
         }
       }
     },
-    "invalidValues.length"(newLength, oldLength) {
+    "invalidValues.length": function(newLength, oldLength) {
       if (newLength && newLength >= 1) {
         this.$emit("error", this.invalidValues);
       } else if (oldLength && oldLength >= 1) {
         this.$emit("error", []);
       }
     },
+  },
+
+  mounted() {
+    window.clearTimeout(this.debounceTimer);
+    window.clearTimeout(this.selectionTimer);
+    window.clearTimeout(this.kbInputTimer);
+    this.renderFormat();
+  },
+
+  beforeUnmount() {
+    window.clearTimeout(this.debounceTimer);
+    window.clearTimeout(this.selectionTimer);
+    window.clearTimeout(this.kbInputTimer);
   },
 
   methods: {
@@ -934,7 +939,7 @@ export default {
       const chunks = [];
       const tokenChunks = [];
 
-      for (let tkMatch of tokensMatchAll) {
+      for (const tkMatch of tokensMatchAll) {
         const tokenMatchItem = {
           index: tkMatch.index,
           token: tkMatch[0],
@@ -944,7 +949,7 @@ export default {
         tokenChunks.push(tokenMatchItem);
       }
 
-      for (let otMatch of othersMatchAll) {
+      for (const otMatch of othersMatchAll) {
         chunks.push({
           index: otMatch.index,
           token: otMatch[0],
@@ -994,13 +999,11 @@ export default {
             }'`
           );
         }
-      } else {
-        if (this.debugMode) {
+      } else if (this.debugMode) {
           this.debugLog(
             `The input string in "v-model" does NOT match the "format" pattern\nformat: ${this.formatString}\nv-model: ${stringValue}`
           );
         }
-      }
     },
 
     polyfillMatchAll(targetString, regxStr) {
@@ -1027,7 +1030,7 @@ export default {
           }
           result.push({
             0: String(matchedItem),
-            index: index,
+            index,
           });
         });
       }
@@ -1098,13 +1101,11 @@ export default {
                 } else {
                   value = hourValue % 12;
                 }
-              } else {
-                if (["k", "kk"].includes(token)) {
+              } else if (["k", "kk"].includes(token)) {
                   value = hourValue === 0 ? 24 : hourValue;
                 } else {
                   value = hourValue % 24;
                 }
-              }
               fullValues[token] = this.formatValue(token, value);
               break;
             case "h":
@@ -1114,15 +1115,13 @@ export default {
                 value = hourValue;
                 apm = apmValue || "";
                 // Read from other hour formats
-              } else {
-                if (hourValue > 11 && hourValue < 24) {
+              } else if (hourValue > 11 && hourValue < 24) {
                   apm = "pm";
                   value = hourValue === 12 ? 12 : hourValue % 12;
                 } else {
                   apm = "am";
                   value = hourValue % 12 === 0 ? 12 : hourValue;
                 }
-              }
               fullValues[token] = this.formatValue(token, value);
               fullValues.a = apm;
               fullValues.A = apm.toUpperCase();
@@ -1224,10 +1223,10 @@ export default {
       if (this.baseOn12Hours) {
         if (!this.apm || !this.apm.length) {
           return false;
-        } else {
+        } 
           const token = this.apm.toLowerCase() === "am" ? "a" : "p";
           return !this.restrictedHourRange.includes(`${+value}${token}`);
-        }
+        
       }
       // Fallback for 'HH' and 'H hour format with a `hour-range` in a 12-hour form
       if (
@@ -1286,9 +1285,7 @@ export default {
           }
         }
       });
-      range.sort((l, r) => {
-        return l - r;
-      });
+      range.sort((l, r) => l - r);
       // Debug Mode
       if (this.debugMode) {
         const fullList =
@@ -1582,9 +1579,7 @@ export default {
 
     getClosestSibling(column, dataKey, getPrevious = false) {
       const siblingsInCol = this.validItemsInCol(column);
-      const selfIndex = Array.prototype.findIndex.call(siblingsInCol, (sbl) => {
-        return sbl.getAttribute("data-key") === dataKey;
-      });
+      const selfIndex = Array.prototype.findIndex.call(siblingsInCol, (sbl) => sbl.getAttribute("data-key") === dataKey);
 
       // Already the first item
       if (getPrevious && selfIndex === 0) {
@@ -1626,7 +1621,7 @@ export default {
           this.debugLog("You're in the leftmost list already");
         }
         return;
-      } else if (
+      } if (
         !toLeft &&
         currentColumnIndex === this.inUse.types.length - 1
       ) {
@@ -1892,8 +1887,7 @@ export default {
           validValue =
             chunkToken === "A" ? validValue.toUpperCase() : validValue;
         }
-      } else {
-        if (this.isValidValue(chunkToken, value)) {
+      } else if (this.isValidValue(chunkToken, value)) {
           validValue = value;
         } else {
           const lastInputValue = this.formatValue(chunkToken, value.substr(-1));
@@ -1901,7 +1895,6 @@ export default {
             validValue = lastInputValue;
           }
         }
-      }
 
       if (validValue) {
         this.setSanitizedValueToSection(chunkType, validValue);
@@ -1989,12 +1982,12 @@ export default {
       const currentIndex = this.validHoursList.findIndex((item) => {
         if (!this.baseOn12Hours) {
           return item === currentValue;
-        } else {
+        } 
           const valueKey = `${currentValue}${
             this.lowerCasedApm(this.apm) === "pm" ? "p" : "a"
           }`;
           return item === valueKey;
-        }
+        
       });
       let nextIndex;
       if (currentIndex === -1) {
@@ -2137,7 +2130,7 @@ export default {
           new RegExp(this.amText, "g"),
           this.apmType === "A" ? "AM" : "am"
         );
-      } else if (
+      } if (
         this.pmText &&
         this.pmText.length &&
         inputString.includes(this.pmText)
@@ -2309,7 +2302,7 @@ export default {
             }
           });
         }
-        for (let inputClass of inputClasses) {
+        for (const inputClass of inputClasses) {
           if (inputClass && inputClass.trim().length) {
             identifier += `.${inputClass.trim()}`;
           }
@@ -2325,28 +2318,16 @@ export default {
       }
     },
   },
-
-  mounted() {
-    window.clearTimeout(this.debounceTimer);
-    window.clearTimeout(this.selectionTimer);
-    window.clearTimeout(this.kbInputTimer);
-    this.renderFormat();
-  },
-
-  beforeUnmount() {
-    window.clearTimeout(this.debounceTimer);
-    window.clearTimeout(this.selectionTimer);
-    window.clearTimeout(this.kbInputTimer);
-  },
 };
 </script>
 
 <template>
   <span class="vue__time-picker" :style="inputWidthStyle">
     <input
+      :id="id"
+      ref="input"
       type="text"
       class="vue__time-picker-input"
-      ref="input"
       :class="[
         inputClass,
         {
@@ -2358,7 +2339,6 @@ export default {
         },
       ]"
       :style="inputWidthStyle"
-      :id="id"
       :name="name"
       :value="inputIsEmpty ? null : customDisplayTime"
       :placeholder="placeholder ? placeholder : formatString"
@@ -2379,7 +2359,7 @@ export default {
       @paste="pasteHandler"
       @keydown.esc.exact="escBlur"
     />
-    <div class="controls" v-if="showClearBtn || showDropdownBtn" tabindex="-1">
+    <div v-if="showClearBtn || showDropdownBtn" class="controls" tabindex="-1">
       <span
         v-if="!isActive && showClearBtn"
         class="clear-btn"
@@ -2402,18 +2382,18 @@ export default {
         <slot name="dropdownButton"><span class="char">&dtrif;</span></slot>
       </span>
     </div>
-    <div class="custom-icon" v-if="$slots && $slots.icon">
+    <div v-if="$slots && $slots.icon" class="custom-icon">
       <slot name="icon"></slot>
     </div>
     <div
-      class="time-picker-overlay"
       v-if="showDropdown"
-      @click="toggleActive"
+      class="time-picker-overlay"
       tabindex="-1"
+      @click="toggleActive"
     ></div>
     <div
-      class="dropdown"
       v-show="showDropdown"
+      class="dropdown"
       tabindex="-1"
       :class="[dropdownDirClass]"
       :style="{ ...inputWidthStyle, display: showDropdown ? '' : 'none' }"
@@ -2435,8 +2415,8 @@ export default {
                   :class="{ active: hour === hr }"
                   :disabled="booleanAttr(isDisabled('hour', hr))"
                   :data-key="hr"
-                  v-text="hr"
                   @click="select('hour', hr)"
+                  v-text="hr"
                 ></li>
               </template>
             </ul>
@@ -2455,8 +2435,8 @@ export default {
                   :class="{ active: minute === m }"
                   :disabled="booleanAttr(isDisabled('minute', m))"
                   :data-key="m"
-                  v-text="m"
                   @click="select('minute', m)"
+                  v-text="m"
                 ></li>
               </template>
             </ul>
@@ -2475,8 +2455,8 @@ export default {
                   :class="{ active: second === s }"
                   :disabled="booleanAttr(isDisabled('second', s))"
                   :data-key="s"
-                  v-text="s"
                   @click="select('second', s)"
+                  v-text="s"
                 ></li>
               </template>
             </ul>
@@ -2491,8 +2471,8 @@ export default {
                   :class="{ active: apm === a }"
                   :disabled="booleanAttr(isDisabled('apm', a))"
                   :data-key="a"
-                  v-text="apmDisplayText(a)"
                   @click="select('apm', a)"
+                  v-text="apmDisplayText(a)"
                 ></li>
               </template>
             </ul>
@@ -2511,7 +2491,7 @@ export default {
               tabindex="-1"
               @scroll="keepFocusing"
             >
-              <li class="hint" v-text="hourLabelText" tabindex="-1"></li>
+              <li class="hint" tabindex="-1" v-text="hourLabelText"></li>
               <template v-for="(hr, hIndex) in hours" :key="hIndex">
                 <li
                   v-if="
@@ -2522,7 +2502,6 @@ export default {
                   :tabindex="isDisabled('hour', hr) ? -1 : tabindex"
                   :data-key="hr"
                   :disabled="booleanAttr(isDisabled('hour', hr))"
-                  v-text="hr"
                   @click="select('hour', hr)"
                   @keydown.space.prevent="select('hour', hr)"
                   @keydown.enter.prevent="select('hour', hr)"
@@ -2533,6 +2512,7 @@ export default {
                   @keydown.esc.exact="debounceBlur"
                   @blur="debounceBlur"
                   @focus="keepFocusing"
+                  v-text="hr"
                 ></li>
               </template>
             </ul>
@@ -2542,7 +2522,7 @@ export default {
               tabindex="-1"
               @scroll="keepFocusing"
             >
-              <li class="hint" v-text="minuteLabelText" tabindex="-1"></li>
+              <li class="hint" tabindex="-1" v-text="minuteLabelText"></li>
               <template v-for="(m, mIndex) in minutes" :key="mIndex">
                 <li
                   v-if="
@@ -2553,7 +2533,6 @@ export default {
                   :tabindex="isDisabled('minute', m) ? -1 : tabindex"
                   :data-key="m"
                   :disabled="booleanAttr(isDisabled('minute', m))"
-                  v-text="m"
                   @click="select('minute', m)"
                   @keydown.space.prevent="select('minute', m)"
                   @keydown.enter.prevent="select('minute', m)"
@@ -2564,6 +2543,7 @@ export default {
                   @keydown.esc.exact="debounceBlur"
                   @blur="debounceBlur"
                   @focus="keepFocusing"
+                  v-text="m"
                 ></li>
               </template>
             </ul>
@@ -2573,7 +2553,7 @@ export default {
               tabindex="-1"
               @scroll="keepFocusing"
             >
-              <li class="hint" v-text="secondLabelText" tabindex="-1"></li>
+              <li class="hint" tabindex="-1" v-text="secondLabelText"></li>
               <template v-for="(s, sIndex) in seconds" :key="sIndex">
                 <li
                   v-if="
@@ -2584,7 +2564,6 @@ export default {
                   :tabindex="isDisabled('second', s) ? -1 : tabindex"
                   :data-key="s"
                   :disabled="booleanAttr(isDisabled('second', s))"
-                  v-text="s"
                   @click="select('second', s)"
                   @keydown.space.prevent="select('second', s)"
                   @keydown.enter.prevent="select('second', s)"
@@ -2595,6 +2574,7 @@ export default {
                   @keydown.esc.exact="debounceBlur"
                   @blur="debounceBlur"
                   @focus="keepFocusing"
+                  v-text="s"
                 ></li>
               </template>
             </ul>
@@ -2604,7 +2584,7 @@ export default {
               tabindex="-1"
               @scroll="keepFocusing"
             >
-              <li class="hint" v-text="apmLabelText" tabindex="-1"></li>
+              <li class="hint" tabindex="-1" v-text="apmLabelText"></li>
               <template v-for="(a, aIndex) in apms" :key="aIndex">
                 <li
                   v-if="
@@ -2615,7 +2595,6 @@ export default {
                   :tabindex="isDisabled('apm', a) ? -1 : tabindex"
                   :data-key="a"
                   :disabled="booleanAttr(isDisabled('apm', a))"
-                  v-text="apmDisplayText(a)"
                   @click="select('apm', a)"
                   @keydown.space.prevent="select('apm', a)"
                   @keydown.enter.prevent="select('apm', a)"
@@ -2626,6 +2605,7 @@ export default {
                   @keydown.esc.exact="debounceBlur"
                   @blur="debounceBlur"
                   @focus="keepFocusing"
+                  v-text="apmDisplayText(a)"
                 ></li>
               </template>
             </ul>

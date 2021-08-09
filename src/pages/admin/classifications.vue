@@ -3,6 +3,7 @@
         <p class="mb-2 text-2xl atlan-gray-500 text-uppercase">
             Classification
         </p>
+
         <div class="relative flex items-center justify-between w-full">
             <p class="mb-0 text-sm text-gray-400">
                 Manage classification tags to build access policies.
@@ -16,6 +17,7 @@
             >
         </div>
     </div>
+
     <splitpanes class="h-auto pt-6 default-theme">
         <pane
             min-size="25"
@@ -26,17 +28,17 @@
             <a-input
                 ref="searchText"
                 v-model:value="treeFilterText"
-                @input="handleSearch"
                 type="text"
                 class="bg-white shadow-none form-control border-right-0"
                 placeholder="Search classifications"
+                @input="handleSearch"
             >
                 <template #suffix>
                     <fa
                         v-if="treeFilterText"
-                        @click="clearSearchText"
                         icon="fal times-circle"
                         class="ml-2 mr-1 text-red-600"
+                        @click="clearSearchText"
                     />
                     <fa
                         v-if="!treeFilterText"
@@ -54,13 +56,13 @@
                     v-for="item in treeFilterText !== ''
                         ? filteredData
                         : treeData"
+                    :key="item.guid"
                     class="flex px-4 py-2 mb-1 rounded cursor-pointer tree-item"
                     :class="
                         selectedClassificationNameFromRoute === item.name
                             ? 'tree-item-active'
                             : ''
                     "
-                    :key="item.guid"
                     @click="() => nodeEmit(item)"
                 >
                     <span class="truncate ...">{{ item.title }}</span>
@@ -74,8 +76,8 @@
         <a-modal
             :visible="modalVisible"
             title="Add"
-            :onCancel="closeModal"
-            :destroyOnClose="true"
+            :on-cancel="closeModal"
+            :destroy-on-close="true"
             :footer="null"
         >
             <a-form
@@ -94,16 +96,17 @@
                 >
                     <a-textarea v-model:value="formState.description" />
                 </a-form-item>
+
                 <div class="flex justify-end w-full">
-                    <a-button @click="closeModal" class="mr-4">Cancel</a-button>
+                    <a-button class="mr-4" @click="closeModal">Cancel</a-button>
                     <a-button
                         type="primary"
-                        @click="createClassification"
                         :loading="
                             createClassificationStatus === 'loading'
                                 ? true
                                 : false
                         "
+                        @click="createClassification"
                         >Create</a-button
                     >
                 </div>
@@ -127,32 +130,24 @@
         Ref,
         computed,
     } from 'vue'
-    import ConnectionTree from '@/connection/tree/index.vue'
-    import Loading from '@common/loaders/section.vue'
-    import ErrorView from '@common/error/index.vue'
-    import CreateClassificationTree from '@common/tree/classification/index.vue'
+
     import { useRouter } from 'vue-router'
+    import { ValidateErrorEntity } from 'ant-design-vue/es/form/interface'
     import { useClassificationStore } from '~/components/admin/classifications/_store'
 
-    import { ValidateErrorEntity } from 'ant-design-vue/es/form/interface'
     import { Classification } from '~/api/atlas/classification'
     import { classificationInterface } from '~/types/classifications/classification.interface'
     import { typedefsInterface } from '~/types/typedefs/typedefs.interface'
 
     export default defineComponent({
         name: 'ClassificationProfileWrapper',
-        components: {
-            ConnectionTree,
-            Loading,
-            ErrorView,
-            CreateClassificationTree,
-        },
+
         props: {
             classificationName: {
                 type: String as PropType<String>,
             },
         },
-        setup(props, context) {
+        setup(props) {
             const store = useClassificationStore()
             const router = useRouter()
             const modalVisible = ref(false)
@@ -166,6 +161,7 @@
                 description: string
             }
             const treeData = computed(() => store.classificationTree)
+
             store.setSelectedClassification(
                 router?.currentRoute.value?.params?.classificationId as string
             )
@@ -191,7 +187,7 @@
 
             watch([classificationData, classificationError], () => {
                 if (classificationData.value) {
-                    let classifications =
+                    const classifications =
                         classificationData.value.classificationDefs || []
                     store.setClassifications(classifications ?? [])
                     store.initializeFilterTree()
@@ -202,19 +198,20 @@
                                 store.classificationTree[0].name
                             )}`
                         )
-                        console.log(router, 'router1')
+                        //                        //                        console.log(router, 'router1')
                     }
                 } else {
                     store.setClassificationsStatus('error')
                 }
             })
+
             const nodeEmit = (node: classificationInterface) => {
                 router.push(
                     `/admin/classifications/${encodeURIComponent(node.name)}`
                 )
                 store.setSelectedClassification(node.name)
 
-                console.log(node.name)
+                //                //                console.log(node.name)
             }
             const formState: UnwrapRef<FormState> = reactive({
                 name: '',
@@ -225,9 +222,11 @@
                 name: [
                     {
                         required: true,
+
                         pattern: urlValidationRegex,
                         message:
                             'Names must consist of a letter followed by a sequence of letter, number, space, or _ characters',
+
                         trigger: 'blur',
                     },
                 ],
@@ -244,6 +243,7 @@
 
             const closeModal = () => {
                 modalVisible.value = false
+
                 formState.name = ''
                 formState.description = ''
             }
@@ -293,6 +293,7 @@
                                     createClassificationData,
                                     createClassificationError
                                 )
+
                                 if (
                                     createClassificationData.value &&
                                     !createClassificationError.value
@@ -309,6 +310,7 @@
                                         ...store.classifications,
                                         ...classifications,
                                     ]
+
                                     store.classifications =
                                         classifications ?? []
                                     const classificationTree =
@@ -339,13 +341,14 @@
                                     )
                                     createErrorText.value =
                                         error.response.data.errorMessage
+
                                     resetRef(createErrorText, 8000)
                                 }
                             }
                         )
                     })
                     .catch((error: ValidateErrorEntity<FormState>) => {
-                        console.log('error', error)
+                        //                        //                        console.log('error', error)
                     })
             }
 
@@ -354,7 +357,7 @@
             }
 
             const handleSelectNode = (node: classificationInterface) => {
-                console.log(node, 'parent')
+                //                //                console.log(node, 'parent')
             }
 
             const classifications = computed(() => store.classifications)
@@ -363,6 +366,7 @@
                 if (!props.classificationName) {
                     return {}
                 }
+
                 if (classifications.value.length === 0) {
                     return {}
                 }
@@ -372,7 +376,7 @@
                         decodeURI(props.classificationName as string)
                 )
             })
-            const handleClickUser = (username: string) => {}
+            const handleClickUser = () => {}
 
             return {
                 selectedClassificationNameFromRoute,
@@ -427,6 +431,7 @@
         line-height: 1;
         content: '*';
     }
+
     .add-classification-btn {
         top: -50%;
     }

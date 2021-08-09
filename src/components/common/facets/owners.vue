@@ -1,11 +1,11 @@
 <template>
   <div>
     <p class="mb-1 text-xs text-gray-500">Users</p>
-    <Users @change="handleChange" v-model:value="userValue"></Users>
+    <Users v-model:value="userValue" @change="handleChange"></Users>
   </div>
   <div class="mt-2">
     <p class="mb-1 text-xs text-gray-500">Groups</p>
-    <Groups @change="handleGroupsChange" v-model:value="groupValue"></Groups>
+    <Groups v-model:value="groupValue" @change="handleGroupsChange"></Groups>
   </div>
 </template>
 
@@ -52,7 +52,6 @@ export default defineComponent({
       },
     },
   },
-  mounted() {},
   emits: ["change"],
   setup(props, { emit }) {
     const userValue = ref("");
@@ -69,7 +68,7 @@ export default defineComponent({
       handleChange();
     };
     const handleChange = () => {
-      let criterion: Components.Schemas.FilterCriteria[] = [];
+      const criterion: Components.Schemas.FilterCriteria[] = [];
 
       if (userValue.value) {
         criterion.push({
@@ -89,7 +88,7 @@ export default defineComponent({
         id: props.item.id,
         payload: {
           condition: "OR",
-          criterion: criterion,
+          criterion,
         } as Components.Schemas.FilterCriteria,
       });
     };
@@ -109,6 +108,7 @@ export default defineComponent({
       clear,
     };
   },
+  mounted() {},
 });
 </script>
 

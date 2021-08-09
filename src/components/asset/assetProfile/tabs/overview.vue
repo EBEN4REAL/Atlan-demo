@@ -1,101 +1,114 @@
+/* eslint-disable vue/no-v-model-argument */
 <template>
-    <div class="w-full h-full px-10 pt-4 overflow-y-auto">
+    <div class="w-full px-10 py-4 overflow-y-auto" style="height: 600px">
         <!--Asset Summary -->
-        <div class="mb-8">
-            <div
-                class="flex items-center w-full py-2 text-base bg-white border rounded-t  px-7"
-            >
-                Summary
-            </div>
-            <div
-                class="w-full h-full py-6 bg-white border border-t-0 rounded-b  px-7"
-            >
-                <!-- Description Component -->
-                <div class="mb-8">
-                    <p v-if="asset.attributes.description">
-                        {{ asset.attributes.description }}
-                        <span class="ml-2">.</span>
-                        <a-button type="link"> Edit description </a-button>
-                    </p>
-                    <p v-else class="text-gray-400">No Description Found</p>
-                </div>
-
-                <!-- Table Component -->
-                <a-table
-                    bordered
-                    :columns="columns"
-                    :data-source="data"
-                    :pagination="false"
+        <div class="flex items-center justify-between w-full mb-8">
+            <div class="w-full max-w-xl mr-8 bg-white border rounded-t h-96">
+                <div
+                    class="flex items-center w-full py-2 text-base bg-white border-b  px-7"
                 >
-                </a-table>
+                    Summary
+                </div>
+                <div class="w-full py-6 px-7">
+                    <!-- Description Component -->
+                    <DescriptionWidget :asset="asset" />
+
+                    <!-- Table Component -->
+                    <a-table
+                        bordered
+                        :columns="tableColumns"
+                        :data-source="results"
+                        :pagination="false"
+                        :scroll="{ y: 170, x: 170 }"
+                        size="middle"
+                    >
+                    </a-table>
+                </div>
+            </div>
+            <!-- Column widget -->
+            <div>
+                <TableColumn :asset="asset" />
             </div>
         </div>
         <!-- Asset ReadMe -->
-        <div>
-            <!-- ReadMe Component -->
-            <Readme class="w-full m-h-48" />
+        <div class="min-h-full">
+            <Readme class="w-full h-32" />
         </div>
     </div>
 </template>
 <script lang="ts">
     // Vue
-    import { defineComponent, ref } from 'vue'
+    import { defineComponent, ref, watch } from 'vue'
 
     // Components
     import Readme from '@/common/readme/index.vue'
+    import TableColumn from '@/asset/assetProfile/overview/tableColumn.vue'
+    import DescriptionWidget from '@/asset/assetProfile/overview/descriptionWidget.vue'
+
+    // api
+    import { useAPI } from '~/api/useAPI'
 
     export default defineComponent({
-        components: { Readme },
+        components: { Readme, TableColumn, DescriptionWidget },
         setup(props, context) {
             const asset = ref(context.attrs.asset)
 
+            // for table widget
+            const tableColumns = ref([])
+            const results = ref([])
+            const getTableData = () => {
+                const {
+                    connectionQualifiedName,
+                    databaseName,
+                    schemaName,
+                    name,
+                } = { ...asset.value.attributes }
+
+                const body = {
+                    tableName: name,
+                    defaultSchema: `${databaseName}.${schemaName}`,
+                    dataSourceName: connectionQualifiedName,
+                }
+
+                return useAPI('PREVIEW_TABLE', 'POST', { body })
+            }
+            const { data, error } = getTableData()
+
+            // filter required data
+            watch([data, error], () => {
+                if (data.value && error.value == undefined) {
+                    // convert data from API in Antd-table format
+                    data.value.columns.forEach((col) => {
+                        const obj = {
+                            title: col.columnName,
+                            dataIndex: col.label,
+                            width: 150,
+                            ellipsis: true,
+                        }
+                        tableColumns.value.push(obj)
+                    })
+                    data.value.results.forEach((val, index) => {
+                        let obj = {}
+                        data.value.columns.forEach((col, i) => {
+                            obj[col.columnName] = val[i]
+                        })
+                        // add key to object
+                        obj = { ...obj, key: index }
+                        results.value.push(obj)
+                    })
+                } else {
+                    // if data not found
+                    console.log(
+                        error.value,
+                        '------ failed to fetch table data------ '
+                    )
+                }
+            })
+
             return {
                 asset,
-                columns: [
-                    {
-                        title: 'Date',
-                        dataIndex: 'date',
-                        width: 200,
-                    },
-                    {
-                        title: 'Amount',
-                        dataIndex: 'amount',
-                        width: 100,
-                    },
-                    {
-                        title: 'Type',
-                        dataIndex: 'type',
-                        width: 100,
-                    },
-                    {
-                        title: 'Note',
-                        dataIndex: 'note',
-                        width: 100,
-                    },
-                ],
-                data: [
-                    {
-                        key: 0,
-                        date: '2018-02-11',
-                        amount: 120,
-                        type: 'income',
-                        note: 'transfer',
-                    },
-                    {
-                        key: 1,
-                        date: '2018-03-11',
-                        amount: 243,
-                        type: 'income',
-                        note: 'transfer',
-                    },
-                    {
-                        key: 2,
-                        date: '2018-04-11',
-                        amount: 98,
-                        type: 'income',
-                        note: 'transfer',
-                    },
-                ],
+                tableColumns,
+                results,
             }
         },
     })

@@ -2,9 +2,9 @@
   <a-select
     :value="modelValue"
     :show-search="true"
-    :autoClearSearchValue="true"
+    :auto-clear-search-value="true"
+    :filter-option="false"
     @search="handleSearch"
-    :filterOption="false"
     @change="handleChange"
   >
     <template v-for="item in list" :key="item.id">
@@ -26,22 +26,23 @@ import { timezone } from "~/constant/timezone";
 
 export default defineComponent({
   name: "HelloWorld",
+  components: {
+    Select,
+  },
   props: {
     modelValue: {
       type: String,
       required: false,
     },
   },
-  components: {
-    Select,
-  },
-  computed: {},
+  emits: ["update:modelValue", "change"],
   data() {
     return {
       list: [],
       fullList: [],
     };
   },
+  computed: {},
   mounted() {
     Object.keys(timezone).forEach((key) => {
       this.fullList.push({
@@ -51,7 +52,6 @@ export default defineComponent({
     });
     this.list = this.fullList;
   },
-  emits: ["update:modelValue", "change"],
   methods: {
     handleChange(checkedValues) {
       this.$emit("update:modelValue", checkedValues);
@@ -59,9 +59,7 @@ export default defineComponent({
     },
     handleSearch(inputValue) {
       this.list = [
-        ...this.fullList.filter((item) => {
-          return item.label.includes(inputValue);
-        }),
+        ...this.fullList.filter((item) => item.label.includes(inputValue)),
       ];
     },
     clear() {},

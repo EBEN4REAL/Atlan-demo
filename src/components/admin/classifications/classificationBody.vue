@@ -6,13 +6,13 @@
                     <div class="w-full rounded asset-list">
                         <AssetsWrapper
                             v-if="selectedClassification?.name"
-                            :selectedClassification="
-                                selectedClassification?.name
-                            "
                             :ref="
                                 (el) => {
                                     assetWrapperRef = el
                                 }
+                            "
+                            :selected-classification="
+                                selectedClassification?.name
                             "
                         />
                     </div>
@@ -20,7 +20,7 @@
                 <a-tab-pane key="2" tab="Linked Terms">
                     <div class="w-full mt-1 rounded asset-list">
                         <LinkedTerms
-                            :selectedClassification="
+                            :selected-classification="
                                 selectedClassification?.name
                             "
                         />
@@ -53,20 +53,18 @@
         setup(props) {
             const assetSearchText = ref('')
             const assetWrapperRef: Ref<any> = ref(null)
-            const selectedClassification = computed(() => {
-                return props.classification
-            })
+            const selectedClassification = computed(() => props.classification)
             const handleAssetSearch = (e: any) => {
                 assetSearchText.value = e.target.value
             }
             const activeTabKey = ref('1')
             watch(selectedClassification, () => {
                 if (selectedClassification.value) {
-                    let criterion: Components.Schemas.FilterCriteria[] = []
+                    const criterion: Components.Schemas.FilterCriteria[] = []
                     const entityFilterPayload = [
                         {
                             condition: 'OR',
-                            criterion: criterion,
+                            criterion,
                         } as Components.Schemas.FilterCriteria,
                     ]
                     criterion.push({

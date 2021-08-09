@@ -29,7 +29,7 @@ export default function (data, error, isValidating) {
     }
     if (data.value === undefined && error) {
       state.value = STATES.ERROR
-      return
+      
     }
   })
 

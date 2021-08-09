@@ -3,10 +3,10 @@
 <template>
   <div class="items">
     <button
-      class="item"
-      :class="{ 'is-selected': index === selectedIndex }"
       v-for="(item, index) in items"
       :key="index"
+      class="item"
+      :class="{ 'is-selected': index === selectedIndex }"
       @click="selectItem(index)"
     >
       {{ item.title }}

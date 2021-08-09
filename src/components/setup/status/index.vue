@@ -1,7 +1,7 @@
 <template>
   <div class="px-10 text-center">
     <div class="mb-2">
-      <a-spin size="large" class="text-gray-500" v-if="status === 'loading'" />
+      <a-spin v-if="status === 'loading'" size="large" class="text-gray-500" />
       <fa
         v-else-if="status === 'success'"
         icon="fas check-circle"
@@ -16,7 +16,7 @@
       ></fa>
     </div>
     <div class="mt-3">
-      <p class="mb-0 text-base text-gray-500" v-if="status === 'loading'">
+      <p v-if="status === 'loading'" class="mb-0 text-base text-gray-500">
         Securely saving your credentials, connecting to the source and starting
         your metadata refresh.
       </p>
@@ -82,6 +82,7 @@ export default defineComponent({
       },
     },
   },
+  emits: ["back"],
   data() {
     return {
       status: "",
@@ -94,7 +95,6 @@ export default defineComponent({
 
     this.handleConnectionSetup();
   },
-  emits: ["back"],
   methods: {
     handleBack() {
       this.$emit("back");
@@ -104,7 +104,7 @@ export default defineComponent({
     },
     async handleConnectionSetup() {
       try {
-        let resp = await Connection.Setup(
+        const resp = await Connection.Setup(
           {
             botQualifiedName: this.attributes(this.item).qualifiedName,
             connection: {

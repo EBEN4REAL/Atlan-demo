@@ -3,9 +3,9 @@
     class="flex flex-col items-center justify-center col-span-12 px-6 py-4 transform bg-white border rounded-lg shadow-sm  sm:col-span-6 md:col-span-3 lg:col-span-2 hover:border-primary-500 :hover:text-primary"
   >
     <div
+      v-if="item?.attributes.isSample"
       class="absolute flex items-center justify-center w-auto h-3 mr-1 text-yellow-300 rounded-full "
       style="top: 8px; right: 8px"
-      v-if="item?.attributes.isSample"
     >
       <fa icon="fas lock mr-1"></fa>
     </div>

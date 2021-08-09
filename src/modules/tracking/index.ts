@@ -18,7 +18,7 @@ interface user {
 }
 
 function isEventTrackingOn() {
-  if (!Boolean(import.meta.env.VITE_ENABLE_EVENTS_TRACKING)) {
+  if (!import.meta.env.VITE_ENABLE_EVENTS_TRACKING) {
     console.log("Event tracking off, Enable it from env!");
     return false;
   }

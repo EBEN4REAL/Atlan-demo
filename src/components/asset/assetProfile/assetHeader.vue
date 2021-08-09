@@ -67,7 +67,7 @@
                 const attr = asset.value.attributes
                 return val === 'lc'
                     ? dayjs().from(attr.__timestamp, true)
-                    : dayjs().from(attr.__modificationTimestamp, true) + ' ago'
+                    : `${dayjs().from(attr.__modificationTimestamp, true)  } ago`
             }
 
             return {

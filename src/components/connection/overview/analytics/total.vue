@@ -5,7 +5,7 @@
     </p>
     <div class="text-xl text-gray-900">{{ numeralFormat(assetTypeSum) }}</div>
 
-    <LoadingView style="min-height: 100px" v-if="isLoading"></LoadingView>
+    <LoadingView v-if="isLoading" style="min-height: 100px"></LoadingView>
 
     <div v-else>
       <div
@@ -29,15 +29,15 @@
 
 <script lang="ts">
 import { defineComponent, PropType, reactive, ref, watch } from "vue";
+import LoadingView from "@common/loaders/section.vue";
+import ErrorView from "@common/error/index.vue";
 import { ConnectionType } from "~/types/atlas/connection";
 
 import useColumnList from "~/composables/bots/useColumnList";
-import LoadingView from "@common/loaders/section.vue";
-import ErrorView from "@common/error/index.vue";
 
 export default defineComponent({
-  mixins: [],
   components: { LoadingView, ErrorView },
+  mixins: [],
   props: {
     item: {
       type: Object as PropType<ConnectionType>,

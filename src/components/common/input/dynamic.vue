@@ -1,63 +1,63 @@
 <template>
   <div>
     <a-input
-      :value="modelValue"
-      @change="handleChange"
-      :placeholder="placeholder"
       v-if="dataType === 'string'"
+      :value="modelValue"
+      :placeholder="placeholder"
       :prefix="prefix"
       :suffix="suffix"
+      @change="handleChange"
     >
     </a-input>
     <a-input-number
-      :value="modelValue"
-      @change="handleChange"
-      :placeholder="placeholder"
       v-if="dataType === 'number'"
+      :value="modelValue"
+      :placeholder="placeholder"
       :prefix="prefix"
       :suffix="suffix"
+      @change="handleChange"
     >
     </a-input-number>
     <a-input-password
-      :value="modelValue"
-      @change="handleChange"
-      :placeholder="placeholder"
       v-if="dataType === 'password'"
+      :value="modelValue"
+      :placeholder="placeholder"
       :prefix="prefix"
       :suffix="suffix"
+      @change="handleChange"
     >
     </a-input-password>
     <a-switch
-      :checked="modelValue"
       v-if="dataType === 'boolean'"
+      :checked="modelValue"
       @change="handleChange"
     />
 
-    <a-input-group compact v-if="dataType === 'enum'" class="w-full">
+    <a-input-group v-if="dataType === 'enum'" compact class="w-full">
       <a-input
+        v-if="isCustom"
         style="width: 80%"
         :value="modelValue"
-        @change="handleChange"
         :placeholder="placeholder"
-        v-if="isCustom"
         :prefix="prefix"
         :suffix="suffix"
+        @change="handleChange"
       >
       </a-input>
       <a-select
+        v-if="dataType === 'enum' && !isCustom"
         style="width: 80%"
         show-search
-        @change="handleChange"
         :value="modelValue"
         :placeholder="placeholder"
-        v-if="dataType === 'enum' && !isCustom"
         :options="enumList"
+        @change="handleChange"
       >
       </a-select>
       <a-button
+        v-if="enumAllowCustom"
         style="width: 10%"
         class="px-1"
-        v-if="enumAllowCustom"
         @click="handleToggleCustom"
         ><fa icon="fal user-edit"></fa
       ></a-button>
@@ -124,6 +124,7 @@ export default defineComponent({
       },
     },
   },
+  emits: ["update:modelValue", "change", "blur"],
   data() {
     return {
       isCustom: false,
@@ -138,7 +139,6 @@ export default defineComponent({
     //   }
     // }
   },
-  emits: ["update:modelValue", "change", "blur"],
   methods: {
     handleChange(e) {
       console.log("changed");

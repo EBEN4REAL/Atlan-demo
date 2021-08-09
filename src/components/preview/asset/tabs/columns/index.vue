@@ -2,7 +2,7 @@
 <template>
   <LoadingView v-if="isLoading"></LoadingView>
 
-  <div class="flex flex-col h-full space-y-2" v-else>
+  <div v-else class="flex flex-col h-full space-y-2">
     <!-- <div class="flex flex-wrap gap-1 mx-3 mb-2">
       <template
         v-for="item in dataTypeAggregationList(
@@ -80,9 +80,9 @@
             </div>
           </div>
           <fa
+            v-if="item?.attributes?.isPrimary"
             icon="fas key"
             class="text-yellow-400"
-            v-if="item?.attributes?.isPrimary"
           ></fa>
         </div>
       </template>
@@ -91,14 +91,14 @@
       <AssetPagination
         :limit="limit"
         :offset="offset"
-        :listCount="list.length"
-        :totalCount="totalCount"
+        :list-count="list.length"
+        :total-count="totalCount"
         label=""
       ></AssetPagination>
       <div
+        v-if="isLoadMore && (!isLoading || !isValidating)"
         class="text-xs cursor-pointer text-primary"
         @click="loadMore"
-        v-if="isLoadMore && (!isLoading || !isValidating)"
       >
         more...
       </div>
@@ -116,18 +116,18 @@
           
 <script lang="ts">
 import { useDebounceFn } from "@vueuse/core";
-import { computed, ref, watch } from "vue";
-import { defineComponent } from "vue";
-import { Components } from "~/api/atlas/client";
+import { computed, ref, watch , defineComponent } from "vue";
 
 import LoadingView from "@common/loaders/section.vue";
+import AssetPagination from "@common/pagination/index.vue";
+import { Components } from "~/api/atlas/client";
+
 
 import fetchColumnList from "~/composables/columns/fetchColumnList";
 
 import useColumnList from "~/composables/bots/useColumnList";
 import { COLUMNS_FETCH_LIST } from "~/constant/cache";
 import { BaseAttributes, ColumnAttributes } from "~/constant/projection";
-import AssetPagination from "@common/pagination/index.vue";
 
 export default defineComponent({
   components: {
@@ -144,7 +144,7 @@ export default defineComponent({
     },
   },
   setup(props: any) {
-    let immediate = ref(true);
+    const immediate = ref(true);
 
     const limit = ref(20);
     const offset = ref(0);
@@ -152,7 +152,7 @@ export default defineComponent({
     const sortBy = ref("Column.order");
     const sortOrder = ref("ASCENDING");
 
-    let entityFilters = ref({
+    const entityFilters = ref({
       condition: "OR" as Components.Schemas.Condition,
       criterion: [
         {
@@ -190,9 +190,7 @@ export default defineComponent({
       replaceBody,
     } = useColumnList(immediate, initialBody, "", true);
 
-    const isLoadMore = computed(() => {
-      return totalCount.value > list.value.length;
-    });
+    const isLoadMore = computed(() => totalCount.value > list.value.length);
 
     const loadMore = () => {
       if (list.value.length + limit.value < totalCount.value) {

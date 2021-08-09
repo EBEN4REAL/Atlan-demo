@@ -29,13 +29,13 @@
             
 <script lang="ts">
 import { defineComponent } from "vue";
+import dayjs from "dayjs";
 import AssetMixin from "~/mixins/asset";
 
-import dayjs from "dayjs";
 
 export default defineComponent({
-  mixins: [AssetMixin],
   components: {},
+  mixins: [AssetMixin],
   props: {
     item: {
       type: Object,

@@ -1,13 +1,13 @@
 
 import { computed, ref, WritableComputedRef, watch } from 'vue';
-import updateAsset from '../utils/updateAsset';
 import mitt from "mitt";
+import updateAsset from '../utils/updateAsset';
 import whoami from '../user/whoami';
 import { SearchBasic } from '~/api/atlas/searchbasic';
 
 export default function updateSavedSearch(item: any) {
 
-    let body = ref({
+    const body = ref({
     })
     const { data, mutate, isReady, error } = SearchBasic.CreateSavedSearch("", body, ref({ immediate: false }));
     const update = () => {

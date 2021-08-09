@@ -35,7 +35,7 @@ export default defineComponent({
     };
   },
   watch: {
-    "item.guid"() {
+    "item.guid": function() {
       this.fetchData();
     },
   },
@@ -44,7 +44,7 @@ export default defineComponent({
     async fetchData() {
       console.log("fetch dad");
       try {
-        let qf = this.item.attributes.qualifiedName.split("/").join("..");
+        const qf = this.item.attributes.qualifiedName.split("/").join("..");
         console.log(this.item.attributes.qualifiedName);
         const response = await Workflows.List({
           "listOptions.limit": 10,

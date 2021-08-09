@@ -5,40 +5,40 @@
       <div v-for="(tag, index) in tags" :key="index">
         <a-tooltip v-if="tag.length > 20" :title="tag">
           <a-tag
-            :closable="allowUpdate"
             :key="tag"
-            @close="handleClose(tag)"
+            :closable="allowUpdate"
             class="bg-gray-50"
             :class="[updatingTags ? 'text-gray-300 pointer-events-none' : '']"
+            @close="handleClose(tag)"
             >{{ `${tag.slice(0, 20)}...` }}</a-tag
           >
         </a-tooltip>
         <a-tag
-          :closable="allowUpdate"
           v-else
-          @close="handleClose(tag)"
+          :closable="allowUpdate"
           :class="[updatingTags ? 'text-gray-300 pointer-events-none' : '']"
           class="bg-gray-50"
+          @close="handleClose(tag)"
           >{{ tag }}</a-tag
         >
       </div>
 
       <a-input
         v-if="inputVisible"
-        :disabled="updatingTags"
         ref="inputRef"
+        v-model:value="inputValue"
+        :disabled="updatingTags"
         type="text"
         size="small"
         :style="{ width: '78px' }"
-        v-model:value="inputValue"
         @blur="handleInputConfirm"
         @keyup.enter="$event.target.blur()"
       />
       <a-tag
         v-else-if="!updatingTags && allowUpdate"
         class="bg-white"
-        @click="showInput"
         style="background: #fff; border-style: dashed"
+        @click="showInput"
       >
         <fa icon="fal plus" class="pushtop"></fa>New Tag
       </a-tag>
@@ -58,6 +58,7 @@ import {
 } from "vue";
 
 export default defineComponent({
+  components: {},
   props: {
     tags: {
       type: Array,
@@ -72,7 +73,6 @@ export default defineComponent({
       default: false,
     },
   },
-  components: {},
   setup(props, context) {
     const inputRef = ref();
     const defaultTags = computed(() => props.tags);
@@ -102,8 +102,8 @@ export default defineComponent({
 
     const handleInputConfirm = () => {
       if (state.inputValue) {
-        const inputValue = state.inputValue;
-        let tags = state.tags;
+        const {inputValue} = state;
+        let {tags} = state;
         if (inputValue && tags.indexOf(inputValue) === -1) {
           tags = [...tags, inputValue];
         }

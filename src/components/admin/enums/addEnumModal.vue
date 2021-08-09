@@ -2,18 +2,18 @@
   <a-modal
     :width="'500px'"
     :visible="true"
-    :confirmLoading="!isReady"
-    okText="Save"
+    :confirm-loading="!isReady"
+    ok-text="Save"
     title="Create Enumeration"
+    destroy-on-close
+    centered
     @ok="handleOK"
     @cancel="$emit('close')"
-    destroyOnClose
-    centered
   >
     <EnumDetails
       ref="enumDetailsComponent"
-      :isNew="true"
-      :selectedEnum="defaultEnum"
+      :is-new="true"
+      :selected-enum="defaultEnum"
     />
   </a-modal>
 </template>
@@ -26,7 +26,7 @@ import EnumDetails from "./enumDetails.vue";
 import { useAddEnums } from "./composables/useModifyEnums";
 
 export default defineComponent({
-  name: "addEnumModal",
+  name: "AddEnumModal",
   components: { EnumDetails },
   emits: ["add", "close"],
   setup(props, context) {

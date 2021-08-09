@@ -1,13 +1,13 @@
 <template>
     <a-modal
         :visible="showDeleteModal"
-        :destroyOnClose="true"
+        :destroy-on-close="true"
         title="Delete"
-        :onCancel="closeDeleteModal"
+        :on-cancel="closeDeleteModal"
         :footer="null"
     >
         <div class="p-0 block-content">
-            <p class="mb-0" v-show="selectedClassificationName">
+            <p v-show="selectedClassificationName" class="mb-0">
                 This will permanently delete the
                 <span class="underline">{{ selectedClassificationName }}</span>
                 classification and it
@@ -16,11 +16,11 @@
             <div class="flex justify-end">
                 <a-button
                     type="danger"
-                    @click="onDelete"
                     ghost
                     class="mt-3"
                     :loading="deleteStatus === 'loading'"
-                    :loadingText="`Deleting this classification...`"
+                    :loading-text="`Deleting this classification...`"
+                    @click="onDelete"
                 >
                     <fa icon="fal trash" class="mr-2 text-left" />
                     I understand the consequences</a-button
@@ -44,9 +44,9 @@
         Ref,
         PropType,
     } from 'vue'
+    import { useRouter } from 'vue-router'
     import { useClassificationStore } from './_store'
     import { Classification } from '~/api/atlas/classification'
-    import { useRouter } from 'vue-router'
     import { classificationInterface } from '~/types/classifications/classification.interface'
 
     export default defineComponent({

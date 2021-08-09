@@ -5,9 +5,9 @@
         <p class="mb-0 text-gray-400">
           First Name
           <fa
+            v-if="updateSuccess"
             icon="fal check"
             class="ml-1 text-success"
-            v-if="updateSuccess"
           ></fa>
         </p>
         <p
@@ -44,9 +44,9 @@
             <a-popover v-else-if="updateErrorMessage" placement="bottom">
               <template #content>{{ updateErrorMessage }}</template>
               <fa
+                v-if="updateErrorMessage"
                 icon="fal exclamation-circle"
                 class="cursor-pointer text-error"
-                v-if="updateErrorMessage"
               ></fa>
             </a-popover>
           </div>
@@ -60,6 +60,7 @@
 <script lang="ts">
 import { defineComponent, ref, watch } from "vue";
 import { User } from "~/api/auth/user";
+
 export default defineComponent({
   name: "UpdateFirstName",
   props: {
@@ -73,11 +74,11 @@ export default defineComponent({
     },
   },
   setup(props, context) {
-    let isUpdate = ref(false);
-    let firstNameLocal = ref(props.selectedUser.first_name);
-    let updateErrorMessage = ref("");
-    let updateSuccess = ref(false);
-    let updateLoading = ref(false);
+    const isUpdate = ref(false);
+    const firstNameLocal = ref(props.selectedUser.first_name);
+    const updateErrorMessage = ref("");
+    const updateSuccess = ref(false);
+    const updateLoading = ref(false);
     const onUpdate = () => {
       firstNameLocal.value = props.selectedUser.first_name;
       updateErrorMessage.value = "";

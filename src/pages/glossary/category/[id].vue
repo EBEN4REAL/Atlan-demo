@@ -66,7 +66,7 @@ import GlossaryProfileOverview from '~/components/glossary/common/glossaryProfil
 import GlossaryTopTerms from '~/components/glossary/common/glossaryTopTerms.vue'
 import EntityHistory from '~/components/glossary/common/entityHistory.vue'
 import CategoryTermsAndCategoriesTab from '@/glossary/categoryProfile/categoryTermsAndCategoriesTab.vue'
-import LoadingView from '@common/loaders/section.vue'
+import LoadingView from '@common/loaders/page.vue'
 
 import useGTCEntity from '~/composables/glossary/useGtcEntity'
 import useCategoryTerms from '~/composables/glossary/useCategoryTerms'

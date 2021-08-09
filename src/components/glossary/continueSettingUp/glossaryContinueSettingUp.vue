@@ -1,5 +1,12 @@
 <template>
-    <div v-if="missingOwners.length || missingDescription.length || missingLinkedAssets.length" class="my-8" >
+    <div
+        v-if="
+            missingOwners.length ||
+            missingDescription.length ||
+            missingLinkedAssets.length
+        "
+        class="my-8"
+    >
         <h2 class="text-xl leading-7">Coninue Setting up GLossary</h2>
         <a-tabs default-active-key="2" class="border-0">
             <a-tab-pane v-if="missingOwners.length" key="1" tab="Add Owners">
@@ -32,7 +39,7 @@
                         }}</span>
                         <span v-else class="text-gray-400">- NA -</span>
                     </template>
-                    <template #owners="{record}">
+                    <template #owners="{ record }">
                         <a-select
                             mode="multiple"
                             placeholder="Please select"
@@ -50,7 +57,11 @@
                 </a-table>
             </a-tab-pane>
 
-            <a-tab-pane key="2" v-if="missingDescription.length" tab="Add Descriptions">
+            <a-tab-pane
+                v-if="missingDescription.length"
+                key="2"
+                tab="Add Descriptions"
+            >
                 <a-table
                     :columns="descriptionTableColumns"
                     :data-source="missingDescription"
@@ -75,12 +86,21 @@
                         </div>
                     </template>
                     <template #description="{ record }">
-                        <GlossaryAddDescriptionCard @updateDescription="(type) => $emit('updateDescription', type)" :entity="record" />
+                        <GlossaryAddDescriptionCard
+                            :entity="record"
+                            @updateDescription="
+                                (type) => $emit('updateDescription', type)
+                            "
+                        />
                     </template>
                 </a-table>
             </a-tab-pane>
 
-            <a-tab-pane key="3" v-if="missingLinkedAssets.length" tab="Link Assets">
+            <a-tab-pane
+                v-if="missingLinkedAssets.length"
+                key="3"
+                tab="Link Assets"
+            >
                 Link Assets
                 <br />
                 {{ missingLinkedAssets }}
@@ -89,14 +109,15 @@
     </div>
 </template>
 <script lang="ts">
-import { defineComponent, computed } from 'vue'
+import { defineComponent, computed, watch } from 'vue'
+
+import Owners from '@/preview/asset/tabs/overview/details/owners.vue'
 
 import { Components } from '~/api/atlas/client'
 
 import TermSvg from '~/assets/images/gtc/term/term.png'
 import CategorySvg from '~/assets/images/gtc/category/category.png'
 import GlossaryAddDescriptionCard from '~/components/glossary/continueSettingUp/glossaryAddDescriptionCard.vue'
-import Owners from '@/preview/asset/tabs/overview/details/owners.vue'
 
 interface PropsType {
     terms: Components.Schemas.AtlasGlossaryTerm[]
@@ -106,8 +127,8 @@ interface PropsType {
 export default defineComponent({
     components: { GlossaryAddDescriptionCard, Owners },
     props: ['terms', 'categories'],
-    emits:['updateDescription'],
-    setup(props: PropsType) {
+    emits: ['updateDescription', 'fetchNextCategoryOrTermList'],
+    setup(props: PropsType, context) {
         const categories = computed(
             () =>
                 props.categories?.map((category) => ({
@@ -126,16 +147,32 @@ export default defineComponent({
                 .map((entity) => ({ ...entity, shortDescription: '' }))
                 .slice(0, 5)
         })
-
-        const missingLinkedAssets = computed(() => {
-            return terms.value.filter((term) => !term.assignedEntities?.length).slice(0,5)
+        watch(missingDescription, (newMissingDescription) => {
+            if (
+                !newMissingDescription.find((entity) => entity.type === 'term')
+            ) {
+                context.emit('fetchNextCategoryOrTermList', 'term')
+            }
+            if (
+                !newMissingDescription.find(
+                    (entity) => entity.type === 'category'
+                )
+            ) {
+                context.emit('fetchNextCategoryOrTermList', 'category')
+            }
         })
 
-        const missingOwners = computed(() => {
-            return [...terms.value, ...categories.value].filter(
-                (entity) => !entity?.owners?.length
-            ).slice(0,5)
-        })
+        const missingLinkedAssets = computed(() =>
+            terms.value
+                .filter((term) => !term.assignedEntities?.length)
+                .slice(0, 5)
+        )
+
+        const missingOwners = computed(() =>
+            [...terms.value, ...categories.value]
+                .filter((entity) => !entity?.additionalAttributes?.owners)
+                .slice(0, 5)
+        )
 
         const descriptionTableColumns = [
             {

@@ -4,7 +4,10 @@ import { useAPI } from "~/api/useAPI"
 import { GET_GLOSSARY, GET_CATEGORY, GET_TERM } from "~/api/keyMaps/glossary"
 import { Components } from "~/api/atlas/client";
 
-
+/**
+ * Uses the Atlas API to fetch a Glossary / Category / Term depending on 
+ * the type
+ */
 const useGTCEntity = (type: 'glossary' | 'category' | 'term') => {
     const keyMap = {
         glossary: GET_GLOSSARY,
@@ -18,7 +21,7 @@ const useGTCEntity = (type: 'glossary' | 'category' | 'term') => {
         guid: entityGuid
     })
 
-    const { data, error, isValidating: isLoading, mutate } = useAPI<Components.Schemas.AtlasGlossary | Components.Schemas.AtlasGlossary>(keyMap[entityType.value], 'GET', {
+    const { data, error, isValidating: isLoading, mutate } = useAPI<Components.Schemas.AtlasGlossary>(keyMap[entityType.value], 'GET', {
         cache: true,
         dependantFetchingKey: entityGuid,
         pathVariables: pathObject,

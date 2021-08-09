@@ -1,5 +1,5 @@
 <template>
-    <div v-if="isLoading" class="w-full min-h-full justify-center">
+    <div v-if="isLoading">
         <LoadingView />
     </div>
     <div v-else class="px-12 pr-0 mb-12">
@@ -44,6 +44,7 @@
                         :terms="glossaryTerms"
                         :categories="glossaryCategories"
                         @updateDescription="refreshCategoryTermList"
+                        @fetchNextCategoryOrTermList="fetchNextCategoryOrTermList"
                     />
                 </a-tab-pane>
                 <a-tab-pane key="2" tab="Terms & Categories">
@@ -68,7 +69,7 @@ import GlossaryTopTerms from '~/components/glossary/common/glossaryTopTerms.vue'
 import GlossaryContinueSettingUp from '~/components/glossary/continueSettingUp/glossaryContinueSettingUp.vue'
 import GlossaryTermsAndCategoriesTab from '@/glossary/glossaryTermsAndCategoriesTab.vue'
 import EntityHistory from '~/components/glossary/common/entityHistory.vue'
-import LoadingView from '@common/loaders/section.vue'
+import LoadingView from '@common/loaders/page.vue'
 
 import useGTCEntity from '~/composables/glossary/useGtcEntity'
 import useGlossaryTerms from '~/composables/glossary/useGlossaryTerms'
@@ -106,15 +107,15 @@ export default defineComponent({
             fetchEntity,
         } = useGTCEntity('glossary')
         const {
-            data: glossaryTerms,
+            terms: glossaryTerms,
             error: termsError,
-            loading: termsLoading,
+            isLoading: termsLoading,
             fetchGlossaryTermsPaginated,
         } = useGlossaryTerms()
         const {
             categories: glossaryCategories,
             error: categoriesError,
-            loading: categoriesLoading,
+            isLoading: categoriesLoading,
             fetchGlossaryCategoriesPaginated,
         } = useGlossaryCategories()
 
@@ -140,24 +141,31 @@ export default defineComponent({
             fetchEntity(newGuid)
             fetchGlossaryTermsPaginated({
                 guid: newGuid,
-                refreshSamePage: true,
+                offset: 0,
             })
             fetchGlossaryCategoriesPaginated({
                 guid: newGuid,
-                refreshSamePage: true,
+                offset: 0,
             })
         })
 
         const refreshCategoryTermList = (type: string) => {
             if (type === 'category') {
-                glossaryCategories.value = []
                 fetchGlossaryCategoriesPaginated({
-                    guid: guid.value,
-                    offset: 0,
+                    refreshSamePage: true,
                 })
             } else if (type === 'term') {
-                glossaryTerms.value = []
-                fetchGlossaryTermsPaginated({ guid: guid.value, offset: 0 })
+                fetchGlossaryTermsPaginated({ refreshSamePage: true })
+            }
+        }
+
+        const fetchNextCategoryOrTermList = (type: string) => {
+            if (type === 'category') {
+                fetchGlossaryCategoriesPaginated({
+                    limit: 5,
+                })
+            } else if (type === 'term') {
+                fetchGlossaryTermsPaginated({ limit: 5 })
             }
         }
 
@@ -176,6 +184,7 @@ export default defineComponent({
             glossaryCategories,
             qualifiedName,
             refreshCategoryTermList,
+            fetchNextCategoryOrTermList,
         }
     },
 })

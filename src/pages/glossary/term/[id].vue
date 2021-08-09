@@ -49,7 +49,7 @@ import GlossaryProfileOverview from '~/components/glossary/common/glossaryProfil
 import TopAssets from '@/glossary/termProfile/topAssets.vue'
 import LinkedAssetsTab from '@/glossary/termProfile/linkedAssetsTab.vue'
 import EntityHistory from '~/components/glossary/common/entityHistory.vue'
-import LoadingView from "@common/loaders/section.vue";
+import LoadingView from "@common/loaders/page.vue";
 import RelatedTerms from '@/glossary/termProfile/relatedTerms.vue'
 
 import useGTCEntity from '~/composables/glossary/useGtcEntity'

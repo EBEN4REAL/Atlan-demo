@@ -24,7 +24,10 @@ const useUpdateGtcEntity = (type: 'glossary' | 'category' | 'term') => {
         cache: true,
         dependantFetchingKey: entityGuid,
         pathVariables: pathObject,
-        body: updateBody
+        body: updateBody,
+        options: {
+            revalidateOnFocus: false
+        }
     })
 
     const updateEntity = (guid: string, body: any) => {

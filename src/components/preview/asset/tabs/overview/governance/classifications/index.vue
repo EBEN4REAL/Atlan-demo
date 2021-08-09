@@ -1,10 +1,10 @@
 <template>
   <a-popover
-    placement="left"
     v-model:visible="linkClassificationPopover"
-    overlayClassName="inlinepopover"
-    @visibleChange="handlePopoverVisibleChange"
+    placement="left"
+    overlay-class-name="inlinepopover"
     trigger="click"
+    @visibleChange="handlePopoverVisibleChange"
   >
     <template #content>
       <div
@@ -18,10 +18,10 @@
             v-model:value="selectedClassificationForLink"
             mode="multiple"
             style="width: 100%"
-            :allowClear="true"
-            :showSearch="true"
-            @change="handleSelectedClassificationForLink"
+            :allow-clear="true"
+            :show-search="true"
             placeholder="Select one or more classifications"
+            @change="handleSelectedClassificationForLink"
           >
             <template
               v-for="classification in availableClassificationsForLink"
@@ -35,20 +35,20 @@
           <p class="mt-2 text-xs text-gray-400">
             Can't find the right classification to link, create a new
             classification from
-            <a @click="showCreateClassificationForm" class="text-sm">here</a>
+            <a class="text-sm" @click="showCreateClassificationForm">here</a>
           </p>
           <a-checkbox
             v-if="selectedClassificationForLink.length < 2"
-            class="mt-2 text-gray-400"
             v-model:checked="linkClassificationData.propagate"
+            class="mt-2 text-gray-400"
             >Propagate classification to related assets
           </a-checkbox>
           <a-checkbox
-            class="mt-2 text-gray-400"
             v-if="linkClassificationData.propagate"
             v-model:checked="
               linkClassificationData.removePropagationsOnEntityDelete
             "
+            class="mt-2 text-gray-400"
             >Remove propagation when
             <span class="font-semibold text-gray-500">{{
               asset.displayText
@@ -94,8 +94,8 @@
         <a-button
           type="primary"
           size="small"
-          @click="handleLinkClassificationPopoverSave"
           :loading="linkClassificationStatus === 'loading' ? true : false"
+          @click="handleLinkClassificationPopoverSave"
           >Link</a-button
         >
       </div>
@@ -139,8 +139,8 @@
         <p class="mb-1 text-sm tracking-wide text-gray-400">Classifications</p>
         <div
           v-if="showAddClassificationBtn"
-          @click.stop.prevent="openLinkClassificationPopover"
           class="flex items-center justify-center p-1 ml-1 border cursor-pointer hover:bg-primary-500 hover:text-white"
+          @click.stop.prevent="openLinkClassificationPopover"
         >
           <span class="flex items-center justify-center">
             <fa icon="fal plus" class="" />
@@ -158,8 +158,8 @@
               @click.prevent.stop="handleClassificationClick"
             >
               <fa
-                icon="fal chart-network"
                 v-if="classification.propagate"
+                icon="fal chart-network"
                 class="mr-1 leading-none pushtop"
               ></fa>
               <div class="text-shadow">
@@ -168,7 +168,6 @@
             </div>
             <a-button
               v-if="!classification.hideRemoveButton"
-              @click.stop="() => unLinkClassification(classification)"
               :loading="
                 unlinkClassificationStatus.status === 'loading' &&
                 unlinkClassificationStatus.typeName === classification.typeName
@@ -176,9 +175,9 @@
                   : false
               "
               class="flex items-center justify-center p-1 px-2 border-none bg-primary-300 hover:bg-primary-500 hover:text-white bg-opacity-10"
+              @click.stop="() => unLinkClassification(classification)"
             >
               <span
-                class="flex items-center justify-center"
                 v-if="
                   unlinkClassificationStatus.status === 'loading' &&
                   unlinkClassificationStatus.typeName ===
@@ -186,6 +185,7 @@
                     ? false
                     : true
                 "
+                class="flex items-center justify-center"
               >
                 <fa icon="fal times-circle" class="" />
               </span>
@@ -194,8 +194,8 @@
         </template>
       </div>
       <p
-        class="mb-0 text-gray-500"
         v-if="assetLinkedClassifcations?.length < 1"
+        class="mb-0 text-gray-500"
       >
         No classifications added
       </p>
@@ -207,6 +207,7 @@
 import { defineComponent, ref, computed, watch, toRaw, reactive } from "vue";
 import { Classification } from "~/api/atlas/classification";
 import { useClassificationStore } from "~/components/admin/classifications/_store";
+
 export default defineComponent({
   props: {
     item: {
@@ -227,7 +228,7 @@ export default defineComponent({
   setup(props, { emit }) {
     const selectedAsset = computed(() => props.selectedAssetData);
     const classificationsStore = useClassificationStore();
-    let asset = computed(() => props.item ?? {});
+    const asset = computed(() => props.item ?? {});
     const linkClassificationPopover = ref(false);
     const linkClassificationStatus = ref("");
     const linkClassificationStatusError = ref("");
@@ -247,7 +248,7 @@ export default defineComponent({
     const createClassificationRef = ref(null);
     const showAddClassificationBtn = ref(false);
 
-    //Todo need to add showAddTagButton props using policy
+    // Todo need to add showAddTagButton props using policy
 
     /*
     const evaluateAssetAccess = ($axios, params) => {
@@ -268,9 +269,9 @@ export default defineComponent({
       selectedAssetClassifications: any,
       classifications: any
     ) {
-      let availableClassifications: Array<any> = [];
+      const availableClassifications: Array<any> = [];
       classifications.forEach((classification) => {
-        let index = selectedAssetClassifications.findIndex(
+        const index = selectedAssetClassifications.findIndex(
           (cl) => cl.typeName === classification.name
         );
         if (index === -1) availableClassifications.push(classification);
@@ -283,7 +284,7 @@ export default defineComponent({
       selectedClassification: any
     ) {
       const { typeName } = selectedClassification;
-      let classifications = selectedAsset.value.classifications;
+      const {classifications} = selectedAsset.value;
       selectedAsset.value.classifications = classifications.filter(
         (classification) => classification.typeName !== typeName
       );
@@ -304,7 +305,7 @@ export default defineComponent({
             ...classification,
             hideRemoveButton: false,
           };
-        } else if (
+        } if (
           classification.propagate &&
           classification.entityGuid &&
           selectedAsset.value.guid !== classification.entityGuid
@@ -328,7 +329,7 @@ export default defineComponent({
       multiple: boolean;
     }) {
       console.log(selectedClassificationsForLink, "selected Multiple");
-      let classifications = selectedAsset.value.classifications;
+      let {classifications} = selectedAsset.value;
       classifications = [...classifications, ...selectedClassificationsForLink];
       selectedAsset.value.classifications = formattedLinkedClassifications(
         classifications
@@ -362,7 +363,7 @@ export default defineComponent({
         entityGuid,
       });
 
-      /* Todo show loader during unlinking of classification from asset*/
+      /* Todo show loader during unlinking of classification from asset */
       watch([data, error, isReady], () => {
         if (isReady && !error.value) {
           unlinkClassificationStatus.value.status = "success";
@@ -389,19 +390,17 @@ export default defineComponent({
     });
 
     const handleLinkClassificationPopoverSave = () => {
-      let payload = ref([]);
+      const payload = ref([]);
       if (selectedClassificationForLink.value.length > 1) {
         payload.value = selectedClassificationForLink.value.map(
-          (classificationName) => {
-            return {
+          (classificationName) => ({
               entityGuid: asset.value.guid,
               attributes: {},
               propagate: false,
               removePropagationsOnEntityDelete: true,
               typeName: classificationName,
               validityPeriods: [],
-            };
-          }
+            })
         );
       } else {
         payload.value = [
@@ -459,7 +458,7 @@ export default defineComponent({
 
     const selectedClassificationForLink = ref([]);
     const handleSelectedClassificationForLink = (typeName) => {
-      let data = [...typeName];
+      const data = [...typeName];
       linkClassificationData.value.typeName = data.pop();
     };
     const showCreateClassificationForm = () => {
@@ -525,7 +524,7 @@ export default defineComponent({
           watch([createClassificationData, createClassificationError], () => {
             console.log(createClassificationData, createClassificationError);
             if (createClassificationData.value) {
-              let classifications =
+              const classifications =
                 createClassificationData.value.classificationDefs ?? [];
               console.log(
                 "getClassifications -> classifications",

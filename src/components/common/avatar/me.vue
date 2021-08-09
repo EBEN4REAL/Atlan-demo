@@ -61,9 +61,6 @@ import whoami from "~/composables/user/whoami";
 export default defineComponent({
   name: "HelloWorld",
   props: {},
-  data() {
-    return {};
-  },
   setup() {
     const keycloak = inject("$keycloak");
     const handleLogout = () => {
@@ -86,6 +83,9 @@ export default defineComponent({
       username,
       name,
     };
+  },
+  data() {
+    return {};
   },
 });
 </script>

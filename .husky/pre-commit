@@ -1,0 +1,20 @@
+# #!/bin/sh
+# . "$(dirname "$0")/_/husky.sh"
+
+# echo "\nStyling and testing your project before committing...\n"
+# sh ./git-hooks/clearConsoleLogs.sh
+
+# files=$(git diff-index --name-only --diff-filter=ACM HEAD | grep src) || echo  "No modified files in src folder"
+
+
+#  pnpx prettier --check $files ||(
+# 		echo "\n Your code looks disgusting. Running prettier...\n"
+# 		pnpx prettier --write $files
+# )
+#  echo "\n Running Eslint...\n"
+# pnpx eslint $files --fix || (
+# 	echo '\n Eslint says that is some weak code! \n Make the required changes listed above, add changes and try to commit again.\n'
+#     exit 1
+# 	)
+
+# git add -A

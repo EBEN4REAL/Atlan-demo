@@ -14,12 +14,12 @@
     <div class="flex justify-between mb-4 gap-x-5">
       <div class="flex w-1/4">
         <a-input-search
+          v-model:value="searchText"
           placeholder="Search Members"
           class="mr-1"
           size="default"
-          v-model:value="searchText"
+          :allow-clear="true"
           @change="handleSearch"
-          :allowClear="true"
         ></a-input-search>
       </div>
       <div class="flex justify-end">
@@ -30,10 +30,10 @@
                 <div class="flex justify-between">
                   <p class="mb-1 text-gray-500">Status</p>
                   <fa
+                    v-if="statusFilterValue"
                     icon="fal times-circle"
                     class="text-red-600 cursor-pointer"
                     @click="resetStatusFilter"
-                    v-if="statusFilterValue"
                   ></fa>
                 </div>
                 <a-radio-group
@@ -76,8 +76,8 @@
       </div>
     </div>
     <div
-      class="flex flex-col items-center h-full align-middle bg-white"
       v-if="[STATES.ERROR, STATES.STALE_IF_ERROR].includes(state)"
+      class="flex flex-col items-center h-full align-middle bg-white"
     >
       <ErrorView>
         <div class="mt-3">
@@ -91,27 +91,27 @@
     <div v-else>
       <div v-if="listType==='users'">
         <a-table
-          :scroll="{ y: 'calc(100vh - 20rem)' }"
-          :tableLayout="'fixed'"
-          id="userList"
           v-if="userList && listType === 'users'"
-          :dataSource="userList"
+          id="userList"
+          :scroll="{ y: 'calc(100vh - 20rem)' }"
+          :table-layout="'fixed'"
+          :data-source="userList"
           :columns="columns"
-          :rowKey="(user) => user.id"
-          @change="handleTableChange"
+          :row-key="(user) => user.id"
           :pagination="false"
           :loading="
             [STATES.PENDING].includes(state) ||
             [STATES.VALIDATING].includes(state)
           "
+          @change="handleTableChange"
         >
           <template #name="{ text: user }">
             <div class="flex items-center align-middle">
               <avatar
-                :imageUrl="imageUrl(user.username)"
-                :allowUpload="isCurrentUser(user.username)"
-                :avatarName="user.name || user.uername || user.email"
-                :avatarSize="40"
+                :image-url="imageUrl(user.username)"
+                :allow-upload="isCurrentUser(user.username)"
+                :avatar-name="user.name || user.uername || user.email"
+                :avatar-size="40"
                 class="mr-2"
               />
               <div
@@ -159,8 +159,8 @@
                 </template>
                 <a-button
                   size="small"
-                  @click="showEnableDisableConfirm(user)"
                   class="mr-3.5 rounded"
+                  @click="showEnableDisableConfirm(user)"
                 >
                   <fa icon="fal user-slash"></fa>
                 </a-button>
@@ -182,9 +182,9 @@
                   <span>Change Role</span>
                 </template>
                 <a-button
+                  v-if="user.enabled"
                   size="small"
                   class="rounded"
-                  v-if="user.enabled"
                   @click="handleChangeRole(user)"
                 >
                   <fa icon="fal user-shield"></fa>
@@ -197,25 +197,25 @@
           <a-button
             type="link"
             size="default"
-            @click="toggleUserInvitationList"
             :class="{ 'opacity-0 pointer-events-none': !loginWithEmailAllowed }"
+            @click="toggleUserInvitationList"
             >View Pending Invitations</a-button
           >
           <a-pagination
             :total="pagination.total"
             :current="pagination.current"
-            :pageSize="pagination.pageSize"
+            :page-size="pagination.pageSize"
             @change="handlePagination"
           />
         </div>
       </div>
       <InvitationListTable
-        @toggleList="toggleUserInvitationList"
         v-if="listType === 'invitations'"
-        :searchText="searchText"
+        ref="invitationComponentRef"
+        :search-text="searchText"
+        @toggleList="toggleUserInvitationList"
         @showPreview="showUserPreviewDrawer"
         @changeRole="handleChangeRole"
-        ref="invitationComponentRef"
       />
     </div>
     <!-- Change Role Modal-->
@@ -228,7 +228,7 @@
     >
       <ChangeRole
         :user="listType === 'users' ? selectedUser : selectedInvite"
-        :roleList="roleList"
+        :role-list="roleList"
         @updateRole="handleUpdateRole"
       />
     </a-modal>
@@ -247,12 +247,13 @@
   </div>
 </template>
 <script lang="ts">
-import { useUserPreview } from "~/composables/user/showUserPreview";
 import { defineComponent, ref, reactive, computed, watch } from "vue";
 import { useDebounceFn } from "@vueuse/core";
+import { Modal, message } from "ant-design-vue";
+import ErrorView from "@common/error/index.vue";
+import { useUserPreview } from "~/composables/user/showUserPreview";
 import useUsers from "~/composables/user/useUsers";
 import InvitationListTable from "./invitationListTable.vue";
-import { Modal, message } from "ant-design-vue";
 import { User } from "~/api/auth/user";
 import whoami from "~/composables/user/whoami";
 import Avatar from "~/components/common/avatar.vue";
@@ -264,7 +265,6 @@ import ChangeRole from "./changeRole.vue";
 import InviteUsers from "./inviteUsers.vue";
 import useRoles from "~/composables/roles/useRoles";
 import { useTenantStore } from "~/store/tenants";
-import ErrorView from "@common/error/index.vue";
 
 export default defineComponent({
   components: {
@@ -280,14 +280,14 @@ export default defineComponent({
     const loginWithEmailAllowed = ref(
       tenantStore?.tenant?.loginWithEmailAllowed ?? false
     );
-    let listType = ref("users");
+    const listType = ref("users");
     const searchText = ref("");
     const showChangeRoleModal = ref(false);
     const showInviteUserModal = ref(false);
     const showUserPreview = ref(false);
     const statusFilterValue = ref<string>("");
     const { username: currentUserUsername } = whoami();
-    let selectedUserId = ref("");
+    const selectedUserId = ref("");
     const selectedUser = computed(() => {
       let activeUserObj = {};
       if (userList && userList.value && userList.value.length)
@@ -298,19 +298,17 @@ export default defineComponent({
     });
     const selectedInvite = ref({});
     const invitationComponentRef = ref(null);
-    let userListAPIParams: any = reactive({
+    const userListAPIParams: any = reactive({
       limit: 15,
       offset: 0,
       sort: "first_name",
       filter: { $and: [{ email_verified: true }] },
     });
-    const pagination = computed(() => {
-      return {
+    const pagination = computed(() => ({
         total: filteredUserCount.value,
         pageSize: userListAPIParams.limit,
         current: userListAPIParams.offset / userListAPIParams.limit + 1,
-      };
-    });
+      }));
     const { userList, filteredUserCount, getUserList, state, STATES } =
       useUsers(userListAPIParams);
     // fetch roles- need this to find role id when changing user/invite role
@@ -319,11 +317,11 @@ export default defineComponent({
       if (listType.value === "users") searchUserList();
     }, 600);
     const searchUserList = () => {
-      let localFilterParams = userListAPIParams.filter.$and;
-      let searchFilterIndex = localFilterParams.findIndex((filter: any) => {
+      const localFilterParams = userListAPIParams.filter.$and;
+      const searchFilterIndex = localFilterParams.findIndex((filter: any) => 
         // eslint-disable-next-line no-prototype-builtins
-        return filter.hasOwnProperty("$or");
-      });
+         filter.hasOwnProperty("$or")
+      );
       if (searchFilterIndex > -1) {
         localFilterParams.splice(searchFilterIndex, 1);
       }
@@ -351,7 +349,7 @@ export default defineComponent({
       getUserList();
     };
     const handleTableChange = (pagination: any, filters: any, sorter: any) => {
-      //add filters
+      // add filters
       // let allFilters: any = [];
       // if (Object.keys(filters).length) {
       //   let filterKeys = Object.keys(filters);
@@ -379,7 +377,7 @@ export default defineComponent({
       //     };
       //   }
       // }
-      //add sort
+      // add sort
       if (Object.keys(sorter).length) {
         let sortValue = "first_name";
         if (sorter.order && sorter.column && sorter.column.sortKey)
@@ -388,7 +386,7 @@ export default defineComponent({
           }`;
         userListAPIParams.sort = sortValue;
       }
-      //modify offset
+      // modify offset
       // const offset = (pagination.current - 1) * userListAPIParams.limit;
       // userListAPIParams.offset = offset;
       // fetch groups
@@ -490,8 +488,8 @@ export default defineComponent({
 
     const nameCase = (name) => {
       if (name) {
-        let nameCaseArray = [];
-        let split = name.split(" ");
+        const nameCaseArray = [];
+        const split = name.split(" ");
         split.forEach((element) => {
           nameCaseArray.push(
             element.charAt(0).toUpperCase() + element.substr(1).toLowerCase()
@@ -501,16 +499,14 @@ export default defineComponent({
       }
       return name;
     };
-    const imageUrl = (username: any) => {
-      return `http://localhost:3333/api/auth/tenants/default/avatars/${username}`;
-    };
+    const imageUrl = (username: any) => `http://localhost:3333/api/auth/tenants/default/avatars/${username}`;
     const handleStatusFilterChange = () => {
       console.log(statusFilterValue.value);
-      let localFilterParams = [...userListAPIParams.filter.$and];
-      let enabledFilterIndex = localFilterParams.findIndex((filter) => {
+      const localFilterParams = [...userListAPIParams.filter.$and];
+      const enabledFilterIndex = localFilterParams.findIndex((filter) => 
         // eslint-disable-next-line no-prototype-builtins
-        return filter.hasOwnProperty("enabled");
-      });
+         filter.hasOwnProperty("enabled")
+      );
       if (enabledFilterIndex > -1) {
         localFilterParams.splice(enabledFilterIndex, 1);
       }
@@ -533,11 +529,11 @@ export default defineComponent({
     };
     const resetStatusFilter = () => {
       statusFilterValue.value = "";
-      let localFilterParams = [...userListAPIParams.filter.$and];
-      let enabledFilterIndex = localFilterParams.findIndex((filter) => {
+      const localFilterParams = [...userListAPIParams.filter.$and];
+      const enabledFilterIndex = localFilterParams.findIndex((filter) => 
         // eslint-disable-next-line no-prototype-builtins
-        return filter.hasOwnProperty("enabled");
-      });
+         filter.hasOwnProperty("enabled")
+      );
       if (enabledFilterIndex > -1) {
         localFilterParams.splice(enabledFilterIndex, 1);
       }
@@ -548,14 +544,12 @@ export default defineComponent({
       getUserList();
     };
     const handlePagination = (page) => {
-      //modify offset
+      // modify offset
       const offset = (page - 1) * userListAPIParams.limit;
       userListAPIParams.offset = offset;
       getUserList();
     };
-    const isCurrentUser = (username: string) => {
-      return username === currentUserUsername.value;
-    };
+    const isCurrentUser = (username: string) => username === currentUserUsername.value;
     return {
       searchText,
       handleSearch,

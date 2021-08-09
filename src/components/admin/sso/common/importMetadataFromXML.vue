@@ -6,7 +6,7 @@
     name="file"
     accept="text/xml"
     :multiple="false"
-    :showUploadList="false"
+    :show-upload-list="false"
     @change="onFileUpload"
   >
     <a-button type="dashed"> Import from XML </a-button>
@@ -60,10 +60,10 @@ export default defineComponent({
       const reader = new FileReader();
       reader.readAsText(file);
       reader.addEventListener("load", (event) => {
-        let xml: any = event?.target?.result;
+        const xml: any = event?.target?.result;
         console.log("onFileUpload -> xml", xml);
-        let xmlDOM: any = new DOMParser().parseFromString(xml, "text/xml");
-        let finalJSON = xmlToJson(xmlDOM);
+        const xmlDOM: any = new DOMParser().parseFromString(xml, "text/xml");
+        const finalJSON = xmlToJson(xmlDOM);
         parseJSONFromUploadedXMLFile(finalJSON);
       });
     };

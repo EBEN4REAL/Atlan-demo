@@ -1,7 +1,7 @@
-import swrvState from "~/composables/utils/swrvState";
 import { computed } from "vue"
-import { fetcher, getAPIPath } from "~/api";
 import useSWRV, { IConfig } from "swrv";
+import swrvState from "~/composables/utils/swrvState";
+import { fetcher, getAPIPath } from "~/api";
 
 export default function useAPIKeys(config?: IConfig) {
     const param = {
@@ -57,11 +57,11 @@ export default function useAPIKeys(config?: IConfig) {
 
     const { state, STATES } = swrvState(data, error, isValidating);
     const { state: roleState, STATES: roleSTATES } = swrvState(rolesData, rolesError, isRoleValidate);
-    var apiList = computed(() => data.value?.results?.records ?? []);
+    const apiList = computed(() => data.value?.results?.records ?? []);
     const AdminrolesId = computed(() => rolesData.value?.results.filter((role: any) => role.name === "$admin")[0].id ?? "")
 
     return {
-        apiList: apiList,
+        apiList,
         mutateApiList,
         state,
         STATES,

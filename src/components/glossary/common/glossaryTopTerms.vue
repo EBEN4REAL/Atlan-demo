@@ -64,8 +64,8 @@ export default defineComponent({
 
         const termsList = computed(() => {
             if (glossaryGuid.value) return glossaryTerms?.value
-            else if (terms.value?.length) return terms?.value
-            else return []
+            if (terms.value?.length) return terms?.value
+            return []
         })
         const termCount = computed(() => termsList.value?.length)
 

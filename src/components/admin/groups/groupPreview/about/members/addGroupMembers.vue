@@ -16,8 +16,9 @@
   </div>
 </template>
 <script lang="ts">
-import UserList from "~/components/admin/groups/common/userList.vue";
 import { defineComponent, ref } from "vue";
+import UserList from "~/components/admin/groups/common/userList.vue";
+
 export default defineComponent({
   name: "AddGroupMembers",
   components: {

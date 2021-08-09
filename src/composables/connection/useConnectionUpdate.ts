@@ -4,7 +4,7 @@ import { useConnectionsStore } from '~/store/connections';
 import { SearchParameters } from '~/types/atlas/attributes';
 
 export default function useConnectionInit() {
-    let body: Ref<SearchParameters> = reactive({
+    const body: Ref<SearchParameters> = reactive({
         typeName: "Connection"
     })
     const { } = Search.BasicSearch(body)

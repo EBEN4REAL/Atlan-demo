@@ -1,6 +1,6 @@
 <template>
   <div class="h-full bg-white divide-y divide-gray-100 rounded">
-    <div class="flex flex-col pt-2" v-if="!isNew">
+    <div v-if="!isNew" class="flex flex-col pt-2">
       <div class="flex items-center justify-between px-3">
         <div class="p-4">
           <p class="m-0 text-2xl font-medium text-primary">
@@ -27,22 +27,22 @@
           <a-button
             v-if="!isEditing"
             shape="circle"
-            @click="() => (isEditing = true)"
             class="rounded-md ant-btn ant-btn-primary"
+            @click="() => (isEditing = true)"
           >
             <fa icon="fal pen" />
           </a-button>
           <a-button
             v-if="isEditing"
-            @click="discardChanges"
             class="rounded-md ant-btn mr-4"
+            @click="discardChanges"
           >
             Cancel
           </a-button>
           <a-button
             v-if="isEditing"
-            @click="saveChanges"
             class="rounded-md ant-btn ant-btn-primary"
+            @click="saveChanges"
           >
             Save
           </a-button>
@@ -57,9 +57,9 @@
       <a-form layout="vertical">
         <a-form-item label="Name" :wrapper-col="{ span: 12 }">
           <a-input
+            v-model:value="localEnum.name"
             :disabled="!isNew"
             placeholder="Enumeration Name"
-            v-model:value="localEnum.name"
           />
         </a-form-item>
         <a-form-item label="Values">
@@ -67,9 +67,9 @@
             mode="tags"
             placeholder="Enter enum values"
             :disabled="!isEditing"
-            @change="handleChange"
             :value="enumValues"
             :open="false"
+            @change="handleChange"
           />
           <!-- TODO: Can this be done using computed and v-modal -->
         </a-form-item>

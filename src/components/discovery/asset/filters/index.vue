@@ -12,7 +12,7 @@
       class="bg-transparent"
     >
       <template #header>
-        <div class="flex justify-between select-none" :key="dirtyTimestamp">
+        <div :key="dirtyTimestamp" class="flex justify-between select-none">
           {{ item.label }}
 
           <div
@@ -27,12 +27,12 @@
         </div>
       </template>
       <component
+        :is="item.component"
         :ref="
           (el) => {
             refMap[item.id] = el;
           }
         "
-        :is="item.component"
         :item="item"
         :data="dataMap[item.id]"
         @change="handleChange"
@@ -68,17 +68,6 @@ export default defineComponent({
       },
     },
   },
-  data() {
-    return {
-      List,
-      activeKey: "",
-      searchParam: {
-        entityFilters: {},
-      } as Components.Schemas.SearchParameters,
-      filterMap: {} as { [key: string]: any },
-      filters: {} as Components.Schemas.FilterCriteria,
-    };
-  },
   emits: ["refresh"],
   setup(props, { emit }) {
     const classificationsStore = useClassificationStore();
@@ -111,18 +100,18 @@ export default defineComponent({
 
     // Mapping of Data to child compoentns
     const dataMap: { [key: string]: any } = ref({});
-    dataMap.value["status"] = {
+    dataMap.value.status = {
       checked: props.initialFilters.facetsFilters.status.checked,
     };
-    dataMap.value["classifications"] = {
+    dataMap.value.classifications = {
       classifications: computed(() => classificationsStore.classifications),
       checked: props.initialFilters.facetsFilters.classifications.checked,
     };
-    dataMap.value["owners"] = {
+    dataMap.value.owners = {
       userValue: props.initialFilters.facetsFilters.owners.userValue,
       groupValue: props.initialFilters.facetsFilters.owners.groupValue,
     };
-    dataMap.value["advanced"] = {
+    dataMap.value.advanced = {
       list: props.initialFilters.facetsFilters.advanced.list,
     };
 
@@ -168,6 +157,17 @@ export default defineComponent({
       filterMap,
       handleClear,
       refMap,
+    };
+  },
+  data() {
+    return {
+      List,
+      activeKey: "",
+      searchParam: {
+        entityFilters: {},
+      } as Components.Schemas.SearchParameters,
+      filterMap: {} as { [key: string]: any },
+      filters: {} as Components.Schemas.FilterCriteria,
     };
   },
   mounted() {},

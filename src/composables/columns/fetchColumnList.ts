@@ -1,4 +1,5 @@
 import { computed, ComputedRef, Ref, ref, watch } from "vue";
+import axios, { CancelTokenSource } from "axios";
 import { SearchParameters } from "~/types/atlas/attributes";
 
 import { SearchBasic } from "~/api/atlas/searchbasic";
@@ -7,7 +8,6 @@ import {
   BotsAttributes,
   ColumnAttributes,
 } from "~/constant/projection";
-import axios, { CancelTokenSource } from "axios";
 
 import swrvState from "../utils/swrvState";
 import { Components } from "~/api/atlas/client";
@@ -22,7 +22,7 @@ export default function fetchColumnList(
   sortBy?: string,
   sortOrder?: string
 ) {
-  let cancelTokenSource: Ref<CancelTokenSource> = ref(
+  const cancelTokenSource: Ref<CancelTokenSource> = ref(
     axios.CancelToken.source()
   );
   let entityFilters: Components.Schemas.FilterCriteria = {};
@@ -47,16 +47,16 @@ export default function fetchColumnList(
     includeSubTypes: false,
     limit: 20,
     offset: 0,
-    sortBy: sortBy,
-    sortOrder: sortOrder,
+    sortBy,
+    sortOrder,
     attributes: [...BaseAttributes, ...ColumnAttributes],
     entityFilters: {
       ...entityFilters,
       criterion: entityFilters.criterion,
     },
-    aggregationAttributes: aggregationAttributes,
+    aggregationAttributes,
   });
-  let options = ref({
+  const options = ref({
     cancelToken: cancelTokenSource?.value.token,
     revalidateOnFocus: false,
     dedupingInterval: 1,
@@ -75,33 +75,21 @@ export default function fetchColumnList(
     if (body?.value?.offset > 0) {
       list.value = list.value.concat(data?.value?.entities);
       console.log(list, "hey");
-    } else {
-      if (data.value?.entities) {
+    } else if (data.value?.entities) {
         list.value = data.value?.entities;
       } else {
         list.value = [];
       }
-    }
   });
 
-  const listCount: ComputedRef<any> = computed(() => {
-    return list.value?.length;
-  });
-  const limit: ComputedRef<any> = computed(() => {
-    return body.value?.limit;
-  });
-  const offset: ComputedRef<any> = computed(() => {
-    return body.value.offset;
-  });
-  const totalCount: ComputedRef<any> = computed(() => {
-    return data?.value?.approximateCount;
-  });
-  const aggregations: ComputedRef<any[]> = computed(() => {
-    return data?.value?.aggregations;
-  });
+  const listCount: ComputedRef<any> = computed(() => list.value?.length);
+  const limit: ComputedRef<any> = computed(() => body.value?.limit);
+  const offset: ComputedRef<any> = computed(() => body.value.offset);
+  const totalCount: ComputedRef<any> = computed(() => data?.value?.approximateCount);
+  const aggregations: ComputedRef<any[]> = computed(() => data?.value?.aggregations);
 
   const aggregationArray = (val: string) => {
-    let temp: { id: string; value: any }[] = [];
+    const temp: { id: string; value: any }[] = [];
     if (aggregations?.value) {
       Object.keys(aggregations?.value[val]).forEach((key) => {
         temp.push({
@@ -122,19 +110,15 @@ export default function fetchColumnList(
   };
 
   const getDataTypeImage = (dataType: any) => {
-    const found = dataTypeList.find((item) => {
-      return item.type.includes(dataType);
-    });
+    const found = dataTypeList.find((item) => item.type.includes(dataType));
     return found?.image;
   };
 
   const dataTypeAggregationList = (list: any) => {
-    let temp = [];
+    const temp = [];
     list.forEach((element) => {
       console.log(element);
-      const found = dataTypeList.find((item) => {
-        return item.type.includes(element.id.toUpperCase());
-      });
+      const found = dataTypeList.find((item) => item.type.includes(element.id.toUpperCase()));
       if (found) {
         temp.push({
           ...found,

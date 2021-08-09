@@ -12,10 +12,11 @@
   </div>
 </template>
   <script lang="ts">
-import { User } from "~/api/auth/user";
 import { defineComponent, ref, computed, watch } from "vue";
-import useRoles from "~/composables/roles/useRoles";
 import { message } from "ant-design-vue";
+import { User } from "~/api/auth/user";
+import useRoles from "~/composables/roles/useRoles";
+
 export default defineComponent({
   name: "ChangeRoleModal",
   props: {
@@ -31,7 +32,7 @@ export default defineComponent({
   setup(props, context) {
     const selectedRole = ref("");
     const updateLoading = ref(false);
-    let roles = ref([]);
+    const roles = ref([]);
     if (!props.roleList || !props.roleList.length) {
       const { roleList } = useRoles();
       watch(roleList, () => {

@@ -1,84 +1,78 @@
-import { useAPI } from "~/api/useAPI";
-import { Ref } from "vue";
+import { Ref } from 'vue'
+import { useAPI } from '~/api/useAPI'
+import { classificationInterface } from '~/types/classifications/classification.interface'
 
-const getClassificationList = ({ cache }: { cache: boolean }) => {
-  return useAPI("GET_CLASSIFICATION_LIST", "GET", {
-    cache,
-  });
-};
+const getClassificationList = <T>({ cache }: { cache: boolean }) =>
+    useAPI<T>('GET_CLASSIFICATION_LIST', 'GET', {
+        cache,
+    })
 
-const createClassification = ({
-  cache,
-  payload,
-}: {
-  cache: boolean;
-  payload: {
-    attributeDefs: Array<any>;
-    description: string;
-    name: string;
-    superTypes: Array<any>;
-  };
-}) => {
-  return useAPI("CREATE_CLASSIFICATION", "POST", {
+const createClassification = <T>({
     cache,
-    body: payload,
-  });
-};
-const updateClassification = ({
-  cache,
-  params,
+    payload,
 }: {
-  cache: boolean;
-  params: any;
-}) => {
-  console.log(params, "request");
-  const payload = {
-    classificationDefs: [{ ...params }],
-  };
-  return useAPI("UPDATE_CLASSIFICATION", "PUT", {
+    cache: boolean
+    payload: {
+        classificationDefs: classificationInterface[]
+    }
+}) =>
+    useAPI<T>('CREATE_CLASSIFICATION', 'POST', {
+        cache,
+        body: payload,
+    })
+const updateClassification = <T>({
     cache,
-    body: payload,
-  });
-};
+    params,
+}: {
+    cache: boolean
+    params: any
+}) => {
+    console.log(params, 'request')
+    const payload = {
+        classificationDefs: [{ ...params }],
+    }
+    return useAPI<T>('UPDATE_CLASSIFICATION', 'PUT', {
+        cache,
+        body: payload,
+    })
+}
 
-const archiveClassification = ({
-  cache,
-  typeName,
-}: {
-  cache: string | undefined;
-  typeName: string;
-}) => {
-  return useAPI("ARCHIVE_CLASSIFICATION", "DELETE", {
+const archiveClassification = <T>({
     cache,
-    pathVariables: { typeName },
-  });
-};
+    typeName,
+}: {
+    cache: string | undefined
+    typeName: string
+}) =>
+    useAPI<T>('ARCHIVE_CLASSIFICATION', 'DELETE', {
+        cache,
+        pathVariables: { typeName },
+    })
 
-const linkClassification = ({
-  cache,
-  entityGuid,
-  payload,
-}: {
-  cache: string | undefined;
-  entityGuid: boolean;
-  payload: Ref<{
-    attributes: Object;
-    propagate: boolean;
-    removePropagationsOnEntityDelete: boolean;
-    typeName: string;
-    validityPeriods: Array<any>;
-  }>;
-}) => {
-  return useAPI("LINK_CLASSIFICATION", "POST", {
+const linkClassification = <T>({
     cache,
-    body: payload,
-    pathVariables: { entityGuid },
-  });
-};
+    entityGuid,
+    payload,
+}: {
+    cache: string | undefined
+    entityGuid: string
+    payload: Ref<{
+        attributes: Object
+        propagate: boolean
+        removePropagationsOnEntityDelete: boolean
+        typeName: string
+        validityPeriods: Array<any>
+    }>
+}) =>
+    useAPI<T>('LINK_CLASSIFICATION', 'POST', {
+        cache,
+        body: payload,
+        pathVariables: { entityGuid },
+    })
 export const Classification = {
-  linkClassification,
-  getClassificationList,
-  createClassification,
-  updateClassification,
-  archiveClassification,
-};
+    linkClassification,
+    getClassificationList,
+    createClassification,
+    updateClassification,
+    archiveClassification,
+}

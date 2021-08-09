@@ -1,9 +1,10 @@
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
-dayjs.extend(relativeTime);
 import { defineComponent, PropType } from 'vue';
 import { Components } from '~/api/atlas/client';
 import { AtlanTableAttributes } from '~/types/asset';
+
+dayjs.extend(relativeTime);
 
 export default defineComponent({
     methods: {
@@ -42,7 +43,7 @@ export default defineComponent({
             return this.labels(item)['bot-template-name'];
         },
         category(item: any) {
-            return this.labels(item)['category'];
+            return this.labels(item).category;
         },
         connectionName(item) {
             const qualifiedName = this.labels(item)[
@@ -68,7 +69,7 @@ export default defineComponent({
         },
         duration(item) {
             if (item?.status?.startedAt && item?.status?.finishedAt) {
-                let sec = dayjs(item.status.finishedAt).diff(
+                const sec = dayjs(item.status.finishedAt).diff(
                     item.status.startedAt,
                     'second'
                 );
@@ -80,7 +81,7 @@ export default defineComponent({
             return item.status.progress;
         },
         progressPercent(item) {
-            let split = item.status.progress.split('/');
+            const split = item.status.progress.split('/');
             let percentage = 100;
             if (split.length == 2) {
                 percentage = (split[0] / split[1]) * 100;

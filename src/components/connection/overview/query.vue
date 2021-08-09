@@ -73,8 +73,8 @@ import { BotsType } from "~/types/atlas/bots";
 import { CredentialType } from "~/types/atlas/credential";
 
 export default defineComponent({
-  mixins: [SourceMixin],
   components: {},
+  mixins: [SourceMixin],
   props: {
     item: {
       type: Object as PropType<ConnectionType>,

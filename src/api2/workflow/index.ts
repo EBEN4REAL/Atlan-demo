@@ -5,18 +5,16 @@ import { WORKFLOW_LIST } from "../keymap/workflow";
 import { useAPI } from "../useAPI";
 
 const List = (
-    params?: any,
+    params?: Ref,
     options?: IConfig & AxiosRequestConfig,
     cacheSuffix?: Ref<string>,
     dependantFetchingKey?: Ref<any>
-) => {
-    return useAPI<any>(WORKFLOW_LIST, "GET", {
+) => useAPI<any>(WORKFLOW_LIST, "GET", {
         params,
         options,
         cacheSuffix,
         dependantFetchingKey
     });
-};
 
 // const List = (params?: any, options?: AxiosRequestConfig) => {
 //     return getAxiosClient().get(getAPIPath(serviceAlias, URL.WorkflowList), {

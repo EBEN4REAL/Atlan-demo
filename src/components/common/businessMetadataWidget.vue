@@ -18,7 +18,7 @@
       </div>
     </div>
     <span v-if="localState?.attributes?.length">
-      <div class="px-2 mb-2 " v-for="(a, x) in localState.attributes" :key="x">
+      <div v-for="(a, x) in localState.attributes" :key="x" class="px-2 mb-2 ">
         <div class="flex justify-between">
           <span class="text-gray-500 cursor-default whitespace-nowrap"
             >{{ a.options.displayName }}:</span
@@ -36,36 +36,36 @@
           ></a-popconfirm>
         </div>
         <div
-          @click="handleEditMode(a.name, getDatatypeOfAttribute(a.typeName))"
           v-if="!a.isEdit"
           class="cursor-text hover:bg-blue-50 font-sm"
+          @click="handleEditMode(a.name, getDatatypeOfAttribute(a.typeName))"
         >
           {{ formatDisplayValue(a["value"], getDatatypeOfAttribute(a.typeName)) }}
         </div>
         <span v-else class="">
           <input
             v-if="getDatatypeOfAttribute(a.typeName) === 'number'"
-            class="px-2 mr-2 border w-100"
-            style="width:70%"
-            type="number"
-            v-model="a.value"
-            v-on:keyup.enter="() => inputsRefMap[a.name].blur()"
-            v-on:blur="
-              () => {
-                updateAttribute();
-                a.isEdit = false;
-              }
-            "
             :ref="
               el => {
                 inputsRefMap[a.name] = el;
               }
             "
+            v-model="a.value"
+            class="px-2 mr-2 border w-100"
+            style="width:70%"
+            type="number"
+            @keyup.enter="() => inputsRefMap[a.name].blur()"
+            @blur="
+              () => {
+                updateAttribute();
+                a.isEdit = false;
+              }
+            "
           />
           <select
             v-else-if="getDatatypeOfAttribute(a.typeName) === 'boolean'"
-            class="border "
             v-model="a.value"
+            class="border "
             @change="
               () => {
                 updateAttribute();
@@ -78,7 +78,7 @@
           </select>
           <span v-else-if="getDatatypeOfAttribute(a.typeName) === 'date'">
             <a-date-picker
-              valueFormat="x"
+              value-format="x"
               :value="(a.value || '').toString()"
               size="small"
               @change="(timestamp, string) => handleDateChange(timestamp, string, x)"
@@ -86,12 +86,12 @@
           </span>
           <div v-else-if="getDatatypeOfAttribute(a.typeName) === 'array<date>'" class="">
             <div class="grid grid-cols-2 mb-2 gap-x-2 gap-y-1">
-              <div class="" v-for="(i, n) in multiInputs[a.name]" :key="n">
+              <div v-for="(i, n) in multiInputs[a.name]" :key="n" class="">
                 <a-date-picker
-                  valueFormat="x"
+                  value-format="x"
                   :value="multiInputs[a.name][n]"
                   size="small"
-                  :allowClear="true"
+                  :allow-clear="true"
                   @change="
                     (timestamp, string) =>
                       handleMultiInputChange(x, true, a.name, timestamp, n)
@@ -102,12 +102,13 @@
             <div class="flex justify-end">
               <a-tag
                 class="bg-white cursor-pointer"
-                @click="addMoreMultiElement(a.name)"
                 style="background: #fff; border-style: none"
+                @click="addMoreMultiElement(a.name)"
               >
                 <fa icon="fal plus" class="pushtop"></fa> add more </a-tag
               ><a-tag
                 class="mr-0 bg-white cursor-pointer"
+                style="background: #fff; border-style: dashed"
                 @click="
                   () => {
                     updateAttribute();
@@ -115,7 +116,6 @@
                     multiInputs[a.name] = ['', ''];
                   }
                 "
-                style="background: #fff; border-style: dashed"
               >
                 Done
               </a-tag>
@@ -126,13 +126,13 @@
             class=""
           >
             <div class="grid grid-cols-2 mb-2 gap-x-2 gap-y-1">
-              <div class="" v-for="(i, n) in multiInputs[a.name]" :key="n">
+              <div v-for="(i, n) in multiInputs[a.name]" :key="n" class="">
                 <a-input-number
                   :key="n"
                   size="small"
                   :placeholder="`Value ${n + 1}`"
                   class="mb-1"
-                  allowClear
+                  allow-clear
                   style="width:100%"
                   :value="multiInputs[a.name][n]"
                   @change="v => handleMultiInputChange(x, false, a.name, v, n)"
@@ -142,12 +142,13 @@
             <div class="flex justify-end">
               <a-tag
                 class="bg-white cursor-pointer"
-                @click="addMoreMultiElement(a.name)"
                 style="background: #fff; border-style: none"
+                @click="addMoreMultiElement(a.name)"
               >
                 <fa icon="fal plus" class="pushtop"></fa> add more </a-tag
               ><a-tag
                 class="mr-0 bg-white cursor-pointer"
+                style="background: #fff; border-style: dashed"
                 @click="
                   () => {
                     updateAttribute();
@@ -155,7 +156,6 @@
                     multiInputs[a.name] = ['', ''];
                   }
                 "
-                style="background: #fff; border-style: dashed"
               >
                 Done
               </a-tag>
@@ -166,13 +166,13 @@
             class="text-center "
           >
             <div class="grid grid-cols-2 mb-2 gap-x-2 gap-y-1">
-              <div class="" v-for="(i, n) in multiInputs[a.name]" :key="n">
+              <div v-for="(i, n) in multiInputs[a.name]" :key="n" class="">
                 <a-input
                   :key="n"
                   size="small"
                   :placeholder="`Value ${n + 1}`"
                   class="mb-1"
-                  allowClear
+                  allow-clear
                   :value="multiInputs[a.name][n]"
                   @change="
                     e => handleMultiInputChange(x, false, a.name, e.target.value, n)
@@ -183,12 +183,13 @@
             <div class="flex justify-end">
               <a-tag
                 class="bg-white cursor-pointer"
-                @click="addMoreMultiElement(a.name)"
                 style="background: #fff; border-style: none"
+                @click="addMoreMultiElement(a.name)"
               >
                 <fa icon="fal plus" class="pushtop"></fa> add more </a-tag
               ><a-tag
                 class="mr-0 bg-white cursor-pointer"
+                style="background: #fff; border-style: dashed"
                 @click="
                   () => {
                     updateAttribute();
@@ -196,7 +197,6 @@
                     multiInputs[a.name] = ['', ''];
                   }
                 "
-                style="background: #fff; border-style: dashed"
               >
                 Done
               </a-tag>
@@ -209,12 +209,12 @@
             "
           >
             <a-select
+              v-model:value="a.value"
               style="width: 100%"
               size="small"
-              :maxTagCount="1"
-              :showArrow="true"
+              :max-tag-count="1"
+              :show-arrow="true"
               class=""
-              v-model:value="a.value"
               placeholder=""
               :mode="getDatatypeOfAttribute(a.typeName).isMultivalues ? 'tags' : ''"
               :options="
@@ -233,18 +233,18 @@
               "
             />
             <div
-              class="flex justify-end mt-2"
               v-if="getDatatypeOfAttribute(a.typeName).isMultivalues"
+              class="flex justify-end mt-2"
             >
               <a-tag
                 class="mr-0 bg-white cursor-pointer"
+                style="background: #fff; border-style: dashed"
                 @click="
                   () => {
                     updateAttribute();
                     a.isEdit = false;
                   }
                 "
-                style="background: #fff; border-style: dashed"
               >
                 Done
               </a-tag>
@@ -252,20 +252,20 @@
           </div>
           <input
             v-else
-            type="text"
-            v-model="a.value"
-            class="px-2 mr-2 border w-100"
-            style="width:90%"
-            v-on:keyup.enter="() => inputsRefMap[a.name].blur()"
-            v-on:blur="
-              () => {
-                updateAttribute();
-                a.isEdit = false;
-              }
-            "
             :ref="
               el => {
                 inputsRefMap[a.name] = el;
+              }
+            "
+            v-model="a.value"
+            type="text"
+            class="px-2 mr-2 border w-100"
+            style="width:90%"
+            @keyup.enter="() => inputsRefMap[a.name].blur()"
+            @blur="
+              () => {
+                updateAttribute();
+                a.isEdit = false;
               }
             "
           />
@@ -279,7 +279,7 @@
     <div class="text-center ">
       <a-popover class="" title="Choose Attribute" placement="left">
         <template #content>
-          <div class="" v-if="availableAttributesToAdd.length">
+          <div v-if="availableAttributesToAdd.length" class="">
             <div
               v-for="(a, x) in availableAttributesToAdd"
               :key="x"
@@ -306,6 +306,7 @@ import { defineComponent, ref, nextTick, computed, onMounted, watch, Ref } from 
 import useEnums from "@/admin/enums/composables/useEnums";
 
 import { formatDate } from "../../utils/date";
+
 export default defineComponent({
   props: {
     bm: {
@@ -340,9 +341,9 @@ export default defineComponent({
       let value = JSON.parse(JSON.stringify(v));
       if (type === "boolean") {
         return JSON.parse(value.toString().toLowerCase()) ? "True" : "False";
-      } else if (type === "date") {
+      } if (type === "date") {
         return formatDate(Number.isInteger(value) ? value : parseInt(value));
-      } else if (Array.isArray(value)) {
+      } if (Array.isArray(value)) {
         if (!value.length) return `No value added`;
         if (typeof type !== "object" && type.toLowerCase().includes("date"))
           value = value.map(v => formatDate(Number.isInteger(v) ? v : parseInt(v)));
@@ -434,19 +435,19 @@ export default defineComponent({
             return `array<number>`;
           }
           return `number`;
-        } else if (typeName.includes("date")) {
+        } if (typeName.includes("date")) {
           if (typeName.includes("array")) {
             return `array<date>`;
           }
           return `date`;
-        } else if (typeName.includes("boolean")) {
+        } if (typeName.includes("boolean")) {
           return `boolean`;
-        } else if (typeName.includes("string")) {
+        } if (typeName.includes("string")) {
           if (typeName.includes("array")) {
             return `array<text>`;
           }
           return `text`;
-        } else if (typeName) {
+        } if (typeName) {
           const reqIndex = enumsList.value.findIndex(enumitem =>
             typeName.includes(enumitem.name)
           );

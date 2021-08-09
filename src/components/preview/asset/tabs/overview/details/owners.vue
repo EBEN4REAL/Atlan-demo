@@ -1,9 +1,9 @@
 <template>
   <div>
     <a-popover
-      placement="left"
       v-model:visible="isCompleted"
-      overlayClassName="inlinepopover"
+      placement="left"
+      overlay-class-name="inlinepopover"
       trigger="click"
     >
       <template #content>
@@ -12,16 +12,16 @@
             <div class="w-full">
               <a-input
                 ref="inputSearch"
+                v-model:value="searchText"
                 :class="$style.borderless"
                 placeholder="Search.."
-                :allowClear="true"
-                v-model:value="searchText"
+                :allow-clear="true"
                 @input="handleSearch"
               >
                 <template #suffix>
                   <a-radio-group
-                    size="small"
                     v-model:value="ownerType"
+                    size="small"
                     @change="handleOwnerTypeChange"
                   >
                     <a-radio-button size="small" value="user">
@@ -75,8 +75,8 @@
           <a-button
             type="primary"
             size="small"
-            @click="handleUpdate"
             :loading="isLoading"
+            @click="handleUpdate"
             >Update</a-button
           >
         </div>
@@ -118,8 +118,8 @@
           </template>
         </div>
         <p
-          class="mb-0 text-gray-500"
           v-if="!item?.attributes?.ownerUsers && !item?.attributes?.ownerGroups"
+          class="mb-0 text-gray-500"
         >
           No owners assigned
         </p>
@@ -135,6 +135,7 @@ import fetchUserList from "~/composables/user/fetchUserList";
 import fetchGroupList from "~/composables/group/fetchGroupList";
 import updateOwners from "~/composables/asset/updateOwners";
 import { useUserPreview } from "~/composables/user/showUserPreview";
+
 export default defineComponent({
   components: { StatusBadge },
   props: {
@@ -147,9 +148,9 @@ export default defineComponent({
     },
   },
   setup(props) {
-    let now = ref(true);
+    const now = ref(true);
 
-    let ownerType = ref("user");
+    const ownerType = ref("user");
 
     const {
       list,
@@ -188,7 +189,7 @@ export default defineComponent({
       }
     };
 
-    let searchText = ref("");
+    const searchText = ref("");
     const handleOwnerTypeChange = (e: any) => {
       searchText.value = "";
       handleSearch(searchText.value);

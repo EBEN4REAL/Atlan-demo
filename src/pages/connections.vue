@@ -1,52 +1,62 @@
 <template>
-  <splitpanes class="h-full">
-    <pane min-size="25" max-size="50" size="25" class="p-4 bg-white border-r">
-      <div class="flex flex-col h-full">
-        <div>
-          <div class="flex">
-            <a-input-search placeholder="Search.." v-model:value="searchText">
-            </a-input-search>
-
-            <a-button type="primary" class="ml-2" @click="handleNewConnector">
-              <fa icon="fal plus" class="mr-1"></fa>New
-            </a-button>
-          </div>
-        </div>
-        <div class="flex justify-between my-2">
-          <p
-            class="mb-0 text-xs font-medium tracking-tight text-gray-500 uppercase "
+  <div class="grid h-full grid-cols-12">
+    <div class="col-span-3 overflow-hidden border-r border-gray-100">
+      <div class="p-3">
+        <div class="flex">
+          <a-input-search
+            v-model:value="searchText"
+            placeholder="Search"
+            @change="handleSearchTextChange"
           >
-            Connections
-          </p>
-        </div>
-        <div class="flex-grow overflow-y-auto">
-          <ConnectionTree
-            :searchText="searchText"
-            @select="handleSelect"
-          ></ConnectionTree>
+          </a-input-search>
+          <a-button type="primary" class="ml-2" @click="handleNewConnector">
+            <fa icon="fal plus" class="mr-1"></fa>New
+          </a-button>
         </div>
       </div>
-    </pane>
-    <pane size="74">
+      <div style="height: calc(100% - 60px)" class="px-3 overflow-y-auto">
+        <ConnectionTree
+          :tree-data="treeData"
+          :is-loading="isLoading"
+          :is-validating="isValidating"
+          :error="error"
+          :is-error="isError"
+          @select="handleSelect"
+        ></ConnectionTree>
+      </div>
+    </div>
+
+    <div class="h-full col-span-9 overflow-y-auto">
       <router-view></router-view>
-    </pane>
-  </splitpanes>
+    </div>
+  </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted } from "vue";
+import { watch, defineComponent, ref, computed } from "vue";
 import ConnectionTree from "@/connection/tree/index.vue";
 import { useRouter } from "vue-router";
 import { useHead } from "@vueuse/head";
+import { useDebounceFn } from "@vueuse/core";
+import useConnectionsList from "~/composables/bots/useConnectionList";
+import { CONNECTION_FETCH_LIST } from "~/constant/cache";
+import { useConnectionsStore } from "~/store/connections";
 
 export default defineComponent({
   components: { ConnectionTree },
-  data() {
-    return {
-      searchText: "",
-    };
-  },
   setup() {
+    // Fetch Connection to Global Store - Max 100
+    const now = ref(true);
+    const initialBody = {
+      limit: 100,
+    };
+    const { data, isLoading, isValidating } = useConnectionsList(
+      now,
+      initialBody,
+      CONNECTION_FETCH_LIST
+    );
+
+    const searchText = ref("");
     useHead({
       title: "Connections",
     });
@@ -58,9 +68,28 @@ export default defineComponent({
       router.push(`/connections/${key}`);
     };
 
+    const treeData = ref();
+    const store = useConnectionsStore();
+    watch(data, () => {
+      treeData.value = store.getSourceTree(searchText.value);
+    });
+    const handleSearchTextChange = useDebounceFn(() => {
+      treeData.value = store.getSourceTree(searchText.value);
+    }, 200);
+
+    const isError = computed(() => store.getStatus.isLoading);
+    const error = computed(() => store.getStatus.error);
+
     return {
+      searchText,
       handleNewConnector,
       handleSelect,
+      treeData,
+      handleSearchTextChange,
+      isLoading,
+      isError,
+      error,
+      isValidating,
     };
   },
 });
@@ -68,6 +97,6 @@ export default defineComponent({
 
 <route lang="yaml">
 meta:
-  layout: default
-  requiresAuth: true
+    layout: default
+    requiresAuth: true
 </route>

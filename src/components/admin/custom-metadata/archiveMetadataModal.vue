@@ -1,11 +1,11 @@
 <template>
   <a-modal
+    v-model:visible="visible"
     :title="``"
     centered
-    @cancel="handleClose"
-    v-model:visible="visible"
     :footer="null"
     :closable="false"
+    @cancel="handleClose"
   >
     <template #closeIcon>
       <i class="far fa-times"> </i>
@@ -45,13 +45,13 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
-import { reactive, ref, toRefs, computed, onMounted, nextTick, watch } from "vue";
+import { defineComponent , reactive, ref, toRefs, computed, onMounted, nextTick, watch } from "vue";
 
+
+import useBusinessMetadata from "@/admin/custom-metadata/composables/useBusinessMetadata";
 import { getErrorMessage } from "~/utils/error";
 
 // ? composables
-import useBusinessMetadata from "@/admin/custom-metadata/composables/useBusinessMetadata";
 
 export default defineComponent({
   props: {

@@ -1,6 +1,6 @@
-import { fetcher, getAPIPath } from "~/api";
 import useSWRV from "swrv";
 import { computed, ref } from "vue";
+import { fetcher, getAPIPath } from "~/api";
 import enumDef from "../enum.interface";
 
 const serviceAlias = "auth/atlas";

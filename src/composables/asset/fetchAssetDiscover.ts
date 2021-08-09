@@ -1,5 +1,6 @@
 
 import { computed, ComputedRef, Ref, ref, watch } from 'vue';
+import axios, { CancelTokenSource } from 'axios';
 import { SearchParameters } from '~/types/atlas/attributes';
 import fetchSearchList from '../utils/search';
 
@@ -12,7 +13,6 @@ import { SearchBasic } from '~/api/atlas/searchbasic';
 
 
 import { BaseAttributes, BasicSearchAttributes } from '~/constant/projection';
-import axios, { CancelTokenSource } from 'axios';
 import { SourceList } from '~/constant/source';
 import swrvState from '../utils/swrvState';
 import { Components } from '~/api/atlas/client';
@@ -20,11 +20,11 @@ import { Components } from '~/api/atlas/client';
 
 export default function fetchAssetDiscover(cache?: string, dependentKey?: Ref<any>) {
 
-    let cancelTokenSource: Ref<CancelTokenSource> = ref(axios.CancelToken.source());
+    const cancelTokenSource: Ref<CancelTokenSource> = ref(axios.CancelToken.source());
 
-    let doAggregation = ref(true);
+    const doAggregation = ref(true);
 
-    let entityFilters: Ref<Components.Schemas.FilterCriteria> = ref({
+    const entityFilters: Ref<Components.Schemas.FilterCriteria> = ref({
         condition: "AND" as Components.Schemas.Condition,
         criterion: []
     });
@@ -44,7 +44,7 @@ export default function fetchAssetDiscover(cache?: string, dependentKey?: Ref<an
         }
     });
 
-    let options = ref({
+    const options = ref({
         cancelToken: cancelTokenSource?.value.token,
         revalidateOnFocus: false,
         dedupingInterval: 1,
@@ -54,7 +54,7 @@ export default function fetchAssetDiscover(cache?: string, dependentKey?: Ref<an
     const { state, STATES } = swrvState(data, error, isValidating);
 
 
-    //Aggregate Setup
+    // Aggregate Setup
     const aggregateBody: Ref<SearchParameters> = ref({
         ...body.value,
         limit: 1,
@@ -79,33 +79,21 @@ export default function fetchAssetDiscover(cache?: string, dependentKey?: Ref<an
         }
         if (body?.value?.offset > 0) {
             list.value = list.value.concat(data?.value?.entities);
-        } else {
-            if (data.value?.entities) {
+        } else if (data.value?.entities) {
                 list.value = data.value?.entities;
             } else {
                 list.value = [];
             }
-        }
     });
 
-    const listCount: ComputedRef<any> = computed(() => {
-        return list.value.length;
-    });
-    const limit: ComputedRef<any> = computed(() => {
-        return body.value.limit;
-    });
-    const offset: ComputedRef<any> = computed(() => {
-        return body.value.offset;
-    });
-    const totalCount: ComputedRef<any> = computed(() => {
-        return data?.value?.approximateCount;
-    });
-    const aggregations: ComputedRef<any[]> = computed(() => {
-        return aggregationData?.value?.aggregations;
-    });
+    const listCount: ComputedRef<any> = computed(() => list.value.length);
+    const limit: ComputedRef<any> = computed(() => body.value.limit);
+    const offset: ComputedRef<any> = computed(() => body.value.offset);
+    const totalCount: ComputedRef<any> = computed(() => data?.value?.approximateCount);
+    const aggregations: ComputedRef<any[]> = computed(() => aggregationData?.value?.aggregations);
     const assetTypeList: ComputedRef<any> = computed(() => {
         const temp = [];
-        let map = aggregations?.value?.['__typeName.keyword'];
+        const map = aggregations?.value?.['__typeName.keyword'];
         // if (map) {
         //     Object.keys(map).forEach((key) => {
         //         if (map[key] > 0) {
@@ -209,7 +197,7 @@ export default function fetchAssetDiscover(cache?: string, dependentKey?: Ref<an
 
     const changeAssetType = (assetType: string) => {
 
-        let temp = {
+        const temp = {
             ...entityFilters.value
         }
         temp.criterion = [...entityFilters.value.criterion];
@@ -229,13 +217,13 @@ export default function fetchAssetDiscover(cache?: string, dependentKey?: Ref<an
 
 
 
-        let temp = {
+        const temp = {
             ...entityFilters.value
         }
         temp.criterion = [...entityFilters.value.criterion];
 
 
-        let tempCriteria = {
+        const tempCriteria = {
             condition: "OR",
             criterion: [],
         }

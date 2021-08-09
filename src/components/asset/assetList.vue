@@ -12,7 +12,7 @@
             Fetching assets...
           </p>
         </div> -->
-            <loader loadingText="Fetching assets..." textLarge></loader>
+            <loader loading-text="Fetching assets..." text-large></loader>
         </div>
         <div
             v-else-if="loadingStatus === 'error' && !assetList.length"
@@ -47,20 +47,20 @@
         </div>
         <simplebar
             v-else
-            :style="{ 'max-height': maxHeight }"
             ref="assetsListRef"
+            :style="{ 'max-height': maxHeight }"
         >
             <AssetItemCard
                 v-for="(asset, index) in assetList"
-                class="border-bottom asset-list-item-wrapper"
                 :key="asset.guid"
+                class="border-bottom asset-list-item-wrapper"
                 :asset="asset"
-                :isAssetSelected="asset === selectedAssetId"
-                @selectAsset="emitSelectAsset"
-                :qualifiedNameCharacterCountToDisplay="
+                :is-asset-selected="asset === selectedAssetId"
+                :qualified-name-character-count-to-display="
                     qualifiedNameCharacterCountToDisplay
                 "
-                :showDescription="showDescription"
+                :show-description="showDescription"
+                @selectAsset="emitSelectAsset"
             >
                 <div
                     v-if="showAssetActionsDropdown && asset.guid !== '-1'"
@@ -68,11 +68,11 @@
                     class=""
                 >
                     <span
-                        class="mr-2"
                         v-if="
                             unLinkAssetStatus[asset.guid] === 'loading' &&
                                 !askAgainBeforeUnLinking
                         "
+                        class="mr-2"
                     >
                         <i
                             class="mr-1 far fa-circle-notch spin fast text-primary font-size-sm"
@@ -91,11 +91,11 @@
                         Unable to unlink asset. Please try again.
                     </span>
                     <span
-                        class="mr-2"
                         v-if="
                             unLinkAssetStatus[asset.guid] === 'success' &&
                                 !askAgainBeforeUnLinking
                         "
+                        class="mr-2"
                     >
                         <i
                             class="mr-1 far fa-check-circle text-success font-size-sm"
@@ -107,8 +107,8 @@
                 </div>
             </AssetItemCard>
             <div
-                class="px-4 py-2 d-flex justify-content-center border-bottom"
                 v-if="loadingStatus === 'loading' && assetList.length"
+                class="px-4 py-2 d-flex justify-content-center border-bottom"
             >
                 <p class="mb-0 text-gray-500 font-w700">
                     <i class="mr-2 far fa-circle-notch spin fast"></i>Fetching
@@ -117,14 +117,14 @@
                 </p>
             </div>
             <div
-                @click="loadMore"
-                class="px-4 py-2 load-more-wrapper d-flex justify-content-center"
                 v-else-if="
                     !listComplete &&
                         loadingStatus !== 'loading' &&
                         assetList.length % limit >= 0 &&
                         assetList.length
                 "
+                class="px-4 py-2 load-more-wrapper d-flex justify-content-center"
+                @click="loadMore"
             >
                 <p
                     class="mb-0 cursor-pointer load-text font-w700 text-primary hover-underline"
@@ -138,11 +138,11 @@
 
 <script lang="ts">
     import { defineComponent, ref, computed, nextTick, watch } from 'vue';
+    import { useRouter } from 'vue-router';
     import AssetItemCard from '~/components/asset/assetItemCard.vue';
     import Loader from '~/components/loader.vue';
     // Media
     import EmptyAssetListIllustration from '~/assets/images/emptyAssetList.png';
-    import { useRouter } from 'vue-router';
 
     export default defineComponent({
         name: 'AssetList',
@@ -241,22 +241,16 @@
                 context.emit('unlinkAsset', asset);
             };
 
-            const assetActions = computed(() => {
-                return [
+            const assetActions = computed(() => [
                     {
                         title: `Unlink`,
                         icon: 'eraser',
                         iconType: 'far',
                         handleClick: emitUnlinkAsset,
                     },
-                ];
-            });
-            const EmptyAssetList = computed(() => {
-                return props.emptyIllus || EmptyAssetListIllustration;
-            });
-            const isInfiniteScrollDisabled = computed(() => {
-                return listComplete;
-            });
+                ]);
+            const EmptyAssetList = computed(() => props.emptyIllus || EmptyAssetListIllustration);
+            const isInfiniteScrollDisabled = computed(() => listComplete);
 
             const askAgainBeforeUnLinking = computed(() => null);
 
@@ -289,7 +283,7 @@
                             1000 <=
                             scrollElement.scrollTop &&
                         checkAssetsListScroll.value &&
-                        loadingStatus !== 'loading'
+                        loadingStatus.value !== 'loading'
                     ) {
                         if (props.assetList.length % props.limit >= 0) {
                             isAssetsListEnd.value = false;
@@ -303,10 +297,10 @@
             };
 
             watch(loadingStatus, () => {
-                if (loadingStatus === 'success') {
+                if (loadingStatus.value === 'success') {
                     nextTick(() => {
                         if (
-                            loadingStatus === 'success' &&
+                            loadingStatus.value === 'success' &&
                             assetsListRef.value
                         ) {
                             checkAssetsListScroll.value = true;

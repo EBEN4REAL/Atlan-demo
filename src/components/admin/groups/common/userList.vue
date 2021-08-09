@@ -4,33 +4,33 @@
       <div class="flex" :class="userListHeaderClass">
         <a-button
           v-if="showHeaderButtons"
-          @click="$emit('showGroupMembers')"
           class="mr-3"
+          @click="$emit('showGroupMembers')"
         >
           <fa class="text-gray-dark" icon="fal chevron-left" />
         </a-button>
         <a-input-search
-          placeholder="Search users"
-          :allowClear="true"
-          class="mr-1"
           v-model:value="searchText"
+          placeholder="Search users"
+          :allow-clear="true"
+          class="mr-1"
           @change="handleSearch"
         ></a-input-search>
       </div>
       <div v-if="showHeaderButtons">
         <a-button
-          @click="$emit('addMembersToGroup')"
           type="primary"
           :loading="addMemberLoading"
           :disabled="addMemberLoading"
+          @click="$emit('addMembersToGroup')"
         >
           <fa icon="fal plus" class="mr-2" />Add
         </a-button>
       </div>
     </div>
     <div
-      class="flex flex-col items-center h-full align-middle bg-white"
       v-if="[STATES.ERROR, STATES.STALE_IF_ERROR].includes(state)"
+      class="flex flex-col items-center h-full align-middle bg-white"
     >
       <ErrorView>
         <div class="mt-3">
@@ -55,16 +55,16 @@
           <template v-for="user in userList.value" :key="user.id">
             <a-checkbox
               :value="user.id"
-              @change="handleChange"
               class="flex items-center w-full py-2 border-b border-gray-100"
+              @change="handleChange"
             >
               <span class="flex justify-between ml-3">
                 <div class="flex items-center">
                   <avatar
-                    :imageUrl="imageUrl(user.username)"
-                    :allowUpload="false"
-                    :avatarName="user.name || user.uername || user.email"
-                    :avatarSize="40"
+                    :image-url="imageUrl(user.username)"
+                    :allow-upload="false"
+                    :avatar-name="user.name || user.uername || user.email"
+                    :avatar-size="40"
                     class="mr-2"
                   />
                   <div class="ml-2">
@@ -80,11 +80,11 @@
         </div>
       </a-checkbox-group>
       <div
-        class="flex justify-center mt-3"
         v-if="
           [STATES.PENDING].includes(state) ||
           [STATES.VALIDATING].includes(state)
         "
+        class="flex justify-center mt-3"
       >
         <a-spin></a-spin>
       </div>
@@ -106,6 +106,7 @@ import {
 import { getIsLoadMore } from "~/composables/utils/isLoadMore";
 import useUsers from "~/composables/user/useUsers";
 import Avatar from "~/components/common/avatar.vue";
+
 export default defineComponent({
   name: "Users",
   components: {
@@ -171,19 +172,16 @@ export default defineComponent({
       getUserList();
     }, 200);
     const handleLoadMore = () => {
-      userListAPIParams.offset =
-        userListAPIParams.offset + userListAPIParams.limit;
+      userListAPIParams.offset += userListAPIParams.limit;
       getUserList();
     };
-    let showLoadMore = computed(() => {
-      return getIsLoadMore(
+    const showLoadMore = computed(() => getIsLoadMore(
         // TODO: check if there's a better way access memberList and not use ref in a ref
         userList.value.value.length,
         userListAPIParams.offset,
         userListAPIParams.limit,
-        filteredUserCount.value //filtered value because we are filtering users in the getUsers API call and getting only the users that have email_verified as true.
-      );
-    });
+        filteredUserCount.value // filtered value because we are filtering users in the getUsers API call and getting only the users that have email_verified as true.
+      ));
     const handleChange = (event) => {
       if (
         event.target.checked &&
@@ -198,9 +196,7 @@ export default defineComponent({
       }
       context.emit("updateSelectedUsers", selectedIds.value);
     };
-    const imageUrl = (username: any) => {
-      return `http://localhost:3333/api/auth/tenants/default/avatars/${username}`;
-    };
+    const imageUrl = (username: any) => `http://localhost:3333/api/auth/tenants/default/avatars/${username}`;
     return {
       searchText,
       showLoadMore,

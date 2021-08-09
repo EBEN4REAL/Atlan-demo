@@ -8,6 +8,7 @@
 import { defineComponent } from "vue";
 import { useHead } from "@vueuse/head";
 import Health from "@/admin/health/health.vue";
+
 export default defineComponent({
   components: {
     Health,

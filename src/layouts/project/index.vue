@@ -4,8 +4,8 @@
 <template>
   <SidebarTabs
     :list="List"
-    tabPostion="left"
-    :defaultActiveKey="activeKey"
+    tab-postion="left"
+    :default-active-key="activeKey"
     :class="$style.sidebartab"
     @change="handleChange"
   ></SidebarTabs>
@@ -14,8 +14,8 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import { RouteLocationRaw } from "vue-router";
-import { List } from "./list";
 import SidebarTabs from "@common/tabs/line.vue";
+import { List } from "./list";
 
 export default defineComponent({
   name: "HelloWorld",
@@ -42,7 +42,7 @@ export default defineComponent({
       const find = this.List.find((item) => item.id == activeKey);
       if (find) {
         this.activeKey = find.id;
-        let url: RouteLocationRaw = find.url;
+        const {url} = find;
         this.$router.push(url);
       }
     },

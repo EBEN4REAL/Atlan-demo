@@ -8,9 +8,9 @@
     <div class="p-2 audit-container">
       <a-timeline v-if="audits">
         <a-timeline-item
-          :color="getEventByAction(log).color || 'green'"
           v-for="(log, index) in audits"
           :key="index"
+          :color="getEventByAction(log).color || 'green'"
         >
           <div>
             <span v-if="getDetailsForEntityAuditEvent(log)">
@@ -62,14 +62,15 @@
 </template>
           
 <script lang="ts">
-import { watch, reactive, computed } from "vue";
-import { defineComponent } from "vue";
+import { watch, reactive, computed , defineComponent } from "vue";
 
-import useAssetAudit from "~/composables/asset/useAssetAudit";
-import emptyScreen from "~/assets/images/empty_search.png";
 
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
+import useAssetAudit from "~/composables/asset/useAssetAudit";
+import emptyScreen from "~/assets/images/empty_search.png";
+
+
 dayjs.extend(relativeTime);
 
 export default defineComponent({
@@ -112,9 +113,7 @@ export default defineComponent({
       }
     );
 
-    const checkAuditsCount = computed(() => {
-      return audits.value?.length < params.count;
-    });
+    const checkAuditsCount = computed(() => audits.value?.length < params.count);
 
     return {
       audits,

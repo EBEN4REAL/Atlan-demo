@@ -1,17 +1,13 @@
-<template>
-</template>
-
 <script lang="ts">
-import { defineComponent } from "vue";
+    import { defineComponent } from 'vue'
 
-export default defineComponent({
-  setup() {
-  },
-});
+    export default defineComponent({
+        setup() {},
+    })
 </script>
 
 <route lang="yaml">
-  meta:
+meta:
     layout: default
     requiresAuth: true
 </route>

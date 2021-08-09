@@ -12,6 +12,7 @@
 import { defineComponent } from "vue";
 import { useHead } from "@vueuse/head";
 import GroupList from "@/admin/groups/index.vue";
+
 export default defineComponent({
   components: {
     GroupList,

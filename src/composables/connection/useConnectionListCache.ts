@@ -13,9 +13,7 @@ export default function useConnectionListCache() {
         console.log("changed", data)
     });
 
-    const list = computed(() => {
-        return data?.value?.entities;
-    });
+    const list = computed(() => data?.value?.entities);
     return {
         list
     }

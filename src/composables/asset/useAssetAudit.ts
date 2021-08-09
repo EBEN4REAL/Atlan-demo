@@ -1,9 +1,9 @@
+import { reactive, watchEffect } from "vue";
+import { toRefs } from "@vueuse/core";
 import { useAPI } from "~/api/useAPI"
 import { Components } from '~/api/atlas/client';
 
 import { GET_ASSET_AUDIT } from "~/api/keyMaps/asset/index";
-import { reactive, watchEffect } from "vue";
-import { toRefs } from "@vueuse/core";
 
 
 const useAssetAudit = (params: any, guid: string) => {
@@ -101,18 +101,12 @@ const useAssetAudit = (params: any, guid: string) => {
         }
     ];
 
-    const getEventByAction = (asset: any) => {
-        return eventMap.find((event: any) => event.id === asset.action);
-    }
+    const getEventByAction = (asset: any) => eventMap.find((event: any) => event.id === asset.action)
 
-    const filterClassificationTypeNameDisplayName = (parsedDetails: any) => {
-        return (typeof (parsedDetails) === "object") ? parsedDetails?.typeName ?? "" :
-            (typeof (parsedDetails) === "string") ? parsedDetails : "";
-    }
+    const filterClassificationTypeNameDisplayName = (parsedDetails: any) => (typeof (parsedDetails) === "object") ? parsedDetails?.typeName ?? "" :
+            (typeof (parsedDetails) === "string") ? parsedDetails : ""
 
-    const filterTermTypeNameDisplayName = (parsedDetails: any) => {
-        return parsedDetails?.name ?? "";
-    }
+    const filterTermTypeNameDisplayName = (parsedDetails: any) => parsedDetails?.name ?? ""
 
     const getEntityUpdateLogs = (logs: any) => {
         const data = {
@@ -151,7 +145,7 @@ const useAssetAudit = (params: any, guid: string) => {
             }
 
             if (status) {
-                var value = attributes.assetStatus;
+                let value = attributes.assetStatus;
                 value = value[0].toUpperCase() + value.slice(1);
                 data.displayValue = value === "Is_null" ? "Updated status to <b>No Status</b>" : value === "Wip" ? `Updated status to <b>Draft</b>` : `Updated status to <b>${value}</b>`;
                 return data;

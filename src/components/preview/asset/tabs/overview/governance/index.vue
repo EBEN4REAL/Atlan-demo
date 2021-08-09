@@ -1,13 +1,13 @@
 <template>
   <div class="flex flex-col px-2 space-y-3">
-    <Terms :item="item" :key="item.guid"></Terms>
+    <Terms :key="item.guid" :item="item"></Terms>
 
-    <BusinessMetadataContainer :item="item" :key="item.guid"></BusinessMetadataContainer>
+    <BusinessMetadataContainer :key="item.guid" :item="item"></BusinessMetadataContainer>
 
     <Classifications
-      :item="item"
       :key="item.guid"
-      :selectedAssetData="selectedAssetData"
+      :item="item"
+      :selected-asset-data="selectedAssetData"
     ></Classifications>
     <!-- <StatusBadge :status="status(item)" :key="item.guid"></StatusBadge> -->
   </div>

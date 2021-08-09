@@ -1,13 +1,13 @@
 <template>
   <div class="flex flex-col space-y-3">
     <div
-      class="px-2"
       v-if="
         item?.typeName?.toLowerCase() === 'table' ||
         item?.typeName?.toLowerCase() === 'view' ||
         item?.typeName?.toLowerCase() === 'materialisedview' ||
         item?.typeName?.toLowerCase() === 'tablepartition'
       "
+      class="px-2"
     >
       <p class="mb-0 text-sm tracking-wide text-gray-400">Rows/Columns</p>
       <p class="mb-0 text-gray">
@@ -51,27 +51,27 @@
       </p>
     </div>
 
-    <Description :item="item" :key="item.guid"></Description>
+    <Description :key="item.guid" :item="item"></Description>
 
-    <Status :item="item" :key="item.guid"></Status>
+    <Status :key="item.guid" :item="item"></Status>
 
-    <Owners :item="item" :key="item.guid"></Owners>
+    <Owners :key="item.guid" :item="item"></Owners>
   </div>
 </template>
             
 <script lang="ts">
 import { defineComponent } from "vue";
+import { highlight } from "sql-highlight";
+import { format } from "sql-formatter";
 import AssetMixin from "~/mixins/asset";
 
 import Description from "./description.vue";
 import Status from "./status.vue";
 import Owners from "./owners.vue";
-import { highlight } from "sql-highlight";
-import { format } from "sql-formatter";
 
 export default defineComponent({
-  mixins: [AssetMixin],
   components: { Status, Description, Owners },
+  mixins: [AssetMixin],
   props: {
     item: {
       type: Object,
@@ -82,11 +82,9 @@ export default defineComponent({
     },
   },
   setup(props) {
-    const getSQLHighlighted = (text: string) => {
-      return highlight(format(text), {
+    const getSQLHighlighted = (text: string) => highlight(format(text), {
         html: true,
       });
-    };
     return {
       getSQLHighlighted,
     };

@@ -14,7 +14,7 @@
                     :columns="ownersTableColumns"
                     :data-source="missingOwners"
                     :pagination="false"
-                    rowKey="guid"
+                    row-key="guid"
                 >
                     <template #name="{ record }">
                         <div class="flex align-middle">
@@ -66,7 +66,7 @@
                     :columns="descriptionTableColumns"
                     :data-source="missingDescription"
                     :pagination="false"
-                    rowKey="guid"
+                    row-key="guid"
                 >
                     <template #name="{ record }">
                         <div class="flex align-middle">
@@ -113,6 +113,8 @@ import { defineComponent, computed, watch } from 'vue'
 
 import Owners from '@/preview/asset/tabs/overview/details/owners.vue'
 
+import GlossaryAddDescriptionCard from '@/glossary/glossaryAddDescriptionCard.vue'
+import Owners from '@/preview/asset/tabs/overview/details/owners.vue'
 import { Components } from '~/api/atlas/client'
 
 import TermSvg from '~/assets/images/gtc/term/term.png'

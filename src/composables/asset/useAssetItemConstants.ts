@@ -51,18 +51,14 @@ export default function useAssetItemConstants() {
   const internalTypes = ["AtlanProcess"];
 
   // * Computed
-  const assetTypeFilterItems = computed(() => {
-    return Object.keys(typeNameMapping)
+  const assetTypeFilterItems = computed(() => Object.keys(typeNameMapping)
       .filter(typeName => !internalTypes.includes(typeName))
-      .map(typeName => {
-        return {
+      .map(typeName => ({
           name: typeNameReadableNameMapping[typeNameMapping[typeName]] || "",
           alias: typeName,
           isPopular: popularTypes.includes(typeName),
           iconClass: iconsMappingByType[typeNameMapping[typeName]],
-        };
-      });
-  });
+        })));
 
   // * Methods
   const getNameFromType = (type: string | number) => {
@@ -83,13 +79,13 @@ export default function useAssetItemConstants() {
   const getStatusIcon = (status: string) => {
     if (status === "VERIFIED") {
       return "fas fa-badge-check table-ready";
-    } else if (status === "WORK_IN_PROGRESS") {
+    } if (status === "WORK_IN_PROGRESS") {
       return "fas fa-exclamation-triangle text-warning";
-    } else if (status === "ISSUE") {
+    } if (status === "ISSUE") {
       return "fas fa-exclamation-triangle text-danger";
-    } else if (status === "LOCKED") {
+    } if (status === "LOCKED") {
       return "fas fa-lock text-gray";
-    } else if (status === "DEPRECATED") {
+    } if (status === "DEPRECATED") {
       return "fas fa-archive text-muted";
     }
     return "";

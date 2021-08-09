@@ -116,7 +116,7 @@ export default defineComponent({
 </style>
 
 <route lang="yaml">
-  meta:
+meta:
     layout: default
     requiresAuth: true
 </route>

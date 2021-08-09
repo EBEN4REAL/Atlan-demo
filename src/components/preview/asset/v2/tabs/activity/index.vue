@@ -1,75 +1,74 @@
 <template>
-    <div class="p-2">
-        <div class="flex justify-between p-2">
-            <h2 class="font-medium text-md">Audit Logs:</h2>
-            <fa
-                icon="fal sync"
-                class="cursor-pointer"
-                @click="refreshAudits"
-            ></fa>
-        </div>
-        <div class="p-2 audit-container">
-            <a-timeline v-if="audits">
-                <a-timeline-item
-                    v-for="(log, index) in audits"
-                    :key="index"
-                    :color="getEventByAction(log).color || 'green'"
-                >
-                    <div>
-                        <span v-if="getDetailsForEntityAuditEvent(log)">
-                            <span
-                                v-html="
-                                    getDetailsForEntityAuditEvent(log)
-                                        ?.displayValue
-                                "
-                            ></span>
-                            <span
-                                v-if="
-                                    getDetailsForEntityAuditEvent(log)?.moreinfo
-                                "
-                                >.<a-popover placement="left">
-                                    <template #content>
-                                        <a-timeline>
-                                            <div class="mb-2">Users Added:</div>
-                                            <a-timeline-item
-                                                v-for="(
-                                                    user, index
-                                                ) in getDetailsForEntityAuditEvent(
-                                                    log
-                                                )?.value"
-                                                :key="index"
-                                            >
-                                                {{ user }}
-                                            </a-timeline-item></a-timeline
+    <div class="flex justify-between p-2 mb-2">
+        <span class="text-">Activity Logs</span>
+        <fa icon="fal sync" class="cursor-pointer" @click="refreshAudits"></fa>
+    </div>
+    <div
+        v-if="isLoading"
+        class="flex items-center justify-center mt-4 text-sm leading-none"
+    >
+        <a-spin size="small" class="mr-2 leading-none"></a-spin
+        ><span>Getting activity logs</span>
+    </div>
+    <div v-else-if="audits.length && !isLoading">
+        <a-timeline class="mx-4">
+            <a-timeline-item v-for="(log, index) in audits" :key="index">
+                <template #dot>
+                    <div
+                        class="w-1 h-6 rounded"
+                        :class="`bg-${
+                            getEventByAction(log).color || 'gray-description'
+                        }`"
+                    ></div>
+                </template>
+                <div>
+                    <span v-if="getDetailsForEntityAuditEvent(log)">
+                        <span
+                            v-html="
+                                getDetailsForEntityAuditEvent(log)?.displayValue
+                            "
+                        ></span>
+                        <span
+                            v-if="getDetailsForEntityAuditEvent(log)?.moreinfo"
+                            >.<a-popover placement="left">
+                                <template #content>
+                                    <a-timeline>
+                                        <div class="mb-2">Users Added:</div>
+                                        <a-timeline-item
+                                            v-for="(
+                                                user, index
+                                            ) in getDetailsForEntityAuditEvent(
+                                                log
+                                            )?.value"
+                                            :key="index"
                                         >
-                                    </template>
-                                    <a-button type="link"
-                                        >View Details</a-button
+                                            {{ user }}
+                                        </a-timeline-item></a-timeline
                                     >
-                                </a-popover></span
-                            >
-                        </span>
-                        <span v-else>
-                            {{ getEventByAction(log).label || 'Event' }}
-                        </span>
-                    </div>
-                    <span class="text-gray-400">{{
-                        timeAgo(log.timestamp) + ' ' + getActionUser(log.user)
-                    }}</span>
-                </a-timeline-item>
-                <div class="block mb-2 text-center">
-                    <a-button
-                        v-if="!checkAuditsCount && !isAllLogsFetched"
-                        @click="fetchMore"
-                        >Show more logs</a-button
-                    >
+                                </template>
+                                <a-button type="link">View Details</a-button>
+                            </a-popover></span
+                        >
+                    </span>
+                    <span v-else>
+                        {{ getEventByAction(log).label || 'Event' }}
+                    </span>
                 </div>
-                <div v-if="!audits.length">No Logs!!</div>
-            </a-timeline>
-            <div v-else>
-                <img :src="emptyScreen" alt="No logs" class="w-3/5 m-auto" />
-            </div>
+                <span class="text-gray-400">{{
+                    timeAgo(log.timestamp) + ' ' + getActionUser(log.user)
+                }}</span>
+            </a-timeline-item>
+        </a-timeline>
+        <div
+            v-if="!checkAuditsCount && !isAllLogsFetched"
+            class="block mt-8 mb-2 text-center"
+        >
+            <a-button @click="fetchMore">Show more logs</a-button>
         </div>
+    </div>
+    <div v-else class="flex flex-col items-center">
+        <img :src="emptyScreen" alt="No logs" class="w-2/5 m-auto mb-4" />
+        <span class="text-gray-description">No logs found</span>
     </div>
 </template>
 
@@ -163,10 +162,6 @@
 </script>
 
 <style lang="less" scoped>
-    .audit-container {
-        height: 80vh;
-    }
-
     .ant-timeline-item {
         padding-bottom: 10px !important;
         margin-bottom: 0 !important;

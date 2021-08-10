@@ -58,8 +58,8 @@
         <a-tabs v-model:activeKey="activeKey" :class="$style.previewtab">
             <a-tab-pane
                 class="px-4 py-2 overflow-y-auto tab-height"
-                v-for="tab in tabs"
-                :key="tab.id"
+                v-for="(tab, index) in filteredTabs"
+                :key="index"
                 :tab="tab.name"
             >
                 <component
@@ -91,7 +91,7 @@
     } from 'vue'
     import StatusBadge from '@common/badge/status/index.vue'
     import { assetInterface } from '~/types/assets/asset.interface'
-    import { tabList as tabs } from './tabList'
+    import useAssetDetailsTabList from './useTabList'
     import HierarchyBar from '@common/badge/hierarchy.vue'
     import useAsset from '~/composables/asset/useAsset'
     import useAssetInfo from '~/composables/asset/useAssetInfo'
@@ -122,10 +122,10 @@
             ),
         },
         setup(props, { emit }) {
+            const { filteredTabs, assetType } = useAssetDetailsTabList()
             const { assetTypeLabel, title } = useAssetInfo()
             const { selectedAsset } = toRefs(props)
-
-            const activeKey = ref('1')
+            const activeKey = ref(0)
             const refMap: { [key: string]: any } = ref({})
             const dataMap: { [id: string]: any } = ref({})
             const handleChange = (value: any) => {}
@@ -141,6 +141,7 @@
                 const { data, error } = useAsset({
                     entityId: selectedAsset.value.guid,
                 })
+                assetType.value = selectedAsset.value.typeName
                 watch([data, error], () => {
                     if (data.value && error.value == undefined) {
                         const entitiy = getAssetEntitity(data)
@@ -162,7 +163,7 @@
                 assetTypeLabel,
                 dataMap,
                 activeKey,
-                tabs,
+                filteredTabs,
                 refMap,
                 handleChange,
             }

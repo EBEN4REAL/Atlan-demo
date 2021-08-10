@@ -2,9 +2,10 @@
     <div class="flex flex-col">
         <div class="flex items-center justify-between mt-2 mb-3">
             <a-input
-                class="mr-2 rounded"
                 v-model:value="searchTerm"
                 placeholder="Search columns"
+                size="default"
+                :class="$style.searchbar"
             >
                 <template #prefix>
                     <Fa icon="fal search" class="mr-2 text-gray-description" />
@@ -21,13 +22,18 @@
                     <DataTypes v-model:filters="filters" />
                 </template>
 
-                <a-button type="text"
-                    >Filters
+                <div
+                    tabindex="0"
+                    class="flex items-center px-4 py-1 transition-shadow border rounded  border-gray-bg hover:border-gray-300"
+                    @keyup.enter="isFilterVisible = !isFilterVisible"
+                >
+                    <span> Filters</span>
                     <Fa
                         icon="fas chevron-down"
                         class="ml-1 transition-transform transform"
                         :class="isFilterVisible ? '-rotate-180' : 'rotate-0'"
-                /></a-button>
+                    />
+                </div>
             </a-popover>
         </div>
 
@@ -126,5 +132,21 @@
     .fkey {
         color: #d452d7;
         background-color: #d452d71a;
+    }
+</style>
+
+<style lang="less" module>
+    .searchbar {
+        @apply mr-2 border-none rounded;
+        @apply bg-gray-bg bg-opacity-50;
+        @apply outline-none;
+        :global(.ant-input) {
+            @apply h-6;
+            @apply bg-transparent;
+            @apply text-gray-description;
+        }
+        ::placeholder {
+            @apply text-gray-description opacity-80;
+        }
     }
 </style>

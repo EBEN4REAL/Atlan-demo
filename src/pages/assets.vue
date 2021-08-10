@@ -1,6 +1,6 @@
 <template>
     <div class="flex w-full h-full">
-        <div v-show="!isItem" class="w-3/4 item-stretch">
+        <div v-show="!isItem" class="flex-grow item-stretch">
             <div class="flex w-full h-full">
                 <AssetDiscovery
                     :initial-filters="initialFilters"
@@ -8,7 +8,7 @@
                 ></AssetDiscovery>
             </div>
         </div>
-        <div v-show="isItem" class="w-3/4 item-stretch">
+        <div v-show="isItem" class="flex-grow item-stretch">
             <div class="flex w-full h-full">
                 <router-view @updateAssetPreview="handlePreview"></router-view>
             </div>
@@ -112,7 +112,7 @@
 </script>
 <style lang="less" scoped>
     .asset-preview-container {
-        width: 30%;
+        width: 420px;
     }
 </style>
 <route lang="yaml">

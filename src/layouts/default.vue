@@ -1,32 +1,67 @@
 <template>
   <a-layout class="min-h-full">
-    <a-layout-header
-      class="h-12 p-0 m-0"
-    >
-      <div
-        class="flex px-4 bg-white text-gray border-b justify-between h-full"
-      >
+    <a-layout-header class="h-12 p-0 m-0">
+      <div class="flex px-4 bg-white text-gray border-b justify-between h-full">
         <div class="flex flex-row items-center text-base font-bold space-x-8">
-            <img
+          <img
             src="https://atlan.com/assets/img/logo.40c9d1d3.svg"
-            class="w-auto h-3  cursor-pointer"
+            class="w-auto h-3 cursor-pointer"
+             @click="() => handleChange('home')"
           />
-
-          <div class="cursor-pointer">Discover</div>
-          <div class="cursor-pointer">Glossary</div>
-          <div class="cursor-pointer">Insights</div>
-          <div class="cursor-pointer">Connectors</div>
+          <a-menu
+            v-model:selectedKeys="activeKey"
+            class="h-full border-0"
+            mode="horizontal"
+          >
+            <a-menu-item
+              key="assets"
+              class="flex px-4 items-center cursor-pointer"
+              @click="() => handleChange('assets')"
+            >
+              Discover
+            </a-menu-item>
+            <a-menu-item
+              key="glossary"
+              class="flex px-4 items-center cursor-pointer"
+              @click="() => handleChange('glossary')"
+              >Glossary</a-menu-item
+            >
+            <a-menu-item
+              key="insights"
+              class="flex px-4 items-center cursor-pointer"
+              @click="() => handleChange('insights')"
+              >Insights</a-menu-item
+            >
+            <a-menu-item
+              key="connections"
+              class="flex px-4 items-center cursor-pointer"
+              @click="() => handleChange('connections')"
+              >Connectors</a-menu-item
+            >
+          </a-menu>
         </div>
-        
+
         <div class="flex items-center space-x-6">
           <a-input
             placeholder="Search Atlan"
             size="small"
-            class="h-8 rounded "
-            style= "background: #F0F2F7"
+            class="h-8 rounded"
+            style="background: #f0f2f7"
           >
           </a-input>
-          <div class="cursor-pointer">Admin</div>
+           <a-menu
+            v-model:selectedKeys="activeKey"
+            class="h-full w-24 border-0"
+            mode="horizontal"
+          >
+            <a-menu-item
+              key="admin"
+              class="flex px-4 w-20 items-center cursor-pointer"
+              @click="() => handleChange('admin')"
+            >
+              Admin
+            </a-menu-item>
+          </a-menu>
           <fa icon="fal bell w-3"></fa>
           <div class="flex text-center items-center">
             <UserPersonalAvatar></UserPersonalAvatar>
@@ -49,32 +84,52 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
-import PageLoader from "@common/loaders/page.vue";
-import KeycloakMixin from "~/mixins/keycloak";
-import Sidebar from "./sidebar/index.vue";
-import UserPersonalAvatar from "~/components/common/avatar/me.vue";
-import PreviewDrawer from "~/components/common/previewDrawer.vue";
+import { defineComponent, ref, watch, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
+
+import KeycloakMixin from '~/mixins/keycloak'
+import Sidebar from './sidebar/index.vue'
+import UserPersonalAvatar from '~/components/common/avatar/me.vue'
+import PreviewDrawer from '~/components/common/previewDrawer.vue'
 
 export default defineComponent({
-  name: "HelloWorld",
+  name: 'HelloWorld',
   components: {
-    PageLoader,
-    Sidebar,
     UserPersonalAvatar,
     PreviewDrawer,
   },
   mixins: [KeycloakMixin],
-  props: {},
-  data() {
-    return {};
-  },
-  computed: {},
-  mounted() {},
-  methods: {
-    handleNewPage() {
-      this.$router.push("/connections");
-    },
+  setup() {
+    const router = useRouter()
+
+    const activeKey = ref(['/'])
+    const pages: Record<string, string> = {
+      home: '/',
+      assets: '/assets',
+      glossary: '/glossary',
+      insights: '/insights',
+      connections: '/connections',
+      admin: '/admin',
+    }
+
+    const handleChange = (key: string) => {
+      if (key && Object.keys(pages).find(page => page === key)) {
+        activeKey.value = [key];
+        router.push(pages[key])
+      }
+    }
+
+    onMounted(() => {
+      const { currentRoute } = router
+      const page = currentRoute.value.path.split('/')[1]
+      if (Object.keys(pages).find((item) => item === page)) {
+        activeKey.value = [page]
+      }
+    })
+    return {
+      handleChange,
+      activeKey,
+    }
   },
 
   // mixins: [KeycloakMixin],
@@ -102,11 +157,10 @@ export default defineComponent({
   //   const htmlTag = document.querySelector("html");
   //   return htmlTag?.classList;
   // };
-});
+})
 </script>
 
 <style lang="less" module>
-
 .sidebar {
   @apply bg-gradient-to-b from-primary-600 via-primary-700 to-primary-800    !important;
   .sidebartab {

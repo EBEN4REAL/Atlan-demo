@@ -4,7 +4,7 @@ module.exports = {
     bracketSpacing: true,
     useTabs: false,
     printWidth: 80,
-    tabWidth: 4,
+    tabWidth: 2,
     trailingComma: 'es5',
     vueIndentScriptAndStyle: true,
 };

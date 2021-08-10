@@ -172,19 +172,9 @@
                         "
                     >
                         <div
-                            class="relative flex items-stretch rounded  justify-items-stretch"
-                            @mouseover="
-                                showCrossButtonId = classification?.typeName
-                            "
-                            @mouseleave="showCrossButtonId = undefined"
+                            class="relative flex items-stretch rounded  bg-primary bg-opacity-10 text-primary group justify-items-stretch hover:bg-primary hover:text-white"
                         >
                             <div
-                                :class="
-                                    showCrossButtonId ==
-                                    classification?.typeName
-                                        ? 'bg-primary text-white '
-                                        : 'bg-primary bg-opacity-10 text-primary '
-                                "
                                 class="flex items-center px-2 py-2 leading-none align-middle rounded cursor-pointer  drop-shadow-sm"
                                 @click.prevent.stop="handleClassificationClick"
                             >
@@ -199,23 +189,13 @@
                             </div>
 
                             <div
-                                v-if="
-                                    showCrossButtonId ==
-                                    classification?.typeName
+                                class="absolute right-0 flex items-center justify-center pl-3 pr-1 text-white bg-transparent border-none rounded opacity-0 cursor-pointer  group-hover:opacity-100 classification-cross-btn"
+                                @click.stop="
+                                    () => unLinkClassification(classification)
                                 "
                             >
-                                <div
-                                    class="absolute right-0 flex items-center justify-center pl-3 pr-1 text-white bg-transparent border-none rounded cursor-pointer  classification-cross-btn"
-                                    @click.stop="
-                                        () =>
-                                            unLinkClassification(classification)
-                                    "
-                                >
-                                    <div
-                                        class="flex items-center justify-center"
-                                    >
-                                        <fa icon="fal times-circle" class="" />
-                                    </div>
+                                <div class="flex items-center justify-center">
+                                    <fa icon="fal times-circle" class="" />
                                 </div>
                             </div>
                         </div>
@@ -652,10 +632,8 @@
                 showCreateClassificationPopover.value = false
                 selectedClassificationForLink.value = []
             }
-            const showCrossButtonId: Ref<string | undefined> = ref(undefined)
 
             return {
-                showCrossButtonId,
                 asset,
                 selectedAsset,
                 unlinkClassificationStatus,

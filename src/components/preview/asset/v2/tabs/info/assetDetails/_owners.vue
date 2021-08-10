@@ -34,7 +34,7 @@
                                 class="
                                     text-gray
                                     mb-0
-                                    hover:border-b
+                                    hover:border-gray-500
                                     truncate
                                     ...
                                 "
@@ -62,14 +62,12 @@
                 </div>
                 <div v-else class="inline-flex mt-2 mb-2 mr-2">
                     <div
-                        class="inline-flex px-2 py-1 rounded cursor-pointer select-none  _bg-primary-light"
+                        class="inline-flex px-2 py-1 rounded cursor-pointer select-none  text-primary hover:text-white hover:bg-primary _bg-primary-light"
                     >
                         <span class="flex items-center text-sm">
-                            <fa icon="fal plus" class="text-primary" />
+                            <fa icon="fal plus" class="" />
                         </span>
-                        <span class="mt-1 ml-2 text-sm text-primary"
-                            >Add Owners</span
-                        >
+                        <span class="ml-2 text-sm">Add Owners</span>
                     </div>
                 </div>
 
@@ -90,9 +88,10 @@
                             v-input-focus
                             :placeholder="
                                 activeOwnerTabKey === '1'
-                                    ? `Search ${listUsers.length} users`
-                                    : `Search ${listGroups.length} groups`
+                                    ? `Search ${listUsers?.length} users`
+                                    : `Search ${listGroups?.length} groups`
                             "
+                            @change="handleOwnerSearch"
                         >
                             <template #prefix>
                                 <fa icon="fal search" />
@@ -121,128 +120,168 @@
                                     :tab="
                                         'Users ' + `(${selectedUsers.length})`
                                     "
-                                    class="h-48 overflow-y-auto"
                                 >
-                                    <template
-                                        v-for="user in listUsers"
-                                        :key="user.username"
-                                    >
+                                    <div class="h-48 overflow-y-auto">
                                         <div
-                                            v-if="user.username"
-                                            :class="
-                                                isOwner(
-                                                    user.username,
-                                                    selectedUsers
-                                                )
-                                                    ? '_bg-primary-light'
-                                                    : ''
+                                            v-if="
+                                                STATES.SUCCESS ===
+                                                userOwnerState
                                             "
-                                            class="flex items-center justify-between w-full px-1 py-1 mb-2 rounded cursor-pointer  hover_bg-primary-light"
-                                            @click="() => onSelectUser(user)"
                                         >
-                                            <div
-                                                class="flex items-center flex-1"
+                                            <template
+                                                v-for="user in listUsers"
+                                                :key="user.username"
                                             >
-                                                <img
-                                                    src="https://picsum.photos/id/237/50/50"
-                                                    alt="view"
-                                                    class="w-4 h-4 mr-2 rounded-full "
-                                                /><span
-                                                    class="
-                                                        text-gray text-sm
-                                                        truncate
-                                                        ...
+                                                <div
+                                                    v-if="user.username"
+                                                    :class="
+                                                        isOwner(
+                                                            user.username,
+                                                            selectedUsers
+                                                        )
+                                                            ? '_bg-primary-light'
+                                                            : ''
                                                     "
-                                                    >{{ user.username }}</span
+                                                    class="flex items-center justify-between w-full px-1 py-1 mb-2 rounded cursor-pointer  hover_bg-primary-light"
+                                                    @click="
+                                                        () => onSelectUser(user)
+                                                    "
                                                 >
-                                            </div>
-                                            <div
-                                                v-if="
-                                                    isOwner(
-                                                        user.username,
-                                                        selectedUsers
-                                                    )
-                                                "
-                                                class="flex items-center mr-4"
-                                            >
-                                                <span class="flex items-center"
-                                                    ><fa
-                                                        class="text-primary"
-                                                        icon="fas check-circle"
-                                                /></span>
-                                            </div>
+                                                    <div
+                                                        class="flex items-center flex-1 "
+                                                    >
+                                                        <img
+                                                            src="https://picsum.photos/id/237/50/50"
+                                                            alt="view"
+                                                            class="w-4 h-4 mr-2 rounded-full "
+                                                        /><span
+                                                            class="
+                                                                text-gray
+                                                                text-sm
+                                                                truncate
+                                                                ...
+                                                            "
+                                                            >{{
+                                                                user.username
+                                                            }}</span
+                                                        >
+                                                    </div>
+                                                    <div
+                                                        v-if="
+                                                            isOwner(
+                                                                user.username,
+                                                                selectedUsers
+                                                            )
+                                                        "
+                                                        class="flex items-center mr-4 "
+                                                    >
+                                                        <span
+                                                            class="flex items-center "
+                                                            ><fa
+                                                                class=" text-primary"
+                                                                icon="fas check-circle"
+                                                        /></span>
+                                                    </div>
+                                                </div>
+                                            </template>
                                         </div>
-                                    </template>
+                                        <div
+                                            v-else
+                                            class="flex items-center justify-center "
+                                        >
+                                            <a-spin
+                                                size="small"
+                                                class="mr-2 leading-none"
+                                            ></a-spin
+                                            ><span>Fetching users</span>
+                                        </div>
+                                    </div>
                                 </a-tab-pane>
                                 <a-tab-pane
                                     key="2"
                                     :tab="
                                         'Groups ' + `(${selectedGroups.length})`
                                     "
-                                    class="h-48 overflow-y-auto"
                                 >
-                                    <template
-                                        v-for="group in listGroups"
-                                        :key="group.name"
-                                    >
+                                    <div class="h-48 overflow-y-auto">
                                         <div
-                                            v-if="group.name"
-                                            :class="
-                                                isOwner(
-                                                    group.name,
-                                                    selectedGroups
-                                                )
-                                                    ? '_bg-primary-light'
-                                                    : ''
+                                            v-if="
+                                                STATES.SUCCESS ===
+                                                groupOwnerState
                                             "
-                                            @click="() => onSelectGroup(group)"
-                                            class="flex items-center justify-between w-full px-1 py-1 mb-2 rounded cursor-pointer  hover_bg-primary-light"
                                         >
-                                            <div
-                                                class="flex items-center flex-1"
+                                            <template
+                                                v-for="group in listGroups"
+                                                :key="group.name"
                                             >
-                                                <img
-                                                    src="https://picsum.photos/id/237/50/50"
-                                                    alt="view"
-                                                    class="w-4 h-4 mr-4 rounded-full "
-                                                /><span
-                                                    class="
-                                                        text-gray text-sm
-                                                        truncate
-                                                        ...
+                                                <div
+                                                    v-if="group.name"
+                                                    :class="
+                                                        isOwner(
+                                                            group.name,
+                                                            selectedGroups
+                                                        )
+                                                            ? '_bg-primary-light'
+                                                            : ''
                                                     "
-                                                    >{{ group.name }}</span
+                                                    @click="
+                                                        () =>
+                                                            onSelectGroup(group)
+                                                    "
+                                                    class="flex items-center justify-between w-full px-1 py-1 mb-2 rounded cursor-pointer  hover_bg-primary-light"
                                                 >
-                                            </div>
-                                            <div
-                                                v-if="
-                                                    isOwner(
-                                                        group.name,
-                                                        selectedGroups
-                                                    )
-                                                "
-                                                class="flex items-center mr-2"
-                                            >
-                                                <span class="flex items-center"
-                                                    ><fa
-                                                        class="text-primary"
-                                                        icon="fas check-circle"
-                                                /></span>
-                                            </div>
-                                        </div> </template
-                                ></a-tab-pane>
+                                                    <div
+                                                        class="flex items-center flex-1 "
+                                                    >
+                                                        <img
+                                                            src="https://picsum.photos/id/237/50/50"
+                                                            alt="view"
+                                                            class="w-4 h-4 mr-4 rounded-full "
+                                                        /><span
+                                                            class="
+                                                                text-gray
+                                                                text-sm
+                                                                truncate
+                                                                ...
+                                                            "
+                                                            >{{
+                                                                group.name
+                                                            }}</span
+                                                        >
+                                                    </div>
+                                                    <div
+                                                        v-if="
+                                                            isOwner(
+                                                                group.name,
+                                                                selectedGroups
+                                                            )
+                                                        "
+                                                        class="flex items-center mr-2 "
+                                                    >
+                                                        <span
+                                                            class="flex items-center "
+                                                            ><fa
+                                                                class=" text-primary"
+                                                                icon="fas check-circle"
+                                                        /></span>
+                                                    </div>
+                                                </div>
+                                            </template>
+                                        </div>
+                                        <div
+                                            v-else
+                                            class="flex items-center justify-center "
+                                        >
+                                            <a-spin
+                                                size="small"
+                                                class="mr-2 leading-none"
+                                            ></a-spin
+                                            ><span>Fetching groups</span>
+                                        </div>
+                                    </div>
+                                </a-tab-pane>
                             </a-tabs>
                         </div>
-                        <!-- <div class="flex justify-end w-full pt-2 border-t">
-                                <a-button
-                                    class="mr-2 rounded"
-                                    @click="closePopover"
-                                    >Cancel</a-button
-                                >
-                                <a-button class="rounded" type="primary"
-                                    >Update
-                                </a-button>
-                            </div> -->
                     </div>
                 </template>
             </a-popover>
@@ -258,15 +297,7 @@
 </template>
 
 <script lang="ts">
-    import {
-        defineComponent,
-        PropType,
-        ref,
-        Ref,
-        watch,
-        onMounted,
-        toRefs,
-    } from 'vue'
+    import { defineComponent, PropType, ref, Ref, watch, toRefs } from 'vue'
     import { assetInterface } from '~/types/assets/asset.interface'
     import { userInterface } from '~/types/users/user.interface'
     import { groupInterface } from '~/types/groups/group.interface'
@@ -299,6 +330,8 @@
                 list: listUsers,
                 total: totalUsersCount,
                 filtered,
+                state: userOwnerState,
+                STATES,
                 handleSearch: handleUserSearch,
             } = fetchUserList(now)
 
@@ -306,6 +339,7 @@
                 list: listGroups,
                 handleSearch: handleGroupSearch,
                 total: totalGroupCount,
+                state: groupOwnerState,
             } = fetchGroupList(now)
             console.log('userList->', listUsers.value)
             console.log('groupList->', listGroups.value)
@@ -346,7 +380,6 @@
                 isReady,
                 state,
                 ownerUsers,
-                isCompleted,
                 isLoading: isOwnersLoading,
                 ownerGroups,
             } = updateOwners(selectedAsset)
@@ -410,7 +443,20 @@
                     immediate: true,
                 }
             )
+            const handleOwnerSearch = (e: Event) => {
+                const queryText = (<HTMLInputElement>e.target).value
+                if (activeOwnerTabKey.value === '1') {
+                    handleUserSearch(queryText)
+                } else if (activeOwnerTabKey.value === '2') {
+                    // for groups
+                    handleGroupSearch(queryText)
+                }
+            }
             return {
+                userOwnerState,
+                STATES,
+                groupOwnerState,
+                handleOwnerSearch,
                 handleUpdateOwners,
                 clearSelectedOwners,
                 selectedGroups,

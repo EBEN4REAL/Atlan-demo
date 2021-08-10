@@ -25,8 +25,7 @@
     </div>
 </template>
 <script lang="ts">
-    import { defineComponent, ref, computed, watch } from 'vue'
-    import { message } from 'ant-design-vue'
+    import { defineComponent, ref, watch } from 'vue'
     import { User } from '~/api/auth/user'
     import useRoles from '~/composables/roles/useRoles'
 
@@ -42,6 +41,7 @@
                 default: [],
             },
         },
+        emits: ['updateRole', 'errorUpdateRole'],
         setup(props, context) {
             const selectedRole = ref('')
             const updateLoading = ref(false)
@@ -68,9 +68,7 @@
                         if (isReady && !error.value && !isLoading.value) {
                             context.emit('updateRole')
                         } else if (error && error.value) {
-                            message.error(
-                                'Unable to update role for the user. Please try again.'
-                            )
+                            context.emit('errorUpdateRole')
                         }
                     },
                     { immediate: true }

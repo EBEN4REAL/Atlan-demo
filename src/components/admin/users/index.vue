@@ -241,11 +241,15 @@
                                     :destroy-tooltip-on-hide="true"
                                     :visible="selectedUserId === user.id"
                                     ><template #title
-                                        ><div class="flex justify-between py-1">
+                                        ><div
+                                            class="flex items-center justify-between "
+                                        >
                                             <span>Change Role</span
-                                            ><a @click="closeChangeRolePopover"
+                                            ><a-button
+                                                @click="closeChangeRolePopover"
+                                                type="text"
                                                 ><fa icon="fal times"></fa
-                                            ></a>
+                                            ></a-button>
                                         </div>
                                     </template>
                                     <template #content>
@@ -257,6 +261,9 @@
                                             "
                                             :role-list="roleList"
                                             @updateRole="handleUpdateRole"
+                                            @errorUpdateRole="
+                                                handleErrorUpdateRole
+                                            "
                                         />
                                     </template>
                                     <a-button
@@ -304,7 +311,8 @@
                             listType === 'users' ? selectedUser : selectedInvite
                         "
                         :role-list="roleList"
-                        @updateRole="handleUpdateRole" /></template
+                        @updateRole="handleUpdateRole"
+                        @errorUpdateRole="handleErrorUpdateRole" /></template
             ></InvitationListTable>
         </div>
 
@@ -574,6 +582,13 @@
                 closeChangeRolePopover()
                 reloadTable()
             }
+            const handleErrorUpdateRole = () => {
+                message.error(
+                    'Unable to update role for the user. Please try again.'
+                )
+                closeChangeRolePopover()
+                reloadTable()
+            }
             const handleInviteSent = () => {
                 if (
                     listType.value === 'invitations' &&
@@ -673,6 +688,7 @@
                 handleChangeRole,
                 closeChangeRolePopover,
                 handleUpdateRole,
+                handleErrorUpdateRole,
                 invitationComponentRef,
                 closeInviteUserModal,
                 showInviteUserModal,

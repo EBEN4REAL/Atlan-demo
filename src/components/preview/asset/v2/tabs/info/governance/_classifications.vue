@@ -205,7 +205,7 @@
                                 "
                             >
                                 <div
-                                    class="absolute right-0 flex items-center justify-center px-1 text-white bg-transparent border-none cursor-pointer  bg-primary classification-cross-btn"
+                                    class="absolute right-0 flex items-center justify-center pl-3 pr-1 text-white bg-transparent border-none rounded cursor-pointer  classification-cross-btn"
                                     @click.stop="
                                         () =>
                                             unLinkClassification(classification)
@@ -721,10 +721,10 @@
     }
     .classification-cross-btn {
         height: 100%;
-        background: -webkit-linear-gradient(
-            left,
-            rgba(255, 0, 0, 0),
-            rgba(69, 103, 211, 1)
+        background: linear-gradient(
+            -90deg,
+            rgba(34, 81, 204, 1) 60%,
+            rgba(0, 0, 0, 0) 100%
         );
     }
 </style>

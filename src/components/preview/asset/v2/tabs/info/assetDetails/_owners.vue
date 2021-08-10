@@ -15,14 +15,14 @@
             >
                 <div
                     v-if="ownerUsers.length > 0"
-                    class="flex flex-wrap m-2 text-sm rounded  hover:border-gray-500"
+                    class="flex flex-wrap px-2 py-1 my-1 text-sm border border-transparent rounded  hover:border-gray-description"
                 >
                     <template
                         v-for="username in splittedOwnerUsers.a"
                         :key="username"
                     >
                         <div
-                            class="flex items-center mr-2.5 mb-3 cursor-pointer"
+                            class="flex items-center mr-2.5 mb-1 cursor-pointer"
                             v-on:click.stop="() => handleClickUser(username)"
                         >
                             <img

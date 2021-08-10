@@ -47,8 +47,9 @@
                 >
                 <div class="flex items-center">
                     <StatusBadge
+                        :showNoStatus="true"
                         :key="selectedAsset.guid"
-                        :status-id="selectedAsset?.attributes?.assetStatus"
+                        :status-id="assetStatus(selectedAsset)"
                         class="ml-1.5"
                     ></StatusBadge>
                 </div>
@@ -123,7 +124,7 @@
         },
         setup(props, { emit }) {
             const { filteredTabs, assetType } = useAssetDetailsTabList()
-            const { assetTypeLabel, title } = useAssetInfo()
+            const { assetTypeLabel, title, assetStatus } = useAssetInfo()
             const { selectedAsset } = toRefs(props)
             const activeKey = ref(0)
             const refMap: { [key: string]: any } = ref({})
@@ -164,6 +165,7 @@
                 dataMap,
                 activeKey,
                 filteredTabs,
+                assetStatus,
                 refMap,
                 handleChange,
             }

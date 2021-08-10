@@ -63,6 +63,7 @@
         onMounted,
         toRefs,
     } from 'vue'
+
     import Description from './description.vue'
     import Status from './status.vue'
     import Owners from './_owners.vue'
@@ -91,8 +92,8 @@
                     useAssetInfo()
                 console.log(selectedAsset.value, 'selectedAsset')
                 details.value = {
-                    Rows: getCountString(rowCount(selectedAsset.value)),
-                    Columns: getCountString(columnCount(selectedAsset.value)),
+                    Rows: rowCount(selectedAsset.value),
+                    Columns: columnCount(selectedAsset.value),
                     'Last updated': updatedAt(selectedAsset.value),
                     'Last crawled': lastCrawled(selectedAsset.value),
                 }

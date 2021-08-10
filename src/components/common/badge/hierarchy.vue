@@ -1,9 +1,9 @@
 <template>
-    <div class="flex mb-4 text-xs tracking-wider">
+    <div class="flex text-xs tracking-wider">
         <div
             v-for="(data, index) in hierarchyInfo"
             :key="index"
-            class="flex items-center mr-3.5"
+            class="flex items-center mr-2"
         >
             <img :src="data.img" class="w-auto h-4 mr-1" />
             <span class="overflow-hidden overflow-ellipsis whitespace-nowrap">{{
@@ -64,6 +64,7 @@
                     logo,
                     databaseLogo,
                     schemaLogo,
+                    tableInfo,
                 } = useAssetInfo()
                 hierarchyInfo.value = []
                 hierarchyInfo.value.push({
@@ -78,6 +79,17 @@
                     text: schemaName(selectedAsset.value),
                     img: schemaLogo(selectedAsset.value),
                 })
+
+                // Pushing parent table info incase of columns
+                let tableQN = tableInfo(
+                    selectedAsset.value
+                )?.uniqueAttributes.qualifiedName.split('/')
+
+                if (tableQN)
+                    hierarchyInfo.value.push({
+                        text: tableQN[tableQN.length - 1],
+                        img: '/src/assets/images/assetType/Table.svg',
+                    })
             }
 
             watch(selectedAsset, init)

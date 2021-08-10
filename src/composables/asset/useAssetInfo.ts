@@ -2,6 +2,8 @@ import { assetInterface } from '~/types/assets/asset.interface'
 import { SourceList } from '~/constant/source'
 import { AssetTypeList } from '~/constant/assetType'
 import { useTimeAgo } from '@vueuse/core'
+import { dataTypeList } from '~/constant/datatype'
+import { getCountString } from '~/composables/asset/useFormat'
 
 export default function useAssetInfo() {
     const attributes = (asset: assetInterface) => {
@@ -67,11 +69,15 @@ export default function useAssetInfo() {
         return name.charAt(0).toUpperCase() + name.slice(1)
     }
 
-    const rowCount = (asset: assetInterface) => {
-        return attributes(asset).rowCount
+    const rowCount = (asset: assetInterface, raw: boolean = false) => {
+        return raw
+            ? attributes(asset).rowCount.toLocaleString()
+            : getCountString(attributes(asset).rowCount)
     }
-    const columnCount = (asset: assetInterface) => {
-        return attributes(asset).columnCount
+    const columnCount = (asset: assetInterface, raw: boolean = false) => {
+        return raw
+            ? attributes(asset).columnCount.toLocaleString()
+            : getCountString(attributes(asset).columnCount)
     }
     const schemaName = (asset: assetInterface) => {
         return attributes(asset).schemaName
@@ -90,6 +96,31 @@ export default function useAssetInfo() {
         return useTimeAgo(attributes(asset).connectionLastSyncedAt).value
     }
 
+    const dataType = (asset: assetInterface) => {
+        return attributes(asset)?.dataType
+    }
+
+    const dataTypeImage = (asset: assetInterface) => {
+        const found = dataTypeList.find((d) =>
+            d.type.find(
+                (type) => type.toLowerCase() === dataType(asset).toLowerCase()
+            )
+        )
+        return found?.image
+    }
+
+    const tableInfo = (asset: assetInterface) => {
+        return attributes(asset)?.table
+    }
+
+    const ownerGroups = (asset: assetInterface) => {
+        return attributes(asset)?.ownerGroups?.split(',') || []
+    }
+
+    const ownerUsers = (asset: assetInterface) => {
+        return attributes(asset)?.ownerUsers?.split(',') || []
+    }
+
     return {
         databaseLogo,
         schemaLogo,
@@ -99,6 +130,8 @@ export default function useAssetInfo() {
         title,
         status,
         assetType,
+        dataType,
+        dataTypeImage,
         description,
         logo,
         integrationName,
@@ -108,5 +141,8 @@ export default function useAssetInfo() {
         createdAt,
         updatedAt,
         lastCrawled,
+        tableInfo,
+        ownerGroups,
+        ownerUsers,
     }
 }

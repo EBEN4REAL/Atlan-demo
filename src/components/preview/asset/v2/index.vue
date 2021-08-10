@@ -53,7 +53,7 @@
                     ></StatusBadge>
                 </div>
             </div>
-            <HierarchyBar :selectedAsset="selectedAsset" />
+            <HierarchyBar class="mb-4" :selectedAsset="selectedAsset" />
         </div>
         <a-tabs v-model:activeKey="activeKey" :class="$style.previewtab">
             <a-tab-pane
@@ -93,7 +93,7 @@
     import StatusBadge from '@common/badge/status/index.vue'
     import { assetInterface } from '~/types/assets/asset.interface'
     import { tabList as tabs } from './tabList'
-    import HierarchyBar from './hierarchy.vue'
+    import HierarchyBar from '@common/badge/hierarchy.vue'
     import useAsset from '~/composables/asset/useAsset'
     import useAssetInfo from '~/composables/asset/useAssetInfo'
 

@@ -27,6 +27,13 @@ export interface assetInterface {
         sourceUpdatedAt: number
         tenantId: string
         viewDefinition: string
+        table?: {
+            guid: string
+            typeName: string
+            uniqueAttributes: {
+                qualifiedName: string
+            }
+        }
         __createdBy: string
         __customAttributes: string
         __guid: string

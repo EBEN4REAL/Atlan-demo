@@ -4,7 +4,8 @@
         <div class="mb-8">
             <div v-if="description" class="flex items-center justify-between">
                 <!-- Tooltip for Truncated Text -->
-                <EllipsisTooltip :tooltip-text="description" />
+                <!--  Normal text if no ellipsis found -->
+                <Tooltip :tooltip-text="description" />
 
                 <a-button type="link" @click="showModal">
                     Edit description
@@ -51,12 +52,12 @@
     // composables
 
     import { useMagicKeys } from '@vueuse/core'
-    import EllipsisTooltip from '@common/ellipsis/index.vue'
+    import Tooltip from '@common/ellipsis/index.vue'
     import updateDescription from '~/composables/asset/updateDescription'
 
     export default defineComponent({
         components: {
-            EllipsisTooltip,
+            Tooltip,
         },
         props: ['asset'],
 

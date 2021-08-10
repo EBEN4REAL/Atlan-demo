@@ -89,7 +89,7 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref, watch, PropType } from 'vue'
+    import { defineComponent, ref, watch, PropType, toRefs } from 'vue'
     import { useMagicKeys } from '@vueuse/core'
     import StatusBadge from '@common/badge/status/index.vue'
 
@@ -109,6 +109,7 @@
         },
         setup(props) {
             // const isLoading = ref(false);
+            const { selectedAsset } = toRefs(props)
 
             const {
                 handleCancel,
@@ -119,7 +120,7 @@
                 statusMessage,
                 isCompleted,
                 isLoading,
-            } = updateStatus(props.selectedAsset)
+            } = updateStatus(selectedAsset)
 
             const animationPoint = ref(null)
 
@@ -161,7 +162,7 @@
             return {
                 handleUpdate,
                 handleCancel,
-
+                selectedAsset,
                 isReady,
                 state,
                 statusId,

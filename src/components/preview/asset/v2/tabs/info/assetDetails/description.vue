@@ -55,7 +55,14 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, nextTick, ref, watch, PropType } from 'vue'
+    import {
+        defineComponent,
+        nextTick,
+        ref,
+        watch,
+        PropType,
+        toRefs,
+    } from 'vue'
     import { useMagicKeys } from '@vueuse/core'
     import updateDescription from '~/composables/asset/updateDescription'
     import { assetInterface } from '~/types/assets/asset.interface'
@@ -68,6 +75,7 @@
             },
         },
         setup(props) {
+            const { selectedAsset } = toRefs(props)
             const {
                 isLoading,
                 update,
@@ -77,7 +85,7 @@
                 state,
                 description,
                 isCompleted,
-            } = updateDescription(props.selectedAsset)
+            } = updateDescription(selectedAsset)
 
             const handleUpdate = () => {
                 update()

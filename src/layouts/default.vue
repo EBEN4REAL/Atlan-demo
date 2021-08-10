@@ -2,10 +2,10 @@
   <a-layout class="min-h-full">
     <a-layout-header class="h-12 p-0 m-0">
       <div class="flex px-4 bg-white text-gray border-b justify-between h-full">
-        <div class="flex flex-row items-center text-base font-bold space-x-8">
+        <div class="flex flex-row items-center text-base font-bold space-x-4">
           <img
-            src="https://atlan.com/assets/img/logo.40c9d1d3.svg"
-            class="w-auto h-3 cursor-pointer"
+            src="https://atlan.com/assets/img/atlan-blue.6ed81a56.svg"
+            class="w-auto h-4 cursor-pointer"
              @click="() => handleChange('home')"
           />
           <a-menu

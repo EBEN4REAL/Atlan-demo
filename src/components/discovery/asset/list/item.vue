@@ -31,17 +31,17 @@
                 </router-link>
             </div>
             <!-- Row?Col/Owner bar -->
-            <div class="flex items-center">
+            <div class="flex items-baseline">
                 <!-- Owners -->
                 <div
                     v-if="
                         projection?.includes('owners') &&
                         getCombinedUsersAndGroups(item).length
                     "
-                    class="flex flex-wrap pt-1 mr-4 text-xs"
+                    class="flex items-baseline mr-4 text-gray"
                 >
-                    <span class="mr-1 text-gray-description">Owned by </span>
-                    <span class="font-bold text-gray">{{
+                    <span class="mr-1 text-xs">Owned by </span>
+                    <span class="text-xs font-bold">{{
                         getTruncatedUsers(getCombinedUsersAndGroups(item), 20)
                     }}</span>
                 </div>
@@ -51,11 +51,11 @@
                         projection?.includes('rows') ||
                         projection?.includes('popularity')
                     "
-                    class="flex items-center"
+                    class="flex items-baseline"
                 >
                     <!-- Row/Col-->
                     <div
-                        class="flex items-center pt-1 mr-2"
+                        class="flex items-baseline mr-2"
                         v-if="
                             projection?.includes('rows') &&
                             (item.typeName.toLowerCase() === 'table' ||
@@ -126,7 +126,7 @@
             <!-- Description -->
             <span
                 v-if="projection?.includes('description')"
-                class="mt-1 text-xs leading-relaxed whitespace-pre-line"
+                class="mt-1 text-sm whitespace-pre-line"
             >
                 {{ description(item) || 'No description' }}
             </span>

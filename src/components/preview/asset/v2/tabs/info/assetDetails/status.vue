@@ -56,7 +56,10 @@
                     >
                 </div>
             </template>
-            <div ref="animationPoint" class="text-xs text-gray-description">
+            <div
+                ref="animationPoint"
+                class="inline-flex flex-col text-xs text-gray-description"
+            >
                 <p class="mb-1">Status</p>
                 <StatusBadge
                     :key="selectedAsset.guid"

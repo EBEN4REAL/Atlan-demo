@@ -70,7 +70,8 @@
                         }
                     "
                     :componentData="dataMap[tab.id]"
-                    :selectedAsset="selectedAsset"
+                    :infoTabData="infoTabData"
+                    :isLoaded="isLoaded"
                     @change="handleChange"
                 ></component>
             </a-tab-pane>
@@ -124,6 +125,7 @@
         setup(props, { emit }) {
             const { assetTypeLabel, title } = useAssetInfo()
             const { selectedAsset } = toRefs(props)
+            const isLoaded: Ref<boolean> = ref(true)
 
             const activeKey = ref('1')
             const refMap: { [key: string]: any } = ref({})
@@ -138,6 +140,7 @@
             }
 
             function init() {
+                isLoaded.value = true
                 const { data, error } = useAsset({
                     entityId: selectedAsset.value.guid,
                 })
@@ -145,6 +148,7 @@
                     if (data.value && error.value == undefined) {
                         const entitiy = getAssetEntitity(data)
                         infoTabData.value = entitiy
+                        isLoaded.value = false
                         console.log(infoTabData.value, 'info tab Data')
                     } else {
                         console.log(
@@ -158,6 +162,8 @@
             onMounted(init)
 
             return {
+                isLoaded,
+                infoTabData,
                 title,
                 assetTypeLabel,
                 dataMap,

@@ -1,5 +1,5 @@
 <template>
-    <div class="mt-3 text-sm text-gray-description">
+    <div class="text-sm text-gray-description">
         <p class="mb-1">Classifications</p>
         <div class="py-1 rounded-lg">
             <a-popover
@@ -167,13 +167,25 @@
                         v-for="(
                             classification, index
                         ) in assetLinkedClassifcations"
-                        :key="classification.entityGuid"
+                        :key="
+                            'classification-' + classification?.typeName + index
+                        "
                     >
                         <div
-                            class="flex items-stretch rounded  justify-items-stretch"
+                            class="relative flex items-stretch rounded  justify-items-stretch"
+                            @mouseover="
+                                showCrossButtonId = classification?.typeName
+                            "
+                            @mouseleave="showCrossButtonId = undefined"
                         >
                             <div
-                                class="flex items-center px-2 py-2 leading-none align-middle cursor-pointer  bg-primary-300 text-primary-400 bg-opacity-10 hover:bg-primary-500 hover:text-white drop-shadow-sm"
+                                :class="
+                                    showCrossButtonId ==
+                                    classification?.typeName
+                                        ? 'bg-primary text-white '
+                                        : 'bg-primary bg-opacity-10 text-primary '
+                                "
+                                class="flex items-center px-2 py-2 leading-none align-middle rounded cursor-pointer  drop-shadow-sm"
                                 @click.prevent.stop="handleClassificationClick"
                             >
                                 <fa
@@ -185,43 +197,40 @@
                                     {{ classification?.typeName }}
                                 </div>
                             </div>
-                            <a-button
-                                v-if="!classification.hideRemoveButton"
-                                :loading="
-                                    unlinkClassificationStatus.status ===
-                                        'loading' &&
-                                    unlinkClassificationStatus.typeName ===
-                                        classification.typeName
-                                        ? true
-                                        : false
-                                "
-                                class="flex items-center justify-center p-1 px-2 border-none  bg-primary-300 hover:bg-primary-500 hover:text-white bg-opacity-10"
-                                @click.stop="
-                                    () => unLinkClassification(classification)
+
+                            <div
+                                v-if="
+                                    showCrossButtonId ==
+                                    classification?.typeName
                                 "
                             >
-                                <span
-                                    v-if="
-                                        unlinkClassificationStatus.status ===
-                                            'loading' &&
-                                        unlinkClassificationStatus.typeName ===
-                                            classification.typeName
-                                            ? false
-                                            : true
+                                <div
+                                    class="absolute right-0 flex items-center justify-center px-1 text-white bg-transparent border-none cursor-pointer  bg-primary classification-cross-btn"
+                                    @click.stop="
+                                        () =>
+                                            unLinkClassification(classification)
                                     "
-                                    class="flex items-center justify-center"
                                 >
-                                    <fa icon="fal times-circle" class="" />
-                                </span>
-                            </a-button>
+                                    <div
+                                        class="flex items-center justify-center"
+                                    >
+                                        <fa icon="fal times-circle" class="" />
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </template>
-                    {{ assetLinkedClassifcations }}
                     <div
-                        v-if="
-                            assetLinkedClassifcations?.length &&
-                            assetLinkedClassifcations?.length < 1
-                        "
+                        v-if="asset.classifications?.length > 0"
+                        class="flex items-center justify-center px-2 py-2 rounded cursor-pointer  text-primary _bg-primary-light hover:text-white hover:bg-primary"
+                        @click.stop.prevent="openLinkClassificationPopover"
+                    >
+                        <span class="flex items-center justify-center">
+                            <fa icon="fal plus" />
+                        </span>
+                    </div>
+                    <div
+                        v-else
                         class="
                             inline-flex
                             px-2
@@ -409,22 +418,23 @@
             }
             /* ------------------------------- */
 
-            const assetLinkedClassifcations = computed(() => {
-                console.log('cpmputed', props.selectedAsset)
-                return props.selectedAsset.classifications
-            })
+            const assetLinkedClassifcations = computed(
+                () => selectedAsset.value.classifications
+            )
             console.log(assetLinkedClassifcations, 'assetLinkedClassifcations')
 
             const unLinkClassification = (classification: any) => {
                 unlinkClassificationStatus.value.status = 'loading'
                 unlinkClassificationStatus.value.typeName =
                     classification.typeName
-                const { typeName } = classification
+
+                const { typeName, entityGuid } = classification
                 // No content response
                 const { data, error, isReady } =
                     Classification.archiveClassification({
                         cache: '',
                         typeName,
+                        entityGuid,
                     })
 
                 /* Todo show loader during unlinking of classification from asset */
@@ -642,8 +652,10 @@
                 showCreateClassificationPopover.value = false
                 selectedClassificationForLink.value = []
             }
+            const showCrossButtonId: Ref<string | undefined> = ref(undefined)
 
             return {
+                showCrossButtonId,
                 asset,
                 selectedAsset,
                 unlinkClassificationStatus,
@@ -706,5 +718,13 @@
 <style lang="less" scoped>
     ._bg-primary-light {
         background: rgba(34, 81, 204, 0.05);
+    }
+    .classification-cross-btn {
+        height: 100%;
+        background: -webkit-linear-gradient(
+            left,
+            rgba(255, 0, 0, 0),
+            rgba(69, 103, 211, 1)
+        );
     }
 </style>

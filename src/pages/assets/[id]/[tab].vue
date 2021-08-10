@@ -84,9 +84,14 @@
                     `/assets/${id.value}/${selectedTab?.name.toLowerCase()}`
                 )
             }
-            const { response, error, loading } = useAsset({
+            const {
+                data: response,
+                error,
+                loading,
+            } = useAsset({
                 entityId: id.value,
             })
+            console.log(response, 'response')
 
             watch(response, () => {
                 if (response.value?.entities?.length)

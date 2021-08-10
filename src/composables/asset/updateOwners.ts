@@ -19,8 +19,16 @@ export default function updateOwners(selectedAsset: Ref<assetInterface>) {
         selectedAsset.value?.attributes?.ownerGroups?.split(',') || []
 
     const ownerUsers: WritableComputedRef<string[]> = computed({
-        get: () =>
-            selectedAsset.value?.attributes?.ownerUsers?.split(',') || [],
+        get: () => {
+            if (selectedAsset.value?.attributes?.ownerUsers !== '') {
+                return (
+                    selectedAsset.value?.attributes?.ownerUsers?.split(',') ||
+                    []
+                )
+            } else {
+                return []
+            }
+        },
         set: (newValue: string[]) => {
             localOwnerUsers.value = newValue
             body.value = getBody()
@@ -28,8 +36,16 @@ export default function updateOwners(selectedAsset: Ref<assetInterface>) {
     })
 
     const ownerGroups: WritableComputedRef<string[]> = computed({
-        get: () =>
-            selectedAsset.value?.attributes?.ownerGroups?.split(',') || [],
+        get: () => {
+            if (selectedAsset.value?.attributes?.ownerGroups !== '') {
+                return (
+                    selectedAsset.value?.attributes?.ownerGroups?.split(',') ||
+                    []
+                )
+            } else {
+                return []
+            }
+        },
         set: (newValue: string[]) => {
             localOwnerGroups.value = newValue
             body.value = getBody()

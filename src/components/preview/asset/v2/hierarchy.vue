@@ -10,6 +10,18 @@
                 data.text
             }}</span>
         </div>
+        <!-- <span class="flex items-center mr-3.5"
+            ><component
+                :is="'Database'"
+                class="w-auto h-3 mr-1 truncated ..."
+            />{{ selectedAsset.attributes.databaseName }}</span
+        >
+        <span class="flex items-center mr-3.5"
+            ><component
+                :is="'Schema'"
+                class="w-auto h-3 mr-1 truncated ..."
+            />{{ selectedAsset.attributes.schemaName }}</span
+        > -->
     </div>
 </template>
 

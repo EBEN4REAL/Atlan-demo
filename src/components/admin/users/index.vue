@@ -246,8 +246,8 @@
                                         >
                                             <span>Change Role</span
                                             ><a-button
-                                                @click="closeChangeRolePopover"
                                                 type="text"
+                                                @click="closeChangeRolePopover"
                                                 ><fa icon="fal times"></fa
                                             ></a-button>
                                         </div>
@@ -305,11 +305,9 @@
                 @toggleList="toggleUserInvitationList"
                 @showPreview="showUserPreviewDrawer"
                 @changeRole="handleChangeRole"
-                ><template v-slot:changeRoleContent
+                ><template #changeRoleContent
                     ><ChangeRole
-                        :user="
-                            listType === 'users' ? selectedUser : selectedInvite
-                        "
+                        :user="selectedInvite"
                         :role-list="roleList"
                         @updateRole="handleUpdateRole"
                         @errorUpdateRole="handleErrorUpdateRole" /></template
@@ -371,6 +369,18 @@
             const showUserPreview = ref(false)
             const statusFilterValue = ref<string>('')
             const { username: currentUserUsername } = whoami()
+
+            const invitationComponentRef = ref(null)
+            const userListAPIParams: any = reactive({
+                limit: 15,
+                offset: 0,
+                sort: 'first_name',
+                filter: { $and: [{ email_verified: true }] },
+            })
+
+            const { userList, filteredUserCount, getUserList, state, STATES } =
+                useUsers(userListAPIParams)
+
             const selectedUserId = ref('')
             const selectedUser = computed(() => {
                 let activeUserObj = {}
@@ -381,25 +391,16 @@
                 return activeUserObj
             })
             const selectedInvite = ref({})
-            const invitationComponentRef = ref(null)
-            const userListAPIParams: any = reactive({
-                limit: 15,
-                offset: 0,
-                sort: 'first_name',
-                filter: { $and: [{ email_verified: true }] },
-            })
+
             const pagination = computed(() => ({
                 total: filteredUserCount.value,
                 pageSize: userListAPIParams.limit,
                 current: userListAPIParams.offset / userListAPIParams.limit + 1,
             }))
-            const { userList, filteredUserCount, getUserList, state, STATES } =
-                useUsers(userListAPIParams)
+
             // fetch roles- need this to find role id when changing user/invite role
             const { roleList } = useRoles()
-            const handleSearch = useDebounceFn(() => {
-                if (listType.value === 'users') searchUserList()
-            }, 600)
+
             const searchUserList = () => {
                 const localFilterParams = userListAPIParams.filter.$and
                 const searchFilterIndex = localFilterParams.findIndex(
@@ -445,11 +446,12 @@
                 }
                 getUserList()
             }
-            const handleTableChange = (
-                pagination: any,
-                filters: any,
-                sorter: any
-            ) => {
+
+            const handleSearch = useDebounceFn(() => {
+                if (listType.value === 'users') searchUserList()
+            }, 600)
+
+            const handleTableChange = (filters: any, sorter: any) => {
                 // add filters
                 // let allFilters: any = [];
                 // if (Object.keys(filters).length) {
@@ -504,9 +506,7 @@
                 openPreview()
                 selectedUserId.value = user.id
             }
-            watch(showPreview, () => {
-                if (!showPreview.value) reloadTable()
-            })
+
             // END: USER PREVIEW
             const handleChangeRole = (user: any) => {
                 if (listType.value === 'users') selectedUserId.value = user.id
@@ -518,7 +518,7 @@
                 showChangeRolePopover.value = false
                 selectedUserId.value = ''
             }
-            const handleInviteUsers = (user: any) => {
+            const handleInviteUsers = () => {
                 showInviteUserModal.value = true
             }
             const closeInviteUserModal = () => {
@@ -558,7 +558,7 @@
                             )
                         }
                     })
-                } else return
+                }
             }
 
             const toggleUserInvitationList = () => {
@@ -577,6 +577,11 @@
                 )
                     invitationComponentRef.value.getInvitationList()
             }
+
+            watch(showPreview, () => {
+                if (!showPreview.value) reloadTable()
+            })
+
             const handleUpdateRole = () => {
                 message.success('User role updated.')
                 closeChangeRolePopover()
@@ -598,9 +603,9 @@
                 closeInviteUserModal()
             }
 
-            const nameCase = (name) => {
+            const nameCase = (name: string) => {
                 if (name) {
-                    const nameCaseArray = []
+                    const nameCaseArray: string[] = []
                     const split = name.split(' ')
                     split.forEach((element) => {
                         nameCaseArray.push(
@@ -659,7 +664,7 @@
                 userListAPIParams.offset = 0
                 getUserList()
             }
-            const handlePagination = (page) => {
+            const handlePagination = (page: number) => {
                 // modify offset
                 const offset = (page - 1) * userListAPIParams.limit
                 userListAPIParams.offset = offset

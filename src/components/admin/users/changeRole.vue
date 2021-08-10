@@ -38,14 +38,14 @@
             },
             roleList: {
                 type: Array,
-                default: [],
+                default: () => [],
             },
         },
         emits: ['updateRole', 'errorUpdateRole'],
         setup(props, context) {
             const selectedRole = ref('')
             const updateLoading = ref(false)
-            const roles = ref([])
+            const roles = ref<any[]>([])
             if (!props.roleList || !props.roleList.length) {
                 const { roleList } = useRoles()
                 watch(roleList, () => {

@@ -114,7 +114,7 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref, reactive, computed, watch } from 'vue'
+    import { defineComponent, reactive, computed, watch } from 'vue'
     import { useDebounceFn } from '@vueuse/core'
     import { Modal, message } from 'ant-design-vue'
     import useInvitations from '~/composables/user/useInvitations'
@@ -133,9 +133,10 @@
         props: {
             searchText: {
                 type: String,
-                deafult: '',
+                default: '',
             },
         },
+        emits: ['showPeview', 'changeRole', 'toggleList'],
         setup(props, context) {
             const invitationListAPIParams: any = reactive({
                 limit: 15,
@@ -143,6 +144,14 @@
                 sort: 'email',
                 filter: { $and: [{ email_verified: false }] },
             })
+            const {
+                userList: invitationList,
+                filteredUserCount: filteredInvitationCount,
+                getUserList: getInvitationList,
+                state,
+                STATES,
+            } = useInvitations(invitationListAPIParams)
+
             const pagination = computed(() => ({
                 total: filteredInvitationCount.value,
                 pageSize: invitationListAPIParams.limit,
@@ -151,17 +160,6 @@
                         invitationListAPIParams.limit +
                     1,
             }))
-            const {
-                userList: invitationList,
-                filteredUserCount: filteredInvitationCount,
-                getUserList: getInvitationList,
-                state,
-                STATES,
-            } = useInvitations(invitationListAPIParams)
-            const handleSearch = useDebounceFn(() => {
-                searchInvitationList()
-            }, 600)
-            watch(() => props.searchText, handleSearch)
 
             const searchInvitationList = () => {
                 const localFilterParams = invitationListAPIParams.filter.$and
@@ -205,7 +203,14 @@
                 // TODO: fetch roles
                 // getRolesList();
             }
+
+            const handleSearch = useDebounceFn(() => {
+                searchInvitationList()
+            }, 600)
+            watch(() => props.searchText, handleSearch)
+
             const handleTableChange = (
+                // eslint-disable-next-line no-shadow
                 pagination: any,
                 filters: any,
                 sorter: any
@@ -263,7 +268,10 @@
             const handleChangeRole = (invite: any) => {
                 context.emit('changeRole', invite)
             }
-            const showResendInvitationConfirm = (invite: any) => {
+            const showResendInvitationConfirm = (invite: {
+                email: any
+                id: string
+            }) => {
                 Modal.confirm({
                     content: `Are you sure you want to resend verification email to ${invite.email}?`,
                     title: `Resend Verification Email`,
@@ -282,7 +290,10 @@
                     },
                 })
             }
-            const showRevokeInvitationConfirm = (invite) => {
+            const showRevokeInvitationConfirm = (invite: {
+                email: any
+                id: string
+            }) => {
                 Modal.confirm({
                     title: 'Revoke Invitation',
                     content: `Are you sure you want to revoke invitation for ${invite.email} ?`,
@@ -304,7 +315,7 @@
                     },
                 })
             }
-            const handlePagination = (page) => {
+            const handlePagination = (page: number) => {
                 // modify offset
                 const offset = (page - 1) * invitationListAPIParams.limit
                 invitationListAPIParams.offset = offset

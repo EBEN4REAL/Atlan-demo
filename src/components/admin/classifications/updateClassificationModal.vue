@@ -3,7 +3,7 @@
         :visible="showEditModal"
         :destroy-on-close="true"
         :title="`Edit`"
-        :on-cancel="closeEditModal"
+        @cancel="closeEditModal"
         :footer="null"
     >
         <a-form
@@ -67,9 +67,14 @@
             }
             const store = useClassificationStore()
             const updateClassificationStatus = ref('')
-            const urlValidationRegex = new RegExp('^[a-zA-Z]*$', 'g')
+            const urlValidationRegex = new RegExp(
+                '^[a-zA-Z][a-zA-Z0-9\s_]*',
+                'g'
+            )
 
-            const selectedClassification: any = computed(() => props.classification)
+            const selectedClassification: any = computed(
+                () => props.classification
+            )
             const showEditModal = computed(() => props.open)
 
             // edit modal

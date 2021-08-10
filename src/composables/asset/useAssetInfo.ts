@@ -113,6 +113,14 @@ export default function useAssetInfo() {
         return attributes(asset)?.table
     }
 
+    const ownerGroups = (asset: assetInterface) => {
+        return attributes(asset)?.ownerGroups?.split(',') || []
+    }
+
+    const ownerUsers = (asset: assetInterface) => {
+        return attributes(asset)?.ownerUsers?.split(',') || []
+    }
+
     return {
         databaseLogo,
         schemaLogo,
@@ -134,5 +142,7 @@ export default function useAssetInfo() {
         updatedAt,
         lastCrawled,
         tableInfo,
+        ownerGroups,
+        ownerUsers,
     }
 }

@@ -13,18 +13,17 @@
             v-if="showLabel && statusId"
             class="mt-1 mb-0 text-xs leading-none text-gray-500"
         >
-            {{ dayjs().from(statusUpdatedAt, true) }}
-            ago by
+            {{ timeAgo(statusUpdatedAt) }}
+            by
             {{ statusUpdatedBy }}
         </p>
     </div>
 </template>
 
 <script lang="ts">
-    import dayjs from 'dayjs'
-    import { defineComponent } from 'vue'
+    import { useTimeAgo } from '@vueuse/core'
+    import { defineComponent, computed, toRefs } from 'vue'
     import { List } from '~/constant/status'
-    import { Checkbox } from '~/types'
 
     export default defineComponent({
         props: {
@@ -68,30 +67,21 @@
             },
         },
         emits: ['change'],
-        data() {
-            return {
-                dayjs,
-                List,
-            }
-        },
-        computed: {
-            statusObject(): Checkbox {
-                let found = List.find((item) => item.id === this.statusId)
-                if (this.showNoStatus && !found) {
+        setup(props) {
+            const { statusId, showNoStatus } = toRefs(props)
+            const statusObject = computed(() => {
+                let found = List.find((item) => item.id === statusId.value)
+                if (showNoStatus.value && !found) {
                     found = List.find((item) => item.id === 'is_null')
                 }
                 return found
-            },
-            icon(): string {
-                return this.statusObject?.icon
-            },
-            iconClass(): string {
-                return this.statusObject?.iconClass
-            },
-            label(): string {
-                return this.statusObject?.label
-            },
+            })
+            const icon = computed(() => statusObject.value?.icon)
+            const iconClass = computed(() => statusObject.value?.iconClass)
+            const label = computed(() => statusObject.value?.label)
+
+            const timeAgo = (time: string | number) => useTimeAgo(time).value
+            return { statusObject, icon, iconClass, label, timeAgo }
         },
-        mounted() {},
     })
 </script>

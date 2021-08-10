@@ -18,7 +18,7 @@ function constructRequest(guid: string) {
         'metadata',
         'relativePinOrder',
         'primary key',
-        'foreign key',
+        'assetStatus',
         'tenantId',
     ]
 

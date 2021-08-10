@@ -64,26 +64,30 @@ export default function useSearchList(
                 ...data?.value?.searchScore,
             }
         } else if (data.value?.entities) {
-                list.value = data.value?.entities
-                searchScoreList.value = {
-                    ...data?.value?.searchScore,
-                }
-            } else {
-                list.value = []
-                searchScoreList.value = {}
+            list.value = data.value?.entities
+            searchScoreList.value = {
+                ...data?.value?.searchScore,
             }
+        } else {
+            list.value = []
+            searchScoreList.value = {}
+        }
     })
 
-    const isLoading = computed(() => (
+    const isLoading = computed(
+        () =>
             ([STATES.PENDING].includes(state.value) ||
                 [STATES.VALIDATING].includes(state.value)) &&
             !data
-        ))
-    const isValidating = computed(() => [STATES.VALIDATING].includes(state.value))
-    const isError = computed(() => (
+    )
+    const isValidating = computed(() =>
+        [STATES.VALIDATING].includes(state.value)
+    )
+    const isError = computed(
+        () =>
             [STATES.ERROR].includes(state.value) ||
             [STATES.STALE_IF_ERROR].includes(state.value)
-        ))
+    )
 
     const refresh = () => {
         if (cancelTokenSource) {
@@ -158,7 +162,10 @@ export default function useSearchList(
     })
     const assetTypeSum = computed(() => {
         const initialValue = 0
-        const sum = assetTypeList.value.reduce((accumulator, currentValue) => accumulator + currentValue.count, initialValue)
+        const sum = assetTypeList.value.reduce(
+            (accumulator, currentValue) => accumulator + currentValue.count,
+            initialValue
+        )
         return sum
     })
 

@@ -12,42 +12,8 @@
         </div>
         <div class="flex w-full pt-4 text-xs text-gray-description">
             <Owners v-if="selectedAsset.guid" :selectedAsset="selectedAsset" />
-            <div class="w-5/12">
-                <p class="flex-1 mb-1">Experts</p>
-                <div class="flex flex-wrap">
-                    <div
-                        class="
-                            flex
-                            items-center
-                            text-sm
-                            mb-2.5
-                            mr-2.5
-                            p-2
-                            hover:border
-                            rounded
-                        "
-                    >
-                        <div
-                            class="flex items-center px-1 py-1 mr-1 rounded-full  _bg-primary-light"
-                        >
-                            <fa icon="fal users" class="text-primary" />
-                        </div>
-                        <span class="text-gray truncate ...">Sale Team</span>
-                    </div>
-                </div>
-            </div>
+            <Experts v-if="selectedAsset.guid" :selectedAsset="selectedAsset" />
         </div>
-        <!-- <div class="w-full pt-2 text-xs text-gray-description">
-            <p class="mb-1">Description</p>
-            <p class="mb-0 text-sm text-gray">
-                Transaction table stores all the information required for a trip
-                before an actual trip is created, such as client requirements,
-                vendor and truck details a...<span
-                    class="ml-2 font-semibold text-primary"
-                    >show more</span
-                >
-            </p>
-        </div> -->
         <Description v-if="selectedAsset.guid" :selectedAsset="selectedAsset" />
         <Status v-if="selectedAsset.guid" :selectedAsset="selectedAsset" />
     </div>
@@ -66,7 +32,8 @@
 
     import Description from './description.vue'
     import Status from './status.vue'
-    import Owners from './_owners.vue'
+    import Owners from './owners.vue'
+    import Experts from './experts.vue'
     import { assetInterface } from '~/types/assets/asset.interface'
     import useAssetInfo from '~/composables/asset/useAssetInfo'
 
@@ -79,6 +46,7 @@
             },
         },
         components: {
+            Experts,
             Description,
             Status,
             Owners,
@@ -113,5 +81,9 @@
     }
     .hover_bg-primary-light:hover {
         background: rgba(34, 81, 204, 0.05);
+    }
+    .owner-expert {
+        // margin-top: 0.3rem;
+        // margin-bottom: 0.3rem;
     }
 </style>

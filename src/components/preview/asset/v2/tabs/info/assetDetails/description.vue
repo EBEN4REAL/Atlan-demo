@@ -50,6 +50,17 @@
             </div>
         </a-popover>
     </div>
+    <!-- <div class="w-full pt-2 text-xs text-gray-description">
+            <p class="mb-1">Description</p>
+            <p class="mb-0 text-sm text-gray">
+                Transaction table stores all the information required for a trip
+                before an actual trip is created, such as client requirements,
+                vendor and truck details a...<span
+                    class="ml-2 font-semibold text-primary"
+                    >show more</span
+                >
+            </p>
+        </div> -->
 </template>
 
 <script lang="ts">

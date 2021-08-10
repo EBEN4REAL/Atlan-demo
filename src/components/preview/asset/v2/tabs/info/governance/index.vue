@@ -9,7 +9,7 @@
 <script lang="ts">
     import { defineComponent, PropType, toRefs, watch } from 'vue'
     import Terms from './terms.vue'
-    import Classifications from './_classifications.vue'
+    import Classifications from './classifications.vue'
     import BusinessMetaData from './businessMetadataContainer.vue'
     import { assetInterface } from '~/types/assets/asset.interface'
 

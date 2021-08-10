@@ -3,9 +3,9 @@
         <div
             v-for="(data, index) in hierarchyInfo"
             :key="index"
-            class="flex items-center mr-2"
+            class="flex items-center mr-3"
         >
-            <img :src="data.img" class="w-auto h-4 mr-1" />
+            <img :src="data.img" class="w-auto h-4 mr-2" />
             <span class="overflow-hidden overflow-ellipsis whitespace-nowrap">{{
                 data.text
             }}</span>

@@ -229,15 +229,15 @@
                             rounded
                             cursor-pointer
                             select-none
+                            text-primary
                             _bg-primary-light
+                            hover:text-white hover:bg-primary
                         "
                     >
                         <span class="flex items-center text-sm">
-                            <fa icon="fal plus" class="text-primary" />
+                            <fa icon="fal plus" class="" />
                         </span>
-                        <span class="mt-1 ml-2 text-primary"
-                            >Add Classifications</span
-                        >
+                        <span class="mt-1 ml-2">Add Classifications</span>
                     </div>
                 </div>
             </a-popover>

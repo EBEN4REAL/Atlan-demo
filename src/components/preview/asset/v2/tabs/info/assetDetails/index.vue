@@ -69,7 +69,6 @@
     import Owners from './_owners.vue'
     import { assetInterface } from '~/types/assets/asset.interface'
     import useAssetInfo from '~/composables/asset/useAssetInfo'
-    import { getCountString } from '~/composables/asset/useFormat'
 
     export default defineComponent({
         name: 'AssetDetails',

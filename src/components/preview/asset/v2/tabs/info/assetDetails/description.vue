@@ -39,14 +39,12 @@
                 </p>
                 <div v-else>
                     <div
-                        class="inline-flex px-2 py-1 rounded cursor-pointer select-none  _bg-primary-light"
+                        class="inline-flex px-2 py-1 rounded cursor-pointer select-none  text-primary hover:text-white hover:bg-primary _bg-primary-light"
                     >
                         <span class="flex items-center text-sm">
-                            <fa icon="fal plus" class="text-primary" />
+                            <fa icon="fal plus" />
                         </span>
-                        <span class="mt-1 ml-2 text-primary"
-                            >Add Description</span
-                        >
+                        <span class="ml-2">Add Description</span>
                     </div>
                 </div>
             </div>

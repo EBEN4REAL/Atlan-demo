@@ -154,6 +154,7 @@
         }
         :global(.ant-collapse-arrow) {
             left: 0px !important;
+            font-size: 1rem !important;
             @apply text-primary !important;
         }
 

@@ -189,10 +189,10 @@
             @apply pb-3 px-1;
             @apply mx-2;
             @apply text-gray-description;
-            @apply text-xs;
+            @apply text-sm;
         }
         :global(.ant-tabs-tab:first-child) {
-            @apply ml-4;
+            @apply ml-2;
         }
         :global(.ant-tabs-nav-container-scrolling .ant-tabs-tab:first-child) {
             @apply ml-0;

@@ -12,7 +12,7 @@
             <div class="flex items-center mb-0">
                 <router-link
                     :to="`/assets/${item.guid}/overview`"
-                    class="flex-shrink mb-0 overflow-hidden text-xl font-bold leading-6 tracking-wide truncate cursor-pointer  text-gray hover:underline overflow-ellipsis whitespace-nowrap"
+                    class="flex-shrink mb-0 overflow-hidden text-lg font-bold leading-6 tracking-wide truncate cursor-pointer  text-gray hover:underline overflow-ellipsis whitespace-nowrap"
                 >
                     {{ title(item) }}
                 </router-link>
@@ -33,43 +33,17 @@
             <!-- Row?Col/Owner bar -->
             <div class="flex items-center">
                 <!-- Owners -->
-                <!-- TODO: Needs improvements -->
                 <div
-                    v-if="projection?.includes('owners')"
-                    class="flex flex-wrap pt-1"
+                    v-if="
+                        projection?.includes('owners') &&
+                        getCombinedUsersAndGroups(item).length
+                    "
+                    class="flex flex-wrap pt-1 mr-4 text-xs"
                 >
-                    <template
-                        v-for="user in item?.attributes?.ownerUsers?.split(',')"
-                        :key="user"
-                    >
-                        <div
-                            v-if="user?.length > 0"
-                            class="mr-1 text-xs tracking-wide  text-gray-description"
-                        >
-                            <Fa
-                                icon="fal user"
-                                class="mr-1 text-xs leading-none  pushtop text-shadow"
-                            />
-                            <span class="">{{ user }}</span>
-                        </div>
-                    </template>
-                    <template
-                        v-for="group in item?.attributes?.ownerGroups?.split(
-                            ','
-                        )"
-                        :key="group"
-                    >
-                        <div
-                            v-if="group?.length > 0"
-                            class="mr-1 text-xs tracking-wide  text-gray-description"
-                        >
-                            <Fa
-                                icon="fal user-friends"
-                                class="mr-1 leading-none pushtop"
-                            />
-                            <span>{{ group }}</span>
-                        </div>
-                    </template>
+                    <span class="mr-1 text-gray-description">Owned by </span>
+                    <span class="font-bold text-gray">{{
+                        getTruncatedUsers(getCombinedUsersAndGroups(item), 20)
+                    }}</span>
                 </div>
                 <!-- Row/Col/popularity count -->
                 <div
@@ -92,22 +66,20 @@
                             class="mr-2"
                             v-if="item?.typeName.toLowerCase() === 'table'"
                         >
-                            <span
-                                class="mr-1 text-xs tracking-wide  text-gray-description"
-                                >Rows</span
-                            >
-                            <span class="text-sm font-bold tracking-wide">{{
+                            <span class="mr-1 text-sm font-bold">{{
                                 rowCount(item, false)
                             }}</span>
+                            <span class="text-xs text-gray-description"
+                                >Rows</span
+                            >
                         </div>
                         <div class="mr-2">
-                            <span
-                                class="mr-1 text-xs tracking-wide  text-gray-description"
-                                >Cols</span
-                            >
-                            <span class="text-sm font-bold tracking-wide">{{
+                            <span class="mr-1 text-sm font-bold">{{
                                 columnCount(item, false)
                             }}</span>
+                            <span class="text-xs text-gray-description"
+                                >Cols</span
+                            >
                         </div>
                     </div>
                     <!-- Popularity -->
@@ -119,7 +91,7 @@
                         "
                     >
                         <Fa icon="fal analytics" class="w-auto h-3" />
-                        <span class="ml-1 text-sm font-bold tracking-wide">
+                        <span class="ml-1 text-sm font-bold">
                             {{
                                 numeralFormat(
                                     item?.attributes?.popularityScore,
@@ -134,7 +106,7 @@
                         class="pt-1 mr-2"
                     >
                         <Fa icon="fal search" class="w-auto h-3 pushtop" />
-                        <span class="ml-1 text-sm font-bold tracking-wide">
+                        <span class="ml-1 text-sm font-bold">
                             {{ numeralFormat(score, '0[.]000000') }}
                         </span>
                     </div>
@@ -171,12 +143,13 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, PropType } from 'vue'
+    import { defineComponent, PropType, toRefs } from 'vue'
 
     import StatusBadge from '@common/badge/status/index.vue'
     import HierarchyBar from '@common/badge/hierarchy.vue'
     import { Components } from '~/api/atlas/client'
     import useAssetInfo from '~/composables/asset/useAssetInfo'
+    import { assetInterface } from '~/types/assets/asset.interface'
 
     export default defineComponent({
         components: {
@@ -216,8 +189,57 @@
                 status,
                 rowCount,
                 columnCount,
+                ownerGroups,
+                ownerUsers,
             } = useAssetInfo()
 
+            function getTruncatedUsers(arr: string[], wordCount: number = 30) {
+                const strSize: number[] = [0]
+                let idx = 0
+                arr.forEach((name) => {
+                    strSize.push(strSize[strSize.length - 1] + name.length)
+                })
+
+                // Check upto how long it is possible to display
+                while (strSize[idx] < wordCount && idx < strSize.length) {
+                    idx++
+                }
+                // // Compenstion for the initial 0 in strSize
+                idx--
+
+                console.log(strSize, arr)
+                /** The elements that would be displayed */
+                const displayArray = arr.slice(0, idx)
+                /** The elements that would be truncated as x other(s) */
+                const truncated = arr.slice(idx)
+
+                // Check if something needs to be truncated
+                if (truncated.length) {
+                    // If there is only 1 element to be truncated then compare the
+                    // length of name and 'x others(s)'
+                    const lastElm =
+                        truncated.length == 1 &&
+                        truncated[0].length <
+                            `${truncated.length} other(s)`.length
+                            ? truncated[0]
+                            : `${truncated.length} other(s)`
+
+                    return displayArray.join(', ') + ` and ${lastElm}`
+                } else {
+                    // Check if everything can be directly displayed
+                    // If so then take the last element from array, append it with 'and'
+                    const lastElm = displayArray.pop()
+                    return displayArray.length
+                        ? displayArray.join(', ') + ` and ${lastElm}`
+                        : lastElm
+                }
+            }
+
+            function getCombinedUsersAndGroups(item: assetInterface) {
+                return [...ownerUsers(item), ...ownerGroups(item)].filter(
+                    (name) => name.length
+                )
+            }
             return {
                 description,
                 logo,
@@ -227,6 +249,10 @@
                 status,
                 rowCount,
                 columnCount,
+                ownerGroups,
+                ownerUsers,
+                getTruncatedUsers,
+                getCombinedUsersAndGroups,
             }
         },
     })

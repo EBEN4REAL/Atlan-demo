@@ -23,7 +23,7 @@
                 <template #header>
                     <div
                         :key="item.id"
-                        class="flex justify-between text-sm select-none"
+                        class="flex justify-between ml-1.5 text-sm select-none"
                     >
                         {{ item.label }}
                     </div>
@@ -154,7 +154,7 @@
         }
         :global(.ant-collapse-arrow) {
             left: 0px !important;
-            font-size: 1rem !important;
+            font-size: 0.85rem !important;
             @apply text-primary !important;
         }
 

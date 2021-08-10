@@ -15,14 +15,15 @@
             >
                 <div
                     v-if="ownerUsers.length > 0"
-                    class="flex flex-wrap px-2 py-1 my-1 text-sm border border-transparent rounded  hover:border-gray-description"
+                    :class="showOwnersDropdown ? 'border-gray-light' : ''"
+                    class="flex flex-wrap px-2 py-1 my-1 text-sm border border-transparent rounded  hover:border-gray-light"
                 >
                     <template
                         v-for="username in splittedOwnerUsers.a"
                         :key="username"
                     >
                         <div
-                            class="flex items-center mr-2.5 mb-1 cursor-pointer"
+                            class="flex items-center mr-3 cursor-pointer  owner-child"
                             v-on:click.stop="() => handleClickUser(username)"
                         >
                             <img
@@ -30,26 +31,28 @@
                                 alt="view"
                                 class="w-4 h-4 mr-1 rounded-full"
                             />
-                            <p
+                            <div
                                 class="
                                     text-gray
                                     mb-0
-                                    hover:border-gray-500
+                                    hover:border-b
                                     truncate
                                     ...
                                 "
                             >
                                 {{ username }}
-                            </p>
+                            </div>
                         </div>
                     </template>
 
-                    <div v-if="splittedOwnerUsers.b.length > 0">
+                    <div
+                        v-if="splittedOwnerUsers.b.length > 0"
+                        class="owner-child"
+                    >
                         <span
                             class="
                                 px-1
                                 py-0.5
-                                mb-3
                                 text-sm
                                 rounded
                                 text-primary
@@ -487,6 +490,14 @@
     .hover_bg-primary-light:hover {
         background: rgba(34, 81, 204, 0.05);
     }
+    .owner-child {
+        margin-top: 0.3rem;
+        margin-bottom: 0.3rem;
+    }
+    // .owner-child:nth-child(2) {
+    //     margin-top: 0.3rem;
+    //     margin-bottom: 0.3rem;
+    // }
 </style>
 <style lang="less" module>
     .previewtab {

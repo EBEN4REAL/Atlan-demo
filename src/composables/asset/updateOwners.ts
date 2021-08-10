@@ -84,11 +84,21 @@ export default function updateOwners(selectedAsset: Ref<assetInterface>) {
     })
 
     const update = (ownerUsers: string[], ownerGroups: string[]) => {
-        isLoading.value = true
-        localOwnerUsers.value = ownerUsers
-        localOwnerGroups.value = ownerGroups
-        body.value = getBody()
-        execute()
+        // console.log(localOwnerUsers.value.join(',') === ownerUsers.join(','))
+        if (localOwnerUsers.value.join(',') !== ownerUsers.join(',')) {
+            isLoading.value = true
+            localOwnerUsers.value = ownerUsers
+            localOwnerGroups.value = ownerGroups
+            body.value = getBody()
+            execute()
+        }
+        if (localOwnerGroups.value.join(',') !== ownerGroups.join(',')) {
+            isLoading.value = true
+            localOwnerUsers.value = ownerUsers
+            localOwnerGroups.value = ownerGroups
+            body.value = getBody()
+            execute()
+        }
     }
 
     watch(state, () => {

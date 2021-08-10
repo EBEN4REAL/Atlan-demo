@@ -13,7 +13,7 @@
         <div class="flex w-full pt-4 text-xs text-gray-description">
             <Owners v-if="selectedAsset.guid" :selectedAsset="selectedAsset" />
             <div class="w-5/12">
-                <p class="flex-1 mb-0">Experts</p>
+                <p class="flex-1 mb-1">Experts</p>
                 <div class="flex flex-wrap">
                     <div
                         class="

@@ -129,7 +129,7 @@
             let assetData: Ref = ref()
             let assetError: Ref = ref()
             function init() {
-                const { response, error } = useAsset({
+                const { data: response, error } = useAsset({
                     entityId: selectedAsset.value.guid,
                 })
                 assetData.value = response.value

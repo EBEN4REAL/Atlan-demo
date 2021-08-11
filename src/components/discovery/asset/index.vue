@@ -485,9 +485,7 @@
                 [assetType, BMAttributeProjection],
                 (n, o) => {
                     // ? Should these run only when all attributes are loaded? like BMAttributeProjection
-                    isAggregate.value = false
                     // abort();
-                    offset.value = 0
                     updateBody()
 
                     if (!now.value) {

@@ -8,27 +8,26 @@
         <!-- Lineage Graph -->
         <div
             v-if="!isCyclic"
-            ref="lineage_graph_ref"
+            ref="lineageGraphRef"
             class="w-full h-full lineage-graph"
             :class="{
                 'cursor-grab': !panStarted,
                 'cursor-grabbing': panStarted,
-                'cursor-wait': columnsListLoading,
             }"
             @dblclick="get_path(null)"
         >
             <div
-                ref="lineage_graph_container_ref"
+                ref="lineageGraphContainerRef"
                 class="flex items-center w-full"
             >
                 <div
-                    v-for="(layoutColumn, index) in layoutColumns"
-                    :key="'layoutColumn' + String(index)"
+                    v-for="(layoutColumn, indexA) in layoutColumns"
+                    :key="'layoutColumn' + String(indexA)"
                 >
                     <!-- group starts here -->
                     <div
-                        v-for="(group, index) in layoutColumn"
-                        :key="'group' + String(index)"
+                        v-for="(group, indexB) in layoutColumn"
+                        :key="'group' + String(indexB)"
                         class="z-10 mb-16 mr-24 text-xs"
                         :class="{
                             'w-12': group.type === 'Process',
@@ -91,9 +90,9 @@
                                     }px`"
                                 >
                                     <div
-                                        v-for="(node, index) in group.fields"
+                                        v-for="(node, indexC) in group.fields"
                                         :id="'group-content-' + node.guid"
-                                        :key="'node' + String(index)"
+                                        :key="'node' + String(indexC)"
                                         :ref="
                                             (el) => {
                                                 el
@@ -113,17 +112,11 @@
                                             expand-icon-position="left"
                                             :bordered="false"
                                             :accordion="true"
-                                            @change="
-                                                handleExpand(
-                                                    group.groupId,
-                                                    group.fields.length,
-                                                    node.guid
-                                                )
-                                            "
+                                            @change="toggleColumns(node, group)"
                                         >
                                             <a-collapse-panel
                                                 :key="node.guid"
-                                                :forceRender="true"
+                                                :force-render="false"
                                             >
                                                 <!-- node header starts here -->
                                                 <template #header>
@@ -154,12 +147,7 @@
                                                     >
                                                         <!-- Node display text -->
                                                         <span
-                                                            class="overflow-hidden  overflow-ellipsis whitespace-nowrap"
-                                                            :style="{
-                                                                width: showColumns
-                                                                    ? '10rem'
-                                                                    : '100%',
-                                                            }"
+                                                            class="w-full overflow-hidden  overflow-ellipsis whitespace-nowrap"
                                                         >
                                                             {{
                                                                 node.displayText
@@ -185,83 +173,21 @@
                                                     "
                                                 >
                                                     <!-- Columns List -->
-                                                    <ul class="pl-3">
-                                                        <li class="my-3">
-                                                            1 Country
-                                                        </li>
-                                                        <li class="mb-3">
-                                                            2 City
-                                                        </li>
-                                                        <li class="mb-3">
-                                                            3 State
-                                                        </li>
-                                                        <li class="mb-3">
-                                                            4 Order_id
-                                                        </li>
-                                                        <li class="mb-3">
-                                                            5 Country
-                                                        </li>
-                                                        <li class="mb-3">
-                                                            6 City
-                                                        </li>
-                                                        <li class="mb-3">
-                                                            7 State
-                                                        </li>
-                                                        <li class="mb-3">
-                                                            8 Order_id
-                                                        </li>
-                                                        <li class="mb-3">
-                                                            9 Country
-                                                        </li>
-                                                        <li class="mb-3">
-                                                            10 City
-                                                        </li>
-                                                        <li class="mb-3">
-                                                            11 City
-                                                        </li>
-                                                        <li class="mb-3">
-                                                            12 City
-                                                        </li>
-                                                        <li class="mb-3">
-                                                            13 City
-                                                        </li>
-                                                        <li class="mb-3">
-                                                            14 City
-                                                        </li>
-                                                    </ul>
+                                                    <LineageColumnList
+                                                        :refs="refs"
+                                                        :data="columnsData"
+                                                        :show-columns="
+                                                            showColumns[
+                                                                group.groupId
+                                                            ]
+                                                        "
+                                                        @update-content-height="
+                                                            updateContentHeight(
+                                                                $event
+                                                            )
+                                                        "
+                                                    />
                                                 </div>
-                                            </a-collapse-panel>
-                                        </a-collapse>
-                                    </div>
-                                    <!-- dummy -->
-                                    <div
-                                        class="absolute hidden w-full cursor-pointer "
-                                    >
-                                        <a-collapse
-                                            expand-icon-position="left"
-                                            :bordered="false"
-                                            :accordion="true"
-                                        >
-                                            <a-collapse-panel
-                                                key="test"
-                                                :forceRender="true"
-                                            >
-                                                <template #header>
-                                                    <div
-                                                        class="relative flex items-center h-full py-2 pl-10 pr-5 text-sm lowercase bg-white border border-gray-300 cursor-pointer  hover:border-primary justify-space-between"
-                                                    >
-                                                        <span
-                                                            class="overflow-hidden  overflow-ellipsis whitespace-nowrap"
-                                                            :style="{
-                                                                width: showColumns
-                                                                    ? '10rem'
-                                                                    : '100%',
-                                                            }"
-                                                        >
-                                                            test dummy node
-                                                        </span>
-                                                    </div>
-                                                </template>
                                             </a-collapse-panel>
                                         </a-collapse>
                                     </div>
@@ -277,8 +203,8 @@
                                 }`"
                         >
                             <div
-                                v-for="(node, index) in group.fields"
-                                :key="'node' + String(index)"
+                                v-for="(node, indexD) in group.fields"
+                                :key="'nodeP' + String(indexD)"
                                 class="w-full h-full cursor-pointer"
                                 :class="{
                                     'border border-primary':
@@ -329,18 +255,15 @@
         nextTick,
         computed,
     } from 'vue'
-
     // Util
     import { getIcon } from '~/components/lineage/util'
     // Components
     import LineageColumnList from '~/components/lineage/lineageColumnList.vue'
-
     // Composables
     import * as useLineageCompute from '~/composables/lineage/useLineageCompute'
     import * as useLineageDOM from '~/composables/lineage/useLineageDOM'
     import * as useLineageLines from '~/composables/lineage/useLineageLines'
     import * as useLineagePanZoom from '~/composables/lineage/useLineagePanZoom'
-    import * as useLineageColumns from '~/composables/lineage/useLineageColumns'
 
     export default defineComponent({
         name: 'LineageGraphComponent',
@@ -355,8 +278,8 @@
             const direction = inject('direction')
 
             /** DATA */
-            const lineage_graph_ref = ref(null)
-            const lineage_graph_container_ref = ref(null)
+            const lineageGraphRef = ref(null)
+            const lineageGraphContainerRef = ref(null)
             const refs = ref({})
             const glGraph = ref({})
             const layoutColumns = ref([])
@@ -367,7 +290,8 @@
             const pathGuid = ref(null)
             const panStarted = ref(false)
             const panZoomInstance = ref({})
-            const columnsListLoading = ref(false)
+            const showColumns = ref({})
+            const columnsData = ref({})
             const contentHeights = ref({})
             const hasLineage = computed(
                 () => lineage.value?.relations.length !== 0
@@ -435,7 +359,7 @@
             const set_pan_zoom_event = async () => {
                 const { panStarted: g, panZoomInstance: h } =
                     await useLineagePanZoom.setPanZoomEvent(
-                        lineage_graph_container_ref,
+                        lineageGraphContainerRef,
                         update_lines
                     )
                 panStarted.value = g.value
@@ -486,30 +410,27 @@
                 center_node()
             }
 
-            // handleExpand
-            const handleExpand = (groupId, groupHeadersLength, guid) => {
-                setTimeout(() => {
-                    let groupHeadersHeight = 38 * groupHeadersLength
-                    let groupContentHeight =
-                        refs.value[`node-content-${guid}`].clientHeight > 0
-                            ? refs.value[`node-content-${guid}`].clientHeight +
-                              24
-                            : refs.value[`node-content-${guid}`].clientHeight
+            // toggleColumns
+            const toggleColumns = ({ guid }, { groupId, fields }) => {
+                showColumns.value[groupId] = !showColumns.value[groupId]
+                columnsData.value = {
+                    guid,
+                    groupId,
+                    groupHeadersLength: fields.length,
+                }
+            }
 
-                    contentHeights.value[groupId] =
-                        groupHeadersHeight + groupContentHeight
-
-                    update_lines()
-                }, 400)
+            // updateContentHeight
+            const updateContentHeight = ({ groupId, val }) => {
+                contentHeights.value[groupId] = val
+                update_lines()
             }
 
             // getTopPosition
             const getTopPosition = (guid) => {
+                // TODO: get absolute top position for each node using previousSibling, clientTop and clientHeight
                 nextTick(() => {
                     const currEle = refs.value[`group-content-${guid}`]
-                    // const prevEle = currEle.previousSibling
-                    // console.log('currEle T:', currEle.clientTop)
-                    // console.log('currEle H:', currEle.clientHeight)
                     return { top: `${0}px` }
                 })
             }
@@ -530,10 +451,9 @@
 
             return {
                 lines,
-                lineage_graph_ref,
-                lineage_graph_container_ref,
+                lineageGraphRef,
+                lineageGraphContainerRef,
                 refs,
-                columnsListLoading,
                 panStarted,
                 glGraph,
                 layoutColumns,
@@ -542,29 +462,23 @@
                 pathGuid,
                 getIcon,
                 contentHeights,
-                isCyclic: false, //
-                showColumns: false, //
+                showColumns,
+                columnsData,
+                isCyclic: false, // TODO:
+                toggleColumns,
                 handle_zoom,
                 handle_fullscreen,
                 get_path,
                 restart_computation,
                 is_highlighted_node,
-                handleExpand,
                 getTopPosition,
+                updateContentHeight,
             }
         },
     })
 </script>
 
 <style lang="less" scoped>
-    .top-0 {
-        top: 0;
-    }
-
-    .cursor-wait {
-        cursor: wait;
-    }
-
     .cursor-grab {
         cursor: grab;
     }

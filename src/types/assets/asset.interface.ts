@@ -21,6 +21,7 @@ export interface assetInterface {
         name: string
         popularityScore: number
         qualifiedName: string
+        userDescription: string
         rowCount: number
         schemaName: string
         sourceUpdatedAt: number

@@ -4,7 +4,7 @@
 
     <div v-else class="w-full bg-gray-100">
         <div class="h-24 p-4 bg-white">
-            <AssetHeader :asset="response?.entities[0]" />
+            <AssetHeader :asset="response?.entities?.[0]" />
         </div>
         <div class="asset-profile">
             <a-tabs v-model="activeKey" @change="selectTab($event)">
@@ -16,7 +16,7 @@
                                 refs[tab.id] = el
                             }
                         "
-                        :asset="response?.entities[0] || {}"
+                        :asset="response?.entities?.[0] || {}"
                     ></component>
                 </a-tab-pane>
             </a-tabs>
@@ -84,9 +84,14 @@
                     `/assets/${id.value}/${selectedTab?.name.toLowerCase()}`
                 )
             }
-            const { response, error, loading } = useAsset({
+            const {
+                data: response,
+                error,
+                loading,
+            } = useAsset({
                 entityId: id.value,
             })
+            console.log(response, 'response')
 
             watch(response, () => {
                 if (response.value?.entities?.length)

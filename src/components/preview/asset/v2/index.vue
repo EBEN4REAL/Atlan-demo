@@ -41,7 +41,7 @@
                     </div>
                 </div>
             </div>
-            <div class="flex items-center mb-2">
+            <div class="flex items-center mb-3">
                 <span class="mb-0 text-lg text-gray font-bold truncate ...">
                     {{ title(selectedAsset) }}</span
                 >
@@ -65,13 +65,10 @@
             >
                 <component
                     :is="tab.component"
-                    :ref="
-                        (el) => {
-                            refMap[tab.id] = el
-                        }
-                    "
                     :componentData="dataMap[tab.id]"
+                    :infoTabData="infoTabData"
                     :selectedAsset="selectedAsset"
+                    :isLoaded="isLoaded"
                     @change="handleChange"
                 ></component>
             </a-tab-pane>
@@ -127,7 +124,8 @@
             const { assetTypeLabel, title, assetStatus } = useAssetInfo()
             const { selectedAsset } = toRefs(props)
             const activeKey = ref(0)
-            const refMap: { [key: string]: any } = ref({})
+            const isLoaded: Ref<boolean> = ref(true)
+
             const dataMap: { [id: string]: any } = ref({})
             const handleChange = (value: any) => {}
             const infoTabData: Ref<any> = ref({})
@@ -139,6 +137,7 @@
             }
 
             function init() {
+                isLoaded.value = true
                 const { data, error } = useAsset({
                     entityId: selectedAsset.value.guid,
                 })
@@ -147,6 +146,7 @@
                     if (data.value && error.value == undefined) {
                         const entitiy = getAssetEntitity(data)
                         infoTabData.value = entitiy
+                        isLoaded.value = false
                         console.log(infoTabData.value, 'info tab Data')
                     } else {
                         console.log(
@@ -160,13 +160,14 @@
             onMounted(init)
 
             return {
+                isLoaded,
+                infoTabData,
                 title,
                 assetTypeLabel,
                 dataMap,
                 activeKey,
                 filteredTabs,
                 assetStatus,
-                refMap,
                 handleChange,
             }
         },
@@ -190,7 +191,7 @@
             @apply tracking-wide;
         }
         :global(.ant-tabs-tab:first-child) {
-            @apply ml-4;
+            @apply ml-2;
         }
         :global(.ant-tabs-nav-container-scrolling .ant-tabs-tab:first-child) {
             @apply ml-0;

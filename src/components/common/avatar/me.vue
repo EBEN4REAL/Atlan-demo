@@ -1,10 +1,13 @@
 <template>
   <a-dropdown>
-    <a-avatar
-      :size="24"
-      class="border-2 border-primary-300"
-      src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png"
-    />
+    <div class="flex items-center">
+      <a-avatar
+        :size="24"
+        class="border-2 mr-2 border-primary-300"
+        src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png"
+      />
+      {{ username }}
+    </div>
     <!-- <a class="ant-dropdown-link" @click="(e) => e.preventDefault()">
               Hover me <a-icon type="down" />
     </a>-->

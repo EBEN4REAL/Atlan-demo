@@ -1,69 +1,76 @@
+import { computed, ref, WritableComputedRef, watch, Ref } from 'vue'
+import mitt from 'mitt'
+import updateAsset from '../utils/updateAsset'
+import whoami from '../user/whoami'
+import { assetInterface } from '~/types/assets/asset.interface'
 
-import { computed, ref, WritableComputedRef, watch } from 'vue';
-import mitt from "mitt";
-import updateAsset from '../utils/updateAsset';
-import whoami from '../user/whoami';
+export default function updateDescription(selectedAsset: Ref<assetInterface>) {
+    const { username } = whoami()
 
-export default function updateDescription(item: any) {
-
-    const { username } = whoami();
-
-
-    const localDescription = ref("");
-    const isCompleted = ref(false);
-    const body = ref({});
-    const isLoading = ref(false);
-
+    const localDescription = ref('')
+    const isCompleted = ref(false)
+    const body = ref({})
+    const isLoading = ref(false)
 
     const getBody = () => ({
-            entities: [
-                {
-                    guid: item.guid,
-                    typeName: item.typeName,
-                    attributes: {
-                        qualifiedName: item.attributes?.qualifiedName,
-                        name: item.attributes?.name,
-                        userDescription: localDescription.value,
-                        tenantId: item.attributes?.tenantId,
-                    },
+        entities: [
+            {
+                guid: selectedAsset.value.guid,
+                typeName: selectedAsset.value.typeName,
+                attributes: {
+                    qualifiedName:
+                        selectedAsset.value.attributes?.qualifiedName,
+                    name: selectedAsset.value.attributes?.name,
+                    userDescription: localDescription.value,
+                    tenantId: selectedAsset.value.attributes?.tenantId,
                 },
-            ],
-        });
+            },
+        ],
+    })
     const description: WritableComputedRef<string> = computed({
-        get: () => (
-                item?.attributes?.userDescription ||
-                item?.attributes?.description
-            ),
+        get: () =>
+            selectedAsset.value?.attributes?.userDescription ||
+            selectedAsset.value?.attributes?.description,
         set: (newValue: string) => {
-            localDescription.value = newValue;
-            body.value = getBody();
+            localDescription.value = newValue
+            body.value = getBody()
         },
-    });
-    const { state, execute, isReady, error } = updateAsset(body, { immediate: false });
+    })
+    const { state, execute, isReady, error } = updateAsset(body, {
+        immediate: false,
+    })
 
     const update = () => {
-        isLoading.value = true;
-        execute();
-    };
-
+        isLoading.value = true
+        execute()
+    }
 
     watch(state, () => {
         if (!error.value && state && isReady.value) {
-            isLoading.value = false;
-            isCompleted.value = false;
-            item.attributes.userDescription = localDescription.value;
-            item.attributes.__modifiedBy = username;
-            item.attributes.__modificationTimestamp = Date.now();
+            isLoading.value = false
+            isCompleted.value = false
+            selectedAsset.value.attributes.userDescription =
+                localDescription.value
+            selectedAsset.value.attributes.__modifiedBy =
+                username as unknown as string
+            selectedAsset.value.attributes.__modificationTimestamp = Date.now()
         }
-    });
+    })
 
     const handleCancel = () => {
-        isCompleted.value = false;
-        isLoading.value = false;
-    };
-
+        isCompleted.value = false
+        isLoading.value = false
+    }
 
     return {
-        description, state, execute, isReady, error, isCompleted, handleCancel, update, isLoading
+        description,
+        state,
+        execute,
+        isReady,
+        error,
+        isCompleted,
+        handleCancel,
+        update,
+        isLoading,
     }
 }

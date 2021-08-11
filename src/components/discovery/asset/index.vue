@@ -1,7 +1,7 @@
 <template>
     <div class="flex w-full">
-        <div class="w-1/3 h-full pt-6 pl-4 bg-white">
-            <div class="flex flex-col">
+        <div class="h-full bg-white border-r facets">
+            <div class="flex flex-col p-4">
                 <div class="mb-3">
                     <a-radio-group
                         v-model:value="filterMode"
@@ -30,10 +30,10 @@
         </div>
 
         <div
-            class="flex flex-col items-stretch w-2/3 w-full mt-3 mb-1 bg-white"
+            class="flex flex-col items-stretch flex-grow mt-3 mb-1 bg-white"
             style="overflow: hidden"
         >
-            <div class="flex flex-col h-full mx-6">
+            <div class="flex flex-col h-full">
                 <div class="flex px-3">
                     <ConnectorDropdown
                         :data="connectorsPayload"
@@ -48,43 +48,54 @@
                 <div class="flex items-center mx-3 mt-1">
                     <a-input
                         v-model:value="queryText"
-                        placeholder="Search"
+                        placeholder="Search for assets"
                         size="default"
-                        class="searchbox"
+                        :class="$style.searchbar"
                         @change="handleSearchChange"
                     >
                         <template #prefix>
-                            <div class="flex -space-x-2">
-                                <img
-                                    :src="filteredConnector?.image"
-                                    class="w-auto h-6 mr-1 bg-white rounded-full  border-5"
-                                />
-                            </div>
-                        </template>
-                        <template #suffix>
-                            <a-popover placement="bottomLeft">
-                                <template #content>
-                                    <Preferences
-                                        :default-projection="projection"
-                                        @change="handleChangePreferences"
-                                        @sort="handleChangeSort"
-                                        @state="handleState"
-                                    ></Preferences>
-                                </template>
-                                <fa icon="fal cog"></fa>
-                            </a-popover>
+                            <Fa
+                                icon="fal search"
+                                class="mr-2 text-gray-description"
+                            />
                         </template>
                     </a-input>
+                    <a-popover
+                        v-model:visible="isFilterVisible"
+                        trigger="click"
+                        placement="bottomLeft"
+                    >
+                        <template #content>
+                            <Preferences
+                                :default-projection="projection"
+                                @change="handleChangePreferences"
+                                @sort="handleChangeSort"
+                                @state="handleState"
+                            ></Preferences>
+                        </template>
+                        <div
+                            tabindex="0"
+                            class="flex items-center px-2 py-1 transition-shadow border rounded  border-gray-bg hover:border-gray-300"
+                            @keyup.enter="isFilterVisible = !isFilterVisible"
+                        >
+                            <span>Options</span>
+                            <Fa
+                                icon="fas chevron-down"
+                                class="ml-1 transition-transform transform"
+                                :class="
+                                    isFilterVisible ? '-rotate-180' : 'rotate-0'
+                                "
+                            />
+                        </div>
+                    </a-popover>
                 </div>
 
-                <div class="flex w-full px-3 mt-3">
-                    <AssetTabs
-                        v-model="assetType"
-                        :asset-type-list="assetTypeList"
-                        :asset-type-map="assetTypeMap"
-                        :total="totalSum"
-                    ></AssetTabs>
-                </div>
+                <AssetTabs
+                    v-model="assetType"
+                    :asset-type-list="assetTypeList"
+                    :asset-type-map="assetTypeMap"
+                    :total="totalSum"
+                ></AssetTabs>
 
                 <div
                     v-if="
@@ -227,7 +238,7 @@
     }
 
     export default defineComponent({
-        name: 'HelloWorld',
+        name: 'AssetDiscovery',
         components: {
             AssetList,
             SavedFilters,
@@ -254,7 +265,7 @@
         setup(props, { emit }) {
             // initializing the discovery store
             const { initialFilters } = props
-
+            const isFilterVisible = ref(false)
             const router = useRouter()
             const tracking = useTracking()
             const events = tracking.getEventsName()
@@ -576,6 +587,7 @@
             })
 
             return {
+                isFilterVisible,
                 initialFilters,
                 searchScoreList,
                 list,
@@ -645,5 +657,24 @@
         },
     })
 </script>
-
-<style lang="less" scoped></style>
+<style lang="less" module>
+    .searchbar {
+        @apply mr-2 border-none rounded;
+        @apply bg-gray-bg bg-opacity-50;
+        @apply outline-none;
+        :global(.ant-input) {
+            @apply h-6;
+            @apply bg-transparent;
+            @apply text-gray-description;
+        }
+        ::placeholder {
+            @apply text-gray-description opacity-80 text-sm;
+        }
+    }
+</style>
+<style scoped>
+    .facets {
+        min-width: 280px;
+        width: 340px;
+    }
+</style>

@@ -1,21 +1,27 @@
 <template>
     <VirtualList :data="list" :data-key="keyField">
         <template #default="{ item }">
-            <div class="border-b border-primary-200">
-                <ListItem
-                    :item="item"
-                    :score="score[item.guid]"
-                    :projection="projection"
-                    @click="handlePreview(item)"
-                ></ListItem>
-            </div>
+            <ListItem
+                :item="item"
+                :score="score[item.guid]"
+                :projection="projection"
+                @click="handlePreview(item)"
+            ></ListItem>
         </template>
     </VirtualList>
+    <!-- <ListItem
+        :v-for="item in list"
+        :key="item[keyField]"
+        :item="item"
+        :score="score[item.guid]"
+        :projection="projection"
+        @click="handlePreview(item)"
+    ></ListItem> -->
     <!-- TODO: Add loading state -->
 </template>
 
 <script lang="ts">
-    import { defineComponent, SetupContext } from 'vue'
+    import { defineComponent, SetupContext, toRefs } from 'vue'
     import ListItem from './item.vue'
     import VirtualList from '~/lib/virtualList.vue'
 

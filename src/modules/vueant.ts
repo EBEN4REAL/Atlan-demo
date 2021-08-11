@@ -41,7 +41,8 @@ import {
   Pagination,
   DatePicker,
   Popconfirm,
-  Empty
+  Empty,
+  Typography
 } from "ant-design-vue";
 import { updater } from "../api/index";
 import { UserModule } from "~/types/vitessg";
@@ -83,6 +84,7 @@ export const install: UserModule = ({ app }) => {
   app.use(Pagination);
   app.use(DatePicker);
   app.use(Popconfirm);
+  app.use(Typography);
   app.use(Empty);
 
  

@@ -91,6 +91,7 @@
             } = useAsset({
                 entityId: id.value,
             })
+            console.log(response, 'response')
 
             watch(response, () => {
                 if (response.value?.entities?.length)

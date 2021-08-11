@@ -1,5 +1,5 @@
 <template>
-    <div class="py-4">
+    <div class="pt-6">
         <div class="px-4">
             <div class="flex items-center justify-between mt-2 mb-4 text-sm">
                 <div class="flex">
@@ -42,13 +42,14 @@
                 </div>
             </div>
             <div class="flex items-center mb-3">
-                <span class="mb-0 text-lg text-gray font-bold truncate ...">
+                <span class="mb-0 text-md text-gray font-bold truncate ...">
                     {{ title(selectedAsset) }}</span
                 >
                 <div class="flex items-center">
                     <StatusBadge
+                        :showNoStatus="true"
                         :key="selectedAsset.guid"
-                        :status-id="selectedAsset?.attributes?.assetStatus"
+                        :status-id="assetStatus(selectedAsset)"
                         class="ml-1.5"
                     ></StatusBadge>
                 </div>
@@ -58,17 +59,12 @@
         <a-tabs v-model:activeKey="activeKey" :class="$style.previewtab">
             <a-tab-pane
                 class="px-4 py-2 overflow-y-auto tab-height"
-                v-for="tab in tabs"
-                :key="tab.id"
+                v-for="(tab, index) in filteredTabs"
+                :key="index"
                 :tab="tab.name"
             >
                 <component
                     :is="tab.component"
-                    :ref="
-                        (el) => {
-                            refMap[tab.id] = el
-                        }
-                    "
                     :componentData="dataMap[tab.id]"
                     :infoTabData="infoTabData"
                     :selectedAsset="selectedAsset"
@@ -93,7 +89,7 @@
     } from 'vue'
     import StatusBadge from '@common/badge/status/index.vue'
     import { assetInterface } from '~/types/assets/asset.interface'
-    import { tabList as tabs } from './tabList'
+    import useAssetDetailsTabList from './useTabList'
     import HierarchyBar from '@common/badge/hierarchy.vue'
     import useAsset from '~/composables/asset/useAsset'
     import useAssetInfo from '~/composables/asset/useAssetInfo'
@@ -124,12 +120,12 @@
             ),
         },
         setup(props, { emit }) {
-            const { assetTypeLabel, title } = useAssetInfo()
+            const { filteredTabs, assetType } = useAssetDetailsTabList()
+            const { assetTypeLabel, title, assetStatus } = useAssetInfo()
             const { selectedAsset } = toRefs(props)
+            const activeKey = ref(0)
             const isLoaded: Ref<boolean> = ref(true)
 
-            const activeKey = ref('1')
-            const refMap: { [key: string]: any } = ref({})
             const dataMap: { [id: string]: any } = ref({})
             const handleChange = (value: any) => {}
             const infoTabData: Ref<any> = ref({})
@@ -145,6 +141,7 @@
                 const { data, error } = useAsset({
                     entityId: selectedAsset.value.guid,
                 })
+                assetType.value = selectedAsset.value.typeName
                 watch([data, error], () => {
                     if (data.value && error.value == undefined) {
                         const entitiy = getAssetEntitity(data)
@@ -169,8 +166,8 @@
                 assetTypeLabel,
                 dataMap,
                 activeKey,
-                tabs,
-                refMap,
+                filteredTabs,
+                assetStatus,
                 handleChange,
             }
         },
@@ -187,10 +184,11 @@
 <style lang="less" module>
     .previewtab {
         :global(.ant-tabs-tab) {
-            @apply pb-2 px-1;
+            @apply pb-5 px-1;
             @apply mx-2;
             @apply text-gray-description;
-            @apply text-sm;
+            @apply text-sm !important;
+            @apply tracking-wide;
         }
         :global(.ant-tabs-tab:first-child) {
             @apply ml-2;
@@ -210,6 +208,7 @@
         }
         :global(.ant-tabs-ink-bar) {
             @apply rounded-t-sm;
+            margin-bottom: 1px;
         }
     }
 </style>

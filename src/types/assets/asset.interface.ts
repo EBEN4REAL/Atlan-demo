@@ -51,5 +51,5 @@ export interface assetInterface {
     meaningNames: string[]
     meanings: { displayText: string }[]
     status: string
-    typeName?: string
+    typeName: string
 }

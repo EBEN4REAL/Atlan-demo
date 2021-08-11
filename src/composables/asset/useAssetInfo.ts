@@ -121,6 +121,10 @@ export default function useAssetInfo() {
         return attributes(asset)?.ownerUsers?.split(',') || []
     }
 
+    const assetStatus = (asset: assetInterface) => {
+        attributes(asset)?.assetStatus
+    }
+
     return {
         databaseLogo,
         schemaLogo,
@@ -144,5 +148,6 @@ export default function useAssetInfo() {
         tableInfo,
         ownerGroups,
         ownerUsers,
+        assetStatus,
     }
 }

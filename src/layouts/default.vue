@@ -6,20 +6,60 @@
           <img
             src="https://atlan.com/assets/img/atlan-blue.6ed81a56.svg"
             class="w-auto h-4 cursor-pointer"
-             @click="() => handleChange('home')"
+            @click="() => handleChange('home')"
           />
           <a-menu
             v-model:selectedKeys="activeKey"
             class="h-full border-0"
             mode="horizontal"
           >
-            <a-menu-item
-              key="assets"
-              class="flex px-4 items-center cursor-pointer"
-              @click="() => handleChange('assets')"
-            >
-              Discover
-            </a-menu-item>
+            <a-dropdown :trigger="['hover']">
+              <a-menu-item
+                key="assets"
+                class="flex px-4 items-center cursor-pointer"
+                @click="() => handleChange('assets')"
+              >
+                Discover
+              </a-menu-item>
+              <template #overlay>
+                <div
+                  class="
+                    flex
+                    min-w-96
+                    py-6
+                    px-8
+                    border
+                    bg-white
+                    text-sm
+                    leading-4
+                    dropdown
+                  "
+                >
+                  <div class="flex flex-col pr-4 border-r">
+                    <h2 class="text-gray text-base leading-5 mb-4">
+                      Your Saved Filters
+                    </h2>
+                    <div class="flex flex-col">
+                      <a-button type="link" class="m-0 p-0">Sales Dashboard 2021 (21 assets)</a-button>
+                      <a-button type="link" class="m-0 p-0">Sales Dashboard 2021 (21 assets)</a-button>
+                      <a-button type="link" class="m-0 p-0">Sales Dashboard 2021 (21 assets)</a-button>
+                      <a-button type="link" class="m-0 p-0">Sales Dashboard 2021 (21 assets)</a-button>
+                    </div>
+                  </div>
+                  <div class="flex flex-col ml-4">
+                    <h2 class="text-gray text-base leading-5 mb-4">
+                      Organisation's Saved Filters
+                    </h2>
+                    <div class="flex flex-col">
+                      <a-button type="link" class="m-0 p-0">Sales Dashboard 2021 (21 assets)</a-button>
+                      <a-button type="link" class="m-0 p-0">Sales Dashboard 2021 (21 assets)</a-button>
+                      <a-button type="link" class="m-0 p-0">Sales Dashboard 2021 (21 assets)</a-button>
+                      <a-button type="link" class="m-0 p-0">Sales Dashboard 2021 (21 assets)</a-button>
+                    </div>
+                  </div>
+                </div>
+              </template>
+            </a-dropdown>
             <a-menu-item
               key="glossary"
               class="flex px-4 items-center cursor-pointer"
@@ -49,7 +89,7 @@
             style="background: #f0f2f7"
           >
           </a-input>
-           <a-menu
+          <a-menu
             v-model:selectedKeys="activeKey"
             class="h-full w-24 border-0"
             mode="horizontal"
@@ -84,11 +124,10 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, watch, onMounted } from 'vue'
+import { defineComponent, ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 
 import KeycloakMixin from '~/mixins/keycloak'
-import Sidebar from './sidebar/index.vue'
 import UserPersonalAvatar from '~/components/common/avatar/me.vue'
 import PreviewDrawer from '~/components/common/previewDrawer.vue'
 
@@ -113,8 +152,8 @@ export default defineComponent({
     }
 
     const handleChange = (key: string) => {
-      if (key && Object.keys(pages).find(page => page === key)) {
-        activeKey.value = [key];
+      if (key && Object.keys(pages).find((page) => page === key)) {
+        activeKey.value = [key]
         router.push(pages[key])
       }
     }
@@ -131,87 +170,8 @@ export default defineComponent({
       activeKey,
     }
   },
-
-  // mixins: [KeycloakMixin],
-  // const getDarkTheme = () => import("~/styles/dark.less");
-  // const getLightTheme = () => import("~/styles/light.less");
-
-  //   function themeToggle() {
-  //     const htmlTag = document.querySelector("html");
-  //     if (htmlTag.classList.contains("dark")) {
-  //       htmlTag.className = "light";
-  //     } else {
-  //       htmlTag.className = "dark";
-  //     }
-
-  //     getCurrentTheme().forEach((element: string) => {
-  //       if (element === "dark") {
-  //         getDarkTheme();
-  //       } else {
-  //         getLightTheme();
-  //       }
-  //     });
-  //   };
-
-  // const getCurrentTheme = function (): any {
-  //   const htmlTag = document.querySelector("html");
-  //   return htmlTag?.classList;
-  // };
 })
 </script>
 
 <style lang="less" module>
-.sidebar {
-  @apply bg-gradient-to-b from-primary-600 via-primary-700 to-primary-800    !important;
-  .sidebartab {
-    :global(.ant-tabs-tab) {
-      @apply text-primary-muted !important;
-      padding: 8px 12px !important;
-      max-width: 60px !important;
-    }
-    :global(.ant-tabs-ink-bar) {
-      @apply bg-primary-600;
-      border-top-right-radius: 1px !important;
-      border-bottom-right-radius: 1px !important;
-      width: 3px !important;
-      right: auto !important;
-    }
-    :global(.ant-tabs-left-bar) {
-      border: 0px !important;
-      min-width: 60px !important;
-    }
-    :global(.ant-tabs-nav-container) {
-      margin-right: 0px !important;
-    }
-    :global(.ant-tabs-nav-wrap) {
-      margin-right: 0px !important;
-    }
-    :global(.ant-tabs-tab-active) {
-      @apply bg-primary-100 bg-opacity-5 text-primary-muted !important;
-      transition: background-color 0.2s cubic-bezier(0.645, 0.045, 0.355, 1);
-    }
-  }
-}
-
-// .sidebarMenu {
-//   @apply mt-3 !important;
-//   width: 48px !important;
-//   border: 0px !important;
-//   background: transparent !important;
-
-//   &:global(.ant-menu-inline-collapsed) {
-//     :global(.ant-menu-item) {
-//       @apply text-primary-muted mb-3 rounded-lg ease-in transition-colors text-center text-xl leading-6 !important;
-//       padding: 8px 0px !important;
-//       margin-left: 6px !important;
-
-//       margin-right: 6px !important;
-//       height: inherit !important;
-
-//       &:global(.ant-menu-item-selected) {
-//         @apply bg-gray-50 text-primary !important;
-//       }
-//     }
-//   }
-// }
 </style>

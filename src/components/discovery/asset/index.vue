@@ -1,7 +1,7 @@
 <template>
     <div class="flex w-full">
         <div class="h-full bg-white border-r facets">
-            <div class="flex flex-col">
+            <div class="flex flex-col p-4">
                 <div class="mb-3">
                     <a-radio-group
                         v-model:value="filterMode"
@@ -668,13 +668,12 @@
             @apply text-gray-description;
         }
         ::placeholder {
-            @apply text-gray-description opacity-80;
+            @apply text-gray-description opacity-80 text-sm;
         }
     }
 </style>
 <style scoped>
     .facets {
-        @apply p-4;
         min-width: 280px;
         width: 340px;
     }

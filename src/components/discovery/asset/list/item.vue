@@ -1,11 +1,13 @@
 <template>
     <div
-        class="flex max-w-2xl px-4 py-6 mx-auto bg-white  hover:bg-primary-100 hover:bg-opacity-10 text-gray"
+        class="flex items-start max-w-2xl py-6 pl-2 pr-4 mx-auto bg-white  hover:bg-primary-100 hover:bg-opacity-10 text-gray"
     >
-        <component
-            :is="item.typeName"
-            class="flex-none w-auto h-6 mr-2"
-        ></component>
+        <div class="p-2 mr-2 rounded bg-opacity-30 bg-primary-100">
+            <component
+                :is="item.typeName"
+                class="flex-none w-auto h-6"
+            ></component>
+        </div>
 
         <div class="box-border flex flex-col flex-1 pr-16 overflow-hidden">
             <!-- Title bar -->

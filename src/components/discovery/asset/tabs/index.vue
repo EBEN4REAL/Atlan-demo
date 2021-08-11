@@ -12,14 +12,14 @@
                     <span
                         class="chip"
                         v-if="item.id === 'Catalog' && total > 0"
-                        >{{ numeralFormat(total) }}</span
+                        >{{ getCountString(total) }}</span
                     >
                     <span
                         class="chip"
                         v-if="
                             assetTypeMap[item.id] && assetTypeMap[item.id] > 0
                         "
-                        >{{ numeralFormat(assetTypeMap[item.id]) }}</span
+                        >{{ getCountString(assetTypeMap[item.id]) }}</span
                     >
                 </template>
             </a-tab-pane>
@@ -29,11 +29,7 @@
 
 <script lang="ts">
     import { computed, defineComponent, Ref, ref, watch } from 'vue'
-    import fetchConnectionList from '~/composables/connection/fetchConnectionList'
-
-    import { AssetTypeList } from '~/constant/assetType'
-    import { CONNECTION_FETCH_LIST } from '~/constant/store_types'
-    import { ConnectionType } from '~/types/atlas/connection'
+    import { getCountString } from '~/composables/asset/useFormat'
 
     export default defineComponent({
         props: {
@@ -193,6 +189,7 @@
             return {
                 assetType,
                 handleChange,
+                getCountString,
             }
         },
     })

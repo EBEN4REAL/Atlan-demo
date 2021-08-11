@@ -21,9 +21,7 @@
             v-for="item in List"
             :key="item.id"
             :class="activeKey === item.id ? 'bg-gray-medium' : ''"
-            class="bg-transparent hover:bg-gray-medium"
-            @mouseover="() => toggleClearFilter(item, true)"
-            @mouseleave="() => toggleClearFilter(item, false)"
+            class="bg-transparent hover:bg-gray-medium group"
         >
             <template #header>
                 <div
@@ -33,7 +31,8 @@
                     {{ item.label }}
 
                     <div
-                        v-if="isFilter(item.id) && showClearFilter"
+                        v-if="isFilter(item.id)"
+                        class="opacity-0 group-hover:opacity-100"
                         @click.stop.prevent="handleClear(item.id)"
                     >
                         Clear
@@ -69,7 +68,7 @@
     import { Collapse } from '~/types'
 
     export default defineComponent({
-        name: 'HelloWorld',
+        name: 'DiscoveryFacets',
         components: {
             Status: defineAsyncComponent(
                 () => import('@common/facets/status.vue')
@@ -96,7 +95,6 @@
         emits: ['refresh'],
         setup(props, { emit }) {
             const classificationsStore = useClassificationStore()
-            const showClearFilter: Ref<boolean> = ref(false)
             const activeKey: Ref<string> = ref('')
             const initialFilterMap = {
                 status: {
@@ -191,22 +189,8 @@
                     refMap.value[id].clear()
                 }
             }
-            const toggleClearFilter = (item: Collapse, visiblity: boolean) => {
-                console.log('called', item, visiblity)
-                if (visiblity) {
-                    if (item.id === activeKey.value) {
-                        showClearFilter.value = true
-                    } else {
-                        showClearFilter.value = false
-                    }
-                } else {
-                    showClearFilter.value = false
-                }
-            }
             return {
                 activeKey,
-                showClearFilter,
-                toggleClearFilter,
                 dataMap,
                 handleChange,
                 isFilter,

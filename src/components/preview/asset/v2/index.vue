@@ -41,7 +41,7 @@
                     </div>
                 </div>
             </div>
-            <div class="flex items-center mb-2">
+            <div class="flex items-center mb-3">
                 <span class="mb-0 text-lg text-gray font-bold truncate ...">
                     {{ title(selectedAsset) }}</span
                 >
@@ -70,7 +70,9 @@
                         }
                     "
                     :componentData="dataMap[tab.id]"
+                    :infoTabData="infoTabData"
                     :selectedAsset="selectedAsset"
+                    :isLoaded="isLoaded"
                     @change="handleChange"
                 ></component>
             </a-tab-pane>
@@ -124,6 +126,7 @@
         setup(props, { emit }) {
             const { assetTypeLabel, title } = useAssetInfo()
             const { selectedAsset } = toRefs(props)
+            const isLoaded: Ref<boolean> = ref(true)
 
             const activeKey = ref('1')
             const refMap: { [key: string]: any } = ref({})
@@ -138,6 +141,7 @@
             }
 
             function init() {
+                isLoaded.value = true
                 const { data, error } = useAsset({
                     entityId: selectedAsset.value.guid,
                 })
@@ -145,6 +149,7 @@
                     if (data.value && error.value == undefined) {
                         const entitiy = getAssetEntitity(data)
                         infoTabData.value = entitiy
+                        isLoaded.value = false
                         console.log(infoTabData.value, 'info tab Data')
                     } else {
                         console.log(
@@ -158,6 +163,8 @@
             onMounted(init)
 
             return {
+                isLoaded,
+                infoTabData,
                 title,
                 assetTypeLabel,
                 dataMap,
@@ -180,13 +187,13 @@
 <style lang="less" module>
     .previewtab {
         :global(.ant-tabs-tab) {
-            @apply pb-3 px-1;
+            @apply pb-2 px-1;
             @apply mx-2;
             @apply text-gray-description;
-            @apply text-xs;
+            @apply text-sm;
         }
         :global(.ant-tabs-tab:first-child) {
-            @apply ml-4;
+            @apply ml-2;
         }
         :global(.ant-tabs-nav-container-scrolling .ant-tabs-tab:first-child) {
             @apply ml-0;

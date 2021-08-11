@@ -39,23 +39,39 @@
                 </p>
                 <div v-else>
                     <div
-                        class="inline-flex px-2 py-1 rounded cursor-pointer select-none  _bg-primary-light"
+                        class="inline-flex px-2 py-1 rounded cursor-pointer select-none  text-primary hover:text-white hover:bg-primary _bg-primary-light"
                     >
                         <span class="flex items-center text-sm">
-                            <fa icon="fal plus" class="text-primary" />
+                            <fa icon="fal plus" />
                         </span>
-                        <span class="mt-1 ml-2 text-primary"
-                            >Add Description</span
-                        >
+                        <span class="ml-2">Add Description</span>
                     </div>
                 </div>
             </div>
         </a-popover>
     </div>
+    <!-- <div class="w-full pt-2 text-xs text-gray-description">
+            <p class="mb-1">Description</p>
+            <p class="mb-0 text-sm text-gray">
+                Transaction table stores all the information required for a trip
+                before an actual trip is created, such as client requirements,
+                vendor and truck details a...<span
+                    class="ml-2 font-semibold text-primary"
+                    >show more</span
+                >
+            </p>
+        </div> -->
 </template>
 
 <script lang="ts">
-    import { defineComponent, nextTick, ref, watch, PropType } from 'vue'
+    import {
+        defineComponent,
+        nextTick,
+        ref,
+        watch,
+        PropType,
+        toRefs,
+    } from 'vue'
     import { useMagicKeys } from '@vueuse/core'
     import updateDescription from '~/composables/asset/updateDescription'
     import { assetInterface } from '~/types/assets/asset.interface'
@@ -68,6 +84,7 @@
             },
         },
         setup(props) {
+            const { selectedAsset } = toRefs(props)
             const {
                 isLoading,
                 update,
@@ -77,7 +94,7 @@
                 state,
                 description,
                 isCompleted,
-            } = updateDescription(props.selectedAsset)
+            } = updateDescription(selectedAsset)
 
             const handleUpdate = () => {
                 update()

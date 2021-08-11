@@ -1,9 +1,9 @@
 import useSWRV from 'swrv'
-import { computed, ref } from 'vue'
+import { computed, ref, ComputedRef } from 'vue'
 import LocalStorageCache from 'swrv/dist/cache/adapters/localStorage'
 import swrvState from '../utils/swrvState'
 import { Components } from '~/api/auth/client'
-
+import { userInterface } from '~/types/users/user.interface'
 import { User, URL } from '~/api/auth/user'
 
 export default function fetchUserList(dependent: any) {
@@ -34,9 +34,13 @@ export default function fetchUserList(dependent: any) {
     )
     const { state, STATES } = swrvState(data, error, isValidating)
 
-    const list = computed(() => data.value?.records)
-    const total = computed(() => data.value?.total_record)
-    const filtered = computed(() => data.value?.filter_record)
+    const list: ComputedRef<userInterface[]> = computed(
+        () => data.value?.records
+    )
+    const total: ComputedRef<number> = computed(() => data.value?.total_record)
+    const filtered: ComputedRef<userInterface[]> = computed(
+        () => data.value?.filter_record
+    )
 
     let debounce: any = null
     const handleSearch = (val: Event | string) => {

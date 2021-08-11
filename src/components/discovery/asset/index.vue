@@ -676,7 +676,6 @@
     .facets {
         @apply p-4;
         min-width: 280px;
-        /* TODO: Apply it when sidebar is removed from layout */
-        /* width: 340px; */
+        width: 340px;
     }
 </style>

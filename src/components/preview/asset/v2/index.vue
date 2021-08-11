@@ -1,5 +1,5 @@
 <template>
-    <div class="py-4">
+    <div class="pt-6">
         <div class="px-4">
             <div class="flex items-center justify-between mt-2 mb-4 text-sm">
                 <div class="flex">
@@ -183,10 +183,11 @@
 <style lang="less" module>
     .previewtab {
         :global(.ant-tabs-tab) {
-            @apply pb-3 px-1;
+            @apply pb-5 px-1;
             @apply mx-2;
             @apply text-gray-description;
-            @apply text-xs;
+            @apply text-sm !important;
+            @apply tracking-wide;
         }
         :global(.ant-tabs-tab:first-child) {
             @apply ml-4;
@@ -206,6 +207,7 @@
         }
         :global(.ant-tabs-ink-bar) {
             @apply rounded-t-sm;
+            margin-bottom: 1px;
         }
     }
 </style>

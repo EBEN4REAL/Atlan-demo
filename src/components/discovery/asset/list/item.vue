@@ -9,10 +9,10 @@
 
         <div class="box-border flex flex-col flex-1 pr-16 overflow-hidden">
             <!-- Title bar -->
-            <div class="flex items-center mb-0">
+            <div class="flex items-center mb-0 overflow-hidden">
                 <router-link
                     :to="`/assets/${item.guid}/overview`"
-                    class="flex-shrink mb-0 overflow-hidden text-lg font-bold leading-6 tracking-wide truncate cursor-pointer  text-gray hover:underline overflow-ellipsis whitespace-nowrap"
+                    class="flex-shrink mb-0 overflow-hidden text-base font-bold leading-6 tracking-wide truncate cursor-pointer  text-gray hover:underline overflow-ellipsis whitespace-nowrap"
                 >
                     {{ title(item) }}
                 </router-link>
@@ -30,98 +30,92 @@
                     <Fa class="w-auto h-3" icon="fal external-link-alt" />
                 </router-link>
             </div>
+            <!-- Column data type -->
+            <div
+                v-if="item.typeName.toLowerCase() === 'column'"
+                class="flex items-center mt-1 mr-4"
+            >
+                <component
+                    :is="dataTypeImage(item)"
+                    class="w-auto h-5"
+                ></component>
+                <span class="ml-1 text-sm">{{ dataType(item) }}</span>
+            </div>
             <!-- Row?Col/Owner bar -->
-            <div class="flex items-baseline">
+            <div
+                v-if="
+                    projection?.includes('owners') ||
+                    projection?.includes('rows') ||
+                    projection?.includes('popularity')
+                "
+                class="flex items-baseline mt-1"
+            >
                 <!-- Owners -->
                 <div
                     v-if="
                         projection?.includes('owners') &&
                         getCombinedUsersAndGroups(item).length
                     "
-                    class="flex items-baseline mr-4 text-gray"
+                    class="flex items-baseline mr-4 text-xs leading-5 text-gray"
                 >
-                    <span class="mr-1 text-xs">Owned by </span>
-                    <span class="text-xs font-bold">{{
+                    <span class="mr-1">Owned by </span>
+                    <span class="font-bold">{{
                         getTruncatedUsers(getCombinedUsersAndGroups(item), 20)
                     }}</span>
                 </div>
-                <!-- Row/Col/popularity count -->
+                <!-- Row/Col-->
                 <div
+                    class="flex mr-2"
                     v-if="
-                        projection?.includes('rows') ||
-                        projection?.includes('popularity')
+                        projection?.includes('rows') &&
+                        (item.typeName.toLowerCase() === 'table' ||
+                            item.typeName.toLowerCase() === 'view')
                     "
-                    class="flex items-baseline"
                 >
-                    <!-- Row/Col-->
                     <div
                         class="flex items-baseline mr-2"
-                        v-if="
-                            projection?.includes('rows') &&
-                            (item.typeName.toLowerCase() === 'table' ||
-                                item.typeName.toLowerCase() === 'view')
-                        "
+                        v-if="item?.typeName.toLowerCase() === 'table'"
                     >
-                        <div
-                            class="mr-2"
-                            v-if="item?.typeName.toLowerCase() === 'table'"
-                        >
-                            <span class="mr-1 text-sm font-bold">{{
-                                rowCount(item, false)
-                            }}</span>
-                            <span class="text-xs text-gray-description"
-                                >Rows</span
-                            >
-                        </div>
-                        <div class="mr-2">
-                            <span class="mr-1 text-sm font-bold">{{
-                                columnCount(item, false)
-                            }}</span>
-                            <span class="text-xs text-gray-description"
-                                >Cols</span
-                            >
-                        </div>
+                        <span class="mr-1 text-sm font-bold">{{
+                            rowCount(item, false)
+                        }}</span>
+                        <span class="text-xs text-gray-description">Rows</span>
                     </div>
-                    <!-- Popularity -->
-                    <div
-                        class="pt-1 mr-2"
-                        v-if="
-                            projection?.includes('popularity') &&
-                            item?.attributes?.popularityScore > 0
-                        "
-                    >
-                        <Fa icon="fal analytics" class="w-auto h-3" />
-                        <span class="ml-1 text-sm font-bold">
-                            {{
-                                numeralFormat(
-                                    item?.attributes?.popularityScore,
-                                    '0[.]00'
-                                )
-                            }}
-                        </span>
-                    </div>
-                    <!-- Search score -->
-                    <div
-                        v-if="projection?.includes('searchscore')"
-                        class="pt-1 mr-2"
-                    >
-                        <Fa icon="fal search" class="w-auto h-3 pushtop" />
-                        <span class="ml-1 text-sm font-bold">
-                            {{ numeralFormat(score, '0[.]000000') }}
-                        </span>
+                    <div class="flex items-baseline mr-2">
+                        <span class="mr-1 text-sm font-bold">{{
+                            columnCount(item, false)
+                        }}</span>
+                        <span class="text-xs text-gray-description">Cols</span>
                     </div>
                 </div>
-            </div>
-            <!-- Column data type -->
-            <div
-                v-if="item.typeName.toLowerCase() === 'column'"
-                class="flex items-center mt-1 mb-0 text-xs"
-            >
-                <component
-                    :is="dataTypeImage(item)"
-                    class="w-5 h-5 mr-1"
-                ></component>
-                <div class="leading-none">{{ dataType(item) }}</div>
+                <!-- Popularity -->
+                <!-- <div
+                    class="pt-1 mr-2"
+                    v-if="
+                        projection?.includes('popularity') &&
+                        item?.attributes?.popularityScore > 0
+                    "
+                >
+                    <Fa icon="fal analytics" class="w-auto h-3" />
+                    <span class="ml-1 text-sm font-bold">
+                        {{
+                            numeralFormat(
+                                item?.attributes?.popularityScore,
+                                '0[.]00'
+                            )
+                        }}
+                    </span>
+                </div> -->
+                <!-- Search score -->
+                <!-- <div
+                    v-if="projection?.includes('searchscore')"
+                    class="pt-1 mr-2"
+                >
+                    <Fa icon="fal search" class="w-auto h-3 pushtop" />
+                    <span class="ml-1 text-sm font-bold">
+                        {{ numeralFormat(score, '0[.]000000') }}
+                    </span>
+                </div> -->
             </div>
             <!-- Description -->
             <span

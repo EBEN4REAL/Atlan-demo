@@ -1,24 +1,30 @@
 <template>
-    <a-tabs
-        v-model:activeKey="assetType"
-        class="w-full"
-        :class="$style.assetbar"
-        @change="handleChange"
-    >
-        <a-tab-pane v-for="item in assetTypeList" :key="item.id">
-            <template #tab>
-                <span>{{ item.label }}</span>
-                <span class="chip" v-if="item.id === 'Catalog' && total > 0">{{
-                    numeralFormat(total)
-                }}</span>
-                <span
-                    class="chip"
-                    v-if="assetTypeMap[item.id] && assetTypeMap[item.id] > 0"
-                    >{{ numeralFormat(assetTypeMap[item.id]) }}</span
-                >
-            </template>
-        </a-tab-pane>
-    </a-tabs>
+    <div>
+        <a-tabs
+            v-model:activeKey="assetType"
+            class="w-full mt-3"
+            :class="$style.assetbar"
+            @change="handleChange"
+        >
+            <a-tab-pane v-for="item in assetTypeList" :key="item.id">
+                <template #tab>
+                    <span>{{ item.label }}</span>
+                    <span
+                        class="chip"
+                        v-if="item.id === 'Catalog' && total > 0"
+                        >{{ numeralFormat(total) }}</span
+                    >
+                    <span
+                        class="chip"
+                        v-if="
+                            assetTypeMap[item.id] && assetTypeMap[item.id] > 0
+                        "
+                        >{{ numeralFormat(assetTypeMap[item.id]) }}</span
+                    >
+                </template>
+            </a-tab-pane>
+        </a-tabs>
+    </div>
 </template>
 
 <script lang="ts">
@@ -195,13 +201,14 @@
 <style lang="less" module>
     .assetbar {
         :global(.ant-tabs-tab) {
-            @apply pb-3 px-1 !important;
+            @apply pb-5 px-1 !important;
             @apply mx-2 !important;
             @apply text-gray-description;
-            @apply text-xs;
+            @apply text-sm !important;
+            @apply tracking-wide;
         }
         :global(.ant-tabs-tab:first-child) {
-            @apply ml-4;
+            @apply ml-4 !important;
         }
         :global(.ant-tabs-nav-container-scrolling .ant-tabs-tab:first-child) {
             @apply ml-0;
@@ -218,14 +225,15 @@
         }
         :global(.ant-tabs-ink-bar) {
             @apply rounded-t-sm;
+            margin-bottom: 1px;
         }
     }
 </style>
 <style scoped>
     .chip {
-        @apply px-1 py-0.5 mx-1;
+        @apply px-1 pt-1 pb-0.5 mx-1;
         @apply rounded;
-        @apply tracking-wider;
+        @apply tracking-wide;
         @apply text-xs;
         @apply font-bold;
         @apply text-primary;

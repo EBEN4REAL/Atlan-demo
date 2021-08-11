@@ -1,6 +1,6 @@
 <template>
     <div class="flex w-full">
-        <div class="w-1/3 h-full pt-6 pl-4 bg-white">
+        <div class="h-full bg-white border-r facets">
             <div class="flex flex-col">
                 <div class="mb-3">
                     <a-radio-group
@@ -30,7 +30,7 @@
         </div>
 
         <div
-            class="flex flex-col items-stretch w-2/3 w-full mt-3 mb-1 bg-white"
+            class="flex flex-col items-stretch flex-grow mt-3 mb-1 bg-white"
             style="overflow: hidden"
         >
             <div class="flex flex-col h-full">
@@ -75,7 +75,7 @@
                         </template>
                         <div
                             tabindex="0"
-                            class="flex items-center px-4 py-1 transition-shadow border rounded  border-gray-bg hover:border-gray-300"
+                            class="flex items-center px-2 py-1 transition-shadow border rounded  border-gray-bg hover:border-gray-300"
                             @keyup.enter="isFilterVisible = !isFilterVisible"
                         >
                             <span>Options</span>
@@ -90,14 +90,12 @@
                     </a-popover>
                 </div>
 
-                <div class="flex w-full px-3 mt-3">
-                    <AssetTabs
-                        v-model="assetType"
-                        :asset-type-list="assetTypeList"
-                        :asset-type-map="assetTypeMap"
-                        :total="totalSum"
-                    ></AssetTabs>
-                </div>
+                <AssetTabs
+                    v-model="assetType"
+                    :asset-type-list="assetTypeList"
+                    :asset-type-map="assetTypeMap"
+                    :total="totalSum"
+                ></AssetTabs>
 
                 <div
                     v-if="
@@ -672,5 +670,13 @@
         ::placeholder {
             @apply text-gray-description opacity-80;
         }
+    }
+</style>
+<style scoped>
+    .facets {
+        @apply p-4;
+        min-width: 280px;
+        /* TODO: Apply it when sidebar is removed from layout */
+        /* width: 340px; */
     }
 </style>

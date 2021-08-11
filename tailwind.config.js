@@ -22,6 +22,7 @@ module.exports = {
                 primary: {
                     DEFAULT: '#2251cc',
                     muted: '#e6edff',
+                    light: '#F4F6FD',
                     100: '#d2d4f6',
                     200: '#a6a8ed',
                     300: '#797de4',
@@ -38,6 +39,7 @@ module.exports = {
                     light: '#ced4da',
                     dark: '#28292a',
                     disabled: '#CED4DA',
+                    medium: '#FAFAFA',
                     bg: '#E5E6EB',
                     description: '#6F7590',
                     100: '#f8f8fd',

@@ -1,31 +1,11 @@
 <template>
     <div class="flex w-full">
-        <div class="w-1/3 h-full pt-6 pl-4 bg-white">
+        <div class="w-1/3 h-full bg-white border-r">
             <div class="flex flex-col">
-                <div class="mb-3">
-                    <a-radio-group
-                        v-model:value="filterMode"
-                        class="flex w-full text-center"
-                    >
-                        <a-radio-button class="flex-grow" value="custom"
-                            ><fa icon="fal filter" class="pushtop"></fa
-                        ></a-radio-button>
-                        <a-radio-button class="flex-grow" value="saved"
-                            ><fa icon="fal list-alt" class="pushtop"></fa
-                        ></a-radio-button>
-                    </a-radio-group>
-                </div>
-
-                <div v-show="filterMode === 'custom'" class="flex-grow">
-                    <AssetFilters
-                        :initial-filters="initialFilters"
-                        @refresh="handleFilterChange"
-                    ></AssetFilters>
-                </div>
-
-                <div v-show="filterMode === 'saved'">
-                    <!--     <SavedFilters @refresh="handleSavedSearchChange"></SavedFilters> -->
-                </div>
+                <AssetFilters
+                    :initial-filters="initialFilters"
+                    @refresh="handleFilterChange"
+                ></AssetFilters>
             </div>
         </div>
 

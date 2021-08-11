@@ -240,7 +240,7 @@
     }
 
     export default defineComponent({
-        name: 'HelloWorld',
+        name: 'AssetDiscovery',
         components: {
             AssetList,
             SavedFilters,

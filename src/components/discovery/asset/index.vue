@@ -10,7 +10,7 @@
         </div>
 
         <div
-            class="flex flex-col items-stretch w-2/3 w-full mt-3 mb-1 bg-white"
+            class="flex flex-col items-stretch flex-grow mt-3 mb-1 bg-white"
             style="overflow: hidden"
         >
             <div class="flex flex-col h-full">
@@ -55,7 +55,17 @@
                         </template>
                         <div
                             tabindex="0"
-                            class="flex items-center px-4 py-1 transition-shadow border rounded  border-gray-bg hover:border-gray-300"
+                            class="
+                                flex
+                                items-center
+                                px-2
+                                py-1
+                                transition-shadow
+                                border
+                                rounded
+                                border-gray-bg
+                                hover:border-gray-300
+                            "
                             @keyup.enter="isFilterVisible = !isFilterVisible"
                         >
                             <span>Options</span>
@@ -70,14 +80,12 @@
                     </a-popover>
                 </div>
 
-                <div class="flex w-full px-3 mt-3">
-                    <AssetTabs
-                        v-model="assetType"
-                        :asset-type-list="assetTypeList"
-                        :asset-type-map="assetTypeMap"
-                        :total="totalSum"
-                    ></AssetTabs>
-                </div>
+                <AssetTabs
+                    v-model="assetType"
+                    :asset-type-list="assetTypeList"
+                    :asset-type-map="assetTypeMap"
+                    :total="totalSum"
+                ></AssetTabs>
 
                 <div
                     v-if="
@@ -220,7 +228,7 @@
     }
 
     export default defineComponent({
-        name: 'HelloWorld',
+        name: 'AssetDiscovery',
         components: {
             AssetList,
             SavedFilters,
@@ -650,7 +658,13 @@
             @apply text-gray-description;
         }
         ::placeholder {
-            @apply text-gray-description opacity-80;
+            @apply text-gray-description opacity-80 text-sm;
         }
+    }
+</style>
+<style scoped>
+    .facets {
+        min-width: 280px;
+        width: 340px;
     }
 </style>

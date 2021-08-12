@@ -319,7 +319,7 @@
             border-left: 2px solid rgba(#161515, 0.1) !important;
 
             p {
-                @apply p-2 bg-gray-50 rounded !important;
+                @apply p-2 bg-gray-100 rounded !important;
             }
         }
 

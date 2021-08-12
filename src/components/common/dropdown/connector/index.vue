@@ -66,7 +66,7 @@
                     </div>
                     <div v-else class="flex py-2 cursor-pointer">
                         <p
-                            class="flex items-center mb-0 text-xs tracking-wide text-gray-900 align-middle hover:bg-gray-50"
+                            class="flex items-center mb-0 text-xs tracking-wide text-gray-900 align-middle hover:bg-gray-100"
                         >
                             <fa icon="fal plug" class="mr-1"></fa>All Connectors
                             <fa

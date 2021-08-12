@@ -29,7 +29,7 @@
                     <div class="flex py-2 pr-3 cursor-pointer">
                         <p
                             v-if="list?.length > 0"
-                            class="flex items-center mb-0 text-xs tracking-wide text-gray-900 align-middle hover:bg-gray-50"
+                            class="flex items-center mb-0 text-xs tracking-wide text-gray-900 align-middle hover:bg-gray-100"
                         >
                             <component
                                 :is="list[0].typeName"

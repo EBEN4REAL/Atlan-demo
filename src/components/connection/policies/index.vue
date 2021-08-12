@@ -1,8 +1,8 @@
 <template>
   <div class="flex h-full">
-    <div class="flex flex-col w-1/4 h-full overflow-hidden border-r bg-gray-50">
+    <div class="flex flex-col w-1/4 h-full overflow-hidden border-r bg-gray-100">
       <div class="flex flex-grow w-full px-4 mt-3 mb-2 overflow-y-auto">
-        <a-menu mode="inline" :class="$style.sidebar" class="bg-gray-50">
+        <a-menu mode="inline" :class="$style.sidebar" class="bg-gray-100">
           <a-menu-item key="metadata"> Assets </a-menu-item>
           <a-menu-item key="adoption"> Adoption </a-menu-item>
           <a-menu-item key="lineage"> Lineage </a-menu-item>

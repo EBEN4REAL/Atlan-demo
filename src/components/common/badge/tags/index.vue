@@ -7,7 +7,7 @@
           <a-tag
             :key="tag"
             :closable="allowUpdate"
-            class="bg-gray-50"
+            class="bg-gray-100"
             :class="[updatingTags ? 'text-gray pointer-events-none' : '']"
             @close="handleClose(tag)"
             >{{ `${tag.slice(0, 20)}...` }}</a-tag
@@ -17,7 +17,7 @@
           v-else
           :closable="allowUpdate"
           :class="[updatingTags ? 'text-gray pointer-events-none' : '']"
-          class="bg-gray-50"
+          class="bg-gray-100"
           @close="handleClose(tag)"
           >{{ tag }}</a-tag
         >

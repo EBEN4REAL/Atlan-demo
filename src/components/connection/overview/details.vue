@@ -68,7 +68,7 @@
             <div class="text-gray-900">{{ item?.attributes?.port }}</div>
           </div>
         </div>
-        <div class="p-4 mt-4 border rounded bg-gray-50">
+        <div class="p-4 mt-4 border rounded bg-gray-100">
           <div
             class="flex items-center justify-between mb-3 text-sm align-middle"
           >

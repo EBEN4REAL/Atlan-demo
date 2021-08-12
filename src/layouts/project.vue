@@ -73,7 +73,7 @@
     //       height: inherit !important;
 
     //       &:global(.ant-menu-item-selected) {
-    //         @apply bg-gray-50 text-primary !important;
+    //         @apply bg-gray-100 text-primary !important;
     //       }
     //     }
     //   }

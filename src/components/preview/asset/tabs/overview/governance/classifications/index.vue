@@ -123,7 +123,7 @@
     </template>
 
     <div
-      class="px-2 py-1 transition duration-500 ease-in-out rounded-lg hover:bg-gray-50 hover:border"
+      class="px-2 py-1 transition duration-500 ease-in-out rounded-lg hover:bg-gray-100 hover:border"
       @mouseover="
         () => {
           showAddClassificationBtn = true;

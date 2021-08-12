@@ -108,7 +108,7 @@
       </div>
     </div>
 
-    <div class="px-3 pt-3 border border-gray-200 rounded bg-gray-50">
+    <div class="px-3 pt-3 border border-gray-200 rounded bg-gray-100">
       <div class="">
         <p class="mb-2 text-sm font-normal text-gray">Advanced</p>
       </div>

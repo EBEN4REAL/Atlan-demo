@@ -280,7 +280,7 @@
         :global(.ant-tabs-tab) {
             @apply pb-3 px-1;
             @apply mx-2;
-            @apply text-gray-description;
+            @apply text-gray-500;
             @apply text-xs;
         }
     }

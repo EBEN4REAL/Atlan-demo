@@ -19,14 +19,14 @@
                     <fa
                         v-if="!classificationSearchText"
                         icon="fal search"
-                        class="ml-2 mr-1 text-gray-description"
+                        class="ml-2 mr-1 text-gray-500"
                     />
                 </template>
             </a-input>
             <a-popover trigger="click" placement="rightTop">
                 <template #content>
                     <div class="flex justify-between mb-2 border-b">
-                        <p class="mb-0 text-gray-description">Sort by</p>
+                        <p class="mb-0 text-gray-500">Sort by</p>
                     </div>
                     <a-radio-group
                         v-model:value="classificationFilterOptionsData"
@@ -39,7 +39,7 @@
                             class="flex flex-col"
                         >
                             <a-radio :value="item.value"
-                                ><span class="mb-0 ml-1 text-gray-description">
+                                ><span class="mb-0 ml-1 text-gray-500">
                                     {{ item?.title }}
                                 </span></a-radio
                             >
@@ -98,9 +98,7 @@
                                 :value="item.name"
                                 class="w-full mb-3"
                             >
-                                <span
-                                    class="mb-0 ml-1  text-gray-description truncated"
-                                >
+                                <span class="mb-0 ml-1 text-gray-500 truncated">
                                     {{ item?.displayName }}
                                 </span>
                             </a-checkbox>
@@ -120,9 +118,7 @@
                                 :value="item.guid"
                                 class="w-full mb-3"
                             >
-                                <span
-                                    class="mb-0 ml-1  text-gray-description truncated"
-                                >
+                                <span class="mb-0 ml-1 text-gray-500 truncated">
                                     {{ item?.displayName }}
                                 </span>
                             </a-checkbox>
@@ -135,7 +131,19 @@
                             classificationSearchText === '' &&
                             classificationsList.length > 5
                         "
-                        class="flex items-center w-auto mt-3 mb-0 font-bold text-center cursor-pointer select-none  outlined text-primary"
+                        class="
+                            flex
+                            items-center
+                            w-auto
+                            mt-3
+                            mb-0
+                            font-bold
+                            text-center
+                            cursor-pointer
+                            select-none
+                            outlined
+                            text-primary
+                        "
                         @click="toggleClassifications"
                     >
                         {{ `Show ${classificationsList.length - 5} more` }}
@@ -145,7 +153,19 @@
                             !hideClassifications &&
                             classificationSearchText === ''
                         "
-                        class="flex items-center w-auto mt-3 mb-0 font-bold text-center cursor-pointer select-none  outlined text-primary"
+                        class="
+                            flex
+                            items-center
+                            w-auto
+                            mt-3
+                            mb-0
+                            font-bold
+                            text-center
+                            cursor-pointer
+                            select-none
+                            outlined
+                            text-primary
+                        "
                         @click="toggleClassifications"
                     >
                         {{ `Show less` }}

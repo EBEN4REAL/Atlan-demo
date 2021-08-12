@@ -2,7 +2,7 @@
     <div class="flex justify-between items-center px-4 py-3.5 text-xs">
         <div class="font-medium text-gray-500">3 filters applied</div>
         <div class="flex items-center text-gray-500">
-            <div class="px-3 py-1 font-medium text-gray-500 rounded">Reset</div>
+            <div class="px-3 py-1 font-medium rounded text-primar">Reset</div>
             <a-button
                 class="px-3 py-1 text-xs font-medium border-0 rounded  bg-primary-light text-primary"
                 >Save</a-button
@@ -45,7 +45,7 @@
                             Clear
                         </div>
                     </div>
-                    <div class="text-gray-500">
+                    <div>
                         {{ getFiltersAppliedString(item.id) }}
                         <!-- {{ refMap?.value[item.id]?.checkedValues }} -->
                     </div>

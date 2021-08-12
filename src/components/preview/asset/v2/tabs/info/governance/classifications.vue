@@ -1,5 +1,5 @@
 <template>
-    <div class="text-sm text-gray-description">
+    <div class="text-sm text-gray-500">
         <p class="mb-1">Classifications</p>
         <div class="py-1 rounded-lg">
             <a-popover
@@ -22,7 +22,7 @@
                             <p class="pb-1 text-lg text-gray-500 border-b">
                                 Link Classification
                             </p>
-                            <p class="mb-1 text-sm text-gray-400">
+                            <p class="mb-1 text-sm text-gray">
                                 Select classifications
                             </p>
                             <a-select
@@ -46,7 +46,7 @@
                                     >
                                 </template>
                             </a-select>
-                            <p class="mt-2 text-xs text-gray-400">
+                            <p class="mt-2 text-xs text-gray">
                                 Can't find the right classification to link,
                                 create a new classification from
                                 <a
@@ -60,7 +60,7 @@
                                 v-model:checked="
                                     linkClassificationData.propagate
                                 "
-                                class="mt-2 text-gray-400"
+                                class="mt-2 text-gray"
                                 >Propagate classification to related assets
                             </a-checkbox>
                             <a-checkbox
@@ -68,7 +68,7 @@
                                 v-model:checked="
                                     linkClassificationData.removePropagationsOnEntityDelete
                                 "
-                                class="mt-2 text-gray-400"
+                                class="mt-2 text-gray"
                                 >Remove propagation when
                                 <span class="font-semibold text-gray-500">{{
                                     asset.displayText

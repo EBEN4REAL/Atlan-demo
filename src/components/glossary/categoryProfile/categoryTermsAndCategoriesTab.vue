@@ -14,7 +14,7 @@
                     <a-tab-pane key="1" :tab="`All (${all.length})`">
                         <div v-for="asset in all" :key="asset.guid">
                             <GtcEntityCard
-                                :class="{ 'hover:bg-gray-50': true }"
+                                :class="{ 'hover:bg-gray-100': true }"
                                 :entity="asset"
                                 @gtcCardClicked="onEntitySelect"
                             />
@@ -23,7 +23,7 @@
                     <a-tab-pane key="2" :tab="`Terms (${terms.length})`">
                         <div v-for="asset in terms" :key="asset.guid">
                             <GtcEntityCard
-                                :class="{ 'hover:bg-gray-50': true }"
+                                :class="{ 'hover:bg-gray-100': true }"
                                 :entity="asset"
                                 @gtcCardClicked="onEntitySelect"
                             />
@@ -35,7 +35,7 @@
                     >
                         <div v-for="asset in categories" :key="asset.guid">
                             <GtcEntityCard
-                                :class="{ 'hover:bg-gray-50': true }"
+                                :class="{ 'hover:bg-gray-100': true }"
                                 :entity="asset"
                                 @gtcCardClicked="onEntitySelect"
                             />
@@ -164,7 +164,7 @@ export default defineComponent({
 </script>
 <style lang="less">
 .secondaryHeading {
-    @apply tracking-widest text-xs text-gray-400 leading-5;
+    @apply tracking-widest text-xs text-gray leading-5;
 }
 </style>
 

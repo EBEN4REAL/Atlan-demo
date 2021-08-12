@@ -7,7 +7,7 @@
                         :is="selectedAsset.typeName"
                         class="w-5 h-5 mr-2"
                     ></component>
-                    <span class="text-gray-description">{{
+                    <span class="text-gray-500">{{
                         assetTypeLabel(selectedAsset)
                     }}</span>
                 </div>
@@ -186,7 +186,7 @@
         :global(.ant-tabs-tab) {
             @apply pb-5 px-1;
             @apply mx-2;
-            @apply text-gray-description;
+            @apply text-gray-500;
             @apply text-sm !important;
             @apply tracking-wide;
         }

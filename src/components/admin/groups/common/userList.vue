@@ -7,7 +7,7 @@
           class="mr-3"
           @click="$emit('showGroupMembers')"
         >
-          <fa class="text-gray-dark" icon="fal chevron-left" />
+          <fa class="text-gray-500" icon="fal chevron-left" />
         </a-button>
         <a-input-search
           v-model:value="searchText"
@@ -70,7 +70,7 @@
                   <div class="ml-2">
                     <div class="text-gray">
                       <div class="mr-2 font-bold">{{ user.name }}</div>
-                      <div class="mr-2 text-gray-400">{{ user.email }}</div>
+                      <div class="mr-2 text-gray">{{ user.email }}</div>
                     </div>
                   </div>
                 </div>

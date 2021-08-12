@@ -1,5 +1,5 @@
 <template>
-    <div class="text-sm leading-6 text-gray-400 font-normal">
+    <div class="text-sm leading-6 text-gray font-normal">
         <span v-if="createdAt" class="mr-3"
             >Created {{ creationTime }} ago<span v-if="createdBy">
                 by

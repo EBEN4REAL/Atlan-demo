@@ -27,7 +27,7 @@
           <p class="mb-0 leading-none text-gray-700">
             {{ connectionName(item) }}
           </p>
-          <p class="mb-0 text-gray-400">{{ botName(item) }}</p>
+          <p class="mb-0 text-gray">{{ botName(item) }}</p>
         </div>
       </div>
     </td>

@@ -82,7 +82,7 @@
         <template #time="{ text: session }">
           <a-popover placement="bottom">
             <template #content>
-              <span class="text-gray-dark">{{
+              <span class="text-gray-500">{{
                 session.last_accessed_string
               }}</span>
             </template>
@@ -92,7 +92,7 @@
         <template #action="{ text: session }">
           <a-popover placement="bottom">
             <template #content>
-              <span class="text-gray-dark">{{
+              <span class="text-gray-500">{{
                 session.started_at_string
               }}</span>
             </template>

@@ -26,7 +26,7 @@
       <div class="d-flex align-items-center justify-content-end w-100">
         <a-button
           variant="link"
-          class="mr-2 btn font-w700 text-muted"
+          class="mr-2 btn font-w700 text-gray-300"
           @click="handleClose"
         >
           Cancel

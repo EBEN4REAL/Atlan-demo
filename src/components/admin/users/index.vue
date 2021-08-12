@@ -1,14 +1,7 @@
 <template>
     <div>
-        <div class="flex items-center">
-            <div class="mb-2 text-2xl text-gray">Manage Members</div>
-            <div
-                class="inline-flex items-center justify-center px-2 py-1 ml-2 mr-2 text-xs font-bold leading-none text-red-100 bg-indigo-600 rounded-full "
-            >
-                {{ filteredUserCount }}
-            </div>
-        </div>
-        <div class="pb-6 text-sm text-gray-400">
+        <div class="mb-2 text-2xl text-gray">Manage Members <a-badge :number-style="{backgroundColor: '#5277D7'}" :count="filteredUserCount" /></div>
+        <div class="pb-6 text-sm text-gray">
             Add, remove and manage their roles
         </div>
         <div class="flex justify-between mb-4 gap-x-5">
@@ -65,7 +58,7 @@
                     </template>
                     <a-button
                         size="default"
-                        class="mr-2 rounded-md text-gray-dark"
+                        class="mr-2 rounded-md text-gray-500"
                     >
                         <fa icon="fal filter" class="mr-1"></fa>Filter users
                         <!--TODO: add logic to count filters and show the count here-->
@@ -143,7 +136,7 @@
                                 <span class="text-primary">{{
                                     nameCase(user.name) || '-'
                                 }}</span>
-                                <p class="mb-0 text-gray-400 truncate">
+                                <p class="mb-0 text-gray truncate">
                                     @{{ user.username || '-' }}
                                 </p>
                             </div>
@@ -158,7 +151,7 @@
                                 py-0.5
                                 bg-gray-100
                                 rounded
-                                text-gray-dark
+                                text-gray-500
                             "
                         >
                             <fa
@@ -239,7 +232,10 @@
                                     placement="leftTop"
                                     trigger="click"
                                     :destroy-tooltip-on-hide="true"
-                                    :visible="selectedUserId === user.id"
+                                    :visible="
+                                        selectedUserId === user.id &&
+                                        showChangeRolePopover
+                                    "
                                     ><template #title
                                         ><div
                                             class="flex items-center justify-between "

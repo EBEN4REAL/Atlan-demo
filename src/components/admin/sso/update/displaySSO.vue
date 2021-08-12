@@ -32,7 +32,7 @@
                 <template #label>
                     <div class="flex flex-col mb-2 h-36">
                         <span class="mb-2 text-xl font-normal">Enabled:</span>
-                        <span class="mb-1 text-gray-400"
+                        <span class="mb-1 text-gray"
                             >This allows user to login with SSO<br />
                             They will be able to login via email.
                         </span>
@@ -45,7 +45,7 @@
                 <template #label>
                     <div class="flex flex-col h-48 mb-2">
                         <div class="mb-2 text-xl font-normal">Enforce SSO:</div>
-                        <div class="mb-4 text-gray-400">
+                        <div class="mb-4 text-gray">
                             User will be automatically redirected to configured
                             SSO
                         </div>

@@ -8,7 +8,7 @@
                 :class="$style.searchbar"
             >
                 <template #prefix>
-                    <Fa icon="fal search" class="mr-2 text-gray-description" />
+                    <Fa icon="fal search" class="mr-2 text-gray-500" />
                 </template>
             </a-input>
             <a-popover
@@ -18,13 +18,13 @@
             >
                 <template #content>
                     <p class="mb-2 text-sm">Filters</p>
-                    <p class="mb-1 text-xs text-gray-description">By type</p>
+                    <p class="mb-1 text-xs text-gray-500">By type</p>
                     <DataTypes v-model:filters="filters" />
                 </template>
 
                 <div
                     tabindex="0"
-                    class="flex items-center px-4 py-1 transition-shadow border rounded  border-gray-bg hover:border-gray-300"
+                    class="flex items-center px-4 py-1 transition-shadow border rounded  border-gray-300 hover:border-gray-300"
                     @keyup.enter="isFilterVisible = !isFilterVisible"
                 >
                     <span> Filters</span>
@@ -59,7 +59,7 @@
                     <span class="pl-1">Fkey</span>
                 </div>
             </div>
-            <span class="text-xs leading-relaxed text-gray-description">
+            <span class="text-xs leading-relaxed text-gray-500">
                 {{ asset.attributes.description || 'No description' }}
             </span>
         </div>
@@ -138,15 +138,15 @@
 <style lang="less" module>
     .searchbar {
         @apply mr-2 border-none rounded;
-        @apply bg-gray-bg bg-opacity-50;
+        @apply bg-gray-300 bg-opacity-50;
         @apply outline-none;
         :global(.ant-input) {
             @apply h-6;
             @apply bg-transparent;
-            @apply text-gray-description;
+            @apply text-gray-500;
         }
         ::placeholder {
-            @apply text-gray-description opacity-80;
+            @apply text-gray-500 opacity-80;
         }
     }
 </style>

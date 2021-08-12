@@ -12,7 +12,7 @@
                 <h1 class="text-3xl leading-9 m-0 p-0 text-black font-normal">
                     <span
                         v-if="parentGlossaryQualifiedName"
-                        class="text-gray-400"
+                        class="text-gray"
                         >{{ parentGlossaryQualifiedName }} /
                     </span>
                     {{ title }}

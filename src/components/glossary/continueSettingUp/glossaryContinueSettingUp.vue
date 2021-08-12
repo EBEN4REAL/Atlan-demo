@@ -37,7 +37,7 @@
                         <span v-if="record.shortDescription">{{
                             record.shortDescription
                         }}</span>
-                        <span v-else class="text-gray-400">- NA -</span>
+                        <span v-else class="text-gray">- NA -</span>
                     </template>
                     <template #owners="{ record }">
                         <a-select

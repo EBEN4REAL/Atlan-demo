@@ -4,7 +4,7 @@
             <div class="flex items-center mb-2 align-middle">
                 <component :is="item.typeName" class="w-6 h-6 mr-1"></component>
                 <p
-                    class="mb-0 text-sm font-bold leading-none truncate  text-primary-400"
+                    class="mb-0 text-sm font-bold leading-none truncate  text-gray"
                 >
                     {{ title(item) }}
                 </p>

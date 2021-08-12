@@ -16,11 +16,11 @@
                     >
                         <span class="truncate ...">{{ displayName }}</span>
                     </div>
-                    <div class="mb-1 text-sm text-gray-300">
+                    <div class="mb-1 text-sm text-gray">
                         <span v-if="createdAt">
                             Created {{ createdAt }} by
                             <span
-                                class="text-gray-400 border-b border-dotted cursor-pointer "
+                                class="text-gray border-b border-dotted cursor-pointer "
                                 @click="() => handleClickUser(createdBy)"
                                 >{{ createdBy }}</span
                             >
@@ -29,7 +29,7 @@
                             <span class="px-1">·</span>
                             Updated {{ updatedAt }} by
                             <span
-                                class="text-gray-400 border-b border-dotted cursor-pointer "
+                                class="text-gray border-b border-dotted cursor-pointer "
                                 @click="() => handleClickUser(updatedBy)"
                             >
                                 {{ updatedBy }}</span
@@ -37,8 +37,8 @@
                         </span>
                     </div>
                     <div class="mt-3">
-                        <p class="mb-1 text-sm text-gray-300">Description</p>
-                        <div class="flex mb-0 text-sm text-gray-400">
+                        <p class="mb-1 text-sm text-gray">Description</p>
+                        <div class="flex mb-0 text-sm text-gray">
                             <span v-if="!selectedClassification.description"
                                 >Click to add description</span
                             >

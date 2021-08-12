@@ -6,7 +6,7 @@
           <p class="m-0 text-2xl font-medium text-primary">
             {{ selectedEnum.name }}
           </p>
-          <span class="m-0 text-sm text-gray-400">
+          <span class="m-0 text-sm text-gray">
             Created
             {{ timeAgo(selectedEnum.createTime) }} by
             <span

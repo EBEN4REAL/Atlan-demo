@@ -11,7 +11,7 @@
       <div class="w-3/4 mr-8">
         <div>
           <div class="flex items-center mb-2 ">
-            <p class="mb-0 mr-4 text-2xl text-gray-dark">
+            <p class="mb-0 mr-4 text-2xl text-gray-500">
               Sales churn analysis
             </p>
             <div
@@ -23,7 +23,7 @@
               Active
             </div>
           </div>
-          <p class="text-sm text-gray-400 ">
+          <p class="text-sm text-gray ">
             This project's focus is on understanding the pitfalls in our sales
             department and proivde feedback to the team
           </p>
@@ -46,13 +46,13 @@
       </div>
       <div class="w-1/4 pr-4 overflow-y-auto sidebar-widget-container">
         <div class="h-64 mb-4 border rounded">
-          <p class="px-4 py-2 text-lg border-b text-gray-dark">Project info</p>
+          <p class="px-4 py-2 text-lg border-b text-gray-500">Project info</p>
         </div>
         <div class="h-64 mb-4 border rounded">
-          <p class="px-4 py-2 text-lg border-b text-gray-dark">Saved Assets</p>
+          <p class="px-4 py-2 text-lg border-b text-gray-500">Saved Assets</p>
         </div>
         <div class="h-64 mb-4 border rounded">
-          <p class="px-4 py-2 text-lg border-b text-gray-dark">Activity</p>
+          <p class="px-4 py-2 text-lg border-b text-gray-500">Activity</p>
         </div>
       </div>
     </div>

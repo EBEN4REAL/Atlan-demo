@@ -33,7 +33,7 @@
       </a-collapse> -->
     </div>
 
-    <!-- <div class="flex flex-col w-1/4 h-full overflow-hidden border-r bg-gray-50">
+    <!-- <div class="flex flex-col w-1/4 h-full overflow-hidden border-r bg-gray-100">
       <p class="px-3 pt-6 mb-0 tracking-tight text-gray-500 uppercase">
         Packages
       </p>

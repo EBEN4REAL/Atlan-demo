@@ -1,5 +1,5 @@
 <template>
-    <div class="border-b rounded-tl-lg rounded-tr-lg bg-gray-50">
+    <div class="border-b rounded-tl-lg rounded-tr-lg bg-gray-100">
         <ConnectorDropdown
             :data="props.connectorsPayload"
             @change="handleChangeConnectors"

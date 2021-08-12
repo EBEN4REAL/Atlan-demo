@@ -56,14 +56,14 @@ export default defineComponent({
 <style lang="less" module>
 .sidebartab {
   :global(.ant-tabs-tab) {
-    @apply text-primary-muted !important;
+    @apply text-primary-light !important;
     padding: 8px 12px !important;
     max-width: 60px !important;
     //   min-height: 48px !important;
     //   line-height: 40px;
   }
   :global(.ant-tabs-ink-bar) {
-    @apply bg-primary-200;
+    @apply bg-primary-light;
     right: 0px !important;
     border-top-right-radius: 1px !important;
     border-bottom-right-radius: 1px !important;

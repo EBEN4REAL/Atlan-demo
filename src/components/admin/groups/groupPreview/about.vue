@@ -20,7 +20,7 @@
       />
       <div class="flex-1">
         <div class="flex items-center">
-          <p class="mb-0 text-gray-400">Members</p>
+          <p class="mb-0 text-gray">Members</p>
         </div>
         <div class="text-gray">
           {{ selectedGroup.memberCount }}
@@ -30,13 +30,13 @@
     <div class="flex mt-3">
       <div class="flex-1 mr-4">
         <div class="flex items-center">
-          <p class="mb-0 text-gray-400">Created By</p>
+          <p class="mb-0 text-gray">Created By</p>
         </div>
         <div class="text-gray">{{ selectedGroup.createdBy }}</div>
       </div>
       <div class="flex-1">
         <div class="flex items-center">
-          <p class="mb-0 text-gray-400">Created</p>
+          <p class="mb-0 text-gray">Created</p>
         </div>
         <div class="capitalize text-gray">
           {{ selectedGroup.createdAtTimeAgo }}

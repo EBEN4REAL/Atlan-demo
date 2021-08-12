@@ -64,7 +64,7 @@
                     >({{ group.memberCountString }})</span
                   >
                 </div>
-                <div class="text-gray-400">@{{ group.alias }}</div>
+                <div class="text-gray">@{{ group.alias }}</div>
               </div>
             </div>
             <div class="font-bold">

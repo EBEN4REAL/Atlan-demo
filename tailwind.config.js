@@ -26,11 +26,6 @@ module.exports = {
                 },
                 body: '#fff',
                 gray: {
-                    light: '#ced4da',
-                    dark: '#28292a',
-                    disabled: '#CED4DA',
-                    bg: '#E5E6EB',
-                    description: '#6F7590',
                     DEFAULT: '#3E4359',
                     500: "#6F7590",
                     300: "#E6E6EB",

@@ -239,7 +239,10 @@
                                     placement="leftTop"
                                     trigger="click"
                                     :destroy-tooltip-on-hide="true"
-                                    :visible="selectedUserId === user.id"
+                                    :visible="
+                                        selectedUserId === user.id &&
+                                        showChangeRolePopover
+                                    "
                                     ><template #title
                                         ><div
                                             class="flex items-center justify-between "

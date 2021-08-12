@@ -9,7 +9,7 @@
       "
       class="px-2"
     >
-      <p class="mb-0 text-sm tracking-wide text-gray-400">Rows/Columns</p>
+      <p class="mb-0 text-sm tracking-wide text-gray">Rows/Columns</p>
       <p class="mb-0 text-gray">
         <span
           v-if="

@@ -15,8 +15,8 @@
             >
                 <div
                     v-if="ownerUsers.length > 0"
-                    :class="showOwnersDropdown ? 'border-gray-light' : ''"
-                    class="flex flex-wrap px-2 py-1 my-1 text-sm border border-transparent rounded  hover:border-gray-light"
+                    :class="showOwnersDropdown ? 'border-gray-100' : ''"
+                    class="flex flex-wrap px-2 py-1 my-1 text-sm border border-transparent rounded  hover:border-gray-100"
                 >
                     <template
                         v-for="username in splittedOwnerUsers.a"
@@ -504,7 +504,7 @@
         :global(.ant-tabs-tab) {
             @apply pb-3 px-1;
             @apply mx-2;
-            @apply text-gray-description;
+            @apply text-gray-500;
             @apply text-xs;
         }
     }

@@ -51,7 +51,7 @@
           </div>
           <div class="flex flex-col justify-center">
             <div>{{ item.title }}</div>
-            <div v-if="item.description" class="text-xs text-gray-400">
+            <div v-if="item.description" class="text-xs text-gray">
               {{ item.description }}
             </div>
           </div>

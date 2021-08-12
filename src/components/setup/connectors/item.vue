@@ -1,6 +1,6 @@
 <template>
   <div
-    class="flex flex-col items-center justify-center col-span-12 px-6 py-4 transform bg-white border rounded-lg shadow-sm  sm:col-span-6 md:col-span-3 lg:col-span-2 hover:border-primary-500 :hover:text-primary"
+    class="flex flex-col items-center justify-center col-span-12 px-6 py-4 transform bg-white border rounded-lg shadow-sm  sm:col-span-6 md:col-span-3 lg:col-span-2 hover:border-primary-focus :hover:text-primary"
   >
     <div
       v-if="item?.attributes.isSample"

@@ -1,6 +1,6 @@
 <template>
   <div>
-    <p class="mb-2 leading-none text-gray-400">Designation</p>
+    <p class="mb-2 leading-none text-gray">Designation</p>
     <div v-if="designation && designation.length" class="flex">
       <Tags
         :tags="designation"

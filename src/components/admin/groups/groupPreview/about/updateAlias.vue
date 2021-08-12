@@ -2,7 +2,7 @@
   <div class>
     <div>
       <div class="flex flex-row items-center cursor-pointer group">
-        <p class="mb-0 text-gray-400">
+        <p class="mb-0 text-gray">
           Alias
           <fa
             v-if="updateSuccess"

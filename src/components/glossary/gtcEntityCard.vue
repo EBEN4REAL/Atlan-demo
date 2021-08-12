@@ -8,7 +8,7 @@
       <h3 class="text-sm leading-5 text-gray-500">
         <a-button class="m-0 p-0" type="link" @click="redirectToProfile">{{  entity.displayText }}</a-button>
       </h3>
-      <div class="text-xs leading-4 text-gray-400">
+      <div class="text-xs leading-4 text-gray">
         {{ entity?.attributes?.shortDescription }}
       </div>
     </div>

@@ -7,7 +7,7 @@
         />
         <p class="mb-0 text-2xl text-gray">Enumerations</p>
         <div class="flex items-center justify-between">
-            <p class="text-sm text-gray-400">Create & manage Enumerations</p>
+            <p class="text-sm text-gray">Create & manage Enumerations</p>
             <a-button
                 class="rounded-md ant-btn ant-btn-primary"
                 @click="toggleAddModal(true)"

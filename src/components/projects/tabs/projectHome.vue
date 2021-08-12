@@ -8,14 +8,14 @@
       @handleBookmarAdd="handleBookmarAdd"
     />
     <div class="mt-8 border rounded h-80">
-      <p class="px-4 py-2 text-lg border-b text-gray-dark">Project Overview</p>
+      <p class="px-4 py-2 text-lg border-b text-gray-500">Project Overview</p>
     </div>
     <div class="flex h-64 mt-6">
       <div class="flex-1 mr-6 border rounded">
-        <p class="px-4 py-2 text-lg border-b text-gray-dark">FAQs</p>
+        <p class="px-4 py-2 text-lg border-b text-gray-500">FAQs</p>
       </div>
       <div class="flex-1 h-64 border rounded">
-        <p class="px-4 py-2 text-lg border-b text-gray-dark">Flat Files</p>
+        <p class="px-4 py-2 text-lg border-b text-gray-500">Flat Files</p>
       </div>
     </div>
   </div>

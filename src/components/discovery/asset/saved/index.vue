@@ -14,7 +14,7 @@
         <div class="mb-0 leading-none tracking-tight">
           {{ item?.attributes?.name }}
         </div>
-        <div class="text-sm text-gray-400">
+        <div class="text-sm text-gray">
           {{ item?.attributes?.__createdBy }}
         </div>
       </div>

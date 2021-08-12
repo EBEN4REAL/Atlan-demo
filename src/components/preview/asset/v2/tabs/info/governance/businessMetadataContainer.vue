@@ -1,5 +1,5 @@
 <template>
-    <div class="mt-3 text-sm text-gray-description">
+    <div class="mt-3 text-sm text-gray-500">
         <p class="flex justify-between mb-2 text-sm tracking-wide">
             <span
                 >Custom Metadata&nbsp;
@@ -44,7 +44,7 @@
                     class="flex flex-col p-2 overflow-y-auto"
                     style="width: 280px; height: 200px"
                 >
-                    <p class="mb-1 text-sm text-gray-400">
+                    <p class="mb-1 text-sm text-gray">
                         Select Custom Metadata
                     </p>
                     <a-select
@@ -54,7 +54,7 @@
                         mode="multiple"
                         :options="addBMSelectOptions"
                     />
-                    <p class="mt-2 text-xs text-gray-400">
+                    <p class="mt-2 text-xs text-gray">
                         Can't find the right Custom Metadata to add, create a
                         new Custom Metadata from
                         <router-link to="/admin/custom-metadata"

@@ -19,7 +19,7 @@
     <div class="grid grid-cols-3 gap-7">
       <div class="col-span-3">
         <p class="mb-0 text-2xl text-gray">Custom Metadata</p>
-        <p class="text-sm text-gray-400">
+        <p class="text-sm text-gray">
           Manage Custom Metadata & it's attributes
         </p>
       </div>

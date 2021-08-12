@@ -70,7 +70,7 @@
               @click.prevent
             >
               <div class="flex items-center justify-between mb-3">
-                <p class="mb-0 text-lg font-bold text-dark-gray">
+                <p class="mb-0 text-lg font-bold text-gray">
                   Edit Bookmark
                 </p>
                 <span
@@ -165,7 +165,7 @@
             class="w-64 px-4 py-4 bg-white rounded shadow add-bookmark"
             @click.prevent
           >
-            <p class="text-lg font-bold text-dark-gray">
+            <p class="text-lg font-bold text-gray">
               Add Bookmarks
             </p>
             <a-form

@@ -2,7 +2,7 @@
   <div class>
     <div>
       <div class="flex flex-row items-center cursor-pointer group">
-        <p class="mb-0 text-gray-400">
+        <p class="mb-0 text-gray">
           Role
           <fa v-if="updateSuccess" icon="fal check" class="ml-1 text-success"></fa>
         </p>

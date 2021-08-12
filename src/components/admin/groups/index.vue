@@ -66,7 +66,7 @@
               Default
             </div>
           </div>
-          <p class="mb-0 text-gray-400 truncate">{{ group.description }}</p>
+          <p class="mb-0 text-gray truncate">{{ group.description }}</p>
         </div>
       </template>
       <template #actions="{ text: group }">

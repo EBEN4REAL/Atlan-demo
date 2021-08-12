@@ -4,7 +4,7 @@
       v-for="(path, index) in getParentsFiltered"
       :key="path.id"
       :class="$style.item"
-      class="px-2 py-2 hover:bg-gray-50 hover:rounded"
+      class="px-2 py-2 hover:bg-gray-100 hover:rounded"
     >
       <div
         :class="$style.itemDots"

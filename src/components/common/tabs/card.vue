@@ -90,7 +90,7 @@ export default defineComponent({
     //   line-height: 40px;
   }
   //   :global(.ant-tabs-ink-bar) {
-  //     @apply bg-primary-200;
+  //     @apply bg-primary-light;
   //     right: 0px !important;
   //     border-top-right-radius: 1px !important;
   //     border-bottom-right-radius: 1px !important;

@@ -1,5 +1,5 @@
 <template>
-    <div class="flex justify-between items-center px-4 py-3.5 text-xs">
+    <div class="flex justify-between items-center px-4 pl-5 py-3.5 text-xs">
         <div class="font-medium text-gray-500">3 filters applied</div>
         <div class="flex items-center text-gray-500">
             <div class="px-3 py-1 font-medium text-gray-500 rounded">Reset</div>
@@ -13,14 +13,14 @@
         v-model:activeKey="activeKey"
         expandIconPosition="right"
         :bordered="false"
-        class="bg-transparent"
+        class="relative bg-transparent"
         :class="$style.filter"
         :accordion="true"
     >
         <template #expandIcon="{ isActive }">
-            <div>
+            <div class="">
                 <fa
-                    icon="fas chevron-down"
+                    icon="fas chevron-down "
                     class="ml-1 transition-transform transform"
                     :class="isActive ? '-rotate-180' : 'rotate-0'"
                 />
@@ -30,7 +30,7 @@
             v-for="item in List"
             :key="item.id"
             :class="activeKey === item.id ? 'bg-gray-100' : ''"
-            class="bg-transparent hover:bg-gray-100 group"
+            class="relative bg-transparent hover:bg-gray-100 group"
         >
             <template #header>
                 <div :key="dirtyTimestamp" class="select-none">
@@ -38,17 +38,31 @@
                         <span class="font-bold">{{ item.label }}</span>
 
                         <div
-                            v-if="isFilter(item.id)"
-                            class="text-gray-500 opacity-0  hover:font-bold group-hover:opacity-100"
+                            v-if="isFilter(item.id) && !activeKey"
+                            class="absolute text-gray-500 opacity-0  carrot-top right-12 hover:font-bold group-hover:opacity-100"
+                            @click.stop.prevent="handleClear(item.id)"
+                        >
+                            Clear
+                        </div>
+
+                        <div
+                            v-if="isFilter(item.id) && activeKey"
+                            class="absolute text-gray-500 opacity-0  top-3 right-12 hover:font-bold group-hover:opacity-100"
                             @click.stop.prevent="handleClear(item.id)"
                         >
                             Clear
                         </div>
                     </div>
-                    <div class="text-gray-500">
+                    <div
+                        class="absolute text-gray-500"
+                        v-if="activeKey !== item.id"
+                    >
                         {{ getFiltersAppliedString(item.id) }}
-                        <!-- {{ refMap?.value[item.id]?.checkedValues }} -->
                     </div>
+                    <div
+                        class="py-2.5"
+                        v-if="isFilter(item.id) && activeKey !== item.id"
+                    ></div>
                 </div>
             </template>
 
@@ -235,7 +249,19 @@
                         return filters.slice(0, 3).join(', ')
                     }
                     case 'owners': {
-                        return ''
+                        const users =
+                            appliedFacetFiltersMap.value[filterId]?.users
+                        const groups =
+                            appliedFacetFiltersMap.value[filterId]?.groups
+                        let appliedOwnersString = ''
+                        if (users && users?.length > 0) {
+                            appliedOwnersString += `${users.length} users`
+                        }
+                        if (groups && groups?.length > 0) {
+                            appliedOwnersString += ` & ${groups.length} groups`
+                        }
+
+                        return appliedOwnersString
                     }
                     case 'advanced': {
                         return ''
@@ -253,10 +279,6 @@
                         return (appliedFacetFiltersMap.value[filterId] = values)
                     }
                     case 'owners': {
-                        console.log(
-                            'owners',
-                            appliedFacetFiltersMap.value[filterId]
-                        )
                         return (appliedFacetFiltersMap.value[filterId] = values)
                     }
                     case 'advanced': {
@@ -353,7 +375,7 @@
         }
 
         :global(.ant-collapse-header) {
-            @apply px-4;
+            @apply px-4 pl-5 !important;
             @apply py-3 !important;
             @apply border-t;
         }
@@ -367,5 +389,10 @@
             padding-top: 0px !important;
             padding-bottom: 0px;
         }
+    }
+</style>
+<style lang="less">
+    .carrot-top {
+        top: 1.33rem;
     }
 </style>

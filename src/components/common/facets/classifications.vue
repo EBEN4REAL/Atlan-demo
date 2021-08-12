@@ -5,7 +5,7 @@
                 ref="searchText"
                 v-model:value="classificationSearchText"
                 type="text"
-                class="bg-white shadow-none form-control border-right-0"
+                class="bg-white rounded shadow-none form-control border-right-0"
                 placeholder="Search classifications"
                 @change="handleClassificationsSearch"
             >
@@ -51,7 +51,7 @@
                     class="mr-1"
                 >
                     <a-badge :dot="classificationFilterOptionsData !== null">
-                        <a-button class="px-2 py-1 ml-2">
+                        <a-button class="px-2 py-1 ml-2 rounded">
                             <span class="flex items-center justify-center">
                                 <fa
                                     icon="fal filter"
@@ -74,7 +74,7 @@
             </a-popover>
         </div>
 
-        <div class="mt-3">
+        <div class="mt-4">
             <a-checkbox-group
                 v-if="classificationsList.length > 0"
                 v-model:value="checkedValues"
@@ -85,7 +85,7 @@
                     <div
                         v-if="classificationSearchText === ''"
                         ref="classificationsScrollContainer"
-                        class="overflow-y-scroll h-36"
+                        class="h-40 overflow-y-scroll"
                     >
                         <template
                             v-for="item in !hideClassifications
@@ -131,19 +131,7 @@
                             classificationSearchText === '' &&
                             classificationsList.length > 5
                         "
-                        class="
-                            flex
-                            items-center
-                            w-auto
-                            mt-3
-                            mb-0
-                            font-bold
-                            text-center
-                            cursor-pointer
-                            select-none
-                            outlined
-                            text-primary
-                        "
+                        class="flex items-center w-auto mt-3 mb-0 font-bold text-center cursor-pointer select-none  outlined text-primary"
                         @click="toggleClassifications"
                     >
                         {{ `Show ${classificationsList.length - 5} more` }}
@@ -153,19 +141,7 @@
                             !hideClassifications &&
                             classificationSearchText === ''
                         "
-                        class="
-                            flex
-                            items-center
-                            w-auto
-                            mt-3
-                            mb-0
-                            font-bold
-                            text-center
-                            cursor-pointer
-                            select-none
-                            outlined
-                            text-primary
-                        "
+                        class="flex items-center w-auto mt-3 mb-0 font-bold text-center cursor-pointer select-none  outlined text-primary"
                         @click="toggleClassifications"
                     >
                         {{ `Show less` }}

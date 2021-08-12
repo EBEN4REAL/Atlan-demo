@@ -1,5 +1,5 @@
 <template>
-    <div class="px-4 py-1 pb-3">
+    <div class="px-4 py-1 pb-3 pl-5">
         <!-- <div>
             <p class="mb-1 text-xs text-gray-500">Users</p>
 
@@ -38,7 +38,10 @@
                         >
                     </template>
                     <div class="h-48 overflow-y-auto">
-                        <a-checkbox-group v-model:value="selectedUsers">
+                        <a-checkbox-group
+                            v-model:value="selectedUsers"
+                            @change="handleUsersChange"
+                        >
                             <div class="flex flex-col w-full">
                                 <a-checkbox
                                     v-for="item in listUsers"
@@ -66,8 +69,11 @@
                         }}</span>
                     </template>
                     <div class="h-48 overflow-y-auto">
-                        <a-checkbox-group v-model:value="selectedGroups">
-                            <div class="flex flex-col w-full space-y-1">
+                        <a-checkbox-group
+                            v-model:value="selectedGroups"
+                            @change="handleGroupsChange"
+                        >
+                            <div class="flex flex-col w-full">
                                 <a-checkbox
                                     v-for="item in listGroups"
                                     :key="item.name"
@@ -129,13 +135,6 @@
                     return ''
                 },
             },
-            modelValue: {
-                type: Object,
-                required: false,
-                default() {
-                    return {}
-                },
-            },
         },
         emits: ['change', 'update:modelValue'],
         setup(props, { emit }) {
@@ -148,39 +147,45 @@
             const selectedUsers: Ref<string[]> = ref([])
             const selectedGroups: Ref<string[]> = ref([])
 
-            const handleUsersChange = (selectedValues: string) => {
+            const handleUsersChange = () => {
                 emit(
                     'update:modelValue',
-                    { users: userValue.value, groups: groupValue.value },
+                    {
+                        users: selectedUsers.value,
+                        groups: selectedGroups.value,
+                    },
                     props.item.id
                 )
                 handleChange()
             }
-            const handleGroupsChange = (selectedValues: string) => {
+            const handleGroupsChange = () => {
                 emit(
                     'update:modelValue',
-                    { users: userValue.value, groups: groupValue.value },
+                    {
+                        users: selectedUsers.value,
+                        groups: selectedGroups.value,
+                    },
                     props.item.id
                 )
                 handleChange()
             }
             const handleChange = () => {
                 const criterion: Components.Schemas.FilterCriteria[] = []
-
-                if (userValue.value) {
+                selectedUsers.value.forEach((name: string) => {
                     criterion.push({
                         attributeName: 'ownerUsers',
-                        attributeValue: userValue.value,
+                        attributeValue: name,
                         operator: 'contains',
                     })
-                }
-                if (groupValue.value) {
+                })
+                selectedGroups.value.forEach((groupname: string) => {
                     criterion.push({
                         attributeName: 'ownerGroups',
-                        attributeValue: groupValue.value,
+                        attributeValue: groupname,
                         operator: 'contains',
                     })
-                }
+                })
+
                 emit('change', {
                     id: props.item.id,
                     payload: {
@@ -191,8 +196,16 @@
             }
 
             const clear = () => {
-                userValue.value = ''
-                groupValue.value = ''
+                selectedUsers.value = []
+                selectedGroups.value = []
+                emit(
+                    'update:modelValue',
+                    {
+                        users: selectedUsers.value,
+                        groups: selectedGroups.value,
+                    },
+                    props.item.id
+                )
                 handleChange()
             }
             const handleOwnerSearch = () => {}
@@ -293,6 +306,6 @@
         @apply text-xs;
         @apply font-bold;
         @apply text-primary;
-        @apply bg-primary-muted;
+        @apply bg-primary-light;
     }
 </style>

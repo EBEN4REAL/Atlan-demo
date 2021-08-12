@@ -29,10 +29,7 @@
             </div>
         </div>
 
-        <div
-            class="flex flex-col items-stretch flex-grow mt-3 mb-1 bg-white"
-            style="overflow: hidden"
-        >
+        <div class="flex flex-col items-stretch flex-1 mt-3 mb-1 bg-white w-80">
             <div class="flex flex-col h-full">
                 <div class="flex px-3">
                     <ConnectorDropdown
@@ -54,10 +51,7 @@
                         @change="handleSearchChange"
                     >
                         <template #prefix>
-                            <Fa
-                                icon="fal search"
-                                class="mr-2 text-gray-500"
-                            />
+                            <Fa icon="fal search" class="mr-2 text-gray-500" />
                         </template>
                     </a-input>
                     <a-popover
@@ -75,7 +69,7 @@
                         </template>
                         <div
                             tabindex="0"
-                            class="flex items-center px-2 py-1 transition-shadow border rounded  border-gray-300 hover:border-gray-300"
+                            class="flex items-center px-2 py-1 transition-shadow border border-gray-300 rounded  hover:border-gray-300"
                             @keyup.enter="isFilterVisible = !isFilterVisible"
                         >
                             <span>Options</span>

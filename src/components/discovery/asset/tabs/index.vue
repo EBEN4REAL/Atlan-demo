@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="w-full">
         <a-tabs
             v-model:activeKey="assetType"
             class="w-full mt-3"
@@ -213,6 +213,7 @@
         :global(.ant-tabs-tab-active) {
             @apply text-gray !important;
             @apply font-bold !important;
+            @apply tracking-normal;
         }
         :global(.ant-tabs-bar) {
             margin-bottom: 0px;
@@ -234,5 +235,6 @@
         @apply text-xs;
         @apply font-bold;
         @apply text-primary;
+        @apply bg-primary-light;
     }
 </style>

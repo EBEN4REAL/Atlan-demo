@@ -1,6 +1,6 @@
 <template>
     <div
-        class="flex items-start max-w-2xl py-6 pl-2 pr-4 mx-auto bg-white  hover:bg-primary-light hover:bg-opacity-10 text-gray"
+        class="flex items-start py-6 pl-2 pr-4 mx-auto bg-white  hover:bg-primary-light hover:bg-opacity-10 text-gray"
     >
         <div class="p-2 mr-2 rounded bg-opacity-30 bg-primary-light">
             <component

@@ -8,7 +8,7 @@
             :key="tag"
             :closable="allowUpdate"
             class="bg-gray-50"
-            :class="[updatingTags ? 'text-gray-300 pointer-events-none' : '']"
+            :class="[updatingTags ? 'text-gray pointer-events-none' : '']"
             @close="handleClose(tag)"
             >{{ `${tag.slice(0, 20)}...` }}</a-tag
           >
@@ -16,7 +16,7 @@
         <a-tag
           v-else
           :closable="allowUpdate"
-          :class="[updatingTags ? 'text-gray-300 pointer-events-none' : '']"
+          :class="[updatingTags ? 'text-gray pointer-events-none' : '']"
           class="bg-gray-50"
           @close="handleClose(tag)"
           >{{ tag }}</a-tag

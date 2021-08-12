@@ -41,7 +41,7 @@
                     <div class="text-lg font-bold capitalize text-gray">
                         {{ selectedUser.name }}
                     </div>
-                    <div class="text-gray-400">
+                    <div class="text-gray">
                         <span class="mr-0.25"
                             >@{{ selectedUser.username }}</span
                         >

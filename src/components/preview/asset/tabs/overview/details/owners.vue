@@ -84,7 +84,7 @@
       <div
         class="px-2 py-1 transition duration-500 ease-in-out rounded-lg  hover:bg-gray-50 hover:border"
       >
-        <p class="mb-0 text-sm tracking-wide text-gray-400">Owners</p>
+        <p class="mb-0 text-sm tracking-wide text-gray">Owners</p>
         <div class="flex flex-wrap gap-x-1">
           <template
             v-for="user in item?.attributes?.ownerUsers?.split(',')"

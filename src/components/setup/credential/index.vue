@@ -149,7 +149,7 @@
             class="grid grid-cols-12 gap-2 px-3 pt-3 border border-gray-200 rounded  flex-nowrap bg-gray-50"
         >
             <div class="col-span-12">
-                <p class="mb-2 text-sm font-normal text-gray-400">Advanced</p>
+                <p class="mb-2 text-sm font-normal text-gray">Advanced</p>
             </div>
             <template v-for="attr in extraAttributesLocal" :key="attr?.id">
                 <div class="col-span-6">

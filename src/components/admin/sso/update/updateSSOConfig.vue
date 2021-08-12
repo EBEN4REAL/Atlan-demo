@@ -119,10 +119,10 @@
                                 <strong class="mb-2 text-gray-600">
                                     SAML SSO URL:
                                 </strong>
-                                <span class="mb-2 leading-3 text-gray-400"
+                                <span class="mb-2 leading-3 text-gray"
                                     >Enter your SAML 2.0 Endpoint.</span
                                 >
-                                <span class="leading-3 text-gray-400"
+                                <span class="leading-3 text-gray"
                                     >This is where users will be redirected to
                                     login.</span
                                 >
@@ -138,7 +138,7 @@
                                 <strong class="mb-2 text-gray-600">
                                     Public Certificate:
                                 </strong>
-                                <span class="leading-3 text-gray-400"
+                                <span class="leading-3 text-gray"
                                     >x.509 Certificate</span
                                 >
                                 <span class="leading-3"

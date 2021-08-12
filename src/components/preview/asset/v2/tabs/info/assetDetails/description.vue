@@ -1,5 +1,5 @@
 <template>
-    <div class="pt-2 text-xs text-gray-description">
+    <div class="pt-2 text-xs text-gray-500">
         <p class="mb-1">Description</p>
         <a-popover
             v-model:visible="isCompleted"
@@ -50,7 +50,7 @@
             </div>
         </a-popover>
     </div>
-    <!-- <div class="w-full pt-2 text-xs text-gray-description">
+    <!-- <div class="w-full pt-2 text-xs text-gray-500">
             <p class="mb-1">Description</p>
             <p class="mb-0 text-sm text-gray">
                 Transaction table stores all the information required for a trip

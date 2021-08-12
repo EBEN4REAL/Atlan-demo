@@ -13,7 +13,7 @@
       >
         <div v-if="!showCreateClassificationPopover">
           <p class="pb-1 text-lg text-gray-500 border-b">Link Classification</p>
-          <p class="mb-1 text-sm text-gray-400">Select classifications</p>
+          <p class="mb-1 text-sm text-gray">Select classifications</p>
           <a-select
             v-model:value="selectedClassificationForLink"
             mode="multiple"
@@ -32,7 +32,7 @@
               }}</a-select-option>
             </template>
           </a-select>
-          <p class="mt-2 text-xs text-gray-400">
+          <p class="mt-2 text-xs text-gray">
             Can't find the right classification to link, create a new
             classification from
             <a class="text-sm" @click="showCreateClassificationForm">here</a>
@@ -40,7 +40,7 @@
           <a-checkbox
             v-if="selectedClassificationForLink.length < 2"
             v-model:checked="linkClassificationData.propagate"
-            class="mt-2 text-gray-400"
+            class="mt-2 text-gray"
             >Propagate classification to related assets
           </a-checkbox>
           <a-checkbox
@@ -48,7 +48,7 @@
             v-model:checked="
               linkClassificationData.removePropagationsOnEntityDelete
             "
-            class="mt-2 text-gray-400"
+            class="mt-2 text-gray"
             >Remove propagation when
             <span class="font-semibold text-gray-500">{{
               asset.displayText
@@ -136,10 +136,10 @@
       "
     >
       <div class="flex items-center justify-between">
-        <p class="mb-1 text-sm tracking-wide text-gray-400">Classifications</p>
+        <p class="mb-1 text-sm tracking-wide text-gray">Classifications</p>
         <div
           v-if="showAddClassificationBtn"
-          class="flex items-center justify-center p-1 ml-1 border cursor-pointer hover:bg-primary-500 hover:text-white"
+          class="flex items-center justify-center p-1 ml-1 border cursor-pointer hover:bg-primary-focus hover:text-white"
           @click.stop.prevent="openLinkClassificationPopover"
         >
           <span class="flex items-center justify-center">
@@ -154,7 +154,7 @@
         >
           <div class="flex m-1 mb-1 rounded-md">
             <div
-              class="flex items-center px-2 py-2 leading-none align-middle cursor-pointer bg-primary-300 text-primary-400 bg-opacity-10 hover:bg-primary-500 hover:text-white drop-shadow-sm"
+              class="flex items-center px-2 py-2 leading-none align-middle cursor-pointer bg-gray-300 text-gray bg-opacity-10 hover:bg-primary-focus hover:text-white drop-shadow-sm"
               @click.prevent.stop="handleClassificationClick"
             >
               <fa
@@ -174,7 +174,7 @@
                   ? true
                   : false
               "
-              class="flex items-center justify-center p-1 px-2 border-none bg-primary-300 hover:bg-primary-500 hover:text-white bg-opacity-10"
+              class="flex items-center justify-center p-1 px-2 border-none bg-gray-300 hover:bg-primary-focus hover:text-white bg-opacity-10"
               @click.stop="() => unLinkClassification(classification)"
             >
               <span

@@ -51,7 +51,7 @@
             <div class="mt-3 ml-2">
               <div class="mb-2">
                 <span class="mr-2">Select users</span
-                ><span class="text-gray-400">(Optional)</span>
+                ><span class="text-gray">(Optional)</span>
               </div>
               <UserList
                 user-list-header-class="min-w-full"
@@ -67,7 +67,7 @@
       <div class="flex items-center text-xl">
         <a-button
           type="link"
-          class="mr-3 font-bold cursor-pointer text-gray-dark"
+          class="mr-3 font-bold cursor-pointer text-gray-500"
           @click="routeToGroups"
           >Cancel</a-button
         >

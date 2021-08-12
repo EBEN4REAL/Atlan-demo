@@ -11,7 +11,7 @@
             <div class="flex flex-col">
                 <span class="secondaryHeading">TERM</span>
                 <h1 class="text-2xl leading-8 m-0 p-0 text-black font-normal">
-                   <span v-if="parentGlossaryName" class="text-gray-400">{{ parentGlossaryName }} / </span>{{ title }}
+                   <span v-if="parentGlossaryName" class="text-gray">{{ parentGlossaryName }} / </span>{{ title }}
                 </h1>
                 <EntityHistory :created-at="term?.createTime" :created-by="term?.createdBy" :updated-at="term?.updateTime" :updated-by="term?.updatedBy" />
                                 <span class="mt-2 text-xs w-1/2 leading-4 text-gray-500">{{

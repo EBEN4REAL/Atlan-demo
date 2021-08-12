@@ -56,7 +56,7 @@
                         <template #prefix>
                             <Fa
                                 icon="fal search"
-                                class="mr-2 text-gray-description"
+                                class="mr-2 text-gray-500"
                             />
                         </template>
                     </a-input>
@@ -75,7 +75,7 @@
                         </template>
                         <div
                             tabindex="0"
-                            class="flex items-center px-2 py-1 transition-shadow border rounded  border-gray-bg hover:border-gray-300"
+                            class="flex items-center px-2 py-1 transition-shadow border rounded  border-gray-300 hover:border-gray-300"
                             @keyup.enter="isFilterVisible = !isFilterVisible"
                         >
                             <span>Options</span>
@@ -660,15 +660,15 @@
 <style lang="less" module>
     .searchbar {
         @apply mr-2 border-none rounded;
-        @apply bg-gray-bg bg-opacity-50;
+        @apply bg-gray-300 bg-opacity-50;
         @apply outline-none;
         :global(.ant-input) {
             @apply h-6;
             @apply bg-transparent;
-            @apply text-gray-description;
+            @apply text-gray-500;
         }
         ::placeholder {
-            @apply text-gray-description opacity-80 text-sm;
+            @apply text-gray-500 opacity-80 text-sm;
         }
     }
 </style>

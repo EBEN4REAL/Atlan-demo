@@ -6,11 +6,11 @@
                 v-for="(value, key, index) in details"
                 :key="index"
             >
-                <span class="text-xs text-gray-description">{{ key }}</span>
+                <span class="text-xs text-gray-500">{{ key }}</span>
                 <span class="text-gray">{{ value }}</span>
             </div>
         </div>
-        <div class="flex w-full pt-4 text-xs text-gray-description">
+        <div class="flex w-full pt-4 text-xs text-gray-500">
             <Owners v-if="selectedAsset.guid" :selectedAsset="selectedAsset" />
             <Experts v-if="selectedAsset.guid" :selectedAsset="selectedAsset" />
         </div>

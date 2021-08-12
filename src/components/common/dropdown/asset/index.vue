@@ -38,7 +38,7 @@
                             >All {{ list[0].name }}s
                             <fa
                                 icon="fas caret-down"
-                                class="text-primary-500"
+                                class="text-primary-focus"
                             ></fa>
                         </p>
                     </div>

@@ -1,8 +1,8 @@
 <template>
     <div
-        class="flex items-start max-w-2xl py-6 pl-2 pr-4 mx-auto bg-white  hover:bg-primary-100 hover:bg-opacity-10 text-gray"
+        class="flex items-start max-w-2xl py-6 pl-2 pr-4 mx-auto bg-white  hover:bg-primary-light hover:bg-opacity-10 text-gray"
     >
-        <div class="p-2 mr-2 rounded bg-opacity-30 bg-primary-100">
+        <div class="p-2 mr-2 rounded bg-opacity-30 bg-primary-light">
             <component
                 :is="item.typeName"
                 class="flex-none w-auto h-6"
@@ -81,13 +81,13 @@
                         <span class="mr-1 text-sm font-bold">{{
                             rowCount(item, false)
                         }}</span>
-                        <span class="text-xs text-gray-description">Rows</span>
+                        <span class="text-xs text-gray-500">Rows</span>
                     </div>
                     <div class="flex items-baseline mr-2">
                         <span class="mr-1 text-sm font-bold">{{
                             columnCount(item, false)
                         }}</span>
-                        <span class="text-xs text-gray-description">Cols</span>
+                        <span class="text-xs text-gray-500">Cols</span>
                     </div>
                 </div>
                 <!-- Popularity -->

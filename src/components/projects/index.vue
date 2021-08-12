@@ -3,8 +3,8 @@
     <div class="flex justify-between mb-4 run-btn-wrapper">
       <div>
         <p class="mb-1 text-base">Superstore sales data 2016</p>
-        <span class="mr-4 text-sm text-gray-400"> Add to Test Suite</span>
-        <span class="text-sm text-gray-400">Schedule query</span>
+        <span class="mr-4 text-sm text-gray"> Add to Test Suite</span>
+        <span class="text-sm text-gray">Schedule query</span>
       </div>
       <a-button
         type="primary"

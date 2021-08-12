@@ -14,7 +14,7 @@
           }"
         >
           <td
-            class="flex items-center justify-between p-1 px-3 cursor-pointer  hover:bg-primary-100 hover:bg-opacity-20"
+            class="flex items-center justify-between p-1 px-3 cursor-pointer  hover:bg-primary-light hover:bg-opacity-20"
           >
             <div class="flex items-center">
               <component

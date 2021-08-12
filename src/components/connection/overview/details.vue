@@ -28,7 +28,7 @@
 
       <div class="flex space-x-5">
         <div>
-          <p class="mt-3 mb-0 text-sm text-gray-400">Display Name</p>
+          <p class="mt-3 mb-0 text-sm text-gray">Display Name</p>
           <div class="flex items-center align-middle">
             <div class="text-gray-900">
               {{ item?.attributes?.displayName
@@ -42,7 +42,7 @@
       <div class="flex flex-col mt-4">
         <div class="flex space-x-5">
           <div class="">
-            <p class="mb-0 text-sm text-gray-400">
+            <p class="mb-0 text-sm text-gray">
               {{
                 bot?.attributes?.config?.attributes?.credential?.attributes.host
                   .attributes.label
@@ -59,7 +59,7 @@
             "
             class=""
           >
-            <p class="mb-0 text-sm text-gray-400">
+            <p class="mb-0 text-sm text-gray">
               {{
                 bot?.attributes?.config?.attributes?.credential?.attributes.port
                   .attributes.label
@@ -85,14 +85,14 @@
           <div v-if="!syncing && !loading">
             <div class="flex flex-wrap space-x-8">
               <div>
-                <p class="mb-0 text-sm text-gray-400">Authentication</p>
+                <p class="mb-0 text-sm text-gray">Authentication</p>
                 <div class="tracking-wider text-gray-900 uppercase">
                   {{ credential?.attributes?.authType }}
                 </div>
               </div>
               <template v-for="attr in authAttributesLocal" :key="attr.id">
                 <div>
-                  <p class="mb-0 text-sm text-gray-400">{{ attr.label }}</p>
+                  <p class="mb-0 text-sm text-gray">{{ attr.label }}</p>
                   <div class="text-red-500">
                     <fa icon="fal lock" class="mr-1"></fa>Secured
                   </div>
@@ -107,7 +107,7 @@
                   :key="extra.id"
                 >
                   <div v-if="extra.attributes.isVisible" class="col-span-4">
-                    <p class="mb-0 text-sm text-gray-400">
+                    <p class="mb-0 text-sm text-gray">
                       {{ extra.attributes.label }}
                     </p>
                     <div
@@ -195,7 +195,7 @@
             <a-button @click="handleEdit">Edit</a-button>
           </div>
 
-          <p class="mb-0 text-gray-400">
+          <p class="mb-0 text-gray">
             updated
             <span>{{
               dayjs().from(

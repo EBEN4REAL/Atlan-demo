@@ -50,7 +50,7 @@
           <a-badge :dot="classificationFilterOptionsData !== null">
             <a-button class="px-2 py-1 ml-2 ">
               <span class="flex items-center justify-center">
-                <fa icon="fal filter" class="hover:text-primary-500" />
+                <fa icon="fal filter" class="hover:text-primary-focus" />
               </span>
             </a-button>
           </a-badge>
@@ -58,7 +58,7 @@
         <div v-else class="mr-1">
           <a-button class="px-2 py-1 ml-2 ">
             <span class="flex items-center justify-center">
-              <fa icon="fal filter" class="hover:text-primary-500" />
+              <fa icon="fal filter" class="hover:text-primary-focus" />
             </span>
           </a-button>
         </div>
@@ -122,7 +122,7 @@
                 classificationSearchText === '' &&
                 classificationsList.length > 5
             "
-            class="flex items-center justify-center w-auto px-2 mt-1 mb-0 font-bold text-center cursor-pointer select-none outlined hover:text-primary-500"
+            class="flex items-center justify-center w-auto px-2 mt-1 mb-0 font-bold text-center cursor-pointer select-none outlined hover:text-primary-focus"
             @click="toggleClassifications"
           >
             <fa icon="fal chevron-down" class="mr-1" />
@@ -130,7 +130,7 @@
           </div>
           <div
             v-else-if="!hideClassifications && classificationSearchText === ''"
-            class="flex items-center justify-center w-auto px-2 mt-1 mb-0 font-bold text-center cursor-pointer select-none outlined hover:text-primary-500"
+            class="flex items-center justify-center w-auto px-2 mt-1 mb-0 font-bold text-center cursor-pointer select-none outlined hover:text-primary-focus"
             @click="toggleClassifications"
           >
             <fa icon="fal chevron-up" class="mr-1 " />
@@ -138,7 +138,7 @@
           </div>
         </div>
       </a-checkbox-group>
-      <p v-else class="text-center text-gray-300 ">No Classifications</p>
+      <p v-else class="text-center text-gray ">No Classifications</p>
     </div>
   </div>
 </template>

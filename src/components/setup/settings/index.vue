@@ -110,7 +110,7 @@
 
     <div class="px-3 pt-3 border border-gray-200 rounded bg-gray-50">
       <div class="">
-        <p class="mb-2 text-sm font-normal text-gray-400">Advanced</p>
+        <p class="mb-2 text-sm font-normal text-gray">Advanced</p>
       </div>
       <div class="flex space-x-4">
         <a-checkbox v-model:checked="job.allowQuery"

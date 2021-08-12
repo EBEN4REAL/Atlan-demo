@@ -139,7 +139,7 @@ export default defineComponent({
 </script>
 <style lang="less">
 .secondaryHeading {
-    @apply tracking-widest text-xs text-gray-400 leading-5;
+    @apply tracking-widest text-xs text-gray leading-5;
 }
 </style>
 

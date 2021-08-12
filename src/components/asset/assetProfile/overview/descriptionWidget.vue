@@ -11,7 +11,7 @@
                     Edit description
                 </a-button>
             </div>
-            <div v-else class="flex items-center justify-between text-gray-400">
+            <div v-else class="flex items-center justify-between text-gray">
                 No Description Found
                 <span class="ml-2">.</span>
                 <a-button type="link" @click="showModal">

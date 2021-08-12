@@ -22,9 +22,7 @@
         <div class="px-2">
             <p class="mb-0 text-sm tracking-wide text-gray-400">Created</p>
             <p class="mb-0 text-gray-700">
-                {{
-                    dayjs().from(selectedAsset?.attributes?.__timestamp, true)
-                }}
+                {{ dayjs().from(selectedAsset?.attributes?.__timestamp, true) }}
                 ago,
                 {{ selectedAsset?.attributes?.__createdBy }}
             </p>

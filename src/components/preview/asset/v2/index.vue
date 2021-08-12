@@ -7,9 +7,9 @@
                         :is="selectedAsset.typeName"
                         class="w-5 h-5 mr-2"
                     ></component>
-                    <span class="text-gray-500">{{
-                        assetTypeLabel(selectedAsset)
-                    }}</span>
+                    <span class="text-gray-500"
+                        >{{ assetTypeLabel(selectedAsset) }}
+                    </span>
                 </div>
                 <div class="flex">
                     <div
@@ -49,7 +49,7 @@
                     <StatusBadge
                         :showNoStatus="true"
                         :key="selectedAsset.guid"
-                        :status-id="assetStatus(selectedAsset)"
+                        :status-id="selectedAsset?.attributes?.assetStatus"
                         class="ml-1.5"
                     ></StatusBadge>
                 </div>

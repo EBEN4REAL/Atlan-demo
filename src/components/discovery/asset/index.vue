@@ -427,9 +427,6 @@
                 [assetType, BMAttributeProjection],
                 (n, o) => {
                     // ? Should these run only when all attributes are loaded? like BMAttributeProjection
-                    isAggregate.value = false
-                    // abort();
-                    offset.value = 0
                     updateBody()
                     if (!now.value) {
                         isAggregate.value = true
@@ -513,6 +510,15 @@
                 isAggregate.value = false
                 updateBody(true)
             }
+            // select fist asset automatically
+
+            watch(list, () => {
+                if (list.value.length > 0) {
+                    console.log(list.value[0], 'firstItem')
+                    handlePreview(list.value[0])
+                }
+            })
+
             onMounted(() => {
                 fetchBMonStore()
             })

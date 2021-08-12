@@ -2,35 +2,35 @@ import { CheckboxArray } from '~/types'
 
 export const List: CheckboxArray = [
     {
-        id: 'Verified',
+        id: 'verified',
         label: 'Verified',
         description: 'Verified',
         icon: 'fas badge-check',
         iconClass: 'text-green-500',
     },
     {
-        id: 'Draft',
+        id: 'draft',
         label: 'Draft',
         description: 'Draft',
         icon: 'fas badge',
         iconClass: 'text-yellow-500',
     },
     {
-        id: 'Issue',
+        id: 'issue',
         label: 'Issue',
         description: 'Issue',
         icon: 'fas exclamation-triangle',
         iconClass: 'text-red-500',
     },
     {
-        id: 'Deprecated',
+        id: 'deprecated',
         label: 'Deprecated',
         description: 'Deprecated',
         icon: 'fas minus-circle',
         iconClass: 'text-gray-500',
     },
     {
-        id: 'No status',
+        id: 'is_null',
         label: 'No Status',
         description: 'No Status',
         icon: 'fal circle',

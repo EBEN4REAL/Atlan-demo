@@ -41,6 +41,7 @@
                         <a-checkbox-group
                             v-model:value="selectedUsers"
                             @change="handleUsersChange"
+                            v-if="STATES.SUCCESS === userOwnerState"
                         >
                             <div class="flex flex-col w-full">
                                 <a-checkbox
@@ -55,6 +56,13 @@
                                 </a-checkbox>
                             </div>
                         </a-checkbox-group>
+                        <div v-else class="flex items-center justify-center">
+                            <a-spin
+                                size="small"
+                                class="mr-2 leading-none"
+                            ></a-spin
+                            ><span>Fetching users</span>
+                        </div>
                     </div>
                 </a-tab-pane>
                 <a-tab-pane key="2">
@@ -70,6 +78,7 @@
                     </template>
                     <div class="h-48 overflow-y-auto">
                         <a-checkbox-group
+                            v-if="STATES.SUCCESS === groupOwnerState"
                             v-model:value="selectedGroups"
                             @change="handleGroupsChange"
                         >
@@ -84,6 +93,13 @@
                                 </a-checkbox>
                             </div>
                         </a-checkbox-group>
+                        <div v-else class="flex items-center justify-center">
+                            <a-spin
+                                size="small"
+                                class="mr-2 leading-none"
+                            ></a-spin
+                            ><span>Fetching groups</span>
+                        </div>
                     </div>
                 </a-tab-pane>
             </a-tabs>
@@ -140,12 +156,21 @@
         setup(props, { emit }) {
             const now = ref(true)
             const userValue = ref('')
-            userValue.value = props.user || props.data.userValue
+            userValue.value = props.data.userValue
             const groupValue = ref('')
-            groupValue.value = props.group || props.data.groupValue
+            groupValue.value = props.data.groupValue
             const activeOwnerTabKey = ref('1')
             const selectedUsers: Ref<string[]> = ref([])
             const selectedGroups: Ref<string[]> = ref([])
+            console.log(
+                'propsValue',
+                props.data.userValue,
+                props.data.groupValue
+            )
+            if (props.data.userValue.length > 0)
+                selectedUsers.value = [...props.data.userValue]
+            if (props.data.groupValue.length > 0)
+                selectedGroups.value = [...props.data.groupValue]
 
             const handleUsersChange = () => {
                 emit(
@@ -208,7 +233,15 @@
                 )
                 handleChange()
             }
-            const handleOwnerSearch = () => {}
+            const handleOwnerSearch = (e: Event) => {
+                const queryText = (<HTMLInputElement>e.target).value
+                if (activeOwnerTabKey.value === '1') {
+                    handleUserSearch(queryText)
+                } else if (activeOwnerTabKey.value === '2') {
+                    // for groups
+                    handleGroupSearch(queryText)
+                }
+            }
             const {
                 list: listUsers,
                 total: totalUsersCount,
@@ -251,6 +284,9 @@
             }
 
             return {
+                userOwnerState,
+                groupOwnerState,
+                STATES,
                 onSelectGroup,
                 isOwner,
                 onSelectUser,

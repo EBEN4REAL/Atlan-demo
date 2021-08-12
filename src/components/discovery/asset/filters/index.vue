@@ -1,8 +1,15 @@
 <template>
     <div class="flex justify-between items-center px-4 pl-5 py-3.5 text-xs">
-        <div class="font-medium text-gray-500">3 filters applied</div>
+        <div class="font-medium text-gray-500">
+            {{ totalAppliedFiltersCount }} filters applied
+        </div>
         <div class="flex items-center text-gray-500">
-            <div class="px-3 py-1 font-medium text-gray-500 rounded">Reset</div>
+            <div
+                class="px-3 py-1 font-medium text-gray-500 rounded cursor-pointer  hover:font-bold"
+                @click="resetAllFilters"
+            >
+                Reset
+            </div>
             <a-button
                 class="px-3 py-1 text-xs font-medium border-0 rounded  bg-primary-light text-primary"
                 >Save</a-button
@@ -93,7 +100,7 @@
     import { List } from './filters'
     import { Components } from '~/api/atlas/client'
     import { useClassificationStore } from '~/components/admin/classifications/_store'
-    import { List as statusList } from '~/constant/status'
+    import { List as StatusList } from '~/constant/status'
 
     export default defineComponent({
         name: 'DiscoveryFacets',
@@ -123,11 +130,17 @@
         emits: ['refresh'],
         setup(props, { emit }) {
             const classificationsStore = useClassificationStore()
+            // console.log(props.initialFilters.facetsFilters, 'facetFilters')
             const activeKey: Ref<string> = ref('')
             const appliedFacetFiltersMap: Ref<any> = ref({
                 status: props.initialFilters.facetsFilters.status.checked,
                 classifications:
                     props.initialFilters.facetsFilters.classifications.checked,
+                owners: {
+                    users: props.initialFilters.facetsFilters.owners.userValue,
+                    groups: props.initialFilters.facetsFilters.owners
+                        .groupValue,
+                },
             })
             const initialFilterMap = {
                 status: {
@@ -201,6 +214,7 @@
                 filterMap[value.id] = value.payload
                 dirtyTimestamp.value = `dirty_${Date.now().toString()}`
                 console.log(dirtyTimestamp.value)
+                setAppliedFiltersCount()
                 refresh()
                 // updateChangesInStore(value);
             }
@@ -215,29 +229,50 @@
                 }
                 return false
             }
+            // const setAppliedFiltersCount = computed(() => {
+            //     const count = 0
+            //     const filterMapKeys = Object.keys(filterMap.value)
+            //     filterMapKeys.forEach(() => {
+            //         if (filterMap[id]?.criterion?.length > 0) {
+            //             return (count += 1)
+            //         }
+            //     })
+            //     return count
+            // })
+            const totalAppliedFiltersCount = ref(0)
+            function setAppliedFiltersCount() {
+                let count = 0
+                const filterMapKeys = Object.keys(filterMap)
+                filterMapKeys.forEach((id) => {
+                    if (filterMap[id]?.criterion?.length > 0) {
+                        return (count += 1)
+                    }
+                })
+                totalAppliedFiltersCount.value = count
+            }
 
             const handleClear = (id) => {
-                console.log(refMap.value[id])
+                console.log(refMap)
                 if (refMap.value[id]) {
                     refMap.value[id].clear()
                 }
             }
-
             function getFiltersAppliedString(filterId: string) {
                 switch (filterId) {
                     case 'status': {
-                        const filters = appliedFacetFiltersMap.value[filterId]
-                        console.log(
-                            appliedFacetFiltersMap.value[filterId],
-                            'filterId'
-                        )
+                        let filters = appliedFacetFiltersMap.value[filterId]
+                        filters = filters.map((statusId: string) => {
+                            return StatusList?.find(
+                                (status: any) => status.id === statusId
+                            ).label
+                        })
                         if (filters.length > 3) {
                             return `${filters.slice(0, 3).join(', ')} +${
                                 filters.length - 3
                             } others`
                         }
+
                         return filters.slice(0, 3).join(', ')
-                        return ''
                     }
                     case 'classifications': {
                         const filters = appliedFacetFiltersMap.value[filterId]
@@ -246,6 +281,7 @@
                                 filters.length - 3
                             } others`
                         }
+
                         return filters.slice(0, 3).join(', ')
                     }
                     case 'owners': {
@@ -287,7 +323,20 @@
                 }
             }
 
+            function resetAllFilters() {
+                console.log(refMap.value)
+                List.forEach((filter) => {
+                    const filterId = filter.id
+                    if (refMap.value[filterId]) {
+                        refMap.value[filterId].clear()
+                    }
+                })
+            }
+            setAppliedFiltersCount()
+
             return {
+                resetAllFilters,
+                totalAppliedFiltersCount,
                 getFiltersAppliedString,
                 appliedFacetFiltersMap,
                 checkedValuesChange,
@@ -379,6 +428,7 @@
             @apply py-3 !important;
             @apply border-t;
         }
+
         // :global(.ant-collapse-header:last-child) {
         //     @apply border-b !important;
         // }

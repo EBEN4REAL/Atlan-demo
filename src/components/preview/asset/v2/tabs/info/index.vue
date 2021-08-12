@@ -23,7 +23,14 @@
                 <template #header>
                     <div
                         :key="item.id"
-                        class="flex justify-between ml-1.5 text-sm select-none"
+                        class="
+                            flex
+                            justify-between
+                            font-bold
+                            ml-1.5
+                            text-sm
+                            select-none
+                        "
                     >
                         {{ item.label }}
                     </div>

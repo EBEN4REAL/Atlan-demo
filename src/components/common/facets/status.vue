@@ -1,7 +1,7 @@
 <template>
     <a-checkbox-group
         v-model:value="checkedValues"
-        class="w-full px-4 py-3 border-b bg-gray-medium"
+        class="w-full px-4 py-1 pb-3 bg-gray-medium"
         @change="handleChange"
     >
         <div class="flex flex-col w-full">
@@ -23,7 +23,7 @@
 </template>
 
 <script lang="ts">
-    import { computed, defineComponent, PropType, ref } from 'vue'
+    import { computed, defineComponent, PropType, ref, toRefs } from 'vue'
     import { Components } from '~/api/atlas/client'
     import { List } from '~/constant/status'
     import { Collapse } from '~/types'
@@ -32,10 +32,7 @@
         props: {
             item: {
                 type: Object as PropType<Collapse>,
-                required: false,
-                default() {
-                    return {}
-                },
+                required: true,
             },
             data: {
                 type: Object,
@@ -56,10 +53,12 @@
         setup(props, { emit }) {
             const list = computed(() => List)
             const checkedValues = ref([])
-            checkedValues.value = [...props.modelValue, ...props.data.checked]
+            const { data, modelValue } = toRefs(props)
+            checkedValues.value = [...modelValue.value, ...data.value.checked]
             console.log(checkedValues.value, 'model')
             const handleChange = (checkedValue: string) => {
-                emit('update:modelValue', checkedValues.value)
+                data.value.checked = checkedValues.value
+                emit('update:modelValue', checkedValues.value, props.item.id)
 
                 const criterion: Components.Schemas.FilterCriteria[] = []
                 checkedValues.value.forEach((val) => {

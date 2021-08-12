@@ -71,6 +71,7 @@ module.exports = {
         extend: {
             animation: ['motion-safe'],
             borderWidth: ['last'],
+            fontWeight: ['hover'],
             borderColor: ['hover', 'focus'],
             display: ['group-hover'],
         },

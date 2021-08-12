@@ -1,8 +1,8 @@
 <template>
-    <div class="flex justify-between items-center px-4 py-3.5 text-xs border-b">
+    <div class="flex justify-between items-center px-4 py-3.5 text-xs">
         <div class="font-medium text-gray-description">3 filters applied</div>
         <div class="flex items-center text-gray-description">
-            <div class="px-3 py-1 font-mediumrounded text-primar">Reset</div>
+            <div class="px-3 py-1 font-medium rounded text-primar">Reset</div>
             <a-button
                 class="px-3 py-1 text-xs font-medium border-0 rounded  bg-primary-light text-primary"
                 >Save</a-button
@@ -17,6 +17,15 @@
         :class="$style.filter"
         :accordion="true"
     >
+        <template #expandIcon="{ isActive }">
+            <div>
+                <fa
+                    icon="fas chevron-down"
+                    class="ml-1 transition-transform transform"
+                    :class="isActive ? '-rotate-180' : 'rotate-0'"
+                />
+            </div>
+        </template>
         <a-collapse-panel
             v-for="item in List"
             :key="item.id"
@@ -24,21 +33,25 @@
             class="bg-transparent hover:bg-gray-medium group"
         >
             <template #header>
-                <div
-                    :key="dirtyTimestamp"
-                    class="flex justify-between select-none"
-                >
-                    {{ item.label }}
+                <div :key="dirtyTimestamp" class="select-none">
+                    <div class="flex justify-between">
+                        <span class="font-bold">{{ item.label }}</span>
 
-                    <div
-                        v-if="isFilter(item.id)"
-                        class="opacity-0 group-hover:opacity-100"
-                        @click.stop.prevent="handleClear(item.id)"
-                    >
-                        Clear
+                        <div
+                            v-if="isFilter(item.id)"
+                            class="opacity-0  hover:font-bold group-hover:opacity-100 text-gray-description"
+                            @click.stop.prevent="handleClear(item.id)"
+                        >
+                            Clear
+                        </div>
+                    </div>
+                    <div>
+                        {{ getFiltersAppliedString(item.id) }}
+                        <!-- {{ refMap?.value[item.id]?.checkedValues }} -->
                     </div>
                 </div>
             </template>
+
             <component
                 :is="item.component"
                 :ref="
@@ -49,6 +62,7 @@
                 :item="item"
                 :data="dataMap[item.id]"
                 @change="handleChange"
+                @update:modelValue="checkedValuesChange"
             ></component>
         </a-collapse-panel>
     </a-collapse>
@@ -65,7 +79,7 @@
     import { List } from './filters'
     import { Components } from '~/api/atlas/client'
     import { useClassificationStore } from '~/components/admin/classifications/_store'
-    import { Collapse } from '~/types'
+    import { List as statusList } from '~/constant/status'
 
     export default defineComponent({
         name: 'DiscoveryFacets',
@@ -96,6 +110,11 @@
         setup(props, { emit }) {
             const classificationsStore = useClassificationStore()
             const activeKey: Ref<string> = ref('')
+            const appliedFacetFiltersMap: Ref<any> = ref({
+                status: props.initialFilters.facetsFilters.status.checked,
+                classifications:
+                    props.initialFilters.facetsFilters.classifications.checked,
+            })
             const initialFilterMap = {
                 status: {
                     condition:
@@ -189,7 +208,67 @@
                     refMap.value[id].clear()
                 }
             }
+
+            function getFiltersAppliedString(filterId: string) {
+                switch (filterId) {
+                    case 'status': {
+                        const filters = appliedFacetFiltersMap.value[filterId]
+                        console.log(
+                            appliedFacetFiltersMap.value[filterId],
+                            'filterId'
+                        )
+                        if (filters.length > 3) {
+                            return `${filters.slice(0, 3).join(', ')} +${
+                                filters.length - 3
+                            } others`
+                        }
+                        return filters.slice(0, 3).join(', ')
+                        return ''
+                    }
+                    case 'classifications': {
+                        const filters = appliedFacetFiltersMap.value[filterId]
+                        if (filters.length > 3) {
+                            return `${filters.slice(0, 3).join(', ')} +${
+                                filters.length - 3
+                            } others`
+                        }
+                        return filters.slice(0, 3).join(', ')
+                    }
+                    case 'owners': {
+                        return ''
+                    }
+                    case 'advanced': {
+                        return ''
+                    }
+                }
+            }
+
+            function checkedValuesChange(values: string[], filterId: string) {
+                console.log('values', values, filterId)
+                switch (filterId) {
+                    case 'status': {
+                        return (appliedFacetFiltersMap.value[filterId] = values)
+                    }
+                    case 'classifications': {
+                        return (appliedFacetFiltersMap.value[filterId] = values)
+                    }
+                    case 'owners': {
+                        console.log(
+                            'owners',
+                            appliedFacetFiltersMap.value[filterId]
+                        )
+                        return (appliedFacetFiltersMap.value[filterId] = values)
+                    }
+                    case 'advanced': {
+                        return ''
+                    }
+                }
+            }
+
             return {
+                getFiltersAppliedString,
+                appliedFacetFiltersMap,
+                checkedValuesChange,
                 activeKey,
                 dataMap,
                 handleChange,
@@ -275,9 +354,12 @@
 
         :global(.ant-collapse-header) {
             @apply px-4;
-            @apply py-3;
-            @apply border-b;
+            @apply py-3 !important;
+            @apply border-t;
         }
+        // :global(.ant-collapse-header:last-child) {
+        //     @apply border-b !important;
+        // }
 
         :global(.ant-collapse-content-box) {
             padding-right: 0px;

@@ -40,7 +40,7 @@
               {{ getEventByAction(log).label || "Event" }}
             </span>
           </div>
-          <span class="text-gray-400"
+          <span class="text-gray"
             >{{ timeAgo(log.timestamp) }} ago
             {{ getActionUser(log.user) }}</span
           >

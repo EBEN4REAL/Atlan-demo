@@ -48,7 +48,7 @@
                         <span class="text-primary">{{
                             invite.email || '-'
                         }}</span>
-                        <p class="mb-0 text-gray-400 truncate">
+                        <p class="mb-0 text-gray truncate">
                             @{{ invite.username || '-' }}
                         </p>
                     </div>

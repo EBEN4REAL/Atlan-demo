@@ -16,7 +16,7 @@
     </div>
     <div class="flex mt-3">
       <div class="flex-1 mr-4">
-        <p class="mb-0 text-gray-400">Display Name</p>
+        <p class="mb-0 text-gray">Display Name</p>
         <div class="text-gray">@{{ selectedUser.username }}</div>
       </div>
       <UpdateRole
@@ -28,7 +28,7 @@
     </div>
     <div class="flex mt-3">
       <div class="flex-1 mr-4">
-        <p class="mb-0 text-xs text-gray-400">Email</p>
+        <p class="mb-0 text-xs text-gray">Email</p>
         <div class="text-gray">{{ selectedUser.email }}</div>
       </div>
       <UpdateMobileNumber

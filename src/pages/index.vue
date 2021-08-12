@@ -69,7 +69,7 @@
                     @updatedUser="handleUpdateUser"
                 />
                 <div class="mt-4">
-                    <p class="mb-2 leading-none text-gray-400">Saved Filters</p>
+                    <p class="mb-2 leading-none text-gray">Saved Filters</p>
                     <SavedList></SavedList>
                 </div>
             </div>

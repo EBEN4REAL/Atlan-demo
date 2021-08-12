@@ -1,6 +1,6 @@
 <template>
   <div class="h-full">
-    <div class="flex justify-between w-full px-6 py-4 border-b bg-gray-50">
+    <div class="flex justify-between w-full px-6 py-4 border-b bg-gray-100">
       <a-input-search
         size="default"
         placeholder="Search Connectors"

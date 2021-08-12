@@ -1,6 +1,6 @@
 <template>
   <div>
-    <p class="mb-2 leading-none text-gray-400">Skills/Expertise</p>
+    <p class="mb-2 leading-none text-gray">Skills/Expertise</p>
     <div class="flex">
       <Tags
         :tags="skills"

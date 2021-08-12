@@ -7,7 +7,7 @@
   >
     <template #content>
       <div class="flex flex-col p-2 overflow-y-auto" style="width: 280px; height: 200px">
-        <p class="mb-1 text-sm text-gray-400">Select Custom Metadata</p>
+        <p class="mb-1 text-sm text-gray">Select Custom Metadata</p>
         <a-select
           v-model:value="addBusinessMetadata"
           placeholder="Custom Metadata"
@@ -15,7 +15,7 @@
           mode="multiple"
           :options="addBMSelectOptions"
         />
-        <p class="mt-2 text-xs text-gray-400">
+        <p class="mt-2 text-xs text-gray">
           Can't find the right Custom Metadata to add, create a new Custom Metadata from
           <router-link to="/admin/custom-metadata">here</router-link>
         </p>
@@ -34,7 +34,7 @@
       </div>
     </template>
     <div class="px-2 py-1">
-      <p class="flex justify-between mb-2 text-sm tracking-wide text-gray-400">
+      <p class="flex justify-between mb-2 text-sm tracking-wide text-gray">
         <span
           >Custom Metadata&nbsp;
           <span

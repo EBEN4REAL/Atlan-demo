@@ -1,25 +1,25 @@
 <template>
   <div class="flex flex-col px-2 space-y-3">
     <div class="px-2">
-      <p class="mb-0 text-sm tracking-wide text-gray-400">Unique ID (GUID)</p>
+      <p class="mb-0 text-sm tracking-wide text-gray">Unique ID (GUID)</p>
       <p class="mb-0 text-gray-700">{{ item?.guid }}</p>
     </div>
     <div class="px-2">
-      <p class="mb-0 text-sm tracking-wide text-gray-400">Last updated</p>
+      <p class="mb-0 text-sm tracking-wide text-gray">Last updated</p>
       <p class="mb-0 text-gray-700">
         {{ dayjs().from(item?.attributes?.__modificationTimestamp, true) }} ago,
         {{ item?.attributes?.__modifiedBy }}
       </p>
     </div>
     <div class="px-2">
-      <p class="mb-0 text-sm tracking-wide text-gray-400">Created</p>
+      <p class="mb-0 text-sm tracking-wide text-gray">Created</p>
       <p class="mb-0 text-gray-700">
         {{ dayjs().from(item?.attributes?.__timestamp, true) }} ago,
         {{ item?.attributes?.__createdBy }}
       </p>
     </div>
     <div class="px-2">
-      <p class="mb-0 text-sm tracking-wide text-gray-400">Popularity Score</p>
+      <p class="mb-0 text-sm tracking-wide text-gray">Popularity Score</p>
       <p class="mb-0 text-gray-700">
         {{ item?.attributes?.popularityScore }}
       </p>

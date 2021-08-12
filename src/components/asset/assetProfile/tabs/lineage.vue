@@ -76,7 +76,7 @@
       <div class="lineage-collapse" @click="toggleDetailsView()">
         <fa
           :icon="`fas ${showDetailsView ? 'caret-right' : 'caret-left'}`"
-          class="text-muted"
+          class="text-gray-300"
         ></fa>
       </div>
     </div>

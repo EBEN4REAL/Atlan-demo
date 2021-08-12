@@ -12,7 +12,7 @@
           ><span
             ><fa
               icon="fal times"
-              class="text-gray-400 cursor-pointer hover:text-red-600"
+              class="text-gray cursor-pointer hover:text-red-600"
             /> </span
         ></a-popconfirm>
       </div>
@@ -32,7 +32,7 @@
             ><span class="cursor-pointer"
               ><fa
                 icon="fal trash"
-                class="text-xs text-gray-400 hover:text-red-600"/></span
+                class="text-xs text-gray hover:text-red-600"/></span
           ></a-popconfirm>
         </div>
         <div
@@ -272,7 +272,7 @@
         </span></div
     ></span>
     <div v-else class="text-center">
-      <p class="mt-2 text-xs text-gray-400">
+      <p class="mt-2 text-xs text-gray">
         Please add an attribute
       </p>
     </div>
@@ -289,7 +289,7 @@
               {{ a.options.displayName }}
             </div>
           </div>
-          <p v-else class="mt-2 text-xs text-gray-400">
+          <p v-else class="mt-2 text-xs text-gray">
             No attributes left.
           </p>
         </template>

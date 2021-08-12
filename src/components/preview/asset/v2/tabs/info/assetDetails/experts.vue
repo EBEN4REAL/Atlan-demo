@@ -11,7 +11,7 @@
                     p-2
                     owner-expert
                     border border-transparent
-                    hover:border-gray-light
+                    hover:border-gray-100
                     rounded
                 "
             >

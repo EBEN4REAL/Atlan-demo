@@ -86,7 +86,7 @@ export default function useAssetItemConstants() {
     } if (status === "LOCKED") {
       return "fas fa-lock text-gray";
     } if (status === "DEPRECATED") {
-      return "fas fa-archive text-muted";
+      return "fas fa-archive text-gray-300";
     }
     return "";
   };

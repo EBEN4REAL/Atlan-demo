@@ -7,7 +7,7 @@
                 <div class="flex items-center align-middle">
                     <fa
                         icon="fal chevron-left"
-                        class="mr-1 text-xl text-gray-400"
+                        class="mr-1 text-xl text-gray"
                         @click="handleBack"
                     ></fa>
                     <img
@@ -20,7 +20,7 @@
                 </div>
             </div>
             <div>
-                <a-tabs v-model:activeKey="selectedTab" :class="$style.topbar">
+                <a-tabs v-model:activeKey="selectedTab">
                     <a-tab-pane key="overview" tab="Overview"></a-tab-pane>
                     <a-tab-pane key="workflows" tab="Workflows"></a-tab-pane>
                     <a-tab-pane key="assets" tab="Assets"></a-tab-pane>
@@ -149,11 +149,6 @@
 </script>
 
 <style lang="less" module>
-    .topbar {
-        :global(.ant-tabs-top-bar) {
-            @apply mb-0 !important;
-        }
-    }
 </style>
 
 <route lang="yaml">

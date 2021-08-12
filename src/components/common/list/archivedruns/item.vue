@@ -35,7 +35,7 @@
                         {{ connectionDisplayName }}
                     </p>
 
-                    <!-- <p class="mb-0 text-gray-400" >{{ item.name }}</p> -->
+                    <!-- <p class="mb-0 text-gray" >{{ item.name }}</p> -->
                 </div>
             </div>
         </td>

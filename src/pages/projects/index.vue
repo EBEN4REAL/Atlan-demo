@@ -24,15 +24,15 @@
                         />
                     </div>
                     <div class="p-4">
-                        <p class="mb-2 text-lg text-gray-dark">
+                        <p class="mb-2 text-lg text-gray-500">
                             {{ project.projectName }}
                         </p>
-                        <p class="mb-2 text-gray-400">
+                        <p class="mb-2 text-gray">
                             {{ project.description }}
                         </p>
                         <div class="flex justify-between mt-6">
                             <div>
-                                <div class="flex items-center text-gray-dark">
+                                <div class="flex items-center text-gray-500">
                                     <template
                                         v-for="view in views"
                                         :key="view.id"

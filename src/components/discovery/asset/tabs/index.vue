@@ -200,7 +200,7 @@
         :global(.ant-tabs-tab) {
             @apply pb-5 px-1 !important;
             @apply mx-2 !important;
-            @apply text-gray-description;
+            @apply text-gray-500;
             @apply text-sm !important;
             @apply tracking-wide;
         }
@@ -234,6 +234,5 @@
         @apply text-xs;
         @apply font-bold;
         @apply text-primary;
-        @apply bg-primary-muted;
     }
 </style>

@@ -1,5 +1,5 @@
 <template>
-    <div class="text-sm text-gray-description">
+    <div class="text-sm text-gray-500">
         <p class="mb-1">Business Terms</p>
         <div class="transition duration-500 ease-in-out rounded-lg">
             <a-popover

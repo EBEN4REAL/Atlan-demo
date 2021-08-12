@@ -49,7 +49,7 @@
                 </a-dropdown>
                 <a-button
                     type="link"
-                    :variant="'btn btn-sm btn-link mb-0 btn-no-focus font-w700 text-muted'"
+                    :variant="'btn btn-sm btn-link mb-0 btn-no-focus font-w700 text-gray-300'"
                     :loading="false"
                     :loading-text="'Cancelling...'"
                     @click="onCancel"

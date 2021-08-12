@@ -67,7 +67,7 @@ export default Node.create({
             //   alert('clicked on the container')
             // })
             const preview = document.createElement('p')
-            preview.classList.add('flex', 'bg-gray-50', 'w-full', 'p-4', 'm-0')
+            preview.classList.add('flex', 'bg-gray-100', 'w-full', 'p-4', 'm-0')
 
             const imageDiv = document.createElement('p')
             const image = document.createElement('img')

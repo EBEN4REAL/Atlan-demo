@@ -12,7 +12,7 @@ const getAntDesignVariables = {
   "text-color": themeColors.gray.DEFAULT,
   // Table
   "table-header-bg": themeColors.gray[100],
-  "table-row-hover-bg": themeColors.primary.muted,
+  "table-row-hover-bg": themeColors.primary.focus,
   "table-padding-horizontal": "1rem",
   "table-padding-vertical": "0.5rem",
   //  overriding table border from antd.less, overriding color from here is not working. 👇

@@ -108,7 +108,7 @@
                                             class="relative flex items-center h-full px-5 text-sm lowercase bg-white border cursor-pointer  hover:border-primary justify-space-between"
                                             :class="{
                                                 'bg-success-muted': group.base,
-                                                'bg-primary-muted border-primary':
+                                                'bg-primary-light border-primary':
                                                     is_highlighted_node(
                                                         node.guid
                                                     ),

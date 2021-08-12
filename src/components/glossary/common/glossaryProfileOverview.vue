@@ -25,7 +25,7 @@
         </div>
         <div class="mb-8 flex flex-row">
             <div class="mr-8 flex flex-col">
-                <div class="text-gray-400 text-sm leading-5 tracking-widest">
+                <div class="text-gray text-sm leading-5 tracking-widest">
                     STATUS
                 </div>
                 <div class="mt-2">
@@ -44,13 +44,13 @@
                 </div>
             </div>
             <div class="mr-8 flex flex-col">
-                <div class="text-gray-400 text-sm leading-5 tracking-widest">
+                <div class="text-gray text-sm leading-5 tracking-widest">
                     OWNERS
                 </div>
                 <div class="bg-blue-50 w-6 text-blue-700 px-2 mr-2 my-2">+</div>
             </div>
             <div class="mr-8 flex flex-col">
-                <div class="text-gray-400 text-sm leading-5 tracking-widest">
+                <div class="text-gray text-sm leading-5 tracking-widest">
                     EXPERTS
                 </div>
                 <div class="bg-blue-50 text-blue-700 w-6 px-2 mr-2 my-2">+</div>

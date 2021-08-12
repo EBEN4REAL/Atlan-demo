@@ -96,7 +96,7 @@
           The {{ classificationName ? "classification" : "term" }} hasn't been
           assigned to any asset.
         </p>
-        <span class="text-muted"
+        <span class="text-gray-300"
           >Link this {{ classificationName ? "classification" : "term" }} to
           assets in order to see linked assets here.</span
         >
@@ -285,7 +285,7 @@ export default defineComponent({
     //           {
     //             name: "Deprecated",
     //             alias: "DEPRECATED",
-    //             iconClass: "fas fa-archive text-muted",
+    //             iconClass: "fas fa-archive text-gray-300",
     //           },
     //           {
     //             name: "No Status",

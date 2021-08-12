@@ -17,7 +17,7 @@
                     <div
                         class="w-1 h-6 rounded"
                         :class="`bg-${
-                            getEventByAction(log).color || 'gray-description'
+                            getEventByAction(log).color || 'gray-500'
                         }`"
                     ></div>
                 </template>
@@ -54,7 +54,7 @@
                         {{ getEventByAction(log).label || 'Event' }}
                     </span>
                 </div>
-                <span class="text-gray-400">{{
+                <span class="text-gray">{{
                     timeAgo(log.timestamp) + ' ' + getActionUser(log.user)
                 }}</span>
             </a-timeline-item>
@@ -68,7 +68,7 @@
     </div>
     <div v-else class="flex flex-col items-center">
         <img :src="emptyScreen" alt="No logs" class="w-2/5 m-auto mb-4" />
-        <span class="text-gray-description">No logs found</span>
+        <span class="text-gray-500">No logs found</span>
     </div>
 </template>
 

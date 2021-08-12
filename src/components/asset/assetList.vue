@@ -39,7 +39,7 @@
                     <p class="mb-2 font-w700">
                         No assets found
                     </p>
-                    <span class="text-muted"
+                    <span class="text-gray-300"
                         >Try changing filters or search keyword</span
                     >
                 </slot>
@@ -77,7 +77,7 @@
                         <i
                             class="mr-1 far fa-circle-notch spin fast text-primary font-size-sm"
                         ></i
-                        ><span class="text-muted font-size-sm"
+                        ><span class="text-gray-300 font-size-sm"
                             >Unlinking...</span
                         >
                     </span>
@@ -100,7 +100,7 @@
                         <i
                             class="mr-1 far fa-check-circle text-success font-size-sm"
                         ></i
-                        ><span class="text-muted font-size-sm"
+                        ><span class="text-gray-300 font-size-sm"
                             >Asset unlinked</span
                         >
                     </span>

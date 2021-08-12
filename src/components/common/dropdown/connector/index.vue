@@ -35,7 +35,7 @@
                             <fa
                                 v-if="connectionObject"
                                 icon="fal chevron-right"
-                                class="text-xs text-gray-300"
+                                class="text-xs text-gray"
                             ></fa>
                             <div v-if="connectionObject" class="text-xs">
                                 {{
@@ -55,23 +55,23 @@
                             </div>
                             <fa
                                 icon="fas caret-down"
-                                class="text-primary-500"
+                                class="text-primary-focus"
                             ></fa>
                         </div>
                         <fa
                             v-if="connectionObject"
                             icon="fal chevron-right"
-                            class="text-xs text-gray-300"
+                            class="text-xs text-gray"
                         ></fa>
                     </div>
                     <div v-else class="flex py-2 cursor-pointer">
                         <p
-                            class="flex items-center mb-0 text-xs tracking-wide text-gray-900 align-middle hover:bg-gray-50"
+                            class="flex items-center mb-0 text-xs tracking-wide text-gray-900 align-middle hover:bg-gray-100"
                         >
                             <fa icon="fal plug" class="mr-1"></fa>All Connectors
                             <fa
                                 icon="fas caret-down"
-                                class="text-primary-500"
+                                class="text-primary-focus"
                             ></fa>
                         </p>
                     </div>

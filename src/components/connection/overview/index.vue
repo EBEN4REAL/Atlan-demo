@@ -11,7 +11,7 @@
       :syncing="syncing"
     ></DetailsView>
     <!-- <div class="flex justify-between mt-4">
-      <p class="mb-0 text-gray-400">Last 5 runs</p>
+      <p class="mb-0 text-gray">Last 5 runs</p>
       <p class="mb-0 cursor-pointer text-primary">View All</p>
     </div> -->
 

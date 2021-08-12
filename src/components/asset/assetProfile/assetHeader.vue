@@ -27,12 +27,12 @@
                 >
 
                 <span class="mr-4"
-                    >last crawled
-                    {{ timeStamp('lc') }}
+                    >last crawled {{ dayjs().from(attr.__timestamp, true) }} ago
+                    ago,
                 </span>
                 <span class="mr-4"
                     >last updated
-                    {{ timeStamp('lu') }}
+                    {{ dayjs().from(attr.__modificationTimestamp, true) }} ago
                 </span>
             </div>
         </div>
@@ -44,15 +44,19 @@
     import { defineComponent, ToRefs, toRefs, computed } from 'vue'
     // Lib
     import dayjs from 'dayjs'
+    import relativeTime from 'dayjs/plugin/relativeTime'
+
     // Util
     import { SourceList } from '~/constant/source'
+
+    dayjs.extend(relativeTime)
 
     export default defineComponent({
         props: ['asset'],
         setup(props) {
             /** DATA */
             const { asset }: ToRefs = toRefs(props)
-
+            const attr = asset.value.attributes
             /** COMPUTED */
             const integrationIcon = computed(() => {
                 const item = SourceList.find(
@@ -62,18 +66,10 @@
                 return item?.image
             })
 
-            /** METHODS */
-            const timeStamp = (val: string) => {
-                const attr = asset.value.attributes
-                return val === 'lc'
-                    ? dayjs().from(attr.__timestamp, true)
-                    : `${dayjs().from(attr.__modificationTimestamp, true)} ago`
-            }
-
             return {
-                asset: props.asset,
+                dayjs,
                 integrationIcon,
-                timeStamp,
+                attr,
             }
         },
     })

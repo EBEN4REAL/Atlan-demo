@@ -2,15 +2,16 @@
     <LoadingView v-if="loading" />
     <ErrorView v-else-if="error" :error="error" />
 
-    <div v-else class="w-full bg-gray-100">
-        <div class="h-24 p-4 bg-white">
+    <div v-if="!loading && response?.entities?.[0]" class="w-full bg-gray-100">
+        <div class="z-30 h-24 p-4 bg-white">
             <AssetHeader :asset="response?.entities?.[0]" />
         </div>
         <div class="asset-profile">
-            <a-tabs v-model="activeKey" @change="selectTab($event)">
+            <a-tabs :active-key="activeKey" @change="selectTab($event)">
                 <a-tab-pane v-for="tab in tabs" :key="tab.id" :tab="tab.name">
                     <component
                         :is="tab.component"
+                        :key="activeKey"
                         :ref="
                             (el) => {
                                 refs[tab.id] = el
@@ -31,6 +32,7 @@
         ref,
         defineAsyncComponent,
         watch,
+        onMounted,
     } from 'vue'
     import { useRoute, useRouter } from 'vue-router'
 
@@ -55,16 +57,16 @@
         },
         setup(_, context) {
             /** DATA */
-            const activeKey = ref('1')
+            const activeKey = ref(1)
             const refs: { [key: string]: any } = ref({})
             const tabs = [
                 {
-                    id: '1',
+                    id: 1,
                     name: 'Overview',
                     component: 'overview',
                 },
                 {
-                    id: '2',
+                    id: 2,
                     name: 'Lineage',
                     component: 'lineage',
                 },
@@ -78,8 +80,9 @@
             const id = computed(() => route?.params?.id || '')
 
             /** METHODS */
-            const selectTab = (activeKey: string) => {
-                const selectedTab = tabs.find((i) => i.id === activeKey)
+            const selectTab = (val: number) => {
+                activeKey.value = val
+                const selectedTab = tabs.find((i) => i.id === val)
                 router.replace(
                     `/assets/${id.value}/${selectedTab?.name.toLowerCase()}`
                 )
@@ -91,13 +94,21 @@
             } = useAsset({
                 entityId: id.value,
             })
-            console.log(response, 'response')
+
+            onMounted(() => {
+                const tab = route?.params?.tab
+                if (!tab) return
+                const currTab = tabs.find(
+                    (i) => i.name.toLowerCase() === tab.toLowerCase()
+                )
+                activeKey.value = currTab.id
+            })
 
             watch(response, () => {
                 if (response.value?.entities?.length)
                     context.emit(
                         'updateAssetPreview',
-                        response.value?.entities[0] ?? []
+                        response.value?.entities?.[0] ?? []
                     )
             })
 

@@ -1,11 +1,8 @@
 import { useAsyncState } from '@vueuse/core'
-import { Ref, watch, ref, computed } from 'vue'
+import { Ref, watch } from 'vue'
 import { fetcher } from '~/api'
 import { GET_ASSET_RELATIONSHIP } from '~/api/keyMaps/asset'
 import keyMaps from '~/api/keyMaps'
-import { dataTypeList } from '~/constant/datatype'
-
-// TODO: to delete this file - use useColumns and useColumnsFilter instead
 
 function constructRequest(guid: string) {
     const finalParams = new URLSearchParams()
@@ -20,7 +17,7 @@ function constructRequest(guid: string) {
         'metadata',
         'relativePinOrder',
         'primary key',
-        'assetStatus',
+        'foreign key',
         'tenantId',
     ]
 
@@ -39,44 +36,19 @@ function constructRequest(guid: string) {
     Object.keys(paramsObj).forEach((key) => {
         finalParams.append(key, paramsObj[key])
     })
+
     return finalParams
 }
 
-export function useColumns(id: Ref<string>) {
-    const searchTerm = ref('')
-    const filters: Ref<string[]> = ref([])
-
+export default function useColumns(id: Ref<string>) {
     const { execute, state, isReady, error } = useAsyncState(
         () => {
-            const params = constructRequest(id.value)
+            const params = constructRequest(id?.value || id)
             return fetcher(keyMaps[GET_ASSET_RELATIONSHIP](), params, {})
         },
         { entities: [] },
         { resetOnExecute: true }
     )
-
-    const filteredList = computed(() => {
-        const allowedTypes = dataTypeList
-            .filter((typeList) => filters.value.includes(typeList.id))
-            .reduce((acc: string[], dt) => [...acc, ...dt.type], [])
-            .map((type) => type.toLowerCase())
-
-        const keyword = searchTerm.value.toLowerCase()
-
-        return (
-            state.value?.entities?.filter(
-                (item) =>
-                    (keyword
-                        ? item.displayText.toLowerCase().includes(keyword)
-                        : true) &&
-                    (filters.value.length
-                        ? allowedTypes.includes(
-                              item.attributes.dataType.toLowerCase()
-                          )
-                        : true)
-            ) || []
-        )
-    })
 
     watch(id, (newId, oldId) => {
         if (newId !== oldId) execute()
@@ -86,8 +58,5 @@ export function useColumns(id: Ref<string>) {
         columnList: state,
         isReady,
         error,
-        searchTerm,
-        filteredList,
-        filters,
     }
 }

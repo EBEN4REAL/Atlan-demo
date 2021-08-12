@@ -1,6 +1,6 @@
 <template>
     <a-layout class="min-h-full">
-        <a-layout-header class="h-12 p-0 m-0">
+        <a-layout-header class="z-30 h-12 p-0 m-0">
             <div
                 class="flex justify-between h-full px-4 bg-white border-b  text-gray"
             >

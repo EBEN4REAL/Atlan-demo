@@ -8,13 +8,17 @@
                 ></AssetDiscovery>
             </div>
         </div>
-        <div v-show="isItem" class="flex-1 item-stretch">
+        <div
+            v-show="isItem"
+            class="flex-1 item-stretch"
+            style="max-width: 70% !important"
+        >
             <div class="flex flex-1 h-full">
                 <router-view @updateAssetPreview="handlePreview"></router-view>
             </div>
         </div>
         <div
-            class="flex flex-col h-full bg-white border-l  asset-preview-container"
+            class="z-20 flex flex-col h-full bg-white border-l  asset-preview-container"
             style="overflow: hidden"
         >
             <AssetPreview

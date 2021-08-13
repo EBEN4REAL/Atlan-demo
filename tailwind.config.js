@@ -20,16 +20,16 @@ module.exports = {
             },
             colors: {
                 primary: {
-                    DEFAULT: "#5277D7",
-                    focus: "#BDCDF4",
-                    light: "#F4F6FD",
+                    DEFAULT: '#5277D7',
+                    focus: '#BDCDF4',
+                    light: '#F4F6FD',
                 },
                 body: '#fff',
                 gray: {
                     DEFAULT: '#3E4359',
-                    500: "#6F7590",
-                    300: "#E6E6EB",
-                    100: "#FAFAFA",
+                    500: '#6F7590',
+                    300: '#E6E6EB',
+                    100: '#FAFAFA',
                 },
                 success: {
                     DEFAULT: '#00a680',
@@ -57,6 +57,7 @@ module.exports = {
         extend: {
             animation: ['motion-safe'],
             borderWidth: ['last'],
+            fontWeight: ['hover'],
             borderColor: ['hover', 'focus'],
             display: ['group-hover'],
         },

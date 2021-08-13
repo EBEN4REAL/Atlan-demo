@@ -1,31 +1,11 @@
 <template>
     <div class="flex w-full">
-        <div class="h-full bg-white border-r facets">
-            <div class="flex flex-col p-4">
-                <div class="mb-3">
-                    <a-radio-group
-                        v-model:value="filterMode"
-                        class="flex w-full text-center"
-                    >
-                        <a-radio-button class="flex-grow" value="custom"
-                            ><fa icon="fal filter" class="pushtop"></fa
-                        ></a-radio-button>
-                        <a-radio-button class="flex-grow" value="saved"
-                            ><fa icon="fal list-alt" class="pushtop"></fa
-                        ></a-radio-button>
-                    </a-radio-group>
-                </div>
-
-                <div v-show="filterMode === 'custom'" class="flex-grow">
-                    <AssetFilters
-                        :initial-filters="initialFilters"
-                        @refresh="handleFilterChange"
-                    ></AssetFilters>
-                </div>
-
-                <div v-show="filterMode === 'saved'">
-                    <!--     <SavedFilters @refresh="handleSavedSearchChange"></SavedFilters> -->
-                </div>
+        <div class="w-1/3 h-full bg-white border-r">
+            <div class="flex flex-col">
+                <AssetFilters
+                    :initial-filters="initialFilters"
+                    @refresh="handleFilterChange"
+                ></AssetFilters>
             </div>
         </div>
 
@@ -152,19 +132,15 @@
         Ref,
         onMounted,
     } from 'vue'
-
     import AssetFilters from '@/discovery/asset/filters/index.vue'
     import SavedFilters from '@/discovery/asset/saved/index.vue'
     import AssetList from '@/discovery/asset/list/index.vue'
     import AssetTabs from '@/discovery/asset/tabs/index.vue'
     import AssetPagination from '@common/pagination/index.vue'
-
     import HeirarchySelect from '@common/tree/heirarchy/index.vue'
     import SearchBox from '@common/searchbox/searchlist.vue'
     import ConnectorDropdown from '@common/dropdown/connector/index.vue'
-
     import AssetDropdown from '@common/dropdown/asset/index.vue'
-
     import EmptyView from '@common/empty/discover.vue'
     import Preferences from '@/discovery/asset/preference/index.vue'
     // import { useDebounceFn } from "@vueuse/core";
@@ -175,7 +151,6 @@
     import useDiscoveryPreferences from '~/composables/preference/useDiscoveryPreference'
     // import { DISCOVERY_FETCH_LIST } from "~/constant/cache";
     // import { Components } from "~/api/atlas/client";
-
     import useAssetList from '~/composables/bots/useAssetList'
     import { AssetTypeList } from '~/constant/assetType'
     import { Components } from '~/api/atlas/client'
@@ -190,7 +165,6 @@
     import { getEncodedStringFromOptions } from '~/utils/routerQuery'
     import { initialFiltersType } from '~/pages/assets.vue'
     import useTracking from '~/modules/tracking'
-
     export interface filterMapType {
         status: {
             checked?: Array<string>
@@ -230,7 +204,6 @@
             }>
         }
     }
-
     export default defineComponent({
         name: 'AssetDiscovery',
         components: {
@@ -264,15 +237,11 @@
             const tracking = useTracking()
             const events = tracking.getEventsName()
             const filterMode = ref('custom')
-
             const now = ref(false)
             let initialBody: SearchParameters = reactive({})
             const assetType = ref('Catalog')
-
             const queryText = ref(initialFilters.searchText)
-
             const connectorsPayload = ref(initialFilters.connectorsPayload)
-
             const filters = ref(initialFilters.initialBodyCriterion)
             const filterMap = ref<filterMapType>({
                 status: {
@@ -294,41 +263,34 @@
                     criterion: initialFilters.facetsFilters.advanced.criterion,
                 },
             })
-
             const limit = ref(initialFilters.limit || 20)
             const offset = ref(0)
             const sortOrder = ref('default')
-
             // * Get all available BMs and save on store
             const store = useBusinessMetadataStore()
             const { fetchBMonStore } = useBusinessMetadata()
-
             const BMAttributeProjection = computed(
                 () => store.getBusinessMetadataListProjections
             )
             const state = ref('active')
-
             const assetTypeLabel = computed(() => {
                 const found = AssetTypeList.find(
                     (item) => item.id == assetType.value
                 )
                 return found?.label
             })
-
             const totalCount = computed(() => {
                 if (assetType.value === 'Catalog') {
                     return totalSum.value
                 }
                 return assetTypeMap.value[assetType.value]
             })
-
             const connectorStore = useConnectionsStore()
             const filteredConnector = computed(() =>
                 connectorStore.getSourceList?.find(
                     (item) => connectorsPayload.value?.connector == item.id
                 )
             )
-
             // Get All Disoverable Asset Types
             const assetTypeList = ref([])
             assetTypeList.value = AssetTypeList.filter(
@@ -337,7 +299,6 @@
             const assetTypeListString = assetTypeList.value
                 .map((item) => item.id)
                 .join(',')
-
             const totalSum = computed(() => {
                 let sum = 0
                 assetTypeList.value.forEach((element) => {
@@ -347,19 +308,15 @@
                 })
                 return sum
             })
-
             // Push all asset type
             assetTypeList.value.push({
                 id: 'Catalog',
                 label: 'All',
             })
-
             const assetlist = ref(null)
-
             const isLoadMore = computed(
                 () => totalCount.value > list.value.length
             )
-
             const {
                 list,
                 replaceBody,
@@ -375,14 +332,12 @@
                 assetType.value,
                 true
             )
-
             console.log(
                 assetTypeListString,
                 initialBody,
                 assetType.value,
                 'useAssetList type'
             )
-
             const updateBody = (dontScroll) => {
                 initialBody = {
                     typeName: assetTypeListString,
@@ -409,7 +364,6 @@
                         operator: 'eq',
                     })
                 }
-
                 if (state.value) {
                     if (state.value === 'all') {
                         initialBody.excludeDeletedEntities = false
@@ -424,7 +378,6 @@
                         initialBody.excludeDeletedEntities = true
                     }
                 }
-
                 const connectorCritera = {
                     condition: 'OR',
                     criterion: [],
@@ -433,7 +386,6 @@
                     condition: 'OR',
                     criterion: [],
                 }
-
                 if (connectorsPayload.value?.connector) {
                     connectorCritera.criterion?.push({
                         attributeName: 'integrationName',
@@ -441,7 +393,6 @@
                         operator: 'eq',
                     })
                 }
-
                 if (connectorsPayload.value?.connection) {
                     connectorCritera.criterion?.push({
                         attributeName: 'connectionQualifiedName',
@@ -449,10 +400,8 @@
                         operator: 'eq',
                     })
                 }
-
                 initialBody.entityFilters.criterion.push(connectorCritera)
                 initialBody.entityFilters.criterion.push(connectionCriteria)
-
                 if (sortOrder.value !== 'default') {
                     const split = sortOrder.value.split('|')
                     if (split.length > 1) {
@@ -463,11 +412,9 @@
                     delete initialBody.sortBy
                     delete initialBody.sortOrder
                 }
-
                 if (queryText.value) {
                     initialBody.query = queryText.value
                 }
-
                 replaceBody(initialBody)
                 if (assetlist.value && !dontScroll) {
                     // assetlist?.value.scrollToItem(0);
@@ -477,9 +424,7 @@
                 [assetType, BMAttributeProjection],
                 (n, o) => {
                     // ? Should these run only when all attributes are loaded? like BMAttributeProjection
-                    // abort();
                     updateBody()
-
                     if (!now.value) {
                         isAggregate.value = true
                         now.value = true
@@ -489,9 +434,7 @@
                     immediate: true,
                 }
             )
-
             const { projection } = useDiscoveryPreferences()
-
             const handleSearchChange = useDebounceFn((val) => {
                 offset.value = 0
                 const routerOptions = getRouterOptions()
@@ -502,23 +445,19 @@
                     trigger: 'discover',
                 })
             }, 100)
-
             const handleChangePreferences = (payload: any) => {
                 projection.value = payload
             }
-
             const handleChangeSort = (payload: any) => {
                 sortOrder.value = payload
                 isAggregate.value = false
                 updateBody()
             }
-
             const handleState = (payload: any) => {
                 state.value = payload
                 isAggregate.value = true
                 updateBody()
             }
-
             const getRouterOptions = () => ({
                 filters: filterMap.value || {},
                 searchText: queryText.value || '',
@@ -533,11 +472,9 @@
                 //   : { sortBy: "", sortOrder: "" }),
                 limit: limit.value || 20,
             })
-
             const pushQueryToRouter = (pushString) => {
                 router.push(`/assets?${pushString}`)
             }
-
             const handleFilterChange = (
                 payload: any,
                 filterMapData: filterMapType
@@ -551,7 +488,6 @@
                 updateBody()
                 pushQueryToRouter(routerQuery)
             }
-
             const handleChangeConnectors = (payload: any) => {
                 connectorsPayload.value = payload
                 const routerOptions = getRouterOptions()
@@ -561,11 +497,9 @@
                 offset.value = 0
                 updateBody()
             }
-
             const handlePreview = (item) => {
                 emit('preview', item)
             }
-
             const loadMore = () => {
                 if (list.value.length + limit.value < totalCount.value) {
                     offset.value = list.value.length + limit.value
@@ -573,11 +507,18 @@
                 isAggregate.value = false
                 updateBody(true)
             }
+            // select fist asset automatically
+
+            watch(list, () => {
+                if (list.value.length > 0) {
+                    console.log(list.value[0], 'firstItem')
+                    handlePreview(list.value[0])
+                }
+            })
 
             onMounted(() => {
                 fetchBMonStore()
             })
-
             return {
                 isFilterVisible,
                 initialFilters,

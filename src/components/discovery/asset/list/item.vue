@@ -203,7 +203,6 @@
                 // // Compenstion for the initial 0 in strSize
                 idx--
 
-                console.log(strSize, arr)
                 /** The elements that would be displayed */
                 const displayArray = arr.slice(0, idx)
                 /** The elements that would be truncated as x other(s) */

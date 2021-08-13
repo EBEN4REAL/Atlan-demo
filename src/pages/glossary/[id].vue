@@ -27,7 +27,7 @@
             <a-tabs default-active-key="1" class="border-0">
                 <a-tab-pane key="1" tab="Overview">
                     <div class="flex flex-row m-0 p-0">
-                        <GlossaryProfileOverview :entity="glossary" />
+                        <GlossaryProfileOverview :entity="glossary" typeName="AtlasGlossary" />
                         <div
                             v-if="termCount"
                             class="flex flex-column w-1/2 ml-9 border-l"

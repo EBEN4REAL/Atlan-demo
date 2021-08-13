@@ -29,31 +29,29 @@
                     STATUS
                 </div>
                 <div class="mt-2">
-                    <a-select
-                        mode="multiple"
-                        placeholder="No status"
-                        style="width: 150px"
-                    >
-                        <a-select-option
-                            v-for="i in 23"
-                            :key="(i + 9).toString(36) + i"
-                        >
-                            {{ (i + 9).toString(36) + i }}
-                        </a-select-option>
-                    </a-select>
+                    <Status
+                        v-if="selectedAsset.guid"
+                        :selectedAsset="selectedAsset"
+                    />
                 </div>
             </div>
             <div class="mr-8 flex flex-col">
                 <div class="text-gray text-sm leading-5 tracking-widest">
                     OWNERS
                 </div>
-                <div class="bg-blue-50 w-6 text-blue-700 px-2 mr-2 my-2">+</div>
+                <Owners
+                    v-if="selectedAsset.guid"
+                    :selectedAsset="selectedAsset"
+                />
             </div>
             <div class="mr-8 flex flex-col">
                 <div class="text-gray text-sm leading-5 tracking-widest">
                     EXPERTS
                 </div>
-                <div class="bg-blue-50 text-blue-700 w-6 px-2 mr-2 my-2">+</div>
+                <Experts
+                    v-if="selectedAsset.guid"
+                    :selectedAsset="selectedAsset"
+                />
             </div>
         </div>
         <Readme
@@ -64,9 +62,13 @@
     </div>
 </template>
 <script lang="ts">
-import { defineComponent, computed } from 'vue'
+import { defineComponent, computed, ref } from 'vue'
 
 import Readme from '@/common/readme/index.vue'
+import Owners from '@/preview/asset/v2/tabs/info/assetDetails/owners.vue'
+import Experts from '@/preview/asset/v2/tabs/info/assetDetails/experts.vue'
+import Description from '@/preview/asset/v2/tabs/info/assetDetails/description.vue'
+import Status from '@/preview/asset/v2/tabs/info/assetDetails/status.vue'
 
 import { Components } from '~/api/atlas/client'
 
@@ -74,11 +76,12 @@ interface PropsType {
     entity: Components.Schemas.AtlasGlossary
     showCategoryCount: boolean
     showTermCount: boolean
+    typeName: 'AtlasGlossary' | 'AtlasGlossaryCategory' | 'AtlasGlossaryTerm'
 }
 
 export default defineComponent({
-    components: { Readme },
-    props: ['entity', 'showCategoryCount', 'showTermCount'],
+    components: { Readme, Owners, Description, Status, Experts },
+    props: ['entity', 'showCategoryCount', 'showTermCount', 'typeName'],
     setup(props: PropsType) {
         const shortDescription = computed(() => props.entity?.shortDescription)
         const termCount = computed(() => props.entity?.terms?.length ?? 0)
@@ -92,6 +95,21 @@ export default defineComponent({
         const showTermCountComputed = computed(
             () => props.showTermCount ?? true
         )
+        const selectedAsset = ref({
+            attributes: {
+                ownerUsers: props.entity.ownerUsers ?? '',
+                ownerGroups: props.entity.ownerGroups ?? '',
+                assetStatus: props.entity.assetStatus ?? '',
+                qualifiedName: props.entity.qualifiedName ?? '',
+                assetStatusUpdatedBy: props.entity.assetStatusUpdatedBy,
+                assetStatusUpdatedAt:props.entity.assetStatusUpdatedAt,
+                name: props.entity.name ?? '',
+                tenantId: 'default',
+            },
+            anchor: props.entity.anchor,
+            guid: props.entity.guid,
+            typeName: props.typeName,
+        })
         return {
             shortDescription,
             termCount,
@@ -99,6 +117,7 @@ export default defineComponent({
             guid,
             showCategoryCountComputed,
             showTermCountComputed,
+            selectedAsset,
         }
     },
 })

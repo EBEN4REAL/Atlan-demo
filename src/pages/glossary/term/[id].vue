@@ -27,6 +27,7 @@
                             :entity="term"
                             :show-category-count="false"
                             :show-term-count="false"
+                            typeName="AtlasGlossaryTerm"
                         />
                         <div v-if="linkedAssetsCount || term?.guid" class="w-3/4 sidebar overflow-y-scroll ml-9 border-l">
                             <TopAssets v-if="linkedAssetsCount" :term-qualified-name="qualifiedName" />

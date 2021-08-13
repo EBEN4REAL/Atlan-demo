@@ -35,6 +35,7 @@
                         <GlossaryProfileOverview
                             :entity="category"
                             :show-category-count="false"
+                            typeName="AtlasGlossaryCategory"
                         />
                         <div
                             v-if="termCount"

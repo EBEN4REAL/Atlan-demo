@@ -5,7 +5,7 @@ import { assetInterface } from '~/types/assets/asset.interface'
 
 export default function updateOwners(selectedAsset: Ref<assetInterface>) {
     const { username } = whoami()
-
+console.log(selectedAsset.value, 'selectedAssets')
     const isLoading = ref(false)
 
     const isCompleted = ref(false)
@@ -67,6 +67,10 @@ export default function updateOwners(selectedAsset: Ref<assetInterface>) {
             name: selectedAsset.value.attributes?.name,
             tenantId: selectedAsset.value.attributes?.tenantId,
         }
+        const anchor = {
+            glossaryGuid: selectedAsset.value.anchor?.glossaryGuid,
+            relationGuid: selectedAsset.value.anchor?.relationGuid
+        }
         if (val.ownerUsers !== '') attributes['ownerUsers'] = val.ownerUsers
         if (val.ownerGroups !== '') attributes['ownerGroups'] = val.ownerGroups
         return {
@@ -74,6 +78,7 @@ export default function updateOwners(selectedAsset: Ref<assetInterface>) {
                 {
                     guid: selectedAsset.value.guid,
                     typeName: selectedAsset.value.typeName,
+                    anchor,
                     attributes,
                 },
             ],

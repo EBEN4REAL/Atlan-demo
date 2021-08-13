@@ -14,6 +14,7 @@ export const URL = {
 
 const BulkUpdate = (body?: Components.Schemas.AtlasEntitiesWithExtInfo,
   options?: AxiosRequestConfig) => {
+    console.log('what the', body)
   const data = getAxiosClient().post(getAPIPath(serviceAlias, URL.BulkUpdate), body, {
     ...options,
   });

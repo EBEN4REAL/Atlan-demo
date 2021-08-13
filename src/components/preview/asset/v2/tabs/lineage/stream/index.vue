@@ -1,5 +1,5 @@
 <template>
-    <div v-if="lineageList?.length">
+    <div v-if="lineageList">
         <div class="flex items-center justify-between my-3 gap-x-3">
             <a-input
                 :value="query"
@@ -39,7 +39,7 @@
             <AssetList :lineage-list="lineageList" />
         </div>
     </div>
-    <div v-else>
+    <div v-if="!lineageList || lineageList.length === 0">
         <img :src="emptyScreen" alt="Empty" class="w-3/5 m-auto mt-4" />
         <div class="mt-4 text-sm text-center text-gray">Result is empty</div>
     </div>

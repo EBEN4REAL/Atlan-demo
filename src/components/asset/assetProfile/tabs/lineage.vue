@@ -163,6 +163,10 @@
                 fetch()
             }
 
+            watch(asset, () => {
+                reloadLineage()
+            })
+
             // changeDepth
             const changeDepth = (level) => {
                 loadingLineage.value = true

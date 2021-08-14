@@ -1,20 +1,26 @@
 <template>
-        <div v-if="isLoading" class="w-full  min-h-full justify-center" >
-            <LoadingView/>
-        </div>
+    <div v-if="isLoading" class="w-full min-h-full justify-center">
+        <LoadingView />
+    </div>
     <div v-else class="px-12 pr-0 mb-0">
-
-            <div class="flex flex-row mt-6 mb-5">
+        <div class="flex flex-row mt-6 mb-5">
             <div class="mr-5">
                 <img :src="TermSvg" />
             </div>
             <div class="flex flex-col">
                 <span class="secondaryHeading">TERM</span>
                 <h1 class="text-2xl leading-8 m-0 p-0 text-black font-normal">
-                   <span v-if="parentGlossaryName" class="text-gray">{{ parentGlossaryName }} / </span>{{ title }}
+                    <span v-if="parentGlossaryName" class="text-gray"
+                        >{{ parentGlossaryName }} / </span
+                    >{{ title }}
                 </h1>
-                <EntityHistory :created-at="term?.createTime" :created-by="term?.createdBy" :updated-at="term?.updateTime" :updated-by="term?.updatedBy" />
-                                <span class="mt-2 text-xs w-1/2 leading-4 text-gray-500">{{
+                <EntityHistory
+                    :created-at="term?.createTime"
+                    :created-by="term?.createdBy"
+                    :updated-at="term?.updateTime"
+                    :updated-by="term?.updatedBy"
+                />
+                <span class="mt-2 text-xs w-1/2 leading-4 text-gray-500">{{
                     shortDescription
                 }}</span>
             </div>
@@ -25,18 +31,27 @@
                     <div class="flex flex-row m-0 p-0">
                         <GlossaryProfileOverview
                             :entity="term"
-                            :show-category-count="false"
-                            :show-term-count="false"
-                            typeName="AtlasGlossaryTerm"
                         />
-                        <div v-if="linkedAssetsCount || term?.guid" class="w-3/4 sidebar overflow-y-scroll ml-9 border-l">
-                            <TopAssets v-if="linkedAssetsCount" :term-qualified-name="qualifiedName" />
-                            <RelatedTerms v-if="term?.guid" :term="term"/>
+                        <div
+                            v-if="linkedAssetsCount || term?.guid"
+                            class="
+                                w-3/4
+                                sidebar
+                                overflow-y-scroll
+                                ml-9
+                                border-l
+                            "
+                        >
+                            <TopAssets
+                                v-if="linkedAssetsCount"
+                                :term-qualified-name="qualifiedName"
+                            />
+                            <RelatedTerms v-if="term?.guid" :term="term" />
                         </div>
                     </div>
                 </a-tab-pane>
                 <a-tab-pane key="2" tab="Linked Terms">
-                   <LinkedAssetsTab :term-qualified-name="qualifiedName" />
+                    <LinkedAssetsTab :term-qualified-name="qualifiedName" />
                 </a-tab-pane>
             </a-tabs>
         </div>
@@ -44,21 +59,30 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, computed, watch, onMounted, toRef } from 'vue'
+import { defineComponent, computed, toRef } from 'vue'
 
-import GlossaryProfileOverview from '~/components/glossary/common/glossaryProfileOverview.vue'
+import GlossaryProfileOverview from '@/glossary/common/glossaryProfileOverview.vue'
 import TopAssets from '@/glossary/termProfile/topAssets.vue'
 import LinkedAssetsTab from '@/glossary/termProfile/linkedAssetsTab.vue'
-import EntityHistory from '~/components/glossary/common/entityHistory.vue'
-import LoadingView from "@common/loaders/page.vue";
+import EntityHistory from '@/glossary/common/entityHistory.vue'
+import LoadingView from '@common/loaders/page.vue'
 import RelatedTerms from '@/glossary/termProfile/relatedTerms.vue'
 
 import useGTCEntity from '~/composables/glossary/useGtcEntity'
 
+import { Term } from '~/types/glossary/glossary.interface'
+
 import TermSvg from '~/assets/images/gtc/term/term.png'
 
 export default defineComponent({
-  components: {GlossaryProfileOverview, TopAssets, RelatedTerms, LinkedAssetsTab, EntityHistory, LoadingView},
+    components: {
+        GlossaryProfileOverview,
+        TopAssets,
+        RelatedTerms,
+        LinkedAssetsTab,
+        EntityHistory,
+        LoadingView,
+    },
     props: {
         id: {
             type: String,
@@ -69,18 +93,18 @@ export default defineComponent({
     setup(props) {
         const guid = toRef(props, 'id')
 
-        const {
-            data: term,
-            error,
-            isLoading,
-        } = useGTCEntity('term', guid)
+        const { entity: term, error, isLoading } = useGTCEntity<Term>('term', guid)
 
-        const title = computed(() => term.value?.name)
-        const shortDescription = computed(() => term.value?.shortDescription)
-        const qualifiedName = computed(() => term.value?.qualifiedName)
-        const parentGlossaryName = computed(() => term.value?.qualifiedName?.split('@')[1] ?? '')
+        const title = computed(() => term.value?.attributes?.name)
+        const shortDescription = computed(() => term.value?.attributes?.shortDescription)
+        const qualifiedName = computed(() => term.value?.attributes?.qualifiedName)
+        const parentGlossaryName = computed(
+            () => term.value?.attributes?.qualifiedName?.split('@')[1] ?? ''
+        )
 
-        const linkedAssetsCount = computed(() => term.value?.assignedEntities?.length ?? 0)
+        const linkedAssetsCount = computed(
+            () => term.value?.attributes?.assignedEntities?.length ?? 0
+        )
 
         return {
             term,
@@ -92,14 +116,14 @@ export default defineComponent({
             shortDescription,
             qualifiedName,
             linkedAssetsCount,
-            parentGlossaryName
+            parentGlossaryName,
         }
     },
 })
 </script>
 <style>
-.sidebar{
-     max-height: 70vh
+.sidebar {
+    max-height: 70vh;
 }
 </style>
 

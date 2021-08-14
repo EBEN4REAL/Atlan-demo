@@ -1,5 +1,5 @@
 <template>
-    <div class="">
+    <div>
         <div class="mb-4">
             <a-input-search
                 v-model:value="searchQuery"
@@ -8,7 +8,10 @@
                 @change="onSearch"
             ></a-input-search>
         </div>
-        <div v-if="all?.length" class="flex flex-row w-full">
+        <div v-if="isLoading && !all.length">
+            <LoadingView />
+        </div>
+        <div v-else-if="all?.length" class="flex flex-row w-full">
             <div class="w-full border-r">
                 <a-tabs type="card" default-active-key="1" class="border-0">
                     <a-tab-pane key="1" :tab="`All (${all.length})`">
@@ -42,6 +45,7 @@
                         </div>
                     </a-tab-pane>
                 </a-tabs>
+            <a-button type="link" @click="loadMore">Load More</a-button>
             </div>
             <!-- <div v-if="selectedEntity?.guid" class="w-1/3">
                 <Overview
@@ -50,7 +54,7 @@
                 ></Overview>
             </div> -->
         </div>
-        <div v-else class="mt-24">
+        <div v-else-if="!all.length" class="mt-24">
             <EmptyView :showClearFiltersCTA="false" />
         </div>
     </div>
@@ -58,23 +62,17 @@
 
 <script lang="ts">
 // Logic will change when /categories/full?searchText="lorem" is active
-import { defineComponent, computed, ref, watch, onMounted } from 'vue'
+import { defineComponent, computed, ref, watch, onMounted, toRef } from 'vue'
 import { useDebounceFn } from '@vueuse/core'
 
-import AssetPreview from '@/preview/asset/index.vue'
-import Overview from '@/preview/asset/tabs/overview/index.vue'
+import LoadingView from '@common/loaders/page.vue'
 import EmptyView from '@common/empty/discover.vue'
 import GtcEntityCard from '../gtcEntityCard.vue'
 
 import useGtcSearch from '~/composables/glossary/useGtcSearch'
 
-interface Proptype {
-    qualifiedName: string
-    categoryGuid: string
-}
-
 export default defineComponent({
-    components: { GtcEntityCard, AssetPreview, Overview, EmptyView },
+    components: { GtcEntityCard, EmptyView, LoadingView },
     props: {
         qualifiedName: {
             type: String,
@@ -87,11 +85,12 @@ export default defineComponent({
             default: '',
         },
     },
-    setup(props: Proptype) {
-        const name = computed(() => props.qualifiedName ?? '')
+    setup(props) {
+        const categoryQualifiedName = toRef(props, 'qualifiedName');
         const searchQuery = ref<string>()
 
-        const { assets, error, isLoading, fetchAssets } = useGtcSearch()
+        const {entities, error, isLoading, fetchAssetsPaginated } =
+            useGtcSearch(categoryQualifiedName)
 
         const selectedEntity = ref()
 
@@ -101,28 +100,27 @@ export default defineComponent({
 
         const terms = computed(
             () =>
-                assets.value?.entities?.filter((entity) => {
-                    let parentCategory = false
-                    if (entity?.attributes?.categories?.length) {
+                entities.value?.filter((entity) => {
+                    if (
+                        entity.typeName === 'AtlasGlossaryTerm' &&
+                        entity?.attributes?.categories?.length
+                    ) {
                         if (
                             entity?.attributes?.categories?.find(
                                 (category) =>
                                     category.guid === props.categoryGuid
                             )
-                        )
-                            parentCategory = true
+                        ) {
+                            return true
+                        }
                     }
-
-                    return (
-                        entity.typeName === 'AtlasGlossaryTerm' &&
-                        parentCategory
-                    )
+                    return false
                 }) ?? []
         )
         const categories = computed(
             () =>
-                assets.value?.entities?.filter((entity) => {
-                    if (entity?.attributes?.parentCategory)
+                entities.value?.filter((entity) => {
+                    if (entity.typeName === 'AtlasGlossaryCategory' && entity?.attributes?.parentCategory)
                         return (
                             entity.typeName === 'AtlasGlossaryCategory' &&
                             entity?.attributes?.parentCategory?.guid ===
@@ -132,32 +130,26 @@ export default defineComponent({
                 }) ?? []
         )
         const all = computed(() => [...terms.value, ...categories.value])
-        onMounted(() => {
-            fetchAssets(name.value ?? '')
-        })
-
-        watch(name, (newName) => {
-            fetchAssets(newName)
-        })
-
-        watch(searchQuery, (newQuery) => {
-            fetchAssets(name.value, `*${newQuery}*`)
-        })
 
         const onSearch = useDebounceFn(() => {
-            fetchAssets(name.value, `*${searchQuery.value}*`)
-        }, 0)
+            fetchAssetsPaginated({query: `${searchQuery.value ? `${searchQuery.value}` : '' }`, offset: 0})
+        }, 200)    
+            
+        const loadMore = () => {
+            fetchAssetsPaginated({})
+        }
 
         return {
-            name,
+            categoryQualifiedName,
             searchQuery,
-            assets,
             all,
             terms,
             categories,
             onSearch,
             onEntitySelect,
+            loadMore,
             selectedEntity,
+            isLoading,
         }
     },
 })

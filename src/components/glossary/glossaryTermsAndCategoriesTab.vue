@@ -1,5 +1,5 @@
 <template>
-    <div class="">
+    <div>
         <div class="mb-4">
             <a-input-search
                 v-model:value="searchQuery"
@@ -8,7 +8,10 @@
                 @change="onSearch"
             ></a-input-search>
         </div>
-        <div v-if="all.length" class="flex flex-row w-full">
+        <div v-if="isLoading && !all.length">
+            <LoadingView />
+        </div>
+        <div v-else-if="all.length" class="flex flex-row w-full">
             <div class="w-full border-r">
                 <a-tabs type="card" default-active-key="1" class="border-0">
                     <a-tab-pane key="1" :tab="`All (${all.length})`">
@@ -42,6 +45,8 @@
                         </div>
                     </a-tab-pane>
                 </a-tabs>
+            <a-button type="link" @click="loadMore">Load More</a-button>
+
             </div>
             <!-- <div v-if="selectedEntity?.guid" class="w-1/3">
                 <Overview
@@ -50,31 +55,24 @@
                 ></Overview>
             </div> -->
         </div>
-        <div v-else class="mt-24">
+        <div v-else-if="!all.length" class="mt-24">
             <EmptyView :showClearFiltersCTA="false" />
         </div>
     </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, computed, ref, watch, onMounted } from 'vue'
+import { defineComponent, computed, ref, toRef } from 'vue'
 import { useDebounceFn } from '@vueuse/core'
 
-import AssetPreview from '@/preview/asset/index.vue'
-import Overview from '@/preview/asset/tabs/overview/index.vue'
+import LoadingView from '@common/loaders/page.vue'
 import EmptyView from '@common/empty/discover.vue';
 import GtcEntityCard from './gtcEntityCard.vue'
 
 import useGtcSearch from '~/composables/glossary/useGtcSearch'
 
-
-
-interface Proptype {
-    qualifiedName: string
-}
-
 export default defineComponent({
-    components: { GtcEntityCard, AssetPreview, Overview, EmptyView },
+    components: { GtcEntityCard, EmptyView, LoadingView },
     props: {
         qualifiedName: {
             type: String,
@@ -82,11 +80,11 @@ export default defineComponent({
             default: '',
         },
     },
-    setup(props: Proptype) {
-        const name = computed(() => props.qualifiedName ?? '')
+    setup(props) {
+        const glossaryQualifiedName = toRef(props, 'qualifiedName');
         const searchQuery = ref<string>()
 
-        const { assets, error, isLoading, fetchAssets } = useGtcSearch()
+        const { entities, error, isLoading, fetchAssetsPaginated } = useGtcSearch(glossaryQualifiedName)
 
         const selectedEntity = ref()
 
@@ -96,43 +94,37 @@ export default defineComponent({
 
         const terms = computed(
             () =>
-                assets.value?.entities?.filter(
+                entities.value?.filter(
                     (entity) => entity.typeName === 'AtlasGlossaryTerm'
                 ) ?? []
-        )
+        );
         const categories = computed(
             () =>
-                assets.value?.entities?.filter(
+                entities.value?.filter(
                     (entity) => entity.typeName === 'AtlasGlossaryCategory'
                 ) ?? []
-        )
-        const all = computed(() => assets.value?.entities ?? [])
-        onMounted(() => {
-            fetchAssets(name.value ?? '')
-        })
-
-        watch(name, (newName) => {
-            fetchAssets(newName)
-        })
-
-        // watch(searchQuery, (newQuery) => {
-        //     fetchAssets(name.value, `*${newQuery}*`)
-        // })
+        );
+        const all = computed(() => entities.value ?? [])
 
         const onSearch = useDebounceFn(() => {
-            fetchAssets(name.value, `*${searchQuery.value}*`)
+            fetchAssetsPaginated({query: `${searchQuery.value ? `${searchQuery.value}` : '' }`, offset: 0})
         }, 400)
 
+        const loadMore = () => {
+            fetchAssetsPaginated({})
+        }
+
         return {
-            name,
+            glossaryQualifiedName,
             searchQuery,
-            assets,
             all,
             terms,
             categories,
             onSearch,
             onEntitySelect,
+            loadMore,
             selectedEntity,
+            isLoading,
         }
     },
 })

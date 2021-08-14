@@ -27,7 +27,7 @@
             <a-tabs default-active-key="1" class="border-0">
                 <a-tab-pane key="1" tab="Overview">
                     <div class="flex flex-row m-0 p-0">
-                        <GlossaryProfileOverview :entity="glossary" typeName="AtlasGlossary" />
+                        <GlossaryProfileOverview :entity="glossary" />
                         <div
                             v-if="termCount"
                             class="flex flex-column w-1/2 ml-9 border-l"
@@ -57,7 +57,6 @@
                 <a-tab-pane key="5" tab="Permissions"> Permissions </a-tab-pane>
             </a-tabs>
         </div>
-        <!-- <hr /> -->
     </div>
 </template>
 
@@ -74,6 +73,8 @@ import EntityHistory from '@/glossary/common/entityHistory.vue'
 import useGTCEntity from '~/composables/glossary/useGtcEntity'
 import useGlossaryTerms from '~/composables/glossary/useGlossaryTerms'
 import useGlossaryCategories from '~/composables/glossary/useGlossaryCategories'
+
+import { Glossary } from "~/types/glossary/glossary.interface";
 
 import GlossarySvg from '~/assets/images/gtc/glossary/glossary.png'
 
@@ -97,16 +98,18 @@ export default defineComponent({
         const guid = toRef(props, 'id')
 
         const {
-            data: glossary,
+            entity: glossary,
             error,
             isLoading,
-        } = useGTCEntity('glossary', guid)
+        } = useGTCEntity<Glossary>('glossary', guid)
+
         const {
             terms: glossaryTerms,
             error: termsError,
             isLoading: termsLoading,
             fetchGlossaryTermsPaginated,
         } = useGlossaryTerms()
+
         const {
             categories: glossaryCategories,
             error: categoriesError,
@@ -114,16 +117,16 @@ export default defineComponent({
             fetchGlossaryCategoriesPaginated,
         } = useGlossaryCategories()
 
-        const title = computed(() => glossary.value?.name)
+        const title = computed(() => glossary.value?.attributes?.name)
         const shortDescription = computed(
-            () => glossary.value?.shortDescription
+            () => glossary.value?.attributes?.shortDescription
         )
-        const termCount = computed(() => glossary.value?.terms?.length ?? 0)
+        const termCount = computed(() => glossary.value?.attributes?.terms?.length ?? 0)
         const categoryCount = computed(
-            () => glossary.value?.categories?.length ?? 0
+            () => glossary.value?.attributes?.categories?.length ?? 0
         )
         const qualifiedName = computed(
-            () => glossary.value?.qualifiedName ?? ''
+            () => glossary.value?.attributes?.qualifiedName ?? ''
         )
 
         onMounted(() => {

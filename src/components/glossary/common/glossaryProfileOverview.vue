@@ -29,29 +29,20 @@
                     STATUS
                 </div>
                 <div class="mt-2">
-                    <Status
-                        v-if="selectedAsset.guid"
-                        :selectedAsset="selectedAsset"
-                    />
+                    <Status v-if="entity" :selected-asset="entity" />
                 </div>
             </div>
             <div class="mr-8 flex flex-col">
                 <div class="text-gray text-sm leading-5 tracking-widest">
                     OWNERS
                 </div>
-                <Owners
-                    v-if="selectedAsset.guid"
-                    :selectedAsset="selectedAsset"
-                />
+                <Owners v-if="entity" :selected-asset="entity" />
             </div>
             <div class="mr-8 flex flex-col">
                 <div class="text-gray text-sm leading-5 tracking-widest">
                     EXPERTS
                 </div>
-                <Experts
-                    v-if="selectedAsset.guid"
-                    :selectedAsset="selectedAsset"
-                />
+                <Experts v-if="entity" :selected-asset="entity" />
             </div>
         </div>
         <Readme
@@ -62,7 +53,7 @@
     </div>
 </template>
 <script lang="ts">
-import { defineComponent, computed, ref } from 'vue'
+import { defineComponent, computed, PropType } from 'vue'
 
 import Readme from '@/common/readme/index.vue'
 import Owners from '@/preview/asset/v2/tabs/info/assetDetails/owners.vue'
@@ -70,46 +61,57 @@ import Experts from '@/preview/asset/v2/tabs/info/assetDetails/experts.vue'
 import Description from '@/preview/asset/v2/tabs/info/assetDetails/description.vue'
 import Status from '@/preview/asset/v2/tabs/info/assetDetails/status.vue'
 
-import { Components } from '~/api/atlas/client'
-
-interface PropsType {
-    entity: Components.Schemas.AtlasGlossary
-    showCategoryCount: boolean
-    showTermCount: boolean
-    typeName: 'AtlasGlossary' | 'AtlasGlossaryCategory' | 'AtlasGlossaryTerm'
-}
+import { Glossary, Category, Term } from '~/types/glossary/glossary.interface'
 
 export default defineComponent({
     components: { Readme, Owners, Description, Status, Experts },
-    props: ['entity', 'showCategoryCount', 'showTermCount', 'typeName'],
-    setup(props: PropsType) {
-        const shortDescription = computed(() => props.entity?.shortDescription)
-        const termCount = computed(() => props.entity?.terms?.length ?? 0)
-        const categoryCount = computed(
-            () => props.entity?.categories?.length ?? 0
+    props: {
+        entity: {
+            type: Object as PropType<Glossary | Category | Term>,
+            required: true,
+            default: () => {},
+        },
+        showCategoryCount: {
+            type: Boolean,
+            required: true,
+            default: false,
+        },
+        showTermCount: {
+            type: Boolean,
+            required: true,
+            default: true,
+        },
+    },
+    setup(props) {
+        const shortDescription = computed(
+            () => props.entity?.attributes?.shortDescription
+        )
+        const termCount = computed(() => {
+            if (
+                props.entity?.typeName === 'AtlasGlossary' ||
+                props.entity.typeName === 'AtlasGlossaryCategory'
+            ) {
+                return props.entity?.attributes?.terms?.length
+            }
+            return 0;
+        })
+        const categoryCount = computed(() => {
+            if (
+                props.entity?.typeName === 'AtlasGlossary'
+            ) {
+                return props.entity?.attributes?.categories?.length
+            }
+            return 0;
+        }
         )
         const guid = computed(() => props.entity?.guid)
         const showCategoryCountComputed = computed(
-            () => props.showCategoryCount ?? true
+            () => props.entity?.typeName === 'AtlasGlossary'
         )
         const showTermCountComputed = computed(
-            () => props.showTermCount ?? true
+            () => props.entity?.typeName !== 'AtlasGlossaryTerm' 
         )
-        const selectedAsset = ref({
-            attributes: {
-                ownerUsers: props.entity.ownerUsers ?? '',
-                ownerGroups: props.entity.ownerGroups ?? '',
-                assetStatus: props.entity.assetStatus ?? '',
-                qualifiedName: props.entity.qualifiedName ?? '',
-                assetStatusUpdatedBy: props.entity.assetStatusUpdatedBy,
-                assetStatusUpdatedAt:props.entity.assetStatusUpdatedAt,
-                name: props.entity.name ?? '',
-                tenantId: 'default',
-            },
-            anchor: props.entity.anchor,
-            guid: props.entity.guid,
-            typeName: props.typeName,
-        })
+
         return {
             shortDescription,
             termCount,
@@ -117,7 +119,6 @@ export default defineComponent({
             guid,
             showCategoryCountComputed,
             showTermCountComputed,
-            selectedAsset,
         }
     },
 })

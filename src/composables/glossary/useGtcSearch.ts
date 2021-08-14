@@ -1,4 +1,4 @@
-import { ref } from "vue";
+import { ref, Ref, computed, watch} from "vue";
 import { useAPI } from "~/api/useAPI"
 
 import { GET_TERM_LINKED_ASSETS } from "~/api/keyMaps/glossary"
@@ -6,73 +6,122 @@ import { GET_TERM_LINKED_ASSETS } from "~/api/keyMaps/glossary"
 import { projection } from "~/api/atlas/utils";
 import { BaseAttributes, BasicSearchAttributes } from '~/constant/projection';
 
+import { Category, Term } from "~/types/glossary/glossary.interface";
 import { Components } from '~/api/atlas/client'
 
-export default function useGtcSearch() {
-    const qualifiedName = ref<string>();
+export default function useGtcSearch(qualifiedName: Ref<string>) {
     const requestQuery = ref<string>();
+    const offsetLocal = ref(0);
+    const defaultLimit = 10;
+    const limitLocal = ref<number>(defaultLimit);
 
-    const entityFilters = {
-        condition: 'AND',
-        criterion: [
-            {
-                attributeName: "qualifiedName",
-                attributeValue: `@${qualifiedName ?? ''}`,
-                operator: "endsWith",
-            }
-        ]
-    }
+    const body = ref();;
+    const refreshBody = () => {
+        body.value = {
+            typeName: "AtlasGlossaryTerm,AtlasGlossaryCategory",
+            excludeDeletedEntities: true,
+            includeClassificationAttributes: true,
+            includeSubClassifications: true,
+            includeSubTypes: true,
+            attributes: [
+                ...projection,
+                "database",
+                "atlanSchema",
+                "metadata",
+                "assetStatus",
+                "shortDescription",
+                "parentCategory",
+                "categories",
+                "pageviewCount",
+                ...BaseAttributes,
+                ...BasicSearchAttributes
+            ],
+            entityFilters: {
+                condition: 'AND',
+                criterion: [
+                    {
+                        attributeName: "qualifiedName",
+                        attributeValue: `@${qualifiedName.value ?? ''}`,
+                        operator: "endsWith",
+                    }
+                ]
+            },
+            // sortBy: "Catalog.popularityScore",
+            // sortOrder: "ASCENDING",
+            query: requestQuery.value,
+            offset: offsetLocal.value,
+            limit: limitLocal.value,
+        }
+    };
 
-    const body = ref({
-        typeName: "AtlasGlossaryTerm,AtlasGlossaryCategory",
-        excludeDeletedEntities: true,
-        includeClassificationAttributes: true,
-        includeSubClassifications: true,
-        includeSubTypes: true,
-        attributes: [
-            ...projection,
-            //   ...BUSINESS_METADATA_GET_ATTRIBUTE_PROJECTION,
-            //   ...CUSTOM_RELATIONSHIP_ATTRIBUTES_TABLE,
-            //   ...CUSTOM_RELATIONSHIP_ATTRIBUTES_COLUMN,
-            "database",
-            "atlanSchema",
-            "metadata",
-            "assetStatus",
-            "shortDescription",
-            "parentCategory",
-            "categories",
-            ...BaseAttributes,
-            ...BasicSearchAttributes
-        ],
-        entityFilters,
-        query: requestQuery
-    });
+    refreshBody();
 
-    const { data: assets, error, isValidating: isLoading, mutate } = useAPI<Components.Schemas.AtlasSearchResult>(GET_TERM_LINKED_ASSETS, 'POST', {
+    const entities: Ref<(Category | Term)[]> = ref<(Category | Term)[]>([]) 
+
+    const { data: assets, error, isValidating: isLoading, mutate } = useAPI<any>(GET_TERM_LINKED_ASSETS, 'POST', {
         cache: true,
         body,
         dependantFetchingKey: qualifiedName,
         options: {
             revalidateOnFocus: false
         }
+    });
+    offsetLocal.value += defaultLimit;
+    refreshBody();
+
+
+    watch(qualifiedName, () => {
+        limitLocal.value = defaultLimit;
+        offsetLocal.value = 0;
+
+        refreshBody()
+        
+        entities.value = [];
+        mutate();
+
+        offsetLocal.value += defaultLimit;
+        refreshBody()
     })
+    watch(assets, (newAssets) => {
+        entities.value = [...entities.value, ...(newAssets.entities ?? [] as (Category | Term)[])]
+    } )
 
-    const fetchAssets = (name: string, query?:string) => {
-        body.value.entityFilters.criterion[0].attributeValue = `@${name}`;
-        qualifiedName.value = name;
+    const fetchAssets = (query?: string) => {
+        if(query){
+            requestQuery.value = query;
+            entities.value = [];
+        }
+        refreshBody();
 
-        body.value.query =  query ?? '';
-        requestQuery.value = query ?? '';
+        mutate();
+    }
 
+    const fetchAssetsPaginated = ({limit, offset, refreshSamePage, query}:{limit?: number, offset?: number, refreshSamePage?: Boolean, query?: string}) => {
+        if(query || query === ''){ 
+            requestQuery.value = query;
+            entities.value = [];
+        }
+        if(offset || offset === 0){ offsetLocal.value = offset;}
 
-        if (name || query)
+        limitLocal.value = limit ?? defaultLimit;
+        refreshBody()
+        
+        if(refreshSamePage){
             mutate();
+        } else {
+            // console.log('bruh', body.value)
+            mutate();
+            offsetLocal.value += limit ?? defaultLimit;
+            refreshBody()
+        }
     }
 
     return {
         assets,
+        entities,
         error,
         isLoading,
         fetchAssets,
+        fetchAssetsPaginated
     };
 }

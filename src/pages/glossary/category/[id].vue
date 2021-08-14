@@ -10,9 +10,7 @@
             <div class="flex flex-col">
                 <span class="secondaryHeading">CATEGORY</span>
                 <h1 class="text-3xl leading-9 m-0 p-0 text-black font-normal">
-                    <span
-                        v-if="parentGlossaryQualifiedName"
-                        class="text-gray"
+                    <span v-if="parentGlossaryQualifiedName" class="text-gray"
                         >{{ parentGlossaryQualifiedName }} /
                     </span>
                     {{ title }}
@@ -32,11 +30,7 @@
             <a-tabs default-active-key="1" class="border-0">
                 <a-tab-pane key="1" tab="Overview">
                     <div class="flex flex-row m-0 p-0">
-                        <GlossaryProfileOverview
-                            :entity="category"
-                            :show-category-count="false"
-                            typeName="AtlasGlossaryCategory"
-                        />
+                        <GlossaryProfileOverview :entity="category" />
                         <div
                             v-if="termCount"
                             class="flex flex-column w-1/2 ml-9 border-l"
@@ -56,21 +50,22 @@
                 </a-tab-pane>
             </a-tabs>
         </div>
-        <!-- <hr /> -->
     </div>
 </template>
 
 <script lang="ts">
 import { defineComponent, computed, watch, onMounted, toRef } from 'vue'
 
-import GlossaryProfileOverview from '~/components/glossary/common/glossaryProfileOverview.vue'
-import GlossaryTopTerms from '~/components/glossary/common/glossaryTopTerms.vue'
-import EntityHistory from '~/components/glossary/common/entityHistory.vue'
+import GlossaryProfileOverview from '@/glossary/common/glossaryProfileOverview.vue'
+import GlossaryTopTerms from '@/glossary/common/glossaryTopTerms.vue'
+import EntityHistory from '@/glossary/common/entityHistory.vue'
 import CategoryTermsAndCategoriesTab from '@/glossary/categoryProfile/categoryTermsAndCategoriesTab.vue'
 import LoadingView from '@common/loaders/page.vue'
 
 import useGTCEntity from '~/composables/glossary/useGtcEntity'
 import useCategoryTerms from '~/composables/glossary/useCategoryTerms'
+
+import { Category } from '~/types/glossary/glossary.interface'
 
 import CategorySvg from '~/assets/images/gtc/category/category.png'
 
@@ -93,10 +88,10 @@ export default defineComponent({
         const guid = toRef(props, 'id')
 
         const {
-            data: category,
+            entity: category,
             error,
             isLoading,
-        } = useGTCEntity('category', guid)
+        } = useGTCEntity<Category>('category', guid)
 
         const {
             data: categoryTerms,
@@ -105,14 +100,18 @@ export default defineComponent({
             fetchCategoryTermsPaginated,
         } = useCategoryTerms()
 
-        const title = computed(() => category.value?.name)
+        const title = computed(() => category.value?.attributes?.name)
+
         const shortDescription = computed(
-            () => category.value?.shortDescription
+            () => category.value?.attributes?.shortDescription
         )
-        const termCount = computed(() => category.value?.terms?.length ?? 0)
+
+        const termCount = computed(
+            () => category.value?.attributes?.terms?.length ?? 0
+        )
 
         const parentGlossaryQualifiedName = computed(
-            () => category.value?.qualifiedName?.split('@')[1] ?? ''
+            () => category.value?.attributes?.qualifiedName?.split('@')[1] ?? ''
         )
 
         onMounted(() => {

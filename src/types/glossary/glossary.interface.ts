@@ -30,17 +30,24 @@ interface GlossaryAttributes extends BaseAttributes {
     categories?: RelatedEntity[],
 }
 type CategoryAttributes = Omit<GlossaryAttributes, 'categories'> & {
-    parentCategories: RelatedEntity[]
+    parentCategory: RelatedEntity;
+    anchor: RelatedEntity;
 }
-type TermAttributes = Omit<GlossaryAttributes, 'terms'>
+type TermAttributes = Omit<GlossaryAttributes, 'terms'> & {
+    assignedEntities: RelatedEntity[];
+    anchor: RelatedEntity;
+}
 
 // GTC Entity types
-export type Glossary = Omit<Components.Schemas.AtlasEntityHeader, 'attributes'> & {
-    attributes: GlossaryAttributes
+export type Glossary = Omit<Components.Schemas.AtlasEntityHeader, 'attributes' | 'typeName'> & {
+    attributes: GlossaryAttributes;
+    typeName: 'AtlasGlossary';
 }
-export type Category = Omit<Components.Schemas.AtlasEntityHeader, 'attributes'> & {
-    attributes: CategoryAttributes
+export type Category = Omit<Components.Schemas.AtlasEntityHeader, 'attributes' | 'typeName'> & {
+    attributes: CategoryAttributes;
+    typeName: 'AtlasGlossaryCategory';
 }
-export type Term = Omit<Components.Schemas.AtlasEntityHeader, 'attributes'> & {
-    attributes: TermAttributes
+export type Term = Omit<Components.Schemas.AtlasEntityHeader, 'attributes' | 'typeName'> & {
+    attributes: TermAttributes;
+    typeName: 'AtlasGlossaryTerm';
 }

@@ -33,7 +33,6 @@ export default function updateAssetStatus(selectedAsset: Ref<assetInterface>) {
             {
                 guid: selectedAsset.value.guid,
                 typeName: selectedAsset.value.typeName,
-                anchor: selectedAsset.value.anchor,
                 attributes: {
                     qualifiedName:
                         selectedAsset.value.attributes?.qualifiedName,
@@ -43,6 +42,7 @@ export default function updateAssetStatus(selectedAsset: Ref<assetInterface>) {
                     assetStatusUpdatedAt: Date.now(),
                     assetStatusUpdatedBy: username,
                     tenantId: selectedAsset.value.attributes?.tenantId,
+                    anchor: selectedAsset.value.attributes?.anchor
                 },
             },
         ],

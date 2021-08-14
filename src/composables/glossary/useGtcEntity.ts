@@ -1,17 +1,19 @@
-import { watch, ref, Ref } from 'vue';
+import { watch, ref, Ref,computed } from 'vue';
+import { Components } from "~/api/atlas/client";
 
 import { useAPI } from "~/api/useAPI"
 import { GET_GTC_ENTITY } from "~/api/keyMaps/glossary"
-import { Components } from "~/api/atlas/client";
+import { Glossary, Category, Term } from "~/types/glossary/glossary.interface";
 
 
 import { projection } from "~/api/atlas/utils";
 import { BaseAttributes, BasicSearchAttributes } from '~/constant/projection';
-/**
+
+/*
  * Uses the Atlas API to fetch a Glossary / Category / Term depending on 
  * the type
  */
-const useGTCEntity = (type: 'glossary' | 'category' | 'term', entityGuid:Ref<string>) => {
+const useGTCEntity = <T extends Glossary | Category | Term>(type: 'glossary' | 'category' | 'term', entityGuid:Ref<string>) => {
     const keyMap = {
         glossary: 'AtlasGlossary',
         category: 'AtlasGlossaryCategory',
@@ -28,7 +30,7 @@ const useGTCEntity = (type: 'glossary' | 'category' | 'term', entityGuid:Ref<str
         includeSubTypes: true,
         attributes: [
             ...projection,
-            "database",
+            "assignedEntities",
             "atlanSchema",
             "metadata",
             "assetStatus",
@@ -36,6 +38,8 @@ const useGTCEntity = (type: 'glossary' | 'category' | 'term', entityGuid:Ref<str
             "parentCategory",
             "categories",
             "terms",
+            "tenantId",
+            "anchor",
             ...BaseAttributes,
             ...BasicSearchAttributes
         ],
@@ -52,7 +56,7 @@ const useGTCEntity = (type: 'glossary' | 'category' | 'term', entityGuid:Ref<str
     });
 
     body.value = getBody();
-    const { data, error, isValidating: isLoading, mutate } = useAPI<Components.Schemas.AtlasGlossary>(GET_GTC_ENTITY, 'POST', {
+    const { data, error, isValidating: isLoading, mutate } = useAPI<any>(GET_GTC_ENTITY, 'POST', {
         cache: true,
         dependantFetchingKey: entityGuid,
         body,
@@ -61,12 +65,14 @@ const useGTCEntity = (type: 'glossary' | 'category' | 'term', entityGuid:Ref<str
         }
     })
 
+    const entity = computed(() => data.value?.entities[0] as T)
+
     watch(entityGuid, () => {
         body.value = getBody()
         mutate()
     })
 
-    return { data, error, isLoading }
+    return { entity, error, isLoading }
 }
 
 export default useGTCEntity;

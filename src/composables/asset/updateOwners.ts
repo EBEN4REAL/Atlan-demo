@@ -66,10 +66,7 @@ console.log(selectedAsset.value, 'selectedAssets')
             qualifiedName: selectedAsset.value.attributes?.qualifiedName,
             name: selectedAsset.value.attributes?.name,
             tenantId: selectedAsset.value.attributes?.tenantId,
-        }
-        const anchor = {
-            glossaryGuid: selectedAsset.value.anchor?.glossaryGuid,
-            relationGuid: selectedAsset.value.anchor?.relationGuid
+            anchor: selectedAsset.value.attributes?.anchor
         }
         if (val.ownerUsers !== '') attributes['ownerUsers'] = val.ownerUsers
         if (val.ownerGroups !== '') attributes['ownerGroups'] = val.ownerGroups
@@ -78,7 +75,6 @@ console.log(selectedAsset.value, 'selectedAssets')
                 {
                     guid: selectedAsset.value.guid,
                     typeName: selectedAsset.value.typeName,
-                    anchor,
                     attributes,
                 },
             ],

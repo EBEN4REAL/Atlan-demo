@@ -1,5 +1,5 @@
 <template>
-    <div v-if="lineageList">
+    <div v-if="lineageList?.length">
         <div class="flex items-center justify-between my-3 gap-x-3">
             <a-input
                 :value="query"
@@ -36,10 +36,10 @@
             </a-popover>
         </div>
         <div>
-            <AssetList :lineage-list="lineageList" />
+            <AssetList :lineage-list="filteredLineageList" />
         </div>
     </div>
-    <div v-if="!lineageList || lineageList.length === 0">
+    <div v-if="!filteredLineageList || !filteredLineageList?.length">
         <img :src="emptyScreen" alt="Empty" class="w-3/5 m-auto mt-4" />
         <div class="mt-4 text-sm text-center text-gray">Result is empty</div>
     </div>
@@ -62,6 +62,10 @@
                 required: true,
             },
             lineageList: {
+                type: Array,
+                required: true,
+            },
+            filteredLineageList: {
                 type: Array,
                 required: true,
             },

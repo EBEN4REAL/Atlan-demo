@@ -6,7 +6,8 @@ export default function useLineageFilters(
     query: Ref<string>,
     direction: Ref<string>
 ) {
-    if (!lineageList.value[direction.value]) return { data: [], l: {} }
+    if (!lineageList.value[direction.value])
+        return { data: { [direction.value]: [] }, l: {} }
 
     const lineageListValue = JSON.parse(JSON.stringify(lineageList.value))
     const assetTypes: [] = []

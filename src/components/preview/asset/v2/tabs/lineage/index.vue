@@ -1,8 +1,4 @@
 <template>
-    <!-- <LoadingView
-        v-if="Object.keys(filteredLineageList).length === 0 || loading"
-        class="mt-2"
-    ></LoadingView> -->
     <div
         v-if="loading"
         class="flex items-center justify-center mt-4 text-sm leading-none"
@@ -30,7 +26,7 @@
         <a-collapse-panel
             v-for="stream in streams"
             :key="stream.key"
-            class="mb-4 bg-transparent"
+            class="bg-transparent"
         >
             <template #header>
                 <div class="flex items-center justify-between w-full">
@@ -51,7 +47,8 @@
 
             <Stream
                 :direction="stream.key"
-                :lineage-list="filteredLineageList[stream.key]"
+                :lineage-list="lineageList[stream.key]"
+                :filtered-lineage-list="filteredLineageList[stream.key]"
             />
         </a-collapse-panel>
     </a-collapse>
@@ -74,7 +71,6 @@
     import { useRoute } from 'vue-router'
 
     // Components
-    import LoadingView from '@common/loaders/section.vue'
     import Stream from './stream/index.vue'
     // Composables
     import useLineage from '~/composables/lineage/useLineage'
@@ -82,10 +78,9 @@
     import useLineageFilters from '~/composables/lineage/useLineageFilters'
     // Types
     import { assetInterface } from '~/types/assets/asset.interface'
-    import { generateUUID } from '~/utils/generator'
 
     export default defineComponent({
-        components: { Stream, LoadingView },
+        components: { Stream },
         props: {
             selectedAsset: {
                 type: Object as PropType<assetInterface>,

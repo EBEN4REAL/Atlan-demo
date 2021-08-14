@@ -1,6 +1,6 @@
 <template>
     <div
-        v-if="lineageList.length > 0"
+        v-if="lineageList?.length > 0"
         class="overflow-y-scroll border rounded-sm"
         style="max-height: 310px"
     >
@@ -11,7 +11,7 @@
                     :key="index"
                     class="border-b"
                     :class="{
-                        'border-none': index === lineageList.length - 1,
+                        'border-none': index === lineageList?.length - 1,
                     }"
                 >
                     <router-link :to="`/assets/${asset.guid}/lineage`">

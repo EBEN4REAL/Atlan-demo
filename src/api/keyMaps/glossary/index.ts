@@ -4,6 +4,7 @@ export const CREATE_GLOSSARY = 'CREATE_GLOSSARY';
 export const CREATE_GLOSSARY_CATEGORY = 'CREATE_GLOSSARY_CATEGORY';
 export const CREATE_GLOSSARY_TERM = 'CREATE_GLOSSARY_TERM';
 
+export const GET_GTC_ENTITY = 'GET_GTC_ENTITY';
 export const GET_GLOSSARY = 'GET_GLOSSARY';
 export const GET_CATEGORY = 'GET_CATEGORY';
 export const GET_TERM = 'GET_TERM';
@@ -28,6 +29,7 @@ const groupsMap: Record<string, (...params:any) => string> = {
     [CREATE_GLOSSARY_CATEGORY]: () => getAPIPath('auth/atlas', "/glossary/category"),
     [CREATE_GLOSSARY_TERM]: () => getAPIPath('auth/atlas', "/glossary/term"),
     
+    [GET_GTC_ENTITY]: () => getAPIPath('auth/atlas', `/search/basic`),
     [GET_GLOSSARY]: ({ guid }: Record<string, string>) => getAPIPath('auth/atlas', `/glossary/${guid}`),
     [GET_CATEGORY]: ({ guid }: Record<string, string>) => getAPIPath('auth/atlas', `/glossary/category/${guid}`),
     [GET_TERM]: ({ guid }: Record<string, string>) => getAPIPath('auth/atlas', `/glossary/term/${guid}`),

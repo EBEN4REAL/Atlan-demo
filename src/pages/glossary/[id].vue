@@ -62,24 +62,20 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, computed, watch, onMounted } from 'vue'
+import { defineComponent, computed, watch, onMounted, toRef } from 'vue'
 
-import GlossaryProfileOverview from '~/components/glossary/common/glossaryProfileOverview.vue'
-import GlossaryTopTerms from '~/components/glossary/common/glossaryTopTerms.vue'
-import GlossaryContinueSettingUp from '~/components/glossary/continueSettingUp/glossaryContinueSettingUp.vue'
 import GlossaryTermsAndCategoriesTab from '@/glossary/glossaryTermsAndCategoriesTab.vue'
-import EntityHistory from '~/components/glossary/common/entityHistory.vue'
 import LoadingView from '@common/loaders/page.vue'
+import GlossaryProfileOverview from '@/glossary/common/glossaryProfileOverview.vue'
+import GlossaryTopTerms from '@/glossary/common/glossaryTopTerms.vue'
+import GlossaryContinueSettingUp from '@/glossary/continueSettingUp/glossaryContinueSettingUp.vue'
+import EntityHistory from '@/glossary/common/entityHistory.vue'
 
 import useGTCEntity from '~/composables/glossary/useGtcEntity'
 import useGlossaryTerms from '~/composables/glossary/useGlossaryTerms'
 import useGlossaryCategories from '~/composables/glossary/useGlossaryCategories'
 
 import GlossarySvg from '~/assets/images/gtc/glossary/glossary.png'
-
-interface Proptype {
-    id: string
-}
 
 export default defineComponent({
     components: {
@@ -97,15 +93,14 @@ export default defineComponent({
             default: '',
         },
     },
-    setup(props: Proptype) {
-        const guid = computed(() => props.id)
+    setup(props) {
+        const guid = toRef(props, 'id')
 
         const {
             data: glossary,
             error,
             isLoading,
-            fetchEntity,
-        } = useGTCEntity('glossary')
+        } = useGTCEntity('glossary', guid)
         const {
             terms: glossaryTerms,
             error: termsError,
@@ -132,13 +127,11 @@ export default defineComponent({
         )
 
         onMounted(() => {
-            fetchEntity(guid.value)
             fetchGlossaryTermsPaginated({ guid: guid.value, offset: 0 })
             fetchGlossaryCategoriesPaginated({ guid: guid.value, offset: 0 })
         })
 
         watch(guid, (newGuid) => {
-            fetchEntity(newGuid)
             fetchGlossaryTermsPaginated({
                 guid: newGuid,
                 offset: 0,

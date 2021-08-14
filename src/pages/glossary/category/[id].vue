@@ -61,7 +61,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, computed, watch, onMounted } from 'vue'
+import { defineComponent, computed, watch, onMounted, toRef } from 'vue'
 
 import GlossaryProfileOverview from '~/components/glossary/common/glossaryProfileOverview.vue'
 import GlossaryTopTerms from '~/components/glossary/common/glossaryTopTerms.vue'
@@ -73,10 +73,6 @@ import useGTCEntity from '~/composables/glossary/useGtcEntity'
 import useCategoryTerms from '~/composables/glossary/useCategoryTerms'
 
 import CategorySvg from '~/assets/images/gtc/category/category.png'
-
-interface Proptype {
-    id: string
-}
 
 export default defineComponent({
     components: {
@@ -93,15 +89,14 @@ export default defineComponent({
             default: '',
         },
     },
-    setup(props: Proptype) {
-        const guid = computed(() => props.id)
+    setup(props) {
+        const guid = toRef(props, 'id')
 
         const {
             data: category,
             error,
             isLoading,
-            fetchEntity,
-        } = useGTCEntity('category')
+        } = useGTCEntity('category', guid)
 
         const {
             data: categoryTerms,
@@ -121,12 +116,10 @@ export default defineComponent({
         )
 
         onMounted(() => {
-            fetchEntity(guid.value)
             fetchCategoryTermsPaginated({ guid: guid.value, offset: 0 })
         })
 
         watch(guid, (newGuid) => {
-            fetchEntity(newGuid)
             fetchCategoryTermsPaginated({
                 guid: newGuid,
                 refreshSamePage: true,

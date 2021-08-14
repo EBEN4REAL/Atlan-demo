@@ -44,7 +44,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, computed, watch, onMounted } from 'vue'
+import { defineComponent, computed, watch, onMounted, toRef } from 'vue'
 
 import GlossaryProfileOverview from '~/components/glossary/common/glossaryProfileOverview.vue'
 import TopAssets from '@/glossary/termProfile/topAssets.vue'
@@ -57,10 +57,6 @@ import useGTCEntity from '~/composables/glossary/useGtcEntity'
 
 import TermSvg from '~/assets/images/gtc/term/term.png'
 
-interface PropsType {
-    id: string
-}
-
 export default defineComponent({
   components: {GlossaryProfileOverview, TopAssets, RelatedTerms, LinkedAssetsTab, EntityHistory, LoadingView},
     props: {
@@ -70,15 +66,14 @@ export default defineComponent({
             default: '',
         },
     },
-    setup(props: PropsType) {
-        const guid = computed(() => props.id)
+    setup(props) {
+        const guid = toRef(props, 'id')
 
         const {
             data: term,
             error,
             isLoading,
-            fetchEntity,
-        } = useGTCEntity('term')
+        } = useGTCEntity('term', guid)
 
         const title = computed(() => term.value?.name)
         const shortDescription = computed(() => term.value?.shortDescription)
@@ -86,14 +81,6 @@ export default defineComponent({
         const parentGlossaryName = computed(() => term.value?.qualifiedName?.split('@')[1] ?? '')
 
         const linkedAssetsCount = computed(() => term.value?.assignedEntities?.length ?? 0)
-
-        onMounted(() => {
-            fetchEntity(guid.value)
-        })
-
-        watch(guid, (newGuid) => {
-            fetchEntity(newGuid)
-        })
 
         return {
             term,

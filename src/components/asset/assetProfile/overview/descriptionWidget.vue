@@ -2,16 +2,13 @@
     <!-- Description Component -->
     <div>
         <div class="mb-8">
-            <div v-if="description" class="flex items-center justify-between">
-                <!-- Tooltip for Truncated Text -->
-                <!--  Normal text if no ellipsis found -->
-                <Tooltip :tooltip-text="description" />
-
+            <div v-if="description" class="flex justify-between">
+                <p>{{ description }}</p>
                 <a-button type="link" @click="showModal">
                     Edit description
                 </a-button>
             </div>
-            <div v-else class="flex items-center justify-between text-gray">
+            <div v-else class="flex justify-between text-gray">
                 No Description Found
                 <span class="ml-2">.</span>
                 <a-button type="link" @click="showModal">
@@ -47,7 +44,7 @@
 </template>
 <script lang="ts">
     // Vue
-    import { defineComponent, ref, watch } from 'vue'
+    import { defineComponent, ref, watch, toRefs } from 'vue'
 
     // composables
 
@@ -63,6 +60,8 @@
 
         setup(props) {
             const visible = ref<boolean>(false)
+
+            const { asset } = toRefs(props)
             const {
                 isLoading,
                 update,
@@ -71,7 +70,7 @@
                 state,
                 description,
                 isCompleted,
-            } = updateDescription(props.asset)
+            } = updateDescription(asset)
 
             const showModal = () => {
                 visible.value = true
@@ -96,6 +95,7 @@
                     handleCancel()
                 }
             })
+            console.log(props.asset)
 
             return {
                 showModal,

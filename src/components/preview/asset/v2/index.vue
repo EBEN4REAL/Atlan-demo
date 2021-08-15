@@ -112,6 +112,9 @@
                 () => import('./tabs/activity/index.vue')
             ),
             chat: defineAsyncComponent(() => import('./tabs/chat/index.vue')),
+            relations: defineAsyncComponent(
+                () => import('./tabs/relations/index.vue')
+            ),
             actions: defineAsyncComponent(
                 () => import('./tabs/actions/index.vue')
             ),

@@ -83,4 +83,10 @@ export const AssetTypeList = [
         orderWeight: 80,
         count: 0,
     },
+    {
+        id: 'TableauWorkbook',
+        label: 'TableauWorkbook',
+        nameAttributeattribute: '',
+        count: 0,
+    },
 ]

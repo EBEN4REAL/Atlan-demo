@@ -22,7 +22,7 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, SetupContext, ref } from 'vue'
+    import { defineComponent, SetupContext, ref, toRefs, watch } from 'vue'
     import ListItem from './item.vue'
     import VirtualList from '~/lib/virtualList.vue'
 
@@ -64,13 +64,26 @@
         },
         emits: ['preview'],
         setup(props, ctx: SetupContext) {
+            const { list } = toRefs(props)
             const selectedAssetId = ref('')
             function handlePreview(item: any) {
                 selectedAssetId.value = item.guid
                 ctx.emit('preview', item)
             }
 
-            return { handlePreview, selectedAssetId }
+            // select first asset automatically
+
+            watch(
+                list,
+                () => {
+                    if (list.value.length > 0) {
+                        selectedAssetId.value = list.value[0].guid
+                    }
+                },
+                { immediate: true }
+            )
+
+            return { handlePreview, selectedAssetId, list }
         },
     })
 </script>

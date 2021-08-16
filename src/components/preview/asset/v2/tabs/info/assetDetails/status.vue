@@ -68,12 +68,6 @@
                     :status-message="
                         selectedAsset?.attributes?.assetStatusMessage
                     "
-                    :status-updated-at="
-                        selectedAsset?.attributes?.assetStatusUpdatedAt
-                    "
-                    :status-updated-by="
-                        selectedAsset?.attributes?.assetStatusUpdatedBy
-                    "
                     :show-no-status="true"
                     :show-label="true"
                 ></StatusBadge>

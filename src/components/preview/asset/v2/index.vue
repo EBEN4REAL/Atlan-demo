@@ -192,6 +192,7 @@
         }
         :global(.ant-tabs-tabpane) {
             @apply px-0 !important;
+            @apply pb-0 !important;
         }
     }
 </style>

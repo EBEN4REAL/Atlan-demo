@@ -11,7 +11,7 @@
         </div>
 
         <p
-            v-if="showLabel && statusId"
+            v-if="showLabel && statusId && statusUpdatedBy"
             class="mt-1 mb-0 text-xs leading-none text-gray-700"
         >
             {{ timeAgo(statusUpdatedAt) }}

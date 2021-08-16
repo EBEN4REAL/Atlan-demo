@@ -1,6 +1,6 @@
 <template>
     <div class="w-full px-5">
-        <div class="flex items-center justify-between w-full">
+        <div class="flex items-center justify-between w-full mb-4">
             <div
                 class="flex flex-col text-sm"
                 v-for="(value, key, index) in details"
@@ -10,7 +10,7 @@
                 <span class="text-gray-700">{{ value }}</span>
             </div>
         </div>
-        <div class="flex w-full pt-4 text-sm text-gray-500">
+        <div class="flex w-full text-sm text-gray-500">
             <Owners v-if="selectedAsset.guid" :selectedAsset="selectedAsset" />
         </div>
         <div class="flex w-full text-sm text-gray-500">

@@ -4,14 +4,14 @@
             <div class="mr-1">
                 <fa :class="iconClass" :icon="icon" class="pushtop" />
             </div>
-            <p v-if="showLabel" class="mb-0 text-sm text-gray">
+            <p v-if="showLabel" class="mb-0 text-sm text-gray-700">
                 {{ label }}
             </p>
         </div>
 
         <p
             v-if="showLabel && statusId"
-            class="mt-1 mb-0 text-xs leading-none text-gray-500"
+            class="mt-1 mb-0 text-xs leading-none text-gray-700"
         >
             {{ timeAgo(statusUpdatedAt) }}
             by

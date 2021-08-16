@@ -32,7 +32,7 @@
         </div>
         <a-tabs v-model:activeKey="activeKey" :class="$style.previewtab">
             <a-tab-pane
-                class="px-4 py-2 overflow-y-auto tab-height"
+                class="px-4 pb-4 overflow-y-auto tab-height"
                 v-for="(tab, index) in filteredTabs"
                 :key="index"
                 :tab="tab.name"
@@ -146,6 +146,9 @@
     })
 </script>
 <style lang="less" scoped>
+    .tab-height {
+        height: calc(100vh - 14rem);
+    }
     .icon-btn {
         @apply flex;
         @apply py-2 ml-2 px-3;
@@ -186,6 +189,9 @@
         :global(.ant-tabs-ink-bar) {
             @apply rounded-t-sm;
             margin-bottom: 1px;
+        }
+        :global(.ant-tabs-tabpane) {
+            @apply px-0 !important;
         }
     }
 </style>

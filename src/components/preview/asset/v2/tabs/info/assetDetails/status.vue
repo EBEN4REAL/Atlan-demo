@@ -1,5 +1,5 @@
 <template>
-    <div class="mt-3">
+    <div class="">
         <a-popover
             v-model:visible="isCompleted"
             placement="left"
@@ -60,7 +60,7 @@
                 ref="animationPoint"
                 class="inline-flex flex-col text-xs text-gray-500"
             >
-                <p class="mb-1">Status</p>
+                <p class="mt-1 mb-1.5 text-sm">Status</p>
                 <StatusBadge
                     :key="selectedAsset.guid"
                     :status-id="selectedAsset?.attributes?.assetStatus"

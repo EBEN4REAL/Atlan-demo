@@ -1,6 +1,6 @@
 <template>
-    <div class="pt-2 text-xs text-gray-500">
-        <p class="mb-1">Description</p>
+    <div class="mb-3 text-xs text-gray-500">
+        <p class="mt-1 mb-2 text-sm">Description</p>
         <a-popover
             v-model:visible="isCompleted"
             placement="left"

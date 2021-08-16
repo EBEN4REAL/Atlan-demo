@@ -116,15 +116,15 @@ const useAssetAudit = (params: any, guid: string) => {
         typeof parsedDetails === 'object'
             ? parsedDetails?.typeName ?? ''
             : typeof parsedDetails === 'string'
-            ? parsedDetails
-            : ''
+                ? parsedDetails
+                : ''
 
     const filterTermTypeNameDisplayName = (parsedDetails: any) =>
         parsedDetails?.name ?? ''
 
     const getEntityUpdateLogs = (logs: any) => {
         const data = {
-            displayValue: 'Asset updated',
+            displayValue: 'Asset was updated',
             moreinfo: false,
             value: [],
         }
@@ -141,9 +141,10 @@ const useAssetAudit = (params: any, guid: string) => {
                     data.displayValue = 'Removed all owners'
                     return data
                 }
-                data.displayValue = 'Owner details updated'
+                data.displayValue = 'owners'
                 data.moreinfo = true
                 data.value = users
+                console.log("Owners Data : ", data)
                 return data
             }
             if (experts) {
@@ -152,18 +153,17 @@ const useAssetAudit = (params: any, guid: string) => {
                     data.displayValue = 'Removed all experts'
                     return data
                 }
-                data.displayValue = 'Experts details updated'
+                data.displayValue = 'experts'
                 data.moreinfo = true
                 data.value = users
                 return data
             }
 
             if (status) {
-                let value = attributes.assetStatus
-                let status = statusList.find((status) => status.id === value)
-                data.displayValue = `<b>Status</b> changed to <b>${
-                    status!.label
-                }</b>`
+                const value = attributes.assetStatus
+                const newStatus = statusList.find((stat) => stat.id === value)
+                data.displayValue = "status"
+                data.value = newStatus
                 return data
             }
 
@@ -276,7 +276,7 @@ const useAssetAudit = (params: any, guid: string) => {
 
     const getActionUser = (user: any) => {
         if (user.startsWith('service-account')) return 'using Atlan services'
-        return `by ${user}`
+        return `${user}`
     }
 
     fetchAudits(params, guid)

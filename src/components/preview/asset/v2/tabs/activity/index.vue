@@ -15,10 +15,7 @@
             <a-timeline-item v-for="(log, index) in audits" :key="index">
                 <template #dot>
                     <div
-                        class="w-1 h-6 rounded"
-                        :class="`bg-${
-                            getEventByAction(log).color || 'gray-500'
-                        }`"
+                        class="border rounded-full  ant-timeline-item-dot bg-primary-light border-primary"
                     ></div>
                 </template>
                 <div>
@@ -29,6 +26,83 @@
                             "
                         ></span>
                         <span
+                            v-if="
+                                getDetailsForEntityAuditEvent(log)
+                                    ?.displayValue === 'owners'
+                            "
+                        >
+                            <span>
+                                Say 👋 Hello, to the newly added
+                                <b>{{
+                                    getDetailsForEntityAuditEvent(log)?.value
+                                        .length > 1
+                                        ? 'Owners'
+                                        : 'Owner'
+                                }}</b
+                                >.</span
+                            >
+                            <ul
+                                v-for="(
+                                    user, index
+                                ) in getDetailsForEntityAuditEvent(log)?.value"
+                                :key="index"
+                            >
+                                <li>
+                                    <b>{{ user }}</b>
+                                </li>
+                            </ul></span
+                        ></span
+                    >
+
+                    <span
+                        v-if="
+                            getDetailsForEntityAuditEvent(log)?.displayValue ===
+                            'status'
+                        "
+                    >
+                        <b>Status</b> changed to
+                        <fa
+                            :icon="
+                                getDetailsForEntityAuditEvent(log)?.value.icon
+                            "
+                            :class="
+                                getDetailsForEntityAuditEvent(log)?.value
+                                    .iconClass
+                            "
+                            class="mx-1 pushtop"
+                        ></fa
+                        ><b>{{
+                            getDetailsForEntityAuditEvent(log)?.value.label
+                        }}</b>
+                        <!-- <div>
+                            <span>Status</span>
+                            <span
+                                >Lorem ipsum dolor sit amet, consectetur
+                                adipiscing elit. Mauris venenatis.
+                            </span>
+                        </div> -->
+                    </span>
+                    <!-- <span
+                            v-if="
+                                getDetailsForEntityAuditEvent(log)
+                                    ?.displayValue === 'owners'
+                            "
+                        >
+                            <owners
+                                :data="getDetailsForEntityAuditEvent(log)"
+                            />
+                        </span>
+                        <span
+                            v-if="
+                                getDetailsForEntityAuditEvent(log)
+                                    ?.displayValue === 'status'
+                            "
+                        >
+                            <status
+                                :data="getDetailsForEntityAuditEvent(log)"
+                            />
+                        </span> -->
+                    <!-- <span
                             v-if="getDetailsForEntityAuditEvent(log)?.moreinfo"
                             >.<a-popover placement="left">
                                 <template #content>
@@ -49,14 +123,17 @@
                                 <a-button type="link">View Details</a-button>
                             </a-popover></span
                         >
-                    </span>
+                    </span> -->
                     <span v-else>
                         {{ getEventByAction(log).label || 'Event' }}
                     </span>
                 </div>
-                <span class="text-gray">{{
-                    timeAgo(log.timestamp) + ' ' + getActionUser(log.user)
-                }}</span>
+                <div class="text-gray-500">
+                    <span class="mr-4 font-bold">{{
+                        getActionUser(log.user)
+                    }}</span>
+                    <span>{{ timeAgo(log.timestamp) }}</span>
+                </div>
             </a-timeline-item>
         </a-timeline>
         <div
@@ -86,6 +163,7 @@
     import useAssetAudit from '~/composables/asset/useAssetAudit'
     import emptyScreen from '~/assets/images/empty_search.png'
     import { assetInterface } from '~/types/assets/asset.interface'
+    import { useAssetAuditActivityList } from './useActivityList'
 
     export default defineComponent({
         props: {
@@ -94,6 +172,7 @@
                 required: true,
             },
         },
+
         setup(props) {
             const { selectedAsset: item } = toRefs(props)
             const params = reactive({ count: 10 })
@@ -163,8 +242,11 @@
 
 <style lang="less" scoped>
     .ant-timeline-item {
-        padding-bottom: 10px !important;
         margin-bottom: 0 !important;
+    }
+    .ant-timeline-item-dot {
+        width: 13px;
+        height: 13px;
     }
     .ant-timeline-item-last > .ant-timeline-item-content {
         min-height: 10px !important;

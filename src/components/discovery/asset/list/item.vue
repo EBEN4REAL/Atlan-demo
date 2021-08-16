@@ -14,7 +14,7 @@
                 <div class="flex items-center mb-0 overflow-hidden">
                     <component
                         :is="item.typeName"
-                        class="flex-none w-auto h-4 mr-2"
+                        class="flex-none w-auto h-5 mr-2"
                     ></component>
                     <router-link
                         :to="`/assets/${item.guid}/overview`"

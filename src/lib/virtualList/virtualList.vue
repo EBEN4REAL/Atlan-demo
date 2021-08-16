@@ -19,7 +19,6 @@
                 :key="item[dataKey]"
                 class="flex-shrink-0 virtual-list-item"
             >
-                {{ idx + listIndices[0] }}
                 <slot :item="item" :index="idx + listIndices[0]"></slot>
             </div>
             <!-- This element is only rendered when the virtual list does not end at last element -->
@@ -44,8 +43,8 @@
         computed,
         nextTick,
     } from 'vue'
-    import useDynamicHeightList from './virtualList/dynamicList'
-    import useFixedHeightList from './virtualList/fixedList'
+    import useDynamicHeightList from './dynamicList'
+    import useFixedHeightList from './fixedList'
 
     interface Props {
         data: any[]
@@ -74,6 +73,12 @@
                 type: String,
                 default: () => 'id',
             },
+            /**
+             * Set it to `true` if the height of the rows may be
+             * different for each row, but will never change.
+             * Set it to `false` if the height of the rows will be same for every row,
+             * but height of individual rows can change in runtime but never be different.
+             */
             variableHeight: {
                 type: Boolean,
                 default: () => false,

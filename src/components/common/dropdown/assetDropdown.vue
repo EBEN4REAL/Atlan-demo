@@ -29,7 +29,7 @@
                     <div class="flex py-2 pr-3 cursor-pointer">
                         <p
                             v-if="list?.length > 0"
-                            class="flex items-center mb-0 text-xs tracking-wide text-gray-900 align-middle hover:bg-gray-100"
+                            class="flex items-center mb-0 text-xs tracking-wide text-gray-900 align-middle  hover:bg-gray-100"
                         >
                             <component
                                 :is="list[0].typeName"
@@ -37,8 +37,8 @@
                             ></component
                             >All {{ list[0].name }}s
                             <fa
-                                icon="fas caret-down"
-                                class="text-primary-focus"
+                                icon="fas chevron-down"
+                                class="ml-2 text-gray-500"
                             ></fa>
                         </p>
                     </div>
@@ -49,12 +49,12 @@
 </template>
 
 <script lang="ts">
-    import { computed, defineComponent, ref } from 'vue';
-    import AssetSelector from '@common/selector/asset/index.vue';
-    import { useConnectionsStore } from '~/store/connections';
-
+    import { computed, defineComponent, ref } from 'vue'
+    import AssetSelector from '@common/selector/asset/index.vue'
+    import { useConnectionsStore } from '~/store/connections'
 
     export default defineComponent({
+        name: 'AssetDropdown',
         components: { AssetSelector },
         props: {
             connector: {
@@ -65,32 +65,35 @@
                 type: Object,
                 required: false,
                 default() {
-                    return {};
+                    return {}
                 },
             },
         },
         emits: ['change'],
         setup(props, { emit }) {
-            const asset: { [key: string]: any } = ref({});
+            const asset: { [key: string]: any } = ref({})
 
-            const assetDirty: { [key: string]: any } = ref({});
+            const assetDirty: { [key: string]: any } = ref({})
 
-            const list = computed(() => (
-                    props.connector?.hierarchy.filter((item) => item.level < 3) || []
-                ));
+            const list = computed(
+                () =>
+                    props.connector?.hierarchy.filter(
+                        (item) => item.level < 3
+                    ) || []
+            )
 
             const isDisabled = (index) => {
                 if (index == 0 && props.data?.connection) {
-                    return false;
+                    return false
                 }
                 if (index > 0) {
-                    const item = list.value[index - 1];
+                    const item = list.value[index - 1]
                     if (asset.value[item.attribute]) {
-                        return false;
+                        return false
                     }
                 }
-                return true;
-            };
+                return true
+            }
 
             const getFilter = (index) => {
                 const baseFilter = {
@@ -102,19 +105,19 @@
                             operator: 'eq',
                         },
                     ],
-                };
+                }
 
                 if (index > 0) {
-                    const item = list.value[index - 1];
+                    const item = list.value[index - 1]
                     if (asset.value[item.attribute]) {
                         baseFilter.criterion.push({
                             attributeName: item.attribute,
                             attributeValue: asset.value[item.attribute],
                             operator: 'eq',
-                        });
+                        })
                     }
                 }
-                return baseFilter;
+                return baseFilter
                 // if (index > 0) {
                 //   const item = list.value[index - 1];
                 //   if (item) {
@@ -130,22 +133,22 @@
                 //     };
                 //   }
                 // }
-            };
+            }
 
             const getKey = (index) => {
                 if (index > 0) {
-                    const item = list.value[index - 1];
-                    return `${item.typeName}_${asset.value[item.attribute]}`;
+                    const item = list.value[index - 1]
+                    return `${item.typeName}_${asset.value[item.attribute]}`
                 }
-                return 'default';
-            };
+                return 'default'
+            }
 
-            const dirtyTimestamp = ref('');
+            const dirtyTimestamp = ref('')
             const handleChange = () => {
-                console.log(asset);
+                console.log(asset)
                 // assetDirty[index] = Date.now().toString();
                 // dirtyTimestamp.value = Date.now().toString();
-            };
+            }
 
             return {
                 list,
@@ -156,7 +159,7 @@
                 isDisabled,
                 getKey,
                 assetDirty,
-            };
+            }
         },
-    });
+    })
 </script>

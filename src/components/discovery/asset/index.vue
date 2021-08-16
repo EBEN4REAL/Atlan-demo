@@ -47,7 +47,16 @@
                         </template>
                         <div
                             tabindex="0"
-                            class="flex items-center px-2 py-1 transition-shadow border border-gray-300 rounded  hover:border-gray-300"
+                            class="
+                                flex
+                                items-center
+                                px-2
+                                py-1
+                                transition-shadow
+                                border border-gray-300
+                                rounded
+                                hover:border-gray-300
+                            "
                             @keyup.enter="isFilterVisible = !isFilterVisible"
                         >
                             <span>Options</span>
@@ -137,8 +146,8 @@
     import AssetPagination from '@common/pagination/index.vue'
     import HeirarchySelect from '@common/tree/heirarchy/index.vue'
     import SearchBox from '@common/searchbox/searchlist.vue'
-    import ConnectorDropdown from '@common/dropdown/connector/index.vue'
-    import AssetDropdown from '@common/dropdown/asset/index.vue'
+    import ConnectorDropdown from '~/components/common/dropdown/connectorDropdown.vue'
+    import AssetDropdown from '~/components/common/dropdown/assetDropdown.vue'
     import EmptyView from '@common/empty/discover.vue'
     import Preferences from '@/discovery/asset/preference/index.vue'
     // import { useDebounceFn } from "@vueuse/core";

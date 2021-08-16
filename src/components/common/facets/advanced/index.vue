@@ -69,7 +69,7 @@
                 },
             },
         },
-        emits: ['update:modelValue', 'change'],
+        emits: ['change'],
         setup(props, { emit }) {
             const list = ref([...props.data.list])
 

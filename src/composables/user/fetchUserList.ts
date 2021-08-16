@@ -37,10 +37,14 @@ export default function fetchUserList(dependent: any) {
     const list: ComputedRef<userInterface[]> = computed(
         () => data.value?.records
     )
+
     const total: ComputedRef<number> = computed(() => data.value?.total_record)
     const filtered: ComputedRef<userInterface[]> = computed(
         () => data.value?.filter_record
     )
+    function setLimit(limit = 20) {
+        params.value.set('limit', `${limit}`)
+    }
 
     let debounce: any = null
     const handleSearch = (val: Event | string) => {
@@ -62,6 +66,7 @@ export default function fetchUserList(dependent: any) {
                     ],
                 })
             )
+            console.log(params.value, 'params')
             mutate()
         }, 200)
     }
@@ -77,5 +82,6 @@ export default function fetchUserList(dependent: any) {
         mutate,
         params,
         handleSearch,
+        setLimit,
     }
 }

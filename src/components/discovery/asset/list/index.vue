@@ -1,8 +1,9 @@
 <template>
-    <VirtualList :data="list" :data-key="keyField">
+    <VirtualList :data="list" data-key="guid">
         <template #default="{ item }">
             <ListItem
                 :item="item"
+                :isSelected="item.guid === selectedAssetId"
                 :score="score[item.guid]"
                 :projection="projection"
                 @click="handlePreview(item)"
@@ -21,7 +22,7 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, SetupContext, toRefs } from 'vue'
+    import { defineComponent, SetupContext, ref } from 'vue'
     import ListItem from './item.vue'
     import VirtualList from '~/lib/virtualList.vue'
 
@@ -46,13 +47,6 @@
                     return {}
                 },
             },
-            keyField: {
-                type: String,
-                required: false,
-                default() {
-                    return 'guid'
-                },
-            },
             projection: {
                 type: Array,
                 required: false,
@@ -70,11 +64,13 @@
         },
         emits: ['preview'],
         setup(props, ctx: SetupContext) {
+            const selectedAssetId = ref('')
             function handlePreview(item: any) {
+                selectedAssetId.value = item.guid
                 ctx.emit('preview', item)
             }
 
-            return { handlePreview }
+            return { handlePreview, selectedAssetId }
         },
     })
 </script>

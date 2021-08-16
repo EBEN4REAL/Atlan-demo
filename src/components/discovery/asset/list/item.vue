@@ -1,97 +1,117 @@
 <template>
     <div
-        class="flex items-start py-6 pl-2 pr-4 mx-auto bg-white  hover:bg-primary-light hover:bg-opacity-10 text-gray"
+        class="flex justify-between border-b border-gray-300 text-gray"
+        :class="isSelected ? 'bg-primary-light' : 'bg-white hover:bg-gray-100'"
     >
-        <div class="p-2 mr-2 rounded bg-opacity-30 bg-primary-light">
-            <component
-                :is="item.typeName"
-                class="flex-none w-auto h-6"
-            ></component>
-        </div>
-
-        <div class="box-border flex flex-col flex-1 pr-16 overflow-hidden">
-            <!-- Title bar -->
-            <div class="flex items-center mb-0 overflow-hidden">
-                <router-link
-                    :to="`/assets/${item.guid}/overview`"
-                    class="flex-shrink mb-0 overflow-hidden text-base font-bold leading-6 tracking-wide truncate cursor-pointer  text-gray hover:underline overflow-ellipsis whitespace-nowrap"
-                >
-                    {{ title(item) }}
-                </router-link>
-                <StatusBadge
-                    :key="item.guid"
-                    :showNoStatus="true"
-                    :status-id="status(item)"
-                    class="flex-none ml-2"
-                ></StatusBadge>
-                <router-link
-                    class="flex-none ml-1"
-                    :to="`/assets/${item.guid}/overview`"
-                    target="_blank"
-                >
-                    <Fa class="w-auto h-3" icon="fal external-link-alt" />
-                </router-link>
-            </div>
-            <!-- Column data type -->
-            <div
-                v-if="item.typeName.toLowerCase() === 'column'"
-                class="flex items-center mt-1 mr-4"
-            >
-                <component
-                    :is="dataTypeImage(item)"
-                    class="w-auto h-5"
-                ></component>
-                <span class="ml-1 text-sm">{{ dataType(item) }}</span>
-            </div>
-            <!-- Row?Col/Owner bar -->
-            <div
-                v-if="
-                    projection?.includes('owners') ||
-                    projection?.includes('rows') ||
-                    projection?.includes('popularity')
-                "
-                class="flex items-baseline mt-1"
-            >
-                <!-- Owners -->
-                <div
-                    v-if="
-                        projection?.includes('owners') &&
-                        getCombinedUsersAndGroups(item).length
-                    "
-                    class="flex items-baseline mr-4 text-xs leading-5 text-gray"
-                >
-                    <span class="mr-1">Owned by </span>
-                    <span class="font-bold">{{
-                        getTruncatedUsers(getCombinedUsersAndGroups(item), 20)
-                    }}</span>
-                </div>
-                <!-- Row/Col-->
-                <div
-                    class="flex mr-2"
-                    v-if="
-                        projection?.includes('rows') &&
-                        (item.typeName.toLowerCase() === 'table' ||
-                            item.typeName.toLowerCase() === 'view')
-                    "
-                >
-                    <div
-                        class="flex items-baseline mr-2"
-                        v-if="item?.typeName.toLowerCase() === 'table'"
+        <!-- Selected asset pill -->
+        <div
+            class="self-stretch"
+            :class="isSelected ? 'w-1 bg-primary mr-4' : 'w-5'"
+        ></div>
+        <div class="flex items-start flex-grow py-6 pr-5">
+            <div class="box-border flex flex-col flex-1 pr-16 overflow-hidden">
+                <!-- Title bar -->
+                <div class="flex items-center mb-0 overflow-hidden">
+                    <component
+                        :is="item.typeName"
+                        class="flex-none w-auto h-4 mr-2"
+                    ></component>
+                    <router-link
+                        :to="`/assets/${item.guid}/overview`"
+                        class="flex-shrink mb-0 overflow-hidden text-lg font-bold leading-6 tracking-wide truncate cursor-pointer  text-gray hover:underline overflow-ellipsis whitespace-nowrap"
                     >
-                        <span class="mr-1 text-sm font-bold">{{
-                            rowCount(item, false)
-                        }}</span>
-                        <span class="text-xs text-gray-500">Rows</span>
-                    </div>
-                    <div class="flex items-baseline mr-2">
-                        <span class="mr-1 text-sm font-bold">{{
-                            columnCount(item, false)
-                        }}</span>
-                        <span class="text-xs text-gray-500">Cols</span>
-                    </div>
+                        {{ title(item) }}
+                    </router-link>
+                    <StatusBadge
+                        :key="item.guid"
+                        :showNoStatus="true"
+                        :status-id="status(item)"
+                        class="flex-none ml-2"
+                    ></StatusBadge>
+                    <router-link
+                        class="flex-none ml-1"
+                        :to="`/assets/${item.guid}/overview`"
+                        target="_blank"
+                    >
+                        <Fa class="w-auto h-3" icon="fal external-link-alt" />
+                    </router-link>
                 </div>
-                <!-- Popularity -->
-                <!-- <div
+                <!-- Column data type -->
+                <div
+                    v-if="item.typeName.toLowerCase() === 'column'"
+                    class="flex items-center mt-1 mr-4"
+                >
+                    <component
+                        :is="dataTypeImage(item)"
+                        class="w-auto h-5"
+                    ></component>
+                    <span class="ml-1 text-sm">{{ dataType(item) }}</span>
+                </div>
+                <!-- Description -->
+                <div
+                    v-if="projection?.includes('description')"
+                    class="max-w-lg mt-1 text-sm truncate-overflow"
+                >
+                    <span v-if="description(item).length">
+                        {{ description(item) }}
+                    </span>
+                    <span v-else class="text-gray-500">No description</span>
+                </div>
+                <!-- Hierarchy bar -->
+                <HierarchyBar
+                    class="py-1 mt-1"
+                    v-if="projection?.includes('heirarchy')"
+                    :selectedAsset="item"
+                ></HierarchyBar>
+                <!-- Row?Col/Owner bar -->
+                <div
+                    v-if="
+                        projection?.includes('owners') ||
+                        projection?.includes('rows') ||
+                        projection?.includes('popularity')
+                    "
+                    class="flex items-center mt-1"
+                >
+                    <!-- Owners -->
+                    <div
+                        v-if="
+                            projection?.includes('owners') &&
+                            getCombinedUsersAndGroups(item).length
+                        "
+                        class="flex items-baseline mr-4 text-xs leading-5  text-gray"
+                    >
+                        <span
+                            class="mr-1"
+                            v-html="
+                                'Owned by ' +
+                                getTruncatedUsers(
+                                    getCombinedUsersAndGroups(item),
+                                    20
+                                )
+                            "
+                        />
+                    </div>
+                    <!-- Row/Col-->
+                    <div
+                        class="flex mr-2 text-sm"
+                        v-if="
+                            projection?.includes('rows') &&
+                            ['table', 'view'].includes(
+                                item.typeName.toLowerCase()
+                            )
+                        "
+                    >
+                        <span
+                            v-if="item?.typeName.toLowerCase() === 'table'"
+                            class="mr-4"
+                            >{{ rowCount(item, false) }} Rows</span
+                        >
+                        <span class="mr-4"
+                            >{{ columnCount(item, false) }} Cols</span
+                        >
+                    </div>
+                    <!-- Popularity -->
+                    <!-- <div
                     class="pt-1 mr-2"
                     v-if="
                         projection?.includes('popularity') &&
@@ -108,8 +128,8 @@
                         }}
                     </span>
                 </div> -->
-                <!-- Search score -->
-                <!-- <div
+                    <!-- Search score -->
+                    <!-- <div
                     v-if="projection?.includes('searchscore')"
                     class="pt-1 mr-2"
                 >
@@ -118,28 +138,16 @@
                         {{ numeralFormat(score, '0[.]000000') }}
                     </span>
                 </div> -->
+                </div>
             </div>
-            <!-- Description -->
-            <span
-                v-if="projection?.includes('description')"
-                class="mt-1 text-sm whitespace-pre-line"
-            >
-                {{ description(item) || 'No description' }}
-            </span>
-            <!-- Hierarchy bar -->
-            <HierarchyBar
-                class="py-1 mt-1"
-                v-if="projection?.includes('heirarchy')"
-                :selectedAsset="item"
-            ></HierarchyBar>
-        </div>
 
-        <img :src="logo(item)" class="flex-none w-auto h-6" />
+            <img :src="logo(item)" class="flex-none w-auto h-6" />
+        </div>
     </div>
 </template>
 
 <script lang="ts">
-    import { defineComponent, PropType, toRefs } from 'vue'
+    import { defineComponent, PropType } from 'vue'
 
     import StatusBadge from '@common/badge/status/index.vue'
     import HierarchyBar from '@common/badge/hierarchy.vue'
@@ -173,6 +181,11 @@
                 default() {
                     return []
                 },
+            },
+            isSelected: {
+                type: Boolean,
+                required: false,
+                default: () => false,
             },
         },
         setup(props) {
@@ -216,16 +229,18 @@
                         truncated.length == 1 &&
                         truncated[0].length <
                             `${truncated.length} other(s)`.length
-                            ? truncated[0]
-                            : `${truncated.length} other(s)`
+                            ? `<b>${truncated[0]}</b>`
+                            : `<b>${truncated.length}</b> other(s)`
 
-                    return displayArray.join(', ') + ` and ${lastElm}`
+                    return `<b>${displayArray.join(', ')}</b> and ${lastElm}`
                 } else {
                     // Check if everything can be directly displayed
                     // If so then take the last element from array, append it with 'and'
                     const lastElm = displayArray.pop()
                     return displayArray.length
-                        ? displayArray.join(', ') + ` and ${lastElm}`
+                        ? `<b>${displayArray.join(
+                              ', '
+                          )}</b> and <b>${lastElm}</b>`
                         : lastElm
                 }
             }
@@ -244,11 +259,23 @@
                 status,
                 rowCount,
                 columnCount,
-                ownerGroups,
-                ownerUsers,
                 getTruncatedUsers,
                 getCombinedUsersAndGroups,
             }
         },
     })
 </script>
+
+<style>
+    .truncate-overflow {
+        position: relative;
+        @apply overflow-y-hidden;
+        @apply bg-clip-text text-transparent;
+        @apply max-h-10;
+        background-image: linear-gradient(
+            to bottom,
+            #3e4359 1.5rem,
+            transparent 2.5rem
+        );
+    }
+</style>

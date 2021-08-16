@@ -1,23 +1,23 @@
 <template>
-    <LoadingView v-if="loading" />
-    <ErrorView v-else-if="error" :error="error" />
+    <LoadingView v-if="!data?.asset" />
+    <ErrorView v-else-if="data?.error" :error="data?.error" />
 
-    <div v-if="!loading && response?.entities?.[0]" class="w-full bg-gray-100">
+    <div v-if="data?.asset" class="w-full bg-gray-100">
         <div class="z-30 h-24 p-4 bg-white">
-            <AssetHeader :asset="response?.entities?.[0]" />
+            <AssetHeader :asset="data?.asset" />
         </div>
         <div class="asset-profile">
             <a-tabs :active-key="activeKey" @change="selectTab($event)">
                 <a-tab-pane v-for="tab in tabs" :key="tab.id" :tab="tab.name">
                     <component
                         :is="tab.component"
-                        :key="activeKey"
+                        :key="activeKey || id"
                         :ref="
                             (el) => {
                                 refs[tab.id] = el
                             }
                         "
-                        :asset="response?.entities?.[0] || {}"
+                        :asset="data?.asset || {}"
                     ></component>
                 </a-tab-pane>
             </a-tabs>
@@ -58,6 +58,7 @@
         setup(_, context) {
             /** DATA */
             const activeKey = ref(1)
+            const data = ref({})
             const refs: { [key: string]: any } = ref({})
             const tabs = [
                 {
@@ -87,13 +88,19 @@
                     `/assets/${id.value}/${selectedTab?.name.toLowerCase()}`
                 )
             }
-            const {
-                data: response,
-                error,
-                loading,
-            } = useAsset({
-                entityId: id.value,
-            })
+
+            const fetch = () => {
+                const { data: response, error } = useAsset({
+                    entityId: id.value,
+                })
+
+                watch(response, () => {
+                    data.value.asset = response.value?.entities?.[0]
+                    data.value.error = error.value
+
+                    context.emit('updateAssetPreview', data.value.asset ?? [])
+                })
+            }
 
             onMounted(() => {
                 const tab = route?.params?.tab
@@ -102,24 +109,18 @@
                     (i) => i.name.toLowerCase() === tab.toLowerCase()
                 )
                 activeKey.value = currTab.id
+                fetch()
             })
 
-            watch(response, () => {
-                if (response.value?.entities?.length)
-                    context.emit(
-                        'updateAssetPreview',
-                        response.value?.entities?.[0] ?? []
-                    )
-            })
+            watch(id, () => fetch())
 
             return {
+                id,
                 activeKey,
                 tabs,
                 refs,
+                data,
                 selectTab,
-                response,
-                error,
-                loading,
             }
         },
     })

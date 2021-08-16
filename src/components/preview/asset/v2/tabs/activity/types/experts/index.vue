@@ -1,7 +1,7 @@
 <template>
     <span
         >Say 👋 Hello, to the newly added
-        {{ data.value.length > 1 ? 'Owners' : 'Owner' }}</span
+        {{ data.value.length > 1 ? 'Experts' : 'Expert' }}</span
     >
     <ul v-for="(user, index) in data.value" :key="index" class="my-1">
         <li class="flex items-center">
@@ -16,8 +16,7 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, PropType } from 'vue'
-    import { assetInterface } from '~/types/assets/asset.interface'
+    import { defineComponent } from 'vue'
     import Avatar from '~/components/common/avatar.vue'
 
     export default defineComponent({

@@ -77,7 +77,7 @@
                             totalUsersCount
                         }}</span>
                     </template>
-                    <div class="w-full h-48 overflow-y-auto">
+                    <div class="w-full overflow-y-auto h-44">
                         <a-checkbox-group
                             v-model:value="data.userValue"
                             class="w-full"
@@ -98,16 +98,15 @@
                                 >
                                     <div
                                         v-if="item.username === myUsername"
-                                        class="inline-flex"
+                                        class="inline-flex capitalize"
                                     >
-                                        <span>
-                                            {{ item.username }}
+                                        {{ item.username }}
+
+                                        <span class="font-bold">
+                                            {{ '&nbsp;(me)' }}
                                         </span>
-                                        <span class="font-bold">{{
-                                            ' (me)'
-                                        }}</span>
                                     </div>
-                                    <span v-else>
+                                    <span v-else class="capitalize">
                                         {{ item.username }}
                                     </span>
                                 </a-checkbox>
@@ -124,25 +123,21 @@
                             ><span>Fetching users</span>
                         </div>
                     </div>
-                    <div v-if="totalUsersCount - userList.length > 0">
+                    <div
+                        v-if="totalUsersCount - userList.length > 0"
+                        class="mt-2"
+                    >
                         <div
                             v-if="
                                 STATES.SUCCESS === userOwnerState &&
-                                showMoreOwners
+                                showMoreUsers
                             "
-                            class="flex items-center w-auto mt-3 mb-0 font-bold text-center cursor-pointer select-none  outlined text-primary"
+                            class="flex items-center w-auto mb-0 font-bold text-center cursor-pointer select-none  outlined text-primary"
                             @click="toggleShowMore"
                         >
                             {{
                                 `Show ${totalUsersCount - userList.length} more`
                             }}
-                        </div>
-                        <div
-                            v-else-if="!showMoreOwners"
-                            class="flex items-center w-auto mt-3 mb-0 font-bold text-center cursor-pointer select-none  outlined text-primary"
-                            @click="toggleShowMore"
-                        >
-                            {{ `Show less` }}
                         </div>
                     </div>
                 </a-tab-pane>
@@ -157,7 +152,7 @@
                             {{ totalGroupCount }}
                         </span>
                     </template>
-                    <div class="h-48 overflow-y-auto">
+                    <div class="overflow-y-auto h-44">
                         <a-checkbox-group
                             v-if="STATES.SUCCESS === groupOwnerState"
                             v-model:value="data.groupValue"
@@ -168,7 +163,7 @@
                                     v-for="item in groupList"
                                     :key="item.name"
                                     :value="item.name"
-                                    class="mb-3"
+                                    class="mb-3 capitalize"
                                 >
                                     {{ item.name }}
                                 </a-checkbox>
@@ -182,8 +177,35 @@
                             ><span>Fetching groups</span>
                         </div>
                     </div>
+                    <div
+                        v-if="totalGroupCount - groupList.length > 0"
+                        class="mt-2"
+                    >
+                        <div
+                            v-if="
+                                GROUPSTATES.SUCCESS === groupOwnerState &&
+                                showMoreGroups
+                            "
+                            class="flex items-center w-auto mb-0 font-bold text-center cursor-pointer select-none  outlined text-primary"
+                            @click="toggleShowMoreGroups"
+                        >
+                            {{
+                                `Show ${
+                                    totalGroupCount - groupList.length
+                                } more`
+                            }}
+                        </div>
+                    </div>
                 </a-tab-pane>
             </a-tabs>
+            <!-- <div>
+                <a-checkbox
+                    v-model:checked="noOwnersAssigned"
+                    class="pt-4 border-t"
+                >
+                    no owners assigned
+                </a-checkbox>
+            </div> -->
         </div>
     </div>
 </template>
@@ -223,7 +245,9 @@
             const now = ref(true)
             const { data } = toRefs(props)
             const activeOwnerTabKey = ref('1')
-            const showMoreOwners = ref(true)
+            const showMoreUsers = ref(true)
+            const showMoreGroups = ref(true)
+            const noOwnersAssigned = ref(false)
             // own info
             const { username: myUsername, name: myName } = whoami()
 
@@ -291,7 +315,10 @@
                 list: listGroups,
                 handleSearch: handleGroupSearch,
                 total: totalGroupCount,
+                STATES: GROUPSTATES,
                 state: groupOwnerState,
+                mutate: mutateGroups,
+                setLimit: setGroupLimit,
             } = fetchGroupList(now)
             const onSelectUser = (user: userInterface) => {
                 // unselect if already selected
@@ -422,21 +449,29 @@
                 }
             }
             function toggleShowMore() {
-                showMoreOwners.value = !showMoreOwners.value
+                showMoreUsers.value = !showMoreUsers.value
                 setLimit(totalUsersCount.value)
                 mutateUsers()
+            }
+            function toggleShowMoreGroups() {
+                showMoreGroups.value = !showMoreGroups.value
+                setGroupLimit(totalGroupCount.value)
+                mutateGroups()
             }
 
             return {
                 data,
+                noOwnersAssigned,
                 totalUsersCount,
                 totalGroupCount,
                 userOwnerState,
                 groupOwnerState,
                 STATES,
+                GROUPSTATES,
                 ownersFilterOptionsData,
                 ownerSortOptions,
                 myUsername,
+                showMoreGroups,
                 onSelectGroup,
                 isOwner,
                 onSelectUser,
@@ -444,12 +479,13 @@
                 groupList,
                 handleOwnerSearch,
                 activeOwnerTabKey,
+                toggleShowMoreGroups,
                 toggleShowMore,
                 handleChange,
                 handleUsersChange,
                 handleGroupsChange,
                 handleSortChange,
-                showMoreOwners,
+                showMoreUsers,
             }
         },
         mounted() {},
@@ -484,7 +520,16 @@
             @apply w-full !important;
         }
     }
+    .badge {
+        :global(.ant-badge-dot) {
+            @apply bg-primary !important;
+        }
+        :global(.ant-badge-count) {
+            @apply top-3 right-2 !important;
+        }
+    }
 </style>
+
 <style scoped>
     .chip {
         @apply px-1 pt-1 pb-0.5 mx-1;
@@ -494,5 +539,8 @@
         @apply font-bold;
         @apply text-primary;
         @apply bg-primary-light;
+    }
+    .owner-checkbox:last-child {
+        @apply pb-0 mb-0 !important;
     }
 </style>

@@ -10,7 +10,7 @@ export default function fetchUserList(dependent: any) {
     const params = ref({})
     // this is needed as there are multiple keys with the same param name
     const urlparam = new URLSearchParams()
-    urlparam.append('limit', '5')
+    urlparam.append('limit', '20')
     urlparam.append('sort', 'first_name')
     urlparam.append('columns', 'first_name')
     urlparam.append('columns', 'last_name')
@@ -42,7 +42,7 @@ export default function fetchUserList(dependent: any) {
     const filtered: ComputedRef<userInterface[]> = computed(
         () => data.value?.filter_record
     )
-    function setLimit(limit = 5) {
+    function setLimit(limit = 20) {
         params.value.set('limit', `${limit}`)
     }
 

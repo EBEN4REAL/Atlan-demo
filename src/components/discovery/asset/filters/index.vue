@@ -1,7 +1,7 @@
 <template>
     <div class="flex justify-between items-center px-4 pl-5 py-3.5 text-xs">
         <div class="font-medium text-gray-500">
-            {{ totalAppliedFiltersCount }} filters applied
+            {{ totalAppliedFiltersCount || 'No' }} filters applied
         </div>
         <div class="flex items-center text-gray-500">
             <div
@@ -349,9 +349,11 @@
             @apply border-t;
         }
 
-        // :global(.ant-collapse-header:last-child) {
-        //     @apply border-b !important;
-        // }
+        :global(.ant-collapse-item:last-child) {
+            @apply border-solid;
+            @apply border-gray-300;
+            @apply border-b !important;
+        }
 
         :global(.ant-collapse-content-box) {
             padding-right: 0px;

@@ -8,7 +8,7 @@
                     Edit description
                 </a-button>
             </div>
-            <div v-else class="flex justify-between text-gray">
+            <div v-else class="flex justify-between text-gray-400">
                 No Description Found
                 <span class="ml-2">.</span>
                 <a-button type="link" @click="showModal">
@@ -95,7 +95,6 @@
                     handleCancel()
                 }
             })
-            console.log(props.asset)
 
             return {
                 showModal,

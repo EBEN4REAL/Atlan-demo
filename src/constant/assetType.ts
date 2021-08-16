@@ -88,5 +88,7 @@ export const AssetTypeList = [
         label: 'TableauWorkbook',
         nameAttributeattribute: '',
         count: 0,
+        isDiscoverable: true,
+        orderWeight: 100,
     },
 ]

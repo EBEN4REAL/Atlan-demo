@@ -75,15 +75,9 @@
 
             <component
                 :is="item.component"
-                :ref="
-                    (el) => {
-                        refMap[item.id] = el
-                    }
-                "
                 :item="item"
-                :data="dataMap[item.id]"
+                v-model:data="dataMap[item.id]"
                 @change="handleChange"
-                @update:modelValue="checkedValuesChange"
             ></component>
         </a-collapse-panel>
     </a-collapse>
@@ -132,16 +126,6 @@
             const classificationsStore = useClassificationStore()
             // console.log(props.initialFilters.facetsFilters, 'facetFilters')
             const activeKey: Ref<string> = ref('')
-            const appliedFacetFiltersMap: Ref<any> = ref({
-                status: props.initialFilters.facetsFilters.status.checked,
-                classifications:
-                    props.initialFilters.facetsFilters.classifications.checked,
-                owners: {
-                    users: props.initialFilters.facetsFilters.owners.userValue,
-                    groups: props.initialFilters.facetsFilters.owners
-                        .groupValue,
-                },
-            })
             const initialFilterMap = {
                 status: {
                     condition:
@@ -179,8 +163,6 @@
 
             const dirtyTimestamp = ref('dirty_')
 
-            const refMap: { [key: string]: any } = ref({})
-
             // Mapping of Data to child compoentns
             const dataMap: { [key: string]: any } = ref({})
             dataMap.value.status = {
@@ -194,9 +176,11 @@
                     props.initialFilters.facetsFilters.classifications.checked,
             }
             dataMap.value.owners = {
-                userValue: props.initialFilters.facetsFilters.owners.userValue,
+                userValue:
+                    props.initialFilters.facetsFilters?.owners?.userValue || [],
                 groupValue:
-                    props.initialFilters.facetsFilters.owners.groupValue,
+                    props.initialFilters.facetsFilters?.owners?.groupValue ||
+                    [],
             }
             dataMap.value.advanced = {
                 list: props.initialFilters.facetsFilters.advanced.list,
@@ -220,8 +204,6 @@
             }
 
             const isFilter = (id) => {
-                console.log(id)
-                console.log(filterMap[id])
                 if (filterMap[id]) {
                     if (filterMap[id]?.criterion?.length > 0) {
                         return true
@@ -229,16 +211,7 @@
                 }
                 return false
             }
-            // const setAppliedFiltersCount = computed(() => {
-            //     const count = 0
-            //     const filterMapKeys = Object.keys(filterMap.value)
-            //     filterMapKeys.forEach(() => {
-            //         if (filterMap[id]?.criterion?.length > 0) {
-            //             return (count += 1)
-            //         }
-            //     })
-            //     return count
-            // })
+
             const totalAppliedFiltersCount = ref(0)
             function setAppliedFiltersCount() {
                 let count = 0
@@ -251,16 +224,35 @@
                 totalAppliedFiltersCount.value = count
             }
 
-            const handleClear = (id) => {
-                console.log(refMap)
-                if (refMap.value[id]) {
-                    refMap.value[id].clear()
+            const handleClear = (filterId: string) => {
+                switch (filterId) {
+                    case 'status': {
+                        dataMap.value[filterId].checked = []
+                        filterMap[filterId].criterion = []
+                        break
+                    }
+                    case 'classifications': {
+                        dataMap.value[filterId].checked = []
+                        filterMap[filterId].criterion = []
+                        break
+                    }
+                    case 'owners': {
+                        dataMap.value[filterId].userValue = []
+                        dataMap.value[filterId].groupValue = []
+                        filterMap[filterId].criterion = []
+                        break
+                    }
+                    case 'advanced': {
+                        break
+                    }
                 }
+                setAppliedFiltersCount()
+                refresh()
             }
             function getFiltersAppliedString(filterId: string) {
                 switch (filterId) {
                     case 'status': {
-                        let filters = appliedFacetFiltersMap.value[filterId]
+                        let filters = dataMap.value[filterId].checked
                         filters = filters.map((statusId: string) => {
                             return StatusList?.find(
                                 (status: any) => status.id === statusId
@@ -275,7 +267,7 @@
                         return filters.slice(0, 3).join(', ')
                     }
                     case 'classifications': {
-                        const filters = appliedFacetFiltersMap.value[filterId]
+                        const filters = dataMap.value[filterId].checked
                         if (filters.length > 3) {
                             return `${filters.slice(0, 3).join(', ')} +${
                                 filters.length - 3
@@ -285,10 +277,8 @@
                         return filters.slice(0, 3).join(', ')
                     }
                     case 'owners': {
-                        const users =
-                            appliedFacetFiltersMap.value[filterId]?.users
-                        const groups =
-                            appliedFacetFiltersMap.value[filterId]?.groups
+                        const users = dataMap.value[filterId].userValue
+                        const groups = dataMap.value[filterId].groupValue
                         let appliedOwnersString = ''
                         if (users && users?.length > 0) {
                             appliedOwnersString += `${users.length} users`
@@ -305,32 +295,19 @@
                 }
             }
 
-            function checkedValuesChange(values: string[], filterId: string) {
-                console.log('values', values, filterId)
-                switch (filterId) {
-                    case 'status': {
-                        return (appliedFacetFiltersMap.value[filterId] = values)
-                    }
-                    case 'classifications': {
-                        return (appliedFacetFiltersMap.value[filterId] = values)
-                    }
-                    case 'owners': {
-                        return (appliedFacetFiltersMap.value[filterId] = values)
-                    }
-                    case 'advanced': {
-                        return ''
-                    }
-                }
-            }
-
             function resetAllFilters() {
-                console.log(refMap.value)
-                List.forEach((filter) => {
-                    const filterId = filter.id
-                    if (refMap.value[filterId]) {
-                        refMap.value[filterId].clear()
-                    }
+                console.log(dataMap.value)
+                dataMap.value.status.checked = []
+                dataMap.value.classifications.checked = []
+                dataMap.value.owners.userValue = []
+                dataMap.value.owners.groupValue = []
+                const filterMapKeys = Object.keys(filterMap)
+                filterMapKeys.forEach((id) => {
+                    filterMap[id].criterion = []
                 })
+                setAppliedFiltersCount()
+
+                refresh()
             }
             setAppliedFiltersCount()
 
@@ -338,8 +315,6 @@
                 resetAllFilters,
                 totalAppliedFiltersCount,
                 getFiltersAppliedString,
-                appliedFacetFiltersMap,
-                checkedValuesChange,
                 activeKey,
                 dataMap,
                 handleChange,
@@ -347,7 +322,6 @@
                 dirtyTimestamp,
                 filterMap,
                 handleClear,
-                refMap,
             }
         },
         data() {
@@ -359,60 +333,6 @@
                 filterMap: {} as { [key: string]: any },
                 filters: {} as Components.Schemas.FilterCriteria,
             }
-        },
-        mounted() {},
-        methods: {
-            handleChanged(value: any) {
-                //   console.log("handle Change filters", value);
-                // this.filters.condition = "AND";
-                // const found = List.find((item) => item.id == value.id);
-                // if (found) {
-                //   let criteria = <Components.Schemas.FilterCriteria>{
-                //     condition: found.overallCondition.toUpperCase(),
-                //     criterion: [],
-                //   };
-                //   found.filters.forEach((element) => {
-                //     let groupCriteria = <Components.Schemas.FilterCriteria>{
-                //       condition: element.condition,
-                //       criterion: [],
-                //     };
-                //     console.log(value);
-                //     if (value.payload[element.attributeName]) {
-                //       if (value.payload[element.attributeName].length > 0) {
-                //         value.payload[element.attributeName].forEach((e: any) => {
-                //           let valCriteria = <Components.Schemas.FilterCriteria>{};
-                //           valCriteria.attributeName = element.attributeName;
-                //           console.log(e);
-                //           // special condition for null support
-                //           if (e === "is_null") {
-                //             valCriteria.operator = "isNull";
-                //           } else {
-                //             valCriteria.attributeValue = e;
-                //             valCriteria.operator = element.operator;
-                //           }
-                //           if (element.isMultiple) {
-                //             groupCriteria.criterion.push(valCriteria);
-                //           } else {
-                //             criteria.criterion.push(valCriteria);
-                //           }
-                //         });
-                //         if (element.isMultiple) {
-                //           criteria.criterion.push(groupCriteria);
-                //         }
-                //       }
-                //     }
-                //   });
-                //   console.log(criteria);
-                //   this.filterMap[found.id] = criteria;
-                // }
-                // console.log(this.filterMap);
-                // this.searchParam.entityFilters.condition = "AND";
-                // this.searchParam.entityFilters.criterion = [];
-                // Object.keys(this.filterMap).forEach((key) => {
-                //   this.searchParam.entityFilters.criterion.push(this.filterMap[key]);
-                // });
-                // this.$emit("change", this.searchParam);
-            },
         },
     })
 </script>

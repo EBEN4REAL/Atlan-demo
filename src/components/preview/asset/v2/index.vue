@@ -16,7 +16,7 @@
                     </div>
                 </div>
             </div>
-            <div class="flex items-center mb-3">
+            <div class="flex items-center pb-1">
                 <span class="mb-0 text-lg text-gray font-bold truncate ...">
                     {{ title(selectedAsset) }}</span
                 >

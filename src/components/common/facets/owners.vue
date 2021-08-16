@@ -77,9 +77,10 @@
                             totalUsersCount
                         }}</span>
                     </template>
-                    <div class="h-48 overflow-y-auto">
+                    <div class="w-full h-48 overflow-y-auto">
                         <a-checkbox-group
                             v-model:value="data.userValue"
+                            class="w-full"
                             @change="handleUsersChange"
                             v-if="STATES.SUCCESS === userOwnerState"
                         >
@@ -88,20 +89,60 @@
                                     v-for="item in userList"
                                     :key="item.username"
                                     :value="item.username"
-                                    class="mb-3"
+                                    class="w-full mb-3"
+                                    :class="
+                                        item.username === myUsername
+                                            ? 'border-b pb-3'
+                                            : ''
+                                    "
                                 >
-                                    <span>
+                                    <div
+                                        v-if="item.username === myUsername"
+                                        class="inline-flex"
+                                    >
+                                        <span>
+                                            {{ item.username }}
+                                        </span>
+                                        <span class="font-bold">{{
+                                            ' (me)'
+                                        }}</span>
+                                    </div>
+                                    <span v-else>
                                         {{ item.username }}
                                     </span>
                                 </a-checkbox>
                             </div>
                         </a-checkbox-group>
-                        <div v-else class="flex items-center justify-center">
+                        <div
+                            v-else
+                            class="flex items-center justify-center mt-3"
+                        >
                             <a-spin
                                 size="small"
                                 class="mr-2 leading-none"
                             ></a-spin
                             ><span>Fetching users</span>
+                        </div>
+                    </div>
+                    <div v-if="totalUsersCount - userList.length > 0">
+                        <div
+                            v-if="
+                                STATES.SUCCESS === userOwnerState &&
+                                showMoreOwners
+                            "
+                            class="flex items-center w-auto mt-3 mb-0 font-bold text-center cursor-pointer select-none  outlined text-primary"
+                            @click="toggleShowMore"
+                        >
+                            {{
+                                `Show ${totalUsersCount - userList.length} more`
+                            }}
+                        </div>
+                        <div
+                            v-else-if="!showMoreOwners"
+                            class="flex items-center w-auto mt-3 mb-0 font-bold text-center cursor-pointer select-none  outlined text-primary"
+                            @click="toggleShowMore"
+                        >
+                            {{ `Show less` }}
                         </div>
                     </div>
                 </a-tab-pane>
@@ -148,15 +189,7 @@
 </template>
 
 <script lang="ts">
-    import {
-        defineComponent,
-        PropType,
-        ref,
-        Ref,
-        toRefs,
-        computed,
-        watch,
-    } from 'vue'
+    import { defineComponent, PropType, ref, Ref, toRefs, watch } from 'vue'
     import Groups from '@common/selector/groups/index.vue'
     import Users from '@common/selector/users/index.vue'
     import { Collapse } from '~/types'
@@ -166,6 +199,7 @@
     import { userInterface } from '~/types/users/user.interface'
     import { groupInterface } from '~/types/groups/group.interface'
     import CustomRadioButton from '@common/radio/customRadioButton.vue'
+    import whoami from '~/composables/user/whoami'
 
     export default defineComponent({
         name: 'HelloWorld',
@@ -189,6 +223,11 @@
             const now = ref(true)
             const { data } = toRefs(props)
             const activeOwnerTabKey = ref('1')
+            const showMoreOwners = ref(true)
+            // own info
+            const { username: myUsername, name: myName } = whoami()
+
+            const criterion: Ref<Components.Schemas.FilterCriteria[]> = ref([])
             console.log(
                 'propsValue',
                 data.value.userValue,
@@ -198,20 +237,20 @@
             const handleUsersChange = () => {
                 handleChange()
             }
+
             const handleGroupsChange = () => {
                 handleChange()
             }
             const handleChange = () => {
-                const criterion: Components.Schemas.FilterCriteria[] = []
                 data.value.userValue.forEach((name: string) => {
-                    criterion.push({
+                    criterion.value.push({
                         attributeName: 'ownerUsers',
                         attributeValue: name,
                         operator: 'contains',
                     })
                 })
                 data.value.groupValue.forEach((groupname: string) => {
-                    criterion.push({
+                    criterion.value.push({
                         attributeName: 'ownerGroups',
                         attributeValue: groupname,
                         operator: 'contains',
@@ -222,9 +261,10 @@
                     id: props.item.id,
                     payload: {
                         condition: 'OR',
-                        criterion,
+                        criterion: criterion.value,
                     } as Components.Schemas.FilterCriteria,
                 })
+                criterion.value = []
             }
 
             const handleOwnerSearch = (e: Event) => {
@@ -242,6 +282,8 @@
                 filtered,
                 state: userOwnerState,
                 STATES,
+                mutate: mutateUsers,
+                setLimit: setLimit,
                 handleSearch: handleUserSearch,
             } = fetchUserList(now)
 
@@ -298,6 +340,16 @@
                         listUsers,
                         'username'
                     )
+                    // removing own username from list
+                    let ownUserObj: userInterface = {}
+                    userList.value = userList.value.filter((user) => {
+                        if (user.username === myUsername.value) {
+                            ownUserObj = user
+                        }
+                        return user.username !== myUsername.value
+                    })
+                    console.log(ownUserObj, 'ownUser')
+                    userList.value = [ownUserObj, ...userList.value]
                     groupList.value = sortClassificationsByOrder(
                         ownersFilterOptionsData.value,
                         listGroups,
@@ -315,6 +367,15 @@
                     listUsers,
                     'username'
                 )
+                // removing own username from list
+                let ownUserObj: userInterface = {}
+                userList.value = userList.value.filter((user) => {
+                    if (user.username === myUsername.value) {
+                        ownUserObj = user
+                    }
+                    return user.username !== myUsername.value
+                })
+                userList.value = [ownUserObj, ...userList.value]
                 groupList.value = sortClassificationsByOrder(
                     ownersFilterOptionsData.value,
                     listGroups,
@@ -360,6 +421,11 @@
                     }
                 }
             }
+            function toggleShowMore() {
+                showMoreOwners.value = !showMoreOwners.value
+                setLimit(totalUsersCount.value)
+                mutateUsers()
+            }
 
             return {
                 data,
@@ -370,6 +436,7 @@
                 STATES,
                 ownersFilterOptionsData,
                 ownerSortOptions,
+                myUsername,
                 onSelectGroup,
                 isOwner,
                 onSelectUser,
@@ -377,10 +444,12 @@
                 groupList,
                 handleOwnerSearch,
                 activeOwnerTabKey,
+                toggleShowMore,
                 handleChange,
                 handleUsersChange,
                 handleGroupsChange,
                 handleSortChange,
+                showMoreOwners,
             }
         },
         mounted() {},
@@ -410,6 +479,9 @@
             @apply mx-2;
             @apply text-gray-500;
             @apply text-xs;
+        }
+        :global(.ant-checkbox-group) {
+            @apply w-full !important;
         }
     }
 </style>

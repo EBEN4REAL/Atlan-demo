@@ -25,10 +25,10 @@
                                 getDetailsForEntityAuditEvent(log)?.displayValue
                             "
                         ></span>
-                        <!-- <span
+                        <span
                             v-if="
                                 getDetailsForEntityAuditEvent(log)
-                                    ?.displayValue === 'description'
+                                    ?.displayValue === 'classificationAdded'
                             "
                         >
                             <a-collapse
@@ -43,16 +43,20 @@
                                         ></template
                                     >
 
-                                    <div><b>Description</b> updated</div>
+                                    <div><b>Classifications</b> added</div>
                                     <div>
-                                        {{
-                                            getDetailsForEntityAuditEvent(log)
-                                                ?.value
-                                        }}
+                                        <span
+                                            class="px-3 py-2 rounded-full pill"
+                                            >{{
+                                                getDetailsForEntityAuditEvent(
+                                                    log
+                                                )?.value
+                                            }}</span
+                                        >
                                     </div>
                                 </a-collapse-panel>
                             </a-collapse>
-                        </span> -->
+                        </span>
 
                         <!-- <span
                             v-if="
@@ -210,5 +214,12 @@
         min-height: 10px !important;
         margin-bottom: 0 !important;
         height: 28px !important;
+    }
+    .pill {
+        background-color: #f3f3f3;
+        &:hover {
+            background-color: #5277d7;
+            color: white;
+        }
     }
 </style>

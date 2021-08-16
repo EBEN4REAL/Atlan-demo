@@ -199,23 +199,32 @@ const useAssetAudit = (params: any, guid: string) => {
                             // This handles the case when classification is linked using Atlan Bot user
                             // In this case, classification object comes in details
                             parsedDetails = JSON.parse(eventDetail[1].trim())
+                            console.log("Classifications")
+
+                            console.log(eventDetail)
 
                             if (parsedDetails.typeName) {
-                                data.displayValue = `Classification <b>${filterClassificationTypeNameDisplayName(
+                                data.value = filterClassificationTypeNameDisplayName(
                                     parsedDetails
-                                )}</b> linked`
+                                )
+                                data.displayValue = "classificationAdded"
+
                                 return data
                             }
                             return null
                         } catch (error) {
-                            data.displayValue = `Classification <b>${eventDetail[1].trim()}</b> linked`
+                            data.value = eventDetail[1].trim()
+                            data.displayValue = "classificationAdded"
+
                             return data
                         }
                     case 'CLASSIFICATION_DELETE':
                         parsedDetails = eventDetail[1].trim()
-                        data.displayValue = `Classification <b>${filterClassificationTypeNameDisplayName(
+                        data.value = filterClassificationTypeNameDisplayName(
                             parsedDetails
-                        )}</b> unlinked`
+                        )
+                        data.displayValue = "classificationRemoved"
+
                         return data
                     case 'PROPAGATED_CLASSIFICATION_ADD':
                         parsedDetails = JSON.parse(eventDetail[1].trim())

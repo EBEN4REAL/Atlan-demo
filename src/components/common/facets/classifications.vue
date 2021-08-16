@@ -427,10 +427,10 @@
 
 <style lang="less" module>
     .badge {
-        :global('.ant-badge-dot') {
+        :global(.ant-badge-dot) {
             @apply bg-primary !important;
         }
-        :global('.ant-badge-count') {
+        :global(.ant-badge-count) {
             @apply top-3 right-2 !important;
         }
     }

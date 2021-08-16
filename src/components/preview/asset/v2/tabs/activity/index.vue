@@ -20,11 +20,39 @@
                 </template>
                 <div>
                     <span v-if="getDetailsForEntityAuditEvent(log)">
-                        <!-- <span
+                        <span
                             v-html="
                                 getDetailsForEntityAuditEvent(log)?.displayValue
                             "
-                        ></span> -->
+                        ></span>
+                        <!-- <span
+                            v-if="
+                                getDetailsForEntityAuditEvent(log)
+                                    ?.displayValue === 'description'
+                            "
+                        >
+                            <a-collapse
+                                class="p-0 m-0 text-gray-700 bg-transparent border-none "
+                                :bordered="false"
+                                expandIconPosition="right"
+                            >
+                                <a-collapse-panel class="border-none">
+                                    <template #header
+                                        ><span class="font-bold"
+                                            >Asset was updated</span
+                                        ></template
+                                    >
+
+                                    <div><b>Description</b> updated</div>
+                                    <div>
+                                        {{
+                                            getDetailsForEntityAuditEvent(log)
+                                                ?.value
+                                        }}
+                                    </div>
+                                </a-collapse-panel>
+                            </a-collapse>
+                        </span> -->
 
                         <!-- <span
                             v-if="
@@ -46,29 +74,7 @@
                                 :data="getDetailsForEntityAuditEvent(log)"
                             />
                         </span> -->
-                        <!-- <span
-                            v-if="getDetailsForEntityAuditEvent(log)?.moreinfo"
-                            >.<a-popover placement="left">
-                                <template #content>
-                                    <a-timeline>
-                                        <div class="mb-2">Users Added:</div>
-                                        <a-timeline-item
-                                            v-for="(
-                                                user, index
-                                            ) in getDetailsForEntityAuditEvent(
-                                                log
-                                            )?.value"
-                                            :key="index"
-                                        >
-                                            {{ user }}
-                                        </a-timeline-item></a-timeline
-                                    >
-                                </template>
-                                <a-button type="link">View Details</a-button>
-                            </a-popover></span
-                        >
-                    </span> --></span
-                    >
+                    </span>
                     <span v-else>
                         {{ getEventByAction(log).label || 'Event' }}
                     </span>

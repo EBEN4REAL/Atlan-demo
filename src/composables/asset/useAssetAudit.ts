@@ -144,7 +144,6 @@ const useAssetAudit = (params: any, guid: string) => {
                 data.displayValue = 'owners'
                 data.moreinfo = true
                 data.value = users
-                console.log("Owners Data : ", data)
                 return data
             }
             if (experts) {
@@ -169,7 +168,8 @@ const useAssetAudit = (params: any, guid: string) => {
 
             if (userDescription) {
                 const value = attributes.userDescription
-                data.displayValue = '<b>Description</b> updated'
+                data.value = value
+                data.displayValue = "description"
                 return data
             }
         }

@@ -8,7 +8,7 @@ export default function useFixedHeightList(
     wrapper: Ref<Element | null>
 ) {
     const topHeight = ref(0)
-    const fullHeight = ref(0)
+    const fullHeight = computed(() => rowCount.value * rowHeight.value || 10)
     const listIndices = ref([0, Math.min(GROUP_SIZE, rowCount.value)])
 
     const rowHeight = computed(() => {
@@ -25,7 +25,6 @@ export default function useFixedHeightList(
             const topIndex = Math.floor(scrollTop / rowHeight.value)
 
             topHeight.value = rowHeight.value * topIndex
-            fullHeight.value = rowCount.value * rowHeight.value
             const screenBuffer = Math.round(clientHeight / rowHeight.value)
 
             const invisibleBuffer = Math.round(screenBuffer / 2)

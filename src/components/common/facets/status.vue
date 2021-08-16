@@ -8,12 +8,12 @@
             <template v-for="item in list" :key="item.id">
                 <div class="mb-3 status">
                     <a-checkbox :value="item.id" class="w-full">
-                        <span class="mb-0 ml-1 text-gray-700 truncated">
-                            <fa
-                                :icon="item.icon"
-                                class="mr-2 pushtop"
-                                :class="item.iconClass"
-                            />{{ item.label }}
+                        <component
+                            class="inline-flex self-center w-auto h-4 mb-1"
+                            :is="item.icon"
+                        />
+                        <span class="mb-0 ml-1 text-gray-700">
+                            {{ item.label }}
                         </span>
                     </a-checkbox>
                 </div>

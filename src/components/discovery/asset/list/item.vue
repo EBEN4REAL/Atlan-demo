@@ -33,7 +33,10 @@
                         :to="`/assets/${item.guid}/overview`"
                         target="_blank"
                     >
-                        <Fa class="w-auto h-3" icon="fal external-link-alt" />
+                        <Fa
+                            class="w-auto h-3 mt-1"
+                            icon="fal external-link-alt"
+                        />
                     </router-link>
                 </div>
                 <!-- Column data type -->

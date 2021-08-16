@@ -21,12 +21,13 @@
                                     class="px-4 mb-1"
                                 >
                                     <span class="align-middle">
-                                        <fa
-                                            :icon="item.icon"
-                                            :class="item.iconClass"
-                                            class="mr-1 pushtop"
-                                        ></fa
-                                        >{{ item.label }}
+                                        <span class="text-gray-700 svg-icon">
+                                            <component
+                                                class="w-auto h-4 mr-1 pushtop"
+                                                :is="item.icon"
+                                            />
+                                            {{ item.label }}
+                                        </span>
                                     </span>
                                 </a-radio>
                             </div>

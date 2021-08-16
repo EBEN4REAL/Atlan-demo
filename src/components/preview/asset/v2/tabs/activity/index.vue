@@ -20,69 +20,13 @@
                 </template>
                 <div>
                     <span v-if="getDetailsForEntityAuditEvent(log)">
-                        <span
+                        <!-- <span
                             v-html="
                                 getDetailsForEntityAuditEvent(log)?.displayValue
                             "
-                        ></span>
-                        <span
-                            v-if="
-                                getDetailsForEntityAuditEvent(log)
-                                    ?.displayValue === 'owners'
-                            "
-                        >
-                            <span>
-                                Say 👋 Hello, to the newly added
-                                <b>{{
-                                    getDetailsForEntityAuditEvent(log)?.value
-                                        .length > 1
-                                        ? 'Owners'
-                                        : 'Owner'
-                                }}</b
-                                >.</span
-                            >
-                            <ul
-                                v-for="(
-                                    user, index
-                                ) in getDetailsForEntityAuditEvent(log)?.value"
-                                :key="index"
-                            >
-                                <li>
-                                    <b>{{ user }}</b>
-                                </li>
-                            </ul></span
-                        ></span
-                    >
+                        ></span> -->
 
-                    <span
-                        v-if="
-                            getDetailsForEntityAuditEvent(log)?.displayValue ===
-                            'status'
-                        "
-                    >
-                        <b>Status</b> changed to
-                        <fa
-                            :icon="
-                                getDetailsForEntityAuditEvent(log)?.value.icon
-                            "
-                            :class="
-                                getDetailsForEntityAuditEvent(log)?.value
-                                    .iconClass
-                            "
-                            class="mx-1 pushtop"
-                        ></fa
-                        ><b>{{
-                            getDetailsForEntityAuditEvent(log)?.value.label
-                        }}</b>
-                        <!-- <div>
-                            <span>Status</span>
-                            <span
-                                >Lorem ipsum dolor sit amet, consectetur
-                                adipiscing elit. Mauris venenatis.
-                            </span>
-                        </div> -->
-                    </span>
-                    <!-- <span
+                        <!-- <span
                             v-if="
                                 getDetailsForEntityAuditEvent(log)
                                     ?.displayValue === 'owners'
@@ -102,7 +46,7 @@
                                 :data="getDetailsForEntityAuditEvent(log)"
                             />
                         </span> -->
-                    <!-- <span
+                        <!-- <span
                             v-if="getDetailsForEntityAuditEvent(log)?.moreinfo"
                             >.<a-popover placement="left">
                                 <template #content>
@@ -123,7 +67,8 @@
                                 <a-button type="link">View Details</a-button>
                             </a-popover></span
                         >
-                    </span> -->
+                    </span> --></span
+                    >
                     <span v-else>
                         {{ getEventByAction(log).label || 'Event' }}
                     </span>
@@ -164,8 +109,10 @@
     import emptyScreen from '~/assets/images/empty_search.png'
     import { assetInterface } from '~/types/assets/asset.interface'
     import { useAssetAuditActivityList } from './useActivityList'
+    import Avatar from '~/components/common/avatar.vue'
 
     export default defineComponent({
+        components: { Avatar },
         props: {
             selectedAsset: {
                 type: Object as PropType<assetInterface>,

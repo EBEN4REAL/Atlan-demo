@@ -51,6 +51,8 @@ export default function useGtcSearch(qualifiedName: Ref<string>) {
                 "categories",
                 "pageviewCount",
                 "anchor",
+                "ownerUsers",
+                "ownerGroups",
                 ...relatedTerms,
                 ...BaseAttributes,
                 ...BasicSearchAttributes

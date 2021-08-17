@@ -1,5 +1,5 @@
 <template>
-    <div class="py-6 px-2 ">
+    <div class="py-6 px-2">
         <div class="mb-4 flex">
             <a-input-search
                 v-model:value="searchQuery"
@@ -7,9 +7,21 @@
                 class="mr-2"
                 @change="onSearch"
             ></a-input-search>
-            <a-button class="p-2 flex align-middle">
-                <fa icon="fal ellipsis-v" />
-            </a-button>
+
+            <a-popover title="Customise" trigger="click">
+                <template #content>
+                    <div class="w-32">
+                        <a-checkbox-group
+                            v-model:value="projection"
+                            name="checkboxgroup"
+                            :options="projectionOptions"
+                        />
+                    </div>
+                </template>
+                <a-button class="p-2 flex align-middle">
+                    <fa icon="fal ellipsis-v" />
+                </a-button>
+            </a-popover>
         </div>
         <a-tabs
             v-if="assets?.length"
@@ -18,14 +30,12 @@
             class="border-0"
         >
             <a-tab-pane key="1" :tab="`All (${assets?.length})`">
-                <div class="flex  h-full">
+                <div class="flex h-full">
                     <div class="item-stretch">
                         <div class="h-full">
                             <div
                                 v-if="
-                                    assets &&
-                                    assets.length <= 0 &&
-                                    !isLoading 
+                                    assets && assets.length <= 0 && !isLoading
                                 "
                                 class="flex-grow"
                             >
@@ -34,11 +44,7 @@
                             <AssetList
                                 v-else-if="assets.length"
                                 :list="assets"
-                                :projection="[
-                                    'heirarchy',
-                                    'description',
-                                    'owners',
-                                ]"
+                                :projection="projection"
                                 :is-loading="isLoading"
                             ></AssetList>
                         </div>
@@ -66,8 +72,8 @@ export default defineComponent({
         termQualifiedName: {
             type: String,
             required: true,
-            defualt: ','
-        }
+            defualt: ',',
+        },
     },
     setup(props) {
         const termName = computed(() => props.termQualifiedName)
@@ -79,6 +85,16 @@ export default defineComponent({
         const assetCount = computed(() => assets.value?.length ?? 0)
 
         const searchQuery = ref<string>()
+
+        const projectionOptions = [
+            { value: 'description', label: 'Description' },
+            { value: 'heirarchy', label: 'Heirarchy' },
+            { value: 'owners', label: 'Owners' },
+            { value: 'rows', label: 'Rows' },
+            { value: 'popularity', label: 'Popularity' },
+            { value: 'classifications', label: 'Classifications' },
+        ]
+        const projection = ref(['heirarchy', 'description'])
 
         onMounted(() => {
             if (termName.value) fetchLinkedAssets(termName.value)
@@ -99,6 +115,8 @@ export default defineComponent({
             assetCount,
             searchQuery,
             onSearch,
+            projectionOptions,
+            projection,
         }
     },
 })

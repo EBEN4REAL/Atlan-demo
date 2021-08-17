@@ -58,7 +58,7 @@
                     </a-collapse-panel>
                 </a-collapse>
             </a-tab-pane>
-            <a-tab-pane key="linkedAssets" tab="Linked Assets"> 
+            <a-tab-pane v-if="entity.typeName === 'AtlasGlossaryTerm'" key="linkedAssets" tab="Linked Assets"> 
                 <LinkedAssets :termQualifiedName="entity.attributes.qualifiedName" />
             </a-tab-pane>
             <a-tab-pane key="activity" tab="Activity"> 

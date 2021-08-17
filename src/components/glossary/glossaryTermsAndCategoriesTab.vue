@@ -1,12 +1,28 @@
 <template>
     <div class="px-6">
         <div class="mb-4">
+            <div class="flex space-x-2">
             <a-input-search
                 v-model:value="searchQuery"
                 :placeholder="`Search ${all.length} assets...`"
-                class="w-80"
                 @change="onSearch"
             ></a-input-search>
+            <a-popover title="Customise" trigger="click">
+                <template #content>
+                    <div class="w-32">
+                        <a-checkbox-group
+                            v-model:value="projection"
+                            name="checkboxgroup"
+                            :options="projectionOptions"
+                        />
+                    </div>
+                </template>
+                <a-button class="p-2 flex align-middle">
+                    <fa icon="fal ellipsis-v" />
+                </a-button>
+            </a-popover>
+            </div>
+
             <div class="my-2">
                 <GtcFilters />
             </div>
@@ -22,6 +38,7 @@
                             <GtcEntityCard
                                 :class="{ 'hover:bg-gray-100': true }"
                                 :entity="asset"
+                                :projection="projection"
                                 @gtcCardClicked="onEntitySelect"
                             />
                         </div>
@@ -31,6 +48,7 @@
                             <GtcEntityCard
                                 :class="{ 'hover:bg-gray-100': true }"
                                 :entity="asset"
+                                :projection="projection"
                                 @gtcCardClicked="onEntitySelect"
                             />
                         </div>
@@ -43,6 +61,7 @@
                             <GtcEntityCard
                                 :class="{ 'hover:bg-gray-100': true }"
                                 :entity="asset"
+                                :projection="projection"
                                 @gtcCardClicked="onEntitySelect"
                             />
                         </div>
@@ -95,6 +114,17 @@ export default defineComponent({
 
         const selectedEntity = ref<Category | Term>()
 
+        const projectionOptions = [
+            { value: 'description', label: 'Description' },
+            { value: 'owners', label: 'Owners' },
+            // { value: 'heirarchy', label: 'Heirarchy' },
+            // { value: 'rows', label: 'Rows' },
+            // { value: 'popularity', label: 'Popularity' },
+            // { value: 'classifications', label: 'Classifications' },
+        ]
+        const projection = ref(['heirarchy', 'description'])
+
+
         const onEntitySelect = (entity: Category | Term) => {
             selectedEntity.value = entity
         }
@@ -137,6 +167,8 @@ export default defineComponent({
             loadMore,
             selectedEntity,
             isLoading,
+            projectionOptions,
+            projection,
         }
     },
 })

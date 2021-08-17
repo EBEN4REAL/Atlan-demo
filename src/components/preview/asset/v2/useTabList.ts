@@ -26,14 +26,14 @@ export default function useAssetDetailsTabList() {
             name: 'Relations',
             component: 'relations',
         },
-        {
-            name: 'Chat',
-            component: 'chat',
-        },
-        {
-            name: 'Actions',
-            component: 'actions',
-        },
+        // {
+        //     name: 'Chat',
+        //     component: 'chat',
+        // },
+        // {
+        //     name: 'Actions',
+        //     component: 'actions',
+        // },
         {
             name: 'Lineage',
             component: 'lineage',

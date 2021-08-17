@@ -7,6 +7,9 @@
                 class="w-80"
                 @change="onSearch"
             ></a-input-search>
+            <div class="my-2">
+                <GtcFilters />
+            </div>
         </div>
         <div v-if="isLoading && !all.length">
             <LoadingView />
@@ -68,11 +71,12 @@ import { useDebounceFn } from '@vueuse/core'
 import LoadingView from '@common/loaders/page.vue'
 import EmptyView from '@common/empty/discover.vue';
 import GtcEntityCard from './gtcEntityCard.vue'
+import GtcFilters from "./common/gtcFilters.vue";
 
 import useGtcSearch from '~/composables/glossary/useGtcSearch'
 
 export default defineComponent({
-    components: { GtcEntityCard, EmptyView, LoadingView },
+    components: { GtcEntityCard, EmptyView, LoadingView, GtcFilters },
     props: {
         qualifiedName: {
             type: String,

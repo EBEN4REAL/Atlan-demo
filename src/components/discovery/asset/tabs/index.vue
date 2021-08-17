@@ -1,6 +1,7 @@
 <template>
     <div class="w-full">
         <a-tabs
+            :key="showTabs"
             v-model:activeKey="assetType"
             class="w-full mt-3"
             :class="$style.assetbar"
@@ -28,7 +29,7 @@
 </template>
 
 <script lang="ts">
-    import { computed, defineComponent, Ref, ref, watch } from 'vue'
+    import { computed, defineComponent, Ref, ref, toRefs, watch } from 'vue'
     import { getCountString } from '~/composables/asset/useFormat'
 
     export default defineComponent({
@@ -72,44 +73,13 @@
         },
         emits: ['refresh', 'update:modelValue'],
         setup(props, { emit }) {
+            const { assetTypeMap } = toRefs(props)
             const assetType = ref(props.modelValue)
+            const showTabs = ref(Date.now())
 
             const handleChange = () => {
                 emit('update:modelValue', assetType.value)
             }
-
-            const testMapping = [
-                {
-                    id: 'Table',
-                    label: 'Table',
-                    heirarchy: ['Database', 'Schema'],
-                    attribute: 'tableQualifiedName',
-                },
-                {
-                    id: 'Column',
-                    label: 'Column',
-                    heirarchy: ['Database', 'Schema', 'Table'],
-                    attribute: 'columnQualifiedName',
-                },
-                {
-                    id: 'View',
-                    label: 'View',
-                    heirarchy: ['Database', 'Schema'],
-                    attribute: 'viewQualifiedName',
-                },
-                {
-                    id: 'Database',
-                    label: 'Database',
-                    heirarchy: [],
-                    attribute: 'databaseQualifiedName',
-                },
-                {
-                    id: 'Schema',
-                    label: 'Schema',
-                    heirarchy: [],
-                    attribute: 'schemaQualifiedName',
-                },
-            ]
 
             watch(
                 () => props.assetTypeList,
@@ -126,6 +96,10 @@
                     immediate: true,
                 }
             )
+
+            watch(assetTypeMap, () => {
+                showTabs.value = Date.now()
+            })
 
             // const filteredList = computed(() => {
             //   let foundConnections: ConnectionType[] = [];
@@ -188,6 +162,7 @@
             //   assetType.value = props.defaultAssetType;
             // }
             return {
+                showTabs,
                 assetType,
                 handleChange,
                 getCountString,

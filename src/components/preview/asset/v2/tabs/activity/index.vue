@@ -1,5 +1,5 @@
 <template>
-    <div class="flex justify-between p-2 mb-2">
+    <div class="flex justify-between px-2 py-3 mb-8 border-b border-gray-300">
         <span class="text-">Activity Logs</span>
         <fa icon="fal sync" class="cursor-pointer" @click="refreshAudits"></fa>
     </div>
@@ -38,7 +38,7 @@
         </a-timeline>
         <div
             v-if="!checkAuditsCount && !isAllLogsFetched"
-            class="block mt-8 mb-2 text-center"
+            class="block my-8 text-center"
         >
             <a-button @click="fetchMore">Show more logs</a-button>
         </div>
@@ -144,6 +144,7 @@
 <style lang="less" scoped>
     .ant-timeline-item {
         margin-bottom: 0 !important;
+        padding-bottom: 40px !important;
     }
     .ant-timeline-item-dot {
         width: 13px;
@@ -158,13 +159,7 @@
         margin-bottom: 0 !important;
         height: 28px !important;
     }
-    .pill {
-        background-color: #f3f3f3;
-        &:hover {
-            background-color: #5277d7;
-            color: white;
-        }
-    }
+
     :global(.ant-collapse-content-box) {
         padding: 0 !important;
     }

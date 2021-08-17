@@ -1,7 +1,7 @@
 <template>
     <span
         >Say 👋 Hello, to the newly added
-        {{ data.value.length > 1 ? 'Experts' : 'Expert' }}</span
+        <b>{{ data.value.length > 1 ? 'Experts' : 'Expert' }}</b></span
     >
     <ul v-for="(user, index) in data.value" :key="index" class="my-1">
         <li class="flex items-center">

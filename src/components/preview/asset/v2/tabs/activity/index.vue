@@ -1,6 +1,6 @@
 <template>
     <div class="flex justify-between px-2 py-3 mb-8 border-b border-gray-300">
-        <span class="text-">Activity Logs</span>
+        <span class="font-bold">Activity Logs</span>
         <fa icon="fal sync" class="cursor-pointer" @click="refreshAudits"></fa>
     </div>
     <div

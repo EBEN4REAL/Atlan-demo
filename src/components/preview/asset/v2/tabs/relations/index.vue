@@ -1,24 +1,27 @@
 <template>
+    <!-- preloader -->
     <div
         v-if="loading"
-        class="flex items-center justify-center mt-4 text-sm leading-none"
+        class="flex items-center justify-center px-5 mt-4 text-base"
     >
         <a-spin size="small" class="mr-2 leading-none"></a-spin
         ><span>Getting relations</span>
     </div>
-    <div class="flex items-center justify-between">
+    <!-- preloader ends here -->
+    <div class="flex items-center justify-between px-5 text-base">
+        <!-- searchbar -->
         <a-input
             v-model:value="queryText"
             placeholder="Search for assets"
             size="default"
             class="my-3"
-            @change="handleSearchChange"
         >
             <template #prefix>
                 <Fa icon="fal search" class="mr-2 text-gray-500" />
             </template>
         </a-input>
-        <a-popover title="Show/hide" trigger="click">
+        <!-- filters -->
+        <a-popover title="Show/hide" trigger="click" placement="bottomRight">
             <template #content>
                 <a-checkbox-group
                     v-model:value="checkedList"
@@ -26,22 +29,27 @@
                     class="flex flex-col"
                 />
             </template>
+            <!-- TODO: replace this icon with appropriate icon -->
             <Fa icon="fal cog" class="ml-2 text-gray-500 cursor-pointer" />
         </a-popover>
     </div>
+    <!-- accordions for different asset type -->
     <a-collapse
         :bordered="false"
         expand-icon-position="right"
         :accordion="true"
-        class="p-0 m-0 bg-transparent"
+        class="m-0 bg-transparent"
+        :class="$style.filter"
     >
+        <!-- each panel is a asset type -->
         <a-collapse-panel
             v-for="item in filteredRelationshipAssets"
             :key="item.displayText"
             class="bg-transparent"
         >
             <template #header>
-                <div class="flex items-center">
+                <div class="flex items-center px-5 py-4">
+                    <!-- first letter to be uppercase -->
                     <p class="my-0 font-bold">
                         {{ item.displayText.charAt(0).toUpperCase()
                         }}{{ item.displayText.slice(1) }}
@@ -54,6 +62,7 @@
                     </div>
                 </div>
             </template>
+            <!-- accordion on expand  -->
             <AssetTypeItems
                 :projections="checkedList"
                 :assetType="item.displayText"
@@ -97,6 +106,7 @@
 
             const checkedList = ref(['description'])
             const { selectedAsset } = toRefs(props)
+            // TODO: define these flter types in constant folder
             const plainOptions = ['description', 'owners', 'business terms']
 
             const fetchData = () => {
@@ -110,9 +120,7 @@
                 loading.value = false
             }
 
-            const handleSearchChange = () => {
-                console.log('changed')
-            }
+            // filter required data
             const filteredRelationshipAssets = computed(() => {
                 return relationshipAssets.value.filter((el) => {
                     return (
@@ -123,7 +131,6 @@
                 })
             })
             watch(selectedAsset, fetchData, { immediate: true })
-            // filter required data
 
             onMounted(fetchData)
             return {
@@ -132,7 +139,6 @@
                 filteredRelationshipAssets,
                 assetId,
                 queryText,
-                handleSearchChange,
                 plainOptions,
                 checkedList,
             }
@@ -140,4 +146,19 @@
     })
 </script>
 
-<style lang="less" scoped></style>
+<style lang="less" module>
+    .filter {
+        :global(.ant-collapse-content-box) {
+            padding-right: 0px !important;
+            padding-left: 0px !important;
+            padding-top: 0px !important;
+            padding-bottom: 0px !important;
+        }
+        :global(.ant-collapse-header) {
+            padding-right: 0px !important;
+            padding-left: 0px !important;
+            padding-top: 0px !important;
+            padding-bottom: 0px !important;
+        }
+    }
+</style>

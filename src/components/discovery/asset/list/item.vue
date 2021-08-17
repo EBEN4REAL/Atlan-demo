@@ -1,3 +1,4 @@
+<!-- TODO: remove hardcoded prop classes and make component generic -->
 <template>
     <div
         class="flex justify-between border-b border-gray-300 text-gray"
@@ -8,7 +9,11 @@
             class="self-stretch"
             :class="isSelected ? 'w-1 bg-primary mr-4' : 'w-5'"
         ></div>
-        <div class="flex items-start flex-1 py-6 pr-5 w-96">
+        <!-- remove cssClasses prop -->
+        <div
+            class="flex items-start flex-1 pr-5 w-96"
+            :class="cssClasses?.paddingY ? cssClasses?.paddingY : 'py-6'"
+        >
             <div
                 class="box-border flex flex-col flex-1 overflow-hidden lg:pr-16"
             >
@@ -18,23 +23,15 @@
                         :is="item.typeName"
                         class="flex-none w-auto h-5 mr-2"
                     ></component>
+                    <!-- remove cssClasses prop -->
                     <router-link
-                        :to="`/assets/${item.guid}/overview`"
-                        class="
-                            flex-shrink
-                            mb-0
-                            overflow-hidden
-                            text-lg
-                            font-bold
-                            leading-6
-                            tracking-wide
-                            truncate
-                            cursor-pointer
-                            text-gray
-                            hover:underline
-                            overflow-ellipsis
-                            whitespace-nowrap
+                        :class="
+                            cssClasses?.textSize
+                                ? cssClasses?.textSize
+                                : 'text-lg'
                         "
+                        :to="`/assets/${item.guid}/overview`"
+                        class="flex-shrink mb-0 overflow-hidden font-bold leading-6 tracking-wide truncate cursor-pointer  text-gray hover:underline overflow-ellipsis whitespace-nowrap"
                     >
                         {{ title(item) }}
                     </router-link>
@@ -97,14 +94,7 @@
                             projection?.includes('owners') &&
                             getCombinedUsersAndGroups(item).length
                         "
-                        class="
-                            flex
-                            items-baseline
-                            mr-4
-                            text-xs
-                            leading-5
-                            text-gray
-                        "
+                        class="flex items-baseline mr-4 text-xs leading-5  text-gray"
                     >
                         <span
                             class="mr-1"
@@ -212,6 +202,11 @@
                 type: Boolean,
                 required: false,
                 default: () => false,
+            },
+            cssClasses: {
+                type: String,
+                required: false,
+                default: () => '',
             },
         },
         setup(props) {

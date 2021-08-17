@@ -1,16 +1,21 @@
 <template>
+    <!-- preloader -->
     <div
         v-if="!isReady"
         class="flex items-center justify-center mt-4 text-sm leading-none"
     >
         <a-spin size="small" class="mr-2 leading-none"></a-spin>
     </div>
+    <!-- preloader ends here -->
+
+    <!-- related asset list with assetTpe type  -->
     <VirtualList v-else :data="list.entities" :data-key="keyField">
         <template #default="{ item }">
             <ListItem
                 :item="item"
                 :projection="projections"
                 class="w-full p-0 m-0 border-b"
+                :cssClasses="cssClasses"
             ></ListItem>
         </template>
     </VirtualList>
@@ -32,6 +37,7 @@
         setup(props) {
             const { assetId,assetType,projections } = toRefs(props)
 
+            // gets the list of related assets for the ListItem component
             const { list, isReady, error } = useBiRelations(
                 props.assetId,
                 props.assetType
@@ -42,6 +48,10 @@
                 list,
                 isReady,
                 projections,
+                cssClasses:{
+                    textSize:'text-sm',
+                    paddingY:'py-3'
+                }
             }
         },
     })

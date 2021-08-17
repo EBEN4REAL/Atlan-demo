@@ -19,7 +19,7 @@ export default function useEntityRelationships(guid) {
                     if (element.length !== 0)
                         relationshipAssets.value.push({
                             displayText: el,
-                            length: element.length,
+                            length: element.length || 1,
                         })
                 }
             )

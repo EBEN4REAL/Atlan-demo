@@ -1,4 +1,5 @@
 <template>
+    <!-- {{ checkedList }} -->
     <div
         v-if="loading"
         class="flex items-center justify-center mt-4 text-sm leading-none"
@@ -6,7 +7,29 @@
         <a-spin size="small" class="mr-2 leading-none"></a-spin
         ><span>Getting relations</span>
     </div>
-
+    <div class="flex items-center justify-between">
+        <a-input
+            v-model:value="queryText"
+            placeholder="Search for assets"
+            size="default"
+            class="my-3"
+            @change="handleSearchChange"
+        >
+            <template #prefix>
+                <Fa icon="fal cog" class="mr-2 text-gray-500" />
+            </template>
+        </a-input>
+        <a-popover title="Show/hide" trigger="click">
+            <template #content>
+                <a-checkbox-group
+                    v-model:value="checkedList"
+                    :options="plainOptions"
+                    class="flex flex-col"
+                />
+            </template>
+            <Fa icon="fal plus" class="ml-2 text-gray-500 cursor-pointer" />
+        </a-popover>
+    </div>
     <a-collapse
         :bordered="false"
         expand-icon-position="right"
@@ -14,7 +37,7 @@
         class="p-0 m-0 bg-transparent"
     >
         <a-collapse-panel
-            v-for="item in relationshipAssets"
+            v-for="item in filteredRelationshipAssets"
             :key="item.displayText"
             class="bg-transparent"
         >
@@ -32,7 +55,11 @@
                     </div>
                 </div>
             </template>
-            <AssetTypeItems :assetType="item.displayText" :assetId="assetId" />
+            <AssetTypeItems
+                :projections="checkedList"
+                :assetType="item.displayText"
+                :assetId="assetId"
+            />
         </a-collapse-panel>
     </a-collapse>
 </template>
@@ -44,6 +71,7 @@
         watch,
         ref,
         onMounted,
+        computed,
         toRefs,
     } from 'vue'
     import { assetInterface } from '~/types/assets/asset.interface'
@@ -66,7 +94,11 @@
             const relationshipAssets = ref([])
             const loading = ref(false)
             const assetId = ref('')
+            const queryText = ref('')
+
+            const checkedList = ref(['description'])
             const { selectedAsset } = toRefs(props)
+            const plainOptions = ['description', 'owners', 'business terms']
 
             const fetchData = () => {
                 const { relationshipAssetTypes, isLoading } =
@@ -76,6 +108,18 @@
                 assetId.value = selectedAsset.value.guid
             }
 
+            const handleSearchChange = () => {
+                console.log('changed')
+            }
+            const filteredRelationshipAssets = computed(() => {
+                return relationshipAssets.value.filter((el) => {
+                    return (
+                        el.displayText
+                            .toLowerCase()
+                            .indexOf(queryText.value.toLowerCase()) !== -1
+                    )
+                })
+            })
             watch(selectedAsset, fetchData, { immediate: true })
             // filter required data
 
@@ -83,7 +127,12 @@
             return {
                 relationshipAssets,
                 loading,
+                filteredRelationshipAssets,
                 assetId,
+                queryText,
+                handleSearchChange,
+                plainOptions,
+                checkedList,
             }
         },
     })

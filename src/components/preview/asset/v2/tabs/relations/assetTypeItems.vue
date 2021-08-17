@@ -1,4 +1,5 @@
 <template>
+    <!-- {{ projection }} -->
     <div
         v-if="!isReady"
         class="flex items-center justify-center mt-4 text-sm leading-none"
@@ -17,7 +18,7 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent } from 'vue'
+    import { defineComponent,ref,watch,toRefs } from 'vue'
     import ListItem from '@/discovery/asset/list/item.vue'
     import useBiRelations from '~/composables/asset/useBiRelations'
     import VirtualList from '~/lib/virtualList.vue'
@@ -27,19 +28,23 @@
         props: {
             assetType: String,
             assetId: String,
+            projections: Array<string>
         },
         setup(props) {
+            const projection=ref([])
+            const { assetId,assetType,projections } = toRefs(props)
+
             const { list, isReady, error } = useBiRelations(
                 props.assetId,
                 props.assetType
             )
 
-            console.log(list)
+            console.log(props)
             return {
                 assetType: props.assetType,
                 list,
                 isReady,
-                projection: ['description', 'owners'],
+                projection:props.projections,
             }
         },
     })

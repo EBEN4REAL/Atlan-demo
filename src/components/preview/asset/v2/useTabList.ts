@@ -23,6 +23,10 @@ export default function useAssetDetailsTabList() {
             component: 'activity',
         },
         {
+            name: 'Relations',
+            component: 'relations',
+        },
+        {
             name: 'Chat',
             component: 'chat',
         },

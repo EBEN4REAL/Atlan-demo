@@ -1,7 +1,7 @@
 import { ref, Ref, computed, watch} from "vue";
 import { useAPI } from "~/api/useAPI"
 
-import { GET_TERM_LINKED_ASSETS } from "~/api/keyMaps/glossary"
+import { GTC_SEARCH } from "~/api/keyMaps/glossary"
 
 import { projection } from "~/api/atlas/utils";
 import { BaseAttributes, BasicSearchAttributes } from '~/constant/projection';
@@ -77,7 +77,7 @@ export default function useGtcSearch(qualifiedName: Ref<string>) {
 
     const entities: Ref<(Category | Term)[]> = ref<(Category | Term)[]>([]) 
 
-    const { data: assets, error, isValidating: isLoading, mutate } = useAPI<any>(GET_TERM_LINKED_ASSETS, 'POST', {
+    const { data: assets, error, isValidating: isLoading, mutate } = useAPI<any>(GTC_SEARCH, 'POST', {
         cache: true,
         body,
         dependantFetchingKey: qualifiedName,

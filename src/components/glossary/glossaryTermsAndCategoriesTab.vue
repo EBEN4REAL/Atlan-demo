@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="px-6">
         <div class="mb-4">
             <a-input-search
                 v-model:value="searchQuery"
@@ -129,6 +129,7 @@ export default defineComponent({
             glossaryQualifiedName,
             searchQuery,
             all,
+            entities,
             terms,
             categories,
             onSearch,

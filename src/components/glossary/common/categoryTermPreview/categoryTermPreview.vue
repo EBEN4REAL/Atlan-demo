@@ -58,7 +58,9 @@
                     </a-collapse-panel>
                 </a-collapse>
             </a-tab-pane>
-            <a-tab-pane v-if="entity.typeName === 'AtlasGlossaryTerm'" key="linkedAssets" tab="Linked Assets"> Link Assets </a-tab-pane>
+            <a-tab-pane key="linkedAssets" tab="Linked Assets"> 
+                <LinkedAssets :termQualifiedName="entity.attributes.qualifiedName" />
+            </a-tab-pane>
             <a-tab-pane key="activity" tab="Activity"> 
                 <Activity :selectedAsset="entity" />
             </a-tab-pane>
@@ -71,7 +73,6 @@
 <script lang="ts">
 import { defineComponent, PropType, computed, ref, toRef } from 'vue'
 
-import GlossaryTopTerms from '@/glossary/common/glossaryTopTerms.vue'
 import Owners from '@/preview/asset/v2/tabs/info/assetDetails/owners.vue'
 import Experts from '@/preview/asset/v2/tabs/info/assetDetails/experts.vue'
 import Description from '@/preview/asset/v2/tabs/info/assetDetails/description.vue'
@@ -79,6 +80,7 @@ import Status from '@/preview/asset/v2/tabs/info/assetDetails/status.vue'
 import Activity from '@/preview/asset/v2//tabs/activity/index.vue';
 import Classifications from '@/preview/asset/v2/tabs/info/governance/classifications.vue'
 import RelatedTerms from '@/glossary/termProfile/relatedTerms.vue';
+import LinkedAssets from './linkedAssets.vue';
 
 import { Category, Term } from '~/types/glossary/glossary.interface'
 import { Components } from '~/api/atlas/client'
@@ -88,7 +90,6 @@ import CategorySvg from "~/assets/images/gtc/category/category.png";
 
 export default defineComponent({
     components: {
-        GlossaryTopTerms,
         Owners,
         Description,
         Status,
@@ -96,6 +97,7 @@ export default defineComponent({
         Activity,
         Classifications,
         RelatedTerms,
+        LinkedAssets,
     },
     props: {
         entity: {

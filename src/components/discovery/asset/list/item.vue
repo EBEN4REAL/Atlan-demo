@@ -68,7 +68,7 @@
                     v-if="projection?.includes('description')"
                     class="max-w-lg mt-1 text-sm truncate-overflow"
                 >
-                    <span v-if="description(item).length">
+                    <span v-if="description(item)?.length">
                         {{ description(item) }}
                     </span>
                     <span v-else class="text-gray-500">No description</span>

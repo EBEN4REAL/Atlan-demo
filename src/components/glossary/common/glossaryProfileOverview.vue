@@ -26,12 +26,7 @@ export default defineComponent({
             type: Boolean,
             required: true,
             default: false,
-        },
-        showTermCount: {
-            type: Boolean,
-            required: true,
-            default: true,
-        },
+        }
     },
     setup(props) {
         const shortDescription = computed(

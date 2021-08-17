@@ -24,7 +24,7 @@ export default function useAssetInfo() {
     }
     const description = (asset: assetInterface) => {
         return (
-            attributes(asset).userDescription || attributes(asset).description
+            attributes(asset).userDescription || attributes(asset).description 
         )
     }
 

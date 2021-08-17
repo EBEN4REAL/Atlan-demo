@@ -1,5 +1,4 @@
 import { watch, ref, Ref,computed } from 'vue';
-import { Components } from "~/api/atlas/client";
 
 import { useAPI } from "~/api/useAPI"
 import { GET_GTC_ENTITY } from "~/api/keyMaps/glossary"
@@ -22,6 +21,22 @@ const useGTCEntity = <T extends Glossary | Category | Term>(type: 'glossary' | '
 
     const body = ref({});
 
+    const relatedTerms = [
+        'synonyms',
+        'antonyms',
+        'preferredTerms',
+        'preferredToTerms',
+        'replacementTerms',
+        'replacedBy',
+        'translationTerms',
+        'translatedTerms',
+        'isA',
+        'classifies',
+        'validValues',
+        'validValuesFor',
+        'seeAlso',
+    ];
+
     const getBody = () => ({
         typeName: keyMap[type],
         excludeDeletedEntities: false,
@@ -40,6 +55,8 @@ const useGTCEntity = <T extends Glossary | Category | Term>(type: 'glossary' | '
             "terms",
             "tenantId",
             "anchor",
+            "linkedAssets",
+            ...relatedTerms,
             ...BaseAttributes,
             ...BasicSearchAttributes
         ],

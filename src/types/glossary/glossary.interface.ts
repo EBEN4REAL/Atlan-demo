@@ -34,7 +34,20 @@ type CategoryAttributes = Omit<GlossaryAttributes, 'categories'> & {
     anchor: RelatedEntity;
 }
 type TermAttributes = Omit<GlossaryAttributes, 'terms'> & {
-    assignedEntities: RelatedEntity[];
+    synonyms?: RelatedEntity;
+    antonyms?: RelatedEntity;
+    preferredTerms?: RelatedEntity;
+    preferredToTerms?: RelatedEntity;
+    replacementTerms?: RelatedEntity;
+    replacedBy?: RelatedEntity;
+    translationTerms?: RelatedEntity;
+    translatedTerms?: RelatedEntity;
+    isA?: RelatedEntity;
+    classifies?: RelatedEntity;
+    validValues?: RelatedEntity;
+    validValuesFor?: RelatedEntity;
+    seeAlso?: RelatedEntity;
+    assignedEntities?: RelatedEntity[];
     anchor: RelatedEntity;
 }
 

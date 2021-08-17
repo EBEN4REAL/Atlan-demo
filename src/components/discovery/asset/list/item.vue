@@ -8,8 +8,10 @@
             class="self-stretch"
             :class="isSelected ? 'w-1 bg-primary mr-4' : 'w-5'"
         ></div>
-        <div class="flex items-start flex-grow py-6 pr-5">
-            <div class="box-border flex flex-col flex-1 pr-16 overflow-hidden">
+        <div class="flex items-start flex-1 py-6 pr-5 w-96">
+            <div
+                class="box-border flex flex-col flex-1 overflow-hidden lg:pr-16"
+            >
                 <!-- Title bar -->
                 <div class="flex items-center mb-0 overflow-hidden">
                     <component
@@ -18,7 +20,21 @@
                     ></component>
                     <router-link
                         :to="`/assets/${item.guid}/overview`"
-                        class="flex-shrink mb-0 overflow-hidden text-lg font-bold leading-6 tracking-wide truncate cursor-pointer  text-gray hover:underline overflow-ellipsis whitespace-nowrap"
+                        class="
+                            flex-shrink
+                            mb-0
+                            overflow-hidden
+                            text-lg
+                            font-bold
+                            leading-6
+                            tracking-wide
+                            truncate
+                            cursor-pointer
+                            text-gray
+                            hover:underline
+                            overflow-ellipsis
+                            whitespace-nowrap
+                        "
                     >
                         {{ title(item) }}
                     </router-link>
@@ -81,7 +97,14 @@
                             projection?.includes('owners') &&
                             getCombinedUsersAndGroups(item).length
                         "
-                        class="flex items-baseline mr-4 text-xs leading-5  text-gray"
+                        class="
+                            flex
+                            items-baseline
+                            mr-4
+                            text-xs
+                            leading-5
+                            text-gray
+                        "
                     >
                         <span
                             class="mr-1"

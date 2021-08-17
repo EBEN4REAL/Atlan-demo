@@ -25,7 +25,14 @@
                 <template #header>
                     <div
                         :key="item.id"
-                        class="flex justify-between text-sm font-bold select-none  header"
+                        class="
+                            flex
+                            justify-between
+                            text-sm
+                            font-bold
+                            select-none
+                            header
+                        "
                     >
                         {{ item.label }}
                     </div>
@@ -67,6 +74,7 @@
     import { assetInterface } from '~/types/assets/asset.interface'
 
     export default defineComponent({
+        name: 'InfoTab',
         props: {
             id: String,
             componentData: {
@@ -146,13 +154,13 @@
 <style lang="less" module>
     .filter {
         :global(.ant-collapse-item) {
-            @apply border-none;
+            @apply border-b;
+            @apply border-gray-300;
         }
 
         :global(.ant-collapse-header) {
             @apply px-5 !important;
             @apply py-4 !important;
-            @apply border-t;
         }
 
         :global(.ant-collapse-arrow) {

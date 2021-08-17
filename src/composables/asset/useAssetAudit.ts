@@ -116,16 +116,15 @@ const useAssetAudit = (params: any, guid: string) => {
         typeof parsedDetails === 'object'
             ? parsedDetails?.typeName ?? ''
             : typeof parsedDetails === 'string'
-            ? parsedDetails
-            : ''
+                ? parsedDetails
+                : ''
 
     const filterTermTypeNameDisplayName = (parsedDetails: any) =>
         parsedDetails?.name ?? ''
 
     const getEntityUpdateLogs = (logs: any) => {
         const data = {
-            displayValue: 'Asset updated',
-            moreinfo: false,
+            displayValue: 'Asset was updated',
             value: [],
         }
         console.log(logs)
@@ -141,8 +140,7 @@ const useAssetAudit = (params: any, guid: string) => {
                     data.displayValue = 'Removed all owners'
                     return data
                 }
-                data.displayValue = 'Owner details updated'
-                data.moreinfo = true
+                data.displayValue = 'owners'
                 data.value = users
                 return data
             }
@@ -152,24 +150,23 @@ const useAssetAudit = (params: any, guid: string) => {
                     data.displayValue = 'Removed all experts'
                     return data
                 }
-                data.displayValue = 'Experts details updated'
-                data.moreinfo = true
+                data.displayValue = 'experts'
                 data.value = users
                 return data
             }
 
             if (status) {
-                let value = attributes.assetStatus
-                let status = statusList.find((status) => status.id === value)
-                data.displayValue = `<b>Status</b> changed to <b>${
-                    status!.label
-                }</b>`
+                const value = attributes.assetStatus
+                const newStatus = statusList.find((stat) => stat.id === value)
+                data.displayValue = "status"
+                data.value = newStatus
                 return data
             }
 
             if (userDescription) {
                 const value = attributes.userDescription
-                data.displayValue = '<b>Description</b> updated'
+                data.value = value
+                data.displayValue = "description"
                 return data
             }
         }
@@ -182,7 +179,6 @@ const useAssetAudit = (params: any, guid: string) => {
             let parsedDetails: any = {}
             const data = {
                 displayValue: '',
-                moreinfo: false,
                 value: [],
             }
 
@@ -199,23 +195,32 @@ const useAssetAudit = (params: any, guid: string) => {
                             // This handles the case when classification is linked using Atlan Bot user
                             // In this case, classification object comes in details
                             parsedDetails = JSON.parse(eventDetail[1].trim())
+                            console.log("Classifications")
+
+                            console.log(eventDetail)
 
                             if (parsedDetails.typeName) {
-                                data.displayValue = `Classification <b>${filterClassificationTypeNameDisplayName(
+                                data.value = filterClassificationTypeNameDisplayName(
                                     parsedDetails
-                                )}</b> linked`
+                                )
+                                data.displayValue = "classificationAdded"
+
                                 return data
                             }
                             return null
                         } catch (error) {
-                            data.displayValue = `Classification <b>${eventDetail[1].trim()}</b> linked`
+                            data.value = eventDetail[1].trim()
+                            data.displayValue = "classificationAdded"
+
                             return data
                         }
                     case 'CLASSIFICATION_DELETE':
                         parsedDetails = eventDetail[1].trim()
-                        data.displayValue = `Classification <b>${filterClassificationTypeNameDisplayName(
+                        data.value = filterClassificationTypeNameDisplayName(
                             parsedDetails
-                        )}</b> unlinked`
+                        )
+                        data.displayValue = "classificationRemoved"
+
                         return data
                     case 'PROPAGATED_CLASSIFICATION_ADD':
                         parsedDetails = JSON.parse(eventDetail[1].trim())
@@ -241,9 +246,11 @@ const useAssetAudit = (params: any, guid: string) => {
                     case 'TERM_ADD':
                         try {
                             parsedDetails = JSON.parse(eventDetail[1].trim())
-                            data.displayValue = `Term <b>${filterTermTypeNameDisplayName(
+                            data.value = filterTermTypeNameDisplayName(
                                 parsedDetails
-                            )}</b> linked`
+                            )
+                            data.displayValue = "termAdded"
+
                             return data
                         } catch (error) {
                             return null
@@ -251,9 +258,11 @@ const useAssetAudit = (params: any, guid: string) => {
                     case 'TERM_DELETE':
                         try {
                             parsedDetails = JSON.parse(eventDetail[1].trim())
-                            data.displayValue = `Term <b>${filterTermTypeNameDisplayName(
+                            data.value = filterTermTypeNameDisplayName(
                                 parsedDetails
-                            )}</b> unlinked`
+                            )
+                            data.displayValue = "termRemoved"
+
                             return data
                         } catch (error) {
                             return null
@@ -276,7 +285,7 @@ const useAssetAudit = (params: any, guid: string) => {
 
     const getActionUser = (user: any) => {
         if (user.startsWith('service-account')) return 'using Atlan services'
-        return `by ${user}`
+        return `${user}`
     }
 
     fetchAudits(params, guid)

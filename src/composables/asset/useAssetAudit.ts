@@ -250,9 +250,11 @@ const useAssetAudit = (params: any, guid: string) => {
                     case 'TERM_ADD':
                         try {
                             parsedDetails = JSON.parse(eventDetail[1].trim())
-                            data.displayValue = `Term <b>${filterTermTypeNameDisplayName(
+                            data.value = filterTermTypeNameDisplayName(
                                 parsedDetails
-                            )}</b> linked`
+                            )
+                            data.displayValue = "termAdded"
+
                             return data
                         } catch (error) {
                             return null
@@ -260,9 +262,11 @@ const useAssetAudit = (params: any, guid: string) => {
                     case 'TERM_DELETE':
                         try {
                             parsedDetails = JSON.parse(eventDetail[1].trim())
-                            data.displayValue = `Term <b>${filterTermTypeNameDisplayName(
+                            data.value = filterTermTypeNameDisplayName(
                                 parsedDetails
-                            )}</b> unlinked`
+                            )
+                            data.displayValue = "termRemoved"
+
                             return data
                         } catch (error) {
                             return null

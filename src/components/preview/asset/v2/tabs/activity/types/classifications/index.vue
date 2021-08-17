@@ -10,8 +10,12 @@
             >
 
             <div>
-                <b>Terms </b
-                >{{ data.displayValue === 'termAdded' ? 'added' : 'removed' }}
+                <b>Classifications </b
+                >{{
+                    data.displayValue === 'classificationAdded'
+                        ? 'added'
+                        : 'removed'
+                }}
             </div>
             <div>
                 <span class="px-3 py-2 rounded-full pill">{{

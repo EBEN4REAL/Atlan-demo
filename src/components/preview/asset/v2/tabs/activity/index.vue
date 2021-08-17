@@ -20,15 +20,16 @@
                 </template>
                 <div>
                     <span v-if="getDetailsForEntityAuditEvent(log)">
-                        <span
+                        <!-- <span
                             v-html="
                                 getDetailsForEntityAuditEvent(log)?.displayValue
                             "
-                        ></span>
+                        ></span> -->
                         <span
                             v-if="
-                                getDetailsForEntityAuditEvent(log)
-                                    ?.displayValue === 'classificationAdded'
+                                getDetailsForEntityAuditEvent(
+                                    log
+                                )?.displayValue.includes('classification')
                             "
                         >
                             <a-collapse
@@ -43,7 +44,16 @@
                                         ></template
                                     >
 
-                                    <div><b>Classifications</b> added</div>
+                                    <div>
+                                        <b>Classsifications </b
+                                        >{{
+                                            getDetailsForEntityAuditEvent(log)
+                                                ?.displayValue ===
+                                            'classificationAdded'
+                                                ? 'added'
+                                                : 'removed'
+                                        }}
+                                    </div>
                                     <div>
                                         <span
                                             class="px-3 py-2 rounded-full pill"

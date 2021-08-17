@@ -15,7 +15,7 @@
             <LoadingView />
         </div>
         <div v-else-if="all.length" class="flex flex-row w-full">
-            <div class="w-full border-r">
+            <div class="w-full">
                 <a-tabs type="card" default-active-key="1" class="border-0">
                     <a-tab-pane key="1" :tab="`All (${all.length})`">
                         <div v-for="asset in all" :key="asset.guid">
@@ -65,7 +65,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, computed, ref, toRef } from 'vue'
+import { defineComponent, computed, ref, toRef, watch } from 'vue'
 import { useDebounceFn } from '@vueuse/core'
 
 import LoadingView from '@common/loaders/page.vue'
@@ -74,6 +74,8 @@ import GtcEntityCard from './gtcEntityCard.vue'
 import GtcFilters from "./common/gtcFilters.vue";
 
 import useGtcSearch from '~/composables/glossary/useGtcSearch'
+
+import { Category, Term } from '~/types/glossary/glossary.interface'
 
 export default defineComponent({
     components: { GtcEntityCard, EmptyView, LoadingView, GtcFilters },
@@ -84,15 +86,16 @@ export default defineComponent({
             default: '',
         },
     },
-    setup(props) {
+    emits: ['entityPreview'],
+    setup(props, context) {
         const glossaryQualifiedName = toRef(props, 'qualifiedName');
         const searchQuery = ref<string>()
 
         const { entities, error, isLoading, fetchAssetsPaginated } = useGtcSearch(glossaryQualifiedName)
 
-        const selectedEntity = ref()
+        const selectedEntity = ref<Category | Term>()
 
-        const onEntitySelect = (entity) => {
+        const onEntitySelect = (entity: Category | Term) => {
             selectedEntity.value = entity
         }
 
@@ -117,6 +120,10 @@ export default defineComponent({
         const loadMore = () => {
             fetchAssetsPaginated({})
         }
+
+        watch(selectedEntity, (newSelectedEntity) => {
+            context.emit('entityPreview', newSelectedEntity)
+        })
 
         return {
             glossaryQualifiedName,

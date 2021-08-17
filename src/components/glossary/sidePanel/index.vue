@@ -1,38 +1,86 @@
 <template>
-    <div class="sidePanel flex flex-col w-1/2 border-l min-h-full overflow-y-hide">
-        <a-tabs default-active-key="1" class="border-0">
-            <a-tab-pane key="info" tab="Info">
-                <a-collapse :bordered="false">
+    <div
+        class="
+            sidePanel
+            flex flex-col
+            w-1/2
+            border-l
+            min-h-full
+            overflow-y-hide
+        "
+        :class="$style.sidePanel"
+    >
+        <a-tabs default-active-key="1">
+            <a-tab-pane key="info" class="m-0 p-0" tab="Info">
+                <a-collapse :bordered="false" expand-icon-position="right">
+                    <template #expandIcon="{ isActive }">
+                        <fa v-if="isActive" icon="fas angle-up" />
+                        <fa v-else icon="fas angle-down" />
+                    </template>
                     <a-collapse-panel v-if="termCount" key="1" header="Details">
                         <div class="pl-6 flex flex-col">
                             <div class="flex flex-row space-x-16">
                                 <div class="flex flex-col">
-                                    <span class="mb-2 text-sm leading-5 text-gray-500"> Categories </span>
                                     <span
-                                        class="p-0 m-0 text-sm leading-5 text-gray-700"
+                                        class="
+                                            mb-2
+                                            text-sm
+                                            leading-5
+                                            text-gray-500
+                                        "
+                                    >
+                                        Categories
+                                    </span>
+                                    <span
+                                        class="
+                                            p-0
+                                            m-0
+                                            text-sm
+                                            leading-5
+                                            text-gray-700
+                                        "
                                         >{{ categoryCount }}
                                     </span>
                                 </div>
                                 <div class="flex flex-col">
-                                    <span class="mb-2 text-sm leading-5 text-gray-500"> Terms </span>
                                     <span
-                                        class="p-0 m-0 text-sm leading-5 text-gray-700"
+                                        class="
+                                            mb-2
+                                            text-sm
+                                            leading-5
+                                            text-gray-500
+                                        "
+                                    >
+                                        Terms
+                                    </span>
+                                    <span
+                                        class="
+                                            p-0
+                                            m-0
+                                            text-sm
+                                            leading-5
+                                            text-gray-700
+                                        "
                                         >{{ termCount }}
                                     </span>
                                 </div>
                             </div>
-                            <div class="flex flex-col mt-4">
-                                <Description v-if="entity.guid" :selectedAsset="entity" />
-                            </div>
-                            <div class="flex flex-col mt-4 min-w-full">
-                                <Owners v-if="entity.guid" :selectedAsset="entity" />
-                            </div>
-                            <div class="flex flex-col mt-4">
-                                <Experts v-if="entity.guid" :selectedAsset="entity" />
-                            </div>
-                            <div class="flex flex-col mt-4">
-                                <Status v-if="entity.guid" :selectedAsset="entity" />
-                            </div>
+                            <Description
+                                v-if="entity.guid"
+                                :selectedAsset="entity"
+                            />
+                            <Owners
+                                v-if="entity.guid"
+                                :selectedAsset="entity"
+                            />
+                            <Experts
+                                v-if="entity.guid"
+                                :selectedAsset="entity"
+                            />
+                            <Status
+                                v-if="entity.guid"
+                                :selectedAsset="entity"
+                            />
                         </div>
                     </a-collapse-panel>
                     <a-collapse-panel
@@ -49,7 +97,7 @@
                     </a-collapse-panel>
                 </a-collapse>
             </a-tab-pane>
-            <a-tab-pane key="activity" tab="Activity"> 
+            <a-tab-pane key="activity" tab="Activity">
                 <Activity :selectedAsset="entity" />
             </a-tab-pane>
             <a-tab-pane key="chat" tab="chat"> Chat </a-tab-pane>
@@ -65,7 +113,7 @@ import Owners from '@/preview/asset/v2/tabs/info/assetDetails/owners.vue'
 import Experts from '@/preview/asset/v2/tabs/info/assetDetails/experts.vue'
 import Description from '@/preview/asset/v2/tabs/info/assetDetails/description.vue'
 import Status from '@/preview/asset/v2/tabs/info/assetDetails/status.vue'
-import Activity from '@/preview/asset/v2//tabs/activity/index.vue';
+import Activity from '@/preview/asset/v2//tabs/activity/index.vue'
 
 import { Glossary, Category, Term } from '~/types/glossary/glossary.interface'
 import { Components } from '~/api/atlas/client'
@@ -77,7 +125,7 @@ export default defineComponent({
         Description,
         Status,
         Experts,
-        Activity
+        Activity,
     },
     props: {
         entity: {
@@ -112,25 +160,30 @@ export default defineComponent({
 })
 </script>
 <style lang="less" module>
-:global(.ant-collapse-content-box) {
-    @apply bg-transparent !important;
-}
-:global(.ant-collapse-header) {
-    @apply pl-8 font-bold text-sm text-gray-700 bg-white border-0 border-b-0 !important;
-}
-:global(.ant-collapse-borderless > .ant-collapse-item) {
-    @apply border-b-0 mt-4 !important;
-}
+.sidePanel {
+    :global(.ant-collapse-header) {
+        @apply pl-6 m-0 font-bold text-sm text-gray-700 bg-white !important;
+    }
+    :global(.ant-collapse-borderless > .ant-collapse-item) {
+        @apply border-b border-gray-300 py-4  mt-0 !important;
+    }
 
-:global(.ant-collapse) {
-    @apply bg-white !important;
-}
+    :global(.ant-collapse) {
+        @apply p-0 m-0 space-y-0 bg-white !important;
+    }
 
-:global(.ant-collapse-content) {
-    @apply mt-4 bg-white !important;
-}
-:global(.ant-collapse-content-box) {
-    @apply m-0 p-0 !important;
+    :global(.ant-collapse-content) {
+        @apply mt-4 bg-white !important;
+    }
+    :global(.ant-collapse-content-box) {
+        @apply m-0 p-0  bg-transparent !important;
+    }
+    :global(.ant-tabs-tabpane) {
+        @apply m-0 p-0  !important;
+    }
+    :global(.ant-tabs-bar){
+        @apply mb-0;
+    }
 }
 </style>
 <route lang="yaml">

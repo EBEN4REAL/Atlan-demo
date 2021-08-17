@@ -24,6 +24,7 @@ export default function updateDescription(selectedAsset: Ref<assetInterface>) {
                     userDescription: localDescription.value,
                     shortDescription: localDescription.value,
                     tenantId: selectedAsset.value.attributes?.tenantId,
+                    anchor: selectedAsset.value.attributes?.anchor
                 },
             },
         ],

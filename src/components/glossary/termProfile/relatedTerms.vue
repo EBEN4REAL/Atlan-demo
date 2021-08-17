@@ -1,19 +1,18 @@
 <template>
-    <div v-if="availableRelatedTerms?.length" class="py-6 w-full">
-        <h2 class="text-gray-700 text-xl leading-7 ml-6">Related Terms</h2>
+    <div v-if="availableRelatedTerms?.length" class="w-full">
 
-        <div class="max-h-80 pl-6 overflow-y-scroll flex flex-col text-left">
+        <div class="flex flex-col text-left">
             <div v-for="related in availableRelatedTerms" :key="related">
                 <h3 class="text-md leading-6">
                     {{ relatedTermDisplayNameMap[related] }}
                 </h3>
-                <div class="flex flex-row justify-start m-0 p-0">
+                <div  class="flex flex-row justify-start m-0 p-0">
                     <div
-                        v-for="relatedTerm in currentTerm[related]"
+                        v-for="relatedTerm in entity.attributes[related]"
                         :key="relatedTerm?.guid"
                         class="bg-blue-50 text-blue-700 px-2 mr-2 mb-4 leading-6"
                     >
-                        {{ relatedTerm.displayText }}
+                        {{ relatedTerm?.uniqueAttributes?.qualifiedName?.split('@')[0] }}
                     </div>
                     <div class="bg-blue-50 text-blue-700 px-2 mr-2 mb-4">
                         +
@@ -24,19 +23,23 @@
     </div>
 </template>
 <script lang="ts">
-import { defineComponent, computed, onMounted, watch, ref } from 'vue'
+import { defineComponent, computed,PropType, onMounted, watch, ref } from 'vue'
 
+import { Term } from '~/types/glossary/glossary.interface'
 import { Components } from '~/api/atlas/client'
 
-interface PropsType {
-    term: Components.Schemas.AtlasGlossaryTerm
-}
+
 
 export default defineComponent({
     components: {},
-    props: ['term'],
-    setup(props: PropsType) {
-        const currentTerm = computed(() => props.term)
+    props: {
+                entity: {
+            type: Object as PropType<Term>,
+            required: true,
+            default: () => ({}),
+        },
+    },
+    setup(props) {
         const list = [
             'synonyms',
             'antonyms',
@@ -70,13 +73,12 @@ export default defineComponent({
         }
 
         const availableRelatedTerms = computed(() => {
-            return Object.keys(currentTerm.value).filter((key) =>
+            return Object.keys(props.entity.attributes).filter((key) =>
                 list.find((item) => item === key) 
             ) ?? []
         })
 
         return {
-            currentTerm,
             availableRelatedTerms,
             relatedTermDisplayNameMap,
         }

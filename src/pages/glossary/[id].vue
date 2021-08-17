@@ -3,8 +3,8 @@
         <LoadingView />
     </div>
     <div v-else class="flex flex-row">
-        <div class="px-12 pr-0">
-            <div class="flex flex-row justify-between mt-6 mb-5">
+        <div :class="currentTab === '1' || (currentTab === '2' && previewEntity) ? 'w-2/3' : 'w-full'">
+            <div class="flex flex-row justify-between px-8 mt-6 mb-5">
                 <div class="flex flex-row">
                     <div class="mr-5">
                         <img :src="GlossarySvg" />
@@ -38,12 +38,11 @@
                 </div>
             </div>
             <div class="flex flex-row">
-                <a-tabs default-active-key="1" class="border-0">
+                <a-tabs v-model:activeKey="currentTab" default-active-key="1" class="border-0">
                     <a-tab-pane key="1" tab="Overview">
-                        <div class="flex flex-row m-0 p-0">
+                        <div class="flex flex-row m-0 px-8">
                             <GlossaryProfileOverview :entity="glossary" />
                         </div>
-                        <hr />
                         <GlossaryContinueSettingUp
                             v-if="!isLoading"
                             :terms="glossaryTerms"
@@ -57,9 +56,9 @@
                     <a-tab-pane key="2" tab="Terms & Categories">
                         <GlossaryTermsAndCategoriesTab
                             :qualified-name="qualifiedName"
+                            @entityPreview="handleCategoryOrTermPreview"
                         />
                     </a-tab-pane>
-                    <a-tab-pane key="3" tab="Activity"> Activity </a-tab-pane>
                     <a-tab-pane key="4" tab="Bots"> Bots </a-tab-pane>
                     <a-tab-pane key="5" tab="Permissions">
                         Permissions
@@ -67,12 +66,13 @@
                 </a-tabs>
             </div>
         </div>
-        <SidePanel :entity="glossary" :topTerms="glossaryTerms" />
+        <SidePanel v-if="currentTab === '1'" :entity="glossary" :topTerms="glossaryTerms" />
+        <CategoryTermPreview v-if="currentTab === '2' && previewEntity" :entity="previewEntity"  />
     </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, computed, watch, onMounted, toRef } from 'vue'
+import { defineComponent, computed, watch, onMounted, toRef, ref } from 'vue'
 
 import GlossaryTermsAndCategoriesTab from '@/glossary/glossaryTermsAndCategoriesTab.vue'
 import LoadingView from '@common/loaders/page.vue'
@@ -80,12 +80,13 @@ import GlossaryProfileOverview from '@/glossary/common/glossaryProfileOverview.v
 import GlossaryContinueSettingUp from '@/glossary/continueSettingUp/glossaryContinueSettingUp.vue'
 import EntityHistory from '@/glossary/common/entityHistory.vue'
 import SidePanel from '@/glossary/sidePanel/index.vue'
+import CategoryTermPreview from '@/glossary/common/categoryTermPreview/categoryTermPreview.vue'
 
 import useGTCEntity from '~/composables/glossary/useGtcEntity'
 import useGlossaryTerms from '~/composables/glossary/useGlossaryTerms'
 import useGlossaryCategories from '~/composables/glossary/useGlossaryCategories'
 
-import { Glossary } from '~/types/glossary/glossary.interface'
+import { Glossary, Category, Term } from '~/types/glossary/glossary.interface'
 
 import GlossarySvg from '~/assets/images/gtc/glossary/glossary.png'
 
@@ -97,6 +98,7 @@ export default defineComponent({
         EntityHistory,
         LoadingView,
         SidePanel,
+        CategoryTermPreview,
     },
     props: {
         id: {
@@ -107,6 +109,8 @@ export default defineComponent({
     },
     setup(props) {
         const guid = toRef(props, 'id')
+        const currentTab = ref('1');
+        const previewEntity = ref<Category | Term | undefined>();
 
         const {
             entity: glossary,
@@ -170,6 +174,10 @@ export default defineComponent({
             } else if (type === 'term') {
                 fetchGlossaryTermsPaginated({ limit: 5 })
             }
+        };
+
+        const handleCategoryOrTermPreview = (entity: Category | Term) => {
+            previewEntity.value = entity;
         }
 
         return {
@@ -184,8 +192,11 @@ export default defineComponent({
             glossaryTerms,
             glossaryCategories,
             qualifiedName,
+            currentTab,
+            previewEntity,
             refreshCategoryTermList,
             fetchNextCategoryOrTermList,
+            handleCategoryOrTermPreview,
         }
     },
 })

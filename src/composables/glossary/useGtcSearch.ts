@@ -15,7 +15,24 @@ export default function useGtcSearch(qualifiedName: Ref<string>) {
     const defaultLimit = 10;
     const limitLocal = ref<number>(defaultLimit);
 
-    const body = ref();;
+    const body = ref();
+
+    const relatedTerms = [
+        'synonyms',
+        'antonyms',
+        'preferredTerms',
+        'preferredToTerms',
+        'replacementTerms',
+        'replacedBy',
+        'translationTerms',
+        'translatedTerms',
+        'isA',
+        'classifies',
+        'validValues',
+        'validValuesFor',
+        'seeAlso',
+    ];
+
     const refreshBody = () => {
         body.value = {
             typeName: "AtlasGlossaryTerm,AtlasGlossaryCategory",
@@ -33,6 +50,8 @@ export default function useGtcSearch(qualifiedName: Ref<string>) {
                 "parentCategory",
                 "categories",
                 "pageviewCount",
+                "anchor",
+                ...relatedTerms,
                 ...BaseAttributes,
                 ...BasicSearchAttributes
             ],

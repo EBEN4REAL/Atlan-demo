@@ -5,7 +5,7 @@
             missingDescription.length ||
             missingLinkedAssets.length
         "
-        class="my-8"
+        class="my-8 px-8"
     >
         <h2 class="text-xl leading-7">Coninue Setting up GLossary</h2>
         <a-tabs default-active-key="2" class="border-0">

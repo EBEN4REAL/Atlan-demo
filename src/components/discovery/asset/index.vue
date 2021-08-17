@@ -47,16 +47,7 @@
                         </template>
                         <div
                             tabindex="0"
-                            class="
-                                flex
-                                items-center
-                                px-2
-                                py-1
-                                transition-shadow
-                                border border-gray-300
-                                rounded
-                                hover:border-gray-300
-                            "
+                            class="flex items-center px-2 py-1 transition-shadow border border-gray-300 rounded  hover:border-gray-300"
                             @keyup.enter="isFilterVisible = !isFilterVisible"
                         >
                             <span>Options</span>
@@ -95,7 +86,7 @@
                     :is-loading="isLoading || isValidating"
                     @preview="handlePreview"
                 ></AssetList>
-                <div class="flex w-full px-3 py-1">
+                <div class="flex w-full px-3 py-1 bg-gray-light h-7">
                     <div class="flex items-center justify-between w-full">
                         <div
                             v-if="isLoading || isValidating"
@@ -105,7 +96,9 @@
                                 size="small"
                                 class="mr-2 leading-none"
                             ></a-spin
-                            ><span>searching results</span>
+                            ><span class="text-sm font-bold text-gray-700"
+                                >searching results</span
+                            >
                         </div>
                         <AssetPagination
                             v-else
@@ -116,7 +109,7 @@
 
                         <div
                             v-if="isLoadMore && (!isLoading || !isValidating)"
-                            class="text-sm cursor-pointer text-primary"
+                            class="text-sm font-bold cursor-pointer  text-primary"
                             @click="loadMore"
                         >
                             load more...
@@ -520,6 +513,8 @@
                 if (list.value.length > 0) {
                     console.log(list.value[0], 'firstItem')
                     handlePreview(list.value[0])
+                } else {
+                    handlePreview(undefined)
                 }
             })
 

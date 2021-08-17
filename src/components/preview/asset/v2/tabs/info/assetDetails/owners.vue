@@ -101,16 +101,9 @@
                         </div>
                     </OwnerInfoCard>
                 </template>
-                <a-button
-                    class="flex items-center justify-center w-8 h-8 px-2 py-2 mr-3 text-gray-700 border-none rounded-full  bg-gray-light hover:bg-primary hover:text-white"
-                    @click.stop="toggleOwnerPopover"
-                >
-                    <fa icon="fal plus" />
-                </a-button>
-
                 <div
                     v-if="splittedOwners.b.length > 0 && !showAll"
-                    class="flex items-center justify-center mb-3 cursor-pointer"
+                    class="flex items-center mb-3 mr-3 cursor-pointer"
                     @click="() => toggleAllOwners(true)"
                 >
                     <span
@@ -128,7 +121,7 @@
                 </div>
                 <div
                     v-if="splittedOwners.b.length > 0 && showAll"
-                    class="flex items-center justify-center mb-3 cursor-pointer"
+                    class="flex items-center justify-center mb-3 mr-3 cursor-pointer "
                     @click="() => toggleAllOwners(false)"
                 >
                     <span
@@ -144,6 +137,12 @@
                         show less
                     </span>
                 </div>
+                <a-button
+                    class="flex items-center justify-center w-8 mb-3 h-8 px-2 py-2 mr-3 text-gray-700 border-none rounded-full  bg-gray-light hover:bg-primary hover:text-white"
+                    @click.stop="toggleOwnerPopover"
+                >
+                    <fa icon="fal plus" />
+                </a-button>
             </div>
             <a-popover
                 v-model:visible="showOwnersDropdown"

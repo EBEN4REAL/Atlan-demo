@@ -14,12 +14,23 @@
             <a-button size="small">
                 <fa icon="fal bookmark" />
             </a-button>
-            <a-button size="small" class="flex align-middle text-xs pt-1 text-primary bg-blue-100 border-0">
+            <a-button 
+                size="small" 
+                class="flex align-middle text-xs pt-1 text-primary bg-blue-100 border-0"
+                @click="redirectToProfile"
+            >
                 Open {{type === 'AtlasGlossaryTerm' ? 'Term' : 'Category'}} Details
             </a-button>
         </div>
     </div>
-    <span class=" px-5 text-xl leading-7 text-gray-700 font-bold">{{ entity.displayText }}</span>
+    <div class="flex">
+        <span class=" pl-5 mr-2 text-xl leading-7 text-gray-700 font-bold">{{ entity.displayText }}</span>
+            <component
+                :is="statusObject?.icon"
+                v-if="statusObject"
+                class="inline-flex self-center w-auto h-5 mb-1"
+            />
+    </div>
         <a-tabs default-active-key="1" class="border-0">
             <a-tab-pane key="info" tab="Info">
                 <a-collapse :bordered="false" expand-icon-position="right">
@@ -72,6 +83,7 @@
 
 <script lang="ts">
 import { defineComponent, PropType, computed, ref, toRef } from 'vue'
+import { useRouter } from 'vue-router'
 
 import Owners from '@/preview/asset/v2/tabs/info/assetDetails/owners.vue'
 import Experts from '@/preview/asset/v2/tabs/info/assetDetails/experts.vue'
@@ -87,6 +99,8 @@ import { Components } from '~/api/atlas/client'
 
 import TermSvg from "~/assets/images/gtc/term/term.png";
 import CategorySvg from "~/assets/images/gtc/category/category.png";
+
+import { List as StatusList } from '~/constant/status'
 
 export default defineComponent({
     components: {
@@ -107,15 +121,27 @@ export default defineComponent({
         },
     },
     setup(props) {
+        const router = useRouter();
+
         const shortDescription = computed(
             () => props.entity?.attributes?.shortDescription
         )
-        const type = computed(() => props.entity?.typeName)
+        const type = computed(() => props.entity?.typeName);
+
+        const statusObject = computed(() => StatusList.find((status) => status.id === props.entity?.attributes?.assetStatus))
+
+        const redirectToProfile = () => {
+            if(props.entity.typeName === 'AtlasGlossaryCategory') router.push(`/glossary/category/${props.entity.guid}`)
+            else if(props.entity.typeName === 'AtlasGlossaryTerm') router.push(`/glossary/term/${props.entity.guid}`)
+        }
+
         return {
             TermSvg,
             CategorySvg,
             shortDescription,
-            type
+            type,
+            statusObject,
+            redirectToProfile
         }
     },
 })

@@ -6,8 +6,14 @@
     
     <div class="flex flex-col ml-1">
       <span class="text-base leading-5 text-gray-700 cursor-pointer" @click="redirectToProfile">
-        {{  entity.displayText }}      
+        {{  entity.displayText }}  
+          <component
+            :is="statusObject?.icon"
+            v-if="statusObject && projection.includes('status')"
+            class="inline-flex self-center w-auto h-4 mb-1"
+          />    
       </span>
+
       <div v-if="projection.includes('description')" class="text-sm leading-5 text-gray-500">
         {{ entity?.attributes?.shortDescription }}
       </div>
@@ -27,6 +33,8 @@ import GlossarySvg from "~/assets/images/gtc/glossary/glossary.png";
 
 import { Glossary, Category, Term } from '~/types/glossary/glossary.interface'
 
+import { List as StatusList } from '~/constant/status'
+
 export default defineComponent({
   props: {
     entity: {
@@ -43,6 +51,7 @@ export default defineComponent({
   emits: ['gtcCardClicked'],
   setup(props) {
     const router = useRouter();
+    const statusObject = computed(() => StatusList.find((status) => status.id === props.entity?.attributes?.assetStatus))
 
     const redirectToProfile = () => {
             if (props.entity.typeName === 'AtlasGlossary') router.push(`/glossary/${props.entity.guid}`)
@@ -53,6 +62,7 @@ export default defineComponent({
       TermSvg,
       GlossarySvg,
       CategorySvg,
+      statusObject,
       redirectToProfile
     };
   },

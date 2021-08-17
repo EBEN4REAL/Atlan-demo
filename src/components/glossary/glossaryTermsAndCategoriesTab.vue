@@ -117,12 +117,13 @@ export default defineComponent({
         const projectionOptions = [
             { value: 'description', label: 'Description' },
             { value: 'owners', label: 'Owners' },
+            { value: 'status', label: 'Status' },
             // { value: 'heirarchy', label: 'Heirarchy' },
             // { value: 'rows', label: 'Rows' },
             // { value: 'popularity', label: 'Popularity' },
             // { value: 'classifications', label: 'Classifications' },
         ]
-        const projection = ref(['heirarchy', 'description'])
+        const projection = ref(['status', 'description'])
 
 
         const onEntitySelect = (entity: Category | Term) => {

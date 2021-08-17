@@ -139,6 +139,7 @@ import { faAlignLeft } from '@fortawesome/pro-solid-svg-icons/faAlignLeft'
 import { faAlignCenter } from '@fortawesome/pro-solid-svg-icons/faAlignCenter'
 import { faAlignRight } from '@fortawesome/pro-solid-svg-icons/faAlignRight'
 import { faFileImage } from '@fortawesome/pro-solid-svg-icons/faFileImage'
+import { faSortAmountUp } from '@fortawesome/pro-solid-svg-icons/faSortAmountUp'
 import { faSpinner } from '@fortawesome/pro-light-svg-icons/faSpinner'
 import { UserModule } from '~/types'
 
@@ -277,6 +278,7 @@ library.add(
     faUndo,
     faRedo,
     faSolidLink,
+    faSortAmountUp,
     // faPencil,
     faSquare,
     faAlignLeft,

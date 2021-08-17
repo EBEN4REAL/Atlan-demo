@@ -1,5 +1,5 @@
 <template>
-    <div class="text-sm text-gray-500">
+    <div class="mt-4 text-sm text-gray-500">
         <p class="mb-3 text-sm">Classifications</p>
         <div class="flex flex-wrap items-stretch items-center lex">
             <template
@@ -25,7 +25,15 @@
                     "
                 >
                     <div
-                        class="flex items-center leading-none align-middle rounded cursor-pointer  drop-shadow-sm"
+                        class="
+                            flex
+                            items-center
+                            leading-none
+                            align-middle
+                            rounded
+                            cursor-pointer
+                            drop-shadow-sm
+                        "
                         @click.prevent.stop="handleClassificationClick"
                     >
                         <div
@@ -42,7 +50,23 @@
                     </div>
 
                     <div
-                        class="absolute right-0 flex items-center justify-center pl-3 pr-1 text-white bg-transparent border-none rounded-full opacity-0 cursor-pointer  group-hover:opacity-100 classification-cross-btn"
+                        class="
+                            absolute
+                            right-0
+                            flex
+                            items-center
+                            justify-center
+                            pl-3
+                            pr-1
+                            text-white
+                            bg-transparent
+                            border-none
+                            rounded-full
+                            opacity-0
+                            cursor-pointer
+                            group-hover:opacity-100
+                            classification-cross-btn
+                        "
                         @click.stop="() => unLinkClassification(classification)"
                     >
                         <div class="flex items-center justify-center">
@@ -75,7 +99,15 @@
                     "
                 >
                     <div
-                        class="flex items-center leading-none align-middle rounded cursor-pointer  drop-shadow-sm"
+                        class="
+                            flex
+                            items-center
+                            leading-none
+                            align-middle
+                            rounded
+                            cursor-pointer
+                            drop-shadow-sm
+                        "
                         @click.prevent.stop="handleClassificationClick"
                     >
                         <div
@@ -92,7 +124,23 @@
                     </div>
 
                     <div
-                        class="absolute right-0 flex items-center justify-center pl-3 pr-1 text-white bg-transparent border-none rounded-full opacity-0 cursor-pointer  group-hover:opacity-100 classification-cross-btn"
+                        class="
+                            absolute
+                            right-0
+                            flex
+                            items-center
+                            justify-center
+                            pl-3
+                            pr-1
+                            text-white
+                            bg-transparent
+                            border-none
+                            rounded-full
+                            opacity-0
+                            cursor-pointer
+                            group-hover:opacity-100
+                            classification-cross-btn
+                        "
                         @click.stop="() => unLinkClassification(classification)"
                     >
                         <div class="flex items-center justify-center">
@@ -103,14 +151,28 @@
             </template>
             <a-button
                 v-if="asset.classifications?.length > 0"
-                class="flex items-center justify-center w-8 h-8 mr-3 px-2 py-2 text-gray-700 border-none rounded-full  bg-gray-light hover:bg-primary hover:text-white"
+                class="
+                    flex
+                    items-center
+                    justify-center
+                    w-8
+                    h-8
+                    px-2
+                    py-2
+                    mr-3
+                    text-gray-700
+                    border-none
+                    rounded-full
+                    bg-gray-light
+                    hover:bg-primary hover:text-white
+                "
                 @click.stop="openLinkClassificationPopover"
             >
                 <fa icon="fal plus" />
             </a-button>
             <div
                 v-if="splittedClassifications.b.length > 0 && !showAll"
-                class="flex items-center justify-center mb-3 "
+                class="flex items-center justify-center mb-3"
                 @click="() => toggleAllClassifications(true)"
             >
                 <span
@@ -121,7 +183,7 @@
             </div>
             <div
                 v-if="splittedClassifications.b.length > 0 && showAll"
-                class="flex items-center justify-center mb-3 "
+                class="flex items-center justify-center mb-3"
                 @click="() => toggleAllClassifications(false)"
             >
                 <span
@@ -249,7 +311,13 @@
 
                 <div
                     v-if="!showCreateClassificationPopover"
-                    class="flex justify-end p-2 space-x-2 border-t border-gray-100 "
+                    class="
+                        flex
+                        justify-end
+                        p-2
+                        space-x-2
+                        border-t border-gray-100
+                    "
                 >
                     <a-button
                         size="small"
@@ -270,7 +338,13 @@
                 </div>
                 <div
                     v-else
-                    class="flex justify-end p-2 space-x-2 border-t border-gray-100 "
+                    class="
+                        flex
+                        justify-end
+                        p-2
+                        space-x-2
+                        border-t border-gray-100
+                    "
                 >
                     <a-button
                         size="small"

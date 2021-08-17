@@ -1,5 +1,5 @@
 <template>
-    <div class="mt-3 text-sm text-gray-500">
+    <div class="mt-4 text-sm text-gray-500">
         <p class="flex justify-between mb-2 text-sm tracking-wide">
             <span
                 >Custom Metadata&nbsp;
@@ -44,9 +44,7 @@
                     class="flex flex-col p-2 overflow-y-auto"
                     style="width: 280px; height: 200px"
                 >
-                    <p class="mb-1 text-sm text-gray">
-                        Select Custom Metadata
-                    </p>
+                    <p class="mb-1 text-sm text-gray">Select Custom Metadata</p>
                     <a-select
                         v-model:value="addBusinessMetadata"
                         placeholder="Custom Metadata"
@@ -62,7 +60,15 @@
                         >
                     </p>
                     <div
-                        class="absolute flex p-2 space-x-2 border-t border-gray-100  bottom-1 right-3"
+                        class="
+                            absolute
+                            flex
+                            p-2
+                            space-x-2
+                            border-t border-gray-100
+                            bottom-1
+                            right-3
+                        "
                     >
                         <a-button size="small" @click="visibility = false"
                             >Cancel</a-button

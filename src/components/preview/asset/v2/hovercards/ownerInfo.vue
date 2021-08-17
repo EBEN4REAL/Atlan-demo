@@ -1,11 +1,18 @@
 <template>
-    <a-popover :class="$style.popover" placement="top">
+    <a-popover placement="top">
         <template #content>
             <div class="w-36">
                 <p class="mb-0 text-gray-500 uppercase">{{ type }}</p>
                 <div class="my-2 text-gray-500">
                     <div
-                        class="flex items-center mb-1 overflow-hidden font-bold text-gray-700 "
+                        class="
+                            flex
+                            items-center
+                            mb-1
+                            overflow-hidden
+                            font-bold
+                            text-gray-700
+                        "
                     >
                         <img
                             src="https://picsum.photos/id/237/50/50"
@@ -76,15 +83,5 @@
 <style scoped>
     .hovercard {
         max-width: 226px;
-    }
-</style>
-<style lang="less" module>
-    .popover {
-        :global(.ant-popover-inner) {
-            border-radius: 8px !important;
-        }
-        :global(.ant-popover-inner-content) {
-            @apply p-4 !important;
-        }
     }
 </style>

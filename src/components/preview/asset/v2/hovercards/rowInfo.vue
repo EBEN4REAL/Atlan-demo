@@ -1,5 +1,5 @@
 <template>
-    <a-popover :class="$style.popover" placement="left">
+    <a-popover placement="left">
         <template #content>
             <div class="flex flex-col hovercard">
                 <span class="mb-2 text-sm text-gray-500">ROWS</span>
@@ -39,15 +39,5 @@
 <style scoped>
     .hovercard {
         max-width: 226px;
-    }
-</style>
-<style lang="less" module>
-    .popover {
-        :global(.ant-popover-inner) {
-            border-radius: 8px !important;
-        }
-        :global(.ant-popover-inner-content) {
-            @apply p-4 !important;
-        }
     }
 </style>

@@ -1,17 +1,18 @@
 <template>
     <div :key="statusId">
         <div class="flex items-center align-middle">
-            <div class="mr-1">
-                <fa :class="iconClass" :icon="icon" class="pushtop" />
-            </div>
+            <span class="svg-icon">
+                <component class="w-auto h-4 mr-1" :is="icon" />
+            </span>
+
             <p v-if="showLabel" class="mb-0 text-sm text-gray">
                 {{ label }}
             </p>
         </div>
 
         <p
-            v-if="showLabel && statusId"
-            class="mt-1 mb-0 text-xs leading-none text-gray-500"
+            v-if="showLabel && statusId && statusUpdatedBy"
+            class="mt-1 mb-0 text-xs leading-none text-gray-700"
         >
             {{ timeAgo(statusUpdatedAt) }}
             by
@@ -77,11 +78,10 @@
                 return found
             })
             const icon = computed(() => statusObject.value?.icon)
-            const iconClass = computed(() => statusObject.value?.iconClass)
             const label = computed(() => statusObject.value?.label)
 
             const timeAgo = (time: string | number) => useTimeAgo(time).value
-            return { statusObject, icon, iconClass, label, timeAgo }
+            return { statusId, icon, label, timeAgo }
         },
     })
 </script>

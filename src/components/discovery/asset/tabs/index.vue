@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="w-full">
         <a-tabs
             v-model:activeKey="assetType"
             class="w-full mt-3"
@@ -32,6 +32,7 @@
     import { getCountString } from '~/composables/asset/useFormat'
 
     export default defineComponent({
+        name: 'AssetTypeTabs',
         props: {
             assetTypeList: {
                 type: Array,
@@ -198,14 +199,16 @@
 <style lang="less" module>
     .assetbar {
         :global(.ant-tabs-tab) {
-            @apply pb-5 px-1 !important;
-            @apply mx-2 !important;
+            padding-left: 2px !important;
+            padding-right: 2px !important;
+            @apply pb-5 !important;
+            @apply mr-4 !important;
             @apply text-gray-500;
             @apply text-sm !important;
             @apply tracking-wide;
         }
         :global(.ant-tabs-tab:first-child) {
-            @apply ml-4 !important;
+            @apply ml-5 !important;
         }
         :global(.ant-tabs-nav-container-scrolling .ant-tabs-tab:first-child) {
             @apply ml-0;
@@ -213,6 +216,7 @@
         :global(.ant-tabs-tab-active) {
             @apply text-gray !important;
             @apply font-bold !important;
+            @apply tracking-normal;
         }
         :global(.ant-tabs-bar) {
             margin-bottom: 0px;
@@ -234,5 +238,6 @@
         @apply text-xs;
         @apply font-bold;
         @apply text-primary;
+        @apply bg-primary-light;
     }
 </style>

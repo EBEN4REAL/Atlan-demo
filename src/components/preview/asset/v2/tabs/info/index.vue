@@ -4,16 +4,18 @@
             v-model:activeKey="activeKey"
             :bordered="false"
             class="bg-transparent"
+            expandIconPosition="right"
             :class="$style.filter"
             @change="handleCollapseChange"
         >
             <template #expandIcon="{ isActive }">
-                <fa
-                    icon="fas chevron-right"
-                    class="text-primary"
-                    v-if="!isActive"
-                />
-                <fa icon="fas chevron-down" class="text-primary" v-else />
+                <div class="">
+                    <fa
+                        icon="fas chevron-down"
+                        class="ml-1 transition-transform transform"
+                        :class="isActive ? '-rotate-180' : 'rotate-0'"
+                    />
+                </div>
             </template>
             <a-collapse-panel
                 v-for="item in List"
@@ -23,14 +25,7 @@
                 <template #header>
                     <div
                         :key="item.id"
-                        class="
-                            flex
-                            justify-between
-                            font-bold
-                            ml-1.5
-                            text-sm
-                            select-none
-                        "
+                        class="flex justify-between text-sm font-bold select-none  header"
                     >
                         {{ item.label }}
                     </div>
@@ -72,6 +67,7 @@
     import { assetInterface } from '~/types/assets/asset.interface'
 
     export default defineComponent({
+        name: 'InfoTab',
         props: {
             id: String,
             componentData: {
@@ -151,24 +147,25 @@
 <style lang="less" module>
     .filter {
         :global(.ant-collapse-item) {
-            @apply border-none;
+            @apply border-b;
+            @apply border-gray-300;
         }
 
         :global(.ant-collapse-header) {
-            padding-left: 18px !important;
-            padding-right: 0px !important;
-            @apply flex items-center !important;
+            @apply px-5 !important;
+            @apply py-4 !important;
         }
+
         :global(.ant-collapse-arrow) {
-            left: 0px !important;
             font-size: 0.85rem !important;
-            @apply text-primary !important;
+            right: 20px !important;
         }
 
         :global(.ant-collapse-content-box) {
             padding-right: 0px;
             padding-left: 0px;
-            padding-top: 0px;
+            padding-top: 0px !important;
+            @apply pb-4 !important;
         }
     }
 </style>

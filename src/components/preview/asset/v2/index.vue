@@ -1,47 +1,22 @@
 <template>
     <div class="pt-6">
-        <div class="px-4">
+        <div class="px-5">
             <div class="flex items-center justify-between mt-2 mb-4 text-sm">
+                <component
+                    :is="selectedAsset.typeName"
+                    class="w-auto h-8"
+                ></component>
                 <div class="flex">
-                    <component
-                        :is="selectedAsset.typeName"
-                        class="w-5 h-5 mr-2"
-                    ></component>
-                    <span class="text-gray-500"
-                        >{{ assetTypeLabel(selectedAsset) }}
-                    </span>
-                </div>
-                <div class="flex">
-                    <div
-                        class="
-                            flex
-                            px-1.5
-                            py-0.5
-                            mx-2
-                            _bg-primary-light
-                            rounded
-                        "
-                    >
-                        <fa class="text-xs text-primary" icon="fal bookmark" />
+                    <div class="icon-btn">
+                        <fa class="w-auto h-4" icon="fal bookmark" />
                     </div>
-                    <div
-                        class="
-                            flex
-                            px-1.5
-                            py-0.5
-                            mx-2
-                            _bg-primary-light
-                            rounded
-                        "
-                    >
-                        <span class="flex mr-2"
-                            ><fa class="text-xs text-primary" icon="fal share"
-                        /></span>
-                        <span class="text-sm text-primary">Share</span>
+                    <div class="icon-btn">
+                        <fa class="mr-2 text-sm" icon="fal share" />
+                        <span class="text-sm">Share</span>
                     </div>
                 </div>
             </div>
-            <div class="flex items-center mb-3">
+            <div class="flex items-center pb-1">
                 <span class="mb-0 text-lg text-gray font-bold truncate ...">
                     {{ title(selectedAsset) }}</span
                 >
@@ -54,11 +29,10 @@
                     ></StatusBadge>
                 </div>
             </div>
-            <HierarchyBar class="mb-4" :selectedAsset="selectedAsset" />
         </div>
         <a-tabs v-model:activeKey="activeKey" :class="$style.previewtab">
             <a-tab-pane
-                class="px-4 py-2 overflow-y-auto tab-height"
+                class="px-4 pb-4 overflow-y-auto tab-height"
                 v-for="(tab, index) in filteredTabs"
                 :key="index"
                 :tab="tab.name"
@@ -90,7 +64,6 @@
     import StatusBadge from '@common/badge/status/index.vue'
     import { assetInterface } from '~/types/assets/asset.interface'
     import useAssetDetailsTabList from './useTabList'
-    import HierarchyBar from '@common/badge/hierarchy.vue'
     import useAsset from '~/composables/asset/useAsset'
     import useAssetInfo from '~/composables/asset/useAssetInfo'
 
@@ -103,7 +76,6 @@
         },
         components: {
             StatusBadge,
-            HierarchyBar,
             info: defineAsyncComponent(() => import('./tabs/info/index.vue')),
             columns: defineAsyncComponent(
                 () => import('./tabs/columns/index.vue')
@@ -174,24 +146,32 @@
     })
 </script>
 <style lang="less" scoped>
-    ._bg-primary-light {
-        background: rgba(34, 81, 204, 0.05);
-    }
     .tab-height {
         height: calc(100vh - 14rem);
+    }
+    .icon-btn {
+        @apply flex;
+        @apply py-2 ml-2 px-3;
+        @apply rounded;
+        @apply text-gray;
+        @apply border border-gray-300;
+        @apply cursor-pointer;
+        @apply hover:bg-gray-100;
     }
 </style>
 <style lang="less" module>
     .previewtab {
         :global(.ant-tabs-tab) {
-            @apply pb-5 px-1;
-            @apply mx-2;
+            padding-left: 2px;
+            padding-right: 2px;
+            @apply pb-5;
+            @apply mr-5;
             @apply text-gray-500;
             @apply text-sm !important;
             @apply tracking-wide;
         }
         :global(.ant-tabs-tab:first-child) {
-            @apply ml-2;
+            @apply ml-5;
         }
         :global(.ant-tabs-nav-container-scrolling .ant-tabs-tab:first-child) {
             @apply ml-0;
@@ -209,6 +189,10 @@
         :global(.ant-tabs-ink-bar) {
             @apply rounded-t-sm;
             margin-bottom: 1px;
+        }
+        :global(.ant-tabs-tabpane) {
+            @apply px-0 !important;
+            @apply pb-0 !important;
         }
     }
 </style>

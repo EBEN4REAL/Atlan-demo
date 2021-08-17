@@ -1,26 +1,40 @@
 <template>
-    <div class="w-5/12">
-        <p class="flex-1 mb-1">Experts</p>
+    <div class="w-full mt-1">
+        <p class="flex-1 mb-2">Experts</p>
         <div class="flex flex-wrap">
             <div
                 class="
                     flex
                     items-center
-                    text-sm
-                    mr-2.5
-                    p-2
-                    owner-expert
-                    border border-transparent
-                    hover:border-gray-100
-                    rounded
+                    mr-3
+                    cursor-pointer
+                    my-0
+                    mb-3
+                    bg-gray-light
+                    rounded-full
+                    px-3
+                    py-1.5
                 "
             >
                 <div
-                    class="flex items-center px-1 py-1 mr-1 rounded-full  _bg-primary-light"
+                    class="flex items-center px-1 py-1 mr-2 rounded-full  bg-primary"
                 >
-                    <fa icon="fal users" class="text-primary" />
+                    <fa icon="fas users" class="text-white" />
                 </div>
-                <span class="text-gray truncate ...">Sale Team</span>
+                <div
+                    class="
+                        text-gray-700
+                        mb-0
+                        font-bold
+                        truncate
+                        text-sm
+                        capitalize
+                        max-owner-name-width
+                        ...
+                    "
+                >
+                    <span class="text-gray truncate ...">Sale Team</span>
+                </div>
             </div>
         </div>
     </div>

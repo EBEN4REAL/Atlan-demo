@@ -19,11 +19,17 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent } from 'vue'
+    import { defineComponent, PropType } from 'vue'
+    import { activityInterface } from '~/types/activitylogs/activitylog.interface'
 
     export default defineComponent({
         props: {
-            data,
+            data: {
+                type: Object as PropType<activityInterface>,
+                default() {
+                    return { displayValue: '', value: [] }
+                },
+            },
         },
     })
 </script>

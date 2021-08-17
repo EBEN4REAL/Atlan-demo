@@ -125,7 +125,6 @@ const useAssetAudit = (params: any, guid: string) => {
     const getEntityUpdateLogs = (logs: any) => {
         const data = {
             displayValue: 'Asset was updated',
-            moreinfo: false,
             value: [],
         }
         console.log(logs)
@@ -142,7 +141,6 @@ const useAssetAudit = (params: any, guid: string) => {
                     return data
                 }
                 data.displayValue = 'owners'
-                data.moreinfo = true
                 data.value = users
                 return data
             }
@@ -153,7 +151,6 @@ const useAssetAudit = (params: any, guid: string) => {
                     return data
                 }
                 data.displayValue = 'experts'
-                data.moreinfo = true
                 data.value = users
                 return data
             }
@@ -182,7 +179,6 @@ const useAssetAudit = (params: any, guid: string) => {
             let parsedDetails: any = {}
             const data = {
                 displayValue: '',
-                moreinfo: false,
                 value: [],
             }
 

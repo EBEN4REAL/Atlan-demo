@@ -20,75 +20,9 @@
                 </template>
                 <div>
                     <span v-if="getDetailsForEntityAuditEvent(log)">
-                        <!-- <span
-                            v-html="
-                                getDetailsForEntityAuditEvent(log)?.displayValue
-                            "
-                        ></span> -->
-                        <span
-                            v-if="
-                                getDetailsForEntityAuditEvent(
-                                    log
-                                )?.displayValue.includes('classification')
-                            "
-                        >
-                            <a-collapse
-                                class="text-gray-700 bg-transparent border-none"
-                                :bordered="false"
-                                expand-icon-position="right"
-                            >
-                                <a-collapse-panel class="border-none">
-                                    <template #header
-                                        ><span class="font-bold"
-                                            >Asset was updated</span
-                                        ></template
-                                    >
-
-                                    <div class="mt-2">
-                                        <b>Classsifications </b
-                                        >{{
-                                            getDetailsForEntityAuditEvent(log)
-                                                ?.displayValue ===
-                                            'classificationAdded'
-                                                ? 'added'
-                                                : 'removed'
-                                        }}
-                                    </div>
-                                    <div class="flex">
-                                        <div
-                                            class="px-3 py-1 m-1 rounded-full  pill"
-                                        >
-                                            {{
-                                                getDetailsForEntityAuditEvent(
-                                                    log
-                                                )?.value
-                                            }}
-                                        </div>
-                                    </div>
-                                </a-collapse-panel>
-                            </a-collapse>
-                        </span>
-
-                        <!-- <span
-                            v-if="
-                                getDetailsForEntityAuditEvent(log)
-                                    ?.displayValue === 'owners'
-                            "
-                        >
-                            <owners
-                                :data="getDetailsForEntityAuditEvent(log)"
-                            />
-                        </span>
-                        <span
-                            v-if="
-                                getDetailsForEntityAuditEvent(log)
-                                    ?.displayValue === 'status'
-                            "
-                        >
-                            <status
-                                :data="getDetailsForEntityAuditEvent(log)"
-                            />
-                        </span> -->
+                        <ActivityType
+                            :data="getDetailsForEntityAuditEvent(log)"
+                        />
                     </span>
                     <span v-else>
                         {{ getEventByAction(log).label || 'Event' }}
@@ -129,11 +63,10 @@
     import useAssetAudit from '~/composables/asset/useAssetAudit'
     import emptyScreen from '~/assets/images/empty_search.png'
     import { assetInterface } from '~/types/assets/asset.interface'
-    import { useAssetAuditActivityList } from './useActivityList'
-    import Avatar from '~/components/common/avatar.vue'
+    import ActivityType from './activityType.vue'
 
     export default defineComponent({
-        components: { Avatar },
+        components: { ActivityType },
         props: {
             selectedAsset: {
                 type: Object as PropType<assetInterface>,

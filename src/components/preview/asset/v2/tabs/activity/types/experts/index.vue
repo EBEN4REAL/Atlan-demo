@@ -16,13 +16,19 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent } from 'vue'
+    import { defineComponent, PropType } from 'vue'
     import Avatar from '~/components/common/avatar.vue'
+    import { activityInterface } from '~/types/activitylogs/activitylog.interface'
 
     export default defineComponent({
         components: { Avatar },
         props: {
-            data,
+            data: {
+                type: Object as PropType<activityInterface>,
+                default() {
+                    return { displayValue: 'Event', value: [] }
+                },
+            },
         },
     })
 </script>

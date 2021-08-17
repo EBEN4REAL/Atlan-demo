@@ -17,13 +17,18 @@
 
 <script lang="ts">
     import { defineComponent, PropType } from 'vue'
-    import { assetInterface } from '~/types/assets/asset.interface'
+    import { activityInterface } from '~/types/activitylogs/activitylog.interface'
     import Avatar from '~/components/common/avatar.vue'
 
     export default defineComponent({
         components: { Avatar },
         props: {
-            data,
+            data: {
+                type: Object as PropType<activityInterface>,
+                default() {
+                    return { displayValue: '', value: [] }
+                },
+            },
         },
     })
 </script>

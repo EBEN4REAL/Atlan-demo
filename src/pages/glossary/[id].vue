@@ -2,61 +2,72 @@
     <div v-if="isLoading">
         <LoadingView />
     </div>
-    <div v-else class="px-12 pr-0 mb-12">
-        <div class="flex flex-row mt-6 mb-5">
-            <div class="mr-5">
-                <img :src="GlossarySvg" />
-            </div>
-            <div class="flex flex-col">
-                <span class="secondaryHeading">GLOSSARY</span>
-                <h1 class="text-3xl leading-9 m-0 p-0 text-black font-normal">
-                    {{ title }}
-                </h1>
-                <EntityHistory
-                    :created-at="glossary?.createTime"
-                    :created-by="glossary?.createdBy"
-                    :updated-at="glossary?.updateTime"
-                    :updated-by="glossary?.updatedBy"
-                />
-                <span class="mt-2 text-xs w-1/2 leading-4 text-gray-500">{{
-                    shortDescription
-                }}</span>
-            </div>
-        </div>
-        <div>
-            <a-tabs default-active-key="1" class="border-0">
-                <a-tab-pane key="1" tab="Overview">
-                    <div class="flex flex-row m-0 p-0">
-                        <GlossaryProfileOverview :entity="glossary" />
-                        <div
-                            v-if="termCount"
-                            class="flex flex-column w-1/2 ml-9 border-l"
-                        >
-                            <GlossaryTopTerms
-                                v-if="glossaryTerms?.length && !termsLoading"
-                                :terms="glossaryTerms"
-                            />
-                        </div>
+    <div v-else class="flex flex-row">
+        <div class="px-12 pr-0">
+            <div class="flex flex-row justify-between mt-6 mb-5">
+                <div class="flex flex-row">
+                    <div class="mr-5">
+                        <img :src="GlossarySvg" />
                     </div>
-                    <hr />
-                    <GlossaryContinueSettingUp
-                        v-if="!isLoading"
-                        :terms="glossaryTerms"
-                        :categories="glossaryCategories"
-                        @updateDescription="refreshCategoryTermList"
-                        @fetchNextCategoryOrTermList="fetchNextCategoryOrTermList"
-                    />
-                </a-tab-pane>
-                <a-tab-pane key="2" tab="Terms & Categories">
-                    <GlossaryTermsAndCategoriesTab
-                        :qualified-name="qualifiedName"
-                    />
-                </a-tab-pane>
-                <a-tab-pane key="3" tab="Activity"> Activity </a-tab-pane>
-                <a-tab-pane key="4" tab="Bots"> Bots </a-tab-pane>
-                <a-tab-pane key="5" tab="Permissions"> Permissions </a-tab-pane>
-            </a-tabs>
+                    <div class="flex flex-col">
+                        <span class="text-xl leading-6 font-bold">{{
+                            title
+                        }}</span>
+                        <!-- <EntityHistory
+                    :created-at="glossary?.attributes.__timestamp"
+                    :created-by="glossary?.createdBy"
+                    :updated-at="glossary?.attributes.__modificationTimestamp"
+                    :updated-by="glossary?.updatedBy"
+                /> -->
+                        <span class="mt-1 text-sm leading-5 text-gray-500">{{
+                            shortDescription
+                        }}</span>
+                    </div>
+                </div>
+                <div class="flex flex-row space-x-2 mr-4">
+                    <a-button >
+                        <fa icon="fal bookmark" />
+                    </a-button>
+                    <a-button class="flex align-middle">
+                        <fa icon="fal upload" class="h-3 mr-2" />
+                        Share
+                    </a-button>
+                    <a-button >
+                        <fa icon="fal ellipsis-v" class="h-4" />
+                    </a-button>
+                </div>
+            </div>
+            <div class="flex flex-row">
+                <a-tabs default-active-key="1" class="border-0">
+                    <a-tab-pane key="1" tab="Overview">
+                        <div class="flex flex-row m-0 p-0">
+                            <GlossaryProfileOverview :entity="glossary" />
+                        </div>
+                        <hr />
+                        <GlossaryContinueSettingUp
+                            v-if="!isLoading"
+                            :terms="glossaryTerms"
+                            :categories="glossaryCategories"
+                            @updateDescription="refreshCategoryTermList"
+                            @fetchNextCategoryOrTermList="
+                                fetchNextCategoryOrTermList
+                            "
+                        />
+                    </a-tab-pane>
+                    <a-tab-pane key="2" tab="Terms & Categories">
+                        <GlossaryTermsAndCategoriesTab
+                            :qualified-name="qualifiedName"
+                        />
+                    </a-tab-pane>
+                    <a-tab-pane key="3" tab="Activity"> Activity </a-tab-pane>
+                    <a-tab-pane key="4" tab="Bots"> Bots </a-tab-pane>
+                    <a-tab-pane key="5" tab="Permissions">
+                        Permissions
+                    </a-tab-pane>
+                </a-tabs>
+            </div>
         </div>
+        <SidePanel :entity="glossary" :topTerms="glossaryTerms" />
     </div>
 </template>
 
@@ -66,26 +77,26 @@ import { defineComponent, computed, watch, onMounted, toRef } from 'vue'
 import GlossaryTermsAndCategoriesTab from '@/glossary/glossaryTermsAndCategoriesTab.vue'
 import LoadingView from '@common/loaders/page.vue'
 import GlossaryProfileOverview from '@/glossary/common/glossaryProfileOverview.vue'
-import GlossaryTopTerms from '@/glossary/common/glossaryTopTerms.vue'
 import GlossaryContinueSettingUp from '@/glossary/continueSettingUp/glossaryContinueSettingUp.vue'
 import EntityHistory from '@/glossary/common/entityHistory.vue'
+import SidePanel from '@/glossary/sidePanel/index.vue'
 
 import useGTCEntity from '~/composables/glossary/useGtcEntity'
 import useGlossaryTerms from '~/composables/glossary/useGlossaryTerms'
 import useGlossaryCategories from '~/composables/glossary/useGlossaryCategories'
 
-import { Glossary } from "~/types/glossary/glossary.interface";
+import { Glossary } from '~/types/glossary/glossary.interface'
 
 import GlossarySvg from '~/assets/images/gtc/glossary/glossary.png'
 
 export default defineComponent({
     components: {
         GlossaryProfileOverview,
-        GlossaryTopTerms,
         GlossaryContinueSettingUp,
         GlossaryTermsAndCategoriesTab,
         EntityHistory,
         LoadingView,
+        SidePanel,
     },
     props: {
         id: {
@@ -120,10 +131,6 @@ export default defineComponent({
         const title = computed(() => glossary.value?.attributes?.name)
         const shortDescription = computed(
             () => glossary.value?.attributes?.shortDescription
-        )
-        const termCount = computed(() => glossary.value?.attributes?.terms?.length ?? 0)
-        const categoryCount = computed(
-            () => glossary.value?.attributes?.categories?.length ?? 0
         )
         const qualifiedName = computed(
             () => glossary.value?.attributes?.qualifiedName ?? ''
@@ -169,8 +176,6 @@ export default defineComponent({
             glossary,
             title,
             shortDescription,
-            termCount,
-            categoryCount,
             error,
             isLoading,
             termsLoading,

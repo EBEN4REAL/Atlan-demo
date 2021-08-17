@@ -140,6 +140,7 @@ import { faAlignCenter } from '@fortawesome/pro-solid-svg-icons/faAlignCenter'
 import { faAlignRight } from '@fortawesome/pro-solid-svg-icons/faAlignRight'
 import { faFileImage } from '@fortawesome/pro-solid-svg-icons/faFileImage'
 import { faSortAmountUp } from '@fortawesome/pro-solid-svg-icons/faSortAmountUp'
+import { faUpload } from '@fortawesome/pro-solid-svg-icons/faUpload'
 import { faSpinner } from '@fortawesome/pro-light-svg-icons/faSpinner'
 import { UserModule } from '~/types'
 
@@ -156,6 +157,7 @@ import Icon from '~/components/common/icon/index.vue'
 library.add(
     faTable,
     faBookmark,
+    faUpload,
     faThList,
     faDatabase,
     faBox,

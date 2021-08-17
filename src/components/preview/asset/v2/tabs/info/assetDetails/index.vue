@@ -10,13 +10,13 @@
                 <span class="text-gray-700">{{ value }}</span>
             </div>
         </div>
+        <Description v-if="selectedAsset.guid" :selectedAsset="selectedAsset" />
         <div class="flex w-full text-sm text-gray-500">
             <Owners v-if="selectedAsset.guid" :selectedAsset="selectedAsset" />
         </div>
         <div class="flex w-full text-sm text-gray-500">
             <Experts v-if="selectedAsset.guid" :selectedAsset="selectedAsset" />
         </div>
-        <Description v-if="selectedAsset.guid" :selectedAsset="selectedAsset" />
         <Status v-if="selectedAsset.guid" :selectedAsset="selectedAsset" />
     </div>
 </template>

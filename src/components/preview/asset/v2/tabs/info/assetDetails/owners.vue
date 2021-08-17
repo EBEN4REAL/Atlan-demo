@@ -88,7 +88,7 @@
                     </div>
                 </template>
                 <a-button
-                    class="flex items-center justify-center w-8 h-8 px-2 py-2 text-gray-700 border-none rounded-full  bg-gray-light hover:bg-primary hover:text-white"
+                    class="flex items-center justify-center w-8 h-8 px-2 py-2 mr-3 text-gray-700 border-none rounded-full bg-gray-light hover:bg-primary hover:text-white"
                     @click.stop="toggleOwnerPopover"
                 >
                     <fa icon="fal plus" />
@@ -96,7 +96,7 @@
 
                 <div
                     v-if="splittedOwnerUsers.b.length > 0 && !showAll"
-                    class="flex items-center justify-center mb-3 ml-3 cursor-pointer "
+                    class="flex items-center justify-center mb-3 cursor-pointer "
                     @click="() => toggleAllOwners(true)"
                 >
                     <span
@@ -114,7 +114,7 @@
                 </div>
                 <div
                     v-if="splittedOwnerUsers.b.length > 0 && showAll"
-                    class="flex items-center justify-center mb-3 ml-3 cursor-pointer "
+                    class="flex items-center justify-center mb-3 cursor-pointer "
                     @click="() => toggleAllOwners(false)"
                 >
                     <span
@@ -230,7 +230,7 @@
                                                             ? '_bg-primary-light'
                                                             : ''
                                                     "
-                                                    class="flex items-center justify-between w-full px-1 py-1 mb-2 rounded cursor-pointer  hover_bg-primary-light"
+                                                    class="flex items-center justify-between w-full px-1 py-1 mb-2 rounded cursor-pointer hover_bg-primary-light"
                                                     @click="
                                                         () => onSelectUser(user)
                                                     "
@@ -317,7 +317,7 @@
                                                         () =>
                                                             onSelectGroup(group)
                                                     "
-                                                    class="flex items-center justify-between w-full px-1 py-1 mb-2 rounded cursor-pointer  hover_bg-primary-light"
+                                                    class="flex items-center justify-between w-full px-1 py-1 mb-2 rounded cursor-pointer hover_bg-primary-light"
                                                 >
                                                     <div
                                                         class="flex items-center flex-1 "
@@ -495,7 +495,9 @@
             function isOwner(username: string, owners: string[]) {
                 return owners.includes(username)
             }
-            const splittedOwnerUsers = ref(splitArray(5, ownerUsers.value))
+            const splittedOwnerUsers = ref(
+                splitArray(5, [...ownerUsers.value, ...ownerGroups.value])
+            )
             const closePopover = () => {
                 showOwnersDropdown.value = false
             }
@@ -512,25 +514,21 @@
             console.log(selectedGroups, 'selectedGroups')
 
             watch(
-                ownerUsers,
+                [ownerUsers, ownerGroups],
                 () => {
                     console.log('owners changed', ownerUsers.value)
                     selectedUsers.value = ownerUsers.value
-                    splittedOwnerUsers.value = splitArray(5, ownerUsers.value)
-                },
-                {
-                    immediate: true,
-                }
-            )
-            watch(
-                ownerGroups,
-                () => {
                     selectedGroups.value = ownerGroups.value
+                    splittedOwnerUsers.value = splitArray(5, [
+                        ...ownerUsers.value,
+                        ...ownerGroups.value,
+                    ])
                 },
                 {
                     immediate: true,
                 }
             )
+
             const handleOwnerSearch = (e: Event) => {
                 const queryText = (<HTMLInputElement>e.target).value
                 if (activeOwnerTabKey.value === '1') {

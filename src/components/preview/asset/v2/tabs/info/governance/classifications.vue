@@ -28,7 +28,15 @@
                         class="flex items-center leading-none align-middle rounded cursor-pointer  drop-shadow-sm"
                         @click.prevent.stop="handleClassificationClick"
                     >
-                        <div class="text-sm font-bold">
+                        <div
+                            class="
+                                text-sm
+                                font-bold
+                                classification-name-width
+                                truncate
+                                ...
+                            "
+                        >
                             {{ classification?.typeName }}
                         </div>
                     </div>
@@ -70,7 +78,15 @@
                         class="flex items-center leading-none align-middle rounded cursor-pointer  drop-shadow-sm"
                         @click.prevent.stop="handleClassificationClick"
                     >
-                        <div class="text-sm font-bold">
+                        <div
+                            class="
+                                text-sm
+                                font-bold
+                                classification-name-width
+                                truncate
+                                ...
+                            "
+                        >
                             {{ classification?.typeName }}
                         </div>
                     </div>
@@ -87,14 +103,14 @@
             </template>
             <a-button
                 v-if="asset.classifications?.length > 0"
-                class="flex items-center justify-center w-8 h-8 px-2 py-2 text-gray-700 border-none rounded-full  bg-gray-light hover:bg-primary hover:text-white"
+                class="flex items-center justify-center w-8 h-8 mr-3 px-2 py-2 text-gray-700 border-none rounded-full  bg-gray-light hover:bg-primary hover:text-white"
                 @click.stop="openLinkClassificationPopover"
             >
                 <fa icon="fal plus" />
             </a-button>
             <div
                 v-if="splittedClassifications.b.length > 0 && !showAll"
-                class="flex items-center justify-center mb-3 ml-3"
+                class="flex items-center justify-center mb-3 "
                 @click="() => toggleAllClassifications(true)"
             >
                 <span
@@ -105,7 +121,7 @@
             </div>
             <div
                 v-if="splittedClassifications.b.length > 0 && showAll"
-                class="flex items-center justify-center mb-3 ml-3"
+                class="flex items-center justify-center mb-3 "
                 @click="() => toggleAllClassifications(false)"
             >
                 <span
@@ -784,5 +800,8 @@
             rgba(82, 119, 215, 1) 60%,
             rgba(0, 0, 0, 0) 100%
         );
+    }
+    .classification-name-width {
+        max-width: 12rem;
     }
 </style>

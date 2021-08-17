@@ -1,22 +1,22 @@
 <template>
     <a-collapse
-        class="p-0 m-0 text-gray-700 bg-transparent border-none"
+        class="text-gray-700 bg-transparent border-none"
         :bordered="false"
-        expandIconPosition="right"
+        expand-icon-position="right"
     >
         <a-collapse-panel class="border-none">
             <template #header
                 ><span class="font-bold">Asset was updated</span></template
             >
 
-            <div>
+            <div class="mt-2">
                 <b>Terms </b
                 >{{ data.displayValue === 'termAdded' ? 'added' : 'removed' }}
             </div>
-            <div>
-                <span class="px-3 py-2 rounded-full pill">{{
-                    data.value
-                }}</span>
+            <div class="flex">
+                <div class="px-3 py-1 m-1 rounded-full pill">
+                    {{ data.value }}
+                </div>
             </div>
         </a-collapse-panel>
     </a-collapse>

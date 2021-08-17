@@ -33,9 +33,9 @@
                             "
                         >
                             <a-collapse
-                                class="p-0 m-0 text-gray-700 bg-transparent border-none "
+                                class="text-gray-700 bg-transparent border-none"
                                 :bordered="false"
-                                expandIconPosition="right"
+                                expand-icon-position="right"
                             >
                                 <a-collapse-panel class="border-none">
                                     <template #header
@@ -44,7 +44,7 @@
                                         ></template
                                     >
 
-                                    <div>
+                                    <div class="mt-2">
                                         <b>Classsifications </b
                                         >{{
                                             getDetailsForEntityAuditEvent(log)
@@ -54,15 +54,16 @@
                                                 : 'removed'
                                         }}
                                     </div>
-                                    <div>
-                                        <span
-                                            class="px-3 py-2 rounded-full pill"
-                                            >{{
+                                    <div class="flex">
+                                        <div
+                                            class="px-3 py-1 m-1 rounded-full  pill"
+                                        >
+                                            {{
                                                 getDetailsForEntityAuditEvent(
                                                     log
                                                 )?.value
-                                            }}</span
-                                        >
+                                            }}
+                                        </div>
                                     </div>
                                 </a-collapse-panel>
                             </a-collapse>
@@ -219,7 +220,6 @@
         min-height: 10px !important;
         height: 20px !important;
     }
-    .ant-timeline-item-content,
     .ant-timeline-item-last {
         min-height: 10px !important;
         margin-bottom: 0 !important;
@@ -231,5 +231,12 @@
             background-color: #5277d7;
             color: white;
         }
+    }
+    :global(.ant-collapse-content-box) {
+        padding: 0 !important;
+    }
+
+    :global(.ant-collapse-header) {
+        padding: 0 !important;
     }
 </style>

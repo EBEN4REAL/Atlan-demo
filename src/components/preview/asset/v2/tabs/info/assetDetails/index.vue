@@ -1,13 +1,15 @@
 <template>
     <div class="w-full px-5">
-        <div class="flex items-center w-full mb-4">
-            <div
-                class="flex flex-col mr-16 text-sm"
-                v-for="(value, key, index) in details"
-                :key="index"
-            >
-                <span class="mb-2 text-sm text-gray-500">{{ key }}</span>
-                <span class="text-gray-700">{{ value }}</span>
+        <div class="flex items-center w-full gap-16 mb-4">
+            <RowInfoHoverCard :rowCount="rows">
+                <div class="flex flex-col text-sm">
+                    <span class="mb-2 text-sm text-gray-500">Rows</span>
+                    <span class="text-gray-700">{{ rows }}</span>
+                </div>
+            </RowInfoHoverCard>
+            <div class="flex flex-col text-sm">
+                <span class="mb-2 text-sm text-gray-500">Cols</span>
+                <span class="text-gray-700">{{ cols }}</span>
             </div>
         </div>
         <Description v-if="selectedAsset.guid" :selectedAsset="selectedAsset" />
@@ -30,6 +32,7 @@
         watch,
         onMounted,
         toRefs,
+        computed,
     } from 'vue'
 
     import Description from './description.vue'
@@ -38,6 +41,7 @@
     import Experts from './experts.vue'
     import { assetInterface } from '~/types/assets/asset.interface'
     import useAssetInfo from '~/composables/asset/useAssetInfo'
+    import RowInfoHoverCard from '@/preview/asset/v2/hovercards/rowInfo.vue'
 
     export default defineComponent({
         name: 'AssetDetails',
@@ -52,26 +56,25 @@
             Description,
             Status,
             Owners,
+            RowInfoHoverCard,
         },
         setup(props) {
             const { selectedAsset } = toRefs(props)
-            const details: Ref = ref({})
-            function init() {
-                const { rowCount, columnCount, lastCrawled, updatedAt } =
-                    useAssetInfo()
-                console.log(selectedAsset.value, 'selectedAsset')
-                details.value = {
-                    Rows: rowCount(selectedAsset.value),
-                    Columns: columnCount(selectedAsset.value),
-                    // 'Last updated': updatedAt(selectedAsset.value),
-                    // 'Last crawled': lastCrawled(selectedAsset.value),
-                }
-            }
 
-            watch(selectedAsset, init)
-            onMounted(init)
+            const { rowCount, columnCount } = useAssetInfo()
+
+            const rows = computed(() =>
+                selectedAsset.value ? rowCount(selectedAsset.value, true) : '~'
+            )
+            const cols = computed(() =>
+                selectedAsset.value
+                    ? columnCount(selectedAsset.value, true)
+                    : '~'
+            )
+
             return {
-                details,
+                rows,
+                cols,
                 selectedAsset,
             }
         },

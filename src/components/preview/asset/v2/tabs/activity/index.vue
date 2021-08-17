@@ -18,12 +18,12 @@
                         class="border rounded-full  ant-timeline-item-dot bg-primary-light border-primary"
                     ></div>
                 </template>
-                <div>
-                    <span v-if="getDetailsForEntityAuditEvent(log)">
+                <div class="">
+                    <div v-if="getDetailsForEntityAuditEvent(log)">
                         <activity-type
                             :data="getDetailsForEntityAuditEvent(log)"
                         />
-                    </span>
+                    </div>
                     <span v-else>
                         {{ getEventByAction(log).label || 'Event' }}
                     </span>
@@ -159,12 +159,7 @@
         margin-bottom: 0 !important;
         height: 28px !important;
     }
-
-    :global(.ant-collapse-content-box) {
-        padding: 0 !important;
-    }
-
-    :global(.ant-collapse-header) {
+    :global(.ant-timeline-item-head-custom) {
         padding: 0 !important;
     }
 </style>

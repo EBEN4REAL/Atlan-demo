@@ -3,13 +3,13 @@ import { useAPI } from '~/api/useAPI'
 
 export default function useEntityRelationships(guid) {
     const relationshipAssets = ref([])
-    const isLoading = ref(true)
     const getEntityData = (id: Ref<string>) =>
         useAPI('GET_ENTITY', 'GET', {
             pathVariables: { guid: id?.value || id },
         })
-    const { data, error } = getEntityData(guid)
+    const { data, error, isLoading } = getEntityData(guid)
 
+    console.log(isLoading.value)
     watch([data, error], () => {
         if (data.value && error.value == undefined) {
             Object.keys(data.value?.entity?.relationshipAttributes).forEach(
@@ -31,6 +31,5 @@ export default function useEntityRelationships(guid) {
             )
         }
     })
-    isLoading.value = false
     return { relationshipAssetTypes: relationshipAssets, isLoading }
 }

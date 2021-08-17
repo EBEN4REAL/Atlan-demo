@@ -1,5 +1,4 @@
 <template>
-    <!-- {{ checkedList }} -->
     <div
         v-if="loading"
         class="flex items-center justify-center mt-4 text-sm leading-none"
@@ -16,7 +15,7 @@
             @change="handleSearchChange"
         >
             <template #prefix>
-                <Fa icon="fal cog" class="mr-2 text-gray-500" />
+                <Fa icon="fal search" class="mr-2 text-gray-500" />
             </template>
         </a-input>
         <a-popover title="Show/hide" trigger="click">
@@ -27,13 +26,13 @@
                     class="flex flex-col"
                 />
             </template>
-            <Fa icon="fal plus" class="ml-2 text-gray-500 cursor-pointer" />
+            <Fa icon="fal cog" class="ml-2 text-gray-500 cursor-pointer" />
         </a-popover>
     </div>
     <a-collapse
         :bordered="false"
         expand-icon-position="right"
-        accordion="true"
+        :accordion="true"
         class="p-0 m-0 bg-transparent"
     >
         <a-collapse-panel
@@ -106,6 +105,9 @@
 
                 relationshipAssets.value = relationshipAssetTypes.value
                 assetId.value = selectedAsset.value.guid
+                loading.value = isLoading.value
+                console.log(isLoading.value)
+                loading.value = false
             }
 
             const handleSearchChange = () => {

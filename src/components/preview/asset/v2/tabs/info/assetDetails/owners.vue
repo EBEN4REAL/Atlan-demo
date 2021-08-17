@@ -1,11 +1,150 @@
 <template>
-    <div class="w-7/12 mr-2">
-        <!-- <Owners
-                    @toggleOwnersDropdown="toggleOwnersDropdown"
-                    :showOwnersDropdown="showOwnersDropdown"
-                /> -->
-        <p class="mb-0">Owners</p>
+    <div class="w-full mr-2">
+        <p class="mb-2">Owners</p>
         <div v-if="!isOwnersLoading">
+            <div
+                v-if="ownerUsers.length > 0"
+                class="flex flex-wrap text-sm border border-transparent rounded"
+            >
+                <template
+                    v-for="owner in splittedOwners.a"
+                    :key="owner.username"
+                >
+                    <OwnerInfoCard
+                        :username="owner.username"
+                        :type="owner.type"
+                    >
+                        <div
+                            class="
+                                flex
+                                items-center
+                                mr-3
+                                cursor-pointer
+                                my-0
+                                mb-3
+                                bg-gray-light
+                                rounded-full
+                                text-gray-700
+                                px-3
+                                py-1.5
+                            "
+                            v-on:click.stop="
+                                () => handleClickUser(owner.username)
+                            "
+                        >
+                            <img
+                                src="https://picsum.photos/id/237/50/50"
+                                alt="view"
+                                class="w-4 h-4 mr-2 rounded-full"
+                            />
+                            <div
+                                class="
+                                    mb-0
+                                    font-bold
+                                    truncate
+                                    text-sm
+                                    capitalize
+                                    max-owner-name-width
+                                    ...
+                                "
+                            >
+                                {{ owner.username }}
+                            </div>
+                        </div>
+                    </OwnerInfoCard>
+                </template>
+                <template
+                    v-if="showAll"
+                    v-for="owner in splittedOwners.b"
+                    :key="owner.username"
+                >
+                    <OwnerInfoCard
+                        :username="owner.username"
+                        :type="owner.type"
+                    >
+                        <div
+                            class="
+                                flex
+                                items-center
+                                mr-3
+                                cursor-pointer
+                                my-0
+                                mb-3
+                                bg-gray-light
+                                rounded-full
+                                px-3
+                                py-1.5
+                                text-gray-700
+                            "
+                            v-on:click.stop="
+                                () => handleClickUser(owner.username)
+                            "
+                        >
+                            <img
+                                src="https://picsum.photos/id/237/50/50"
+                                alt="view"
+                                class="w-4 h-4 mr-2 rounded-full"
+                            />
+                            <div
+                                class="
+                                    mb-0
+                                    font-bold
+                                    truncate
+                                    text-sm
+                                    capitalize
+                                    max-owner-name-width
+                                    ...
+                                "
+                            >
+                                {{ owner.username }}
+                            </div>
+                        </div>
+                    </OwnerInfoCard>
+                </template>
+                <a-button
+                    class="flex items-center justify-center w-8 h-8 px-2 py-2 mr-3 text-gray-700 border-none rounded-full  bg-gray-light hover:bg-primary hover:text-white"
+                    @click.stop="toggleOwnerPopover"
+                >
+                    <fa icon="fal plus" />
+                </a-button>
+
+                <div
+                    v-if="splittedOwners.b.length > 0 && !showAll"
+                    class="flex items-center justify-center mb-3 cursor-pointer"
+                    @click="() => toggleAllOwners(true)"
+                >
+                    <span
+                        class="
+                            px-1
+                            py-0.5
+                            text-sm
+                            font-bold
+                            rounded
+                            text-primary
+                        "
+                    >
+                        and {{ splittedOwners.b.length }} more
+                    </span>
+                </div>
+                <div
+                    v-if="splittedOwners.b.length > 0 && showAll"
+                    class="flex items-center justify-center mb-3 cursor-pointer"
+                    @click="() => toggleAllOwners(false)"
+                >
+                    <span
+                        class="
+                            px-1
+                            py-0.5
+                            text-sm
+                            font-bold
+                            rounded
+                            text-primary
+                        "
+                    >
+                        show less
+                    </span>
+                </div>
+            </div>
             <a-popover
                 v-model:visible="showOwnersDropdown"
                 placement="left"
@@ -13,59 +152,19 @@
                 trigger="click"
                 @visibleChange="handleUpdateOwners"
             >
-                <div
-                    v-if="ownerUsers.length > 0"
-                    :class="showOwnersDropdown ? 'border-gray-100' : ''"
-                    class="flex flex-wrap px-2 py-1 my-1 text-sm border border-transparent rounded  hover:border-gray-100"
-                >
-                    <template
-                        v-for="username in splittedOwnerUsers.a"
-                        :key="username"
-                    >
-                        <div
-                            class="flex items-center mr-3 cursor-pointer  owner-child"
-                            v-on:click.stop="() => handleClickUser(username)"
-                        >
-                            <img
-                                src="https://picsum.photos/id/237/50/50"
-                                alt="view"
-                                class="w-4 h-4 mr-1 rounded-full"
-                            />
-                            <div
-                                class="
-                                    text-gray
-                                    mb-0
-                                    hover:border-b
-                                    truncate
-                                    ...
-                                "
-                            >
-                                {{ username }}
-                            </div>
-                        </div>
-                    </template>
-
+                <div v-if="ownerUsers.length < 1" class="inline-flex mb-3 mr-2">
                     <div
-                        v-if="splittedOwnerUsers.b.length > 0"
-                        class="owner-child"
-                    >
-                        <span
-                            class="
-                                px-1
-                                py-0.5
-                                text-sm
-                                rounded
-                                text-primary
-                                _bg-primary-light
-                            "
-                        >
-                            +{{ splittedOwnerUsers.b.length }}
-                        </span>
-                    </div>
-                </div>
-                <div v-else class="inline-flex mt-2 mr-2">
-                    <div
-                        class="inline-flex px-2 py-1 rounded cursor-pointer select-none  text-primary hover:text-white hover:bg-primary _bg-primary-light"
+                        class="
+                            inline-flex
+                            px-3
+                            py-1.5
+                            rounded-full
+                            cursor-pointer
+                            select-none
+                            text-primary
+                            hover:text-white hover:bg-primary
+                            _bg-primary-light
+                        "
                     >
                         <span class="flex items-center text-sm">
                             <fa icon="fal plus" class="" />
@@ -161,6 +260,7 @@
                                                             class="
                                                                 text-gray
                                                                 text-sm
+                                                                capitalize
                                                                 truncate
                                                                 ...
                                                             "
@@ -245,6 +345,7 @@
                                                                 text-gray
                                                                 text-sm
                                                                 truncate
+                                                                capitalize
                                                                 ...
                                                             "
                                                             >{{
@@ -308,9 +409,10 @@
     import fetchGroupList from '~/composables/group/fetchGroupList'
     import { useUserPreview } from '~/composables/user/showUserPreview'
     import updateOwners from '~/composables/asset/updateOwners'
+    import OwnerInfoCard from '~/components/preview/asset/v2/hovercards/ownerInfo.vue'
 
     export default defineComponent({
-        components: {},
+        components: { OwnerInfoCard },
         props: {
             selectedAsset: {
                 type: Object as PropType<assetInterface>,
@@ -325,10 +427,8 @@
             const activeOwnerTabKey = ref('1')
             const selectedUsers: Ref<string[]> = ref([])
             const selectedGroups: Ref<string[]> = ref([])
+            const showAll = ref(false)
 
-            const toggleOwnersDropdown = () => {
-                showOwnersDropdown.value = true
-            }
             const {
                 list: listUsers,
                 total: totalUsersCount,
@@ -410,7 +510,29 @@
             function isOwner(username: string, owners: string[]) {
                 return owners.includes(username)
             }
-            const splittedOwnerUsers = ref(splitArray(3, ownerUsers.value))
+            function mappedSplittedOwners(ownerUsers, ownerGroups) {
+                let splittedOwners = []
+                let temp = ownerUsers.value.map((username: string) => {
+                    return {
+                        type: 'user',
+                        username,
+                    }
+                })
+                splittedOwners = temp
+                temp = ownerGroups.value.map((name: string) => {
+                    return {
+                        type: 'group',
+                        username: name,
+                    }
+                })
+                splittedOwners = [...splittedOwners, ...temp]
+                console.log(splittedOwners, 'spilltedOwners')
+                return splittedOwners
+            }
+
+            const splittedOwners = ref(
+                splitArray(5, mappedSplittedOwners(ownerUsers, ownerGroups))
+            )
             const closePopover = () => {
                 showOwnersDropdown.value = false
             }
@@ -427,25 +549,21 @@
             console.log(selectedGroups, 'selectedGroups')
 
             watch(
-                ownerUsers,
+                [ownerUsers, ownerGroups],
                 () => {
                     console.log('owners changed', ownerUsers.value)
                     selectedUsers.value = ownerUsers.value
-                    splittedOwnerUsers.value = splitArray(3, ownerUsers.value)
-                },
-                {
-                    immediate: true,
-                }
-            )
-            watch(
-                ownerGroups,
-                () => {
                     selectedGroups.value = ownerGroups.value
+                    splittedOwners.value = splitArray(
+                        5,
+                        mappedSplittedOwners(ownerUsers, ownerGroups)
+                    )
                 },
                 {
                     immediate: true,
                 }
             )
+
             const handleOwnerSearch = (e: Event) => {
                 const queryText = (<HTMLInputElement>e.target).value
                 if (activeOwnerTabKey.value === '1') {
@@ -455,7 +573,15 @@
                     handleGroupSearch(queryText)
                 }
             }
+            const toggleOwnerPopover = () => {
+                showOwnersDropdown.value = !showOwnersDropdown.value
+            }
+            const toggleAllOwners = (state: boolean) => {
+                showAll.value = state
+            }
             return {
+                showAll,
+                toggleAllOwners,
                 userOwnerState,
                 STATES,
                 groupOwnerState,
@@ -468,7 +594,7 @@
                 closePopover,
                 activeOwnerTabKey,
                 isOwner,
-                splittedOwnerUsers,
+                splittedOwners,
                 ownerUsers,
                 ownerGroups,
                 handleClickUser,
@@ -477,7 +603,7 @@
                 listUsers,
                 listGroups,
                 showOwnersDropdown,
-                toggleOwnersDropdown,
+                toggleOwnerPopover,
                 selectedAsset,
             }
         },
@@ -493,6 +619,9 @@
     .owner-child {
         margin-top: 0.3rem;
         margin-bottom: 0.3rem;
+    }
+    .max-owner-name-width {
+        max-width: 10rem;
     }
     // .owner-child:nth-child(2) {
     //     margin-top: 0.3rem;

@@ -1,18 +1,13 @@
 <template>
     <div class="flex w-full">
-        <div class="w-1/3 h-full bg-white border-r">
-            <div class="flex flex-col">
-                <AssetFilters
-                    :initial-filters="initialFilters"
-                    @refresh="handleFilterChange"
-                ></AssetFilters>
-            </div>
+        <div class="flex flex-col h-full bg-white border-r facets">
+            <AssetFilters
+                :initial-filters="initialFilters"
+                @refresh="handleFilterChange"
+            ></AssetFilters>
         </div>
 
-        <div
-            class="flex flex-col items-stretch flex-grow mt-3 mb-1 bg-white"
-            style="overflow: hidden"
-        >
+        <div class="flex flex-col items-stretch flex-1 mt-3 mb-1 bg-white w-80">
             <div class="flex flex-col h-full">
                 <div class="flex px-3">
                     <ConnectorDropdown
@@ -52,7 +47,16 @@
                         </template>
                         <div
                             tabindex="0"
-                            class="flex items-center px-2 py-1 transition-shadow border border-gray-300 rounded  hover:border-gray-300"
+                            class="
+                                flex
+                                items-center
+                                px-2
+                                py-1
+                                transition-shadow
+                                border border-gray-300
+                                rounded
+                                hover:border-gray-300
+                            "
                             @keyup.enter="isFilterVisible = !isFilterVisible"
                         >
                             <span>Options</span>
@@ -142,8 +146,8 @@
     import AssetPagination from '@common/pagination/index.vue'
     import HeirarchySelect from '@common/tree/heirarchy/index.vue'
     import SearchBox from '@common/searchbox/searchlist.vue'
-    import ConnectorDropdown from '@common/dropdown/connector/index.vue'
-    import AssetDropdown from '@common/dropdown/asset/index.vue'
+    import ConnectorDropdown from '~/components/common/dropdown/connectorDropdown.vue'
+    import AssetDropdown from '~/components/common/dropdown/assetDropdown.vue'
     import EmptyView from '@common/empty/discover.vue'
     import Preferences from '@/discovery/asset/preference/index.vue'
     // import { useDebounceFn } from "@vueuse/core";
@@ -610,7 +614,7 @@
 </style>
 <style scoped>
     .facets {
-        min-width: 280px;
-        width: 340px;
+        min-width: 240px;
+        width: 240px;
     }
 </style>

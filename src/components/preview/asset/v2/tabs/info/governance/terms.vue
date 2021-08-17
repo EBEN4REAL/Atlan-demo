@@ -1,6 +1,7 @@
 <template>
     <div class="text-sm text-gray-500">
-        <p class="mb-1">Business Terms</p>
+        <p class="mb-3 text-sm">Business Terms</p>
+        <TermInfoHoverCard> click me </TermInfoHoverCard>
         <div class="transition duration-500 ease-in-out rounded-lg">
             <a-popover
                 v-model:visible="isCompleted"
@@ -14,7 +15,12 @@
                         style="width: 300px; height: 250px"
                     >
                         <div
-                            class="flex items-center align-middle border-b border-gray-100 "
+                            class="
+                                flex
+                                items-center
+                                align-middle
+                                border-b border-gray-100
+                            "
                         >
                             <div class="w-full">
                                 <a-input
@@ -94,7 +100,13 @@
                     </div>
 
                     <div
-                        class="flex justify-end p-2 space-x-2 border-t border-gray-100 "
+                        class="
+                            flex
+                            justify-end
+                            p-2
+                            space-x-2
+                            border-t border-gray-100
+                        "
                     >
                         <a-button size="small" @click="handleCancel"
                             >Cancel</a-button
@@ -116,14 +128,21 @@
                     "
                 >
                     <div
-                        class="inline-flex px-2 py-1 rounded cursor-pointer select-none  _bg-primary-light"
+                        class="
+                            inline-flex
+                            px-3
+                            py-1.5
+                            rounded-full
+                            items-center
+                            cursor-pointer
+                            select-none
+                            text-sm text-primary
+                            hover:text-white hover:bg-primary
+                            _bg-primary-light
+                        "
                     >
-                        <span class="flex items-center text-sm">
-                            <fa icon="fal plus" class="text-primary" />
-                        </span>
-                        <span class="mt-1 ml-2 text-primary"
-                            >Add Business terms</span
-                        >
+                        <fa icon="fal plus" />
+                        <span class="ml-2">Add Business terms</span>
                     </div>
                 </div>
                 <div class="flex flex-wrap gap-x-1" v-else>
@@ -133,7 +152,22 @@
                         :key="meaning.termGuid"
                     >
                         <div
-                            class="flex items-center px-2 py-1 mb-1 leading-none text-purple-500 align-middle bg-purple-500 rounded-md cursor-pointer  bg-opacity-10 hover:bg-purple-500 hover:text-white drop-shadow-sm"
+                            class="
+                                flex
+                                items-center
+                                px-2
+                                py-1
+                                mb-1
+                                leading-none
+                                text-purple-500
+                                align-middle
+                                bg-purple-500
+                                rounded-md
+                                cursor-pointer
+                                bg-opacity-10
+                                hover:bg-purple-500 hover:text-white
+                                drop-shadow-sm
+                            "
                             @click.prevent.stop="handleClickUser"
                         >
                             <fa
@@ -155,6 +189,7 @@
 <script lang="ts">
     import { defineComponent, ref, PropType } from 'vue'
     import StatusBadge from '@common/badge/status/index.vue'
+    import TermInfoHoverCard from '@/preview/asset/v2/hovercards/termInfo.vue'
 
     import fetchUserList from '~/composables/user/fetchUserList'
     import fetchGroupList from '~/composables/group/fetchGroupList'
@@ -162,8 +197,7 @@
     import { assetInterface } from '~/types/assets/asset.interface'
 
     export default defineComponent({
-        components: { StatusBadge },
-
+        components: { StatusBadge, TermInfoHoverCard },
         props: {
             selectedAsset: {
                 type: Object as PropType<assetInterface>,

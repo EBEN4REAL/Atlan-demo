@@ -44,7 +44,7 @@
 <style lang="less" module>
     .popover {
         :global(.ant-popover-inner) {
-            @apply rounded !important;
+            border-radius: 8px !important;
         }
         :global(.ant-popover-inner-content) {
             @apply p-4 !important;

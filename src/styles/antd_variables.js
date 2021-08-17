@@ -21,7 +21,9 @@ const getAntDesignVariables = {
     // "table-border-radius-base": "0.7rem",
     // Drawer
     'drawer-body-padding': 0,
-    // Popover
+    // Input
+    'input-icon-color': themeColors.gray[500],
+    'input-hover-border-color': themeColors.primary.focus,
 }
 
 export default getAntDesignVariables

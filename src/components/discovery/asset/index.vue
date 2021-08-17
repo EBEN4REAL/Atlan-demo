@@ -28,15 +28,11 @@
                         :class="$style.searchbar"
                         @change="handleSearchChange"
                     >
-                        <template #prefix>
+                        <template #suffix>
                             <Fa icon="fal search" class="mr-2 text-gray-500" />
                         </template>
                     </a-input>
-                    <a-popover
-                        v-model:visible="isFilterVisible"
-                        trigger="click"
-                        placement="bottomLeft"
-                    >
+                    <a-popover trigger="click" placement="bottomLeft">
                         <template #content>
                             <Preferences
                                 :default-projection="projection"
@@ -45,29 +41,16 @@
                                 @state="handleState"
                             ></Preferences>
                         </template>
-                        <div
-                            tabindex="0"
-                            class="
-                                flex
-                                items-center
-                                px-2
-                                py-1
-                                transition-shadow
-                                border border-gray-300
-                                rounded
-                                hover:border-gray-300
-                            "
-                            @keyup.enter="isFilterVisible = !isFilterVisible"
-                        >
-                            <span>Options</span>
-                            <Fa
-                                icon="fas chevron-down"
-                                class="ml-1 transition-transform transform"
-                                :class="
-                                    isFilterVisible ? '-rotate-180' : 'rotate-0'
-                                "
-                            />
-                        </div>
+                        <a-badge :dot="projection.length" :class="$style.badge">
+                            <a-button class="px-2 py-1 ml-2 rounded">
+                                <span class="flex items-center justify-center">
+                                    <fa
+                                        icon="fas sort-amount-up"
+                                        class="hover:text-primary-500"
+                                    />
+                                </span>
+                            </a-button>
+                        </a-badge>
                     </a-popover>
                 </div>
 
@@ -239,7 +222,6 @@
         setup(props, { emit }) {
             // initializing the discovery store
             const { initialFilters } = props
-            const isFilterVisible = ref(false)
             const router = useRouter()
             const tracking = useTracking()
             const events = tracking.getEventsName()
@@ -527,7 +509,6 @@
                 fetchBMonStore()
             })
             return {
-                isFilterVisible,
                 initialFilters,
                 searchScoreList,
                 list,
@@ -599,16 +580,28 @@
 </script>
 <style lang="less" module>
     .searchbar {
-        @apply mr-2 border-none rounded;
-        @apply bg-gray-300 bg-opacity-50;
+        @apply mr-2 rounded;
+        @apply border-2 border-primary-focus !important;
         @apply outline-none;
         :global(.ant-input) {
             @apply h-6;
             @apply bg-transparent;
             @apply text-gray-500;
         }
+        &:hover {
+            border-right-width: 2px !important;
+            box-shadow: 0 0 0 2px rgb(82 119 215 / 20%);
+        }
         ::placeholder {
             @apply text-gray-500 opacity-80 text-sm;
+        }
+    }
+    .badge {
+        :global(.ant-badge-dot) {
+            @apply bg-primary !important;
+        }
+        :global(.ant-badge-count) {
+            @apply top-3 right-2 !important;
         }
     }
 </style>

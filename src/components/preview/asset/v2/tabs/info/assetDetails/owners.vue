@@ -46,16 +46,58 @@
                         </div>
                     </div>
                 </template>
+                <template
+                    v-if="showAll"
+                    v-for="username in splittedOwnerUsers.b"
+                    :key="username"
+                >
+                    <div
+                        class="
+                            flex
+                            items-center
+                            mr-3
+                            cursor-pointer
+                            my-0
+                            mb-3
+                            bg-gray-light
+                            rounded-full
+                            px-3
+                            py-1.5
+                        "
+                        v-on:click.stop="() => handleClickUser(username)"
+                    >
+                        <img
+                            src="https://picsum.photos/id/237/50/50"
+                            alt="view"
+                            class="w-4 h-4 mr-2 rounded-full"
+                        />
+                        <div
+                            class="
+                                text-gray-700
+                                mb-0
+                                font-bold
+                                truncate
+                                text-sm
+                                capitalize
+                                max-owner-name-width
+                                ...
+                            "
+                        >
+                            {{ username }}
+                        </div>
+                    </div>
+                </template>
                 <a-button
-                    class="flex items-center justify-center px-2 py-2 text-gray-700 border-none rounded-full  bg-gray-light hover:bg-primary hover:text-white"
+                    class="flex items-center justify-center w-8 h-8 px-2 py-2 text-gray-700 border-none rounded-full  bg-gray-light hover:bg-primary hover:text-white"
                     @click.stop="toggleOwnerPopover"
                 >
                     <fa icon="fal plus" />
                 </a-button>
 
                 <div
-                    v-if="splittedOwnerUsers.b.length > 0"
-                    class="flex items-center justify-center mb-3 ml-3"
+                    v-if="splittedOwnerUsers.b.length > 0 && !showAll"
+                    class="flex items-center justify-center mb-3 ml-3 cursor-pointer "
+                    @click="() => toggleAllOwners(true)"
                 >
                     <span
                         class="
@@ -67,7 +109,25 @@
                             text-primary
                         "
                     >
-                        + {{ splittedOwnerUsers.b.length }} more
+                        and {{ splittedOwnerUsers.b.length }} more
+                    </span>
+                </div>
+                <div
+                    v-if="splittedOwnerUsers.b.length > 0 && showAll"
+                    class="flex items-center justify-center mb-3 ml-3 cursor-pointer "
+                    @click="() => toggleAllOwners(false)"
+                >
+                    <span
+                        class="
+                            px-1
+                            py-0.5
+                            text-sm
+                            font-bold
+                            rounded
+                            text-primary
+                        "
+                    >
+                        show less
                     </span>
                 </div>
             </div>
@@ -80,7 +140,17 @@
             >
                 <div v-if="ownerUsers.length < 1" class="inline-flex mb-3 mr-2">
                     <div
-                        class="inline-flex px-2 py-1 rounded cursor-pointer select-none  text-primary hover:text-white hover:bg-primary _bg-primary-light"
+                        class="
+                            inline-flex
+                            px-3
+                            py-1.5
+                            rounded-full
+                            cursor-pointer
+                            select-none
+                            text-primary
+                            hover:text-white hover:bg-primary
+                            _bg-primary-light
+                        "
                     >
                         <span class="flex items-center text-sm">
                             <fa icon="fal plus" class="" />
@@ -342,6 +412,7 @@
             const activeOwnerTabKey = ref('1')
             const selectedUsers: Ref<string[]> = ref([])
             const selectedGroups: Ref<string[]> = ref([])
+            const showAll = ref(false)
 
             const {
                 list: listUsers,
@@ -472,7 +543,12 @@
             const toggleOwnerPopover = () => {
                 showOwnersDropdown.value = !showOwnersDropdown.value
             }
+            const toggleAllOwners = (state: boolean) => {
+                showAll.value = state
+            }
             return {
+                showAll,
+                toggleAllOwners,
                 userOwnerState,
                 STATES,
                 groupOwnerState,

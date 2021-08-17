@@ -3,7 +3,49 @@
         <p class="mb-3 text-sm">Classifications</p>
         <div class="flex flex-wrap items-stretch items-center lex">
             <template
-                v-for="(classification, index) in assetLinkedClassifcations"
+                v-for="(classification, index) in splittedClassifications.a"
+                :key="'classification-' + classification?.typeName + index"
+            >
+                <div
+                    class="
+                        relative
+                        flex
+                        items-stretch
+                        px-3
+                        py-1.5
+                        mb-3
+                        mr-3
+                        font-bold
+                        rounded-full
+                        bg-gray-light
+                        text-gray-700
+                        group
+                        justify-items-stretch
+                        hover:bg-primary hover:text-white
+                    "
+                >
+                    <div
+                        class="flex items-center leading-none align-middle rounded cursor-pointer  drop-shadow-sm"
+                        @click.prevent.stop="handleClassificationClick"
+                    >
+                        <div class="text-sm font-bold">
+                            {{ classification?.typeName }}
+                        </div>
+                    </div>
+
+                    <div
+                        class="absolute right-0 flex items-center justify-center pl-3 pr-1 text-white bg-transparent border-none rounded-full opacity-0 cursor-pointer  group-hover:opacity-100 classification-cross-btn"
+                        @click.stop="() => unLinkClassification(classification)"
+                    >
+                        <div class="flex items-center justify-center">
+                            <fa icon="fal times-circle" class="" />
+                        </div>
+                    </div>
+                </div>
+            </template>
+            <template
+                v-if="showAll"
+                v-for="(classification, index) in splittedClassifications.b"
                 :key="'classification-' + classification?.typeName + index"
             >
                 <div
@@ -45,11 +87,33 @@
             </template>
             <a-button
                 v-if="asset.classifications?.length > 0"
-                class="flex items-center justify-center px-2 py-2 text-gray-700 border-none rounded-full  bg-gray-light hover:bg-primary hover:text-white"
+                class="flex items-center justify-center w-8 h-8 px-2 py-2 text-gray-700 border-none rounded-full  bg-gray-light hover:bg-primary hover:text-white"
                 @click.stop="openLinkClassificationPopover"
             >
                 <fa icon="fal plus" />
             </a-button>
+            <div
+                v-if="splittedClassifications.b.length > 0 && !showAll"
+                class="flex items-center justify-center mb-3 ml-3"
+                @click="() => toggleAllClassifications(true)"
+            >
+                <span
+                    class="px-1 py-0.5 text-sm font-bold rounded text-primary"
+                >
+                    and {{ splittedClassifications.b.length }} more
+                </span>
+            </div>
+            <div
+                v-if="splittedClassifications.b.length > 0 && showAll"
+                class="flex items-center justify-center mb-3 ml-3"
+                @click="() => toggleAllClassifications(false)"
+            >
+                <span
+                    class="px-1 py-0.5 text-sm font-bold rounded text-primary"
+                >
+                    show less
+                </span>
+            </div>
         </div>
         <a-popover
             v-model:visible="linkClassificationPopover"
@@ -62,19 +126,18 @@
                 v-if="asset.classifications?.length < 1"
                 class="
                     inline-flex
-                    px-2
+                    px-3
                     py-1.5
-                    rounded
+                    rounded-full
+                    items-center
                     cursor-pointer
                     select-none
-                    text-primary
+                    text-sm text-primary
                     hover:text-white hover:bg-primary
                     _bg-primary-light
                 "
             >
-                <span class="flex items-center text-sm">
-                    <fa icon="fal plus" class="" />
-                </span>
+                <fa icon="fal plus" class="" />
                 <span class="ml-2">Add Classifications</span>
             </div>
             <template #content>
@@ -252,6 +315,7 @@
             const linkClassificationPopover = ref(false)
             const linkClassificationStatus = ref('')
             const linkClassificationStatusError = ref('')
+            const showAll = ref(false)
             const availableClassificationsForLink = ref(
                 getAvailableClassificationsForLink(
                     selectedAsset.value.classifications,
@@ -618,6 +682,33 @@
                 selectedClassificationForLink.value = []
             }
 
+            function splitArray(sizeofSplit: number, arr: any[]) {
+                if (sizeofSplit >= arr.length) {
+                    return {
+                        a: [...arr],
+                        b: [],
+                    }
+                }
+                const a: any[] = arr.slice(0, sizeofSplit)
+                const b: any[] = arr.slice(sizeofSplit, arr.length)
+                return {
+                    a,
+                    b,
+                }
+            }
+            const splittedClassifications = ref(
+                splitArray(5, assetLinkedClassifcations.value)
+            )
+            watch(assetLinkedClassifcations, () => {
+                splittedClassifications.value = splitArray(
+                    5,
+                    assetLinkedClassifcations.value
+                )
+            })
+            const toggleAllClassifications = (state: boolean) => {
+                showAll.value = state
+            }
+
             return {
                 asset,
                 selectedAsset,
@@ -635,6 +726,7 @@
                 availableClassificationsForLink,
                 linkClassificationPopover,
                 assetLinkedClassifcations,
+                splittedClassifications,
                 unLinkClassification,
                 handleClassificationClick,
                 createClassificationRef,
@@ -645,6 +737,8 @@
                 createErrorText,
                 showAddClassificationBtn,
                 handlePopoverVisibleChange,
+                toggleAllClassifications,
+                showAll,
             }
         },
     })

@@ -1,8 +1,8 @@
 <template>
     <div class="w-full px-5">
-        <div class="flex items-center justify-between w-full mb-4">
+        <div class="flex items-center w-full mb-4">
             <div
-                class="flex flex-col text-sm"
+                class="flex flex-col mr-16 text-sm"
                 v-for="(value, key, index) in details"
                 :key="index"
             >
@@ -63,8 +63,8 @@
                 details.value = {
                     Rows: rowCount(selectedAsset.value),
                     Columns: columnCount(selectedAsset.value),
-                    'Last updated': updatedAt(selectedAsset.value),
-                    'Last crawled': lastCrawled(selectedAsset.value),
+                    // 'Last updated': updatedAt(selectedAsset.value),
+                    // 'Last crawled': lastCrawled(selectedAsset.value),
                 }
             }
 

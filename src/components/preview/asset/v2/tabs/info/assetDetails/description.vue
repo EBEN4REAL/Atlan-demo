@@ -39,7 +39,17 @@
                 </p>
                 <div v-else>
                     <div
-                        class="inline-flex px-2 py-1 rounded cursor-pointer select-none  text-primary hover:text-white hover:bg-primary _bg-primary-light"
+                        class="
+                            inline-flex
+                            px-3
+                            py-1.5
+                            rounded-full
+                            cursor-pointer
+                            select-none
+                            text-primary
+                            hover:text-white hover:bg-primary
+                            _bg-primary-light
+                        "
                     >
                         <span class="flex items-center text-sm">
                             <fa icon="fal plus" />

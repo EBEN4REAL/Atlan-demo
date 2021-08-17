@@ -20,7 +20,7 @@
                 </template>
                 <div>
                     <span v-if="getDetailsForEntityAuditEvent(log)">
-                        <ActivityType
+                        <activity-type
                             :data="getDetailsForEntityAuditEvent(log)"
                         />
                     </span>

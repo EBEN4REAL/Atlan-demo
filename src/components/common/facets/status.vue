@@ -1,6 +1,6 @@
 <template>
     <a-checkbox-group
-        v-model:value="checkedValues"
+        v-model:value="data.checked"
         class="w-full px-4 py-1 pb-3 bg-gray-100"
         @change="handleChange"
     >
@@ -36,32 +36,18 @@
             },
             data: {
                 type: Object,
-                required: false,
-                default() {
-                    return {}
-                },
-            },
-            modelValue: {
-                type: Array,
-                required: false,
-                default() {
-                    return []
-                },
+                required: true,
             },
         },
-        emits: ['update:modelValue', 'change'],
+        emits: ['change'],
         setup(props, { emit }) {
             const list = computed(() => List)
             const checkedValues = ref([])
-            const { data, modelValue } = toRefs(props)
-            checkedValues.value = [...modelValue.value, ...data.value.checked]
+            const { data } = toRefs(props)
             console.log(checkedValues.value, 'model')
-            const handleChange = (checkedValue: string) => {
-                data.value.checked = checkedValues.value
-                emit('update:modelValue', checkedValues.value, props.item.id)
-
+            const handleChange = () => {
                 const criterion: Components.Schemas.FilterCriteria[] = []
-                checkedValues.value.forEach((val) => {
+                data.value.checked.forEach((val) => {
                     criterion.push({
                         attributeName: 'assetStatus',
                         attributeValue: val,
@@ -78,16 +64,11 @@
                 })
             }
 
-            const clear = () => {
-                checkedValues.value = []
-                handleChange('')
-            }
-
             return {
+                data,
                 handleChange,
                 list,
                 checkedValues,
-                clear,
             }
         },
     })

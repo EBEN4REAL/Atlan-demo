@@ -17,10 +17,9 @@
                 </div>
             </div>
             <div class="flex items-center pb-1">
-                <!-- <span class="mb-0 text-lg font-bold text-gray">
-                    <Tooltip :tooltip-text="title(selectedAsset)"
-                /></span> --><Tooltip
-                    tooltip-text="Lorem Ipsum Lorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem Ipsum"
+                <Tooltip
+                    :tooltip-text="title(selectedAsset)"
+                    classes="mb-0 text-lg font-bold text-gray"
                 />
 
                 <div class="flex items-center">

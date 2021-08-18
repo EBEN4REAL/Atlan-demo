@@ -33,6 +33,7 @@
         props: {
             assetType: String,
             assetId: String,
+            projections: Array<string>
         },
         setup(props) {
             const { assetId, assetType } = toRefs(props)
@@ -47,7 +48,6 @@
                 assetType: props.assetType,
                 list,
                 isReady,
-                projections: ['description', 'owners'],
                 cssClasses: {
                     paddingY: 'py-6',
                 },

@@ -1,7 +1,11 @@
 <template>
     <div class="w-2/3 readme-wrapper h-min-1/2">
         <div
-            class="flex items-center justify-between w-full py-1 text-base bg-white border rounded-t  px-7"
+            class="flex items-center justify-between w-full py-1 text-base bg-white "
+            :class="[
+                showBorders ? ' border rounded-t ' : '',
+                showPaddingX ? 'px-7' : '',
+            ]"
         >
             <div>Readme</div>
             <div v-if="editable" class="flex align-items-center">
@@ -64,7 +68,10 @@
         <Editor
             ref="editor"
             :placeholder="placeholder"
-            class="rounded-b"
+            :class="[
+                showBorders ? 'border border-t-0 rounded-b' : 'border-0',
+                showPaddingX ? 'px-7' : '',
+            ]"
             :editable="editable"
             @onEditorContentUpdate="onUpdate"
         />
@@ -139,6 +146,16 @@
                 type: String,
                 required: true,
                 default: '',
+            },
+            showBorders: {
+                type: Boolean,
+                required: false,
+                default: true,
+            },
+            showPaddingX: {
+                type: Boolean,
+                required: false,
+                default: true,
             },
         },
         setup() {

@@ -7,7 +7,6 @@
         <a-spin size="small" class="mr-2 leading-none"></a-spin>
     </div>
     <!-- preloader ends here -->
-
     <!-- related asset list with assetTpe type  -->
     <VirtualList v-else :data="list.entities" :data-key="keyField">
         <template #default="{ item }">
@@ -23,7 +22,7 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent,ref,watch,toRefs } from 'vue'
+    import { defineComponent, ref, watch, toRefs } from 'vue'
     import ListItem from '@/discovery/asset/list/item.vue'
     import useBiRelations from '~/composables/asset/useBiRelations'
     import VirtualList from '~/lib/virtualList/virtualList.vue'
@@ -31,12 +30,29 @@
     export default defineComponent({
         components: { ListItem, VirtualList },
         props: {
-            assetType: String,
-            assetId: String,
-            projections: Array<string>
+            assetType: {
+                type: String,
+                requred: true,
+                default: () => '',
+            },
+            assetId: {
+                type: String,
+                requred: true,
+                default: () => '',
+            },
+            projections: {
+                type: Array,
+                required: false,
+                default: () => [],
+            },
+            cssClasses: {
+                type: Object,
+                required: false,
+                default: () => {},
+            },
         },
         setup(props) {
-            const { assetId,assetType,projections } = toRefs(props)
+            const { assetId, assetType, projections } = toRefs(props)
 
             // gets the list of related assets for the ListItem component
             const { list, isReady, error } = useBiRelations(
@@ -49,10 +65,6 @@
                 list,
                 isReady,
                 projections,
-                cssClasses:{
-                    textSize:'text-sm',
-                    paddingY:'py-3'
-                }
             }
         },
     })

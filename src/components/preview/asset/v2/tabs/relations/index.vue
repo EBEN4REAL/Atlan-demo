@@ -67,6 +67,7 @@
                 :projections="checkedList"
                 :assetType="item.displayText"
                 :assetId="assetId"
+                :cssClasses="cssClasses"
             />
         </a-collapse-panel>
     </a-collapse>
@@ -82,9 +83,9 @@
         computed,
         toRefs,
     } from 'vue'
+    import AssetTypeItems from '@/preview/asset/v2/tabs/relations/assetTypeItems.vue'
     import { assetInterface } from '~/types/assets/asset.interface'
     import useEntityRelationships from '~/composables/asset/useEntityRelationships'
-    import AssetTypeItems from './assetTypeItems.vue'
 
     export default defineComponent({
         components: { AssetTypeItems },
@@ -141,6 +142,10 @@
                 queryText,
                 plainOptions,
                 checkedList,
+                cssClasses: {
+                    textSize: 'text-sm',
+                    paddingY: 'py-3',
+                },
             }
         },
     })

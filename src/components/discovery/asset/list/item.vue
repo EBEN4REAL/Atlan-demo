@@ -20,6 +20,7 @@
                 <!-- Title bar -->
                 <div class="flex items-center mb-0 overflow-hidden">
                     <component
+                        v-if="showAssetTypeIcon"
                         :is="item.typeName"
                         class="flex-none w-auto h-5 mr-2"
                     ></component>
@@ -207,6 +208,11 @@
                 type: String,
                 required: false,
                 default: () => '',
+            },
+            showAssetTypeIcon: {
+                type: Boolean,
+                required: false,
+                default: () => true,
             },
         },
         setup(props) {

@@ -16,6 +16,7 @@
                 :projection="projections"
                 class="w-full p-0 m-0 border-b"
                 :cssClasses="cssClasses"
+                :showAssetTypeIcon="false"
             ></ListItem>
         </template>
     </VirtualList>
@@ -48,7 +49,6 @@
                 isReady,
                 projections: ['description', 'owners'],
                 cssClasses: {
-                    textSize: 'text-sm',
                     paddingY: 'py-6',
                 },
             }

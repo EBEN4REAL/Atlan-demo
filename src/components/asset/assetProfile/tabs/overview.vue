@@ -15,8 +15,9 @@
                 </div>
                 <div class="w-full py-6 px-7">
                     <!-- Description Component -->
-                    <DescriptionWidget :asset="asset" />
-
+                    <div class="mb-8">
+                        <DescriptionWidget :asset="asset" />
+                    </div>
                     <!-- Table Component -->
                     <div>
                         <a-table
@@ -41,11 +42,7 @@
             <Readme class="w-full h-32" />
         </div>
     </div>
-    <div
-        v-else
-        class="w-full py-4 overflow-y-auto bg-white"
-        style="height: 600px"
-    >
+    <div v-else class="w-full overflow-y-auto bg-white" style="height: 600px">
         <BiWidgetWrapper :asset="asset" />
     </div>
 </template>
@@ -67,8 +64,6 @@
         setup(props, context) {
             const asset = ref(context.attrs.asset)
 
-            console.log(asset.value.guid)
-            console.log(BiWidgetWrapper)
             // for table widget
             const tableColumns = ref([])
             const results = ref([])

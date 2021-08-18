@@ -16,6 +16,7 @@
                 :projection="projections"
                 class="w-full p-0 m-0 border-b"
                 :cssClasses="cssClasses"
+                :showAssetTypeIcon="false"
             ></ListItem>
         </template>
     </VirtualList>

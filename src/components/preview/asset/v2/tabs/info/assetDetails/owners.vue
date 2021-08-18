@@ -16,17 +16,19 @@
                     >
                         <div
                             class="
+                                relative
                                 flex
                                 items-center
-                                mr-3
-                                cursor-pointer
-                                my-0
-                                mb-3
-                                bg-gray-light
-                                rounded-full
-                                text-gray-700
                                 px-3
                                 py-1.5
+                                mb-3
+                                mr-3
+                                font-bold
+                                rounded-full
+                                bg-gray-light
+                                text-gray-700
+                                group
+                                hover:bg-primary hover:text-white
                             "
                             v-on:click.stop="
                                 () => handleClickUser(owner.username)
@@ -49,6 +51,13 @@
                                 "
                             >
                                 {{ owner.username }}
+                            </div>
+                            <div
+                                class="absolute right-0 flex items-center justify-center pl-3 pr-1 text-white bg-transparent border-none rounded-full opacity-0 cursor-pointer  group-hover:opacity-100 owners-cross-btn"
+                            >
+                                <div class="flex items-center justify-center">
+                                    <fa icon="fal times-circle" class="" />
+                                </div>
                             </div>
                         </div>
                     </OwnerInfoCard>
@@ -74,6 +83,8 @@
                                 rounded-full
                                 px-3
                                 py-1.5
+                                relative
+                                group
                                 text-gray-700
                             "
                             v-on:click.stop="
@@ -97,6 +108,13 @@
                                 "
                             >
                                 {{ owner.username }}
+                            </div>
+                            <div
+                                class="absolute right-0 flex items-center justify-center pl-3 pr-1 text-white bg-transparent border-none rounded-full opacity-0 cursor-pointer  group-hover:opacity-100 owners-cross-btn"
+                            >
+                                <div class="flex items-center justify-center">
+                                    <fa icon="fal times-circle" class="" />
+                                </div>
                             </div>
                         </div>
                     </OwnerInfoCard>
@@ -138,7 +156,7 @@
                     </span>
                 </div>
                 <a-button
-                    class="flex items-center justify-center w-8 mb-3 h-8 px-2 py-2 mr-3 text-gray-700 border-none rounded-full  bg-gray-light hover:bg-primary hover:text-white"
+                    class="flex items-center justify-center w-8 h-8 px-2 py-2 mb-3 mr-3 text-gray-700 border-none rounded-full  bg-gray-light hover:bg-primary hover:text-white"
                     @click.stop="toggleOwnerPopover"
                 >
                     <fa icon="fal plus" />
@@ -149,7 +167,6 @@
                 placement="left"
                 overlay-class-name="inlinepopover"
                 trigger="click"
-                @visibleChange="handleUpdateOwners"
             >
                 <div v-if="ownerUsers.length < 1" class="inline-flex mb-3 mr-2">
                     <div
@@ -199,7 +216,7 @@
                             </template>
                         </a-input>
                         <div class="relative w-full">
-                            <p
+                            <!-- <p
                                 class="
                                     absolute
                                     cursor-pointer
@@ -211,17 +228,28 @@
                                 @click="clearSelectedOwners"
                             >
                                 clear
-                            </p>
+                            </p> -->
                             <a-tabs
                                 v-model:activeKey="activeOwnerTabKey"
                                 :class="$style.previewtab"
                             >
-                                <a-tab-pane
-                                    key="1"
-                                    :tab="
-                                        'Users ' + `(${selectedUsers.length})`
-                                    "
-                                >
+                                <a-tab-pane key="1">
+                                    <template #tab>
+                                        <span
+                                            class="text-sm"
+                                            :class="
+                                                activeOwnerTabKey == '1'
+                                                    ? 'font-bold'
+                                                    : ''
+                                            "
+                                            >Users</span
+                                        >
+                                        <span
+                                            class="ml-2 chip"
+                                            v-if="listUsers.length > 0"
+                                            >{{ listUsers.length }}</span
+                                        >
+                                    </template>
                                     <div class="h-48 overflow-y-auto">
                                         <div
                                             v-if="
@@ -299,12 +327,23 @@
                                         </div>
                                     </div>
                                 </a-tab-pane>
-                                <a-tab-pane
-                                    key="2"
-                                    :tab="
-                                        'Groups ' + `(${selectedGroups.length})`
-                                    "
-                                >
+                                <a-tab-pane key="2">
+                                    <template #tab>
+                                        <span
+                                            class="text-sm"
+                                            :class="
+                                                activeOwnerTabKey == '1'
+                                                    ? 'font-bold'
+                                                    : ''
+                                            "
+                                            >Groups</span
+                                        >
+                                        <span
+                                            class="ml-2 chip"
+                                            v-if="listGroups.length > 0"
+                                            >{{ listGroups.length }}</span
+                                        >
+                                    </template>
                                     <div class="h-48 overflow-y-auto">
                                         <div
                                             v-if="
@@ -330,7 +369,7 @@
                                                         () =>
                                                             onSelectGroup(group)
                                                     "
-                                                    class="flex items-center justify-between w-full px-1 py-1 mb-2 rounded cursor-pointer  hover_bg-primary-light"
+                                                    class="relative flex items-center justify-between w-full px-1 py-1 mb-2 rounded cursor-pointer  hover_bg-primary-light"
                                                 >
                                                     <div
                                                         class="flex items-center flex-1 "
@@ -384,6 +423,36 @@
                                     </div>
                                 </a-tab-pane>
                             </a-tabs>
+                        </div>
+                        <div class="w-full mt-2">
+                            <div class="flex justify-end text-xs">
+                                <span v-if="selectedUsers.length > 0">{{
+                                    `${selectedUsers.length} users`
+                                }}</span>
+                                <span v-if="selectedGroups.length > 0">{{
+                                    `&nbsp;&&nbsp;${selectedGroups.length} groups`
+                                }}</span>
+                                <span
+                                    v-if="
+                                        selectedGroups.length > 0 ||
+                                        selectedUsers.length > 0
+                                    "
+                                    >{{ `&nbsp;selected` }}</span
+                                >
+                            </div>
+                            <div class="flex justify-end w-full mt-2">
+                                <a-button
+                                    class="mr-3 border rounded"
+                                    @click="handleCancelUpdateOwnerPopover"
+                                    >Cancel</a-button
+                                >
+                                <a-button
+                                    type="primary"
+                                    class="rounded"
+                                    @click="handleUpdateOwners"
+                                    >Update</a-button
+                                >
+                            </div>
                         </div>
                     </div>
                 </template>
@@ -487,9 +556,11 @@
             } = updateOwners(selectedAsset)
 
             const handleUpdateOwners = () => {
-                if (!showOwnersDropdown.value) {
-                    update(selectedUsers.value, selectedGroups.value)
-                }
+                showOwnersDropdown.value = false
+                update(selectedUsers.value, selectedGroups.value)
+            }
+            const handleCancelUpdateOwnerPopover = () => {
+                showOwnersDropdown.value = false
             }
 
             function splitArray(sizeofSplit: number, arr: any[]) {
@@ -604,6 +675,7 @@
                 showOwnersDropdown,
                 toggleOwnerPopover,
                 selectedAsset,
+                handleCancelUpdateOwnerPopover,
             }
         },
     })
@@ -614,6 +686,15 @@
     }
     .hover_bg-primary-light:hover {
         background: rgba(34, 81, 204, 0.05);
+    }
+    .owners-cross-btn {
+        height: 100%;
+        @apply -top-0;
+        background: linear-gradient(
+            -90deg,
+            rgba(82, 119, 215, 1) 60%,
+            rgba(0, 0, 0, 0) 100%
+        );
     }
     .owner-child {
         margin-top: 0.3rem;
@@ -626,12 +707,21 @@
     //     margin-top: 0.3rem;
     //     margin-bottom: 0.3rem;
     // }
+    .chip {
+        @apply px-1 pt-1 pb-1 mx-1;
+        @apply rounded;
+        @apply tracking-wide;
+        @apply text-xs;
+        @apply font-bold;
+        @apply text-primary;
+        @apply bg-primary-light;
+    }
 </style>
 <style lang="less" module>
     .previewtab {
         :global(.ant-tabs-tab) {
             @apply pb-3 px-1;
-            @apply mx-2;
+            @apply mr-4;
             @apply text-gray-500;
             @apply text-xs;
         }

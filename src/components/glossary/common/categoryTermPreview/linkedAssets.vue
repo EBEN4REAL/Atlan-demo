@@ -1,13 +1,27 @@
 <template>
-    <div class="py-6 w-full">
-        <h2 class="text-gray-700 text-xl leading-7 ml-6">Top Assets</h2>
-        <div class="mb-4">
+    <div class="py-6 px-2">
+        <div class="mb-4 flex">
             <a-input-search
                 v-model:value="searchQuery"
                 :placeholder="`Search ${assets?.length} assets...`"
-                class="w-80"
+                class="mr-2"
                 @change="onSearch"
             ></a-input-search>
+
+            <a-popover title="Customise" trigger="click">
+                <template #content>
+                    <div class="w-32">
+                        <a-checkbox-group
+                            v-model:value="projection"
+                            name="checkboxgroup"
+                            :options="projectionOptions"
+                        />
+                    </div>
+                </template>
+                <a-button class="p-2 flex align-middle">
+                    <fa icon="fal ellipsis-v" />
+                </a-button>
+            </a-popover>
         </div>
         <a-tabs
             v-if="assets?.length"
@@ -16,29 +30,22 @@
             class="border-0"
         >
             <a-tab-pane key="1" :tab="`All (${assets?.length})`">
-                <div class="flex w-full h-full">
-                    <div class="w-full item-stretch">
+                <div class="flex h-full">
+                    <div class="item-stretch">
                         <div class="h-full">
                             <div
                                 v-if="
-                                    assets &&
-                                    assets.length <= 0 &&
-                                    !isLoading 
+                                    assets && assets.length <= 0 && !isLoading
                                 "
                                 class="flex-grow"
                             >
                                 <EmptyView></EmptyView>
                             </div>
                             <AssetList
-                                v-else
+                                v-else-if="assets.length"
                                 :list="assets"
-                                :projection="[
-                                    'heirarchy',
-                                    'description',
-                                    'owners',
-                                ]"
+                                :projection="projection"
                                 :is-loading="isLoading"
-                                @preview="(asset) => $emit('preview', asset)"
                             ></AssetList>
                         </div>
                     </div>
@@ -59,16 +66,16 @@ import EmptyView from '@common/empty/discover.vue'
 
 import useTermLinkedAssets from '~/composables/glossary/useTermLinkedAssets'
 
-interface PropsType {
-    termQualifiedName: string
-    termCount: number
-}
-
 export default defineComponent({
     components: { AssetList, EmptyView },
-    props: ['termQualifiedName', 'termCount'],
-    emits: ['preview'],
-    setup(props: PropsType) {
+    props: {
+        termQualifiedName: {
+            type: String,
+            required: true,
+            defualt: ',',
+        },
+    },
+    setup(props) {
         const termName = computed(() => props.termQualifiedName)
 
         const { linkedAssets, isLoading, error, fetchLinkedAssets } =
@@ -76,9 +83,18 @@ export default defineComponent({
 
         const assets = computed(() => linkedAssets.value?.entities ?? [])
         const assetCount = computed(() => assets.value?.length ?? 0)
-        const numberOfTerms = computed(() => props.termCount ?? 5)
 
         const searchQuery = ref<string>()
+
+        const projectionOptions = [
+            { value: 'description', label: 'Description' },
+            { value: 'heirarchy', label: 'Heirarchy' },
+            { value: 'owners', label: 'Owners' },
+            { value: 'rows', label: 'Rows' },
+            { value: 'popularity', label: 'Popularity' },
+            { value: 'classifications', label: 'Classifications' },
+        ]
+        const projection = ref(['heirarchy', 'description'])
 
         onMounted(() => {
             if (termName.value) fetchLinkedAssets(termName.value)
@@ -97,9 +113,10 @@ export default defineComponent({
             assets,
             isLoading,
             assetCount,
-            numberOfTerms,
             searchQuery,
             onSearch,
+            projectionOptions,
+            projection,
         }
     },
 })

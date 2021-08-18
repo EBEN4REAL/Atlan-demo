@@ -20,6 +20,7 @@
                 <!-- Title bar -->
                 <div class="flex items-center mb-0 overflow-hidden">
                     <component
+                        v-if="showAssetTypeIcon"
                         :is="item.typeName"
                         class="flex-none w-auto h-5 mr-2"
                     ></component>
@@ -81,7 +82,7 @@
                     v-if="projection?.includes('description')"
                     class="max-w-lg mt-1 text-sm truncate-overflow"
                 >
-                    <span v-if="description(item).length">
+                    <span v-if="description(item)?.length">
                         {{ description(item) }}
                     </span>
                     <span v-else class="text-gray-500">No description</span>
@@ -228,6 +229,11 @@
                 type: String,
                 required: false,
                 default: () => '',
+            },
+            showAssetTypeIcon: {
+                type: Boolean,
+                required: false,
+                default: () => true,
             },
         },
         setup(props) {

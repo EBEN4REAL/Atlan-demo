@@ -1,6 +1,6 @@
 <template>
-    <div class="flex justify-between px-2 py-3 mb-8 border-b border-gray-300">
-        <span class="font-bold">Activity Logs</span>
+    <div class="flex justify-between p-4 mb-8 border-b border-gray-300">
+        <span class="font-bold">Logs</span>
         <fa icon="fal sync" class="cursor-pointer" @click="refreshAudits"></fa>
     </div>
     <div
@@ -18,15 +18,15 @@
                         class="border rounded-full  ant-timeline-item-dot bg-primary-light border-primary"
                     ></div>
                 </template>
-                <div class="">
+                <div>
                     <div v-if="getDetailsForEntityAuditEvent(log)">
                         <activity-type
                             :data="getDetailsForEntityAuditEvent(log)"
                         />
                     </div>
-                    <span v-else>
+                    <div v-else>
                         {{ getEventByAction(log).label || 'Event' }}
-                    </span>
+                    </div>
                 </div>
                 <div class="text-gray-500">
                     <span class="mr-4 font-bold">{{
@@ -158,6 +158,9 @@
         min-height: 10px !important;
         margin-bottom: 0 !important;
         height: 28px !important;
+    }
+    :global(.ant-timeline-item-content) {
+        margin-left: 22px;
     }
     :global(.ant-timeline-item-head-custom) {
         padding: 0 !important;

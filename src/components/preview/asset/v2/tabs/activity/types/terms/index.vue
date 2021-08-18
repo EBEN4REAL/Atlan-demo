@@ -1,10 +1,10 @@
 <template>
-    <div class="mt-2">
+    <div>
         <b>Terms </b
         >{{ data.displayValue === 'termAdded' ? 'added' : 'removed' }}
     </div>
     <div class="flex">
-        <div class="px-3 py-1 m-1 rounded-full cursor-pointer pill">
+        <div class="px-3 my-1 rounded-full cursor-pointer pill py-0.5">
             {{ data.value }}
         </div>
     </div>

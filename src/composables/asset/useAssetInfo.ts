@@ -24,7 +24,7 @@ export default function useAssetInfo() {
     }
     const description = (asset: assetInterface) => {
         return (
-            attributes(asset).userDescription || attributes(asset).description 
+            attributes(asset).userDescription || attributes(asset).description
         )
     }
 
@@ -125,6 +125,27 @@ export default function useAssetInfo() {
         attributes(asset)?.assetStatus
     }
 
+    const getHierarchy = (asset: assetInterface) => {
+        const assetType = AssetTypeList.find((a) => a.id == asset.typeName)
+        const relations: any[] = []
+
+        if (assetType) {
+            const filtered = AssetTypeList.filter((a) =>
+                assetType.parents?.includes(a.id)
+            )
+
+            filtered.forEach((f) => {
+                relations.push({
+                    ...f,
+                    qualifiedName: attributes(asset)[f.qualifiedNameAttribute],
+                    value: attributes(asset)[f.nameAttribute],
+                })
+            })
+        }
+
+        return relations
+    }
+
     return {
         databaseLogo,
         schemaLogo,
@@ -149,5 +170,6 @@ export default function useAssetInfo() {
         ownerGroups,
         ownerUsers,
         assetStatus,
+        getHierarchy,
     }
 }

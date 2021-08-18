@@ -1,7 +1,6 @@
 <template>
     <div class="w-full">
         <a-tabs
-            :key="showTabs"
             v-model:activeKey="assetType"
             class="w-full mt-3"
             :class="$style.assetbar"
@@ -29,7 +28,7 @@
 </template>
 
 <script lang="ts">
-    import { computed, defineComponent, Ref, ref, toRefs, watch } from 'vue'
+    import { defineComponent, nextTick, ref, toRefs, watch } from 'vue'
     import { getCountString } from '~/composables/asset/useFormat'
 
     export default defineComponent({
@@ -74,8 +73,7 @@
         emits: ['refresh', 'update:modelValue'],
         setup(props, { emit }) {
             const { assetTypeMap } = toRefs(props)
-            const assetType = ref(props.modelValue)
-            const showTabs = ref(Date.now())
+            const assetType = ref<String>(props.modelValue)
 
             const handleChange = () => {
                 emit('update:modelValue', assetType.value)
@@ -98,7 +96,9 @@
             )
 
             watch(assetTypeMap, () => {
-                showTabs.value = Date.now()
+                const prev = assetType.value
+                assetType.value = ''
+                nextTick(() => (assetType.value = prev))
             })
 
             // const filteredList = computed(() => {
@@ -162,7 +162,6 @@
             //   assetType.value = props.defaultAssetType;
             // }
             return {
-                showTabs,
                 assetType,
                 handleChange,
                 getCountString,

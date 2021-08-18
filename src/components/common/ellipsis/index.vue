@@ -3,7 +3,7 @@
         :title="truncated ? tooltipText : undefined"
         placement="topRight"
         :overlay-style="{ maxWidth: width }"
-        ><div :class="classes" :style="{ width: '90%' }">
+        ><div :class="classes" :style="{ maxWidth: '95%' }">
             <a-typography-paragraph
                 :ellipsis="{
                     rows: rows,

@@ -4,7 +4,7 @@
         >{{ data.displayValue === 'classificationAdded' ? 'added' : 'removed' }}
     </div>
     <div class="flex">
-        <div class="px-3 my-1 rounded-full cursor-pointer pill py-0.5">
+        <div class="px-3 my-3 rounded-full cursor-pointer pill py-0.5">
             {{ data.value }}
         </div>
     </div>

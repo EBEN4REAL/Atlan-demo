@@ -15,13 +15,7 @@
             <a-timeline-item v-for="(log, index) in audits" :key="index">
                 <template #dot>
                     <div
-                        class="
-                            border
-                            rounded-full
-                            ant-timeline-item-dot
-                            bg-primary-light
-                            border-primary
-                        "
+                        class="border rounded-full  ant-timeline-item-dot bg-primary-light border-primary"
                     ></div>
                 </template>
                 <div>
@@ -35,7 +29,7 @@
                     </div>
                 </div>
                 <div class="text-gray-500">
-                    <span class="mr-4 font-bold capitalize">{{
+                    <span class="mr-4 capitalize">{{
                         getActionUser(log.user)
                     }}</span>
                     <span>{{ timeAgo(log.timestamp) }}</span>

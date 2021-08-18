@@ -4,6 +4,7 @@ export const CREATE_GLOSSARY = 'CREATE_GLOSSARY';
 export const CREATE_GLOSSARY_CATEGORY = 'CREATE_GLOSSARY_CATEGORY';
 export const CREATE_GLOSSARY_TERM = 'CREATE_GLOSSARY_TERM';
 
+export const GET_GTC_ENTITY = 'GET_GTC_ENTITY';
 export const GET_GLOSSARY = 'GET_GLOSSARY';
 export const GET_CATEGORY = 'GET_CATEGORY';
 export const GET_TERM = 'GET_TERM';
@@ -22,12 +23,14 @@ export const GET_GLOSSARY_CATEGORIES = 'GET_GLOSSARY_CATEGORIES';
 export const GET_CATEGORY_TERMS = 'GET_CATEGORY_TERMS';
 
 export const GET_TERM_LINKED_ASSETS = 'GET_TERM_LINKED_ASSETS';
+export const GTC_SEARCH = 'GTC_SEARCH';
 
 const groupsMap: Record<string, (...params:any) => string> = {
     [CREATE_GLOSSARY]: () => getAPIPath('auth/atlas', "/glossary"),
     [CREATE_GLOSSARY_CATEGORY]: () => getAPIPath('auth/atlas', "/glossary/category"),
     [CREATE_GLOSSARY_TERM]: () => getAPIPath('auth/atlas', "/glossary/term"),
     
+    [GET_GTC_ENTITY]: () => getAPIPath('auth/atlas', `/search/basic`),
     [GET_GLOSSARY]: ({ guid }: Record<string, string>) => getAPIPath('auth/atlas', `/glossary/${guid}`),
     [GET_CATEGORY]: ({ guid }: Record<string, string>) => getAPIPath('auth/atlas', `/glossary/category/${guid}`),
     [GET_TERM]: ({ guid }: Record<string, string>) => getAPIPath('auth/atlas', `/glossary/term/${guid}`),
@@ -46,6 +49,7 @@ const groupsMap: Record<string, (...params:any) => string> = {
     [GET_CATEGORY_TERMS]: ({ guid }: Record<string, string>) => getAPIPath('auth/atlas', `/glossary/category/${guid}/terms`),
 
     [GET_TERM_LINKED_ASSETS]: () => getAPIPath('auth/atlas', `/search/basic`),
+    [GTC_SEARCH]: () => getAPIPath('auth/atlas', `/search/basic`),
 
 }
 

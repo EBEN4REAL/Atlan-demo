@@ -9,7 +9,7 @@
     <!-- preloader ends here -->
 
     <!-- related asset list with assetTpe type  -->
-    <VirtualList v-else :data="list.entities" :data-key="keyField">
+    <VirtualList v-else :data="list.entities">
         <template #default="{ item }">
             <ListItem
                 :item="item"
@@ -23,7 +23,7 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent,ref,watch,toRefs } from 'vue'
+    import { defineComponent, ref, watch, toRefs } from 'vue'
     import ListItem from '@/discovery/asset/list/item.vue'
     import useBiRelations from '~/composables/asset/useBiRelations'
     import VirtualList from '~/lib/virtualList/virtualList.vue'
@@ -33,10 +33,9 @@
         props: {
             assetType: String,
             assetId: String,
-            projections: Array<string>
         },
         setup(props) {
-            const { assetId,assetType,projections } = toRefs(props)
+            const { assetId, assetType } = toRefs(props)
 
             // gets the list of related assets for the ListItem component
             const { list, isReady, error } = useBiRelations(
@@ -48,11 +47,10 @@
                 assetType: props.assetType,
                 list,
                 isReady,
-                projections,
-                cssClasses:{
-                    textSize:'text-sm',
-                    paddingY:'py-3'
-                }
+                projections: ['description', 'owners'],
+                cssClasses: {
+                    paddingY: 'py-6',
+                },
             }
         },
     })

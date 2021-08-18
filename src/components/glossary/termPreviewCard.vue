@@ -3,11 +3,11 @@
     <div><img :src="TermSvg" /></div>
     
     <div class="flex flex-col ml-4">
-      <h3 class="text-sm leading-5 text-gray-500">{{ term.name ?? term.displayText }}</h3>
+      <h3 class="mb-0.5 p-0 text-sm font-bold leading-5 text-gray-500">{{ term.name ?? term.displayText }}</h3>
       <div class="text-xs leading-4 text-gray">
         {{ term.shortDescription }}
       </div>
-      <div class="text-sm leading-5">{{ term.createdBy }}</div>
+      <div class="text-sm leading-5 text-gray-700">{{ term.createdBy }}</div>
     </div>
   </div>
 </template>

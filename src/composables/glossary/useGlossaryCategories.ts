@@ -76,7 +76,7 @@ const useGlossaryCategories = () => {
             requestOffset.value = 0;
             entityGuid.value = guid;
         }
-        if (offset) requestOffset.value = offset;
+        if (offset || offset === 0) requestOffset.value = offset;
         if (refreshSamePage) requestOffset.value -= limit ?? defaultLimit;
 
         pathObject.value = {

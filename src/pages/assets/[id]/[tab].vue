@@ -134,7 +134,10 @@ meta:
 <style lang="less">
     .asset-profile {
         .ant-tabs-bar {
-            @apply px-4 bg-white  !important;
+            @apply px-4 bg-white m-0 !important;
+        }
+        .ant-tabs-top-bar {
+            @apply m-0 !important;
         }
     }
 </style>

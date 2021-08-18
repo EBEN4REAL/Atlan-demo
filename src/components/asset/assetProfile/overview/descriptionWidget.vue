@@ -1,46 +1,36 @@
 <template>
     <!-- Description Component -->
-    <div>
-        <div class="mb-8">
-            <div v-if="description" class="flex justify-between">
-                <p>{{ description }}</p>
-                <a-button type="link" @click="showModal">
-                    Edit description
-                </a-button>
-            </div>
-            <div v-else class="flex justify-between text-gray-400">
-                No Description Found
-                <span class="ml-2">.</span>
-                <a-button type="link" @click="showModal">
-                    Add description
-                </a-button>
-            </div>
-        </div>
-
-        <!-- Edit description modal -->
-        <!-- eslint-disable-next-line vue/no-v-model-argument -->
-        <a-modal v-model:visible="visible" @ok="handleOk">
-            <template #title
-                ><p v-if="description">Edit description</p>
-                <p v-else>Add description</p></template
-            >
-            <template #footer>
-                <a-button key="back" @click="handleCancelModal"
-                    >Cancel</a-button
-                >
-                <a-button
-                    key="submit"
-                    type="primary"
-                    :loading="isLoading"
-                    @click="handleOk"
-                    >Update</a-button
-                >
-            </template>
-            <!-- eslint-disable-next-line vue/no-v-model-argument -->
-            <a-textarea v-model:value="description" placeholder="Description">
-            </a-textarea>
-        </a-modal>
+    <div v-if="description" class="flex justify-between">
+        <p>{{ description }}</p>
+        <a-button type="link" @click="showModal"> Edit description </a-button>
     </div>
+    <div v-else class="flex justify-between text-gray-400">
+        No Description Found
+        <span class="ml-2">.</span>
+        <a-button type="link" @click="showModal"> Add description </a-button>
+    </div>
+
+    <!-- Edit description modal -->
+    <!-- eslint-disable-next-line vue/no-v-model-argument -->
+    <a-modal v-model:visible="visible" @ok="handleOk">
+        <template #title
+            ><p v-if="description">Edit description</p>
+            <p v-else>Add description</p></template
+        >
+        <template #footer>
+            <a-button key="back" @click="handleCancelModal">Cancel</a-button>
+            <a-button
+                key="submit"
+                type="primary"
+                :loading="isLoading"
+                @click="handleOk"
+                >Update</a-button
+            >
+        </template>
+        <!-- eslint-disable-next-line vue/no-v-model-argument -->
+        <a-textarea v-model:value="description" placeholder="Description">
+        </a-textarea>
+    </a-modal>
 </template>
 <script lang="ts">
     // Vue

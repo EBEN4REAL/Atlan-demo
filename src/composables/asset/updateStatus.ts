@@ -42,6 +42,7 @@ export default function updateAssetStatus(selectedAsset: Ref<assetInterface>) {
                     assetStatusUpdatedAt: Date.now(),
                     assetStatusUpdatedBy: username,
                     tenantId: selectedAsset.value.attributes?.tenantId,
+                    anchor: selectedAsset.value.attributes?.anchor
                 },
             },
         ],

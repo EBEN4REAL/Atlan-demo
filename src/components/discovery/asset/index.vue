@@ -4,6 +4,11 @@
             <AssetFilters
                 :initial-filters="initialFilters"
                 @refresh="handleFilterChange"
+                :ref="
+                    (el) => {
+                        assetFilterRef = el
+                    }
+                "
             ></AssetFilters>
         </div>
 
@@ -67,7 +72,7 @@
                     "
                     class="flex-grow"
                 >
-                    <EmptyView></EmptyView>
+                    <EmptyView @event="handleClearFiltersFromList"></EmptyView>
                 </div>
                 <AssetList
                     v-else
@@ -78,7 +83,7 @@
                     :is-loading="isLoading || isValidating"
                     @preview="handlePreview"
                 ></AssetList>
-                <div class="flex w-full px-3 py-1">
+                <div class="flex w-full px-3 py-1 bg-gray-light h-7">
                     <div class="flex items-center justify-between w-full">
                         <div
                             v-if="isLoading || isValidating"
@@ -88,7 +93,9 @@
                                 size="small"
                                 class="mr-2 leading-none"
                             ></a-spin
-                            ><span>searching results</span>
+                            ><span class="text-sm font-bold text-gray-700"
+                                >searching results</span
+                            >
                         </div>
                         <AssetPagination
                             v-else
@@ -99,7 +106,12 @@
 
                         <div
                             v-if="isLoadMore && (!isLoading || !isValidating)"
-                            class="text-sm cursor-pointer text-primary"
+                            class="
+                                text-sm
+                                font-bold
+                                cursor-pointer
+                                text-primary
+                            "
                             @click="loadMore"
                         >
                             load more...
@@ -222,6 +234,8 @@
         setup(props, { emit }) {
             // initializing the discovery store
             const { initialFilters } = props
+            const assetFilterRef = ref()
+            const isFilterVisible = ref(false)
             const router = useRouter()
             const tracking = useTracking()
             const events = tracking.getEventsName()
@@ -496,12 +510,18 @@
                 isAggregate.value = false
                 updateBody(true)
             }
+
+            const handleClearFiltersFromList = () => {
+                assetFilterRef.value?.resetAllFilters()
+            }
             // select fist asset automatically
 
             watch(list, () => {
                 if (list.value.length > 0) {
                     console.log(list.value[0], 'firstItem')
                     handlePreview(list.value[0])
+                } else {
+                    handlePreview(undefined)
                 }
             })
 
@@ -509,6 +529,9 @@
                 fetchBMonStore()
             })
             return {
+                handleClearFiltersFromList,
+                assetFilterRef,
+                isFilterVisible,
                 initialFilters,
                 searchScoreList,
                 list,

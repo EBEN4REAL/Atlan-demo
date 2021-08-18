@@ -1,7 +1,7 @@
 <template>
     <div
         v-if="loading"
-        class="flex items-center justify-center mt-4 text-sm leading-none"
+        class="flex items-center justify-center px-5 py-4 mt-4 text-sm leading-none "
     >
         <a-spin size="small" class="mr-2 leading-none"></a-spin
         ><span>Getting lineage data</span>
@@ -12,7 +12,7 @@
         :bordered="false"
         :accordion="true"
         :class="$style.filter"
-        class="bg-transparent"
+        class="px-5 py-4 bg-transparent"
         @change="updateActiveKey"
     >
         <template #expandIcon="{ isActive }">

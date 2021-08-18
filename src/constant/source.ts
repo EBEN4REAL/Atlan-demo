@@ -3,8 +3,8 @@ import tableau from '~/assets/images/source/tableau.png'
 import redshift from '~/assets/images/source/redshift.png'
 import postgres from '~/assets/images/source/postgres.png'
 import athena from '~/assets/images/source/athena.png'
-// import database from '~/assets/images/assetType/Database.svg'
-// import schema from '~/assets/images/assetType/Schema.svg'
+import database from '~/assets/images/assetType/Database.svg'
+import schema from '~/assets/images/assetType/Schema.svg'
 
 export const SourceList = [
     {
@@ -19,7 +19,7 @@ export const SourceList = [
                 parent: '',
                 attribute: 'databaseQualifiedName',
                 level: 1,
-                image: 'https://i.ibb.co/n185WPT/database.png',
+                image: database,
             },
             {
                 typeName: 'Schema',
@@ -27,7 +27,7 @@ export const SourceList = [
                 parent: 'Database',
                 attribute: 'schemaQualifiedName',
                 level: 2,
-                image: 'https://i.ibb.co/2yMj363/schema.png',
+                image: schema,
             },
             {
                 typeName: 'Table',

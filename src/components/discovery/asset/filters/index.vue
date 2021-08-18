@@ -8,31 +8,13 @@
             class="flex items-center text-gray-500"
         >
             <div
-                class="
-                    px-3
-                    py-1
-                    text-sm
-                    font-medium
-                    text-gray-500
-                    rounded
-                    cursor-pointer
-                    hover:font-bold
-                "
+                class="px-3 py-1 text-sm font-medium text-gray-500 rounded cursor-pointer  hover:font-bold"
                 @click="resetAllFilters"
             >
                 Reset
             </div>
             <a-button
-                class="
-                    px-3
-                    py-1
-                    text-sm
-                    font-medium
-                    border-0
-                    rounded
-                    bg-primary-light
-                    text-primary
-                "
+                class="px-3 py-1 text-sm font-medium border-0 rounded  bg-primary-light text-primary"
                 >Save</a-button
             >
         </div>
@@ -67,15 +49,7 @@
 
                         <div
                             v-if="isFilter(item.id) && !activeKey"
-                            class="
-                                absolute
-                                text-gray-500
-                                opacity-0
-                                carrot-top
-                                right-12
-                                hover:font-bold
-                                group-hover:opacity-100
-                            "
+                            class="absolute text-gray-500 opacity-0  carrot-top right-12 hover:font-bold group-hover:opacity-100"
                             @click.stop.prevent="handleClear(item.id)"
                         >
                             Clear
@@ -83,15 +57,7 @@
 
                         <div
                             v-if="isFilter(item.id) && activeKey"
-                            class="
-                                absolute
-                                text-gray-500
-                                opacity-0
-                                top-3
-                                right-12
-                                hover:font-bold
-                                group-hover:opacity-100
-                            "
+                            class="absolute text-gray-500 opacity-0  top-3 right-12 hover:font-bold group-hover:opacity-100"
                             @click.stop.prevent="handleClear(item.id)"
                         >
                             Clear
@@ -318,10 +284,22 @@
                         const groups = dataMap.value[filterId].groupValue
                         let appliedOwnersString = ''
                         if (users && users?.length > 0) {
-                            appliedOwnersString += `${users.length} users`
+                            if (users?.length == 1)
+                                appliedOwnersString += `${users.length} user`
+                            else appliedOwnersString += `${users.length} users`
                         }
                         if (groups && groups?.length > 0) {
-                            appliedOwnersString += ` & ${groups.length} groups`
+                            if (appliedOwnersString.length > 0) {
+                                if (groups.length == 1)
+                                    appliedOwnersString += ` & ${groups.length} group`
+                                else
+                                    appliedOwnersString += ` & ${groups.length} groups`
+                            } else {
+                                if (groups.length == 1)
+                                    appliedOwnersString += `${groups.length} group`
+                                else
+                                    appliedOwnersString += `${groups.length} groups`
+                            }
                         }
 
                         return appliedOwnersString

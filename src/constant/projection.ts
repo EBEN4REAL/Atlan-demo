@@ -67,6 +67,7 @@ export const ColumnAttributes = [
     'isPartition',
     'isIndexed',
     'table',
+    'view',
 ]
 
 export const SavedSearchAttribute = [
@@ -119,7 +120,8 @@ export const BasicSearchAttributes = [
     'tableCount',
     'tableCrawledCount',
     'dataType',
-    'table',
+    'tableName',
+    'viewName',
     'lastUpdatedByJob',
     'category',
     'integrationName',

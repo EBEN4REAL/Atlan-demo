@@ -28,7 +28,7 @@
 </template>
 
 <script lang="ts">
-    import { computed, defineComponent, Ref, ref, watch } from 'vue'
+    import { defineComponent, nextTick, ref, toRefs, watch } from 'vue'
     import { getCountString } from '~/composables/asset/useFormat'
 
     export default defineComponent({
@@ -72,44 +72,12 @@
         },
         emits: ['refresh', 'update:modelValue'],
         setup(props, { emit }) {
-            const assetType = ref(props.modelValue)
+            const { assetTypeMap } = toRefs(props)
+            const assetType = ref<String>(props.modelValue)
 
             const handleChange = () => {
                 emit('update:modelValue', assetType.value)
             }
-
-            const testMapping = [
-                {
-                    id: 'Table',
-                    label: 'Table',
-                    heirarchy: ['Database', 'Schema'],
-                    attribute: 'tableQualifiedName',
-                },
-                {
-                    id: 'Column',
-                    label: 'Column',
-                    heirarchy: ['Database', 'Schema', 'Table'],
-                    attribute: 'columnQualifiedName',
-                },
-                {
-                    id: 'View',
-                    label: 'View',
-                    heirarchy: ['Database', 'Schema'],
-                    attribute: 'viewQualifiedName',
-                },
-                {
-                    id: 'Database',
-                    label: 'Database',
-                    heirarchy: [],
-                    attribute: 'databaseQualifiedName',
-                },
-                {
-                    id: 'Schema',
-                    label: 'Schema',
-                    heirarchy: [],
-                    attribute: 'schemaQualifiedName',
-                },
-            ]
 
             watch(
                 () => props.assetTypeList,
@@ -126,6 +94,12 @@
                     immediate: true,
                 }
             )
+
+            watch(assetTypeMap, () => {
+                const prev = assetType.value
+                assetType.value = ''
+                nextTick(() => (assetType.value = prev))
+            })
 
             // const filteredList = computed(() => {
             //   let foundConnections: ConnectionType[] = [];

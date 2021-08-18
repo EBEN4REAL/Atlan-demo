@@ -1,6 +1,10 @@
 /* eslint-disable vue/no-v-model-argument */
 <template>
-    <div class="w-full px-10 py-4 overflow-y-auto" style="height: 600px">
+    <div
+        v-if="asset.attributes.integrationName !== 'tableau'"
+        class="w-full px-10 py-4 overflow-y-auto"
+        style="height: 600px"
+    >
         <!--Asset Summary -->
         <div class="flex justify-between w-full mb-8">
             <div class="w-full max-w-xl mr-8 bg-white border rounded-t">
@@ -37,6 +41,13 @@
             <Readme class="w-full h-32" />
         </div>
     </div>
+    <div
+        v-else
+        class="w-full py-4 overflow-y-auto bg-white"
+        style="height: 600px"
+    >
+        <BiWidgetWrapper :asset="asset" />
+    </div>
 </template>
 <script lang="ts">
     // Vue
@@ -46,15 +57,18 @@
     import Readme from '@/common/readme/index.vue'
     import TableColumn from '@/asset/assetProfile/overview/tableColumn.vue'
     import DescriptionWidget from '@/asset/assetProfile/overview/descriptionWidget.vue'
+    import BiWidgetWrapper from '@/asset/assetProfile/overview/biWidget/biWidgetWrapper.vue'
 
     // api
     import { useAPI } from '~/api/useAPI'
 
     export default defineComponent({
-        components: { Readme, TableColumn, DescriptionWidget },
+        components: { Readme, TableColumn, DescriptionWidget, BiWidgetWrapper },
         setup(props, context) {
             const asset = ref(context.attrs.asset)
 
+            console.log(asset.value.guid)
+            console.log(BiWidgetWrapper)
             // for table widget
             const tableColumns = ref([])
             const results = ref([])

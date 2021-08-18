@@ -71,12 +71,12 @@ export default function useAssetInfo() {
 
     const rowCount = (asset: assetInterface, raw: boolean = false) => {
         return raw
-            ? attributes(asset)?.rowCount?.toLocaleString() || '~'
+            ? attributes(asset)?.rowCount?.toLocaleString() || 'N/A'
             : getCountString(attributes(asset).rowCount)
     }
     const columnCount = (asset: assetInterface, raw: boolean = false) => {
         return raw
-            ? attributes(asset)?.columnCount?.toLocaleString() || '~'
+            ? attributes(asset)?.columnCount?.toLocaleString() || 'N/A'
             : getCountString(attributes(asset).columnCount)
     }
     const schemaName = (asset: assetInterface) => {

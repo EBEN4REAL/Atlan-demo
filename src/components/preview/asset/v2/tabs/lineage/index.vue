@@ -6,52 +6,100 @@
         <a-spin size="small" class="mr-2 leading-none"></a-spin
         ><span>Getting lineage data</span>
     </div>
-    <a-collapse
-        v-else
-        v-model="activeKey"
-        :bordered="false"
-        :accordion="true"
-        :class="$style.filter"
-        class="px-5 py-4 bg-transparent"
-        @change="updateActiveKey"
-    >
-        <template #expandIcon="{ isActive }">
-            <fa
-                v-if="!isActive"
-                icon="fas chevron-right"
-                class="text-primary"
-            />
-            <fa v-else icon="fas chevron-down" class="text-primary" />
-        </template>
-        <a-collapse-panel
-            v-for="stream in streams"
-            :key="stream.key"
+    <div v-else>
+        <div class="flex items-center justify-between px-5 my-3 gap-x-2">
+            <a-input
+                :value="query"
+                size="default"
+                :placeholder="`Search assets`"
+                :class="$style.searchbar"
+                @change="searchQuery"
+            >
+                <template #prefix>
+                    <Fa icon="fal search" class="text-gray-500" />
+                </template>
+            </a-input>
+            <a-popover
+                v-model:visible="isFilterVisible"
+                placement="bottomRight"
+                trigger="click"
+            >
+                <template #content>
+                    <Preferences />
+                </template>
+
+                <div
+                    tabindex="0"
+                    class="flex items-center p-2 transition-shadow border border-gray-300 rounded  hover:border-gray-300"
+                    @keyup.enter="isFilterVisible = !isFilterVisible"
+                >
+                    <fa
+                        icon="fas sort-amount-up"
+                        class="hover:text-primary-500"
+                    />
+                </div>
+            </a-popover>
+            <router-link
+                :to="`/assets/${id || guid}/lineage`"
+                class="flex w-32 text-xs underline"
+                @click="$event.stopPropagation()"
+                >Graph view
+                <fa icon="fal external-link-alt" class="w-3 h-3 ml-1"></fa
+            ></router-link>
+        </div>
+        <a-collapse
+            v-model:activeKey="activeKeys"
+            :bordered="false"
+            :class="$style.filter"
+            expand-icon-position="right"
             class="bg-transparent"
         >
-            <template #header>
-                <div class="flex items-center justify-between w-full">
-                    <div class="font-semibold">
-                        {{ stream.name }} ({{
+            <template #expandIcon="{ isActive }">
+                <div class="">
+                    <fa
+                        icon="fas chevron-down"
+                        class="ml-1 transition-transform transform"
+                        :class="isActive ? '-rotate-180' : 'rotate-0'"
+                    />
+                </div>
+            </template>
+            <a-collapse-panel
+                v-for="stream in streams"
+                :key="stream.key"
+                class="bg-transparent"
+            >
+                <template #header>
+                    <div
+                        class="flex items-center text-sm font-bold select-none  header"
+                    >
+                        {{ stream.name }}
+
+                        <span class="chip">{{
                             lineageList[stream.key]?.length || 0
-                        }})
+                        }}</span>
+                    </div>
+                </template>
+
+                <AssetList
+                    v-if="
+                        filteredLineageList[stream.key] &&
+                        filteredLineageList[stream.key].length > 0
+                    "
+                    :lineage-list="filteredLineageList[stream.key]"
+                />
+                <div v-else>
+                    <img
+                        :src="emptyScreen"
+                        alt="Empty"
+                        class="w-3/5 m-auto mt-4"
+                    />
+                    <div class="mt-4 text-sm text-center text-gray">
+                        No assets found in {{ stream.name }}
                     </div>
                 </div>
-                <router-link
-                    @click="$event.stopPropagation()"
-                    :to="`/assets/${id || guid}/lineage`"
-                    class="flex w-32 underline"
-                    >Graph view
-                    <fa icon="fal external-link-alt" class="w-3 h-3 ml-1"></fa
-                ></router-link>
-            </template>
-
-            <Stream
-                :direction="stream.key"
-                :lineage-list="lineageList[stream.key]"
-                :filtered-lineage-list="filteredLineageList[stream.key]"
-            />
-        </a-collapse-panel>
-    </a-collapse>
+            </a-collapse-panel>
+        </a-collapse>
+    </div>
 </template>
 
 <script lang="ts">
@@ -71,16 +119,21 @@
     import { useRoute } from 'vue-router'
 
     // Components
-    import Stream from './stream/index.vue'
+    import AssetList from './assetList.vue'
+    import Preferences from './preferences.vue'
+
     // Composables
     import useLineage from '~/composables/lineage/useLineage'
     import * as useLineageCompute from '~/composables/lineage/useLineageCompute'
     import useLineageFilters from '~/composables/lineage/useLineageFilters'
     // Types
     import { assetInterface } from '~/types/assets/asset.interface'
+    // Assets
+    import emptyScreen from '~/assets/images/empty_search.png'
 
     export default defineComponent({
-        components: { Stream },
+        name: 'LineagePreviewTab',
+        components: { AssetList, Preferences },
         props: {
             selectedAsset: {
                 type: Object as PropType<assetInterface>,
@@ -88,15 +141,16 @@
             },
         },
         setup(props) {
+            /** DATA */
             const { selectedAsset }: ToRefs = toRefs(props)
-            const activeKey: Ref<string> = ref('upstream')
-            const guid = computed(() => selectedAsset.value.guid)
+            const activeKeys = ref([])
             const loading = ref(true)
             const lineage: Ref<{}> = ref({})
             const lineageList = ref({})
             const filteredLineageList = ref({})
             const assetTypesLengthMap = ref({})
             const depth = ref(1)
+            const isFilterVisible = ref(false)
             const query = ref('')
             const filters = ref(['Table', 'View', 'Column', 'Bi Dashboard'])
             const streams = [
@@ -113,22 +167,19 @@
             /** COMPUTED */
             const route = useRoute()
             const id = computed(() => route?.params?.id || '')
+            const guid = computed(() => selectedAsset.value.guid)
+            const filtersLength = computed(() => filters.value.length)
 
-            const updateActiveKey = (key) => {
-                if (key) activeKey.value = key
+            /** METHODS */
+            const searchQuery = (e) => {
+                query.value = e.target.value
             }
-
             const updateDepth = (val: number) => {
                 depth.value = val
-            }
-            const searchQuery = (val: string) => {
-                query.value = val
             }
             const updateFilters = (val: Ref<string[]>) => {
                 filters.value = val
             }
-            const filtersLength = computed(() => filters.value.length)
-
             const fetch = () => {
                 loading.value = true
                 const currGuid = id.value || guid.value
@@ -139,35 +190,39 @@
                         lineage,
                         'widget'
                     )
+                    streams.forEach((i) => {
+                        if (lineageList.value[i.key])
+                            activeKeys.value.push(i.key)
+                    })
+
                     filter()
                 })
             }
-
             const filter = () => {
                 const { data, l } = useLineageFilters(
                     lineageList,
                     filters,
-                    query,
-                    activeKey
+                    query
                 )
                 filteredLineageList.value = data
-                assetTypesLengthMap.value[activeKey.value] = l
+                assetTypesLengthMap.value = l
                 loading.value = false
             }
 
-            provide('activeKey', activeKey)
+            /** PROVIDERS */
             provide('updateDepth', updateDepth)
             provide('updateFilters', updateFilters)
             provide('searchQuery', searchQuery)
             provide('assetTypesLengthMap', assetTypesLengthMap)
 
+            /** WATCHERS */
             watch(depth, () => fetch())
             watch(guid, () => fetch())
             watch(id, () => fetch())
             watch(query, () => filter())
-            watch(activeKey, () => filter())
             watch(filtersLength, () => filter())
 
+            /** LIFECYCLE */
             onMounted(fetch)
 
             return {
@@ -179,15 +234,20 @@
                 lineageList,
                 filteredLineageList,
                 assetTypesLengthMap,
-                activeKey,
+                activeKeys,
                 streams,
-                updateActiveKey,
+                isFilterVisible,
+                emptyScreen,
+                searchQuery,
             }
         },
     })
 </script>
 
-<style lang="less" scoped>
+<style scoped>
+    .chip {
+        @apply px-1 pt-1 pb-0.5 mr-1 ml-3 rounded tracking-wide text-xs font-bold text-primary bg-primary-light;
+    }
     :global(.ant-tabs .ant-tabs-right-content) {
         @apply pr-0 !important;
     }
@@ -195,24 +255,39 @@
 <style lang="less" module>
     .filter {
         :global(.ant-collapse-item) {
-            @apply border-none;
+            @apply border-b;
+            @apply border-gray-300;
         }
 
         :global(.ant-collapse-header) {
-            padding-left: 18px !important;
-            padding-right: 0px !important;
-            @apply flex items-center !important;
+            @apply px-5 !important;
+            @apply py-4 !important;
         }
+
         :global(.ant-collapse-arrow) {
-            left: 0px !important;
             font-size: 0.85rem !important;
-            @apply text-primary !important;
+            right: 20px !important;
         }
 
         :global(.ant-collapse-content-box) {
             padding-right: 0px;
             padding-left: 0px;
-            padding-top: 0px;
+            padding-top: 0px !important;
+            @apply pb-4 !important;
+        }
+    }
+
+    .searchbar {
+        @apply mr-2 border-none rounded;
+        @apply bg-gray-300 bg-opacity-50;
+        @apply outline-none;
+        :global(.ant-input) {
+            @apply h-6;
+            @apply bg-transparent;
+            @apply text-gray-500;
+        }
+        ::placeholder {
+            @apply text-gray-500 opacity-80;
         }
     }
 </style>

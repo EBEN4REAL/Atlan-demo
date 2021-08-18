@@ -21,10 +21,9 @@
                         <div class="h-full">
                             <div
                                 v-if="
-                                    list &&
-                                    list.length <= 0 &&
-                                    !isLoading &&
-                                    !isValidating
+                                    assets &&
+                                    assets.length <= 0 &&
+                                    !isLoading 
                                 "
                                 class="flex-grow"
                             >
@@ -39,16 +38,9 @@
                                     'owners',
                                 ]"
                                 :is-loading="isLoading"
-                                @preview="handlePreview"
+                                @preview="(asset) => $emit('preview', asset)"
                             ></AssetList>
                         </div>
-                    </div>
-                    <div
-                        v-if="selected?.guid"
-                        class="flex flex-col w-1/2 h-full bg-white border-l"
-                        style="overflow: hidden; z-index: 99"
-                    >
-                        <AssetPreview :item="selected"></AssetPreview>
                     </div>
                 </div>
             </a-tab-pane>
@@ -63,7 +55,6 @@ import { defineComponent, computed, onMounted, watch, ref } from 'vue'
 import { useDebounceFn } from '@vueuse/core'
 
 import AssetList from '@/discovery/asset/list/index.vue'
-import AssetPreview from '@/preview/asset/index.vue'
 import EmptyView from '@common/empty/discover.vue'
 
 import useTermLinkedAssets from '~/composables/glossary/useTermLinkedAssets'
@@ -74,8 +65,9 @@ interface PropsType {
 }
 
 export default defineComponent({
-    components: { AssetList, AssetPreview, EmptyView },
+    components: { AssetList, EmptyView },
     props: ['termQualifiedName', 'termCount'],
+    emits: ['preview'],
     setup(props: PropsType) {
         const termName = computed(() => props.termQualifiedName)
 
@@ -86,7 +78,6 @@ export default defineComponent({
         const assetCount = computed(() => assets.value?.length ?? 0)
         const numberOfTerms = computed(() => props.termCount ?? 5)
 
-        const selected = ref({})
         const searchQuery = ref<string>()
 
         onMounted(() => {
@@ -96,10 +87,6 @@ export default defineComponent({
         watch(termName, (newTermName) => {
             if (newTermName) fetchLinkedAssets(newTermName)
         })
-
-        const handlePreview = (selectedItem: any) => {
-            selected.value = selectedItem
-        }
 
         const onSearch = useDebounceFn(() => {
             fetchLinkedAssets(termName.value, `*${searchQuery.value}*`)
@@ -111,8 +98,6 @@ export default defineComponent({
             isLoading,
             assetCount,
             numberOfTerms,
-            handlePreview,
-            selected,
             searchQuery,
             onSearch,
         }

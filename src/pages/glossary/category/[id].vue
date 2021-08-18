@@ -75,9 +75,6 @@
 import { defineComponent, computed, watch, onMounted, toRef, ref } from 'vue'
 
 import GlossaryProfileOverview from '@/glossary/common/glossaryProfileOverview.vue'
-import GlossaryTopTerms from '@/glossary/common/glossaryTopTerms.vue'
-import EntityHistory from '@/glossary/common/entityHistory.vue'
-import CategoryTermsAndCategoriesTab from '@/glossary/categoryProfile/categoryTermsAndCategoriesTab.vue'
 import LoadingView from '@common/loaders/page.vue'
 import SidePanel from '@/glossary/sidePanel/index.vue'
 import CategoryTermPreview from '@/glossary/common/categoryTermPreview/categoryTermPreview.vue'
@@ -151,7 +148,7 @@ export default defineComponent({
         const handleCategoryOrTermPreview = (entity: Category | Term) => {
             previewEntity.value = entity;
         }
-        
+
         return {
             category,
             categoryTerms,

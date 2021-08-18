@@ -21,11 +21,6 @@ export default defineComponent({
             type: Object as PropType<Glossary | Category | Term>,
             required: true,
             default: () => {},
-        },
-        showCategoryCount: {
-            type: Boolean,
-            required: true,
-            default: false,
         }
     },
     setup(props) {

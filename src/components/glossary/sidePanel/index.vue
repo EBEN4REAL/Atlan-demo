@@ -17,7 +17,7 @@
                         <fa v-if="isActive" icon="fas angle-up" />
                         <fa v-else icon="fas angle-down" />
                     </template>
-                    <a-collapse-panel v-if="termCount" key="1" header="Details">
+                    <a-collapse-panel key="1" header="Details">
                         <div class="pl-6 flex flex-col">
                             <div class="flex flex-row space-x-16">
                                 <div class="flex flex-col">
@@ -100,7 +100,7 @@
             <a-tab-pane key="activity" tab="Activity">
                 <Activity :selectedAsset="entity" />
             </a-tab-pane>
-            <a-tab-pane key="chat" tab="chat"> Chat </a-tab-pane>
+            <a-tab-pane key="chat" tab="Chat"> Chat </a-tab-pane>
         </a-tabs>
     </div>
 </template>

@@ -56,6 +56,7 @@ import { faShield } from '@fortawesome/pro-light-svg-icons/faShield'
 import { faUserEdit } from '@fortawesome/pro-light-svg-icons/faUserEdit'
 import { faPencilAlt } from '@fortawesome/pro-light-svg-icons/faPencilAlt'
 import { faSync } from '@fortawesome/pro-light-svg-icons/faSync'
+import { faUpload } from '@fortawesome/pro-light-svg-icons/faUpload'
 import { faChevronDoubleLeft } from '@fortawesome/pro-light-svg-icons/faChevronDoubleLeft'
 
 import { faGlobe } from '@fortawesome/pro-light-svg-icons/faGlobe'
@@ -140,7 +141,6 @@ import { faAlignCenter } from '@fortawesome/pro-solid-svg-icons/faAlignCenter'
 import { faAlignRight } from '@fortawesome/pro-solid-svg-icons/faAlignRight'
 import { faFileImage } from '@fortawesome/pro-solid-svg-icons/faFileImage'
 import { faSortAmountUp } from '@fortawesome/pro-solid-svg-icons/faSortAmountUp'
-import { faUpload } from '@fortawesome/pro-solid-svg-icons/faUpload'
 import { faSpinner } from '@fortawesome/pro-light-svg-icons/faSpinner'
 import { faAngleDown } from '@fortawesome/pro-solid-svg-icons/faAngleDown'
 import { faAngleUp } from '@fortawesome/pro-solid-svg-icons/faAngleUp'
@@ -158,10 +158,10 @@ import Icon from '~/components/common/icon/index.vue'
 
 library.add(
     faTable,
+    faUpload,
     faBookmark,
     faAngleUp,
     faAngleDown,
-    faUpload,
     faThList,
     faDatabase,
     faBox,

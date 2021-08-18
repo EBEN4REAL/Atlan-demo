@@ -1,8 +1,8 @@
 <template>
-    <div class="sidePanel flex flex-col w-1/3 border-l min-h-full overflow-y-hide"
+    <div class="sidePanel flex flex-col w-1/3 border-l min-h-screen"
         :class="$style.gtcPreview"
     >
-    <div class="flex flex-row justify-between align-middle px-5 py-8">
+    <div v-if="preview" class="flex flex-row justify-between align-middle px-5 py-8">
         <div class="flex flex-row align-middle space-x-2">
             <span>
                 <img v-if="entity.typeName === 'AtlasGlossaryCategory'" :src="CategorySvg" :width="25" />
@@ -23,7 +23,7 @@
             </a-button>
         </div>
     </div>
-    <div class="flex">
+    <div v-if="preview" class="flex">
         <span class=" pl-5 mr-2 text-xl leading-7 text-gray-700 font-bold">{{ entity.displayText }}</span>
             <component
                 :is="statusObject?.icon"
@@ -69,7 +69,7 @@
                     </a-collapse-panel>
                 </a-collapse>
             </a-tab-pane>
-            <a-tab-pane v-if="entity.typeName === 'AtlasGlossaryTerm'" key="linkedAssets" tab="Linked Assets"> 
+            <a-tab-pane v-if="entity.typeName === 'AtlasGlossaryTerm' && preview" key="linkedAssets" tab="Linked Assets"> 
                 <LinkedAssets :termQualifiedName="entity.attributes.qualifiedName" />
             </a-tab-pane>
             <a-tab-pane key="activity" tab="Activity"> 
@@ -119,6 +119,11 @@ export default defineComponent({
             required: true,
             default: () => ({}),
         },
+        preview: {
+            type: Boolean,
+            required: false,
+            default: true
+        }
     },
     setup(props) {
         const router = useRouter();

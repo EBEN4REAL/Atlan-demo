@@ -10,11 +10,11 @@
                     <div
                         v-for="relatedTerm in entity.attributes[related]"
                         :key="relatedTerm?.guid"
-                        class="bg-blue-50 text-blue-700 px-2 mr-2 mb-4 leading-6"
+                        class="bg-blue-50 text-primary px-2 mr-2 mb-4 leading-6 rounded"
                     >
                         {{ relatedTerm?.uniqueAttributes?.qualifiedName?.split('@')[0] }}
                     </div>
-                    <div class="bg-blue-50 text-blue-700 px-2 mr-2 mb-4">
+                    <div class="bg-blue-50 text-primary px-2 mr-2 mb-4 rounded">
                         +
                     </div>
                 </div>

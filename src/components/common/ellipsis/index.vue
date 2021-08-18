@@ -4,7 +4,7 @@
         placement="topRight"
         :overlay-style="{ maxWidth: width }"
     >
-        <a-typography-text
+        <a-typography-paragraph
             :style="{ width: '85%' }"
             :ellipsis="{
                 rows: rows,

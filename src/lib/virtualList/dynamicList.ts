@@ -81,5 +81,11 @@ export default function useDynamicHeightList(
         { flush: 'post' }
     )
 
-    return { handleIntersection, topHeight, fullHeight, listIndices }
+    function reset() {
+        topHeight.value = 0
+        listIndices.value = [0, Math.min(GROUP_SIZE, rowCount.value)]
+        listSize.splice(1)
+    }
+
+    return { handleIntersection, topHeight, fullHeight, listIndices, reset }
 }

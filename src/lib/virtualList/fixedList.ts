@@ -13,8 +13,8 @@ export default function useFixedHeightList(
 
     const rowHeight = computed(() => {
         if (rowCount.value && wrapper.value) {
-            const firstElem = listIndices.value[0] ? 1 : 0
-            const size = wrapper.value?.children[firstElem].clientHeight
+            // const firstElem = listIndices.value[0] ? 1 : 0
+            const size = wrapper.value?.children[2].clientHeight
             return size || 0
         }
         return 0
@@ -39,5 +39,10 @@ export default function useFixedHeightList(
         }
     }
 
-    return { topHeight, fullHeight, listIndices, handleIntersection }
+    function reset() {
+        topHeight.value = 0
+        listIndices.value = [0, Math.min(GROUP_SIZE, rowCount.value)]
+    }
+
+    return { topHeight, fullHeight, listIndices, handleIntersection, reset }
 }

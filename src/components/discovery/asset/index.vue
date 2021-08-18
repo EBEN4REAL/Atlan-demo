@@ -4,6 +4,11 @@
             <AssetFilters
                 :initial-filters="initialFilters"
                 @refresh="handleFilterChange"
+                :ref="
+                    (el) => {
+                        assetFilterRef = el
+                    }
+                "
             ></AssetFilters>
         </div>
 
@@ -75,7 +80,7 @@
                     "
                     class="flex-grow"
                 >
-                    <EmptyView></EmptyView>
+                    <EmptyView @event="handleClearFiltersFromList"></EmptyView>
                 </div>
                 <AssetList
                     v-else
@@ -232,6 +237,7 @@
         setup(props, { emit }) {
             // initializing the discovery store
             const { initialFilters } = props
+            const assetFilterRef = ref()
             const isFilterVisible = ref(false)
             const router = useRouter()
             const tracking = useTracking()
@@ -507,6 +513,10 @@
                 isAggregate.value = false
                 updateBody(true)
             }
+
+            const handleClearFiltersFromList = () => {
+                assetFilterRef.value?.resetAllFilters()
+            }
             // select fist asset automatically
 
             watch(list, () => {
@@ -522,6 +532,8 @@
                 fetchBMonStore()
             })
             return {
+                handleClearFiltersFromList,
+                assetFilterRef,
                 isFilterVisible,
                 initialFilters,
                 searchScoreList,

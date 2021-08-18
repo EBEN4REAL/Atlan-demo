@@ -1,5 +1,5 @@
 <template>
-    <div class="mt-4 text-sm text-gray-500">
+    <div class="text-sm text-gray-500">
         <p class="mb-3 text-sm">Classifications</p>
         <div class="flex flex-wrap items-stretch items-center lex">
             <template

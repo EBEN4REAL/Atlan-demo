@@ -27,7 +27,7 @@
                         :key="item.id"
                         class="flex justify-between text-sm font-bold select-none  header"
                     >
-                        <Tooltip :tooltip-text="item.label" />
+                        {{ item.label }}
                     </div>
                 </template>
                 <component
@@ -65,7 +65,6 @@
     } from 'vue'
     import { List } from './List'
     import { assetInterface } from '~/types/assets/asset.interface'
-    import Tooltip from '@common/ellipsis/index.vue'
 
     export default defineComponent({
         name: 'InfoTab',
@@ -83,7 +82,6 @@
             },
         },
         components: {
-            Tooltip,
             assetDetails: defineAsyncComponent(
                 () => import('./assetDetails/index.vue')
             ),

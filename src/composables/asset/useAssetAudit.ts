@@ -1,4 +1,4 @@
-import { reactive, watchEffect, ref } from 'vue'
+import { reactive, watch, ref } from 'vue'
 import { toRefs } from '@vueuse/core'
 import { useAPI } from '~/api/useAPI'
 import { Components } from '~/api/atlas/client'
@@ -22,7 +22,7 @@ const useAssetAudit = (params: any, guid: string) => {
             pathVariables: { guid },
             cache: false,
         })
-        response.audits = data as Components.Schemas.EntityAuditEventV2[] | any
+        response.audits = data
         response.error = error
         response.isLoading = isLoading
         // @ts-ignore
@@ -30,16 +30,17 @@ const useAssetAudit = (params: any, guid: string) => {
     }
 
     const fetchMoreAudits = (fetchmoreParams: any) => {
-        const { data, isLoading } = useAPI<
+        const { data, isLoading, error } = useAPI<
             Components.Schemas.EntityAuditEventV2[]
         >(GET_ASSET_AUDIT, 'GET', {
             params: fetchmoreParams,
             pathVariables: { guid },
             cache: false,
         })
-        watchEffect(() => {
-            if (data.value && fetchmoreParams?.startKey.length > 0) {
-                response.audits.push(...data.value)
+
+        watch(data, () => {
+            if (data.value?.length && !error.value) {
+                response.audits = ref([...response.audits, ...data.value])
                 response.isAllLogsFetched =
                     data?.value?.length < fetchmoreParams.count
                 response.isFetchingMore = isLoading
@@ -116,8 +117,8 @@ const useAssetAudit = (params: any, guid: string) => {
         typeof parsedDetails === 'object'
             ? parsedDetails?.typeName ?? ''
             : typeof parsedDetails === 'string'
-                ? parsedDetails
-                : ''
+            ? parsedDetails
+            : ''
 
     const filterTermTypeNameDisplayName = (parsedDetails: any) =>
         parsedDetails?.name ?? ''
@@ -158,7 +159,7 @@ const useAssetAudit = (params: any, guid: string) => {
             if (status) {
                 const value = attributes.assetStatus
                 const newStatus = statusList.find((stat) => stat.id === value)
-                data.displayValue = "status"
+                data.displayValue = 'status'
                 data.value = newStatus
                 return data
             }
@@ -166,7 +167,7 @@ const useAssetAudit = (params: any, guid: string) => {
             if (userDescription) {
                 const value = attributes.userDescription
                 data.value = value
-                data.displayValue = "description"
+                data.displayValue = 'description'
                 return data
             }
         }
@@ -195,31 +196,33 @@ const useAssetAudit = (params: any, guid: string) => {
                             // This handles the case when classification is linked using Atlan Bot user
                             // In this case, classification object comes in details
                             parsedDetails = JSON.parse(eventDetail[1].trim())
-                            console.log("Classifications")
+                            console.log('Classifications')
 
                             console.log(eventDetail)
 
                             if (parsedDetails.typeName) {
-                                data.value = filterClassificationTypeNameDisplayName(
-                                    parsedDetails
-                                )
-                                data.displayValue = "classificationAdded"
+                                data.value =
+                                    filterClassificationTypeNameDisplayName(
+                                        parsedDetails
+                                    )
+                                data.displayValue = 'classificationAdded'
 
                                 return data
                             }
                             return null
                         } catch (error) {
                             data.value = eventDetail[1].trim()
-                            data.displayValue = "classificationAdded"
+                            data.displayValue = 'classificationAdded'
 
                             return data
                         }
                     case 'CLASSIFICATION_DELETE':
                         parsedDetails = eventDetail[1].trim()
-                        data.value = filterClassificationTypeNameDisplayName(
-                            parsedDetails
-                        )
-                        data.displayValue = "classificationRemoved"
+                        data.value =
+                            filterClassificationTypeNameDisplayName(
+                                parsedDetails
+                            )
+                        data.displayValue = 'classificationRemoved'
 
                         return data
                     case 'PROPAGATED_CLASSIFICATION_ADD':
@@ -246,10 +249,9 @@ const useAssetAudit = (params: any, guid: string) => {
                     case 'TERM_ADD':
                         try {
                             parsedDetails = JSON.parse(eventDetail[1].trim())
-                            data.value = filterTermTypeNameDisplayName(
-                                parsedDetails
-                            )
-                            data.displayValue = "termAdded"
+                            data.value =
+                                filterTermTypeNameDisplayName(parsedDetails)
+                            data.displayValue = 'termAdded'
 
                             return data
                         } catch (error) {
@@ -258,10 +260,9 @@ const useAssetAudit = (params: any, guid: string) => {
                     case 'TERM_DELETE':
                         try {
                             parsedDetails = JSON.parse(eventDetail[1].trim())
-                            data.value = filterTermTypeNameDisplayName(
-                                parsedDetails
-                            )
-                            data.displayValue = "termRemoved"
+                            data.value =
+                                filterTermTypeNameDisplayName(parsedDetails)
+                            data.displayValue = 'termRemoved'
 
                             return data
                         } catch (error) {

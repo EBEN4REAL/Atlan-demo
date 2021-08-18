@@ -1,8 +1,7 @@
 <template>
-    <div class="mb-2 w-100">
+    <div class="mb-4 w-100">
         <a-input
             v-if="type === 'number'"
-            ,
             v-model:value="value"
             class="px-2 mr-2 border shadow-none w-100"
             type="number"
@@ -209,7 +208,7 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref, onBeforeUnmount } from 'vue'
+    import { defineComponent, ref, onBeforeUnmount, onMounted } from 'vue'
     import useBusinessMetadataHelper from '~/composables/businessMetadata/useBusinessMetadataHelper'
 
     export default defineComponent({
@@ -223,6 +222,10 @@
                 type: String,
                 required: true,
                 default: '=',
+            },
+            defaultValue: {
+                type: String,
+                required: true,
             },
         },
         emits: ['handleChange', 'removeFilter'],
@@ -239,6 +242,10 @@
                 if (value.value) {
                     emit('removeFilter', props.operator)
                 }
+            })
+
+            onMounted(() => {
+                value.value = props.defaultValue
             })
             return {
                 getDatatypeOfAttribute,

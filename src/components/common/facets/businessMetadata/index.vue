@@ -29,7 +29,11 @@
                 :key="x"
                 class="mx-5"
             >
-                <AttributeItem :a="a" @handleAttributeInput="setBMfilter" />
+                <AttributeItem
+                    :a="a"
+                    :applied="data.applied[a.name] || {}"
+                    @handleAttributeInput="setBMfilter"
+                />
             </div>
         </div>
     </span>
@@ -54,13 +58,20 @@
                 required: true,
             },
         },
-        emits: ['change'],
+        emits: ['change', 'update:data'],
         setup(props, { emit }) {
             const attributeSearchText = ref('')
             const setBMfilter = (
                 a: { name: string },
                 appliedValueMap: Object
             ) => {
+                emit('update:data', {
+                    ...props.data,
+                    applied: {
+                        ...props.data.applied,
+                        [a.name]: appliedValueMap,
+                    },
+                })
                 const attributeName = `${props.data.list.name}.${a.name}`
                 const criterion: Components.Schemas.FilterCriteria[] = []
                 Object.keys(appliedValueMap).forEach((key: string) => {

@@ -1,11 +1,11 @@
 <template>
     <div>
         <a-popover
+            v-model:visible="isVisible"
             title=""
             class="mb-2"
             placement="right"
             trigger="click"
-            v-model:visible="isVisible"
         >
             <template #content>
                 <template
@@ -19,7 +19,6 @@
                         :value="o.value"
                         class="w-full mb-2"
                         style="min-width: 200px"
-                        @change="removeUncheck"
                     >
                         <span class="mb-0 ml-1 text-gray-500 truncated">
                             {{ o.label }}
@@ -27,11 +26,12 @@
                     </a-checkbox>
                     <div class="w-100">
                         <DynamicComponents
-                            @handleChange="handleInput"
-                            @removeFilter="removeFilter"
                             v-if="o.checked"
                             :type="getDatatypeOfAttribute(a.typeName)"
                             :operator="o.value"
+                            :default-value="applied[o.value] || ''"
+                            @handleChange="handleInput"
+                            @removeFilter="removeFilter"
                         />
                     </div>
                 </template>
@@ -44,14 +44,18 @@
                         : ''
                 "
             >
-                <span>{{ a.options.displayName }}</span>
+                <div
+                    v-if="Object.keys(applied).length"
+                    class="w-2 h-2 mr-2 rounded-full bg-primary"
+                ></div>
+                <span> {{ a.options.displayName }}</span>
             </div>
         </a-popover>
     </div>
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref } from 'vue'
+    import { defineComponent, ref, onMounted, toRefs, watch } from 'vue'
     import { operatorsMap as map } from './constants'
     import useBusinessMetadataHelper from '~/composables/businessMetadata/useBusinessMetadataHelper'
     import DynamicComponents from './dynamicComponents.vue'
@@ -64,6 +68,10 @@
                 type: Object,
                 required: true,
             },
+            applied: {
+                type: Object,
+                required: true,
+            },
         },
         emits: ['handleAttributeInput'],
         setup(props, { emit }) {
@@ -73,7 +81,7 @@
             operatorsMap.value = JSON.parse(JSON.stringify(map))
             const appliedValues = ref({})
 
-            const removeFilter = (operator) => {
+            const removeFilter = (operator: string) => {
                 // ? check appliedValues
                 if (appliedValues.value[operator]) {
                     delete appliedValues.value[operator]
@@ -96,6 +104,48 @@
                     removeFilter(operator)
                 }
             }
+            onMounted(() => {
+                // ? set check applied checkbox
+                if (props.applied.value)
+                    Object.keys(props.applied.value).forEach((k) => {
+                        operatorsMap.value[
+                            getDatatypeOfAttribute(props.a.typeName)
+                            // eslint-disable-next-line no-return-assign
+                        ].find(
+                            (o: { value: string }) => o.value === k
+                        ).checked = true
+                    })
+            })
+
+            watch(
+                () => props.applied.value,
+                (n, o) => {
+                    // Object.keys(operatorsMap.value[
+                    //         getDatatypeOfAttribute(props.a.typeName)
+                    //     ]).forEach(k => {
+                    //         if(!applied.value[k]) {
+                    //             operatorsMap.value[
+                    //         getDatatypeOfAttribute(props.a.typeName)
+                    //     ]
+                    //         }
+                    //     })
+                    // if (o && JSON.stringify(props.applied.value) === '{}') {
+                    //     Object.keys(
+                    //         operatorsMap.value[
+                    //             getDatatypeOfAttribute(props.a.typeName)
+                    //         ]
+                    //     ).forEach((o) => {
+                    //         operatorsMap.value[
+                    //             getDatatypeOfAttribute(props.a.typeName)
+                    //         ][o].checked = false
+                    //     })
+                    // }
+                },
+                {
+                    deep: true,
+                    immediate: true,
+                }
+            )
             return {
                 operatorsMap,
                 getDatatypeOfAttribute,

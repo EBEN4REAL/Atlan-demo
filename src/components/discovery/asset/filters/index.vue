@@ -229,7 +229,7 @@
                             )
                             .map((bm) => ({
                                 [bm.name]: {
-                                    applied: [],
+                                    applied: {},
                                     list: {
                                         ...bm,
                                         attributeDefs: bm.attributeDefs.filter(
@@ -336,6 +336,10 @@
                     case 'advanced': {
                         break
                     }
+                    default: {
+                        dataMap.value[filterId].applied = {}
+                        filterMap[filterId].criterion = []
+                    }
                 }
                 setAppliedFiltersCount()
                 refresh()
@@ -384,6 +388,17 @@
                         return ''
                     }
                     default: {
+                        // ? default fall back to bm filter
+                        const totalCount = Object.keys(
+                            dataMap.value[filterId].applied
+                        ).length
+
+                        return totalCount
+                            ? `${
+                                  Object.keys(dataMap.value[filterId].applied)
+                                      .length
+                              } condition(s) applied`
+                            : ''
                     }
                 }
             }

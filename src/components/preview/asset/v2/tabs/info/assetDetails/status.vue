@@ -59,7 +59,7 @@
             </template>
             <div
                 ref="animationPoint"
-                class="inline-flex flex-col text-xs text-gray-500"
+                class="inline-flex flex-col text-xs text-gray-500 cursor-pointer "
             >
                 <p class="mt-1 mb-1.5 text-sm">Status</p>
                 <StatusBadge

@@ -12,8 +12,8 @@
     @closeModal="handleCloseModal"
   />
   <splitpanes class="h-full default-theme">
-    <pane min-size="25" max-size="50" :size="25" class="px-3 bg-white">
-      <a-input placeholder="Search" class="mt-3"></a-input>
+    <pane min-size="25" max-size="50" :size="19" class="px-3 bg-white">
+      <a-input placeholder="Search" class="my-3"></a-input>
       <GlossaryTree
         ref="glossaryTreeRef"
         @success="handleSuccess"
@@ -21,7 +21,7 @@
         @showUpdateGlossaryModal="handleOpenUpdateModal"
       ></GlossaryTree>
     </pane>
-    <pane :size="74" class="bg-white overflow-y-scroll">
+    <pane :size="80" class="bg-white overflow-y-scroll">
         <router-view  />
     </pane>
   </splitpanes>

@@ -1,6 +1,6 @@
 <template>
-    <div class="flex flex-col">
-        <div class="flex items-center justify-between mt-2 mb-3">
+    <div class="flex flex-col px-5 py-4">
+        <div class="flex items-center justify-between mb-5">
             <a-input
                 v-model:value="searchTerm"
                 placeholder="Search columns"
@@ -17,14 +17,21 @@
                 placement="leftTop"
             >
                 <template #content>
-                    <p class="mb-2 text-sm">Filters</p>
-                    <p class="mb-1 text-xs text-gray-500">By type</p>
+                    <div class="flex items-center justify-between mb-2 text-sm">
+                        <span>By type</span>
+                        <span
+                            class="text-gray-500 cursor-pointer hover:font-bold"
+                            @click="clearAllFilters"
+                            >clear all</span
+                        >
+                    </div>
+                    <!-- <p class="mb-1 text-xs text-gray-500">By type</p> -->
                     <DataTypes v-model:filters="filters" />
                 </template>
 
                 <div
                     tabindex="0"
-                    class="flex items-center px-4 py-1 transition-shadow border rounded  border-gray-300 hover:border-gray-300"
+                    class="flex items-center px-4 py-1 transition-shadow border border-gray-300 rounded  hover:border-gray-300"
                     @keyup.enter="isFilterVisible = !isFilterVisible"
                 >
                     <span> Filters</span>
@@ -47,7 +54,9 @@
                     :is="dataTypeImage(asset)"
                     class="w-3 h-3 mr-1 text-gray"
                 ></component>
-                <span class="flex-shrink mr-2 text-xs leading-tight text-gray">
+                <span
+                    class="items-center flex-shrink mr-2 text-xs leading-tight  text-gray"
+                >
                     {{ asset.displayText }}
                 </span>
                 <div class="chip pkey" v-if="asset.attributes.isPrimary">
@@ -84,6 +93,7 @@
 
     export default defineComponent({
         components: { DataTypes },
+        name: 'Column Tab',
         props: {
             id: String,
             componentData: {
@@ -100,14 +110,21 @@
             const { selectedAsset } = toRefs(props)
 
             const assetId = computed(() => selectedAsset.value.guid)
-            const { filteredList, isReady, error, searchTerm, filters } =
-                useColumns(assetId)
+            const {
+                filteredList,
+                isReady,
+                error,
+                searchTerm,
+                filters,
+                clearAllFilters,
+            } = useColumns(assetId)
 
             return {
                 isFilterVisible,
                 filteredList,
                 searchTerm,
                 dataTypeImage,
+                clearAllFilters,
                 isReady,
                 error,
                 dataTypeList,

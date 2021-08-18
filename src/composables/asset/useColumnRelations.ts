@@ -78,6 +78,10 @@ export function useColumns(id: Ref<string>) {
         )
     })
 
+    const clearAllFilters = () => {
+        filters.value = []
+    }
+
     watch(id, (newId, oldId) => {
         if (newId !== oldId) execute()
     })
@@ -89,5 +93,6 @@ export function useColumns(id: Ref<string>) {
         searchTerm,
         filteredList,
         filters,
+        clearAllFilters,
     }
 }

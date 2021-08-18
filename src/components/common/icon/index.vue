@@ -33,7 +33,7 @@ export default defineComponent({
     let iconArray: any[] = [];
 
     if (props.icon) {
-      iconArray = props.icon.split(" ");
+      iconArray = props.icon?.split(" ") ?? [];
     }
 
     let definition: any = null;

@@ -1,6 +1,6 @@
 <template>
-    <div class="flex justify-between px-2 py-3 mb-8 border-b border-gray-300">
-        <span class="font-bold">Activity Logs</span>
+    <div class="flex justify-between p-4 mb-10 border-b border-gray-300">
+        <span class="font-bold">Logs</span>
         <fa icon="fal sync" class="cursor-pointer" @click="refreshAudits"></fa>
     </div>
     <div
@@ -19,17 +19,17 @@
                     ></div>
                 </template>
                 <div>
-                    <span v-if="getDetailsForEntityAuditEvent(log)">
-                        <ActivityType
+                    <div v-if="getDetailsForEntityAuditEvent(log)">
+                        <activity-type
                             :data="getDetailsForEntityAuditEvent(log)"
                         />
-                    </span>
-                    <span v-else>
+                    </div>
+                    <div v-else>
                         {{ getEventByAction(log).label || 'Event' }}
-                    </span>
+                    </div>
                 </div>
                 <div class="text-gray-500">
-                    <span class="mr-4 font-bold">{{
+                    <span class="mr-4 capitalize">{{
                         getActionUser(log.user)
                     }}</span>
                     <span>{{ timeAgo(log.timestamp) }}</span>
@@ -38,7 +38,7 @@
         </a-timeline>
         <div
             v-if="!checkAuditsCount && !isAllLogsFetched"
-            class="block my-8 text-center"
+            class="block mb-8 text-center"
         >
             <a-button @click="fetchMore">Show more logs</a-button>
         </div>
@@ -150,21 +150,11 @@
         width: 13px;
         height: 13px;
     }
-    .ant-timeline-item-last > .ant-timeline-item-content {
-        min-height: 10px !important;
-        height: 20px !important;
-    }
-    .ant-timeline-item-last {
-        min-height: 10px !important;
-        margin-bottom: 0 !important;
-        height: 28px !important;
-    }
 
-    :global(.ant-collapse-content-box) {
-        padding: 0 !important;
+    :global(.ant-timeline-item-content) {
+        margin-left: 22px;
     }
-
-    :global(.ant-collapse-header) {
+    :global(.ant-timeline-item-head-custom) {
         padding: 0 !important;
     }
 </style>

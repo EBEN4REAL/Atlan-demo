@@ -17,9 +17,11 @@
                 </div>
             </div>
             <div class="flex items-center pb-1">
-                <span class="mb-0 text-lg text-gray font-bold truncate ...">
-                    {{ title(selectedAsset) }}</span
-                >
+                <Tooltip
+                    :tooltip-text="title(selectedAsset)"
+                    classes="mb-0 text-lg font-bold text-gray"
+                />
+
                 <div class="flex items-center">
                     <StatusBadge
                         :showNoStatus="true"
@@ -66,6 +68,7 @@
     import useAssetDetailsTabList from './useTabList'
     import useAsset from '~/composables/asset/useAsset'
     import useAssetInfo from '~/composables/asset/useAssetInfo'
+    import Tooltip from '@common/ellipsis/index.vue'
 
     export default defineComponent({
         props: {
@@ -75,6 +78,7 @@
             },
         },
         components: {
+            Tooltip,
             StatusBadge,
             info: defineAsyncComponent(() => import('./tabs/info/index.vue')),
             columns: defineAsyncComponent(

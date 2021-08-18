@@ -42,7 +42,7 @@
                     </div>
 
                     <div
-                        class="absolute right-0 flex items-center justify-center pl-3 pr-1 text-white bg-transparent border-none rounded-full opacity-0 cursor-pointer  group-hover:opacity-100 classification-cross-btn"
+                        class="absolute flex items-center justify-center pl-3 pr-1 text-white bg-transparent border-none rounded-full opacity-0 cursor-pointer  group-hover:opacity-100 classification-cross-btn"
                         @click.stop="() => unLinkClassification(classification)"
                     >
                         <div class="flex items-center justify-center">
@@ -92,7 +92,7 @@
                     </div>
 
                     <div
-                        class="absolute right-0 flex items-center justify-center pl-3 pr-1 text-white bg-transparent border-none rounded-full opacity-0 cursor-pointer  group-hover:opacity-100 classification-cross-btn"
+                        class="absolute flex items-center justify-center pl-3 pr-1 text-white bg-transparent border-none rounded-full opacity-0 cursor-pointer  group-hover:opacity-100 classification-cross-btn"
                         @click.stop="() => unLinkClassification(classification)"
                     >
                         <div class="flex items-center justify-center">
@@ -794,6 +794,7 @@
     }
     .classification-cross-btn {
         height: 100%;
+        right: 6px;
         @apply -top-0;
         background: linear-gradient(
             -90deg,

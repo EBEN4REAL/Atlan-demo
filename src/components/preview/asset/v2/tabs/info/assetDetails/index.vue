@@ -1,6 +1,9 @@
 <template>
     <div class="w-full px-5">
-        <div class="flex items-center w-full gap-16 mb-4">
+        <div
+            class="flex items-center w-full gap-16 mb-4"
+            v-if="isSelectedAssetHaveRowsAndColumns(selectedAsset)"
+        >
             <RowInfoHoverCard :rowCount="rows">
                 <div class="flex flex-col text-sm cursor-pointer">
                     <span class="mb-2 text-sm text-gray-500">Rows</span>
@@ -71,11 +74,19 @@
                     ? columnCount(selectedAsset.value, true)
                     : '~'
             )
+            function isSelectedAssetHaveRowsAndColumns(
+                selectedAsset: assetInterface
+            ) {
+                if (selectedAsset.typeName == 'View') return true
+                else if (selectedAsset.typeName == 'Table') return true
+                else return false
+            }
 
             return {
                 rows,
                 cols,
                 selectedAsset,
+                isSelectedAssetHaveRowsAndColumns,
             }
         },
     })

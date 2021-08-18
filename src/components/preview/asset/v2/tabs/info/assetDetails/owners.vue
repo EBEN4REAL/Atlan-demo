@@ -1,13 +1,68 @@
 <template>
     <div class="w-full mr-2">
         <p class="mb-2">Owners</p>
-        <div v-if="!isOwnersLoading">
+        <div>
             <div
                 v-if="ownerUsers.length > 0"
                 class="flex flex-wrap text-sm border border-transparent rounded"
             >
                 <template
                     v-for="owner in splittedOwners.a"
+                    :key="owner.username"
+                >
+                    <OwnerInfoCard
+                        :username="owner.username"
+                        :type="owner.type"
+                    >
+                        <div
+                            class="
+                                relative
+                                flex
+                                items-center
+                                px-3
+                                py-1.5
+                                mb-3
+                                mr-3
+                                font-bold
+                                rounded-full
+                                bg-gray-light
+                                text-gray-700
+                                group
+                                hover:bg-primary hover:text-white
+                            "
+                        >
+                            <img
+                                src="https://picsum.photos/id/237/50/50"
+                                alt="view"
+                                class="w-4 h-4 mr-2 rounded-full"
+                            />
+                            <div
+                                class="
+                                    mb-0
+                                    font-bold
+                                    truncate
+                                    text-sm
+                                    capitalize
+                                    max-owner-name-width
+                                    ...
+                                "
+                            >
+                                {{ owner.username }}
+                            </div>
+                            <div
+                                class="absolute flex items-center justify-center pl-3 pr-1 text-white bg-transparent border-none rounded-full opacity-0 cursor-pointer  group-hover:opacity-100 owners-cross-btn"
+                                v-on:click.stop="() => handleRemoveOwner(owner)"
+                            >
+                                <div class="flex items-center justify-center">
+                                    <fa icon="fal times-circle" class="" />
+                                </div>
+                            </div>
+                        </div>
+                    </OwnerInfoCard>
+                </template>
+                <template
+                    v-if="showAll"
+                    v-for="owner in splittedOwners.b"
                     :key="owner.username"
                 >
                     <OwnerInfoCard
@@ -53,64 +108,8 @@
                                 {{ owner.username }}
                             </div>
                             <div
-                                class="absolute right-0 flex items-center justify-center pl-3 pr-1 text-white bg-transparent border-none rounded-full opacity-0 cursor-pointer  group-hover:opacity-100 owners-cross-btn"
-                            >
-                                <div class="flex items-center justify-center">
-                                    <fa icon="fal times-circle" class="" />
-                                </div>
-                            </div>
-                        </div>
-                    </OwnerInfoCard>
-                </template>
-                <template
-                    v-if="showAll"
-                    v-for="owner in splittedOwners.b"
-                    :key="owner.username"
-                >
-                    <OwnerInfoCard
-                        :username="owner.username"
-                        :type="owner.type"
-                    >
-                        <div
-                            class="
-                                flex
-                                items-center
-                                mr-3
-                                cursor-pointer
-                                my-0
-                                mb-3
-                                bg-gray-light
-                                rounded-full
-                                px-3
-                                py-1.5
-                                relative
-                                group
-                                text-gray-700
-                            "
-                            v-on:click.stop="
-                                () => handleClickUser(owner.username)
-                            "
-                        >
-                            <img
-                                src="https://picsum.photos/id/237/50/50"
-                                alt="view"
-                                class="w-4 h-4 mr-2 rounded-full"
-                            />
-                            <div
-                                class="
-                                    mb-0
-                                    font-bold
-                                    truncate
-                                    text-sm
-                                    capitalize
-                                    max-owner-name-width
-                                    ...
-                                "
-                            >
-                                {{ owner.username }}
-                            </div>
-                            <div
-                                class="absolute right-0 flex items-center justify-center pl-3 pr-1 text-white bg-transparent border-none rounded-full opacity-0 cursor-pointer  group-hover:opacity-100 owners-cross-btn"
+                                class="absolute flex items-center justify-center pl-3 pr-1 text-white bg-transparent border-none rounded-full opacity-0 cursor-pointer  group-hover:opacity-100 owners-cross-btn"
+                                v-on:click.stop="() => handleRemoveOwner(owner)"
                             >
                                 <div class="flex items-center justify-center">
                                     <fa icon="fal times-circle" class="" />
@@ -449,6 +448,7 @@
                                 <a-button
                                     type="primary"
                                     class="rounded"
+                                    :loading="isOwnersLoading"
                                     @click="handleUpdateOwners"
                                     >Update</a-button
                                 >
@@ -458,13 +458,13 @@
                 </template>
             </a-popover>
         </div>
-        <div
+        <!-- <div
             v-else
             class="flex items-center justify-center mt-4 text-sm leading-none"
         >
             <a-spin size="small" class="mr-2 leading-none"></a-spin
             ><span>Updating owners</span>
-        </div>
+        </div> -->
     </div>
 </template>
 
@@ -556,7 +556,6 @@
             } = updateOwners(selectedAsset)
 
             const handleUpdateOwners = () => {
-                showOwnersDropdown.value = false
                 update(selectedUsers.value, selectedGroups.value)
             }
             const handleCancelUpdateOwnerPopover = () => {
@@ -622,8 +621,8 @@
                 [ownerUsers, ownerGroups],
                 () => {
                     console.log('owners changed', ownerUsers.value)
-                    selectedUsers.value = ownerUsers.value
-                    selectedGroups.value = ownerGroups.value
+                    // selectedUsers.value = ownerUsers.value
+                    // selectedGroups.value = ownerGroups.value
                     splittedOwners.value = splitArray(
                         5,
                         mappedSplittedOwners(ownerUsers, ownerGroups)
@@ -649,6 +648,32 @@
             const toggleAllOwners = (state: boolean) => {
                 showAll.value = state
             }
+
+            const handleRemoveOwner = (owner: {
+                username: string
+                type: string
+            }) => {
+                if (owner.type === 'user') {
+                    let filteredOwnerUsers = ownerUsers.value.filter(
+                        (username) => {
+                            return username !== owner.username
+                        }
+                    )
+                    selectedUsers.value = filteredOwnerUsers
+                    console.log(ownerUsers.value, 'delete', filteredOwnerUsers)
+                } else {
+                    let filteredOwnerGroups = ownerGroups.value.filter(
+                        (name) => name !== owner.username
+                    )
+                    selectedGroups.value = filteredOwnerGroups
+                }
+                update(selectedUsers.value, selectedGroups.value)
+            }
+            // closing the popover on making the req successfully
+            watch(isOwnersLoading, () => {
+                if (!isOwnersLoading.value) showOwnersDropdown.value = false
+            })
+
             return {
                 showAll,
                 toggleAllOwners,
@@ -675,6 +700,7 @@
                 showOwnersDropdown,
                 toggleOwnerPopover,
                 selectedAsset,
+                handleRemoveOwner,
                 handleCancelUpdateOwnerPopover,
             }
         },
@@ -688,6 +714,7 @@
         background: rgba(34, 81, 204, 0.05);
     }
     .owners-cross-btn {
+        right: 6px;
         height: 100%;
         @apply -top-0;
         background: linear-gradient(

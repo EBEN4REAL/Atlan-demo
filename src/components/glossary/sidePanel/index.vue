@@ -5,7 +5,7 @@
             flex flex-col
             w-1/2
             border-l
-            min-h-full
+            min-h-screen
             overflow-y-hide
         "
         :class="$style.sidePanel"

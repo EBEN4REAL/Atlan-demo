@@ -2,7 +2,7 @@
     <div v-if="isLoading">
         <LoadingView />
     </div>
-    <div v-else class="flex flex-row">
+    <div v-else class="flex flex-row ">
         <div :class="currentTab === '1' || (currentTab === '2' && previewEntity) ? 'w-2/3' : 'w-full'">
             <div class="flex flex-row justify-between px-8 mt-6 mb-5">
                 <div class="flex flex-row">
@@ -56,6 +56,8 @@
                     <a-tab-pane key="2" tab="Terms & Categories">
                         <GlossaryTermsAndCategoriesTab
                             :qualified-name="qualifiedName"
+                            :guid="glossary.guid"
+                            :type="glossary.typeName"
                             @entityPreview="handleCategoryOrTermPreview"
                         />
                     </a-tab-pane>

@@ -36,7 +36,7 @@
                     <a-tab-pane key="1" :tab="`All (${all.length})`">
                         <div v-for="asset in all" :key="asset.guid">
                             <GtcEntityCard
-                                :class="{ 'hover:bg-gray-100': true }"
+                                :class="{ 'hover:bg-gray-100': true, 'bg-blue-50': selectedEntity?.guid === asset.guid }"
                                 :entity="asset"
                                 :projection="projection"
                                 @gtcCardClicked="onEntitySelect"
@@ -84,7 +84,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, computed, ref, toRef, watch } from 'vue'
+import { defineComponent, computed, ref, toRef, watch, PropType } from 'vue'
 import { useDebounceFn } from '@vueuse/core'
 
 import LoadingView from '@common/loaders/page.vue'
@@ -104,6 +104,16 @@ export default defineComponent({
             required: true,
             default: '',
         },
+        guid: {
+            type: String,
+            required: true,
+            default: ''
+        },
+        type: {
+            type: String as PropType<'AtlasGlossary' | 'AtlasGlossaryCategory'>,
+            required: true,
+            default: 'AtlasGlossary'
+        }
     },
     emits: ['entityPreview'],
     setup(props, context) {
@@ -131,18 +141,54 @@ export default defineComponent({
         }
 
         const terms = computed(
-            () =>
-                entities.value?.filter(
+            () => {
+                if(props.type === 'AtlasGlossary'){
+                    return entities.value?.filter(
                     (entity) => entity.typeName === 'AtlasGlossaryTerm'
-                ) ?? []
+                ) ?? [];
+                } 
+                if (props.type === 'AtlasGlossaryCategory'){
+                    return   entities.value?.filter((entity) => {
+                    if (
+                        entity.typeName === 'AtlasGlossaryTerm' &&
+                        entity?.attributes?.categories?.length
+                    ) {
+                        if (
+                            entity?.attributes?.categories?.find(
+                                (category) =>
+                                    category.guid === props.guid
+                            )
+                        ) {
+                            return true
+                        }
+                    }
+                    return false
+                }) ?? []           
+                }
+                return []
+            }
         );
         const categories = computed(
-            () =>
-                entities.value?.filter(
+            () =>{
+            if(props.type === 'AtlasGlossary'){
+                return entities.value?.filter(
                     (entity) => entity.typeName === 'AtlasGlossaryCategory'
                 ) ?? []
-        );
-        const all = computed(() => entities.value ?? [])
+            }
+            if(props.type === 'AtlasGlossaryCategory'){
+                return entities.value?.filter((entity) => {
+                    if (entity.typeName === 'AtlasGlossaryCategory' && entity?.attributes?.parentCategory)
+                        return (
+                            entity.typeName === 'AtlasGlossaryCategory' &&
+                            entity?.attributes?.parentCategory?.guid ===
+                                props.guid
+                        )
+                    return false
+                }) ?? []
+            }
+            return []
+        });
+        const all = computed(() => [...terms.value, ...categories.value] ?? [])
 
         const onSearch = useDebounceFn(() => {
             fetchAssetsPaginated({query: `${searchQuery.value ? `${searchQuery.value}` : '' }`, offset: 0})

@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <!-- <div>
         <div class="mb-4">
             <a-input-search
                 v-model:value="searchQuery"
@@ -57,7 +57,7 @@
         <div v-else-if="!all.length" class="mt-24">
             <EmptyView :showClearFiltersCTA="false" />
         </div>
-    </div>
+    </div> -->
 </template>
 
 <script lang="ts">

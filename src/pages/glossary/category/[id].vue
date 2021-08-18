@@ -2,80 +2,101 @@
     <div v-if="isLoading" class="">
         <LoadingView />
     </div>
-    <div v-else class="px-12 pr-0 mb-12">
-        <div class="flex flex-row mt-6 mb-5">
-            <div class="mr-5">
-                <img :src="CategorySvg" />
-            </div>
-            <div class="flex flex-col">
-                <span class="secondaryHeading">CATEGORY</span>
-                <h1 class="text-3xl leading-9 m-0 p-0 text-black font-normal">
-                    <span v-if="parentGlossaryQualifiedName" class="text-gray"
-                        >{{ parentGlossaryQualifiedName }} /
-                    </span>
-                    {{ title }}
-                </h1>
-                <EntityHistory
-                    :created-at="category?.createTime"
-                    :created-by="category?.createdBy"
-                    :updated-at="category?.updateTime"
-                    :updated-by="category?.updatedBy"
-                />
-                <span class="mt-2 text-xs w-1/2 leading-4 text-gray-500">{{
-                    shortDescription
-                }}</span>
-            </div>
-        </div>
-        <div>
-            <a-tabs default-active-key="1" class="border-0">
-                <a-tab-pane key="1" tab="Overview">
-                    <div class="flex flex-row m-0 p-0">
-                        <GlossaryProfileOverview :entity="category" />
-                        <div
-                            v-if="termCount"
-                            class="flex flex-column w-1/2 ml-9 border-l"
-                        >
-                            <GlossaryTopTerms
-                                v-if="categoryTerms?.length && !termsLoading"
-                                :terms="categoryTerms"
-                            />
-                        </div>
+    <div v-else class="flex flex-row">
+        <div :class="currentTab === '1' || (currentTab === '2' && previewEntity) ? 'w-2/3' : 'w-full'">
+            <div class="flex flex-row justify-between px-8 mt-6 mb-5">
+                <div class="flex flex-row">
+                    <div class="mr-5">
+                        <img :src="CategorySvg" />
                     </div>
-                </a-tab-pane>
-                <a-tab-pane key="2" tab="Terms & Categories">
-                    <CategoryTermsAndCategoriesTab
+                    <div class="flex flex-col">
+                        <span v-if="parentGlossaryQualifiedName" class="text-gray">
+                            {{ parentGlossaryQualifiedName }} /
+                        </span>
+                        <span class="text-xl leading-6 font-bold">{{
+                            title
+                        }}</span>
+                        <!-- <EntityHistory
+                    :created-at="glossary?.attributes.__timestamp"
+                    :created-by="glossary?.createdBy"
+                    :updated-at="glossary?.attributes.__modificationTimestamp"
+                    :updated-by="glossary?.updatedBy"
+                /> -->
+                        <span class="mt-1 text-sm leading-5 text-gray-500">{{
+                            shortDescription
+                        }}</span>
+                    </div>
+                </div>
+                <div class="flex flex-row space-x-2 mr-4">
+                    <a-button >
+                        <fa icon="fal bookmark" />
+                    </a-button>
+                    <a-button class="flex align-middle">
+                        <fa icon="fal upload" class="h-3 mr-2" />
+                        Share
+                    </a-button>
+                    <a-button >
+                        <fa icon="fal ellipsis-v" class="h-4" />
+                    </a-button>
+                </div>
+            </div>
+            <div class="flex flex-row">
+                <a-tabs v-model:activeKey="currentTab" default-active-key="1" class="border-0">
+                    <a-tab-pane key="1" tab="Overview">
+                        <div class="flex flex-row m-0 px-8">
+                            <GlossaryProfileOverview :entity="category" />
+                        </div>
+                    </a-tab-pane>
+                    <a-tab-pane key="2" tab="Terms & Categories">
+                    <!-- <CategoryTermsAndCategoriesTab
                         :category-guid="guid"
                         :qualified-name="parentGlossaryQualifiedName"
-                    />
-                </a-tab-pane>
-            </a-tabs>
+                    /> -->
+                                            <GlossaryTermsAndCategoriesTab
+                            :qualified-name="parentGlossaryQualifiedName"
+                            :guid="guid"
+                            type="AtlasGlossaryCategory"
+                            @entityPreview="handleCategoryOrTermPreview"
+                        />
+                    </a-tab-pane>
+                    <a-tab-pane key="4" tab="Bots"> Bots </a-tab-pane>
+                    <a-tab-pane key="5" tab="Permissions">
+                        Permissions
+                    </a-tab-pane>
+                </a-tabs>
+            </div>
         </div>
+        <SidePanel v-if="currentTab === '1'" :entity="category" :topTerms="categoryTerms" />
+        <CategoryTermPreview v-if="currentTab === '2' && previewEntity" :entity="previewEntity"  />
     </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, computed, watch, onMounted, toRef } from 'vue'
+import { defineComponent, computed, watch, onMounted, toRef, ref } from 'vue'
 
 import GlossaryProfileOverview from '@/glossary/common/glossaryProfileOverview.vue'
 import GlossaryTopTerms from '@/glossary/common/glossaryTopTerms.vue'
 import EntityHistory from '@/glossary/common/entityHistory.vue'
 import CategoryTermsAndCategoriesTab from '@/glossary/categoryProfile/categoryTermsAndCategoriesTab.vue'
 import LoadingView from '@common/loaders/page.vue'
+import SidePanel from '@/glossary/sidePanel/index.vue'
+import CategoryTermPreview from '@/glossary/common/categoryTermPreview/categoryTermPreview.vue'
+import GlossaryTermsAndCategoriesTab from '@/glossary/glossaryTermsAndCategoriesTab.vue'
 
 import useGTCEntity from '~/composables/glossary/useGtcEntity'
 import useCategoryTerms from '~/composables/glossary/useCategoryTerms'
 
-import { Category } from '~/types/glossary/glossary.interface'
+import { Glossary, Category, Term } from '~/types/glossary/glossary.interface'
 
 import CategorySvg from '~/assets/images/gtc/category/category.png'
 
 export default defineComponent({
     components: {
         GlossaryProfileOverview,
-        GlossaryTopTerms,
-        CategoryTermsAndCategoriesTab,
-        EntityHistory,
+        GlossaryTermsAndCategoriesTab,
         LoadingView,
+        SidePanel,
+        CategoryTermPreview
     },
     props: {
         id: {
@@ -86,6 +107,8 @@ export default defineComponent({
     },
     setup(props) {
         const guid = toRef(props, 'id')
+        const currentTab = ref('1');
+        const previewEntity = ref<Category | Term | undefined>();
 
         const {
             entity: category,
@@ -125,9 +148,15 @@ export default defineComponent({
             })
         })
 
+        const handleCategoryOrTermPreview = (entity: Category | Term) => {
+            previewEntity.value = entity;
+        }
+        
         return {
             category,
             categoryTerms,
+            currentTab,
+            previewEntity,
             title,
             shortDescription,
             termCount,
@@ -137,6 +166,7 @@ export default defineComponent({
             termsLoading,
             CategorySvg,
             guid,
+            handleCategoryOrTermPreview,
         }
     },
 })

@@ -2,7 +2,7 @@
     <div class="w-full px-5">
         <div class="flex items-center w-full gap-16 mb-4">
             <RowInfoHoverCard :rowCount="rows">
-                <div class="flex flex-col text-sm">
+                <div class="flex flex-col text-sm cursor-pointer">
                     <span class="mb-2 text-sm text-gray-500">Rows</span>
                     <span class="text-gray-700">{{ rows }}</span>
                 </div>

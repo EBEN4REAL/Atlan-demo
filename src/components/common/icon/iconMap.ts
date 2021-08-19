@@ -7,6 +7,7 @@ import PrimaryKey from '~/assets/images/icons/primary.svg'
 import Share from '~/assets/images/icons/share.svg'
 import Filter from '~/assets/images/icons/filter.svg'
 import FilterDot from '~/assets/images/icons/filter-dot.svg'
+import Search from '~/assets/images/icons/search.svg'
 
 export default {
     BookmarkFilled,
@@ -18,4 +19,5 @@ export default {
     Share,
     Filter,
     FilterDot,
+    Search,
 }

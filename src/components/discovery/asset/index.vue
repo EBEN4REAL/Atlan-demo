@@ -34,7 +34,7 @@
                         @change="handleSearchChange"
                     >
                         <template #suffix>
-                            <Fa icon="fal search" class="mr-2 text-gray-500" />
+                            <AtlanIcon icon="Search" />
                         </template>
                     </a-input>
                     <a-popover trigger="click" placement="bottomLeft">
@@ -46,11 +46,9 @@
                                 @state="handleState"
                             ></Preferences>
                         </template>
-                        <a-badge>
-                            <a-button class="p-1 ml-2 rounded">
-                                <AtlanIcon icon="FilterDot" class="h-6" />
-                            </a-button>
-                        </a-badge>
+                        <a-button class="p-1 ml-2 rounded">
+                            <AtlanIcon icon="FilterDot" class="h-6" />
+                        </a-button>
                     </a-popover>
                 </div>
 
@@ -594,7 +592,7 @@
 <style lang="less" module>
     .searchbar {
         @apply mr-2 rounded;
-        @apply border-2 border-primary-focus !important;
+        @apply border-2 border-gray-300 !important;
         @apply outline-none;
         :global(.ant-input) {
             @apply h-6;

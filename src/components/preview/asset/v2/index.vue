@@ -8,10 +8,10 @@
                 ></component>
                 <div class="flex">
                     <div class="icon-btn">
-                        <fa class="w-auto h-4" icon="fal bookmark" />
+                        <AtlanIcon icon="BookmarkOutlined" />
                     </div>
                     <div class="icon-btn">
-                        <fa class="mr-2 text-sm" icon="fal share" />
+                        <AtlanIcon class="mr-2" icon="Share" />
                         <span class="text-sm">Share</span>
                     </div>
                 </div>
@@ -76,6 +76,10 @@
                 type: Object as PropType<assetInterface>,
                 required: true,
             },
+            page: {
+                type: String,
+                required: true,
+            },
         },
         components: {
             Tooltip,
@@ -99,9 +103,9 @@
             ),
         },
         setup(props, { emit }) {
-            const { filteredTabs, assetType } = useAssetDetailsTabList()
+            const { selectedAsset, page } = toRefs(props)
+            const { filteredTabs, assetType } = useAssetDetailsTabList(page)
             const { assetTypeLabel, title, assetStatus } = useAssetInfo()
-            const { selectedAsset } = toRefs(props)
             const activeKey = ref(0)
             const isLoaded: Ref<boolean> = ref(true)
 
@@ -114,6 +118,11 @@
                     return data.value?.entities[0]
                 return {}
             }
+
+            watch(page, () => {
+                if (activeKey.value > filteredTabs.value.length)
+                    activeKey.value = 0
+            })
 
             function init() {
                 isLoaded.value = true

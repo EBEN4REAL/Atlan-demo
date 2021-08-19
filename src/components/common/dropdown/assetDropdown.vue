@@ -36,10 +36,7 @@
                                 class="w-auto h-3 mr-1"
                             ></component
                             >All {{ list[0].name }}s
-                            <fa
-                                icon="fas chevron-down"
-                                class="ml-2 text-gray-500"
-                            ></fa>
+                            <AtlanIcon icon="ChevronDown" class="ml-2" />
                         </p>
                     </div>
                 </a-popover>

@@ -145,7 +145,7 @@
             })
 
             const addBMSelectOptions = computed(() =>
-                availableBM.value.map((b) => ({
+                availableBM?.value?.map((b) => ({
                     value: b.name,
                     title: b.options.displayName,
                 }))

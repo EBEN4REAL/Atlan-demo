@@ -2,68 +2,70 @@
 <template>
     <div
         v-if="asset.attributes.integrationName !== 'tableau'"
-        class="w-full px-10 py-4 overflow-y-auto"
+        class="w-full px-5 overflow-y-auto"
         style="height: 600px"
     >
-        <!--Asset Summary -->
-        <div class="flex justify-between w-full mb-8">
-            <div class="w-full max-w-xl mr-8 bg-white border rounded-t">
-                <div
-                    class="flex items-center w-full py-2 text-base bg-white border-b  px-7"
-                >
-                    Summary
-                </div>
-                <div class="w-full py-6 px-7">
-                    <!-- Description Component -->
-                    <div class="mb-8">
-                        <DescriptionWidget :asset="asset" />
-                    </div>
-                    <!-- Table Component -->
-                    <div>
-                        <a-table
-                            bordered
-                            :columns="tableColumns"
-                            :data-source="results"
-                            :pagination="false"
-                            :scroll="{ y: 170, x: 170 }"
-                            size="middle"
-                        >
-                        </a-table>
-                    </div>
-                </div>
-            </div>
-            <!-- Column widget -->
-            <div>
-                <TableColumn :asset="asset" />
-            </div>
+        <div class="mt-6">
+            <p class="mb-3 text-base font-bold mt-7">Column preview</p>
+            <!-- TODO: new column ui goes here -->
+            <TableColumn :asset="asset" />
         </div>
-        <!-- Asset ReadMe -->
-        <div class="min-h-full">
-            <Readme class="w-full h-32" />
+        <div class="border-b">
+            <div class="flex items-center justify-between mb-3 text-base">
+                <p class="font-bold mt-7">Table preview</p>
+                <div
+                    class="flex items-center p-2 border border-gray-300 rounded cursor-pointer  text-gray hover:bg-gray-100"
+                >
+                    <span class="text-sm">Query on this asset</span>
+                    <fa class="ml-2 text-sm" icon="fal share" />
+                </div>
+            </div>
+            <a-table
+                bordered
+                :columns="tableColumns"
+                :data-source="results"
+                :scroll="{ x: 1500, y: 300 }"
+                class="max-w-5xl m-auto"
+                :pagination="false"
+            >
+            </a-table>
+        </div>
+        <!--Asset Summary -->
+        <div class="min-h-full my-6">
+            <Readme
+                class="w-full border-0"
+                :showBorders="false"
+                :showPaddingX="false"
+                :parent-asset-id="asset?.guid"
+            />
         </div>
     </div>
+    <!-- for BI assets -->
     <div v-else class="w-full overflow-y-auto bg-white" style="height: 600px">
-        <BiWidgetWrapper :asset="asset" />
+        <BiWidgetWrapper :asset="asset" @preview="handlePreview" />
     </div>
 </template>
 <script lang="ts">
     // Vue
-    import { defineComponent, ref, watch } from 'vue'
+    import { defineComponent, ref, watch, toRefs } from 'vue'
 
     // Components
     import Readme from '@/common/readme/index.vue'
     import TableColumn from '@/asset/assetProfile/overview/tableColumn.vue'
-    import DescriptionWidget from '@/asset/assetProfile/overview/descriptionWidget.vue'
     import BiWidgetWrapper from '@/asset/assetProfile/overview/biWidget/biWidgetWrapper.vue'
 
     // api
     import { useAPI } from '~/api/useAPI'
 
     export default defineComponent({
-        components: { Readme, TableColumn, DescriptionWidget, BiWidgetWrapper },
+        components: { Readme, TableColumn, BiWidgetWrapper },
+        props: ['asset'],
+        emits: ['preview'],
         setup(props, context) {
-            const asset = ref(context.attrs.asset)
+            // const asset = ref(context.attrs.asset)
+            const { asset }: ToRefs = toRefs(props)
 
+            console.log(asset)
             // for table widget
             const tableColumns = ref([])
             const results = ref([])
@@ -116,8 +118,13 @@
                 }
             })
 
+            const handlePreview = (item) => {
+                context.emit('preview', item)
+            }
+
             return {
                 asset,
+                handlePreview,
                 tableColumns,
                 results,
             }

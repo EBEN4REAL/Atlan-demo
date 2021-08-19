@@ -5,6 +5,7 @@
                 <router-view
                     v-if="isItem"
                     @updateAssetPreview="handlePreview"
+                    @preview="handlePreview"
                 ></router-view>
                 <AssetDiscovery
                     v-else
@@ -19,6 +20,7 @@
             <AssetPreview
                 v-if="selected"
                 :selectedAsset="selected"
+                :page="page"
             ></AssetPreview>
         </div>
     </div>
@@ -48,31 +50,22 @@
             AssetDiscovery,
         },
         setup() {
-            const router = useRouter()
-            const route = useRoute()
-
-            const id = computed(() => route.params.id)
-            const isItem = computed(() => {
-                if (route.params.id) {
-                    return true
-                }
-                return false
-            })
-            // onMounted(() => {
-            //   const id = route.params.id;
-            // });
-
-            const initialFilters: initialFiltersType =
-                getDecodedOptionsFromString(router)
-
-            const selected: Ref<assetInterface | undefined> = ref(undefined)
-
             useHead({
                 title: 'Discover assets',
             })
+            const router = useRouter()
+            const route = useRoute()
+            const isItem = computed(() => route.params.id)
+
+            const initialFilters: initialFiltersType =
+                getDecodedOptionsFromString(router)
+            const selected: Ref<assetInterface | undefined> = ref(undefined)
             const handlePreview = (selectedItem: assetInterface) => {
                 selected.value = selectedItem
             }
+            const page = computed(() =>
+                isItem.value ? 'profile' : 'discovery'
+            )
 
             /* Making the network request here to fetch the latest changes of classifications. 
             So that everytime user visit the discover page it will be in sync to latest data not with store
@@ -103,8 +96,8 @@
                 initialFilters,
                 selected,
                 handlePreview,
-                id,
                 isItem,
+                page,
             }
         },
     })

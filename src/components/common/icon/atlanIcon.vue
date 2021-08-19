@@ -1,10 +1,11 @@
 <template>
-    <component :is="svgIcon" />
+    <component class="w-auto h-4" :is="svgIcon" />
 </template>
 
 <script lang="ts">
+    import { toRefs, defineComponent, computed } from 'vue'
     import iconMap from './iconMap'
-    export default {
+    export default defineComponent({
         name: 'AtlanIcons',
         props: {
             icon: {
@@ -13,10 +14,11 @@
             },
         },
         setup(props) {
-            const svgIcon = iconMap[props.icon] || 'div'
+            const { icon } = toRefs(props)
+            const svgIcon = computed(() => iconMap[icon.value] || 'div')
             return { svgIcon }
         },
-    }
+    })
 </script>
 
 <style>

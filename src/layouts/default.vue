@@ -25,7 +25,7 @@
                             >
                                 Discover
                             </a-menu-item>
-                            <template #overlay>
+                            <!--template #overlay>
                                 <div
                                     class="flex px-8 py-6 text-sm leading-4 bg-white border  min-w-96 dropdown"
                                 >
@@ -96,7 +96,7 @@
                                         </div>
                                     </div>
                                 </div>
-                            </template>
+                            </template-->
                         </a-dropdown>
                         <a-menu-item
                             key="glossary"

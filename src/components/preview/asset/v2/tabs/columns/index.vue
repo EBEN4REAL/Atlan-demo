@@ -7,8 +7,8 @@
                 size="default"
                 :class="$style.searchbar"
             >
-                <template #prefix>
-                    <Fa icon="fal search" class="mr-2 text-gray-500" />
+                <template #suffix>
+                    <AtlanIcon icon="Search" />
                 </template>
             </a-input>
             <a-popover
@@ -18,29 +18,22 @@
             >
                 <template #content>
                     <div class="flex items-center justify-between mb-2 text-sm">
-                        <span>By type</span>
+                        <span>Data type</span>
                         <span
-                            class="text-gray-500 cursor-pointer hover:font-bold"
+                            class="text-gray-500 cursor-pointer hover:text-gray"
                             @click="clearAllFilters"
-                            >clear all</span
+                            >Clear</span
                         >
                     </div>
-                    <!-- <p class="mb-1 text-xs text-gray-500">By type</p> -->
                     <DataTypes v-model:filters="filters" />
                 </template>
 
-                <div
-                    tabindex="0"
-                    class="flex items-center px-4 py-1 transition-shadow border border-gray-300 rounded  hover:border-gray-300"
-                    @keyup.enter="isFilterVisible = !isFilterVisible"
-                >
-                    <span> Filters</span>
-                    <Fa
-                        icon="fas chevron-down"
-                        class="ml-1 transition-transform transform"
-                        :class="isFilterVisible ? '-rotate-180' : 'rotate-0'"
+                <a-button class="p-1 ml-2 rounded">
+                    <AtlanIcon
+                        :icon="filters.length ? 'FilterDot' : 'Filter'"
+                        class="h-6"
                     />
-                </div>
+                </a-button>
             </a-popover>
         </div>
 
@@ -52,23 +45,33 @@
             <div class="flex items-center mb-1">
                 <component
                     :is="dataTypeImage(asset)"
-                    class="w-3 h-3 mr-1 text-gray"
+                    class="flex-none w-auto h-4 mr-2 text-gray"
                 ></component>
                 <span
-                    class="items-center flex-shrink mr-2 text-xs leading-tight  text-gray"
+                    class="
+                        flex-shrink
+                        pt-0.5
+                        mr-2
+                        overflow-hidden
+                        text-xs
+                        font-bold
+                        align-middle
+                        text-gray
+                        overflow-ellipsis
+                    "
                 >
                     {{ asset.displayText }}
                 </span>
-                <div class="chip pkey" v-if="asset.attributes.isPrimary">
-                    <Fa icon="fas key" />
-                    <span class="pl-1">Pkey</span>
+                <div class="chip" v-if="asset.attributes.isPrimary">
+                    <AtlanIcon icon="PrimaryKey" />
                 </div>
-                <div class="chip fkey" v-if="asset.attributes.isPrimary">
-                    <Fa icon="fas key" class="transform rotate-180" />
-                    <span class="pl-1">Fkey</span>
+                <div class="chip" v-if="asset.attributes.isPrimary">
+                    <AtlanIcon icon="ForeignKey" />
                 </div>
             </div>
-            <span class="text-xs leading-relaxed text-gray-500">
+            <span
+                class="text-xs leading-relaxed text-gray-500 whitespace-pre-wrap "
+            >
                 {{ asset.attributes.description || 'No description' }}
             </span>
         </div>
@@ -141,29 +144,27 @@
         @apply flex;
         @apply items-center;
         @apply text-xs;
-    }
-    .pkey {
-        color: #52c7d7;
-        background-color: #52c7d71a;
-    }
-    .fkey {
-        color: #d452d7;
-        background-color: #d452d71a;
+        @apply border;
+        @apply border-gray-300;
     }
 </style>
 
 <style lang="less" module>
     .searchbar {
-        @apply mr-2 border-none rounded;
-        @apply bg-gray-300 bg-opacity-50;
+        @apply mr-2 rounded;
+        @apply border-2 border-gray-300 !important;
         @apply outline-none;
         :global(.ant-input) {
             @apply h-6;
             @apply bg-transparent;
             @apply text-gray-500;
         }
+        &:hover {
+            border-right-width: 2px !important;
+            box-shadow: 0 0 0 2px rgb(82 119 215 / 20%);
+        }
         ::placeholder {
-            @apply text-gray-500 opacity-80;
+            @apply text-gray-500 opacity-80 text-sm;
         }
     }
 </style>

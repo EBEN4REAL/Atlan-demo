@@ -7,7 +7,9 @@ import PrimaryKey from '~/assets/images/icons/primary.svg'
 import Share from '~/assets/images/icons/share.svg'
 import Verified from '~/assets/images/icons/verified.svg'
 import FilterDot from '~/assets/images/icons/filter-dot.svg'
+import Filter from '~/assets/images/icons/filter.svg'
 import ArrowRight from '~/assets/images/icons/arrow-right.svg'
+import Search from '~/assets/images/icons/search.svg'
 
 export default {
     BookmarkFilled,
@@ -19,5 +21,7 @@ export default {
     Share,
     Verified,
     FilterDot,
+    Filter,
     ArrowRight,
+    Search,
 }

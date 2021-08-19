@@ -2,7 +2,7 @@
     <LoadingView v-if="!data?.asset" />
     <ErrorView v-else-if="data?.error" :error="data?.error" />
 
-    <div v-if="data?.asset" class="w-full bg-gray-100x">
+    <div v-if="data?.asset" class="w-full">
         <div class="z-30 px-4 pt-5 pb-3 bg-white">
             <assetProfileHeader :asset="data?.asset" />
         </div>
@@ -22,6 +22,7 @@
                             }
                         "
                         :asset="data?.asset || {}"
+                        @preview="handlePreview"
                     ></component>
                 </a-tab-pane>
             </a-tabs>
@@ -134,6 +135,9 @@
             })
 
             watch(id, () => fetch())
+            const handlePreview = (item) => {
+                context.emit('preview', item)
+            }
 
             /** PROVIDER */
 
@@ -143,6 +147,7 @@
                 id,
                 activeKey,
                 tabs,
+                handlePreview,
                 refs,
                 data,
                 selectTab,

@@ -1,14 +1,14 @@
 <template>
-    <div class="pr-5 m-4 overflow-x-scroll max-h-60">
+    <div class="pr-1 m-4">
         <div
             v-for="(a, x) in applicableList"
             :key="x"
-            class="flex items-center justify-between mb-4"
+            class="grid grid-cols-7 gap-6 mb-4 gap-y-0 group"
         >
-            <div class="w-32 mr-2 font-bold text-gray-500">
+            <div class="col-span-3 font-bold text-gray-500">
                 {{ a.options.displayName }}
             </div>
-            <div class="" style="width: 170px">
+            <div class="col-span-3">
                 <a-input
                     v-if="getDatatypeOfAttribute(a.typeName) === 'number'"
                     v-model:value="a.value"
@@ -48,8 +48,17 @@
                 />
             </div>
             <div
-                class="w-8 text-gray-500 cursor-pointer  hover:font-bold group-hover:opacity-100"
-            ></div>
+                v-if="a?.value?.toString()"
+                class="col-span-1 text-gray-500 opacity-0 cursor-pointer  group-hover:opacity-100 hover:font-bold"
+                @click.stop.prevent="
+                    () => {
+                        a.value = ''
+                        updateAttribute()
+                    }
+                "
+            >
+                Clear
+            </div>
         </div>
     </div>
 </template>
@@ -164,6 +173,6 @@
 
 <style>
     .ant-calendar-picker-input {
-        width: 170px;
+        /* width: 170px; */
     }
 </style>

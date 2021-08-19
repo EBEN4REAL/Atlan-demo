@@ -8,15 +8,15 @@
             placeholder="Type..."
             @change="handleChange"
         />
-        <a-select
+        <a-radio-group
             v-else-if="type === 'boolean'"
             v-model:value="value"
-            class="border"
+            class="shadow-none"
             @change="handleChange"
         >
-            <option value="true">True</option>
-            <option value="false">False</option>
-        </a-select>
+            <a-radio class="shadow-none" value="true">True</a-radio>
+            <a-radio class="shadow-none" value="false">False</a-radio>
+        </a-radio-group>
         <span v-else-if="type === 'date'">
             <a-date-picker
                 v-model:value="value"

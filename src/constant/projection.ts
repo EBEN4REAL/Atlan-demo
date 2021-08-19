@@ -15,6 +15,42 @@ export const ConnectionAttributes = [
     'integrationCredentialQualifiedName',
 ]
 
+// server property is not there for Site in atlas
+export const tableauAttributes = [
+    'siteName',
+    'siteQualifiedName',
+    'projectName',
+    'projectQualifiedName',
+    'topLevelProjectName',
+    'topLevelProjectQualifiedName',
+    'projectHierarchy',
+    'workbookName',
+    'workbookQualifiedName',
+    'isTopLevelProject',
+    'tags',
+    'inputFields',
+    'outputFields',
+    'outputSteps',
+    'datasourceName',
+    'datasourceQualifiedName',
+    'isDatasourcePublished',
+    'tableauFullyQualifiedName',
+    'upstreamTables',
+    'upstreamColumns',
+    'upstreamFields',
+    'upstreamDatasources',
+    'isPublished',
+    'hasExtracts',
+    'isCertified',
+    'certifier',
+    'certificationNote',
+    'certifierDisplayName',
+    'dataCategory',
+    'role',
+    'dataType',
+    'formula',
+]
+
 export const CredentialAttributes = ['authType', 'extra']
 
 export const BaseAttributes = [
@@ -67,6 +103,7 @@ export const ColumnAttributes = [
     'isPartition',
     'isIndexed',
     'table',
+    'view',
 ]
 
 export const SavedSearchAttribute = [
@@ -119,7 +156,8 @@ export const BasicSearchAttributes = [
     'tableCount',
     'tableCrawledCount',
     'dataType',
-    'table',
+    'tableName',
+    'viewName',
     'lastUpdatedByJob',
     'category',
     'integrationName',

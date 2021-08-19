@@ -24,7 +24,7 @@ export default function useAssetInfo() {
     }
     const description = (asset: assetInterface) => {
         return (
-            attributes(asset).userDescription || attributes(asset).description 
+            attributes(asset).userDescription || attributes(asset).description
         )
     }
 
@@ -71,12 +71,12 @@ export default function useAssetInfo() {
 
     const rowCount = (asset: assetInterface, raw: boolean = false) => {
         return raw
-            ? attributes(asset).rowCount.toLocaleString()
+            ? attributes(asset)?.rowCount?.toLocaleString() || 'N/A'
             : getCountString(attributes(asset).rowCount)
     }
     const columnCount = (asset: assetInterface, raw: boolean = false) => {
         return raw
-            ? attributes(asset).columnCount.toLocaleString()
+            ? attributes(asset)?.columnCount?.toLocaleString() || 'N/A'
             : getCountString(attributes(asset).columnCount)
     }
     const schemaName = (asset: assetInterface) => {
@@ -125,6 +125,46 @@ export default function useAssetInfo() {
         attributes(asset)?.assetStatus
     }
 
+    const getHierarchy = (asset: assetInterface) => {
+        const assetType = AssetTypeList.find((a) => a.id == asset.typeName)
+        const relations: any[] = []
+
+        if (assetType) {
+            const filtered = AssetTypeList.filter((a) =>
+                assetType.parents?.includes(a.id)
+            )
+
+            filtered.forEach((f) => {
+                relations.push({
+                    ...f,
+                    qualifiedName: attributes(asset)[f.qualifiedNameAttribute],
+                    value: attributes(asset)[f.nameAttribute],
+                })
+            })
+        }
+
+        return relations
+    }
+
+    const getTableauProperties = (asset: assetInterface, properties: any) => {
+        const data: any = []
+        properties.forEach((tableauProperty: any) => {
+            const { label, property } = tableauProperty
+            if (attributes(asset)[property]) {
+                const temp = {}
+                temp.id = property
+                temp.label = label
+                temp[property] = attributes(asset)[property]
+                if (property === '__timestamp')
+                    temp[property] = createdAt(asset)
+                else if (property === '__modificationTimestamp')
+                    temp[property] = updatedAt(asset)
+                data.push(temp)
+            }
+        })
+        return data
+    }
+
     return {
         databaseLogo,
         schemaLogo,
@@ -149,5 +189,7 @@ export default function useAssetInfo() {
         ownerGroups,
         ownerUsers,
         assetStatus,
+        getHierarchy,
+        getTableauProperties,
     }
 }

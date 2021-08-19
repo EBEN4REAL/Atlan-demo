@@ -1,7 +1,10 @@
 <template>
-    <div class="flex justify-between px-2 py-3 mb-8 border-b border-gray-300">
-        <span class="font-bold">Activity Logs</span>
-        <fa icon="fal sync" class="cursor-pointer" @click="refreshAudits"></fa>
+    <div class="flex justify-end px-8 py-6">
+        <fa
+            icon="fa sync"
+            class="text-lg cursor-pointer text-primary"
+            @click="refreshAudits"
+        ></fa>
     </div>
     <div
         v-if="isLoading"
@@ -15,30 +18,29 @@
             <a-timeline-item v-for="(log, index) in audits" :key="index">
                 <template #dot>
                     <div
-                        class="border rounded-full  ant-timeline-item-dot bg-primary-light border-primary"
+                        class="border  ant-timeline-item-dot bg-primary-light border-primary"
                     ></div>
                 </template>
                 <div>
-                    <span v-if="getDetailsForEntityAuditEvent(log)">
-                        <ActivityType
+                    <div v-if="getDetailsForEntityAuditEvent(log)">
+                        <activity-type
                             :data="getDetailsForEntityAuditEvent(log)"
                         />
-                    </span>
-                    <span v-else>
+                    </div>
+                    <div v-else>
                         {{ getEventByAction(log).label || 'Event' }}
-                    </span>
+                    </div>
                 </div>
-                <div class="text-gray-500">
-                    <span class="mr-4 font-bold">{{
-                        getActionUser(log.user)
-                    }}</span>
-                    <span>{{ timeAgo(log.timestamp) }}</span>
+                <div class="flex items-center leading-5 text-gray-500">
+                    <div class="capitalize">{{ getActionUser(log.user) }}</div>
+                    <div class="mx-3 name-time-separator"></div>
+                    <div>{{ timeAgo(log.timestamp) }}</div>
                 </div>
             </a-timeline-item>
         </a-timeline>
         <div
             v-if="!checkAuditsCount && !isAllLogsFetched"
-            class="block my-8 text-center"
+            class="block mb-8 text-center"
         >
             <a-button @click="fetchMore">Show more logs</a-button>
         </div>
@@ -149,22 +151,20 @@
     .ant-timeline-item-dot {
         width: 13px;
         height: 13px;
-    }
-    .ant-timeline-item-last > .ant-timeline-item-content {
-        min-height: 10px !important;
-        height: 20px !important;
-    }
-    .ant-timeline-item-last {
-        min-height: 10px !important;
-        margin-bottom: 0 !important;
-        height: 28px !important;
+        border-radius: 50%;
     }
 
-    :global(.ant-collapse-content-box) {
-        padding: 0 !important;
+    .name-time-separator {
+        height: 5px;
+        width: 5px;
+        background-color: #c4c4c4;
+        border-radius: 50%;
     }
 
-    :global(.ant-collapse-header) {
+    :global(.ant-timeline-item-content) {
+        margin-left: 22px;
+    }
+    :global(.ant-timeline-item-head-custom) {
         padding: 0 !important;
     }
 </style>

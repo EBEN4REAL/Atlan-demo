@@ -8,18 +8,20 @@
                 ></component>
                 <div class="flex">
                     <div class="icon-btn">
-                        <fa class="w-auto h-4" icon="fal bookmark" />
+                        <AtlanIcon icon="BookmarkOutlined" />
                     </div>
                     <div class="icon-btn">
-                        <fa class="mr-2 text-sm" icon="fal share" />
+                        <AtlanIcon class="mr-2" icon="Share" />
                         <span class="text-sm">Share</span>
                     </div>
                 </div>
             </div>
             <div class="flex items-center pb-1">
-                <span class="mb-0 text-lg text-gray font-bold truncate ...">
-                    {{ title(selectedAsset) }}</span
-                >
+                <Tooltip
+                    :tooltip-text="title(selectedAsset)"
+                    classes="mb-0 text-lg font-bold text-gray"
+                />
+
                 <div class="flex items-center">
                     <StatusBadge
                         :showNoStatus="true"
@@ -66,6 +68,7 @@
     import useAssetDetailsTabList from './useTabList'
     import useAsset from '~/composables/asset/useAsset'
     import useAssetInfo from '~/composables/asset/useAssetInfo'
+    import Tooltip from '@common/ellipsis/index.vue'
 
     export default defineComponent({
         props: {
@@ -73,8 +76,13 @@
                 type: Object as PropType<assetInterface>,
                 required: true,
             },
+            page: {
+                type: String,
+                required: true,
+            },
         },
         components: {
+            Tooltip,
             StatusBadge,
             info: defineAsyncComponent(() => import('./tabs/info/index.vue')),
             columns: defineAsyncComponent(
@@ -95,9 +103,9 @@
             ),
         },
         setup(props, { emit }) {
-            const { filteredTabs, assetType } = useAssetDetailsTabList()
+            const { selectedAsset, page } = toRefs(props)
+            const { filteredTabs, assetType } = useAssetDetailsTabList(page)
             const { assetTypeLabel, title, assetStatus } = useAssetInfo()
-            const { selectedAsset } = toRefs(props)
             const activeKey = ref(0)
             const isLoaded: Ref<boolean> = ref(true)
 
@@ -110,6 +118,11 @@
                     return data.value?.entities[0]
                 return {}
             }
+
+            watch(page, () => {
+                if (activeKey.value > filteredTabs.value.length)
+                    activeKey.value = 0
+            })
 
             function init() {
                 isLoaded.value = true

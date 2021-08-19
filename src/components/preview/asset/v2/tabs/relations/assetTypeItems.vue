@@ -7,7 +7,6 @@
         <a-spin size="small" class="mr-2 leading-none"></a-spin>
     </div>
     <!-- preloader ends here -->
-
     <!-- related asset list with assetTpe type  -->
     <VirtualList v-else :data="list.entities" :data-key="keyField">
         <template #default="{ item }">
@@ -16,13 +15,16 @@
                 :projection="projections"
                 class="w-full p-0 m-0 border-b"
                 :cssClasses="cssClasses"
+                :showAssetTypeIcon="false"
+                @click="handlePreview(item)"
+                :isSelected="item.guid === selectedAssetId"
             ></ListItem>
         </template>
     </VirtualList>
 </template>
 
 <script lang="ts">
-    import { defineComponent,ref,watch,toRefs } from 'vue'
+    import { defineComponent, ref, watch, toRefs, SetupContext } from 'vue'
     import ListItem from '@/discovery/asset/list/item.vue'
     import useBiRelations from '~/composables/asset/useBiRelations'
     import VirtualList from '~/lib/virtualList/virtualList.vue'
@@ -30,12 +32,34 @@
     export default defineComponent({
         components: { ListItem, VirtualList },
         props: {
-            assetType: String,
-            assetId: String,
-            projections: Array<string>
+            assetType: {
+                type: String,
+                requred: true,
+                default: () => '',
+            },
+            assetId: {
+                type: String,
+                requred: true,
+                default: () => '',
+            },
+            projections: {
+                type: Array,
+                required: false,
+                default: () => [],
+            },
+            cssClasses: {
+                required: false,
+                default: () => {},
+            },
         },
-        setup(props) {
-            const { assetId,assetType,projections } = toRefs(props)
+        emits: ['preview'],
+        setup(props, context) {
+            const selectedAssetId = ref('')
+            function handlePreview(item: any) {
+                selectedAssetId.value = item.guid
+                // ctx.emit('preview', item)
+                context.emit('preview', item)
+            }
 
             // gets the list of related assets for the ListItem component
             const { list, isReady, error } = useBiRelations(
@@ -43,15 +67,21 @@
                 props.assetType
             )
 
+            watch(
+                list,
+                () => {
+                    if (list.value.length > 0) {
+                        selectedAssetId.value = list.value[0].guid
+                    }
+                },
+                { immediate: true }
+            )
+
             return {
-                assetType: props.assetType,
                 list,
                 isReady,
-                projections,
-                cssClasses:{
-                    textSize:'text-sm',
-                    paddingY:'py-3'
-                }
+                handlePreview,
+                selectedAssetId,
             }
         },
     })

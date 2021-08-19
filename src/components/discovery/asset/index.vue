@@ -4,6 +4,11 @@
             <AssetFilters
                 :initial-filters="initialFilters"
                 @refresh="handleFilterChange"
+                :ref="
+                    (el) => {
+                        assetFilterRef = el
+                    }
+                "
             ></AssetFilters>
         </div>
 
@@ -22,21 +27,18 @@
                 </div>
                 <div class="flex items-center mx-3 mt-1">
                     <a-input
+                        ref="assetSearchBar"
                         v-model:value="queryText"
-                        placeholder="Search for assets"
+                        placeholder="Search"
                         size="default"
                         :class="$style.searchbar"
                         @change="handleSearchChange"
                     >
-                        <template #prefix>
-                            <Fa icon="fal search" class="mr-2 text-gray-500" />
+                        <template #suffix>
+                            <AtlanIcon icon="Search" />
                         </template>
                     </a-input>
-                    <a-popover
-                        v-model:visible="isFilterVisible"
-                        trigger="click"
-                        placement="bottomLeft"
-                    >
+                    <a-popover trigger="click" placement="bottomLeft">
                         <template #content>
                             <Preferences
                                 :default-projection="projection"
@@ -45,29 +47,9 @@
                                 @state="handleState"
                             ></Preferences>
                         </template>
-                        <div
-                            tabindex="0"
-                            class="
-                                flex
-                                items-center
-                                px-2
-                                py-1
-                                transition-shadow
-                                border border-gray-300
-                                rounded
-                                hover:border-gray-300
-                            "
-                            @keyup.enter="isFilterVisible = !isFilterVisible"
-                        >
-                            <span>Options</span>
-                            <Fa
-                                icon="fas chevron-down"
-                                class="ml-1 transition-transform transform"
-                                :class="
-                                    isFilterVisible ? '-rotate-180' : 'rotate-0'
-                                "
-                            />
-                        </div>
+                        <a-button class="p-1 ml-2 rounded">
+                            <AtlanIcon icon="FilterDot" class="h-6" />
+                        </a-button>
                     </a-popover>
                 </div>
 
@@ -84,7 +66,7 @@
                     "
                     class="flex-grow"
                 >
-                    <EmptyView></EmptyView>
+                    <EmptyView @event="handleClearFiltersFromList"></EmptyView>
                 </div>
                 <AssetList
                     v-else
@@ -95,7 +77,7 @@
                     :is-loading="isLoading || isValidating"
                     @preview="handlePreview"
                 ></AssetList>
-                <div class="flex w-full px-3 py-1">
+                <div class="flex w-full px-3 py-1 bg-gray-light h-7">
                     <div class="flex items-center justify-between w-full">
                         <div
                             v-if="isLoading || isValidating"
@@ -105,7 +87,9 @@
                                 size="small"
                                 class="mr-2 leading-none"
                             ></a-spin
-                            ><span>searching results</span>
+                            ><span class="text-sm font-bold text-gray-700"
+                                >searching results</span
+                            >
                         </div>
                         <AssetPagination
                             v-else
@@ -116,7 +100,7 @@
 
                         <div
                             v-if="isLoadMore && (!isLoading || !isValidating)"
-                            class="text-sm cursor-pointer text-primary"
+                            class="text-sm font-bold cursor-pointer  text-primary"
                             @click="loadMore"
                         >
                             load more...
@@ -239,6 +223,7 @@
         setup(props, { emit }) {
             // initializing the discovery store
             const { initialFilters } = props
+            const assetFilterRef = ref()
             const isFilterVisible = ref(false)
             const router = useRouter()
             const tracking = useTracking()
@@ -316,7 +301,7 @@
                 return sum
             })
             // Push all asset type
-            assetTypeList.value.push({
+            assetTypeList.value.unshift({
                 id: 'Catalog',
                 label: 'All',
             })
@@ -451,7 +436,7 @@
                 tracking.trackEvent(events.EVENT_ASSET_SEARCH, {
                     trigger: 'discover',
                 })
-            }, 100)
+            }, 200)
             const handleChangePreferences = (payload: any) => {
                 projection.value = payload
             }
@@ -514,19 +499,30 @@
                 isAggregate.value = false
                 updateBody(true)
             }
+
+            const handleClearFiltersFromList = () => {
+                assetFilterRef.value?.resetAllFilters()
+            }
             // select fist asset automatically
 
             watch(list, () => {
                 if (list.value.length > 0) {
                     console.log(list.value[0], 'firstItem')
                     handlePreview(list.value[0])
+                } else {
+                    handlePreview(undefined)
                 }
             })
 
+            const assetSearchBar = ref<HTMLInputElement | null>(null)
+
             onMounted(() => {
                 fetchBMonStore()
+                assetSearchBar?.value?.focus()
             })
             return {
+                handleClearFiltersFromList,
+                assetFilterRef,
                 isFilterVisible,
                 initialFilters,
                 searchScoreList,
@@ -556,6 +552,7 @@
                 handleState,
                 connectorsPayload,
                 filteredConnector,
+                assetSearchBar,
                 // listCount,
                 // isLoading,
                 // limit,
@@ -599,13 +596,17 @@
 </script>
 <style lang="less" module>
     .searchbar {
-        @apply mr-2 border-none rounded;
-        @apply bg-gray-300 bg-opacity-50;
+        @apply mr-2 rounded;
+        @apply border-2 border-gray-300 !important;
         @apply outline-none;
         :global(.ant-input) {
             @apply h-6;
             @apply bg-transparent;
             @apply text-gray-500;
+        }
+        &:hover {
+            border-right-width: 2px !important;
+            box-shadow: 0 0 0 2px rgb(82 119 215 / 20%);
         }
         ::placeholder {
             @apply text-gray-500 opacity-80 text-sm;

@@ -10,6 +10,7 @@ const getAntDesignVariables = {
     'link-color': themeColors.primary.DEFAULT,
     'heading-color': themeColors.gray.DEFAULT,
     'text-color': themeColors.gray.DEFAULT,
+    'font-family': 'Avenir',
     'border-radius-base': '4px',
     // Table
     'table-header-bg': themeColors.gray[100],
@@ -21,7 +22,9 @@ const getAntDesignVariables = {
     // "table-border-radius-base": "0.7rem",
     // Drawer
     'drawer-body-padding': 0,
-    // Popover
+    // Input
+    'input-icon-color': themeColors.gray[500],
+    'input-hover-border-color': themeColors.primary.focus,
 }
 
 export default getAntDesignVariables

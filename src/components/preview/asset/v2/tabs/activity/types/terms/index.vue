@@ -1,25 +1,26 @@
 <template>
-    <a-collapse
-        class="text-gray-700 bg-transparent border-none"
-        :bordered="false"
-        expand-icon-position="right"
-    >
-        <a-collapse-panel class="border-none">
-            <template #header
-                ><span class="font-bold">Asset was updated</span></template
-            >
-
-            <div class="mt-2">
-                <b>Terms </b
-                >{{ data.displayValue === 'termAdded' ? 'added' : 'removed' }}
-            </div>
-            <div class="flex">
-                <div class="px-3 py-1 m-1 rounded-full pill">
-                    {{ data.value }}
-                </div>
-            </div>
-        </a-collapse-panel>
-    </a-collapse>
+    <div>
+        <b>Terms </b
+        >{{ data.displayValue === 'termAdded' ? 'added' : 'removed' }}
+    </div>
+    <div class="flex">
+        <div
+            class="
+                px-3
+                my-3
+                rounded-full
+                cursor-pointer
+                pill
+                py-1.5
+                font-bold
+                bg-gray-light
+                text-gray-700
+                hover:bg-primary hover:text-white
+            "
+        >
+            {{ data.value }}
+        </div>
+    </div>
 </template>
 
 <script lang="ts">
@@ -37,13 +38,3 @@
         },
     })
 </script>
-
-<style lang="less" scoped>
-    .pill {
-        background-color: #f3f3f3;
-        &:hover {
-            background-color: #5277d7;
-            color: white;
-        }
-    }
-</style>

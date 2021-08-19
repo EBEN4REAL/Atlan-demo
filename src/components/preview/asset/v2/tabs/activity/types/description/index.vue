@@ -1,20 +1,8 @@
 <template>
-    <a-collapse
-        class="p-0 m-0 text-gray-700 bg-transparent border-none"
-        :bordered="false"
-        expand-icon-position="right"
-    >
-        <a-collapse-panel class="border-none">
-            <template #header
-                ><span class="font-bold">Asset was updated</span></template
-            >
-
-            <div><b>Description</b> updated</div>
-            <div>
-                {{ data.value }}
-            </div>
-        </a-collapse-panel>
-    </a-collapse>
+    <div><b>Description</b> updated</div>
+    <div class="my-3 text-sm text-gray-500">
+        {{ data.value }}
+    </div>
 </template>
 
 <script lang="ts">

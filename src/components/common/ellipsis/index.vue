@@ -2,16 +2,17 @@
     <a-tooltip
         :title="truncated ? tooltipText : undefined"
         placement="topRight"
+        :destroy-tooltip-on-hide="true"
         :overlay-style="{ maxWidth: width }"
-    >
-        <a-typography-paragraph
-            :style="{ width: '85%' }"
-            :ellipsis="{
-                rows: rows,
-                onEllipsis: () => (truncated = true),
-            }"
-            :content="tooltipText"
-        />
+        ><div :class="classes" :style="{ maxWidth: '95%' }">
+            <a-typography-paragraph
+                :ellipsis="{
+                    rows: rows,
+                    onEllipsis: () => (truncated = !truncated),
+                }"
+                :content="tooltipText"
+            />
+        </div>
     </a-tooltip>
 </template>
 
@@ -32,6 +33,10 @@
                 type: String,
                 default: 'intial',
             },
+            classes: {
+                type: String,
+                default: 'intial',
+            },
         },
         setup() {
             const truncated = ref<boolean>(false)
@@ -42,3 +47,9 @@
         },
     })
 </script>
+
+<style lang="less" scoped>
+    :global(div.ant-typography, .ant-typography p) {
+        margin-bottom: 0 !important;
+    }
+</style>

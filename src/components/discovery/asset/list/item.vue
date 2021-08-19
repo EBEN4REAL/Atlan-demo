@@ -20,6 +20,7 @@
                 <!-- Title bar -->
                 <div class="flex items-center mb-0 overflow-hidden">
                     <component
+                        v-if="showAssetTypeIcon"
                         :is="item.typeName"
                         class="flex-none w-auto h-5 mr-2"
                     ></component>
@@ -31,7 +32,20 @@
                                 : 'text-lg'
                         "
                         :to="`/assets/${item.guid}/overview`"
-                        class="flex-shrink mb-0 overflow-hidden font-bold leading-6 tracking-wide truncate cursor-pointer  text-gray hover:underline overflow-ellipsis whitespace-nowrap"
+                        class="
+                            flex-shrink
+                            mb-0
+                            overflow-hidden
+                            font-bold
+                            leading-6
+                            tracking-wide
+                            truncate
+                            cursor-pointer
+                            text-gray
+                            hover:underline
+                            overflow-ellipsis
+                            whitespace-nowrap
+                        "
                     >
                         {{ title(item) }}
                     </router-link>
@@ -86,7 +100,7 @@
                         projection?.includes('rows') ||
                         projection?.includes('popularity')
                     "
-                    class="flex items-center mt-1"
+                    class="flex items-center"
                 >
                     <!-- Owners -->
                     <div
@@ -94,7 +108,15 @@
                             projection?.includes('owners') &&
                             getCombinedUsersAndGroups(item).length
                         "
-                        class="flex items-baseline mr-4 text-xs leading-5  text-gray"
+                        class="
+                            flex
+                            items-baseline
+                            mt-1
+                            mr-4
+                            text-xs
+                            leading-5
+                            text-gray
+                        "
                     >
                         <span
                             class="mr-1"
@@ -109,7 +131,7 @@
                     </div>
                     <!-- Row/Col-->
                     <div
-                        class="flex mr-2 text-sm"
+                        class="flex mt-1 mr-2 text-sm"
                         v-if="
                             projection?.includes('rows') &&
                             ['table', 'view'].includes(
@@ -207,6 +229,11 @@
                 type: String,
                 required: false,
                 default: () => '',
+            },
+            showAssetTypeIcon: {
+                type: Boolean,
+                required: false,
+                default: () => true,
             },
         },
         setup(props) {

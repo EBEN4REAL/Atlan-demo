@@ -12,7 +12,7 @@
         <!-- searchbar -->
         <a-input
             v-model:value="queryText"
-            placeholder="Search for assets"
+            placeholder="Search"
             size="default"
             class="my-3"
         >
@@ -30,7 +30,16 @@
                 />
             </template>
             <!-- TODO: replace this icon with appropriate icon -->
-            <Fa icon="fal cog" class="ml-2 text-gray-500 cursor-pointer" />
+            <a-badge :dot="checkedList?.length" :class="$style.badge">
+                <a-button class="px-2 py-1 ml-2 rounded">
+                    <span class="flex items-center justify-center">
+                        <fa
+                            icon="fas sort-amount-up"
+                            class="hover:text-primary-500"
+                        />
+                    </span>
+                </a-button>
+            </a-badge>
         </a-popover>
     </div>
     <!-- accordions for different asset type -->
@@ -67,6 +76,7 @@
                 :projections="checkedList"
                 :assetType="item.displayText"
                 :assetId="assetId"
+                :cssClasses="cssClasses"
             />
         </a-collapse-panel>
     </a-collapse>
@@ -82,9 +92,9 @@
         computed,
         toRefs,
     } from 'vue'
+    import AssetTypeItems from '@/preview/asset/v2/tabs/relations/assetTypeItems.vue'
     import { assetInterface } from '~/types/assets/asset.interface'
     import useEntityRelationships from '~/composables/asset/useEntityRelationships'
-    import AssetTypeItems from './assetTypeItems.vue'
 
     export default defineComponent({
         components: { AssetTypeItems },
@@ -141,6 +151,10 @@
                 queryText,
                 plainOptions,
                 checkedList,
+                cssClasses: {
+                    textSize: 'text-sm',
+                    paddingY: 'py-3',
+                },
             }
         },
     })

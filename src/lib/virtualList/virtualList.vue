@@ -1,6 +1,7 @@
 <template>
     <div ref="root" class="virtual-list-container">
         <div
+            v-if="isVirtualised"
             ref="wrapper"
             class="flex flex-col virtual-list-scroll"
             :style="wrapperStyle"
@@ -25,9 +26,18 @@
             <div
                 v-if="listIndices[1] != data.length"
                 ref="loadBottom"
-                class="flex-grow"
+                class="flex justify-center flex-grow"
             >
-                Load More
+                <a-spin tip="Loading..." />
+            </div>
+        </div>
+        <div v-else>
+            <div
+                v-for="(item, idx) in data"
+                :key="item[dataKey]"
+                class="flex-shrink-0 virtual-list-item"
+            >
+                <slot :item="item" :index="idx + listIndices[0]"></slot>
             </div>
         </div>
     </div>
@@ -100,10 +110,15 @@
 
             const rowCount = computed(() => data.value.length)
 
-            const { handleIntersection, topHeight, fullHeight, listIndices } =
-                variableHeight.value
-                    ? useDynamicHeightList(rowCount, wrapper)
-                    : useFixedHeightList(rowCount, wrapper)
+            const {
+                handleIntersection,
+                topHeight,
+                fullHeight,
+                listIndices,
+                reset,
+            } = variableHeight.value
+                ? useDynamicHeightList(rowCount, wrapper)
+                : useFixedHeightList(rowCount, wrapper)
 
             // We dynamically change these css property to give the illusion of scroll
             const wrapperStyle = computed(() => ({
@@ -114,10 +129,18 @@
                 height: topHeight.value + 'px',
             }))
 
+            // Virtualize the container if there are more than 20 elements
+            // for varible-height, always virtualize.
+            const isVirtualised = computed(
+                () => data.value?.length > 20 || variableHeight.value
+            )
+
             /** Slice of the data that is actually rendered on the screen */
             const pool = computed(() =>
                 data.value.slice(listIndices.value[0], listIndices.value[1])
             )
+
+            let lastListLength = data.value.length
 
             let iObserver: IntersectionObserver
 
@@ -169,6 +192,15 @@
             onMounted(init)
 
             watch(data, init)
+            watch([isVirtualised, data.value.length], (cVal) => {
+                // Reset the list when the mode is set to virtualised
+                // or when the length of list smaller than the last one
+                if (cVal || lastListLength > data.value.length) {
+                    reset()
+                }
+
+                lastListLength = data.value.length
+            })
 
             return {
                 pool,

@@ -1,6 +1,6 @@
 <template>
     <div class="px-4 py-1 pb-3 pl-5">
-        <div class="flex justify-between">
+        <div class="flex justify-between mb-1">
             <a-input
                 v-input-focus
                 :placeholder="
@@ -15,7 +15,7 @@
                     <fa icon="fal search" />
                 </template>
             </a-input>
-            <div class="mr-1">
+            <div class="">
                 <a-popover trigger="click" placement="rightTop">
                     <template #content class="rounded">
                         <div class="p-0">
@@ -512,7 +512,7 @@
     .previewtab {
         :global(.ant-tabs-tab) {
             @apply pb-3 px-1;
-            @apply mx-2;
+            @apply mr-4;
             @apply text-gray-500;
             @apply text-xs;
         }

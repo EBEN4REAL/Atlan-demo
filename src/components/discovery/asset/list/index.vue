@@ -1,5 +1,5 @@
 <template>
-    <VirtualList :data="list" data-key="guid">
+    <VirtualList :data="list" data-key="guid" :variable-height="false">
         <template #default="{ item }">
             <ListItem
                 :item="item"

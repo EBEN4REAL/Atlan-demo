@@ -8,31 +8,13 @@
             class="flex items-center text-gray-500"
         >
             <div
-                class="
-                    px-3
-                    py-1
-                    text-sm
-                    font-medium
-                    text-gray-500
-                    rounded
-                    cursor-pointer
-                    hover:font-bold
-                "
+                class="px-3 py-1 text-sm font-medium text-gray-500 rounded cursor-pointer  hover:font-bold"
                 @click="resetAllFilters"
             >
                 Reset
             </div>
             <a-button
-                class="
-                    px-3
-                    py-1
-                    text-sm
-                    font-medium
-                    border-0
-                    rounded
-                    bg-primary-light
-                    text-primary
-                "
+                class="px-3 py-1 text-sm font-medium border-0 rounded  bg-primary-light text-primary"
                 >Save</a-button
             >
         </div>
@@ -47,15 +29,15 @@
     >
         <template #expandIcon="{ isActive }">
             <div class="">
-                <fa
-                    icon="fas chevron-down "
+                <AtlanIcon
+                    icon="ChevronDown"
                     class="ml-1 transition-transform transform"
                     :class="isActive ? '-rotate-180' : 'rotate-0'"
                 />
             </div>
         </template>
         <a-collapse-panel
-            v-for="item in List"
+            v-for="item in dynamicList"
             :key="item.id"
             :class="activeKey === item.id ? 'bg-gray-100' : ''"
             class="relative bg-transparent hover:bg-gray-100 group"
@@ -63,19 +45,18 @@
             <template #header>
                 <div :key="dirtyTimestamp" class="select-none">
                     <div class="flex justify-between">
-                        <span class="font-bold">{{ item.label }}</span>
+                        <span class="font-bold">
+                            <img
+                                v-if="item.image"
+                                :src="item.image"
+                                class="float-left w-auto h-5 mr-2"
+                            />
+                            {{ item.label }}</span
+                        >
 
                         <div
                             v-if="isFilter(item.id) && !activeKey"
-                            class="
-                                absolute
-                                text-gray-500
-                                opacity-0
-                                carrot-top
-                                right-12
-                                hover:font-bold
-                                group-hover:opacity-100
-                            "
+                            class="absolute text-gray-500 opacity-0  carrot-top right-12 hover:font-bold group-hover:opacity-100"
                             @click.stop.prevent="handleClear(item.id)"
                         >
                             Clear
@@ -83,15 +64,7 @@
 
                         <div
                             v-if="isFilter(item.id) && activeKey"
-                            class="
-                                absolute
-                                text-gray-500
-                                opacity-0
-                                top-3
-                                right-12
-                                hover:font-bold
-                                group-hover:opacity-100
-                            "
+                            class="absolute text-gray-500 opacity-0  top-3 right-12 hover:font-bold group-hover:opacity-100"
                             @click.stop.prevent="handleClear(item.id)"
                         >
                             Clear
@@ -127,9 +100,12 @@
         ref,
         computed,
         Ref,
+        watch,
     } from 'vue'
     import { List } from './filters'
     import { Components } from '~/api/atlas/client'
+    // ? Store
+    import { useBusinessMetadataStore } from '~/store/businessMetadata'
     import { useClassificationStore } from '~/components/admin/classifications/_store'
     import { List as StatusList } from '~/constant/status'
 
@@ -148,6 +124,9 @@
             Advanced: defineAsyncComponent(
                 () => import('@common/facets/advanced/index.vue')
             ),
+            businessMetadata: defineAsyncComponent(
+                () => import('@common/facets/businessMetadata/index.vue')
+            ),
         },
         props: {
             initialFilters: {
@@ -161,6 +140,7 @@
         emits: ['refresh'],
         setup(props, { emit }) {
             const classificationsStore = useClassificationStore()
+            const businessMetadataStore = useBusinessMetadataStore()
             // console.log(props.initialFilters.facetsFilters, 'facetFilters')
             const activeKey: Ref<string> = ref('')
             const initialFilterMap = {
@@ -200,7 +180,69 @@
 
             const dirtyTimestamp = ref('dirty_')
 
-            // Mapping of Data to child compoentns
+            /**
+             * @desc combines static List with mapped BM object that has filter support
+             * */
+            const dynamicList = computed(() => {
+                if (businessMetadataStore.getBusinessMetadataList?.length) {
+                    const bmFiltersList =
+                        businessMetadataStore.getBusinessMetadataList
+                            .filter((bm) =>
+                                bm.attributeDefs.some(
+                                    (a) => a.options?.isFacet === 'true'
+                                )
+                            )
+                            .map((bm) => ({
+                                id: bm.name,
+                                label: bm.options.displayName,
+                                component: 'businessMetadata',
+                                image: bm.options.image || '',
+                                overallCondition: 'OR',
+                                filters: [
+                                    {
+                                        attributeName: '',
+                                        condition: 'OR',
+                                        isMultiple: false,
+                                        operator: 'eq',
+                                    },
+                                ],
+                                isDeleted: false,
+                                isDisabled: false,
+                                exclude: false,
+                            }))
+                    return [...List, ...bmFiltersList]
+                }
+                return List
+            })
+
+            /**
+             * @desc consist of BM objects items with isFacet set to true, excluding isFacet false attribtues
+             * */
+            const bmDataMap = computed(() => {
+                if (businessMetadataStore.getBusinessMetadataList?.length) {
+                    const filterableList =
+                        businessMetadataStore.getBusinessMetadataList
+                            .filter((bm) =>
+                                bm.attributeDefs.some(
+                                    (a) => a.options?.isFacet === 'true'
+                                )
+                            )
+                            .map((bm) => ({
+                                [bm.name]: {
+                                    applied: {},
+                                    list: {
+                                        ...bm,
+                                        attributeDefs: bm.attributeDefs.filter(
+                                            (a) => a.options?.isFacet === 'true'
+                                        ),
+                                    },
+                                },
+                            }))
+                    return Object.assign({}, ...filterableList)
+                }
+                return {}
+            })
+            // Mapping of Data to child components
             const dataMap: { [key: string]: any } = ref({})
             dataMap.value.status = {
                 checked: props.initialFilters.facetsFilters.status.checked,
@@ -222,6 +264,18 @@
             dataMap.value.advanced = {
                 list: props.initialFilters.facetsFilters.advanced.list,
             }
+
+            // ? watching for bmDataMap to be computed
+            watch(
+                () => bmDataMap.value,
+                () => {
+                    dataMap.value = { ...dataMap.value, ...bmDataMap.value }
+                },
+                {
+                    deep: true,
+                    immediate: true,
+                }
+            )
 
             const refresh = () => {
                 filters = []
@@ -282,6 +336,10 @@
                     case 'advanced': {
                         break
                     }
+                    default: {
+                        dataMap.value[filterId].applied = {}
+                        filterMap[filterId].criterion = []
+                    }
                 }
                 setAppliedFiltersCount()
                 refresh()
@@ -318,16 +376,41 @@
                         const groups = dataMap.value[filterId].groupValue
                         let appliedOwnersString = ''
                         if (users && users?.length > 0) {
-                            appliedOwnersString += `${users.length} users`
+                            if (users?.length == 1)
+                                appliedOwnersString += `${users.length} user`
+                            else appliedOwnersString += `${users.length} users`
                         }
                         if (groups && groups?.length > 0) {
-                            appliedOwnersString += ` & ${groups.length} groups`
+                            if (appliedOwnersString.length > 0) {
+                                if (groups.length == 1)
+                                    appliedOwnersString += ` & ${groups.length} group`
+                                else
+                                    appliedOwnersString += ` & ${groups.length} groups`
+                            } else {
+                                if (groups.length == 1)
+                                    appliedOwnersString += `${groups.length} group`
+                                else
+                                    appliedOwnersString += `${groups.length} groups`
+                            }
                         }
 
                         return appliedOwnersString
                     }
                     case 'advanced': {
                         return ''
+                    }
+                    default: {
+                        // ? default fall back to bm filter
+                        const totalCount = Object.keys(
+                            dataMap.value[filterId].applied
+                        ).length
+
+                        return totalCount
+                            ? `${
+                                  Object.keys(dataMap.value[filterId].applied)
+                                      .length
+                              } condition(s) applied`
+                            : ''
                     }
                 }
             }
@@ -359,11 +442,11 @@
                 dirtyTimestamp,
                 filterMap,
                 handleClear,
+                dynamicList,
             }
         },
         data() {
             return {
-                List,
                 searchParam: {
                     entityFilters: {},
                 } as Components.Schemas.SearchParameters,

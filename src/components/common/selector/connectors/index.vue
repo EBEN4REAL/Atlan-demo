@@ -23,10 +23,10 @@
 </template>
 
 <script lang="ts">
-    import { computed, defineComponent, ref } from 'vue';
-    import SourceMixin from '~/mixins/source';
-    import fetchConnectionList from '~/composables/connection/fetchConnectionList';
-    import { useConnectionsStore } from '~/store/connections';
+    import { computed, defineComponent, ref } from 'vue'
+    import SourceMixin from '~/mixins/source'
+    import fetchConnectionList from '~/composables/connection/fetchConnectionList'
+    import { useConnectionsStore } from '~/store/connections'
 
     export default defineComponent({
         props: {
@@ -36,13 +36,13 @@
         },
         emits: ['update:modelValue', 'change'],
         setup(props, { emit }) {
-            console.log(props.modalVale, 'modalValue');
-            const store = useConnectionsStore();
+            console.log(props.modalVale, 'modalValue')
+            const store = useConnectionsStore()
 
             // let now = ref(true);
 
-            const connectorsDropdown = ref(null);
-            const searchValue = ref('');
+            const connectorsDropdown = ref(null)
+            const searchValue = ref('')
             // const { list } = fetchConnectionList(now);
             // const sourceMap = computed(() => {
             //   return [
@@ -50,24 +50,26 @@
             //   ];
             // });
 
-            const filteredList = computed(() => store.getSourceList?.filter((item) =>
+            const filteredList = computed(() =>
+                store.getSourceList?.filter((item) =>
                     item.id
                         .toLowerCase()
                         .includes(searchValue.value.toLowerCase())
-                ));
+                )
+            )
             const handleSearch = (inputValue: string) => {
-                searchValue.value = inputValue;
-            };
+                searchValue.value = inputValue
+            }
             const handleChange = (checkedValues: string) => {
-                emit('update:modelValue', checkedValues);
-                emit('change', checkedValues);
-            };
+                emit('update:modelValue', checkedValues)
+                emit('change', checkedValues)
+            }
             return {
                 filteredList,
                 handleSearch,
                 handleChange,
                 connectorsDropdown,
-            };
+            }
         },
-    });
+    })
 </script>

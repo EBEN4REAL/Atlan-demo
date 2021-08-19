@@ -1,5 +1,5 @@
 import { watch, ref } from 'vue'
-import { BasicSearchAttributes } from '~/constant/projection'
+import { BasicSearchAttributes, tableauAttributes } from '~/constant/projection'
 import { SearchBasic } from '~/api/atlas/searchbasic'
 
 export default function useAsset({
@@ -39,6 +39,7 @@ export default function useAsset({
             'metadata',
             'commits',
             ...BasicSearchAttributes,
+            ...tableauAttributes,
         ],
         entityFilters,
     }

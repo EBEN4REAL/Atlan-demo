@@ -18,14 +18,14 @@
                 </div>
             </template>
             <a-collapse-panel
-                v-for="item in List"
+                v-for="item in PanelsMapToAsset[selectedAsset.typeName].panels"
                 :key="item.id"
                 class="bg-transparent"
             >
                 <template #header>
                     <div
                         :key="item.id"
-                        class="flex justify-between text-sm font-bold select-none  header"
+                        class="flex justify-between text-sm font-bold select-none header"
                     >
                         {{ item.label }}
                     </div>
@@ -41,6 +41,7 @@
                     :data="dataMap[item.id]"
                     :selectedAsset="infoTabData"
                     :tabData="componentData"
+                    :properties="PanelsMapToAsset[selectedAsset.typeName]?.properties ?? []"
                     @change="handleChange"
                 ></component>
             </a-collapse-panel>
@@ -63,7 +64,7 @@
         Ref,
         PropType,
     } from 'vue'
-    import { List } from './List'
+    import { PanelsMapToAsset } from './List'
     import { assetInterface } from '~/types/assets/asset.interface'
 
     export default defineComponent({
@@ -74,6 +75,10 @@
                 type: Object as PropType<any>,
             },
             infoTabData: {
+                type: Object as PropType<assetInterface>,
+                required: true,
+            },
+            selectedAsset: {
                 type: Object as PropType<assetInterface>,
                 required: true,
             },
@@ -93,6 +98,12 @@
             ),
             heirarchy: defineAsyncComponent(
                 () => import('./heirarchy/index.vue')
+            ),
+            tableauProperties: defineAsyncComponent(
+                () => import('./tableau/properties/index.vue')
+            ),
+            tableauPreview: defineAsyncComponent(
+                () => import('./tableau/preview/index.vue')
             ),
         },
         setup(props) {
@@ -133,8 +144,8 @@
                 setUserDefaultCollapseOrderInInfoTab(activeKey.value)
             }
             return {
+                PanelsMapToAsset,
                 handleCollapseChange,
-                List,
                 activeKey,
                 refMap,
                 dataMap,

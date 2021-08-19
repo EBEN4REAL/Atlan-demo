@@ -1,16 +1,18 @@
 <template>
-    <div class="m-4">
+    <div class="pr-5 m-4 overflow-x-scroll max-h-60">
         <div
             v-for="(a, x) in applicableList"
             :key="x"
-            class="flex justify-between mb-4"
+            class="flex items-center justify-between mb-4"
         >
-            <div>{{ a.options.displayName }}</div>
-            <div class="">
+            <div class="w-32 mr-2 font-bold text-gray-500">
+                {{ a.options.displayName }}
+            </div>
+            <div class="" style="width: 170px">
                 <a-input
                     v-if="getDatatypeOfAttribute(a.typeName) === 'number'"
                     v-model:value="a.value"
-                    class="px-2 mr-2 border shadow-none w-100"
+                    class="mr-2 border shadow-none"
                     type="number"
                     placeholder="Type..."
                     @input="() => debounce(() => updateAttribute(), 800)"
@@ -26,29 +28,28 @@
                 </a-radio-group>
                 <span v-else-if="getDatatypeOfAttribute(a.typeName) === 'date'">
                     <a-date-picker
+                        :allowClear="false"
                         :value="(a.value || '').toString()"
-                        value-format="x"
                         class="w-100"
-                        style="width: 100%"
+                        value-format="x"
                         @change="
                             (timestamp, string) => handleChange(x, timestamp)
                         "
                     />
                 </span>
-                <a-input
+                <a-textarea
                     v-else
+                    :auto-size="true"
                     v-model:value="a.value"
                     placeholder="Type..."
                     type="text"
-                    class="px-2 mr-2 shadow-none border-1"
+                    class="shadow-none border-1"
                     @input="() => debounce(() => updateAttribute(), 800)"
                 />
             </div>
             <div
-                class="text-gray-500 cursor-pointer  hover:font-bold group-hover:opacity-100"
-            >
-                Clear
-            </div>
+                class="w-8 text-gray-500 cursor-pointer  hover:font-bold group-hover:opacity-100"
+            ></div>
         </div>
     </div>
 </template>
@@ -161,4 +162,8 @@
     })
 </script>
 
-<style scoped></style>
+<style>
+    .ant-calendar-picker-input {
+        width: 170px;
+    }
+</style>

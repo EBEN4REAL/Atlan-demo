@@ -17,7 +17,10 @@
                         ></StatusBadge>
                     </div>
                 </div>
-                <div class="flex text-xs leading-4 text-gray-700">
+                <div
+                    v-if="asset.attributes.integrationName !== 'tableau'"
+                    class="flex text-xs leading-4 text-gray-700"
+                >
                     <span class="flex items-center mr-4"
                         ><img
                             :src="integrationIcon"
@@ -35,20 +38,9 @@
                             asset.attributes.schemaName
                         }}</span
                     >
-
-                    <!-- <span class="mr-4">~{{ asset.attributes.rowCount }} rows</span>
-                <span class="mr-4"
-                    >{{ asset.attributes.columnCount }} columns</span
-                > -->
-
-                    <!-- <span class="mr-4"
-                    >last crawled {{ dayjs().from(attr.__timestamp, true) }} ago
-                    ago,
-                </span>
-                <span class="mr-4"
-                    >last updated
-                    {{ dayjs().from(attr.__modificationTimestamp, true) }} ago
-                </span> -->
+                </div>
+                <div v-else class="flex text-xs leading-4 text-gray-700">
+                    <p>{{ camelTotitle(asset.typeName) }}</p>
                 </div>
             </div>
         </div>
@@ -97,11 +89,16 @@
                 )
                 return item?.image
             })
-
+            const camelTotitle = (camelCaseString: String): String =>
+                camelCaseString
+                    .replace(/([A-Z])/g, (match) => ` ${match}`)
+                    .replace(/^./, (match) => match.toUpperCase())
+                    .trim()
             return {
                 dayjs,
                 integrationIcon,
                 attr,
+                camelTotitle,
             }
         },
     })

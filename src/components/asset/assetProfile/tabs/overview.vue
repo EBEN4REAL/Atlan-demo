@@ -41,7 +41,7 @@
         </div>
     </div>
     <div v-else class="w-full overflow-y-auto bg-white" style="height: 600px">
-        <BiWidgetWrapper :asset="asset" />
+        <BiWidgetWrapper :asset="asset" @preview="handlePreview" />
     </div>
 </template>
 <script lang="ts">
@@ -60,6 +60,7 @@
     export default defineComponent({
         components: { Readme, TableColumn, DescriptionWidget, BiWidgetWrapper },
         props: ['asset'],
+        emits: ['preview'],
         setup(props, context) {
             // const asset = ref(context.attrs.asset)
             const { asset }: ToRefs = toRefs(props)
@@ -116,9 +117,13 @@
                     )
                 }
             })
+            const handlePreview = (item) => {
+                context.emit('preview', item)
+            }
 
             return {
                 asset,
+                handlePreview,
                 tableColumns,
                 results,
             }

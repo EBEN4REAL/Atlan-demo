@@ -16,13 +16,15 @@
                 class="w-full p-0 m-0 border-b"
                 :cssClasses="cssClasses"
                 :showAssetTypeIcon="false"
+                @click="handlePreview(item)"
+                :isSelected="item.guid === selectedAssetId"
             ></ListItem>
         </template>
     </VirtualList>
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref, watch, toRefs } from 'vue'
+    import { defineComponent, ref, watch, toRefs, SetupContext } from 'vue'
     import ListItem from '@/discovery/asset/list/item.vue'
     import useBiRelations from '~/composables/asset/useBiRelations'
     import VirtualList from '~/lib/virtualList/virtualList.vue'
@@ -46,13 +48,18 @@
                 default: () => [],
             },
             cssClasses: {
-                type: Object,
                 required: false,
                 default: () => {},
             },
         },
-        setup(props) {
-            const { assetId, assetType, projections } = toRefs(props)
+        emits: ['preview'],
+        setup(props, context) {
+            const selectedAssetId = ref('')
+            function handlePreview(item: any) {
+                selectedAssetId.value = item.guid
+                // ctx.emit('preview', item)
+                context.emit('preview', item)
+            }
 
             // gets the list of related assets for the ListItem component
             const { list, isReady, error } = useBiRelations(
@@ -60,11 +67,21 @@
                 props.assetType
             )
 
+            watch(
+                list,
+                () => {
+                    if (list.value.length > 0) {
+                        selectedAssetId.value = list.value[0].guid
+                    }
+                },
+                { immediate: true }
+            )
+
             return {
-                assetType: props.assetType,
                 list,
                 isReady,
-                projections,
+                handlePreview,
+                selectedAssetId,
             }
         },
     })

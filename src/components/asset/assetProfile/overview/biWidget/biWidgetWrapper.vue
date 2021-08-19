@@ -62,6 +62,7 @@
                 :assetType="item.displayText"
                 :assetId="asset.guid"
                 :cssClasses="cssClasses"
+                @preview="handlePreview"
             />
         </a-tab-pane>
     </a-tabs>
@@ -82,7 +83,8 @@
             AssetTypeItems,
         },
         props: ['asset'],
-        setup(props) {
+        emits: ['preview'],
+        setup(props, context) {
             const relationshipAssets = ref([])
             const plainOptions = ['description', 'owners', 'business terms']
             const checkedList = ref(['description'])
@@ -98,11 +100,14 @@
 
             onMounted(fetchData)
             watch(asset, fetchData)
-
+            const handlePreview = (item) => {
+                context.emit('preview', item)
+            }
             return {
                 relationshipAssets,
                 plainOptions,
                 checkedList,
+                handlePreview,
                 cssClasses: {
                     paddingY: 'py-6',
                 },

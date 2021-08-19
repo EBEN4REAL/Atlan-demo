@@ -18,6 +18,7 @@
                             }
                         "
                         :asset="data?.asset || {}"
+                        @preview="handlePreview"
                     ></component>
                 </a-tab-pane>
             </a-tabs>
@@ -113,11 +114,15 @@
             })
 
             watch(id, () => fetch())
+            const handlePreview = (item) => {
+                context.emit('preview', item)
+            }
 
             return {
                 id,
                 activeKey,
                 tabs,
+                handlePreview,
                 refs,
                 data,
                 selectTab,

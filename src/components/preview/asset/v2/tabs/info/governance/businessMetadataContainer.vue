@@ -60,15 +60,7 @@
                         >
                     </p>
                     <div
-                        class="
-                            absolute
-                            flex
-                            p-2
-                            space-x-2
-                            border-t border-gray-100
-                            bottom-1
-                            right-3
-                        "
+                        class="absolute flex p-2 space-x-2 border-t border-gray-100  bottom-1 right-3"
                     >
                         <a-button size="small" @click="visibility = false"
                             >Cancel</a-button
@@ -153,7 +145,7 @@
             })
 
             const addBMSelectOptions = computed(() =>
-                availableBM.value.map((b) => ({
+                availableBM?.value?.map((b) => ({
                     value: b.name,
                     title: b.options.displayName,
                 }))

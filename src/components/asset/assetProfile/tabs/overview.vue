@@ -48,7 +48,7 @@
 </template>
 <script lang="ts">
     // Vue
-    import { defineComponent, ref, watch } from 'vue'
+    import { defineComponent, ref, watch, toRefs } from 'vue'
 
     // Components
     import Readme from '@/common/readme/index.vue'
@@ -61,8 +61,10 @@
 
     export default defineComponent({
         components: { Readme, TableColumn, DescriptionWidget, BiWidgetWrapper },
+        props: ['asset'],
         setup(props, context) {
-            const asset = ref(context.attrs.asset)
+            // const asset = ref(context.attrs.asset)
+            const { asset }: ToRefs = toRefs(props)
 
             console.log(asset)
             // for table widget

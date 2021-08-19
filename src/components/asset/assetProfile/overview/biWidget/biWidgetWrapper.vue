@@ -59,14 +59,14 @@
             <AssetTypeItems
                 :projections="checkedList"
                 :assetType="item.displayText"
-                :assetId="assetId"
+                :assetId="asset.guid"
                 :cssClasses="cssClasses"
             />
         </a-tab-pane>
     </a-tabs>
 </template>
 <script lang="ts">
-    import { defineComponent, watch, onMounted, ref } from 'vue'
+    import { defineComponent, watch, onMounted, ref, toRefs } from 'vue'
     import AssetTypeItems from '@/preview/asset/v2/tabs/relations/assetTypeItems.vue'
     import BiWidgetTabPanel from '@/asset/assetProfile/overview/biWidget/biWidgetTabPanel.vue'
     import DescriptionWidget from '@/asset/assetProfile/overview/descriptionWidget.vue'
@@ -83,9 +83,9 @@
         props: ['asset'],
         setup(props) {
             const relationshipAssets = ref([])
-            const assetId = ref(props.asset.guid)
             const plainOptions = ['description', 'owners', 'business terms']
             const checkedList = ref(['description'])
+            const { asset }: ToRefs = toRefs(props)
             const fetchData = () => {
                 const { relationshipAssetTypes, isLoading } =
                     useEntityRelationships(props.asset.guid)
@@ -96,10 +96,10 @@
             // filter required data
 
             onMounted(fetchData)
+            watch(asset, fetchData)
 
             return {
                 relationshipAssets,
-                assetId,
                 plainOptions,
                 checkedList,
                 cssClasses: {

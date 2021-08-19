@@ -9,14 +9,13 @@ export default function useEntityRelationships(guid) {
         })
     const { data, error, isLoading } = getEntityData(guid)
 
-    console.log(isLoading.value)
     watch([data, error], () => {
         if (data.value && error.value == undefined) {
             Object.keys(data.value?.entity?.relationshipAttributes).forEach(
                 (el) => {
                     const element =
                         data.value?.entity?.relationshipAttributes[el]
-                    if (element?.length !== 0)
+                    if (element && element?.length !== 0)
                         relationshipAssets.value.push({
                             displayText: el,
                             length: element?.length || 1,

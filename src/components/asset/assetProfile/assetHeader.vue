@@ -42,7 +42,12 @@
                 <div v-else class="flex text-xs leading-4 text-gray-700">
                     <p>{{ camelTotitle(asset.typeName) }}</p>
                     <p class="ml-4">
-                        {{ camelTotitle(parentOfAssetType[asset?.typeName]) }} :
+                        {{
+                            camelTotitle(
+                                parentOfAssetType[asset?.typeName]
+                            )?.replace('Name', '')
+                        }}
+                        :
                     </p>
                     <p class="ml-1 font-bold">
                         {{ getParent(parentOfAssetType[asset?.typeName]) }}
@@ -91,6 +96,8 @@
                 TableauWorkbook: 'projectName',
                 TableauDashboard: 'workbookName',
                 TableauProject: 'siteName',
+                TableauDatasource: 'workbookName',
+                TableauDatasourceField: 'datasourceName',
             }
 
             // get parent of tableau asset

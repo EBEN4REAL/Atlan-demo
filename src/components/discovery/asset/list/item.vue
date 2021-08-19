@@ -42,16 +42,6 @@
                         :status-id="status(item)"
                         class="flex-none ml-2"
                     ></StatusBadge>
-                    <router-link
-                        class="flex-none ml-1"
-                        :to="`/assets/${item.guid}/overview`"
-                        target="_blank"
-                    >
-                        <Fa
-                            class="w-auto h-3 mt-1"
-                            icon="fal external-link-alt"
-                        />
-                    </router-link>
                 </div>
                 <!-- Column data type -->
                 <div

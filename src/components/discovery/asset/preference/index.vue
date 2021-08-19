@@ -12,7 +12,7 @@
                             >Classifications</a-checkbox
                         >
                         <a-checkbox value="rows">Row/Columns</a-checkbox>
-                        <a-checkbox value="heirarchy">Heirarchy</a-checkbox>
+                        <a-checkbox value="heirarchy">Hierarchy</a-checkbox>
                         <a-checkbox value="popularity"
                             >Popularity Score</a-checkbox
                         >

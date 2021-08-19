@@ -12,8 +12,8 @@
                 required: true,
             },
         },
-        setup() {
-            const svgIcon = iconMap[icon] || 'div'
+        setup(props) {
+            const svgIcon = iconMap[props.icon] || 'div'
             return { svgIcon }
         },
     }

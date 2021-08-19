@@ -41,6 +41,12 @@
                 </div>
                 <div v-else class="flex text-xs leading-4 text-gray-700">
                     <p>{{ camelTotitle(asset.typeName) }}</p>
+                    <p class="ml-4">
+                        {{ camelTotitle(parentOfAssetType[asset?.typeName]) }} :
+                    </p>
+                    <p class="ml-1 font-bold">
+                        {{ getParent(parentOfAssetType[asset?.typeName]) }}
+                    </p>
                 </div>
             </div>
         </div>
@@ -80,7 +86,16 @@
             /** DATA */
             const { asset }: ToRefs = toRefs(props)
             const attr = asset.value.attributes
-            console.log(asset)
+            const parentOfAssetType = {
+                TableauWorksheet: 'workbookName',
+                TableauWorkbook: 'projectName',
+                TableauDashboard: 'workbookName',
+                TableauProject: 'siteName',
+            }
+
+            // get parent of tableau asset
+            const getParent = (attr: String) => asset.value.attributes[attr]
+
             /** COMPUTED */
             const integrationIcon = computed(() => {
                 const item = SourceList.find(
@@ -89,16 +104,20 @@
                 )
                 return item?.image
             })
-            const camelTotitle = (camelCaseString: String): String =>
-                camelCaseString
-                    .replace(/([A-Z])/g, (match) => ` ${match}`)
-                    .replace(/^./, (match) => match.toUpperCase())
-                    .trim()
+            const camelTotitle = (camelCaseString: String): String => {
+                if (camelCaseString)
+                    return camelCaseString
+                        .replace(/([A-Z])/g, (match) => ` ${match}`)
+                        .replace(/^./, (match) => match.toUpperCase())
+                        .trim()
+            }
             return {
                 dayjs,
                 integrationIcon,
                 attr,
                 camelTotitle,
+                parentOfAssetType,
+                getParent,
             }
         },
     })

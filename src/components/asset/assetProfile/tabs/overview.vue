@@ -40,6 +40,7 @@
             />
         </div>
     </div>
+    <!-- for BI assets -->
     <div v-else class="w-full overflow-y-auto bg-white" style="height: 600px">
         <BiWidgetWrapper :asset="asset" @preview="handlePreview" />
     </div>
@@ -51,14 +52,13 @@
     // Components
     import Readme from '@/common/readme/index.vue'
     import TableColumn from '@/asset/assetProfile/overview/tableColumn.vue'
-    import DescriptionWidget from '@/asset/assetProfile/overview/descriptionWidget.vue'
     import BiWidgetWrapper from '@/asset/assetProfile/overview/biWidget/biWidgetWrapper.vue'
 
     // api
     import { useAPI } from '~/api/useAPI'
 
     export default defineComponent({
-        components: { Readme, TableColumn, DescriptionWidget, BiWidgetWrapper },
+        components: { Readme, TableColumn, BiWidgetWrapper },
         props: ['asset'],
         emits: ['preview'],
         setup(props, context) {
@@ -117,6 +117,7 @@
                     )
                 }
             })
+
             const handlePreview = (item) => {
                 context.emit('preview', item)
             }

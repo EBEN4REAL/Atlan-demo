@@ -106,12 +106,7 @@
 
                         <div
                             v-if="isLoadMore && (!isLoading || !isValidating)"
-                            class="
-                                text-sm
-                                font-bold
-                                cursor-pointer
-                                text-primary
-                            "
+                            class="text-sm font-bold cursor-pointer  text-primary"
                             @click="loadMore"
                         >
                             load more...
@@ -630,7 +625,7 @@
 </style>
 <style scoped>
     .facets {
-        min-width: 240px;
-        width: 240px;
+        min-width: 264px;
+        width: 264px;
     }
 </style>

@@ -65,6 +65,7 @@
             <a-tabs
                 v-model:activeKey="activeOwnerTabKey"
                 :class="$style.previewtab"
+                @change="onTabChange"
             >
                 <a-tab-pane key="1">
                     <template #tab>
@@ -78,40 +79,59 @@
                         }}</span>
                     </template>
                     <div class="w-full overflow-y-auto h-44">
-                        <a-checkbox-group
-                            v-model:value="data.userValue"
-                            class="w-full"
-                            @change="handleUsersChange"
+                        <div
+                            v-if="
+                                STATES.SUCCESS === userOwnerState &&
+                                userList.length < 1
+                            "
+                            class="flex flex-col items-center justify-center h-full "
+                        >
+                            <div class="flex flex-col items-center">
+                                <img
+                                    :src="emptyScreen"
+                                    alt="No logs"
+                                    class="w-2/5 m-auto mb-4"
+                                />
+                                <span class="text-gray-500"
+                                    >No Users Found</span
+                                >
+                            </div>
+                        </div>
+                        <div
+                            class="flex flex-col w-full"
                             v-if="STATES.SUCCESS === userOwnerState"
                         >
-                            <div class="flex flex-col w-full">
-                                <a-checkbox
+                            <a-checkbox-group
+                                v-model:value="data.userValue"
+                                class="w-full"
+                                @change="handleUsersChange"
+                            >
+                                <template
                                     v-for="item in userList"
                                     :key="item.username"
-                                    :value="item.username"
-                                    class="w-full mb-3"
-                                    :class="
-                                        item.username === myUsername
-                                            ? 'border-b pb-3'
-                                            : ''
-                                    "
                                 >
-                                    <div
-                                        v-if="item.username === myUsername"
-                                        class="inline-flex capitalize"
+                                    <a-checkbox
+                                        :value="item.username"
+                                        v-if="item.username"
+                                        class="w-full mb-3"
                                     >
-                                        {{ item.username }}
+                                        <div
+                                            v-if="item.username === myUsername"
+                                            class="inline-flex capitalize"
+                                        >
+                                            {{ item.username }}
 
-                                        <span class="font-bold">
-                                            {{ '&nbsp;(me)' }}
+                                            <span class="font-bold">
+                                                {{ '&nbsp;(me)' }}
+                                            </span>
+                                        </div>
+                                        <span v-else class="capitalize">
+                                            {{ item.username }}
                                         </span>
-                                    </div>
-                                    <span v-else class="capitalize">
-                                        {{ item.username }}
-                                    </span>
-                                </a-checkbox>
-                            </div>
-                        </a-checkbox-group>
+                                    </a-checkbox>
+                                </template>
+                            </a-checkbox-group>
+                        </div>
                         <div
                             v-else
                             class="flex items-center justify-center mt-3"
@@ -124,7 +144,10 @@
                         </div>
                     </div>
                     <div
-                        v-if="totalUsersCount - userList.length > 0"
+                        v-if="
+                            totalUsersCount - userList.length > 0 &&
+                            queryText.length < 1
+                        "
                         class="mt-2"
                     >
                         <div
@@ -153,6 +176,24 @@
                         </span>
                     </template>
                     <div class="overflow-y-auto h-44">
+                        <div
+                            v-if="
+                                STATES.SUCCESS === groupOwnerState &&
+                                groupList.length < 1
+                            "
+                            class="flex flex-col items-center justify-center h-full "
+                        >
+                            <div class="flex flex-col items-center">
+                                <img
+                                    :src="emptyScreen"
+                                    alt="No logs"
+                                    class="w-2/5 m-auto mb-4"
+                                />
+                                <span class="text-gray-500"
+                                    >No Groups Found</span
+                                >
+                            </div>
+                        </div>
                         <a-checkbox-group
                             v-if="STATES.SUCCESS === groupOwnerState"
                             v-model:value="data.groupValue"
@@ -178,7 +219,10 @@
                         </div>
                     </div>
                     <div
-                        v-if="totalGroupCount - groupList.length > 0"
+                        v-if="
+                            totalGroupCount - groupList.length > 0 &&
+                            queryText.length < 1
+                        "
                         class="mt-2"
                     >
                         <div
@@ -222,6 +266,7 @@
     import { groupInterface } from '~/types/groups/group.interface'
     import CustomRadioButton from '@common/radio/customRadioButton.vue'
     import whoami from '~/composables/user/whoami'
+    import emptyScreen from '~/assets/images/empty_search.png'
 
     export default defineComponent({
         name: 'HelloWorld',
@@ -248,6 +293,7 @@
             const showMoreUsers = ref(true)
             const showMoreGroups = ref(true)
             const noOwnersAssigned = ref(false)
+            const queryText = ref('')
             // own info
             const { username: myUsername, name: myName } = whoami()
 
@@ -291,13 +337,15 @@
                 criterion.value = []
             }
 
-            const handleOwnerSearch = (e: Event) => {
-                const queryText = (<HTMLInputElement>e.target).value
+            const handleOwnerSearch = (e?: Event) => {
+                if (e) {
+                    queryText.value = (<HTMLInputElement>e?.target)?.value
+                }
                 if (activeOwnerTabKey.value === '1') {
-                    handleUserSearch(queryText)
+                    handleUserSearch(queryText.value)
                 } else if (activeOwnerTabKey.value === '2') {
                     // for groups
-                    handleGroupSearch(queryText)
+                    handleGroupSearch(queryText.value)
                 }
             }
             const {
@@ -376,7 +424,11 @@
                         return user.username !== myUsername.value
                     })
                     console.log(ownUserObj, 'ownUser')
-                    userList.value = [ownUserObj, ...userList.value]
+                    if (Object.keys(ownUserObj).length > 0) {
+                        userList.value = [ownUserObj, ...userList.value]
+                    } else {
+                        userList.value = [...userList.value]
+                    }
                     groupList.value = sortClassificationsByOrder(
                         ownersFilterOptionsData.value,
                         listGroups,
@@ -402,7 +454,11 @@
                     }
                     return user.username !== myUsername.value
                 })
-                userList.value = [ownUserObj, ...userList.value]
+                if (Object.keys(ownUserObj).length > 0) {
+                    userList.value = [ownUserObj, ...userList.value]
+                } else {
+                    userList.value = [...userList.value]
+                }
                 groupList.value = sortClassificationsByOrder(
                     ownersFilterOptionsData.value,
                     listGroups,
@@ -418,32 +474,38 @@
                 switch (sortingOrder) {
                     case 'asc': {
                         let modifiedData: userInterface[] = []
-                        modifiedData = data.value.sort((dataA, dataB) => {
-                            const a = dataA[key]
-                            const b = dataB[key]
-                            if (a < b) {
-                                return -1
-                            }
-                            if (a > b) {
-                                return 1
-                            }
-                            return 0
-                        })
+                        if (data?.value) {
+                            modifiedData = data.value.sort((dataA, dataB) => {
+                                const a = dataA[key]
+                                const b = dataB[key]
+                                if (a < b) {
+                                    return -1
+                                }
+                                if (a > b) {
+                                    return 1
+                                }
+                                return 0
+                            })
+                        }
+                        console.log(modifiedData, 'sort')
                         return modifiedData
                     }
                     case 'dsc': {
                         let modifiedData: groupInterface[] = []
-                        modifiedData = data.value.sort((dataA, dataB) => {
-                            const a = dataA[key]
-                            const b = dataB[key]
-                            if (a < b) {
-                                return 1
-                            }
-                            if (a > b) {
-                                return -1
-                            }
-                            return 0
-                        })
+                        if (data?.value) {
+                            modifiedData = data.value.sort((dataA, dataB) => {
+                                const a = dataA[key]
+                                const b = dataB[key]
+                                if (a < b) {
+                                    return 1
+                                }
+                                if (a > b) {
+                                    return -1
+                                }
+                                return 0
+                            })
+                        }
+
                         return modifiedData
                     }
                 }
@@ -458,9 +520,14 @@
                 setGroupLimit(totalGroupCount.value)
                 mutateGroups()
             }
+            function onTabChange() {
+                if (queryText.value !== '') handleOwnerSearch()
+            }
 
             return {
                 data,
+                emptyScreen,
+                queryText,
                 noOwnersAssigned,
                 totalUsersCount,
                 totalGroupCount,
@@ -485,6 +552,7 @@
                 handleUsersChange,
                 handleGroupsChange,
                 handleSortChange,
+                onTabChange,
                 showMoreUsers,
             }
         },

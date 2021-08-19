@@ -1,12 +1,9 @@
 <template>
     <div class="flex justify-between items-center px-4 pl-5 py-3.5 text-xs">
-        <div class="font-medium text-gray-500">
+        <div class="text-sm font-medium text-gray-500">
             {{ totalAppliedFiltersCount || 'No' }} filters applied
         </div>
-        <div
-            v-if="totalAppliedFiltersCount"
-            class="flex items-center text-gray-500"
-        >
+        <div class="flex items-center text-gray-500">
             <div
                 class="px-3 py-1 text-sm font-medium text-gray-500 rounded cursor-pointer  hover:font-bold"
                 @click="resetAllFilters"

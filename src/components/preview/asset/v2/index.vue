@@ -8,10 +8,10 @@
                 ></component>
                 <div class="flex">
                     <div class="icon-btn">
-                        <fa class="w-auto h-4" icon="fal bookmark" />
+                        <AtlanIcon icon="BookmarkOutlined" />
                     </div>
                     <div class="icon-btn">
-                        <fa class="mr-2 text-sm" icon="fal share" />
+                        <AtlanIcon class="mr-2" icon="Share" />
                         <span class="text-sm">Share</span>
                     </div>
                 </div>

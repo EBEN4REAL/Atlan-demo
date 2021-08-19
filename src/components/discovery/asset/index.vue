@@ -46,14 +46,9 @@
                                 @state="handleState"
                             ></Preferences>
                         </template>
-                        <a-badge :dot="projection.length" :class="$style.badge">
-                            <a-button class="px-2 py-1 ml-2 rounded">
-                                <span class="flex items-center justify-center">
-                                    <fa
-                                        icon="fas sort-amount-up"
-                                        class="hover:text-primary-500"
-                                    />
-                                </span>
+                        <a-badge>
+                            <a-button class="p-1 ml-2 rounded">
+                                <AtlanIcon icon="FilterDot" class="h-6" />
                             </a-button>
                         </a-badge>
                     </a-popover>
@@ -106,12 +101,7 @@
 
                         <div
                             v-if="isLoadMore && (!isLoading || !isValidating)"
-                            class="
-                                text-sm
-                                font-bold
-                                cursor-pointer
-                                text-primary
-                            "
+                            class="text-sm font-bold cursor-pointer  text-primary"
                             @click="loadMore"
                         >
                             load more...
@@ -617,14 +607,6 @@
         }
         ::placeholder {
             @apply text-gray-500 opacity-80 text-sm;
-        }
-    }
-    .badge {
-        :global(.ant-badge-dot) {
-            @apply bg-primary !important;
-        }
-        :global(.ant-badge-count) {
-            @apply top-3 right-2 !important;
         }
     }
 </style>

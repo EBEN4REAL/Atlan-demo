@@ -2,12 +2,13 @@
     <a-tooltip
         :title="truncated ? tooltipText : undefined"
         placement="topRight"
+        :destroy-tooltip-on-hide="true"
         :overlay-style="{ maxWidth: width }"
         ><div :class="classes" :style="{ maxWidth: '95%' }">
             <a-typography-paragraph
                 :ellipsis="{
                     rows: rows,
-                    onEllipsis: () => (truncated = true),
+                    onEllipsis: () => (truncated = !truncated),
                 }"
                 :content="tooltipText"
             />

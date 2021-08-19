@@ -1,31 +1,53 @@
 <template>
-    <span
-        >Say 👋 Hello, to the newly added
-        <b>{{ data.value.length > 1 ? 'Owners' : 'Owner' }}</b></span
-    >
-    <ul v-for="(user, index) in data.value" :key="index" class="my-1">
-        <li
-            class="flex items-center cursor-pointer"
-            @click.stop="() => handleClickUser(user)"
+    <chips :data="data">
+        <template #header
+            ><span
+                >Say 👋 Hello, to the newly added
+                <b>{{ data.value.length > 1 ? 'Owners' : 'Owner' }}</b></span
+            ></template
         >
-            <avatar
-                :avatar-name="user"
-                avatar-shape="circle"
-                :avatar-size="28"
-                class="mx-2"
-            /><span class="font-bold">{{ user }}</span>
-        </li>
-    </ul>
+        <template #chip-content="user">
+            <div
+                class="
+                    flex
+                    items-center
+                    px-3
+                    py-1.5
+                    mb-3
+                    mr-3
+                    font-bold
+                    rounded-full
+                    bg-gray-light
+                    text-gray-700
+                    group
+                    hover:bg-primary hover:text-white
+                    cursor-pointer
+                "
+                @click.stop="() => handleClickUser(user.item)"
+            >
+                <img
+                    src="https://picsum.photos/id/237/50/50"
+                    alt="view"
+                    class="w-4 h-4 mr-2 rounded-full"
+                />
+                <div
+                    class="mb-0 text-sm font-bold capitalize truncate  max-owner-name-width"
+                >
+                    {{ user.item }}
+                </div>
+            </div></template
+        >
+    </chips>
 </template>
 
 <script lang="ts">
     import { defineComponent, PropType } from 'vue'
     import { activityInterface } from '~/types/activitylogs/activitylog.interface'
-    import Avatar from '~/components/common/avatar.vue'
     import { useUserPreview } from '~/composables/user/showUserPreview'
+    import Chips from '../chips/index.vue'
 
     export default defineComponent({
-        components: { Avatar },
+        components: { Chips },
         props: {
             data: {
                 type: Object as PropType<activityInterface>,
@@ -40,7 +62,14 @@
                 setUserUniqueAttribute(username, 'username')
                 showUserPreview({ allowed: ['about'] })
             }
+
             return { handleClickUser }
         },
     })
 </script>
+
+<style lang="less" scoped>
+    .max-owner-name-width {
+        max-width: 10rem;
+    }
+</style>

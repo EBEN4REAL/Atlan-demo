@@ -1,6 +1,6 @@
 <template>
     <div><b>Description</b> updated</div>
-    <div class="my-3 text-gray-500">
+    <div class="my-3 text-sm text-gray-500">
         {{ data.value }}
     </div>
 </template>

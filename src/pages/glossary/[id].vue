@@ -2,56 +2,50 @@
     <div v-if="isLoading">
         <LoadingView />
     </div>
-    <div v-else class="flex flex-row ">
-        <div :class="currentTab === '1' || (currentTab === '2' && previewEntity) ? 'w-2/3' : 'w-full'">
-            <div class="flex flex-row justify-between px-8 mt-6 mb-5">
+    <div v-else class="flex flex-row h-full" :class="$style.glossaryHome">
+        <div class="h-full overflow-auto" :class="currentTab === '1' || (currentTab === '2' && !previewEntity?.guid) ? 'w-full' : 'w-2/3'">
+            <div class="flex flex-row justify-between pl-8 pr-4 mt-6 mb-5">
                 <div class="flex flex-row">
-                    <div class="mr-5">
+                    <div class="mr-5 min-w-32">
                         <img :src="GlossarySvg" />
                     </div>
-                    <div class="flex flex-col">
+                    <div class="flex flex-col w-3/4">
                         <span class="text-xl leading-6 font-bold">{{
                             title
                         }}</span>
-                        <!-- <EntityHistory
-                    :created-at="glossary?.attributes.__timestamp"
-                    :created-by="glossary?.createdBy"
-                    :updated-at="glossary?.attributes.__modificationTimestamp"
-                    :updated-by="glossary?.updatedBy"
-                /> -->
                         <span class="mt-1 text-sm leading-5 text-gray-500">{{
                             shortDescription
                         }}</span>
                     </div>
                 </div>
-                <div class="flex flex-row space-x-2 mr-4">
-                    <a-button >
+                <div class="flex flex-row space-x-2">
+                    <a-button class="px-2.5">
                         <fa icon="fal bookmark" />
                     </a-button>
-                    <a-button class="flex align-middle">
+                    <a-button class="px-2.5 flex align-middle">
                         <fa icon="fal upload" class="h-3 mr-2" />
-                        Share
+                        <span>Share</span>
                     </a-button>
-                    <a-button >
+                    <a-button class="px-2.5" >
                         <fa icon="fal ellipsis-v" class="h-4" />
                     </a-button>
                 </div>
             </div>
-            <div class="flex flex-row">
+            <div>
                 <a-tabs v-model:activeKey="currentTab" default-active-key="1" class="border-0">
                     <a-tab-pane key="1" tab="Overview">
-                        <div class="flex flex-row m-0 px-8">
+                        <div class="px-8">
                             <GlossaryProfileOverview :entity="glossary" />
+                            <GlossaryContinueSettingUp
+                                v-if="!isLoading"
+                                :terms="glossaryTerms"
+                                :categories="glossaryCategories"
+                                @updateDescription="refreshCategoryTermList"
+                                @fetchNextCategoryOrTermList="
+                                    fetchNextCategoryOrTermList
+                                "
+                            />
                         </div>
-                        <GlossaryContinueSettingUp
-                            v-if="!isLoading"
-                            :terms="glossaryTerms"
-                            :categories="glossaryCategories"
-                            @updateDescription="refreshCategoryTermList"
-                            @fetchNextCategoryOrTermList="
-                                fetchNextCategoryOrTermList
-                            "
-                        />
                     </a-tab-pane>
                     <a-tab-pane key="2" tab="Terms & Categories">
                         <GlossaryTermsAndCategoriesTab
@@ -203,9 +197,11 @@ export default defineComponent({
     },
 })
 </script>
-<style lang="less">
-.secondaryHeading {
-    @apply tracking-widest text-xs text-gray leading-5;
+<style lang="less" module>
+.glossaryHome {
+    :global(.ant-tabs-nav) {
+        @apply ml-8;
+    }
 }
 </style>
 

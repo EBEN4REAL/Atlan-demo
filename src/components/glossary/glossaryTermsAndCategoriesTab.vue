@@ -32,7 +32,7 @@
         </div>
         <div v-else-if="all.length" class="flex flex-row w-full">
             <div class="w-full">
-                <a-tabs type="card" default-active-key="1" class="border-0">
+                <a-tabs  default-active-key="1" class="border-0">
                     <a-tab-pane key="1" :tab="`All (${all.length})`">
                         <div v-for="asset in all" :key="asset.guid">
                             <GtcEntityCard

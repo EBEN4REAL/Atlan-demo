@@ -3,8 +3,14 @@ type collapsiblePanels = {
     label: string
     component: string
 }
+type tableauProperty = {
+    id: string
+    label: string
+    property: string
+}
 type penlsMapToAsset = {
     panels: collapsiblePanels[]
+    properties?: tableauProperty[]
 }
 
 const CollapsiblePanels: { [key: string]: collapsiblePanels } = {
@@ -72,15 +78,6 @@ export const PanelsMapToAsset: { [key: string]: penlsMapToAsset } = {
     Column: {
         panels: [assetDetails, linkedAsset, heirarchy, properties],
     },
-    // TableauSite: {
-    //     panels: [
-    //         tableauProperties,
-    //         assetDetails,
-    //         linkedAsset,
-    //         heirarchy,
-    //         properties,
-    //     ],
-    // },
     TableauWorkbook: {
         panels: [
             tableauPreview,
@@ -90,7 +87,33 @@ export const PanelsMapToAsset: { [key: string]: penlsMapToAsset } = {
             heirarchy,
             properties,
         ],
+        properties: [
+            {
+                id: 'projectName',
+                label: 'Project',
+                property: 'projectName',
+            },
+            {
+                id: '__timestamp',
+                label: 'Created on',
+                property: '__timestamp',
+            },
+            {
+                id: '__modificationTimestamp',
+                label: 'Modified on',
+                property: '__modificationTimestamp',
+            },
+        ],
     },
+    // TableauSite: {
+    //     panels: [
+    //         tableauProperties,
+    //         assetDetails,
+    //         linkedAsset,
+    //         heirarchy,
+    //         properties,
+    //     ],
+    // },
     // TableauProject: {
     //     panels: [
     //         tableauProperties,

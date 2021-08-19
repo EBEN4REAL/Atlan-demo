@@ -25,7 +25,7 @@
                 <template #header>
                     <div
                         :key="item.id"
-                        class="flex justify-between text-sm font-bold select-none  header"
+                        class="flex justify-between text-sm font-bold select-none header"
                     >
                         {{ item.label }}
                     </div>
@@ -41,6 +41,7 @@
                     :data="dataMap[item.id]"
                     :selectedAsset="infoTabData"
                     :tabData="componentData"
+                    :properties="PanelsMapToAsset[selectedAsset.typeName]?.properties ?? []"
                     @change="handleChange"
                 ></component>
             </a-collapse-panel>

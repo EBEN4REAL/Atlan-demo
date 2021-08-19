@@ -5,6 +5,7 @@ import ChevronUp from '~/assets/images/icons/chevron-up.svg'
 import ForeignKey from '~/assets/images/icons/foreign.svg'
 import PrimaryKey from '~/assets/images/icons/primary.svg'
 import Share from '~/assets/images/icons/share.svg'
+import Cancel from '~/assets/images/icons/cancel.svg'
 
 export default {
     BookmarkFilled,
@@ -14,4 +15,5 @@ export default {
     ForeignKey,
     PrimaryKey,
     Share,
+    Cancel,
 }

@@ -78,8 +78,8 @@
                             }
                         "
                     >
-                        Clear
-                        <!-- <AtlanIcon icon="Cancel" /> -->
+                        <!-- Clear -->
+                        <AtlanIcon icon="Cancel" />
                     </div>
                 </div>
             </div>

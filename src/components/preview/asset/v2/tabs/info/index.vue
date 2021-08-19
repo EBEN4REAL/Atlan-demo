@@ -25,7 +25,7 @@
                 <template #header>
                     <div
                         :key="item.id"
-                        class="flex justify-between text-sm font-bold select-none  header"
+                        class="flex text-sm font-bold select-none header"
                     >
                         <img
                             v-if="item.image"
@@ -111,6 +111,7 @@
             ),
             businessMetadata: defineAsyncComponent(
                 () => import('./businessMetadata/index.vue')
+            ),
             tableauProperties: defineAsyncComponent(
                 () => import('./tableau/properties/index.vue')
             ),
@@ -167,7 +168,7 @@
                 }))
             // ? check if computed  not needed needed?
             const dynamicList = computed(() => [
-                ...PanelsMapToAsset[selectedAsset.typeName].panels,
+                ...PanelsMapToAsset[props.selectedAsset.typeName].panels,
                 ...applicableBMList(props.infoTabData.typeName),
             ])
 

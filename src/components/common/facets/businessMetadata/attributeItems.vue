@@ -37,7 +37,7 @@
                 </template>
             </template>
             <div
-                class="flex items-center h-8 pl-2 cursor-pointer  hover:text-primary"
+                class="relative flex items-center h-8 pl-2 cursor-pointer  hover:text-primary"
                 :class="
                     isVisible
                         ? 'border rounded  border-primary bg-primary-light  text-primary'
@@ -46,7 +46,7 @@
             >
                 <div
                     v-if="Object.keys(applied).length"
-                    class="w-2 h-2 mr-2 rounded-full bg-primary"
+                    class="absolute w-2 h-2 mr-2 rounded-full  -left-2 bg-primary"
                 ></div>
                 <span> {{ a.options.displayName }}</span>
             </div>

@@ -39,7 +39,7 @@
                             connector?.substr(1).toLowerCase()
                         }}
                     </div>
-                    <fa icon="fas chevron-down" class="ml-2 text-gray-500"></fa>
+                    <AtlanIcon icon="ChevronDown" class="ml-2" />
                 </div>
             </div>
             <div v-else class="flex py-2 cursor-pointer">
@@ -47,7 +47,7 @@
                     class="flex items-center mb-0 text-xs tracking-wide text-gray-900 align-middle  hover:bg-gray-100"
                 >
                     <fa icon="fal plug" class="mr-1"></fa>All Connectors
-                    <fa icon="fas chevron-down" class="ml-2 text-gray-500"></fa>
+                    <AtlanIcon icon="ChevronDown" class="ml-2" />
                 </p>
             </div>
         </a-popover>

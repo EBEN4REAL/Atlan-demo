@@ -27,6 +27,7 @@
                 </div>
                 <div class="flex items-center mx-3 mt-1">
                     <a-input
+                        ref="assetSearchBar"
                         v-model:value="queryText"
                         placeholder="Search"
                         size="default"
@@ -300,7 +301,7 @@
                 return sum
             })
             // Push all asset type
-            assetTypeList.value.push({
+            assetTypeList.value.unshift({
                 id: 'Catalog',
                 label: 'All',
             })
@@ -435,7 +436,7 @@
                 tracking.trackEvent(events.EVENT_ASSET_SEARCH, {
                     trigger: 'discover',
                 })
-            }, 100)
+            }, 200)
             const handleChangePreferences = (payload: any) => {
                 projection.value = payload
             }
@@ -513,8 +514,11 @@
                 }
             })
 
+            const assetSearchBar = ref<HTMLInputElement | null>(null)
+
             onMounted(() => {
                 fetchBMonStore()
+                assetSearchBar?.value?.focus()
             })
             return {
                 handleClearFiltersFromList,
@@ -548,6 +552,7 @@
                 handleState,
                 connectorsPayload,
                 filteredConnector,
+                assetSearchBar,
                 // listCount,
                 // isLoading,
                 // limit,

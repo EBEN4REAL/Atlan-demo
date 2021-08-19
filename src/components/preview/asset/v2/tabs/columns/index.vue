@@ -29,7 +29,10 @@
                 </template>
 
                 <a-button class="p-1 ml-2 rounded">
-                    <AtlanIcon icon="Filter" class="h-6" />
+                    <AtlanIcon
+                        :icon="filters.length ? 'FilterDot' : 'Filter'"
+                        class="h-6"
+                    />
                 </a-button>
             </a-popover>
         </div>
@@ -141,7 +144,8 @@
         @apply flex;
         @apply items-center;
         @apply text-xs;
-        @apply bg-gray-light;
+        @apply border;
+        @apply border-gray-300;
     }
 </style>
 

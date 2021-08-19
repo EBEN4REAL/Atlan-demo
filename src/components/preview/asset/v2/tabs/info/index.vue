@@ -18,15 +18,20 @@
                 </div>
             </template>
             <a-collapse-panel
-                v-for="item in List"
+                v-for="item in dynamicList"
                 :key="item.id"
                 class="bg-transparent"
             >
                 <template #header>
                     <div
                         :key="item.id"
-                        class="flex justify-between text-sm font-bold select-none  header"
+                        class="flex text-sm font-bold select-none header"
                     >
+                        <img
+                            v-if="item.image"
+                            :src="item.image"
+                            class="w-auto h-5 mr-2"
+                        />
                         {{ item.label }}
                     </div>
                 </template>
@@ -62,9 +67,11 @@
         defineAsyncComponent,
         Ref,
         PropType,
+        computed,
     } from 'vue'
     import { List } from './List'
     import { assetInterface } from '~/types/assets/asset.interface'
+    import useBusinessMetadataHelper from '~/composables/businessMetadata/useBusinessMetadataHelper'
 
     export default defineComponent({
         name: 'InfoTab',
@@ -94,11 +101,16 @@
             heirarchy: defineAsyncComponent(
                 () => import('./heirarchy/index.vue')
             ),
+            businessMetadata: defineAsyncComponent(
+                () => import('./businessMetadata/index.vue')
+            ),
         },
         setup(props) {
             const refMap: Ref<{
                 [key: string]: any
             }> = ref({})
+
+            const { getApplicableBmGroups } = useBusinessMetadataHelper()
             // Mapping of Data to child compoentns
             const dataMap: { [key: string]: any } = ref({})
             const localStorage = window.localStorage
@@ -132,9 +144,23 @@
             const handleCollapseChange = () => {
                 setUserDefaultCollapseOrderInInfoTab(activeKey.value)
             }
+
+            const applicableBMList = (typeName: string) =>
+                getApplicableBmGroups(typeName)?.map((b) => ({
+                    component: 'businessMetadata',
+                    id: b.name,
+                    label: b.options.displayName,
+                    image: b.options.image || '',
+                }))
+            // ? check if computed  not needed needed?
+            const dynamicList = computed(() => [
+                ...List,
+                ...applicableBMList(props.infoTabData.typeName),
+            ])
+
             return {
                 handleCollapseChange,
-                List,
+                dynamicList,
                 activeKey,
                 refMap,
                 dataMap,

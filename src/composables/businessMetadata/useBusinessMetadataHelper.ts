@@ -1,11 +1,29 @@
 // * Composables
 import useEnums from "@/admin/enums/composables/useEnums";
-import { computed } from "vue";
+import { computed, ref } from "vue";
 import { useBusinessMetadataStore } from '~/store/businessMetadata'
 
 export default function useBusinessMetadataHelper() {
     const { enumListData: enumsList } = useEnums();
     const businessMetadataStore = useBusinessMetadataStore()
+
+    // * Computed
+    const businessMetadataList = computed(
+        () => businessMetadataStore.getBusinessMetadataList
+    )
+
+    function createDebounce() {
+        let timeout = null;
+        return function (fnc: () => void, delayMs: number) {
+            clearTimeout(timeout);
+            timeout = setTimeout(() => {
+                fnc();
+            }, delayMs || 500);
+        };
+    }
+
+
+
     const getDatatypeOfAttribute = (typeName: string | string[]) => {
         if (typeName && typeof typeName !== "undefined") {
             if (
@@ -51,6 +69,9 @@ export default function useBusinessMetadataHelper() {
         return typeName || "";
     };
 
+    /**
+            * @desc mapped BM object that has filter support
+            * */
     const bmFiltersList = computed(() => {
         if (businessMetadataStore.getBusinessMetadataList?.length) {
             const bmFiltersList =
@@ -110,10 +131,46 @@ export default function useBusinessMetadataHelper() {
         }
         return {}
     })
+
+    const getApplicableBmGroups = (typeName: string) => {
+        if (businessMetadataStore.getBusinessMetadataList?.length) {
+            return businessMetadataStore.getBusinessMetadataList.filter(bm => {
+                const applicable = bm.attributeDefs.some(a => {
+                    if (a.options.customEntityTypes && JSON.parse(a.options.customEntityTypes).includes(typeName))
+                        return true;
+                    return false;
+                })
+                if (applicable)
+                    return true;
+                return false;
+            })
+        }
+    }
+
+
+    /**
+             * Find the required from the BM List and return
+             * @param  {String} name Name of the required BM
+             * @return {Object}  The required BM or null
+             */
+    const getBMbyName = (name: string) => {
+        const requiredBM = businessMetadataList.value.find(
+            (bm: object) => name === bm.name
+        )
+        return requiredBM || null
+    }
+
+
+    const getApplicableAttributes = (BMname, typeName) => getBMbyName(BMname).attributeDefs.filter(a =>
+        a.options.customEntityTypes && JSON.parse(a.options.customEntityTypes).includes(typeName)
+    )
     return {
         getDatatypeOfAttribute,
         businessMetadataStore,
         bmFiltersList,
-        bmDataMap
+        bmDataMap,
+        getApplicableBmGroups,
+        getApplicableAttributes,
+        createDebounce
     }
 }

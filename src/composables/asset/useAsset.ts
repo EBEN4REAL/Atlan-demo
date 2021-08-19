@@ -1,6 +1,7 @@
 import { watch, ref } from 'vue'
 import { BasicSearchAttributes } from '~/constant/projection'
 import { SearchBasic } from '~/api/atlas/searchbasic'
+import { useBusinessMetadataStore } from '~/store/businessMetadata';
 
 export default function useAsset({
     entityId,
@@ -39,6 +40,7 @@ export default function useAsset({
             'metadata',
             'commits',
             ...BasicSearchAttributes,
+            ...useBusinessMetadataStore().getBusinessMetadataListProjections
         ],
         entityFilters,
     }

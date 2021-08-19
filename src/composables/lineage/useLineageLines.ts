@@ -3,7 +3,7 @@ import {
     graphRelations,
     getPredecessors,
     getSuccessors,
-} from '~/components/lineage/util'
+} from '~/components/asset/assetProfile/tabs/lineage/util'
 import LeaderLine from 'leader-line-new'
 
 export const getPath = (guid, pathGuid, selectedPathGuids) => {

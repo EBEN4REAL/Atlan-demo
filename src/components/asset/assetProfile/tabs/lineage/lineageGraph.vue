@@ -255,10 +255,10 @@
         nextTick,
         computed,
     } from 'vue'
-    // Util
-    import { getIcon } from '~/components/lineage/util'
     // Components
-    import LineageColumnList from '~/components/lineage/lineageColumnList.vue'
+    import LineageColumnList from '@/asset/assetProfile/tabs/lineage/lineageColumnList.vue'
+    // Util
+    import { getIcon } from '@/asset/assetProfile/tabs/lineage/util.js'
     // Composables
     import * as useLineageCompute from '~/composables/lineage/useLineageCompute'
     import * as useLineageDOM from '~/composables/lineage/useLineageDOM'

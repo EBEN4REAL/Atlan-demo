@@ -28,7 +28,7 @@
                 <div class="flex items-center mx-3 mt-1">
                     <a-input
                         v-model:value="queryText"
-                        placeholder="Search for assets"
+                        placeholder="Search"
                         size="default"
                         :class="$style.searchbar"
                         @change="handleSearchChange"

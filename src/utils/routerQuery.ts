@@ -51,16 +51,16 @@ export function getEncodedStringFromOptions(options: any) {
                     const uniqueOwnerAttributes = new Set(
                         filterKeyValue.map((e: criterion) => e.attributeName)
                     )
-                    ;[...uniqueOwnerAttributes].map((uniqueOwnerAttribute) => {
-                        ownerString += `${uniqueOwnerAttribute}:`
-                        filterKeyValue.forEach((e: criterion) => {
-                            if (e.attributeName === uniqueOwnerAttribute) {
-                                ownerString += `${e.attributeValue},`
-                            }
+                        ;[...uniqueOwnerAttributes].map((uniqueOwnerAttribute) => {
+                            ownerString += `${uniqueOwnerAttribute}:`
+                            filterKeyValue.forEach((e: criterion) => {
+                                if (e.attributeName === uniqueOwnerAttribute) {
+                                    ownerString += `${e.attributeValue},`
+                                }
+                            })
+                            ownerString = ownerString.slice(0, -1)
+                            ownerString += '&'
                         })
-                        ownerString = ownerString.slice(0, -1)
-                        ownerString += '&'
-                    })
                     ownerString = ownerString.slice(0, -1)
                     filterKeyValue = ownerString
                     break
@@ -304,6 +304,9 @@ export function getDecodedOptionsFromString(router) {
                 }
                 break
             }
+            // default: {
+
+            // }
         }
 
         if (connectorsPayload) {

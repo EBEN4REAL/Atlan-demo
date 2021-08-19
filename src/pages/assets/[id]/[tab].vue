@@ -2,8 +2,8 @@
     <LoadingView v-if="!data?.asset" />
     <ErrorView v-else-if="data?.error" :error="data?.error" />
 
-    <div v-if="data?.asset" class="w-full bg-gray-100">
-        <div class="z-30 h-24 p-4 bg-white">
+    <div v-if="data?.asset" class="w-full bg-white">
+        <div class="z-30 px-5 pt-6 pb-5 bg-white">
             <AssetHeader :asset="data?.asset" />
         </div>
         <div class="asset-profile">

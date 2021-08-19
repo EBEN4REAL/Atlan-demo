@@ -1,13 +1,17 @@
 <template>
     <div class="w-2/3 readme-wrapper h-min-1/2">
         <div
-            class="flex items-center justify-between w-full py-1 text-base bg-white border rounded-t  px-7"
+            class="flex items-center justify-between w-full py-1 text-base bg-white "
+            :class="[
+                showBorders ? ' border rounded-t ' : '',
+                showPaddingX ? 'px-7' : '',
+            ]"
         >
             <div>Readme</div>
             <div v-if="editable" class="flex align-items-center">
-                <a-button class="mr-2">Save</a-button>
+                <a-button class="mr-2" @click="editable = false">Save</a-button>
 
-                <a-dropdown
+                <!-- <a-dropdown
                     v-model:visible="templateNameDropdown"
                     :trigger="['click']"
                 >
@@ -46,7 +50,7 @@
                             </div>
                         </a-menu>
                     </template>
-                </a-dropdown>
+                </a-dropdown> -->
                 <a-button
                     type="link"
                     :variant="'btn btn-sm btn-link mb-0 btn-no-focus font-w700 text-gray-300'"
@@ -64,7 +68,10 @@
         <Editor
             ref="editor"
             :placeholder="placeholder"
-            class="rounded-b"
+            :class="[
+                showBorders ? 'border border-t-0 rounded-b' : 'border-0',
+                showPaddingX ? 'px-7' : '',
+            ]"
             :editable="editable"
             @onEditorContentUpdate="onUpdate"
         />
@@ -140,6 +147,16 @@
                 required: true,
                 default: '',
             },
+            showBorders: {
+                type: Boolean,
+                required: false,
+                default: true,
+            },
+            showPaddingX: {
+                type: Boolean,
+                required: false,
+                default: true,
+            },
         },
         setup() {
             const editable = ref(false)
@@ -197,9 +214,9 @@
 
             const startEdit = () => {
                 editable.value = true
-                if (!editorContent.value || editorContent.value === '<p></p>') {
-                    showTemplatesModal.value = true
-                }
+                // if (!editorContent.value || editorContent.value === '<p></p>') {
+                //     showTemplatesModal.value = true
+                // }
             }
 
             // const newTemplate = () => {

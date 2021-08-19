@@ -1,5 +1,5 @@
 <template>
-    <div class="sidePanel flex flex-col w-1/3 border-l min-h-screen"
+    <div class="flex flex-col w-1/3 border-l min-h-screen"
         :class="$style.gtcPreview"
     >
         <div v-if="preview" class="flex flex-row justify-between align-middle px-5 py-8">
@@ -33,7 +33,7 @@
         </div>
         <a-tabs default-active-key="1" class="border-0">
             <a-tab-pane key="info" tab="Info">
-                <div class="h-full overflow-auto ">
+                <div class="h-screen overflow-auto pb-52">
                     <a-collapse :bordered="false" expand-icon-position="right">
                         <template #expandIcon="{ isActive }">
                             <fa v-if="isActive" icon="fas angle-up" />

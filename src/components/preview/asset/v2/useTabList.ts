@@ -23,7 +23,7 @@ export default function useAssetDetailsTabList(page: Ref<string>) {
         {
             name: 'Columns',
             component: 'columns',
-            exclude: ['Column'],
+            exclude: ['Column', 'TableauWorkbook', 'TableauWorksheet'],
             visibleOn: ['discovery', 'profile'],
         },
         {

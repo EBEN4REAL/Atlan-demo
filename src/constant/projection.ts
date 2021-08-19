@@ -15,6 +15,7 @@ export const ConnectionAttributes = [
     'integrationCredentialQualifiedName',
 ]
 
+// server property is not there for Site in atlas
 export const tableauAttributes = [
     'siteName',
     'siteQualifiedName',

@@ -105,54 +105,129 @@ export const PanelsMapToAsset: { [key: string]: penlsMapToAsset } = {
             },
         ],
     },
-    // TableauSite: {
-    //     panels: [
-    //         tableauProperties,
-    //         assetDetails,
-    //         linkedAsset,
-    //         heirarchy,
-    //         properties,
-    //     ],
-    // },
-    // TableauProject: {
-    //     panels: [
-    //         tableauProperties,
-    //         assetDetails,
-    //         linkedAsset,
-    //         heirarchy,
-    //         properties,
-    //     ],
-    // },
-    // TableauDashboard: {
-    //     panels: [
-    //         tableauPreview,
-    //         tableauProperties,
-    //         assetDetails,
-    //         linkedAsset,
-    //         heirarchy,
-    //         properties,
-    //     ],
-    // },
-    // TableauWorksheet: {
-    //     panels: [
-    //         tableauPreview,
-    //         tableauProperties,
-    //         assetDetails,
-    //         linkedAsset,
-    //         heirarchy,
-    //         properties,
-    //     ],
-    // },
+    TableauSite: {
+        panels: [
+            tableauProperties,
+            assetDetails,
+            linkedAsset,
+            heirarchy,
+            properties,
+        ],
+        properties: [
+            {
+                id: 'connectionName',
+                label: 'Server',
+                property: 'connectionName',
+            },
+            {
+                id: '__timestamp',
+                label: 'Created on',
+                property: '__timestamp',
+            },
+        ],
+    },
+    TableauProject: {
+        panels: [
+            tableauProperties,
+            assetDetails,
+            linkedAsset,
+            heirarchy,
+            properties,
+        ],
+        properties: [
+            {
+                id: 'siteName',
+                label: 'Site',
+                property: 'siteName',
+            },
+            {
+                id: '__timestamp',
+                label: 'Created on',
+                property: '__timestamp',
+            },
+        ],
+    },
+    TableauDashboard: {
+        panels: [
+            tableauPreview,
+            tableauProperties,
+            assetDetails,
+            linkedAsset,
+            heirarchy,
+            properties,
+        ],
+        properties: [
+            {
+                id: 'workbookName',
+                label: 'Workbook',
+                property: 'workbookName',
+            },
+            {
+                id: '__timestamp',
+                label: 'Created on',
+                property: '__timestamp',
+            },
+            {
+                id: '__modificationTimestamp',
+                label: 'Modified on',
+                property: '__modificationTimestamp',
+            },
+        ],
+    },
+    TableauWorksheet: {
+        panels: [
+            tableauPreview,
+            tableauProperties,
+            assetDetails,
+            linkedAsset,
+            heirarchy,
+            properties,
+        ],
+        properties: [
+            {
+                id: 'workbookName',
+                label: 'Workbook',
+                property: 'workbookName',
+            },
+            {
+                id: '__timestamp',
+                label: 'Created on',
+                property: '__timestamp',
+            },
+            {
+                id: '__modificationTimestamp',
+                label: 'Modified on',
+                property: '__modificationTimestamp',
+            },
+        ],
+    },
     // in attributes if isPublished -true ( means it is a published datasoruce )/ isPublished - false ( means it is a embedded datasource)
-    // TableauDatasource: {
-    //     panels: [
-    //         tableauProperties,
-    //         assetDetails,
-    //         linkedAsset,
-    //         heirarchy,
-    //         properties,
-    //     ],
-    // },
+    TableauDatasource: {
+        panels: [
+            tableauProperties,
+            assetDetails,
+            linkedAsset,
+            heirarchy,
+            properties,
+        ],
+        properties: [
+            {
+                id: 'projectName',
+                label: 'Project',
+                property: 'projectName',
+            },
+            {
+                id: '__timestamp',
+                label: 'Created on',
+                property: '__timestamp',
+            },
+            {
+                id: '__modificationTimestamp',
+                label: 'Modified on',
+                property: '__modificationTimestamp',
+            },
+        ],
+    },
 }
 
 // preview

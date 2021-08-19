@@ -1,7 +1,7 @@
 import { watch, ref } from 'vue'
-import { BasicSearchAttributes } from '~/constant/projection'
+import { BasicSearchAttributes, tableauAttributes } from '~/constant/projection'
 import { SearchBasic } from '~/api/atlas/searchbasic'
-import { useBusinessMetadataStore } from '~/store/businessMetadata';
+import { useBusinessMetadataStore } from '~/store/businessMetadata'
 
 export default function useAsset({
     entityId,
@@ -39,8 +39,18 @@ export default function useAsset({
             'extra',
             'metadata',
             'commits',
+            'siteName',
+            'siteQualifiedName',
+            'topLevelProjectName',
+            'topLevelProjectQualifiedName',
+            'isTopLevelProject',
+            'projectHierarchy',
+            'projectName',
+            'workbookName',
+            'datasourceName',
             ...BasicSearchAttributes,
-            ...useBusinessMetadataStore().getBusinessMetadataListProjections
+            ...useBusinessMetadataStore().getBusinessMetadataListProjections,
+            ...tableauAttributes,
         ],
         entityFilters,
     }

@@ -10,8 +10,8 @@
         >
             <template #expandIcon="{ isActive }">
                 <div class="">
-                    <fa
-                        icon="fas chevron-down"
+                    <AtlanIcon
+                        icon="ChevronDown"
                         class="ml-1 transition-transform transform"
                         :class="isActive ? '-rotate-180' : 'rotate-0'"
                     />
@@ -25,7 +25,7 @@
                 <template #header>
                     <div
                         :key="item.id"
-                        class="flex text-sm font-bold select-none header"
+                        class="flex justify-between text-sm font-bold select-none  header"
                     >
                         <img
                             v-if="item.image"
@@ -46,6 +46,10 @@
                     :data="dataMap[item.id]"
                     :selectedAsset="infoTabData"
                     :tabData="componentData"
+                    :properties="
+                        PanelsMapToAsset[selectedAsset.typeName]?.properties ??
+                        []
+                    "
                     @change="handleChange"
                 ></component>
             </a-collapse-panel>
@@ -69,7 +73,7 @@
         PropType,
         computed,
     } from 'vue'
-    import { List } from './List'
+    import { PanelsMapToAsset } from './List'
     import { assetInterface } from '~/types/assets/asset.interface'
     import useBusinessMetadataHelper from '~/composables/businessMetadata/useBusinessMetadataHelper'
 
@@ -81,6 +85,10 @@
                 type: Object as PropType<any>,
             },
             infoTabData: {
+                type: Object as PropType<assetInterface>,
+                required: true,
+            },
+            selectedAsset: {
                 type: Object as PropType<assetInterface>,
                 required: true,
             },
@@ -103,6 +111,11 @@
             ),
             businessMetadata: defineAsyncComponent(
                 () => import('./businessMetadata/index.vue')
+            tableauProperties: defineAsyncComponent(
+                () => import('./tableau/properties/index.vue')
+            ),
+            tableauPreview: defineAsyncComponent(
+                () => import('./tableau/preview/index.vue')
             ),
         },
         setup(props) {
@@ -154,11 +167,12 @@
                 }))
             // ? check if computed  not needed needed?
             const dynamicList = computed(() => [
-                ...List,
+                ...PanelsMapToAsset[selectedAsset.typeName].panels,
                 ...applicableBMList(props.infoTabData.typeName),
             ])
 
             return {
+                PanelsMapToAsset,
                 handleCollapseChange,
                 dynamicList,
                 activeKey,

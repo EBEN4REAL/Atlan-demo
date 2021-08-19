@@ -29,8 +29,8 @@
     >
         <template #expandIcon="{ isActive }">
             <div class="">
-                <fa
-                    icon="fas chevron-down "
+                <AtlanIcon
+                    icon="ChevronDown"
                     class="ml-1 transition-transform transform"
                     :class="isActive ? '-rotate-180' : 'rotate-0'"
                 />

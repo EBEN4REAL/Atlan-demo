@@ -16,13 +16,13 @@ export const operatorsMap = {
         { label: 'Is Not Null', value: 'notNull' },
     ],
     boolean: [
-        { label: 'equal', value: 'eq' },
+        { label: 'Equal', value: 'eq' },
         { label: 'Doesn’t equal', value: 'neq' },
         { label: 'Is Null', value: 'isNull' },
         { label: 'Is not Null', value: '=' },
     ],
     number: [
-        { label: 'equal', value: 'eq' },
+        { label: 'Equal', value: 'eq' },
         { label: 'Doesn’t equal', value: 'neq' },
         { label: 'Greater than', value: 'gt' },
         { label: 'Less than', value: 'lt' },
@@ -32,7 +32,7 @@ export const operatorsMap = {
         { label: 'Is not Null', value: '=' },
     ],
     enum: [
-        { label: 'equal', value: 'eq' },
+        { label: 'Equal', value: 'eq' },
         { label: 'Doesn’t equal', value: 'neq' },
         { label: 'Is Null', value: '=' },
         { label: 'Is not Null', value: '=' },

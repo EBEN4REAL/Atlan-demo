@@ -63,7 +63,7 @@ export const AssetTypeList = [
     },
     {
         id: 'MaterialisedView',
-        label: 'MaterialisedView',
+        label: 'Materialised View',
         nameAttribute: 'materialisedView',
         qualifiedNameAttribute: 'materialisedViewQualifiedName',
         parents: ['Connection', 'Database', 'Schema'],
@@ -85,7 +85,15 @@ export const AssetTypeList = [
     },
     {
         id: 'TableauWorkbook',
-        label: 'TableauWorkbook',
+        label: 'Tableau Workbook',
+        nameAttributeattribute: '',
+        count: 0,
+        isDiscoverable: true,
+        orderWeight: 100,
+    },
+    {
+        id: 'TableauWorksheet',
+        label: 'Tableau Worksheet',
         nameAttributeattribute: '',
         count: 0,
         isDiscoverable: true,

@@ -4,7 +4,20 @@
         >{{ data.displayValue === 'termAdded' ? 'added' : 'removed' }}
     </div>
     <div class="flex">
-        <div class="px-3 my-1 rounded-full cursor-pointer pill py-0.5">
+        <div
+            class="
+                px-3
+                my-3
+                rounded-full
+                cursor-pointer
+                pill
+                py-1.5
+                font-bold
+                bg-gray-light
+                text-gray-700
+                hover:bg-primary hover:text-white
+            "
+        >
             {{ data.value }}
         </div>
     </div>
@@ -25,13 +38,3 @@
         },
     })
 </script>
-
-<style lang="less" scoped>
-    .pill {
-        background-color: #f3f3f3;
-        &:hover {
-            background-color: #5277d7;
-            color: white;
-        }
-    }
-</style>

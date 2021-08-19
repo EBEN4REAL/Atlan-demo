@@ -16,10 +16,10 @@ export default function useEntityRelationships(guid) {
                 (el) => {
                     const element =
                         data.value?.entity?.relationshipAttributes[el]
-                    if (element.length !== 0)
+                    if (element?.length !== 0)
                         relationshipAssets.value.push({
                             displayText: el,
-                            length: element.length || 1,
+                            length: element?.length || 1,
                         })
                 }
             )

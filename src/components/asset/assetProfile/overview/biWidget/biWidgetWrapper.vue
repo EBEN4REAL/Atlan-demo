@@ -20,15 +20,16 @@
                     class="flex flex-col"
                 />
             </template>
-            <!-- TODO: replace this icon with appropriate icon -->
-            <a-button class="px-2 py-1 ml-2 rounded">
-                <span class="flex items-center justify-center">
-                    <fa
-                        icon="fas sort-amount-up"
-                        class="hover:text-primary-500"
-                    />
-                </span>
-            </a-button>
+            <a-badge :dot="checkedList?.length" :class="$style.badge">
+                <a-button class="px-2 py-1 ml-2 rounded">
+                    <span class="flex items-center justify-center">
+                        <fa
+                            icon="fas sort-amount-up"
+                            class="hover:text-primary-500"
+                        />
+                    </span>
+                </a-button>
+            </a-badge>
         </a-popover>
     </div>
 
@@ -59,14 +60,15 @@
             <AssetTypeItems
                 :projections="checkedList"
                 :assetType="item.displayText"
-                :assetId="assetId"
+                :assetId="asset.guid"
                 :cssClasses="cssClasses"
+                @preview="handlePreview"
             />
         </a-tab-pane>
     </a-tabs>
 </template>
 <script lang="ts">
-    import { defineComponent, watch, onMounted, ref } from 'vue'
+    import { defineComponent, watch, onMounted, ref, toRefs } from 'vue'
     import AssetTypeItems from '@/preview/asset/v2/tabs/relations/assetTypeItems.vue'
     import BiWidgetTabPanel from '@/asset/assetProfile/overview/biWidget/biWidgetTabPanel.vue'
     import DescriptionWidget from '@/asset/assetProfile/overview/descriptionWidget.vue'
@@ -81,11 +83,12 @@
             AssetTypeItems,
         },
         props: ['asset'],
-        setup(props) {
+        emits: ['preview'],
+        setup(props, context) {
             const relationshipAssets = ref([])
-            const assetId = ref(props.asset.guid)
             const plainOptions = ['description', 'owners', 'business terms']
             const checkedList = ref(['description'])
+            const { asset }: ToRefs = toRefs(props)
             const fetchData = () => {
                 const { relationshipAssetTypes, isLoading } =
                     useEntityRelationships(props.asset.guid)
@@ -96,12 +99,15 @@
             // filter required data
 
             onMounted(fetchData)
-
+            watch(asset, fetchData)
+            const handlePreview = (item) => {
+                context.emit('preview', item)
+            }
             return {
                 relationshipAssets,
-                assetId,
                 plainOptions,
                 checkedList,
+                handlePreview,
                 cssClasses: {
                     paddingY: 'py-6',
                 },

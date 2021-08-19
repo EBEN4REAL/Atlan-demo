@@ -5,6 +5,7 @@
                 <router-view
                     v-if="isItem"
                     @updateAssetPreview="handlePreview"
+                    @preview="handlePreview"
                 ></router-view>
                 <AssetDiscovery
                     v-else

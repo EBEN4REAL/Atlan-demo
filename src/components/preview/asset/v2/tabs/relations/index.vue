@@ -30,7 +30,16 @@
                 />
             </template>
             <!-- TODO: replace this icon with appropriate icon -->
-            <Fa icon="fal cog" class="ml-2 text-gray-500 cursor-pointer" />
+            <a-badge :dot="checkedList?.length" :class="$style.badge">
+                <a-button class="px-2 py-1 ml-2 rounded">
+                    <span class="flex items-center justify-center">
+                        <fa
+                            icon="fas sort-amount-up"
+                            class="hover:text-primary-500"
+                        />
+                    </span>
+                </a-button>
+            </a-badge>
         </a-popover>
     </div>
     <!-- accordions for different asset type -->

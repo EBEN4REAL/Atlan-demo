@@ -3,7 +3,6 @@
         <a-popover
             v-model:visible="isCompleted"
             placement="left"
-            overlay-class-name="inlinepopover"
             trigger="click"
         >
             <template #content>
@@ -177,8 +176,6 @@
 <style lang="less" module>
     .borderless {
         @apply border-none shadow-none px-4 !important;
-        border-top-left-radius: 10px;
-        border-top-right-radius: 10px;
 
         &:global(.ant-input-affix-wrapper-focused) {
             @apply border-none shadow-none;

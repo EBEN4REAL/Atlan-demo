@@ -80,7 +80,6 @@ export const PanelsMapToAsset: { [key: string]: penlsMapToAsset } = {
     },
     TableauWorkbook: {
         panels: [
-            tableauPreview,
             tableauProperties,
             assetDetails,
             linkedAsset,

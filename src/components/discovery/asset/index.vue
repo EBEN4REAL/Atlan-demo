@@ -615,7 +615,7 @@
 </style>
 <style scoped>
     .facets {
-        min-width: 240px;
-        width: 240px;
+        min-width: 264px;
+        width: 264px;
     }
 </style>

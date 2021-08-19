@@ -1,3 +1,16 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+    @font-face {
+        font-family: Avenir;
+        font-weight: 400;
+        src: url('~/assets/fonts/avenir/Avenir-Roman.woff2') format('woff2');
+    }
+    @font-face {
+        font-family: Avenir;
+        font-weight: bold;
+        src: url('~/assets/fonts/avenir/Avenir-Heavy.woff2') format('woff2');
+    }
+}

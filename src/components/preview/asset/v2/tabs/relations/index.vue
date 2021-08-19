@@ -12,7 +12,7 @@
         <!-- searchbar -->
         <a-input
             v-model:value="queryText"
-            placeholder="Search for assets"
+            placeholder="Search"
             size="default"
             class="my-3"
         >

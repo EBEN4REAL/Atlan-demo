@@ -9,9 +9,9 @@
         >
             <div>Readme</div>
             <div v-if="editable" class="flex align-items-center">
-                <a-button class="mr-2">Save</a-button>
+                <a-button class="mr-2" @click="editable = false">Save</a-button>
 
-                <a-dropdown
+                <!-- <a-dropdown
                     v-model:visible="templateNameDropdown"
                     :trigger="['click']"
                 >
@@ -50,7 +50,7 @@
                             </div>
                         </a-menu>
                     </template>
-                </a-dropdown>
+                </a-dropdown> -->
                 <a-button
                     type="link"
                     :variant="'btn btn-sm btn-link mb-0 btn-no-focus font-w700 text-gray-300'"
@@ -214,9 +214,9 @@
 
             const startEdit = () => {
                 editable.value = true
-                if (!editorContent.value || editorContent.value === '<p></p>') {
-                    showTemplatesModal.value = true
-                }
+                // if (!editorContent.value || editorContent.value === '<p></p>') {
+                //     showTemplatesModal.value = true
+                // }
             }
 
             // const newTemplate = () => {

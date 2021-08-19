@@ -9,7 +9,7 @@
     <p class="px-5 m-0 font-bold">Relations</p>
     <div class="flex items-center justify-between px-5 mt-3 mb-5 text-base">
         <!-- searchbar -->
-        <a-input-search placeholder="Search for assets" size="default">
+        <a-input-search placeholder="Search" size="default">
         </a-input-search>
         <!-- filters -->
         <a-popover title="Show/hide" trigger="click" placement="bottomRight">

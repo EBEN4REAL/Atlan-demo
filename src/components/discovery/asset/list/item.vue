@@ -32,26 +32,13 @@
                                 : 'text-lg'
                         "
                         :to="`/assets/${item.guid}/overview`"
-                        class="
-                            flex-shrink
-                            mb-0
-                            overflow-hidden
-                            font-bold
-                            leading-6
-                            tracking-wide
-                            truncate
-                            cursor-pointer
-                            text-gray
-                            hover:underline
-                            overflow-ellipsis
-                            whitespace-nowrap
-                        "
+                        class="flex-shrink mb-0 overflow-hidden font-bold leading-6 tracking-wide truncate cursor-pointer  text-gray hover:underline overflow-ellipsis whitespace-nowrap"
                     >
                         {{ title(item) }}
                     </router-link>
                     <StatusBadge
                         :key="item.guid"
-                        :showNoStatus="true"
+                        :showNoStatus="false"
                         :status-id="status(item)"
                         class="flex-none ml-2"
                     ></StatusBadge>
@@ -73,26 +60,12 @@
                 >
                     <component
                         :is="dataTypeImage(item)"
-                        class="w-auto h-5"
+                        class="w-auto h-4"
                     ></component>
-                    <span class="ml-1 text-sm">{{ dataType(item) }}</span>
+                    <span class="pt-0.5 ml-1 text-sm leading-none">{{
+                        dataType(item)
+                    }}</span>
                 </div>
-                <!-- Description -->
-                <div
-                    v-if="projection?.includes('description')"
-                    class="max-w-lg mt-1 text-sm truncate-overflow"
-                >
-                    <span v-if="description(item)?.length">
-                        {{ description(item) }}
-                    </span>
-                    <span v-else class="text-gray-500">No description</span>
-                </div>
-                <!-- Hierarchy bar -->
-                <HierarchyBar
-                    class="py-1 mt-1"
-                    v-if="projection?.includes('heirarchy')"
-                    :selectedAsset="item"
-                ></HierarchyBar>
                 <!-- Row?Col/Owner bar -->
                 <div
                     v-if="
@@ -108,15 +81,7 @@
                             projection?.includes('owners') &&
                             getCombinedUsersAndGroups(item).length
                         "
-                        class="
-                            flex
-                            items-baseline
-                            mt-1
-                            mr-4
-                            text-xs
-                            leading-5
-                            text-gray
-                        "
+                        class="flex items-baseline mt-1 mr-4 text-xs leading-5  text-gray"
                     >
                         <span
                             class="mr-1"
@@ -177,6 +142,22 @@
                     </span>
                 </div> -->
                 </div>
+                <!-- Description -->
+                <div
+                    v-if="
+                        projection?.includes('description') &&
+                        description(item)?.length
+                    "
+                    class="max-w-lg mt-1 text-sm truncate-overflow"
+                >
+                    {{ description(item) }}
+                </div>
+                <!-- Hierarchy bar -->
+                <HierarchyBar
+                    class="py-1 mt-1"
+                    v-if="projection?.includes('heirarchy')"
+                    :selectedAsset="item"
+                />
             </div>
 
             <img :src="logo(item)" class="flex-none w-auto h-6" />

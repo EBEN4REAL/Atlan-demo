@@ -38,7 +38,7 @@
                             <AtlanIcon icon="Search" />
                         </template>
                     </a-input>
-                    <a-popover trigger="click" placement="bottomLeft">
+                    <a-popover trigger="click" placement="bottomRight">
                         <template #content>
                             <Preferences
                                 :default-projection="projection"

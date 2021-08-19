@@ -24,7 +24,7 @@
 
                 <div class="flex items-center">
                     <StatusBadge
-                        :showNoStatus="true"
+                        :showNoStatus="false"
                         :key="selectedAsset.guid"
                         :status-id="selectedAsset?.attributes?.assetStatus"
                         class="ml-1.5"

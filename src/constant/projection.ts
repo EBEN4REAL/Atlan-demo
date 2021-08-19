@@ -15,6 +15,41 @@ export const ConnectionAttributes = [
     'integrationCredentialQualifiedName',
 ]
 
+export const tableauAttributes = [
+    'siteName',
+    'siteQualifiedName',
+    'projectName',
+    'projectQualifiedName',
+    'topLevelProjectName',
+    'topLevelProjectQualifiedName',
+    'projectHierarchy',
+    'workbookName',
+    'workbookQualifiedName',
+    'isTopLevelProject',
+    'tags',
+    'inputFields',
+    'outputFields',
+    'outputSteps',
+    'datasourceName',
+    'datasourceQualifiedName',
+    'isDatasourcePublished',
+    'tableauFullyQualifiedName',
+    'upstreamTables',
+    'upstreamColumns',
+    'upstreamFields',
+    'upstreamDatasources',
+    'isPublished',
+    'hasExtracts',
+    'isCertified',
+    'certifier',
+    'certificationNote',
+    'certifierDisplayName',
+    'dataCategory',
+    'role',
+    'dataType',
+    'formula',
+]
+
 export const CredentialAttributes = ['authType', 'extra']
 
 export const BaseAttributes = [

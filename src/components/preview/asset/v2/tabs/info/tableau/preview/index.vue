@@ -1,5 +1,7 @@
 <template>
-    <div class="px-5">Tableau Preview</div>
+    <div class="px-5">
+        <div class="w-full h-48 rounded bg-gray-light"></div>
+    </div>
 </template>
 
 <script lang="ts">

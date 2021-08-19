@@ -72,6 +72,15 @@ export const PanelsMapToAsset: { [key: string]: penlsMapToAsset } = {
     Column: {
         panels: [assetDetails, linkedAsset, heirarchy, properties],
     },
+    // TableauSite: {
+    //     panels: [
+    //         tableauProperties,
+    //         assetDetails,
+    //         linkedAsset,
+    //         heirarchy,
+    //         properties,
+    //     ],
+    // },
     TableauWorkbook: {
         panels: [
             tableauPreview,
@@ -82,6 +91,45 @@ export const PanelsMapToAsset: { [key: string]: penlsMapToAsset } = {
             properties,
         ],
     },
+    // TableauProject: {
+    //     panels: [
+    //         tableauProperties,
+    //         assetDetails,
+    //         linkedAsset,
+    //         heirarchy,
+    //         properties,
+    //     ],
+    // },
+    // TableauDashboard: {
+    //     panels: [
+    //         tableauPreview,
+    //         tableauProperties,
+    //         assetDetails,
+    //         linkedAsset,
+    //         heirarchy,
+    //         properties,
+    //     ],
+    // },
+    // TableauWorksheet: {
+    //     panels: [
+    //         tableauPreview,
+    //         tableauProperties,
+    //         assetDetails,
+    //         linkedAsset,
+    //         heirarchy,
+    //         properties,
+    //     ],
+    // },
+    // in attributes if isPublished -true ( means it is a published datasoruce )/ isPublished - false ( means it is a embedded datasource)
+    // TableauDatasource: {
+    //     panels: [
+    //         tableauProperties,
+    //         assetDetails,
+    //         linkedAsset,
+    //         heirarchy,
+    //         properties,
+    //     ],
+    // },
 }
 
 // preview

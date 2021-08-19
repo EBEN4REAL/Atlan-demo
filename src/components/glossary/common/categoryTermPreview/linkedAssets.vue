@@ -8,8 +8,9 @@
                 @change="onSearch"
             ></a-input-search>
 
-            <a-popover title="Customise" trigger="click">
+            <a-popover trigger="click">
                 <template #content>
+                    <p class="mb-1 text-gray-500">Show/Hide</p>
                     <div class="w-32">
                         <a-checkbox-group
                             v-model:value="projection"
@@ -18,12 +19,24 @@
                         />
                     </div>
                 </template>
-                <a-button class="p-2 flex align-middle">
-                    <fa icon="fal ellipsis-v" />
+                <a-button class="p-1 ml-2 rounded">
+                    <AtlanIcon icon="FilterDot" class="h-6" />
                 </a-button>
             </a-popover>
         </div>
-        <a-tabs
+        <div
+            v-if="assets && assets.length <= 0 && !isLoading"
+            class="flex-grow"
+        >
+            <EmptyView></EmptyView>
+        </div>
+        <AssetList
+            v-else-if="assets.length"
+            :list="assets"
+            :projection="projection"
+            :is-loading="isLoading"
+        ></AssetList>
+        <!-- <a-tabs
             v-if="assets?.length"
             type="card"
             default-active-key="1"
@@ -47,11 +60,17 @@
                                 :projection="projection"
                                 :is-loading="isLoading"
                             ></AssetList>
+
                         </div>
                     </div>
                 </div>
             </a-tab-pane>
-        </a-tabs>
+        </a-tabs> -->
+        <!-- <AssetDiscovery
+            v-if="assets.length"
+            :show-filters="false"
+            :initial-filters="initialFilters"
+        ></AssetDiscovery> -->
         <div v-else class="mt-24">
             <EmptyView :showClearFiltersCTA="false" />
         </div>
@@ -60,14 +79,17 @@
 <script lang="ts">
 import { defineComponent, computed, onMounted, watch, ref } from 'vue'
 import { useDebounceFn } from '@vueuse/core'
+import { useRouter } from 'vue-router'
 
 import AssetList from '@/discovery/asset/list/index.vue'
 import EmptyView from '@common/empty/discover.vue'
+import AssetDiscovery from '@/discovery/asset/index.vue'
 
 import useTermLinkedAssets from '~/composables/glossary/useTermLinkedAssets'
+import { getDecodedOptionsFromString } from '~/utils/routerQuery'
 
 export default defineComponent({
-    components: { AssetList, EmptyView },
+    components: { AssetList, EmptyView, AssetDiscovery },
     props: {
         termQualifiedName: {
             type: String,
@@ -77,7 +99,8 @@ export default defineComponent({
     },
     setup(props) {
         const termName = computed(() => props.termQualifiedName)
-
+        const router = useRouter()
+        const initialFilters = getDecodedOptionsFromString(router)
         const { linkedAssets, isLoading, error, fetchLinkedAssets } =
             useTermLinkedAssets()
 
@@ -117,6 +140,7 @@ export default defineComponent({
             onSearch,
             projectionOptions,
             projection,
+            initialFilters,
         }
     },
 })

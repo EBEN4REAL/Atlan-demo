@@ -8,7 +8,7 @@
                     <img v-if="entity.typeName === 'AtlasGlossaryCategory'" :src="CategorySvg" :width="25" />
                     <img v-else-if="entity.typeName === 'AtlasGlossaryTerm'" :src="TermSvg" />
                 </span>
-                <span v-if="type" class="text-sm text-gray-500 font-bold" >{{ type === 'AtlasGlossaryTerm' ? 'Term' : 'Category'}} </span>
+                <span v-if="type" class="flex flex-col justify-center text-sm text-gray-500 font-bold" >{{ type === 'AtlasGlossaryTerm' ? 'Term' : 'Category'}} </span>
             </div>
             <div class="flex flex-row space-x-2">
                 <a-button size="small">
@@ -72,7 +72,9 @@
                 </div>
             </a-tab-pane>
             <a-tab-pane v-if="entity.typeName === 'AtlasGlossaryTerm' && preview" key="linkedAssets" tab="Linked Assets"> 
-                <LinkedAssets :termQualifiedName="entity.attributes.qualifiedName" />
+                <div class="h-screen overflow-auto pb-52">
+                  <LinkedAssets :termQualifiedName="entity.attributes.qualifiedName" />
+                </div>
             </a-tab-pane>
             <a-tab-pane key="activity" tab="Activity"> 
                 <Activity :selectedAsset="entity" />
@@ -179,7 +181,13 @@ export default defineComponent({
         @apply mb-0;
     }
     :global(.ant-tabs-tab){
-        @apply mr-6 pb-3;
+        @apply mr-6 pb-3 px-0;
+    }
+    :global(.ant-tabs-nav){
+        @apply  ml-0 px-0 !important;
+    }
+    :global(.ant-tabs-tab-prev){
+        @apply mr-2;
     }
 }
 </style>

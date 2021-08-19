@@ -10,9 +10,16 @@
                         <img :src="GlossarySvg" />
                     </div>
                     <div class="flex flex-col w-3/4">
-                        <span class="text-xl leading-6 font-bold">{{
-                            title
-                        }}</span>
+                        <div class="flex">
+                            <span class="text-xl leading-6 font-bold mr-3">{{
+                                title
+                            }}</span>
+                            <component
+                                :is="statusObject?.icon"
+                                v-if="statusObject "
+                                class="inline-flex self-center w-auto h-4 mb-1"
+                            /> 
+                        </div>
                         <span class="mt-1 text-sm leading-5 text-gray-500">{{
                             shortDescription
                         }}</span>
@@ -34,7 +41,7 @@
             <div>
                 <a-tabs v-model:activeKey="currentTab" default-active-key="1" class="border-0">
                     <a-tab-pane key="1" tab="Overview">
-                        <div class="px-8">
+                        <div class="px-8 mt-4">
                             <GlossaryProfileOverview :entity="glossary" />
                             <GlossaryContinueSettingUp
                                 v-if="!isLoading"
@@ -85,6 +92,7 @@ import useGlossaryCategories from '~/composables/glossary/useGlossaryCategories'
 import { Glossary, Category, Term } from '~/types/glossary/glossary.interface'
 
 import GlossarySvg from '~/assets/images/gtc/glossary/glossary.png'
+import { List as StatusList } from '~/constant/status'
 
 export default defineComponent({
     components: {
@@ -135,6 +143,7 @@ export default defineComponent({
         const qualifiedName = computed(
             () => glossary.value?.attributes?.qualifiedName ?? ''
         )
+        const statusObject = computed(() => StatusList.find((status) => status.id === glossary.value?.attributes?.assetStatus))
 
         onMounted(() => {
             fetchGlossaryTermsPaginated({ guid: guid.value, offset: 0 })
@@ -190,6 +199,7 @@ export default defineComponent({
             qualifiedName,
             currentTab,
             previewEntity,
+            statusObject,
             refreshCategoryTermList,
             fetchNextCategoryOrTermList,
             handleCategoryOrTermPreview,
@@ -201,6 +211,9 @@ export default defineComponent({
 .glossaryHome {
     :global(.ant-tabs-nav) {
         @apply ml-8;
+    }
+    :global(.ant-tabs-bar) {
+        @apply mb-0;
     }
 }
 </style>

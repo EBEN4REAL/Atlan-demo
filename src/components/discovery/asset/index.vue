@@ -14,7 +14,7 @@
 
         <div class="flex flex-col items-stretch flex-1 mt-3 mb-1 bg-white w-80">
             <div class="flex flex-col h-full">
-                <div class="flex px-3">
+                <div class="flex px-3 mb-1">
                     <ConnectorDropdown
                         :data="connectorsPayload"
                         @change="handleChangeConnectors"

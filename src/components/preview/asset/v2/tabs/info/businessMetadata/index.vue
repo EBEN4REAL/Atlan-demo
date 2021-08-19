@@ -15,7 +15,7 @@
                     class="mr-2 border shadow-none"
                     type="number"
                     placeholder="Type..."
-                    @input="() => debounce(() => updateAttribute(), 800)"
+                    @input="() => debounce(() => updateAttribute(x), 800)"
                 />
                 <a-radio-group
                     v-else-if="getDatatypeOfAttribute(a.typeName) === 'boolean'"
@@ -38,22 +38,44 @@
                     />
                 </span>
                 <a-textarea
+                    :id="`${x}`"
                     v-else
                     :auto-size="true"
                     v-model:value="a.value"
                     placeholder="Type..."
                     type="text"
+                    ref="text"
                     class="shadow-none border-1"
-                    @input="() => debounce(() => updateAttribute(), 800)"
+                    @input="() => debounce(() => updateAttribute(x), 800)"
                 />
             </div>
             <div
-                v-if="a?.value?.toString()"
+                class="flex col-span-1"
+                v-if="loading !== '' && activeIndex === x"
+            >
+                <fa
+                    v-if="loading === 'loading' || true"
+                    icon="fal circle-notch spin"
+                    class="animate-spin text-grey-600"
+                />
+                <fa
+                    v-else-if="loading === 'failed'"
+                    icon="fal times"
+                    class="text-red-600"
+                />
+                <fa
+                    v-else-if="loading === 'success'"
+                    icon="fal check"
+                    class="text-green-600"
+                />
+            </div>
+            <div
+                v-if="a?.value?.toString() && loading === ''"
                 class="col-span-1 text-gray-500 opacity-0 cursor-pointer  group-hover:opacity-100 hover:font-bold"
                 @click.stop.prevent="
                     () => {
                         a.value = ''
-                        updateAttribute()
+                        updateAttribute(x)
                     }
                 "
             >
@@ -64,7 +86,14 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, PropType, ref, onMounted, computed } from 'vue'
+    import {
+        defineComponent,
+        PropType,
+        ref,
+        onMounted,
+        computed,
+        watch,
+    } from 'vue'
     import { assetInterface } from '~/types/assets/asset.interface'
     import useBusinessMetadataHelper from '~/composables/businessMetadata/useBusinessMetadataHelper'
     import { BusinessMetadataService } from '~/api/atlas/businessMetadata'
@@ -141,20 +170,44 @@
 
                 return mappedPayload
             })
+            const text = ref(null)
 
-            const updateAttribute = () => {
+            const loading = ref('')
+            const activeIndex = ref(null)
+            const updateAttribute = (index) => {
+                const i = document.getElementById('7')
+                console.log(text.value, i)
+                activeIndex.value = index
+                loading.value = 'loading'
                 const { error, isReady, isLoading } =
                     BusinessMetadataService.saveAssetBMUpdateChanges(
                         props.selectedAsset.guid,
                         payload.value
                     )
+
+                watch([() => isLoading.value, error, isReady], (n) => {
+                    if (isLoading.value) {
+                        loading.value = 'loading'
+                    } else if (error.value) {
+                        loading.value = 'failed'
+                    } else if (isReady.value) {
+                        loading.value = 'success'
+
+                        setTimeout(async () => {
+                            // await this.refreshAssetInAssetsList(this.asset.guid);
+                            loading.value = ''
+                            // this.originalBmAttributesList = JSON.parse(
+                            //   JSON.stringify(this.attributesList)
+                            // );
+                        }, 1000)
+                    }
+                })
             }
 
             const handleChange = (index, value) => {
                 applicableList.value[index].value = value
-                updateAttribute()
+                updateAttribute(index)
             }
-
             onMounted(() => {
                 setAttributesList()
             })
@@ -163,8 +216,10 @@
                 getDatatypeOfAttribute,
                 applicableList,
                 updateAttribute,
-
+                loading,
                 handleChange,
+                activeIndex,
+                text,
                 debounce: createDebounce(),
             }
         },

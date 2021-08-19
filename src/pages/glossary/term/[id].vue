@@ -42,7 +42,7 @@
                     </a-button>
                 </div>
             </div>
-            <div class="flex flex-row">
+            <div class="m-0">
                 <a-tabs v-model:activeKey="currentTab" default-active-key="1" class="border-0">
                     <a-tab-pane key="1" tab="Overview">
                         <div class="flex flex-row m-0 px-8">
@@ -50,16 +50,20 @@
                         </div>
                     </a-tab-pane>
                     <a-tab-pane key="2" tab="Linked Terms">
-                        <LinkedAssetsTab :term-qualified-name="qualifiedName" @preview="handlePreview"/>
+                        <div class="flex flex-row m-0 p-2">
+                            <LinkedAssetsTab :term-qualified-name="qualifiedName" @preview="handlePreview"/>
+                        </div>
                     </a-tab-pane>
                 </a-tabs>
             </div>
         </div>
         <CategoryTermPreview v-if="currentTab === '1' && term" :entity="term" :preview="false" />
-        <AssetPreview
-            v-if="currentTab === '2' && previewEntity"
-            :selectedAsset="previewEntity"
-        ></AssetPreview>
+        <div class="border-l">
+            <AssetPreview
+                v-if="currentTab === '2' && previewEntity"
+                :selectedAsset="previewEntity"
+            ></AssetPreview>
+        </div>
     </div>
 </template>
 

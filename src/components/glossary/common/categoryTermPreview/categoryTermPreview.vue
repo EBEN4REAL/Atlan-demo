@@ -154,10 +154,10 @@ export default defineComponent({
 <style lang="less" module>
 .gtcPreview {
     :global(.ant-collapse-header) {
-        @apply pl-6 m-0 font-bold text-sm text-gray-700 bg-white !important;
+        @apply pl-6 py-4 m-0 font-bold text-sm text-gray-700 bg-white !important;
     }
     :global(.ant-collapse-borderless > .ant-collapse-item) {
-        @apply border-b border-gray-300 py-4  mt-0 !important;
+        @apply border-b border-gray-300 py-0 mt-0 !important;
     }
 
     :global(.ant-collapse) {
@@ -165,7 +165,7 @@ export default defineComponent({
     }
 
     :global(.ant-collapse-content) {
-        @apply mt-4 bg-white !important;
+        @apply mt-4 pb-4 bg-white !important;
     }
     :global(.ant-collapse-content-box) {
         @apply m-0 p-0  bg-transparent !important;
@@ -175,6 +175,9 @@ export default defineComponent({
     }
     :global(.ant-tabs-bar){
         @apply mb-0;
+    }
+    :global(.ant-tabs-tab){
+        @apply mr-6 pb-3;
     }
 }
 </style>

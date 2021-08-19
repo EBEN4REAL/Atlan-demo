@@ -2,8 +2,8 @@
 <template>
     <div class="w-full px-10 py-4 overflow-y-auto" style="height: 600px">
         <!--Asset Summary -->
-        <div class="flex items-center justify-between w-full mb-8">
-            <div class="w-full max-w-xl mr-8 bg-white border rounded-t h-96">
+        <div class="flex justify-between w-full mb-8">
+            <div class="w-full max-w-xl mr-8 bg-white border rounded-t">
                 <div
                     class="flex items-center w-full py-2 text-base bg-white border-b  px-7"
                 >
@@ -14,15 +14,17 @@
                     <DescriptionWidget :asset="asset" />
 
                     <!-- Table Component -->
-                    <a-table
-                        bordered
-                        :columns="tableColumns"
-                        :data-source="results"
-                        :pagination="false"
-                        :scroll="{ y: 170, x: 170 }"
-                        size="middle"
-                    >
-                    </a-table>
+                    <div>
+                        <a-table
+                            bordered
+                            :columns="tableColumns"
+                            :data-source="results"
+                            :pagination="false"
+                            :scroll="{ y: 170, x: 170 }"
+                            size="middle"
+                        >
+                        </a-table>
+                    </div>
                 </div>
             </div>
             <!-- Column widget -->

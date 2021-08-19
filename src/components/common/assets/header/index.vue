@@ -1,5 +1,5 @@
 <template>
-    <div class="border-b rounded-tl-lg rounded-tr-lg bg-gray-50">
+    <div class="border-b rounded-tl-lg rounded-tr-lg bg-gray-100">
         <ConnectorDropdown
             :data="props.connectorsPayload"
             @change="handleChangeConnectors"
@@ -22,7 +22,14 @@
                     >
                         <img
                             :src="item.image"
-                            class="w-auto h-6 mr-1 bg-white rounded-full border-5"
+                            class="
+                                w-auto
+                                h-6
+                                mr-1
+                                bg-white
+                                rounded-full
+                                border-5
+                            "
                         />
                     </template>
                 </div>
@@ -45,13 +52,13 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, computed, ref } from 'vue';
-    import ConnectorDropdown from '@common/dropdown/connector/index.vue';
-    import Preferences from '@/discovery/asset/preference/index.vue';
+    import { defineComponent, computed, ref } from 'vue'
+    import ConnectorDropdown from '~/components/common/dropdown/connectorDropdown.vue'
+    import Preferences from '@/discovery/asset/preference/index.vue'
 
     export interface Connector {
-        connector: string;
-        connection: string;
+        connector: string
+        connection: string
     }
 
     export default defineComponent({
@@ -64,44 +71,44 @@
                 type: Object,
                 required: true,
                 default() {
-                    return {};
+                    return {}
                 },
             },
             filteredConnectorList: {
                 type: Array,
                 required: true,
                 default() {
-                    return [];
+                    return []
                 },
             },
             projection: {
                 type: Array,
                 required: true,
                 default() {
-                    return [];
+                    return []
                 },
             },
         },
         setup(props, { emit }) {
-            const queryText = ref('');
+            const queryText = ref('')
             const handleChangeConnectors = (e: Connector) => {
-                emit('handleChangeConnectors', e);
-            };
+                emit('handleChangeConnectors', e)
+            }
             const handleSearchChange = (e: Event) => {
-                emit('handleSearchChange', e);
-            };
+                emit('handleSearchChange', e)
+            }
             const handleChangePreferences = (e: {
-                [index: string]: string;
+                [index: string]: string
             }) => {
-                console.log('handleChangePreferences', e);
-                emit('handleChangePreferences', e);
-            };
+                console.log('handleChangePreferences', e)
+                emit('handleChangePreferences', e)
+            }
             const handleChangeSort = (e: string) => {
-                emit('handleChangeSort', e);
-            };
+                emit('handleChangeSort', e)
+            }
             const handleState = (e: string) => {
-                emit('handleState', e);
-            };
+                emit('handleState', e)
+            }
             return {
                 props,
                 handleChangeConnectors,
@@ -110,9 +117,9 @@
                 handleChangeSort,
                 handleState,
                 queryText,
-            };
+            }
         },
-    });
+    })
 </script>
 
 <style scoped></style>

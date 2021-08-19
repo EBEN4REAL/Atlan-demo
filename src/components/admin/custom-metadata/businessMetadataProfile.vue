@@ -211,7 +211,7 @@
                     <template #extra>
                         <span
                             v-if="attribute.isNew"
-                            class="text-gray-400 hover:text-red-600 cursor"
+                            class="text-gray hover:text-red-600 cursor"
                             @click.prevent.stop="handleRemoveAttribute(index)"
                         >
                             Remove

@@ -20,7 +20,6 @@ import { faCompressAlt } from '@fortawesome/pro-light-svg-icons/faCompressAlt'
 import { faPlus } from '@fortawesome/pro-light-svg-icons/faPlus'
 import { faSearch } from '@fortawesome/pro-light-svg-icons/faSearch'
 import { faUser } from '@fortawesome/pro-light-svg-icons/faUser'
-import { faUsers } from '@fortawesome/pro-light-svg-icons/faUsers'
 import { faCheckCircle } from '@fortawesome/pro-light-svg-icons/faCheckCircle'
 import { faCircleNotch } from '@fortawesome/pro-light-svg-icons/faCircleNotch'
 import { faCheck } from '@fortawesome/pro-light-svg-icons/faCheck'
@@ -129,6 +128,7 @@ import { faUnderline } from '@fortawesome/pro-solid-svg-icons/faUnderline'
 import { faListOl } from '@fortawesome/pro-solid-svg-icons/faListOl'
 import { faListUl } from '@fortawesome/pro-solid-svg-icons/faListUl'
 import { faCode } from '@fortawesome/pro-solid-svg-icons/faCode'
+import { faUsers } from '@fortawesome/pro-solid-svg-icons/faUsers'
 import { faQuoteLeft } from '@fortawesome/pro-solid-svg-icons/faQuoteLeft'
 import { faUndo } from '@fortawesome/pro-solid-svg-icons/faUndo'
 import { faRedo } from '@fortawesome/pro-solid-svg-icons/faRedo'
@@ -139,6 +139,7 @@ import { faAlignLeft } from '@fortawesome/pro-solid-svg-icons/faAlignLeft'
 import { faAlignCenter } from '@fortawesome/pro-solid-svg-icons/faAlignCenter'
 import { faAlignRight } from '@fortawesome/pro-solid-svg-icons/faAlignRight'
 import { faFileImage } from '@fortawesome/pro-solid-svg-icons/faFileImage'
+import { faSortAmountUp } from '@fortawesome/pro-solid-svg-icons/faSortAmountUp'
 import { faSpinner } from '@fortawesome/pro-light-svg-icons/faSpinner'
 import { UserModule } from '~/types'
 
@@ -277,6 +278,7 @@ library.add(
     faUndo,
     faRedo,
     faSolidLink,
+    faSortAmountUp,
     // faPencil,
     faSquare,
     faAlignLeft,

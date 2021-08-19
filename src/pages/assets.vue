@@ -1,21 +1,20 @@
 <template>
     <div class="flex w-full h-full">
-        <div v-show="!isItem" class="w-3/4 item-stretch">
-            <div class="flex w-full h-full">
+        <div class="flex-1 item-stretch">
+            <div class="flex flex-1 h-full">
+                <router-view
+                    v-if="isItem"
+                    @updateAssetPreview="handlePreview"
+                ></router-view>
                 <AssetDiscovery
+                    v-else
                     :initial-filters="initialFilters"
                     @preview="handlePreview"
                 ></AssetDiscovery>
             </div>
         </div>
-        <div v-show="isItem" class="w-3/4 item-stretch">
-            <div class="flex w-full h-full">
-                <router-view @updateAssetPreview="handlePreview"></router-view>
-            </div>
-        </div>
         <div
-            class="flex flex-col h-full bg-white border-l  asset-preview-container"
-            style="overflow: hidden"
+            class="z-20 flex flex-col h-full bg-white border-l  asset-preview-container"
         >
             <AssetPreview
                 v-if="selected"
@@ -110,9 +109,10 @@
         },
     })
 </script>
-<style lang="less" scoped>
+<style scoped>
     .asset-preview-container {
-        width: 30%;
+        width: 420px;
+        min-width: 420px;
     }
 </style>
 <route lang="yaml">

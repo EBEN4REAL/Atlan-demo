@@ -21,11 +21,19 @@ export interface assetInterface {
         name: string
         popularityScore: number
         qualifiedName: string
+        userDescription: string
         rowCount: number
         schemaName: string
         sourceUpdatedAt: number
         tenantId: string
         viewDefinition: string
+        table?: {
+            guid: string
+            typeName: string
+            uniqueAttributes: {
+                qualifiedName: string
+            }
+        }
         __createdBy: string
         __customAttributes: string
         __guid: string
@@ -43,5 +51,5 @@ export interface assetInterface {
     meaningNames: string[]
     meanings: { displayText: string }[]
     status: string
-    typeName?: string
+    typeName: string
 }

@@ -1,39 +1,14 @@
 <template>
     <div class="flex w-full">
-        <div class="w-1/3 h-full pt-6 pl-4 bg-white">
-            <div class="flex flex-col">
-                <div class="mb-3">
-                    <a-radio-group
-                        v-model:value="filterMode"
-                        class="flex w-full text-center"
-                    >
-                        <a-radio-button class="flex-grow" value="custom"
-                            ><fa icon="fal filter" class="pushtop"></fa
-                        ></a-radio-button>
-                        <a-radio-button class="flex-grow" value="saved"
-                            ><fa icon="fal list-alt" class="pushtop"></fa
-                        ></a-radio-button>
-                    </a-radio-group>
-                </div>
-
-                <div v-show="filterMode === 'custom'" class="flex-grow">
-                    <AssetFilters
-                        :initial-filters="initialFilters"
-                        @refresh="handleFilterChange"
-                    ></AssetFilters>
-                </div>
-
-                <div v-show="filterMode === 'saved'">
-                    <!--     <SavedFilters @refresh="handleSavedSearchChange"></SavedFilters> -->
-                </div>
-            </div>
+        <div class="flex flex-col h-full bg-white border-r facets">
+            <AssetFilters
+                :initial-filters="initialFilters"
+                @refresh="handleFilterChange"
+            ></AssetFilters>
         </div>
 
-        <div
-            class="flex flex-col items-stretch w-2/3 w-full mt-3 mb-1 bg-white"
-            style="overflow: hidden"
-        >
-            <div class="flex flex-col h-full mx-6">
+        <div class="flex flex-col items-stretch flex-1 mt-3 mb-1 bg-white w-80">
+            <div class="flex flex-col h-full">
                 <div class="flex px-3">
                     <ConnectorDropdown
                         :data="connectorsPayload"
@@ -48,43 +23,60 @@
                 <div class="flex items-center mx-3 mt-1">
                     <a-input
                         v-model:value="queryText"
-                        placeholder="Search"
+                        placeholder="Search for assets"
                         size="default"
-                        class="searchbox"
+                        :class="$style.searchbar"
                         @change="handleSearchChange"
                     >
                         <template #prefix>
-                            <div class="flex -space-x-2">
-                                <img
-                                    :src="filteredConnector?.image"
-                                    class="w-auto h-6 mr-1 bg-white rounded-full  border-5"
-                                />
-                            </div>
-                        </template>
-                        <template #suffix>
-                            <a-popover placement="bottomLeft">
-                                <template #content>
-                                    <Preferences
-                                        :default-projection="projection"
-                                        @change="handleChangePreferences"
-                                        @sort="handleChangeSort"
-                                        @state="handleState"
-                                    ></Preferences>
-                                </template>
-                                <fa icon="fal cog"></fa>
-                            </a-popover>
+                            <Fa icon="fal search" class="mr-2 text-gray-500" />
                         </template>
                     </a-input>
+                    <a-popover
+                        v-model:visible="isFilterVisible"
+                        trigger="click"
+                        placement="bottomLeft"
+                    >
+                        <template #content>
+                            <Preferences
+                                :default-projection="projection"
+                                @change="handleChangePreferences"
+                                @sort="handleChangeSort"
+                                @state="handleState"
+                            ></Preferences>
+                        </template>
+                        <div
+                            tabindex="0"
+                            class="
+                                flex
+                                items-center
+                                px-2
+                                py-1
+                                transition-shadow
+                                border border-gray-300
+                                rounded
+                                hover:border-gray-300
+                            "
+                            @keyup.enter="isFilterVisible = !isFilterVisible"
+                        >
+                            <span>Options</span>
+                            <Fa
+                                icon="fas chevron-down"
+                                class="ml-1 transition-transform transform"
+                                :class="
+                                    isFilterVisible ? '-rotate-180' : 'rotate-0'
+                                "
+                            />
+                        </div>
+                    </a-popover>
                 </div>
 
-                <div class="flex w-full px-3 mt-3">
-                    <AssetTabs
-                        v-model="assetType"
-                        :asset-type-list="assetTypeList"
-                        :asset-type-map="assetTypeMap"
-                        :total="totalSum"
-                    ></AssetTabs>
-                </div>
+                <AssetTabs
+                    v-model="assetType"
+                    :asset-type-list="assetTypeList"
+                    :asset-type-map="assetTypeMap"
+                    :total="totalSum"
+                ></AssetTabs>
 
                 <div
                     v-if="
@@ -147,19 +139,15 @@
         Ref,
         onMounted,
     } from 'vue'
-
     import AssetFilters from '@/discovery/asset/filters/index.vue'
     import SavedFilters from '@/discovery/asset/saved/index.vue'
     import AssetList from '@/discovery/asset/list/index.vue'
     import AssetTabs from '@/discovery/asset/tabs/index.vue'
     import AssetPagination from '@common/pagination/index.vue'
-
     import HeirarchySelect from '@common/tree/heirarchy/index.vue'
     import SearchBox from '@common/searchbox/searchlist.vue'
-    import ConnectorDropdown from '@common/dropdown/connector/index.vue'
-
-    import AssetDropdown from '@common/dropdown/asset/index.vue'
-
+    import ConnectorDropdown from '~/components/common/dropdown/connectorDropdown.vue'
+    import AssetDropdown from '~/components/common/dropdown/assetDropdown.vue'
     import EmptyView from '@common/empty/discover.vue'
     import Preferences from '@/discovery/asset/preference/index.vue'
     // import { useDebounceFn } from "@vueuse/core";
@@ -170,7 +158,6 @@
     import useDiscoveryPreferences from '~/composables/preference/useDiscoveryPreference'
     // import { DISCOVERY_FETCH_LIST } from "~/constant/cache";
     // import { Components } from "~/api/atlas/client";
-
     import useAssetList from '~/composables/bots/useAssetList'
     import { AssetTypeList } from '~/constant/assetType'
     import { Components } from '~/api/atlas/client'
@@ -185,7 +172,6 @@
     import { getEncodedStringFromOptions } from '~/utils/routerQuery'
     import { initialFiltersType } from '~/pages/assets.vue'
     import useTracking from '~/modules/tracking'
-
     export interface filterMapType {
         status: {
             checked?: Array<string>
@@ -225,9 +211,8 @@
             }>
         }
     }
-
     export default defineComponent({
-        name: 'HelloWorld',
+        name: 'AssetDiscovery',
         components: {
             AssetList,
             SavedFilters,
@@ -254,20 +239,16 @@
         setup(props, { emit }) {
             // initializing the discovery store
             const { initialFilters } = props
-
+            const isFilterVisible = ref(false)
             const router = useRouter()
             const tracking = useTracking()
             const events = tracking.getEventsName()
             const filterMode = ref('custom')
-
             const now = ref(false)
             let initialBody: SearchParameters = reactive({})
             const assetType = ref('Catalog')
-
             const queryText = ref(initialFilters.searchText)
-
             const connectorsPayload = ref(initialFilters.connectorsPayload)
-
             const filters = ref(initialFilters.initialBodyCriterion)
             const filterMap = ref<filterMapType>({
                 status: {
@@ -289,41 +270,34 @@
                     criterion: initialFilters.facetsFilters.advanced.criterion,
                 },
             })
-
             const limit = ref(initialFilters.limit || 20)
             const offset = ref(0)
             const sortOrder = ref('default')
-
             // * Get all available BMs and save on store
             const store = useBusinessMetadataStore()
             const { fetchBMonStore } = useBusinessMetadata()
-
             const BMAttributeProjection = computed(
                 () => store.getBusinessMetadataListProjections
             )
             const state = ref('active')
-
             const assetTypeLabel = computed(() => {
                 const found = AssetTypeList.find(
                     (item) => item.id == assetType.value
                 )
                 return found?.label
             })
-
             const totalCount = computed(() => {
                 if (assetType.value === 'Catalog') {
                     return totalSum.value
                 }
                 return assetTypeMap.value[assetType.value]
             })
-
             const connectorStore = useConnectionsStore()
             const filteredConnector = computed(() =>
                 connectorStore.getSourceList?.find(
                     (item) => connectorsPayload.value?.connector == item.id
                 )
             )
-
             // Get All Disoverable Asset Types
             const assetTypeList = ref([])
             assetTypeList.value = AssetTypeList.filter(
@@ -332,7 +306,6 @@
             const assetTypeListString = assetTypeList.value
                 .map((item) => item.id)
                 .join(',')
-
             const totalSum = computed(() => {
                 let sum = 0
                 assetTypeList.value.forEach((element) => {
@@ -342,19 +315,15 @@
                 })
                 return sum
             })
-
             // Push all asset type
             assetTypeList.value.push({
                 id: 'Catalog',
                 label: 'All',
             })
-
             const assetlist = ref(null)
-
             const isLoadMore = computed(
                 () => totalCount.value > list.value.length
             )
-
             const {
                 list,
                 replaceBody,
@@ -370,14 +339,12 @@
                 assetType.value,
                 true
             )
-
             console.log(
                 assetTypeListString,
                 initialBody,
                 assetType.value,
                 'useAssetList type'
             )
-
             const updateBody = (dontScroll) => {
                 initialBody = {
                     typeName: assetTypeListString,
@@ -404,7 +371,6 @@
                         operator: 'eq',
                     })
                 }
-
                 if (state.value) {
                     if (state.value === 'all') {
                         initialBody.excludeDeletedEntities = false
@@ -419,7 +385,6 @@
                         initialBody.excludeDeletedEntities = true
                     }
                 }
-
                 const connectorCritera = {
                     condition: 'OR',
                     criterion: [],
@@ -428,7 +393,6 @@
                     condition: 'OR',
                     criterion: [],
                 }
-
                 if (connectorsPayload.value?.connector) {
                     connectorCritera.criterion?.push({
                         attributeName: 'integrationName',
@@ -436,7 +400,6 @@
                         operator: 'eq',
                     })
                 }
-
                 if (connectorsPayload.value?.connection) {
                     connectorCritera.criterion?.push({
                         attributeName: 'connectionQualifiedName',
@@ -444,10 +407,8 @@
                         operator: 'eq',
                     })
                 }
-
                 initialBody.entityFilters.criterion.push(connectorCritera)
                 initialBody.entityFilters.criterion.push(connectionCriteria)
-
                 if (sortOrder.value !== 'default') {
                     const split = sortOrder.value.split('|')
                     if (split.length > 1) {
@@ -458,11 +419,9 @@
                     delete initialBody.sortBy
                     delete initialBody.sortOrder
                 }
-
                 if (queryText.value) {
                     initialBody.query = queryText.value
                 }
-
                 replaceBody(initialBody)
                 if (assetlist.value && !dontScroll) {
                     // assetlist?.value.scrollToItem(0);
@@ -472,11 +431,7 @@
                 [assetType, BMAttributeProjection],
                 (n, o) => {
                     // ? Should these run only when all attributes are loaded? like BMAttributeProjection
-                    isAggregate.value = false
-                    // abort();
-                    offset.value = 0
                     updateBody()
-
                     if (!now.value) {
                         isAggregate.value = true
                         now.value = true
@@ -486,9 +441,7 @@
                     immediate: true,
                 }
             )
-
             const { projection } = useDiscoveryPreferences()
-
             const handleSearchChange = useDebounceFn((val) => {
                 offset.value = 0
                 const routerOptions = getRouterOptions()
@@ -499,23 +452,19 @@
                     trigger: 'discover',
                 })
             }, 100)
-
             const handleChangePreferences = (payload: any) => {
                 projection.value = payload
             }
-
             const handleChangeSort = (payload: any) => {
                 sortOrder.value = payload
                 isAggregate.value = false
                 updateBody()
             }
-
             const handleState = (payload: any) => {
                 state.value = payload
                 isAggregate.value = true
                 updateBody()
             }
-
             const getRouterOptions = () => ({
                 filters: filterMap.value || {},
                 searchText: queryText.value || '',
@@ -530,11 +479,9 @@
                 //   : { sortBy: "", sortOrder: "" }),
                 limit: limit.value || 20,
             })
-
             const pushQueryToRouter = (pushString) => {
                 router.push(`/assets?${pushString}`)
             }
-
             const handleFilterChange = (
                 payload: any,
                 filterMapData: filterMapType
@@ -548,7 +495,6 @@
                 updateBody()
                 pushQueryToRouter(routerQuery)
             }
-
             const handleChangeConnectors = (payload: any) => {
                 connectorsPayload.value = payload
                 const routerOptions = getRouterOptions()
@@ -558,11 +504,9 @@
                 offset.value = 0
                 updateBody()
             }
-
             const handlePreview = (item) => {
                 emit('preview', item)
             }
-
             const loadMore = () => {
                 if (list.value.length + limit.value < totalCount.value) {
                     offset.value = list.value.length + limit.value
@@ -570,12 +514,20 @@
                 isAggregate.value = false
                 updateBody(true)
             }
+            // select fist asset automatically
+
+            watch(list, () => {
+                if (list.value.length > 0) {
+                    console.log(list.value[0], 'firstItem')
+                    handlePreview(list.value[0])
+                }
+            })
 
             onMounted(() => {
                 fetchBMonStore()
             })
-
             return {
+                isFilterVisible,
                 initialFilters,
                 searchScoreList,
                 list,
@@ -645,5 +597,24 @@
         },
     })
 </script>
-
-<style lang="less" scoped></style>
+<style lang="less" module>
+    .searchbar {
+        @apply mr-2 border-none rounded;
+        @apply bg-gray-300 bg-opacity-50;
+        @apply outline-none;
+        :global(.ant-input) {
+            @apply h-6;
+            @apply bg-transparent;
+            @apply text-gray-500;
+        }
+        ::placeholder {
+            @apply text-gray-500 opacity-80 text-sm;
+        }
+    }
+</style>
+<style scoped>
+    .facets {
+        min-width: 240px;
+        width: 240px;
+    }
+</style>

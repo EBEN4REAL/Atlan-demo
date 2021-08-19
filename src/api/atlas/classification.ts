@@ -40,13 +40,15 @@ const updateClassification = <T>({
 const archiveClassification = <T>({
     cache,
     typeName,
+    entityGuid,
 }: {
     cache: string | undefined
     typeName: string
+    entityGuid: string
 }) =>
     useAPI<T>('ARCHIVE_CLASSIFICATION', 'DELETE', {
         cache,
-        pathVariables: { typeName },
+        pathVariables: { typeName, entityGuid },
     })
 
 const linkClassification = <T>({

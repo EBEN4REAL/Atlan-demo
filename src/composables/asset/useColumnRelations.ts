@@ -5,6 +5,8 @@ import { GET_ASSET_RELATIONSHIP } from '~/api/keyMaps/asset'
 import keyMaps from '~/api/keyMaps'
 import { dataTypeList } from '~/constant/datatype'
 
+// TODO: to delete this file - use useColumns and useColumnsFilter instead
+
 function constructRequest(guid: string) {
     const finalParams = new URLSearchParams()
     const attributes = [
@@ -18,7 +20,7 @@ function constructRequest(guid: string) {
         'metadata',
         'relativePinOrder',
         'primary key',
-        'foreign key',
+        'assetStatus',
         'tenantId',
     ]
 

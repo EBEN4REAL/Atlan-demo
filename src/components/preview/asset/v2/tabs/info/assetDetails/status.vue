@@ -1,5 +1,5 @@
 <template>
-    <div class="mt-3">
+    <div class="">
         <a-popover
             v-model:visible="isCompleted"
             placement="left"
@@ -21,12 +21,13 @@
                                     class="px-4 mb-1"
                                 >
                                     <span class="align-middle">
-                                        <fa
-                                            :icon="item.icon"
-                                            :class="item.iconClass"
-                                            class="mr-1 pushtop"
-                                        ></fa
-                                        >{{ item.label }}
+                                        <span class="text-gray-700 svg-icon">
+                                            <component
+                                                class="w-auto h-4 mr-1 pushtop"
+                                                :is="item.icon"
+                                            />
+                                            {{ item.label }}
+                                        </span>
                                     </span>
                                 </a-radio>
                             </div>
@@ -56,19 +57,16 @@
                     >
                 </div>
             </template>
-            <div ref="animationPoint" class="text-xs text-gray-description">
-                <p class="mb-1">Status</p>
+            <div
+                ref="animationPoint"
+                class="inline-flex flex-col text-xs text-gray-500"
+            >
+                <p class="mt-1 mb-1.5 text-sm">Status</p>
                 <StatusBadge
                     :key="selectedAsset.guid"
                     :status-id="selectedAsset?.attributes?.assetStatus"
                     :status-message="
                         selectedAsset?.attributes?.assetStatusMessage
-                    "
-                    :status-updated-at="
-                        selectedAsset?.attributes?.assetStatusUpdatedAt
-                    "
-                    :status-updated-by="
-                        selectedAsset?.attributes?.assetStatusUpdatedBy
                     "
                     :show-no-status="true"
                     :show-label="true"
@@ -89,7 +87,7 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref, watch, PropType } from 'vue'
+    import { defineComponent, ref, watch, PropType, toRefs } from 'vue'
     import { useMagicKeys } from '@vueuse/core'
     import StatusBadge from '@common/badge/status/index.vue'
 
@@ -109,6 +107,7 @@
         },
         setup(props) {
             // const isLoading = ref(false);
+            const { selectedAsset } = toRefs(props)
 
             const {
                 handleCancel,
@@ -119,7 +118,7 @@
                 statusMessage,
                 isCompleted,
                 isLoading,
-            } = updateStatus(props.selectedAsset)
+            } = updateStatus(selectedAsset)
 
             const animationPoint = ref(null)
 
@@ -161,7 +160,7 @@
             return {
                 handleUpdate,
                 handleCancel,
-
+                selectedAsset,
                 isReady,
                 state,
                 statusId,

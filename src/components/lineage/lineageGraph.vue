@@ -8,45 +8,45 @@
         <!-- Lineage Graph -->
         <div
             v-if="!isCyclic"
-            ref="lineage_graph_ref"
+            ref="lineageGraphRef"
             class="w-full h-full lineage-graph"
             :class="{
                 'cursor-grab': !panStarted,
                 'cursor-grabbing': panStarted,
-                'cursor-wait': columnsListLoading,
             }"
             @dblclick="get_path(null)"
         >
             <div
-                ref="lineage_graph_container_ref"
+                ref="lineageGraphContainerRef"
                 class="flex items-center w-full"
             >
                 <div
-                    v-for="(layoutColumn, index) in layoutColumns"
-                    :key="'layoutColumn' + String(index)"
+                    v-for="(layoutColumn, indexA) in layoutColumns"
+                    :key="'layoutColumn' + String(indexA)"
                 >
                     <!-- group starts here -->
                     <div
-                        v-for="(group, index) in layoutColumn"
-                        :key="'group' + String(index)"
-                        class="z-10 mb-16 mr-24 text-xs border"
+                        v-for="(group, indexB) in layoutColumn"
+                        :key="'group' + String(indexB)"
+                        class="z-10 mb-16 mr-24 text-xs"
                         :class="{
                             'w-12': group.type === 'Process',
-                            'border-success border-2': group.base,
                             'w-80 bg-white': group.type !== 'Process',
                         }"
                     >
-                        <!-- group accordian starts here  -->
+                        <!-- group accordion starts here  -->
                         <a-collapse
                             v-if="group.type !== 'Process'"
                             expand-icon-position="right"
                             :bordered="false"
                             :accordion="true"
-                            :expand-icon="handleExpandIcon"
-                            active-key="1"
+                            :active-key="group.groupId"
                         >
-                            <a-collapse-panel key="1" :force-render="true">
-                                <!-- header -->
+                            <a-collapse-panel
+                                :key="group.groupId"
+                                :forceRender="true"
+                            >
+                                <!-- group header starts here -->
                                 <template #header>
                                     <div
                                         :id="group.groupId"
@@ -57,7 +57,10 @@
                                                     : refs
                                             }
                                         "
-                                        class="flex items-center w-full h-full p-3 text-sm font-bold bg-white "
+                                        class="flex items-center w-full h-full p-3 text-sm font-bold bg-white border border-b-0 border-gray-300 rounded-t "
+                                        :class="{
+                                            'border-success': group.base,
+                                        }"
                                     >
                                         <img
                                             :src="getIcon(group.source)"
@@ -76,113 +79,138 @@
                                         </div>
                                     </div>
                                 </template>
-                                <!-- header ends here -->
 
                                 <!-- group content starts here  -->
                                 <div
                                     v-if="group.type !== 'Process'"
-                                    class="relative p-0 overflow-hidden"
-                                    :style="
-                                        get_content_height(
-                                            group.groupId,
-                                            group.fields.length
-                                        )
-                                    "
+                                    class="relative p-0 overflow-hidden bg-transparent "
+                                    :style="`height: ${
+                                        contentHeights[group.groupId] ||
+                                        38 * group.fields.length
+                                    }px`"
                                 >
                                     <div
-                                        v-for="(node, index) in group.fields"
-                                        :key="'node' + String(index)"
-                                        class="w-full h-full cursor-pointer"
+                                        v-for="(node, indexC) in group.fields"
+                                        :id="'group-content-' + node.guid"
+                                        :key="'node' + String(indexC)"
+                                        :ref="
+                                            (el) => {
+                                                el
+                                                    ? (refs[
+                                                          'group-content-' +
+                                                              node.guid
+                                                      ] = el)
+                                                    : refs
+                                            }
+                                        "
+                                        class="absolute w-full cursor-pointer"
+                                        :style="getTopPosition(node.guid)"
                                         @click.stop="get_path(node.guid)"
                                     >
-                                        <div
-                                            v-if="group.type !== 'Process'"
-                                            :id="node.guid"
-                                            :ref="
-                                                (el) => {
-                                                    el
-                                                        ? (refs[node.guid] = el)
-                                                        : refs
-                                                }
-                                            "
-                                            class="relative flex items-center h-full px-5 text-sm lowercase bg-white border cursor-pointer  hover:border-primary justify-space-between"
-                                            :class="{
-                                                'bg-success-muted': group.base,
-                                                'bg-primary-muted border-primary':
-                                                    is_highlighted_node(
-                                                        node.guid
-                                                    ),
-                                            }"
+                                        <!-- node accordion starts here -->
+                                        <a-collapse
+                                            expand-icon-position="left"
+                                            :bordered="false"
+                                            :accordion="true"
+                                            @change="toggleColumns(node, group)"
                                         >
-                                            <!-- Node display text -->
-                                            <span
-                                                class="overflow-hidden  overflow-ellipsis whitespace-nowrap"
-                                                :style="{
-                                                    width: showColumns
-                                                        ? '10rem'
-                                                        : '100%',
-                                                }"
+                                            <a-collapse-panel
+                                                :key="node.guid"
+                                                :force-render="false"
                                             >
-                                                {{ node.displayText }}
-                                            </span>
-                                            <button
-                                                v-if="showColumns"
-                                                :class="{
-                                                    'cursor-wait':
-                                                        columnsListLoading &&
-                                                        expandedNodeGroups[
-                                                            group.groupId
-                                                        ],
-                                                }"
-                                                @click.stop="
-                                                    fetch_columns_list(
-                                                        group.groupId,
+                                                <!-- node header starts here -->
+                                                <template #header>
+                                                    <div
+                                                        v-if="
+                                                            group.type !==
+                                                            'Process'
+                                                        "
+                                                        :id="node.guid"
+                                                        :ref="
+                                                            (el) => {
+                                                                el
+                                                                    ? (refs[
+                                                                          node.guid
+                                                                      ] = el)
+                                                                    : refs
+                                                            }
+                                                        "
+                                                        class="relative flex items-center h-full py-2 pl-10 pr-5 text-sm lowercase bg-white border border-gray-300 cursor-pointer  hover:border-primary justify-space-between"
+                                                        :class="{
+                                                            'bg-success-muted border-success':
+                                                                group.base,
+                                                            'bg-primary-muted border-primary':
+                                                                is_highlighted_node(
+                                                                    node.guid
+                                                                ),
+                                                        }"
+                                                    >
+                                                        <!-- Node display text -->
+                                                        <span
+                                                            class="w-full overflow-hidden  overflow-ellipsis whitespace-nowrap"
+                                                        >
+                                                            {{
+                                                                node.displayText
+                                                            }}
+                                                        </span>
+                                                    </div>
+                                                </template>
+                                                <!-- node content starts here -->
+                                                <div
+                                                    :id="
+                                                        'node-content-' +
                                                         node.guid
-                                                    )
-                                                "
-                                            >
-                                                <fa
-                                                    v-if="
-                                                        expandedNodeGroups[
-                                                            group.groupId
-                                                        ] === node.guid
                                                     "
-                                                    icon="fal minus"
-                                                ></fa>
-                                                <fa v-else icon="fal plus"></fa>
-                                            </button>
-                                        </div>
+                                                    :ref="
+                                                        (el) => {
+                                                            el
+                                                                ? (refs[
+                                                                      'node-content-' +
+                                                                          node.guid
+                                                                  ] = el)
+                                                                : refs
+                                                        }
+                                                    "
+                                                >
+                                                    <!-- Columns List -->
+                                                    <LineageColumnList
+                                                        :refs="refs"
+                                                        :data="columnsData"
+                                                        :show-columns="
+                                                            showColumns[
+                                                                group.groupId
+                                                            ]
+                                                        "
+                                                        @update-content-height="
+                                                            updateContentHeight(
+                                                                $event
+                                                            )
+                                                        "
+                                                    />
+                                                </div>
+                                            </a-collapse-panel>
+                                        </a-collapse>
                                     </div>
                                 </div>
                             </a-collapse-panel>
                         </a-collapse>
-                        <!-- accordion ends here -->
                         <!-- accordion is not needed if process node -->
                         <div
                             v-if="group.type === 'Process'"
                             class="flex items-center justify-center w-12 p-0 overflow-hidden bg-transparent "
-                            :style="
-                                get_content_height(
-                                    group.groupId,
-                                    group.fields.length
-                                )
-                            "
+                            :style="`{
+                                    height: 5px;
+                                }`"
                         >
                             <div
-                                v-for="(node, index) in group.fields"
-                                :key="'node' + String(index)"
+                                v-for="(node, indexD) in group.fields"
+                                :key="'nodeP' + String(indexD)"
                                 class="w-full h-full cursor-pointer"
                                 :class="{
                                     'border border-primary':
                                         is_highlighted_node(node.guid),
                                 }"
-                                :style="
-                                    get_item_top_position(
-                                        group.type,
-                                        group.groupId,
-                                        index
-                                    )
-                                "
+                                :style="{ top: `${0}px` }"
                                 @click.stop="get_path(node.guid)"
                             >
                                 <div
@@ -227,18 +255,15 @@
         nextTick,
         computed,
     } from 'vue'
-
     // Util
     import { getIcon } from '~/components/lineage/util'
     // Components
     import LineageColumnList from '~/components/lineage/lineageColumnList.vue'
-
     // Composables
     import * as useLineageCompute from '~/composables/lineage/useLineageCompute'
     import * as useLineageDOM from '~/composables/lineage/useLineageDOM'
     import * as useLineageLines from '~/composables/lineage/useLineageLines'
     import * as useLineagePanZoom from '~/composables/lineage/useLineagePanZoom'
-    import * as useLineageColumns from '~/composables/lineage/useLineageColumns'
 
     export default defineComponent({
         name: 'LineageGraphComponent',
@@ -253,8 +278,8 @@
             const direction = inject('direction')
 
             /** DATA */
-            const lineage_graph_ref = ref(null)
-            const lineage_graph_container_ref = ref(null)
+            const lineageGraphRef = ref(null)
+            const lineageGraphContainerRef = ref(null)
             const refs = ref({})
             const glGraph = ref({})
             const layoutColumns = ref([])
@@ -265,19 +290,17 @@
             const pathGuid = ref(null)
             const panStarted = ref(false)
             const panZoomInstance = ref({})
-            const expandedNodes = ref([])
-            const expandedNodeGroups = ref({})
-            const columnsListLoading = ref(false)
+            const showColumns = ref({})
+            const columnsData = ref({})
+            const contentHeights = ref({})
             const hasLineage = computed(
                 () => lineage.value?.relations.length !== 0
             )
-            const panelActiveKey = ref('1')
-            // const header=computed((type,))
+
             /** METHODS */
 
-            // compute_graph_relations
             // restartComputation
-            const _restartComputation = () => {
+            const restart_computation = () => {
                 useLineageCompute.restartComputation(
                     compute_graph_relations,
                     lines,
@@ -332,35 +355,11 @@
                     lineage_graph_wrapper_ref
                 )
 
-            // get_item_top_position
-            const get_item_top_position = (type, groupId, currNodeIndex) =>
-                useLineageDOM.getItemTopPosition(
-                    type,
-                    groupId,
-                    currNodeIndex,
-                    expandedNodes
-                )
-
-            // get_content_height
-            const get_content_height = (groupId, length) =>
-                useLineageDOM.getContentHeight(groupId, length, expandedNodes)
-
-            // get_expanded_node_height
-            const get_expanded_node_height = () => {
-                const { expandedNodes: e } =
-                    useLineageDOM.getExpandedNodeHeight(
-                        layoutColumns,
-                        refs,
-                        update_lines
-                    )
-                expandedNodes.value = e
-            }
-
             // set_pan_zoom_event
             const set_pan_zoom_event = async () => {
                 const { panStarted: g, panZoomInstance: h } =
                     await useLineagePanZoom.setPanZoomEvent(
-                        lineage_graph_container_ref,
+                        lineageGraphContainerRef,
                         update_lines
                     )
                 panStarted.value = g.value
@@ -372,25 +371,7 @@
                 useLineagePanZoom.pausePanZoomEvent(val, panZoomInstance)
             }
 
-            // fetch_columns_list
-            const fetch_columns_list = async (groupId, guid) => {
-                columnsListLoading.value = true
-                const { expandedNodeGroups: _expandedNodeGroups } =
-                    await useLineageColumns.fetchColumnsList(
-                        groupId,
-                        guid,
-                        expandedNodes,
-                        pause_pan_zoom_event,
-                        get_expanded_node_height
-                    )
-                expandedNodeGroups.value = _expandedNodeGroups
-                columnsListLoading.value = false
-            }
-
-            const handleExpandIcon = () => {
-                update_lines()
-            }
-
+            // compute_graph_relations
             const compute_graph_relations = async () => {
                 const {
                     glGraph: a,
@@ -413,9 +394,6 @@
                 // setSearchItems
                 setSearchItems(searchItems)
 
-                // getExpandedNodeHeight
-                get_expanded_node_height()
-
                 // drawLines
                 if (hasLineage.value) {
                     const { lines: f } = useLineageLines.drawLines(
@@ -430,6 +408,31 @@
 
                 // centerNode
                 center_node()
+            }
+
+            // toggleColumns
+            const toggleColumns = ({ guid }, { groupId, fields }) => {
+                showColumns.value[groupId] = !showColumns.value[groupId]
+                columnsData.value = {
+                    guid,
+                    groupId,
+                    groupHeadersLength: fields.length,
+                }
+            }
+
+            // updateContentHeight
+            const updateContentHeight = ({ groupId, val }) => {
+                contentHeights.value[groupId] = val
+                update_lines()
+            }
+
+            // getTopPosition
+            const getTopPosition = (guid) => {
+                // TODO: get absolute top position for each node using previousSibling, clientTop and clientHeight
+                nextTick(() => {
+                    const currEle = refs.value[`group-content-${guid}`]
+                    return { top: `${0}px` }
+                })
             }
 
             /** LIFECYCLE */
@@ -448,50 +451,34 @@
 
             return {
                 lines,
-                lineage_graph_ref,
-                lineage_graph_container_ref,
+                lineageGraphRef,
+                lineageGraphContainerRef,
                 refs,
-                columnsListLoading,
                 panStarted,
                 glGraph,
                 layoutColumns,
                 searchItems,
                 cycles,
-                expandedNodeGroups,
                 pathGuid,
                 getIcon,
-                isCyclic: false, //
-                showColumns: false, //
-                get_item_top_position,
-                get_content_height,
+                contentHeights,
+                showColumns,
+                columnsData,
+                isCyclic: false, // TODO:
+                toggleColumns,
                 handle_zoom,
                 handle_fullscreen,
                 get_path,
-                _restartComputation,
+                restart_computation,
                 is_highlighted_node,
-                fetch_columns_list,
-                handleExpandIcon,
-                panelActiveKey,
+                getTopPosition,
+                updateContentHeight,
             }
         },
     })
 </script>
 
-<style>
-    .leader-line {
-        /* z-index: 9 !important; */
-    }
-</style>
-
 <style lang="less" scoped>
-    .top-0 {
-        top: 0;
-    }
-
-    .cursor-wait {
-        cursor: wait;
-    }
-
     .cursor-grab {
         cursor: grab;
     }
@@ -521,9 +508,20 @@
     }
 
     :global(.ant-collapse-content-box) {
-        @apply p-0 !important;
+        @apply p-0 bg-transparent !important;
     }
     :global(.ant-collapse-header) {
-        @apply font-bold bg-white p-0 !important;
+        @apply font-bold bg-white p-0 border-0 border-b-0 !important;
+    }
+    :global(.ant-collapse-borderless > .ant-collapse-item) {
+        @apply border-b-0 !important;
+    }
+
+    :global(.anticon) {
+        @apply z-10 !important;
+    }
+
+    :global(.ant-collapse-content) {
+        @apply bg-white !important;
     }
 </style>

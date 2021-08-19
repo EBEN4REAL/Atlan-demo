@@ -1,18 +1,21 @@
 <template>
-    <div class="">
+    <div v-if="!isLoaded" class="">
         <a-collapse
             v-model:activeKey="activeKey"
             :bordered="false"
             class="bg-transparent"
+            expandIconPosition="right"
             :class="$style.filter"
+            @change="handleCollapseChange"
         >
             <template #expandIcon="{ isActive }">
-                <fa
-                    icon="fas chevron-right"
-                    class="text-primary"
-                    v-if="!isActive"
-                />
-                <fa icon="fas chevron-down" class="text-primary" v-else />
+                <div class="">
+                    <fa
+                        icon="fas chevron-down"
+                        class="ml-1 transition-transform transform"
+                        :class="isActive ? '-rotate-180' : 'rotate-0'"
+                    />
+                </div>
             </template>
             <a-collapse-panel
                 v-for="item in List"
@@ -22,7 +25,7 @@
                 <template #header>
                     <div
                         :key="item.id"
-                        class="flex justify-between text-sm select-none"
+                        class="flex justify-between text-sm font-bold select-none  header"
                     >
                         {{ item.label }}
                     </div>
@@ -36,11 +39,19 @@
                     "
                     :item="item"
                     :data="dataMap[item.id]"
-                    :selectedAsset="selectedAsset"
+                    :selectedAsset="infoTabData"
+                    :tabData="componentData"
                     @change="handleChange"
                 ></component>
             </a-collapse-panel>
         </a-collapse>
+    </div>
+    <div
+        v-else
+        class="flex items-center justify-center mt-4 text-sm leading-none"
+    >
+        <a-spin size="small" class="mr-2 leading-none"></a-spin
+        ><span>Getting info</span>
     </div>
 </template>
 
@@ -56,14 +67,18 @@
     import { assetInterface } from '~/types/assets/asset.interface'
 
     export default defineComponent({
+        name: 'InfoTab',
         props: {
             id: String,
             componentData: {
                 type: Object as PropType<any>,
             },
-            selectedAsset: {
+            infoTabData: {
                 type: Object as PropType<assetInterface>,
                 required: true,
+            },
+            isLoaded: {
+                type: Boolean,
             },
         },
         components: {
@@ -86,10 +101,39 @@
             }> = ref({})
             // Mapping of Data to child compoentns
             const dataMap: { [key: string]: any } = ref({})
-            const activeKey: Ref<string> = ref('')
+            const localStorage = window.localStorage
+            function getUserDefaultCollapseOrderInInfoTab(): string[] {
+                let activeKeyOrder: string[] | undefined
+                if (localStorage.getItem('asset_preview_info_tab')) {
+                    activeKeyOrder = JSON.parse(
+                        localStorage.getItem('asset_preview_info_tab') as any
+                    )
+                }
+                if (activeKeyOrder && activeKeyOrder?.length > 0)
+                    return JSON.parse(
+                        localStorage.getItem('asset_preview_info_tab') as any
+                    ) as string[]
+
+                return ['assetDetails', 'linkedAsset']
+            }
+            function setUserDefaultCollapseOrderInInfoTab(
+                activeKeyOrder: string[]
+            ) {
+                localStorage.setItem(
+                    'asset_preview_info_tab',
+                    JSON.stringify(activeKeyOrder)
+                )
+            }
+            const activeKey: Ref<string[]> = ref(
+                getUserDefaultCollapseOrderInInfoTab()
+            )
 
             const handleChange = (value: any) => {}
+            const handleCollapseChange = () => {
+                setUserDefaultCollapseOrderInInfoTab(activeKey.value)
+            }
             return {
+                handleCollapseChange,
                 List,
                 activeKey,
                 refMap,
@@ -103,23 +147,25 @@
 <style lang="less" module>
     .filter {
         :global(.ant-collapse-item) {
-            @apply border-none;
+            @apply border-b;
+            @apply border-gray-300;
         }
 
         :global(.ant-collapse-header) {
-            padding-left: 18px !important;
-            padding-right: 0px !important;
-            @apply flex items-center !important;
+            @apply px-5 !important;
+            @apply py-4 !important;
         }
+
         :global(.ant-collapse-arrow) {
-            left: 0px !important;
-            @apply text-primary !important;
+            font-size: 0.85rem !important;
+            right: 20px !important;
         }
 
         :global(.ant-collapse-content-box) {
             padding-right: 0px;
             padding-left: 0px;
-            padding-top: 0px;
+            padding-top: 0px !important;
+            @apply pb-4 !important;
         }
     }
 </style>

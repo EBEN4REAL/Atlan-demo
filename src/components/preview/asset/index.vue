@@ -4,7 +4,7 @@
             <div class="flex items-center mb-2 align-middle">
                 <component :is="item.typeName" class="w-6 h-6 mr-1"></component>
                 <p
-                    class="mb-0 text-sm font-bold leading-none truncate  text-primary-400"
+                    class="mb-0 text-sm font-bold leading-none truncate  text-gray"
                 >
                     {{ title(item) }}
                 </p>
@@ -97,7 +97,6 @@
             const activeKey = ref('overview')
             const { selectedAsset } = toRefs(props)
             const selectedAssetData = ref({})
-            const availableClassificationsForLink = ref([])
 
             const filteredTabList = computed(() =>
                 List.filter((item) => {
@@ -126,40 +125,6 @@
             //   cache: false,
             //   body: params,
             // });
-            let assetData: Ref = ref()
-            let assetError: Ref = ref()
-            function init() {
-                const { response, error } = useAsset({
-                    entityId: selectedAsset.value.guid,
-                })
-                assetData.value = response.value
-                assetError.value = error.value
-                watch([assetData, assetError], () => {
-                    if (assetData.value && assetError.value == undefined) {
-                        console.log(assetData.value, 'dataRes')
-                        const entities = getAssetEntitites(assetData)
-                        selectedAssetData.value = entities
-                        console.log(
-                            availableClassificationsForLink.value,
-                            'root Available'
-                        )
-                    } else {
-                        console.log(
-                            assetError.value,
-                            '------ assetInfo failed to fetch ------ '
-                        )
-                    }
-                })
-            }
-
-            const getAssetEntitites = (data: Ref): any => {
-                if (data.value?.entities.length > 0)
-                    return data.value?.entities[0]
-                return {}
-            }
-
-            watch(selectedAsset, init)
-            onMounted(init)
 
             return {
                 selectedAssetData,

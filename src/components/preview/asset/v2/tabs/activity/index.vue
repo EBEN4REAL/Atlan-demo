@@ -1,75 +1,51 @@
 <template>
-    <div class="p-2">
-        <div class="flex justify-between p-2">
-            <h2 class="font-medium text-md">Audit Logs:</h2>
-            <fa
-                icon="fal sync"
-                class="cursor-pointer"
-                @click="refreshAudits"
-            ></fa>
-        </div>
-        <div class="p-2 audit-container">
-            <a-timeline v-if="audits">
-                <a-timeline-item
-                    v-for="(log, index) in audits"
-                    :key="index"
-                    :color="getEventByAction(log).color || 'green'"
-                >
-                    <div>
-                        <span v-if="getDetailsForEntityAuditEvent(log)">
-                            <span
-                                v-html="
-                                    getDetailsForEntityAuditEvent(log)
-                                        ?.displayValue
-                                "
-                            ></span>
-                            <span
-                                v-if="
-                                    getDetailsForEntityAuditEvent(log)?.moreinfo
-                                "
-                                >.<a-popover placement="left">
-                                    <template #content>
-                                        <a-timeline>
-                                            <div class="mb-2">Users Added:</div>
-                                            <a-timeline-item
-                                                v-for="(
-                                                    user, index
-                                                ) in getDetailsForEntityAuditEvent(
-                                                    log
-                                                )?.value"
-                                                :key="index"
-                                            >
-                                                {{ user }}
-                                            </a-timeline-item></a-timeline
-                                        >
-                                    </template>
-                                    <a-button type="link"
-                                        >View Details</a-button
-                                    >
-                                </a-popover></span
-                            >
-                        </span>
-                        <span v-else>
-                            {{ getEventByAction(log).label || 'Event' }}
-                        </span>
-                    </div>
-                    <span class="text-gray-400">{{
-                        timeAgo(log.timestamp) + ' ' + getActionUser(log.user)
-                    }}</span>
-                </a-timeline-item>
-                <div class="block mb-2 text-center">
-                    <a-button
-                        v-if="!checkAuditsCount && !isAllLogsFetched"
-                        @click="fetchMore"
-                        >Show more logs</a-button
-                    >
+    <div class="flex justify-between px-2 py-3 mb-8 border-b border-gray-300">
+        <span class="font-bold">Activity Logs</span>
+        <fa icon="fal sync" class="cursor-pointer" @click="refreshAudits"></fa>
+    </div>
+    <div
+        v-if="isLoading"
+        class="flex items-center justify-center mt-4 text-sm leading-none"
+    >
+        <a-spin size="small" class="mr-2 leading-none"></a-spin
+        ><span>Getting activity logs</span>
+    </div>
+    <div v-else-if="audits.length && !isLoading">
+        <a-timeline class="mx-4">
+            <a-timeline-item v-for="(log, index) in audits" :key="index">
+                <template #dot>
+                    <div
+                        class="border rounded-full  ant-timeline-item-dot bg-primary-light border-primary"
+                    ></div>
+                </template>
+                <div>
+                    <span v-if="getDetailsForEntityAuditEvent(log)">
+                        <ActivityType
+                            :data="getDetailsForEntityAuditEvent(log)"
+                        />
+                    </span>
+                    <span v-else>
+                        {{ getEventByAction(log).label || 'Event' }}
+                    </span>
                 </div>
-                <div v-if="!audits.length">No Logs!!</div>
-            </a-timeline>
-            <div v-else>
-                <img :src="emptyScreen" alt="No logs" class="w-3/5 m-auto" />
-            </div>
+                <div class="text-gray-500">
+                    <span class="mr-4 font-bold">{{
+                        getActionUser(log.user)
+                    }}</span>
+                    <span>{{ timeAgo(log.timestamp) }}</span>
+                </div>
+            </a-timeline-item>
+        </a-timeline>
+        <div
+            v-if="!checkAuditsCount && !isAllLogsFetched"
+            class="block my-8 text-center"
+        >
+            <a-button @click="fetchMore">Show more logs</a-button>
         </div>
+    </div>
+    <div v-else class="flex flex-col items-center">
+        <img :src="emptyScreen" alt="No logs" class="w-2/5 m-auto mb-4" />
+        <span class="text-gray-500">No logs found</span>
     </div>
 </template>
 
@@ -87,14 +63,17 @@
     import useAssetAudit from '~/composables/asset/useAssetAudit'
     import emptyScreen from '~/assets/images/empty_search.png'
     import { assetInterface } from '~/types/assets/asset.interface'
+    import ActivityType from './activityType.vue'
 
     export default defineComponent({
+        components: { ActivityType },
         props: {
             selectedAsset: {
                 type: Object as PropType<assetInterface>,
                 required: true,
             },
         },
+
         setup(props) {
             const { selectedAsset: item } = toRefs(props)
             const params = reactive({ count: 10 })
@@ -163,22 +142,29 @@
 </script>
 
 <style lang="less" scoped>
-    .audit-container {
-        height: 80vh;
-    }
-
     .ant-timeline-item {
-        padding-bottom: 10px !important;
         margin-bottom: 0 !important;
+        padding-bottom: 40px !important;
+    }
+    .ant-timeline-item-dot {
+        width: 13px;
+        height: 13px;
     }
     .ant-timeline-item-last > .ant-timeline-item-content {
         min-height: 10px !important;
         height: 20px !important;
     }
-    .ant-timeline-item-content,
     .ant-timeline-item-last {
         min-height: 10px !important;
         margin-bottom: 0 !important;
         height: 28px !important;
+    }
+
+    :global(.ant-collapse-content-box) {
+        padding: 0 !important;
+    }
+
+    :global(.ant-collapse-header) {
+        padding: 0 !important;
     }
 </style>

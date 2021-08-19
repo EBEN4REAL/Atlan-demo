@@ -8,7 +8,7 @@
       <div
         v-for="item in list"
         :key="item.guid"
-        class="flex justify-between px-3 py-2 text-gray-800 bg-white border cursor-pointer  hover:bg-gray-50"
+        class="flex justify-between px-3 py-2 text-gray-800 bg-white border cursor-pointer  hover:bg-gray-100"
       >
         <div class="mb-0 leading-none tracking-tight">
           {{ item?.attributes?.name }}

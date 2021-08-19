@@ -17,7 +17,7 @@
 <script lang="ts">
     import { defineComponent, SetupContext } from 'vue'
     import ListItem from './item.vue'
-    import VirtualList from '~/lib/virtualList.vue'
+    import VirtualList from '~/lib/virtualList/virtualList.vue'
 
     export default defineComponent({
         components: {

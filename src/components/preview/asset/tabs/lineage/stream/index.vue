@@ -13,7 +13,7 @@
         </template>
         <a-button size="default"
           ><fa icon="fal cog" class="mr-1"></fa
-          ><fa icon="fal chevron-down" class="text-xs text-primary-500"></fa
+          ><fa icon="fal chevron-down" class="text-xs text-primary-focus"></fa
         ></a-button>
       </a-popover>
     </div>
@@ -23,7 +23,7 @@
   </div>
   <div v-if="!lineageList || lineageList.length === 0">
     <img :src="emptyScreen" alt="Empty" class="w-3/5 m-auto mt-4" />
-    <div class="mt-4 text-sm text-center text-gray-300">Result is empty</div>
+    <div class="mt-4 text-sm text-center text-gray">Result is empty</div>
   </div>
 </template>
 

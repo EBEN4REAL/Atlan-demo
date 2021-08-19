@@ -2,7 +2,7 @@
   <div class="">
     <div class="flex space-x-6">
       <div>
-        <p class="mb-0 text-sm text-gray-400">Allow Query</p>
+        <p class="mb-0 text-sm text-gray">Allow Query</p>
         <div class="flex items-center mt-1 text-gray-900 align-middle">
           <span
             v-if="item?.attributes?.allowQuery"
@@ -25,7 +25,7 @@
         </div>
       </div>
       <div>
-        <p class="mb-0 text-sm text-gray-400">Allow Preview</p>
+        <p class="mb-0 text-sm text-gray">Allow Preview</p>
         <div class="flex items-center mt-1 text-gray-900 align-middle">
           <span
             v-if="item?.attributes?.allowPreview"
@@ -50,11 +50,11 @@
     </div>
     <div class="flex mt-4 space-x-6">
       <div>
-        <p class="mb-0 text-sm text-gray-400">Row Limit</p>
+        <p class="mb-0 text-sm text-gray">Row Limit</p>
         <div class="text-gray-900">N/A</div>
       </div>
       <div>
-        <p class="mb-0 text-sm text-gray-400">Authentication</p>
+        <p class="mb-0 text-sm text-gray">Authentication</p>
         <div class="text-gray-900">N/A</div>
       </div>
     </div>

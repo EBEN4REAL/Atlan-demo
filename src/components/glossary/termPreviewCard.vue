@@ -3,8 +3,8 @@
     <div><img :src="TermSvg" /></div>
     
     <div class="flex flex-col ml-4">
-      <h3 class="text-sm leading-5 text-gray-500">{{ term.name }}</h3>
-      <div class="text-xs leading-4 text-gray-400">
+      <h3 class="text-sm leading-5 text-gray-500">{{ term.name ?? term.displayText }}</h3>
+      <div class="text-xs leading-4 text-gray">
         {{ term.shortDescription }}
       </div>
       <div class="text-sm leading-5">{{ term.createdBy }}</div>

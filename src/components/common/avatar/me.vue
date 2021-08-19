@@ -1,10 +1,13 @@
 <template>
   <a-dropdown>
-    <a-avatar
-      :size="24"
-      class="border-2 border-primary-300"
-      src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png"
-    />
+    <div class="flex items-center">
+      <a-avatar
+        :size="24"
+        class="border-2 mr-2 border-gray-300"
+        src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png"
+      />
+      {{ username }}
+    </div>
     <!-- <a class="ant-dropdown-link" @click="(e) => e.preventDefault()">
               Hover me <a-icon type="down" />
     </a>-->
@@ -14,7 +17,7 @@
           <div class="flex items-center">
             <a-avatar
               :size="42"
-              class="border-2 border-primary-300"
+              class="border-2 border-gray-300"
               src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png"
             />
 
@@ -93,41 +96,6 @@ export default defineComponent({
   
   
 <style lang="less" module>
-.sidebar {
-  @apply bg-gradient-to-b from-primary-600 via-primary-800 to-primary-900    !important;
 
-  .sidebartab {
-    :global(.ant-tabs-tab) {
-      @apply text-primary-muted !important;
-      padding: 8px 12px !important;
-      max-width: 60px !important;
-      //   min-height: 48px !important;
-      //   line-height: 40px;
-    }
-    :global(.ant-tabs-ink-bar) {
-      @apply bg-primary-200;
-      right: 0px !important;
-      border-top-right-radius: 1px !important;
-      border-bottom-right-radius: 1px !important;
-      width: 3px !important;
-      right: auto !important;
-    }
-    :global(.ant-tabs-left-bar) {
-      border: 0px !important;
-      min-width: 60px !important;
-    }
-    :global(.ant-tabs-nav-container) {
-      margin-right: 0px !important;
-    }
-
-    :global(.ant-tabs-nav-wrap) {
-      margin-right: 0px !important;
-    }
-    :global(.ant-tabs-tab-active) {
-      @apply bg-primary-100 bg-opacity-5 text-primary-muted !important;
-      transition: background-color 0.2s cubic-bezier(0.645, 0.045, 0.355, 1);
-    }
-  }
-}
 </style>
   

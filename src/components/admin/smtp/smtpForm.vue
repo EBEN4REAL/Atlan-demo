@@ -24,7 +24,7 @@
             :required="config.required"
             :label="config.label"
             :name="config.id"
-            class="w-full text-gray-300"
+            class="w-full text-gray"
           >
             <a-switch
               v-if="config.type === 'switch'"

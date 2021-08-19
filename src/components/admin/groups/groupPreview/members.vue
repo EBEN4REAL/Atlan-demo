@@ -76,7 +76,7 @@
                     >({{ pluralizeString("group", user.group_count) }})</span
                   > -->
                 </div>
-                <div class="text-gray-400">@{{ user.username }}</div>
+                <div class="text-gray">@{{ user.username }}</div>
               </div>
             </div>
             <div class="font-bold">

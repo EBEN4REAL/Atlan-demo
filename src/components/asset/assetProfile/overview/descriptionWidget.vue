@@ -2,16 +2,13 @@
     <!-- Description Component -->
     <div>
         <div class="mb-8">
-            <div v-if="description" class="flex items-center justify-between">
-                <p class="m-0 truncate overflow-ellipsis">
-                    {{ description }}
-                </p>
-                <span class="ml-2">.</span>
+            <div v-if="description" class="flex justify-between">
+                <p>{{ description }}</p>
                 <a-button type="link" @click="showModal">
                     Edit description
                 </a-button>
             </div>
-            <div v-else class="flex items-center justify-between text-gray-400">
+            <div v-else class="flex justify-between text-gray-400">
                 No Description Found
                 <span class="ml-2">.</span>
                 <a-button type="link" @click="showModal">
@@ -47,17 +44,24 @@
 </template>
 <script lang="ts">
     // Vue
-    import { defineComponent, ref, watch } from 'vue'
+    import { defineComponent, ref, watch, toRefs } from 'vue'
 
     // composables
-    import updateDescription from '~/composables/asset/updateDescription'
 
     import { useMagicKeys } from '@vueuse/core'
+    import Tooltip from '@common/ellipsis/index.vue'
+    import updateDescription from '~/composables/asset/updateDescription'
 
     export default defineComponent({
+        components: {
+            Tooltip,
+        },
         props: ['asset'],
+
         setup(props) {
             const visible = ref<boolean>(false)
+
+            const { asset } = toRefs(props)
             const {
                 isLoading,
                 update,
@@ -66,7 +70,7 @@
                 state,
                 description,
                 isCompleted,
-            } = updateDescription(props.asset)
+            } = updateDescription(asset)
 
             const showModal = () => {
                 visible.value = true

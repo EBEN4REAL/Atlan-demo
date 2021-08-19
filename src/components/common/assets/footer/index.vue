@@ -1,5 +1,5 @@
 <template>
-    <div class="flex w-full px-3 py-1 border-t bg-gray-50 border-gray-50">
+    <div class="flex w-full px-3 py-1 border-t bg-gray-100 border-gray-100">
         <div class="flex items-center justify-between w-full">
             <div
                 v-if="props.isLoading || props.isValidating"

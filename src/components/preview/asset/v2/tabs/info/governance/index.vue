@@ -1,13 +1,13 @@
 <template>
-    <div class="w-full">
-        <Terms :selectedAsset="selectedAsset" />
+    <div class="w-full px-5">
+        <!-- <Terms :selectedAsset="selectedAsset" /> -->
         <Classifications :selectedAsset="selectedAsset" />
         <BusinessMetaData :selectedAsset="selectedAsset" />
     </div>
 </template>
 
 <script lang="ts">
-    import { defineComponent, PropType } from 'vue'
+    import { defineComponent, PropType, toRefs, watch } from 'vue'
     import Terms from './terms.vue'
     import Classifications from './classifications.vue'
     import BusinessMetaData from './businessMetadataContainer.vue'
@@ -22,7 +22,17 @@
             },
         },
         setup(props) {
-            return {}
+            const { selectedAsset } = toRefs(props)
+            watch(
+                selectedAsset,
+                () => {
+                    console.log('asset changed governance', selectedAsset)
+                },
+                {
+                    immediate: true,
+                }
+            )
+            return { selectedAsset }
         },
     })
 </script>

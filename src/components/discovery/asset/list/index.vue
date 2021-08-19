@@ -1,23 +1,30 @@
 <template>
-    <VirtualList :data="list" :data-key="keyField">
+    <VirtualList :data="list" data-key="guid">
         <template #default="{ item }">
-            <div class="border-b border-primary-200">
-                <ListItem
-                    :item="item"
-                    :score="score[item.guid]"
-                    :projection="projection"
-                    @click="handlePreview(item)"
-                ></ListItem>
-            </div>
+            <ListItem
+                :item="item"
+                :isSelected="item.guid === selectedAssetId"
+                :score="score[item.guid]"
+                :projection="projection"
+                @click="handlePreview(item)"
+            ></ListItem>
         </template>
     </VirtualList>
+    <!-- <ListItem
+        :v-for="item in list"
+        :key="item[keyField]"
+        :item="item"
+        :score="score[item.guid]"
+        :projection="projection"
+        @click="handlePreview(item)"
+    ></ListItem> -->
     <!-- TODO: Add loading state -->
 </template>
 
 <script lang="ts">
-    import { defineComponent, SetupContext } from 'vue'
+    import { defineComponent, SetupContext, ref, toRefs, watch } from 'vue'
     import ListItem from './item.vue'
-    import VirtualList from '~/lib/virtualList.vue'
+    import VirtualList from '~/lib/virtualList/virtualList.vue'
 
     export default defineComponent({
         name: 'AssetList',
@@ -40,13 +47,6 @@
                     return {}
                 },
             },
-            keyField: {
-                type: String,
-                required: false,
-                default() {
-                    return 'guid'
-                },
-            },
             projection: {
                 type: Array,
                 required: false,
@@ -64,11 +64,26 @@
         },
         emits: ['preview'],
         setup(props, ctx: SetupContext) {
+            const { list } = toRefs(props)
+            const selectedAssetId = ref('')
             function handlePreview(item: any) {
+                selectedAssetId.value = item.guid
                 ctx.emit('preview', item)
             }
 
-            return { handlePreview }
+            // select first asset automatically
+
+            watch(
+                list,
+                () => {
+                    if (list.value.length > 0) {
+                        selectedAssetId.value = list.value[0].guid
+                    }
+                },
+                { immediate: true }
+            )
+
+            return { handlePreview, selectedAssetId, list }
         },
     })
 </script>

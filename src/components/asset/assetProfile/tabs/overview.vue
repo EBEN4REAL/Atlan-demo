@@ -42,7 +42,7 @@
             <Readme class="w-full h-32" />
         </div>
     </div>
-    <div v-else class="w-full overflow-y-auto bg-white" style="height: 600px">
+    <div v-else class="w-full overflow-y-auto bg-white">
         <BiWidgetWrapper :asset="asset" />
     </div>
 </template>
@@ -64,6 +64,7 @@
         setup(props, context) {
             const asset = ref(context.attrs.asset)
 
+            console.log(asset)
             // for table widget
             const tableColumns = ref([])
             const results = ref([])

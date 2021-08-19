@@ -30,7 +30,7 @@
                     v-else-if="getDatatypeOfAttribute(a.typeName) === 'date'"
                 >
                     <a-date-picker
-                        :allowClear="false"
+                        :allow-clear="false"
                         :value="(a.value || '').toString()"
                         class="flex-grow w-100"
                         value-format="x"
@@ -40,20 +40,19 @@
                     />
                 </template>
                 <a-textarea
-                    :id="`${x}`"
                     v-else
+                    :id="`${x}`"
                     :auto-size="true"
                     v-model:value="a.value"
                     placeholder="Type..."
                     type="text"
-                    ref="text"
                     class="flex-grow shadow-none border-1"
                     @input="() => debounce(() => updateAttribute(x), 800)"
                 />
                 <div class="flex flex-none w-4 col-span-1 ml-3">
                     <template v-if="loading !== '' && activeIndex === x">
                         <fa
-                            v-if="loading === 'loading' || true"
+                            v-if="loading === 'loading'"
                             icon="fal circle-notch spin"
                             class="animate-spin text-grey-600"
                         />
@@ -88,15 +87,7 @@
 </template>
 
 <script lang="ts">
-    import {
-        defineComponent,
-        PropType,
-        ref,
-        onMounted,
-        computed,
-        watch,
-        toRefs,
-    } from 'vue'
+    import { defineComponent, PropType, ref, computed, watch } from 'vue'
     import { assetInterface } from '~/types/assets/asset.interface'
     import useBusinessMetadataHelper from '~/composables/businessMetadata/useBusinessMetadataHelper'
     import { BusinessMetadataService } from '~/api/atlas/businessMetadata'
@@ -153,7 +144,7 @@
 
             // {"BM for facet 2":{"test for facet 2":"1","test for facet 2 date":1629294652575}}
             const payload = computed(() => {
-                let mappedPayload = {}
+                let mappedPayload = { [props.item.id]: {} }
                 // ? handle current payload
                 Object.keys(props.selectedAsset.attributes).forEach((k) => {
                     if (k.split('.').length > 1) {
@@ -169,22 +160,17 @@
 
                 // ? handle new payload
                 applicableList.value
-                    .filter((a) => a.value === 0 || a.value)
+                    .filter((a) => a.value === 0 || a?.value?.toString())
                     .forEach((at) => {
-                        if (!mappedPayload[props.item.id])
-                            mappedPayload[props.item.id] = {}
                         mappedPayload[props.item.id][at.name] = at.value
                     })
 
                 return mappedPayload
             })
-            const text = ref(null)
 
             const loading = ref('')
             const activeIndex = ref(null)
             const updateAttribute = (index) => {
-                const i = document.getElementById('7')
-                console.log(text.value, i)
                 activeIndex.value = index
                 loading.value = 'loading'
                 const { error, isReady, isLoading } =
@@ -226,7 +212,7 @@
                 loading,
                 handleChange,
                 activeIndex,
-                text,
+                payload,
                 debounce: createDebounce(),
             }
         },

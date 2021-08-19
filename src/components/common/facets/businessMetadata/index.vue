@@ -14,14 +14,14 @@
                 <template #suffix>
                     <fa
                         v-if="attributeSearchText"
-                        icon="fal times "
+                        icon="fal times"
                         class="ml-2 mr-1 cursor-pointer"
                         @click="() => (attributeSearchText = '')"
                     />
                 </template>
             </a-input>
         </div>
-        <div ref="container" class="mr-5 overflow-y-scroll max-h-48">
+        <div ref="container" class="mr-2 overflow-y-scroll max-h-48">
             <div
                 v-for="(a, x) in attributeSearchText.length
                     ? filterList(data.list.attributeDefs)

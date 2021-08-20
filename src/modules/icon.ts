@@ -120,6 +120,7 @@ import { faCheckCircle as faSolidCheckCircle } from '@fortawesome/pro-solid-svg-
 import { faKey } from '@fortawesome/pro-solid-svg-icons/faKey'
 import { faLock as faSolidLock } from '@fortawesome/pro-solid-svg-icons/faLock'
 import { faCaretDown } from '@fortawesome/pro-solid-svg-icons/faCaretDown'
+import { faLongArrowAltDown } from '@fortawesome/pro-solid-svg-icons/faLongArrowAltDown'
 
 import { faBold } from '@fortawesome/pro-solid-svg-icons/faBold'
 import { faItalic } from '@fortawesome/pro-solid-svg-icons/faItalic'
@@ -200,7 +201,7 @@ library.add(
     faListAlt,
     faPlug,
     faShare,
-    faComment,
+    faComment, faLongArrowAltDown,
     faCommentsAlt,
     faFilter,
     faEye,

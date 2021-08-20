@@ -593,7 +593,7 @@
 <style lang="less" module>
     .searchbar {
         @apply mr-2 rounded;
-        @apply border-2 border-gray-300 !important;
+        @apply border border-gray-300 !important;
         @apply outline-none;
         :global(.ant-input) {
             @apply h-6;

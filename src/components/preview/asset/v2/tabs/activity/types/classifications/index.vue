@@ -1,6 +1,6 @@
 <template>
     <div>
-        <b>Classsification </b
+        <b>Classification </b
         >{{ data.displayValue === 'classificationAdded' ? 'added' : 'removed' }}
     </div>
     <div class="flex">

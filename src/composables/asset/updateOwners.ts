@@ -5,7 +5,7 @@ import { assetInterface } from '~/types/assets/asset.interface'
 
 export default function updateOwners(selectedAsset: Ref<assetInterface>) {
     const { username } = whoami()
-console.log(selectedAsset.value, 'selectedAssets')
+    console.log(selectedAsset.value, 'selectedAssets')
     const isLoading = ref(false)
 
     const isCompleted = ref(false)
@@ -66,10 +66,10 @@ console.log(selectedAsset.value, 'selectedAssets')
             qualifiedName: selectedAsset.value.attributes?.qualifiedName,
             name: selectedAsset.value.attributes?.name,
             tenantId: selectedAsset.value.attributes?.tenantId,
-            anchor: selectedAsset.value.attributes?.anchor
+            anchor: selectedAsset.value.attributes?.anchor,
         }
-        if (val.ownerUsers !== '') attributes['ownerUsers'] = val.ownerUsers
-        if (val.ownerGroups !== '') attributes['ownerGroups'] = val.ownerGroups
+        attributes['ownerUsers'] = val.ownerUsers
+        attributes['ownerGroups'] = val.ownerGroups
         return {
             entities: [
                 {
@@ -86,20 +86,25 @@ console.log(selectedAsset.value, 'selectedAssets')
 
     const update = (ownerUsers: string[], ownerGroups: string[]) => {
         // console.log(localOwnerUsers.value.join(',') === ownerUsers.join(','))
-        if (localOwnerUsers.value.join(',') !== ownerUsers.join(',')) {
-            isLoading.value = true
-            localOwnerUsers.value = ownerUsers
-            localOwnerGroups.value = ownerGroups
-            body.value = getBody()
-            execute()
-        }
-        if (localOwnerGroups.value.join(',') !== ownerGroups.join(',')) {
-            isLoading.value = true
-            localOwnerUsers.value = ownerUsers
-            localOwnerGroups.value = ownerGroups
-            body.value = getBody()
-            execute()
-        }
+        // if (localOwnerUsers.value.join(',') !== ownerUsers.join(',')) {
+        //     isLoading.value = true
+        //     localOwnerUsers.value = ownerUsers
+        //     localOwnerGroups.value = ownerGroups
+        //     body.value = getBody()
+        //     execute()
+        // }
+        // if (localOwnerGroups.value.join(',') !== ownerGroups.join(',')) {
+        //     isLoading.value = true
+        //     localOwnerUsers.value = ownerUsers
+        //     localOwnerGroups.value = ownerGroups
+        //     body.value = getBody()
+        //     execute()
+        // }
+        isLoading.value = true
+        localOwnerUsers.value = ownerUsers
+        localOwnerGroups.value = ownerGroups
+        body.value = getBody()
+        execute()
     }
 
     watch(state, () => {

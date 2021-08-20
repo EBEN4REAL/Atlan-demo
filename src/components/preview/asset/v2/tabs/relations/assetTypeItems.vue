@@ -11,6 +11,7 @@
     <VirtualList v-else :data="list.entities" :data-key="keyField">
         <template #default="{ item }">
             <ListItem
+                v-if="item.typeName !== 'Column'"
                 :item="item"
                 :projection="projections"
                 class="w-full p-0 m-0 border-b"
@@ -19,6 +20,9 @@
                 @click="handlePreview(item)"
                 :isSelected="item.guid === selectedAssetId"
             ></ListItem>
+            <div v-else class="mx-5 my-2">
+                <ColumnListItem :asset="item" />
+            </div>
         </template>
     </VirtualList>
 </template>
@@ -28,9 +32,11 @@
     import ListItem from '@/discovery/asset/list/item.vue'
     import useBiRelations from '~/composables/asset/useBiRelations'
     import VirtualList from '~/lib/virtualList/virtualList.vue'
+    import useAssetInfo from '~/composables/asset/useAssetInfo'
+    import ColumnListItem from '@/preview/asset/v2/tabs/columns/listItem.vue'
 
     export default defineComponent({
-        components: { ListItem, VirtualList },
+        components: { ListItem, VirtualList, ColumnListItem },
         props: {
             assetType: {
                 type: String,
@@ -55,6 +61,7 @@
         emits: ['preview'],
         setup(props, context) {
             const selectedAssetId = ref('')
+            const { dataTypeImage } = useAssetInfo()
             function handlePreview(item: any) {
                 selectedAssetId.value = item.guid
                 // ctx.emit('preview', item)
@@ -81,6 +88,7 @@
                 list,
                 isReady,
                 handlePreview,
+                dataTypeImage,
                 selectedAssetId,
             }
         },

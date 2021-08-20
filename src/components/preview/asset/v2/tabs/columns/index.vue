@@ -42,38 +42,7 @@
             v-for="(asset, index) in filteredList"
             :key="index"
         >
-            <div class="flex items-center mb-1">
-                <component
-                    :is="dataTypeImage(asset)"
-                    class="flex-none w-auto h-4 mr-2 text-gray"
-                ></component>
-                <span
-                    class="
-                        flex-shrink
-                        pt-0.5
-                        mr-2
-                        overflow-hidden
-                        text-xs
-                        font-bold
-                        align-middle
-                        text-gray
-                        overflow-ellipsis
-                    "
-                >
-                    {{ asset.displayText }}
-                </span>
-                <div class="chip" v-if="asset.attributes.isPrimary">
-                    <AtlanIcon icon="PrimaryKey" />
-                </div>
-                <div class="chip" v-if="asset.attributes.isPrimary">
-                    <AtlanIcon icon="ForeignKey" />
-                </div>
-            </div>
-            <span
-                class="text-xs leading-relaxed text-gray-500 whitespace-pre-wrap "
-            >
-                {{ asset.attributes.description || 'No description' }}
-            </span>
+            <ColumnListItem :asset="asset" />
         </div>
         <div
             v-if="!isReady"
@@ -93,9 +62,10 @@
     import useAssetInfo from '~/composables/asset/useAssetInfo'
     import { dataTypeList } from '~/constant/datatype'
     import DataTypes from '@common/facets/dataType.vue'
+    import ColumnListItem from '@/preview/asset/v2/tabs/columns/listItem.vue'
 
     export default defineComponent({
-        components: { DataTypes },
+        components: { DataTypes, ColumnListItem },
         name: 'Column Tab',
         props: {
             id: String,

@@ -1,6 +1,6 @@
 <template>
     <div class="flex w-full">
-        <div class="flex flex-col h-full bg-white border-r facets">
+        <div v-if="showFilters" class="flex flex-col h-full bg-white border-r facets">
             <AssetFilters
                 :initial-filters="initialFilters"
                 @refresh="handleFilterChange"
@@ -14,7 +14,7 @@
 
         <div class="flex flex-col items-stretch flex-1 mt-3 mb-1 bg-white w-80">
             <div class="flex flex-col h-full">
-                <div class="flex px-3">
+                <div class="flex px-3 mb-1">
                     <ConnectorDropdown
                         :data="connectorsPayload"
                         @change="handleChangeConnectors"
@@ -38,7 +38,7 @@
                             <AtlanIcon icon="Search" />
                         </template>
                     </a-input>
-                    <a-popover trigger="click" placement="bottomLeft">
+                    <a-popover trigger="click" placement="bottomRight">
                         <template #content>
                             <Preferences
                                 :default-projection="projection"
@@ -218,6 +218,16 @@
                     return {}
                 },
             },
+            termName: {
+                type: String,
+                required: false,
+                default: undefined,
+            },
+            showFilters: {
+                type: Boolean,
+                required: false,
+                default: true
+            }
         },
         emits: ['preview'],
         setup(props, { emit }) {
@@ -333,6 +343,7 @@
             const updateBody = (dontScroll) => {
                 initialBody = {
                     typeName: assetTypeListString,
+                    termName: props.termName,
                     // includeClassificationAttributes: true,
                     // includeSubClassifications: true,
                     limit: limit.value,
@@ -615,7 +626,7 @@
 </style>
 <style scoped>
     .facets {
-        min-width: 240px;
-        width: 240px;
+        min-width: 264px;
+        width: 264px;
     }
 </style>

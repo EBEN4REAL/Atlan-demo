@@ -24,7 +24,7 @@
 
                 <div class="flex items-center">
                     <StatusBadge
-                        :showNoStatus="true"
+                        :showNoStatus="false"
                         :key="selectedAsset.guid"
                         :status-id="selectedAsset?.attributes?.assetStatus"
                         class="ml-1.5"
@@ -71,6 +71,7 @@
     import Tooltip from '@common/ellipsis/index.vue'
 
     export default defineComponent({
+        name: 'AssetPreview',
         props: {
             selectedAsset: {
                 type: Object as PropType<assetInterface>,

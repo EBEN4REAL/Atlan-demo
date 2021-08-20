@@ -1,65 +1,67 @@
 <template>
-    <div v-if="isLoading" class="w-full min-h-full justify-center">
+    <div v-if="isLoading">
         <LoadingView />
     </div>
-     <div v-else class="flex flex-row">
-        <div :class="currentTab === '1' || (currentTab === '2') ? 'w-2/3' : 'w-full'">
-            <div class="flex flex-row justify-between px-8 mt-6 mb-5">
+     <div v-else class="flex flex-row h-full" :class="$style.termHome">
+        <div class="h-full overflow-auto"  :class="currentTab === '1' || (currentTab === '2') ? 'w-2/3' : 'w-full'">
+            <div class="flex flex-row justify-between pl-8 pr-4 mt-6 mb-5">
                 <div class="flex flex-row">
                     <div class="mr-5">
                         <img :src="TermSvg" />
                     </div>
-                    <div class="flex flex-col">
+                    <div class="flex flex-col w-3/4">
                         <div class="flex">
-                            <span v-if="parentGlossaryName" class="text-gray-400 mr-1">
-                            {{ parentGlossaryName }} / 
-                        </span>
-                        <span class="text-xl leading-6 font-bold">{{
+                        <span class="text-xl leading-6 font-bold mr-3">{{
                             title
                         }}</span>
-                        </div>
-                        <!-- <EntityHistory
-                    :created-at="glossary?.attributes.__timestamp"
-                    :created-by="glossary?.createdBy"
-                    :updated-at="glossary?.attributes.__modificationTimestamp"
-                    :updated-by="glossary?.updatedBy"
-                /> -->
+                        <component
+                            :is="statusObject?.icon"
+                            v-if="statusObject"
+                            class="inline-flex self-center w-auto h-4 mb-1"
+                        /> 
+                    </div>
+
                         <span class="mt-1 text-sm leading-5 text-gray-500">{{
                             shortDescription
                         }}</span>
                     </div>
                 </div>
-                <div class="flex flex-row space-x-2 mr-4">
-                    <a-button >
+                <div class="flex flex-row space-x-2">
+                    <a-button class="px-2.5">
                         <fa icon="fal bookmark" />
                     </a-button>
-                    <a-button class="flex align-middle">
+                    <a-button class="px-2.5 flex align-middle">
                         <fa icon="fal upload" class="h-3 mr-2" />
-                        Share
+                        <span>Share</span>
                     </a-button>
-                    <a-button >
+                    <a-button class="px-2.5" >
                         <fa icon="fal ellipsis-v" class="h-4" />
                     </a-button>
                 </div>
             </div>
-            <div class="flex flex-row">
+            <div class="m-0" >
                 <a-tabs v-model:activeKey="currentTab" default-active-key="1" class="border-0">
                     <a-tab-pane key="1" tab="Overview">
-                        <div class="flex flex-row m-0 px-8">
+                        <div class="px-8 mt-4">
                             <GlossaryProfileOverview :entity="term" />
                         </div>
                     </a-tab-pane>
                     <a-tab-pane key="2" tab="Linked Terms">
-                        <LinkedAssetsTab :term-qualified-name="qualifiedName" @preview="handlePreview"/>
+                        <div :class="$style.overviewTab">
+                            <LinkedAssetsTab :term-qualified-name="qualifiedName" @preview="handlePreview"/>
+                        </div>
                     </a-tab-pane>
                 </a-tabs>
             </div>
         </div>
         <CategoryTermPreview v-if="currentTab === '1' && term" :entity="term" :preview="false" />
-        <AssetPreview
-            v-if="currentTab === '2' && previewEntity"
-            :selectedAsset="previewEntity"
-        ></AssetPreview>
+        <div class="border-l" :class="$style.overviewTab">
+            <AssetPreview
+                v-if="currentTab === '2' && previewEntity"
+                page="discovery"
+                :selectedAsset="previewEntity"
+            ></AssetPreview>
+        </div>
     </div>
 </template>
 
@@ -80,6 +82,7 @@ import useGTCEntity from '~/composables/glossary/useGtcEntity'
 import { Term } from '~/types/glossary/glossary.interface'
 
 import TermSvg from '~/assets/images/gtc/term/term.png'
+import { List as StatusList } from '~/constant/status'
 
 export default defineComponent({
     components: {
@@ -116,6 +119,7 @@ export default defineComponent({
         const linkedAssetsCount = computed(
             () => term.value?.attributes?.assignedEntities?.length ?? 0
         )
+        const statusObject = computed(() => StatusList.find((status) => status.id === term.value?.attributes?.assetStatus))
 
         const handlePreview = (entity: any) => {
             previewEntity.value = entity;
@@ -133,14 +137,25 @@ export default defineComponent({
             linkedAssetsCount,
             parentGlossaryName,
             previewEntity,
+            statusObject,
             handlePreview
         }
     },
 })
 </script>
-<style>
-.sidebar {
-    max-height: 70vh;
+<style lang="less" module>
+.termHome {
+    :global(.ant-tabs-bar) {
+        @apply mb-0;
+    }
+    :global(.ant-tabs-nav) {
+        @apply ml-8;
+    }
+}
+.overviewTab {
+    :global(.ant-tabs-nav) {
+        @apply ml-0;
+    }
 }
 </style>
 

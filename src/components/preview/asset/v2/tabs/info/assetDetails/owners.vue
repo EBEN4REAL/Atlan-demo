@@ -50,7 +50,7 @@
                                 {{ owner.username }}
                             </div>
                             <div
-                                class="absolute flex items-center justify-center pl-3 pr-1 text-white bg-transparent border-none rounded-full opacity-0 cursor-pointer  group-hover:opacity-100 owners-cross-btn"
+                                class="absolute flex items-center justify-center pl-3 pr-1 text-white bg-transparent border-none rounded-full opacity-0 cursor-pointer group-hover:opacity-100 owners-cross-btn"
                                 v-on:click.stop="() => handleRemoveOwner(owner)"
                             >
                                 <div class="flex items-center justify-center">
@@ -108,7 +108,7 @@
                                 {{ owner.username }}
                             </div>
                             <div
-                                class="absolute flex items-center justify-center pl-3 pr-1 text-white bg-transparent border-none rounded-full opacity-0 cursor-pointer  group-hover:opacity-100 owners-cross-btn"
+                                class="absolute flex items-center justify-center pl-3 pr-1 text-white bg-transparent border-none rounded-full opacity-0 cursor-pointer group-hover:opacity-100 owners-cross-btn"
                                 v-on:click.stop="() => handleRemoveOwner(owner)"
                             >
                                 <div class="flex items-center justify-center">
@@ -155,7 +155,7 @@
                     </span>
                 </div>
                 <a-button
-                    class="flex items-center justify-center w-8 h-8 px-2 py-2 mb-3 mr-3 text-gray-700 border-none rounded-full  bg-gray-light hover:bg-primary hover:text-white"
+                    class="flex items-center justify-center w-8 h-8 px-2 py-2 mb-3 mr-3 text-gray-700 border-none rounded-full bg-gray-light hover:bg-primary hover:text-white"
                     @click.stop="toggleOwnerPopover"
                 >
                     <fa icon="fal plus" />
@@ -177,8 +177,9 @@
                             cursor-pointer
                             select-none
                             text-primary
+                            rounded
                             hover:text-white hover:bg-primary
-                            _bg-primary-light
+                            bg-primary-light
                         "
                     >
                         <span class="flex items-center text-sm">
@@ -189,18 +190,7 @@
                 </div>
 
                 <template #content>
-                    <div
-                        class="
-                            p-2.5
-                            bg-white
-                            rounded
-                            shadow
-                            flex
-                            items-center
-                            flex-col
-                            w-56
-                        "
-                    >
+                    <div class="p-2.5 bg-white flex items-center flex-col w-56 rounded">
                         <a-input
                             v-input-focus
                             :placeholder="
@@ -245,8 +235,8 @@
                                         >
                                         <span
                                             class="ml-2 chip"
-                                            v-if="listUsers.length > 0"
-                                            >{{ listUsers.length }}</span
+                                            v-if="listUsers?.length > 0"
+                                            >{{ listUsers?.length }}</span
                                         >
                                     </template>
                                     <div class="h-48 overflow-y-auto">
@@ -267,10 +257,10 @@
                                                             user.username,
                                                             selectedUsers
                                                         )
-                                                            ? '_bg-primary-light'
+                                                            ? 'bg-primary-light'
                                                             : ''
                                                     "
-                                                    class="flex items-center justify-between w-full px-1 py-1 mb-2 rounded cursor-pointer  hover_bg-primary-light"
+                                                    class="flex items-center justify-between w-full px-1 py-1 mb-2 rounded cursor-pointer hover:bg-primary-light"
                                                     @click="
                                                         () => onSelectUser(user)
                                                     "
@@ -339,8 +329,8 @@
                                         >
                                         <span
                                             class="ml-2 chip"
-                                            v-if="listGroups.length > 0"
-                                            >{{ listGroups.length }}</span
+                                            v-if="listGroups?.length > 0"
+                                            >{{ listGroups?.length }}</span
                                         >
                                     </template>
                                     <div class="h-48 overflow-y-auto">
@@ -361,14 +351,14 @@
                                                             group.name,
                                                             selectedGroups
                                                         )
-                                                            ? '_bg-primary-light'
+                                                            ? 'bg-primary-light'
                                                             : ''
                                                     "
                                                     @click="
                                                         () =>
                                                             onSelectGroup(group)
                                                     "
-                                                    class="relative flex items-center justify-between w-full px-1 py-1 mb-2 rounded cursor-pointer  hover_bg-primary-light"
+                                                    class="relative flex items-center justify-between w-full px-1 py-1 mb-2 rounded cursor-pointer hoverbg-primary-light"
                                                 >
                                                     <div
                                                         class="flex items-center flex-1 "
@@ -621,8 +611,8 @@
                 [ownerUsers, ownerGroups],
                 () => {
                     console.log('owners changed', ownerUsers.value)
-                    // selectedUsers.value = ownerUsers.value
-                    // selectedGroups.value = ownerGroups.value
+                    selectedUsers.value = [...ownerUsers.value]
+                    selectedGroups.value = [...ownerGroups.value]
                     splittedOwners.value = splitArray(
                         5,
                         mappedSplittedOwners(ownerUsers, ownerGroups)
@@ -707,12 +697,6 @@
     })
 </script>
 <style lang="less" scoped>
-    ._bg-primary-light {
-        background: rgba(34, 81, 204, 0.05);
-    }
-    .hover_bg-primary-light:hover {
-        background: rgba(34, 81, 204, 0.05);
-    }
     .owners-cross-btn {
         right: 6px;
         height: 100%;

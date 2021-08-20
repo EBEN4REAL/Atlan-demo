@@ -37,7 +37,7 @@
                 </template>
             </template>
             <div
-                class="relative flex items-center h-8 pl-2 cursor-pointer  hover:text-primary"
+                class="relative flex items-center h-8 pl-2 cursor-pointer  hover:text-primary hover:bg-primary-light"
                 :class="
                     isVisible
                         ? 'border rounded  border-primary bg-primary-light  text-primary'
@@ -48,21 +48,33 @@
                     v-if="Object.keys(applied).length"
                     class="absolute w-2 h-2 mr-2 rounded-full  -left-2 bg-primary"
                 ></div>
-                <span> {{ a.options.displayName }}</span>
+                <div class="flex items-center justify-between w-96">
+                    <Tooltip
+                        :tooltip-text="a.options.displayName"
+                        classes="w-40"
+                    />
+                    <!-- <span>{{ a.options.displayName }}</span> -->
+                    <span class="mr-2"
+                        ><AtlanIcon
+                            class="pt-1 transform -rotate-90"
+                            icon="ChevronDown"
+                    /></span>
+                </div>
             </div>
         </a-popover>
     </div>
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref, onMounted, toRefs, watch } from 'vue'
+    import { defineComponent, ref, onMounted, watch } from 'vue'
+    import Tooltip from '@common/ellipsis/index.vue'
     import { operatorsMap as map } from './constants'
     import useBusinessMetadataHelper from '~/composables/businessMetadata/useBusinessMetadataHelper'
     import DynamicComponents from './dynamicComponents.vue'
 
     export default defineComponent({
         name: 'AttributeItems',
-        components: { DynamicComponents },
+        components: { DynamicComponents, Tooltip },
         props: {
             a: {
                 type: Object,

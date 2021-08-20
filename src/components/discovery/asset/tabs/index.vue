@@ -8,19 +8,22 @@
         >
             <a-tab-pane v-for="item in assetTypeList" :key="item.id">
                 <template #tab>
-                    <span>{{ item.label }}</span>
-                    <span
-                        class="chip"
-                        v-if="item.id === 'Catalog' && total > 0"
-                        >{{ getCountString(total) }}</span
-                    >
-                    <span
-                        class="chip"
-                        v-if="
-                            assetTypeMap[item.id] && assetTypeMap[item.id] > 0
-                        "
-                        >{{ getCountString(assetTypeMap[item.id]) }}</span
-                    >
+                    <div :class="{ active: item.id === assetType }">
+                        <span>{{ item.label }}</span>
+                        <span
+                            class="chip"
+                            v-if="item.id === 'Catalog' && total > 0"
+                            >{{ getCountString(total) }}</span
+                        >
+                        <span
+                            class="chip"
+                            v-if="
+                                assetTypeMap[item.id] &&
+                                assetTypeMap[item.id] > 0
+                            "
+                            >{{ getCountString(assetTypeMap[item.id]) }}</span
+                        >
+                    </div>
                 </template>
             </a-tab-pane>
         </a-tabs>
@@ -204,6 +207,7 @@
         }
     }
 </style>
+
 <style scoped>
     .chip {
         @apply px-1 pt-1 pb-0.5 mx-1;
@@ -211,6 +215,13 @@
         @apply tracking-wide;
         @apply text-xs;
         @apply font-bold;
+        @apply text-gray-500;
+        @apply bg-gray-100;
+    }
+    .active {
+        @apply text-primary;
+    }
+    .active .chip {
         @apply text-primary;
         @apply bg-primary-light;
     }

@@ -2,10 +2,12 @@
     <div class="pt-1">
         <div class="px-5" v-if="page === 'discovery'">
             <div class="flex items-center justify-between mt-2 mb-4 text-sm">
-                <component
+                <!-- <component
                     :is="selectedAsset.typeName"
                     class="w-auto h-8"
-                ></component>
+                ></component> -->
+                <AssetLogo :asset="selectedAsset" variant="lg" />
+
                 <div class="flex">
                     <div class="icon-btn">
                         <AtlanIcon icon="BookmarkOutlined" />
@@ -69,6 +71,7 @@
     import useAsset from '~/composables/asset/useAsset'
     import useAssetInfo from '~/composables/asset/useAssetInfo'
     import Tooltip from '@common/ellipsis/index.vue'
+    import AssetLogo from '@/common/icon/assetIcon.vue'
 
     export default defineComponent({
         name: 'AssetPreview',
@@ -84,6 +87,7 @@
         },
         components: {
             Tooltip,
+            AssetLogo,
             StatusBadge,
             info: defineAsyncComponent(() => import('./tabs/info/index.vue')),
             columns: defineAsyncComponent(

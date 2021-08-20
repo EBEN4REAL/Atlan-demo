@@ -44,7 +44,7 @@
             <template #header>
                 <div :key="dirtyTimestamp" class="select-none">
                     <div class="flex justify-between">
-                        <span class="font-bold">
+                        <span>
                             <img
                                 v-if="item.image"
                                 :src="item.image"
@@ -345,9 +345,10 @@
                     }
                     default: {
                         // ? default fall back to bm filter
-                        const totalCount = Object.keys(
-                            dataMap.value[filterId].applied
-                        ).length
+
+                        const totalCount = Object?.values(
+                            dataMap?.value[filterId]?.applied
+                        )?.filter((a) => JSON.stringify(a) !== '{}').length
 
                         return totalCount
                             ? `${
@@ -360,11 +361,18 @@
             }
 
             function resetAllFilters() {
-                console.log(dataMap.value)
                 dataMap.value.status.checked = []
                 dataMap.value.classifications.checked = []
                 dataMap.value.owners.userValue = []
                 dataMap.value.owners.groupValue = []
+
+                // ? remove bm applied data
+                bmFiltersList.value
+                    .map((b) => b.id)
+                    .forEach((n) => {
+                        dataMap.value[n].applied = {}
+                    })
+
                 const filterMapKeys = Object.keys(filterMap)
                 filterMapKeys.forEach((id) => {
                     filterMap[id].criterion = []
@@ -387,6 +395,7 @@
                 filterMap,
                 handleClear,
                 dynamicList,
+                bmFiltersList,
             }
         },
         data() {

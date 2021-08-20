@@ -6,7 +6,7 @@
             class="px-2 mr-2 border shadow-none w-100"
             type="number"
             placeholder="Type..."
-            @change="handleChange"
+            @change="() => debounce(() => handleChange(), 800)"
         />
         <a-radio-group
             v-else-if="type === 'boolean'"
@@ -202,7 +202,7 @@
             placeholder="Type..."
             type="text"
             class="px-2 mr-2 shadow-none border-1"
-            @change="handleChange"
+            @change="() => debounce(() => handleChange(), 800)"
         />
     </div>
 </template>
@@ -230,11 +230,12 @@
         },
         emits: ['handleChange', 'removeFilter'],
         setup(props, { emit }) {
-            const { getDatatypeOfAttribute } = useBusinessMetadataHelper()
+            const { getDatatypeOfAttribute, createDebounce } =
+                useBusinessMetadataHelper()
             const value = ref(null)
 
             const handleChange = () => {
-                emit('handleChange', props.type, props.operator, value.value)
+                emit('handleChange', props.operator, value.value)
             }
 
             onBeforeUnmount(() => {
@@ -251,6 +252,7 @@
                 getDatatypeOfAttribute,
                 value,
                 handleChange,
+                debounce: createDebounce(),
             }
         },
     })

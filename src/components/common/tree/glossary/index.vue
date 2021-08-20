@@ -1,10 +1,11 @@
 <template>
     <a-tree
-        v-model:expandedKeys="expandedKeys"
+        v-model:expandedKeys="expandedKeysList"
         v-model:value="selectedKeys"
-        :tree-data="treeData"
+        :tree-data="childrenTreeData.length ? childrenTreeData : treeData"
         :load-data="onLoadData"
         :block-node="true"
+        :defaultExpandAll="true"
         @select="selectNode"
         @expand="expandNode"
     >
@@ -14,8 +15,8 @@
                     class="min-w-full"
                     @click="() => reirectToProfile(type, key)"
                 >
-                    <div class="flex align-middle">
-                        <span class="mr-1">
+                    <div class="flex content-center">
+                        <span class="mr-2 p-0">
                             <img
                                 v-if="type === 'glossary'"
                                 :src="GlossarySvg"
@@ -32,7 +33,7 @@
                                 :width="12"
                             />
                         </span>
-                        <span class="text-sm leading-none text-gray-600">{{
+                        <span class="text-sm leading-5 text-gray-700">{{
                             title
                         }}</span>
                     </div>
@@ -65,7 +66,7 @@ import 'emoji-mart-vue-fast/css/emoji-mart.css'
 import { Emoji, EmojiIndex } from 'emoji-mart-vue-fast/src'
 import { Modal } from 'ant-design-vue'
 
-import { defineComponent, watch } from 'vue'
+import { defineComponent, watch, computed, ref } from 'vue'
 import { MenuInfo } from 'ant-design-vue/lib/menu/src/interface'
 import { useRouter } from 'vue-router'
 import fetchGlossaryList from '~/composables/glossary/fetchGlossaryList'
@@ -76,6 +77,7 @@ import GlossaryContextMenu from './glossaryContextMenu.vue'
 import GlossarySvg from '~/assets/images/gtc/glossary/glossary.png'
 import CategorySvg from '~/assets/images/gtc/category/category.png'
 import TermSvg from '~/assets/images/gtc/term/term.png'
+import { toRefs } from '@vueuse/core'
 
 
 export default defineComponent({
@@ -88,6 +90,11 @@ export default defineComponent({
                 return ''
             },
         },
+        parentGuid: {
+            type: String,
+            required: true,
+            default: ''
+        }
     },
     emits: ['showCreateGlossaryModal', 'showUpdateGlossaryModal', 'success'],
 
@@ -97,15 +104,35 @@ export default defineComponent({
         
 
         const { list, totalCount, listCount, refetchGlossary, response } =
-            fetchGlossaryList()
+            fetchGlossaryList(props.parentGuid)
         const { selectedKeys, expandedKeys, expandNode, selectNode } =
             handleTreeExpand(emit)
 
         const index = new EmojiIndex(data)
 
         const { treeData, onLoadData } = useGlossaryTree(list)
-        console.log(treeData, 'treeData')
-
+        
+        const treeNode = ref({
+                dataRef: {
+                    // children: [],
+                    key: '',
+                    type: 'glossary',
+                }
+            })
+        watch(list, (newList) => {
+            // if(newList?.length)
+            treeNode.value.dataRef.key = newList[0]?.guid ?? ''
+            onLoadData(treeNode.value)
+            // treeData.value[0].children = treeNode.children
+        })
+        watch(treeNode, (newTreeNode) => {
+            console.log(newTreeNode, 'ok')
+            treeData.value[0].children = newTreeNode.children
+        }, {
+            deep: true
+        })
+        const childrenTreeData = computed(() => treeData.value[0]?.children ?? [])
+        const expandedKeysList = ref([props.parentGuid, ...expandedKeys.value])
         const refreshTree = () => {
             refetchGlossary()
         }
@@ -151,6 +178,7 @@ export default defineComponent({
         return {
             index,
             list,
+            childrenTreeData,
             response,
             treeData,
             listCount,
@@ -158,6 +186,7 @@ export default defineComponent({
             onLoadData,
             selectedKeys,
             expandedKeys,
+            expandedKeysList,
             expandNode,
             selectNode,
             refreshTree,

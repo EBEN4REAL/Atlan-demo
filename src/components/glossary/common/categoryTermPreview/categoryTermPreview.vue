@@ -184,7 +184,7 @@ export default defineComponent({
         @apply mr-6 pb-3 px-0;
     }
     :global(.ant-tabs-nav){
-        @apply  ml-0 px-0 !important;
+        @apply  ml-2 px-0 !important;
     }
     :global(.ant-tabs-tab-prev){
         @apply mr-2;

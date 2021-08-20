@@ -87,7 +87,7 @@
                         key="2"
                         header="Top Terms"
                     >
-                        <div class="flex flex-column ">
+                        <div`>
                             <GlossaryTopTerms
                                 v-if="glossaryTerms?.length"
                                 :terms="glossaryTerms"

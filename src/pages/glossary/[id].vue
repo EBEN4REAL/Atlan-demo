@@ -6,7 +6,7 @@
         <div class="h-full overflow-auto" :class="currentTab === '1' || (currentTab === '2' && !previewEntity?.guid) ? 'w-full' : 'w-2/3'">
             <div class="flex flex-row justify-between pl-8 pr-4 mt-6 mb-5">
                 <div class="flex flex-row">
-                    <div class="mr-5 min-w-32">
+                    <div class="mr-5">
                         <img :src="GlossarySvg" />
                     </div>
                     <div class="flex flex-col w-3/4">
@@ -38,7 +38,7 @@
                     </a-button>
                 </div>
             </div>
-            <div>
+            <div class="m-0">
                 <a-tabs v-model:activeKey="currentTab" default-active-key="1" class="border-0">
                     <a-tab-pane key="1" tab="Overview">
                         <div class="px-8 mt-4">

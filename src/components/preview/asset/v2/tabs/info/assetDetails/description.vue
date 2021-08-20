@@ -46,7 +46,6 @@
                             px-3
                             py-1.5
                             mr-3
-                            font-bold
                             rounded-full
                             cursor-pointer
                             bg-gray-light

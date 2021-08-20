@@ -1,15 +1,13 @@
 <template>
-    <div class="flex flex-col px-2 space-y-3">
+    <div class="flex flex-col space-y-3">
         <div class="px-2">
-            <p class="mb-1 text-sm font-bold tracking-wide text-gray-700">
+            <p class="mb-1 text-sm tracking-wide text-gray-500">
                 Unique ID (GUID)
             </p>
             <p class="mb-0 text-gray-700">{{ selectedAsset?.guid }}</p>
         </div>
         <div class="px-2">
-            <p class="mb-1 text-sm font-bold tracking-wide text-gray-700">
-                Last updated
-            </p>
+            <p class="mb-1 text-sm tracking-wide text-gray-500">Last updated</p>
             <p class="mb-0 text-gray-700">
                 {{
                     dayjs().from(
@@ -22,9 +20,7 @@
             </p>
         </div>
         <div class="px-2">
-            <p class="mb-1 text-sm font-bold tracking-wide text-gray-700">
-                Created
-            </p>
+            <p class="mb-1 text-sm tracking-wide text-gray-500">Created</p>
             <p class="mb-0 text-gray-700">
                 {{ dayjs().from(selectedAsset?.attributes?.__timestamp, true) }}
                 ago,
@@ -32,7 +28,7 @@
             </p>
         </div>
         <div class="px-2">
-            <p class="mb-1 text-sm font-bold tracking-wide text-gray-700">
+            <p class="mb-1 text-sm tracking-wide text-gray-500">
                 Popularity Score
             </p>
             <p class="mb-0 text-gray-700">

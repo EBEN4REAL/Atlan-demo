@@ -26,7 +26,7 @@ const CollapsiblePanels: { [key: string]: collapsiblePanels } = {
     },
     heirarchy: {
         id: 'heirarchy',
-        label: 'Heirarchy',
+        label: 'Hierarchy',
         component: 'heirarchy',
     },
     properties: {

@@ -23,10 +23,7 @@
                 class="bg-transparent"
             >
                 <template #header>
-                    <div
-                        :key="item.id"
-                        class="flex text-sm font-bold select-none header"
-                    >
+                    <div :key="item.id" class="flex text-sm select-none header">
                         <img
                             v-if="item.image"
                             :src="item.image"

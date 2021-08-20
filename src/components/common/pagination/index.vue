@@ -1,8 +1,5 @@
 <template>
-    <span v-if="listCount === 0" class="text-xs text-gray-500">
-        <i class="mr-1 fal fa-frown-open"></i>No {{ label.toLowerCase() }} found
-    </span>
-    <div v-else class="text-xs text-gray-500">
+    <div v-if="listCount" class="text-xs text-gray-500">
         Showing {{ getCountString(listCount) }} of
         {{ getCountString(totalCount) }}
         <span class="capitalize">
@@ -16,6 +13,7 @@
     import { getCountString } from '~/composables/asset/useFormat'
 
     export default defineComponent({
+        name: 'PageCounter',
         props: {
             label: {
                 type: String,

@@ -76,9 +76,8 @@ export default function useSearchList(
 
     const isLoading = computed(
         () =>
-            ([STATES.PENDING].includes(state.value) ||
-                [STATES.VALIDATING].includes(state.value)) &&
-            !data
+            [STATES.PENDING].includes(state.value) ||
+            ([STATES.VALIDATING].includes(state.value) && !data)
     )
     const isValidating = computed(() =>
         [STATES.VALIDATING].includes(state.value)

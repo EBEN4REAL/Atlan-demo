@@ -319,12 +319,7 @@
                 assetType.value,
                 true
             )
-            console.log(
-                assetTypeListString,
-                initialBody,
-                assetType.value,
-                'useAssetList type'
-            )
+            console.log('IS LOADING', isLoading.value)
             const updateBody = (dontScroll) => {
                 initialBody = {
                     typeName: assetTypeListString,

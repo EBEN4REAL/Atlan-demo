@@ -5,32 +5,36 @@
             missingDescription.length ||
             missingLinkedAssets.length
         "
-        class="my-8 px-8"
+        class="my-8 pt-6 pb-4"
+        :class="$style.continueSettingUp"
     >
-        <h2 class="text-xl leading-7">Coninue Setting up GLossary</h2>
-        <a-tabs default-active-key="2" class="border-0">
+        <p class="mb-2 ml-8 text-xs leading-4 text-gray-700">This section  is only visible to Data Stewards</p>
+        <h2 class="text-2xl ml-8 leading-6">Coninue Setting up GLossary</h2>
+        <div class="bg-white">
+        <a-tabs default-active-key="1" class="border-0">
             <a-tab-pane v-if="missingOwners.length" key="1" tab="Add Owners">
                 <a-table
                     :columns="ownersTableColumns"
                     :data-source="missingOwners"
                     :pagination="false"
+                    :showHeader="false"
                     row-key="guid"
                 >
                     <template #name="{ record }">
-                        <div class="flex align-middle">
+                        <div class="ml-2 flex align-middle w-24">
                             <span class="mr-2">
                                 <img
                                     v-if="record.type === 'term'"
                                     :src="TermSvg"
-                                    width="20"
+                                    height="16"
                                 />
                                 <img
                                     v-if="record.type === 'category'"
                                     :src="CategorySvg"
-                                    width="20"
+                                    height="16"
                                 />
                             </span>
-                            <span>{{ record.name }}</span>
+                            <span class="text-sm leading-5 text-bold text-gray-700" >{{ record.name }}</span>
                         </div>
                     </template>
                     <template #description="{ record }">
@@ -66,6 +70,7 @@
                     :columns="descriptionTableColumns"
                     :data-source="missingDescription"
                     :pagination="false"
+                    :showHeader="false"
                     row-key="guid"
                 >
                     <template #name="{ record }">
@@ -106,6 +111,7 @@
                 {{ missingLinkedAssets }}
             </a-tab-pane>
         </a-tabs>
+        </div>
     </div>
 </template>
 <script lang="ts">
@@ -225,3 +231,8 @@ export default defineComponent({
     },
 })
 </script>
+<style lang="less" module>
+.continueSettingUp {
+    background-color: #FFF8F1;
+}
+</style>

@@ -1,30 +1,30 @@
 <template>
-    <div class="px-6">
-        <div class="mb-4">
-            <div class="flex space-x-2">
-            <a-input-search
-                v-model:value="searchQuery"
-                :placeholder="`Search ${all.length} assets...`"
-                @change="onSearch"
-            ></a-input-search>
-            <a-popover title="Customise" trigger="click">
-                <template #content>
-                    <div class="w-32">
-                        <a-checkbox-group
-                            v-model:value="projection"
-                            name="checkboxgroup"
-                            :options="projectionOptions"
-                        />
-                    </div>
-                </template>
-                <a-button class="p-2 flex align-middle">
-                    <fa icon="fal ellipsis-v" />
-                </a-button>
-            </a-popover>
+    <div>
+        <div class="p-4 bg-gray-100">
+            <div class="flex mb-2 space-x-2">
+                <a-input-search
+                    v-model:value="searchQuery"
+                    :placeholder="`Search ${qualifiedName.split('@'[1])}...`"
+                    @change="onSearch"
+                ></a-input-search>
+                <a-popover trigger="click">
+                    <template #content>
+                        <p class="mb-1 text-gray-500">Show/Hide</p>
+                        <div class="w-32">
+                            <a-checkbox-group
+                                v-model:value="projection"
+                                name="checkboxgroup"
+                                :options="projectionOptions"
+                            />
+                        </div>
+                    </template>
+                    <a-button class="p-1 ml-2 rounded">
+                        <AtlanIcon icon="FilterDot" class="h-6" />
+                    </a-button>
+                </a-popover>
             </div>
-
-            <div class="my-2">
-                <GtcFilters />
+            <div>
+                <GtcFilters @filterUpdated="updateFilters" />
             </div>
         </div>
         <div v-if="isLoading && !all.length">
@@ -32,7 +32,7 @@
         </div>
         <div v-else-if="all.length" class="flex flex-row w-full">
             <div class="w-full">
-                <a-tabs type="card" default-active-key="1" class="border-0">
+                <a-tabs  default-active-key="1" class="border-0">
                     <a-tab-pane key="1" :tab="`All (${all.length})`">
                         <div v-for="asset in all" :key="asset.guid">
                             <GtcEntityCard
@@ -198,6 +198,11 @@ export default defineComponent({
             fetchAssetsPaginated({})
         }
 
+        const updateFilters = (filters: any) => {
+            console.log(filters)
+            fetchAssetsPaginated({filters, offset: 0})
+        }
+
         watch(selectedEntity, (newSelectedEntity) => {
             context.emit('entityPreview', newSelectedEntity)
         })
@@ -212,6 +217,7 @@ export default defineComponent({
             onSearch,
             onEntitySelect,
             loadMore,
+            updateFilters,
             selectedEntity,
             isLoading,
             projectionOptions,

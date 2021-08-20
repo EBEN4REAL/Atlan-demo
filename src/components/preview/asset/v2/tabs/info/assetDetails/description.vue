@@ -4,7 +4,6 @@
         <a-popover
             v-model:visible="isCompleted"
             placement="left"
-            overlay-class-name="inlinepopover"
             trigger="click"
             @visibleChange="handleVisibleChange"
         >
@@ -43,12 +42,12 @@
                             inline-flex
                             px-3
                             py-1.5
-                            rounded-full
                             cursor-pointer
                             select-none
                             text-primary
                             hover:text-white hover:bg-primary
-                            _bg-primary-light
+                            rounded-full
+                            bg-primary-light
                         "
                     >
                         <span class="flex items-center text-sm">
@@ -144,8 +143,6 @@
 <style lang="less" module>
     .borderless {
         @apply border-none shadow-none p-4 !important;
-        border-top-left-radius: 10px;
-        border-top-right-radius: 10px;
 
         &:global(.ant-input-affix-wrapper-focused) {
             @apply border-none shadow-none;
@@ -153,7 +150,7 @@
     }
 </style>
 <style lang="less" scoped>
-    ._bg-primary-light {
+    .bg-primary-light {
         background: rgba(34, 81, 204, 0.05);
     }
 </style>

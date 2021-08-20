@@ -2,16 +2,14 @@
     <div
         class="
             sidePanel
-            flex flex-col
             w-1/2
             border-l
-            min-h-screen
-            overflow-y-hide
         "
         :class="$style.sidePanel"
     >
         <a-tabs default-active-key="1">
             <a-tab-pane key="info" class="m-0 p-0" tab="Info">
+                <div class="h-screen overflow-auto pb-24" >
                 <a-collapse :bordered="false" expand-icon-position="right">
                     <template #expandIcon="{ isActive }">
                         <fa v-if="isActive" icon="fas angle-up" />
@@ -19,7 +17,7 @@
                     </template>
                     <a-collapse-panel key="1" header="Details">
                         <div class="pl-6 flex flex-col">
-                            <div class="flex flex-row space-x-16">
+                            <div class="flex space-x-16">
                                 <div class="flex flex-col">
                                     <span
                                         class="
@@ -83,12 +81,13 @@
                             />
                         </div>
                     </a-collapse-panel>
+                                      
                     <a-collapse-panel
                         v-if="termCount"
                         key="2"
                         header="Top Terms"
                     >
-                        <div class="flex flex-column">
+                        <div>
                             <GlossaryTopTerms
                                 v-if="glossaryTerms?.length"
                                 :terms="glossaryTerms"
@@ -96,6 +95,7 @@
                         </div>
                     </a-collapse-panel>
                 </a-collapse>
+                </div>
             </a-tab-pane>
             <a-tab-pane key="activity" tab="Activity">
                 <Activity :selectedAsset="entity" />

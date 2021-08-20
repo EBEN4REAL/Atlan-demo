@@ -35,7 +35,7 @@ export default function fetchUserList(dependent: any) {
     const { state, STATES } = swrvState(data, error, isValidating)
 
     const list: ComputedRef<userInterface[]> = computed(
-        () => data.value?.records
+        () => data.value?.records ?? []
     )
 
     const total: ComputedRef<number> = computed(() => data.value?.total_record)

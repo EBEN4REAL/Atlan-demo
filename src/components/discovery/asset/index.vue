@@ -14,7 +14,7 @@
 
         <div class="flex flex-col items-stretch flex-1 mt-3 mb-1 bg-white w-80">
             <div class="flex flex-col h-full">
-                <div class="flex px-3">
+                <div class="flex px-3 mb-1">
                     <ConnectorDropdown
                         :data="connectorsPayload"
                         @change="handleChangeConnectors"
@@ -38,7 +38,7 @@
                             <AtlanIcon icon="Search" />
                         </template>
                     </a-input>
-                    <a-popover trigger="click" placement="bottomLeft">
+                    <a-popover trigger="click" placement="bottomRight">
                         <template #content>
                             <Preferences
                                 :default-projection="projection"
@@ -626,7 +626,7 @@
 </style>
 <style scoped>
     .facets {
-        min-width: 240px;
-        width: 240px;
+        min-width: 264px;
+        width: 264px;
     }
 </style>

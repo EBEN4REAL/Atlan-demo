@@ -344,9 +344,9 @@
                     default: {
                         // ? default fall back to bm filter
 
-                        const totalCount = Object.values(
-                            dataMap.value[filterId].applied
-                        ).filter((a) => JSON.stringify(a) !== '{}').length
+                        const totalCount = Object?.values(
+                            dataMap?.value[filterId]?.applied
+                        )?.filter((a) => JSON.stringify(a) !== '{}').length
 
                         return totalCount
                             ? `${
@@ -363,6 +363,14 @@
                 dataMap.value.classifications.checked = []
                 dataMap.value.owners.userValue = []
                 dataMap.value.owners.groupValue = []
+
+                // ? remove bm applied data
+                bmFiltersList.value
+                    .map((b) => b.id)
+                    .forEach((n) => {
+                        dataMap.value[n].applied = {}
+                    })
+
                 const filterMapKeys = Object.keys(filterMap)
                 filterMapKeys.forEach((id) => {
                     filterMap[id].criterion = []
@@ -385,6 +393,7 @@
                 filterMap,
                 handleClear,
                 dynamicList,
+                bmFiltersList,
             }
         },
         data() {

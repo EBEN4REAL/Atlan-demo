@@ -98,7 +98,9 @@
                 </div>
             </a-tab-pane>
             <a-tab-pane key="activity" tab="Activity">
-                <Activity :selectedAsset="entity" />
+                <div class="h-screen overflow-auto">
+                    <Activity :selectedAsset="entity" />
+                </div>
             </a-tab-pane>
             <a-tab-pane key="chat" tab="Chat"> Chat </a-tab-pane>
         </a-tabs>

@@ -77,7 +77,9 @@
                 </div>
             </a-tab-pane>
             <a-tab-pane key="activity" tab="Activity"> 
-                <Activity :selectedAsset="entity" />
+                <div class="h-screen overflow-auto">
+                    <Activity :selectedAsset="entity" />
+                </div>
             </a-tab-pane>
             <a-tab-pane key="requests" tab="Requests"> Requests </a-tab-pane>
             <a-tab-pane key="chat" tab="chat"> Chat </a-tab-pane>

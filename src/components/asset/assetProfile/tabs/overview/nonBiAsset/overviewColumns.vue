@@ -23,7 +23,10 @@
             </div>
         </div>
         <!-- Table -->
-        <div style="max-width: calc(100vw - 28rem)">
+        <div
+            class="overflow-scroll border-t border-gray-light"
+            style="max-width: calc(100vw - 28rem); max-height: 20rem"
+        >
             <a-table
                 :columns="columns"
                 :data-source="columnsData.filteredList"
@@ -257,6 +260,10 @@
 </script>
 
 <style lang="less" scoped>
+    :global(.ant-tabs-content) {
+        height: calc(100vh - 200px) !important;
+        overflow: scroll !important;
+    }
     :global(.ant-table th) {
         @apply whitespace-nowrap font-bold !important;
     }

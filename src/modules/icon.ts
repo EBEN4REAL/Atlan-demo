@@ -108,6 +108,7 @@ import { faCaretLeft } from '@fortawesome/pro-solid-svg-icons/faCaretLeft'
 import { faCaretRight } from '@fortawesome/pro-solid-svg-icons/faCaretRight'
 import { faChevronDown } from '@fortawesome/pro-solid-svg-icons/faChevronDown'
 import { faChevronUp } from '@fortawesome/pro-solid-svg-icons/faChevronUp'
+import { faChevronLeft as faSolidChevronLeft } from '@fortawesome/pro-solid-svg-icons/faChevronLeft'
 import { faChevronRight } from '@fortawesome/pro-solid-svg-icons/faChevronRight'
 import { faSlidersV } from '@fortawesome/pro-solid-svg-icons/faSlidersV'
 import { faSync as faSyncSolid } from '@fortawesome/pro-solid-svg-icons/faSync'
@@ -197,6 +198,7 @@ library.add(
     faInfoCircle,
     faChevronRight,
     faChevronLeft,
+    faSolidChevronLeft,
     faExclamationCircle,
     faListAlt,
     faPlug,

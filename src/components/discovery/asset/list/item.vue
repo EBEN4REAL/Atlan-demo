@@ -24,7 +24,8 @@
                         :is="item.typeName"
                         class="flex-none w-auto h-5 mr-2"
                     ></component> -->
-                    <AssetLogo :asset="item" />
+                    <!-- <AssetLogo :asset="item" /> -->
+                    <AssetLogo :asset="item" v-if="showAssetTypeIcon" />
                     <!-- remove cssClasses prop -->
                     <router-link
                         :class="

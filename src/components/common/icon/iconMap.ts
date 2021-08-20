@@ -16,6 +16,7 @@ import Search from '~/assets/images/icons/search.svg'
 import ArrowDown from '~/assets/images/icons/arrow-down.svg'
 import Database from '~/assets/images/icons/database.svg'
 import Schema from '~/assets/images/icons/schema.svg'
+import Connection from '~/assets/images/icons/connection.svg'
 
 export default {
     BookmarkFilled,
@@ -36,4 +37,5 @@ export default {
     Notification,
     NotificationDot,
     ArrowDown,
+    Connection,
 }

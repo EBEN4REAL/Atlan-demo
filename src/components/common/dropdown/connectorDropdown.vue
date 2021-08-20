@@ -41,7 +41,8 @@
                 </div>
             </div>
             <div v-else class="connector-btn">
-                <fa icon="fal plug" class="mr-1"></fa>All Connectors
+                <atlan-icon icon="Connection" class="w-auto h-4 mr-2" />All
+                Connectors
                 <AtlanIcon icon="ChevronDown" class="ml-2" />
             </div>
         </a-popover>

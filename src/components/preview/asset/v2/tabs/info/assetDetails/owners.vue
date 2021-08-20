@@ -22,6 +22,7 @@
                                 px-3
                                 py-1.5
                                 mr-3
+                                mb-2
                                 rounded-full
                                 bg-gray-light
                                 text-gray-700

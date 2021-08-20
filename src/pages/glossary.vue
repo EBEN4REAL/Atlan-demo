@@ -13,7 +13,12 @@
   />
   <splitpanes class="h-full default-theme">
     <pane min-size="25" max-size="50" :size="18" class="bg-white">
-      <HomeTree v-if="!currentGuid"/>
+      <div v-if="!currentGuid" class="px-2 py-4">
+        <div class="px-2 pb-2">
+          <a-input-search placeholder="Search accross Glossaries"></a-input-search>
+        </div>
+        <HomeTree />
+      </div>
       <div v-else-if="currentGuid && parentGlossaryGuid">
         <div class="flex text-sm leading-5 text-gray-500 cursor-pointer py-2 pl-4 mb-4 bg-gray-100" type="link" 
           @click="backToHome"

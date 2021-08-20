@@ -11,7 +11,7 @@
         <p class="mb-2 ml-8 text-xs leading-4 text-gray-700">
             This section is only visible to Data Stewards
         </p>
-        <h2 class="ml-8 text-2xl leading-6">Coninue Setting up GLossary</h2>
+        <h2 class="ml-8 text-2xl leading-6">Coninue Setting up Glossary</h2>
         <div class="pt-4 my-3 bg-white">
             <a-tabs default-active-key="1" class="border-0">
                 <a-tab-pane v-if="missingOwners.length" key="1" tab="Add Owners"

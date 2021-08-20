@@ -4,19 +4,20 @@
     >
         <div v-if="preview" class="flex flex-row justify-between align-middle px-5 py-8">
             <div class="flex flex-row align-middle space-x-2">
-                <span>
-                    <img v-if="entity.typeName === 'AtlasGlossaryCategory'" :src="CategorySvg" :width="25" />
-                    <img v-else-if="entity.typeName === 'AtlasGlossaryTerm'" :src="TermSvg" />
-                </span>
+                <div class="flex flex-col justify-center">
+                    <span>
+                        <img v-if="entity.typeName === 'AtlasGlossaryCategory'" :src="CategorySvg" :width="25" />
+                        <img v-else-if="entity.typeName === 'AtlasGlossaryTerm'" :src="TermSvg" />
+                    </span>
+                </div>
                 <span v-if="type" class="flex flex-col justify-center text-sm text-gray-500 font-bold" >{{ type === 'AtlasGlossaryTerm' ? 'Term' : 'Category'}} </span>
             </div>
             <div class="flex flex-row space-x-2">
-                <a-button size="small">
+                <a-button class="px-2.5">
                     <fa icon="fal bookmark" />
                 </a-button>
                 <a-button 
-                    size="small" 
-                    class="flex align-middle text-xs pt-1 text-primary bg-blue-100 border-0"
+                    class="flex flex-col justify-center text-xs pt-1 text-primary bg-primary-light border-0"
                     @click="redirectToProfile"
                 >
                     Open {{type === 'AtlasGlossaryTerm' ? 'Term' : 'Category'}} Details

@@ -19,10 +19,11 @@
             </div>
             <div>
                 <div class="flex">
-                    <component
+                    <!-- <component
                         :is="assetData.typeName"
                         class="flex-none w-auto h-6 mt-1 mr-1"
-                    ></component>
+                    ></component> -->
+                    <AssetLogo class="self-start pt-2" :asset="assetData" />
                     <div
                         class="flex items-center mt-1 mb-2 text-xl font-bold lowercase "
                     >
@@ -30,7 +31,7 @@
                         <atlan-icon icon="Verified" class="w-auto h-4 ml-2" />
                     </div>
                 </div>
-                <div class="flex text-sm">
+                <!-- <div class="flex text-sm">
                     <div class="flex items-center mr-6 capitalize">
                         <img :src="integrationIcon" class="w-auto h-4 mr-2" />
                         <span>{{ assetData.attributes.integrationName }}</span>
@@ -45,7 +46,8 @@
                             assetData.attributes.schemaName
                         }}</span>
                     </div>
-                </div>
+                </div> -->
+                <HierarchyBar class="py-1 mt-1" :selectedAsset="assetData" />
             </div>
         </div>
         <div class="flex">
@@ -63,12 +65,13 @@
 <script lang="ts">
     import { defineComponent, computed, inject } from 'vue'
     import AssetLogo from '@/common/icon/assetIcon.vue'
+    import HierarchyBar from '@common/badge/hierarchy.vue'
 
     // Util
     import { SourceList } from '~/constant/source'
 
     export default defineComponent({
-        components: { AssetLogo },
+        components: { AssetLogo, HierarchyBar },
         setup() {
             /** INJECTIONS */
             const assetDataInjection = inject('assetData')

@@ -33,7 +33,7 @@
                                 : 'text-lg'
                         "
                         :to="`/assets/${item.guid}/overview`"
-                        class="flex-shrink mb-0 overflow-hidden font-bold leading-6 tracking-wide truncate cursor-pointer text-gray hover:underline overflow-ellipsis whitespace-nowrap"
+                        class="flex-shrink mb-0 overflow-hidden font-bold leading-6 tracking-wide truncate cursor-pointer  text-gray hover:underline overflow-ellipsis whitespace-nowrap"
                     >
                         {{ title(item) }}
                     </router-link>
@@ -72,7 +72,7 @@
                             projection?.includes('owners') &&
                             getCombinedUsersAndGroups(item).length
                         "
-                        class="flex items-baseline mt-1 mr-4 text-xs leading-5 text-gray"
+                        class="flex items-baseline mt-1 mr-4 text-xs leading-5  text-gray"
                     >
                         <span
                             class="mr-1"
@@ -151,7 +151,7 @@
                 />
             </div>
 
-            <img :src="logo(item)" class="flex-none w-auto h-6" />
+            <!-- <img :src="logo(item)" class="flex-none w-auto h-6" /> -->
         </div>
     </div>
 </template>

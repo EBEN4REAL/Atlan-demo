@@ -1,15 +1,14 @@
 <template>
-    <p v-if="listCount === 0" class="mb-0 font-bold text-gray-700">
+    <span v-if="listCount === 0" class="text-xs text-gray-500">
         <i class="mr-1 fal fa-frown-open"></i>No {{ label.toLowerCase() }} found
-    </p>
-    <p v-else class="mb-0 font-bold leading-none text-gray-700">
-        {{ getCountString(listCount) }} of
-        <span class=""
-            >{{ getCountString(totalCount)
-            }}<span v-if="totalCount > 9999"></span>
-            {{ label.toLowerCase() }}</span
-        >
-    </p>
+    </span>
+    <div v-else class="text-xs text-gray-500">
+        Showing {{ getCountString(listCount) }} of
+        {{ getCountString(totalCount) }}
+        <span class="capitalize">
+            {{ label.toLowerCase() }}
+        </span>
+    </div>
 </template>
 
 <script lang="ts">

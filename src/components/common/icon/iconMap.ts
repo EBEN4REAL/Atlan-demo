@@ -11,6 +11,7 @@ import FilterDot from '~/assets/images/icons/filter-dot.svg'
 import Notification from '~/assets/images/icons/notification.svg'
 import NotificationDot from '~/assets/images/icons/notification-dot.svg'
 import Search from '~/assets/images/icons/search.svg'
+import ArrowDown from '~/assets/images/icons/arrow-down.svg'
 
 export default {
     BookmarkFilled,
@@ -26,4 +27,5 @@ export default {
     Search,
     Notification,
     NotificationDot,
+    ArrowDown,
 }

@@ -234,6 +234,5 @@
     .footer {
         width: inherit;
         @apply sticky bottom-4;
-        padding-top: 30rem;
     }
 </style>

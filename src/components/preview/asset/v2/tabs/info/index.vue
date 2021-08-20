@@ -165,7 +165,7 @@
                     id: b.name,
                     label: b.options.displayName,
                     image: b.options.image || '',
-                }))
+                })) || []
             // ? check if computed  not needed needed?
             const dynamicList = computed(() => [
                 ...PanelsMapToAsset[props.selectedAsset.typeName].panels,

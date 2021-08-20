@@ -8,12 +8,23 @@ import { BaseAttributes, BasicSearchAttributes } from '~/constant/projection';
 
 import { Category, Term } from "~/types/glossary/glossary.interface";
 import { Components } from '~/api/atlas/client'
-
+type Filters  = {
+    condition: string;
+    criterion: {
+        condition: string;
+        critetion: {
+            attributeName: string;
+            attributeValue: string;
+            operator: string;
+        }
+    }[]
+}
 export default function useGtcSearch(qualifiedName: Ref<string>) {
     const requestQuery = ref<string>();
     const offsetLocal = ref(0);
     const defaultLimit = 10;
     const limitLocal = ref<number>(defaultLimit);
+    const localFilters = ref<Filters>()
 
     const body = ref();
 
@@ -61,10 +72,14 @@ export default function useGtcSearch(qualifiedName: Ref<string>) {
                 condition: 'AND',
                 criterion: [
                     {
-                        attributeName: "qualifiedName",
-                        attributeValue: `@${qualifiedName.value ?? ''}`,
-                        operator: "endsWith",
-                    }
+                        condition: 'OR',
+                        criterion: [{
+                            attributeName: "qualifiedName",
+                            attributeValue: `@${qualifiedName.value ?? ''}`,
+                            operator: "endsWith",
+                        }]
+                    },
+                    ...(localFilters.value?.criterion ?? [])
                 ]
             },
             // sortBy: "Catalog.popularityScore",
@@ -117,12 +132,18 @@ export default function useGtcSearch(qualifiedName: Ref<string>) {
         mutate();
     }
 
-    const fetchAssetsPaginated = ({limit, offset, refreshSamePage, query}:{limit?: number, offset?: number, refreshSamePage?: Boolean, query?: string}) => {
+
+    const fetchAssetsPaginated = ({limit, offset, refreshSamePage, query, filters}:{limit?: number, offset?: number, refreshSamePage?: Boolean, query?: string, filters?: Filters }) => {
         if(query || query === ''){ 
             requestQuery.value = query;
             entities.value = [];
         }
         if(offset || offset === 0){ offsetLocal.value = offset;}
+        
+        if(filters?.criterion.length){
+            entities.value = [];
+            localFilters.value = filters;
+        }
 
         limitLocal.value = limit ?? defaultLimit;
         refreshBody()
@@ -130,7 +151,6 @@ export default function useGtcSearch(qualifiedName: Ref<string>) {
         if(refreshSamePage){
             mutate();
         } else {
-            // console.log('bruh', body.value)
             mutate();
             offsetLocal.value += limit ?? defaultLimit;
             refreshBody()

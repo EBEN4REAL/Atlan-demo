@@ -24,7 +24,7 @@
                 </a-popover>
             </div>
             <div>
-                <GtcFilters />
+                <GtcFilters @filterUpdated="updateFilters" />
             </div>
         </div>
         <div v-if="isLoading && !all.length">
@@ -198,6 +198,11 @@ export default defineComponent({
             fetchAssetsPaginated({})
         }
 
+        const updateFilters = (filters: any) => {
+            console.log(filters)
+            fetchAssetsPaginated({filters, offset: 0})
+        }
+
         watch(selectedEntity, (newSelectedEntity) => {
             context.emit('entityPreview', newSelectedEntity)
         })
@@ -212,6 +217,7 @@ export default defineComponent({
             onSearch,
             onEntitySelect,
             loadMore,
+            updateFilters,
             selectedEntity,
             isLoading,
             projectionOptions,

@@ -49,7 +49,7 @@
                 "
             >
                 <div
-                    v-if="Object.keys(applied).length"
+                    v-if="Object.keys(applied).length && !isVisible"
                     class="absolute w-2 h-2 mr-2 rounded-full  -left-2 bg-primary"
                 ></div>
                 <div class="flex items-center justify-between w-96">

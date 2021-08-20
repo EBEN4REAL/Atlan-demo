@@ -1,12 +1,13 @@
 <template>
     <!-- preloader -->
-    <div
+    <!-- TODO: isLoading from useAPI doesnt work fine  -->
+    <!-- <div
         v-if="loading"
         class="flex items-center justify-center px-5 mt-4 text-base"
     >
         <a-spin size="small" class="mr-2 leading-none"></a-spin
         ><span>Getting relations</span>
-    </div>
+    </div> -->
     <!-- preloader ends here -->
     <div class="flex items-center justify-between px-5 text-base">
         <!-- searchbar -->
@@ -29,7 +30,6 @@
                     class="flex flex-col"
                 />
             </template>
-            <!-- TODO: replace this icon with appropriate icon -->
             <a-badge :dot="checkedList?.length" :class="$style.badge">
                 <a-button class="px-2 py-1 ml-2 rounded">
                     <span class="flex items-center justify-center">
@@ -126,8 +126,6 @@
                 relationshipAssets.value = relationshipAssetTypes.value
                 assetId.value = selectedAsset.value.guid
                 loading.value = isLoading.value
-                console.log(isLoading.value)
-                loading.value = false
             }
 
             // filter required data
@@ -173,6 +171,14 @@
             padding-left: 0px !important;
             padding-top: 0px !important;
             padding-bottom: 0px !important;
+        }
+    }
+    .badge {
+        :global(.ant-badge-dot) {
+            @apply bg-primary !important;
+        }
+        :global(.ant-badge-count) {
+            @apply top-3 right-2 !important;
         }
     }
 </style>

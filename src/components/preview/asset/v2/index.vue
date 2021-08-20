@@ -1,6 +1,6 @@
 <template>
-    <div class="pt-6">
-        <div class="px-5">
+    <div class="pt-1">
+        <!-- <div class="px-5">
             <div class="flex items-center justify-between mt-2 mb-4 text-sm">
                 <component
                     :is="selectedAsset.typeName"
@@ -24,14 +24,14 @@
 
                 <div class="flex items-center">
                     <StatusBadge
-                        :showNoStatus="true"
+                        :showNoStatus="false"
                         :key="selectedAsset.guid"
                         :status-id="selectedAsset?.attributes?.assetStatus"
                         class="ml-1.5"
                     ></StatusBadge>
                 </div>
             </div>
-        </div>
+        </div> -->
         <a-tabs v-model:activeKey="activeKey" :class="$style.previewtab">
             <a-tab-pane
                 class="px-4 pb-4 overflow-y-auto tab-height"
@@ -71,6 +71,7 @@
     import Tooltip from '@common/ellipsis/index.vue'
 
     export default defineComponent({
+        name: 'AssetPreview',
         props: {
             selectedAsset: {
                 type: Object as PropType<assetInterface>,

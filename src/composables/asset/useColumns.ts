@@ -19,6 +19,7 @@ function constructRequest(guid: string) {
         'primary key',
         'foreign key',
         'tenantId',
+        'popularityScore',
     ]
 
     const paramsObj: any = {

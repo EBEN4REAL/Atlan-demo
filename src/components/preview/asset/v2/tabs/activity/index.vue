@@ -1,10 +1,10 @@
 <template>
-    <div class="flex justify-end px-8 py-6">
-        <fa
+    <div class="flex justify-end px-8 py-4">
+        <!-- <fa
             icon="fa sync"
             class="text-lg cursor-pointer text-primary"
             @click="refreshAudits"
-        ></fa>
+        ></fa> -->
     </div>
     <div
         v-if="isLoading"
@@ -40,9 +40,14 @@
         </a-timeline>
         <div
             v-if="!checkAuditsCount && !isAllLogsFetched"
-            class="block mb-8 text-center"
+            class="flex justify-center mb-8 text-center"
         >
-            <a-button @click="fetchMore">Show more logs</a-button>
+            <a-button
+                class="flex items-center px-5 py-4 text-sm font-bold border-none rounded-full  bg-primary-light text-primary"
+                style="box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.08)"
+                @click="fetchMore"
+                >Load more <fa icon="fas long-arrow-alt-down" class="ml-1"></fa
+            ></a-button>
         </div>
     </div>
     <div v-else class="flex flex-col items-center">

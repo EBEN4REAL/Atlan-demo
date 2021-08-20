@@ -14,12 +14,12 @@ const getAntDesignVariables = {
     'border-radius-base': '4px',
     // Table
     'table-header-bg': themeColors.gray[100],
-    'table-row-hover-bg': themeColors.primary.focus,
+    'table-row-hover-bg': themeColors.primary.light,
     'table-padding-horizontal': '1rem',
     'table-padding-vertical': '0.5rem',
-    //  overriding table border from antd.less, overriding color from here is not working. 👇
-    // "table-border-color": "#ff751f",
-    // "table-border-radius-base": "0.7rem",
+    // Progress
+    'progress-default-color': themeColors.primary.DEFAULT,
+    'progress-remaining-color': themeColors.primary.light,
     // Drawer
     'drawer-body-padding': 0,
     // Input

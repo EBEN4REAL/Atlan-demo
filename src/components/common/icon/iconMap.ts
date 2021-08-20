@@ -10,6 +10,8 @@ import FilterDot from '~/assets/images/icons/filter-dot.svg'
 import Filter from '~/assets/images/icons/filter.svg'
 import ArrowRight from '~/assets/images/icons/arrow-right.svg'
 import Search from '~/assets/images/icons/search.svg'
+import Database from '~/assets/images/icons/database.svg'
+import Schema from '~/assets/images/icons/schema.svg'
 
 export default {
     BookmarkFilled,
@@ -24,4 +26,6 @@ export default {
     Filter,
     ArrowRight,
     Search,
+    Database,
+    Schema,
 }

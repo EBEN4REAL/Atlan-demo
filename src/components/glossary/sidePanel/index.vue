@@ -87,7 +87,7 @@
                         key="2"
                         header="Top Terms"
                     >
-                        <div`>
+                        <div>
                             <GlossaryTopTerms
                                 v-if="glossaryTerms?.length"
                                 :terms="glossaryTerms"

@@ -260,10 +260,6 @@
 </script>
 
 <style lang="less" scoped>
-    :global(.ant-tabs-content) {
-        height: calc(100vh - 200px) !important;
-        overflow: scroll !important;
-    }
     :global(.ant-table th) {
         @apply whitespace-nowrap font-bold !important;
     }

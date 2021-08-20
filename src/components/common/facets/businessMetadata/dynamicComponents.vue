@@ -6,13 +6,13 @@
             class="px-2 mr-2 border shadow-none w-100"
             type="number"
             placeholder="Type..."
-            @change="handleChange"
+            @change="() => debounce(() => handleChange(), 800)"
         />
         <a-radio-group
             v-else-if="type === 'boolean'"
             v-model:value="value"
             class="shadow-none"
-            @change="handleChange"
+            @change="() => debounce(() => handleChange(), 800)"
         >
             <a-radio class="shadow-none" value="true">True</a-radio>
             <a-radio class="shadow-none" value="false">False</a-radio>
@@ -23,7 +23,7 @@
                 value-format="x"
                 class="w-100"
                 style="width: 100%"
-                @change="handleChange"
+                @change="() => debounce(() => handleChange(), 800)"
             />
         </span>
         <!-- <div v-else-if="type === 'array<date>'" class="">
@@ -230,7 +230,8 @@
         },
         emits: ['handleChange', 'removeFilter'],
         setup(props, { emit }) {
-            const { getDatatypeOfAttribute } = useBusinessMetadataHelper()
+            const { getDatatypeOfAttribute, createDebounce } =
+                useBusinessMetadataHelper()
             const value = ref(null)
 
             const handleChange = () => {
@@ -251,6 +252,7 @@
                 getDatatypeOfAttribute,
                 value,
                 handleChange,
+                debounce: createDebounce(),
             }
         },
     })

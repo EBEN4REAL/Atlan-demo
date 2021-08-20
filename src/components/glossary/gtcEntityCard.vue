@@ -5,7 +5,7 @@
     <img v-else-if="entity.typeName === 'AtlasGlossaryTerm'" :src="TermSvg" /></div>
     
     <div class="flex flex-col ml-1">
-      <span class="text-base leading-5 text-gray-700 cursor-pointer" @click="redirectToProfile">
+      <span class="text-base leading-6 text-gray-700 cursor-pointer" @click="redirectToProfile">
         {{  entity.displayText }}  
           <component
             :is="statusObject?.icon"

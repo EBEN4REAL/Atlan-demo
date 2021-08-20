@@ -1,5 +1,5 @@
 <template>
-    <div class="mb-6 p-0 w-11/12">
+    <div class="mb-6 p-0 w-full">
         <Readme
             class="min-w-full"
             placeholder="Add some details here..."

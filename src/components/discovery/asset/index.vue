@@ -1,6 +1,6 @@
 <template>
     <div class="flex w-full">
-        <div class="flex flex-col h-full bg-white border-r facets">
+        <div v-if="showFilters" class="flex flex-col h-full bg-white border-r facets">
             <AssetFilters
                 :initial-filters="initialFilters"
                 @refresh="handleFilterChange"
@@ -14,7 +14,7 @@
 
         <div class="flex flex-col items-stretch flex-1 mt-3 mb-1 bg-white w-80">
             <div class="flex flex-col h-full">
-                <div class="flex px-3">
+                <div class="flex px-3 mb-1">
                     <ConnectorDropdown
                         :data="connectorsPayload"
                         @change="handleChangeConnectors"
@@ -27,6 +27,7 @@
                 </div>
                 <div class="flex items-center mx-3 mt-1">
                     <a-input
+                        ref="assetSearchBar"
                         v-model:value="queryText"
                         placeholder="Search"
                         size="default"
@@ -34,10 +35,10 @@
                         @change="handleSearchChange"
                     >
                         <template #suffix>
-                            <Fa icon="fal search" class="mr-2 text-gray-500" />
+                            <AtlanIcon icon="Search" />
                         </template>
                     </a-input>
-                    <a-popover trigger="click" placement="bottomLeft">
+                    <a-popover trigger="click" placement="bottomRight">
                         <template #content>
                             <Preferences
                                 :default-projection="projection"
@@ -46,16 +47,9 @@
                                 @state="handleState"
                             ></Preferences>
                         </template>
-                        <a-badge :dot="projection.length" :class="$style.badge">
-                            <a-button class="px-2 py-1 ml-2 rounded">
-                                <span class="flex items-center justify-center">
-                                    <fa
-                                        icon="fas sort-amount-up"
-                                        class="hover:text-primary-500"
-                                    />
-                                </span>
-                            </a-button>
-                        </a-badge>
+                        <a-button class="p-1 ml-2 rounded">
+                            <AtlanIcon icon="FilterDot" class="h-6" />
+                        </a-button>
                     </a-popover>
                 </div>
 
@@ -106,12 +100,7 @@
 
                         <div
                             v-if="isLoadMore && (!isLoading || !isValidating)"
-                            class="
-                                text-sm
-                                font-bold
-                                cursor-pointer
-                                text-primary
-                            "
+                            class="text-sm font-bold cursor-pointer  text-primary"
                             @click="loadMore"
                         >
                             load more...
@@ -229,6 +218,16 @@
                     return {}
                 },
             },
+            termName: {
+                type: String,
+                required: false,
+                default: undefined,
+            },
+            showFilters: {
+                type: Boolean,
+                required: false,
+                default: true
+            }
         },
         emits: ['preview'],
         setup(props, { emit }) {
@@ -312,7 +311,7 @@
                 return sum
             })
             // Push all asset type
-            assetTypeList.value.push({
+            assetTypeList.value.unshift({
                 id: 'Catalog',
                 label: 'All',
             })
@@ -344,6 +343,7 @@
             const updateBody = (dontScroll) => {
                 initialBody = {
                     typeName: assetTypeListString,
+                    termName: props.termName,
                     // includeClassificationAttributes: true,
                     // includeSubClassifications: true,
                     limit: limit.value,
@@ -447,7 +447,7 @@
                 tracking.trackEvent(events.EVENT_ASSET_SEARCH, {
                     trigger: 'discover',
                 })
-            }, 100)
+            }, 200)
             const handleChangePreferences = (payload: any) => {
                 projection.value = payload
             }
@@ -525,8 +525,11 @@
                 }
             })
 
+            const assetSearchBar = ref<HTMLInputElement | null>(null)
+
             onMounted(() => {
                 fetchBMonStore()
+                assetSearchBar?.value?.focus()
             })
             return {
                 handleClearFiltersFromList,
@@ -560,6 +563,7 @@
                 handleState,
                 connectorsPayload,
                 filteredConnector,
+                assetSearchBar,
                 // listCount,
                 // isLoading,
                 // limit,
@@ -604,7 +608,7 @@
 <style lang="less" module>
     .searchbar {
         @apply mr-2 rounded;
-        @apply border-2 border-primary-focus !important;
+        @apply border-2 border-gray-300 !important;
         @apply outline-none;
         :global(.ant-input) {
             @apply h-6;
@@ -619,18 +623,10 @@
             @apply text-gray-500 opacity-80 text-sm;
         }
     }
-    .badge {
-        :global(.ant-badge-dot) {
-            @apply bg-primary !important;
-        }
-        :global(.ant-badge-count) {
-            @apply top-3 right-2 !important;
-        }
-    }
 </style>
 <style scoped>
     .facets {
-        min-width: 240px;
-        width: 240px;
+        min-width: 264px;
+        width: 264px;
     }
 </style>

@@ -1,12 +1,9 @@
 <template>
     <div class="flex justify-between items-center px-4 pl-5 py-3.5 text-xs">
-        <div class="font-medium text-gray-500">
+        <div class="text-sm font-medium text-gray-500">
             {{ totalAppliedFiltersCount || 'No' }} filters applied
         </div>
-        <div
-            v-if="totalAppliedFiltersCount"
-            class="flex items-center text-gray-500"
-        >
+        <div class="flex items-center text-gray-500">
             <div
                 class="px-3 py-1 text-sm font-medium text-gray-500 rounded cursor-pointer  hover:font-bold"
                 @click="resetAllFilters"
@@ -29,8 +26,8 @@
     >
         <template #expandIcon="{ isActive }">
             <div class="">
-                <fa
-                    icon="fas chevron-down "
+                <AtlanIcon
+                    icon="ChevronDown"
                     class="ml-1 transition-transform transform"
                     :class="isActive ? '-rotate-180' : 'rotate-0'"
                 />
@@ -104,10 +101,9 @@
     } from 'vue'
     import { List } from './filters'
     import { Components } from '~/api/atlas/client'
-    // ? Store
-    import { useBusinessMetadataStore } from '~/store/businessMetadata'
     import { useClassificationStore } from '~/components/admin/classifications/_store'
     import { List as StatusList } from '~/constant/status'
+    import useBusinessMetadataHelper from '~/composables/businessMetadata/useBusinessMetadataHelper'
 
     export default defineComponent({
         name: 'DiscoveryFacets',
@@ -140,7 +136,7 @@
         emits: ['refresh'],
         setup(props, { emit }) {
             const classificationsStore = useClassificationStore()
-            const businessMetadataStore = useBusinessMetadataStore()
+            const { bmFiltersList, bmDataMap } = useBusinessMetadataHelper()
             // console.log(props.initialFilters.facetsFilters, 'facetFilters')
             const activeKey: Ref<string> = ref('')
             const initialFilterMap = {
@@ -183,65 +179,11 @@
             /**
              * @desc combines static List with mapped BM object that has filter support
              * */
-            const dynamicList = computed(() => {
-                if (businessMetadataStore.getBusinessMetadataList?.length) {
-                    const bmFiltersList =
-                        businessMetadataStore.getBusinessMetadataList
-                            .filter((bm) =>
-                                bm.attributeDefs.some(
-                                    (a) => a.options?.isFacet === 'true'
-                                )
-                            )
-                            .map((bm) => ({
-                                id: bm.name,
-                                label: bm.options.displayName,
-                                component: 'businessMetadata',
-                                image: bm.options.image || '',
-                                overallCondition: 'OR',
-                                filters: [
-                                    {
-                                        attributeName: '',
-                                        condition: 'OR',
-                                        isMultiple: false,
-                                        operator: 'eq',
-                                    },
-                                ],
-                                isDeleted: false,
-                                isDisabled: false,
-                                exclude: false,
-                            }))
-                    return [...List, ...bmFiltersList]
-                }
-                return List
-            })
+            const dynamicList = computed(() => [
+                ...List,
+                ...bmFiltersList.value,
+            ])
 
-            /**
-             * @desc consist of BM objects items with isFacet set to true, excluding isFacet false attribtues
-             * */
-            const bmDataMap = computed(() => {
-                if (businessMetadataStore.getBusinessMetadataList?.length) {
-                    const filterableList =
-                        businessMetadataStore.getBusinessMetadataList
-                            .filter((bm) =>
-                                bm.attributeDefs.some(
-                                    (a) => a.options?.isFacet === 'true'
-                                )
-                            )
-                            .map((bm) => ({
-                                [bm.name]: {
-                                    applied: {},
-                                    list: {
-                                        ...bm,
-                                        attributeDefs: bm.attributeDefs.filter(
-                                            (a) => a.options?.isFacet === 'true'
-                                        ),
-                                    },
-                                },
-                            }))
-                    return Object.assign({}, ...filterableList)
-                }
-                return {}
-            })
             // Mapping of Data to child components
             const dataMap: { [key: string]: any } = ref({})
             dataMap.value.status = {

@@ -41,7 +41,7 @@ export default function handleTreeExpand(
             if (selectedKeys.value.includes(selected)) {
                 selectedKeys.value = []
             } else {
-                selectedKeys.value = selected
+                selectedKeys.value = [selected]
             }
             emit('select', event.node.eventKey)
         }

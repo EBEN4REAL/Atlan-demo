@@ -4,7 +4,7 @@
             <div class="flex gap-x-2">
                 <a-popover placement="bottomLeft" trigger="click">
                     <template #content>
-                        <div class="flex flex-col space-y-2">
+                        <div class="flex flex-col pb-1 gap-y-3">
                             <template
                                 v-for="(item, index) in list"
                                 :key="item.typeName"
@@ -26,20 +26,15 @@
                             </template>
                         </div>
                     </template>
-                    <div class="flex py-2 pr-3 cursor-pointer">
-                        <p
-                            v-if="list?.length > 0"
-                            class="flex items-center mb-0 text-xs tracking-wide text-gray-900 align-middle  hover:bg-gray-100"
-                        >
+                    <div class="flex pr-3 cursor-pointer">
+                        <p v-if="list?.length > 0" class="connector-btn">
                             <component
                                 :is="list[0].typeName"
                                 class="w-auto h-3 mr-1"
                             ></component
                             >All {{ list[0].name }}s
-                            <fa
-                                icon="fas chevron-down"
-                                class="ml-2 text-gray-500"
-                            ></fa>
+                            {{ selectorValues }}
+                            <AtlanIcon icon="ChevronDown" class="ml-2" />
                         </p>
                     </div>
                 </a-popover>
@@ -150,6 +145,13 @@
                 // dirtyTimestamp.value = Date.now().toString();
             }
 
+            // const selectorValues = computed(() =>
+            //     list.value.map((lv) => {
+            //         debugger
+            //         return asset?.[lv.attribute]
+            //     })
+            // )
+
             return {
                 list,
                 asset,
@@ -159,7 +161,19 @@
                 isDisabled,
                 getKey,
                 assetDirty,
+                // selectorValues,
             }
         },
     })
 </script>
+
+<style scoped>
+    .connector-btn {
+        @apply flex items-center h-8 px-2 mb-0;
+        @apply text-xs tracking-wide text-gray;
+        @apply rounded cursor-pointer;
+    }
+    .connector-btn:hover {
+        @apply bg-gray-100;
+    }
+</style>

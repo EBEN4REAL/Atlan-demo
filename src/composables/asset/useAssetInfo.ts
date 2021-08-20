@@ -146,6 +146,25 @@ export default function useAssetInfo() {
         return relations
     }
 
+    const getTableauProperties = (asset: assetInterface, properties: any) => {
+        const data: any = []
+        properties.forEach((tableauProperty: any) => {
+            const { label, property } = tableauProperty
+            if (attributes(asset)[property]) {
+                const temp = {}
+                temp.id = property
+                temp.label = label
+                temp[property] = attributes(asset)[property]
+                if (property === '__timestamp')
+                    temp[property] = createdAt(asset)
+                else if (property === '__modificationTimestamp')
+                    temp[property] = updatedAt(asset)
+                data.push(temp)
+            }
+        })
+        return data
+    }
+
     return {
         databaseLogo,
         schemaLogo,
@@ -171,5 +190,6 @@ export default function useAssetInfo() {
         ownerUsers,
         assetStatus,
         getHierarchy,
+        getTableauProperties,
     }
 }

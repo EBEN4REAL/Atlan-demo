@@ -2,23 +2,31 @@
     <div class="flex items-center mb-1">
         <component
             :is="dataTypeImage(asset)"
-            class="w-3 h-3 mr-1 text-gray"
+            class="flex-none w-auto h-4 mr-2 text-gray"
         ></component>
         <span
-            class="items-center flex-shrink mr-2 text-xs leading-tight  text-gray"
+            class="
+                flex-shrink
+                pt-0.5
+                mr-2
+                overflow-hidden
+                text-xs
+                font-bold
+                align-middle
+                text-gray
+                overflow-ellipsis
+            "
         >
             {{ asset.displayText }}
         </span>
-        <div class="chip pkey" v-if="asset.attributes.isPrimary">
-            <Fa icon="fas key" />
-            <span class="pl-1">Pkey</span>
+        <div class="chip" v-if="asset.attributes.isPrimary">
+            <AtlanIcon icon="PrimaryKey" />
         </div>
-        <div class="chip fkey" v-if="asset.attributes.isPrimary">
-            <Fa icon="fas key" class="transform rotate-180" />
-            <span class="pl-1">Fkey</span>
+        <div class="chip" v-if="asset.attributes.isPrimary">
+            <AtlanIcon icon="ForeignKey" />
         </div>
     </div>
-    <span class="text-xs leading-relaxed text-gray-500">
+    <span class="text-xs leading-relaxed text-gray-500 whitespace-pre-wrap">
         {{ asset.attributes.description || 'No description' }}
     </span>
 </template>

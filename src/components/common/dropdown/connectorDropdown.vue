@@ -21,10 +21,8 @@
                 ></ConnectionSelector>
             </template>
 
-            <div v-if="connector" class="flex py-2 cursor-pointer">
-                <div
-                    class="flex items-center text-xs text-gray-900 align-middle"
-                >
+            <div v-if="connector" class="flex cursor-pointer">
+                <div class="connector-btn">
                     <img :src="getImage(connector)" class="w-auto h-4 mr-1" />
                     <div v-if="connectionObject" class="text-xs">
                         {{
@@ -39,16 +37,12 @@
                             connector?.substr(1).toLowerCase()
                         }}
                     </div>
-                    <fa icon="fas chevron-down" class="ml-2 text-gray-500"></fa>
+                    <AtlanIcon icon="ChevronDown" class="ml-2" />
                 </div>
             </div>
-            <div v-else class="flex py-2 cursor-pointer">
-                <p
-                    class="flex items-center mb-0 text-xs tracking-wide text-gray-900 align-middle  hover:bg-gray-100"
-                >
-                    <fa icon="fal plug" class="mr-1"></fa>All Connectors
-                    <fa icon="fas chevron-down" class="ml-2 text-gray-500"></fa>
-                </p>
+            <div v-else class="connector-btn">
+                <fa icon="fal plug" class="mr-1"></fa>All Connectors
+                <AtlanIcon icon="ChevronDown" class="ml-2" />
             </div>
         </a-popover>
     </div>
@@ -135,3 +129,14 @@
         methods: {},
     })
 </script>
+
+<style scoped>
+    .connector-btn {
+        @apply flex items-center h-8 px-2 mb-0;
+        @apply text-xs tracking-wide text-gray;
+        @apply rounded cursor-pointer;
+    }
+    .connector-btn:hover {
+        @apply bg-gray-100;
+    }
+</style>

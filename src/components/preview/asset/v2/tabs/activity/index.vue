@@ -1,7 +1,10 @@
 <template>
-    <div class="flex justify-between p-4 mb-10 border-b border-gray-300">
-        <span class="font-bold">Logs</span>
-        <fa icon="fal sync" class="cursor-pointer" @click="refreshAudits"></fa>
+    <div class="flex justify-end px-8 py-6">
+        <fa
+            icon="fa sync"
+            class="text-lg cursor-pointer text-primary"
+            @click="refreshAudits"
+        ></fa>
     </div>
     <div
         v-if="isLoading"
@@ -15,7 +18,7 @@
             <a-timeline-item v-for="(log, index) in audits" :key="index">
                 <template #dot>
                     <div
-                        class="border rounded-full  ant-timeline-item-dot bg-primary-light border-primary"
+                        class="border  ant-timeline-item-dot bg-primary-light border-primary"
                     ></div>
                 </template>
                 <div>
@@ -28,11 +31,10 @@
                         {{ getEventByAction(log).label || 'Event' }}
                     </div>
                 </div>
-                <div class="text-gray-500">
-                    <span class="mr-4 capitalize">{{
-                        getActionUser(log.user)
-                    }}</span>
-                    <span>{{ timeAgo(log.timestamp) }}</span>
+                <div class="flex items-center leading-5 text-gray-500">
+                    <div class="capitalize">{{ getActionUser(log.user) }}</div>
+                    <div class="mx-3 name-time-separator"></div>
+                    <div>{{ timeAgo(log.timestamp) }}</div>
                 </div>
             </a-timeline-item>
         </a-timeline>
@@ -149,6 +151,14 @@
     .ant-timeline-item-dot {
         width: 13px;
         height: 13px;
+        border-radius: 50%;
+    }
+
+    .name-time-separator {
+        height: 5px;
+        width: 5px;
+        background-color: #c4c4c4;
+        border-radius: 50%;
     }
 
     :global(.ant-timeline-item-content) {

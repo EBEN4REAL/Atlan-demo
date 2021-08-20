@@ -9,7 +9,7 @@
                 {{ a.options.displayName }}
             </div>
 
-            <div class="flex items-center self-start flex-grow w-32 pt-1">
+            <div class="flex items-center self-start flex-grow w-32">
                 <a-input
                     v-if="getDatatypeOfAttribute(a.typeName) === 'number'"
                     v-model:value="a.value"

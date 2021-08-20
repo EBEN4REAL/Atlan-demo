@@ -234,7 +234,7 @@
             const value = ref(null)
 
             const handleChange = () => {
-                emit('handleChange', props.type, props.operator, value.value)
+                emit('handleChange', props.operator, value.value)
             }
 
             onBeforeUnmount(() => {

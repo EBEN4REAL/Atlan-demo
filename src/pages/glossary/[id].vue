@@ -90,8 +90,8 @@
                     <a-tab-pane key="2" tab="Terms & Categories">
                         <GlossaryTermsAndCategoriesTab
                             :qualified-name="qualifiedName"
-                            :guid="glossary.guid"
-                            :type="glossary.typeName"
+                            :guid="glossary?.guid"
+                            :type="glossary?.typeName"
                             @entityPreview="handleCategoryOrTermPreview"
                         />
                     </a-tab-pane>

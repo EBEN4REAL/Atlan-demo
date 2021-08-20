@@ -60,7 +60,12 @@
             /** WATCHERS */
             watch([data, error], () => {
                 if (data.value && error.value === undefined) {
-                    console.log('data.value:', data.value)
+                    tableColumns.value.push({
+                        title: '#',
+                        dataIndex: 'hash_index',
+                        width: 5,
+                        ellipsis: true,
+                    })
                     // convert data from API in Antd-table format
                     data.value.columns.forEach((col) => {
                         const obj = {
@@ -72,7 +77,7 @@
                         tableColumns.value.push(obj)
                     })
                     data.value.results.forEach((val, index) => {
-                        let obj = {}
+                        let obj = { hash_index: index + 1 }
                         data.value.columns.forEach((col, i) => {
                             obj[col.columnName] = val[i]
                         })
@@ -86,6 +91,7 @@
             return {
                 tableColumns,
                 results,
+                error,
             }
         },
     })
@@ -100,5 +106,9 @@
     }
     :global(.ant-progress-status-success .ant-progress-bg) {
         background-color: #1890ff !important;
+    }
+
+    :global(.ant-table-row-cell-ellipsis .ant-table-column-title) {
+        @apply lowercase !important;
     }
 </style>

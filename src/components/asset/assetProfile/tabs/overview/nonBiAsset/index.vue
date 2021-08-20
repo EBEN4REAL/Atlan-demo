@@ -1,5 +1,5 @@
 <template>
-    <div class="px-5 mt-8">
+    <div class="pl-12 pr-5 mt-8">
         <!-- Overview Columns widget -->
         <div class="mb-16">
             <h2 class="mb-6 text-base text-gray">Columns preview</h2>

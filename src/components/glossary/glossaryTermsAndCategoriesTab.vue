@@ -33,41 +33,46 @@
         <div v-else-if="all.length" class="flex flex-row w-full">
             <div class="w-full">
                 <a-tabs default-active-key="1" class="border-0">
-                    <a-tab-pane key="1" :tab="`All (${all.length})`">
-                        <div v-for="asset in all" :key="asset.guid">
-                            <GtcEntityCard
-                                :class="{
-                                    'hover:bg-gray-100': true,
-                                    'bg-blue-50':
-                                        selectedEntity?.guid === asset.guid,
-                                }"
-                                :entity="asset"
-                                :projection="projection"
-                                @gtcCardClicked="onEntitySelect"
-                            />
+                    <a-tab-pane key="1" :tab="`All (${all.length})`"
+                        ><div class="overflow-auto" style="max-height: 380px">
+                            <div v-for="asset in all" :key="asset.guid">
+                                <GtcEntityCard
+                                    :class="{
+                                        'hover:bg-gray-100': true,
+                                        'bg-blue-50':
+                                            selectedEntity?.guid === asset.guid,
+                                    }"
+                                    :entity="asset"
+                                    :projection="projection"
+                                    @gtcCardClicked="onEntitySelect"
+                                />
+                            </div>
                         </div>
                     </a-tab-pane>
-                    <a-tab-pane key="2" :tab="`Terms (${terms.length})`">
-                        <div v-for="asset in terms" :key="asset.guid">
-                            <GtcEntityCard
-                                :class="{ 'hover:bg-gray-100': true }"
-                                :entity="asset"
-                                :projection="projection"
-                                @gtcCardClicked="onEntitySelect"
-                            />
+                    <a-tab-pane key="2" :tab="`Terms (${terms.length})`"
+                        ><div class="overflow-auto" style="max-height: 380px">
+                            <div v-for="asset in terms" :key="asset.guid">
+                                <GtcEntityCard
+                                    :class="{ 'hover:bg-gray-100': true }"
+                                    :entity="asset"
+                                    :projection="projection"
+                                    @gtcCardClicked="onEntitySelect"
+                                />
+                            </div>
                         </div>
                     </a-tab-pane>
                     <a-tab-pane
                         key="3"
                         :tab="`Categories (${categories.length})`"
-                    >
-                        <div v-for="asset in categories" :key="asset.guid">
-                            <GtcEntityCard
-                                :class="{ 'hover:bg-gray-100': true }"
-                                :entity="asset"
-                                :projection="projection"
-                                @gtcCardClicked="onEntitySelect"
-                            />
+                        ><div class="overflow-auto" style="max-height: 380px">
+                            <div v-for="asset in categories" :key="asset.guid">
+                                <GtcEntityCard
+                                    :class="{ 'hover:bg-gray-100': true }"
+                                    :entity="asset"
+                                    :projection="projection"
+                                    @gtcCardClicked="onEntitySelect"
+                                />
+                            </div>
                         </div>
                     </a-tab-pane>
                 </a-tabs>

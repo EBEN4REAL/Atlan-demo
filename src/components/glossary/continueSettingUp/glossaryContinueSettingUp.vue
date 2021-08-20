@@ -14,110 +14,111 @@
         <h2 class="ml-8 text-2xl leading-6">Coninue Setting up GLossary</h2>
         <div class="pt-4 my-3 bg-white">
             <a-tabs default-active-key="1" class="border-0">
-                <a-tab-pane
-                    v-if="missingOwners.length"
-                    key="1"
-                    tab="Add Owners"
-                >
-                    <a-table
-                        :columns="ownersTableColumns"
-                        :data-source="missingOwners"
-                        :pagination="false"
-                        :showHeader="false"
-                        row-key="guid"
-                    >
-                        <template #name="{ record }">
-                            <div class="flex w-24 ml-2 align-middle">
-                                <span class="mr-2">
-                                    <img
-                                        v-if="record.type === 'term'"
-                                        :src="TermSvg"
-                                        height="16"
-                                    />
-                                    <img
-                                        v-if="record.type === 'category'"
-                                        :src="CategorySvg"
-                                        height="16"
-                                    />
-                                </span>
-                                <span
-                                    class="text-sm leading-5 text-gray-700  text-bold"
-                                    >{{ record.name }}</span
+                <a-tab-pane v-if="missingOwners.length" key="1" tab="Add Owners"
+                    ><div class="overflow-auto" style="max-height: 270px">
+                        <a-table
+                            :columns="ownersTableColumns"
+                            :data-source="missingOwners"
+                            :pagination="false"
+                            :showHeader="false"
+                            row-key="guid"
+                        >
+                            <template #name="{ record }">
+                                <div class="flex w-24 ml-2 align-middle">
+                                    <span class="mr-2">
+                                        <img
+                                            v-if="record.type === 'term'"
+                                            :src="TermSvg"
+                                            height="16"
+                                        />
+                                        <img
+                                            v-if="record.type === 'category'"
+                                            :src="CategorySvg"
+                                            height="16"
+                                        />
+                                    </span>
+                                    <span
+                                        class="text-sm leading-5 text-gray-700  text-bold"
+                                        >{{ record.name }}</span
+                                    >
+                                </div>
+                            </template>
+                            <template #description="{ record }">
+                                <span v-if="record.shortDescription">{{
+                                    record.shortDescription
+                                }}</span>
+                                <span v-else class="text-gray">- NA -</span>
+                            </template>
+                            <template #owners="{ record }">
+                                <a-select
+                                    mode="multiple"
+                                    placeholder="Please select"
+                                    style="width: 200px"
                                 >
-                            </div>
-                        </template>
-                        <template #description="{ record }">
-                            <span v-if="record.shortDescription">{{
-                                record.shortDescription
-                            }}</span>
-                            <span v-else class="text-gray">- NA -</span>
-                        </template>
-                        <template #owners="{ record }">
-                            <a-select
-                                mode="multiple"
-                                placeholder="Please select"
-                                style="width: 200px"
-                            >
-                                <a-select-option
-                                    v-for="i in 25"
-                                    :key="(i + 9).toString(36) + i"
-                                >
-                                    {{ (i + 9).toString(36) + i }}
-                                </a-select-option>
-                            </a-select>
-                            <!-- <Owners :item="record" :key="record.guid" /> -->
-                        </template>
-                    </a-table>
+                                    <a-select-option
+                                        v-for="i in 25"
+                                        :key="(i + 9).toString(36) + i"
+                                    >
+                                        {{ (i + 9).toString(36) + i }}
+                                    </a-select-option>
+                                </a-select>
+                                <!-- <Owners :item="record" :key="record.guid" /> -->
+                            </template>
+                        </a-table>
+                    </div>
                 </a-tab-pane>
 
                 <a-tab-pane
                     v-if="missingDescription.length"
                     key="2"
                     tab="Add Descriptions"
-                >
-                    <a-table
-                        :columns="descriptionTableColumns"
-                        :data-source="missingDescription"
-                        :pagination="false"
-                        :showHeader="false"
-                        row-key="guid"
-                    >
-                        <template #name="{ record }">
-                            <div class="flex align-middle">
-                                <span class="mr-2">
-                                    <img
-                                        v-if="record.type === 'term'"
-                                        :src="TermSvg"
-                                        width="20"
-                                    />
-                                    <img
-                                        v-if="record.type === 'category'"
-                                        :src="CategorySvg"
-                                        width="20"
-                                    />
-                                </span>
-                                <span>{{ record.name }}</span>
-                            </div>
-                        </template>
-                        <template #description="{ record }">
-                            <GlossaryAddDescriptionCard
-                                :entity="record"
-                                @updateDescription="
-                                    (type) => $emit('updateDescription', type)
-                                "
-                            />
-                        </template>
-                    </a-table>
+                    ><div class="overflow-auto" style="max-height: 270px">
+                        <a-table
+                            :columns="descriptionTableColumns"
+                            :data-source="missingDescription"
+                            :pagination="false"
+                            :showHeader="false"
+                            row-key="guid"
+                        >
+                            <template #name="{ record }">
+                                <div class="flex align-middle">
+                                    <span class="mr-2">
+                                        <img
+                                            v-if="record.type === 'term'"
+                                            :src="TermSvg"
+                                            width="20"
+                                        />
+                                        <img
+                                            v-if="record.type === 'category'"
+                                            :src="CategorySvg"
+                                            width="20"
+                                        />
+                                    </span>
+                                    <span>{{ record.name }}</span>
+                                </div>
+                            </template>
+                            <template #description="{ record }">
+                                <GlossaryAddDescriptionCard
+                                    :entity="record"
+                                    @updateDescription="
+                                        (type) =>
+                                            $emit('updateDescription', type)
+                                    "
+                                />
+                            </template>
+                        </a-table>
+                    </div>
                 </a-tab-pane>
 
                 <a-tab-pane
                     v-if="missingLinkedAssets.length"
                     key="3"
                     tab="Link Assets"
-                >
-                    Link Assets
-                    <br />
-                    {{ missingLinkedAssets }}
+                    ><div class="overflow-auto" style="max-height: 270px">
+                        Link Assets
+                        <br />
+                        {{ missingLinkedAssets }}
+                    </div>
                 </a-tab-pane>
             </a-tabs>
         </div>

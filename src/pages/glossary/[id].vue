@@ -74,10 +74,7 @@
                     class="border-0"
                 >
                     <a-tab-pane key="1" tab="Overview">
-                        <div
-                            class="px-5 mt-4 overflow-y-auto"
-                            style="height: 400px"
-                        >
+                        <div class="px-5 mt-4">
                             <GlossaryProfileOverview :entity="glossary" />
                             <GlossaryContinueSettingUp
                                 v-if="!isLoading"

@@ -2,7 +2,7 @@
     <div v-if="isLoading" class="">
         <LoadingView />
     </div>
-    <divv-else class="flex flex-row h-full" :class="$style.categoryHome">
+    <divv-else class="flex flex-row h-full" :class="$style.tabClasses">
         <div class="h-full overflow-auto" :class="currentTab === '1' || (currentTab === '2' && !previewEntity?.guid) ? 'w-full' : 'w-2/3'">
             <div class="flex flex-row justify-between pl-8 pr-4 mt-6 mb-5">
                 <div class="flex flex-row">
@@ -173,6 +173,21 @@ export default defineComponent({
     }
     :global(.ant-tabs-bar) {
         @apply mb-0;
+    }
+}
+.tabClasses {
+    :global(.ant-tabs-tab) {
+        margin: 0px 32px 0px 0px !important;
+        padding: 0px 0px 18px 0px !important;
+    }
+    :global(.ant-tabs-nav) {
+        margin: 0px !important;
+    }
+    :global(.ant-tabs-tab-active) {
+        @apply text-gray-700 font-bold !important;
+    }
+    :global(.ant-tabs-bar) {
+        @apply px-5 !important;
     }
 }
 </style>

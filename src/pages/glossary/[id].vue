@@ -256,7 +256,7 @@
     }
     .tabClasses {
         :global(.ant-tabs-tab) {
-            margin: 0px 20px 0px 0px !important;
+            margin: 0px 32px 0px 0px !important;
             padding: 0px 0px 20px 0px !important;
         }
         :global(.ant-tabs-nav) {

@@ -7,6 +7,17 @@ import array from '~/assets/images/dataType/array.svg'
 import struct from '~/assets/images/dataType/struct.svg'
 import geography from '~/assets/images/dataType/geography.svg'
 
+export const images = {
+    Number: number,
+    Decimal: float1,
+    Boolean: boolean,
+    Text: string,
+    'Date/Timestamp': date,
+    Array: array,
+    Object: struct,
+    Geography: geography,
+}
+
 export const dataTypeList = [
     {
         id: 'number',

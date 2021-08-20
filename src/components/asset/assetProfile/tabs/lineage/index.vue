@@ -103,8 +103,8 @@
 
     // Components
     import LoadingView from '@common/loaders/section.vue'
-    import LineageGraph from '~/components/lineage/lineageGraph.vue'
-    import LineageHeader from '~/components/lineage/lineageHeader.vue'
+    import LineageGraph from '@/asset/assetProfile/tabs/lineage/lineageGraph.vue'
+    import LineageHeader from '@/asset/assetProfile/tabs/lineage/lineageHeader.vue'
 
     // Composables
     import useLineage from '~/composables/lineage/useLineage'
@@ -134,6 +134,7 @@
             /** METHODS */
             // fetch
             const fetch = () => {
+                console.log('lineage - fetch')
                 const { data } = useLineage(
                     asset.value.guid,
                     depth.value,

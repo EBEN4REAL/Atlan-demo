@@ -1,6 +1,6 @@
 <template>
     <div class="flex w-full">
-        <div class="flex flex-col h-full bg-white border-r facets">
+        <div v-if="showFilters" class="flex flex-col h-full bg-white border-r facets">
             <AssetFilters
                 :initial-filters="initialFilters"
                 @refresh="handleFilterChange"
@@ -218,6 +218,16 @@
                     return {}
                 },
             },
+            termName: {
+                type: String,
+                required: false,
+                default: undefined,
+            },
+            showFilters: {
+                type: Boolean,
+                required: false,
+                default: true
+            }
         },
         emits: ['preview'],
         setup(props, { emit }) {
@@ -333,6 +343,7 @@
             const updateBody = (dontScroll) => {
                 initialBody = {
                     typeName: assetTypeListString,
+                    termName: props.termName,
                     // includeClassificationAttributes: true,
                     // includeSubClassifications: true,
                     limit: limit.value,

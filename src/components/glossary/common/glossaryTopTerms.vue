@@ -1,5 +1,5 @@
 <template>
-    <div class="min-w-full">
+    <div>
         <div
             v-if="termsLoading"
         >
@@ -7,7 +7,7 @@
         </div>
         <div
             v-else-if="termCount && !termsLoading"
-            class=" max-h-80 overflow-y-scroll  flex flex-col text-left"
+            class="flex flex-col text-left"
         >
             <div
                 v-for="(term, index) in termsList.slice(0, numberOfTerms)"
@@ -23,7 +23,7 @@
                 />
             </div>
         </div>
-        <div class="items-start">
+        <div class="items-start my-1">
             <a-button type="link">See all {{ termCount }} terms -></a-button>
         </div>
     </div>
@@ -58,7 +58,7 @@ export default defineComponent({
             fetchGlossaryTerms,
         } = useGlossaryTerms()
 
-        const numberOfTerms = computed(() => props.numberOfTerms ?? 7)
+        const numberOfTerms = computed(() => props.numberOfTerms ?? 5)
 
         const termsList = computed(() => {
             if (glossaryGuid.value) return glossaryTerms?.value

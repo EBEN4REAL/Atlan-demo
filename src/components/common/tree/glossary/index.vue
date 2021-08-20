@@ -92,10 +92,14 @@ export default defineComponent({
     emits: ['showCreateGlossaryModal', 'showUpdateGlossaryModal', 'success'],
 
     setup(props, { emit }) {
+        const router = useRouter()
+
+        
+
         const { list, totalCount, listCount, refetchGlossary, response } =
             fetchGlossaryList()
         const { selectedKeys, expandedKeys, expandNode, selectNode } =
-            handleTreeExpand()
+            handleTreeExpand(emit)
 
         const index = new EmojiIndex(data)
 
@@ -138,7 +142,6 @@ export default defineComponent({
                 })
             }
         }
-        const router = useRouter()
 
         const reirectToProfile = (type: string, guid: string) => {
             if (type === 'glossary') router.push(`/glossary/${guid}`)

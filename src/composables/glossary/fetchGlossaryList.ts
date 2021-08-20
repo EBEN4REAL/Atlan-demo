@@ -9,6 +9,7 @@ import { BaseAttributes, GlossaryAttributes } from "~/constant/projection";
 import { GlossaryType } from "~/types/atlas/glossary";
 
 export default function fetchGlossaryList(
+  parentGuid: string,
   query?: string,
   filters?: Components.Schemas.FilterCriteria,
   limit?: number,
@@ -34,7 +35,7 @@ export default function fetchGlossaryList(
     }
   );
 
-  const list: ComputedRef<GlossaryType[] | undefined> = computed(() => response.value?.entities);
+  const list: ComputedRef<GlossaryType[] | undefined> = computed(() => response.value?.entities?.filter((entity) => entity.guid === parentGuid));
   const totalCount = computed(() => response.value?.approximateCount);
   const listCount = computed(() => response?.value?.entities?.length);
 

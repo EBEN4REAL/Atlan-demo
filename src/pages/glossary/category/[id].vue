@@ -2,7 +2,7 @@
     <div v-if="isLoading" class="">
         <LoadingView />
     </div>
-    <divv-else class="flex flex-row h-full" :class="$style.tabClasses">
+    <div v-else class="flex flex-row h-full" :class="$style.tabClasses">
         <div class="h-full overflow-auto" :class="currentTab === '1' || (currentTab === '2' && !previewEntity?.guid) ? 'w-full' : 'w-2/3'">
             <div class="flex flex-row justify-between pl-8 pr-4 mt-6 mb-5">
                 <div class="flex flex-row">
@@ -63,7 +63,7 @@
         </div>
         <SidePanel v-if="currentTab === '1'" :entity="category" :topTerms="categoryTerms" />
         <CategoryTermPreview v-if="currentTab === '2' && previewEntity" :entity="previewEntity"  />
-    </divv-else>
+    </div>
 </template>
 
 <script lang="ts">

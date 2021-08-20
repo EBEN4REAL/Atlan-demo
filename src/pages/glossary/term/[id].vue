@@ -107,7 +107,7 @@ export default defineComponent({
         const currentTab = ref('1');
         const previewEntity = ref();
 
-        const { entity: term, error, isLoading } = useGTCEntity<Term>('term', guid)
+        const { entity: term, error, isLoading } = useGTCEntity<Term>('term', guid, 'profile')
 
         const title = computed(() => term.value?.attributes?.name)
         const shortDescription = computed(() => term.value?.attributes?.shortDescription)

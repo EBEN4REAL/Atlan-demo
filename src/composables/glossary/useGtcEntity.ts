@@ -12,13 +12,14 @@ import { BaseAttributes, BasicSearchAttributes } from '~/constant/projection';
  * Uses the Atlas API to fetch a Glossary / Category / Term depending on 
  * the type
  */
-const useGTCEntity = <T extends Glossary | Category | Term>(type: 'glossary' | 'category' | 'term', entityGuid:Ref<string>) => {
+const useGTCEntity = <T extends Glossary | Category | Term>(type: 'glossary' | 'category' | 'term', entityGuid:Ref<string>, cache?: string) => {
     const keyMap = {
         glossary: 'AtlasGlossary',
         category: 'AtlasGlossaryCategory',
         term: 'AtlasGlossaryTerm',
     }
 
+    const guidLocal = ref<string>()
     const body = ref({});
 
     const relatedTerms = [
@@ -74,7 +75,7 @@ const useGTCEntity = <T extends Glossary | Category | Term>(type: 'glossary' | '
 
     body.value = getBody();
     const { data, error, isValidating: isLoading, mutate } = useAPI<any>(GET_GTC_ENTITY, 'POST', {
-        cache: true,
+        cache: cache ?? true,
         dependantFetchingKey: entityGuid,
         body,
         options: {
@@ -82,14 +83,19 @@ const useGTCEntity = <T extends Glossary | Category | Term>(type: 'glossary' | '
         }
     })
 
-    const entity = computed(() => data.value?.entities[0] as T)
+    const entity = computed(() => data.value?.entities ? data.value?.entities[0] as T : undefined)
 
     watch(entityGuid, () => {
         body.value = getBody()
         mutate()
-    })
+    });
 
-    return { entity, error, isLoading }
+    const refetch = () => {
+        body.value = getBody()
+        mutate()
+    }
+
+    return { entity, error, isLoading, refetch }
 }
 
 export default useGTCEntity;

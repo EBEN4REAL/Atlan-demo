@@ -166,10 +166,13 @@
                     label: b.options.displayName,
                     image: b.options.image || '',
                 })) || []
+            const panels = PanelsMapToAsset[props.selectedAsset.typeName].panels
+            const propertiesPanel = panels.pop()
             // ? check if computed  not needed needed?
             const dynamicList = computed(() => [
-                ...PanelsMapToAsset[props.selectedAsset.typeName].panels,
+                ...panels,
                 ...applicableBMList(props.infoTabData.typeName),
+                propertiesPanel,
             ])
 
             return {

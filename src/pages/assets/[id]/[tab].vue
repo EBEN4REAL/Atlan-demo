@@ -4,7 +4,7 @@
 
     <div v-if="data?.asset" class="w-full">
         <div class="z-30 px-4 pt-5 pb-3 bg-white">
-            <assetProfileHeader :asset="data?.asset" />
+            <Header :asset="data?.asset" />
         </div>
         <div class="asset-profile">
             <a-tabs
@@ -45,31 +45,25 @@
     // Components
     import LoadingView from '@common/loaders/section.vue'
     import ErrorView from '@common/error/index.vue'
-    import assetProfileHeader from '@/asset/assetProfile/assetProfileHeader.vue'
+    import Header from '~/components/asset/assetProfile/header.vue'
     import useAsset from '~/composables/asset/useAsset'
 
     export default defineComponent({
         components: {
-            assetProfileHeader,
+            Header,
             LoadingView,
             ErrorView,
             overview: defineAsyncComponent(
                 () =>
                     import(
-                        '~/components/asset/assetProfile/tabs/overview/index.vue'
+                        '~/components/asset/assetProfile/tabs/overview/nonBiAsset/index.vue'
                     )
             ),
             lineage: defineAsyncComponent(
-                () =>
-                    import(
-                        '~/components/asset/assetProfile/tabs/lineage/index.vue'
-                    )
+                () => import('@/asset/assetProfile/tabs/lineage/index.vue')
             ),
             settings: defineAsyncComponent(
-                () =>
-                    import(
-                        '~/components/asset/assetProfile/tabs/settings/index.vue'
-                    )
+                () => import('@/asset/assetProfile/tabs/settings/index.vue')
             ),
         },
         setup(_, context) {

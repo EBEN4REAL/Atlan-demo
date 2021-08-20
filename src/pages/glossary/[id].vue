@@ -4,7 +4,7 @@
     </div>
     <div v-else class="flex flex-row h-full" :class="$style.tabClasses">
         <div
-            class="h-full overflow-auto"
+            class="h-full"
             :class="
                 currentTab === '1' ||
                 (currentTab === '2' && !previewEntity?.guid)
@@ -53,7 +53,10 @@
                     class="border-0"
                 >
                     <a-tab-pane key="1" tab="Overview">
-                        <div class="px-5 mt-4">
+                        <div
+                            class="px-5 mt-4 overflow-y-auto"
+                            style="height: 400px"
+                        >
                             <GlossaryProfileOverview :entity="glossary" />
                             <GlossaryContinueSettingUp
                                 v-if="!isLoading"

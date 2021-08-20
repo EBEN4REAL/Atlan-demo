@@ -8,18 +8,13 @@
             trigger="click"
         >
             <template #content>
-                <template
-                    v-for="(o, y) in operatorsMap[
-                        getDatatypeOfAttribute(a.typeName)
-                    ]"
-                    :key="y"
-                >
+                <template v-for="(o, y) in operatorsMap" :key="y">
                     <a-checkbox
                         v-model:checked="o.checked"
                         :value="o.value"
                         class="w-full mb-2"
                         style="min-width: 200px"
-                        @change="(e) => handleCheckbox(o.value, o.checked)"
+                        @change="handleCheckbox(o.value, o.checked)"
                     >
                         <span class="mb-0 ml-1 text-gray-500 truncated">
                             {{ o.label }}
@@ -27,10 +22,7 @@
                     </a-checkbox>
                     <div class="w-100">
                         <DynamicComponents
-                            v-if="
-                                o.checked &&
-                                !['isNull', 'notNull'].includes(o.value)
-                            "
+                            v-if="o.checked && operatorHasValue(o.value)"
                             :type="getDatatypeOfAttribute(a.typeName)"
                             :operator="o.value"
                             :default-value="applied[o.value] || ''"
@@ -92,85 +84,79 @@
         emits: ['handleAttributeInput'],
         setup(props, { emit }) {
             const { getDatatypeOfAttribute } = useBusinessMetadataHelper()
-            const operatorsMap = ref({})
+            const operatorsMap = ref([])
             const isVisible = ref(false)
-            operatorsMap.value = JSON.parse(JSON.stringify(map))
+            operatorsMap.value = JSON.parse(
+                JSON.stringify(map[getDatatypeOfAttribute(props.a.typeName)])
+            ).map((o) => ({ ...o, checked: false }))
             const appliedValues = ref({})
 
+            const operatorHasValue = (o: string) =>
+                !['isNull', 'notNull'].includes(o)
+
+            /**
+             * @param {String} operator - operator of the checkbox
+             * @desc - checks if filter is already applied & emit apply remove filter
+             */
             const removeFilter = (operator: string) => {
-                // ? check appliedValues
                 if (
                     appliedValues.value[operator] ||
-                    ['isNull', 'notNull'].includes(operator)
+                    !operatorHasValue(operator)
                 ) {
                     delete appliedValues.value[operator]
                     emit('handleAttributeInput', props.a, appliedValues.value)
                 }
             }
 
-            const handleInput = (operator: string, inputValue: string) => {
-                if (inputValue || ['isNull', 'notNull'].includes(operator)) {
+            /**
+             * @param {String} operator - operator of the checkbox
+             * @param {String} inputValue - value of the dynamic input
+             * @desc - if there is value  or operator needs no value then emit apply filter
+             */
+            const handleInput = (operator: string, inputValue: string = '') => {
+                if (inputValue || !operatorHasValue(operator)) {
                     appliedValues.value[operator] = inputValue
                     emit('handleAttributeInput', props.a, appliedValues.value)
-                } else {
-                    removeFilter(operator)
-                }
+                } else removeFilter(operator)
             }
 
-            const handleCheckbox = (operator: string, checked) => {
-                if (['isNull', 'notNull'].includes(operator) && checked) {
-                    handleInput(operator, '')
-                } else if (!checked) {
-                    removeFilter(operator)
-                }
+            /**
+             * @param {String} operator - operator of the checkbox
+             * @param {String} checked - checked || unchecked
+             * @desc - if operator needs no value then apply filter directly,
+             *         if operator has value and unchecking it then apply remove filter
+             */
+            const handleCheckbox = (operator: string, checked: boolean) => {
+                if (!operatorHasValue(operator) && checked)
+                    handleInput(operator)
+                else if (!checked) removeFilter(operator)
             }
 
-            onMounted(() => {
-                // ? set check applied checkbox
-                if (props.applied.value)
-                    Object.keys(props.applied.value).forEach((k) => {
-                        operatorsMap.value[
-                            getDatatypeOfAttribute(props.a.typeName)
-                            // eslint-disable-next-line no-return-assign
-                        ].find(
-                            (o: { value: string }) => o.value === k
-                        ).checked = true
-                    })
-            })
+            const checkOperator = (operatorArray: string[]) => {
+                operatorsMap.value.forEach(
+                    (o: { value: string }, i: number) => {
+                        operatorsMap.value[i].checked = operatorArray.includes(
+                            o.value
+                        )
+                    }
+                )
+            }
+
+            // check all applied attributes when mounted (using search and show less can unmount , loosing check state)
+            onMounted(() => checkOperator(Object.keys(props.applied)))
 
             watch(
                 () => props.applied,
-                (n, o) => {
-                    console.log(props.applied)
-                    console.log({ n, o })
-                    if (JSON.stringify(n) === '{}')
-                        operatorsMap.value = JSON.parse(JSON.stringify(map))
-                    // Object.keys(operatorsMap.value[
-                    //         getDatatypeOfAttribute(props.a.typeName)
-                    //     ]).forEach(k => {
-                    //         if(!applied.value[k]) {
-                    //             operatorsMap.value[
-                    //         getDatatypeOfAttribute(props.a.typeName)
-                    //     ]
-                    //         }
-                    //     })
-                    // if (o && JSON.stringify(props.applied.value) === '{}') {
-                    //     Object.keys(
-                    //         operatorsMap.value[
-                    //             getDatatypeOfAttribute(props.a.typeName)
-                    //         ]
-                    //     ).forEach((o) => {
-                    //         operatorsMap.value[
-                    //             getDatatypeOfAttribute(props.a.typeName)
-                    //         ][o].checked = false
-                    //     })
-                    // }
+                (n, _o) => {
+                    // check all checkbox if not checked <> sync
+                    //! trigger only when component is not triggering, i.e clear filter, or load default is triggering
+                    checkOperator(Object.keys(n))
                 },
                 {
                     deep: true,
-                    immediate: true,
                 }
             )
+
             return {
                 operatorsMap,
                 getDatatypeOfAttribute,
@@ -179,6 +165,7 @@
                 isVisible,
                 removeFilter,
                 handleCheckbox,
+                operatorHasValue,
                 appliedValues,
             }
         },

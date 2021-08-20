@@ -63,6 +63,7 @@
                     tableColumns.value.push({
                         title: '#',
                         dataIndex: 'hash_index',
+                        width: 5,
                         ellipsis: true,
                     })
                     // convert data from API in Antd-table format

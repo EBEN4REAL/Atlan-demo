@@ -19,8 +19,8 @@
     import { defineComponent } from 'vue'
 
     // Components
-    import overviewColumns from '@/asset/assetProfile/tabs/overview/overviewColumns.vue'
-    import overviewTable from '@/asset/assetProfile/tabs/overview/overviewTable.vue'
+    import overviewColumns from '~/components/asset/assetProfile/tabs/overview/nonBiAsset/overviewColumns.vue'
+    import overviewTable from '~/components/asset/assetProfile/tabs/overview/nonBiAsset/overviewTable.vue'
 
     export default defineComponent({
         components: { overviewColumns, overviewTable },

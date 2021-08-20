@@ -36,14 +36,56 @@
                     <div class="flex items-center">
                         <component
                             :is="images[record.data_type]"
-                            class="w-5 h-5 mr-3 text-primary"
+                            class="w-4 h-4 mr-3"
                         ></component>
-                        {{ text }}
+                        <span class="truncate">{{ text }}</span>
                     </div>
                 </template>
                 <!-- popularity col -->
                 <template #popularity="{ text }">
                     <a-progress :percent="text" :show-info="false" />
+                </template>
+                <!-- terms col -->
+                <template #terms="{ text }">
+                    <div
+                        class="
+                            inline-flex
+                            px-3
+                            py-1.5
+                            rounded-full
+                            items-center
+                            cursor-pointer
+                            select-none
+                            text-sm text-primary
+                            hover:text-white hover:bg-primary
+                            whitespace-nowrap
+                            _bg-primary-light
+                        "
+                    >
+                        <fa icon="fal plus" class="" />
+                        <span class="ml-2">Add Terms</span>
+                    </div>
+                </template>
+                <!-- classifications col -->
+                <template #classifications="{ text }">
+                    <div
+                        class="
+                            inline-flex
+                            px-3
+                            py-1.5
+                            rounded-full
+                            items-center
+                            cursor-pointer
+                            select-none
+                            text-sm text-primary
+                            whitespace-nowrap
+                            hover:text-white hover:bg-primary
+                            _bg-primary-light
+                        "
+                    >
+                        <fa icon="fal plus" class="" />
+                        <span class="ml-2">Add Classifications</span>
+                    </div>
                 </template>
             </a-table>
         </div>
@@ -79,7 +121,10 @@
                 const filtersIdSet = new Set()
                 dataTypeList.forEach((i) => {
                     filteredList.forEach((j) => {
-                        if (i.type.includes(j.attributes.dataType))
+                        if (
+                            i.type.includes(j.attributes.dataType) ||
+                            i.type.includes(j.attributes.dataType.toLowerCase())
+                        )
                             filtersIdSet.add(i.id)
                     })
                 })
@@ -120,7 +165,11 @@
                 const getDataType = (type) => {
                     let label = ''
                     dataTypeList.forEach((i) => {
-                        if (i.type.includes(type)) label = i.label
+                        if (
+                            i.type.includes(type) ||
+                            i.type.includes(type.toLowerCase())
+                        )
+                            label = i.label
                     })
                     return label
                 }
@@ -132,7 +181,7 @@
                     description: i.attributes.description || '---',
                     popularity: i.attributes.popularityScore || 8,
                     terms: 'N/A',
-                    classification: 'N/A',
+                    classifications: 'N/A',
                 }))
 
                 columnsData.value = {
@@ -167,14 +216,13 @@
                     },
                     {
                         title: 'Column name',
-                        sorter: true,
                         dataIndex: 'column_name',
                         slots: { customRender: 'column_name' },
                         key: 'column_name',
+                        sorter: (a, b) => a.column_name > b.column_name,
                     },
                     {
                         title: 'Data type',
-                        sorter: true,
                         dataIndex: 'data_type',
                         key: 'data_type',
                     },
@@ -193,12 +241,14 @@
                     {
                         title: 'Terms',
                         dataIndex: 'terms',
+                        slots: { customRender: 'terms' },
                         key: 'terms',
                     },
                     {
-                        title: 'Classification',
-                        dataIndex: 'classification',
-                        key: 'classification',
+                        title: 'Classifications',
+                        dataIndex: 'classifications',
+                        slots: { customRender: 'classifications' },
+                        key: 'classifications',
                     },
                 ],
             }

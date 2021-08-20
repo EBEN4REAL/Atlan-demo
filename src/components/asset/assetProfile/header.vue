@@ -20,11 +20,11 @@
                         <span>{{ asset.attributes.integrationName }}</span>
                     </div>
                     <div class="flex items-center mr-6 lowercase">
-                        <component :is="'Database'" class="w-auto h-4 mr-2" />
+                        <atlan-icon icon="Database" class="w-auto h-4 mr-2" />
                         <span>{{ asset.attributes.databaseName }}</span>
                     </div>
                     <div class="flex items-center lowercase">
-                        <component :is="'Schema'" class="w-auto h-4 mr-2" />
+                        <atlan-icon icon="Schema" class="w-auto h-4 mr-2" />
                         <span class="mt-1">{{
                             asset.attributes.schemaName
                         }}</span>

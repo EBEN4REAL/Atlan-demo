@@ -1,6 +1,6 @@
 <template>
     <a-tree
-        v-model:expandedKeys="expandedKeysList"
+        v-model:expandedKeys="expandedKeys"
         v-model:value="selectedKeys"
         :tree-data="childrenTreeData.length ? childrenTreeData : treeData"
         :load-data="onLoadData"
@@ -112,27 +112,8 @@ export default defineComponent({
 
         const { treeData, onLoadData } = useGlossaryTree(list)
         
-        const treeNode = ref({
-                dataRef: {
-                    // children: [],
-                    key: '',
-                    type: 'glossary',
-                }
-            })
-        watch(list, (newList) => {
-            // if(newList?.length)
-            treeNode.value.dataRef.key = newList[0]?.guid ?? ''
-            onLoadData(treeNode.value)
-            // treeData.value[0].children = treeNode.children
-        })
-        watch(treeNode, (newTreeNode) => {
-            console.log(newTreeNode, 'ok')
-            treeData.value[0].children = newTreeNode.children
-        }, {
-            deep: true
-        })
+
         const childrenTreeData = computed(() => treeData.value[0]?.children ?? [])
-        const expandedKeysList = ref([props.parentGuid, ...expandedKeys.value])
         const refreshTree = () => {
             refetchGlossary()
         }

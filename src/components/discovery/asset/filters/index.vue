@@ -44,7 +44,7 @@
             <template #header>
                 <div :key="dirtyTimestamp" class="select-none">
                     <div class="flex justify-between">
-                        <span class="font-bold">
+                        <span>
                             <img
                                 v-if="item.image"
                                 :src="item.image"

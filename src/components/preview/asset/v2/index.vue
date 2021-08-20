@@ -71,6 +71,7 @@
     import Tooltip from '@common/ellipsis/index.vue'
 
     export default defineComponent({
+        name: 'AssetPreview',
         props: {
             selectedAsset: {
                 type: Object as PropType<assetInterface>,

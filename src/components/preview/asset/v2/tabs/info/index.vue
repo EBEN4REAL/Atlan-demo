@@ -18,15 +18,20 @@
                 </div>
             </template>
             <a-collapse-panel
-                v-for="item in PanelsMapToAsset[selectedAsset.typeName].panels"
+                v-for="item in dynamicList"
                 :key="item.id"
                 class="bg-transparent"
             >
                 <template #header>
                     <div
                         :key="item.id"
-                        class="flex justify-between text-sm font-bold select-none header"
+                        class="flex text-sm font-bold select-none header"
                     >
+                        <img
+                            v-if="item.image"
+                            :src="item.image"
+                            class="w-auto h-5 mr-2"
+                        />
                         {{ item.label }}
                     </div>
                 </template>
@@ -41,7 +46,10 @@
                     :data="dataMap[item.id]"
                     :selectedAsset="infoTabData"
                     :tabData="componentData"
-                    :properties="PanelsMapToAsset[selectedAsset.typeName]?.properties ?? []"
+                    :properties="
+                        PanelsMapToAsset[selectedAsset.typeName]?.properties ??
+                        []
+                    "
                     @change="handleChange"
                 ></component>
             </a-collapse-panel>
@@ -63,9 +71,11 @@
         defineAsyncComponent,
         Ref,
         PropType,
+        computed,
     } from 'vue'
     import { PanelsMapToAsset } from './List'
     import { assetInterface } from '~/types/assets/asset.interface'
+    import useBusinessMetadataHelper from '~/composables/businessMetadata/useBusinessMetadataHelper'
 
     export default defineComponent({
         name: 'InfoTab',
@@ -99,6 +109,9 @@
             heirarchy: defineAsyncComponent(
                 () => import('./heirarchy/index.vue')
             ),
+            businessMetadata: defineAsyncComponent(
+                () => import('./businessMetadata/index.vue')
+            ),
             tableauProperties: defineAsyncComponent(
                 () => import('./tableau/properties/index.vue')
             ),
@@ -110,6 +123,8 @@
             const refMap: Ref<{
                 [key: string]: any
             }> = ref({})
+
+            const { getApplicableBmGroups } = useBusinessMetadataHelper()
             // Mapping of Data to child compoentns
             const dataMap: { [key: string]: any } = ref({})
             const localStorage = window.localStorage
@@ -143,9 +158,24 @@
             const handleCollapseChange = () => {
                 setUserDefaultCollapseOrderInInfoTab(activeKey.value)
             }
+
+            const applicableBMList = (typeName: string) =>
+                getApplicableBmGroups(typeName)?.map((b) => ({
+                    component: 'businessMetadata',
+                    id: b.name,
+                    label: b.options.displayName,
+                    image: b.options.image || '',
+                }))
+            // ? check if computed  not needed needed?
+            const dynamicList = computed(() => [
+                ...PanelsMapToAsset[props.selectedAsset.typeName].panels,
+                ...applicableBMList(props.infoTabData.typeName),
+            ])
+
             return {
                 PanelsMapToAsset,
                 handleCollapseChange,
+                dynamicList,
                 activeKey,
                 refMap,
                 dataMap,

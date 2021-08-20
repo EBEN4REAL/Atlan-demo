@@ -22,7 +22,7 @@
                                 px-3
                                 py-1.5
                                 mr-3
-                                font-bold
+                                mb-2
                                 rounded-full
                                 bg-gray-light
                                 text-gray-700
@@ -38,7 +38,6 @@
                             <div
                                 class="
                                     mb-0
-                                    font-bold
                                     truncate
                                     text-sm
                                     capitalize
@@ -76,7 +75,6 @@
                                 px-3
                                 py-1.5
                                 mr-3
-                                font-bold
                                 rounded-full
                                 bg-gray-light
                                 text-gray-700
@@ -95,7 +93,6 @@
                             <div
                                 class="
                                     mb-0
-                                    font-bold
                                     truncate
                                     text-sm
                                     capitalize
@@ -121,16 +118,7 @@
                     class="flex items-center mr-3 cursor-pointer"
                     @click="() => toggleAllOwners(true)"
                 >
-                    <span
-                        class="
-                            px-1
-                            py-0.5
-                            text-sm
-                            font-bold
-                            rounded
-                            text-primary
-                        "
-                    >
+                    <span class="px-1 py-0.5 text-sm rounded text-primary">
                         and {{ splittedOwners.b.length }} more
                     </span>
                 </div>
@@ -139,16 +127,7 @@
                     class="flex items-center justify-center mr-3 cursor-pointer"
                     @click="() => toggleAllOwners(false)"
                 >
-                    <span
-                        class="
-                            px-1
-                            py-0.5
-                            text-sm
-                            font-bold
-                            rounded
-                            text-primary
-                        "
-                    >
+                    <span class="px-1 py-0.5 text-sm rounded text-primary">
                         show less
                     </span>
                 </div>
@@ -173,7 +152,6 @@
                             px-3
                             py-1.5
                             mr-3
-                            font-bold
                             rounded-full
                             cursor-pointer
                             bg-gray-light
@@ -237,7 +215,7 @@
                                             class="text-sm"
                                             :class="
                                                 activeOwnerTabKey == '1'
-                                                    ? 'font-bold'
+                                                    ? ''
                                                     : ''
                                             "
                                             >Users</span
@@ -331,7 +309,7 @@
                                             class="text-sm"
                                             :class="
                                                 activeOwnerTabKey == '1'
-                                                    ? 'font-bold'
+                                                    ? ''
                                                     : ''
                                             "
                                             >Groups</span
@@ -738,7 +716,6 @@
         @apply rounded;
         @apply tracking-wide;
         @apply text-xs;
-        @apply font-bold;
         @apply text-primary;
         @apply bg-primary-light;
     }

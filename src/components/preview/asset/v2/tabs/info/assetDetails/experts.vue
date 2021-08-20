@@ -24,7 +24,6 @@
                     class="
                         text-gray-700
                         mb-0
-                        font-bold
                         truncate
                         text-sm
                         capitalize

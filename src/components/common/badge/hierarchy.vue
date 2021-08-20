@@ -1,9 +1,9 @@
 <template>
     <div class="flex overflow-hidden text-xs tracking-wider flex-nowrap">
         <template v-for="data in hierarchyInfo">
-            <img
+            <atlan-icon
                 v-if="data.id === 'Connection'"
-                :src="logo(selectedAsset)"
+                icon="Connection"
                 class="w-auto h-4 mr-2"
             />
             <component v-else :is="data.id" class="w-auto h-4 mr-2" />

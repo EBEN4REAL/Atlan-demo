@@ -15,7 +15,6 @@
                         py-1.5
                         mb-3
                         mr-3
-                        font-bold
                         rounded-full
                         bg-gray-light
                         text-gray-700
@@ -25,13 +24,12 @@
                     "
                 >
                     <div
-                        class="flex items-center leading-none align-middle rounded cursor-pointer  drop-shadow-sm"
+                        class="flex items-center leading-none align-middle rounded cursor-pointer drop-shadow-sm"
                         @click.prevent.stop="handleClassificationClick"
                     >
                         <div
                             class="
                                 text-sm
-                                font-bold
                                 classification-name-width
                                 truncate
                                 ...
@@ -42,7 +40,7 @@
                     </div>
 
                     <div
-                        class="absolute flex items-center justify-center pl-3 pr-1 text-white bg-transparent border-none rounded-full opacity-0 cursor-pointer  group-hover:opacity-100 classification-cross-btn"
+                        class="absolute flex items-center justify-center pl-3 pr-1 text-white bg-transparent border-none rounded-full opacity-0 cursor-pointer group-hover:opacity-100 classification-cross-btn"
                         @click.stop="() => unLinkClassification(classification)"
                     >
                         <div class="flex items-center justify-center">
@@ -65,7 +63,6 @@
                         py-1.5
                         mb-3
                         mr-3
-                        font-bold
                         rounded-full
                         bg-gray-light
                         text-gray-700
@@ -75,13 +72,12 @@
                     "
                 >
                     <div
-                        class="flex items-center leading-none align-middle rounded cursor-pointer  drop-shadow-sm"
+                        class="flex items-center leading-none align-middle rounded cursor-pointer drop-shadow-sm"
                         @click.prevent.stop="handleClassificationClick"
                     >
                         <div
                             class="
                                 text-sm
-                                font-bold
                                 classification-name-width
                                 truncate
                                 ...
@@ -92,7 +88,7 @@
                     </div>
 
                     <div
-                        class="absolute flex items-center justify-center pl-3 pr-1 text-white bg-transparent border-none rounded-full opacity-0 cursor-pointer  group-hover:opacity-100 classification-cross-btn"
+                        class="absolute flex items-center justify-center pl-3 pr-1 text-white bg-transparent border-none rounded-full opacity-0 cursor-pointer group-hover:opacity-100 classification-cross-btn"
                         @click.stop="() => unLinkClassification(classification)"
                     >
                         <div class="flex items-center justify-center">
@@ -107,7 +103,7 @@
                 @click="() => toggleAllClassifications(true)"
             >
                 <span
-                    class="px-1 py-0.5 text-sm font-bold rounded text-primary"
+                    class="px-1 py-0.5 text-sm  rounded text-primary"
                 >
                     and {{ splittedClassifications.b.length }} more
                 </span>
@@ -118,14 +114,14 @@
                 @click="() => toggleAllClassifications(false)"
             >
                 <span
-                    class="px-1 py-0.5 text-sm font-bold rounded text-primary"
+                    class="px-1 py-0.5 text-sm  rounded text-primary"
                 >
                     show less
                 </span>
             </div>
             <a-button
                 v-if="asset.classifications?.length > 0"
-                class="flex items-center justify-center w-8 h-8 px-2 py-2 mb-3 text-gray-700 border-none rounded-full  bg-gray-light hover:bg-primary hover:text-white"
+                class="flex items-center justify-center w-8 h-8 px-2 py-2 mb-3 text-gray-700 border-none rounded-full bg-gray-light hover:bg-primary hover:text-white"
                 @click.stop="openLinkClassificationPopover"
             >
                 <fa icon="fal plus" />
@@ -144,7 +140,6 @@
                     px-3
                     py-1.5
                     mr-3
-                    font-bold
                     rounded-full
                     text-sm
                     cursor-pointer
@@ -160,7 +155,7 @@
             <template #content>
                 <div class="flex flex-col overflow-y-auto" style="width: 400px">
                     <div v-if="!showCreateClassificationPopover">
-                        <p class="mb-2 text-sm font-bold text-gray-700">
+                        <p class="mb-2 text-sm text-gray-700">
                             Link Classification
                         </p>
                         <a-select
@@ -210,7 +205,7 @@
                         </a-checkbox>
                     </div>
                     <div v-else>
-                        <p class="mb-2 text-sm font-bold text-gray-700">
+                        <p class="mb-2 text-sm text-gray-700">
                             Create Classification
                         </p>
                         <a-form
@@ -258,7 +253,7 @@
                         >
                             Or create a
                             <span
-                                class="text-sm font-bold cursor-pointer  text-primary"
+                                class="text-sm cursor-pointer text-primary"
                                 @click="showCreateClassificationForm"
                                 >&nbsp;new term</span
                             >

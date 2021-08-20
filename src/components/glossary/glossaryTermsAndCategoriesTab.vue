@@ -23,14 +23,14 @@
                     </a-button>
                 </a-popover>
             </div>
-            <div>
+            <!-- <div>
                 <GtcFilters @filterUpdated="updateFilters" />
-            </div>
+            </div> -->
         </div>
         <div v-if="isLoading && !all.length">
             <LoadingView />
         </div>
-        <div v-else-if="all.length" class="flex flex-row w-full">
+        <div v-else-if="all.length" class="flex flex-row w-full mt-4">
             <div class="w-full">
                 <a-tabs default-active-key="1" class="border-0">
                     <a-tab-pane key="1" :tab="`All (${all.length})`"

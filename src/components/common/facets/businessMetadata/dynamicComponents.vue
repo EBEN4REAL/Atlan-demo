@@ -12,7 +12,7 @@
             v-else-if="type === 'boolean'"
             v-model:value="value"
             class="shadow-none"
-            @change="() => debounce(() => handleChange(), 800)"
+            @change="handleChange"
         >
             <a-radio class="shadow-none" value="true">True</a-radio>
             <a-radio class="shadow-none" value="false">False</a-radio>
@@ -23,7 +23,7 @@
                 value-format="x"
                 class="w-100"
                 style="width: 100%"
-                @change="() => debounce(() => handleChange(), 800)"
+                @change="handleChange"
             />
         </span>
         <!-- <div v-else-if="type === 'array<date>'" class="">
@@ -202,7 +202,7 @@
             placeholder="Type..."
             type="text"
             class="px-2 mr-2 shadow-none border-1"
-            @change="handleChange"
+            @change="() => debounce(() => handleChange(), 800)"
         />
     </div>
 </template>

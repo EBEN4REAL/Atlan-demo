@@ -11,7 +11,7 @@
             <img
                 :src="logoSrc"
                 class="flex-none w-auto bg-white"
-                :class="variant == 'lg' ? 'h-6' : 'h-4'"
+                :class="variant == 'lg' ? 'h-5 m-0.5' : 'h-3 m-0.5'"
             />
         </div>
 
@@ -20,9 +20,14 @@
                 border-top-right-radius: 2px;
                 border-bottom-right-radius: 2px;
             "
-            :style="{ backgroundColor: color, borderColor: color }"
+            :style="{
+                backgroundColor: color,
+                borderColor: color,
+                lineHeight:
+                    variant == 'lg' ? '28px !important' : '18px !important',
+            }"
             class="px-1 font-bold tracking-wide text-white border"
-            :class="variant == 'lg' ? 'text-xl leading-8' : 'text-sm leading-5'"
+            :class="variant == 'lg' ? 'text-xl pt-1' : 'text-sm pt-0.5'"
             >{{ text }}</span
         >
     </div>

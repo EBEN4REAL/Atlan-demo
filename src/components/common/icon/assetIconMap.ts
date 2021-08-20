@@ -8,4 +8,13 @@ export const abbreviationMap = {
     Table: 'TBL',
     Column: 'COL',
     View: 'VW',
+    MaterialisedView: 'MVW',
+    //     Tableau Worksheet: '',
+    // TableauWorkbook: '',
+    // TableauSite: '',
+    // TableauDashboard: '',
+    // TableauProject: '',
+    // TableauSite: '',
+    // TableauEmbedded Datasource: '',
+    // TableauPublished Datasource
 }

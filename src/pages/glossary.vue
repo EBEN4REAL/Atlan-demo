@@ -12,8 +12,10 @@
     @closeModal="handleCloseModal"
   />
   <splitpanes class="h-full default-theme">
-    <pane min-size="25" max-size="50" :size="19" class="px-3 bg-white">
-      <a-input placeholder="Search" class="my-3"></a-input>
+    <pane min-size="25" max-size="50" :size="18" class="p-4 bg-white">
+      <a-button class="text-sm leading-5 text-primary font-bold bg-primary-light w-full border-none">+ Create New Glossary</a-button>
+      <a-input-search placeholder="Search accross Glossaries" class="my-4"></a-input-search>
+      <!-- <HomeTree /> -->
       <GlossaryTree
         ref="glossaryTreeRef"
         @success="handleSuccess"
@@ -21,27 +23,31 @@
         @showUpdateGlossaryModal="handleOpenUpdateModal"
       ></GlossaryTree>
     </pane>
-    <pane :size="80" class="bg-white">
+    <pane :size="82" class="bg-white">
         <router-view  />
     </pane>
   </splitpanes>
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from "vue";
+import { defineComponent, ref, watch } from "vue";
+import { useHead } from "@vueuse/head";
+import { useRouter, useRoute } from 'vue-router'
 
 import GlossaryTree from "@common/tree/glossary/index.vue";
+import HomeTree from "@common/tree/glossary/home.vue";
 import CreateGlossaryModal from "@common/tree/glossary/createGlossaryModal.vue";
 import UpdateGlossaryModal from "@common/tree/glossary/updateGlossaryModal.vue";
-import { useHead } from "@vueuse/head";
 
 export default defineComponent({
-  components: { GlossaryTree, CreateGlossaryModal, UpdateGlossaryModal },
+  components: { GlossaryTree, HomeTree, CreateGlossaryModal, UpdateGlossaryModal },
   props:['id', 'class'],
   setup() {
     useHead({
       title: "Glossary",
     });
+    const route = useRoute();
+
     const createGlossaryModalVisble = ref(false);
     const updateGlossaryModalVisble = ref(false);
     const glossaryTreeRef = ref();
@@ -70,6 +76,12 @@ export default defineComponent({
       }, 2000);
     };
 
+    watch(
+      () => route.params.id,
+      async newId => {
+        // console.log(newId)
+      }
+    )
     return {
       handleOpenModal,
       handleCloseModal,

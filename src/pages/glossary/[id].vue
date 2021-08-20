@@ -12,7 +12,7 @@
                     : 'w-2/3'
             "
         >
-            <div class="flex flex-row justify-between pl-8 pr-4 mt-6 mb-5">
+            <div class="flex flex-row justify-between pl-5 pr-4 mt-6 mb-5">
                 <div class="flex flex-row">
                     <div class="mr-5">
                         <img :src="GlossarySvg" />

@@ -1,7 +1,7 @@
 <template>
     <a-dropdown>
         <div
-            class="flex items-center px-2 py-1 border border-gray-300 rounded-full "
+            class="flex items-center px-2 py-1 transition-colors duration-300 border border-transparent rounded-full  hover:border-gray-300"
         >
             <a-avatar
                 :size="24"
@@ -66,7 +66,7 @@
     import whoami from '~/composables/user/whoami'
 
     export default defineComponent({
-        name: 'HelloWorld',
+        name: 'UserPersonalAvatar',
         props: {},
         setup() {
             const keycloak = inject('$keycloak')

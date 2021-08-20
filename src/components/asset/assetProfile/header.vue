@@ -1,12 +1,8 @@
 <template>
     <div class="flex items-start justify-between">
         <div class="flex">
-            <div>
-                <component
-                    :is="assetData.typeName"
-                    class="flex-none w-auto h-6 mt-1 mr-3"
-                ></component>
-            </div>
+            <AssetLogo class="self-start pt-2" :asset="asset" />
+
             <div>
                 <div
                     class="flex items-center mt-1 mb-2 text-xl font-bold lowercase "
@@ -45,32 +41,45 @@
 </template>
 
 <script lang="ts">
-    // Vue
-    import { defineComponent, computed, inject } from 'vue'
+        // Vue
+    <<<<<<< HEAD
+        import { defineComponent, ToRefs, toRefs, computed } from 'vue'
+        import AssetLogo from '@/common/icon/assetIcon.vue'
+    =======
+        import { defineComponent, computed, inject } from 'vue'
+    >>>>>>> development
 
-    // Util
-    import { SourceList } from '~/constant/source'
+        // Util
+        import { SourceList } from '~/constant/source'
 
-    export default defineComponent({
-        setup() {
-            /** INJECTIONS */
-            const assetDataInjection = inject('assetData')
+        export default defineComponent({
+    <<<<<<< HEAD
+            props: ['asset'],
+            components: { AssetLogo },
+            setup(props) {
+                /** DATA */
+                const { asset }: ToRefs = toRefs(props)
+    =======
+            setup() {
+                /** INJECTIONS */
+                const assetDataInjection = inject('assetData')
+    >>>>>>> development
 
-            /** COMPUTED */
-            const assetData = computed(() => assetDataInjection?.asset)
+                /** COMPUTED */
+                const assetData = computed(() => assetDataInjection?.asset)
 
-            const integrationIcon = computed(() => {
-                const item = SourceList.find(
-                    (src: { id: string }) =>
-                        src.id === assetData.value.attributes.integrationName
-                )
-                return item?.image
-            })
+                const integrationIcon = computed(() => {
+                    const item = SourceList.find(
+                        (src: { id: string }) =>
+                            src.id === assetData.value.attributes.integrationName
+                    )
+                    return item?.image
+                })
 
-            return {
-                assetData,
-                integrationIcon,
-            }
-        },
-    })
+                return {
+                    assetData,
+                    integrationIcon,
+                }
+            },
+        })
 </script>

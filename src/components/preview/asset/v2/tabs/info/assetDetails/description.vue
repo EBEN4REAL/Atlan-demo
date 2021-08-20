@@ -8,28 +8,30 @@
             @visibleChange="handleVisibleChange"
         >
             <template #content>
-                <a-textarea
-                    v-model:value="description"
-                    autofocus
-                    placeholder="Description"
-                    :class="$style.borderless"
-                    :rows="10"
-                    style="width: 300px"
-                >
-                </a-textarea>
-                <div
-                    class="flex justify-end p-2 space-x-2 border-t border-gray-100 "
-                >
-                    <a-button size="small" @click="handleCancel"
-                        >Cancel</a-button
+                <div class="">
+                    <a-textarea
+                        v-model:value="descriptionInput"
+                        @change="handleTextAreaUpdate"
+                        autofocus
+                        placeholder="Add an asset description"
+                        showCount
+                        :maxlength="140"
+                        :rows="4"
+                        style="width: 280px"
                     >
-                    <a-button
-                        type="primary"
-                        size="small"
-                        :loading="isLoading"
-                        @click="handleUpdate"
-                        >Update</a-button
-                    >
+                    </a-textarea>
+                    <div class="flex justify-end w-full mt-4 space-x-4">
+                        <a-button @click="handleCancel" class="px-4"
+                            >Cancel</a-button
+                        >
+                        <a-button
+                            type="primary"
+                            class="px-4"
+                            :loading="isLoading"
+                            @click="handleUpdate"
+                            >Update</a-button
+                        >
+                    </div>
                 </div>
             </template>
             <div class="inline-block text-sm cursor-pointer text-gray">
@@ -39,15 +41,17 @@
                 <div v-else>
                     <div
                         class="
-                            inline-flex
+                            flex
+                            items-center
                             px-3
                             py-1.5
-                            cursor-pointer
-                            select-none
-                            text-primary
-                            hover:text-white hover:bg-primary
+                            mr-3
+                            font-bold
                             rounded-full
-                            bg-primary-light
+                            cursor-pointer
+                            bg-gray-light
+                            text-gray-700
+                            hover:bg-primary hover:text-white
                         "
                     >
                         <span class="flex items-center text-sm">
@@ -98,7 +102,6 @@
                 isLoading,
                 update,
                 handleCancel,
-
                 isReady,
                 state,
                 description,
@@ -109,13 +112,16 @@
                 update()
             }
 
-            const descriptionInput = ref()
+            const descriptionInput = ref('')
             const handleVisibleChange = () => {
                 if (descriptionInput?.value) {
                     nextTick(() => {
                         descriptionInput?.value?.$el?.focus()
                     })
                 }
+            }
+            const handleTextAreaUpdate = (e: any) => {
+                description.value = e.target.value
             }
 
             const keys = useMagicKeys()
@@ -127,9 +133,11 @@
                 }
             })
             return {
+                handleTextAreaUpdate,
                 handleUpdate,
                 handleCancel,
                 handleVisibleChange,
+                descriptionInput,
                 isReady,
                 state,
                 description,
@@ -139,18 +147,3 @@
         },
     })
 </script>
-
-<style lang="less" module>
-    .borderless {
-        @apply border-none shadow-none p-4 !important;
-
-        &:global(.ant-input-affix-wrapper-focused) {
-            @apply border-none shadow-none;
-        }
-    }
-</style>
-<style lang="less" scoped>
-    .bg-primary-light {
-        background: rgba(34, 81, 204, 0.05);
-    }
-</style>

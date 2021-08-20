@@ -2,27 +2,29 @@
     <div class="">
         <a-popover
             v-model:visible="isCompleted"
+            class="p-0"
             placement="left"
             trigger="click"
+            :class="$style.popover"
         >
             <template #content>
-                <div class="flex flex-col" style="width: 300px">
+                <div class="flex flex-col" style="width: 300px p-4">
                     <div class="">
                         <a-radio-group
                             v-model:value="statusId"
-                            class="w-full py-3"
+                            class="w-full mb-3"
                         >
                             <div class="flex flex-col">
                                 <a-radio
                                     v-for="item in List"
                                     :key="item.id"
                                     :value="item.id"
-                                    class="px-4 mb-1"
+                                    class="mb-1"
                                 >
                                     <span class="align-middle">
                                         <span class="text-gray-700 svg-icon">
                                             <component
-                                                class="w-auto h-4 mr-1 pushtop"
+                                                class="w-auto h-4 ml-1 mr-2  pushtop"
                                                 :is="item.icon"
                                             />
                                             {{ item.label }}
@@ -35,25 +37,27 @@
                 </div>
                 <div class="mt-1 border-t border-gray-100">
                     <a-textarea
-                        v-model:value="statusMessage"
-                        placeholder="message"
+                        v-model:value="message"
+                        @change="handleTextAreaUpdate"
+                        placeholder="Add a status message"
+                        showCount
+                        :maxlength="180"
+                        style="width: 280px"
+                        :rows="5"
                         class=""
-                        :class="$style.borderless"
                     ></a-textarea>
-                </div>
-                <div
-                    class="flex justify-end p-2 space-x-2 border-t border-gray-100 "
-                >
-                    <a-button size="small" @click="handleCancel"
-                        >Cancel</a-button
-                    >
-                    <a-button
-                        type="primary"
-                        size="small"
-                        :loading="isLoading"
-                        @click="handleUpdate"
-                        >Update</a-button
-                    >
+                    <div class="flex justify-end w-full mt-4 space-x-4">
+                        <a-button @click="handleCancel" class="px-4"
+                            >Cancel</a-button
+                        >
+                        <a-button
+                            type="primary"
+                            class="px-4"
+                            :loading="isLoading"
+                            @click="handleUpdate"
+                            >Update</a-button
+                        >
+                    </div>
                 </div>
             </template>
             <div
@@ -67,6 +71,7 @@
                     :status-message="
                         selectedAsset?.attributes?.assetStatusMessage
                     "
+                    :showChipStyleStatus="true"
                     :show-no-status="true"
                     :show-label="true"
                 ></StatusBadge>
@@ -120,9 +125,13 @@
             } = updateStatus(selectedAsset)
 
             const animationPoint = ref(null)
+            const message = ref('')
 
             const handleUpdate = () => {
                 update()
+            }
+            const handleTextAreaUpdate = (e: any) => {
+                statusMessage.value = e.target.value
             }
 
             watch(isReady, () => {
@@ -159,6 +168,8 @@
             return {
                 handleUpdate,
                 handleCancel,
+                handleTextAreaUpdate,
+                message,
                 selectedAsset,
                 isReady,
                 state,
@@ -174,11 +185,9 @@
 </script>
 
 <style lang="less" module>
-    .borderless {
-        @apply border-none shadow-none px-4 !important;
-
-        &:global(.ant-input-affix-wrapper-focused) {
-            @apply border-none shadow-none;
+    .popover {
+        :global(.ant-popover-inner-content) {
+            @apply p-4 !important;
         }
     }
 </style>

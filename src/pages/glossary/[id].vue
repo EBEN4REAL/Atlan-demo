@@ -171,7 +171,7 @@
                 entity: glossary,
                 error,
                 isLoading,
-            } = useGTCEntity<Glossary>('glossary', guid)
+            } = useGTCEntity<Glossary>('glossary', guid, guid)
 
             const {
                 terms: glossaryTerms,

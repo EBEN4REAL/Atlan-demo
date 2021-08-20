@@ -224,12 +224,15 @@
             }
 
             const updateFilters = (filters: any) => {
-                console.log(filters)
                 fetchAssetsPaginated({ filters, offset: 0 })
             }
 
             watch(selectedEntity, (newSelectedEntity) => {
                 context.emit('entityPreview', newSelectedEntity)
+            })
+
+            watch(entities, (newEntities) => {
+                selectedEntity.value = newEntities[0];
             })
 
             return {

@@ -5,7 +5,7 @@
             :key="x"
             class="flex gap-6 mb-4 gap-y-0 group"
         >
-            <div class="w-40 font-bold text-gray-500">
+            <div class="w-40 text-gray-700">
                 {{ a.options.displayName }}
             </div>
 

@@ -19,11 +19,12 @@
             >
                 <!-- Title bar -->
                 <div class="flex items-center mb-0 overflow-hidden">
-                    <component
+                    <!-- <component
                         v-if="showAssetTypeIcon"
                         :is="item.typeName"
                         class="flex-none w-auto h-5 mr-2"
-                    ></component>
+                    ></component> -->
+                    <AssetLogo :asset="item" />
                     <!-- remove cssClasses prop -->
                     <router-link
                         :class="
@@ -32,7 +33,7 @@
                                 : 'text-lg'
                         "
                         :to="`/assets/${item.guid}/overview`"
-                        class="flex-shrink mb-0 overflow-hidden font-bold leading-6 tracking-wide truncate cursor-pointer  text-gray hover:underline overflow-ellipsis whitespace-nowrap"
+                        class="flex-shrink mb-0 overflow-hidden font-bold leading-6 tracking-wide truncate cursor-pointer text-gray hover:underline overflow-ellipsis whitespace-nowrap"
                     >
                         {{ title(item) }}
                     </router-link>
@@ -71,7 +72,7 @@
                             projection?.includes('owners') &&
                             getCombinedUsersAndGroups(item).length
                         "
-                        class="flex items-baseline mt-1 mr-4 text-xs leading-5  text-gray"
+                        class="flex items-baseline mt-1 mr-4 text-xs leading-5 text-gray"
                     >
                         <span
                             class="mr-1"
@@ -160,6 +161,7 @@
 
     import StatusBadge from '@common/badge/status/index.vue'
     import HierarchyBar from '@common/badge/hierarchy.vue'
+    import AssetLogo from '@/common/icon/assetIcon.vue'
     import { Components } from '~/api/atlas/client'
     import useAssetInfo from '~/composables/asset/useAssetInfo'
     import { assetInterface } from '~/types/assets/asset.interface'
@@ -168,6 +170,7 @@
         components: {
             StatusBadge,
             HierarchyBar,
+            AssetLogo,
         },
         props: {
             item: {

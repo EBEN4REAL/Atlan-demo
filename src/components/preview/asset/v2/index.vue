@@ -6,7 +6,7 @@
                     :is="selectedAsset.typeName"
                     class="w-auto h-8"
                 ></component> -->
-                <AssetLogo :asset="selectedAsset" />
+                <AssetLogo :asset="selectedAsset" variant="lg" />
 
                 <div class="flex">
                     <div class="icon-btn">

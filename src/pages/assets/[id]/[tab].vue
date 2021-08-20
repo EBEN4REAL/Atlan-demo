@@ -4,7 +4,7 @@
 
     <div v-if="data?.asset" class="w-full">
         <div class="z-30 px-4 pt-5 pb-3 bg-white">
-            <Header :asset="data?.asset" />
+            <Header />
         </div>
         <div class="asset-profile">
             <a-tabs
@@ -21,7 +21,6 @@
                                 refs[tab.id] = el
                             }
                         "
-                        :asset="data?.asset || {}"
                         @preview="handlePreview"
                     ></component>
                 </a-tab-pane>
@@ -54,10 +53,7 @@
             LoadingView,
             ErrorView,
             overview: defineAsyncComponent(
-                () =>
-                    import(
-                        '~/components/asset/assetProfile/tabs/overview/nonBiAsset/index.vue'
-                    )
+                () => import('@/asset/assetProfile/tabs/overview/index.vue')
             ),
             lineage: defineAsyncComponent(
                 () => import('@/asset/assetProfile/tabs/lineage/index.vue')

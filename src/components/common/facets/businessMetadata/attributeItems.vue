@@ -19,6 +19,7 @@
                         :value="o.value"
                         class="w-full mb-2"
                         style="min-width: 200px"
+                        @change="(e) => handleCheckbox(o.value, o.checked)"
                     >
                         <span class="mb-0 ml-1 text-gray-500 truncated">
                             {{ o.label }}
@@ -26,7 +27,10 @@
                     </a-checkbox>
                     <div class="w-100">
                         <DynamicComponents
-                            v-if="o.checked"
+                            v-if="
+                                o.checked &&
+                                !['isNull', 'notNull'].includes(o.value)
+                            "
                             :type="getDatatypeOfAttribute(a.typeName)"
                             :operator="o.value"
                             :default-value="applied[o.value] || ''"
@@ -45,7 +49,7 @@
                 "
             >
                 <div
-                    v-if="Object.keys(applied).length"
+                    v-if="Object.keys(applied).length && !isVisible"
                     class="absolute w-2 h-2 mr-2 rounded-full  -left-2 bg-primary"
                 ></div>
                 <div class="flex items-center justify-between w-96">
@@ -95,27 +99,32 @@
 
             const removeFilter = (operator: string) => {
                 // ? check appliedValues
-                if (appliedValues.value[operator]) {
+                if (
+                    appliedValues.value[operator] ||
+                    ['isNull', 'notNull'].includes(operator)
+                ) {
                     delete appliedValues.value[operator]
                     emit('handleAttributeInput', props.a, appliedValues.value)
                 }
             }
-            const handleInput = (
-                type: string,
-                operator: string,
-                inputValue: string
-            ) => {
-                // if (
-                //     operatorsMap.value[type].find((o) => o.value === operator)
-                //         .checked
-                // )
-                if (inputValue) {
+
+            const handleInput = (operator: string, inputValue: string) => {
+                if (inputValue || ['isNull', 'notNull'].includes(operator)) {
                     appliedValues.value[operator] = inputValue
                     emit('handleAttributeInput', props.a, appliedValues.value)
                 } else {
                     removeFilter(operator)
                 }
             }
+
+            const handleCheckbox = (operator: string, checked) => {
+                if (['isNull', 'notNull'].includes(operator) && checked) {
+                    handleInput(operator, '')
+                } else if (!checked) {
+                    removeFilter(operator)
+                }
+            }
+
             onMounted(() => {
                 // ? set check applied checkbox
                 if (props.applied.value)
@@ -130,8 +139,12 @@
             })
 
             watch(
-                () => props.applied.value,
+                () => props.applied,
                 (n, o) => {
+                    console.log(props.applied)
+                    console.log({ n, o })
+                    if (JSON.stringify(n) === '{}')
+                        operatorsMap.value = JSON.parse(JSON.stringify(map))
                     // Object.keys(operatorsMap.value[
                     //         getDatatypeOfAttribute(props.a.typeName)
                     //     ]).forEach(k => {
@@ -165,6 +178,8 @@
                 handleInput,
                 isVisible,
                 removeFilter,
+                handleCheckbox,
+                appliedValues,
             }
         },
     })

@@ -23,52 +23,60 @@
                     </a-button>
                 </a-popover>
             </div>
-            <div>
+            <!-- <div>
                 <GtcFilters @filterUpdated="updateFilters" />
-            </div>
+            </div> -->
         </div>
         <div v-if="isLoading && !all.length">
             <LoadingView />
         </div>
-        <div v-else-if="all.length" class="flex flex-row w-full">
+        <div v-else-if="all.length" class="flex flex-row w-full mt-4">
             <div class="w-full">
-                <a-tabs  default-active-key="1" class="border-0">
-                    <a-tab-pane key="1" :tab="`All (${all.length})`">
-                        <div v-for="asset in all" :key="asset.guid">
-                            <GtcEntityCard
-                                :class="{ 'hover:bg-gray-100': true, 'bg-blue-50': selectedEntity?.guid === asset.guid }"
-                                :entity="asset"
-                                :projection="projection"
-                                @gtcCardClicked="onEntitySelect"
-                            />
+                <a-tabs default-active-key="1" class="border-0">
+                    <a-tab-pane key="1" :tab="`All (${all.length})`"
+                        ><div class="overflow-auto" style="max-height: 380px">
+                            <div v-for="asset in all" :key="asset.guid">
+                                <GtcEntityCard
+                                    :class="{
+                                        'hover:bg-gray-100': true,
+                                        'bg-blue-50':
+                                            selectedEntity?.guid === asset.guid,
+                                    }"
+                                    :entity="asset"
+                                    :projection="projection"
+                                    @gtcCardClicked="onEntitySelect"
+                                />
+                            </div>
                         </div>
                     </a-tab-pane>
-                    <a-tab-pane key="2" :tab="`Terms (${terms.length})`">
-                        <div v-for="asset in terms" :key="asset.guid">
-                            <GtcEntityCard
-                                :class="{ 'hover:bg-gray-100': true }"
-                                :entity="asset"
-                                :projection="projection"
-                                @gtcCardClicked="onEntitySelect"
-                            />
+                    <a-tab-pane key="2" :tab="`Terms (${terms.length})`"
+                        ><div class="overflow-auto" style="max-height: 380px">
+                            <div v-for="asset in terms" :key="asset.guid">
+                                <GtcEntityCard
+                                    :class="{ 'hover:bg-gray-100': true }"
+                                    :entity="asset"
+                                    :projection="projection"
+                                    @gtcCardClicked="onEntitySelect"
+                                />
+                            </div>
                         </div>
                     </a-tab-pane>
                     <a-tab-pane
                         key="3"
                         :tab="`Categories (${categories.length})`"
-                    >
-                        <div v-for="asset in categories" :key="asset.guid">
-                            <GtcEntityCard
-                                :class="{ 'hover:bg-gray-100': true }"
-                                :entity="asset"
-                                :projection="projection"
-                                @gtcCardClicked="onEntitySelect"
-                            />
+                        ><div class="overflow-auto" style="max-height: 380px">
+                            <div v-for="asset in categories" :key="asset.guid">
+                                <GtcEntityCard
+                                    :class="{ 'hover:bg-gray-100': true }"
+                                    :entity="asset"
+                                    :projection="projection"
+                                    @gtcCardClicked="onEntitySelect"
+                                />
+                            </div>
                         </div>
                     </a-tab-pane>
                 </a-tabs>
-            <a-button type="link" @click="loadMore">Load More</a-button>
-
+                <a-button type="link" @click="loadMore">Load More</a-button>
             </div>
             <!-- <div v-if="selectedEntity?.guid" class="w-1/3">
                 <Overview
@@ -84,156 +92,173 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, computed, ref, toRef, watch, PropType } from 'vue'
-import { useDebounceFn } from '@vueuse/core'
+    import { defineComponent, computed, ref, toRef, watch, PropType } from 'vue'
+    import { useDebounceFn } from '@vueuse/core'
 
-import LoadingView from '@common/loaders/page.vue'
-import EmptyView from '@common/empty/discover.vue';
-import GtcEntityCard from './gtcEntityCard.vue'
-import GtcFilters from "./common/gtcFilters.vue";
+    import LoadingView from '@common/loaders/page.vue'
+    import EmptyView from '@common/empty/discover.vue'
+    import GtcEntityCard from './gtcEntityCard.vue'
+    import GtcFilters from './common/gtcFilters.vue'
 
-import useGtcSearch from '~/composables/glossary/useGtcSearch'
+    import useGtcSearch from '~/composables/glossary/useGtcSearch'
 
-import { Category, Term } from '~/types/glossary/glossary.interface'
+    import { Category, Term } from '~/types/glossary/glossary.interface'
 
-export default defineComponent({
-    components: { GtcEntityCard, EmptyView, LoadingView, GtcFilters },
-    props: {
-        qualifiedName: {
-            type: String,
-            required: true,
-            default: '',
+    export default defineComponent({
+        components: { GtcEntityCard, EmptyView, LoadingView, GtcFilters },
+        props: {
+            qualifiedName: {
+                type: String,
+                required: true,
+                default: '',
+            },
+            guid: {
+                type: String,
+                required: true,
+                default: '',
+            },
+            type: {
+                type: String as PropType<
+                    'AtlasGlossary' | 'AtlasGlossaryCategory'
+                >,
+                required: true,
+                default: 'AtlasGlossary',
+            },
         },
-        guid: {
-            type: String,
-            required: true,
-            default: ''
-        },
-        type: {
-            type: String as PropType<'AtlasGlossary' | 'AtlasGlossaryCategory'>,
-            required: true,
-            default: 'AtlasGlossary'
-        }
-    },
-    emits: ['entityPreview'],
-    setup(props, context) {
-        const glossaryQualifiedName = toRef(props, 'qualifiedName');
-        const searchQuery = ref<string>()
+        emits: ['entityPreview'],
+        setup(props, context) {
+            const glossaryQualifiedName = toRef(props, 'qualifiedName')
+            const searchQuery = ref<string>()
 
-        const { entities, error, isLoading, fetchAssetsPaginated } = useGtcSearch(glossaryQualifiedName)
+            const { entities, error, isLoading, fetchAssetsPaginated } =
+                useGtcSearch(glossaryQualifiedName)
 
-        const selectedEntity = ref<Category | Term>()
+            const selectedEntity = ref<Category | Term>()
 
-        const projectionOptions = [
-            { value: 'description', label: 'Description' },
-            { value: 'owners', label: 'Owners' },
-            { value: 'status', label: 'Status' },
-            // { value: 'heirarchy', label: 'Heirarchy' },
-            // { value: 'rows', label: 'Rows' },
-            // { value: 'popularity', label: 'Popularity' },
-            // { value: 'classifications', label: 'Classifications' },
-        ]
-        const projection = ref(['status', 'description'])
+            const projectionOptions = [
+                { value: 'description', label: 'Description' },
+                { value: 'owners', label: 'Owners' },
+                { value: 'status', label: 'Status' },
+                // { value: 'heirarchy', label: 'Heirarchy' },
+                // { value: 'rows', label: 'Rows' },
+                // { value: 'popularity', label: 'Popularity' },
+                // { value: 'classifications', label: 'Classifications' },
+            ]
+            const projection = ref(['status', 'description'])
 
+            const onEntitySelect = (entity: Category | Term) => {
+                selectedEntity.value = entity
+            }
 
-        const onEntitySelect = (entity: Category | Term) => {
-            selectedEntity.value = entity
-        }
-
-        const terms = computed(
-            () => {
-                if(props.type === 'AtlasGlossary'){
-                    return entities.value?.filter(
-                    (entity) => entity.typeName === 'AtlasGlossaryTerm'
-                ) ?? [];
-                } 
-                if (props.type === 'AtlasGlossaryCategory'){
-                    return   entities.value?.filter((entity) => {
-                    if (
-                        entity.typeName === 'AtlasGlossaryTerm' &&
-                        entity?.attributes?.categories?.length
-                    ) {
-                        if (
-                            entity?.attributes?.categories?.find(
-                                (category) =>
-                                    category.guid === props.guid
-                            )
-                        ) {
-                            return true
-                        }
-                    }
-                    return false
-                }) ?? []           
+            const terms = computed(() => {
+                if (props.type === 'AtlasGlossary') {
+                    return (
+                        entities.value?.filter(
+                            (entity) => entity.typeName === 'AtlasGlossaryTerm'
+                        ) ?? []
+                    )
+                }
+                if (props.type === 'AtlasGlossaryCategory') {
+                    return (
+                        entities.value?.filter((entity) => {
+                            if (
+                                entity.typeName === 'AtlasGlossaryTerm' &&
+                                entity?.attributes?.categories?.length
+                            ) {
+                                if (
+                                    entity?.attributes?.categories?.find(
+                                        (category) =>
+                                            category.guid === props.guid
+                                    )
+                                ) {
+                                    return true
+                                }
+                            }
+                            return false
+                        }) ?? []
+                    )
                 }
                 return []
+            })
+            const categories = computed(() => {
+                if (props.type === 'AtlasGlossary') {
+                    return (
+                        entities.value?.filter(
+                            (entity) =>
+                                entity.typeName === 'AtlasGlossaryCategory'
+                        ) ?? []
+                    )
+                }
+                if (props.type === 'AtlasGlossaryCategory') {
+                    return (
+                        entities.value?.filter((entity) => {
+                            if (
+                                entity.typeName === 'AtlasGlossaryCategory' &&
+                                entity?.attributes?.parentCategory
+                            )
+                                return (
+                                    entity.typeName ===
+                                        'AtlasGlossaryCategory' &&
+                                    entity?.attributes?.parentCategory?.guid ===
+                                        props.guid
+                                )
+                            return false
+                        }) ?? []
+                    )
+                }
+                return []
+            })
+            const all = computed(
+                () => [...terms.value, ...categories.value] ?? []
+            )
+
+            const onSearch = useDebounceFn(() => {
+                fetchAssetsPaginated({
+                    query: `${searchQuery.value ? `${searchQuery.value}` : ''}`,
+                    offset: 0,
+                })
+            }, 400)
+
+            const loadMore = () => {
+                fetchAssetsPaginated({})
             }
-        );
-        const categories = computed(
-            () =>{
-            if(props.type === 'AtlasGlossary'){
-                return entities.value?.filter(
-                    (entity) => entity.typeName === 'AtlasGlossaryCategory'
-                ) ?? []
+
+            const updateFilters = (filters: any) => {
+                console.log(filters)
+                fetchAssetsPaginated({ filters, offset: 0 })
             }
-            if(props.type === 'AtlasGlossaryCategory'){
-                return entities.value?.filter((entity) => {
-                    if (entity.typeName === 'AtlasGlossaryCategory' && entity?.attributes?.parentCategory)
-                        return (
-                            entity.typeName === 'AtlasGlossaryCategory' &&
-                            entity?.attributes?.parentCategory?.guid ===
-                                props.guid
-                        )
-                    return false
-                }) ?? []
+
+            watch(selectedEntity, (newSelectedEntity) => {
+                context.emit('entityPreview', newSelectedEntity)
+            })
+
+            return {
+                glossaryQualifiedName,
+                searchQuery,
+                all,
+                entities,
+                terms,
+                categories,
+                onSearch,
+                onEntitySelect,
+                loadMore,
+                updateFilters,
+                selectedEntity,
+                isLoading,
+                projectionOptions,
+                projection,
             }
-            return []
-        });
-        const all = computed(() => [...terms.value, ...categories.value] ?? [])
-
-        const onSearch = useDebounceFn(() => {
-            fetchAssetsPaginated({query: `${searchQuery.value ? `${searchQuery.value}` : '' }`, offset: 0})
-        }, 400)
-
-        const loadMore = () => {
-            fetchAssetsPaginated({})
-        }
-
-        const updateFilters = (filters: any) => {
-            console.log(filters)
-            fetchAssetsPaginated({filters, offset: 0})
-        }
-
-        watch(selectedEntity, (newSelectedEntity) => {
-            context.emit('entityPreview', newSelectedEntity)
-        })
-
-        return {
-            glossaryQualifiedName,
-            searchQuery,
-            all,
-            entities,
-            terms,
-            categories,
-            onSearch,
-            onEntitySelect,
-            loadMore,
-            updateFilters,
-            selectedEntity,
-            isLoading,
-            projectionOptions,
-            projection,
-        }
-    },
-})
+        },
+    })
 </script>
 <style lang="less">
-.secondaryHeading {
-    @apply tracking-widest text-xs text-gray leading-5;
-}
+    .secondaryHeading {
+        @apply tracking-widest text-xs text-gray leading-5;
+    }
 </style>
 
 <route lang="yaml">
-  meta:
+meta:
     layout: default
     requiresAuth: true
 </route>

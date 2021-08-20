@@ -9,18 +9,14 @@
         ><span>Getting relations</span>
     </div> -->
     <!-- preloader ends here -->
-    <div class="flex items-center justify-between px-5 text-base">
+    <div class="flex items-center justify-between px-5 mt-4 mb-1 text-base">
         <!-- searchbar -->
-        <a-input
+        <a-input-search
             v-model:value="queryText"
             placeholder="Search"
             size="default"
-            class="my-3"
         >
-            <template #prefix>
-                <Fa icon="fal search" class="mr-2 text-gray-500" />
-            </template>
-        </a-input>
+        </a-input-search>
         <!-- filters -->
         <a-popover title="Show/hide" trigger="click" placement="bottomRight">
             <template #content>
@@ -30,16 +26,9 @@
                     class="flex flex-col"
                 />
             </template>
-            <a-badge :dot="checkedList?.length" :class="$style.badge">
-                <a-button class="px-2 py-1 ml-2 rounded">
-                    <span class="flex items-center justify-center">
-                        <fa
-                            icon="fas sort-amount-up"
-                            class="hover:text-primary-500"
-                        />
-                    </span>
-                </a-button>
-            </a-badge>
+            <a-button class="p-1 ml-2 rounded">
+                <AtlanIcon icon="FilterDot" class="h-6" />
+            </a-button>
         </a-popover>
     </div>
     <!-- accordions for different asset type -->
@@ -50,10 +39,21 @@
         class="m-0 bg-transparent"
         :class="$style.filter"
     >
+        <template #expandIcon="{ isActive }">
+            <div class="">
+                <fa
+                    icon="fas chevron-down"
+                    class="ml-1 transition-transform transform"
+                    :class="isActive ? '-rotate-180' : 'rotate-0'"
+                />
+            </div>
+        </template>
+
         <!-- each panel is a asset type -->
         <a-collapse-panel
-            v-for="item in filteredRelationshipAssets"
-            :key="item.displayText"
+            v-for="(item, index) in filteredRelationshipAssets"
+            :key="index"
+            v-model:activeKey="activeKeys"
             class="bg-transparent"
         >
             <template #header>
@@ -113,6 +113,7 @@
             const loading = ref(false)
             const assetId = ref('')
             const queryText = ref('')
+            const activeKeys = ref([])
 
             const checkedList = ref(['description'])
             const { selectedAsset } = toRefs(props)
@@ -148,10 +149,11 @@
                 assetId,
                 queryText,
                 plainOptions,
+                activeKeys,
                 checkedList,
                 cssClasses: {
                     textSize: 'text-sm',
-                    paddingY: 'py-3',
+                    paddingY: 'py-2',
                 },
             }
         },

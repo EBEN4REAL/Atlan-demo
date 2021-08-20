@@ -1,7 +1,7 @@
 <template>
     <span>
         <div v-if="data.list.attributeDefs.length > 5" class="pr-1 mx-5 mb-3">
-            <a-input
+            <!-- <a-input
                 ref="searchText"
                 v-model:value="attributeSearchText"
                 type="text"
@@ -19,16 +19,21 @@
                         @click="() => (attributeSearchText = '')"
                     />
                 </template>
-            </a-input>
+            </a-input> -->
         </div>
-        <div ref="container" class="mr-2 overflow-y-scroll max-h-48">
-            <div
+        <div ref="container" class="mr-2 overflow-y-scroll max-h-90">
+            <!-- <div
                 v-for="(a, x) in attributeSearchText.length
                     ? filterList(data.list.attributeDefs)
                     : data.list.attributeDefs.slice(
                           0,
                           showAll ? data.list.attributeDefs.length : 5
                       )"
+                :key="x"
+                class="mx-5"
+            > -->
+            <div
+                v-for="(a, x) in data.list.attributeDefs"
                 :key="x"
                 class="mx-5"
             >
@@ -39,14 +44,14 @@
                 />
             </div>
         </div>
-        <div class="m-3">
+        <!-- <div class="m-3">
             <div
                 v-if="
                     !showAll &&
                     attributeSearchText === '' &&
                     data.list.attributeDefs.length > 5
                 "
-                class="flex items-center w-auto font-bold text-center cursor-pointer select-none  outlined text-primary"
+                class="flex items-center w-auto font-bold text-center cursor-pointer select-none outlined text-primary"
                 @click="
                     () => {
                         showAll = true
@@ -58,12 +63,12 @@
             </div>
             <div
                 v-else-if="showAll && attributeSearchText === ''"
-                class="flex items-center w-auto font-bold text-center cursor-pointer select-none  outlined text-primary"
+                class="flex items-center w-auto font-bold text-center cursor-pointer select-none outlined text-primary"
                 @click="showAll = false"
             >
                 {{ `Show less` }}
             </div>
-        </div>
+        </div> -->
     </span>
 </template>
 <script lang="ts">
@@ -96,6 +101,7 @@
                 a: { name: string },
                 appliedValueMap: Object
             ) => {
+                console.log('setBMfilter', { a, appliedValueMap })
                 emit('update:data', {
                     ...props.data,
                     applied: {

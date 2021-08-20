@@ -343,9 +343,10 @@
                     }
                     default: {
                         // ? default fall back to bm filter
-                        const totalCount = Object.keys(
+
+                        const totalCount = Object.values(
                             dataMap.value[filterId].applied
-                        ).length
+                        ).filter((a) => JSON.stringify(a) !== '{}').length
 
                         return totalCount
                             ? `${
@@ -358,7 +359,6 @@
             }
 
             function resetAllFilters() {
-                console.log(dataMap.value)
                 dataMap.value.status.checked = []
                 dataMap.value.classifications.checked = []
                 dataMap.value.owners.userValue = []

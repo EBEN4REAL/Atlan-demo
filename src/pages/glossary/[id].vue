@@ -41,9 +41,30 @@
                         <fa icon="fal upload" class="h-3 mr-2" />
                         <span>Share</span>
                     </a-button>
-                    <a-button class="px-2.5">
-                        <fa icon="fal ellipsis-v" class="h-4" />
-                    </a-button>
+                    <a-dropdown :trigger="['click']">
+                        <a-button class="px-2.5" @click.prevent>
+                            <fa icon="fal ellipsis-v" class="h-4" />
+                        </a-button>
+                        <template #overlay>
+                            <a-menu>
+                                <a-menu-item>Add Term</a-menu-item>
+                                <a-menu-item>Add Category</a-menu-item>
+                                <a-sub-menu title="No status">
+                                    <a-menu-item>3rd menu item</a-menu-item>
+                                    <a-menu-item>4th menu item</a-menu-item>
+                                </a-sub-menu>
+                                <a-sub-menu title="Add Owner">
+                                    <a-menu-item>5d menu item</a-menu-item>
+                                    <a-menu-item>6th menu item</a-menu-item>
+                                </a-sub-menu>
+                                <a-sub-menu title="Add Expert">
+                                    <a-menu-item>5d menu item</a-menu-item>
+                                    <a-menu-item>6th menu item</a-menu-item>
+                                </a-sub-menu>
+                                <a-menu-item>Archive</a-menu-item>
+                            </a-menu>
+                        </template>
+                    </a-dropdown>
                 </div>
             </div>
             <div class="m-0">
@@ -53,10 +74,7 @@
                     class="border-0"
                 >
                     <a-tab-pane key="1" tab="Overview">
-                        <div
-                            class="px-5 mt-4 overflow-y-auto"
-                            style="height: 400px"
-                        >
+                        <div class="px-5 mt-4">
                             <GlossaryProfileOverview :entity="glossary" />
                             <GlossaryContinueSettingUp
                                 v-if="!isLoading"

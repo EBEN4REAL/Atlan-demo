@@ -1,5 +1,5 @@
 <template>
-    <div class="w-full mt-1">
+    <div class="w-full mb-4">
         <p class="flex-1 mb-2">Experts</p>
         <div class="flex flex-wrap">
             <div
@@ -9,7 +9,6 @@
                     mr-3
                     cursor-pointer
                     my-0
-                    mb-3
                     bg-gray-light
                     rounded-full
                     px-3
@@ -25,7 +24,6 @@
                     class="
                         text-gray-700
                         mb-0
-                        font-bold
                         truncate
                         text-sm
                         capitalize

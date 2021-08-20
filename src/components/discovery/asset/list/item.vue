@@ -19,11 +19,12 @@
             >
                 <!-- Title bar -->
                 <div class="flex items-center mb-0 overflow-hidden">
-                    <component
+                    <!-- <component
                         v-if="showAssetTypeIcon"
                         :is="item.typeName"
                         class="flex-none w-auto h-5 mr-2"
-                    ></component>
+                    ></component> -->
+                    <AssetLogo :asset="item" />
                     <!-- remove cssClasses prop -->
                     <router-link
                         :class="
@@ -150,7 +151,7 @@
                 />
             </div>
 
-            <img :src="logo(item)" class="flex-none w-auto h-6" />
+            <!-- <img :src="logo(item)" class="flex-none w-auto h-6" /> -->
         </div>
     </div>
 </template>
@@ -160,6 +161,7 @@
 
     import StatusBadge from '@common/badge/status/index.vue'
     import HierarchyBar from '@common/badge/hierarchy.vue'
+    import AssetLogo from '@/common/icon/assetIcon.vue'
     import { Components } from '~/api/atlas/client'
     import useAssetInfo from '~/composables/asset/useAssetInfo'
     import { assetInterface } from '~/types/assets/asset.interface'
@@ -168,6 +170,7 @@
         components: {
             StatusBadge,
             HierarchyBar,
+            AssetLogo,
         },
         props: {
             item: {

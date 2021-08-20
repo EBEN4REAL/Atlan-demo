@@ -1,6 +1,9 @@
 <template>
     <div class="flex w-full">
-        <div v-if="showFilters" class="flex flex-col h-full bg-white border-r facets">
+        <div
+            v-if="showFilters"
+            class="flex flex-col h-full bg-white border-r facets"
+        >
             <AssetFilters
                 :initial-filters="initialFilters"
                 @refresh="handleFilterChange"
@@ -59,7 +62,17 @@
                     :asset-type-map="assetTypeMap"
                     :total="totalSum"
                 ></AssetTabs>
-
+                <div class="flex items-center justify-between w-full px-3 py-2">
+                    <AssetPagination
+                        v-if="!isLoading && !isValidating"
+                        :label="assetTypeLabel"
+                        :list-count="list.length"
+                        :total-count="totalCount"
+                    ></AssetPagination>
+                    <span class="text-xs text-gray-500" v-else
+                        >Searching...</span
+                    >
+                </div>
                 <div
                     v-if="
                         list && list.length <= 0 && !isLoading && !isValidating
@@ -74,39 +87,11 @@
                     :list="list"
                     :score="searchScoreList"
                     :projection="projection"
-                    :is-loading="isLoading || isValidating"
+                    :isLoading="isLoading || isValidating"
+                    :isLoadMore="isLoadMore"
                     @preview="handlePreview"
+                    @loadMore="loadMore"
                 ></AssetList>
-                <div class="flex w-full px-3 py-1 bg-gray-light h-7">
-                    <div class="flex items-center justify-between w-full">
-                        <div
-                            v-if="isLoading || isValidating"
-                            class="flex items-center text-sm leading-none"
-                        >
-                            <a-spin
-                                size="small"
-                                class="mr-2 leading-none"
-                            ></a-spin
-                            ><span class="text-sm font-bold text-gray-700"
-                                >searching results</span
-                            >
-                        </div>
-                        <AssetPagination
-                            v-else
-                            :label="assetTypeLabel"
-                            :list-count="list.length"
-                            :total-count="totalCount"
-                        ></AssetPagination>
-
-                        <div
-                            v-if="isLoadMore && (!isLoading || !isValidating)"
-                            class="text-sm font-bold cursor-pointer  text-primary"
-                            @click="loadMore"
-                        >
-                            load more...
-                        </div>
-                    </div>
-                </div>
             </div>
         </div>
     </div>
@@ -226,8 +211,8 @@
             showFilters: {
                 type: Boolean,
                 required: false,
-                default: true
-            }
+                default: true,
+            },
         },
         emits: ['preview'],
         setup(props, { emit }) {
@@ -334,12 +319,7 @@
                 assetType.value,
                 true
             )
-            console.log(
-                assetTypeListString,
-                initialBody,
-                assetType.value,
-                'useAssetList type'
-            )
+            console.log('IS LOADING', isLoading.value)
             const updateBody = (dontScroll) => {
                 initialBody = {
                     typeName: assetTypeListString,

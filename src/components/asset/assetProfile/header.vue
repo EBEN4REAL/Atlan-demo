@@ -1,6 +1,11 @@
 <template>
     <div class="flex items-start justify-between">
         <div class="flex">
+            <!-- <AssetLogo
+                class="self-start pt-2"
+                :asset="assetData"
+                variant="lg"
+            /> -->
             <div>
                 <a-button
                     :ghost="true"
@@ -56,13 +61,14 @@
 </template>
 
 <script lang="ts">
-    // Vue
     import { defineComponent, computed, inject } from 'vue'
+    import AssetLogo from '@/common/icon/assetIcon.vue'
 
     // Util
     import { SourceList } from '~/constant/source'
 
     export default defineComponent({
+        components: { AssetLogo },
         setup() {
             /** INJECTIONS */
             const assetDataInjection = inject('assetData')

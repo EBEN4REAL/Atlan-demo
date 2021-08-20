@@ -1,5 +1,5 @@
 <template>
-    <div class="w-full mr-2">
+    <div class="w-full mb-4 mr-2">
         <p class="mb-2">Owners</p>
         <div>
             <div
@@ -21,9 +21,8 @@
                                 items-center
                                 px-3
                                 py-1.5
-                                mb-3
                                 mr-3
-                                font-bold
+                                mb-2
                                 rounded-full
                                 bg-gray-light
                                 text-gray-700
@@ -39,7 +38,6 @@
                             <div
                                 class="
                                     mb-0
-                                    font-bold
                                     truncate
                                     text-sm
                                     capitalize
@@ -50,7 +48,7 @@
                                 {{ owner.username }}
                             </div>
                             <div
-                                class="absolute flex items-center justify-center pl-3 pr-1 text-white bg-transparent border-none rounded-full opacity-0 cursor-pointer group-hover:opacity-100 owners-cross-btn"
+                                class="absolute flex items-center justify-center pl-3 pr-1 text-white bg-transparent border-none rounded-full opacity-0 cursor-pointer  group-hover:opacity-100 owners-cross-btn"
                                 v-on:click.stop="() => handleRemoveOwner(owner)"
                             >
                                 <div class="flex items-center justify-center">
@@ -76,9 +74,7 @@
                                 items-center
                                 px-3
                                 py-1.5
-                                mb-3
                                 mr-3
-                                font-bold
                                 rounded-full
                                 bg-gray-light
                                 text-gray-700
@@ -97,7 +93,6 @@
                             <div
                                 class="
                                     mb-0
-                                    font-bold
                                     truncate
                                     text-sm
                                     capitalize
@@ -108,7 +103,7 @@
                                 {{ owner.username }}
                             </div>
                             <div
-                                class="absolute flex items-center justify-center pl-3 pr-1 text-white bg-transparent border-none rounded-full opacity-0 cursor-pointer group-hover:opacity-100 owners-cross-btn"
+                                class="absolute flex items-center justify-center pl-3 pr-1 text-white bg-transparent border-none rounded-full opacity-0 cursor-pointer  group-hover:opacity-100 owners-cross-btn"
                                 v-on:click.stop="() => handleRemoveOwner(owner)"
                             >
                                 <div class="flex items-center justify-center">
@@ -120,42 +115,24 @@
                 </template>
                 <div
                     v-if="splittedOwners.b.length > 0 && !showAll"
-                    class="flex items-center mb-3 mr-3 cursor-pointer"
+                    class="flex items-center mr-3 cursor-pointer"
                     @click="() => toggleAllOwners(true)"
                 >
-                    <span
-                        class="
-                            px-1
-                            py-0.5
-                            text-sm
-                            font-bold
-                            rounded
-                            text-primary
-                        "
-                    >
+                    <span class="px-1 py-0.5 text-sm rounded text-primary">
                         and {{ splittedOwners.b.length }} more
                     </span>
                 </div>
                 <div
                     v-if="splittedOwners.b.length > 0 && showAll"
-                    class="flex items-center justify-center mb-3 mr-3 cursor-pointer "
+                    class="flex items-center justify-center mr-3 cursor-pointer"
                     @click="() => toggleAllOwners(false)"
                 >
-                    <span
-                        class="
-                            px-1
-                            py-0.5
-                            text-sm
-                            font-bold
-                            rounded
-                            text-primary
-                        "
-                    >
+                    <span class="px-1 py-0.5 text-sm rounded text-primary">
                         show less
                     </span>
                 </div>
                 <a-button
-                    class="flex items-center justify-center w-8 h-8 px-2 py-2 mb-3 mr-3 text-gray-700 border-none rounded-full bg-gray-light hover:bg-primary hover:text-white"
+                    class="flex items-center justify-center w-8 h-8 px-2 py-2 mr-3 text-gray-700 border-none rounded-full  bg-gray-light hover:bg-primary hover:text-white"
                     @click.stop="toggleOwnerPopover"
                 >
                     <fa icon="fal plus" />
@@ -167,19 +144,19 @@
                 overlay-class-name="inlinepopover"
                 trigger="click"
             >
-                <div v-if="ownerUsers.length < 1" class="inline-flex mb-3 mr-2">
+                <div v-if="ownerUsers.length < 1" class="inline-flex mr-2">
                     <div
                         class="
-                            inline-flex
+                            flex
+                            items-center
                             px-3
                             py-1.5
+                            mr-3
                             rounded-full
                             cursor-pointer
-                            select-none
-                            text-primary
-                            rounded
-                            hover:text-white hover:bg-primary
-                            bg-primary-light
+                            bg-gray-light
+                            text-gray-700
+                            hover:bg-primary hover:text-white
                         "
                     >
                         <span class="flex items-center text-sm">
@@ -190,7 +167,17 @@
                 </div>
 
                 <template #content>
-                    <div class="p-2.5 bg-white flex items-center flex-col w-56 rounded">
+                    <div
+                        class="
+                            p-2.5
+                            bg-white
+                            flex
+                            items-center
+                            flex-col
+                            w-56
+                            rounded
+                        "
+                    >
                         <a-input
                             v-input-focus
                             :placeholder="
@@ -200,7 +187,7 @@
                             "
                             @change="handleOwnerSearch"
                         >
-                            <template #prefix>
+                            <template #suffix>
                                 <fa icon="fal search" />
                             </template>
                         </a-input>
@@ -228,7 +215,7 @@
                                             class="text-sm"
                                             :class="
                                                 activeOwnerTabKey == '1'
-                                                    ? 'font-bold'
+                                                    ? ''
                                                     : ''
                                             "
                                             >Users</span
@@ -260,7 +247,7 @@
                                                             ? 'bg-primary-light'
                                                             : ''
                                                     "
-                                                    class="flex items-center justify-between w-full px-1 py-1 mb-2 rounded cursor-pointer hover:bg-primary-light"
+                                                    class="flex items-center justify-between w-full px-1 py-1 mb-2 rounded cursor-pointer  hoverbg-primary-light"
                                                     @click="
                                                         () => onSelectUser(user)
                                                     "
@@ -322,7 +309,7 @@
                                             class="text-sm"
                                             :class="
                                                 activeOwnerTabKey == '1'
-                                                    ? 'font-bold'
+                                                    ? ''
                                                     : ''
                                             "
                                             >Groups</span
@@ -358,7 +345,7 @@
                                                         () =>
                                                             onSelectGroup(group)
                                                     "
-                                                    class="relative flex items-center justify-between w-full px-1 py-1 mb-2 rounded cursor-pointer hoverbg-primary-light"
+                                                    class="relative flex items-center justify-between w-full px-1 py-1 mb-2 rounded cursor-pointer  hoverbg-primary-light"
                                                 >
                                                     <div
                                                         class="flex items-center flex-1 "
@@ -697,6 +684,12 @@
     })
 </script>
 <style lang="less" scoped>
+    .bg-primary-light {
+        background: rgba(34, 81, 204, 0.05);
+    }
+    .hoverbg-primary-light:hover {
+        background: rgba(34, 81, 204, 0.05);
+    }
     .owners-cross-btn {
         right: 6px;
         height: 100%;
@@ -723,7 +716,6 @@
         @apply rounded;
         @apply tracking-wide;
         @apply text-xs;
-        @apply font-bold;
         @apply text-primary;
         @apply bg-primary-light;
     }

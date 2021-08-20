@@ -9,6 +9,48 @@
                 @click="handlePreview(item)"
             ></ListItem>
         </template>
+        <template #footer>
+            <div
+                class="flex items-center justify-center"
+                v-if="isLoadMore || isLoading"
+            >
+                <button
+                    :disabled="isLoading"
+                    @click="$emit('loadMore')"
+                    class="flex items-center justify-between py-2 transition-all duration-300 rounded-full shadow  bg-primary-light text-primary"
+                    :class="isLoading ? 'px-2 w-9' : 'px-5 w-32'"
+                >
+                    <template v-if="!isLoading">
+                        <p
+                            class="m-0 mr-1 overflow-hidden text-sm transition-all duration-300  overflow-ellipsis whitespace-nowrap"
+                        >
+                            Load more
+                        </p>
+                        <AtlanIcon icon="ArrowDown" />
+                    </template>
+                    <svg
+                        v-else
+                        class="w-5 h-5 text-primary animate-spin"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                    >
+                        <circle
+                            class="opacity-25"
+                            cx="12"
+                            cy="12"
+                            r="10"
+                            stroke="currentColor"
+                            stroke-width="4"
+                        ></circle>
+                        <path
+                            class="opacity-75"
+                            fill="currentColor"
+                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                        ></path>
+                    </svg>
+                </button>
+            </div>
+        </template>
     </VirtualList>
     <!-- <ListItem
         :v-for="item in list"
@@ -56,13 +98,20 @@
             },
             isLoading: {
                 type: Boolean,
-                required: false,
+                required: true,
+                default() {
+                    return false
+                },
+            },
+            isLoadMore: {
+                type: Boolean,
+                required: true,
                 default() {
                     return false
                 },
             },
         },
-        emits: ['preview'],
+        emits: ['preview', 'loadMore'],
         setup(props, ctx: SetupContext) {
             const { list } = toRefs(props)
             const selectedAssetId = ref('')

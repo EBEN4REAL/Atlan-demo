@@ -1,7 +1,9 @@
 <template>
     <div class="flex justify-between items-center px-4 pl-5 py-3.5 text-xs">
-        <div class="text-sm font-medium text-gray-500">
-            {{ totalAppliedFiltersCount || 'No' }} filters applied
+        <div class="font-medium text-gray-500">
+            {{ totalAppliedFiltersCount || 'No' }}
+            {{ totalAppliedFiltersCount > 1 ? 'filters' : 'filter' }}
+            applied
         </div>
         <div class="flex items-center text-gray-500">
             <div
@@ -42,7 +44,7 @@
             <template #header>
                 <div :key="dirtyTimestamp" class="select-none">
                     <div class="flex justify-between">
-                        <span class="font-bold">
+                        <span>
                             <img
                                 v-if="item.image"
                                 :src="item.image"
@@ -344,9 +346,9 @@
                     default: {
                         // ? default fall back to bm filter
 
-                        const totalCount = Object.values(
-                            dataMap.value[filterId].applied
-                        ).filter((a) => JSON.stringify(a) !== '{}').length
+                        const totalCount = Object?.values(
+                            dataMap?.value[filterId]?.applied
+                        )?.filter((a) => JSON.stringify(a) !== '{}').length
 
                         return totalCount
                             ? `${
@@ -363,6 +365,14 @@
                 dataMap.value.classifications.checked = []
                 dataMap.value.owners.userValue = []
                 dataMap.value.owners.groupValue = []
+
+                // ? remove bm applied data
+                bmFiltersList.value
+                    .map((b) => b.id)
+                    .forEach((n) => {
+                        dataMap.value[n].applied = {}
+                    })
+
                 const filterMapKeys = Object.keys(filterMap)
                 filterMapKeys.forEach((id) => {
                     filterMap[id].criterion = []
@@ -385,6 +395,7 @@
                 filterMap,
                 handleClear,
                 dynamicList,
+                bmFiltersList,
             }
         },
         data() {

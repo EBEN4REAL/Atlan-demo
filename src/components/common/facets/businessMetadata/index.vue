@@ -21,7 +21,11 @@
                 </template>
             </a-input> -->
         </div>
-        <div ref="container" class="mr-2 overflow-y-scroll max-h-90">
+        <div
+            ref="container"
+            class="mr-2 overflow-y-scroll"
+            style="max-height: 25rem"
+        >
             <!-- <div
                 v-for="(a, x) in attributeSearchText.length
                     ? filterList(data.list.attributeDefs)

@@ -15,7 +15,6 @@
                         py-1.5
                         mb-3
                         mr-3
-                        font-bold
                         rounded-full
                         bg-gray-light
                         text-gray-700
@@ -25,13 +24,12 @@
                     "
                 >
                     <div
-                        class="flex items-center leading-none align-middle rounded cursor-pointer  drop-shadow-sm"
+                        class="flex items-center leading-none align-middle rounded cursor-pointer drop-shadow-sm"
                         @click.prevent.stop="handleClassificationClick"
                     >
                         <div
                             class="
                                 text-sm
-                                font-bold
                                 classification-name-width
                                 truncate
                                 ...
@@ -42,7 +40,7 @@
                     </div>
 
                     <div
-                        class="absolute flex items-center justify-center pl-3 pr-1 text-white bg-transparent border-none rounded-full opacity-0 cursor-pointer  group-hover:opacity-100 classification-cross-btn"
+                        class="absolute flex items-center justify-center pl-3 pr-1 text-white bg-transparent border-none rounded-full opacity-0 cursor-pointer group-hover:opacity-100 classification-cross-btn"
                         @click.stop="() => unLinkClassification(classification)"
                     >
                         <div class="flex items-center justify-center">
@@ -65,7 +63,6 @@
                         py-1.5
                         mb-3
                         mr-3
-                        font-bold
                         rounded-full
                         bg-gray-light
                         text-gray-700
@@ -75,13 +72,12 @@
                     "
                 >
                     <div
-                        class="flex items-center leading-none align-middle rounded cursor-pointer  drop-shadow-sm"
+                        class="flex items-center leading-none align-middle rounded cursor-pointer drop-shadow-sm"
                         @click.prevent.stop="handleClassificationClick"
                     >
                         <div
                             class="
                                 text-sm
-                                font-bold
                                 classification-name-width
                                 truncate
                                 ...
@@ -92,7 +88,7 @@
                     </div>
 
                     <div
-                        class="absolute flex items-center justify-center pl-3 pr-1 text-white bg-transparent border-none rounded-full opacity-0 cursor-pointer  group-hover:opacity-100 classification-cross-btn"
+                        class="absolute flex items-center justify-center pl-3 pr-1 text-white bg-transparent border-none rounded-full opacity-0 cursor-pointer group-hover:opacity-100 classification-cross-btn"
                         @click.stop="() => unLinkClassification(classification)"
                     >
                         <div class="flex items-center justify-center">
@@ -107,7 +103,7 @@
                 @click="() => toggleAllClassifications(true)"
             >
                 <span
-                    class="px-1 py-0.5 text-sm font-bold rounded text-primary"
+                    class="px-1 py-0.5 text-sm  rounded text-primary"
                 >
                     and {{ splittedClassifications.b.length }} more
                 </span>
@@ -118,14 +114,14 @@
                 @click="() => toggleAllClassifications(false)"
             >
                 <span
-                    class="px-1 py-0.5 text-sm font-bold rounded text-primary"
+                    class="px-1 py-0.5 text-sm  rounded text-primary"
                 >
                     show less
                 </span>
             </div>
             <a-button
                 v-if="asset.classifications?.length > 0"
-                class="flex items-center justify-center w-8 h-8 px-2 py-2 mb-3 text-gray-700 border-none rounded-full  bg-gray-light hover:bg-primary hover:text-white"
+                class="flex items-center justify-center w-8 h-8 px-2 py-2 mb-3 text-gray-700 border-none rounded-full bg-gray-light hover:bg-primary hover:text-white"
                 @click.stop="openLinkClassificationPopover"
             >
                 <fa icon="fal plus" />
@@ -140,40 +136,36 @@
             <div
                 v-if="asset.classifications?.length < 1"
                 class="
-                    inline-flex
+                    items-center
                     px-3
                     py-1.5
+                    mr-3
                     rounded-full
-                    items-center
+                    text-sm
                     cursor-pointer
-                    select-none
-                    text-sm text-primary
-                    hover:text-white hover:bg-primary
-                    _bg-primary-light
+                    bg-gray-light
+                    text-gray-700
+                    inline-flex
+                    hover:bg-primary hover:text-white
                 "
             >
                 <fa icon="fal plus" class="" />
                 <span class="ml-2">Add Classifications</span>
             </div>
             <template #content>
-                <div
-                    class="flex flex-col p-4 overflow-y-auto"
-                    style="width: 350px; max-height: 300px; min-height: 240px"
-                >
+                <div class="flex flex-col overflow-y-auto" style="width: 400px">
                     <div v-if="!showCreateClassificationPopover">
-                        <p class="pb-1 text-lg text-gray-500 border-b">
+                        <p class="mb-2 text-sm text-gray-700">
                             Link Classification
-                        </p>
-                        <p class="mb-1 text-sm text-gray">
-                            Select classifications
                         </p>
                         <a-select
                             v-model:value="selectedClassificationForLink"
                             mode="multiple"
                             style="width: 100%"
                             :allow-clear="true"
+                            :autofocus="true"
                             :show-search="true"
-                            placeholder="Select one or more classifications"
+                            placeholder="Search for classifications"
                             @change="handleSelectedClassificationForLink"
                         >
                             <template
@@ -185,36 +177,35 @@
                                 }}</a-select-option>
                             </template>
                         </a-select>
-                        <p class="mt-2 text-xs text-gray">
-                            Can't find the right classification to link, create
-                            a new classification from
+                        <!-- <p class="text-sm text-gray-700">
+                            Or create a new term
                             <a
                                 class="text-sm"
                                 @click="showCreateClassificationForm"
                                 >here</a
                             >
-                        </p>
+                        </p> -->
                         <a-checkbox
                             v-if="selectedClassificationForLink.length < 2"
                             v-model:checked="linkClassificationData.propagate"
-                            class="mt-2 text-gray"
+                            class="mt-2 text-sm text-gray-700"
                             >Propagate classification to related assets
                         </a-checkbox>
                         <a-checkbox
-                            v-if="linkClassificationData.propagate"
+                            :disabled="!linkClassificationData.propagate"
                             v-model:checked="
                                 linkClassificationData.removePropagationsOnEntityDelete
                             "
-                            class="mt-2 text-gray"
-                            >Remove propagation when
-                            <span class="font-semibold text-gray-500">{{
+                            class="mt-2 text-sm text-gray"
+                            >Remove propagation when related assets
+                            <!-- <span class="font-semibold text-gray-500">{{
                                 asset.displayText
-                            }}</span>
-                            is deleted
+                            }}</span> -->
+                            are deleted
                         </a-checkbox>
                     </div>
                     <div v-else>
-                        <p class="mb-1 text-lg text-gray-500 border-b">
+                        <p class="mb-2 text-sm text-gray-700">
                             Create Classification
                         </p>
                         <a-form
@@ -222,18 +213,29 @@
                             :model="formState"
                             :rules="rules"
                             layout="vertical"
-                            class="mt-4"
                         >
-                            <a-form-item ref="name" label="Name" name="name">
-                                <a-input v-model:value="formState.name" />
+                            <a-form-item
+                                ref="name"
+                                label="Name"
+                                name="name"
+                                class="mb-2"
+                            >
+                                <a-input
+                                    v-model:value="formState.name"
+                                    placeholder="Name of classification"
+                                />
                             </a-form-item>
                             <a-form-item
                                 ref="description"
                                 label="Description"
                                 name="description"
+                                class="mb-3"
                             >
                                 <a-textarea
                                     v-model:value="formState.description"
+                                    showCount
+                                    :maxlength="140"
+                                    placeholder="Add a description"
                                 />
                             </a-form-item>
                         </a-form>
@@ -244,53 +246,66 @@
                             {{ createErrorText }}
                         </p>
                     </div>
-                </div>
-
-                <div
-                    v-if="!showCreateClassificationPopover"
-                    class="flex justify-end p-2 space-x-2 border-t border-gray-100 "
-                >
-                    <a-button
-                        size="small"
-                        @click="handleLinkClassificationPopoverCancel"
-                        >Cancel</a-button
-                    >
-                    <a-button
-                        type="primary"
-                        size="small"
-                        :loading="
-                            linkClassificationStatus === 'loading'
-                                ? true
-                                : false
-                        "
-                        @click="handleLinkClassificationPopoverSave"
-                        >Link</a-button
-                    >
-                </div>
-                <div
-                    v-else
-                    class="flex justify-end p-2 space-x-2 border-t border-gray-100 "
-                >
-                    <a-button
-                        size="small"
-                        @click="
-                            () => {
-                                showCreateClassificationPopover = false
-                            }
-                        "
-                        >Cancel</a-button
-                    >
-                    <a-button
-                        type="primary"
-                        size="small"
-                        :loading="
-                            createClassificationStatus === 'loading'
-                                ? true
-                                : false
-                        "
-                        @click="createClassification"
-                        >Create</a-button
-                    >
+                    <div class="flex items-center justify-between w-full mt-4">
+                        <div
+                            v-if="!showCreateClassificationPopover"
+                            class="inline-flex flex-1 text-sm text-gray-700"
+                        >
+                            Or create a
+                            <span
+                                class="text-sm cursor-pointer text-primary"
+                                @click="showCreateClassificationForm"
+                                >&nbsp;new term</span
+                            >
+                        </div>
+                        <div
+                            v-else
+                            class="inline-flex flex-1 text-sm text-gray-700"
+                        ></div>
+                        <div
+                            v-if="!showCreateClassificationPopover"
+                            class="space-x-4"
+                        >
+                            <a-button
+                                class="px-4"
+                                @click="handleLinkClassificationPopoverCancel"
+                                >Cancel</a-button
+                            >
+                            <a-button
+                                type="primary"
+                                :loading="
+                                    linkClassificationStatus === 'loading'
+                                        ? true
+                                        : false
+                                "
+                                class="px-4"
+                                @click="handleLinkClassificationPopoverSave"
+                                >Link</a-button
+                            >
+                        </div>
+                        <div v-else class="space-x-4">
+                            <a-button
+                                @click="
+                                    () => {
+                                        showCreateClassificationPopover = false
+                                    }
+                                "
+                                class="px-4"
+                                >Cancel</a-button
+                            >
+                            <a-button
+                                type="primary"
+                                class="px-4"
+                                :loading="
+                                    createClassificationStatus === 'loading'
+                                        ? true
+                                        : false
+                                "
+                                @click="createClassification"
+                                >Create</a-button
+                            >
+                        </div>
+                    </div>
                 </div>
             </template>
         </a-popover>
@@ -504,7 +519,7 @@
 
             const linkClassificationData = ref({
                 propagate: false,
-                removePropagationsOnEntityDelete: true,
+                removePropagationsOnEntityDelete: false,
                 typeName: '',
             })
 

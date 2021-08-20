@@ -4,7 +4,7 @@
     <img v-else-if="entity.typeName === 'AtlasGlossaryCategory'" :src="CategorySvg" :width="25" />
     <img v-else-if="entity.typeName === 'AtlasGlossaryTerm'" :src="TermSvg" /></div>
     
-    <div class="flex flex-col ml-1">
+    <div class="flex flex-col ml-1 w-3/4">
       <span class="text-base leading-6 text-gray-700 cursor-pointer" @click="redirectToProfile">
         {{  entity.displayText }}  
           <component

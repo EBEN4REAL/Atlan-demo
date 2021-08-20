@@ -2,7 +2,7 @@
     <div v-if="isLoading">
         <LoadingView />
     </div>
-     <div v-else class="flex flex-row h-full" :class="$style.termHome">
+     <div v-else class="flex flex-row h-full" :class="$style.tabClasses">
         <div class="h-full overflow-auto"  :class="currentTab === '1' || (currentTab === '2') ? 'w-2/3' : 'w-full'">
             <div class="flex flex-row justify-between pl-8 pr-4 mt-6 mb-5">
                 <div class="flex flex-row">
@@ -47,7 +47,7 @@
                         </div>
                     </a-tab-pane>
                     <a-tab-pane key="2" tab="Linked Terms">
-                        <div :class="$style.overviewTab">
+                        <div :class="$style.tabClasses">
                             <LinkedAssetsTab :term-qualified-name="qualifiedName" @preview="handlePreview"/>
                         </div>
                     </a-tab-pane>
@@ -55,7 +55,7 @@
             </div>
         </div>
         <CategoryTermPreview v-if="currentTab === '1' && term" :entity="term" :preview="false" />
-        <div class="border-l" :class="$style.overviewTab">
+        <div class="border-l" :class="$style.tabClasses">
             <AssetPreview
                 v-if="currentTab === '2' && previewEntity"
                 page="discovery"
@@ -107,7 +107,7 @@ export default defineComponent({
         const currentTab = ref('1');
         const previewEntity = ref();
 
-        const { entity: term, error, isLoading } = useGTCEntity<Term>('term', guid)
+        const { entity: term, error, isLoading } = useGTCEntity<Term>('term', guid, 'profile')
 
         const title = computed(() => term.value?.attributes?.name)
         const shortDescription = computed(() => term.value?.attributes?.shortDescription)
@@ -155,6 +155,21 @@ export default defineComponent({
 .overviewTab {
     :global(.ant-tabs-nav) {
         @apply ml-0;
+    }
+}
+.tabClasses {
+    :global(.ant-tabs-tab) {
+        margin: 0px 32px 0px 0px !important;
+        padding: 0px 0px 18px 0px !important;
+    }
+    :global(.ant-tabs-nav) {
+        margin: 0px !important;
+    }
+    :global(.ant-tabs-tab-active) {
+        @apply text-gray-700 font-bold !important;
+    }
+    :global(.ant-tabs-bar) {
+        @apply px-5 !important;
     }
 }
 </style>

@@ -1,10 +1,10 @@
 <template>
     <div
-        style="border-radius: 2px"
+        :style="{ borderRadius: variant == 'lg' ? '4px' : '2px' }"
         class="flex items-center flex-none mr-2 bg-white"
     >
         <div
-            style="border-radius: 2px"
+            :style="{ borderRadius: variant == 'lg' ? '4px' : '2px' }"
             class="border border-r-0 border-gray-300 rounded-tr-none rounded-br-none "
             :class="variant == 'lg' ? 'p-1' : 'p-0.5'"
         >
@@ -16,15 +16,13 @@
         </div>
 
         <span
-            style="
-                border-top-right-radius: 2px;
-                border-bottom-right-radius: 2px;
-            "
             :style="{
                 backgroundColor: color,
                 borderColor: color,
                 lineHeight:
                     variant == 'lg' ? '28px !important' : '18px !important',
+                borderTopRightRadius: variant == 'lg' ? '4px' : '2px',
+                borderBottomRightRadius: variant == 'lg' ? '4px' : '2px',
             }"
             class="px-1 font-bold tracking-wide text-white border"
             :class="variant == 'lg' ? 'text-xl pt-1' : 'text-sm pt-0.5'"

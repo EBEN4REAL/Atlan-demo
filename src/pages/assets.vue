@@ -105,7 +105,7 @@
 <style scoped>
     .asset-preview-container {
         width: 420px;
-        min-width: 420px;
+        /* min-width: 420px; */
     }
 </style>
 <route lang="yaml">

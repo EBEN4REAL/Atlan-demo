@@ -167,11 +167,34 @@
                         props.initialFilters.facetsFilters.advanced.criterion,
                 },
             }
+
             const filterMap: {
                 [key: string]: Components.Schemas.FilterCriteria
             } = {
                 ...initialFilterMap,
             }
+
+            // ? add business metadata filters to filter map on load
+            watch(
+                () => bmFiltersList.value,
+                () => {
+                    bmFiltersList.value.forEach((bm) => {
+                        if (props.initialFilters.facetsFilters[bm.id]) {
+                            filterMap[bm.id] = {
+                                condition: 'or',
+                                criterion:
+                                    props.initialFilters.facetsFilters[bm.id]
+                                        .criterion,
+                            }
+                        }
+                    })
+                },
+                {
+                    deep: true,
+                    immediate: true,
+                }
+            )
+
             let filters: Components.Schemas.FilterCriteria[] = []
 
             const dirtyTimestamp = ref('dirty_')
@@ -211,7 +234,19 @@
             watch(
                 () => bmDataMap.value,
                 () => {
-                    dataMap.value = { ...dataMap.value, ...bmDataMap.value }
+                    dataMap.value = {
+                        ...dataMap.value,
+                        ...bmDataMap.value,
+                    }
+                    // ? add initial applied filters to dataMap
+                    Object.keys(bmDataMap.value).forEach((b) => {
+                        if (props.initialFilters.facetsFilters[b]?.applied)
+                            dataMap.value[b].applied = {
+                                ...dataMap.value[b].applied,
+                                ...props.initialFilters.facetsFilters[b]
+                                    .applied,
+                            }
+                    })
                 },
                 {
                     deep: true,
@@ -343,16 +378,12 @@
                     }
                     default: {
                         // ? default fall back to bm filter
-
-                        const totalCount = Object?.values(
-                            dataMap?.value[filterId]?.applied
-                        )?.filter((a) => JSON.stringify(a) !== '{}').length
+                        const totalCount = Object.values(
+                            dataMap.value[filterId]?.applied
+                        ).length
 
                         return totalCount
-                            ? `${
-                                  Object.keys(dataMap.value[filterId].applied)
-                                      .length
-                              } condition(s) applied`
+                            ? `${totalCount} condition(s) applied`
                             : ''
                     }
                 }

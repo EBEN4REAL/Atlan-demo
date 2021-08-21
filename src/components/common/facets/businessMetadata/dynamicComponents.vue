@@ -101,7 +101,7 @@
                 required: true,
             },
         },
-        emits: ['handleChange', 'removeFilter'],
+        emits: ['handleChange'],
         setup(props, { emit }) {
             const { getDatatypeOfAttribute, createDebounce } =
                 useBusinessMetadataHelper()

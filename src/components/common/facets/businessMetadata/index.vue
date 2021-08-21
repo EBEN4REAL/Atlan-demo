@@ -96,6 +96,9 @@
             const showAll = ref(false)
             const container = ref(null)
 
+            const isEmptyObject = (obj: Object) =>
+                Object.keys(obj).length === 0 && obj.constructor === Object
+
             /**
              * @param {String} a - attribute object of the filter to apply
              * @param {String} appliedValueMap - consists of 1 or more operators mapped with their values
@@ -105,22 +108,47 @@
                 a: { name: string },
                 appliedValueMap: Object
             ) => {
-                emit('update:data', {
+                // ? if appliedValueMap === {} i.e all applied filters removed, remove the entry
+                const newDataMap = {
                     ...props.data,
                     applied: {
                         ...props.data.applied,
                         [a.name]: appliedValueMap,
                     },
-                })
+                }
+
+                if (isEmptyObject(appliedValueMap))
+                    delete newDataMap.applied[a.name]
+                emit('update:data', newDataMap)
                 const attributeName = `${props.data.list.name}.${a.name}`
 
                 const criterion: Components.Schemas.FilterCriteria[] = []
+
+                // ? populate criterion object with filters previously applied
+                Object.entries(props.data.applied).forEach((attribute) => {
+                    Object.entries(attribute[1]).forEach((o) => {
+                        criterion.push({
+                            attributeName: `${props.data.list.name}.${attribute[0]}`,
+                            operator: o[0],
+                            attributeValue: o[1],
+                        })
+                    })
+                })
+                // ? add new filter to criterion
                 Object.keys(appliedValueMap).forEach((key: string) => {
-                    criterion.push({
+                    const alreadyAppliedIndex = criterion.findIndex(
+                        (c) =>
+                            c.attributeName === attributeName &&
+                            c.operator === key
+                    )
+                    const filter = {
                         attributeName,
                         operator: key,
                         attributeValue: appliedValueMap[key],
-                    })
+                    }
+                    if (alreadyAppliedIndex > -1)
+                        criterion[alreadyAppliedIndex] = filter
+                    else criterion.push(filter)
                 })
                 emit('change', {
                     id: props.item.id,
@@ -131,15 +159,19 @@
                 })
             }
 
-            const filterList = (list) =>
-                list.filter((a) =>
-                    a.options.displayName.includes(attributeSearchText.value)
+            const filterList = (list: any[]) =>
+                list.filter(
+                    (a: { options: { displayName: string | string[] } }) =>
+                        a.options.displayName.includes(
+                            attributeSearchText.value
+                        )
                 )
 
             const showScrollBar = () => {
                 container.value.scrollTop = 1
                 container.value.scrollTop = 0
             }
+
             return {
                 setBMfilter,
                 attributeSearchText,

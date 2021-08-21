@@ -27,7 +27,6 @@
                             :operator="o.value"
                             :default-value="applied[o.value] || ''"
                             @handleChange="handleInput"
-                            @removeFilter="removeFilter"
                         />
                     </div>
                 </template>
@@ -100,7 +99,7 @@
              */
             const removeFilter = (operator: string) => {
                 if (
-                    appliedValues.value[operator] ||
+                    appliedValues.value[operator]?.toString() ||
                     !operatorHasValue(operator)
                 ) {
                     delete appliedValues.value[operator]

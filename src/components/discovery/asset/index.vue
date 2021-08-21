@@ -1,6 +1,9 @@
 <template>
     <div class="flex w-full">
-        <div v-if="showFilters" class="flex flex-col h-full bg-white border-r facets">
+        <div
+            v-if="showFilters"
+            class="flex flex-col h-full bg-white border-r facets"
+        >
             <AssetFilters
                 :initial-filters="initialFilters"
                 @refresh="handleFilterChange"
@@ -226,8 +229,8 @@
             showFilters: {
                 type: Boolean,
                 required: false,
-                default: true
-            }
+                default: true,
+            },
         },
         emits: ['preview'],
         setup(props, { emit }) {

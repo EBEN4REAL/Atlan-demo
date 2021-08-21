@@ -78,8 +78,23 @@ export function getEncodedStringFromOptions(options: any) {
                         )
                         .join(',')
                     filterKeyValue = filterKeyValue.slice(0, -1)
-
                     break
+                }
+                default: {
+                    filterKeyValue = options.filters[filterKey].criterion
+                    filterKeyValue = filterKeyValue
+                        .map(
+                            (e: criterion) =>
+                                (e.attributeName ? `${e.attributeName.split('.')[1]}:` : '') +
+                                (e.attributeValue
+                                    ? `${e.attributeValue}:`
+                                    : '') +
+                                (e.operator ? `${e.operator}:` : '')
+                        )
+                        .join(',')
+                    filterKeyValue = filterKeyValue.slice(0, -1)
+                    break
+
                 }
             }
             // TODO include business met data and other filters
@@ -304,9 +319,30 @@ export function getDecodedOptionsFromString(router) {
                 }
                 break
             }
-            // default: {
+            default: {
+                const allFilters = facetFilterValuesString.split(',')
+                const applied = {}
+                const criterion = []
+                allFilters.forEach(att => {
+                    const [a, v, o] = att.split(':');
+                    applied[a] = {
+                        ...(applied[a] || {}),
+                        [o]: v
+                    }
+                    criterion.push(
+                        {
+                            attributeName: `${facetFilterName}.${a}`,
+                            attributeValue: v,
+                            operator: o,
+                        }
+                    )
+                })
 
-            // }
+                facetsFilters[facetFilterName] = {
+                    applied, criterion
+                }
+
+            }
         }
 
         if (connectorsPayload) {

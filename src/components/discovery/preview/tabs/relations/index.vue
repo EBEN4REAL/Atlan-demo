@@ -92,7 +92,7 @@
         computed,
         toRefs,
     } from 'vue'
-    import AssetTypeItems from '@/preview/asset/v2/tabs/relations/assetTypeItems.vue'
+    import AssetTypeItems from '@/discovery/preview/tabs/relations/assetTypeItems.vue'
     import { assetInterface } from '~/types/assets/asset.interface'
     import useEntityRelationships from '~/composables/asset/useEntityRelationships'
 

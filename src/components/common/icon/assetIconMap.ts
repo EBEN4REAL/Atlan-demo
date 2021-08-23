@@ -9,12 +9,11 @@ export const abbreviationMap = {
     Column: 'COL',
     View: 'VW',
     MaterialisedView: 'MVW',
-    //     Tableau Worksheet: '',
+    // TableauWorksheet: '',
     // TableauWorkbook: '',
     // TableauSite: '',
     // TableauDashboard: '',
     // TableauProject: '',
-    // TableauSite: '',
-    // TableauEmbedded Datasource: '',
-    // TableauPublished Datasource
+    // TableauEmbeddedDatasource: '',
+    // TableauPublishedDatasource: '',
 }

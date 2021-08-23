@@ -189,7 +189,7 @@
 <script lang="ts">
     import { defineComponent, ref, PropType } from 'vue'
     import StatusBadge from '@common/badge/status/index.vue'
-    import TermInfoHoverCard from '@/preview/asset/v2/hovercards/termInfo.vue'
+    import TermInfoHoverCard from '@/discovery/preview/hovercards/termInfo.vue'
 
     import fetchUserList from '~/composables/user/fetchUserList'
     import fetchGroupList from '~/composables/group/fetchGroupList'

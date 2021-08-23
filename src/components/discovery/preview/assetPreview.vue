@@ -67,7 +67,7 @@
     } from 'vue'
     import StatusBadge from '@common/badge/status/index.vue'
     import { assetInterface } from '~/types/assets/asset.interface'
-    import useAssetDetailsTabList from './useTabList'
+    import useAssetDetailsTabList from '../../discovery/preview/tabs/useTabList'
     import useAsset from '~/composables/asset/useAsset'
     import useAssetInfo from '~/composables/asset/useAssetInfo'
     import Tooltip from '@common/ellipsis/index.vue'
@@ -89,22 +89,26 @@
             Tooltip,
             AssetLogo,
             StatusBadge,
-            info: defineAsyncComponent(() => import('./tabs/info/index.vue')),
+            info: defineAsyncComponent(
+                () => import('../../discovery/preview/tabs/info/index.vue')
+            ),
             columns: defineAsyncComponent(
-                () => import('./tabs/columns/index.vue')
+                () => import('../../discovery/preview/tabs/columns/index.vue')
             ),
             activity: defineAsyncComponent(
-                () => import('./tabs/activity/index.vue')
+                () => import('../../discovery/preview/tabs/activity/index.vue')
             ),
-            chat: defineAsyncComponent(() => import('./tabs/chat/index.vue')),
+            chat: defineAsyncComponent(
+                () => import('../../discovery/preview/tabs/chat/assetChat.vue')
+            ),
             relations: defineAsyncComponent(
-                () => import('./tabs/relations/index.vue')
+                () => import('../../discovery/preview/tabs/relations/index.vue')
             ),
             actions: defineAsyncComponent(
-                () => import('./tabs/actions/index.vue')
+                () => import('../../discovery/preview/tabs/actions/actions.vue')
             ),
             lineage: defineAsyncComponent(
-                () => import('./tabs/lineage/index.vue')
+                () => import('../../discovery/preview/tabs/lineage/index.vue')
             ),
         },
         setup(props, { emit }) {

@@ -38,7 +38,11 @@
                                         />
                                     </span>
                                     <span
-                                        class="text-sm leading-5 text-gray-700  text-bold"
+                                        class="
+                                            text-sm
+                                            leading-5
+                                            text-gray-700 text-bold
+                                        "
                                         >{{ record.name }}</span
                                     >
                                 </div>
@@ -127,10 +131,9 @@
 <script lang="ts">
     import { defineComponent, computed, watch } from 'vue'
 
-    import Owners from '@/preview/asset/tabs/overview/details/owners.vue'
+    // import Owners from '@/discovery/preview/tabs/overview/details/owners.vue'
 
     import GlossaryAddDescriptionCard from '@/glossary/glossaryAddDescriptionCard.vue'
-    import Owners from '@/preview/asset/tabs/overview/details/owners.vue'
     import { Components } from '~/api/atlas/client'
 
     import TermSvg from '~/assets/images/gtc/term/term.png'
@@ -143,7 +146,7 @@
     }
 
     export default defineComponent({
-        components: { GlossaryAddDescriptionCard, Owners },
+        components: { GlossaryAddDescriptionCard },
         props: ['terms', 'categories'],
         emits: ['updateDescription', 'fetchNextCategoryOrTermList'],
         setup(props: PropsType, context) {

@@ -86,7 +86,9 @@
             const operatorsMap = ref([])
             const isVisible = ref(false)
             operatorsMap.value = JSON.parse(
-                JSON.stringify(map[getDatatypeOfAttribute(props.a.typeName)])
+                JSON.stringify(
+                    map[getDatatypeOfAttribute(props.a.typeName)] || map['enum']
+                )
             ).map((o) => ({ ...o, checked: false }))
             const appliedValues = ref({})
 

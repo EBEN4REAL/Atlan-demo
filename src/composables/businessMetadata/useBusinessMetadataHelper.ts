@@ -1,10 +1,8 @@
 // * Composables
-import useEnums from '@/admin/enums/composables/useEnums'
-import { computed, ref } from 'vue'
+import { computed } from 'vue'
 import { useBusinessMetadataStore } from '~/store/businessMetadata'
 
 export default function useBusinessMetadataHelper() {
-    const { enumListData: enumsList } = useEnums()
     const businessMetadataStore = useBusinessMetadataStore()
 
     // * Computed
@@ -52,24 +50,9 @@ export default function useBusinessMetadataHelper() {
                 }
                 return `text`
             }
-            if (typeName) {
-                const reqIndex = enumsList.value.findIndex((enumitem) =>
-                    typeName.includes(enumitem.name)
-                )
-                if (reqIndex > -1) {
-                    return {
-                        typeName,
-                        type: 'enum',
-                        isMultivalues: typeName.includes('array'),
-                        enum: JSON.parse(
-                            JSON.stringify(enumsList.value[reqIndex])
-                        ),
-                    }
-                }
-                return typeName
-            }
         }
 
+        // return ['enum', typeName] || typeName
         return typeName || ''
     }
 

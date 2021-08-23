@@ -99,11 +99,11 @@
 
 <script lang="ts">
     import useBusinessMetadata from '@/admin/custom-metadata/composables/useBusinessMetadata'
-    import AssetFilters from '@/discovery/filters/index.vue'
-    import AssetList from '@/discovery/list/index.vue'
-    import Preferences from '@/discovery/list/preference/index.vue'
-    import SavedFilters from '@/discovery/filters/saved/index.vue'
-    import AssetTabs from '@/discovery/list/tabs/index.vue'
+    import AssetFilters from '~/components/discovery/filters/discoveryFilters.vue'
+    import AssetList from '~/components/discovery/list/assetList.vue'
+    import Preferences from '~/components/discovery/list/preference.vue'
+    import SavedFilters from '~/components/discovery/filters/saved.vue'
+    import AssetTabs from '~/components/discovery/list/assetTypeTabs.vue'
     import EmptyView from '@common/empty/discover.vue'
     import AssetPagination from '@common/pagination/index.vue'
     import SearchBox from '@common/searchbox/searchlist.vue'

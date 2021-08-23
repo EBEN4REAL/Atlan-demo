@@ -37,7 +37,7 @@
     import { assetInterface } from '~/types/assets/asset.interface'
 
     export default defineComponent({
-        name: 'Column List item',
+        name: 'ColumnListItem',
         props: {
             asset: {
                 type: Object as PropType<assetInterface>,
@@ -61,13 +61,5 @@
         @apply flex;
         @apply items-center;
         @apply text-xs;
-    }
-    .pkey {
-        color: #52c7d7;
-        background-color: #52c7d71a;
-    }
-    .fkey {
-        color: #d452d7;
-        background-color: #d452d71a;
     }
 </style>

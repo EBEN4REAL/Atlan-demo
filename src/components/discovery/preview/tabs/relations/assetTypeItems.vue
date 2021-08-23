@@ -28,8 +28,8 @@
 </template>
 
 <script lang="ts">
-    import ListItem from '@/discovery/list/item.vue'
-    import ColumnListItem from '@/discovery/preview/tabs/columns/listItem.vue'
+    import ListItem from '~/components/discovery/list/listItem.vue'
+    import ColumnListItem from '~/components/discovery/preview/tabs/columns/columnListItem.vue'
     import { defineComponent, ref, watch } from 'vue'
     import useAssetInfo from '~/composables/asset/useAssetInfo'
     import useBiRelations from '~/composables/asset/useBiRelations'

@@ -55,7 +55,7 @@
 </template>
 
 <script lang="ts">
-    import ColumnListItem from '@/discovery/preview/tabs/columns/listItem.vue'
+    import ColumnListItem from '~/components/discovery/preview/tabs/columns/columnListItem.vue'
     import DataTypes from '@common/facets/dataType.vue'
     import { toRefs } from '@vueuse/core'
     import { computed, defineComponent, PropType, ref } from 'vue'

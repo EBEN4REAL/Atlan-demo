@@ -17,12 +17,32 @@
                 <button
                     :disabled="isLoading"
                     @click="$emit('loadMore')"
-                    class="flex items-center justify-between py-2 transition-all duration-300 rounded-full shadow  bg-primary-light text-primary"
+                    class="
+                        flex
+                        items-center
+                        justify-between
+                        py-2
+                        transition-all
+                        duration-300
+                        rounded-full
+                        shadow
+                        bg-primary-light
+                        text-primary
+                    "
                     :class="isLoading ? 'px-2 w-9' : 'px-5 w-32'"
                 >
                     <template v-if="!isLoading">
                         <p
-                            class="m-0 mr-1 overflow-hidden text-sm transition-all duration-300  overflow-ellipsis whitespace-nowrap"
+                            class="
+                                m-0
+                                mr-1
+                                overflow-hidden
+                                text-sm
+                                transition-all
+                                duration-300
+                                overflow-ellipsis
+                                whitespace-nowrap
+                            "
                         >
                             Load more
                         </p>
@@ -65,7 +85,7 @@
 
 <script lang="ts">
     import { defineComponent, SetupContext, ref, toRefs, watch } from 'vue'
-    import ListItem from './item.vue'
+    import ListItem from './listItem.vue'
     import VirtualList from '~/lib/virtualList/virtualList.vue'
 
     export default defineComponent({

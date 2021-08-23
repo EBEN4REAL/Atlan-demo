@@ -167,6 +167,7 @@
     import { assetInterface } from '~/types/assets/asset.interface'
 
     export default defineComponent({
+        name: 'AssetListItem',
         components: {
             StatusBadge,
             HierarchyBar,

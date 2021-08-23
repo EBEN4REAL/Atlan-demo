@@ -15,7 +15,14 @@
             </div>
         </div>
         <div
-            class="z-20 flex flex-col h-full bg-white border-l  asset-preview-container"
+            class="
+                z-20
+                flex flex-col
+                h-full
+                bg-white
+                border-l
+                asset-preview-container
+            "
         >
             <AssetPreview
                 v-if="selected"
@@ -27,7 +34,7 @@
 </template>
 
 <script lang="ts">
-    import AssetDiscovery from '@/discovery/index.vue'
+    import AssetDiscovery from '~/components/discovery/assetDiscovery.vue'
     import AssetPreview from '@/discovery/preview/assetPreview.vue'
     import { useHead } from '@vueuse/head'
     import { computed, defineComponent, ref, Ref, watch } from 'vue'

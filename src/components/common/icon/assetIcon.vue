@@ -32,6 +32,7 @@
 </template>
 
 <script lang="ts">
+    type variant = 'lg' | 'sm'
     import { defineComponent, PropType, computed, toRefs } from 'vue'
     import { assetInterface } from '~/types/assets/asset.interface'
     import useAssetInfo from '~/composables/asset/useAssetInfo'
@@ -44,7 +45,7 @@
                 required: true,
             },
             variant: {
-                type: String,
+                type: String as PropType<variant>,
                 required: false,
             },
         },

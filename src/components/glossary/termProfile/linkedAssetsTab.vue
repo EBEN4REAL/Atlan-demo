@@ -59,9 +59,9 @@ import { defineComponent, computed, onMounted, watch, ref } from 'vue'
 import { useDebounceFn } from '@vueuse/core'
 import { useRouter } from 'vue-router'
 
-import AssetList from '@/discovery/asset/list/index.vue'
+import AssetList from '@/discovery/ist/index.vue'
 import EmptyView from '@common/empty/discover.vue'
-import AssetDiscovery from '@/discovery/asset/index.vue'
+import AssetDiscovery from '@/discovery/index.vue'
 
 import useTermLinkedAssets from '~/composables/glossary/useTermLinkedAssets'
 import { getDecodedOptionsFromString } from '~/utils/routerQuery'

@@ -104,11 +104,11 @@
     import { defineComponent, PropType, computed, ref, toRef } from 'vue'
 
     import GlossaryTopTerms from '@/glossary/common/glossaryTopTerms.vue'
-    import Owners from '@/preview/asset/tabs/info/assetDetails/owners.vue'
-    import Experts from '@/preview/asset/tabs/info/assetDetails/experts.vue'
-    import Description from '@/preview/asset/tabs/info/assetDetails/description.vue'
-    import Status from '@/preview/asset/tabs/info/assetDetails/status.vue'
-    import Activity from '@/preview/asset/tabs/activity/index.vue'
+    import Owners from '@/discovery/preview/tabs/info/assetDetails/owners.vue'
+    import Experts from '@/discovery/preview/tabs/info/assetDetails/experts.vue'
+    import Description from '@/discovery/preview/tabs/info/assetDetails/description.vue'
+    import Status from '@/discovery/preview/tabs/info/assetDetails/status.vue'
+    import Activity from '@/discovery/preview/tabs/activity/index.vue'
 
     import {
         Glossary,

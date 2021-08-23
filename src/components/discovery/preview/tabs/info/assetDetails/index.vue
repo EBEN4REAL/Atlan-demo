@@ -44,7 +44,7 @@
     import Experts from './experts.vue'
     import { assetInterface } from '~/types/assets/asset.interface'
     import useAssetInfo from '~/composables/asset/useAssetInfo'
-    import RowInfoHoverCard from '@/preview/asset/hovercards/rowInfo.vue'
+    import RowInfoHoverCard from '@/discovery/preview/hovercards/rowInfo.vue'
 
     export default defineComponent({
         name: 'AssetDetails',

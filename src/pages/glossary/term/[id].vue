@@ -16,7 +16,7 @@
                     </div>
                     <div class="flex flex-col w-3/4">
                         <div class="flex">
-                            <span class="text-xl leading-6 font-bold mr-3">{{
+                            <span class="mr-3 text-xl font-bold leading-6">{{
                                 title
                             }}</span>
                             <component
@@ -91,7 +91,7 @@
     import LoadingView from '@common/loaders/page.vue'
     import RelatedTerms from '@/glossary/termProfile/relatedTerms.vue'
     import CategoryTermPreview from '@/glossary/common/categoryTermPreview/categoryTermPreview.vue'
-    import AssetPreview from '~/components/preview/asset/index.vue'
+    import AssetPreview from '~/components/discovery/preview/assetPreview.vue'
 
     import useGTCEntity from '~/composables/glossary/useGtcEntity'
 

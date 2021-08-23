@@ -62,7 +62,7 @@
     import useAssetInfo from '~/composables/asset/useAssetInfo'
     import { dataTypeList } from '~/constant/datatype'
     import DataTypes from '@common/facets/dataType.vue'
-    import ColumnListItem from '@/preview/asset/tabs/columns/listItem.vue'
+    import ColumnListItem from '@/discovery/preview/tabs/columns/listItem.vue'
 
     export default defineComponent({
         components: { DataTypes, ColumnListItem },

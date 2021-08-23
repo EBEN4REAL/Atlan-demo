@@ -565,7 +565,7 @@
     import fetchGroupList from '~/composables/group/fetchGroupList'
     import { useUserPreview } from '~/composables/user/showUserPreview'
     import updateOwners from '~/composables/asset/updateOwners'
-    import OwnerInfoCard from '~/components/preview/asset/hovercards/ownerInfo.vue'
+    import OwnerInfoCard from '~/components/discovery/preview/hovercards/ownerInfo.vue'
 
     export default defineComponent({
         components: { OwnerInfoCard },

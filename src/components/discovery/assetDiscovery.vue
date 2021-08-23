@@ -28,33 +28,22 @@
                         :data="connectorsPayload"
                     ></AssetDropdown>
                 </div>
-                <div class="flex items-center mx-3 mt-1">
-                    <a-input
-                        ref="assetSearchBar"
-                        v-model:value="queryText"
-                        placeholder="Search"
-                        size="default"
-                        :class="$style.searchbar"
-                        @change="handleSearchChange"
-                    >
-                        <template #suffix>
-                            <AtlanIcon icon="Search" />
-                        </template>
-                    </a-input>
-                    <a-popover trigger="click" placement="bottomRight">
-                        <template #content>
-                            <Preferences
-                                :default-projection="projection"
-                                @change="handleChangePreferences"
-                                @sort="handleChangeSort"
-                                @state="handleState"
-                            ></Preferences>
-                        </template>
-                        <a-button class="p-1 ml-2 rounded">
-                            <AtlanIcon icon="FilterDot" class="h-6" />
-                        </a-button>
-                    </a-popover>
-                </div>
+                <SearchAndFilter
+                    class="mx-3 mt-1"
+                    v-model:value="queryText"
+                    placeholder="Search"
+                    @change="handleSearchChange"
+                    :autofocus="true"
+                >
+                    <template #filter>
+                        <Preferences
+                            :default-projection="projection"
+                            @change="handleChangePreferences"
+                            @sort="handleChangeSort"
+                            @state="handleState"
+                        />
+                    </template>
+                </SearchAndFilter>
 
                 <AssetTabs
                     v-model="assetType"
@@ -108,6 +97,8 @@
     import AssetPagination from '@common/pagination/index.vue'
     import SearchBox from '@common/searchbox/searchlist.vue'
     import HeirarchySelect from '@common/tree/heirarchy/index.vue'
+    import SearchAndFilter from '@/common/input/searchAndFilter.vue'
+
     // import { useDebounceFn } from "@vueuse/core";
     // import fetchAssetDiscover from "~/composables/asset/fetchAssetDiscover";
     import { useDebounceFn } from '@vueuse/core'
@@ -190,6 +181,7 @@
             EmptyView,
             HeirarchySelect,
             AssetDropdown,
+            SearchAndFilter,
         },
         props: {
             initialFilters: {
@@ -501,11 +493,8 @@
                 }
             })
 
-            const assetSearchBar = ref<HTMLInputElement | null>(null)
-
             onMounted(() => {
                 fetchBMonStore()
-                assetSearchBar?.value?.focus()
             })
             return {
                 handleClearFiltersFromList,
@@ -539,7 +528,6 @@
                 handleState,
                 connectorsPayload,
                 filteredConnector,
-                assetSearchBar,
                 // listCount,
                 // isLoading,
                 // limit,
@@ -581,25 +569,7 @@
         },
     })
 </script>
-<style lang="less" module>
-    .searchbar {
-        @apply mr-2 rounded;
-        @apply border border-gray-300 !important;
-        @apply outline-none;
-        :global(.ant-input) {
-            @apply h-6;
-            @apply bg-transparent;
-            @apply text-gray-500;
-        }
-        &:hover {
-            border-right-width: 2px !important;
-            box-shadow: 0 0 0 2px rgb(82 119 215 / 20%);
-        }
-        ::placeholder {
-            @apply text-gray-500 opacity-80 text-sm;
-        }
-    }
-</style>
+
 <style scoped>
     .facets {
         min-width: 264px;

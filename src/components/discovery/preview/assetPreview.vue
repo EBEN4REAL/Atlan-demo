@@ -89,26 +89,24 @@
             Tooltip,
             AssetLogo,
             StatusBadge,
-            info: defineAsyncComponent(
-                () => import('../../discovery/preview/tabs/info/index.vue')
-            ),
+            info: defineAsyncComponent(() => import('./tabs/info/infoTab.vue')),
             columns: defineAsyncComponent(
-                () => import('../../discovery/preview/tabs/columns/index.vue')
+                () => import('./tabs/columns/columnTab.vue')
             ),
             activity: defineAsyncComponent(
-                () => import('../../discovery/preview/tabs/activity/index.vue')
+                () => import('./tabs/activity/activityTab.vue')
             ),
             chat: defineAsyncComponent(
                 () => import('../../discovery/preview/tabs/chat/assetChat.vue')
             ),
             relations: defineAsyncComponent(
-                () => import('../../discovery/preview/tabs/relations/index.vue')
+                () => import('./tabs/relations/relationTab.vue')
             ),
             actions: defineAsyncComponent(
                 () => import('../../discovery/preview/tabs/actions/actions.vue')
             ),
             lineage: defineAsyncComponent(
-                () => import('../../discovery/preview/tabs/lineage/index.vue')
+                () => import('./tabs/lineage/lineageTab.vue')
             ),
         },
         setup(props, { emit }) {

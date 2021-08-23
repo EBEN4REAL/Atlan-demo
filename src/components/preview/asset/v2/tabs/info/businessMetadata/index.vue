@@ -41,8 +41,7 @@
                     />
                 </template>
                 <a-textarea
-                    v-else
-                    :id="`${x}`"
+                    v-else-if="getDatatypeOfAttribute(a.typeName) === 'text'"
                     :auto-size="true"
                     v-model:value="a.value"
                     placeholder="Type..."
@@ -50,6 +49,17 @@
                     class="flex-grow shadow-none border-1"
                     @input="() => debounce(() => updateAttribute(x), 800)"
                 />
+                <div v-else class="flex-grow shadow-none border-1">
+                    <a-select
+                        style="width: 100%"
+                        v-model:value="a.value"
+                        :show-arrow="true"
+                        class=""
+                        placeholder=""
+                        :options="getEnumOptions(a.typeName)"
+                        @change="updateAttribute(x)"
+                    />
+                </div>
                 <div class="flex flex-none w-4 col-span-1 ml-3">
                     <template v-if="loading !== '' && activeIndex === x">
                         <fa
@@ -90,6 +100,7 @@
 <script lang="ts">
     import { defineComponent, PropType, ref, computed, watch } from 'vue'
     import { assetInterface } from '~/types/assets/asset.interface'
+    import useEnums from '@/admin/enums/composables/useEnums'
     import useBusinessMetadataHelper from '~/composables/businessMetadata/useBusinessMetadataHelper'
     import { BusinessMetadataService } from '~/api/atlas/businessMetadata'
 
@@ -112,12 +123,22 @@
                 createDebounce,
             } = useBusinessMetadataHelper()
 
+            const { enumListData: enumsList } = useEnums()
+
             const applicableList = ref(
                 getApplicableAttributes(
                     props.item.id,
                     props.selectedAsset.typeName
                 )
             )
+
+            const getEnumOptions = (enumName: string) =>
+                enumsList.value
+                    .find((e) => e.name === enumName)
+                    ?.elementDefs.map((a) => ({
+                        label: a.value,
+                        value: a.value,
+                    })) || null
 
             /**
              * @desc parses all the attached bm from the asset payload and
@@ -214,6 +235,7 @@
                 handleChange,
                 activeIndex,
                 payload,
+                getEnumOptions,
                 debounce: createDebounce(),
             }
         },

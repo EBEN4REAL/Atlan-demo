@@ -167,7 +167,6 @@ export default defineComponent({
             onLoadData,
             selectedKeys,
             expandedKeys,
-            expandedKeysList,
             expandNode,
             selectNode,
             refreshTree,

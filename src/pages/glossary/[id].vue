@@ -50,8 +50,10 @@
                                 <a-menu-item>Add Term</a-menu-item>
                                 <a-menu-item>Add Category</a-menu-item>
                                 <a-sub-menu title="No status">
-                                    <a-menu-item>3rd menu item</a-menu-item>
-                                    <a-menu-item>4th menu item</a-menu-item>
+                                    <a-menu-item>Verified</a-menu-item>
+                                    <a-menu-item>Work in Progress</a-menu-item>
+                                    <a-menu-item>Warning</a-menu-item>
+                                    <a-menu-item>Deprecated</a-menu-item>
                                 </a-sub-menu>
                                 <a-sub-menu title="Add Owner">
                                     <a-menu-item>5d menu item</a-menu-item>

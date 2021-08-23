@@ -29,7 +29,7 @@
 <script lang="ts">
     import { defineComponent, ref, watch, computed, Ref } from 'vue'
     import AssetDiscovery from '@/discovery/index.vue'
-    import AssetPreview from '@/preview/asset/v2/index.vue'
+    import AssetPreview from '@/discovery/preview/assetPreview.vue'
     import { useHead } from '@vueuse/head'
     import { useRoute, useRouter } from 'vue-router'
     import { Classification } from '~/api/atlas/classification'

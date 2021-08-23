@@ -108,17 +108,17 @@
         Ref,
         onMounted,
     } from 'vue'
-    import AssetFilters from '@/discovery/asset/filters/index.vue'
-    import SavedFilters from '@/discovery/asset/saved/index.vue'
-    import AssetList from '@/discovery/asset/list/index.vue'
-    import AssetTabs from '@/discovery/asset/tabs/index.vue'
+    import AssetFilters from '@/discovery/filters/index.vue'
+    import SavedFilters from '@/discovery/saved/index.vue'
+    import AssetList from '@/discovery/list/index.vue'
+    import AssetTabs from '@/discovery/tabs/index.vue'
     import AssetPagination from '@common/pagination/index.vue'
     import HeirarchySelect from '@common/tree/heirarchy/index.vue'
     import SearchBox from '@common/searchbox/searchlist.vue'
     import ConnectorDropdown from '~/components/common/dropdown/connectorDropdown.vue'
     import AssetDropdown from '~/components/common/dropdown/assetDropdown.vue'
     import EmptyView from '@common/empty/discover.vue'
-    import Preferences from '@/discovery/asset/preference/index.vue'
+    import Preferences from '@/discovery/preference/index.vue'
     // import { useDebounceFn } from "@vueuse/core";
     // import fetchAssetDiscover from "~/composables/asset/fetchAssetDiscover";
     import { useDebounceFn } from '@vueuse/core'

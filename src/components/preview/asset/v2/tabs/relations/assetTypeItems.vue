@@ -29,7 +29,7 @@
 
 <script lang="ts">
     import { defineComponent, ref, watch, toRefs, SetupContext } from 'vue'
-    import ListItem from '@/discovery/asset/list/item.vue'
+    import ListItem from '@/discovery/list/item.vue'
     import useBiRelations from '~/composables/asset/useBiRelations'
     import VirtualList from '~/lib/virtualList/virtualList.vue'
     import useAssetInfo from '~/composables/asset/useAssetInfo'

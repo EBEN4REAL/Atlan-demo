@@ -25,7 +25,7 @@
 </template>
 <script lang="ts">
 import { defineComponent, computed, onMounted, watch } from 'vue'
-import Item from '@/discovery/asset/list/item.vue'
+import Item from '@/discovery/list/item.vue'
 import LoadingView from '@common/loaders/section.vue'
 
 import useTermLinkedAssets from '~/composables/glossary/useTermLinkedAssets'

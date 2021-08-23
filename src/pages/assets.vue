@@ -28,7 +28,7 @@
 
 <script lang="ts">
     import { defineComponent, ref, watch, computed, Ref } from 'vue'
-    import AssetDiscovery from '@/discovery/asset/index.vue'
+    import AssetDiscovery from '@/discovery/index.vue'
     import AssetPreview from '@/preview/asset/v2/index.vue'
     import { useHead } from '@vueuse/head'
     import { useRoute, useRouter } from 'vue-router'

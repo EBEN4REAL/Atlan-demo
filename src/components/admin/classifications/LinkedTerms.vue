@@ -92,9 +92,9 @@
 
 <script lang="ts">
     import { defineComponent, computed, ref, toRaw, watch, Ref } from 'vue'
-    import Preferences from '@/discovery/asset/preference/index.vue'
+    import Preferences from '@/discovery/preference/index.vue'
     import LinkedTermList from '@/common/list/linkedTerms/index.vue'
-    import AssetTabs from '@/discovery/asset/tabs/index.vue'
+    import AssetTabs from '@/discovery/tabs/index.vue'
     import EmptyView from '@common/empty/discover.vue'
     import Footer from '@common/assets/footer/index.vue'
     import { Components } from '~/api/atlas/client'

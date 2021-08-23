@@ -172,7 +172,7 @@
 </script>
 <style lang="less" scoped>
     .tab-height {
-        height: calc(100vh - 7rem);
+        max-height: calc(100vh - 12rem);
     }
     .icon-btn {
         @apply flex;

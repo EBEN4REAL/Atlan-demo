@@ -1,6 +1,6 @@
 <template>
     <div class="w-full px-5">
-        <Properties :selectedAsset="selectedAsset" />
+        <Properties :selected-asset="selectedAsset" />
     </div>
 </template>
 

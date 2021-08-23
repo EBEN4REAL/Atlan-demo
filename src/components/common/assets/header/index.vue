@@ -45,9 +45,9 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, computed, ref } from 'vue'
+    import { defineComponent, ref } from 'vue'
     import ConnectorDropdown from '~/components/common/dropdown/connectorDropdown.vue'
-    import Preferences from '@/discovery/preference/index.vue'
+    import Preferences from '@/discovery/list/preference/index.vue'
 
     export interface Connector {
         connector: string

@@ -9,22 +9,17 @@
         <div class="px-2">
             <p class="mb-1 text-sm tracking-wide text-gray-500">Last updated</p>
             <p class="mb-0 text-gray-700">
-                {{
-                    dayjs().from(
-                        selectedAsset?.attributes?.__modificationTimestamp,
-                        true
-                    )
-                }}
+                {{ updatedAt(selectedAsset) }}
                 ago,
-                {{ selectedAsset?.attributes?.__modifiedBy }}
+                {{ modifiedBy(selectedAsset) }}
             </p>
         </div>
         <div class="px-2">
             <p class="mb-1 text-sm tracking-wide text-gray-500">Created</p>
             <p class="mb-0 text-gray-700">
-                {{ dayjs().from(selectedAsset?.attributes?.__timestamp, true) }}
+                {{ createdAt(selectedAsset) }}
                 ago,
-                {{ selectedAsset?.attributes?.__createdBy }}
+                {{ createdBy(selectedAsset) }}
             </p>
         </div>
         <div class="px-2">
@@ -32,7 +27,7 @@
                 Popularity Score
             </p>
             <p class="mb-0 text-gray-700">
-                {{ selectedAsset?.attributes?.popularityScore }}
+                {{ popularityScore(selectedAsset) }}
             </p>
         </div>
     </div>
@@ -40,8 +35,8 @@
 
 <script lang="ts">
     import { defineComponent, PropType } from 'vue'
-    import dayjs from 'dayjs'
     import { assetInterface } from '~/types/assets/asset.interface'
+    import useAssetInfo from '~/composables/asset/useAssetInfo'
 
     export default defineComponent({
         components: {},
@@ -52,7 +47,20 @@
             },
         },
         setup(props) {
-            return { dayjs }
+            const {
+                createdAt,
+                updatedAt,
+                createdBy,
+                modifiedBy,
+                popularityScore,
+            } = useAssetInfo()
+            return {
+                createdAt,
+                updatedAt,
+                createdBy,
+                modifiedBy,
+                popularityScore,
+            }
         },
     })
 </script>

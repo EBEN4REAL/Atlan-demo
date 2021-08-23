@@ -49,20 +49,22 @@
                             <a-menu>
                                 <a-menu-item>Add Term</a-menu-item>
                                 <a-menu-item>Add Category</a-menu-item>
-                                <a-sub-menu title="No status">
+                                <a-menu-divider />
+                                <a-sub-menu key="status" title="No status">
                                     <a-menu-item>Verified</a-menu-item>
                                     <a-menu-item>Work in Progress</a-menu-item>
                                     <a-menu-item>Warning</a-menu-item>
                                     <a-menu-item>Deprecated</a-menu-item>
                                 </a-sub-menu>
-                                <a-sub-menu title="Add Owner">
+                                <a-sub-menu key="owner" title="Add Owner">
                                     <a-menu-item>5d menu item</a-menu-item>
                                     <a-menu-item>6th menu item</a-menu-item>
                                 </a-sub-menu>
-                                <a-sub-menu title="Add Expert">
+                                <a-sub-menu key="expert" title="Add Expert">
                                     <a-menu-item>5d menu item</a-menu-item>
                                     <a-menu-item>6th menu item</a-menu-item>
                                 </a-sub-menu>
+                                <a-menu-divider />
                                 <a-menu-item>Archive</a-menu-item>
                             </a-menu>
                         </template>

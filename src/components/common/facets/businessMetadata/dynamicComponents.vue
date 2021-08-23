@@ -37,11 +37,10 @@
         <div v-else>
             <a-select
                 v-model:value="value"
+                placeholder="Select"
                 style="width: 100%"
-                :max-tag-count="1"
                 :show-arrow="true"
                 class=""
-                placeholder=""
                 :options="getEnumOptions(type)"
                 @change="handleChange"
             />
@@ -75,15 +74,21 @@
             const { getDatatypeOfAttribute, createDebounce } =
                 useBusinessMetadataHelper()
             const value = ref(null)
-            const enumsList: Ref<{}> = inject('enumsList')
+            const enumsList: Ref<object[]> = inject('enumsList')
 
-            const getEnumOptions = (enumName: string) =>
-                enumsList.value
-                    .find((e) => e.name === enumName)
-                    .elementDefs.map((a) => ({
-                        label: a.value,
-                        value: a.value,
-                    }))
+            const getEnumOptions = (enumName: string) => {
+                if (enumsList.value.length) {
+                    return (
+                        enumsList.value
+                            .find((e) => e.name === enumName)
+                            .elementDefs.map((a) => ({
+                                label: a.value,
+                                value: a.value,
+                            })) || []
+                    )
+                }
+                return []
+            }
 
             const handleChange = () => {
                 emit('handleChange', props.operator, value.value)

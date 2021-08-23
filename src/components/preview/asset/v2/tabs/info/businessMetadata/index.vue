@@ -51,11 +51,11 @@
                 />
                 <div v-else class="flex-grow shadow-none border-1">
                     <a-select
+                        placeholder="Unassigned"
                         style="width: 100%"
                         v-model:value="a.value"
                         :show-arrow="true"
                         class=""
-                        placeholder=""
                         :options="getEnumOptions(a.typeName)"
                         @change="updateAttribute(x)"
                     />
@@ -99,8 +99,8 @@
 
 <script lang="ts">
     import { defineComponent, PropType, ref, computed, watch } from 'vue'
-    import { assetInterface } from '~/types/assets/asset.interface'
     import useEnums from '@/admin/enums/composables/useEnums'
+    import { assetInterface } from '~/types/assets/asset.interface'
     import useBusinessMetadataHelper from '~/composables/businessMetadata/useBusinessMetadataHelper'
     import { BusinessMetadataService } from '~/api/atlas/businessMetadata'
 
@@ -132,14 +132,19 @@
                 )
             )
 
-            const getEnumOptions = (enumName: string) =>
-                enumsList.value
-                    .find((e) => e.name === enumName)
-                    ?.elementDefs.map((a) => ({
-                        label: a.value,
-                        value: a.value,
-                    })) || null
-
+            const getEnumOptions = (enumName: string) => {
+                if (enumsList.value.length) {
+                    return (
+                        enumsList.value
+                            .find((e) => e.name === enumName)
+                            ?.elementDefs.map((a) => ({
+                                label: a.value,
+                                value: a.value,
+                            })) || []
+                    )
+                }
+                return []
+            }
             /**
              * @desc parses all the attached bm from the asset payload and
              *  forms the initial attribute list

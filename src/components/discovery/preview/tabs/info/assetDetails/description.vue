@@ -76,15 +76,15 @@
 </template>
 
 <script lang="ts">
+    import { useMagicKeys } from '@vueuse/core'
     import {
         defineComponent,
         nextTick,
-        ref,
-        watch,
         PropType,
+        ref,
         toRefs,
+        watch,
     } from 'vue'
-    import { useMagicKeys } from '@vueuse/core'
     import updateDescription from '~/composables/asset/updateDescription'
     import { assetInterface } from '~/types/assets/asset.interface'
 

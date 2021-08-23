@@ -33,7 +33,7 @@
 </template>
 
 <script lang="ts">
-    import { computed, defineComponent, toRefs } from 'vue'
+    import { defineComponent } from 'vue'
 
     export default defineComponent({
         props: {},

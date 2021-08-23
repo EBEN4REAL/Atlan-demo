@@ -32,9 +32,9 @@
 </template>
 
 <script lang="ts">
-    import { computed, defineComponent, PropType, ref } from 'vue'
-    import { assetInterface } from '~/types/assets/asset.interface'
+    import { defineComponent, PropType } from 'vue'
     import useAssetInfo from '~/composables/asset/useAssetInfo'
+    import { assetInterface } from '~/types/assets/asset.interface'
 
     export default defineComponent({
         name: 'Column List item',

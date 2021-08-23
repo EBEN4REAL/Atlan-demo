@@ -55,23 +55,23 @@
 </template>
 
 <script lang="ts">
+    import AssetLogo from '@/common/icon/assetIcon.vue'
+    import StatusBadge from '@common/badge/status/index.vue'
+    import Tooltip from '@common/ellipsis/index.vue'
     import {
+        defineAsyncComponent,
         defineComponent,
+        onMounted,
         PropType,
         ref,
-        defineAsyncComponent,
         Ref,
-        onMounted,
-        watch,
         toRefs,
+        watch,
     } from 'vue'
-    import StatusBadge from '@common/badge/status/index.vue'
-    import { assetInterface } from '~/types/assets/asset.interface'
-    import useAssetDetailsTabList from '../../discovery/preview/tabs/useTabList'
     import useAsset from '~/composables/asset/useAsset'
     import useAssetInfo from '~/composables/asset/useAssetInfo'
-    import Tooltip from '@common/ellipsis/index.vue'
-    import AssetLogo from '@/common/icon/assetIcon.vue'
+    import { assetInterface } from '~/types/assets/asset.interface'
+    import useAssetDetailsTabList from '../../discovery/preview/tabs/useTabList'
 
     export default defineComponent({
         name: 'AssetPreview',

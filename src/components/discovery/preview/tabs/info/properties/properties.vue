@@ -41,12 +41,10 @@
 <script lang="ts">
     import { defineComponent, PropType } from 'vue'
     import dayjs from 'dayjs'
-    import AssetMixin from '~/mixins/asset'
     import { assetInterface } from '~/types/assets/asset.interface'
 
     export default defineComponent({
         components: {},
-        mixins: [AssetMixin],
         props: {
             selectedAsset: {
                 type: Object as PropType<assetInterface>,

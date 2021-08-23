@@ -44,28 +44,30 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, PropType } from 'vue'
-    import AssetMixin from '~/mixins/asset'
+    import { defineComponent, PropType, computed, toRefs } from 'vue'
     import { assetInterface } from '~/types/assets/asset.interface'
-
+    import useAssetInfo from '~/composables/asset/useAssetInfo'
     import dottedUrl from '~/assets/images/dotted.png'
 
     export default defineComponent({
         name: 'RelationshipList',
-        mixins: [AssetMixin],
         props: {
             selectedAsset: {
                 type: Object as PropType<assetInterface>,
                 required: true,
             },
         },
-        data() {
-            return { dottedUrl }
-        },
-        computed: {
-            getParentsFiltered() {
-                return this.relationshipList(this.selectedAsset)
-            },
+        setup(props) {
+            const { selectedAsset } = toRefs(props)
+            const { relationshipList, logo } = useAssetInfo()
+            const getParentsFiltered = computed(() =>
+                relationshipList(selectedAsset.value)
+            )
+            return {
+                logo,
+                dottedUrl,
+                getParentsFiltered,
+            }
         },
     })
 </script>

@@ -56,8 +56,6 @@
 
     import ConnectionSelector from '@common/selector/connections/index.vue'
     import ConnectorSelector from '@common/selector/connectors/index.vue'
-    import useDiscoveryPreferences from '~/composables/preference/useDiscoveryPreference'
-
     export default defineComponent({
         components: { ConnectionSelector, ConnectorSelector },
         props: {

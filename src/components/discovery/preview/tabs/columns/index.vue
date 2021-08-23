@@ -55,14 +55,14 @@
 </template>
 
 <script lang="ts">
-    import { computed, defineComponent, PropType, ref } from 'vue'
-    import { toRefs } from '@vueuse/core'
-    import { assetInterface } from '~/types/assets/asset.interface'
-    import { useColumns } from '~/composables/asset/useColumnRelations'
-    import useAssetInfo from '~/composables/asset/useAssetInfo'
-    import { dataTypeList } from '~/constant/datatype'
-    import DataTypes from '@common/facets/dataType.vue'
     import ColumnListItem from '@/discovery/preview/tabs/columns/listItem.vue'
+    import DataTypes from '@common/facets/dataType.vue'
+    import { toRefs } from '@vueuse/core'
+    import { computed, defineComponent, PropType, ref } from 'vue'
+    import useAssetInfo from '~/composables/asset/useAssetInfo'
+    import { useColumns } from '~/composables/asset/useColumnRelations'
+    import { dataTypeList } from '~/constant/datatype'
+    import { assetInterface } from '~/types/assets/asset.interface'
 
     export default defineComponent({
         components: { DataTypes, ColumnListItem },

@@ -99,10 +99,16 @@
 </template>
 
 <script lang="ts">
-    import { ref, defineComponent, computed, watch, onMounted } from 'vue'
     import BusinessMetadataWidget from '@/common/businessMetadataWidget.vue'
+    import {
+        computed,
+        defineComponent,
+        onMounted,
+        PropType,
+        ref,
+        watch,
+    } from 'vue'
     import { BusinessMetadataService } from '~/api/atlas/businessMetadata'
-
     // ? Store
     import { useBusinessMetadataStore } from '~/store/businessMetadata'
     import { State } from '~/store/businessMetadata/state'

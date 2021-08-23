@@ -24,7 +24,7 @@
                     "
                 >
                     <div
-                        class="flex items-center leading-none align-middle rounded cursor-pointer drop-shadow-sm"
+                        class="flex items-center leading-none align-middle rounded cursor-pointer  drop-shadow-sm"
                         @click.prevent.stop="handleClassificationClick"
                     >
                         <div
@@ -40,7 +40,7 @@
                     </div>
 
                     <div
-                        class="absolute flex items-center justify-center pl-3 pr-1 text-white bg-transparent border-none rounded-full opacity-0 cursor-pointer group-hover:opacity-100 classification-cross-btn"
+                        class="absolute flex items-center justify-center pl-3 pr-1 text-white bg-transparent border-none rounded-full opacity-0 cursor-pointer  group-hover:opacity-100 classification-cross-btn"
                         @click.stop="() => unLinkClassification(classification)"
                     >
                         <div class="flex items-center justify-center">
@@ -72,7 +72,7 @@
                     "
                 >
                     <div
-                        class="flex items-center leading-none align-middle rounded cursor-pointer drop-shadow-sm"
+                        class="flex items-center leading-none align-middle rounded cursor-pointer  drop-shadow-sm"
                         @click.prevent.stop="handleClassificationClick"
                     >
                         <div
@@ -88,7 +88,7 @@
                     </div>
 
                     <div
-                        class="absolute flex items-center justify-center pl-3 pr-1 text-white bg-transparent border-none rounded-full opacity-0 cursor-pointer group-hover:opacity-100 classification-cross-btn"
+                        class="absolute flex items-center justify-center pl-3 pr-1 text-white bg-transparent border-none rounded-full opacity-0 cursor-pointer  group-hover:opacity-100 classification-cross-btn"
                         @click.stop="() => unLinkClassification(classification)"
                     >
                         <div class="flex items-center justify-center">
@@ -102,9 +102,7 @@
                 class="flex items-center justify-center mb-3 mr-3 cursor-pointer "
                 @click="() => toggleAllClassifications(true)"
             >
-                <span
-                    class="px-1 py-0.5 text-sm  rounded text-primary"
-                >
+                <span class="px-1 py-0.5 text-sm rounded text-primary">
                     and {{ splittedClassifications.b.length }} more
                 </span>
             </div>
@@ -113,15 +111,13 @@
                 class="flex items-center justify-center mb-3 mr-3 cursor-pointer "
                 @click="() => toggleAllClassifications(false)"
             >
-                <span
-                    class="px-1 py-0.5 text-sm  rounded text-primary"
-                >
+                <span class="px-1 py-0.5 text-sm rounded text-primary">
                     show less
                 </span>
             </div>
             <a-button
                 v-if="asset.classifications?.length > 0"
-                class="flex items-center justify-center w-8 h-8 px-2 py-2 mb-3 text-gray-700 border-none rounded-full bg-gray-light hover:bg-primary hover:text-white"
+                class="flex items-center justify-center w-8 h-8 px-2 py-2 mb-3 text-gray-700 border-none rounded-full  bg-gray-light hover:bg-primary hover:text-white"
                 @click.stop="openLinkClassificationPopover"
             >
                 <fa icon="fal plus" />
@@ -313,23 +309,23 @@
 </template>
 
 <script lang="ts">
+    import { ValidateErrorEntity } from 'ant-design-vue/es/form/interface'
     import {
-        defineComponent,
-        ref,
         computed,
-        watch,
-        toRaw,
-        reactive,
+        defineComponent,
         PropType,
-        UnwrapRef,
+        reactive,
+        ref,
         Ref,
+        toRaw,
+        UnwrapRef,
+        watch,
     } from 'vue'
     import { Classification } from '~/api/atlas/classification'
     import { useClassificationStore } from '~/components/admin/classifications/_store'
     import { assetInterface } from '~/types/assets/asset.interface'
     import { classificationInterface } from '~/types/classifications/classification.interface'
     import { typedefsInterface } from '~/types/typedefs/typedefs.interface'
-    import { ValidateErrorEntity } from 'ant-design-vue/es/form/interface'
 
     export default defineComponent({
         props: {

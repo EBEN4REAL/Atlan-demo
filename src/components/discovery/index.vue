@@ -98,49 +98,45 @@
 </template>
 
 <script lang="ts">
-    import {
-        computed,
-        defineComponent,
-        reactive,
-        ref,
-        watch,
-        toRaw,
-        Ref,
-        onMounted,
-    } from 'vue'
+    import useBusinessMetadata from '@/admin/custom-metadata/composables/useBusinessMetadata'
     import AssetFilters from '@/discovery/filters/index.vue'
-    import SavedFilters from '@/discovery/saved/index.vue'
     import AssetList from '@/discovery/list/index.vue'
-    import AssetTabs from '@/discovery/tabs/index.vue'
-    import AssetPagination from '@common/pagination/index.vue'
-    import HeirarchySelect from '@common/tree/heirarchy/index.vue'
-    import SearchBox from '@common/searchbox/searchlist.vue'
-    import ConnectorDropdown from '~/components/common/dropdown/connectorDropdown.vue'
-    import AssetDropdown from '~/components/common/dropdown/assetDropdown.vue'
-    import EmptyView from '@common/empty/discover.vue'
     import Preferences from '@/discovery/preference/index.vue'
+    import SavedFilters from '@/discovery/saved/index.vue'
+    import AssetTabs from '@/discovery/tabs/index.vue'
+    import EmptyView from '@common/empty/discover.vue'
+    import AssetPagination from '@common/pagination/index.vue'
+    import SearchBox from '@common/searchbox/searchlist.vue'
+    import HeirarchySelect from '@common/tree/heirarchy/index.vue'
     // import { useDebounceFn } from "@vueuse/core";
     // import fetchAssetDiscover from "~/composables/asset/fetchAssetDiscover";
     import { useDebounceFn } from '@vueuse/core'
-    import useBusinessMetadata from '@/admin/custom-metadata/composables/useBusinessMetadata'
+    import {
+        computed,
+        defineComponent,
+        onMounted,
+        reactive,
+        ref,
+        watch,
+    } from 'vue'
     import { useRouter } from 'vue-router'
-    import useDiscoveryPreferences from '~/composables/preference/useDiscoveryPreference'
+    import AssetDropdown from '~/components/common/dropdown/assetDropdown.vue'
+    import ConnectorDropdown from '~/components/common/dropdown/connectorDropdown.vue'
     // import { DISCOVERY_FETCH_LIST } from "~/constant/cache";
     // import { Components } from "~/api/atlas/client";
     import useAssetList from '~/composables/bots/useAssetList'
+    import useDiscoveryPreferences from '~/composables/preference/useDiscoveryPreference'
     import { AssetTypeList } from '~/constant/assetType'
-    import { Components } from '~/api/atlas/client'
-    import { SearchParameters } from '~/types/atlas/attributes'
     import {
         BaseAttributes,
         BasicSearchAttributes,
     } from '~/constant/projection'
-    import { useBusinessMetadataStore } from '~/store/businessMetadata'
-    import { useDiscoveryStore } from '~/store/discovery'
-    import { useConnectionsStore } from '~/store/connections'
-    import { getEncodedStringFromOptions } from '~/utils/routerQuery'
-    import { initialFiltersType } from '~/pages/assets.vue'
     import useTracking from '~/modules/tracking'
+    import { initialFiltersType } from '~/pages/assets.vue'
+    import { useBusinessMetadataStore } from '~/store/businessMetadata'
+    import { useConnectionsStore } from '~/store/connections'
+    import { SearchParameters } from '~/types/atlas/attributes'
+    import { getEncodedStringFromOptions } from '~/utils/routerQuery'
     export interface filterMapType {
         status: {
             checked?: Array<string>

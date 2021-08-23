@@ -27,24 +27,14 @@
 </template>
 
 <script lang="ts">
-    import {
-        defineComponent,
-        PropType,
-        ref,
-        Ref,
-        watch,
-        onMounted,
-        toRefs,
-        computed,
-    } from 'vue'
-
-    import Description from './description.vue'
-    import Status from './status.vue'
-    import Owners from './owners.vue'
-    import Experts from './experts.vue'
-    import { assetInterface } from '~/types/assets/asset.interface'
-    import useAssetInfo from '~/composables/asset/useAssetInfo'
     import RowInfoHoverCard from '@/discovery/preview/hovercards/rowInfo.vue'
+    import { computed, defineComponent, PropType, toRefs } from 'vue'
+    import useAssetInfo from '~/composables/asset/useAssetInfo'
+    import { assetInterface } from '~/types/assets/asset.interface'
+    import Description from './description.vue'
+    import Experts from './experts.vue'
+    import Owners from './owners.vue'
+    import Status from './status.vue'
 
     export default defineComponent({
         name: 'AssetDetails',

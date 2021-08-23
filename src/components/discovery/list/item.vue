@@ -158,11 +158,10 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, PropType } from 'vue'
-
-    import StatusBadge from '@common/badge/status/index.vue'
-    import HierarchyBar from '@common/badge/hierarchy.vue'
     import AssetLogo from '@/common/icon/assetIcon.vue'
+    import HierarchyBar from '@common/badge/hierarchy.vue'
+    import StatusBadge from '@common/badge/status/index.vue'
+    import { defineComponent, PropType } from 'vue'
     import { Components } from '~/api/atlas/client'
     import useAssetInfo from '~/composables/asset/useAssetInfo'
     import { assetInterface } from '~/types/assets/asset.interface'

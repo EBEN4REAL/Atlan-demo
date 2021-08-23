@@ -28,12 +28,12 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref, watch, toRefs, SetupContext } from 'vue'
     import ListItem from '@/discovery/list/item.vue'
+    import ColumnListItem from '@/discovery/preview/tabs/columns/listItem.vue'
+    import { defineComponent, ref, watch } from 'vue'
+    import useAssetInfo from '~/composables/asset/useAssetInfo'
     import useBiRelations from '~/composables/asset/useBiRelations'
     import VirtualList from '~/lib/virtualList/virtualList.vue'
-    import useAssetInfo from '~/composables/asset/useAssetInfo'
-    import ColumnListItem from '@/discovery/preview/tabs/columns/listItem.vue'
 
     export default defineComponent({
         components: { ListItem, VirtualList, ColumnListItem },

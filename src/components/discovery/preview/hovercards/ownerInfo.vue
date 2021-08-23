@@ -5,14 +5,7 @@
                 <p class="mb-0 text-gray-500 uppercase">{{ type }}</p>
                 <div class="my-2 text-gray-500">
                     <div
-                        class="
-                            flex
-                            items-center
-                            mb-1
-                            overflow-hidden
-                            font-bold
-                            text-gray-700
-                        "
+                        class="flex items-center mb-1 overflow-hidden font-bold text-gray-700 "
                     >
                         <img
                             src="https://picsum.photos/id/237/50/50"
@@ -52,8 +45,7 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, PropType, toRefs } from 'vue'
-    // import { userInterface } from '~/types/users/user.interface'
+    import { defineComponent, toRefs } from 'vue'
 
     export default defineComponent({
         name: 'UserInfoHoverCard',

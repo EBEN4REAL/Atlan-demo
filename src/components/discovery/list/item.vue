@@ -113,7 +113,7 @@
                         item?.attributes?.popularityScore > 0
                     "
                 >
-                    <Fa icon="fal analytics" class="w-auto h-3" />
+                    <AtlanIcon :icon="search" class="h-3"/>
                     <span class="ml-1 text-sm font-bold">
                         {{
                             numeralFormat(
@@ -128,7 +128,7 @@
                     v-if="projection?.includes('searchscore')"
                     class="pt-1 mr-2"
                 >
-                    <Fa icon="fal search" class="w-auto h-3 pushtop" />
+                    <AtlanIcon :icon="search" class="h-3"/>
                     <span class="ml-1 text-sm font-bold">
                         {{ numeralFormat(score, '0[.]000000') }}
                     </span>

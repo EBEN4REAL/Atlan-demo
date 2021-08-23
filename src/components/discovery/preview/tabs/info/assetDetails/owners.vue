@@ -188,7 +188,7 @@
                             @change="handleOwnerSearch"
                         >
                             <template #suffix>
-                                <fa icon="fal search" />
+                                <AtlanIcon icon="Search" />
                             </template>
                         </a-input>
                         <div class="relative w-full">

@@ -15,7 +15,14 @@
             </div>
         </div>
         <div
-            class="z-20 flex flex-col h-full bg-white border-l  asset-preview-container"
+            class="
+                z-20
+                flex flex-col
+                h-full
+                bg-white
+                border-l
+                asset-preview-container
+            "
         >
             <AssetPreview
                 v-if="selected"
@@ -29,7 +36,7 @@
 <script lang="ts">
     import { defineComponent, ref, watch, computed, Ref } from 'vue'
     import AssetDiscovery from '@/discovery/asset/index.vue'
-    import AssetPreview from '@/preview/asset/v2/index.vue'
+    import AssetPreview from '~/components/preview/asset/index.vue'
     import { useHead } from '@vueuse/head'
     import { useRoute, useRouter } from 'vue-router'
     import { Classification } from '~/api/atlas/classification'

@@ -15,12 +15,7 @@
                         style="width: 300px; height: 250px"
                     >
                         <div
-                            class="
-                                flex
-                                items-center
-                                align-middle
-                                border-b border-gray-100
-                            "
+                            class="flex items-center align-middle border-b border-gray-100 "
                         >
                             <div class="w-full">
                                 <a-input
@@ -100,13 +95,7 @@
                     </div>
 
                     <div
-                        class="
-                            flex
-                            justify-end
-                            p-2
-                            space-x-2
-                            border-t border-gray-100
-                        "
+                        class="flex justify-end p-2 space-x-2 border-t border-gray-100 "
                     >
                         <a-button size="small" @click="handleCancel"
                             >Cancel</a-button
@@ -152,22 +141,7 @@
                         :key="meaning.termGuid"
                     >
                         <div
-                            class="
-                                flex
-                                items-center
-                                px-2
-                                py-1
-                                mb-1
-                                leading-none
-                                text-purple-500
-                                align-middle
-                                bg-purple-500
-                                rounded-md
-                                cursor-pointer
-                                bg-opacity-10
-                                hover:bg-purple-500 hover:text-white
-                                drop-shadow-sm
-                            "
+                            class="flex items-center px-2 py-1 mb-1 leading-none text-purple-500 align-middle bg-purple-500 rounded-md cursor-pointer  bg-opacity-10 hover:bg-purple-500 hover:text-white drop-shadow-sm"
                             @click.prevent.stop="handleClickUser"
                         >
                             <fa
@@ -189,7 +163,7 @@
 <script lang="ts">
     import { defineComponent, ref, PropType } from 'vue'
     import StatusBadge from '@common/badge/status/index.vue'
-    import TermInfoHoverCard from '@/preview/asset/v2/hovercards/termInfo.vue'
+    import TermInfoHoverCard from '@/preview/asset/hovercards/termInfo.vue'
 
     import fetchUserList from '~/composables/user/fetchUserList'
     import fetchGroupList from '~/composables/group/fetchGroupList'

@@ -13,23 +13,45 @@
                                 <div class="flex space-x-16">
                                     <div class="flex flex-col">
                                         <span
-                                            class="mb-2 text-sm leading-5 text-gray-500 "
+                                            class="
+                                                mb-2
+                                                text-sm
+                                                leading-5
+                                                text-gray-500
+                                            "
                                         >
                                             Categories
                                         </span>
                                         <span
-                                            class="p-0 m-0 text-sm leading-5 text-gray-700 "
+                                            class="
+                                                p-0
+                                                m-0
+                                                text-sm
+                                                leading-5
+                                                text-gray-700
+                                            "
                                             >{{ categoryCount }}
                                         </span>
                                     </div>
                                     <div class="flex flex-col">
                                         <span
-                                            class="mb-2 text-sm leading-5 text-gray-500 "
+                                            class="
+                                                mb-2
+                                                text-sm
+                                                leading-5
+                                                text-gray-500
+                                            "
                                         >
                                             Terms
                                         </span>
                                         <span
-                                            class="p-0 m-0 text-sm leading-5 text-gray-700 "
+                                            class="
+                                                p-0
+                                                m-0
+                                                text-sm
+                                                leading-5
+                                                text-gray-700
+                                            "
                                             >{{ termCount }}
                                         </span>
                                     </div>
@@ -82,11 +104,11 @@
     import { defineComponent, PropType, computed, ref, toRef } from 'vue'
 
     import GlossaryTopTerms from '@/glossary/common/glossaryTopTerms.vue'
-    import Owners from '@/preview/asset/v2/tabs/info/assetDetails/owners.vue'
-    import Experts from '@/preview/asset/v2/tabs/info/assetDetails/experts.vue'
-    import Description from '@/preview/asset/v2/tabs/info/assetDetails/description.vue'
-    import Status from '@/preview/asset/v2/tabs/info/assetDetails/status.vue'
-    import Activity from '@/preview/asset/v2//tabs/activity/index.vue'
+    import Owners from '@/preview/asset/tabs/info/assetDetails/owners.vue'
+    import Experts from '@/preview/asset/tabs/info/assetDetails/experts.vue'
+    import Description from '@/preview/asset/tabs/info/assetDetails/description.vue'
+    import Status from '@/preview/asset/tabs/info/assetDetails/status.vue'
+    import Activity from '@/preview/asset/tabs/activity/index.vue'
 
     import {
         Glossary,

@@ -96,9 +96,9 @@
     import { useRoute } from 'vue-router'
 
     // Components
+    import SearchAndFilter from '@/common/input/searchAndFilter.vue'
     import AssetList from './assetList.vue'
     import Preferences from './preferences.vue'
-    import SearchAndFilter from '@/common/input/searchAndFilter.vue'
 
     // Composables
     import useLineage from '~/composables/lineage/useLineage'
@@ -148,6 +148,16 @@
             const filtersLength = computed(() => filters.value.length)
 
             /** METHODS */
+            const filter = () => {
+                const { data, l } = useLineageFilters(
+                    lineageList,
+                    filters,
+                    query
+                )
+                filteredLineageList.value = data
+                assetTypesLengthMap.value = l
+                loading.value = false
+            }
             const searchQuery = (e) => {
                 query.value = e.target.value
             }
@@ -174,16 +184,6 @@
 
                     filter()
                 })
-            }
-            const filter = () => {
-                const { data, l } = useLineageFilters(
-                    lineageList,
-                    filters,
-                    query
-                )
-                filteredLineageList.value = data
-                assetTypesLengthMap.value = l
-                loading.value = false
             }
 
             /** PROVIDERS */

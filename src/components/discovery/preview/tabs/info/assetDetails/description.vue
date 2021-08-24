@@ -11,17 +11,17 @@
                 <div class="">
                     <a-textarea
                         v-model:value="descriptionInput"
-                        @change="handleTextAreaUpdate"
                         autofocus
                         placeholder="Add an asset description"
-                        showCount
+                        show-count
                         :maxlength="140"
                         :rows="4"
                         style="width: 280px"
+                        @change="handleTextAreaUpdate"
                     >
                     </a-textarea>
                     <div class="flex justify-end w-full mt-4 space-x-4">
-                        <a-button @click="handleCancel" class="px-4"
+                        <a-button class="px-4" @click="handleCancel"
                             >Cancel</a-button
                         >
                         <a-button

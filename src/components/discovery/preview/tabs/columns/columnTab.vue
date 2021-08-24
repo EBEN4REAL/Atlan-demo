@@ -2,8 +2,8 @@
     <div class="flex flex-col px-5 py-4">
         <div class="mb-5">
             <SearchAndFilter
-                :dot="!!filters.length"
                 v-model:value="searchTerm"
+                :dot="!!filters.length"
                 placeholder="Search columns"
             >
                 <template #filter>
@@ -21,9 +21,9 @@
         </div>
 
         <div
-            class="flex flex-col mb-4 overflow-y-auto"
             v-for="(asset, index) in filteredList"
             :key="index"
+            class="flex flex-col mb-4 overflow-y-auto"
         >
             <ColumnListItem :asset="asset" />
         </div>
@@ -38,19 +38,19 @@
 </template>
 
 <script lang="ts">
-    import ColumnListItem from '~/components/discovery/preview/tabs/columns/columnListItem.vue'
     import DataTypes from '@common/facets/dataType.vue'
     import { toRefs } from '@vueuse/core'
     import { computed, defineComponent, PropType, ref } from 'vue'
+    import SearchAndFilter from '@/common/input/searchAndFilter.vue'
+    import ColumnListItem from '~/components/discovery/preview/tabs/columns/columnListItem.vue'
     import useAssetInfo from '~/composables/asset/useAssetInfo'
     import { useColumns } from '~/composables/asset/useColumnRelations'
     import { dataTypeList } from '~/constant/datatype'
     import { assetInterface } from '~/types/assets/asset.interface'
-    import SearchAndFilter from '@/common/input/searchAndFilter.vue'
 
     export default defineComponent({
+        name: 'ColumnTab',
         components: { DataTypes, ColumnListItem, SearchAndFilter },
-        name: 'Column Tab',
         props: {
             id: String,
             componentData: {

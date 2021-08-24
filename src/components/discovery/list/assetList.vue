@@ -3,7 +3,7 @@
         <template #default="{ item }">
             <ListItem
                 :item="item"
-                :isSelected="item.guid === selectedAssetId"
+                :is-selected="item.guid === selectedAssetId"
                 :score="score[item.guid]"
                 :projection="projection"
                 @click="handlePreview(item)"
@@ -11,12 +11,11 @@
         </template>
         <template #footer>
             <div
-                class="flex items-center justify-center"
                 v-if="isLoadMore || isLoading"
+                class="flex items-center justify-center"
             >
                 <button
                     :disabled="isLoading"
-                    @click="$emit('loadMore')"
                     class="
                         flex
                         items-center
@@ -30,6 +29,7 @@
                         text-primary
                     "
                     :class="isLoading ? 'px-2 w-9' : 'px-5 w-32'"
+                    @click="$emit('loadMore')"
                 >
                     <template v-if="!isLoading">
                         <p

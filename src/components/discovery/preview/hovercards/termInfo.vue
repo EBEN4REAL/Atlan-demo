@@ -36,6 +36,7 @@
     import { defineComponent } from 'vue'
 
     export default defineComponent({
+        name: 'TermInfoHoverCard',
         props: {},
         setup() {
             const term = {
@@ -48,7 +49,6 @@
             }
             return { term }
         },
-        name: 'TermInfoHoverCard',
     })
 </script>
 

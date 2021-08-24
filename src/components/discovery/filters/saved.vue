@@ -23,13 +23,11 @@
 </template>
 
 <script lang="ts">
-    import ErrorView from '@common/error/index.vue'
-    import LoadingView from '@common/loaders/section.vue'
     import { defineComponent, ref } from 'vue'
     import fetchSavedSearchList from '~/composables/savedsearch/fetchSavedSearchList'
 
     export default defineComponent({
-        components: { LoadingView, ErrorView },
+        components: {},
         props: {},
         emits: ['refresh'],
         setup(props, { emit }) {
@@ -43,7 +41,6 @@
 
             const handleSelect = (payload) => {
                 selected.value = payload.guid
-                console.log(payload)
                 emit('refresh', payload)
             }
 

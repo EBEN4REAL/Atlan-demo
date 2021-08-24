@@ -19,10 +19,10 @@
         >
             {{ asset.displayText }}
         </span>
-        <div class="chip" v-if="asset.attributes.isPrimary">
+        <div v-if="asset.attributes.isPrimary" class="chip">
             <AtlanIcon icon="PrimaryKey" />
         </div>
-        <div class="chip" v-if="asset.attributes.isPrimary">
+        <div v-if="asset.attributes.isPrimary" class="chip">
             <AtlanIcon icon="ForeignKey" />
         </div>
     </div>
@@ -44,7 +44,7 @@
                 required: true,
             },
         },
-        setup(props) {
+        setup() {
             const { dataTypeImage } = useAssetInfo()
 
             return {

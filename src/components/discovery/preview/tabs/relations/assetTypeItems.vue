@@ -15,10 +15,10 @@
                 :item="item"
                 :projection="projections"
                 class="w-full p-0 m-0 border-b"
-                :cssClasses="cssClasses"
-                :showAssetTypeIcon="false"
+                :css-classes="cssClasses"
+                :show-asset-type-icon="false"
+                :is-selected="item.guid === selectedAssetId"
                 @click="handlePreview(item)"
-                :isSelected="item.guid === selectedAssetId"
             ></ListItem>
             <div v-else class="mx-5 my-2">
                 <ColumnListItem :asset="item" />
@@ -28,9 +28,9 @@
 </template>
 
 <script lang="ts">
+    import { defineComponent, ref, watch } from 'vue'
     import ListItem from '~/components/discovery/list/listItem.vue'
     import ColumnListItem from '~/components/discovery/preview/tabs/columns/columnListItem.vue'
-    import { defineComponent, ref, watch } from 'vue'
     import useAssetInfo from '~/composables/asset/useAssetInfo'
     import useBiRelations from '~/composables/asset/useBiRelations'
     import VirtualList from '~/lib/virtualList/virtualList.vue'

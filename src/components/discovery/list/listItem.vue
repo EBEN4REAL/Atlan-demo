@@ -25,7 +25,7 @@
                         class="flex-none w-auto h-5 mr-2"
                     ></component> -->
                     <!-- <AssetLogo :asset="item" /> -->
-                    <AssetLogo :asset="item" v-if="showAssetTypeIcon" />
+                    <AssetLogo v-if="showAssetTypeIcon" :asset="item" />
                     <!-- remove cssClasses prop -->
                     <router-link
                         :class="
@@ -40,7 +40,7 @@
                     </router-link>
                     <StatusBadge
                         :key="item.guid"
-                        :showNoStatus="false"
+                        :show-no-status="false"
                         :status-id="status(item)"
                         class="flex-none ml-2"
                     ></StatusBadge>
@@ -88,13 +88,13 @@
                     </div>
                     <!-- Row/Col-->
                     <div
-                        class="flex mt-1 mr-2 text-sm"
                         v-if="
                             projection?.includes('rows') &&
                             ['table', 'view'].includes(
                                 item.typeName.toLowerCase()
                             )
                         "
+                        class="flex mt-1 mr-2 text-sm"
                     >
                         <span
                             v-if="item?.typeName.toLowerCase() === 'table'"
@@ -146,9 +146,9 @@
                 </div>
                 <!-- Hierarchy bar -->
                 <HierarchyBar
-                    class="py-1 mt-1"
                     v-if="projection?.includes('heirarchy')"
-                    :selectedAsset="item"
+                    class="py-1 mt-1"
+                    :selected-asset="item"
                 />
             </div>
 
@@ -211,7 +211,7 @@
                 default: () => true,
             },
         },
-        setup(props) {
+        setup() {
             const {
                 description,
                 logo,
@@ -234,10 +234,10 @@
 
                 // Check upto how long it is possible to display
                 while (strSize[idx] < wordCount && idx < strSize.length) {
-                    idx++
+                    idx += 1
                 }
                 // // Compenstion for the initial 0 in strSize
-                idx--
+                idx -= 1
 
                 /** The elements that would be displayed */
                 const displayArray = arr.slice(0, idx)
@@ -249,23 +249,20 @@
                     // If there is only 1 element to be truncated then compare the
                     // length of name and 'x others(s)'
                     const lastElm =
-                        truncated.length == 1 &&
+                        truncated.length === 1 &&
                         truncated[0].length <
                             `${truncated.length} other(s)`.length
                             ? `<b>${truncated[0]}</b>`
                             : `<b>${truncated.length}</b> other(s)`
 
                     return `<b>${displayArray.join(', ')}</b> and ${lastElm}`
-                } else {
-                    // Check if everything can be directly displayed
-                    // If so then take the last element from array, append it with 'and'
-                    const lastElm = displayArray.pop()
-                    return displayArray.length
-                        ? `<b>${displayArray.join(
-                              ', '
-                          )}</b> and <b>${lastElm}</b>`
-                        : lastElm
                 }
+                // Check if everything can be directly displayed
+                // If so then take the last element from array, append it with 'and'
+                const lastElm = displayArray.pop()
+                return displayArray.length
+                    ? `<b>${displayArray.join(', ')}</b> and <b>${lastElm}</b>`
+                    : lastElm
             }
 
             function getCombinedUsersAndGroups(item: assetInterface) {

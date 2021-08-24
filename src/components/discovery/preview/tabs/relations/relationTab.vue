@@ -65,9 +65,9 @@
             <!-- accordion on expand  -->
             <AssetTypeItems
                 :projections="checkedList"
-                :assetType="item.displayText"
-                :assetId="assetId"
-                :cssClasses="cssClasses"
+                :asset-type="item.displayText"
+                :asset-id="assetId"
+                :css-classes="cssClasses"
             />
         </a-collapse-panel>
     </a-collapse>
@@ -123,15 +123,11 @@
             }
 
             // filter required data
-            const filteredRelationshipAssets = computed(() => {
-                return relationshipAssets.value.filter((el) => {
-                    return (
+            const filteredRelationshipAssets = computed(() => relationshipAssets.value.filter((el) => (
                         el.displayText
                             .toLowerCase()
                             .indexOf(queryText.value.toLowerCase()) !== -1
-                    )
-                })
-            })
+                    )))
             watch(selectedAsset, fetchData, { immediate: true })
 
             onMounted(fetchData)

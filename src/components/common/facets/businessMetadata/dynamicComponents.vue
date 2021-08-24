@@ -6,7 +6,7 @@
             class="px-2 mr-2 border shadow-none w-100"
             type="number"
             placeholder="Type..."
-            @change="handleChange"
+            @change="() => debounce(() => handleChange(), 800)"
         />
         <a-radio-group
             v-else-if="type === 'boolean'"
@@ -26,134 +26,7 @@
                 @change="handleChange"
             />
         </span>
-        <!-- <div v-else-if="type === 'array<date>'" class="">
-            <div class="grid grid-cols-2 mb-2 gap-x-2 gap-y-1">
-                <div v-for="(i, n) in multiInputs[a.name]" :key="n" class="">
-                    <a-date-picker
-                        value-format="x"
-                        :value="multiInputs[a.name][n]"
-                        size="small"
-                        :allow-clear="true"
-                        @change="
-                            (timestamp, string) =>
-                                handleMultiInputChange(
-                                    x,
-                                    true,
-                                    a.name,
-                                    timestamp,
-                                    n
-                                )
-                        "
-                    />
-                </div>
-            </div>
-            <div class="flex justify-end">
-                <a-tag
-                    class="bg-white cursor-pointer"
-                    style="background: #fff; border-style: none"
-                    @click="addMoreMultiElement(a.name)"
-                >
-                    <fa icon="fal plus" class="pushtop"></fa> add more </a-tag
-                ><a-tag
-                    class="mr-0 bg-white cursor-pointer"
-                    style="background: #fff; border-style: dashed"
-                    @click="
-                        () => {
-                            updateAttribute()
-                            a.isEdit = false
-                            multiInputs[a.name] = ['', '']
-                        }
-                    "
-                >
-                    Done
-                </a-tag>
-            </div>
-        </div>
-        <div v-else-if="type === 'array<number>'" class="">
-            <div class="grid grid-cols-2 mb-2 gap-x-2 gap-y-1">
-                <div v-for="(i, n) in multiInputs[a.name]" :key="n" class="">
-                    <a-input-number
-                        :key="n"
-                        size="small"
-                        :placeholder="`Value ${n + 1}`"
-                        class="mb-1"
-                        allow-clear
-                        style="width: 100%"
-                        :value="multiInputs[a.name][n]"
-                        @change="
-                            (v) =>
-                                handleMultiInputChange(x, false, a.name, v, n)
-                        "
-                    />
-                </div>
-            </div>
-            <div class="flex justify-end">
-                <a-tag
-                    class="bg-white cursor-pointer"
-                    style="background: #fff; border-style: none"
-                    @click="addMoreMultiElement(a.name)"
-                >
-                    <fa icon="fal plus" class="pushtop"></fa> add more </a-tag
-                ><a-tag
-                    class="mr-0 bg-white cursor-pointer"
-                    style="background: #fff; border-style: dashed"
-                    @click="
-                        () => {
-                            updateAttribute()
-                            a.isEdit = false
-                            multiInputs[a.name] = ['', '']
-                        }
-                    "
-                >
-                    Done
-                </a-tag>
-            </div>
-        </div>
-        <div v-else-if="type === 'array<text>'" class="text-center">
-            <div class="grid grid-cols-2 mb-2 gap-x-2 gap-y-1">
-                <div v-for="(i, n) in multiInputs[a.name]" :key="n" class="">
-                    <a-input
-                        :key="n"
-                        size="small"
-                        :placeholder="`Value ${n + 1}`"
-                        class="mb-1"
-                        allow-clear
-                        :value="multiInputs[a.name][n]"
-                        @change="
-                            (e) =>
-                                handleMultiInputChange(
-                                    x,
-                                    false,
-                                    a.name,
-                                    e.target.value,
-                                    n
-                                )
-                        "
-                    />
-                </div>
-            </div>
-            <div class="flex justify-end">
-                <a-tag
-                    class="bg-white cursor-pointer"
-                    style="background: #fff; border-style: none"
-                    @click="addMoreMultiElement(a.name)"
-                >
-                    <fa icon="fal plus" class="pushtop"></fa> add more </a-tag
-                ><a-tag
-                    class="mr-0 bg-white cursor-pointer"
-                    style="background: #fff; border-style: dashed"
-                    @click="
-                        () => {
-                            updateAttribute()
-                            a.isEdit = false
-                            multiInputs[a.name] = ['', '']
-                        }
-                    "
-                >
-                    Done
-                </a-tag>
-            </div>
-        </div> -->
+
         <div
             v-else-if="
                 typeof type === 'object' &&
@@ -202,7 +75,7 @@
             placeholder="Type..."
             type="text"
             class="px-2 mr-2 shadow-none border-1"
-            @change="handleChange"
+            @change="() => debounce(() => handleChange(), 800)"
         />
     </div>
 </template>
@@ -228,21 +101,15 @@
                 required: true,
             },
         },
-        emits: ['handleChange', 'removeFilter'],
+        emits: ['handleChange'],
         setup(props, { emit }) {
-            const { getDatatypeOfAttribute } = useBusinessMetadataHelper()
+            const { getDatatypeOfAttribute, createDebounce } =
+                useBusinessMetadataHelper()
             const value = ref(null)
 
             const handleChange = () => {
-                emit('handleChange', props.type, props.operator, value.value)
+                emit('handleChange', props.operator, value.value)
             }
-
-            onBeforeUnmount(() => {
-                // ? unmounting this === unchecking the checkbox, remove any value is applied
-                if (value.value) {
-                    emit('removeFilter', props.operator)
-                }
-            })
 
             onMounted(() => {
                 value.value = props.defaultValue
@@ -251,6 +118,7 @@
                 getDatatypeOfAttribute,
                 value,
                 handleChange,
+                debounce: createDebounce(),
             }
         },
     })

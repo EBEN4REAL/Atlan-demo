@@ -34,11 +34,14 @@
         <div v-else>
             <div
                 v-for="(item, idx) in data"
-                :key="item[dataKey]"
+                :key="idx + listIndices[0]"
                 class="flex-shrink-0 virtual-list-item"
             >
                 <slot :item="item" :index="idx + listIndices[0]"></slot>
             </div>
+        </div>
+        <div class="footer">
+            <slot name="footer" />
         </div>
     </div>
 </template>
@@ -227,5 +230,9 @@
     }
     .virtual-list-item {
         overflow: hidden;
+    }
+    .footer {
+        width: inherit;
+        @apply sticky bottom-4;
     }
 </style>

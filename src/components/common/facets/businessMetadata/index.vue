@@ -1,6 +1,6 @@
 <template>
     <span>
-        <div v-if="data.list.attributeDefs.length > 5" class="pr-1 mx-5 mb-3">
+        <div v-if="data.list.attributeDefs.length > 10" class="pr-1 mx-5 mb-3">
             <a-input
                 ref="searchText"
                 v-model:value="attributeSearchText"
@@ -21,13 +21,17 @@
                 </template>
             </a-input>
         </div>
-        <div ref="container" class="mr-2 overflow-y-scroll max-h-48">
+        <div
+            ref="container"
+            class="mr-2 overflow-y-scroll"
+            style="max-height: 25rem"
+        >
             <div
                 v-for="(a, x) in attributeSearchText.length
                     ? filterList(data.list.attributeDefs)
                     : data.list.attributeDefs.slice(
                           0,
-                          showAll ? data.list.attributeDefs.length : 5
+                          showAll ? data.list.attributeDefs.length : 10
                       )"
                 :key="x"
                 class="mx-5"
@@ -44,7 +48,7 @@
                 v-if="
                     !showAll &&
                     attributeSearchText === '' &&
-                    data.list.attributeDefs.length > 5
+                    data.list.attributeDefs.length > 10
                 "
                 class="flex items-center w-auto font-bold text-center cursor-pointer select-none  outlined text-primary"
                 @click="
@@ -92,26 +96,59 @@
             const showAll = ref(false)
             const container = ref(null)
 
+            const isEmptyObject = (obj: Object) =>
+                Object.keys(obj).length === 0 && obj.constructor === Object
+
+            /**
+             * @param {String} a - attribute object of the filter to apply
+             * @param {String} appliedValueMap - consists of 1 or more operators mapped with their values
+             * @desc - updates the dataMap at parent to be in sync, and emits change to apply filter
+             */
             const setBMfilter = (
                 a: { name: string },
                 appliedValueMap: Object
             ) => {
-                emit('update:data', {
+                // ? if appliedValueMap === {} i.e all applied filters removed, remove the entry
+                const newDataMap = {
                     ...props.data,
                     applied: {
                         ...props.data.applied,
                         [a.name]: appliedValueMap,
                     },
-                })
+                }
+
+                if (isEmptyObject(appliedValueMap))
+                    delete newDataMap.applied[a.name]
+                emit('update:data', newDataMap)
                 const attributeName = `${props.data.list.name}.${a.name}`
 
                 const criterion: Components.Schemas.FilterCriteria[] = []
+
+                // ? populate criterion object with filters previously applied
+                Object.entries(props.data.applied).forEach((attribute) => {
+                    Object.entries(attribute[1]).forEach((o) => {
+                        criterion.push({
+                            attributeName: `${props.data.list.name}.${attribute[0]}`,
+                            operator: o[0],
+                            attributeValue: o[1],
+                        })
+                    })
+                })
+                // ? add new filter to criterion
                 Object.keys(appliedValueMap).forEach((key: string) => {
-                    criterion.push({
+                    const alreadyAppliedIndex = criterion.findIndex(
+                        (c) =>
+                            c.attributeName === attributeName &&
+                            c.operator === key
+                    )
+                    const filter = {
                         attributeName,
                         operator: key,
                         attributeValue: appliedValueMap[key],
-                    })
+                    }
+                    if (alreadyAppliedIndex > -1)
+                        criterion[alreadyAppliedIndex] = filter
+                    else criterion.push(filter)
                 })
                 emit('change', {
                     id: props.item.id,
@@ -122,15 +159,19 @@
                 })
             }
 
-            const filterList = (list) =>
-                list.filter((a) =>
-                    a.options.displayName.includes(attributeSearchText.value)
+            const filterList = (list: any[]) =>
+                list.filter(
+                    (a: { options: { displayName: string | string[] } }) =>
+                        a.options.displayName.includes(
+                            attributeSearchText.value
+                        )
                 )
 
             const showScrollBar = () => {
                 container.value.scrollTop = 1
                 container.value.scrollTop = 0
             }
+
             return {
                 setBMfilter,
                 attributeSearchText,

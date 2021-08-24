@@ -2,8 +2,13 @@
     <div v-if="isLoading">
         <LoadingView />
     </div>
-     <div v-else class="flex flex-row h-full" :class="$style.tabClasses">
-        <div class="h-full overflow-auto"  :class="currentTab === '1' || (currentTab === '2') ? 'w-2/3' : 'w-full'">
+    <div v-else class="flex flex-row h-full" :class="$style.tabClasses">
+        <div
+            class="h-full overflow-auto"
+            :class="
+                currentTab === '1' || currentTab === '2' ? 'w-2/3' : 'w-full'
+            "
+        >
             <div class="flex flex-row justify-between pl-8 pr-4 mt-6 mb-5">
                 <div class="flex flex-row">
                     <div class="mr-5">
@@ -11,15 +16,15 @@
                     </div>
                     <div class="flex flex-col w-3/4">
                         <div class="flex">
-                        <span class="text-xl leading-6 font-bold mr-3">{{
-                            title
-                        }}</span>
-                        <component
-                            :is="statusObject?.icon"
-                            v-if="statusObject"
-                            class="inline-flex self-center w-auto h-4 mb-1"
-                        /> 
-                    </div>
+                            <span class="mr-3 text-xl font-bold leading-6">{{
+                                title
+                            }}</span>
+                            <component
+                                :is="statusObject?.icon"
+                                v-if="statusObject"
+                                class="inline-flex self-center w-auto h-4 mb-1"
+                            />
+                        </div>
 
                         <span class="mt-1 text-sm leading-5 text-gray-500">{{
                             shortDescription
@@ -34,13 +39,17 @@
                         <fa icon="fal upload" class="h-3 mr-2" />
                         <span>Share</span>
                     </a-button>
-                    <a-button class="px-2.5" >
+                    <a-button class="px-2.5">
                         <fa icon="fal ellipsis-v" class="h-4" />
                     </a-button>
                 </div>
             </div>
-            <div class="m-0" >
-                <a-tabs v-model:activeKey="currentTab" default-active-key="1" class="border-0">
+            <div class="m-0">
+                <a-tabs
+                    v-model:activeKey="currentTab"
+                    default-active-key="1"
+                    class="border-0"
+                >
                     <a-tab-pane key="1" tab="Overview">
                         <div class="px-8 mt-4">
                             <GlossaryProfileOverview :entity="term" />
@@ -48,13 +57,20 @@
                     </a-tab-pane>
                     <a-tab-pane key="2" tab="Linked Terms">
                         <div :class="$style.tabClasses">
-                            <LinkedAssetsTab :term-qualified-name="qualifiedName" @preview="handlePreview"/>
+                            <LinkedAssetsTab
+                                :term-qualified-name="qualifiedName"
+                                @preview="handlePreview"
+                            />
                         </div>
                     </a-tab-pane>
                 </a-tabs>
             </div>
         </div>
-        <CategoryTermPreview v-if="currentTab === '1' && term" :entity="term" :preview="false" />
+        <CategoryTermPreview
+            v-if="currentTab === '1' && term"
+            :entity="term"
+            :preview="false"
+        />
         <div class="border-l" :class="$style.tabClasses">
             <AssetPreview
                 v-if="currentTab === '2' && previewEntity"
@@ -75,7 +91,7 @@ import EntityHistory from '@/glossary/common/entityHistory.vue'
 import LoadingView from '@common/loaders/page.vue'
 import RelatedTerms from '@/glossary/termProfile/relatedTerms.vue'
 import CategoryTermPreview from '@/glossary/common/categoryTermPreview/categoryTermPreview.vue'
-import AssetPreview from '@/preview/asset/v2/index.vue'
+import AssetPreview from '~/components/discovery/preview/assetPreview.vue'
 
 import useGTCEntity from '~/composables/glossary/useGtcEntity'
 
@@ -103,8 +119,8 @@ export default defineComponent({
     },
     setup(props) {
         const guid = toRef(props, 'id')
-        const currentTab = ref('1');
-        const previewEntity = ref();
+        const currentTab = ref('1')
+        const previewEntity = ref()
 
         const { 
             entity: term,
@@ -126,7 +142,7 @@ export default defineComponent({
         )
 
         const handlePreview = (entity: any) => {
-            previewEntity.value = entity;
+            previewEntity.value = entity
         }
         return {
             term,
@@ -142,40 +158,40 @@ export default defineComponent({
             parentGlossaryName,
             previewEntity,
             statusObject,
-            handlePreview
+            handlePreview,
         }
     },
 })
 </script>
 <style lang="less" module>
-.termHome {
-    :global(.ant-tabs-bar) {
-        @apply mb-0;
+    .termHome {
+        :global(.ant-tabs-bar) {
+            @apply mb-0;
+        }
+        :global(.ant-tabs-nav) {
+            @apply ml-8;
+        }
     }
-    :global(.ant-tabs-nav) {
-        @apply ml-8;
+    .overviewTab {
+        :global(.ant-tabs-nav) {
+            @apply ml-0;
+        }
     }
-}
-.overviewTab {
-    :global(.ant-tabs-nav) {
-        @apply ml-0;
+    .tabClasses {
+        :global(.ant-tabs-tab) {
+            margin: 0px 32px 0px 0px !important;
+            padding: 0px 0px 18px 0px !important;
+        }
+        :global(.ant-tabs-nav) {
+            margin: 0px !important;
+        }
+        :global(.ant-tabs-tab-active) {
+            @apply text-gray-700 font-bold !important;
+        }
+        :global(.ant-tabs-bar) {
+            @apply px-5 !important;
+        }
     }
-}
-.tabClasses {
-    :global(.ant-tabs-tab) {
-        margin: 0px 32px 0px 0px !important;
-        padding: 0px 0px 18px 0px !important;
-    }
-    :global(.ant-tabs-nav) {
-        margin: 0px !important;
-    }
-    :global(.ant-tabs-tab-active) {
-        @apply text-gray-700 font-bold !important;
-    }
-    :global(.ant-tabs-bar) {
-        @apply px-5 !important;
-    }
-}
 </style>
 
 <route lang="yaml">

@@ -1,11 +1,35 @@
 <template>
     <div :key="statusId">
-        <div class="flex items-center align-middle">
+        <div class="flex items-center align-middle" v-if="!showChipStyleStatus">
             <span class="svg-icon">
-                <component class="w-auto h-4 mr-1" :is="icon" />
+                <component class="w-auto h-4" :is="icon" />
             </span>
 
-            <p v-if="showLabel" class="mb-0 text-sm text-gray">
+            <p v-if="showLabel" class="mb-0 ml-2">
+                {{ label }}
+            </p>
+        </div>
+
+        <div
+            v-else
+            class="
+                flex
+                items-center
+                px-3
+                py-1.5
+                mr-3
+                rounded-full
+                text-sm
+                cursor-pointer
+                bg-gray-light
+                text-gray-700
+            "
+        >
+            <span class="svg-icon">
+                <component class="w-auto h-4" :is="icon" />
+            </span>
+
+            <p v-if="showLabel" class="mb-0 ml-2">
                 {{ label }}
             </p>
         </div>
@@ -60,6 +84,13 @@
                 },
             },
             showNoStatus: {
+                type: Boolean,
+                required: false,
+                default() {
+                    return false
+                },
+            },
+            showChipStyleStatus: {
                 type: Boolean,
                 required: false,
                 default() {

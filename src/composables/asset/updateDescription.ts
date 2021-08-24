@@ -24,7 +24,7 @@ export default function updateDescription(selectedAsset: Ref<assetInterface>) {
                     userDescription: localDescription.value,
                     shortDescription: localDescription.value,
                     tenantId: selectedAsset.value.attributes?.tenantId,
-                    anchor: selectedAsset.value.attributes?.anchor
+                    anchor: selectedAsset.value.attributes?.anchor,
                 },
             },
         ],
@@ -32,7 +32,7 @@ export default function updateDescription(selectedAsset: Ref<assetInterface>) {
     const description: WritableComputedRef<string> = computed({
         get: () =>
             selectedAsset.value?.attributes?.userDescription ||
-            selectedAsset.value?.attributes?.description || 
+            selectedAsset.value?.attributes?.description ||
             selectedAsset.value?.attributes?.shortDescription,
         set: (newValue: string) => {
             localDescription.value = newValue

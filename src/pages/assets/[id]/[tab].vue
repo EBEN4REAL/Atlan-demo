@@ -3,8 +3,8 @@
     <ErrorView v-else-if="data?.error" :error="data?.error" />
 
     <div v-if="data?.asset" class="w-full">
-        <div class="z-30 px-4 pt-5 pb-3 bg-white">
-            <Header :asset="data?.asset" />
+        <div class="z-30 pt-5 pb-3 pr-4 bg-white">
+            <Header />
         </div>
         <div class="asset-profile">
             <a-tabs
@@ -21,7 +21,6 @@
                                 refs[tab.id] = el
                             }
                         "
-                        :asset="data?.asset || {}"
                         @preview="handlePreview"
                     ></component>
                 </a-tab-pane>
@@ -54,10 +53,7 @@
             LoadingView,
             ErrorView,
             overview: defineAsyncComponent(
-                () =>
-                    import(
-                        '~/components/asset/assetProfile/tabs/overview/nonBiAsset/index.vue'
-                    )
+                () => import('@/asset/assetProfile/tabs/overview/index.vue')
             ),
             lineage: defineAsyncComponent(
                 () => import('@/asset/assetProfile/tabs/lineage/index.vue')
@@ -172,9 +168,12 @@ meta:
             @apply text-gray font-bold;
         }
         :global(.ant-tabs-bar) {
-            @apply mb-0;
+            @apply mb-0 pl-7;
         }
+
         :global(.ant-tabs-content) {
+            height: calc(100vh - 200px) !important;
+            overflow: scroll !important;
             @apply pr-0;
         }
         :global(.ant-tabs-ink-bar) {

@@ -88,14 +88,6 @@ export default function useBusinessMetadataHelper() {
                     component: 'businessMetadata',
                     image: bm.options.image || '',
                     overallCondition: 'OR',
-                    filters: [
-                        {
-                            attributeName: '',
-                            condition: 'OR',
-                            isMultiple: false,
-                            operator: 'eq',
-                        },
-                    ],
                     isDeleted: false,
                     isDisabled: false,
                     exclude: false,

@@ -11,22 +11,17 @@
                     v-else
                     :initial-filters="initialFilters"
                     @preview="handlePreview"
+                    ref="assetDiscovery"
                 ></AssetDiscovery>
             </div>
         </div>
         <div
-            class="
-                z-20
-                flex flex-col
-                h-full
-                bg-white
-                border-l
-                asset-preview-container
-            "
+            class="z-20 flex flex-col h-full bg-white border-l  asset-preview-container"
         >
             <AssetPreview
                 v-if="selected"
                 :selectedAsset="selected"
+                @asset-mutation="propagateToAssetList"
                 :page="page"
             ></AssetPreview>
         </div>
@@ -62,7 +57,7 @@
             const router = useRouter()
             const route = useRoute()
             const isItem = computed(() => route.params.id)
-
+            const assetDiscovery: Ref<Element | null> = ref(null)
             const initialFilters: initialFiltersType =
                 getDecodedOptionsFromString(router)
             const selected: Ref<assetInterface | undefined> = ref(undefined)
@@ -98,12 +93,20 @@
                 }
             })
 
+            function propagateToAssetList(updatedAsset: assetInterface) {
+                if (assetDiscovery.value)
+                    assetDiscovery.value.mutateAssetInList(updatedAsset)
+                handlePreview(updatedAsset)
+            }
+
             return {
                 initialFilters,
                 selected,
                 handlePreview,
                 isItem,
                 page,
+                propagateToAssetList,
+                assetDiscovery,
             }
         },
     })

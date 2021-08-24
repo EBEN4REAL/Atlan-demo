@@ -91,7 +91,7 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref, watch, PropType, toRefs } from 'vue'
+    import { defineComponent, ref, watch, PropType, toRefs, inject } from 'vue'
     import { useMagicKeys } from '@vueuse/core'
     import StatusBadge from '@common/badge/status/index.vue'
 
@@ -124,6 +124,9 @@
                 isLoading,
             } = updateStatus(selectedAsset)
 
+            const mutateSelectedAsset: (updatedAsset: assetInterface) => void =
+                inject('mutateSelectedAsset')
+
             const animationPoint = ref(null)
             const message = ref('')
 
@@ -154,6 +157,7 @@
                         }
                         confetti(animationPoint.value, config)
                     }
+                    mutateSelectedAsset(selectedAsset.value)
                 }
             })
 

@@ -128,6 +128,7 @@
     import { useConnectionsStore } from '~/store/connections'
     import { SearchParameters } from '~/types/atlas/attributes'
     import { getEncodedStringFromOptions } from '~/utils/routerQuery'
+    import { assetInterface } from '~/types/assets/asset.interface'
 
     export interface filterMapType {
         status: {
@@ -265,6 +266,7 @@
                 searchScoreList,
                 isAggregate,
                 assetTypeMap,
+                mutateAssetInList,
             } = useAssetList(
                 now,
                 assetTypeListString,
@@ -539,6 +541,7 @@
                 handleState,
                 connectorsPayload,
                 filteredConnector,
+                mutateAssetInList,
             }
         },
         data() {

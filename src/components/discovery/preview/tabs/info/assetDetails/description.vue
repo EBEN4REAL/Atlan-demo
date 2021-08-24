@@ -79,6 +79,7 @@
     import { useMagicKeys } from '@vueuse/core'
     import {
         defineComponent,
+        inject,
         nextTick,
         PropType,
         ref,
@@ -106,6 +107,8 @@
                 description,
                 isCompleted,
             } = updateDescription(selectedAsset)
+            const mutateSelectedAsset: (updatedAsset: assetInterface) => void =
+                inject('mutateSelectedAsset')
 
             const handleUpdate = () => {
                 update()
@@ -131,6 +134,11 @@
                     handleCancel()
                 }
             })
+
+            watch(description, () => {
+                mutateSelectedAsset(selectedAsset.value)
+            })
+
             return {
                 handleTextAreaUpdate,
                 handleUpdate,

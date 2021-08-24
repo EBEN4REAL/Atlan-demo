@@ -67,6 +67,7 @@
         Ref,
         toRefs,
         watch,
+        provide,
     } from 'vue'
     import useAsset from '~/composables/asset/useAsset'
     import useAssetInfo from '~/composables/asset/useAssetInfo'
@@ -109,8 +110,8 @@
                 required: true,
             },
         },
-
-        setup(props) {
+        emits: ['assetMutation'],
+        setup(props, { emit }) {
             const { selectedAsset, page } = toRefs(props)
             const { filteredTabs, assetType } = useAssetDetailsTabList(page)
             const { assetTypeLabel, title, assetStatus } = useAssetInfo()
@@ -126,6 +127,10 @@
                     return data.value?.entities[0]
                 return {}
             }
+
+            provide('mutateSelectedAsset', (updatedAsset: assetInterface) => {
+                emit('assetMutation', updatedAsset)
+            })
 
             watch(page, () => {
                 if (activeKey.value > filteredTabs.value.length)
@@ -152,7 +157,7 @@
                     }
                 })
             }
-            watch(selectedAsset, init)
+            watch(() => selectedAsset.value.guid, init)
             onMounted(init)
 
             return {

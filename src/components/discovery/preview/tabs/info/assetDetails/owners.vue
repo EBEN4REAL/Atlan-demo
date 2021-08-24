@@ -444,7 +444,15 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, PropType, ref, Ref, toRefs, watch } from 'vue'
+    import {
+        defineComponent,
+        PropType,
+        ref,
+        Ref,
+        toRefs,
+        watch,
+        inject,
+    } from 'vue'
     import OwnerInfoCard from '~/components/discovery/preview/hovercards/ownerInfo.vue'
     import updateOwners from '~/composables/asset/updateOwners'
     import fetchGroupList from '~/composables/group/fetchGroupList'
@@ -483,8 +491,9 @@
                 handleSearch: handleGroupSearch,
                 state: groupOwnerState,
             } = fetchGroupList(now)
-            console.log('userList->', listUsers.value)
-            console.log('groupList->', listGroups.value)
+
+            const mutateSelectedAsset: (updatedAsset: assetInterface) => void =
+                inject('mutateSelectedAsset')
 
             const onSelectUser = (user: userInterface) => {
                 // unselect if already selected
@@ -591,6 +600,7 @@
                         5,
                         mappedSplittedOwners(ownerUsers, ownerGroups)
                     )
+                    mutateSelectedAsset(selectedAsset.value)
                 },
                 {
                     immediate: true,

@@ -12,6 +12,7 @@
                     : 'w-2/3'
             "
         >
+            <!-- top section -->
             <div class="flex flex-row justify-between pl-5 pr-4 mt-6 mb-5">
                 <div class="flex flex-row">
                     <div class="mr-5">
@@ -46,6 +47,7 @@
                             <fa icon="fal ellipsis-v" class="h-4" />
                         </a-button>
                         <template #overlay>
+                            <!-- TODO: replace with 3-dot menu component -->
                             <a-menu>
                                 <a-menu-item>Add Term</a-menu-item>
                                 <a-menu-item>Add Category</a-menu-item>
@@ -71,6 +73,7 @@
                     </a-dropdown>
                 </div>
             </div>
+            <!-- tabs start here  -->
             <div class="m-0">
                 <a-tabs
                     v-model:activeKey="currentTab"
@@ -128,6 +131,7 @@
         ref,
     } from 'vue'
 
+    // components
     import GlossaryTermsAndCategoriesTab from '@/glossary/glossaryTermsAndCategoriesTab.vue'
     import LoadingView from '@common/loaders/page.vue'
     import GlossaryProfileOverview from '@/glossary/common/glossaryProfileOverview.vue'
@@ -136,10 +140,12 @@
     import SidePanel from '@/glossary/sidePanel/index.vue'
     import CategoryTermPreview from '@/glossary/common/categoryTermPreview/categoryTermPreview.vue'
 
+    // composables
     import useGTCEntity from '~/composables/glossary/useGtcEntity'
     import useGlossaryTerms from '~/composables/glossary/useGlossaryTerms'
     import useGlossaryCategories from '~/composables/glossary/useGlossaryCategories'
 
+    // static
     import {
         Glossary,
         Category,
@@ -167,6 +173,7 @@
             },
         },
         setup(props) {
+            // data
             const guid = toRef(props, 'id')
             const currentTab = ref('1')
             const previewEntity = ref<Category | Term | undefined>()
@@ -191,6 +198,7 @@
                 fetchGlossaryCategoriesPaginated,
             } = useGlossaryCategories()
 
+            // computed
             const title = computed(() => glossary.value?.attributes?.name)
             const shortDescription = computed(
                 () => glossary.value?.attributes?.shortDescription
@@ -205,25 +213,7 @@
                 )
             )
 
-            onMounted(() => {
-                fetchGlossaryTermsPaginated({ guid: guid.value, offset: 0 })
-                fetchGlossaryCategoriesPaginated({
-                    guid: guid.value,
-                    offset: 0,
-                })
-            })
-
-            watch(guid, (newGuid) => {
-                fetchGlossaryTermsPaginated({
-                    guid: newGuid,
-                    offset: 0,
-                })
-                fetchGlossaryCategoriesPaginated({
-                    guid: newGuid,
-                    offset: 0,
-                })
-            })
-
+            // methods
             const refreshCategoryTermList = (type: string) => {
                 if (type === 'category') {
                     fetchGlossaryCategoriesPaginated({
@@ -247,6 +237,26 @@
             const handleCategoryOrTermPreview = (entity: Category | Term) => {
                 previewEntity.value = entity
             }
+
+            // lifecycle methods and watchers
+            onMounted(() => {
+                fetchGlossaryTermsPaginated({ guid: guid.value, offset: 0 })
+                fetchGlossaryCategoriesPaginated({
+                    guid: guid.value,
+                    offset: 0,
+                })
+            })
+
+            watch(guid, (newGuid) => {
+                fetchGlossaryTermsPaginated({
+                    guid: newGuid,
+                    offset: 0,
+                })
+                fetchGlossaryCategoriesPaginated({
+                    guid: newGuid,
+                    offset: 0,
+                })
+            })
 
             return {
                 glossary,

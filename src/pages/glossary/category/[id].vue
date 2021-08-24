@@ -3,7 +3,15 @@
         <LoadingView />
     </div>
     <div v-else class="flex flex-row h-full" :class="$style.tabClasses">
-        <div class="h-full overflow-auto" :class="currentTab === '1' || (currentTab === '2' && !previewEntity?.guid) ? 'w-full' : 'w-2/3'">
+        <div
+            class="h-full overflow-auto"
+            :class="
+                currentTab === '1' ||
+                (currentTab === '2' && !previewEntity?.guid)
+                    ? 'w-full'
+                    : 'w-2/3'
+            "
+        >
             <div class="flex flex-row justify-between pl-8 pr-4 mt-6 mb-5">
                 <div class="flex flex-row">
                     <div class="mr-5">
@@ -11,14 +19,14 @@
                     </div>
                     <div class="flex flex-col w-3/4">
                         <div class="flex">
-                            <span class="text-xl leading-6 font-bold mr-3">{{
+                            <span class="mr-3 text-xl font-bold leading-6">{{
                                 title
                             }}</span>
                             <component
                                 :is="statusObject?.icon"
-                                v-if="statusObject "
+                                v-if="statusObject"
                                 class="inline-flex self-center w-auto h-4 mb-1"
-                            /> 
+                            />
                         </div>
                         <span class="mt-1 text-sm leading-5 text-gray-500">{{
                             shortDescription
@@ -33,20 +41,23 @@
                         <fa icon="fal upload" class="h-3 mr-2" />
                         <span>Share</span>
                     </a-button>
-                    <a-button class="px-2.5" >
+                    <a-button class="px-2.5">
                         <fa icon="fal ellipsis-v" class="h-4" />
                     </a-button>
                 </div>
             </div>
             <div class="m-0">
-                <a-tabs v-model:activeKey="currentTab" default-active-key="1" class="border-0">
+                <a-tabs
+                    v-model:activeKey="currentTab"
+                    default-active-key="1"
+                    class="border-0"
+                >
                     <a-tab-pane key="1" tab="Overview">
                         <div class="px-8 mt-4">
                             <GlossaryProfileOverview :entity="category" />
                         </div>
                     </a-tab-pane>
                     <a-tab-pane key="2" tab="Terms & Categories">
-
                         <GlossaryTermsAndCategoriesTab
                             :qualified-name="parentGlossaryQualifiedName"
                             :guid="guid"
@@ -61,135 +72,162 @@
                 </a-tabs>
             </div>
         </div>
-        <SidePanel v-if="currentTab === '1'" :entity="category" :topTerms="categoryTerms" />
-        <CategoryTermPreview v-if="currentTab === '2' && previewEntity" :entity="previewEntity"  />
+        <SidePanel
+            v-if="currentTab === '1'"
+            :entity="category"
+            :topTerms="categoryTerms"
+        />
+        <CategoryTermPreview
+            v-if="currentTab === '2' && previewEntity"
+            :entity="previewEntity"
+        />
     </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, computed, watch, onMounted, toRef, ref } from 'vue'
+    import {
+        defineComponent,
+        computed,
+        watch,
+        onMounted,
+        toRef,
+        ref,
+    } from 'vue'
 
-import GlossaryProfileOverview from '@/glossary/common/glossaryProfileOverview.vue'
-import LoadingView from '@common/loaders/page.vue'
-import SidePanel from '@/glossary/sidePanel/index.vue'
-import CategoryTermPreview from '@/glossary/common/categoryTermPreview/categoryTermPreview.vue'
-import GlossaryTermsAndCategoriesTab from '@/glossary/glossaryTermsAndCategoriesTab.vue'
+    // components
+    import GlossaryProfileOverview from '@/glossary/common/glossaryProfileOverview.vue'
+    import LoadingView from '@common/loaders/page.vue'
+    import SidePanel from '@/glossary/sidePanel/index.vue'
+    import CategoryTermPreview from '@/glossary/common/categoryTermPreview/categoryTermPreview.vue'
+    import GlossaryTermsAndCategoriesTab from '@/glossary/glossaryTermsAndCategoriesTab.vue'
 
-import useGTCEntity from '~/composables/glossary/useGtcEntity'
-import useCategoryTerms from '~/composables/glossary/useCategoryTerms'
+    // composables
+    import useGTCEntity from '~/composables/glossary/useGtcEntity'
+    import useCategoryTerms from '~/composables/glossary/useCategoryTerms'
 
-import { Glossary, Category, Term } from '~/types/glossary/glossary.interface'
+    // static
+    import {
+        Glossary,
+        Category,
+        Term,
+    } from '~/types/glossary/glossary.interface'
+    import CategorySvg from '~/assets/images/gtc/category/category.png'
+    import { List as StatusList } from '~/constant/status'
 
-import CategorySvg from '~/assets/images/gtc/category/category.png'
-import { List as StatusList } from '~/constant/status'
-
-export default defineComponent({
-    components: {
-        GlossaryProfileOverview,
-        GlossaryTermsAndCategoriesTab,
-        LoadingView,
-        SidePanel,
-        CategoryTermPreview
-    },
-    props: {
-        id: {
-            type: String,
-            required: true,
-            default: '',
+    export default defineComponent({
+        components: {
+            GlossaryProfileOverview,
+            GlossaryTermsAndCategoriesTab,
+            LoadingView,
+            SidePanel,
+            CategoryTermPreview,
         },
-    },
-    setup(props) {
-        const guid = toRef(props, 'id')
-        const currentTab = ref('1');
-        const previewEntity = ref<Category | Term | undefined>();
+        props: {
+            id: {
+                type: String,
+                required: true,
+                default: '',
+            },
+        },
+        setup(props) {
+            // data
+            const guid = toRef(props, 'id')
+            const currentTab = ref('1')
+            const previewEntity = ref<Category | Term | undefined>()
 
-        const {
-            entity: category,
-            error,
-            isLoading,
-        } = useGTCEntity<Category>('category', guid)
+            const {
+                entity: category,
+                error,
+                isLoading,
+            } = useGTCEntity<Category>('category', guid)
 
-        const {
-            data: categoryTerms,
-            error: termsError,
-            isLoading: termsLoading,
-            fetchCategoryTermsPaginated,
-        } = useCategoryTerms()
+            const {
+                data: categoryTerms,
+                error: termsError,
+                isLoading: termsLoading,
+                fetchCategoryTermsPaginated,
+            } = useCategoryTerms()
 
-        const title = computed(() => category.value?.attributes?.name)
+            // computed
+            const title = computed(() => category.value?.attributes?.name)
+            const shortDescription = computed(
+                () => category.value?.attributes?.shortDescription
+            )
+            const termCount = computed(
+                () => category.value?.attributes?.terms?.length ?? 0
+            )
+            const parentGlossaryQualifiedName = computed(
+                () =>
+                    category.value?.attributes?.qualifiedName?.split('@')[1] ??
+                    ''
+            )
+            const statusObject = computed(() =>
+                StatusList.find(
+                    (status) =>
+                        status.id === category.value?.attributes?.assetStatus
+                )
+            )
 
-        const shortDescription = computed(
-            () => category.value?.attributes?.shortDescription
-        )
+            // methods
+            const handleCategoryOrTermPreview = (entity: Category | Term) => {
+                previewEntity.value = entity
+            }
 
-        const termCount = computed(
-            () => category.value?.attributes?.terms?.length ?? 0
-        )
-
-        const parentGlossaryQualifiedName = computed(
-            () => category.value?.attributes?.qualifiedName?.split('@')[1] ?? ''
-        )
-        const statusObject = computed(() => StatusList.find((status) => status.id === category.value?.attributes?.assetStatus))
-
-        onMounted(() => {
-            fetchCategoryTermsPaginated({ guid: guid.value, offset: 0 })
-        })
-
-        watch(guid, (newGuid) => {
-            fetchCategoryTermsPaginated({
-                guid: newGuid,
-                refreshSamePage: true,
+            // lifecycle methods and watchers
+            onMounted(() => {
+                fetchCategoryTermsPaginated({ guid: guid.value, offset: 0 })
             })
-        })
 
-        const handleCategoryOrTermPreview = (entity: Category | Term) => {
-            previewEntity.value = entity;
-        }
-
-        return {
-            category,
-            categoryTerms,
-            currentTab,
-            previewEntity,
-            title,
-            shortDescription,
-            termCount,
-            parentGlossaryQualifiedName,
-            error,
-            isLoading,
-            termsLoading,
-            CategorySvg,
-            guid,
-            statusObject,
-            handleCategoryOrTermPreview,
-        }
-    },
-})
+            watch(guid, (newGuid) => {
+                fetchCategoryTermsPaginated({
+                    guid: newGuid,
+                    refreshSamePage: true,
+                })
+            })
+            return {
+                category,
+                categoryTerms,
+                currentTab,
+                previewEntity,
+                title,
+                shortDescription,
+                termCount,
+                parentGlossaryQualifiedName,
+                error,
+                isLoading,
+                termsLoading,
+                CategorySvg,
+                guid,
+                statusObject,
+                handleCategoryOrTermPreview,
+            }
+        },
+    })
 </script>
 <style lang="less" module>
-.categoryHome {
-    :global(.ant-tabs-nav) {
-        @apply ml-8;
+    .categoryHome {
+        :global(.ant-tabs-nav) {
+            @apply ml-8;
+        }
+        :global(.ant-tabs-bar) {
+            @apply mb-0;
+        }
     }
-    :global(.ant-tabs-bar) {
-        @apply mb-0;
+    .tabClasses {
+        :global(.ant-tabs-tab) {
+            margin: 0px 32px 0px 0px !important;
+            padding: 0px 0px 18px 0px !important;
+        }
+        :global(.ant-tabs-nav) {
+            margin: 0px !important;
+        }
+        :global(.ant-tabs-tab-active) {
+            @apply text-gray-700 font-bold !important;
+        }
+        :global(.ant-tabs-bar) {
+            @apply px-5 !important;
+        }
     }
-}
-.tabClasses {
-    :global(.ant-tabs-tab) {
-        margin: 0px 32px 0px 0px !important;
-        padding: 0px 0px 18px 0px !important;
-    }
-    :global(.ant-tabs-nav) {
-        margin: 0px !important;
-    }
-    :global(.ant-tabs-tab-active) {
-        @apply text-gray-700 font-bold !important;
-    }
-    :global(.ant-tabs-bar) {
-        @apply px-5 !important;
-    }
-}
 </style>
 <route lang="yaml">
 meta:

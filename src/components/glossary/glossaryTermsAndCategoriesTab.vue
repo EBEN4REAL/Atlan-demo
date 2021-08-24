@@ -33,8 +33,11 @@
         <div v-else-if="all.length" class="flex flex-row w-full mt-4">
             <div class="w-full">
                 <a-tabs default-active-key="1" class="border-0">
-                    <a-tab-pane key="1" :tab="`All (${all.length})`"
-                        ><div class="overflow-auto" style="max-height: 380px">
+                    <!-- TODO: fix tab-pane header UI  -->
+                    <a-tab-pane key="1" :tab="`All (${all.length})`">
+                        <!-- list starts here -->
+                        <!-- TODO: make panel scrollable -->
+                        <div class="overflow-auto" style="max-height: 380px">
                             <div v-for="asset in all" :key="asset.guid">
                                 <GtcEntityCard
                                     :class="{
@@ -49,8 +52,9 @@
                             </div>
                         </div>
                     </a-tab-pane>
-                    <a-tab-pane key="2" :tab="`Terms (${terms.length})`"
-                        ><div class="overflow-auto" style="max-height: 380px">
+                    <a-tab-pane key="2" :tab="`Terms (${terms.length})`">
+                        <!--? why max-height is fixed to 380px  -->
+                        <div class="overflow-auto" style="max-height: 380px">
                             <div v-for="asset in terms" :key="asset.guid">
                                 <GtcEntityCard
                                     :class="{ 'hover:bg-gray-100': true }"
@@ -64,7 +68,9 @@
                     <a-tab-pane
                         key="3"
                         :tab="`Categories (${categories.length})`"
-                        ><div class="overflow-auto" style="max-height: 380px">
+                    >
+                        <!--? why max-height is fixed to 380px  -->
+                        <div class="overflow-auto" style="max-height: 380px">
                             <div v-for="asset in categories" :key="asset.guid">
                                 <GtcEntityCard
                                     :class="{ 'hover:bg-gray-100': true }"
@@ -95,13 +101,16 @@
     import { defineComponent, computed, ref, toRef, watch, PropType } from 'vue'
     import { useDebounceFn } from '@vueuse/core'
 
+    // components
     import LoadingView from '@common/loaders/page.vue'
     import EmptyView from '@common/empty/discover.vue'
     import GtcEntityCard from './gtcEntityCard.vue'
     import GtcFilters from './common/gtcFilters.vue'
 
+    // composables
     import useGtcSearch from '~/composables/glossary/useGtcSearch'
 
+    // static
     import { Category, Term } from '~/types/glossary/glossary.interface'
 
     export default defineComponent({
@@ -127,13 +136,13 @@
         },
         emits: ['entityPreview'],
         setup(props, context) {
+            // data
             const glossaryQualifiedName = toRef(props, 'qualifiedName')
             const searchQuery = ref<string>()
-
+            const selectedEntity = ref<Category | Term>()
+            const projection = ref(['status', 'description'])
             const { entities, error, isLoading, fetchAssetsPaginated } =
                 useGtcSearch(glossaryQualifiedName)
-
-            const selectedEntity = ref<Category | Term>()
 
             const projectionOptions = [
                 { value: 'description', label: 'Description' },
@@ -144,12 +153,8 @@
                 // { value: 'popularity', label: 'Popularity' },
                 // { value: 'classifications', label: 'Classifications' },
             ]
-            const projection = ref(['status', 'description'])
 
-            const onEntitySelect = (entity: Category | Term) => {
-                selectedEntity.value = entity
-            }
-
+            // computed
             const terms = computed(() => {
                 if (props.type === 'AtlasGlossary') {
                     return (
@@ -212,6 +217,10 @@
                 () => [...terms.value, ...categories.value] ?? []
             )
 
+            // methods
+            const onEntitySelect = (entity: Category | Term) => {
+                selectedEntity.value = entity
+            }
             const onSearch = useDebounceFn(() => {
                 fetchAssetsPaginated({
                     query: `${searchQuery.value ? `${searchQuery.value}` : ''}`,
@@ -227,12 +236,13 @@
                 fetchAssetsPaginated({ filters, offset: 0 })
             }
 
+            // lifecycle methods and watchers
             watch(selectedEntity, (newSelectedEntity) => {
                 context.emit('entityPreview', newSelectedEntity)
             })
 
             watch(entities, (newEntities) => {
-                selectedEntity.value = newEntities[0];
+                selectedEntity.value = newEntities[0]
             })
 
             return {

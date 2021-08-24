@@ -3,6 +3,7 @@
         class="flex justify-between py-4 border-b rounded px-9"
         @click="$emit('gtcCardClicked', entity)"
     >
+        <!-- projections start here -->
         <div class="flex flex-row">
             <div class="mr-4">
                 <img
@@ -47,6 +48,7 @@
                 </div>
             </div>
         </div>
+        <!-- TODO: replace with 3-dot menu component -->
         <div>
             <a-dropdown :trigger="['click']">
                 <a-button class="px-2.5" @click.prevent>
@@ -82,7 +84,7 @@
 <script lang="ts">
     import { defineComponent, computed, PropType } from 'vue'
     import { useRouter } from 'vue-router'
-
+    // static
     import TermSvg from '~/assets/images/gtc/term/term.png'
     import CategorySvg from '~/assets/images/gtc/category/category.png'
     import GlossarySvg from '~/assets/images/gtc/glossary/glossary.png'
@@ -111,6 +113,7 @@
         emits: ['gtcCardClicked'],
         setup(props) {
             const router = useRouter()
+            // computed
             const statusObject = computed(() =>
                 StatusList.find(
                     (status) =>
@@ -118,6 +121,7 @@
                 )
             )
 
+            // methods
             const redirectToProfile = () => {
                 if (props.entity.typeName === 'AtlasGlossary')
                     router.push(`/glossary/${props.entity.guid}`)

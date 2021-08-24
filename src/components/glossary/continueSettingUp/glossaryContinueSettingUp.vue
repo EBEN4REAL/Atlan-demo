@@ -127,15 +127,14 @@
 <script lang="ts">
     import { defineComponent, computed, watch } from 'vue'
 
+    // components
     import Owners from '@/preview/asset/tabs/overview/details/owners.vue'
-
     import GlossaryAddDescriptionCard from '@/glossary/glossaryAddDescriptionCard.vue'
-    import Owners from '@/preview/asset/tabs/overview/details/owners.vue'
+    import GlossaryAddDescriptionCard from '~/components/glossary/continueSettingUp/glossaryAddDescriptionCard.vue'
     import { Components } from '~/api/atlas/client'
-
+    // static
     import TermSvg from '~/assets/images/gtc/term/term.png'
     import CategorySvg from '~/assets/images/gtc/category/category.png'
-    import GlossaryAddDescriptionCard from '~/components/glossary/continueSettingUp/glossaryAddDescriptionCard.vue'
 
     interface PropsType {
         terms: Components.Schemas.AtlasGlossaryTerm[]
@@ -147,55 +146,7 @@
         props: ['terms', 'categories'],
         emits: ['updateDescription', 'fetchNextCategoryOrTermList'],
         setup(props: PropsType, context) {
-            const categories = computed(
-                () =>
-                    props.categories?.map((category) => ({
-                        ...category,
-                        type: 'category',
-                    })) ?? []
-            )
-            const terms = computed(
-                () =>
-                    props.terms?.map((term) => ({ ...term, type: 'term' })) ??
-                    []
-            )
-
-            const missingDescription = computed(() => {
-                const entities = [...terms.value, ...categories.value]
-                return entities
-                    .filter((entity) => !entity.shortDescription)
-                    .map((entity) => ({ ...entity, shortDescription: '' }))
-                    .slice(0, 5)
-            })
-            watch(missingDescription, (newMissingDescription) => {
-                if (
-                    !newMissingDescription.find(
-                        (entity) => entity.type === 'term'
-                    )
-                ) {
-                    context.emit('fetchNextCategoryOrTermList', 'term')
-                }
-                if (
-                    !newMissingDescription.find(
-                        (entity) => entity.type === 'category'
-                    )
-                ) {
-                    context.emit('fetchNextCategoryOrTermList', 'category')
-                }
-            })
-
-            const missingLinkedAssets = computed(() =>
-                terms.value
-                    .filter((term) => !term.assignedEntities?.length)
-                    .slice(0, 5)
-            )
-
-            const missingOwners = computed(() =>
-                [...terms.value, ...categories.value]
-                    .filter((entity) => !entity?.additionalAttributes?.owners)
-                    .slice(0, 5)
-            )
-
+            // data
             const descriptionTableColumns = [
                 {
                     title: 'Term/Category',
@@ -231,6 +182,56 @@
                     slots: { customRender: 'owners' },
                 },
             ]
+
+            // computed
+            const categories = computed(
+                () =>
+                    props.categories?.map((category) => ({
+                        ...category,
+                        type: 'category',
+                    })) ?? []
+            )
+            const terms = computed(
+                () =>
+                    props.terms?.map((term) => ({ ...term, type: 'term' })) ??
+                    []
+            )
+            const missingDescription = computed(() => {
+                const entities = [...terms.value, ...categories.value]
+                return entities
+                    .filter((entity) => !entity.shortDescription)
+                    .map((entity) => ({ ...entity, shortDescription: '' }))
+                    .slice(0, 5)
+            })
+            const missingLinkedAssets = computed(() =>
+                terms.value
+                    .filter((term) => !term.assignedEntities?.length)
+                    .slice(0, 5)
+            )
+
+            const missingOwners = computed(() =>
+                [...terms.value, ...categories.value]
+                    .filter((entity) => !entity?.additionalAttributes?.owners)
+                    .slice(0, 5)
+            )
+
+            // lifecycle methods and watchers
+            watch(missingDescription, (newMissingDescription) => {
+                if (
+                    !newMissingDescription.find(
+                        (entity) => entity.type === 'term'
+                    )
+                ) {
+                    context.emit('fetchNextCategoryOrTermList', 'term')
+                }
+                if (
+                    !newMissingDescription.find(
+                        (entity) => entity.type === 'category'
+                    )
+                ) {
+                    context.emit('fetchNextCategoryOrTermList', 'category')
+                }
+            })
             return {
                 TermSvg,
                 CategorySvg,

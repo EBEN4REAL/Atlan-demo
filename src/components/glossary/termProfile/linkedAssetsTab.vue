@@ -1,5 +1,5 @@
 <template>
-    <div class="pb-6 w-full">
+    <div class="w-full pb-6">
         <!-- <div class="mb-4">
             <a-input-search
                 v-model:value="searchQuery"
@@ -55,64 +55,65 @@
     </div>
 </template>
 <script lang="ts">
-import { defineComponent, computed, onMounted, watch, ref } from 'vue'
-import { useDebounceFn } from '@vueuse/core'
-import { useRouter } from 'vue-router'
+    import { defineComponent, computed, onMounted, watch, ref } from 'vue'
+    import { useDebounceFn } from '@vueuse/core'
+    import { useRouter } from 'vue-router'
 
-import AssetList from '@/discovery/asset/list/index.vue'
-import EmptyView from '@common/empty/discover.vue'
-import AssetDiscovery from '@/discovery/asset/index.vue'
+    import AssetList from '@/discovery/asset/list/index.vue'
+    import EmptyView from '@common/empty/discover.vue'
+    import AssetDiscovery from '@/discovery/asset/index.vue'
 
-import useTermLinkedAssets from '~/composables/glossary/useTermLinkedAssets'
-import { getDecodedOptionsFromString } from '~/utils/routerQuery'
+    import useTermLinkedAssets from '~/composables/glossary/useTermLinkedAssets'
+    import { getDecodedOptionsFromString } from '~/utils/routerQuery'
 
-interface PropsType {
-    termQualifiedName: string
-    termCount: number
-}
+    interface PropsType {
+        termQualifiedName: string
+        termCount: number
+    }
 
-export default defineComponent({
-    components: { AssetList, EmptyView, AssetDiscovery },
-    props: ['termQualifiedName', 'termCount'],
-    emits: ['preview'],
-    setup(props: PropsType) {
-        const router = useRouter()
-        const initialFilters = getDecodedOptionsFromString(router)
+    export default defineComponent({
+        components: { AssetList, EmptyView, AssetDiscovery },
+        props: ['termQualifiedName', 'termCount'],
+        emits: ['preview'],
+        setup(props: PropsType) {
+            // data
+            const router = useRouter()
+            const initialFilters = getDecodedOptionsFromString(router)
+            const searchQuery = ref<string>()
+            const { linkedAssets, isLoading, error, fetchLinkedAssets } =
+                useTermLinkedAssets()
 
-        const termName = computed(() => props.termQualifiedName)
+            // computed
+            const termName = computed(() => props.termQualifiedName)
+            const assets = computed(() => linkedAssets.value?.entities ?? [])
+            const assetCount = computed(() => assets.value?.length ?? 0)
+            const numberOfTerms = computed(() => props.termCount ?? 5)
 
-        const { linkedAssets, isLoading, error, fetchLinkedAssets } =
-            useTermLinkedAssets()
+            // methods
+            const onSearch = useDebounceFn(() => {
+                fetchLinkedAssets(termName.value, `*${searchQuery.value}*`)
+            }, 0)
 
-        const assets = computed(() => linkedAssets.value?.entities ?? [])
-        const assetCount = computed(() => assets.value?.length ?? 0)
-        const numberOfTerms = computed(() => props.termCount ?? 5)
+            // lifecycle methods and watchers
+            onMounted(() => {
+                if (termName.value) fetchLinkedAssets(termName.value)
+            })
 
-        const searchQuery = ref<string>()
+            watch(termName, (newTermName) => {
+                if (newTermName) fetchLinkedAssets(newTermName)
+            })
 
-        onMounted(() => {
-            if (termName.value) fetchLinkedAssets(termName.value)
-        })
-
-        watch(termName, (newTermName) => {
-            if (newTermName) fetchLinkedAssets(newTermName)
-        })
-
-        const onSearch = useDebounceFn(() => {
-            fetchLinkedAssets(termName.value, `*${searchQuery.value}*`)
-        }, 0)
-
-        return {
-            termName,
-            assets,
-            isLoading,
-            assetCount,
-            numberOfTerms,
-            searchQuery,
-            onSearch,
-            initialFilters,
-            AssetDiscovery
-        }
-    },
-})
+            return {
+                termName,
+                assets,
+                isLoading,
+                assetCount,
+                numberOfTerms,
+                searchQuery,
+                onSearch,
+                initialFilters,
+                AssetDiscovery,
+            }
+        },
+    })
 </script>

@@ -5,13 +5,13 @@
             class="flex flex-col h-full bg-white border-r facets"
         >
             <AssetFilters
-                :initial-filters="initialFilters"
-                @refresh="handleFilterChange"
                 :ref="
                     (el) => {
                         assetFilterRef = el
                     }
                 "
+                :initial-filters="initialFilters"
+                @refresh="handleFilterChange"
             ></AssetFilters>
         </div>
 
@@ -28,33 +28,22 @@
                         :data="connectorsPayload"
                     ></AssetDropdown>
                 </div>
-                <div class="flex items-center mx-3 mt-1">
-                    <a-input
-                        ref="assetSearchBar"
-                        v-model:value="queryText"
-                        placeholder="Search"
-                        size="default"
-                        :class="$style.searchbar"
-                        @change="handleSearchChange"
-                    >
-                        <template #suffix>
-                            <AtlanIcon icon="Search" />
-                        </template>
-                    </a-input>
-                    <a-popover trigger="click" placement="bottomRight">
-                        <template #content>
-                            <Preferences
-                                :default-projection="projection"
-                                @change="handleChangePreferences"
-                                @sort="handleChangeSort"
-                                @state="handleState"
-                            ></Preferences>
-                        </template>
-                        <a-button class="p-1 ml-2 rounded">
-                            <AtlanIcon icon="FilterDot" class="h-6" />
-                        </a-button>
-                    </a-popover>
-                </div>
+                <SearchAndFilter
+                    v-model:value="queryText"
+                    class="mx-3 mt-1"
+                    placeholder="Search"
+                    :autofocus="true"
+                    @change="handleSearchChange"
+                >
+                    <template #filter>
+                        <Preferences
+                            :default-projection="projection"
+                            @change="handleChangePreferences"
+                            @sort="handleChangeSort"
+                            @state="handleState"
+                        />
+                    </template>
+                </SearchAndFilter>
 
                 <AssetTabs
                     v-model="assetType"
@@ -69,7 +58,7 @@
                         :list-count="list.length"
                         :total-count="totalCount"
                     ></AssetPagination>
-                    <span class="text-xs text-gray-500" v-else
+                    <span v-else class="text-xs text-gray-500"
                         >Searching...</span
                     >
                 </div>
@@ -87,8 +76,8 @@
                     :list="list"
                     :score="searchScoreList"
                     :projection="projection"
-                    :isLoading="isLoading || isValidating"
-                    :isLoadMore="isLoadMore"
+                    :is-loading="isLoading || isValidating"
+                    :is-load-more="isLoadMore"
                     @preview="handlePreview"
                     @loadMore="loadMore"
                 ></AssetList>
@@ -99,15 +88,11 @@
 
 <script lang="ts">
     import useBusinessMetadata from '@/admin/custom-metadata/composables/useBusinessMetadata'
-    import AssetFilters from '@/discovery/filters/index.vue'
-    import AssetList from '@/discovery/list/index.vue'
-    import Preferences from '@/discovery/list/preference/index.vue'
-    import SavedFilters from '@/discovery/filters/saved/index.vue'
-    import AssetTabs from '@/discovery/list/tabs/index.vue'
     import EmptyView from '@common/empty/discover.vue'
     import AssetPagination from '@common/pagination/index.vue'
-    import SearchBox from '@common/searchbox/searchlist.vue'
     import HeirarchySelect from '@common/tree/heirarchy/index.vue'
+    import SearchAndFilter from '@/common/input/searchAndFilter.vue'
+
     // import { useDebounceFn } from "@vueuse/core";
     // import fetchAssetDiscover from "~/composables/asset/fetchAssetDiscover";
     import { useDebounceFn } from '@vueuse/core'
@@ -118,8 +103,14 @@
         reactive,
         ref,
         watch,
+        toRefs,
+        PropType,
     } from 'vue'
     import { useRouter } from 'vue-router'
+    import AssetTabs from '~/components/discovery/list/assetTypeTabs.vue'
+    import Preferences from '~/components/discovery/list/preference.vue'
+    import AssetList from '~/components/discovery/list/assetList.vue'
+    import AssetFilters from '~/components/discovery/filters/discoveryFilters.vue'
     import AssetDropdown from '~/components/common/dropdown/assetDropdown.vue'
     import ConnectorDropdown from '~/components/common/dropdown/connectorDropdown.vue'
     // import { DISCOVERY_FETCH_LIST } from "~/constant/cache";
@@ -137,6 +128,7 @@
     import { useConnectionsStore } from '~/store/connections'
     import { SearchParameters } from '~/types/atlas/attributes'
     import { getEncodedStringFromOptions } from '~/utils/routerQuery'
+
     export interface filterMapType {
         status: {
             checked?: Array<string>
@@ -180,20 +172,18 @@
         name: 'AssetDiscovery',
         components: {
             AssetList,
-            SavedFilters,
-            SearchBox,
             AssetTabs,
             AssetFilters,
             AssetPagination,
             ConnectorDropdown,
             Preferences,
             EmptyView,
-            HeirarchySelect,
             AssetDropdown,
+            SearchAndFilter,
         },
         props: {
             initialFilters: {
-                type: Object as () => initialFiltersType,
+                type: Object as PropType<initialFiltersType>,
                 required: false,
                 default() {
                     return {}
@@ -213,7 +203,7 @@
         emits: ['preview'],
         setup(props, { emit }) {
             // initializing the discovery store
-            const { initialFilters } = props
+            const { initialFilters } = toRefs(props)
             const assetFilterRef = ref()
             const isFilterVisible = ref(false)
             const router = useRouter()
@@ -223,32 +213,66 @@
             const now = ref(false)
             let initialBody: SearchParameters = reactive({})
             const assetType = ref('Catalog')
-            const queryText = ref(initialFilters.searchText)
-            const connectorsPayload = ref(initialFilters.connectorsPayload)
-            const filters = ref(initialFilters.initialBodyCriterion)
+            const queryText = ref(initialFilters.value.searchText)
+            const connectorsPayload = ref(
+                initialFilters.value.connectorsPayload
+            )
+            const filters = ref(initialFilters.value.initialBodyCriterion)
             const filterMap = ref<filterMapType>({
                 status: {
-                    condition: initialFilters.facetsFilters.status.condition,
-                    criterion: initialFilters.facetsFilters.status.criterion,
+                    condition:
+                        initialFilters.value.facetsFilters.status.condition,
+                    criterion:
+                        initialFilters.value.facetsFilters.status.criterion,
                 },
                 classifications: {
                     condition:
-                        initialFilters.facetsFilters.classifications.condition,
+                        initialFilters.value.facetsFilters.classifications
+                            .condition,
                     criterion:
-                        initialFilters.facetsFilters.classifications.criterion,
+                        initialFilters.value.facetsFilters.classifications
+                            .criterion,
                 },
                 owners: {
-                    condition: initialFilters.facetsFilters.owners.condition,
-                    criterion: initialFilters.facetsFilters.owners.criterion,
+                    condition:
+                        initialFilters.value.facetsFilters.owners.condition,
+                    criterion:
+                        initialFilters.value.facetsFilters.owners.criterion,
                 },
                 advanced: {
-                    condition: initialFilters.facetsFilters.advanced.condition,
-                    criterion: initialFilters.facetsFilters.advanced.criterion,
+                    condition:
+                        initialFilters.value.facetsFilters.advanced.condition,
+                    criterion:
+                        initialFilters.value.facetsFilters.advanced.criterion,
                 },
             })
-            const limit = ref(initialFilters.limit || 20)
+            const limit = ref(initialFilters.value.limit || 20)
             const offset = ref(0)
             const sortOrder = ref('default')
+            // Get All Disoverable Asset Types
+            const assetTypeList = ref([])
+            assetTypeList.value = AssetTypeList.filter(
+                (item) => item.isDiscoverable == true
+            )
+            const assetTypeListString = assetTypeList.value
+                .map((item) => item.id)
+                .join(',')
+            const {
+                list,
+                replaceBody,
+                isLoading,
+                isValidating,
+                searchScoreList,
+                isAggregate,
+                assetTypeMap,
+            } = useAssetList(
+                now,
+                assetTypeListString,
+                initialBody,
+                assetType.value,
+                true
+            )
+
             // * Get all available BMs and save on store
             const store = useBusinessMetadataStore()
             const { fetchBMonStore } = useBusinessMetadata()
@@ -263,7 +287,7 @@
                 return found?.label
             })
             const totalCount = computed(() => {
-                if (assetType.value === 'Catalog') {
+                if (assetType.value == 'Catalog') {
                     return totalSum.value
                 }
                 return assetTypeMap.value[assetType.value]
@@ -274,14 +298,7 @@
                     (item) => connectorsPayload.value?.connector == item.id
                 )
             )
-            // Get All Disoverable Asset Types
-            const assetTypeList = ref([])
-            assetTypeList.value = AssetTypeList.filter(
-                (item) => item.isDiscoverable == true
-            )
-            const assetTypeListString = assetTypeList.value
-                .map((item) => item.id)
-                .join(',')
+
             const totalSum = computed(() => {
                 let sum = 0
                 assetTypeList.value.forEach((element) => {
@@ -300,22 +317,7 @@
             const isLoadMore = computed(
                 () => totalCount.value > list.value.length
             )
-            const {
-                list,
-                replaceBody,
-                isLoading,
-                isValidating,
-                searchScoreList,
-                isAggregate,
-                assetTypeMap,
-            } = useAssetList(
-                now,
-                assetTypeListString,
-                initialBody,
-                assetType.value,
-                true
-            )
-            console.log('IS LOADING', isLoading.value)
+
             const updateBody = (dontScroll) => {
                 initialBody = {
                     typeName: assetTypeListString,
@@ -401,7 +403,7 @@
             }
             watch(
                 [assetType, BMAttributeProjection],
-                (n, o) => {
+                () => {
                     // ? Should these run only when all attributes are loaded? like BMAttributeProjection
                     updateBody()
                     if (!now.value) {
@@ -414,7 +416,7 @@
                 }
             )
             const { projection } = useDiscoveryPreferences()
-            const handleSearchChange = useDebounceFn((val) => {
+            const handleSearchChange = useDebounceFn(() => {
                 offset.value = 0
                 const routerOptions = getRouterOptions()
                 const routerQuery = getEncodedStringFromOptions(routerOptions)
@@ -437,6 +439,7 @@
                 isAggregate.value = true
                 updateBody()
             }
+
             const getRouterOptions = () => ({
                 filters: filterMap.value || {},
                 searchText: queryText.value || '',
@@ -454,6 +457,7 @@
             const pushQueryToRouter = (pushString) => {
                 router.push(`/assets?${pushString}`)
             }
+
             const handleFilterChange = (
                 payload: any,
                 filterMapData: filterMapType
@@ -494,18 +498,14 @@
 
             watch(list, () => {
                 if (list.value.length > 0) {
-                    console.log(list.value[0], 'firstItem')
                     handlePreview(list.value[0])
                 } else {
                     handlePreview(undefined)
                 }
             })
 
-            const assetSearchBar = ref<HTMLInputElement | null>(null)
-
             onMounted(() => {
                 fetchBMonStore()
-                assetSearchBar?.value?.focus()
             })
             return {
                 handleClearFiltersFromList,
@@ -539,38 +539,6 @@
                 handleState,
                 connectorsPayload,
                 filteredConnector,
-                assetSearchBar,
-                // listCount,
-                // isLoading,
-                // limit,
-                // offset,
-                // totalCount,
-                // isLoadMore,
-                // loadMore,
-                // handleSearchChange,
-                // handleFilterChange,
-                // assetlist,
-                // projection,
-                // handleChangePreferences,
-                // handleChangeAssetType,
-                // assetTypeList,
-                // handleChangeConnectors,
-                // changeConnectors,
-                // handleChangeSort,
-                // handleSavedSearchChange,
-                // savedSearch,
-                // list,
-                // filterMode,
-                // state,
-                // STATES,
-                // assetTypeList,
-                // totalCount,
-                // listCount,
-                // // defaultBody,
-                // // handleSearchChange,
-                // // handleChangePreferences,
-                // // handleChangeAssetType,
-                // projection,
             }
         },
         data() {
@@ -581,25 +549,7 @@
         },
     })
 </script>
-<style lang="less" module>
-    .searchbar {
-        @apply mr-2 rounded;
-        @apply border border-gray-300 !important;
-        @apply outline-none;
-        :global(.ant-input) {
-            @apply h-6;
-            @apply bg-transparent;
-            @apply text-gray-500;
-        }
-        &:hover {
-            border-right-width: 2px !important;
-            box-shadow: 0 0 0 2px rgb(82 119 215 / 20%);
-        }
-        ::placeholder {
-            @apply text-gray-500 opacity-80 text-sm;
-        }
-    }
-</style>
+
 <style scoped>
     .facets {
         min-width: 264px;

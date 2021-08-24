@@ -122,7 +122,7 @@
                 required: true,
             },
         },
-        setup(props, context) {
+        setup(props) {
             const store = useBusinessMetadataStore()
             const attributesList = ref([])
             const originalBmAttributesList = ref([])
@@ -404,7 +404,7 @@
                         ref(getUpdatePayload(value))
                     )
 
-                watch([() => isLoading.value, error, isReady], (n) => {
+                watch([() => isLoading.value, error, isReady], () => {
                     if (isLoading.value) {
                         updateBmAttributesStatus.value = 'loading'
                     } else if (error.value) {

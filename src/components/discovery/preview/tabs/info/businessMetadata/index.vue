@@ -43,8 +43,8 @@
                 <a-textarea
                     v-else
                     :id="`${x}`"
-                    :auto-size="true"
                     v-model:value="a.value"
+                    :auto-size="true"
                     placeholder="Type..."
                     type="text"
                     class="flex-grow shadow-none border-1"
@@ -145,7 +145,7 @@
 
             // {"BM for facet 2":{"test for facet 2":"1","test for facet 2 date":1629294652575}}
             const payload = computed(() => {
-                let mappedPayload = { [props.item.id]: {} }
+                const mappedPayload = { [props.item.id]: {} }
                 // ? handle current payload
                 Object.keys(props.selectedAsset.attributes).forEach((k) => {
                     if (k.split('.').length > 1) {
@@ -180,7 +180,7 @@
                         payload.value
                     )
 
-                watch([() => isLoading.value, error, isReady], (n) => {
+                watch([() => isLoading.value, error, isReady], () => {
                     if (isLoading.value) {
                         loading.value = 'loading'
                     } else if (error.value) {

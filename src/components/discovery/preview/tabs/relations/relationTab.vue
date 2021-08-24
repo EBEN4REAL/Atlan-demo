@@ -9,27 +9,18 @@
         ><span>Getting relations</span>
     </div> -->
     <!-- preloader ends here -->
-    <div class="flex items-center justify-between px-5 mt-4 mb-1 text-base">
+    <div class="px-5 mt-4 mb-1">
         <!-- searchbar -->
-        <a-input-search
-            v-model:value="queryText"
-            placeholder="Search"
-            size="default"
-        >
-        </a-input-search>
-        <!-- filters -->
-        <a-popover title="Show/hide" trigger="click" placement="bottomRight">
-            <template #content>
+        <SearchAndFilter v-model:value="queryText">
+            <!-- filters -->
+            <template #filter>
                 <a-checkbox-group
                     v-model:value="checkedList"
                     :options="plainOptions"
                     class="flex flex-col"
                 />
             </template>
-            <a-button class="p-1 ml-2 rounded">
-                <AtlanIcon icon="FilterDot" class="h-6" />
-            </a-button>
-        </a-popover>
+        </SearchAndFilter>
     </div>
     <!-- accordions for different asset type -->
     <a-collapse
@@ -74,9 +65,9 @@
             <!-- accordion on expand  -->
             <AssetTypeItems
                 :projections="checkedList"
-                :assetType="item.displayText"
-                :assetId="assetId"
-                :cssClasses="cssClasses"
+                :asset-type="item.displayText"
+                :asset-id="assetId"
+                :css-classes="cssClasses"
             />
         </a-collapse-panel>
     </a-collapse>
@@ -93,11 +84,13 @@
         toRefs,
     } from 'vue'
     import AssetTypeItems from '@/discovery/preview/tabs/relations/assetTypeItems.vue'
+    import SearchAndFilter from '@/common/input/searchAndFilter.vue'
+
     import { assetInterface } from '~/types/assets/asset.interface'
     import useEntityRelationships from '~/composables/asset/useEntityRelationships'
 
     export default defineComponent({
-        components: { AssetTypeItems },
+        components: { AssetTypeItems, SearchAndFilter },
         props: {
             id: String,
             componentData: {
@@ -130,15 +123,11 @@
             }
 
             // filter required data
-            const filteredRelationshipAssets = computed(() => {
-                return relationshipAssets.value.filter((el) => {
-                    return (
+            const filteredRelationshipAssets = computed(() => relationshipAssets.value.filter((el) => (
                         el.displayText
                             .toLowerCase()
                             .indexOf(queryText.value.toLowerCase()) !== -1
-                    )
-                })
-            })
+                    )))
             watch(selectedAsset, fetchData, { immediate: true })
 
             onMounted(fetchData)

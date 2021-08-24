@@ -49,7 +49,7 @@
                             </div>
                             <div
                                 class="absolute flex items-center justify-center pl-3 pr-1 text-white bg-transparent border-none rounded-full opacity-0 cursor-pointer  group-hover:opacity-100 owners-cross-btn"
-                                v-on:click.stop="() => handleRemoveOwner(owner)"
+                                @click.stop="() => handleRemoveOwner(owner)"
                             >
                                 <div class="flex items-center justify-center">
                                     <fa icon="fal times-circle" class="" />
@@ -59,8 +59,8 @@
                     </OwnerInfoCard>
                 </template>
                 <template
-                    v-if="showAll"
                     v-for="owner in splittedOwners.b"
+                    v-if="showAll"
                     :key="owner.username"
                 >
                     <OwnerInfoCard
@@ -81,9 +81,7 @@
                                 group
                                 hover:bg-primary hover:text-white
                             "
-                            v-on:click.stop="
-                                () => handleClickUser(owner.username)
-                            "
+                            @click.stop="() => handleClickUser(owner.username)"
                         >
                             <img
                                 src="https://picsum.photos/id/237/50/50"
@@ -104,7 +102,7 @@
                             </div>
                             <div
                                 class="absolute flex items-center justify-center pl-3 pr-1 text-white bg-transparent border-none rounded-full opacity-0 cursor-pointer  group-hover:opacity-100 owners-cross-btn"
-                                v-on:click.stop="() => handleRemoveOwner(owner)"
+                                @click.stop="() => handleRemoveOwner(owner)"
                             >
                                 <div class="flex items-center justify-center">
                                     <fa icon="fal times-circle" class="" />
@@ -221,8 +219,8 @@
                                             >Users</span
                                         >
                                         <span
-                                            class="ml-2 chip"
                                             v-if="listUsers?.length > 0"
+                                            class="ml-2 chip"
                                             >{{ listUsers?.length }}</span
                                         >
                                     </template>
@@ -315,8 +313,8 @@
                                             >Groups</span
                                         >
                                         <span
-                                            class="ml-2 chip"
                                             v-if="listGroups?.length > 0"
+                                            class="ml-2 chip"
                                             >{{ listGroups?.length }}</span
                                         >
                                     </template>
@@ -341,11 +339,11 @@
                                                             ? 'bg-primary-light'
                                                             : ''
                                                     "
+                                                    class="relative flex items-center justify-between w-full px-1 py-1 mb-2 rounded cursor-pointer  hoverbg-primary-light"
                                                     @click="
                                                         () =>
                                                             onSelectGroup(group)
                                                     "
-                                                    class="relative flex items-center justify-between w-full px-1 py-1 mb-2 rounded cursor-pointer  hoverbg-primary-light"
                                                 >
                                                     <div
                                                         class="flex items-center flex-1 "
@@ -406,7 +404,7 @@
                                     `${selectedUsers.length} users`
                                 }}</span>
                                 <span v-if="selectedGroups.length > 0">{{
-                                    `&nbsp;&&nbsp;${selectedGroups.length} groups`
+                                    `&nbsp;& &nbsp;${selectedGroups.length} groups`
                                 }}</span>
                                 <span
                                     v-if="
@@ -466,7 +464,6 @@
         },
         setup(props) {
             const now = ref(true)
-            const ownerType = ref('user')
             const { selectedAsset } = toRefs(props)
             const showOwnersDropdown: Ref<boolean> = ref(false)
             const activeOwnerTabKey = ref('1')
@@ -476,8 +473,6 @@
 
             const {
                 list: listUsers,
-                total: totalUsersCount,
-                filtered,
                 state: userOwnerState,
                 STATES,
                 handleSearch: handleUserSearch,
@@ -486,7 +481,6 @@
             const {
                 list: listGroups,
                 handleSearch: handleGroupSearch,
-                total: totalGroupCount,
                 state: groupOwnerState,
             } = fetchGroupList(now)
             console.log('userList->', listUsers.value)
@@ -523,10 +517,7 @@
             }
 
             const {
-                handleCancel,
                 update,
-                isReady,
-                state,
                 ownerUsers,
                 isLoading: isOwnersLoading,
                 ownerGroups,
@@ -558,19 +549,15 @@
             }
             function mappedSplittedOwners(ownerUsers, ownerGroups) {
                 let splittedOwners = []
-                let temp = ownerUsers.value.map((username: string) => {
-                    return {
-                        type: 'user',
-                        username,
-                    }
-                })
+                let temp = ownerUsers.value.map((username: string) => ({
+                    type: 'user',
+                    username,
+                }))
                 splittedOwners = temp
-                temp = ownerGroups.value.map((name: string) => {
-                    return {
-                        type: 'group',
-                        username: name,
-                    }
-                })
+                temp = ownerGroups.value.map((name: string) => ({
+                    type: 'group',
+                    username: name,
+                }))
                 splittedOwners = [...splittedOwners, ...temp]
                 console.log(splittedOwners, 'spilltedOwners')
                 return splittedOwners
@@ -631,15 +618,13 @@
                 type: string
             }) => {
                 if (owner.type === 'user') {
-                    let filteredOwnerUsers = ownerUsers.value.filter(
-                        (username) => {
-                            return username !== owner.username
-                        }
+                    const filteredOwnerUsers = ownerUsers.value.filter(
+                        (username) => username !== owner.username
                     )
                     selectedUsers.value = filteredOwnerUsers
                     console.log(ownerUsers.value, 'delete', filteredOwnerUsers)
                 } else {
-                    let filteredOwnerGroups = ownerGroups.value.filter(
+                    const filteredOwnerGroups = ownerGroups.value.filter(
                         (name) => name !== owner.username
                     )
                     selectedGroups.value = filteredOwnerGroups

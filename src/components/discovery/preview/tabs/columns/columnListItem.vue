@@ -19,10 +19,10 @@
         >
             {{ asset.displayText }}
         </span>
-        <div class="chip" v-if="asset.attributes.isPrimary">
+        <div v-if="asset.attributes.isPrimary" class="chip">
             <AtlanIcon icon="PrimaryKey" />
         </div>
-        <div class="chip" v-if="asset.attributes.isPrimary">
+        <div v-if="asset.attributes.isPrimary" class="chip">
             <AtlanIcon icon="ForeignKey" />
         </div>
     </div>
@@ -37,14 +37,14 @@
     import { assetInterface } from '~/types/assets/asset.interface'
 
     export default defineComponent({
-        name: 'Column List item',
+        name: 'ColumnListItem',
         props: {
             asset: {
                 type: Object as PropType<assetInterface>,
                 required: true,
             },
         },
-        setup(props) {
+        setup() {
             const { dataTypeImage } = useAssetInfo()
 
             return {
@@ -61,13 +61,5 @@
         @apply flex;
         @apply items-center;
         @apply text-xs;
-    }
-    .pkey {
-        color: #52c7d7;
-        background-color: #52c7d71a;
-    }
-    .fkey {
-        color: #d452d7;
-        background-color: #d452d71a;
     }
 </style>

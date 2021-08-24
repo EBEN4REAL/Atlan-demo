@@ -46,7 +46,7 @@
                 required: true,
             },
         },
-        setup(props) {
+        setup() {
             const {
                 createdAt,
                 updatedAt,

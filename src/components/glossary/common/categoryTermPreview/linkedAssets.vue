@@ -77,71 +77,71 @@
     </div>
 </template>
 <script lang="ts">
-import { defineComponent, computed, onMounted, watch, ref } from 'vue'
-import { useDebounceFn } from '@vueuse/core'
-import { useRouter } from 'vue-router'
+    import { defineComponent, computed, onMounted, watch, ref } from 'vue'
+    import { useDebounceFn } from '@vueuse/core'
+    import { useRouter } from 'vue-router'
 
-import AssetList from '@/discovery/list/index.vue'
-import EmptyView from '@common/empty/discover.vue'
-import AssetDiscovery from '@/discovery/index.vue'
+    import AssetList from '~/components/discovery/list/assetList.vue'
+    import EmptyView from '@common/empty/discover.vue'
+    import AssetDiscovery from '~/components/discovery/assetDiscovery.vue'
 
-import useTermLinkedAssets from '~/composables/glossary/useTermLinkedAssets'
-import { getDecodedOptionsFromString } from '~/utils/routerQuery'
+    import useTermLinkedAssets from '~/composables/glossary/useTermLinkedAssets'
+    import { getDecodedOptionsFromString } from '~/utils/routerQuery'
 
-export default defineComponent({
-    components: { AssetList, EmptyView, AssetDiscovery },
-    props: {
-        termQualifiedName: {
-            type: String,
-            required: true,
-            defualt: ',',
+    export default defineComponent({
+        components: { AssetList, EmptyView, AssetDiscovery },
+        props: {
+            termQualifiedName: {
+                type: String,
+                required: true,
+                defualt: ',',
+            },
         },
-    },
-    setup(props) {
-        const termName = computed(() => props.termQualifiedName)
-        const router = useRouter()
-        const initialFilters = getDecodedOptionsFromString(router)
-        const { linkedAssets, isLoading, error, fetchLinkedAssets } =
-            useTermLinkedAssets()
+        setup(props) {
+            const termName = computed(() => props.termQualifiedName)
+            const router = useRouter()
+            const initialFilters = getDecodedOptionsFromString(router)
+            const { linkedAssets, isLoading, error, fetchLinkedAssets } =
+                useTermLinkedAssets()
 
-        const assets = computed(() => linkedAssets.value?.entities ?? [])
-        const assetCount = computed(() => assets.value?.length ?? 0)
+            const assets = computed(() => linkedAssets.value?.entities ?? [])
+            const assetCount = computed(() => assets.value?.length ?? 0)
 
-        const searchQuery = ref<string>()
+            const searchQuery = ref<string>()
 
-        const projectionOptions = [
-            { value: 'description', label: 'Description' },
-            { value: 'heirarchy', label: 'Heirarchy' },
-            { value: 'owners', label: 'Owners' },
-            { value: 'rows', label: 'Rows' },
-            { value: 'popularity', label: 'Popularity' },
-            { value: 'classifications', label: 'Classifications' },
-        ]
-        const projection = ref(['heirarchy', 'description'])
+            const projectionOptions = [
+                { value: 'description', label: 'Description' },
+                { value: 'heirarchy', label: 'Heirarchy' },
+                { value: 'owners', label: 'Owners' },
+                { value: 'rows', label: 'Rows' },
+                { value: 'popularity', label: 'Popularity' },
+                { value: 'classifications', label: 'Classifications' },
+            ]
+            const projection = ref(['heirarchy', 'description'])
 
-        onMounted(() => {
-            if (termName.value) fetchLinkedAssets(termName.value)
-        })
+            onMounted(() => {
+                if (termName.value) fetchLinkedAssets(termName.value)
+            })
 
-        watch(termName, (newTermName) => {
-            if (newTermName) fetchLinkedAssets(newTermName)
-        })
+            watch(termName, (newTermName) => {
+                if (newTermName) fetchLinkedAssets(newTermName)
+            })
 
-        const onSearch = useDebounceFn(() => {
-            fetchLinkedAssets(termName.value, `*${searchQuery.value}*`)
-        }, 0)
+            const onSearch = useDebounceFn(() => {
+                fetchLinkedAssets(termName.value, `*${searchQuery.value}*`)
+            }, 0)
 
-        return {
-            termName,
-            assets,
-            isLoading,
-            assetCount,
-            searchQuery,
-            onSearch,
-            projectionOptions,
-            projection,
-            initialFilters,
-        }
-    },
-})
+            return {
+                termName,
+                assets,
+                isLoading,
+                assetCount,
+                searchQuery,
+                onSearch,
+                projectionOptions,
+                projection,
+                initialFilters,
+            }
+        },
+    })
 </script>

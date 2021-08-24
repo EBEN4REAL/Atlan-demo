@@ -4,7 +4,7 @@
             <div class="flex items-start justify-between mt-5 mb-4 text-sm">
                 <div>
                     <Tooltip
-                        :tooltip-text="title(selectedAsset)"
+                        :tooltip-text="selectedRow?.column_name"
                         classes="mb-0.5 text-base font-bold text-gray-700 capitalize"
                     />
                     <div class="text-gray-500">Column</div>
@@ -22,14 +22,14 @@
                 class="px-4 pb-4 overflow-y-auto tab-height"
                 :tab="tab.name"
             >
-                <component
+                <!-- <component
                     :is="tab.component"
-                    :componentData="dataMap[tab.id]"
-                    :infoTabData="infoTabData"
-                    :selectedAsset="selectedAsset"
-                    :isLoaded="isLoaded"
+                    :component-data="dataMap[tab.id]"
+                    :info-tab-data="infoTabData"
+                    :selected-row="selectedRow"
+                    :is-loaded="isLoaded"
                     @change="handleChange"
-                ></component>
+                ></component> -->
             </a-tab-pane>
         </a-tabs>
     </div>
@@ -60,20 +60,11 @@
             chat: defineAsyncComponent(() => import('./tabs/chat/index.vue')),
         },
         props: {
-            selectedAsset: {
-                type: Object as PropType<assetInterface>,
-                required: true,
-            },
-            page: {
-                type: String,
-                required: true,
-            },
+            selectedRow,
         },
 
         setup(props) {
-            const { selectedAsset, page } = toRefs(props)
             const { filteredTabs, columnType } = useColumnDetailsTabList()
-            const { assetTypeLabel, title, assetStatus } = useAssetInfo()
             const activeKey = ref(0)
             const isLoaded: Ref<boolean> = ref(true)
 
@@ -81,44 +72,10 @@
             const handleChange = (value: any) => {}
             const infoTabData: Ref<any> = ref({})
 
-            function getAssetEntitity(data: Ref): any {
-                if (data.value?.entities.length > 0)
-                    return data.value?.entities[0]
-                return {}
-            }
-
-            watch(page, () => {
-                if (activeKey.value > filteredTabs.value.length)
-                    activeKey.value = 0
-            })
-
-            function init() {
-                isLoaded.value = true
-                const { data, error } = useAsset({
-                    entityId: selectedAsset.value.guid,
-                })
-                columnType.value.value = selectedAsset.value.typeName
-                watch([data, error], () => {
-                    if (data.value && error.value === undefined) {
-                        const entitiy = getAssetEntitity(data)
-                        infoTabData.value = entitiy
-                        isLoaded.value = false
-                        console.log(infoTabData.value, 'info tab Data')
-                    } else {
-                        console.log(
-                            error.value,
-                            '------ assetInfo failed to fetch ------ '
-                        )
-                    }
-                })
-            }
-            watch(selectedAsset, init)
-            onMounted(init)
-
             return {
                 isLoaded,
                 infoTabData,
-                title,
+
                 dataMap,
                 activeKey,
                 filteredTabs,

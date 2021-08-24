@@ -9,7 +9,18 @@
                 {{ a.options.displayName }}
             </div>
 
-            <div class="flex items-center self-start flex-grow w-32">
+            <div
+                v-if="readOnly"
+                class="flex items-center self-start flex-grow w-32 break-all"
+            >
+                {{
+                    formatDisplayValue(
+                        a.value || '',
+                        getDatatypeOfAttribute(a.typeName)
+                    ) || '-'
+                }}
+            </div>
+            <div v-else class="flex items-center self-start flex-grow w-32">
                 <a-input
                     v-if="getDatatypeOfAttribute(a.typeName) === 'number'"
                     v-model:value="a.value"
@@ -121,9 +132,12 @@
                 getApplicableAttributes,
                 getDatatypeOfAttribute,
                 createDebounce,
+                formatDisplayValue,
             } = useBusinessMetadataHelper()
 
             const { enumListData: enumsList } = useEnums()
+
+            const readOnly = ref(true)
 
             const applicableList = ref(
                 getApplicableAttributes(
@@ -241,6 +255,8 @@
                 activeIndex,
                 payload,
                 getEnumOptions,
+                readOnly,
+                formatDisplayValue,
                 debounce: createDebounce(),
             }
         },

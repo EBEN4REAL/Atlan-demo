@@ -58,7 +58,7 @@
                     }
                 "
             >
-                {{ `Show ${data.list.attributeDefs.length - 5} more` }}
+                {{ `Show ${data.list.attributeDefs.length - 10} more` }}
             </div>
             <div
                 v-else-if="showAll && attributeSearchText === ''"

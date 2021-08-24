@@ -1,6 +1,7 @@
 // * Composables
 import { computed } from 'vue'
 import { useBusinessMetadataStore } from '~/store/businessMetadata'
+import { formatDate } from '../../utils/date'
 
 export default function useBusinessMetadataHelper() {
     const businessMetadataStore = useBusinessMetadataStore()
@@ -54,6 +55,34 @@ export default function useBusinessMetadataHelper() {
 
         // return ['enum', typeName] || typeName
         return typeName || ''
+    }
+
+    const formatDisplayValue = (v: any, type: string) => {
+        if (v) {
+            let value = JSON.parse(JSON.stringify(v))
+            if (type === 'boolean') {
+                return JSON.parse(value.toString().toLowerCase())
+                    ? 'True'
+                    : 'False'
+            }
+            if (type === 'date') {
+                return formatDate(
+                    Number.isInteger(value) ? value : parseInt(value)
+                )
+            }
+            if (Array.isArray(value)) {
+                if (!value.length) return `No value added`
+                if (
+                    typeof type !== 'object' &&
+                    type.toLowerCase().includes('date')
+                )
+                    value = value.map((v) =>
+                        formatDate(Number.isInteger(v) ? v : parseInt(v))
+                    )
+                return value.join(', ')
+            }
+        }
+        return v
     }
 
     /**
@@ -152,6 +181,6 @@ export default function useBusinessMetadataHelper() {
         bmDataMap,
         getApplicableBmGroups,
         getApplicableAttributes,
-        createDebounce,
+        createDebounce, formatDisplayValue
     }
 }

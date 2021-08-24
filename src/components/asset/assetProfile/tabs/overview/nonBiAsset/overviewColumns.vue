@@ -33,7 +33,20 @@
                 :pagination="false"
                 :scroll="{ x: true }"
                 :loading="!columnsData.filteredList"
+                :custom-row="customRow"
+                :row-class-name="rowClassName"
             >
+                <!-- hash_index col -->
+                <template #hash_index="{ text, record }">
+                    <div
+                        :class="{
+                            'border-primary': record.key === selectedRow,
+                        }"
+                        class="absolute top-0 left-0 flex items-center justify-center w-full h-full border-l-4 border-transparent "
+                    >
+                        {{ text }}
+                    </div>
+                </template>
                 <!-- column_name col -->
                 <template #column_name="{ text, record }">
                     <div class="flex items-center">
@@ -111,6 +124,7 @@
             const filters = ref([])
             const filtersSelected = ref([])
             const columnsData = ref({})
+            const selectedRow = ref(null)
 
             /** INJECTIONS */
             const assetDataInjection = inject('assetData')
@@ -196,12 +210,31 @@
             // useColumns
             const { columnList } = useColumns(assetData.value.guid)
 
+            // customRow Antd
+            const customRow = (record) => ({
+                onClick: (event) => {
+                    if (selectedRow.value === record.key)
+                        selectedRow.value = null
+                    else selectedRow.value = record.key
+                    // TODO:  emit record here for column asset preview
+                },
+            })
+
+            // rowClassName Antd
+            const rowClassName = (record, index) =>
+                record.key === selectedRow.value
+                    ? 'bg-primary-light'
+                    : 'bg-transparent'
+
             /** Watchers */
             watch(columnList, () => {
                 filterColumnsList(columnList.value)
             })
 
             return {
+                rowClassName,
+                customRow,
+                selectedRow,
                 filterByQuery,
                 filterByType,
                 columnsData,
@@ -213,6 +246,7 @@
                     {
                         title: '#',
                         dataIndex: 'hash_index',
+                        slots: { customRender: 'hash_index' },
                         key: 'hash_index',
                         defaultSortOrder: 'ascend',
                         sorter: (a, b) => a.hash_index - b.hash_index,
@@ -264,7 +298,7 @@
         @apply whitespace-nowrap font-bold !important;
     }
     :global(.ant-table td) {
-        @apply max-w-xs !important;
+        @apply max-w-xs relative cursor-pointer !important;
     }
     :global(.ant-progress-status-success .ant-progress-bg) {
         background-color: #1890ff !important;

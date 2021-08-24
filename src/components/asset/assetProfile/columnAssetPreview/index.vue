@@ -1,13 +1,13 @@
 <template>
     <div class="pt-1">
         <div class="px-5">
-            <div class="flex items-center justify-between mt-5 mb-4">
+            <div class="flex items-start justify-between mt-5 mb-4 text-sm">
                 <div>
                     <Tooltip
                         :tooltip-text="title(selectedAsset)"
-                        classes="mb-0.5 text-lg font-bold text-gray-700 capitalize"
+                        classes="mb-0.5 text-base font-bold text-gray-700 capitalize"
                     />
-                    <div class="text-base text-gray-500">Column</div>
+                    <div class="text-gray-500">Column</div>
                 </div>
                 <div class="icon-btn">
                     <AtlanIcon class="mr-2" icon="Share" />

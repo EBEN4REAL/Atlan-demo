@@ -23,7 +23,7 @@
         </div>
         <div
             ref="container"
-            class="mr-2 overflow-y-scroll"
+            class="mr-2 overflow-y-auto"
             style="max-height: 25rem"
         >
             <div

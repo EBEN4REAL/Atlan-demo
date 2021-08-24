@@ -17,11 +17,11 @@
         <div
             class="z-20 flex flex-col h-full bg-white border-l  asset-preview-container"
         >
-            <AssetPreview
+            <ColumnPreview
                 v-if="selected"
                 :selectedAsset="selected"
                 :page="page"
-            ></AssetPreview>
+            ></ColumnPreview>
         </div>
     </div>
 </template>
@@ -29,6 +29,7 @@
 <script lang="ts">
     import AssetDiscovery from '@/discovery/index.vue'
     import AssetPreview from '@/discovery/preview/assetPreview.vue'
+    import ColumnPreview from '@/asset/assetProfile/columnAssetPreview/index.vue'
     import { useHead } from '@vueuse/head'
     import { computed, defineComponent, ref, Ref, watch } from 'vue'
     import { useRoute, useRouter } from 'vue-router'
@@ -47,6 +48,7 @@
         components: {
             AssetPreview,
             AssetDiscovery,
+            ColumnPreview,
         },
         setup() {
             useHead({

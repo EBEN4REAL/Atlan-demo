@@ -1,5 +1,5 @@
 <template>
-    <div class="pb-6 w-full">
+    <div class="w-full pb-6">
         <!-- <div class="mb-4">
             <a-input-search
                 v-model:value="searchQuery"
@@ -59,7 +59,7 @@
     import { useDebounceFn } from '@vueuse/core'
     import { useRouter } from 'vue-router'
 
-    import AssetList from '@/discovery/ist/index.vue'
+    import AssetList from '@/discovery/list/assetList.vue'
     import EmptyView from '@common/empty/discover.vue'
     import AssetDiscovery from '~/components/discovery/assetDiscovery.vue'
 

@@ -59,7 +59,7 @@
             <AssetPreview
                 v-if="currentTab === '2' && previewEntity"
                 page="discovery"
-                :selectedAsset="previewEntity"
+                :selected-asset="previewEntity"
             ></AssetPreview>
         </div>
     </div>
@@ -82,7 +82,6 @@ import useGTCEntity from '~/composables/glossary/useGtcEntity'
 import { Term } from '~/types/glossary/glossary.interface'
 
 import TermSvg from '~/assets/images/gtc/term/term.png'
-import { List as StatusList } from '~/constant/status'
 
 export default defineComponent({
     components: {
@@ -107,11 +106,17 @@ export default defineComponent({
         const currentTab = ref('1');
         const previewEntity = ref();
 
-        const { entity: term, error, isLoading } = useGTCEntity<Term>('term', guid, 'profile')
+        const { 
+            entity: term,
+            title,
+            shortDescription,
+            qualifiedName,
+            statusObject,
+            error, 
+            isLoading
+        } = useGTCEntity<Term>('term', guid, 'profile')
 
-        const title = computed(() => term.value?.attributes?.name)
-        const shortDescription = computed(() => term.value?.attributes?.shortDescription)
-        const qualifiedName = computed(() => term.value?.attributes?.qualifiedName)
+
         const parentGlossaryName = computed(
             () => term.value?.attributes?.qualifiedName?.split('@')[1] ?? ''
         )
@@ -119,7 +124,6 @@ export default defineComponent({
         const linkedAssetsCount = computed(
             () => term.value?.attributes?.assignedEntities?.length ?? 0
         )
-        const statusObject = computed(() => StatusList.find((status) => status.id === term.value?.attributes?.assetStatus))
 
         const handlePreview = (entity: any) => {
             previewEntity.value = entity;

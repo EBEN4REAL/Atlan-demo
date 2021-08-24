@@ -75,7 +75,7 @@
         <SidePanel
             v-if="currentTab === '1'"
             :entity="category"
-            :topTerms="categoryTerms"
+            :top-terms="categoryTerms"
         />
         <CategoryTermPreview
             v-if="currentTab === '2' && previewEntity"
@@ -112,7 +112,6 @@
         Term,
     } from '~/types/glossary/glossary.interface'
     import CategorySvg from '~/assets/images/gtc/category/category.png'
-    import { List as StatusList } from '~/constant/status'
 
     export default defineComponent({
         components: {
@@ -137,6 +136,10 @@
 
             const {
                 entity: category,
+                title,
+                shortDescription,
+                qualifiedName,
+                statusObject,
                 error,
                 isLoading,
             } = useGTCEntity<Category>('category', guid)
@@ -149,10 +152,6 @@
             } = useCategoryTerms()
 
             // computed
-            const title = computed(() => category.value?.attributes?.name)
-            const shortDescription = computed(
-                () => category.value?.attributes?.shortDescription
-            )
             const termCount = computed(
                 () => category.value?.attributes?.terms?.length ?? 0
             )
@@ -161,12 +160,7 @@
                     category.value?.attributes?.qualifiedName?.split('@')[1] ??
                     ''
             )
-            const statusObject = computed(() =>
-                StatusList.find(
-                    (status) =>
-                        status.id === category.value?.attributes?.assetStatus
-                )
-            )
+
 
             // methods
             const handleCategoryOrTermPreview = (entity: Category | Term) => {

@@ -88,6 +88,12 @@ export default function useAssetInfo() {
     const createdAt = (asset: assetInterface) => {
         return useTimeAgo(attributes(asset).__timestamp).value
     }
+    const createdBy = (asset: assetInterface) => {
+        return attributes(asset).__createdBy
+    }
+    const modifiedBy = (asset: assetInterface) => {
+        return attributes(asset).__modifiedBy
+    }
     const updatedAt = (asset: assetInterface) => {
         return useTimeAgo(attributes(asset).__modificationTimestamp).value
     }
@@ -111,6 +117,9 @@ export default function useAssetInfo() {
 
     const tableInfo = (asset: assetInterface) => {
         return attributes(asset)?.table
+    }
+    const popularityScore = (asset: assetInterface) => {
+        return attributes(asset)?.popularityScore
     }
 
     const ownerGroups = (asset: assetInterface) => {
@@ -164,8 +173,31 @@ export default function useAssetInfo() {
         })
         return data
     }
+    const relationshipList = (item: assetInterface) => {
+        const found = AssetTypeList.find((a) => a.id == item.typeName)
+
+        const temp = []
+        if (found) {
+            const filtered = AssetTypeList.filter((a) =>
+                found.parents?.includes(a.id)
+            )
+
+            filtered.forEach((f) => {
+                temp.push({
+                    ...f,
+                    qualifiedName: attributes(item)[f.qualifiedNameAttribute],
+                    value: attributes(item)[f.nameAttribute],
+                })
+            })
+        }
+
+        return temp
+    }
 
     return {
+        popularityScore,
+        createdBy,
+        modifiedBy,
         databaseLogo,
         schemaLogo,
         databaseName,
@@ -191,5 +223,6 @@ export default function useAssetInfo() {
         assetStatus,
         getHierarchy,
         getTableauProperties,
+        relationshipList,
     }
 }

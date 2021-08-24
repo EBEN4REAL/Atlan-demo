@@ -9,7 +9,7 @@ interface BaseAttributes {
     __timestamp: Number
 }
 interface RelatedEntity {
-    guid: String,
+    guid: string,
     typeName: String,
     uniqueAttributes: {
         qualifiedName: String

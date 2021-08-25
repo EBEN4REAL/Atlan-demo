@@ -18,7 +18,7 @@
                 required: true,
             },
         },
-        setup(props) {
+        setup() {
             return {}
         },
     })

@@ -24,8 +24,8 @@
                                     <span class="align-middle">
                                         <span class="text-gray-700 svg-icon">
                                             <component
-                                                class="w-auto h-4 ml-1 mr-2  pushtop"
                                                 :is="item.icon"
+                                                class="w-auto h-4 ml-1 mr-2  pushtop"
                                             />
                                             {{ item.label }}
                                         </span>
@@ -38,16 +38,16 @@
                 <div class="mt-1 border-t border-gray-100">
                     <a-textarea
                         v-model:value="message"
-                        @change="handleTextAreaUpdate"
                         placeholder="Add a status message"
-                        showCount
+                        show-count
                         :maxlength="180"
                         style="width: 280px"
                         :rows="5"
                         class=""
+                        @change="handleTextAreaUpdate"
                     ></a-textarea>
                     <div class="flex justify-end w-full mt-4 space-x-4">
-                        <a-button @click="handleCancel" class="px-4"
+                        <a-button class="px-4" @click="handleCancel"
                             >Cancel</a-button
                         >
                         <a-button
@@ -71,7 +71,7 @@
                     :status-message="
                         selectedAsset?.attributes?.assetStatusMessage
                     "
-                    :showChipStyleStatus="true"
+                    :show-chip-style-status="true"
                     :show-no-status="true"
                     :show-label="true"
                 ></StatusBadge>
@@ -91,7 +91,7 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref, watch, PropType, toRefs } from 'vue'
+    import { defineComponent, ref, watch, PropType, toRefs, inject } from 'vue'
     import { useMagicKeys } from '@vueuse/core'
     import StatusBadge from '@common/badge/status/index.vue'
 
@@ -124,6 +124,9 @@
                 isLoading,
             } = updateStatus(selectedAsset)
 
+            const mutateSelectedAsset: (updatedAsset: assetInterface) => void =
+                inject('mutateSelectedAsset')
+
             const animationPoint = ref(null)
             const message = ref('')
 
@@ -154,6 +157,7 @@
                         }
                         confetti(animationPoint.value, config)
                     }
+                    mutateSelectedAsset(selectedAsset.value)
                 }
             })
 

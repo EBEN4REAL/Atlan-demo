@@ -19,8 +19,8 @@
     import useAssetInfo from '~/composables/asset/useAssetInfo'
 
     export default defineComponent({
+        name: 'TableauProperties',
         components: {},
-        name: 'Tableau Properties',
         props: {
             selectedAsset: {
                 type: Object as PropType<assetInterface>,
@@ -32,8 +32,7 @@
             },
         },
         setup(props) {
-            const { selectedAsset } = toRefs(props)
-            const properties = props.properties
+            const { selectedAsset, properties } = toRefs(props)
             const { getTableauProperties } = useAssetInfo()
             const propertiesData = getTableauProperties(
                 selectedAsset.value,

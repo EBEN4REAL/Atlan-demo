@@ -8,40 +8,17 @@
     </div>
     <div v-else>
         <div class="flex items-center justify-between px-5 my-3 gap-x-2">
-            <a-input
+            <SearchAndFilter
+                class="flex-grow"
                 :value="query"
-                size="default"
-                :placeholder="`Search assets`"
-                :class="$style.searchbar"
+                placeholder="Search assets"
                 @change="searchQuery"
             >
-                <template #prefix>
-                    <Fa icon="fal search" class="text-gray-500" />
-                </template>
-            </a-input>
-            <a-popover
-                v-model:visible="isFilterVisible"
-                placement="bottomRight"
-                trigger="click"
-            >
-                <template #content>
-                    <Preferences />
-                </template>
-
-                <div
-                    tabindex="0"
-                    class="flex items-center p-2 transition-shadow border border-gray-300 rounded  hover:border-gray-300"
-                    @keyup.enter="isFilterVisible = !isFilterVisible"
-                >
-                    <fa
-                        icon="fas sort-amount-up"
-                        class="hover:text-primary-500"
-                    />
-                </div>
-            </a-popover>
+                <template #filter> <Preferences /> </template>
+            </SearchAndFilter>
             <router-link
                 :to="`/assets/${id || guid}/lineage`"
-                class="flex w-32 text-xs underline"
+                class="w-24 text-xs underline"
                 @click="$event.stopPropagation()"
                 >Graph view
                 <fa icon="fal external-link-alt" class="w-3 h-3 ml-1"></fa
@@ -119,6 +96,7 @@
     import { useRoute } from 'vue-router'
 
     // Components
+    import SearchAndFilter from '@/common/input/searchAndFilter.vue'
     import AssetList from './assetList.vue'
     import Preferences from './preferences.vue'
 
@@ -133,7 +111,7 @@
 
     export default defineComponent({
         name: 'LineagePreviewTab',
-        components: { AssetList, Preferences },
+        components: { AssetList, Preferences, SearchAndFilter },
         props: {
             selectedAsset: {
                 type: Object as PropType<assetInterface>,
@@ -150,7 +128,6 @@
             const filteredLineageList = ref({})
             const assetTypesLengthMap = ref({})
             const depth = ref(1)
-            const isFilterVisible = ref(false)
             const query = ref('')
             const filters = ref(['Table', 'View', 'Column', 'Bi Dashboard'])
             const streams = [
@@ -171,6 +148,16 @@
             const filtersLength = computed(() => filters.value.length)
 
             /** METHODS */
+            const filter = () => {
+                const { data, l } = useLineageFilters(
+                    lineageList,
+                    filters,
+                    query
+                )
+                filteredLineageList.value = data
+                assetTypesLengthMap.value = l
+                loading.value = false
+            }
             const searchQuery = (e) => {
                 query.value = e.target.value
             }
@@ -197,16 +184,6 @@
 
                     filter()
                 })
-            }
-            const filter = () => {
-                const { data, l } = useLineageFilters(
-                    lineageList,
-                    filters,
-                    query
-                )
-                filteredLineageList.value = data
-                assetTypesLengthMap.value = l
-                loading.value = false
             }
 
             /** PROVIDERS */
@@ -236,7 +213,6 @@
                 assetTypesLengthMap,
                 activeKeys,
                 streams,
-                isFilterVisible,
                 emptyScreen,
                 searchQuery,
             }
@@ -274,20 +250,6 @@
             padding-left: 0px;
             padding-top: 0px !important;
             @apply pb-4 !important;
-        }
-    }
-
-    .searchbar {
-        @apply mr-2 border-none rounded;
-        @apply bg-gray-300 bg-opacity-50;
-        @apply outline-none;
-        :global(.ant-input) {
-            @apply h-6;
-            @apply bg-transparent;
-            @apply text-gray-500;
-        }
-        ::placeholder {
-            @apply text-gray-500 opacity-80;
         }
     }
 </style>

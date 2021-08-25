@@ -9,15 +9,15 @@
     import { assetInterface } from '~/types/assets/asset.interface'
 
     export default defineComponent({
+        name: 'TableauPreview',
         components: {},
-        name: 'Tableau Preview',
         props: {
             selectedAsset: {
                 type: Object as PropType<assetInterface>,
                 required: true,
             },
         },
-        setup(props) {
+        setup() {
             return {}
         },
     })

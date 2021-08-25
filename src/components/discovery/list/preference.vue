@@ -54,10 +54,8 @@
 <script lang="ts">
     import { defineComponent, Ref, ref } from 'vue'
 
-    import ConnectionSelector from '@common/selector/connections/index.vue'
-    import ConnectorSelector from '@common/selector/connectors/index.vue'
     export default defineComponent({
-        components: { ConnectionSelector, ConnectorSelector },
+        components: {},
         props: {
             defaultProjection: {
                 type: Array,

@@ -1,4 +1,4 @@
-<template>
+<!-- <template>
     <div v-if="!isLoaded" class="">
         <a-collapse
             v-model:activeKey="activeKey"
@@ -203,3 +203,16 @@
         }
     }
 </style>
+ -->
+<template>
+    <div>Info</div>
+</template>
+
+<script lang="ts">
+    import { defineComponent } from 'vue'
+
+    export default defineComponent({
+        name: 'InfoTab',
+    })
+</script>
+<style scoped></style>

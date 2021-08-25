@@ -42,17 +42,7 @@
                         :class="{
                             'border-primary': record.key === selectedRow,
                         }"
-                        class="
-                            absolute
-                            top-0
-                            left-0
-                            flex
-                            items-center
-                            justify-center
-                            w-full
-                            h-full
-                            border-l-4 border-transparent
-                        "
+                        class="absolute top-0 left-0 flex items-center justify-center w-full h-full border-l-4 border-transparent "
                     >
                         {{ text }}
                     </div>
@@ -115,23 +105,28 @@
                 </template>
             </a-table>
         </div>
-        <a-drawer v-model:visible="showColumnPreview" placement="right">
-            <div
-                class="
-                    flex flex-col
-                    h-full
-                    bg-white
-                    border-l
-                    z-25
-                    column-preview-container
-                "
-            >
-                <!-- <ColumnPreview :selected-row="selectedRowData"></ColumnPreview> -->
-                <p>Some contents...</p>
-                <p>Some contents...</p>
-                <p>Some contents...</p>
-            </div>
-        </a-drawer>
+        <!-- <div
+            class="flex flex-col h-full bg-white border-l z-25 column-preview-container"
+        >
+            <ColumnPreview />
+        </div> --><teleport to="#overAssetColumnPreview">
+            <a-drawer
+                v-model:visible="showColumnPreview"
+                placement="right"
+                :mask="false"
+                :wrap-style="{ position: 'absolute' }"
+                :get-container="false"
+                wrap-class-name=""
+                :destroy-on-close="true"
+                width="420"
+                ><div class="flex flex-col bg-white border-l">
+                    <ColumnPreview :selected-row="selectedRowData" />
+                </div>
+                <!-- <p>Some contents...</p>
+            <p>Some contents...</p>
+            <p>Some contents...</p> -->
+            </a-drawer>
+        </teleport>
     </div>
 </template>
 
@@ -148,7 +143,7 @@
     import ColumnPreview from './columnPreview/index.vue'
 
     export default defineComponent({
-        components: {},
+        components: { ColumnPreview },
         setup() {
             /** DATA */
             const query = ref('')

@@ -1,8 +1,8 @@
 <template>
-    <div class="pt-1">
+    <div class="pt-20">
         <div class="px-5">
             <div class="flex items-start justify-between mt-5 mb-4 text-sm">
-                <div>
+                <div class="w-full">
                     <Tooltip
                         :tooltip-text="selectedRow?.column_name"
                         classes="mb-0.5 text-base font-bold text-gray-700 capitalize"
@@ -22,14 +22,14 @@
                 class="px-4 pb-4 overflow-y-auto tab-height"
                 :tab="tab.name"
             >
-                <!-- <component
+                <component
                     :is="tab.component"
                     :component-data="dataMap[tab.id]"
                     :info-tab-data="infoTabData"
                     :selected-row="selectedRow"
                     :is-loaded="isLoaded"
                     @change="handleChange"
-                ></component> -->
+                ></component>
             </a-tab-pane>
         </a-tabs>
     </div>
@@ -40,16 +40,10 @@
     import {
         defineAsyncComponent,
         defineComponent,
-        onMounted,
         PropType,
         ref,
         Ref,
-        toRefs,
-        watch,
     } from 'vue'
-    import useAsset from '~/composables/asset/useAsset'
-    import useAssetInfo from '~/composables/asset/useAssetInfo'
-    import { assetInterface } from '~/types/assets/asset.interface'
     import useColumnDetailsTabList from './tabs/useTabList'
 
     export default defineComponent({
@@ -60,7 +54,10 @@
             chat: defineAsyncComponent(() => import('./tabs/chat/index.vue')),
         },
         props: {
-            selectedRow,
+            selectedRow: {
+                type: Object,
+                required: true,
+            },
         },
 
         setup(props) {

@@ -22,6 +22,7 @@
                 :selectedAsset="selected"
                 :page="page"
             ></AssetPreview>
+            <div id="overAssetColumnPreview"></div>
         </div>
     </div>
 </template>

@@ -1,87 +1,130 @@
 <template>
     <div class="px-5 py-2">
-        <div
-            v-for="(a, x) in applicableList"
-            :key="x"
-            class="flex gap-6 mb-4 gap-y-0 group"
-        >
-            <div class="w-40 text-gray-700">
-                {{ a.options.displayName }}
-            </div>
+        <div v-for="(a, x) in applicableList" :key="x">
+            <div
+                class="flex gap-6 gap-y-0 group"
+                :class="a.error ? '' : 'mb-4'"
+            >
+                <div class="w-40 text-gray-700">
+                    {{ a.options.displayName }}
+                </div>
 
-            <div class="flex items-center self-start flex-grow w-32">
-                <a-input
-                    v-if="getDatatypeOfAttribute(a.typeName) === 'number'"
-                    v-model:value="a.value"
-                    class="flex-grow border shadow-none"
-                    type="number"
-                    placeholder="Type..."
-                    @input="() => debounce(() => updateAttribute(x), 800)"
-                />
-                <a-radio-group
-                    v-else-if="getDatatypeOfAttribute(a.typeName) === 'boolean'"
-                    :value="a.value"
-                    class="flex-grow"
-                    @change="(e) => handleChange(x, e.target.value)"
+                <div
+                    v-if="readOnly"
+                    class="flex items-center self-start flex-grow w-32 break-all "
                 >
-                    <a-radio class="" :value="true">True</a-radio>
-                    <a-radio class="" :value="false">False</a-radio>
-                </a-radio-group>
-                <template
-                    v-else-if="getDatatypeOfAttribute(a.typeName) === 'date'"
-                >
-                    <a-date-picker
-                        :allow-clear="false"
-                        :value="(a.value || '').toString()"
-                        class="flex-grow w-100"
-                        value-format="x"
-                        @change="
-                            (timestamp, string) => handleChange(x, timestamp)
-                        "
+                    <a
+                        v-if="isLink(a.value, a.options.displayName)"
+                        target="_blank"
+                        :href="a.value"
+                    >
+                        {{ a.value || '-' }}</a
+                    >
+                    <span v-else>
+                        {{
+                            formatDisplayValue(
+                                a.value?.toString() || '',
+                                getDatatypeOfAttribute(a.typeName)
+                            ) || '-'
+                        }}</span
+                    >
+                </div>
+                <div v-else class="flex items-center self-start flex-grow w-32">
+                    <a-input
+                        v-if="getDatatypeOfAttribute(a.typeName) === 'number'"
+                        v-model:value="a.value"
+                        class="flex-grow border shadow-none"
+                        type="number"
+                        placeholder="Type..."
+                        @input="() => debounce(() => updateAttribute(x), 800)"
                     />
-                </template>
-                <a-textarea
-                    v-else
-                    :id="`${x}`"
-                    v-model:value="a.value"
-                    :auto-size="true"
-                    placeholder="Type..."
-                    type="text"
-                    class="flex-grow shadow-none border-1"
-                    @input="() => debounce(() => updateAttribute(x), 800)"
-                />
-                <div class="flex flex-none w-4 col-span-1 ml-3">
-                    <template v-if="loading !== '' && activeIndex === x">
-                        <fa
-                            v-if="loading === 'loading'"
-                            icon="fal circle-notch spin"
-                            class="animate-spin text-grey-600"
-                        />
-                        <fa
-                            v-else-if="loading === 'failed'"
-                            icon="fal times"
-                            class="text-red-600"
-                        />
-                        <fa
-                            v-else-if="loading === 'success'"
-                            icon="fal check"
-                            class="text-green-600"
-                        />
-                    </template>
-                    <div
-                        v-if="a?.value?.toString() && loading === ''"
-                        class="col-span-1 text-gray-500 opacity-0 cursor-pointer  group-hover:opacity-100 hover:font-bold"
-                        @click.stop.prevent="
-                            () => {
-                                a.value = ''
-                                updateAttribute(x)
-                            }
+                    <a-radio-group
+                        v-else-if="
+                            getDatatypeOfAttribute(a.typeName) === 'boolean'
+                        "
+                        :value="a.value"
+                        class="flex-grow"
+                        @change="(e) => handleChange(x, e.target.value)"
+                    >
+                        <a-radio class="" :value="true">True</a-radio>
+                        <a-radio class="" :value="false">False</a-radio>
+                    </a-radio-group>
+                    <template
+                        v-else-if="
+                            getDatatypeOfAttribute(a.typeName) === 'date'
                         "
                     >
-                        <!-- Clear -->
-                        <AtlanIcon icon="Cancel" />
+                        <a-date-picker
+                            :allow-clear="false"
+                            :value="(a.value || '').toString()"
+                            class="flex-grow w-100"
+                            value-format="x"
+                            @change="
+                                (timestamp, string) =>
+                                    handleChange(x, timestamp)
+                            "
+                        />
+                    </template>
+                    <a-textarea
+                        v-else-if="
+                            getDatatypeOfAttribute(a.typeName) === 'text'
+                        "
+                        :auto-size="true"
+                        v-model:value="a.value"
+                        :showCount="true"
+                        :maxlength="parseInt(a.options.maxStrLength) + 100"
+                        placeholder="Type..."
+                        type="text"
+                        class="flex-grow shadow-none"
+                        @input="() => debounce(() => updateAttribute(x), 800)"
+                    />
+                    <div v-else class="flex-grow shadow-none border-1">
+                        <a-select
+                            placeholder="Unassigned"
+                            style="width: 100%"
+                            v-model:value="a.value"
+                            :show-arrow="true"
+                            class=""
+                            :options="getEnumOptions(a.typeName)"
+                            @change="updateAttribute(x)"
+                        />
+                    </div>
+                    <div class="flex flex-none w-4 col-span-1 ml-3">
+                        <template v-if="loading !== '' && activeIndex === x">
+                            <fa
+                                v-if="loading === 'loading'"
+                                icon="fal circle-notch spin"
+                                class="animate-spin text-grey-600"
+                            />
+                            <fa
+                                v-else-if="loading === 'failed'"
+                                icon="fal times"
+                                class="text-red-600"
+                            />
+                            <fa
+                                v-else-if="loading === 'success'"
+                                icon="fal check"
+                                class="text-green-600"
+                            />
+                        </template>
+                        <div
+                            v-if="a.value?.toString() && loading === ''"
+                            class="col-span-1 text-gray-500 opacity-0 cursor-pointer  group-hover:opacity-100 hover:font-bold"
+                            @click.stop.prevent="
+                                () => {
+                                    a.value = ''
+                                    updateAttribute(x)
+                                }
+                            "
+                        >
+                            <!-- Clear -->
+                            <AtlanIcon icon="Cancel" />
+                        </div>
                     </div>
                 </div>
+            </div>
+            <div class="pr-3 mb-4 text-warning" v-if="a.error">
+                {{ a.error }}
             </div>
         </div>
     </div>
@@ -89,6 +132,7 @@
 
 <script lang="ts">
     import { defineComponent, PropType, ref, computed, watch } from 'vue'
+    import useEnums from '@/admin/enums/composables/useEnums'
     import { assetInterface } from '~/types/assets/asset.interface'
     import useBusinessMetadataHelper from '~/composables/businessMetadata/useBusinessMetadataHelper'
     import { BusinessMetadataService } from '~/api/atlas/businessMetadata'
@@ -110,7 +154,13 @@
                 getApplicableAttributes,
                 getDatatypeOfAttribute,
                 createDebounce,
+                formatDisplayValue,
+                isLink,
             } = useBusinessMetadataHelper()
+
+            const { enumListData: enumsList } = useEnums()
+
+            const readOnly = ref(true)
 
             const applicableList = ref(
                 getApplicableAttributes(
@@ -119,6 +169,19 @@
                 )
             )
 
+            const getEnumOptions = (enumName: string) => {
+                if (enumsList.value.length) {
+                    return (
+                        enumsList.value
+                            .find((e) => e.name === enumName)
+                            ?.elementDefs.map((a) => ({
+                                label: a.value,
+                                value: a.value,
+                            })) || []
+                    )
+                }
+                return []
+            }
             /**
              * @desc parses all the attached bm from the asset payload and
              *  forms the initial attribute list
@@ -169,6 +232,7 @@
                 return mappedPayload
             })
 
+            // const hasError = ref(false)
             const loading = ref('')
             const activeIndex = ref(null)
             const updateAttribute = (index) => {
@@ -185,15 +249,26 @@
                         loading.value = 'loading'
                     } else if (error.value) {
                         loading.value = 'failed'
+                        console.log(error.value.response.data.errorMessage)
+                        let message =
+                            error.value?.response?.data?.errorMessage || ''
+                        if (message) message = message.split(':')
+                        if (message?.length > 1)
+                            applicableList.value[
+                                index
+                            ].error = `Error occured: ${
+                                message[message.length - 1]
+                            }`
+                        else
+                            applicableList.value[index].error =
+                                'Some error occured please try again.'
+                        // hasError.value = true
                     } else if (isReady.value) {
                         loading.value = 'success'
-
+                        applicableList.value[index].error = false
+                        // hasError.value = false
                         setTimeout(async () => {
-                            // await this.refreshAssetInAssetsList(this.asset.guid);
                             loading.value = ''
-                            // this.originalBmAttributesList = JSON.parse(
-                            //   JSON.stringify(this.attributesList)
-                            // );
                         }, 1000)
                     }
                 })
@@ -214,6 +289,10 @@
                 handleChange,
                 activeIndex,
                 payload,
+                getEnumOptions,
+                readOnly,
+                formatDisplayValue,
+                isLink,
                 debounce: createDebounce(),
             }
         },

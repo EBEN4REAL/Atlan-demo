@@ -12,7 +12,8 @@
                     <a-checkbox
                         v-model:checked="o.checked"
                         :value="o.value"
-                        class="w-full mb-2"
+                        class="w-full"
+                        :class="operatorsMap.length - 1 !== y ? 'mb-2' : ''"
                         style="min-width: 200px"
                         @change="handleCheckbox(o.value, o.checked)"
                     >
@@ -86,7 +87,9 @@
             const operatorsMap = ref([])
             const isVisible = ref(false)
             operatorsMap.value = JSON.parse(
-                JSON.stringify(map[getDatatypeOfAttribute(props.a.typeName)])
+                JSON.stringify(
+                    map[getDatatypeOfAttribute(props.a.typeName)] || map['enum']
+                )
             ).map((o) => ({ ...o, checked: false }))
             const appliedValues = ref({})
 
@@ -139,6 +142,7 @@
                         )
                     }
                 )
+                appliedValues.value = { ...props.applied }
             }
 
             // check all applied attributes when mounted (using search and show less can unmount , loosing check state)

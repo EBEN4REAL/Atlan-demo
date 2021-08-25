@@ -102,21 +102,7 @@
                         id="name"
                         v-model="localBm.options.displayName"
                         type="text"
-                        class="
-                            block
-                            w-full
-                            px-2
-                            py-1
-                            mb-1
-                            text-base
-                            leading-normal
-                            bg-white
-                            border
-                            rounded
-                            appearance-none
-                            text-grey-darker
-                            border-grey
-                        "
+                        class="block w-full px-2 py-1 mb-1 text-base leading-normal bg-white border rounded appearance-none  text-grey-darker border-grey"
                         name="Name"
                         @input="onUpdate"
                     />
@@ -127,21 +113,7 @@
                         id="description"
                         v-model="localBm.description"
                         placeholder="Add some details about this metadata."
-                        class="
-                            block
-                            w-full
-                            px-2
-                            py-1
-                            mb-1
-                            text-base
-                            leading-normal
-                            bg-white
-                            border
-                            rounded
-                            appearance-none
-                            text-grey-darker
-                            border-grey
-                        "
+                        class="block w-full px-2 py-1 mb-1 text-base leading-normal bg-white border rounded appearance-none  text-grey-darker border-grey"
                         name="Description"
                         :rows="2"
                         @input="onUpdate"
@@ -154,13 +126,7 @@
             <div class="flex items-center mb-4">
                 <div class="mr-4">
                     <div
-                        class="
-                            relative
-                            flex
-                            items-stretch
-                            w-full
-                            overflow-hidden
-                        "
+                        class="relative flex items-stretch w-full overflow-hidden "
                     >
                         <a-input
                             v-model:value="attrsearchText"
@@ -347,7 +313,6 @@
                     error.value = validatedBm.error
                     return
                 }
-                debugger
                 loading.value = true
                 const apiResponse = ref()
                 if (validatedBm.data?.guid === 'new')

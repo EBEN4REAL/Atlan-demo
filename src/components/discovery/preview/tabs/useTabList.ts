@@ -1,6 +1,7 @@
 // Always match the exclude fields with these assettypes
 // import { AssetTypeList } from '~/constant/assetType'
 import { ref, computed, Ref } from 'vue'
+import { assetInterface } from '~/types/assets/asset.interface'
 
 // Keep adding pages here as and when required
 type Page = 'discovery' | 'profile'
@@ -12,8 +13,10 @@ interface TabList {
     exclude?: string[]
 }
 
-export default function useAssetDetailsTabList(page: Ref<string>) {
-    const assetType = ref('')
+export default function useAssetDetailsTabList(
+    page: Ref<string>,
+    selectedAsset: Ref<assetInterface>
+) {
     const tabList: TabList[] = [
         {
             name: 'Info',
@@ -23,7 +26,15 @@ export default function useAssetDetailsTabList(page: Ref<string>) {
         {
             name: 'Columns',
             component: 'columns',
-            exclude: ['Column', 'TableauWorkbook', 'TableauWorksheet'],
+            exclude: [
+                'Column',
+                'TableauWorkbook',
+                'TableauWorksheet',
+                'TableauSite',
+                'TableauProject',
+                'TableauDashboard',
+                'TableauDatasource',
+            ],
             visibleOn: ['discovery', 'profile'],
         },
         {
@@ -34,6 +45,16 @@ export default function useAssetDetailsTabList(page: Ref<string>) {
         {
             name: 'Relations',
             component: 'relations',
+            exclude: [
+                'Connection',
+                'Database',
+                'Schema',
+                'View',
+                'Table',
+                'TablePartition',
+                'MaterialisedView',
+                'Column',
+            ],
             visibleOn: ['discovery'],
         },
         // {
@@ -54,14 +75,14 @@ export default function useAssetDetailsTabList(page: Ref<string>) {
     ]
 
     const filteredTabs = computed(() => {
-        if (assetType.value)
+        if (selectedAsset.value.typeName)
             return tabList.filter(
                 (tab) =>
-                    !tab.exclude?.includes(assetType.value) &&
+                    !tab.exclude?.includes(selectedAsset.value.typeName) &&
                     tab.visibleOn.includes(page.value)
             )
         return tabList
     })
 
-    return { allTabs: tabList, filteredTabs, assetType }
+    return { allTabs: tabList, filteredTabs }
 }

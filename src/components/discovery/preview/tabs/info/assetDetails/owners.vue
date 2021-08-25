@@ -620,7 +620,10 @@
             const toggleOwnerPopover = () => {
                 showOwnersDropdown.value = !showOwnersDropdown.value
 
-                if (!searchText.value) {
+                if (
+                    !searchText.value &&
+                    (!listUsers.value.length || !listGroups.value.length)
+                ) {
                     mutateUsers()
                     mutateGroups()
                 }

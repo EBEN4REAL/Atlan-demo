@@ -11,9 +11,15 @@
                     :allow-clear="true"
                     @change="filterByQuery"
                 ></a-input-search>
-                <a-button class="px-2"
-                    ><atlan-icon icon="FilterDot" class="w-auto h-5"
-                /></a-button>
+
+                <a-popover trigger="click" placement="right">
+                    <template #content>
+                        <preferences />
+                    </template>
+                    <a-button class="px-2"
+                        ><atlan-icon icon="FilterDot" class="w-auto h-5"
+                    /></a-button>
+                </a-popover>
             </div>
             <div class="flex justify-end flex-1">
                 <a-button class="flex items-center">
@@ -110,14 +116,18 @@
 
 <script lang="ts">
     // Vue
-    import { defineComponent, inject, watch, computed, ref } from 'vue'
+    import { defineComponent, inject, watch, computed, ref, provide } from 'vue'
 
     // Composables
     import useColumns from '~/composables/asset/useColumns'
     import useColumnsFilter from '~/composables/asset/useColumnsFilter'
     import { images, dataTypeList } from '~/constant/datatype'
 
+    // Components
+    import preferences from './preferences.vue'
+
     export default defineComponent({
+        components: { preferences },
         setup() {
             /** DATA */
             const query = ref('')
@@ -125,6 +135,8 @@
             const filtersSelected = ref([])
             const columnsData = ref({})
             const selectedRow = ref(null)
+            // const typeFilter = ref('')
+            const statusFilter = ref('')
 
             /** INJECTIONS */
             const assetDataInjection = inject('assetData')
@@ -152,12 +164,6 @@
             //  filterByQuery
             const filterByQuery = (e) => {
                 query.value = e.target.value
-                handleFilter()
-            }
-
-            // filterByType
-            const filterByType = (e) => {
-                filtersSelected.value = e
                 handleFilter()
             }
 
@@ -226,6 +232,19 @@
                     ? 'bg-primary-light'
                     : 'bg-transparent'
 
+            const updateTypeFilter = (val) => {
+                filtersSelected.value = val
+                handleFilter()
+            }
+            const updateStatusFilter = (val) => {
+                statusFilter.value = val
+            }
+
+            /** PROVIDERS */
+            provide('updateTypeFilter', updateTypeFilter)
+            provide('typeFilters', filtersSelected)
+            provide('updateStatusFilter', updateStatusFilter)
+
             /** Watchers */
             watch(columnList, () => {
                 filterColumnsList(columnList.value)
@@ -236,7 +255,7 @@
                 customRow,
                 selectedRow,
                 filterByQuery,
-                filterByType,
+                // filterByType,
                 columnsData,
                 query,
                 images,
@@ -267,6 +286,8 @@
                         title: 'Description',
                         dataIndex: 'description',
                         key: 'description',
+                        width: 300,
+                        ellipsis: true,
                     },
                     {
                         title: 'Popularity',

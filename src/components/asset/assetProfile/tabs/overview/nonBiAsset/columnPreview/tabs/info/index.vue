@@ -115,23 +115,23 @@
             const localStorage = window.localStorage
             function getUserDefaultCollapseOrderInInfoTab(): string[] {
                 let activeKeyOrder: string[] | undefined
-                if (localStorage.getItem('asset_preview_info_tab')) {
+                if (localStorage.getItem('column_preview_info_tab')) {
                     activeKeyOrder = JSON.parse(
-                        localStorage.getItem('asset_preview_info_tab') as any
+                        localStorage.getItem('column_preview_info_tab') as any
                     )
                 }
                 if (activeKeyOrder && activeKeyOrder?.length > 0)
                     return JSON.parse(
-                        localStorage.getItem('asset_preview_info_tab') as any
+                        localStorage.getItem('column_preview_info_tab') as any
                     ) as string[]
 
-                return ['assetDetails', 'linkedAsset']
+                return ['columnDetails', 'linkedAsset']
             }
             function setUserDefaultCollapseOrderInInfoTab(
                 activeKeyOrder: string[]
             ) {
                 localStorage.setItem(
-                    'asset_preview_info_tab',
+                    'column_preview_info_tab',
                     JSON.stringify(activeKeyOrder)
                 )
             }

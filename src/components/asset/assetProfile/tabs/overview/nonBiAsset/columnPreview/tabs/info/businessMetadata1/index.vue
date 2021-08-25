@@ -1,5 +1,5 @@
 <template>
-    <div>Business Metadata 1</div>
+    <div></div>
 </template>
 
 <script lang="ts">

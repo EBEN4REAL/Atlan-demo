@@ -1,8 +1,7 @@
 <template>
     <div class="w-full px-5">
-        <!-- <Terms :selectedAsset="selectedAsset" /> -->
-        <Classifications :selectedAsset="selectedAsset" />
-        <!-- <BusinessMetaData :selectedAsset="selectedAsset" /> -->
+        <Terms :selected-row="selectedRow" />
+        <Classifications :selected-row="selectedRow" />
     </div>
 </template>
 
@@ -15,23 +14,22 @@
     export default defineComponent({
         components: { Terms, Classifications },
         props: {
-            selectedAsset: {
-                type: Object as PropType<assetInterface>,
+            selectedRow: {
+                type: Object as PropType<any>,
                 required: true,
             },
         },
         setup(props) {
-            const { selectedAsset } = toRefs(props)
+            const { selectedRow } = toRefs(props)
             watch(
-                selectedAsset,
+                selectedRow,
                 () => {
-                    console.log('asset changed governance', selectedAsset)
+                    console.log('column changed governance', selectedRow)
                 },
                 {
                     immediate: true,
                 }
             )
-            return { selectedAsset }
         },
     })
 </script>

@@ -1,11 +1,6 @@
 <template>
     <div class="flex items-start justify-between">
         <div class="flex">
-            <!-- <AssetLogo
-                class="self-start pt-2"
-                :asset="assetData"
-                variant="lg"
-            /> -->
             <div>
                 <a-button
                     :ghost="true"
@@ -49,6 +44,12 @@
             </div>
         </div>
         <div class="flex">
+            <a-button
+                v-if="assetType.includes('Tableau')"
+                class="flex items-center mr-2"
+            >
+                <span class="mt-1 text-sm">Open in Tableau</span></a-button
+            >
             <a-button class="px-2 mr-2"
                 ><atlan-icon icon="BookmarkOutlined" class="w-auto h-4"
             /></a-button>
@@ -61,20 +62,22 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, computed, inject } from 'vue'
-    import AssetLogo from '@/common/icon/assetIcon.vue'
+    import { defineComponent, computed, inject, ref } from 'vue'
 
     // Util
     import { SourceList } from '~/constant/source'
 
     export default defineComponent({
-        components: { AssetLogo },
         setup() {
+            /** DATA */
+            const assetType = ref('')
+
             /** INJECTIONS */
             const assetDataInjection = inject('assetData')
 
             /** COMPUTED */
             const assetData = computed(() => assetDataInjection?.asset)
+            assetType.value = assetData.value.typeName
 
             const integrationIcon = computed(() => {
                 const item = SourceList.find(
@@ -85,6 +88,7 @@
             })
 
             return {
+                assetType,
                 assetData,
                 integrationIcon,
             }

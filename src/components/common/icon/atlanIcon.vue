@@ -3,13 +3,13 @@
 </template>
 
 <script lang="ts">
-    import { toRefs, defineComponent, computed } from 'vue'
+    import { toRefs, defineComponent, computed, PropType } from 'vue'
     import iconMap from './iconMap'
     export default defineComponent({
         name: 'AtlanIcons',
         props: {
             icon: {
-                type: String,
+                type: String as PropType<keyof typeof iconMap>,
                 required: true,
             },
         },

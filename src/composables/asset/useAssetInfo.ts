@@ -1,3 +1,4 @@
+import { Ref } from 'vue'
 import { assetInterface } from '~/types/assets/asset.interface'
 import { SourceList } from '~/constant/source'
 import { AssetTypeList } from '~/constant/assetType'
@@ -88,6 +89,12 @@ export default function useAssetInfo() {
     const createdAt = (asset: assetInterface) => {
         return useTimeAgo(attributes(asset).__timestamp).value
     }
+    const createdBy = (asset: assetInterface) => {
+        return attributes(asset).__createdBy
+    }
+    const modifiedBy = (asset: assetInterface) => {
+        return attributes(asset).__modifiedBy
+    }
     const updatedAt = (asset: assetInterface) => {
         return useTimeAgo(attributes(asset).__modificationTimestamp).value
     }
@@ -112,6 +119,9 @@ export default function useAssetInfo() {
     const tableInfo = (asset: assetInterface) => {
         return attributes(asset)?.table
     }
+    const popularityScore = (asset: assetInterface) => {
+        return attributes(asset)?.popularityScore
+    }
 
     const ownerGroups = (asset: assetInterface) => {
         return attributes(asset)?.ownerGroups?.split(',') || []
@@ -128,44 +138,58 @@ export default function useAssetInfo() {
     const getHierarchy = (asset: assetInterface) => {
         const assetType = AssetTypeList.find((a) => a.id == asset.typeName)
         const relations: any[] = []
+        console.log('xxx assetType:', assetType)
 
         if (assetType) {
             const filtered = AssetTypeList.filter((a) =>
                 assetType.parents?.includes(a.id)
             )
 
+            console.log('xxx filtered:', filtered)
+            console.log('xxx attributes(asset):', attributes(asset))
             filtered.forEach((f) => {
                 relations.push({
                     ...f,
+                    guid: asset.guid,
                     qualifiedName: attributes(asset)[f.qualifiedNameAttribute],
                     value: attributes(asset)[f.nameAttribute],
                 })
             })
+            console.log('xxx relations:', relations)
         }
 
         return relations
     }
 
-    const getTableauProperties = (asset: assetInterface, properties: any) => {
+    const getTableauProperties = (
+        asset: Ref<assetInterface> | undefined,
+        properties: any
+    ) => {
         const data: any = []
-        properties.forEach((tableauProperty: any) => {
-            const { label, property } = tableauProperty
-            if (attributes(asset)[property]) {
-                const temp = {}
-                temp.id = property
-                temp.label = label
-                temp[property] = attributes(asset)[property]
-                if (property === '__timestamp')
-                    temp[property] = createdAt(asset)
-                else if (property === '__modificationTimestamp')
-                    temp[property] = updatedAt(asset)
-                data.push(temp)
-            }
-        })
+        console.log(properties, 'properties')
+        if (asset.value && properties.length > 0) {
+            properties.forEach((tableauProperty: any) => {
+                const { label, property } = tableauProperty
+                if (attributes(asset.value)[property]) {
+                    const temp = {}
+                    temp.id = property
+                    temp.label = label
+                    temp[property] = attributes(asset.value)[property]
+                    if (property === '__timestamp')
+                        temp[property] = createdAt(asset.value)
+                    else if (property === '__modificationTimestamp')
+                        temp[property] = updatedAt(asset.value)
+                    data.push(temp)
+                }
+            })
+        }
         return data
     }
 
     return {
+        popularityScore,
+        createdBy,
+        modifiedBy,
         databaseLogo,
         schemaLogo,
         databaseName,

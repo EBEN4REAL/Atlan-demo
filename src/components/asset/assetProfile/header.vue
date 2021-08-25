@@ -1,11 +1,11 @@
 <template>
     <div class="flex items-start justify-between">
         <div class="flex">
+            <!-- back button -->
             <div>
                 <a-button
                     :ghost="true"
                     class="px-2 mr-1 border-0 outline-none"
-                    style="margin-top: -2px"
                     @click="$router.back()"
                     ><atlan-icon
                         icon="ChevronDown"
@@ -13,11 +13,9 @@
                 /></a-button>
             </div>
             <div>
+                <!-- asset logo -->
                 <div class="flex">
-                    <component
-                        :is="assetData.typeName"
-                        class="flex-none w-auto h-6 mt-1 mr-1"
-                    ></component>
+                    <AssetLogo class="self-start pt-2" :asset="assetData" />
                     <div
                         class="flex items-center mt-1 mb-2 text-xl font-bold lowercase "
                     >
@@ -25,24 +23,30 @@
                         <atlan-icon icon="Verified" class="w-auto h-4 ml-2" />
                     </div>
                 </div>
-                <div class="flex text-sm">
-                    <div class="flex items-center mr-6 capitalize">
-                        <img :src="integrationIcon" class="w-auto h-4 mr-2" />
-                        <span>{{ assetData.attributes.integrationName }}</span>
-                    </div>
-                    <div class="flex items-center mr-6 lowercase">
-                        <atlan-icon icon="Database" class="w-auto h-4 mr-2" />
-                        <span>{{ assetData.attributes.databaseName }}</span>
-                    </div>
-                    <div class="flex items-center lowercase">
-                        <atlan-icon icon="Schema" class="w-auto h-4 mr-2" />
-                        <span class="mt-1">{{
-                            assetData.attributes.schemaName
-                        }}</span>
+                <!-- asset source hierarchy -->
+                <div class="flex items-center">
+                    <div
+                        v-for="(item, index) in hierarchyInfo"
+                        :key="index"
+                        class="flex items-center"
+                    >
+                        <div>
+                            <span class="text-gray-500"
+                                >{{ item.label }} :</span
+                            >
+                            <span class="ml-1">{{ item.text }}</span>
+                        </div>
+                        <div
+                            v-if="index !== hierarchyInfo.length - 1"
+                            class="mx-3"
+                        >
+                            &bull;
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
+        <!-- CTAs -->
         <div class="flex">
             <a-button
                 v-if="assetType.includes('Tableau')"
@@ -62,12 +66,17 @@
 </template>
 
 <script lang="ts">
+    // Vue
     import { defineComponent, computed, inject, ref } from 'vue'
+    // Components
+    import AssetLogo from '@/common/icon/assetIcon.vue'
 
     // Util
-    import { SourceList } from '~/constant/source'
+    import useAssetInfo from '~/composables/asset/useAssetInfo'
+    // import { SourceList } from '~/constant/source'
 
     export default defineComponent({
+        components: { AssetLogo },
         setup() {
             /** DATA */
             const assetType = ref('')
@@ -79,18 +88,30 @@
             const assetData = computed(() => assetDataInjection?.asset)
             assetType.value = assetData.value.typeName
 
-            const integrationIcon = computed(() => {
-                const item = SourceList.find(
-                    (src: { id: string }) =>
-                        src.id === assetData.value.attributes.integrationName
-                )
-                return item?.image
-            })
+            // const integrationIcon = computed(() => {
+            //     const item = SourceList.find(
+            //         (src: { id: string }) =>
+            //             src.id === assetData.value.attributes.integrationName
+            //     )
+            //     return item?.image
+            // })
+
+            /** METHODS */
+            // hierarchyInfo
+            const { logo, getHierarchy } = useAssetInfo()
+            const hierarchyInfo = getHierarchy(assetData.value)
+                .filter((data) => data.value)
+                .map((data) => ({
+                    label: data.label,
+                    text: data.value,
+                }))
 
             return {
+                hierarchyInfo,
+                logo,
                 assetType,
                 assetData,
-                integrationIcon,
+                // integrationIcon,
             }
         },
     })

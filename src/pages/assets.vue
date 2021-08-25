@@ -11,6 +11,7 @@
                     v-else
                     :initial-filters="initialFilters"
                     @preview="handlePreview"
+                    ref="assetDiscovery"
                 ></AssetDiscovery>
             </div>
         </div>
@@ -20,6 +21,7 @@
             <AssetPreview
                 v-if="selected"
                 :selectedAsset="selected"
+                @asset-mutation="propagateToAssetList"
                 :page="page"
             ></AssetPreview>
         </div>
@@ -27,17 +29,16 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref, watch, computed, Ref } from 'vue'
-    import AssetDiscovery from '@/discovery/asset/index.vue'
-    import AssetPreview from '@/preview/asset/v2/index.vue'
+    import AssetDiscovery from '~/components/discovery/assetDiscovery.vue'
+    import AssetPreview from '@/discovery/preview/assetPreview.vue'
     import { useHead } from '@vueuse/head'
+    import { computed, defineComponent, ref, Ref, watch } from 'vue'
     import { useRoute, useRouter } from 'vue-router'
     import { Classification } from '~/api/atlas/classification'
     import { useClassificationStore } from '~/components/admin/classifications/_store'
-    import { getDecodedOptionsFromString } from '~/utils/routerQuery'
-
-    import { typedefsInterface } from '~/types/typedefs/typedefs.interface'
     import { assetInterface } from '~/types/assets/asset.interface'
+    import { typedefsInterface } from '~/types/typedefs/typedefs.interface'
+    import { getDecodedOptionsFromString } from '~/utils/routerQuery'
 
     export interface initialFiltersType {
         facetsFilters: any
@@ -56,7 +57,7 @@
             const router = useRouter()
             const route = useRoute()
             const isItem = computed(() => route.params.id)
-
+            const assetDiscovery: Ref<Element | null> = ref(null)
             const initialFilters: initialFiltersType =
                 getDecodedOptionsFromString(router)
             const selected: Ref<assetInterface | undefined> = ref(undefined)
@@ -92,12 +93,20 @@
                 }
             })
 
+            function propagateToAssetList(updatedAsset: assetInterface) {
+                if (assetDiscovery.value)
+                    assetDiscovery.value.mutateAssetInList(updatedAsset)
+                handlePreview(updatedAsset)
+            }
+
             return {
                 initialFilters,
                 selected,
                 handlePreview,
                 isItem,
                 page,
+                propagateToAssetList,
+                assetDiscovery,
             }
         },
     })

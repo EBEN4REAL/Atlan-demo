@@ -55,10 +55,10 @@
 
     import EmptyView from '@common/empty/discover.vue'
     import { useDebounceFn } from '@vueuse/core'
-    import AssetList from '@/discovery/asset/list/index.vue'
-    import AssetTabs from '@/discovery/asset/tabs/index.vue'
+    import AssetList from '~/components/discovery/list/assetList.vue'
+    import AssetTabs from '~/components/discovery/list/assetTypeTabs.vue'
     import ConnectorDropdown from '~/components/common/dropdown/connectorDropdown.vue'
-    import Preferences from '@/discovery/asset/preference/index.vue'
+    import Preferences from '~/components/discovery/list/preference.vue'
     import { AssetTypeList } from '~/constant/assetType'
     import useAssetList from '~/composables/bots/useAssetList'
     import { SearchParameters } from '~/types/atlas/attributes'

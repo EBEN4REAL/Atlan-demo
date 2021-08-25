@@ -30,7 +30,9 @@
           <a-input-search placeholder="Search accross Glossaries"></a-input-search>
         </div>
         <div v-if="entity" class="flex space-x-2 px-4">
-          <a-button class="text-sm leading-5 bg-primary-light text-primary font-bold w-full border-none">
+          <a-button class="text-sm leading-5 bg-primary-light text-primary font-bold w-full border-none"
+            @click="backToGlossary"
+          >
             <span v-if="entity?.typeName === 'AtlasGlossary'">
               {{ entity?.displayText }}
             </span>
@@ -83,7 +85,7 @@ export default defineComponent({
     const router = useRouter();
 
     const currentGuid = ref<string>(route.params.id as string);
-    const type = route.fullPath.split('/')[2];
+    const type = route.fullPath.split('/')[1];
     const parentGlossaryGuid = ref<string | undefined>('')
     const {
       entity,
@@ -122,7 +124,7 @@ export default defineComponent({
     };
 
     const backToHome = () => router.push('/glossary')
-
+    const backToGlossary = () => router.push(`/glossary/${entity.value?.guid}`)
     watch(
       () => route.params.id,
       newId => {

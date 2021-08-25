@@ -1,5 +1,5 @@
 <template>
-    <div class="border-b rounded-tl-lg rounded-tr-lg bg-gray-100">
+    <div class="bg-gray-100 border-b rounded-tl-lg rounded-tr-lg">
         <ConnectorDropdown
             :data="props.connectorsPayload"
             @change="handleChangeConnectors"
@@ -52,9 +52,9 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, computed, ref } from 'vue'
+    import { defineComponent, ref } from 'vue'
     import ConnectorDropdown from '~/components/common/dropdown/connectorDropdown.vue'
-    import Preferences from '@/discovery/asset/preference/index.vue'
+    import Preferences from '~/components/discovery/list/preference.vue'
 
     export interface Connector {
         connector: string

@@ -4,7 +4,7 @@
             v-model:activeKey="activeKey"
             :bordered="false"
             class="bg-transparent"
-            expandIconPosition="right"
+            expand-icon-position="right"
             :class="$style.filter"
             @change="handleCollapseChange"
         >
@@ -41,8 +41,8 @@
                     "
                     :item="item"
                     :data="dataMap[item.id]"
-                    :selectedAsset="infoTabData"
-                    :tabData="componentData"
+                    :selected-asset="infoTabData"
+                    :tab-data="componentData"
                     :properties="
                         PanelsMapToAsset[selectedAsset.typeName]?.properties ??
                         []
@@ -124,7 +124,7 @@
             const { getApplicableBmGroups } = useBusinessMetadataHelper()
             // Mapping of Data to child compoentns
             const dataMap: { [key: string]: any } = ref({})
-            const localStorage = window.localStorage
+            const { localStorage } = window
             function getUserDefaultCollapseOrderInInfoTab(): string[] {
                 let activeKeyOrder: string[] | undefined
                 if (localStorage.getItem('asset_preview_info_tab')) {
@@ -151,7 +151,7 @@
                 getUserDefaultCollapseOrderInInfoTab()
             )
 
-            const handleChange = (value: any) => {}
+            const handleChange = () => {}
             const handleCollapseChange = () => {
                 setUserDefaultCollapseOrderInInfoTab(activeKey.value)
             }
@@ -163,7 +163,7 @@
                     label: b.options.displayName,
                     image: b.options.image || '',
                 })) || []
-            const panels = PanelsMapToAsset[props.selectedAsset.typeName].panels
+            const { panels } = PanelsMapToAsset[props.selectedAsset.typeName]
             const propertiesPanel = panels.pop()
             // ? check if computed  not needed needed?
             const dynamicList = computed(() => [

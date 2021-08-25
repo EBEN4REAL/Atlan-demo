@@ -20,7 +20,7 @@
     </div>
     <a-collapse
         v-model:activeKey="activeKey"
-        expandIconPosition="right"
+        expand-icon-position="right"
         :bordered="false"
         class="relative bg-transparent"
         :class="$style.filter"
@@ -70,22 +70,22 @@
                         </div>
                     </div>
                     <div
-                        class="absolute text-gray-500"
                         v-if="activeKey !== item.id"
+                        class="absolute text-gray-500"
                     >
                         {{ getFiltersAppliedString(item.id) }}
                     </div>
                     <div
-                        class="py-2.5"
                         v-if="isFilter(item.id) && activeKey !== item.id"
+                        class="py-2.5"
                     ></div>
                 </div>
             </template>
 
             <component
                 :is="item.component"
-                :item="item"
                 v-model:data="dataMap[item.id]"
+                :item="item"
                 @change="handleChange"
             ></component>
         </a-collapse-panel>
@@ -232,6 +232,17 @@
                 list: props.initialFilters.facetsFilters.advanced.list,
             }
 
+            function setAppliedFiltersCount() {
+                let count = 0
+                const filterMapKeys = Object.keys(filterMap)
+                filterMapKeys.forEach((id) => {
+                    if (filterMap[id]?.criterion?.length > 0) {
+                        return (count += 1)
+                    }
+                })
+                totalAppliedFiltersCount.value = count
+            }
+
             // ? watching for bmDataMap to be computed
             watch(
                 () => bmDataMap.value,
@@ -273,26 +284,14 @@
                 // updateChangesInStore(value);
             }
 
-            const isFilter = (id) => {
-                if (filterMap[id]) {
-                    if (filterMap[id]?.criterion?.length > 0) {
-                        return true
-                    }
+            const isFilter = (id: string) => {
+                if (filterMap[id] && filterMap[id]?.criterion?.length > 0) {
+                    return true
                 }
                 return false
             }
 
             const totalAppliedFiltersCount = ref(0)
-            function setAppliedFiltersCount() {
-                let count = 0
-                const filterMapKeys = Object.keys(filterMap)
-                filterMapKeys.forEach((id) => {
-                    if (filterMap[id]?.criterion?.length > 0) {
-                        return (count += 1)
-                    }
-                })
-                totalAppliedFiltersCount.value = count
-            }
 
             const handleClear = (filterId: string) => {
                 switch (filterId) {
@@ -326,51 +325,54 @@
             function getFiltersAppliedString(filterId: string) {
                 switch (filterId) {
                     case 'status': {
-                        let filters = dataMap.value[filterId].checked
-                        filters = filters.map((statusId: string) => {
-                            return StatusList?.find(
-                                (status: any) => status.id === statusId
-                            ).label
-                        })
-                        if (filters.length > 3) {
-                            return `${filters.slice(0, 3).join(', ')} +${
-                                filters.length - 3
+                        let facetFiltersData = dataMap.value[filterId].checked
+                        facetFiltersData = facetFiltersData.map(
+                            (statusId: string) =>
+                                StatusList?.find(
+                                    (status: any) => status.id === statusId
+                                ).label
+                        )
+                        if (facetFiltersData.length > 3) {
+                            return `${facetFiltersData
+                                .slice(0, 3)
+                                .join(', ')} +${
+                                facetFiltersData.length - 3
                             } others`
                         }
 
-                        return filters.slice(0, 3).join(', ')
+                        return facetFiltersData.slice(0, 3).join(', ')
                     }
                     case 'classifications': {
-                        const filters = dataMap.value[filterId].checked
-                        if (filters.length > 3) {
-                            return `${filters.slice(0, 3).join(', ')} +${
-                                filters.length - 3
+                        const facetFiltersData = dataMap.value[filterId].checked
+                        if (facetFiltersData.length > 3) {
+                            return `${facetFiltersData
+                                .slice(0, 3)
+                                .join(', ')} +${
+                                facetFiltersData.length - 3
                             } others`
                         }
 
-                        return filters.slice(0, 3).join(', ')
+                        return facetFiltersData.slice(0, 3).join(', ')
                     }
                     case 'owners': {
                         const users = dataMap.value[filterId].userValue
                         const groups = dataMap.value[filterId].groupValue
                         let appliedOwnersString = ''
                         if (users && users?.length > 0) {
-                            if (users?.length == 1)
+                            if (users?.length === 1)
                                 appliedOwnersString += `${users.length} user`
                             else appliedOwnersString += `${users.length} users`
                         }
                         if (groups && groups?.length > 0) {
                             if (appliedOwnersString.length > 0) {
-                                if (groups.length == 1)
+                                if (groups.length === 1)
                                     appliedOwnersString += ` & ${groups.length} group`
                                 else
                                     appliedOwnersString += ` & ${groups.length} groups`
-                            } else {
-                                if (groups.length == 1)
-                                    appliedOwnersString += `${groups.length} group`
-                                else
-                                    appliedOwnersString += `${groups.length} groups`
-                            }
+                            } else if (groups.length === 1)
+                                appliedOwnersString += `${groups.length} group`
+                            else
+                                appliedOwnersString += `${groups.length} groups`
                         }
 
                         return appliedOwnersString

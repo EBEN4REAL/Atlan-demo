@@ -1,22 +1,12 @@
 <template>
     <div class="flex flex-col px-5 py-4">
-        <div class="flex items-center justify-between mb-5">
-            <a-input
+        <div class="mb-5">
+            <SearchAndFilter
                 v-model:value="searchTerm"
+                :dot="!!filters.length"
                 placeholder="Search columns"
-                size="default"
-                :class="$style.searchbar"
             >
-                <template #suffix>
-                    <AtlanIcon icon="Search" />
-                </template>
-            </a-input>
-            <a-popover
-                v-model:visible="isFilterVisible"
-                trigger="click"
-                placement="leftTop"
-            >
-                <template #content>
+                <template #filter>
                     <div class="flex items-center justify-between mb-2 text-sm">
                         <span>Data type</span>
                         <span
@@ -27,20 +17,13 @@
                     </div>
                     <DataTypes v-model:filters="filters" />
                 </template>
-
-                <a-button class="p-1 ml-2 rounded">
-                    <AtlanIcon
-                        :icon="filters.length ? 'FilterDot' : 'Filter'"
-                        class="h-6"
-                    />
-                </a-button>
-            </a-popover>
+            </SearchAndFilter>
         </div>
 
         <div
-            class="flex flex-col mb-4 overflow-y-auto"
             v-for="(asset, index) in filteredList"
             :key="index"
+            class="flex flex-col mb-4 overflow-y-auto"
         >
             <ColumnListItem :asset="asset" />
         </div>
@@ -55,18 +38,19 @@
 </template>
 
 <script lang="ts">
-    import ColumnListItem from '@/discovery/preview/tabs/columns/listItem.vue'
     import DataTypes from '@common/facets/dataType.vue'
     import { toRefs } from '@vueuse/core'
     import { computed, defineComponent, PropType, ref } from 'vue'
+    import SearchAndFilter from '@/common/input/searchAndFilter.vue'
+    import ColumnListItem from '~/components/discovery/preview/tabs/columns/columnListItem.vue'
     import useAssetInfo from '~/composables/asset/useAssetInfo'
     import { useColumns } from '~/composables/asset/useColumnRelations'
     import { dataTypeList } from '~/constant/datatype'
     import { assetInterface } from '~/types/assets/asset.interface'
 
     export default defineComponent({
-        components: { DataTypes, ColumnListItem },
-        name: 'Column Tab',
+        name: 'ColumnTab',
+        components: { DataTypes, ColumnListItem, SearchAndFilter },
         props: {
             id: String,
             componentData: {
@@ -116,25 +100,5 @@
         @apply text-xs;
         @apply border;
         @apply border-gray-300;
-    }
-</style>
-
-<style lang="less" module>
-    .searchbar {
-        @apply mr-2 rounded;
-        @apply border border-gray-300 !important;
-        @apply outline-none;
-        :global(.ant-input) {
-            @apply h-6;
-            @apply bg-transparent;
-            @apply text-gray-500;
-        }
-        &:hover {
-            border-right-width: 2px !important;
-            box-shadow: 0 0 0 2px rgb(82 119 215 / 20%);
-        }
-        ::placeholder {
-            @apply text-gray-500 opacity-80 text-sm;
-        }
     }
 </style>

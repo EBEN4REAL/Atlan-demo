@@ -1,20 +1,20 @@
 <template>
     <div class="w-full px-5">
         <!-- <Terms :selectedAsset="selectedAsset" /> -->
-        <Classifications :selectedAsset="selectedAsset" />
+        <Classifications :selected-asset="selectedAsset" />
         <!-- <BusinessMetaData :selectedAsset="selectedAsset" /> -->
     </div>
 </template>
 
 <script lang="ts">
     import { defineComponent, PropType, toRefs, watch } from 'vue'
-    import Terms from './terms.vue'
+    // import Terms from './terms.vue'
     import Classifications from './classifications.vue'
-    import BusinessMetaData from './businessMetadataContainer.vue'
+    // import BusinessMetaData from './businessMetadataContainer.vue'
     import { assetInterface } from '~/types/assets/asset.interface'
 
     export default defineComponent({
-        components: { Terms, Classifications, BusinessMetaData },
+        components: { Classifications },
         props: {
             selectedAsset: {
                 type: Object as PropType<assetInterface>,

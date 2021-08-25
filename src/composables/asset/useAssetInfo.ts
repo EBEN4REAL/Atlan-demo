@@ -173,26 +173,6 @@ export default function useAssetInfo() {
         })
         return data
     }
-    const relationshipList = (item: assetInterface) => {
-        const found = AssetTypeList.find((a) => a.id == item.typeName)
-
-        const temp = []
-        if (found) {
-            const filtered = AssetTypeList.filter((a) =>
-                found.parents?.includes(a.id)
-            )
-
-            filtered.forEach((f) => {
-                temp.push({
-                    ...f,
-                    qualifiedName: attributes(item)[f.qualifiedNameAttribute],
-                    value: attributes(item)[f.nameAttribute],
-                })
-            })
-        }
-
-        return temp
-    }
 
     return {
         popularityScore,
@@ -223,6 +203,5 @@ export default function useAssetInfo() {
         assetStatus,
         getHierarchy,
         getTableauProperties,
-        relationshipList,
     }
 }

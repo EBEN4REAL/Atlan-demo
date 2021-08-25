@@ -2,13 +2,13 @@
     <div class="pl-12 pr-5 mt-8">
         <!-- Overview Columns widget -->
         <div class="mb-16">
-            <h2 class="mb-6 text-base text-gray">Columns preview</h2>
+            <h2 class="mb-6 text-xl text-gray">Columns preview</h2>
             <overview-columns />
         </div>
 
         <!-- Overview Table widget -->
         <div class="mb-16">
-            <h2 class="mb-6 text-base text-gray">Table preview</h2>
+            <h2 class="mb-6 text-xl text-gray">Table preview</h2>
             <overview-table />
         </div>
 

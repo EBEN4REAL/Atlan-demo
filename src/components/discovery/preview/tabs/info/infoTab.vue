@@ -157,27 +157,31 @@
                     label: b.options.displayName,
                     image: b.options.image || '',
                 })) || []
-            let panels = PanelsMapToAsset[props.selectedAsset.typeName].panels
-            let tableauProperties =
-                PanelsMapToAsset[props.selectedAsset.typeName].properties
-            watch(selectedAsset, () => {
-                panels = PanelsMapToAsset[props.selectedAsset.typeName].panels
-            })
-            // ? check if computed  not needed needed?
-            const dynamicList = computed(() => {
-                if (selectedAsset.value.typeName) {
-                    let propertiesPanel = [...panels].pop()
-                    return [
+            const dynamicList = ref([])
+            let tableauProperties = ref([])
+
+            watch(
+                selectedAsset,
+                () => {
+                    let panels = [
+                        ...PanelsMapToAsset[props.selectedAsset.typeName]
+                            .panels,
+                    ]
+                    let propertiesPanel = panels.pop()
+                    tableauProperties.value =
+                        PanelsMapToAsset[props.selectedAsset.typeName]
+                            ?.properties ?? []
+                    dynamicList.value = [
                         ...panels,
                         ...applicableBMList(props.infoTabData.typeName),
                         propertiesPanel,
                     ]
-                }
-            })
+                },
+                { immediate: true }
+            )
 
             return {
                 tableauProperties,
-                PanelsMapToAsset,
                 handleCollapseChange,
                 dynamicList,
                 activeKey,

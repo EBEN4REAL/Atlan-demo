@@ -13,12 +13,21 @@
                     v-if="readOnly"
                     class="flex items-center self-start flex-grow w-32 break-all "
                 >
-                    {{
-                        formatDisplayValue(
-                            a.value || '',
-                            getDatatypeOfAttribute(a.typeName)
-                        ) || '-'
-                    }}
+                    <a
+                        v-if="isLink(a.value, a.options.displayName)"
+                        target="_blank"
+                        :href="a.value"
+                    >
+                        {{ a.value || '-' }}</a
+                    >
+                    <span v-else>
+                        {{
+                            formatDisplayValue(
+                                a.value?.toString() || '',
+                                getDatatypeOfAttribute(a.typeName)
+                            ) || '-'
+                        }}</span
+                    >
                 </div>
                 <div v-else class="flex items-center self-start flex-grow w-32">
                     <a-input
@@ -99,7 +108,7 @@
                             />
                         </template>
                         <div
-                            v-if="a?.value?.toString() && loading === ''"
+                            v-if="a.value?.toString() && loading === ''"
                             class="col-span-1 text-gray-500 opacity-0 cursor-pointer  group-hover:opacity-100 hover:font-bold"
                             @click.stop.prevent="
                                 () => {
@@ -146,6 +155,7 @@
                 getDatatypeOfAttribute,
                 createDebounce,
                 formatDisplayValue,
+                isLink,
             } = useBusinessMetadataHelper()
 
             const { enumListData: enumsList } = useEnums()
@@ -282,6 +292,7 @@
                 getEnumOptions,
                 readOnly,
                 formatDisplayValue,
+                isLink,
                 debounce: createDebounce(),
             }
         },

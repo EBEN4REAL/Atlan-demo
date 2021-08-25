@@ -58,7 +58,7 @@ export default function useBusinessMetadataHelper() {
     }
 
     const formatDisplayValue = (v: any, type: string) => {
-        if (v) {
+        if (v || v?.toString()) {
             let value = JSON.parse(JSON.stringify(v))
             if (type === 'boolean') {
                 return JSON.parse(value.toString().toLowerCase())
@@ -83,6 +83,13 @@ export default function useBusinessMetadataHelper() {
             }
         }
         return v
+    }
+
+    const isLink = (v: any, name: string) => {
+        const urlRegex = /(((https?:\/\/)|(www\.))[^\s]+)/g;
+        if (name.toLowerCase().includes('link') || (v?.toString().match(urlRegex)))
+            return true;
+        return false;
     }
 
     /**
@@ -181,6 +188,7 @@ export default function useBusinessMetadataHelper() {
         bmDataMap,
         getApplicableBmGroups,
         getApplicableAttributes,
+        isLink,
         createDebounce, formatDisplayValue
     }
 }

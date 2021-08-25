@@ -47,6 +47,7 @@
 
                 <AssetTabs
                     v-model="assetType"
+                    @update:model-value="handleTabChange"
                     :asset-type-list="assetTypeList"
                     :asset-type-map="assetTypeMap"
                     :total="totalSum"
@@ -124,7 +125,6 @@
     } from '~/constant/projection'
     import useTracking from '~/modules/tracking'
     import { initialFiltersType } from '~/pages/assets.vue'
-    import { useBusinessMetadataStore } from '~/store/businessMetadata'
     import { useConnectionsStore } from '~/store/connections'
     import { SearchParameters } from '~/types/atlas/attributes'
     import { getEncodedStringFromOptions } from '~/utils/routerQuery'
@@ -276,11 +276,8 @@
             )
 
             // * Get all available BMs and save on store
-            const store = useBusinessMetadataStore()
             const { fetchBMonStore } = useBusinessMetadata()
-            const BMAttributeProjection = computed(
-                () => store.getBusinessMetadataListProjections
-            )
+
             const state = ref('active')
             const assetTypeLabel = computed(() => {
                 const found = AssetTypeList.find(
@@ -320,7 +317,7 @@
                 () => totalCount.value > list.value.length
             )
 
-            const updateBody = (dontScroll) => {
+            const updateBody = () => {
                 initialBody = {
                     typeName: assetTypeListString,
                     termName: props.termName,
@@ -329,11 +326,7 @@
                     limit: limit.value,
                     offset: offset.value,
                     entityFilters: {},
-                    attributes: [
-                        ...BaseAttributes,
-                        ...BasicSearchAttributes,
-                        ...BMAttributeProjection.value,
-                    ],
+                    attributes: [...BaseAttributes, ...BasicSearchAttributes],
                     aggregationAttributes: [],
                 }
                 initialBody.entityFilters = {
@@ -399,24 +392,29 @@
                     initialBody.query = queryText.value
                 }
                 replaceBody(initialBody)
-                if (assetlist.value && !dontScroll) {
-                    // assetlist?.value.scrollToItem(0);
-                }
+                // if (assetlist.value && !dontScroll) {
+                // assetlist?.value.scrollToItem(0);
+                // }
             }
-            watch(
-                [assetType, BMAttributeProjection],
-                () => {
-                    // ? Should these run only when all attributes are loaded? like BMAttributeProjection
-                    updateBody()
-                    if (!now.value) {
-                        isAggregate.value = true
-                        now.value = true
-                    }
-                },
-                {
-                    immediate: true,
-                }
-            )
+
+            function handleTabChange() {
+                isAggregate.value = false
+                updateBody()
+            }
+            // watch(
+            //     assetType,
+            //     () => {
+            //         // ? Should these run only when all attributes are loaded? like BMAttributeProjection
+            //         updateBody()
+            //         if (!now.value) {
+            //             isAggregate.value = true
+            //             now.value = true
+            //         }
+            //     },
+            //     {
+            //         immediate: true,
+            //     }
+            // )
             const { projection } = useDiscoveryPreferences()
             const handleSearchChange = useDebounceFn(() => {
                 offset.value = 0
@@ -508,6 +506,9 @@
 
             onMounted(() => {
                 fetchBMonStore()
+                now.value = true
+                isAggregate.value = true
+                updateBody()
             })
             return {
                 handleClearFiltersFromList,
@@ -542,6 +543,7 @@
                 connectorsPayload,
                 filteredConnector,
                 mutateAssetInList,
+                handleTabChange,
             }
         },
         data() {

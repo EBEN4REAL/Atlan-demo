@@ -14,8 +14,6 @@ export default function useAssetList(
     const list: Ref<assetInterface[]> = ref([])
     const {
         data,
-        state,
-        STATES,
         isLoading,
         isValidating,
         query,
@@ -33,7 +31,7 @@ export default function useAssetList(
         cacheSuffx,
         false,
         cancelTokenSource,
-        true
+        false
     )
 
     const aggregationList: Ref<any> = ref([])
@@ -56,10 +54,10 @@ export default function useAssetList(
         [],
         data,
         aggregationBody,
-        cacheSuffx,
+        'Aggregations',
         false,
-        cancelTokenSource,
-        true
+        undefined,
+        false
     )
 
     const isAggregate = ref(false)
@@ -101,8 +99,6 @@ export default function useAssetList(
     return {
         data,
         list,
-        state,
-        STATES,
         isLoading,
         isValidating,
         query,

@@ -1,36 +1,41 @@
+import { computed, ComputedRef, Ref, ref, watch } from 'vue'
+import axios, { CancelTokenSource } from 'axios'
+import { SearchParameters } from '~/types/atlas/attributes'
+import fetchSearchList from '../utils/search'
 
-import { computed, ComputedRef, Ref, ref, watch } from 'vue';
-import axios, { CancelTokenSource } from 'axios';
-import { SearchParameters } from '~/types/atlas/attributes';
-import fetchSearchList from '../utils/search';
-
-import { AssetTypeList } from "~/constant/assetType";
-import { Search } from '~/api/atlas/search';
-import { SearchBasic } from '~/api/atlas/searchbasic';
+import { AssetTypeList } from '~/constant/assetType'
+import { Search } from '~/api/atlas/search'
+import { SearchBasic } from '~/api/atlas/searchbasic'
 // import axios, { CancelTokenSource } from 'axios';
 // import { Components } from '~/api/atlas/client';
 // import fetchAssetAggregation from './fetchAssetAggregation';
 
+import {
+    BaseAttributes,
+    BasicSearchAttributes,
+    tableauAttributes,
+} from '~/constant/projection'
+import { SourceList } from '~/constant/source'
+import swrvState from '../utils/swrvState'
+import { Components } from '~/api/atlas/client'
 
-import { BaseAttributes, BasicSearchAttributes } from '~/constant/projection';
-import { SourceList } from '~/constant/source';
-import swrvState from '../utils/swrvState';
-import { Components } from '~/api/atlas/client';
+export default function fetchAssetDiscover(
+    cache?: string,
+    dependentKey?: Ref<any>
+) {
+    const cancelTokenSource: Ref<CancelTokenSource> = ref(
+        axios.CancelToken.source()
+    )
 
-
-export default function fetchAssetDiscover(cache?: string, dependentKey?: Ref<any>) {
-
-    const cancelTokenSource: Ref<CancelTokenSource> = ref(axios.CancelToken.source());
-
-    const doAggregation = ref(true);
+    const doAggregation = ref(true)
 
     const entityFilters: Ref<Components.Schemas.FilterCriteria> = ref({
-        condition: "AND" as Components.Schemas.Condition,
-        criterion: []
-    });
+        condition: 'AND' as Components.Schemas.Condition,
+        criterion: [],
+    })
 
     const body: Ref<SearchParameters> = ref({
-        typeName: "Table,Column,View",
+        typeName: 'Table,Column,View',
         excludeDeletedEntities: true,
         includeClassificationAttributes: true,
         includeSubClassifications: true,
@@ -40,19 +45,23 @@ export default function fetchAssetDiscover(cache?: string, dependentKey?: Ref<an
         attributes: [...BaseAttributes, ...BasicSearchAttributes],
         entityFilters: {
             ...entityFilters.value,
-            criterion: entityFilters.value.criterion
-        }
-    });
+            criterion: entityFilters.value.criterion,
+        },
+    })
 
     const options = ref({
         cancelToken: cancelTokenSource?.value.token,
         revalidateOnFocus: false,
         dedupingInterval: 1,
         immediate: false,
-    });
-    const { data, mutate, isValidating, error } = SearchBasic.BasicV2(cache, body, options, dependentKey);
-    const { state, STATES } = swrvState(data, error, isValidating);
-
+    })
+    const { data, mutate, isValidating, error } = SearchBasic.BasicV2(
+        cache,
+        body,
+        options,
+        dependentKey
+    )
+    const { state, STATES } = swrvState(data, error, isValidating)
 
     // Aggregate Setup
     const aggregateBody: Ref<SearchParameters> = ref({
@@ -62,38 +71,49 @@ export default function fetchAssetDiscover(cache?: string, dependentKey?: Ref<an
         attributes: [],
         entityFilters: {
             ...entityFilters,
-            criterion: entityFilters.value.criterion
+            criterion: entityFilters.value.criterion,
         },
-        aggregationAttributes: ["__typeName.keyword"]
-    });
-    const dependentKeyAggregation = ref(false);
-    const { data: aggregationData, mutate: mutateAggregation, error: errorAggregation, isValidating: isValidatingAggregation } = SearchBasic.BasicV2(false, aggregateBody, options);
-    const { state: AggregationState, STATES: AggergationSTATES } = swrvState(data, error, isValidating);
+        aggregationAttributes: ['__typeName.keyword'],
+    })
+    const dependentKeyAggregation = ref(false)
+    const {
+        data: aggregationData,
+        mutate: mutateAggregation,
+        error: errorAggregation,
+        isValidating: isValidatingAggregation,
+    } = SearchBasic.BasicV2(false, aggregateBody, options)
+    const { state: AggregationState, STATES: AggergationSTATES } = swrvState(
+        data,
+        error,
+        isValidating
+    )
 
-
-    const list = ref([]);
+    const list = ref([])
     watch(data, () => {
-
         if (doAggregation.value) {
-            refreshAggregation();
+            refreshAggregation()
         }
         if (body?.value?.offset > 0) {
-            list.value = list.value.concat(data?.value?.entities);
+            list.value = list.value.concat(data?.value?.entities)
         } else if (data.value?.entities) {
-                list.value = data.value?.entities;
-            } else {
-                list.value = [];
-            }
-    });
+            list.value = data.value?.entities
+        } else {
+            list.value = []
+        }
+    })
 
-    const listCount: ComputedRef<any> = computed(() => list.value.length);
-    const limit: ComputedRef<any> = computed(() => body.value.limit);
-    const offset: ComputedRef<any> = computed(() => body.value.offset);
-    const totalCount: ComputedRef<any> = computed(() => data?.value?.approximateCount);
-    const aggregations: ComputedRef<any[]> = computed(() => aggregationData?.value?.aggregations);
+    const listCount: ComputedRef<any> = computed(() => list.value.length)
+    const limit: ComputedRef<any> = computed(() => body.value.limit)
+    const offset: ComputedRef<any> = computed(() => body.value.offset)
+    const totalCount: ComputedRef<any> = computed(
+        () => data?.value?.approximateCount
+    )
+    const aggregations: ComputedRef<any[]> = computed(
+        () => aggregationData?.value?.aggregations
+    )
     const assetTypeList: ComputedRef<any> = computed(() => {
-        const temp = [];
-        const map = aggregations?.value?.['__typeName.keyword'];
+        const temp = []
+        const map = aggregations?.value?.['__typeName.keyword']
         // if (map) {
         //     Object.keys(map).forEach((key) => {
         //         if (map[key] > 0) {
@@ -110,12 +130,11 @@ export default function fetchAssetDiscover(cache?: string, dependentKey?: Ref<an
         //     });
         // }
         // console.log(map);
-        return map;
-    });
-
+        return map
+    })
 
     const refreshAggregation = () => {
-        dependentKeyAggregation.value = true;
+        dependentKeyAggregation.value = true
         aggregateBody.value = {
             ...body.value,
             limit: 1,
@@ -123,171 +142,168 @@ export default function fetchAssetDiscover(cache?: string, dependentKey?: Ref<an
             attributes: [],
             entityFilters: {
                 ...body.value.entityFilters,
-                criterion: body.value?.entityFilters?.criterion
+                criterion: body.value?.entityFilters?.criterion,
             },
-            aggregationAttributes: ["__typeName.keyword"]
+            aggregationAttributes: ['__typeName.keyword'],
         }
-        mutateAggregation();
-    };
+        mutateAggregation()
+    }
 
     const refresh = (dontAggregate?: boolean) => {
-
         if (dontAggregate) {
-            doAggregation.value = false;
+            doAggregation.value = false
         } else {
-            doAggregation.value = true;
+            doAggregation.value = true
         }
-        console.log(doAggregation.value);
+        console.log(doAggregation.value)
 
-        if ([STATES.PENDING].includes(state.value) || [STATES.VALIDATING].includes(state.value) || [AggergationSTATES.PENDING].includes(AggregationState.value)
-            || [AggergationSTATES.VALIDATING].includes(AggregationState.value)) {
-            cancelTokenSource.value.cancel();
-            cancelTokenSource.value = axios.CancelToken.source();
-            options.value.cancelToken = cancelTokenSource.value.token;
+        if (
+            [STATES.PENDING].includes(state.value) ||
+            [STATES.VALIDATING].includes(state.value) ||
+            [AggergationSTATES.PENDING].includes(AggregationState.value) ||
+            [AggergationSTATES.VALIDATING].includes(AggregationState.value)
+        ) {
+            cancelTokenSource.value.cancel()
+            cancelTokenSource.value = axios.CancelToken.source()
+            options.value.cancelToken = cancelTokenSource.value.token
         }
-        mutate();
-    };
+        mutate()
+    }
 
     const isLoadMore = computed(() => {
         if (listCount.value < totalCount.value) {
-            return true;
+            return true
         }
-        return false;
-    });
+        return false
+    })
 
     const loadMore = (limit: number) => {
         if (isLoadMore.value) {
-            body.value.offset += limit;
+            body.value.offset += limit
         }
         body.value.entityFilters = {
             ...entityFilters.value,
-            criterion: entityFilters.value.criterion
+            criterion: entityFilters.value.criterion,
         }
-        refresh(true);
-    };
+        refresh(true)
+    }
 
     const query = (queryText: string) => {
-        body.value.query = queryText;
-        body.value.offset = 0;
+        body.value.query = queryText
+        body.value.offset = 0
         body.value.entityFilters = {
             ...entityFilters.value,
-            criterion: entityFilters.value.criterion
+            criterion: entityFilters.value.criterion,
         }
-        refresh();
-    };
+        refresh()
+    }
 
     const changeSort = (sort: string) => {
-        console.log(sort);
+        console.log(sort)
 
-        if (sort !== "default") {
-            const split = sort.split("|");
+        if (sort !== 'default') {
+            const split = sort.split('|')
             if (split.length > 1) {
-                body.value.sortBy = split[0];
-                body.value.sortOrder = split[1].toUpperCase();
+                body.value.sortBy = split[0]
+                body.value.sortOrder = split[1].toUpperCase()
             }
         } else {
-            body.value.sortBy = "";
-            delete body.value.sortOrder;
+            body.value.sortBy = ''
+            delete body.value.sortOrder
         }
-        refresh(true);
+        refresh(true)
 
         // body.value.
-    };
-
+    }
 
     const changeAssetType = (assetType: string) => {
-
         const temp = {
-            ...entityFilters.value
+            ...entityFilters.value,
         }
-        temp.criterion = [...entityFilters.value.criterion];
+        temp.criterion = [...entityFilters.value.criterion]
         temp.criterion?.push({
-            attributeName: "__typeName",
+            attributeName: '__typeName',
             attributeValue: assetType,
-            operator: "eq"
-        });
+            operator: 'eq',
+        })
         body.value.entityFilters = {
-            ...temp
+            ...temp,
         }
-        console.log("chaneg asset type");
-        refresh(true);
-    };
+        console.log('chaneg asset type')
+        refresh(true)
+    }
 
     const changeConnectors = (payload: any) => {
-
-
-
         const temp = {
-            ...entityFilters.value
+            ...entityFilters.value,
         }
-        temp.criterion = [...entityFilters.value.criterion];
-
+        temp.criterion = [...entityFilters.value.criterion]
 
         const tempCriteria = {
-            condition: "OR",
+            condition: 'OR',
             criterion: [],
         }
 
         payload.connectors.forEach((element: any) => {
             tempCriteria.criterion?.push({
-                attributeName: "integrationName",
+                attributeName: 'integrationName',
                 attributeValue: element,
-                operator: "eq"
-            });
-        });
+                operator: 'eq',
+            })
+        })
         payload.connections.forEach((element: any) => {
             tempCriteria.criterion?.push({
-                attributeName: "connectionQualifiedName",
+                attributeName: 'connectionQualifiedName',
                 attributeValue: element,
-                operator: "eq"
-            });
-        });
-        temp.criterion.push(tempCriteria);
+                operator: 'eq',
+            })
+        })
+        temp.criterion.push(tempCriteria)
 
         body.value.entityFilters = {
-            ...temp
+            ...temp,
         }
-        console.log("chaneg asset type");
+        console.log('chaneg asset type')
         refresh()
-
     }
 
     const filter = (filters: Components.Schemas.FilterCriteria) => {
-        entityFilters.value = filters;
+        entityFilters.value = filters
         body.value.entityFilters = {
             ...filters,
-            criterion: filters.criterion
+            criterion: filters.criterion,
         }
-        refresh();
-    };
+        refresh()
+    }
     const savedSearch = (param: SearchParameters) => {
-        console.log(param);
+        console.log(param)
 
-        param.limit = body.value.limit;
-        param.attributes = [...BaseAttributes, ...BasicSearchAttributes];
+        param.limit = body.value.limit
+        param.attributes = [...BaseAttributes, ...BasicSearchAttributes]
 
         body.value = {
-            ...param
-        };
+            ...param,
+        }
 
-        refresh();
-    };
-
+        refresh()
+    }
 
     const isLoading = computed(() => {
-        if ([STATES.PENDING].includes(state.value) || [STATES.VALIDATING].includes(state.value)) {
-            return true;
+        if (
+            [STATES.PENDING].includes(state.value) ||
+            [STATES.VALIDATING].includes(state.value)
+        ) {
+            return true
         }
-        return false;
-    });
+        return false
+    })
 
     const isError = computed(() => {
         if ([STATES.ERROR, STATES.STALE_IF_ERROR].includes(state.value)) {
-            return true;
+            return true
         }
-        return false;
-    });
-
+        return false
+    })
 
     return {
         data,

@@ -247,7 +247,7 @@
                         initialFilters.value.facetsFilters.advanced.criterion,
                 },
             })
-            const limit = ref(initialFilters.value.limit || 20)
+            const limit = ref(parseInt(initialFilters.value.limit) || 20)
             const offset = ref(0)
             const sortOrder = ref('default')
             // Get All Disoverable Asset Types
@@ -399,6 +399,7 @@
 
             function handleTabChange() {
                 isAggregate.value = false
+                offset.value = 0
                 updateBody()
             }
             // watch(
@@ -488,7 +489,7 @@
                     offset.value = list.value.length + limit.value
                 }
                 isAggregate.value = false
-                updateBody(true)
+                updateBody()
             }
 
             const handleClearFiltersFromList = () => {
@@ -510,6 +511,7 @@
                 isAggregate.value = true
                 updateBody()
             })
+
             return {
                 handleClearFiltersFromList,
                 assetFilterRef,

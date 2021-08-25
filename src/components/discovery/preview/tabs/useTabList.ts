@@ -23,7 +23,15 @@ export default function useAssetDetailsTabList(page: Ref<string>) {
         {
             name: 'Columns',
             component: 'columns',
-            exclude: ['Column', 'TableauWorkbook', 'TableauWorksheet'],
+            exclude: [
+                'Column',
+                'TableauWorkbook',
+                'TableauWorksheet',
+                'TableauSite',
+                'TableauProject',
+                'TableauDashboard',
+                'TableauDatasource',
+            ],
             visibleOn: ['discovery', 'profile'],
         },
         {
@@ -34,6 +42,16 @@ export default function useAssetDetailsTabList(page: Ref<string>) {
         {
             name: 'Relations',
             component: 'relations',
+            exclude: [
+                'Connection',
+                'Database',
+                'Schema',
+                'View',
+                'Table',
+                'TablePartition',
+                'MaterialisedView',
+                'Column',
+            ],
             visibleOn: ['discovery'],
         },
         // {

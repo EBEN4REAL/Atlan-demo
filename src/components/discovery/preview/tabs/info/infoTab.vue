@@ -32,21 +32,12 @@
                         {{ item.label }}
                     </div>
                 </template>
+
                 <component
                     :is="item.component"
-                    :ref="
-                        (el) => {
-                            refMap[item.id] = el
-                        }
-                    "
-                    :item="item"
-                    :data="dataMap[item.id]"
                     :selected-asset="infoTabData"
                     :tab-data="componentData"
-                    :properties="
-                        PanelsMapToAsset[selectedAsset.typeName]?.properties ??
-                        []
-                    "
+                    :tableauProperties="tableauProperties ?? []"
                     @change="handleChange"
                 ></component>
             </a-collapse-panel>
@@ -69,6 +60,8 @@
         Ref,
         PropType,
         computed,
+        toRefs,
+        watch,
     } from 'vue'
     import { PanelsMapToAsset } from './List'
     import { assetInterface } from '~/types/assets/asset.interface'
@@ -120,6 +113,7 @@
             const refMap: Ref<{
                 [key: string]: any
             }> = ref({})
+            const { selectedAsset } = toRefs(props)
 
             const { getApplicableBmGroups } = useBusinessMetadataHelper()
             // Mapping of Data to child compoentns
@@ -163,16 +157,26 @@
                     label: b.options.displayName,
                     image: b.options.image || '',
                 })) || []
-            const { panels } = PanelsMapToAsset[props.selectedAsset.typeName]
-            const propertiesPanel = panels.pop()
+            let panels = PanelsMapToAsset[props.selectedAsset.typeName].panels
+            let tableauProperties =
+                PanelsMapToAsset[props.selectedAsset.typeName].properties
+            watch(selectedAsset, () => {
+                panels = PanelsMapToAsset[props.selectedAsset.typeName].panels
+            })
             // ? check if computed  not needed needed?
-            const dynamicList = computed(() => [
-                ...panels,
-                ...applicableBMList(props.infoTabData.typeName),
-                propertiesPanel,
-            ])
+            const dynamicList = computed(() => {
+                if (selectedAsset.value.typeName) {
+                    let propertiesPanel = [...panels].pop()
+                    return [
+                        ...panels,
+                        ...applicableBMList(props.infoTabData.typeName),
+                        propertiesPanel,
+                    ]
+                }
+            })
 
             return {
+                tableauProperties,
                 PanelsMapToAsset,
                 handleCollapseChange,
                 dynamicList,

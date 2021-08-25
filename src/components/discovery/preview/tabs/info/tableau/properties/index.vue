@@ -26,21 +26,21 @@
                 type: Object as PropType<assetInterface>,
                 required: true,
             },
-            properties: {
+            tableauProperties: {
                 type: Object as PropType<string[]>,
                 required: true,
             },
         },
         setup(props) {
-            const { selectedAsset, properties } = toRefs(props)
+            const { selectedAsset, tableauProperties } = toRefs(props)
             const { getTableauProperties } = useAssetInfo()
             const propertiesData = getTableauProperties(
-                selectedAsset.value,
-                properties
+                selectedAsset,
+                tableauProperties.value
             )
             return {
                 propertiesData,
-                properties,
+                tableauProperties,
             }
         },
     })

@@ -1,3 +1,4 @@
+import { Ref } from 'vue'
 import { assetInterface } from '~/types/assets/asset.interface'
 import { SourceList } from '~/constant/source'
 import { AssetTypeList } from '~/constant/assetType'
@@ -155,22 +156,28 @@ export default function useAssetInfo() {
         return relations
     }
 
-    const getTableauProperties = (asset: assetInterface, properties: any) => {
+    const getTableauProperties = (
+        asset: Ref<assetInterface> | undefined,
+        properties: any
+    ) => {
         const data: any = []
-        properties.forEach((tableauProperty: any) => {
-            const { label, property } = tableauProperty
-            if (attributes(asset)[property]) {
-                const temp = {}
-                temp.id = property
-                temp.label = label
-                temp[property] = attributes(asset)[property]
-                if (property === '__timestamp')
-                    temp[property] = createdAt(asset)
-                else if (property === '__modificationTimestamp')
-                    temp[property] = updatedAt(asset)
-                data.push(temp)
-            }
-        })
+        console.log(properties, 'properties')
+        if (asset.value && properties.length > 0) {
+            properties.forEach((tableauProperty: any) => {
+                const { label, property } = tableauProperty
+                if (attributes(asset.value)[property]) {
+                    const temp = {}
+                    temp.id = property
+                    temp.label = label
+                    temp[property] = attributes(asset.value)[property]
+                    if (property === '__timestamp')
+                        temp[property] = createdAt(asset.value)
+                    else if (property === '__modificationTimestamp')
+                        temp[property] = updatedAt(asset.value)
+                    data.push(temp)
+                }
+            })
+        }
         return data
     }
 

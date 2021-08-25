@@ -58,7 +58,7 @@ export default function useDynamicHeightList(
         ]
 
         topHeight.value = listSize[listIndices.value[0]]
-        fullHeight.value = listSize[listSize.length - 1] + 30
+        fullHeight.value = listSize[listSize.length - 1]
     }
 
     watch(
@@ -70,7 +70,7 @@ export default function useDynamicHeightList(
 
             // Keep recording the height of the elements
             // TODO: Account for the spacer elements
-            while (listSize.length < index[1] + offset && wrapper.value) {
+            while (listSize.length <= index[1] + offset && wrapper.value) {
                 const nthChild = listSize.length - (index[0] + offset)
                 const size =
                     listSize[listSize.length - 1] +
@@ -78,7 +78,7 @@ export default function useDynamicHeightList(
                 listSize.push(size)
             }
         },
-        { flush: 'post' }
+        { flush: 'post', immediate: true }
     )
 
     function reset() {

@@ -52,7 +52,9 @@
                     :asset-type-map="assetTypeMap"
                     :total="totalSum"
                 ></AssetTabs>
-                <div class="flex items-center justify-between w-full px-3 py-2">
+                <div
+                    class="flex items-center justify-between w-full px-3 py-2 border-b border-gray-300 "
+                >
                     <AssetPagination
                         v-if="!isLoading && !isValidating"
                         :label="assetTypeLabel"

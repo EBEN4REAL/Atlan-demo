@@ -4,7 +4,7 @@ import { ref, computed, Ref } from 'vue'
 import { assetInterface } from '~/types/assets/asset.interface'
 
 // Keep adding pages here as and when required
-type Page = 'discovery' | 'profile'
+type Page = 'discovery' | 'profile' | 'columnPreview'
 
 interface TabList {
     name: string
@@ -57,11 +57,11 @@ export default function useAssetDetailsTabList(
             ],
             visibleOn: ['discovery'],
         },
-        // {
-        //     name: 'Chat',
-        //     component: 'chat',
-        //     visibleOn: ["discovery", "profile"],
-        // },
+        {
+            name: 'Chat',
+            component: 'chat',
+            visibleOn: ["discovery", "profile", "columnPreview"],
+        },
         // {
         //     name: 'Actions',
         //     component: 'actions',
@@ -71,6 +71,11 @@ export default function useAssetDetailsTabList(
             name: 'Lineage',
             component: 'lineage',
             visibleOn: ['discovery'],
+        },
+        {
+            name: 'Info',
+            component: 'columnInfo',
+            visibleOn: ["columnPreview"],
         },
     ]
 

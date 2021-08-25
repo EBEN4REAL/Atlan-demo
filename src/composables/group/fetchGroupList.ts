@@ -6,7 +6,7 @@ import { Components } from '~/api/auth/client'
 
 import { Group, URL } from '~/api/auth/group'
 
-export default function fetchGroupList(dependent: any, paramsdefault?: any) {
+export default function fetchGroupList(immediate: boolean = true) {
     const params = ref({})
     // this is needed as there are multiple keys with the same param name
     const urlparam = new URLSearchParams()
@@ -20,9 +20,8 @@ export default function fetchGroupList(dependent: any, paramsdefault?: any) {
     const { data, error, mutate, isValidating } = useSWRV(
         [URL.GroupList, params?.value, {}],
         () => {
-            if (dependent.value) {
-                return Group.ListV2(params?.value)
-            }
+            if (immediate) return Group.ListV2(params?.value)
+            else immediate = true
 
             return {}
         },

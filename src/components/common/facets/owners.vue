@@ -84,7 +84,12 @@
                                 STATES.SUCCESS === userOwnerState &&
                                 userList.length < 1
                             "
-                            class="flex flex-col items-center justify-center h-full "
+                            class="
+                                flex flex-col
+                                items-center
+                                justify-center
+                                h-full
+                            "
                         >
                             <div class="flex flex-col items-center">
                                 <img
@@ -155,7 +160,18 @@
                                 STATES.SUCCESS === userOwnerState &&
                                 showMoreUsers
                             "
-                            class="flex items-center w-auto mb-0 font-bold text-center cursor-pointer select-none  outlined text-primary"
+                            class="
+                                flex
+                                items-center
+                                w-auto
+                                mb-0
+                                font-bold
+                                text-center
+                                cursor-pointer
+                                select-none
+                                outlined
+                                text-primary
+                            "
                             @click="toggleShowMore"
                         >
                             {{
@@ -181,7 +197,12 @@
                                 STATES.SUCCESS === groupOwnerState &&
                                 groupList.length < 1
                             "
-                            class="flex flex-col items-center justify-center h-full "
+                            class="
+                                flex flex-col
+                                items-center
+                                justify-center
+                                h-full
+                            "
                         >
                             <div class="flex flex-col items-center">
                                 <img
@@ -230,7 +251,18 @@
                                 GROUPSTATES.SUCCESS === groupOwnerState &&
                                 showMoreGroups
                             "
-                            class="flex items-center w-auto mb-0 font-bold text-center cursor-pointer select-none  outlined text-primary"
+                            class="
+                                flex
+                                items-center
+                                w-auto
+                                mb-0
+                                font-bold
+                                text-center
+                                cursor-pointer
+                                select-none
+                                outlined
+                                text-primary
+                            "
                             @click="toggleShowMoreGroups"
                         >
                             {{
@@ -287,7 +319,6 @@
         },
         emits: ['change'],
         setup(props, { emit }) {
-            const now = ref(true)
             const { data } = toRefs(props)
             const activeOwnerTabKey = ref('1')
             const showMoreUsers = ref(true)
@@ -357,7 +388,7 @@
                 mutate: mutateUsers,
                 setLimit: setLimit,
                 handleSearch: handleUserSearch,
-            } = fetchUserList(now)
+            } = fetchUserList()
 
             const {
                 list: listGroups,
@@ -367,7 +398,7 @@
                 state: groupOwnerState,
                 mutate: mutateGroups,
                 setLimit: setGroupLimit,
-            } = fetchGroupList(now)
+            } = fetchGroupList()
             const onSelectUser = (user: userInterface) => {
                 // unselect if already selected
                 if (data.value.userValue.includes(user.username)) {

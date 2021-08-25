@@ -1,7 +1,7 @@
 <template>
     <div class="w-full px-5">
         <!-- <Terms :selectedAsset="selectedAsset" /> -->
-        <Classifications :selected-asset="selectedAsset" />
+        <!-- <Classifications :selected-asset="selectedAsset" /> -->
         <!-- <BusinessMetaData :selectedAsset="selectedAsset" /> -->
     </div>
 </template>

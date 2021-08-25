@@ -138,24 +138,25 @@
             })
 
             function init() {
-                isLoaded.value = true
-                const { data, error } = useAsset({
-                    entityId: selectedAsset.value.guid,
-                })
-                assetType.value = selectedAsset.value.typeName
-                watch([data, error], () => {
-                    if (data.value && error.value === undefined) {
-                        const entitiy = getAssetEntitity(data)
-                        infoTabData.value = entitiy
-                        isLoaded.value = false
-                        console.log(infoTabData.value, 'info tab Data')
-                    } else {
-                        console.log(
-                            error.value,
-                            '------ assetInfo failed to fetch ------ '
-                        )
-                    }
-                })
+                isLoaded.value = false
+                // const { data, error } = useAsset({
+                //     entityId: selectedAsset.value.guid,
+                // })
+                // assetType.value = selectedAsset.value.typeName
+                // watch([data, error], () => {
+                //     if (data.value && error.value === undefined) {
+                //         const entitiy = getAssetEntitity(data)
+                //         infoTabData.value = entitiy
+                //         isLoaded.value = false
+                //         console.log(infoTabData.value, 'info tab Data')
+                //     } else {
+                //         console.log(
+                //             error.value,
+                //             '------ assetInfo failed to fetch ------ '
+                //         )
+                //     }
+                // })
+                infoTabData.value = selectedAsset.value
             }
             watch(() => selectedAsset.value.guid, init)
             onMounted(init)

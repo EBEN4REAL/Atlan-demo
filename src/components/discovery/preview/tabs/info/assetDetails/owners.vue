@@ -183,6 +183,7 @@
                                     ? `Search ${listUsers?.length} users`
                                     : `Search ${listGroups?.length} groups`
                             "
+                            v-model:value="searchText"
                             @change="handleOwnerSearch"
                         >
                             <template #suffix>
@@ -471,26 +472,28 @@
             },
         },
         setup(props) {
-            const now = ref(true)
             const { selectedAsset } = toRefs(props)
             const showOwnersDropdown: Ref<boolean> = ref(false)
             const activeOwnerTabKey = ref('1')
             const selectedUsers: Ref<string[]> = ref([])
             const selectedGroups: Ref<string[]> = ref([])
+            const searchText: Ref<string> = ref('')
             const showAll = ref(false)
 
             const {
                 list: listUsers,
                 state: userOwnerState,
                 STATES,
+                mutate: mutateUsers,
                 handleSearch: handleUserSearch,
-            } = fetchUserList(now)
+            } = fetchUserList(false)
 
             const {
                 list: listGroups,
                 handleSearch: handleGroupSearch,
                 state: groupOwnerState,
-            } = fetchGroupList(now)
+                mutate: mutateGroups,
+            } = fetchGroupList(false)
 
             const mutateSelectedAsset: (updatedAsset: assetInterface) => void =
                 inject('mutateSelectedAsset')
@@ -608,16 +611,19 @@
             )
 
             const handleOwnerSearch = (e: Event) => {
-                const queryText = (<HTMLInputElement>e.target).value
                 if (activeOwnerTabKey.value === '1') {
-                    handleUserSearch(queryText)
+                    handleUserSearch(searchText.value)
                 } else if (activeOwnerTabKey.value === '2') {
-                    // for groups
-                    handleGroupSearch(queryText)
+                    handleGroupSearch(searchText.value)
                 }
             }
             const toggleOwnerPopover = () => {
                 showOwnersDropdown.value = !showOwnersDropdown.value
+
+                if (!searchText.value) {
+                    mutateUsers()
+                    mutateGroups()
+                }
             }
             const toggleAllOwners = (state: boolean) => {
                 showAll.value = state
@@ -650,6 +656,7 @@
                 showAll,
                 toggleAllOwners,
                 userOwnerState,
+                searchText,
                 STATES,
                 groupOwnerState,
                 handleOwnerSearch,

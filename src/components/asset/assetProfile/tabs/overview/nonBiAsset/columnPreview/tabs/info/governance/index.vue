@@ -10,11 +10,10 @@
     import { defineComponent, PropType, toRefs, watch } from 'vue'
     import Terms from './terms.vue'
     import Classifications from './classifications.vue'
-    import BusinessMetaData from './businessMetadataContainer.vue'
     import { assetInterface } from '~/types/assets/asset.interface'
 
     export default defineComponent({
-        components: { Terms, Classifications, BusinessMetaData },
+        components: { Terms, Classifications },
         props: {
             selectedAsset: {
                 type: Object as PropType<assetInterface>,

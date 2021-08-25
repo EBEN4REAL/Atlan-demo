@@ -61,7 +61,7 @@
         },
 
         setup(props) {
-            const { filteredTabs, columnType } = useColumnDetailsTabList()
+            const { filteredTabs } = useColumnDetailsTabList()
             const activeKey = ref(0)
             const isLoaded: Ref<boolean> = ref(true)
 

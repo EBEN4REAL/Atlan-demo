@@ -120,8 +120,8 @@
                 :destroy-on-close="true"
                 width="420"
                 ><div class="flex flex-col bg-white border-l">
-                    <AssetPreview
-                        :selected-asset="selectedRowData"
+                    <ColumnPreview
+                        :selected-row="selectedRowData"
                         page="columnPreview"
                     />
                 </div>
@@ -147,7 +147,7 @@
     import AssetPreview from '~/components/discovery/preview/assetPreview.vue'
 
     export default defineComponent({
-        components: { AssetPreview },
+        components: { ColumnPreview },
         setup() {
             /** DATA */
             const query = ref('')

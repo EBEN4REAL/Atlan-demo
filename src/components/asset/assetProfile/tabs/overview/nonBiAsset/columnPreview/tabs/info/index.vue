@@ -1,5 +1,5 @@
-<!-- <template>
-    <div v-if="!isLoaded" class="">
+<template>
+    <div v-if="isLoaded" class="">
         <a-collapse
             v-model:activeKey="activeKey"
             :bordered="false"
@@ -18,17 +18,12 @@
                 </div>
             </template>
             <a-collapse-panel
-                v-for="item in dynamicList"
+                v-for="item in panels"
                 :key="item.id"
                 class="bg-transparent"
             >
                 <template #header>
                     <div :key="item.id" class="flex text-sm select-none header">
-                        <img
-                            v-if="item.image"
-                            :src="item.image"
-                            class="w-auto h-5 mr-2"
-                        />
                         {{ item.label }}
                     </div>
                 </template>
@@ -41,12 +36,8 @@
                     "
                     :item="item"
                     :data="dataMap[item.id]"
-                    :selectedAsset="infoTabData"
-                    :tabData="componentData"
-                    :properties="
-                        PanelsMapToAsset[selectedAsset.typeName]?.properties ??
-                        []
-                    "
+                    :selected-row="selectedRow"
+                    :tab-data="componentData"
                     @change="handleChange"
                 ></component>
             </a-collapse-panel>
@@ -70,7 +61,7 @@
         PropType,
         computed,
     } from 'vue'
-    import { PanelsMapToAsset } from './List'
+    import { PanelsMapToAsset, CollapsiblePanels } from './List'
     import { assetInterface } from '~/types/assets/asset.interface'
     import useBusinessMetadataHelper from '~/composables/businessMetadata/useBusinessMetadataHelper'
 
@@ -80,15 +71,20 @@
             columnDetails: defineAsyncComponent(
                 () => import('./columnDetails/index.vue')
             ),
+
+            /* linkedAsset: defineAsyncComponent(
+                () => import('./governance/index.vue')
+            ), */
+            usage: defineAsyncComponent(() => import('./usage/index.vue')),
+
+            businessMetadata1: defineAsyncComponent(
+                () => import('./businessMetadata1/index.vue')
+            ),
+            businessMetadata2: defineAsyncComponent(
+                () => import('./businessMetadata2/index.vue')
+            ),
             columnProfile: defineAsyncComponent(
                 () => import('./columnProfile/index.vue')
-            ),
-            linkedAsset: defineAsyncComponent(
-                () => import('./governance/index.vue')
-            ),
-
-            businessMetadata: defineAsyncComponent(
-                () => import('./businessMetadata/index.vue')
             ),
         },
         props: {
@@ -100,7 +96,7 @@
                 type: Object as PropType<assetInterface>,
                 required: true,
             },
-            selectedAsset: {
+            selectedRow: {
                 type: Object as PropType<assetInterface>,
                 required: true,
             },
@@ -114,7 +110,6 @@
                 [key: string]: any
             }> = ref({})
 
-            const { getApplicableBmGroups } = useBusinessMetadataHelper()
             // Mapping of Data to child compoentns
             const dataMap: { [key: string]: any } = ref({})
             const localStorage = window.localStorage
@@ -149,26 +144,11 @@
                 setUserDefaultCollapseOrderInInfoTab(activeKey.value)
             }
 
-            const applicableBMList = (typeName: string) =>
-                getApplicableBmGroups(typeName)?.map((b) => ({
-                    component: 'businessMetadata',
-                    id: b.name,
-                    label: b.options.displayName,
-                    image: b.options.image || '',
-                })) || []
-            const panels = PanelsMapToAsset[props.selectedAsset.typeName].panels
-            const propertiesPanel = panels.pop()
-            // ? check if computed  not needed needed?
-            const dynamicList = computed(() => [
-                ...panels,
-                ...applicableBMList(props.infoTabData.typeName),
-                propertiesPanel,
-            ])
+            const panels = CollapsiblePanels
 
             return {
-                PanelsMapToAsset,
                 handleCollapseChange,
-                dynamicList,
+                panels,
                 activeKey,
                 refMap,
                 dataMap,
@@ -203,8 +183,7 @@
         }
     }
 </style>
- -->
-<template>
+<!-- <template>
     <div>Info</div>
 </template>
 
@@ -215,4 +194,4 @@
         name: 'InfoTab',
     })
 </script>
-<style scoped></style>
+<style scoped></style> -->

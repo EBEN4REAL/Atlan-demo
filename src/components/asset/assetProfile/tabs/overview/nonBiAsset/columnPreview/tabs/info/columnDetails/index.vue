@@ -1,6 +1,6 @@
 <template>
     <div class="w-full px-5">
-        <Description v-if="selectedRow.key" :selectedRow="selectedRow" />
+        <Description :selected-row="selectedRow" />
     </div>
 </template>
 
@@ -16,7 +16,7 @@
         },
         props: {
             selectedRow: {
-                type: Object as PropType<assetInterface>,
+                type: Object as PropType<any>,
                 required: true,
             },
         },

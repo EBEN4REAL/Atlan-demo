@@ -3,17 +3,12 @@ type collapsiblePanels = {
     label: string
     component: string
 }
-type tableauProperty = {
-    id: string
-    label: string
-    property: string
-}
+
 type penlsMapToAsset = {
     panels: collapsiblePanels[]
-    properties?: tableauProperty[]
 }
 
-const CollapsiblePanels: { [key: string]: collapsiblePanels } = {
+export const CollapsiblePanels: { [key: string]: collapsiblePanels } = {
     columnDetails: {
         id: 'columnDetails',
         label: 'Details',
@@ -24,25 +19,25 @@ const CollapsiblePanels: { [key: string]: collapsiblePanels } = {
         label: 'Governance',
         component: 'linkedAsset',
     },
-    heirarchy: {
-        id: 'heirarchy',
-        label: 'Hierarchy',
-        component: 'heirarchy',
+    usage: {
+        id: 'usage',
+        label: 'Usage',
+        component: 'usage',
+    },
+    bm1: {
+        id: 'businessMetadata1',
+        label: 'Business Metadata 1',
+        component: 'businessMetadata1',
+    },
+    bm2: {
+        id: 'businessMetadata2',
+        label: 'Business Metadata 2',
+        component: 'businessMetadata2',
     },
     columnProfile: {
         id: 'columnProfile',
         label: 'Column Profile',
         component: 'columnProfile',
-    },
-    tableauProperties: {
-        id: 'tableauProperties',
-        label: 'Tableau Properties',
-        component: 'tableauProperties',
-    },
-    tableauPreview: {
-        id: 'tableauPreview',
-        label: 'Preview',
-        component: 'tableauPreview',
     },
 }
 const {

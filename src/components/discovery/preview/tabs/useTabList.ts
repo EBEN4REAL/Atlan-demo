@@ -57,11 +57,11 @@ export default function useAssetDetailsTabList(
             ],
             visibleOn: ['discovery'],
         },
-        {
-            name: 'Chat',
-            component: 'chat',
-            visibleOn: ["discovery", "profile", "columnPreview"],
-        },
+        // {
+        //     name: 'Chat',
+        //     component: 'chat',
+        //     visibleOn: ["discovery", "profile" , "columnPreview"],
+        // },
         // {
         //     name: 'Actions',
         //     component: 'actions',

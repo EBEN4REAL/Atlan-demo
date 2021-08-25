@@ -17,7 +17,7 @@
     export default defineComponent({
         props: {
             selectedRow: {
-                type: Object as PropType<assetInterface>,
+                type: Object as PropType<any>,
                 required: true,
             },
         },

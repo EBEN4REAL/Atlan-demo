@@ -472,7 +472,7 @@
             /* ------------------------------- */
 
             const assetLinkedClassifcations = computed(
-                () => selectedAsset.value.classifications
+                () => selectedAsset.value.classifications ?? []
             )
             console.log(assetLinkedClassifcations, 'assetLinkedClassifcations')
 
@@ -707,7 +707,7 @@
             }
 
             function splitArray(sizeofSplit: number, arr: any[]) {
-                if (sizeofSplit >= arr.length) {
+                if (sizeofSplit >= arr?.length) {
                     return {
                         a: [...arr],
                         b: [],

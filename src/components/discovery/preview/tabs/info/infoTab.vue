@@ -63,7 +63,7 @@
         toRefs,
         watch,
     } from 'vue'
-    import { PanelsMapToAsset } from './List'
+    import { useInfoPanels } from './List'
     import { assetInterface } from '~/types/assets/asset.interface'
     import useBusinessMetadataHelper from '~/composables/businessMetadata/useBusinessMetadataHelper'
 
@@ -84,6 +84,10 @@
             },
             isLoaded: {
                 type: Boolean,
+            },
+            page: {
+                type: String,
+                required: true,
             },
         },
         components: {
@@ -113,7 +117,7 @@
             const refMap: Ref<{
                 [key: string]: any
             }> = ref({})
-            const { selectedAsset } = toRefs(props)
+            const { selectedAsset, page } = toRefs(props)
 
             const { getApplicableBmGroups } = useBusinessMetadataHelper()
             // Mapping of Data to child compoentns
@@ -161,16 +165,13 @@
             let tableauProperties = ref([])
 
             watch(
-                selectedAsset,
+                [selectedAsset, page],
                 () => {
-                    let panels = [
-                        ...PanelsMapToAsset[props.selectedAsset.typeName]
-                            .panels,
-                    ]
+                    let infoTab = useInfoPanels(page, selectedAsset)
+                    let panels = [...infoTab?.panels]
+                    let properties = infoTab?.properties
                     let propertiesPanel = panels.pop()
-                    tableauProperties.value =
-                        PanelsMapToAsset[props.selectedAsset.typeName]
-                            ?.properties ?? []
+                    tableauProperties.value = properties ?? []
                     dynamicList.value = [
                         ...panels,
                         ...applicableBMList(props.infoTabData.typeName),

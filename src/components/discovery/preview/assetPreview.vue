@@ -45,6 +45,7 @@
                     :is="tab.component"
                     :component-data="dataMap[tab.id]"
                     :info-tab-data="infoTabData"
+                    :page="page"
                     :selected-asset="selectedAsset"
                     :is-loaded="isLoaded"
                     @change="handleChange"
@@ -113,7 +114,7 @@
         emits: ['assetMutation'],
         setup(props, { emit }) {
             const { selectedAsset, page } = toRefs(props)
-            const { filteredTabs, assetType } = useAssetDetailsTabList(page)
+            const { filteredTabs } = useAssetDetailsTabList(page, selectedAsset)
             const { assetTypeLabel, title, assetStatus } = useAssetInfo()
             const activeKey = ref(0)
             const isLoaded: Ref<boolean> = ref(true)
@@ -157,11 +158,13 @@
                 //     }
                 // })
                 infoTabData.value = selectedAsset.value
+                console.log(infoTabData.value, 'info tab Data')
             }
             watch(() => selectedAsset.value.guid, init)
             onMounted(init)
 
             return {
+                page,
                 isLoaded,
                 infoTabData,
                 title,

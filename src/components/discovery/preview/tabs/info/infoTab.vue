@@ -4,7 +4,7 @@
             v-model:activeKey="activeKey"
             :bordered="false"
             class="bg-transparent"
-            expandIconPosition="right"
+            expand-icon-position="right"
             :class="$style.filter"
             @change="handleCollapseChange"
         >
@@ -32,21 +32,12 @@
                         {{ item.label }}
                     </div>
                 </template>
+
                 <component
                     :is="item.component"
-                    :ref="
-                        (el) => {
-                            refMap[item.id] = el
-                        }
-                    "
-                    :item="item"
-                    :data="dataMap[item.id]"
-                    :selectedAsset="infoTabData"
-                    :tabData="componentData"
-                    :properties="
-                        PanelsMapToAsset[selectedAsset.typeName]?.properties ??
-                        []
-                    "
+                    :selected-asset="infoTabData"
+                    :tab-data="componentData"
+                    :tableauProperties="tableauProperties ?? []"
                     @change="handleChange"
                 ></component>
             </a-collapse-panel>
@@ -69,8 +60,10 @@
         Ref,
         PropType,
         computed,
+        toRefs,
+        watch,
     } from 'vue'
-    import { PanelsMapToAsset } from './List'
+    import { useInfoPanels } from './List'
     import { assetInterface } from '~/types/assets/asset.interface'
     import useBusinessMetadataHelper from '~/composables/businessMetadata/useBusinessMetadataHelper'
 
@@ -91,6 +84,10 @@
             },
             isLoaded: {
                 type: Boolean,
+            },
+            page: {
+                type: String,
+                required: true,
             },
         },
         components: {
@@ -120,11 +117,12 @@
             const refMap: Ref<{
                 [key: string]: any
             }> = ref({})
+            const { selectedAsset, page } = toRefs(props)
 
             const { getApplicableBmGroups } = useBusinessMetadataHelper()
             // Mapping of Data to child compoentns
             const dataMap: { [key: string]: any } = ref({})
-            const localStorage = window.localStorage
+            const { localStorage } = window
             function getUserDefaultCollapseOrderInInfoTab(): string[] {
                 let activeKeyOrder: string[] | undefined
                 if (localStorage.getItem('asset_preview_info_tab')) {
@@ -151,7 +149,7 @@
                 getUserDefaultCollapseOrderInInfoTab()
             )
 
-            const handleChange = (value: any) => {}
+            const handleChange = () => {}
             const handleCollapseChange = () => {
                 setUserDefaultCollapseOrderInInfoTab(activeKey.value)
             }
@@ -163,17 +161,28 @@
                     label: b.options.displayName,
                     image: b.options.image || '',
                 })) || []
-            const panels = PanelsMapToAsset[props.selectedAsset.typeName].panels
-            const propertiesPanel = panels.pop()
-            // ? check if computed  not needed needed?
-            const dynamicList = computed(() => [
-                ...panels,
-                ...applicableBMList(props.infoTabData.typeName),
-                propertiesPanel,
-            ])
+            const dynamicList = ref([])
+            let tableauProperties = ref([])
+
+            watch(
+                [selectedAsset, page],
+                () => {
+                    let infoTab = useInfoPanels(page, selectedAsset)
+                    let panels = [...infoTab?.panels]
+                    let properties = infoTab?.properties
+                    let propertiesPanel = panels.pop()
+                    tableauProperties.value = properties ?? []
+                    dynamicList.value = [
+                        ...panels,
+                        ...applicableBMList(props.infoTabData.typeName),
+                        propertiesPanel,
+                    ]
+                },
+                { immediate: true }
+            )
 
             return {
-                PanelsMapToAsset,
+                tableauProperties,
                 handleCollapseChange,
                 dynamicList,
                 activeKey,

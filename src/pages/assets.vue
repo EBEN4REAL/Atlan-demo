@@ -11,6 +11,7 @@
                     v-else
                     :initial-filters="initialFilters"
                     @preview="handlePreview"
+                    ref="assetDiscovery"
                 ></AssetDiscovery>
             </div>
         </div>
@@ -20,6 +21,7 @@
             <AssetPreview
                 v-if="selected"
                 :selectedAsset="selected"
+                @asset-mutation="propagateToAssetList"
                 :page="page"
             ></AssetPreview>
             <div id="overAssetColumnPreview"></div>
@@ -28,7 +30,7 @@
 </template>
 
 <script lang="ts">
-    import AssetDiscovery from '@/discovery/index.vue'
+    import AssetDiscovery from '~/components/discovery/assetDiscovery.vue'
     import AssetPreview from '@/discovery/preview/assetPreview.vue'
     import { useHead } from '@vueuse/head'
     import { computed, defineComponent, ref, Ref, watch } from 'vue'
@@ -56,7 +58,7 @@
             const router = useRouter()
             const route = useRoute()
             const isItem = computed(() => route.params.id)
-
+            const assetDiscovery: Ref<Element | null> = ref(null)
             const initialFilters: initialFiltersType =
                 getDecodedOptionsFromString(router)
             const selected: Ref<assetInterface | undefined> = ref(undefined)
@@ -92,12 +94,20 @@
                 }
             })
 
+            function propagateToAssetList(updatedAsset: assetInterface) {
+                if (assetDiscovery.value)
+                    assetDiscovery.value.mutateAssetInList(updatedAsset)
+                handlePreview(updatedAsset)
+            }
+
             return {
                 initialFilters,
                 selected,
                 handlePreview,
                 isItem,
                 page,
+                propagateToAssetList,
+                assetDiscovery,
             }
         },
     })

@@ -1,6 +1,6 @@
 <template>
     <div class="w-full px-5">
-        <Heirarchy :selectedAsset="selectedAsset" />
+        <Heirarchy :selected-asset="selectedAsset" />
     </div>
 </template>
 
@@ -17,7 +17,7 @@
                 required: true,
             },
         },
-        setup(props) {
+        setup() {
             return {}
         },
     })

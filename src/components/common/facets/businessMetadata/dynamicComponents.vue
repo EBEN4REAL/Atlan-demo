@@ -26,62 +26,30 @@
                 @change="handleChange"
             />
         </span>
-
-        <div
-            v-else-if="
-                typeof type === 'object' &&
-                getDatatypeOfAttribute(a.typeName).type === 'enum'
-            "
-        >
-            <!-- <a-select
-                v-model:value="value"
-                style="width: 100%"
-                size="small"
-                :max-tag-count="1"
-                :show-arrow="true"
-                class=""
-                placeholder=""
-                :options="
-                    getDatatypeOfAttribute(a.typeName).enum.elementDefs.map(
-                        (item) => ({
-                            value: item.value,
-                            title: item.value,
-                        })
-                    )
-                "
-                @change=""
-            /> -->
-            <!-- <div
-                v-if="getDatatypeOfAttribute(a.typeName).isMultivalues"
-                class="flex justify-end mt-2"
-            >
-                <a-tag
-                    class="mr-0 bg-white cursor-pointer"
-                    style="background: #fff; border-style: dashed"
-                    @click="
-                        () => {
-                            updateAttribute()
-                            a.isEdit = false
-                        }
-                    "
-                >
-                    Done
-                </a-tag>
-            </div> -->
-        </div>
         <a-input
-            v-else
+            v-else-if="type === 'text'"
             v-model:value="value"
             placeholder="Type..."
             type="text"
             class="px-2 mr-2 shadow-none border-1"
             @change="() => debounce(() => handleChange(), 800)"
         />
+        <div v-else>
+            <a-select
+                v-model:value="value"
+                placeholder="Select"
+                style="width: 100%"
+                :show-arrow="true"
+                class=""
+                :options="getEnumOptions(type)"
+                @change="handleChange"
+            />
+        </div>
     </div>
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref, onBeforeUnmount, onMounted } from 'vue'
+    import { defineComponent, ref, Ref, onMounted, inject } from 'vue'
     import useBusinessMetadataHelper from '~/composables/businessMetadata/useBusinessMetadataHelper'
 
     export default defineComponent({
@@ -106,6 +74,21 @@
             const { getDatatypeOfAttribute, createDebounce } =
                 useBusinessMetadataHelper()
             const value = ref(null)
+            const enumsList: Ref<object[]> = inject('enumsList')
+
+            const getEnumOptions = (enumName: string) => {
+                if (enumsList.value.length) {
+                    return (
+                        enumsList.value
+                            .find((e) => e.name === enumName)
+                            .elementDefs.map((a) => ({
+                                label: a.value,
+                                value: a.value,
+                            })) || []
+                    )
+                }
+                return []
+            }
 
             const handleChange = () => {
                 emit('handleChange', props.operator, value.value)
@@ -118,6 +101,8 @@
                 getDatatypeOfAttribute,
                 value,
                 handleChange,
+                enumsList,
+                getEnumOptions,
                 debounce: createDebounce(),
             }
         },

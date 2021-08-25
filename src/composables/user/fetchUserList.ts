@@ -6,7 +6,7 @@ import { Components } from '~/api/auth/client'
 import { userInterface } from '~/types/users/user.interface'
 import { User, URL } from '~/api/auth/user'
 
-export default function fetchUserList(dependent: any) {
+export default function fetchUserList(immediate: boolean = true) {
     const params = ref({})
     // this is needed as there are multiple keys with the same param name
     const urlparam = new URLSearchParams()
@@ -20,9 +20,8 @@ export default function fetchUserList(dependent: any) {
     const { data, error, mutate, isValidating } = useSWRV(
         [URL.UserList, params?.value, {}],
         () => {
-            if (dependent.value) {
-                return User.ListV2(params?.value)
-            }
+            if (immediate) return User.ListV2(params?.value)
+            else immediate = true
 
             return {}
         },

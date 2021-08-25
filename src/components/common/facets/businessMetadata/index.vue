@@ -23,7 +23,7 @@
         </div>
         <div
             ref="container"
-            class="mr-2 overflow-y-scroll"
+            class="mr-2 overflow-y-auto"
             style="max-height: 25rem"
         >
             <div
@@ -58,7 +58,7 @@
                     }
                 "
             >
-                {{ `Show ${data.list.attributeDefs.length - 5} more` }}
+                {{ `Show ${data.list.attributeDefs.length - 10} more` }}
             </div>
             <div
                 v-else-if="showAll && attributeSearchText === ''"
@@ -71,7 +71,8 @@
     </span>
 </template>
 <script lang="ts">
-    import { defineComponent, PropType, ref } from 'vue'
+    import { defineComponent, PropType, ref, provide } from 'vue'
+    import useEnums from '@/admin/enums/composables/useEnums'
     import { Collapse } from '~/types'
     import AttributeItem from './attributeItems.vue'
     import { Components } from '~/api/atlas/client'
@@ -96,9 +97,12 @@
             const showAll = ref(false)
             const container = ref(null)
 
+            const { enumListData: enumsList } = useEnums()
+
             const isEmptyObject = (obj: Object) =>
                 Object.keys(obj).length === 0 && obj.constructor === Object
 
+            provide('enumsList', enumsList)
             /**
              * @param {String} a - attribute object of the filter to apply
              * @param {String} appliedValueMap - consists of 1 or more operators mapped with their values

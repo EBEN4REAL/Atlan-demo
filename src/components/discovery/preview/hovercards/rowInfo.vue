@@ -20,6 +20,7 @@
     import { getCountString } from '~/composables/asset/useFormat'
 
     export default defineComponent({
+        name: 'RowInfoHoverCard',
         props: {
             rowCount: {
                 type: String,
@@ -32,7 +33,6 @@
             const displayCount = computed(() => getCountString(rowCount.value))
             return { displayCount }
         },
-        name: 'RowInfoHoverCard',
     })
 </script>
 

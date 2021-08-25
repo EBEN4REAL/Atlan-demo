@@ -121,11 +121,11 @@
                     </div>
                 </template>
                 <div
-                    class="inline-block"
                     v-if="
                         !selectedAsset.attributes?.ownerUsers &&
                         !selectedAsset.attributes?.ownerGroups
                     "
+                    class="inline-block"
                 >
                     <div
                         class="
@@ -145,7 +145,7 @@
                         <span class="ml-2">Add Business terms</span>
                     </div>
                 </div>
-                <div class="flex flex-wrap gap-x-1" v-else>
+                <div v-else class="flex flex-wrap gap-x-1">
                     {{ selectedAsset.meanings }}
                     <template
                         v-for="meaning in selectedAsset.meanings"
@@ -188,7 +188,6 @@
 
 <script lang="ts">
     import { defineComponent, ref, PropType } from 'vue'
-    import StatusBadge from '@common/badge/status/index.vue'
     import TermInfoHoverCard from '@/discovery/preview/hovercards/termInfo.vue'
 
     import fetchUserList from '~/composables/user/fetchUserList'
@@ -197,7 +196,7 @@
     import { assetInterface } from '~/types/assets/asset.interface'
 
     export default defineComponent({
-        components: { StatusBadge, TermInfoHoverCard },
+        components: { TermInfoHoverCard },
         props: {
             selectedAsset: {
                 type: Object as PropType<assetInterface>,
@@ -205,8 +204,6 @@
             },
         },
         setup(props) {
-            const now = ref(true)
-
             const ownerType = ref('user')
 
             const {
@@ -214,13 +211,13 @@
                 total,
                 filtered,
                 handleSearch: handleUserSearch,
-            } = fetchUserList(now)
+            } = fetchUserList()
 
             const {
                 list: listGroup,
                 handleSearch: handleGroupSearch,
                 total: totalGroupCount,
-            } = fetchGroupList(now)
+            } = fetchGroupList()
 
             const {
                 handleCancel,
@@ -246,7 +243,7 @@
             }
 
             const searchText = ref('')
-            const handleOwnerTypeChange = (e: any) => {
+            const handleOwnerTypeChange = () => {
                 searchText.value = ''
                 handleSearch(searchText.value)
             }

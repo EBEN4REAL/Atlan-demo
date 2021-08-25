@@ -1,6 +1,6 @@
 <template>
     <div class="pt-1">
-        <div class="px-5" v-if="page === 'discovery'">
+        <div v-if="page === 'discovery'" class="px-5">
             <div class="flex items-center justify-between mt-2 mb-4 text-sm">
                 <!-- <component
                     :is="selectedAsset.typeName"
@@ -26,8 +26,8 @@
 
                 <div class="flex items-center">
                     <StatusBadge
-                        :showNoStatus="false"
                         :key="selectedAsset.guid"
+                        :show-no-status="false"
                         :status-id="selectedAsset?.attributes?.assetStatus"
                         class="ml-1.5"
                     ></StatusBadge>
@@ -36,17 +36,18 @@
         </div>
         <a-tabs v-model:activeKey="activeKey" :class="$style.previewtab">
             <a-tab-pane
-                class="px-4 pb-4 overflow-y-auto tab-height"
                 v-for="(tab, index) in filteredTabs"
                 :key="index"
+                class="px-4 pb-4 overflow-y-auto tab-height"
                 :tab="tab.name"
             >
                 <component
                     :is="tab.component"
-                    :componentData="dataMap[tab.id]"
-                    :infoTabData="infoTabData"
-                    :selectedAsset="selectedAsset"
-                    :isLoaded="isLoaded"
+                    :component-data="dataMap[tab.id]"
+                    :info-tab-data="infoTabData"
+                    :page="page"
+                    :selected-asset="selectedAsset"
+                    :is-loaded="isLoaded"
                     @change="handleChange"
                 ></component>
             </a-tab-pane>
@@ -67,6 +68,7 @@
         Ref,
         toRefs,
         watch,
+        provide,
     } from 'vue'
     import useAsset from '~/composables/asset/useAsset'
     import useAssetInfo from '~/composables/asset/useAssetInfo'
@@ -75,6 +77,30 @@
 
     export default defineComponent({
         name: 'AssetPreview',
+        components: {
+            Tooltip,
+            AssetLogo,
+            StatusBadge,
+            info: defineAsyncComponent(() => import('./tabs/info/infoTab.vue')),
+            columns: defineAsyncComponent(
+                () => import('./tabs/columns/columnTab.vue')
+            ),
+            activity: defineAsyncComponent(
+                () => import('./tabs/activity/activityTab.vue')
+            ),
+            chat: defineAsyncComponent(
+                () => import('./tabs/chat/assetChat.vue')
+            ),
+            relations: defineAsyncComponent(
+                () => import('./tabs/relations/relationTab.vue')
+            ),
+            actions: defineAsyncComponent(
+                () => import('./tabs/actions/actions.vue')
+            ),
+            lineage: defineAsyncComponent(
+                () => import('./tabs/lineage/lineageTab.vue')
+            ),
+        },
         props: {
             selectedAsset: {
                 type: Object as PropType<assetInterface>,
@@ -85,41 +111,16 @@
                 required: true,
             },
         },
-        components: {
-            Tooltip,
-            AssetLogo,
-            StatusBadge,
-            info: defineAsyncComponent(
-                () => import('../../discovery/preview/tabs/info/index.vue')
-            ),
-            columns: defineAsyncComponent(
-                () => import('../../discovery/preview/tabs/columns/index.vue')
-            ),
-            activity: defineAsyncComponent(
-                () => import('../../discovery/preview/tabs/activity/index.vue')
-            ),
-            chat: defineAsyncComponent(
-                () => import('../../discovery/preview/tabs/chat/assetChat.vue')
-            ),
-            relations: defineAsyncComponent(
-                () => import('../../discovery/preview/tabs/relations/index.vue')
-            ),
-            actions: defineAsyncComponent(
-                () => import('../../discovery/preview/tabs/actions/actions.vue')
-            ),
-            lineage: defineAsyncComponent(
-                () => import('../../discovery/preview/tabs/lineage/index.vue')
-            ),
-        },
+        emits: ['assetMutation'],
         setup(props, { emit }) {
             const { selectedAsset, page } = toRefs(props)
-            const { filteredTabs, assetType } = useAssetDetailsTabList(page)
+            const { filteredTabs } = useAssetDetailsTabList(page, selectedAsset)
             const { assetTypeLabel, title, assetStatus } = useAssetInfo()
             const activeKey = ref(0)
             const isLoaded: Ref<boolean> = ref(true)
 
             const dataMap: { [id: string]: any } = ref({})
-            const handleChange = (value: any) => {}
+            const handleChange = () => {}
             const infoTabData: Ref<any> = ref({})
 
             function getAssetEntitity(data: Ref): any {
@@ -128,35 +129,42 @@
                 return {}
             }
 
+            provide('mutateSelectedAsset', (updatedAsset: assetInterface) => {
+                emit('assetMutation', updatedAsset)
+            })
+
             watch(page, () => {
                 if (activeKey.value > filteredTabs.value.length)
                     activeKey.value = 0
             })
 
             function init() {
-                isLoaded.value = true
-                const { data, error } = useAsset({
-                    entityId: selectedAsset.value.guid,
-                })
-                assetType.value = selectedAsset.value.typeName
-                watch([data, error], () => {
-                    if (data.value && error.value == undefined) {
-                        const entitiy = getAssetEntitity(data)
-                        infoTabData.value = entitiy
-                        isLoaded.value = false
-                        console.log(infoTabData.value, 'info tab Data')
-                    } else {
-                        console.log(
-                            error.value,
-                            '------ assetInfo failed to fetch ------ '
-                        )
-                    }
-                })
+                isLoaded.value = false
+                // const { data, error } = useAsset({
+                //     entityId: selectedAsset.value.guid,
+                // })
+                // assetType.value = selectedAsset.value.typeName
+                // watch([data, error], () => {
+                //     if (data.value && error.value === undefined) {
+                //         const entitiy = getAssetEntitity(data)
+                //         infoTabData.value = entitiy
+                //         isLoaded.value = false
+                //         console.log(infoTabData.value, 'info tab Data')
+                //     } else {
+                //         console.log(
+                //             error.value,
+                //             '------ assetInfo failed to fetch ------ '
+                //         )
+                //     }
+                // })
+                infoTabData.value = selectedAsset.value
+                console.log(infoTabData.value, 'info tab Data')
             }
-            watch(selectedAsset, init)
+            watch(() => selectedAsset.value.guid, init)
             onMounted(init)
 
             return {
+                page,
                 isLoaded,
                 infoTabData,
                 title,

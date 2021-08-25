@@ -56,25 +56,61 @@
                 </a-button>
                 <template #overlay>
                     <a-menu>
-                        <a-menu-item>Go to term profile</a-menu-item>
-                        <a-menu-item>Copy term profile link</a-menu-item>
+                        <a-menu-item @click="redirectToProfile">
+                            <template #icon>
+                                <Fa
+                                    class="w-auto h-3 text-white"
+                                    icon="fal external-link-alt"
+                            /></template>
+                            Go to term profile</a-menu-item
+                        >
+                        <a-menu-item>
+                            <template #icon>
+                                <Fa
+                                    class="w-auto h-3 text-white  group-hover:text-primary"
+                                    icon="fal external-link-alt"
+                            /></template>
+                            Copy term profile link</a-menu-item
+                        >
                         <a-menu-divider />
-                        <a-sub-menu key="status" title="No status">
-                            <a-menu-item>Verified</a-menu-item>
-                            <a-menu-item>Work in Progress</a-menu-item>
-                            <a-menu-item>Warning</a-menu-item>
-                            <a-menu-item>Deprecated</a-menu-item>
-                        </a-sub-menu>
+
+                        <a-menu-item>
+                            <Status
+                                v-if="entity.guid"
+                                :selectedAsset="entity"
+                            />
+                        </a-menu-item>
                         <a-sub-menu key="owner" title="Add Owner">
-                            <a-menu-item>5d menu item</a-menu-item>
-                            <a-menu-item>6th menu item</a-menu-item>
+                            <template #icon>
+                                <fa
+                                    icon="fal trash-alt"
+                                    class="w-auto h-3 mr-2"
+                                ></fa>
+                            </template>
+                            <a-menu-item class="bg-white">
+                                <Owners :selectedAsset="entity" />
+                            </a-menu-item>
                         </a-sub-menu>
                         <a-sub-menu key="expert" title="Add Expert">
+                            <template #icon>
+                                <fa
+                                    icon="fal trash-alt"
+                                    class="w-auto h-3 mr-2"
+                                ></fa>
+                            </template>
                             <a-menu-item>5d menu item</a-menu-item>
                             <a-menu-item>6th menu item</a-menu-item>
                         </a-sub-menu>
                         <a-menu-divider />
-                        <a-menu-item>Archive</a-menu-item>
+                        <a-menu-item>
+                            <template #icon>
+                                <fa
+                                    icon="fal trash-alt"
+                                    class="w-auto h-3 mr-2"
+                                ></fa>
+                            </template>
+                            Archive</a-menu-item
+                        >
                     </a-menu>
                 </template>
             </a-dropdown>
@@ -84,6 +120,9 @@
 <script lang="ts">
     import { defineComponent, computed, PropType } from 'vue'
     import { useRouter } from 'vue-router'
+    // components
+    import Status from '@/preview/asset/v2/tabs/info/assetDetails/status.vue'
+    import Owners from '@/glossary/common/owners.vue'
     // static
     import TermSvg from '~/assets/images/gtc/term/term.png'
     import CategorySvg from '~/assets/images/gtc/category/category.png'
@@ -98,6 +137,7 @@
     import { List as StatusList } from '~/constant/status'
 
     export default defineComponent({
+        components: { Status, Owners },
         props: {
             entity: {
                 type: Object as PropType<Glossary | Category | Term>,

@@ -161,7 +161,6 @@
                     ''
             )
 
-
             // methods
             const handleCategoryOrTermPreview = (entity: Category | Term) => {
                 previewEntity.value = entity

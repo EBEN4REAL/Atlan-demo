@@ -14,15 +14,17 @@
     <splitpanes class="h-full default-theme">
         <!-- glossary sidebar -->
         <pane min-size="25" max-size="50" :size="18" class="bg-white">
-            <div v-if="!currentGuid" class="px-2 py-4">
+            <glossaryTree :glossary-list="glossaryList" :is-home="isHome" :tree-data="treeData" />
+            <!-- <div v-if="!currentGuid" class="px-2 py-4">
                 <div class="px-2 pb-2">
                     <a-input-search
                         placeholder="Search accross Glossaries"
                     ></a-input-search>
                 </div>
                 <HomeTree />
-            </div>
-            <div v-else-if="currentGuid && parentGlossaryGuid">
+            </div> -->
+            <!-- <div v-else-if="currentGuid && parentGlossaryGuid"> -->
+            <!-- <div>
                 <div
                     class="flex py-2 pl-4 mb-4 text-sm leading-5 text-gray-500 bg-gray-100 cursor-pointer "
                     type="link"
@@ -72,7 +74,7 @@
                         @showUpdateGlossaryModal="handleOpenUpdateModal"
                     ></GlossaryTree>
                 </div>
-            </div>
+            </div> -->
         </pane>
         <!-- glossary profile -->
         <pane :size="82" class="bg-white">
@@ -82,7 +84,7 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref, watch } from 'vue'
+    import { defineComponent, ref, watch, computed } from 'vue'
     import { useHead } from '@vueuse/head'
     import { useRouter, useRoute } from 'vue-router'
 
@@ -91,9 +93,12 @@
     import HomeTree from '@common/tree/glossary/home.vue'
     import CreateGlossaryModal from '@common/tree/glossary/createGlossaryModal.vue'
     import UpdateGlossaryModal from '@common/tree/glossary/updateGlossaryModal.vue'
+    import glossaryTree from '@/glossary/tree/glossaryTree.vue';
 
     // composables
     import useGTCEntity from '~/composables/glossary/useGtcEntity'
+    import useGlossaryList from '~/composables/glossary/useGlossaryList'
+    import useTree from '~/composables/glossary/useTree'
 
     // types
     import {
@@ -105,6 +110,7 @@
     export default defineComponent({
         components: {
             GlossaryTree,
+            glossaryTree,
             HomeTree,
             CreateGlossaryModal,
             UpdateGlossaryModal,
@@ -119,8 +125,9 @@
             const route = useRoute()
             const router = useRouter()
             const currentGuid = ref<string>(route.params.id as string)
-            const type = route.fullPath.split('/')[1]
+            const type = computed(() => router.currentRoute.value.fullPath.split('/')[1])
             const parentGlossaryGuid = ref<string | undefined>('')
+
             const createGlossaryModalVisble = ref(false)
             const updateGlossaryModalVisble = ref(false)
             const glossaryTreeRef = ref()
@@ -131,7 +138,18 @@
             >(
                 type === 'term' || type === 'category' ? type : 'glossary',
                 currentGuid,
-                currentGuid
+            )
+
+            const { glossaryList, refetch: refetchGlossaryList } = useGlossaryList()
+
+            const { treeData } = useTree(currentGuid, type)
+
+            // computed
+            const isHome = computed(
+                () =>
+                    router.currentRoute.value.path.split('/')[
+                        router.currentRoute.value.path.split('/').length - 1
+                    ] === 'glossary'
             )
 
             // methods
@@ -175,11 +193,18 @@
                         newEntity?.attributes?.anchor?.guid
                 }
             }
+
             // watchers
+            watch(isHome, (newIsHome) => {
+                if(newIsHome){
+                    refetchGlossaryList()
+                }
+            });
+
             watch(
                 () => route.params.id,
                 (newId) => {
-                    currentGuid.value = newId
+                    currentGuid.value = newId as string
                     refetch()
                 }
             )
@@ -202,9 +227,16 @@
                 entity,
                 type,
                 route,
+                glossaryList,
+                treeData,
+                isHome,
             }
         },
     })
+// fetch current guid element
+// if glossary, fetch cat and term (call loadData once)
+// if not glossary, fetch parent glossary and call loadData
+
 </script>
 
 <route lang="yaml">

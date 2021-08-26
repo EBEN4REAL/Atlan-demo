@@ -121,7 +121,7 @@
     import { defineComponent, computed, PropType } from 'vue'
     import { useRouter } from 'vue-router'
     // components
-    import Status from '@/preview/asset/v2/tabs/info/assetDetails/status.vue'
+    import Status from '@/discovery/preview/tabs/info/assetDetails/status.vue'
     import Owners from '@/glossary/common/owners.vue'
     // static
     import TermSvg from '~/assets/images/gtc/term/term.png'

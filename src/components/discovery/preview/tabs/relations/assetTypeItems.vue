@@ -33,7 +33,7 @@
     import ColumnListItem from '~/components/discovery/preview/tabs/columns/columnListItem.vue'
     import useAssetInfo from '~/composables/asset/useAssetInfo'
     import useBiRelations from '~/composables/asset/useBiRelations'
-    import VirtualList from '~/lib/virtualList/virtualList.vue'
+    import VirtualList from '~/utils/library/virtualList/virtualList.vue'
 
     export default defineComponent({
         components: { ListItem, VirtualList, ColumnListItem },

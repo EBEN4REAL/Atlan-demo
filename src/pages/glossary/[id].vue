@@ -1,5 +1,5 @@
 <template>
-    <div v-if="isLoading && !glossary?.guid">
+    <div v-if="isLoading">
         <LoadingView />
     </div>
     <div v-else class="flex flex-row h-full" :class="$style.tabClasses">
@@ -177,7 +177,7 @@
                 error,
                 isLoading,
                 refetch,
-            } = useGTCEntity<Glossary>('glossary', guid, guid.value)
+            } = useGTCEntity<Glossary>('glossary', guid)
 
             const {
                 terms: glossaryTerms,

@@ -14,7 +14,14 @@
     <splitpanes class="h-full default-theme">
         <!-- glossary sidebar -->
         <pane min-size="25" max-size="50" :size="18" class="bg-white">
-            <glossaryTree :glossary-list="glossaryList" :is-home="isHome" :tree-data="treeData" />
+            <glossaryTree 
+                :glossary-list="glossaryList" 
+                :is-home="isHome" 
+                :tree-data="treeData" 
+                :on-load-data="onLoadData" 
+                :parent-glossary="parentGlossary" 
+                :is-loading="isInitingTree"
+            />
             <!-- <div v-if="!currentGuid" class="px-2 py-4">
                 <div class="px-2 pb-2">
                     <a-input-search
@@ -90,13 +97,11 @@
 
     // components
     import GlossaryTree from '@common/tree/glossary/index.vue'
-    import HomeTree from '@common/tree/glossary/home.vue'
     import CreateGlossaryModal from '@common/tree/glossary/createGlossaryModal.vue'
     import UpdateGlossaryModal from '@common/tree/glossary/updateGlossaryModal.vue'
     import glossaryTree from '@/glossary/tree/glossaryTree.vue';
 
     // composables
-    import useGTCEntity from '~/composables/glossary/useGtcEntity'
     import useGlossaryList from '~/composables/glossary/useGlossaryList'
     import useTree from '~/composables/glossary/useTree'
 
@@ -111,7 +116,6 @@
         components: {
             GlossaryTree,
             glossaryTree,
-            HomeTree,
             CreateGlossaryModal,
             UpdateGlossaryModal,
         },
@@ -125,7 +129,7 @@
             const route = useRoute()
             const router = useRouter()
             const currentGuid = ref<string>(route.params.id as string)
-            const type = computed(() => router.currentRoute.value.fullPath.split('/')[1])
+            const type = ref(router.currentRoute.value.fullPath.split('/')[1] as 'glossary' | 'category' | 'term')
             const parentGlossaryGuid = ref<string | undefined>('')
 
             const createGlossaryModalVisble = ref(false)
@@ -133,16 +137,9 @@
             const glossaryTreeRef = ref()
             const eventContext = ref({})
 
-            const { entity, error, isLoading, refetch } = useGTCEntity<
-                Glossary | Term | Category
-            >(
-                type === 'term' || type === 'category' ? type : 'glossary',
-                currentGuid,
-            )
-
             const { glossaryList, refetch: refetchGlossaryList } = useGlossaryList()
 
-            const { treeData } = useTree(currentGuid, type)
+            const { treeData, onLoadData, parentGlossary, isInitingTree } = useTree(currentGuid, type)
 
             // computed
             const isHome = computed(
@@ -178,21 +175,7 @@
             // router updates
             const backToHome = () => router.push('/glossary')
             const backToGlossary = () =>
-                router.push(`/glossary/${entity.value?.guid}`)
-
-            const updateNewEntity = (newEntity) => {
-                if (newEntity?.typeName === 'AtlasGlossary') {
-                    parentGlossaryGuid.value = newEntity?.guid
-                }
-                if (newEntity?.typeName === 'AtlasGlossaryCategory') {
-                    parentGlossaryGuid.value =
-                        newEntity?.attributes?.anchor?.guid
-                }
-                if (newEntity?.typeName === 'AtlasGlossaryTerm') {
-                    parentGlossaryGuid.value =
-                        newEntity?.attributes?.anchor?.guid
-                }
-            }
+                router.push(`/glossary/${parentGlossary.value?.guid}`)
 
             // watchers
             watch(isHome, (newIsHome) => {
@@ -205,11 +188,9 @@
                 () => route.params.id,
                 (newId) => {
                     currentGuid.value = newId as string
-                    refetch()
+                    type.value = router.currentRoute.value.fullPath.split('/')[router.currentRoute.value.fullPath.split('/').length - 2]
                 }
             )
-
-            watch(entity, (newEntity) => updateNewEntity(newEntity))
 
             return {
                 handleOpenModal,
@@ -218,17 +199,19 @@
                 handleSuccess,
                 backToHome,
                 backToGlossary,
+                onLoadData,
                 createGlossaryModalVisble,
                 updateGlossaryModalVisble,
                 eventContext,
                 glossaryTreeRef,
                 currentGuid,
                 parentGlossaryGuid,
-                entity,
                 type,
                 route,
                 glossaryList,
                 treeData,
+                parentGlossary,
+                isInitingTree,
                 isHome,
             }
         },

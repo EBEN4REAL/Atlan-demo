@@ -5,7 +5,7 @@
                 placeholder="Search accross Glossaries"
             ></a-input-search>
         </div>
-        <div v-for="glossary in glossaryList" :key="glossary.guid" @click="() => redirectToProfile(glossary.guid)">
+        <div v-for="glossary in glossaryList" :key="glossary.guid" @click="() => redirectToProfile('glossary', glossary.guid)">
             <div
                 class="
                     px-3
@@ -31,7 +31,7 @@
             </div>
         </div>
     </div>
-    <div v-else>
+    <div v-else-if="!isLoading">
         <div
             class="flex py-2 pl-4 mb-4 text-sm leading-5 text-gray-500 bg-gray-100 cursor-pointer "
             type="link"
@@ -49,10 +49,10 @@
             <a-button
                 class="w-full text-sm font-bold leading-5 border-none  bg-primary-light text-primary"
             >
-                <!-- <span v-if="entity?.typeName === 'AtlasGlossary'">
-                    {{ entity?.displayText }}
+                <span>
+                    {{ parentGlossary?.displayText }}
                 </span>
-                <span v-else>{{
+                <!-- <span v-else>{{
                     entity?.attributes?.anchor?.uniqueAttributes
                         ?.qualifiedName
                 }}</span> -->
@@ -76,6 +76,7 @@
                     v-model:expandedKeys="expandedKeys"
                     v-model:value="selectedKeys"
                     :tree-data="treeData"
+                    :load-data="onLoadData"
                     :block-node="true"
                     @select="selectNode"
                     @expand="expandNode"
@@ -84,7 +85,7 @@
                         <a-dropdown :trigger="['contextmenu']">
                             <div
                                 class="min-w-full"
-                                @click="() => reirectToProfile(type, key)"
+                                @click="() => redirectToProfile(type, key)"
                             >
                                 <div class="flex content-center">
                                     <span class="mr-2 p-0">
@@ -114,6 +115,7 @@
                 </a-tree>
         </div>
     </div>
+    <div v-else>loading</div>
 </template>
 <script lang="ts">
 // library
@@ -148,6 +150,21 @@ export default defineComponent({
             type: Object as PropType<TreeDataItem[]>,
             required: true,
             default: () => {}
+        },
+        onLoadData: {
+            type: Function,
+            required: false,
+            default: () => {}
+        },
+        parentGlossary: {
+            type: Object as PropType<Glossary>,
+            required: false,
+            default: () => {}
+        },
+        isLoading: {
+            type: Boolean,
+            required: false,
+            default: false
         }
     },
     setup(props, { emit }) {
@@ -163,8 +180,9 @@ export default defineComponent({
 
 
         // methods
-        const redirectToProfile = (guid: string) => {
-            router.push(`/glossary/${guid}`)
+        const redirectToProfile = (type: string, guid: string) => {
+            if (type === 'glossary') router.push(`/glossary/${guid}`)
+            else router.push(`/glossary/${type}/${guid}`)
         }
         const backToHome = () => router.push('/glossary')
 

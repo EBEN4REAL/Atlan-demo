@@ -13,7 +13,7 @@ import { List as StatusList } from '~/constant/status'
  * Uses the Atlas API to fetch a Glossary / Category / Term depending on 
  * the type
  */
-const useGTCEntity = <T extends Glossary | Category | Term>(type: 'glossary' | 'category' | 'term', entityGuid:Ref<string>, cache?: string) => {
+const useGTCEntity = <T extends Glossary | Category | Term>(type: 'glossary' | 'category' | 'term', entityGuid:Ref<string>, cache?: boolean) => {
     const keyMap = {
         glossary: 'AtlasGlossary',
         category: 'AtlasGlossaryCategory',
@@ -99,7 +99,9 @@ const useGTCEntity = <T extends Glossary | Category | Term>(type: 'glossary' | '
         )
     );
 
-    watch(entityGuid, () => {
+    watch(entityGuid, (newGuid) => {
+        console.log('bruhh', cache,entityGuid.value, newGuid, getBody());
+
         body.value = getBody()
         mutate()
     });

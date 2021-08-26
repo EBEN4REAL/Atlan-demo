@@ -48,22 +48,7 @@
                                 {{ owner.username }}
                             </div>
                             <div
-                                class="
-                                    absolute
-                                    flex
-                                    items-center
-                                    justify-center
-                                    pl-3
-                                    pr-1
-                                    text-white
-                                    bg-transparent
-                                    border-none
-                                    rounded-full
-                                    opacity-0
-                                    cursor-pointer
-                                    group-hover:opacity-100
-                                    owners-cross-btn
-                                "
+                                class="absolute flex items-center justify-center pl-3 pr-1 text-white bg-transparent border-none rounded-full opacity-0 cursor-pointer  group-hover:opacity-100 owners-cross-btn"
                                 @click.stop="() => handleRemoveOwner(owner)"
                             >
                                 <div class="flex items-center justify-center">
@@ -116,22 +101,7 @@
                                 {{ owner.username }}
                             </div>
                             <div
-                                class="
-                                    absolute
-                                    flex
-                                    items-center
-                                    justify-center
-                                    pl-3
-                                    pr-1
-                                    text-white
-                                    bg-transparent
-                                    border-none
-                                    rounded-full
-                                    opacity-0
-                                    cursor-pointer
-                                    group-hover:opacity-100
-                                    owners-cross-btn
-                                "
+                                class="absolute flex items-center justify-center pl-3 pr-1 text-white bg-transparent border-none rounded-full opacity-0 cursor-pointer  group-hover:opacity-100 owners-cross-btn"
                                 @click.stop="() => handleRemoveOwner(owner)"
                             >
                                 <div class="flex items-center justify-center">
@@ -160,21 +130,7 @@
                     </span>
                 </div>
                 <a-button
-                    class="
-                        flex
-                        items-center
-                        justify-center
-                        w-8
-                        h-8
-                        px-2
-                        py-2
-                        mr-3
-                        text-gray-700
-                        border-none
-                        rounded-full
-                        bg-gray-light
-                        hover:bg-primary hover:text-white
-                    "
+                    class="flex items-center justify-center w-8 h-8 px-2 py-2 mr-3 text-gray-700 border-none rounded-full  bg-gray-light hover:bg-primary hover:text-white"
                     @click.stop="toggleOwnerPopover"
                 >
                     <fa icon="fal plus" />
@@ -220,20 +176,17 @@
                             rounded
                         "
                     >
-                        <a-input
-                            v-input-focus
+                        <SearchAndFilter
+                            v-model:value="searchText"
+                            :autofocus="true"
                             :placeholder="
                                 activeOwnerTabKey === '1'
                                     ? `Search ${listUsers?.length} users`
                                     : `Search ${listGroups?.length} groups`
                             "
-                            v-model:value="searchText"
                             @change="handleOwnerSearch"
                         >
-                            <template #suffix>
-                                <AtlanIcon icon="Search" />
-                            </template>
-                        </a-input>
+                        </SearchAndFilter>
                         <div class="relative w-full">
                             <!-- <p
                                 class="
@@ -290,38 +243,18 @@
                                                             ? 'bg-primary-light'
                                                             : ''
                                                     "
-                                                    class="
-                                                        flex
-                                                        items-center
-                                                        justify-between
-                                                        w-full
-                                                        px-1
-                                                        py-1
-                                                        mb-2
-                                                        rounded
-                                                        cursor-pointer
-                                                        hoverbg-primary-light
-                                                    "
+                                                    class="flex items-center justify-between w-full px-1 py-1 mb-2 rounded cursor-pointer  hoverbg-primary-light"
                                                     @click="
                                                         () => onSelectUser(user)
                                                     "
                                                 >
                                                     <div
-                                                        class="
-                                                            flex
-                                                            items-center
-                                                            flex-1
-                                                        "
+                                                        class="flex items-center flex-1 "
                                                     >
                                                         <img
                                                             src="https://picsum.photos/id/237/50/50"
                                                             alt="view"
-                                                            class="
-                                                                w-4
-                                                                h-4
-                                                                mr-2
-                                                                rounded-full
-                                                            "
+                                                            class="w-4 h-4 mr-2 rounded-full "
                                                         /><span
                                                             class="
                                                                 text-gray
@@ -342,21 +275,12 @@
                                                                 selectedUsers
                                                             )
                                                         "
-                                                        class="
-                                                            flex
-                                                            items-center
-                                                            mr-4
-                                                        "
+                                                        class="flex items-center mr-4 "
                                                     >
                                                         <span
-                                                            class="
-                                                                flex
-                                                                items-center
-                                                            "
+                                                            class="flex items-center "
                                                             ><fa
-                                                                class="
-                                                                    text-primary
-                                                                "
+                                                                class=" text-primary"
                                                                 icon="fas check-circle"
                                                         /></span>
                                                     </div>
@@ -365,11 +289,7 @@
                                         </div>
                                         <div
                                             v-else
-                                            class="
-                                                flex
-                                                items-center
-                                                justify-center
-                                            "
+                                            class="flex items-center justify-center "
                                         >
                                             <a-spin
                                                 size="small"
@@ -417,40 +337,19 @@
                                                             ? 'bg-primary-light'
                                                             : ''
                                                     "
-                                                    class="
-                                                        relative
-                                                        flex
-                                                        items-center
-                                                        justify-between
-                                                        w-full
-                                                        px-1
-                                                        py-1
-                                                        mb-2
-                                                        rounded
-                                                        cursor-pointer
-                                                        hoverbg-primary-light
-                                                    "
+                                                    class="relative flex items-center justify-between w-full px-1 py-1 mb-2 rounded cursor-pointer  hoverbg-primary-light"
                                                     @click="
                                                         () =>
                                                             onSelectGroup(group)
                                                     "
                                                 >
                                                     <div
-                                                        class="
-                                                            flex
-                                                            items-center
-                                                            flex-1
-                                                        "
+                                                        class="flex items-center flex-1 "
                                                     >
                                                         <img
                                                             src="https://picsum.photos/id/237/50/50"
                                                             alt="view"
-                                                            class="
-                                                                w-4
-                                                                h-4
-                                                                mr-4
-                                                                rounded-full
-                                                            "
+                                                            class="w-4 h-4 mr-4 rounded-full "
                                                         /><span
                                                             class="
                                                                 text-gray
@@ -471,21 +370,12 @@
                                                                 selectedGroups
                                                             )
                                                         "
-                                                        class="
-                                                            flex
-                                                            items-center
-                                                            mr-2
-                                                        "
+                                                        class="flex items-center mr-2 "
                                                     >
                                                         <span
-                                                            class="
-                                                                flex
-                                                                items-center
-                                                            "
+                                                            class="flex items-center "
                                                             ><fa
-                                                                class="
-                                                                    text-primary
-                                                                "
+                                                                class=" text-primary"
                                                                 icon="fas check-circle"
                                                         /></span>
                                                     </div>
@@ -494,11 +384,7 @@
                                         </div>
                                         <div
                                             v-else
-                                            class="
-                                                flex
-                                                items-center
-                                                justify-center
-                                            "
+                                            class="flex items-center justify-center "
                                         >
                                             <a-spin
                                                 size="small"
@@ -561,13 +447,15 @@
     import updateOwners from '~/composables/asset/updateOwners'
     import fetchGroupList from '~/composables/group/fetchGroupList'
     import fetchUserList from '~/composables/user/fetchUserList'
+    import SearchAndFilter from '@/common/input/searchAndFilter.vue'
+
     import { useUserPreview } from '~/composables/user/showUserPreview'
     import { assetInterface } from '~/types/assets/asset.interface'
     import { groupInterface } from '~/types/groups/group.interface'
     import { userInterface } from '~/types/users/user.interface'
 
     export default defineComponent({
-        components: { OwnerInfoCard },
+        components: { OwnerInfoCard, SearchAndFilter },
         props: {
             selectedAsset: {
                 type: Object as PropType<assetInterface>,

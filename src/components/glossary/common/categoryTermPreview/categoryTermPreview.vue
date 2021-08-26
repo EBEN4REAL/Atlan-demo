@@ -39,6 +39,12 @@
                     {{ type === 'AtlasGlossaryTerm' ? 'Term' : 'Category' }}
                     Details
                 </a-button>
+                <a-button
+                    class="px-1 border-0 outline-none"
+                    @click="handlClosePreviewPanel"
+                >
+                    X
+                </a-button>
             </div>
         </div>
         <div v-if="preview" class="flex mb-5">
@@ -55,12 +61,15 @@
         <a-tabs default-active-key="1" class="border-0">
             <a-tab-pane key="info" tab="Info">
                 <div class="h-screen overflow-auto pb-52">
-                    <a-collapse :bordered="false" expand-icon-position="right">
+                    <a-collapse
+                        v-model:activeKey="activeKey"
+                        :bordered="false"
+                        expand-icon-position="right"
+                    >
                         <template #expandIcon="{ isActive }">
-                            <fa v-if="isActive" icon="fas angle-up" />
-                            <fa v-else icon="fas angle-down" />
+                            <fa v-if="isActive" icon="fas chevron-up" />
+                            <fa v-else icon="fas chevron-down" />
                         </template>
-
                         <a-collapse-panel key="details" header="Details">
                             <div class="flex flex-col pl-6">
                                 <Description
@@ -170,8 +179,10 @@
                 default: true,
             },
         },
-        setup(props) {
+        emits: ['closePreviewPanel'],
+        setup(props, context) {
             const router = useRouter()
+            const activeKey = ref(['details'])
 
             const shortDescription = computed(
                 () => props.entity?.attributes?.shortDescription
@@ -191,14 +202,18 @@
                 else if (props.entity.typeName === 'AtlasGlossaryTerm')
                     router.push(`/glossary/term/${props.entity.guid}`)
             }
-
+            const handlClosePreviewPanel = () => {
+                context.emit('closePreviewPanel')
+            }
             return {
                 TermSvg,
                 CategorySvg,
                 shortDescription,
                 type,
+                handlClosePreviewPanel,
                 statusObject,
                 redirectToProfile,
+                activeKey,
             }
         },
     })

@@ -72,7 +72,14 @@
                 </a-tabs>
             </div>
         </div>
-        <SidePanel
+        <CategoryTermPreview
+            v-if="currentTab === '2' && previewEntity && showPreviewPanel"
+            :entity="previewEntity"
+            @closePreviewPanel="handlClosePreviewPanel"
+        />
+        <SidePanel v-else :entity="category" :top-terms="categoryTerms" />
+
+        <!-- <SidePanel
             v-if="currentTab === '1'"
             :entity="category"
             :top-terms="categoryTerms"
@@ -80,7 +87,7 @@
         <CategoryTermPreview
             v-if="currentTab === '2' && previewEntity"
             :entity="previewEntity"
-        />
+        /> -->
     </div>
 </template>
 
@@ -133,7 +140,7 @@
             const guid = toRef(props, 'id')
             const currentTab = ref('1')
             const previewEntity = ref<Category | Term | undefined>()
-
+            const showPreviewPanel = ref(false)
             const {
                 entity: category,
                 title,
@@ -164,6 +171,10 @@
             // methods
             const handleCategoryOrTermPreview = (entity: Category | Term) => {
                 previewEntity.value = entity
+                showPreviewPanel.value = true
+            }
+            const handlClosePreviewPanel = () => {
+                showPreviewPanel.value = false
             }
 
             // lifecycle methods and watchers
@@ -182,6 +193,7 @@
                 categoryTerms,
                 currentTab,
                 previewEntity,
+                showPreviewPanel,
                 title,
                 shortDescription,
                 termCount,
@@ -193,6 +205,7 @@
                 guid,
                 statusObject,
                 handleCategoryOrTermPreview,
+                handlClosePreviewPanel,
             }
         },
     })

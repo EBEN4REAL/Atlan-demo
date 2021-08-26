@@ -1,6 +1,6 @@
 <template>
     <div
-        class="flex justify-between py-4 border-b rounded px-9"
+        class="flex justify-between py-4 pr-4 border-b rounded pl-9"
         @click="$emit('gtcCardClicked', entity)"
     >
         <!-- projections start here -->
@@ -23,14 +23,16 @@
 
             <div class="flex flex-col w-3/4 ml-1">
                 <span
-                    class="text-base leading-6 text-gray-700 cursor-pointer"
+                    class="flex items-center text-base leading-6 text-gray-700 cursor-pointer  hover:underline"
                     @click="redirectToProfile"
                 >
-                    {{ entity.displayText }}
+                    <p class="my-0">
+                        {{ entity.displayText }}
+                    </p>
                     <component
                         :is="statusObject?.icon"
                         v-if="statusObject && projection.includes('status')"
-                        class="inline-flex self-center w-auto h-4 mb-1"
+                        class="inline-flex w-auto h-4 mb-1 ml-2"
                     />
                 </span>
 
@@ -41,10 +43,22 @@
                     {{ entity?.attributes?.shortDescription }}
                 </div>
                 <div
-                    v-if="projection.includes('owners')"
-                    class="text-xs leading-4 text-gray"
+                    v-if="
+                        projection?.includes('owners') &&
+                        getCombinedUsersAndGroups(entity).length
+                    "
+                    class="flex items-baseline mt-1 mr-4 text-xs leading-5  text-gray"
                 >
-                    {{ entity?.attributes?.ownerUsers?.split(',') }}
+                    <span
+                        class="mr-1"
+                        v-html="
+                            'Owned by ' +
+                            getTruncatedUsers(
+                                getCombinedUsersAndGroups(entity),
+                                20
+                            )
+                        "
+                    />
                 </div>
             </div>
         </div>
@@ -123,7 +137,11 @@
     // components
     import Status from '@/preview/asset/v2/tabs/info/assetDetails/status.vue'
     import Owners from '@/glossary/common/owners.vue'
+
+    // Composables
+    import useAssetInfo from '~/composables/asset/useAssetInfo'
     // static
+    import { assetInterface } from '~/types/assets/asset.interface'
     import TermSvg from '~/assets/images/gtc/term/term.png'
     import CategorySvg from '~/assets/images/gtc/category/category.png'
     import GlossarySvg from '~/assets/images/gtc/glossary/glossary.png'
@@ -153,6 +171,8 @@
         emits: ['gtcCardClicked'],
         setup(props) {
             const router = useRouter()
+            const { ownerGroups, ownerUsers } = useAssetInfo()
+
             // computed
             const statusObject = computed(() =>
                 StatusList.find(
@@ -162,6 +182,55 @@
             )
 
             // methods
+            // TODO: extract this function as a util function to be used at multiple places
+            function getTruncatedUsers(arr: string[], wordCount: number = 30) {
+                const strSize: number[] = [0]
+                let idx = 0
+                arr.forEach((name) => {
+                    strSize.push(strSize[strSize.length - 1] + name.length)
+                })
+
+                // Check upto how long it is possible to display
+                while (strSize[idx] < wordCount && idx < strSize.length) {
+                    idx++
+                }
+                idx--
+
+                /** The elements that would be displayed */
+                const displayArray = arr.slice(0, idx)
+                /** The elements that would be truncated as x other(s) */
+                const truncated = arr.slice(idx)
+
+                // Check if something needs to be truncated
+                if (truncated.length) {
+                    // If there is only 1 element to be truncated then compare the
+                    // length of name and 'x others(s)'
+                    const lastElm =
+                        truncated.length == 1 &&
+                        truncated[0].length <
+                            `${truncated.length} other(s)`.length
+                            ? `<b>${truncated[0]}</b>`
+                            : `<b>${truncated.length}</b> other(s)`
+
+                    return `<b>${displayArray.join(', ')}</b> and ${lastElm}`
+                } else {
+                    // Check if everything can be directly displayed
+                    // If so then take the last element from array, append it with 'and'
+                    const lastElm = displayArray.pop()
+                    return displayArray.length
+                        ? `<b>${displayArray.join(
+                              ', '
+                          )}</b> and <b>${lastElm}</b>`
+                        : lastElm
+                }
+            }
+
+            // TODO: extract this function as a util function to be used at multiple places
+            function getCombinedUsersAndGroups(item: assetInterface) {
+                return [...ownerUsers(item), ...ownerGroups(item)].filter(
+                    (name) => name.length
+                )
+            }
             const redirectToProfile = () => {
                 if (props.entity.typeName === 'AtlasGlossary')
                     router.push(`/glossary/${props.entity.guid}`)
@@ -176,6 +245,8 @@
                 CategorySvg,
                 statusObject,
                 redirectToProfile,
+                getTruncatedUsers,
+                getCombinedUsersAndGroups,
             }
         },
     })

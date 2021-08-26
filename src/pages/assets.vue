@@ -24,8 +24,8 @@
                 @asset-mutation="propagateToAssetList"
                 :page="page"
             ></AssetPreview>
-            <div id="overAssetColumnPreview"></div>
         </div>
+        <div id="overAssetColumnPreview" class="relative"></div>
     </div>
 </template>
 

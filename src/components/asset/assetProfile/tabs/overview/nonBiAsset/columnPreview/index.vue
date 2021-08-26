@@ -1,5 +1,5 @@
 <template>
-    <div class="pt-14">
+    <div class="pt-1">
         <div class="px-5">
             <div class="flex items-start justify-between mt-5 mb-4 text-sm">
                 <div class="w-full">
@@ -10,11 +10,14 @@
                     <div class="text-gray-500">Column</div>
                 </div>
                 <div class="flex">
-                    <div class="icon-btn">
+                    <div class="mr-4 icon-btn">
                         <AtlanIcon class="mr-2" icon="Share" />
                         <span class="text-sm">Share</span>
                     </div>
-                    <a-button type="text" @click="$emit('closeColumnSidebar')"
+                    <a-button
+                        type="text"
+                        class="p-0 text-xl"
+                        @click="$emit('closeColumnSidebar')"
                         ><fa icon="fal times"></fa
                     ></a-button>
                 </div>

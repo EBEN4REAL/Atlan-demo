@@ -105,31 +105,22 @@
                 </template>
             </a-table>
         </div>
-        <!-- <div
-            class="flex flex-col h-full bg-white border-l z-25 column-preview-container"
-        >
-            <ColumnPreview />
-        </div> --><teleport to="#overAssetColumnPreview">
+        <teleport to="#overAssetColumnPreview">
             <a-drawer
                 v-model:visible="showColumnPreview"
                 placement="right"
                 :mask="false"
-                :wrap-style="{ position: 'absolute' }"
                 :get-container="false"
-                wrap-class-name=""
+                :wrap-style="{ position: 'absolute' }"
+                :keyboard="false"
                 :destroy-on-close="true"
-                width="420"
                 :closable="false"
-                ><div class="flex flex-col bg-white border-l">
-                    <ColumnPreview
-                        :selected-row="selectedRowData"
-                        page="columnPreview"
-                        @closeColumnSidebar="handleCloseColumnSidebar"
-                    />
-                </div>
-                <!-- <p>Some contents...</p>
-            <p>Some contents...</p>
-            <p>Some contents...</p> -->
+            >
+                <ColumnPreview
+                    :selected-row="selectedRowData"
+                    page="columnPreview"
+                    @closeColumnSidebar="handleCloseColumnSidebar"
+                />
             </a-drawer>
         </teleport>
     </div>
@@ -369,8 +360,9 @@
 </script>
 
 <style lang="less" scoped>
-    .column-preview-container {
-        width: 420px;
+    :global(.ant-drawer-content-wrapper) {
+        width: 420px !important;
+        background-color: white !important;
     }
     :global(.ant-table th) {
         @apply whitespace-nowrap font-bold !important;

@@ -126,6 +126,24 @@
         <div v-else-if="!all.length" class="mt-24">
             <EmptyView :showClearFiltersCTA="false" />
         </div>
+        <teleport to="#sidePanel">
+            <a-drawer
+                :visible="selectedEntity?.guid !== undefined && showPreviewPanel"
+                placement="right"
+                :mask="false"
+                :get-container="false"
+                :wrap-style="{ position: 'absolute', width: '100%' }"
+                :keyboard="false"
+                :destroy-on-close="true"
+                :closable="false"
+                width="100%"
+            >
+                <CategoryTermPreview
+                    :entity="selectedEntity"
+                    @closePreviewPanel="handlClosePreviewPanel"
+                />
+            </a-drawer>
+        </teleport>
     </div>
 </template>
 
@@ -138,6 +156,7 @@
     import EmptyView from '@common/empty/discover.vue'
     import GtcEntityCard from './gtcEntityCard.vue'
     import GtcFilters from './common/gtcFilters.vue'
+    import CategoryTermPreview from '@/glossary/common/categoryTermPreview/categoryTermPreview.vue'
 
     // composables
     import useGtcSearch from '~/composables/glossary/useGtcSearch'
@@ -146,7 +165,7 @@
     import { Category, Term } from '~/types/glossary/glossary.interface'
 
     export default defineComponent({
-        components: { GtcEntityCard, EmptyView, LoadingView, GtcFilters },
+        components: { GtcEntityCard, EmptyView, LoadingView, GtcFilters, CategoryTermPreview },
         props: {
             qualifiedName: {
                 type: String,
@@ -165,6 +184,11 @@
                 required: true,
                 default: 'AtlasGlossary',
             },
+            showPreviewPanel: {
+                type: Boolean,
+                required: true,
+                default: false
+            }
         },
         emits: ['entityPreview'],
         setup(props, { emit }) {
@@ -253,6 +277,9 @@
             const onEntitySelect = (entity: Category | Term) => {
                 selectedEntity.value = entity
             }
+            const handlClosePreviewPanel = () => {
+                selectedEntity.value = undefined;
+            }
             const onSearch = useDebounceFn(() => {
                 fetchAssetsPaginated({
                     query: `${searchQuery.value ? `${searchQuery.value}` : ''}`,
@@ -288,6 +315,7 @@
                 onEntitySelect,
                 loadMore,
                 updateFilters,
+                handlClosePreviewPanel,
                 selectedEntity,
                 isLoading,
                 projectionOptions,

@@ -55,6 +55,7 @@
                         <GlossaryTermsAndCategoriesTab
                             :qualified-name="parentGlossaryQualifiedName"
                             :guid="guid"
+                            :show-preview-panel="currentTab === '2'"
                             type="AtlasGlossaryCategory"
                             @entityPreview="handleCategoryOrTermPreview"
                         />
@@ -66,22 +67,11 @@
                 </a-tabs>
             </div>
         </div>
-        <CategoryTermPreview
-            v-if="currentTab === '2' && previewEntity && showPreviewPanel"
-            :entity="previewEntity"
-            @closePreviewPanel="handlClosePreviewPanel"
-        />
-        <SidePanel v-else :entity="category" :top-terms="categoryTerms" />
 
-        <!-- <SidePanel
-            v-if="currentTab === '1'"
-            :entity="category"
-            :top-terms="categoryTerms"
-        />
-        <CategoryTermPreview
-            v-if="currentTab === '2' && previewEntity"
-            :entity="previewEntity"
-        /> -->
+        <div id="sidePanel" class="relative h-full w-1/3">
+            <SidePanel :entity="category" :top-terms="categoryTerms" />
+        </div>
+
     </div>
 </template>
 

@@ -1,6 +1,6 @@
 <template>
     <div
-        class="flex flex-col w-1/3 border-l"
+        class="flex flex-col w-full  overflow-y-hidden border-l"
         :class="$style.gtcPreview"
     >
         <div
@@ -125,7 +125,7 @@
                 </div>
             </a-tab-pane>
             <a-tab-pane key="activity" tab="Activity">
-                <div class="h-screen overflow-auto">
+                <div class="h-screen overflow-auto pb-52">
                     <Activity :selectedAsset="entity" />
                 </div>
             </a-tab-pane>
@@ -220,6 +220,7 @@
 </script>
 <style lang="less" module>
     .gtcPreview {
+        height: calc(100vh - 50px);
         :global(.ant-collapse-header) {
             @apply pl-5 py-4 m-0 font-bold text-sm text-gray-700 bg-white !important;
         }

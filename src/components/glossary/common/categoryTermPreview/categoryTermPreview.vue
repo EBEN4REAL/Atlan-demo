@@ -1,6 +1,6 @@
 <template>
     <div
-        class="flex flex-col w-1/3 min-h-screen border-l"
+        class="flex flex-col w-1/3 border-l"
         :class="$style.gtcPreview"
     >
         <div
@@ -60,7 +60,7 @@
 
         <a-tabs default-active-key="1" class="border-0">
             <a-tab-pane key="info" tab="Info">
-                <div class="h-screen overflow-auto pb-52">
+                <div class="h-screen overflow-auto pb-64">
                     <a-collapse
                         v-model:activeKey="activeKey"
                         :bordered="false"

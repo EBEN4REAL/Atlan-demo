@@ -1,5 +1,5 @@
 <template>
-    <div class="w-1/2 pt-4 border-l sidePanel" :class="$style.sidePanel">
+    <div class="w-1/3 pt-4 border-l sidePanel" :class="$style.sidePanel">
         <a-tabs default-active-key="1">
             <a-tab-pane key="info" class="p-0 m-0" tab="Info">
                 <div class="h-screen pb-24 overflow-auto">

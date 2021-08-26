@@ -48,7 +48,8 @@
         <div v-if="!isLoading">
             <div class="flex px-4 space-x-2">
                 <div
-                    class=" flex justify-center w-full text-base font-bold leading-5 border-none "
+                    class=" flex justify-center w-full text-base font-bold leading-5 cursor-pointer "
+                    @click="redirectToProfile('glossary', parentGlossary.guid)"
                 >
                     <span class="flex my-auto">
                         {{ parentGlossary?.displayText }}

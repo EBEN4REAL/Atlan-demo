@@ -48,7 +48,7 @@
                         </template>
                         <!-- list starts here -->
                         <!-- TODO: make panel scrollable -->
-                        <div class="overflow-auto" style="max-height: 380px">
+                        <div class="overflow-auto pb-16" style="max-height: 380px">
                             <div v-for="asset in all" :key="asset.guid">
                                 <GtcEntityCard
                                     :class="{
@@ -167,7 +167,7 @@
             },
         },
         emits: ['entityPreview'],
-        setup(props, context) {
+        setup(props, { emit }) {
             // data
             const glossaryQualifiedName = toRef(props, 'qualifiedName')
             const searchQuery = ref<string>()
@@ -270,7 +270,7 @@
 
             // lifecycle methods and watchers
             watch(selectedEntity, (newSelectedEntity) => {
-                context.emit('entityPreview', newSelectedEntity)
+                emit('entityPreview', newSelectedEntity)
             })
 
             // watch(entities, (newEntities) => {

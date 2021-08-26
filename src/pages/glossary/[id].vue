@@ -4,13 +4,7 @@
     </div>
     <div v-else class="flex flex-row h-full" :class="$style.tabClasses">
         <div
-            class="h-full"
-            :class="
-                currentTab === '1' ||
-                (currentTab === '2' && !previewEntity?.guid)
-                    ? 'w-full'
-                    : 'w-2/3'
-            "
+            class="h-full w-2/3"
         >
             <!-- top section -->
             <div class="flex flex-row justify-between pl-5 pr-4 mt-6 mb-5">
@@ -223,6 +217,7 @@
                 showPreviewPanel.value = true
             }
             const handlClosePreviewPanel = () => {
+                previewEntity.value = undefined
                 showPreviewPanel.value = false
             }
 

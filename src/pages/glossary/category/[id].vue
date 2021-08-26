@@ -4,13 +4,7 @@
     </div>
     <div v-else class="flex flex-row h-full" :class="$style.tabClasses">
         <div
-            class="h-full overflow-auto"
-            :class="
-                currentTab === '1' ||
-                (currentTab === '2' && !previewEntity?.guid)
-                    ? 'w-full'
-                    : 'w-2/3'
-            "
+            class="h-full w-2/3"
         >
             <div class="flex flex-row justify-between pl-5 pr-4 my-6">
                 <div class="flex flex-row">

@@ -121,6 +121,7 @@
     import {
         BaseAttributes,
         BasicSearchAttributes,
+        tableauAttributes,
     } from '~/constant/projection'
     import useTracking from '~/modules/tracking'
     import { initialFiltersType } from '~/pages/assets.vue'
@@ -333,6 +334,7 @@
                         ...BaseAttributes,
                         ...BasicSearchAttributes,
                         ...BMAttributeProjection.value,
+                        ...tableauAttributes,
                     ],
                     aggregationAttributes: [],
                 }

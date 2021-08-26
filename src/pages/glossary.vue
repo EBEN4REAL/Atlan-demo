@@ -13,20 +13,20 @@
     />
     <splitpanes class="h-full default-theme">
         <!-- glossary sidebar -->
-        <pane style="min-width: 264px" class="bg-white">
+        <pane min-size="12" max-size="50"  style="width: 264px" class="bg-white">
             <div>
                 <glossaryTree 
-                :glossary-list="glossaryList" 
-                :is-home="isHome" 
-                :tree-data="treeData" 
-                :on-load-data="onLoadData" 
-                :parent-glossary="parentGlossary" 
-                :is-loading="isInitingTree"
-            />
+                    :glossary-list="glossaryList" 
+                    :is-home="isHome" 
+                    :tree-data="treeData" 
+                    :on-load-data="onLoadData" 
+                    :parent-glossary="parentGlossary" 
+                    :is-loading="isInitingTree"
+                />
             </div>
         </pane>
         <!-- glossary profile -->
-        <pane class="bg-white">
+        <pane :size="82" class="bg-white">
             <router-view />
         </pane>
     </splitpanes>

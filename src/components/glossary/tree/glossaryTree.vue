@@ -75,6 +75,7 @@
                         :tree-data="treeData"
                         :load-data="onLoadData"
                         :block-node="true"
+                        :auto-expand-parent="false"
                         @select="selectNode"
                         @expand="expandNode"
                     >

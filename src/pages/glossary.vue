@@ -71,7 +71,7 @@
             const route = useRoute()
             const router = useRouter()
             const currentGuid = ref<string>(route.params.id as string)
-            const type = ref(router.currentRoute.value.fullPath.split('/')[1] as 'glossary' | 'category' | 'term')
+            const type = ref(router.currentRoute.value.fullPath.split('/')[router.currentRoute.value.fullPath.split('/').length - 2] as 'glossary' | 'category' | 'term')
             const parentGlossaryGuid = ref<string | undefined>('')
 
             const createGlossaryModalVisble = ref(false)

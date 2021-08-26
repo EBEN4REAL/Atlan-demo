@@ -50,8 +50,8 @@
                 </div>
             </template>
             <template
-                v-if="showAll"
                 v-for="(classification, index) in splittedClassifications.b"
+                v-if="showAll"
                 :key="'classification-' + classification?.typeName + index"
             >
                 <div
@@ -188,10 +188,10 @@
                             >Propagate classification to related assets
                         </a-checkbox>
                         <a-checkbox
-                            :disabled="!linkClassificationData.propagate"
                             v-model:checked="
                                 linkClassificationData.removePropagationsOnEntityDelete
                             "
+                            :disabled="!linkClassificationData.propagate"
                             class="mt-2 text-sm text-gray"
                             >Remove propagation when related assets
                             <!-- <span class="font-semibold text-gray-500">{{
@@ -229,7 +229,7 @@
                             >
                                 <a-textarea
                                     v-model:value="formState.description"
-                                    showCount
+                                    show-count
                                     :maxlength="140"
                                     placeholder="Add a description"
                                 />
@@ -281,12 +281,12 @@
                         </div>
                         <div v-else class="space-x-4">
                             <a-button
+                                class="px-4"
                                 @click="
                                     () => {
                                         showCreateClassificationPopover = false
                                     }
                                 "
-                                class="px-4"
                                 >Cancel</a-button
                             >
                             <a-button
@@ -334,7 +334,7 @@
                 required: true,
             },
         },
-        setup(props, { emit }) {
+        setup(props) {
             const selectedAsset = computed(() => props.selectedAsset)
             const classificationsStore = useClassificationStore()
             const asset = computed(() => props.selectedAsset ?? {})
@@ -342,12 +342,6 @@
             const linkClassificationStatus = ref('')
             const linkClassificationStatusError = ref('')
             const showAll = ref(false)
-            const availableClassificationsForLink = ref(
-                getAvailableClassificationsForLink(
-                    selectedAsset.value.classifications,
-                    classificationsStore.classifications
-                )
-            )
             const unlinkClassificationStatus = ref({
                 status: '',
                 typeName: null,
@@ -393,7 +387,12 @@
 
                 return availableClassifications
             }
-
+            const availableClassificationsForLink = ref(
+                getAvailableClassificationsForLink(
+                    selectedAsset.value.classifications,
+                    classificationsStore.classifications
+                )
+            )
             function removeClassificationFromSelectedAsset(
                 selectedClassification: any
             ) {
@@ -441,7 +440,6 @@
             }
             function addClassificationToSelectedAsset({
                 classifications: selectedClassificationsForLink,
-                multiple,
             }: {
                 classifications: classificationInterface[]
                 multiple: boolean
@@ -474,7 +472,7 @@
             /* ------------------------------- */
 
             const assetLinkedClassifcations = computed(
-                () => selectedAsset.value.classifications
+                () => selectedAsset.value.classifications ?? []
             )
             console.log(assetLinkedClassifcations, 'assetLinkedClassifcations')
 
@@ -518,6 +516,7 @@
                 removePropagationsOnEntityDelete: false,
                 typeName: '',
             })
+            const selectedClassificationForLink = ref([])
 
             const handleLinkClassificationPopoverSave = () => {
                 const payload = ref([]) as Ref<any>
@@ -583,7 +582,6 @@
                 linkClassificationPopover.value = false
             }
 
-            const selectedClassificationForLink = ref([])
             const handleSelectedClassificationForLink = (typeName: any) => {
                 const data = [...typeName]
                 linkClassificationData.value.typeName = data.pop()
@@ -618,9 +616,9 @@
                 ],
             }
 
-            const resetRef = (ref: Ref, time: number) => {
+            const resetRef = (passedRef: Ref, time: number) => {
                 setTimeout(() => {
-                    ref.value = ''
+                    passedRef.value = ''
                 }, time)
             }
 
@@ -709,7 +707,7 @@
             }
 
             function splitArray(sizeofSplit: number, arr: any[]) {
-                if (sizeofSplit >= arr.length) {
+                if (sizeofSplit >= arr?.length) {
                     return {
                         a: [...arr],
                         b: [],

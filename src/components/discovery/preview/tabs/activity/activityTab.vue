@@ -109,8 +109,6 @@
             }
 
             const fetchMore = () => {
-                console.log(audits?.value[audits.value?.length - 1].eventKey)
-                console.log(audits)
                 fetchMoreAuditParams.startKey = audits?.value[
                     audits.value?.length - 1
                 ].eventKey as string

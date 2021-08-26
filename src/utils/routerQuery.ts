@@ -88,7 +88,7 @@ export function getEncodedStringFromOptions(options: any) {
                                 (e.attributeName ? `${e.attributeName.split('.')[1]}:` : '') +
                                 (e.attributeValue
                                     ? `${e.attributeValue}:`
-                                    : '') +
+                                    : '-:') +
                                 (e.operator ? `${e.operator}:` : '')
                         )
                         .join(',')
@@ -332,7 +332,7 @@ export function getDecodedOptionsFromString(router) {
                     criterion.push(
                         {
                             attributeName: `${facetFilterName}.${a}`,
-                            attributeValue: v,
+                            attributeValue: (v === '-' && ['isNull', 'notNull'].includes(o)) ? '' : v,
                             operator: o,
                         }
                     )

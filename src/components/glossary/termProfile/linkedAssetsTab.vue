@@ -59,9 +59,9 @@
     import { useDebounceFn } from '@vueuse/core'
     import { useRouter } from 'vue-router'
 
-    import AssetList from '@/discovery/asset/list/index.vue'
+    import AssetList from '@/discovery/list/assetList.vue'
     import EmptyView from '@common/empty/discover.vue'
-    import AssetDiscovery from '@/discovery/asset/index.vue'
+    import AssetDiscovery from '~/components/discovery/assetDiscovery.vue'
 
     import useTermLinkedAssets from '~/composables/glossary/useTermLinkedAssets'
     import { getDecodedOptionsFromString } from '~/utils/routerQuery'
@@ -76,25 +76,20 @@
         props: ['termQualifiedName', 'termCount'],
         emits: ['preview'],
         setup(props: PropsType) {
-            // data
             const router = useRouter()
             const initialFilters = getDecodedOptionsFromString(router)
-            const searchQuery = ref<string>()
+
+            const termName = computed(() => props.termQualifiedName)
+
             const { linkedAssets, isLoading, error, fetchLinkedAssets } =
                 useTermLinkedAssets()
 
-            // computed
-            const termName = computed(() => props.termQualifiedName)
             const assets = computed(() => linkedAssets.value?.entities ?? [])
             const assetCount = computed(() => assets.value?.length ?? 0)
             const numberOfTerms = computed(() => props.termCount ?? 5)
 
-            // methods
-            const onSearch = useDebounceFn(() => {
-                fetchLinkedAssets(termName.value, `*${searchQuery.value}*`)
-            }, 0)
+            const searchQuery = ref<string>()
 
-            // lifecycle methods and watchers
             onMounted(() => {
                 if (termName.value) fetchLinkedAssets(termName.value)
             })
@@ -102,6 +97,10 @@
             watch(termName, (newTermName) => {
                 if (newTermName) fetchLinkedAssets(newTermName)
             })
+
+            const onSearch = useDebounceFn(() => {
+                fetchLinkedAssets(termName.value, `*${searchQuery.value}*`)
+            }, 0)
 
             return {
                 termName,

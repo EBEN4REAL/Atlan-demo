@@ -16,7 +16,10 @@
                         <template #content>
                             <div class="flex">
                                 <div
-                                    class="px-3 border-r border-gray-200 border-dashed "
+                                    class="
+                                        px-3
+                                        border-r border-gray-200 border-dashed
+                                    "
                                 >
                                     <p class="mb-1 text-gray-500">Show/Hide</p>
                                     <a-checkbox-group
@@ -65,7 +68,10 @@
             "
             class="flex-grow"
         >
-            <EmptyView :show-clear-filters-c-t-a="false" type="Terms"></EmptyView>
+            <EmptyView
+                :show-clear-filters-c-t-a="false"
+                type="Terms"
+            ></EmptyView>
         </div>
         <LinkedTermList
             v-else
@@ -92,9 +98,9 @@
 
 <script lang="ts">
     import { defineComponent, computed, ref, toRaw, watch, Ref } from 'vue'
-    import Preferences from '@/discovery/list/preference/index.vue'
+    import Preferences from '~/components/discovery/list/preference.vue'
     import LinkedTermList from '@/common/list/linkedTerms/index.vue'
-    import AssetTabs from '@/discovery/list/tabs/index.vue'
+    import AssetTabs from '~/components/discovery/list/assetTypeTabs.vue'
     import EmptyView from '@common/empty/discover.vue'
     import Footer from '@common/assets/footer/index.vue'
     import { Components } from '~/api/atlas/client'
@@ -222,10 +228,7 @@
                 let list = []
                 switch (sortingOrder) {
                     case 'ascending': {
-                        list = data.value.sort((
-                            listA: any,
-                            listB: any
-                        ) => {
+                        list = data.value.sort((listA: any, listB: any) => {
                             const a = listA.attributes.name
                             const b = listB.attributes.name
                             if (a < b) {
@@ -239,10 +242,7 @@
                         break
                     }
                     case 'descending': {
-                        list = data.value.sort((
-                            listA: any,
-                            listB: any
-                        ) => {
+                        list = data.value.sort((listA: any, listB: any) => {
                             const a = listA.attributes.name
                             const b = listB.attributes.name
                             if (a < b) {

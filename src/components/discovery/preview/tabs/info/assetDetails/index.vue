@@ -1,10 +1,10 @@
 <template>
     <div class="w-full px-5">
         <div
-            class="flex items-center w-full gap-16 mb-4"
             v-if="isSelectedAssetHaveRowsAndColumns(selectedAsset)"
+            class="flex items-center w-full gap-16 mb-4"
         >
-            <RowInfoHoverCard :rowCount="rows">
+            <RowInfoHoverCard :row-count="rows">
                 <div class="flex flex-col text-sm cursor-pointer">
                     <span class="mb-2 text-sm text-gray-500">Rows</span>
                     <span class="text-gray-700">{{ rows }}</span>
@@ -15,14 +15,20 @@
                 <span class="text-gray-700">{{ cols }}</span>
             </div>
         </div>
-        <Description v-if="selectedAsset.guid" :selectedAsset="selectedAsset" />
+        <Description
+            v-if="selectedAsset.guid"
+            :selected-asset="selectedAsset"
+        />
         <div class="flex w-full text-sm text-gray-500">
-            <Owners v-if="selectedAsset.guid" :selectedAsset="selectedAsset" />
+            <Owners v-if="selectedAsset.guid" :selected-asset="selectedAsset" />
         </div>
         <div class="flex w-full text-sm text-gray-500">
-            <Experts v-if="selectedAsset.guid" :selectedAsset="selectedAsset" />
+            <Experts
+                v-if="selectedAsset.guid"
+                :selected-asset="selectedAsset"
+            />
         </div>
-        <Status v-if="selectedAsset.guid" :selectedAsset="selectedAsset" />
+        <Status v-if="selectedAsset.guid" :selected-asset="selectedAsset" />
     </div>
 </template>
 
@@ -38,12 +44,6 @@
 
     export default defineComponent({
         name: 'AssetDetails',
-        props: {
-            selectedAsset: {
-                type: Object as PropType<assetInterface>,
-                required: true,
-            },
-        },
         components: {
             Experts,
             Description,
@@ -51,6 +51,13 @@
             Owners,
             RowInfoHoverCard,
         },
+        props: {
+            selectedAsset: {
+                type: Object as PropType<assetInterface>,
+                required: true,
+            },
+        },
+
         setup(props) {
             const { selectedAsset } = toRefs(props)
 
@@ -67,9 +74,9 @@
             function isSelectedAssetHaveRowsAndColumns(
                 selectedAsset: assetInterface
             ) {
-                if (selectedAsset.typeName == 'View') return true
-                else if (selectedAsset.typeName == 'Table') return true
-                else return false
+                if (selectedAsset.typeName === 'View') return true
+                if (selectedAsset.typeName === 'Table') return true
+                return false
             }
 
             return {

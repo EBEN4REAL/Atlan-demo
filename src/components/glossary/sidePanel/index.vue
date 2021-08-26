@@ -108,7 +108,7 @@
     import Experts from '@/discovery/preview/tabs/info/assetDetails/experts.vue'
     import Description from '@/discovery/preview/tabs/info/assetDetails/description.vue'
     import Status from '@/discovery/preview/tabs/info/assetDetails/status.vue'
-    import Activity from '@/discovery/preview/tabs/activity/index.vue'
+    import Activity from '~/components/discovery/preview/tabs/activity/activityTab.vue'
 
     import {
         Glossary,

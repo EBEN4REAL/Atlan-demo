@@ -59,9 +59,9 @@
         },
         setup(props) {
             const { selectedAsset } = toRefs(props)
-            const { relationshipList, logo } = useAssetInfo()
+            const { getHierarchy, logo } = useAssetInfo()
             const getParentsFiltered = computed(() =>
-                relationshipList(selectedAsset.value)
+                getHierarchy(selectedAsset.value)
             )
             return {
                 logo,

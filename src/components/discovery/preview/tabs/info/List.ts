@@ -1,3 +1,6 @@
+import { Ref } from 'vue'
+import { assetInterface } from '~/types/assets/asset.interface'
+
 type collapsiblePanels = {
     id: string
     label: string
@@ -8,7 +11,7 @@ type tableauProperty = {
     label: string
     property: string
 }
-type penlsMapToAsset = {
+type AssetTab = {
     panels: collapsiblePanels[]
     properties?: tableauProperty[]
 }
@@ -53,7 +56,8 @@ const {
     tableauProperties,
     tableauPreview,
 } = CollapsiblePanels
-export const PanelsMapToAsset: { [key: string]: penlsMapToAsset } = {
+
+export const InfoTabInAssetInDiscovery: { [key: string]: AssetTab } = {
     Connection: {
         panels: [assetDetails, linkedAsset, heirarchy, properties],
     },
@@ -229,5 +233,192 @@ export const PanelsMapToAsset: { [key: string]: penlsMapToAsset } = {
     },
 }
 
-// preview
-//
+export const InfoTabInAssetProfile: { [key: string]: AssetTab } = {
+    Connection: {
+        panels: [assetDetails, linkedAsset, heirarchy, properties],
+    },
+    Database: {
+        panels: [assetDetails, linkedAsset, heirarchy, properties],
+    },
+    Schema: {
+        panels: [assetDetails, linkedAsset, heirarchy, properties],
+    },
+    View: {
+        panels: [assetDetails, linkedAsset, heirarchy, properties],
+    },
+    Table: {
+        panels: [assetDetails, linkedAsset, heirarchy, properties],
+    },
+    TablePartition: {
+        panels: [assetDetails, linkedAsset, heirarchy, properties],
+    },
+    MaterialisedView: {
+        panels: [assetDetails, linkedAsset, heirarchy, properties],
+    },
+    Column: {
+        panels: [assetDetails, linkedAsset, heirarchy, properties],
+    },
+    TableauWorkbook: {
+        panels: [
+            tableauProperties,
+            assetDetails,
+            linkedAsset,
+            heirarchy,
+            properties,
+        ],
+        properties: [
+            {
+                id: 'projectName',
+                label: 'Project',
+                property: 'projectName',
+            },
+            {
+                id: '__timestamp',
+                label: 'Created on',
+                property: '__timestamp',
+            },
+            {
+                id: '__modificationTimestamp',
+                label: 'Modified on',
+                property: '__modificationTimestamp',
+            },
+        ],
+    },
+    TableauSite: {
+        panels: [
+            tableauProperties,
+            assetDetails,
+            linkedAsset,
+            heirarchy,
+            properties,
+        ],
+        properties: [
+            {
+                id: 'connectionName',
+                label: 'Server',
+                property: 'connectionName',
+            },
+            {
+                id: '__timestamp',
+                label: 'Created on',
+                property: '__timestamp',
+            },
+        ],
+    },
+    TableauProject: {
+        panels: [
+            tableauProperties,
+            assetDetails,
+            linkedAsset,
+            heirarchy,
+            properties,
+        ],
+        properties: [
+            {
+                id: 'siteName',
+                label: 'Site',
+                property: 'siteName',
+            },
+            {
+                id: '__timestamp',
+                label: 'Created on',
+                property: '__timestamp',
+            },
+        ],
+    },
+    TableauDashboard: {
+        panels: [
+            tableauPreview,
+            tableauProperties,
+            assetDetails,
+            linkedAsset,
+            heirarchy,
+            properties,
+        ],
+        properties: [
+            {
+                id: 'workbookName',
+                label: 'Workbook',
+                property: 'workbookName',
+            },
+            {
+                id: '__timestamp',
+                label: 'Created on',
+                property: '__timestamp',
+            },
+            {
+                id: '__modificationTimestamp',
+                label: 'Modified on',
+                property: '__modificationTimestamp',
+            },
+        ],
+    },
+    TableauWorksheet: {
+        panels: [
+            tableauPreview,
+            tableauProperties,
+            assetDetails,
+            linkedAsset,
+            heirarchy,
+            properties,
+        ],
+        properties: [
+            {
+                id: 'workbookName',
+                label: 'Workbook',
+                property: 'workbookName',
+            },
+            {
+                id: '__timestamp',
+                label: 'Created on',
+                property: '__timestamp',
+            },
+            {
+                id: '__modificationTimestamp',
+                label: 'Modified on',
+                property: '__modificationTimestamp',
+            },
+        ],
+    },
+    // in attributes if isPublished -true ( means it is a published datasoruce )/ isPublished - false ( means it is a embedded datasource)
+    TableauDatasource: {
+        panels: [
+            tableauProperties,
+            assetDetails,
+            linkedAsset,
+            heirarchy,
+            properties,
+        ],
+        properties: [
+            {
+                id: 'projectName',
+                label: 'Project',
+                property: 'projectName',
+            },
+            {
+                id: '__timestamp',
+                label: 'Created on',
+                property: '__timestamp',
+            },
+            {
+                id: '__modificationTimestamp',
+                label: 'Modified on',
+                property: '__modificationTimestamp',
+            },
+        ],
+    },
+}
+
+export function useInfoPanels(
+    page: Ref<string>,
+    selectedAsset: Ref<assetInterface>
+) {
+    switch (page.value) {
+        case 'discovery': {
+            return InfoTabInAssetInDiscovery[selectedAsset.value.typeName]
+        }
+        case 'profile': {
+            return InfoTabInAssetProfile[selectedAsset.value.typeName]
+        }
+    }
+}

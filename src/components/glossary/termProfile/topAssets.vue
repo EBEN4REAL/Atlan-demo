@@ -24,45 +24,45 @@
     </div>
 </template>
 <script lang="ts">
-import { defineComponent, computed, onMounted, watch } from 'vue'
-import Item from '@/discovery/list/item.vue'
-import LoadingView from '@common/loaders/section.vue'
+    import { defineComponent, computed, onMounted, watch } from 'vue'
+    import Item from '~/components/discovery/list/listItem.vue'
+    import LoadingView from '@common/loaders/section.vue'
 
-import useTermLinkedAssets from '~/composables/glossary/useTermLinkedAssets'
+    import useTermLinkedAssets from '~/composables/glossary/useTermLinkedAssets'
 
-interface PropsType {
-    termQualifiedName: string
-    termCount: number
-}
+    interface PropsType {
+        termQualifiedName: string
+        termCount: number
+    }
 
-export default defineComponent({
-    components: { Item, LoadingView },
-    props: ['termQualifiedName', 'termCount'],
-    setup(props: PropsType) {
-        const termName = computed(() => props.termQualifiedName)
+    export default defineComponent({
+        components: { Item, LoadingView },
+        props: ['termQualifiedName', 'termCount'],
+        setup(props: PropsType) {
+            const termName = computed(() => props.termQualifiedName)
 
-        const { linkedAssets, isLoading, error, fetchLinkedAssets } =
-            useTermLinkedAssets()
+            const { linkedAssets, isLoading, error, fetchLinkedAssets } =
+                useTermLinkedAssets()
 
-        const assets = computed(() => linkedAssets.value?.entities)
-        const assetCount = computed(() => assets.value?.length ?? 0)
-        const numberOfTerms = computed(() => props.termCount ?? 5)
+            const assets = computed(() => linkedAssets.value?.entities)
+            const assetCount = computed(() => assets.value?.length ?? 0)
+            const numberOfTerms = computed(() => props.termCount ?? 5)
 
-        onMounted(() => {
-            if (termName.value) fetchLinkedAssets(termName.value)
-        })
+            onMounted(() => {
+                if (termName.value) fetchLinkedAssets(termName.value)
+            })
 
-        watch(termName, (newTermName) => {
-            if (newTermName) fetchLinkedAssets(newTermName)
-        })
+            watch(termName, (newTermName) => {
+                if (newTermName) fetchLinkedAssets(newTermName)
+            })
 
-        return {
-            termName,
-            isLoading,
-            assets,
-            assetCount,
-            numberOfTerms,
-        }
-    },
-})
+            return {
+                termName,
+                isLoading,
+                assets,
+                assetCount,
+                numberOfTerms,
+            }
+        },
+    })
 </script>

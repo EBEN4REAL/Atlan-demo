@@ -11,16 +11,16 @@
                     <div :class="{ active: item.id === assetType }">
                         <span>{{ item.label }}</span>
                         <span
-                            class="chip"
                             v-if="item.id === 'Catalog' && total > 0"
+                            class="chip"
                             >{{ getCountString(total) }}</span
                         >
                         <span
-                            class="chip"
                             v-if="
                                 assetTypeMap[item.id] &&
                                 assetTypeMap[item.id] > 0
                             "
+                            class="chip"
                             >{{ getCountString(assetTypeMap[item.id]) }}</span
                         >
                     </div>

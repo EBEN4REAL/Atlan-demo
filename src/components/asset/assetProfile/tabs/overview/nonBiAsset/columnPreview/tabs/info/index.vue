@@ -59,11 +59,8 @@
         defineAsyncComponent,
         Ref,
         PropType,
-        computed,
     } from 'vue'
-    import { PanelsMapToAsset, CollapsiblePanels } from './List'
-    import { assetInterface } from '~/types/assets/asset.interface'
-    import useBusinessMetadataHelper from '~/composables/businessMetadata/useBusinessMetadataHelper'
+    import { CollapsiblePanels } from './List'
 
     export default defineComponent({
         name: 'InfoTab',
@@ -72,9 +69,9 @@
                 () => import('./columnDetails/index.vue')
             ),
 
-            /* linkedAsset: defineAsyncComponent(
+            linkedAsset: defineAsyncComponent(
                 () => import('./governance/index.vue')
-            ), */
+            ),
             usage: defineAsyncComponent(() => import('./usage/index.vue')),
 
             businessMetadata1: defineAsyncComponent(
@@ -93,11 +90,11 @@
                 type: Object as PropType<any>,
             },
             infoTabData: {
-                type: Object as PropType<assetInterface>,
+                type: Object as PropType<any>,
                 required: true,
             },
             selectedRow: {
-                type: Object as PropType<assetInterface>,
+                type: Object as PropType<any>,
                 required: true,
             },
             isLoaded: {
@@ -105,7 +102,7 @@
             },
         },
 
-        setup(props) {
+        setup() {
             const refMap: Ref<{
                 [key: string]: any
             }> = ref({})
@@ -183,15 +180,3 @@
         }
     }
 </style>
-<!-- <template>
-    <div>Info</div>
-</template>
-
-<script lang="ts">
-    import { defineComponent } from 'vue'
-
-    export default defineComponent({
-        name: 'InfoTab',
-    })
-</script>
-<style scoped></style> -->

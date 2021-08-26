@@ -1,5 +1,9 @@
 <template>
-    <div></div>
+    <div
+        class="flex items-center justify-center h-48 m-5 bg-gray-300 rounded-md"
+    >
+        <p class="text-sm text-gray-500">Top users, popularity score</p>
+    </div>
 </template>
 
 <script lang="ts">

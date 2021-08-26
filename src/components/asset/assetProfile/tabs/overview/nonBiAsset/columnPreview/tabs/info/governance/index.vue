@@ -9,7 +9,6 @@
     import { defineComponent, PropType, toRefs, watch } from 'vue'
     import Terms from './terms.vue'
     import Classifications from './classifications.vue'
-    import { assetInterface } from '~/types/assets/asset.interface'
 
     export default defineComponent({
         components: { Terms, Classifications },

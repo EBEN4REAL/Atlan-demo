@@ -3,7 +3,11 @@
         <a-tabs default-active-key="1">
             <a-tab-pane key="info" class="p-0 m-0" tab="Info">
                 <div class="h-screen pb-24 overflow-auto">
-                    <a-collapse :bordered="false" expand-icon-position="right">
+                    <a-collapse
+                        v-model:activeKey="activeKey"
+                        :bordered="false"
+                        expand-icon-position="right"
+                    >
                         <template #expandIcon="{ isActive }">
                             <fa v-if="isActive" icon="fas chevron-up" />
                             <fa v-else icon="fas chevron-down" />
@@ -141,6 +145,8 @@
             },
         },
         setup(props) {
+            const activeKey = ref(['1'])
+
             const shortDescription = computed(
                 () => props.entity?.attributes?.shortDescription
             )
@@ -156,6 +162,7 @@
                 termCount,
                 categoryCount,
                 glossaryTerms,
+                activeKey,
             }
         },
     })

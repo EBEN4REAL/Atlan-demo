@@ -140,7 +140,7 @@
             const glossaryQualifiedName = toRef(props, 'qualifiedName')
             const searchQuery = ref<string>()
             const selectedEntity = ref<Category | Term>()
-            const projection = ref(['status', 'description'])
+            const projection = ref(['status', 'description', 'owners'])
             const { entities, error, isLoading, fetchAssetsPaginated } =
                 useGtcSearch(glossaryQualifiedName)
 
@@ -241,9 +241,9 @@
                 context.emit('entityPreview', newSelectedEntity)
             })
 
-            watch(entities, (newEntities) => {
-                selectedEntity.value = newEntities[0]
-            })
+            // watch(entities, (newEntities) => {
+            //     selectedEntity.value = newEntities[0]
+            // })
 
             return {
                 glossaryQualifiedName,

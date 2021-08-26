@@ -109,15 +109,12 @@
                 </a-tabs>
             </div>
         </div>
-        <SidePanel
-            v-if="currentTab === '1'"
-            :entity="glossary"
-            :top-terms="glossaryTerms"
-        />
         <CategoryTermPreview
-            v-if="currentTab === '2' && previewEntity"
+            v-if="currentTab === '2' && previewEntity && showPreviewPanel"
             :entity="previewEntity"
+            @closePreviewPanel="handlClosePreviewPanel"
         />
+        <SidePanel v-else :entity="glossary" :top-terms="glossaryTerms" />
     </div>
 </template>
 
@@ -169,6 +166,7 @@
             const guid = toRef(props, 'id')
             const currentTab = ref('1')
             const previewEntity = ref<Category | Term | undefined>()
+            const showPreviewPanel = ref(false)
 
             const {
                 entity: glossary,
@@ -220,6 +218,10 @@
 
             const handleCategoryOrTermPreview = (entity: Category | Term) => {
                 previewEntity.value = entity
+                showPreviewPanel.value = true
+            }
+            const handlClosePreviewPanel = () => {
+                showPreviewPanel.value = false
             }
 
             // lifecycle methods and watchers
@@ -256,11 +258,13 @@
                 qualifiedName,
                 currentTab,
                 previewEntity,
+                showPreviewPanel,
                 statusObject,
                 refreshCategoryTermList,
                 fetchNextCategoryOrTermList,
                 refetch,
                 handleCategoryOrTermPreview,
+                handlClosePreviewPanel,
             }
         },
     })

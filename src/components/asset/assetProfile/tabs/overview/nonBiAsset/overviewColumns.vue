@@ -24,7 +24,7 @@
         </div>
         <!-- Table -->
         <div
-            class="overflow-scroll border-t border-gray-light"
+            class="overflow-y-scroll border-t border-gray-light"
             style="max-width: calc(100vw - 28rem); max-height: 20rem"
         >
             <a-table
@@ -137,7 +137,6 @@
 
     // Components
     import ColumnPreview from './columnPreview/index.vue'
-    import AssetPreview from '~/components/discovery/preview/assetPreview.vue'
 
     export default defineComponent({
         components: { ColumnPreview },

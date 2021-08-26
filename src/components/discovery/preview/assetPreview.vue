@@ -100,12 +100,6 @@
             lineage: defineAsyncComponent(
                 () => import('./tabs/lineage/lineageTab.vue')
             ),
-            columnInfo: defineAsyncComponent(
-                () =>
-                    import(
-                        '~/components/asset/assetProfile/tabs/overview/nonBiAsset/columnPreview/tabs/info/index.vue'
-                    )
-            ),
         },
         props: {
             selectedAsset: {

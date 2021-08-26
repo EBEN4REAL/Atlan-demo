@@ -60,7 +60,7 @@ export default function useAssetDetailsTabList(
         // {
         //     name: 'Chat',
         //     component: 'chat',
-        //     visibleOn: ["discovery", "profile" , "columnPreview"],
+        //     visibleOn: ["discovery", "profile"],
         // },
         // {
         //     name: 'Actions',

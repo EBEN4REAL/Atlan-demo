@@ -21,17 +21,19 @@
                     <ConnectorDropdown
                         :data="connectorsPayload"
                         @change="handleChangeConnectors"
+                        @label-change="setPlaceholder($event, 'connector')"
                     ></ConnectorDropdown>
                     <AssetDropdown
                         v-if="connectorsPayload.connection"
                         :connector="filteredConnector"
                         :data="connectorsPayload"
+                        @label-change="setPlaceholder($event, 'asset')"
                     ></AssetDropdown>
                 </div>
                 <SearchAndFilter
                     v-model:value="queryText"
                     class="mx-3 mt-1"
-                    placeholder="Search"
+                    :placeholder="dynamicSearchPlaceholder"
                     :autofocus="true"
                     @change="handleSearchChange"
                 >
@@ -108,6 +110,7 @@
         watch,
         toRefs,
         PropType,
+        Ref,
     } from 'vue'
     import { useRouter } from 'vue-router'
     import AssetTabs from '~/components/discovery/list/assetTypeTabs.vue'
@@ -288,6 +291,7 @@
                 )
                 return found?.label
             })
+            const placeholderLabel: Ref<Record<string, string>> = ref({})
             const totalCount = computed(() => {
                 if (assetType.value == 'Catalog') {
                     return totalSum.value
@@ -295,12 +299,26 @@
                 return assetTypeMap.value[assetType.value]
             })
             const connectorStore = useConnectionsStore()
+
             const filteredConnector = computed(() =>
                 connectorStore.getSourceList?.find(
                     (item) => connectorsPayload.value?.connector == item.id
                 )
             )
 
+            const dynamicSearchPlaceholder = computed(() => {
+                let placeholder = 'Search for assets'
+                if (placeholderLabel.value.asset) {
+                    placeholder += ' in ' + placeholderLabel.value.asset
+                } else if (placeholderLabel.value.connector) {
+                    placeholder += ' in ' + placeholderLabel.value.connector
+                }
+                return placeholder
+            })
+
+            function setPlaceholder(label: string, type: string) {
+                placeholderLabel.value[type] = label
+            }
             const totalSum = computed(() => {
                 let sum = 0
                 assetTypeList.value.forEach((element) => {
@@ -553,6 +571,9 @@
                 filteredConnector,
                 mutateAssetInList,
                 handleTabChange,
+                dynamicSearchPlaceholder,
+                setPlaceholder,
+                placeholderLabel,
             }
         },
         data() {

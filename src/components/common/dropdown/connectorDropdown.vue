@@ -31,11 +31,11 @@
                         }}
                     </div>
 
-                    <div v-else-if="connector" class="text-xs tracking-wide">
-                        {{
-                            connector?.charAt(0).toUpperCase() +
-                            connector?.substr(1).toLowerCase()
-                        }}
+                    <div
+                        v-else-if="connector"
+                        class="text-xs tracking-wide capitalize"
+                    >
+                        {{ connector }}
                     </div>
                     <AtlanIcon icon="ChevronDown" class="ml-2" />
                 </div>
@@ -50,7 +50,7 @@
 </template>
 
 <script lang="ts">
-    import { computed, defineComponent, ref, watch, toRaw } from 'vue'
+    import { computed, defineComponent, ref, watch, Ref } from 'vue'
 
     import ConnectionSelector from '@common/selector/connections/index.vue'
     import ConnectorSelector from '@common/selector/connectors/index.vue'
@@ -68,7 +68,7 @@
                 },
             },
         },
-        emits: ['change'],
+        emits: ['change', 'labelChange'],
         setup(props, { emit }) {
             const connectorPayload = props.data
 
@@ -76,8 +76,10 @@
                 console.log(connectorPayload, 'payload')
             })
 
-            const connector = ref('' || connectorPayload.connector)
-            const connection = ref('' || connectorPayload.connection)
+            const connector: Ref<string> = ref('' || connectorPayload.connector)
+            const connection: Ref<string> = ref(
+                '' || connectorPayload.connection
+            )
 
             const store = useConnectionsStore()
             const getImage = (id: string) => store.getImage(id)
@@ -87,13 +89,26 @@
                     (item) => item.attributes.qualifiedName === connection.value
                 )
             )
-
+            const connectorObject = computed(() =>
+                store.getSourceList?.find((item) => connector.value === item.id)
+            )
             const isDisabled = computed(() => {
                 if (connector.value?.length > 0) {
                     return false
                 }
                 return true
             })
+
+            function setLabel() {
+                let label = ''
+                if (connectionObject.value)
+                    label =
+                        connectionObject.value.attributes.displayName ||
+                        connectionObject.value.attributes.name
+                else if (connectorObject.value)
+                    label = connectorObject.value.label
+                emit('labelChange', label)
+            }
 
             const handleConnectorChange = (value) => {
                 if (!value) {
@@ -108,12 +123,14 @@
                     connector: connector.value,
                     connection: connection.value,
                 })
+                setLabel()
             }
             const handleConnectionChange = (value) => {
                 emit('change', {
                     connector: connector?.value,
                     connection: connection.value,
                 })
+                setLabel()
             }
             return {
                 connector,

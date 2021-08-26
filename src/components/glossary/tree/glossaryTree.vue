@@ -31,7 +31,7 @@
             </div>
         </div>
     </div>
-    <div v-else-if="!isLoading">
+    <div v-else>
         <div
             class="flex py-2 pl-4 mb-4 text-sm leading-5 text-gray-500 bg-gray-100 cursor-pointer "
             type="link"
@@ -45,83 +45,87 @@
                 placeholder="Search accross Glossaries"
             ></a-input-search>
         </div>
-        <div class="flex px-4 space-x-2">
-            <a-button
-                class="w-full text-sm font-bold leading-5 border-none  bg-primary-light text-primary"
-            >
-                <span>
-                    {{ parentGlossary?.displayText }}
-                </span>
-                <!-- <span v-else>{{
-                    entity?.attributes?.anchor?.uniqueAttributes
-                        ?.qualifiedName
-                }}</span> -->
-            </a-button>
-            <a-button
-                class="
-                    p-2
-                    px-2.5
-                    flex flex-col
-                    justify-center
-                    bg-primary-light
-                    text-primary
-                    border-none
-                "
-            >
-                <fa icon="fal plus" />
-            </a-button>
-        </div>
-        <div class="py-2 px-2.5">
-                <a-tree
-                    v-model:expandedKeys="expandedKeys"
-                    v-model:value="selectedKeys"
-                    :tree-data="treeData"
-                    :load-data="onLoadData"
-                    :block-node="true"
-                    @select="selectNode"
-                    @expand="expandNode"
+        <div v-if="!isLoading">
+            <div class="flex px-4 space-x-2">
+                <div
+                    class=" flex justify-center w-full text-base font-bold leading-5 border-none "
                 >
-                    <template #title="{ title, type, key }">
-                        <a-dropdown :trigger="['contextmenu']">
-                            <div
-                                class="min-w-full"
-                                @click="() => redirectToProfile(type, key)"
-                            >
-                                <div class="flex content-center">
-                                    <span class="mr-2 p-0">
-                                        <img
-                                            v-if="type === 'glossary'"
-                                            :src="GlossarySvg"
-                                            :width="15"
-                                        />
-                                        <img
-                                            v-if="type === 'category'"
-                                            :src="CategorySvg"
-                                            :width="15"
-                                        />
-                                        <img
-                                            v-if="type === 'term'"
-                                            :src="TermSvg"
-                                            :width="12"
-                                        />
-                                    </span>
-                                    <span class="text-sm leading-5 text-gray-700">{{
-                                        title
-                                    }}</span>
+                    <span class="flex my-auto">
+                        {{ parentGlossary?.displayText }}
+                    </span>
+                </div>
+                <a-button
+                    class="
+                        p-2
+                        px-2.5
+                        flex flex-col
+                        justify-center
+                        bg-primary-light
+                        text-primary
+                        border-none
+                    "
+                >
+                    <fa icon="fal plus" />
+                </a-button>
+            </div>
+            <div class="py-2 pl-6">
+                    <a-tree
+                        v-model:expandedKeys="expandedKeys"
+                        v-model:value="selectedKeys"
+                        :tree-data="treeData"
+                        :load-data="onLoadData"
+                        :block-node="true"
+                        :auto-expand-parent="false"
+                        @select="selectNode"
+                        @expand="expandNode"
+                    >
+                        <template #title="{ title, type, key }">
+                            <a-dropdown :trigger="['contextmenu']">
+                                <div
+                                    class="min-w-full"
+                                    @click="() => redirectToProfile(type, key)"
+                                >
+                                    <div class="flex content-center">
+                                        <span class="mr-2 p-0">
+                                            <img
+                                                v-if="type === 'glossary'"
+                                                :src="GlossarySvg"
+                                                :width="15"
+                                            />
+                                            <img
+                                                v-if="type === 'category'"
+                                                :src="CategorySvg"
+                                                :width="15"
+                                            />
+                                            <img
+                                                v-if="type === 'term'"
+                                                :src="TermSvg"
+                                                :width="12"
+                                            />
+                                        </span>
+                                        <span class="text-sm leading-5 text-gray-700">{{
+                                            title
+                                        }}</span>
+                                    </div>
                                 </div>
-                            </div>
-                        </a-dropdown>
-                    </template>
-                </a-tree>
+                            </a-dropdown>
+                        </template>
+                    </a-tree>
+            </div>
+        </div>
+        <div v-else class="mt-4">
+            <LoadingView />
         </div>
     </div>
-    <div v-else>loading</div>
 </template>
 <script lang="ts">
 // library
 import { defineComponent, computed, PropType } from 'vue'
 import { useRouter } from 'vue-router'
 import { TreeDataItem } from 'ant-design-vue/lib/tree/Tree';
+
+// components
+import LoadingView from '@common/loaders/section.vue'
 
 // import { Glossary } from '~/api/atlas/glossary'
 import { Glossary } from "~/types/glossary/glossary.interface";
@@ -135,6 +139,7 @@ import CategorySvg from '~/assets/images/gtc/category/category.png'
 import TermSvg from '~/assets/images/gtc/term/term.png'
 
 export default defineComponent({
+    components: {LoadingView},
     props: {
         glossaryList: {
             type: Object as PropType<Glossary[]>,

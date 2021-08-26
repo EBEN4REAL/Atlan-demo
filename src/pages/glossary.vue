@@ -13,75 +13,17 @@
     />
     <splitpanes class="h-full default-theme">
         <!-- glossary sidebar -->
-        <pane min-size="25" max-size="50" :size="18" class="bg-white">
-            <glossaryTree 
-                :glossary-list="glossaryList" 
-                :is-home="isHome" 
-                :tree-data="treeData" 
-                :on-load-data="onLoadData" 
-                :parent-glossary="parentGlossary" 
-                :is-loading="isInitingTree"
-            />
-            <!-- <div v-if="!currentGuid" class="px-2 py-4">
-                <div class="px-2 pb-2">
-                    <a-input-search
-                        placeholder="Search accross Glossaries"
-                    ></a-input-search>
-                </div>
-                <HomeTree />
-            </div> -->
-            <!-- <div v-else-if="currentGuid && parentGlossaryGuid"> -->
-            <!-- <div>
-                <div
-                    class="flex py-2 pl-4 mb-4 text-sm leading-5 text-gray-500 bg-gray-100 cursor-pointer "
-                    type="link"
-                    @click="backToHome"
-                >
-                    <fa icon="fas chevron-left" class="mr-2" />
-                    <span>Back to Glossary Home</span>
-                </div>
-                <div class="px-4 pb-4">
-                    <a-input-search
-                        placeholder="Search accross Glossaries"
-                    ></a-input-search>
-                </div>
-                <div v-if="entity" class="flex px-4 space-x-2">
-                    <a-button
-                        class="w-full text-sm font-bold leading-5 border-none  bg-primary-light text-primary"
-                        @click="backToGlossary"
-                    >
-                        <span v-if="entity?.typeName === 'AtlasGlossary'">
-                            {{ entity?.displayText }}
-                        </span>
-                        <span v-else>{{
-                            entity?.attributes?.anchor?.uniqueAttributes
-                                ?.qualifiedName
-                        }}</span>
-                    </a-button>
-                    <a-button
-                        class="
-                            p-2
-                            px-2.5
-                            flex flex-col
-                            justify-center
-                            bg-primary-light
-                            text-primary
-                            border-none
-                        "
-                    >
-                        <fa icon="fal plus" />
-                    </a-button>
-                </div>
-                <div class="py-2 px-2.5">
-                    <GlossaryTree
-                        ref="glossaryTreeRef"
-                        :parentGuid="parentGlossaryGuid"
-                        @success="handleSuccess"
-                        @showCreateGlossaryModal="handleOpenModal"
-                        @showUpdateGlossaryModal="handleOpenUpdateModal"
-                    ></GlossaryTree>
-                </div>
-            </div> -->
+        <pane min-size="12" max-size="50"  style="width: 264px" class="bg-white">
+            <div>
+                <glossaryTree 
+                    :glossary-list="glossaryList" 
+                    :is-home="isHome" 
+                    :tree-data="treeData" 
+                    :on-load-data="onLoadData" 
+                    :parent-glossary="parentGlossary" 
+                    :is-loading="isInitingTree"
+                />
+            </div>
         </pane>
         <!-- glossary profile -->
         <pane :size="82" class="bg-white">
@@ -129,7 +71,7 @@
             const route = useRoute()
             const router = useRouter()
             const currentGuid = ref<string>(route.params.id as string)
-            const type = ref(router.currentRoute.value.fullPath.split('/')[1] as 'glossary' | 'category' | 'term')
+            const type = ref(router.currentRoute.value.fullPath.split('/')[router.currentRoute.value.fullPath.split('/').length - 2] as 'glossary' | 'category' | 'term')
             const parentGlossaryGuid = ref<string | undefined>('')
 
             const createGlossaryModalVisble = ref(false)

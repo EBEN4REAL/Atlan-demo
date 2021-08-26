@@ -23,7 +23,7 @@ const useTree = (currentGuid: Ref<string>, type: Ref<'glossary' | 'category' | '
     const { entity, error, isLoading, refetch } = useGTCEntity<
     Glossary | Term | Category
     >(
-    type.value,
+    type,
     currentGuid,
     false,
     )
@@ -112,9 +112,8 @@ const useTree = (currentGuid: Ref<string>, type: Ref<'glossary' | 'category' | '
     };
 
     watch(currentGuid, () => {
-        console.log(type.value)
         if(type.value === 'glossary')
-        isInitingTree.value = true;
+            isInitingTree.value = true;
     })
 
     watch(entity, (newEntity) => {
@@ -122,6 +121,12 @@ const useTree = (currentGuid: Ref<string>, type: Ref<'glossary' | 'category' | '
             parentGlossary.value = newEntity
             treeData.value = [];
             initTreeData(currentGuid.value)
+        } 
+        else if(newEntity?.typeName === 'AtlasGlossaryCategory' || newEntity?.typeName === 'AtlasGlossaryTerm') {
+            if(!treeData.value?.length){
+                parentGlossary.value = newEntity.attributes.anchor
+                initTreeData(newEntity?.attributes?.anchor?.guid)
+            }
         }
     });
 

@@ -119,10 +119,12 @@
                 wrap-class-name=""
                 :destroy-on-close="true"
                 width="420"
+                :closable="false"
                 ><div class="flex flex-col bg-white border-l">
                     <ColumnPreview
                         :selected-row="selectedRowData"
                         page="columnPreview"
+                        @closeColumnSidebar="handleCloseColumnSidebar"
                     />
                 </div>
                 <!-- <p>Some contents...</p>
@@ -257,11 +259,16 @@
             // useColumns
             const { columnList } = useColumns(assetData.value.guid)
 
+            const handleCloseColumnSidebar = () => {
+                showColumnPreview.value = false
+                selectedRow.value = null
+                selectedRowData.value = {}
+            }
             // customRow Antd
             const customRow = (record: { key: null }) => ({
                 onClick: () => {
                     if (selectedRow.value === record.key)
-                        selectedRow.value = null
+                        handleCloseColumnSidebar()
                     else {
                         selectedRow.value = record.key
                         columnsData.value.filteredList.forEach(
@@ -303,6 +310,7 @@
                 filtersSelected,
                 showColumnPreview,
                 selectedRowData,
+                handleCloseColumnSidebar,
                 columns: [
                     {
                         title: '#',

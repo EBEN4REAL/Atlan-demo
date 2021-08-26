@@ -1,5 +1,5 @@
 <template>
-    <div class="pt-20">
+    <div class="pt-14">
         <div class="px-5">
             <div class="flex items-start justify-between mt-5 mb-4 text-sm">
                 <div class="w-full">
@@ -9,9 +9,14 @@
                     />
                     <div class="text-gray-500">Column</div>
                 </div>
-                <div class="icon-btn">
-                    <AtlanIcon class="mr-2" icon="Share" />
-                    <span class="text-sm">Share</span>
+                <div class="flex">
+                    <div class="icon-btn">
+                        <AtlanIcon class="mr-2" icon="Share" />
+                        <span class="text-sm">Share</span>
+                    </div>
+                    <a-button type="text" @click="$emit('closeColumnSidebar')"
+                        ><fa icon="fal times"></fa
+                    ></a-button>
                 </div>
             </div>
         </div>
@@ -55,12 +60,13 @@
         },
         props: {
             selectedRow: {
-                type: Object,
+                type: Object as PropType<any>,
                 required: true,
             },
         },
+        emits: ['closeColumnSidebar'],
 
-        setup(props) {
+        setup() {
             const { filteredTabs } = useColumnDetailsTabList()
             const activeKey = ref(0)
             const isLoaded: Ref<boolean> = ref(true)
@@ -72,7 +78,6 @@
             return {
                 isLoaded,
                 infoTabData,
-
                 dataMap,
                 activeKey,
                 filteredTabs,

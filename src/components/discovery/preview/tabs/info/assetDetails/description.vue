@@ -79,7 +79,6 @@
     import { useMagicKeys } from '@vueuse/core'
     import {
         defineComponent,
-        inject,
         nextTick,
         PropType,
         ref,
@@ -96,7 +95,8 @@
                 required: true,
             },
         },
-        setup(props) {
+        emits: ['update:selectedAsset'],
+        setup(props, { emit }) {
             const { selectedAsset } = toRefs(props)
             const {
                 isLoading,
@@ -107,8 +107,6 @@
                 description,
                 isCompleted,
             } = updateDescription(selectedAsset)
-            const mutateSelectedAsset: (updatedAsset: assetInterface) => void =
-                inject('mutateSelectedAsset')
 
             const handleUpdate = () => {
                 update()
@@ -136,7 +134,7 @@
             })
 
             watch(description, () => {
-                mutateSelectedAsset(selectedAsset.value)
+                emit('update:selectedAsset', selectedAsset.value)
             })
 
             return {

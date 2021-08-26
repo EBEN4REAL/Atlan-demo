@@ -182,6 +182,7 @@ export default function useAssetInfo() {
         TableauProject.push({
             ...firstProject,
             icon: 'TableauProject',
+            label: 'Project',
             subProjects: projectHierarchy,
         })
 

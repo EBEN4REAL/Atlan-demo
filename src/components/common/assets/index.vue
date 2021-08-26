@@ -66,6 +66,7 @@
     import { useConnectionsStore } from '~/store/connections'
     import {
         BaseAttributes,
+        tableauAttributes,
         BasicSearchAttributes,
     } from '~/constant/projection'
     import useDiscoveryPreferences from '~/composables/preference/useDiscoveryPreference'
@@ -185,7 +186,11 @@
                     limit: limit.value,
                     offset: offset.value,
                     entityFilters: {},
-                    attributes: [...BaseAttributes, ...BasicSearchAttributes],
+                    attributes: [
+                        ...BaseAttributes,
+                        ...BasicSearchAttributes,
+                        ...tableauAttributes,
+                    ],
                     aggregationAttributes: [],
                 }
                 if (entityFilterData?.length > 0) {

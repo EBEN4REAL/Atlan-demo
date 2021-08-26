@@ -47,6 +47,11 @@ const CollapsiblePanels: { [key: string]: collapsiblePanels } = {
         label: 'Preview',
         component: 'tableauPreview',
     },
+    tableauHierarchy: {
+        id: 'tableauHierarchy',
+        label: 'Hierarchy',
+        component: 'tableauHierarchy',
+    },
 }
 const {
     assetDetails,
@@ -55,6 +60,7 @@ const {
     properties,
     tableauProperties,
     tableauPreview,
+    tableauHierarchy,
 } = CollapsiblePanels
 
 export const InfoTabInAssetInDiscovery: { [key: string]: AssetTab } = {
@@ -87,7 +93,7 @@ export const InfoTabInAssetInDiscovery: { [key: string]: AssetTab } = {
             tableauProperties,
             assetDetails,
             linkedAsset,
-            heirarchy,
+            tableauHierarchy,
             properties,
         ],
         properties: [
@@ -113,7 +119,7 @@ export const InfoTabInAssetInDiscovery: { [key: string]: AssetTab } = {
             tableauProperties,
             assetDetails,
             linkedAsset,
-            heirarchy,
+            tableauHierarchy,
             properties,
         ],
         properties: [
@@ -134,7 +140,7 @@ export const InfoTabInAssetInDiscovery: { [key: string]: AssetTab } = {
             tableauProperties,
             assetDetails,
             linkedAsset,
-            heirarchy,
+            tableauHierarchy,
             properties,
         ],
         properties: [
@@ -156,7 +162,7 @@ export const InfoTabInAssetInDiscovery: { [key: string]: AssetTab } = {
             tableauProperties,
             assetDetails,
             linkedAsset,
-            heirarchy,
+            tableauHierarchy,
             properties,
         ],
         properties: [
@@ -183,7 +189,7 @@ export const InfoTabInAssetInDiscovery: { [key: string]: AssetTab } = {
             tableauProperties,
             assetDetails,
             linkedAsset,
-            heirarchy,
+            tableauHierarchy,
             properties,
         ],
         properties: [
@@ -210,7 +216,7 @@ export const InfoTabInAssetInDiscovery: { [key: string]: AssetTab } = {
             tableauProperties,
             assetDetails,
             linkedAsset,
-            heirarchy,
+            tableauHierarchy,
             properties,
         ],
         properties: [
@@ -263,7 +269,7 @@ export const InfoTabInAssetProfile: { [key: string]: AssetTab } = {
             tableauProperties,
             assetDetails,
             linkedAsset,
-            heirarchy,
+            tableauHierarchy,
             properties,
         ],
         properties: [
@@ -289,7 +295,7 @@ export const InfoTabInAssetProfile: { [key: string]: AssetTab } = {
             tableauProperties,
             assetDetails,
             linkedAsset,
-            heirarchy,
+            tableauHierarchy,
             properties,
         ],
         properties: [
@@ -310,7 +316,7 @@ export const InfoTabInAssetProfile: { [key: string]: AssetTab } = {
             tableauProperties,
             assetDetails,
             linkedAsset,
-            heirarchy,
+            tableauHierarchy,
             properties,
         ],
         properties: [
@@ -332,7 +338,7 @@ export const InfoTabInAssetProfile: { [key: string]: AssetTab } = {
             tableauProperties,
             assetDetails,
             linkedAsset,
-            heirarchy,
+            tableauHierarchy,
             properties,
         ],
         properties: [
@@ -359,7 +365,7 @@ export const InfoTabInAssetProfile: { [key: string]: AssetTab } = {
             tableauProperties,
             assetDetails,
             linkedAsset,
-            heirarchy,
+            tableauHierarchy,
             properties,
         ],
         properties: [
@@ -386,7 +392,7 @@ export const InfoTabInAssetProfile: { [key: string]: AssetTab } = {
             tableauProperties,
             assetDetails,
             linkedAsset,
-            heirarchy,
+            tableauHierarchy,
             properties,
         ],
         properties: [

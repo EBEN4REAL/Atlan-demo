@@ -218,7 +218,7 @@
     import { getEnv } from '~/modules/__env';
     import { copyToClipboard } from '~/utils/clipboard';
     // @ts-ignore
-    import { downloadFile } from '~/utils/download';
+    import { downloadFile } from '~/utils/library/download';
 
     import { IdentityProvider } from '~/api/auth/identityProvider';
     import { Tenant } from '~/api/auth/tenant';

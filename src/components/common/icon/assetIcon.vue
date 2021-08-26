@@ -4,6 +4,7 @@
         class="flex items-center flex-none mr-2 bg-white"
     >
         <div
+            v-if="imageRequired"
             :style="{ borderRadius: variant == 'lg' ? '4px' : '2px' }"
             class="border border-r-0 border-gray-300 rounded-tr-none rounded-br-none "
             :class="variant == 'lg' ? 'p-1' : 'p-0.5'"
@@ -47,6 +48,11 @@
             variant: {
                 type: String as PropType<variant>,
                 required: false,
+            },
+            imageRequired: {
+                type: Boolean,
+                required: false,
+                default: true,
             },
         },
         setup(prop) {

@@ -16,7 +16,7 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, PropType, toRefs } from 'vue'
+    import { computed, defineComponent, PropType, toRefs } from 'vue'
     import useAssetInfo from '~/composables/asset/useAssetInfo'
     import { assetInterface } from '~/types/assets/asset.interface'
 
@@ -33,9 +33,11 @@
             const { selectedAsset } = toRefs(props)
 
             const { logo, getHierarchy } = useAssetInfo()
-            const hierarchyInfo = getHierarchy(selectedAsset.value)
-                .filter((data) => data.value)
-                .map((data) => ({ id: data.id, text: data.value }))
+            const hierarchyInfo = computed(() =>
+                getHierarchy(selectedAsset.value)
+                    .filter((data) => data.value)
+                    .map((data) => ({ id: data.id, text: data.value }))
+            )
 
             return { hierarchyInfo, logo }
         },

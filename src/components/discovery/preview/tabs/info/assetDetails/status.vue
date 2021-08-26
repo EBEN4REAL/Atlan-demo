@@ -109,7 +109,8 @@
                 required: true,
             },
         },
-        setup(props) {
+        emits: ['update:selectedAsset'],
+        setup(props, { emit }) {
             // const isLoading = ref(false);
             const { selectedAsset } = toRefs(props)
 
@@ -123,9 +124,6 @@
                 isCompleted,
                 isLoading,
             } = updateStatus(selectedAsset)
-
-            const mutateSelectedAsset: (updatedAsset: assetInterface) => void =
-                inject('mutateSelectedAsset')
 
             const animationPoint = ref(null)
             const message = ref('')
@@ -157,7 +155,7 @@
                         }
                         confetti(animationPoint.value, config)
                     }
-                    mutateSelectedAsset(selectedAsset.value)
+                    emit('update:selectedAsset', selectedAsset.value)
                 }
             })
 

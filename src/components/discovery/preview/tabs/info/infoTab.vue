@@ -35,6 +35,7 @@
 
                 <component
                     :is="item.component"
+                    :item="item"
                     :selected-asset="infoTabData"
                     :tab-data="componentData"
                     :tableauProperties="tableauProperties ?? []"

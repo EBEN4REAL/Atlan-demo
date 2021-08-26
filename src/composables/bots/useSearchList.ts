@@ -1,14 +1,11 @@
-import { computed, reactive, Ref, ref, watch } from 'vue'
+import { computed, Ref, ref, watch } from 'vue'
 import axios, { AxiosRequestConfig, CancelTokenSource } from 'axios'
 import { IConfig } from 'swrv'
 import LocalStorageCache from 'swrv/dist/cache/adapters/localStorage'
-import { SearchParameters } from '~/types/atlas/attributes'
-import {
-    BaseAttributes,
-    BotsAttributes,
-    tableauAttributes,
-} from '~/constant/projection'
-import { Search } from '~/api2/search'
+import { BaseAttributes, tableauAttributes } from '~/constant/projection'
+// import { Search } from '~/api2/search'
+import { SearchBasic } from '~/api/atlas/searchbasic'
+
 import { Components } from '~/api/atlas/client'
 import { AssetTypeList } from '~/constant/assetType'
 
@@ -51,12 +48,9 @@ export default function useSearchList(
     })
 
     const cachekey = ref(`${cacheSuffx}`)
-    const { data, mutate, state, STATES, error } = Search.BasicSearch(
-        body,
-        asyncOptions,
-        cachekey,
-        dependentKey
-    )
+
+    const { data, mutate, error, isLoading, isValidating } =
+        SearchBasic.BasicV2(cachekey.value, body, asyncOptions, dependentKey)
 
     const searchScoreList = ref({})
 
@@ -78,27 +72,9 @@ export default function useSearchList(
         }
     })
 
-    const isLoading = computed(
-        () =>
-            [STATES.PENDING].includes(state.value) ||
-            ([STATES.VALIDATING].includes(state.value) && !data)
-    )
-    const isValidating = computed(() =>
-        [STATES.VALIDATING].includes(state.value)
-    )
-    const isError = computed(
-        () =>
-            [STATES.ERROR].includes(state.value) ||
-            [STATES.STALE_IF_ERROR].includes(state.value)
-    )
-
     const refresh = () => {
         if (cancelTokenSource) {
-            if (
-                ([STATES.PENDING].includes(state.value) ||
-                    [STATES.VALIDATING].includes(state.value)) &&
-                cancelTokenSource.value
-            ) {
+            if (isValidating?.value && cancelTokenSource.value) {
                 cancelTokenSource?.value.cancel('aborted')
             }
             cancelTokenSource.value = axios.CancelToken.source()
@@ -113,11 +89,7 @@ export default function useSearchList(
 
     const asyncRefresh = () => {
         if (cancelTokenSource) {
-            if (
-                ([STATES.PENDING].includes(state.value) ||
-                    [STATES.VALIDATING].includes(state.value)) &&
-                cancelTokenSource.value
-            ) {
+            if (isValidating?.value && cancelTokenSource.value) {
                 cancelTokenSource?.value.cancel('aborted')
             }
             cancelTokenSource.value = axios.CancelToken.source()
@@ -175,10 +147,7 @@ export default function useSearchList(
     return {
         data,
         list,
-        state,
-        STATES,
         isLoading,
-        isError,
         error,
         isValidating,
         query,

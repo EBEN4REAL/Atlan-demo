@@ -20,7 +20,9 @@
                                         :filters="getFilter(index)"
                                         :disabled="isDisabled(index)"
                                         style="width: 200px"
-                                        @change="handleChange"
+                                        @change="
+                                            handleChange($event, item.level)
+                                        "
                                     ></AssetSelector>
                                 </div>
                             </template>
@@ -31,9 +33,8 @@
                             <component
                                 :is="list[0].typeName"
                                 class="w-auto h-3 mr-1"
-                            ></component
-                            >All {{ list[0].name }}s
-                            {{ selectorValues }}
+                            />
+                            {{ selectorValue }}
                             <AtlanIcon icon="ChevronDown" class="ml-2" />
                         </p>
                     </div>
@@ -64,7 +65,7 @@
                 },
             },
         },
-        emits: ['change'],
+        emits: ['labelChange'],
         setup(props, { emit }) {
             const asset: { [key: string]: any } = ref({})
 
@@ -139,18 +140,35 @@
             }
 
             const dirtyTimestamp = ref('')
-            const handleChange = () => {
-                console.log(asset)
+            const selectorValue = ref(`All ${list.value[0]?.name}s`)
+            const handleChange = (value: any, level: number) => {
+                // Reset all values which are more than this level
+                list.value.forEach((lv) => {
+                    if (lv.level > level) {
+                        asset.value[lv.attribute] = undefined
+                    }
+                })
+                setSelectorValue()
                 // assetDirty[index] = Date.now().toString();
                 // dirtyTimestamp.value = Date.now().toString();
             }
 
-            // const selectorValues = computed(() =>
-            //     list.value.map((lv) => {
-            //         debugger
-            //         return asset?.[lv.attribute]
-            //     })
-            // )
+            function setSelectorValue() {
+                // Iterate from the last to see the most granular filter value and display it
+                for (let i = list.value.length - 1; i >= 0; i--) {
+                    const lv = list.value[i]
+                    if (asset.value?.[lv.attribute]) {
+                        selectorValue.value = asset.value?.[lv.attribute]
+                            .split('/')
+                            .pop()
+                        emit('labelChange', selectorValue.value)
+                        return
+                    }
+                }
+
+                selectorValue.value = `All ${list.value[0]?.name}s`
+                emit('labelChange', '')
+            }
 
             return {
                 list,
@@ -161,7 +179,7 @@
                 isDisabled,
                 getKey,
                 assetDirty,
-                // selectorValues,
+                selectorValue,
             }
         },
     })

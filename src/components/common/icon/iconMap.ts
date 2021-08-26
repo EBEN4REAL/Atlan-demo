@@ -1,5 +1,6 @@
 import BookmarkFilled from '~/assets/images/icons/bookmark-filled.svg'
 import BookmarkOutlined from '~/assets/images/icons/bookmark-outline.svg'
+import CopyOutlined from '~/assets/images/icons/copy.svg'
 import ChevronDown from '~/assets/images/icons/chevron-down.svg'
 import ChevronUp from '~/assets/images/icons/chevron-up.svg'
 import ForeignKey from '~/assets/images/icons/foreign.svg'
@@ -20,6 +21,7 @@ import Connection from '~/assets/images/icons/connection.svg'
 
 export default {
     BookmarkFilled,
+    CopyOutlined,
     BookmarkOutlined,
     ChevronDown,
     ChevronUp,

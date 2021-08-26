@@ -318,6 +318,7 @@
 
             function setPlaceholder(label: string, type: string) {
                 placeholderLabel.value[type] = label
+                if (type === 'connector') placeholderLabel.value.asset = ''
             }
             const totalSum = computed(() => {
                 let sum = 0

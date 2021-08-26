@@ -292,6 +292,9 @@
         :global(.ant-tabs-bar) {
             @apply px-5;
         }
+        :global(.ant-tabs-bar) {
+            @apply mb-0 !important;
+        }
     }
 </style>
 

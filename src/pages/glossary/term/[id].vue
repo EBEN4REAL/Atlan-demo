@@ -9,7 +9,7 @@
                 currentTab === '1' || currentTab === '2' ? 'w-2/3' : 'w-full'
             "
         >
-            <div class="flex flex-row justify-between pl-8 pr-4 mt-6 mb-5">
+            <div class="flex flex-row justify-between pl-5 pr-5 mt-6 mb-5">
                 <div class="flex flex-row">
                     <div class="mr-5">
                         <img :src="TermSvg" />
@@ -51,7 +51,7 @@
                     class="border-0"
                 >
                     <a-tab-pane key="1" tab="Overview">
-                        <div class="px-8 mt-4">
+                        <div class="px-5 mt-4">
                             <GlossaryProfileOverview :entity="term" />
                         </div>
                     </a-tab-pane>
@@ -70,6 +70,7 @@
             v-if="currentTab === '1' && term"
             :entity="term"
             :preview="false"
+            class="pt-6"
         />
         <div class="border-l" :class="$style.tabClasses">
             <AssetPreview
@@ -82,86 +83,85 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, computed, toRef, ref } from 'vue'
+    import { defineComponent, computed, toRef, ref } from 'vue'
 
-import GlossaryProfileOverview from '@/glossary/common/glossaryProfileOverview.vue'
-import TopAssets from '@/glossary/termProfile/topAssets.vue'
-import LinkedAssetsTab from '@/glossary/termProfile/linkedAssetsTab.vue'
-import EntityHistory from '@/glossary/common/entityHistory.vue'
-import LoadingView from '@common/loaders/page.vue'
-import RelatedTerms from '@/glossary/termProfile/relatedTerms.vue'
-import CategoryTermPreview from '@/glossary/common/categoryTermPreview/categoryTermPreview.vue'
-import AssetPreview from '~/components/discovery/preview/assetPreview.vue'
+    import GlossaryProfileOverview from '@/glossary/common/glossaryProfileOverview.vue'
+    import TopAssets from '@/glossary/termProfile/topAssets.vue'
+    import LinkedAssetsTab from '@/glossary/termProfile/linkedAssetsTab.vue'
+    import EntityHistory from '@/glossary/common/entityHistory.vue'
+    import LoadingView from '@common/loaders/page.vue'
+    import RelatedTerms from '@/glossary/termProfile/relatedTerms.vue'
+    import CategoryTermPreview from '@/glossary/common/categoryTermPreview/categoryTermPreview.vue'
+    import AssetPreview from '~/components/discovery/preview/assetPreview.vue'
 
-import useGTCEntity from '~/composables/glossary/useGtcEntity'
+    import useGTCEntity from '~/composables/glossary/useGtcEntity'
 
-import { Term } from '~/types/glossary/glossary.interface'
+    import { Term } from '~/types/glossary/glossary.interface'
 
-import TermSvg from '~/assets/images/gtc/term/term.png'
+    import TermSvg from '~/assets/images/gtc/term/term.png'
 
-export default defineComponent({
-    components: {
-        GlossaryProfileOverview,
-        TopAssets,
-        RelatedTerms,
-        LinkedAssetsTab,
-        EntityHistory,
-        LoadingView,
-        CategoryTermPreview,
-        AssetPreview,
-    },
-    props: {
-        id: {
-            type: String,
-            required: true,
-            default: '',
+    export default defineComponent({
+        components: {
+            GlossaryProfileOverview,
+            TopAssets,
+            RelatedTerms,
+            LinkedAssetsTab,
+            EntityHistory,
+            LoadingView,
+            CategoryTermPreview,
+            AssetPreview,
         },
-    },
-    setup(props) {
-        const guid = toRef(props, 'id')
-        const currentTab = ref('1')
-        const previewEntity = ref()
+        props: {
+            id: {
+                type: String,
+                required: true,
+                default: '',
+            },
+        },
+        setup(props) {
+            const guid = toRef(props, 'id')
+            const currentTab = ref('1')
+            const previewEntity = ref()
 
-        const { 
-            entity: term,
-            title,
-            shortDescription,
-            qualifiedName,
-            statusObject,
-            error, 
-            isLoading
-        } = useGTCEntity<Term>('term', guid, 'profile')
+            const {
+                entity: term,
+                title,
+                shortDescription,
+                qualifiedName,
+                statusObject,
+                error,
+                isLoading,
+            } = useGTCEntity<Term>('term', guid, 'profile')
 
+            const parentGlossaryName = computed(
+                () => term.value?.attributes?.qualifiedName?.split('@')[1] ?? ''
+            )
 
-        const parentGlossaryName = computed(
-            () => term.value?.attributes?.qualifiedName?.split('@')[1] ?? ''
-        )
+            const linkedAssetsCount = computed(
+                () => term.value?.attributes?.assignedEntities?.length ?? 0
+            )
 
-        const linkedAssetsCount = computed(
-            () => term.value?.attributes?.assignedEntities?.length ?? 0
-        )
-
-        const handlePreview = (entity: any) => {
-            previewEntity.value = entity
-        }
-        return {
-            term,
-            currentTab,
-            error,
-            isLoading,
-            guid,
-            TermSvg,
-            title,
-            shortDescription,
-            qualifiedName,
-            linkedAssetsCount,
-            parentGlossaryName,
-            previewEntity,
-            statusObject,
-            handlePreview,
-        }
-    },
-})
+            const handlePreview = (entity: any) => {
+                previewEntity.value = entity
+            }
+            return {
+                term,
+                currentTab,
+                error,
+                isLoading,
+                guid,
+                TermSvg,
+                title,
+                shortDescription,
+                qualifiedName,
+                linkedAssetsCount,
+                parentGlossaryName,
+                previewEntity,
+                statusObject,
+                handlePreview,
+            }
+        },
+    })
 </script>
 <style lang="less" module>
     .termHome {
@@ -189,7 +189,7 @@ export default defineComponent({
             @apply text-gray-700 font-bold !important;
         }
         :global(.ant-tabs-bar) {
-            @apply px-5 !important;
+            @apply px-5 mb-0 !important;
         }
     }
 </style>

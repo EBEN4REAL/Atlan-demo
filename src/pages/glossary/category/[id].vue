@@ -12,7 +12,7 @@
                     : 'w-2/3'
             "
         >
-            <div class="flex flex-row justify-between pl-8 pr-4 mt-6 mb-5">
+            <div class="flex flex-row justify-between pl-5 pr-4 my-6">
                 <div class="flex flex-row">
                     <div class="mr-5">
                         <img :src="CategorySvg" />
@@ -231,7 +231,7 @@
             @apply text-gray-700 font-bold !important;
         }
         :global(.ant-tabs-bar) {
-            @apply px-5 !important;
+            @apply px-5 mb-0 !important;
         }
     }
 </style>

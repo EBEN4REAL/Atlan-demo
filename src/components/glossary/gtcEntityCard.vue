@@ -63,7 +63,8 @@
             </div>
         </div>
         <!-- TODO: replace with 3-dot menu component -->
-        <div>
+        <ThreeDotMenu :entity="entity" :redirectToProfile="redirectToProfile" />
+        <!-- <div>
             <a-dropdown :trigger="['click']">
                 <a-button class="px-2.5" @click.prevent>
                     <fa icon="fal ellipsis-v" class="h-4" />
@@ -81,7 +82,7 @@
                         <a-menu-item>
                             <template #icon>
                                 <Fa
-                                    class="w-auto h-3 text-white  group-hover:text-primary"
+                                    class="w-auto h-3 text-white group-hover:text-primary"
                                     icon="fal external-link-alt"
                             /></template>
                             Copy term profile link</a-menu-item
@@ -128,7 +129,7 @@
                     </a-menu>
                 </template>
             </a-dropdown>
-        </div>
+        </div> -->
     </div>
 </template>
 <script lang="ts">
@@ -137,6 +138,7 @@
     // components
     import Status from '@/discovery/preview/tabs/info/assetDetails/status.vue'
     import Owners from '@/glossary/common/owners.vue'
+    import ThreeDotMenu from '@/glossary/common/threeDotMenu.vue'
 
     // Composables
     import useAssetInfo from '~/composables/asset/useAssetInfo'
@@ -155,7 +157,7 @@
     import { List as StatusList } from '~/constant/status'
 
     export default defineComponent({
-        components: { Status, Owners },
+        components: { Status, Owners, ThreeDotMenu },
         props: {
             entity: {
                 type: Object as PropType<Glossary | Category | Term>,

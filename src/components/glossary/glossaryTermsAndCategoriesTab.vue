@@ -34,7 +34,18 @@
             <div class="w-full">
                 <a-tabs default-active-key="1" class="border-0">
                     <!-- TODO: fix tab-pane header UI  -->
-                    <a-tab-pane key="1" :tab="`All (${all.length})`">
+                    <a-tab-pane key="1">
+                        <template #tab>
+                            <div class="flex items-center">
+                                <p class="my-0">All</p>
+                                <div
+                                    v-if="all.length"
+                                    class="px-2 mx-2  bg-primary-light text-primary"
+                                >
+                                    {{ all.length }}
+                                </div>
+                            </div>
+                        </template>
                         <!-- list starts here -->
                         <!-- TODO: make panel scrollable -->
                         <div class="overflow-auto" style="max-height: 380px">
@@ -52,8 +63,20 @@
                             </div>
                         </div>
                     </a-tab-pane>
-                    <a-tab-pane key="2" :tab="`Terms (${terms.length})`">
+                    <a-tab-pane key="2">
                         <!--? why max-height is fixed to 380px  -->
+                        <template #tab>
+                            <div class="flex items-center">
+                                <p class="my-0">Terms</p>
+                                <div
+                                    v-if="terms.length"
+                                    class="px-2 mx-2  bg-primary-light text-primary"
+                                >
+                                    {{ terms.length }}
+                                </div>
+                            </div>
+                        </template>
+
                         <div class="overflow-auto" style="max-height: 380px">
                             <div v-for="asset in terms" :key="asset.guid">
                                 <GtcEntityCard
@@ -65,10 +88,19 @@
                             </div>
                         </div>
                     </a-tab-pane>
-                    <a-tab-pane
-                        key="3"
-                        :tab="`Categories (${categories.length})`"
-                    >
+                    <a-tab-pane key="3">
+                        <template #tab>
+                            <div class="flex items-center">
+                                <p class="my-0">Categories</p>
+                                <div
+                                    v-if="categories.length"
+                                    class="px-2 mx-2  bg-primary-light text-primary"
+                                >
+                                    {{ categories.length }}
+                                </div>
+                            </div>
+                        </template>
+
                         <!--? why max-height is fixed to 380px  -->
                         <div class="overflow-auto" style="max-height: 380px">
                             <div v-for="asset in categories" :key="asset.guid">

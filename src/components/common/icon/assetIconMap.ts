@@ -10,6 +10,7 @@ export const abbreviationMap = {
     View: 'VW',
     MaterialisedView: 'MVW',
     TablePartition: 'PRT',
+    SiteName: 'SIT',
     TableauWorksheet: 'WS',
     TableauWorkbook: 'WB',
     TableauSite: 'STE',

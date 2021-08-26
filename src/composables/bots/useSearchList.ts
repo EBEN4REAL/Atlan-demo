@@ -1,11 +1,11 @@
-import { computed, reactive, Ref, ref, watch } from 'vue'
+import { computed, Ref, ref, watch } from 'vue'
 import axios, { AxiosRequestConfig, CancelTokenSource } from 'axios'
 import { IConfig } from 'swrv'
 import LocalStorageCache from 'swrv/dist/cache/adapters/localStorage'
-import { SearchParameters } from '~/types/atlas/attributes'
-import { BaseAttributes, BotsAttributes } from '~/constant/projection'
+import { BaseAttributes, tableauAttributes } from '~/constant/projection'
 // import { Search } from '~/api2/search'
 import { SearchBasic } from '~/api/atlas/searchbasic'
+
 import { Components } from '~/api/atlas/client'
 import { AssetTypeList } from '~/constant/assetType'
 
@@ -41,7 +41,7 @@ export default function useSearchList(
         includeSubTypes: true,
         limit: 100,
         offset: 0,
-        attributes: [...BaseAttributes, ...attributes],
+        attributes: [...BaseAttributes, ...attributes, ...tableauAttributes],
         entityFilters: {},
         aggregationAttributes: [],
         ...initialBody,

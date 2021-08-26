@@ -124,12 +124,13 @@
     import {
         BaseAttributes,
         BasicSearchAttributes,
+        tableauAttributes,
     } from '~/constant/projection'
     import useTracking from '~/modules/tracking'
     import { initialFiltersType } from '~/pages/assets.vue'
     import { useConnectionsStore } from '~/store/connections'
     import { SearchParameters } from '~/types/atlas/attributes'
-    import { getEncodedStringFromOptions } from '~/utils/routerQuery'
+    import { getEncodedStringFromOptions } from '~/utils/helper/routerQuery'
     import { assetInterface } from '~/types/assets/asset.interface'
 
     export interface filterMapType {
@@ -328,7 +329,11 @@
                     limit: limit.value,
                     offset: offset.value,
                     entityFilters: {},
-                    attributes: [...BaseAttributes, ...BasicSearchAttributes],
+                    attributes: [
+                        ...BaseAttributes,
+                        ...BasicSearchAttributes,
+                        ...tableauAttributes,
+                    ],
                     aggregationAttributes: [],
                 }
                 initialBody.entityFilters = {

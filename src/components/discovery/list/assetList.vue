@@ -66,7 +66,7 @@
 <script lang="ts">
     import { defineComponent, SetupContext, ref, toRefs, watch } from 'vue'
     import ListItem from './listItem.vue'
-    import VirtualList from '~/lib/virtualList/virtualList.vue'
+    import VirtualList from '~/utils/library/virtualList/virtualList.vue'
 
     export default defineComponent({
         name: 'AssetList',

@@ -113,6 +113,9 @@
             tableauPreview: defineAsyncComponent(
                 () => import('./tableau/preview/index.vue')
             ),
+            tableauHierarchy: defineAsyncComponent(
+                () => import('./tableau/hierarchy/index.vue')
+            ),
         },
         setup(props) {
             const refMap: Ref<{

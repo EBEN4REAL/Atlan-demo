@@ -21,17 +21,19 @@
                     <ConnectorDropdown
                         :data="connectorsPayload"
                         @change="handleChangeConnectors"
+                        @label-change="setPlaceholder($event, 'connector')"
                     ></ConnectorDropdown>
                     <AssetDropdown
                         v-if="connectorsPayload.connection"
                         :connector="filteredConnector"
                         :data="connectorsPayload"
+                        @label-change="setPlaceholder($event, 'asset')"
                     ></AssetDropdown>
                 </div>
                 <SearchAndFilter
                     v-model:value="queryText"
                     class="mx-3 mt-1"
-                    placeholder="Search"
+                    :placeholder="dynamicSearchPlaceholder"
                     :autofocus="true"
                     @change="handleSearchChange"
                 >
@@ -47,11 +49,14 @@
 
                 <AssetTabs
                     v-model="assetType"
+                    @update:model-value="handleTabChange"
                     :asset-type-list="assetTypeList"
                     :asset-type-map="assetTypeMap"
                     :total="totalSum"
                 ></AssetTabs>
-                <div class="flex items-center justify-between w-full px-3 py-2">
+                <div
+                    class="flex items-center justify-between w-full px-3 py-2 border-b border-gray-300 "
+                >
                     <AssetPagination
                         v-if="!isLoading && !isValidating"
                         :label="assetTypeLabel"
@@ -105,6 +110,7 @@
         watch,
         toRefs,
         PropType,
+        Ref,
     } from 'vue'
     import { useRouter } from 'vue-router'
     import AssetTabs from '~/components/discovery/list/assetTypeTabs.vue'
@@ -121,13 +127,13 @@
     import {
         BaseAttributes,
         BasicSearchAttributes,
+        tableauAttributes,
     } from '~/constant/projection'
     import useTracking from '~/modules/tracking'
     import { initialFiltersType } from '~/pages/assets.vue'
-    import { useBusinessMetadataStore } from '~/store/businessMetadata'
     import { useConnectionsStore } from '~/store/connections'
     import { SearchParameters } from '~/types/atlas/attributes'
-    import { getEncodedStringFromOptions } from '~/utils/routerQuery'
+    import { getEncodedStringFromOptions } from '~/utils/helper/routerQuery'
     import { assetInterface } from '~/types/assets/asset.interface'
 
     export interface filterMapType {
@@ -247,7 +253,7 @@
                         initialFilters.value.facetsFilters.advanced.criterion,
                 },
             })
-            const limit = ref(initialFilters.value.limit || 20)
+            const limit = ref(parseInt(initialFilters.value.limit) || 20)
             const offset = ref(0)
             const sortOrder = ref('default')
             // Get All Disoverable Asset Types
@@ -276,11 +282,8 @@
             )
 
             // * Get all available BMs and save on store
-            const store = useBusinessMetadataStore()
             const { fetchBMonStore } = useBusinessMetadata()
-            const BMAttributeProjection = computed(
-                () => store.getBusinessMetadataListProjections
-            )
+
             const state = ref('active')
             const assetTypeLabel = computed(() => {
                 const found = AssetTypeList.find(
@@ -288,6 +291,7 @@
                 )
                 return found?.label
             })
+            const placeholderLabel: Ref<Record<string, string>> = ref({})
             const totalCount = computed(() => {
                 if (assetType.value == 'Catalog') {
                     return totalSum.value
@@ -295,12 +299,27 @@
                 return assetTypeMap.value[assetType.value]
             })
             const connectorStore = useConnectionsStore()
+
             const filteredConnector = computed(() =>
                 connectorStore.getSourceList?.find(
                     (item) => connectorsPayload.value?.connector == item.id
                 )
             )
 
+            const dynamicSearchPlaceholder = computed(() => {
+                let placeholder = 'Search for assets'
+                if (placeholderLabel.value.asset) {
+                    placeholder += ' in ' + placeholderLabel.value.asset
+                } else if (placeholderLabel.value.connector) {
+                    placeholder += ' in ' + placeholderLabel.value.connector
+                }
+                return placeholder
+            })
+
+            function setPlaceholder(label: string, type: string) {
+                placeholderLabel.value[type] = label
+                if (type === 'connector') placeholderLabel.value.asset = ''
+            }
             const totalSum = computed(() => {
                 let sum = 0
                 assetTypeList.value.forEach((element) => {
@@ -320,19 +339,19 @@
                 () => totalCount.value > list.value.length
             )
 
-            const updateBody = (dontScroll) => {
+            const updateBody = () => {
                 initialBody = {
                     typeName: assetTypeListString,
                     termName: props.termName,
-                    // includeClassificationAttributes: true,
-                    // includeSubClassifications: true,
+                    includeClassificationAttributes: true,
+                    includeSubClassifications: true,
                     limit: limit.value,
                     offset: offset.value,
                     entityFilters: {},
                     attributes: [
                         ...BaseAttributes,
                         ...BasicSearchAttributes,
-                        ...BMAttributeProjection.value,
+                        ...tableauAttributes,
                     ],
                     aggregationAttributes: [],
                 }
@@ -399,24 +418,30 @@
                     initialBody.query = queryText.value
                 }
                 replaceBody(initialBody)
-                if (assetlist.value && !dontScroll) {
-                    // assetlist?.value.scrollToItem(0);
-                }
+                // if (assetlist.value && !dontScroll) {
+                // assetlist?.value.scrollToItem(0);
+                // }
             }
-            watch(
-                [assetType, BMAttributeProjection],
-                () => {
-                    // ? Should these run only when all attributes are loaded? like BMAttributeProjection
-                    updateBody()
-                    if (!now.value) {
-                        isAggregate.value = true
-                        now.value = true
-                    }
-                },
-                {
-                    immediate: true,
-                }
-            )
+
+            function handleTabChange() {
+                isAggregate.value = false
+                offset.value = 0
+                updateBody()
+            }
+            // watch(
+            //     assetType,
+            //     () => {
+            //         // ? Should these run only when all attributes are loaded? like BMAttributeProjection
+            //         updateBody()
+            //         if (!now.value) {
+            //             isAggregate.value = true
+            //             now.value = true
+            //         }
+            //     },
+            //     {
+            //         immediate: true,
+            //     }
+            // )
             const { projection } = useDiscoveryPreferences()
             const handleSearchChange = useDebounceFn(() => {
                 offset.value = 0
@@ -490,7 +515,7 @@
                     offset.value = list.value.length + limit.value
                 }
                 isAggregate.value = false
-                updateBody(true)
+                updateBody()
             }
 
             const handleClearFiltersFromList = () => {
@@ -508,7 +533,11 @@
 
             onMounted(() => {
                 fetchBMonStore()
+                now.value = true
+                isAggregate.value = true
+                updateBody()
             })
+
             return {
                 handleClearFiltersFromList,
                 assetFilterRef,
@@ -542,6 +571,10 @@
                 connectorsPayload,
                 filteredConnector,
                 mutateAssetInList,
+                handleTabChange,
+                dynamicSearchPlaceholder,
+                setPlaceholder,
+                placeholderLabel,
             }
         },
         data() {

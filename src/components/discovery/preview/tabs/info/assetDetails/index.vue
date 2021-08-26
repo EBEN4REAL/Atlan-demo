@@ -18,23 +18,33 @@
         <Description
             v-if="selectedAsset.guid"
             :selected-asset="selectedAsset"
+            @update:selected-asset="mutateSelectedAsset"
         />
         <div class="flex w-full text-sm text-gray-500">
-            <Owners v-if="selectedAsset.guid" :selected-asset="selectedAsset" />
+            <Owners
+                v-if="selectedAsset.guid"
+                :selected-asset="selectedAsset"
+                @update:selected-asset="mutateSelectedAsset"
+            />
         </div>
         <div class="flex w-full text-sm text-gray-500">
             <Experts
                 v-if="selectedAsset.guid"
                 :selected-asset="selectedAsset"
+                @update:selected-asset="mutateSelectedAsset"
             />
         </div>
-        <Status v-if="selectedAsset.guid" :selected-asset="selectedAsset" />
+        <Status
+            v-if="selectedAsset.guid"
+            :selected-asset="selectedAsset"
+            @update:selected-asset="mutateSelectedAsset"
+        />
     </div>
 </template>
 
 <script lang="ts">
     import RowInfoHoverCard from '@/discovery/preview/hovercards/rowInfo.vue'
-    import { computed, defineComponent, PropType, toRefs } from 'vue'
+    import { computed, defineComponent, PropType, toRefs, inject } from 'vue'
     import useAssetInfo from '~/composables/asset/useAssetInfo'
     import { assetInterface } from '~/types/assets/asset.interface'
     import Description from './description.vue'
@@ -60,6 +70,8 @@
 
         setup(props) {
             const { selectedAsset } = toRefs(props)
+            const mutateSelectedAsset: (updatedAsset: assetInterface) => void =
+                inject('mutateSelectedAsset', () => {})
 
             const { rowCount, columnCount } = useAssetInfo()
 
@@ -71,6 +83,7 @@
                     ? columnCount(selectedAsset.value, true)
                     : '~'
             )
+
             function isSelectedAssetHaveRowsAndColumns(
                 selectedAsset: assetInterface
             ) {
@@ -84,6 +97,7 @@
                 cols,
                 selectedAsset,
                 isSelectedAssetHaveRowsAndColumns,
+                mutateSelectedAsset,
             }
         },
     })

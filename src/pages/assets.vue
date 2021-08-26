@@ -39,7 +39,7 @@
     import { useClassificationStore } from '~/components/admin/classifications/_store'
     import { assetInterface } from '~/types/assets/asset.interface'
     import { typedefsInterface } from '~/types/typedefs/typedefs.interface'
-    import { getDecodedOptionsFromString } from '~/utils/routerQuery'
+    import { getDecodedOptionsFromString } from '~/utils/helper/routerQuery'
 
     export interface initialFiltersType {
         facetsFilters: any

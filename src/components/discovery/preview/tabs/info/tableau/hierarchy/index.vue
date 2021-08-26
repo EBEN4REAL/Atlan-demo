@@ -15,15 +15,55 @@
                 <div v-if="index === 0" :class="$style.itemPic" class="border">
                     <img :src="logo(selectedAsset)" :class="$style.itemType" />
                 </div>
-                <div v-else :class="$style.itemPic" class="border">
-                    <component
-                        :is="path.id"
-                        :class="$style.itemType"
-                    ></component>
+                <div
+                    v-else
+                    :class="$style.itemPic"
+                    class="flex items-center justify-center border"
+                >
+                    <TableauIcon :typeName="path.icon" />
                 </div>
             </div>
             <div class="flex justify-between" :class="$style.ellipsis">
-                <div class="flex flex-col max-w-full">
+                <div v-if="path?.subProjects && path?.subProjects?.length > 0">
+                    <div class="flex flex-wrap max-w-full">
+                        <div class="flex flex-col">
+                            <p
+                                class="mb-0 text-sm text-blue-600 truncate  lh-sm"
+                            >
+                                <a-tooltip placement="left">
+                                    <template #title>
+                                        {{ path.value ?? path.name }}
+                                    </template>
+                                    {{ path.value ?? path.name }}
+                                </a-tooltip>
+                            </p>
+                        </div>
+
+                        <template
+                            v-for="item in path?.subProjects"
+                            :key="item.id"
+                        >
+                            <div class="flex">
+                                <div class="mx-1">
+                                    <!-- <AtlanIcon icon="ArrowRight" /> -->
+                                    ->
+                                </div>
+                                <p
+                                    class="mb-0 text-sm text-blue-600 truncate  lh-sm"
+                                >
+                                    {{ item.name ?? item.value }}
+                                </p>
+                            </div>
+                        </template>
+                    </div>
+                    <div class="flex items-center justify-between mb-0">
+                        <p class="mb-0 text-xs text-gray-500 line-height-1">
+                            {{ 'Project' }}
+                        </p>
+                    </div>
+                </div>
+
+                <div class="flex flex-col max-w-full" v-else>
                     <p class="mb-0 text-sm text-blue-600 truncate lh-sm">
                         <a-tooltip placement="left">
                             <template #title>
@@ -48,6 +88,8 @@
     import { assetInterface } from '~/types/assets/asset.interface'
     import useAssetInfo from '~/composables/asset/useAssetInfo'
     import dottedUrl from '~/assets/images/dotted.png'
+    import TableauIcon from './tableauIcon.vue'
+    import AtlanIcon from '@common/icon/atlanIcon.vue'
 
     export default defineComponent({
         name: 'RelationshipList',
@@ -57,12 +99,17 @@
                 required: true,
             },
         },
+        components: {
+            TableauIcon,
+            AtlanIcon,
+        },
         setup(props) {
             const { selectedAsset } = toRefs(props)
-            const { getHierarchy, logo } = useAssetInfo()
+            const { getTableauHierarchy, logo } = useAssetInfo()
             const getParentsFiltered = computed(() =>
-                getHierarchy(selectedAsset.value).filter((data) => data.value)
+                getTableauHierarchy(selectedAsset.value)
             )
+            console.log(getParentsFiltered, 'heirarchy')
             return {
                 logo,
                 dottedUrl,
@@ -109,6 +156,7 @@
         align-self: flex-start;
         position: relative;
         margin-right: 10px;
+        overflow: hidden;
         // margin-left: rem(15);
     }
 
@@ -138,6 +186,7 @@
         border-radius: 50%;
         line-height: 36px;
         flex-shrink: 0;
+        overflow: hidden;
     }
 
     .itemIcon {

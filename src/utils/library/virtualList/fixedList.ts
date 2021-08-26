@@ -24,7 +24,6 @@ export default function useFixedHeightList(
         if (rowHeight.value) {
             const topIndex = Math.floor(scrollTop / rowHeight.value)
 
-            topHeight.value = rowHeight.value * topIndex
             const screenBuffer = Math.round(clientHeight / rowHeight.value)
 
             const invisibleBuffer = Math.round(screenBuffer / 2)
@@ -36,6 +35,8 @@ export default function useFixedHeightList(
                     topIndex + screenBuffer + invisibleBuffer
                 ),
             ]
+
+            topHeight.value = rowHeight.value * listIndices.value[0]
         }
     }
 

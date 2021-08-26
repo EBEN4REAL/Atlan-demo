@@ -61,7 +61,7 @@
             const { selectedAsset } = toRefs(props)
             const { getHierarchy, logo } = useAssetInfo()
             const getParentsFiltered = computed(() =>
-                getHierarchy(selectedAsset.value)
+                getHierarchy(selectedAsset.value).filter((data) => data.value)
             )
             return {
                 logo,

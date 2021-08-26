@@ -43,7 +43,7 @@
                     class="px-1 border-0 outline-none"
                     @click="handlClosePreviewPanel"
                 >
-                    X
+                    <AtlanIcon icon="Cancel" class="m-0 mr-2" />
                 </a-button>
             </div>
         </div>

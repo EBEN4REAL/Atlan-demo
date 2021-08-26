@@ -42,12 +42,12 @@
                         <fa icon="fal upload" class="h-3 mr-2" />
                         <span>Share</span>
                     </a-button>
-                    <a-dropdown :trigger="['click']">
+                    <ThreeDotMenu :entity="glossary" />
+                    <!-- <a-dropdown :trigger="['click']">
                         <a-button class="px-2.5" @click.prevent>
                             <fa icon="fal ellipsis-v" class="h-4" />
                         </a-button>
                         <template #overlay>
-                            <!-- TODO: replace with 3-dot menu component -->
                             <a-menu>
                                 <a-menu-item>Add Term</a-menu-item>
                                 <a-menu-item>Add Category</a-menu-item>
@@ -70,7 +70,7 @@
                                 <a-menu-item>Archive</a-menu-item>
                             </a-menu>
                         </template>
-                    </a-dropdown>
+                    </a-dropdown> -->
                 </div>
             </div>
             <!-- tabs start here  -->
@@ -129,6 +129,7 @@
     import EntityHistory from '@/glossary/common/entityHistory.vue'
     import SidePanel from '@/glossary/sidePanel/index.vue'
     import CategoryTermPreview from '@/glossary/common/categoryTermPreview/categoryTermPreview.vue'
+    import ThreeDotMenu from '@/glossary/common/threeDotMenu.vue'
 
     // composables
     import useGTCEntity from '~/composables/glossary/useGtcEntity'
@@ -153,6 +154,7 @@
             LoadingView,
             SidePanel,
             CategoryTermPreview,
+            ThreeDotMenu,
         },
         props: {
             id: {

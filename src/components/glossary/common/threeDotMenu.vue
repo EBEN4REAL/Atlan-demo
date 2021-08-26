@@ -7,36 +7,36 @@
             <template #overlay>
                 <a-menu>
                     <a-menu-item @click="redirectToProfile">
-                        <template #icon>
-                            <Fa
-                                class="w-auto h-3 text-white"
-                                icon="fal external-link-alt"
-                        /></template>
-                        Go to term profile</a-menu-item
+                        <div class="flex items-center">
+                            <AtlanIcon icon="Link" class="m-0 mr-2" />
+                            <p class="p-0 m-0">Go to term profile</p>
+                        </div>
+                    </a-menu-item>
+                    <a-menu-item
+                        class="flex items-center"
+                        @click="handleCopyProfileLink"
                     >
-                    <a-menu-item>
-                        <template #icon>
-                            <Fa
-                                class="w-auto h-3 text-white  group-hover:text-primary"
-                                icon="fal external-link-alt"
-                        /></template>
-                        Copy term profile link</a-menu-item
-                    >
+                        <div class="flex items-center">
+                            <AtlanIcon icon="CopyOutlined" class="m-0 mr-2" />
+                            <p class="p-0 m-0">Copy term profile link</p>
+                        </div>
+                    </a-menu-item>
                     <a-menu-divider />
 
-                    <!-- <a-menu-item>
-                        <Status v-if="entity.guid" :selectedAsset="entity" />
-                    </a-menu-item> -->
                     <a-sub-menu key="status">
                         <template #title>
                             <div class="flex items-center justify-between">
-                                <div class="flex items-center justify-between">
-                                    <fa
-                                        icon="fal trash-alt"
-                                        class="w-auto h-3 mr-2"
-                                    ></fa>
-                                    <p class="p-0 m-0">Add status</p>
-                                </div>
+                                <StatusBadge
+                                    :key="entity.guid"
+                                    :status-id="entity?.attributes?.assetStatus"
+                                    :status-message="
+                                        entity?.attributes?.assetStatusMessage
+                                    "
+                                    :show-chip-style-status="false"
+                                    :show-no-status="true"
+                                    :show-label="true"
+                                    class="p-0"
+                                ></StatusBadge>
                                 <AtlanIcon
                                     class="pt-1 transform -rotate-90"
                                     icon="ChevronDown"
@@ -55,10 +55,10 @@
                         <template #title>
                             <div class="flex items-center justify-between">
                                 <div class="flex items-center justify-between">
-                                    <fa
-                                        icon="fal trash-alt"
-                                        class="w-auto h-3 mr-2"
-                                    ></fa>
+                                    <AtlanIcon
+                                        icon="AddUser"
+                                        class="m-0 mr-2"
+                                    />
                                     <p class="p-0 m-0">Add Owner</p>
                                 </div>
                                 <AtlanIcon
@@ -72,15 +72,12 @@
                         /></a-menu-item>
                     </a-sub-menu>
                     <a-menu-divider />
-                    <a-menu-item>
-                        <template #icon>
-                            <fa
-                                icon="fal trash-alt"
-                                class="w-auto h-3 mr-2"
-                            ></fa>
-                        </template>
-                        Archive</a-menu-item
-                    >
+                    <a-menu-item class="text-red-700">
+                        <div class="flex items-center">
+                            <fa icon="fal trash-alt" class="mr-2"></fa>
+                            <p class="p-0 m-0">Archive</p>
+                        </div>
+                    </a-menu-item>
                 </a-menu>
             </template>
         </a-dropdown>
@@ -92,8 +89,11 @@
     // import Status from '@/discovery/preview/tabs/info/assetDetails/status.vue'
     import Owners from '@/glossary/common/owners.vue'
     import Status from '@/glossary/common/status.vue'
+    import StatusBadge from '@common/badge/status/index.vue'
+    import { copyToClipboard } from '~/utils/clipboard'
+
     export default defineComponent({
-        components: { Status, Owners },
+        components: { Status, Owners, StatusBadge },
         props: {
             entity: {
                 type: Object as PropType<Glossary | Category | Term>,
@@ -103,12 +103,17 @@
             redirectToProfile: {
                 type: Function,
                 required: false,
-                default: () => {},
+                default: () => undefined,
             },
         },
         setup(props) {
-            console.log(props.redirectToProfile)
-            return {}
+            const handleCopyProfileLink = () => {
+                const baseUrl = window.location.origin
+                const text = `${baseUrl}/glossary/term/${props?.entity?.guid}`
+                copyToClipboard(text)
+            }
+
+            return { handleCopyProfileLink }
         },
     })
 </script>

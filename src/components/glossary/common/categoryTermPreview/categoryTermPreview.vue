@@ -1,13 +1,13 @@
 <template>
     <div
-        class="flex flex-col w-1/3 border-l min-h-screen"
+        class="flex flex-col w-1/3 min-h-screen border-l"
         :class="$style.gtcPreview"
     >
         <div
             v-if="preview"
-            class="flex flex-row justify-between align-middle px-5 py-8"
+            class="flex flex-row justify-between px-5 py-8 align-middle"
         >
-            <div class="flex flex-row align-middle space-x-2">
+            <div class="flex flex-row space-x-2 align-middle">
                 <div class="flex flex-col justify-center">
                     <span>
                         <img
@@ -23,12 +23,7 @@
                 </div>
                 <span
                     v-if="type"
-                    class="
-                        flex flex-col
-                        justify-center
-                        text-sm text-gray-500
-                        font-bold
-                    "
+                    class="flex flex-col justify-center text-sm font-bold text-gray-500 "
                     >{{ type === 'AtlasGlossaryTerm' ? 'Term' : 'Category' }}
                 </span>
             </div>
@@ -37,15 +32,7 @@
                     <fa icon="fal bookmark" />
                 </a-button>
                 <a-button
-                    class="
-                        flex flex-col
-                        justify-center
-                        text-xs
-                        pt-1
-                        text-primary
-                        bg-primary-light
-                        border-0
-                    "
+                    class="flex flex-col justify-center pt-1 text-xs border-0  text-primary bg-primary-light"
                     @click="redirectToProfile"
                 >
                     Open
@@ -54,16 +41,17 @@
                 </a-button>
             </div>
         </div>
-        <div v-if="preview" class="flex">
-            <span class="pl-5 mr-2 text-xl leading-7 text-gray-700 font-bold">{{
+        <div v-if="preview" class="flex mb-5">
+            <span class="pl-5 mr-2 text-xl font-bold leading-7 text-gray-700">{{
                 entity.displayText
             }}</span>
             <component
                 :is="statusObject?.icon"
                 v-if="statusObject"
-                class="inline-flex self-center w-auto h-5 mb-1"
+                class="inline-flex self-center w-auto h-5"
             />
         </div>
+
         <a-tabs default-active-key="1" class="border-0">
             <a-tab-pane key="info" tab="Info">
                 <div class="h-screen overflow-auto pb-52">
@@ -74,7 +62,7 @@
                         </template>
 
                         <a-collapse-panel key="details" header="Details">
-                            <div class="pl-6 flex flex-col">
+                            <div class="flex flex-col pl-6">
                                 <Description
                                     v-if="entity.guid"
                                     :selectedAsset="entity"
@@ -132,8 +120,8 @@
                     <Activity :selectedAsset="entity" />
                 </div>
             </a-tab-pane>
-            <a-tab-pane key="requests" tab="Requests"> Requests </a-tab-pane>
-            <a-tab-pane key="chat" tab="chat"> Chat </a-tab-pane>
+            <!-- <a-tab-pane key="requests" tab="Requests"> Requests </a-tab-pane> -->
+            <!-- <a-tab-pane key="chat" tab="chat"> Chat </a-tab-pane> -->
         </a-tabs>
     </div>
 </template>
@@ -218,7 +206,7 @@
 <style lang="less" module>
     .gtcPreview {
         :global(.ant-collapse-header) {
-            @apply pl-6 py-4 m-0 font-bold text-sm text-gray-700 bg-white !important;
+            @apply pl-5 py-4 m-0 font-bold text-sm text-gray-700 bg-white !important;
         }
         :global(.ant-collapse-borderless > .ant-collapse-item) {
             @apply border-b border-gray-300 py-0 mt-0 !important;
@@ -238,16 +226,7 @@
             @apply m-0 p-0  !important;
         }
         :global(.ant-tabs-bar) {
-            @apply mb-0;
-        }
-        :global(.ant-tabs-tab) {
-            @apply mr-6 pb-3 px-0;
-        }
-        :global(.ant-tabs-nav) {
-            @apply ml-2 px-0 !important;
-        }
-        :global(.ant-tabs-tab-prev) {
-            @apply mr-2;
+            @apply mb-0 mx-auto !important;
         }
     }
 </style>

@@ -38,7 +38,7 @@
                     <a-button class="px-2.5">
                         <fa icon="fal bookmark" />
                     </a-button>
-                    <a-button class="px-2.5 flex align-middle" @click="refetch" >
+                    <a-button class="px-2.5 flex align-middle" @click="refetch">
                         <fa icon="fal upload" class="h-3 mr-2" />
                         <span>Share</span>
                     </a-button>
@@ -122,169 +122,173 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, watch, onMounted, toRef, ref } from 'vue'
+    import { defineComponent, watch, onMounted, toRef, ref } from 'vue'
 
-// components
-import GlossaryTermsAndCategoriesTab from '@/glossary/glossaryTermsAndCategoriesTab.vue'
-import LoadingView from '@common/loaders/page.vue'
-import GlossaryProfileOverview from '@/glossary/common/glossaryProfileOverview.vue'
-import GlossaryContinueSettingUp from '@/glossary/continueSettingUp/glossaryContinueSettingUp.vue'
-import EntityHistory from '@/glossary/common/entityHistory.vue'
-import SidePanel from '@/glossary/sidePanel/index.vue'
-import CategoryTermPreview from '@/glossary/common/categoryTermPreview/categoryTermPreview.vue'
+    // components
+    import GlossaryTermsAndCategoriesTab from '@/glossary/glossaryTermsAndCategoriesTab.vue'
+    import LoadingView from '@common/loaders/page.vue'
+    import GlossaryProfileOverview from '@/glossary/common/glossaryProfileOverview.vue'
+    import GlossaryContinueSettingUp from '@/glossary/continueSettingUp/glossaryContinueSettingUp.vue'
+    import EntityHistory from '@/glossary/common/entityHistory.vue'
+    import SidePanel from '@/glossary/sidePanel/index.vue'
+    import CategoryTermPreview from '@/glossary/common/categoryTermPreview/categoryTermPreview.vue'
 
-// composables
-import useGTCEntity from '~/composables/glossary/useGtcEntity'
-import useGlossaryTerms from '~/composables/glossary/useGlossaryTerms'
-import useGlossaryCategories from '~/composables/glossary/useGlossaryCategories'
+    // composables
+    import useGTCEntity from '~/composables/glossary/useGtcEntity'
+    import useGlossaryTerms from '~/composables/glossary/useGlossaryTerms'
+    import useGlossaryCategories from '~/composables/glossary/useGlossaryCategories'
 
-// static
-import { Glossary, Category, Term } from '~/types/glossary/glossary.interface'
+    // static
+    import {
+        Glossary,
+        Category,
+        Term,
+    } from '~/types/glossary/glossary.interface'
 
-import GlossarySvg from '~/assets/images/gtc/glossary/glossary.png'
+    import GlossarySvg from '~/assets/images/gtc/glossary/glossary.png'
 
-export default defineComponent({
-    components: {
-        GlossaryProfileOverview,
-        GlossaryContinueSettingUp,
-        GlossaryTermsAndCategoriesTab,
-        EntityHistory,
-        LoadingView,
-        SidePanel,
-        CategoryTermPreview,
-    },
-    props: {
-        id: {
-            type: String,
-            required: true,
-            default: '',
+    export default defineComponent({
+        components: {
+            GlossaryProfileOverview,
+            GlossaryContinueSettingUp,
+            GlossaryTermsAndCategoriesTab,
+            EntityHistory,
+            LoadingView,
+            SidePanel,
+            CategoryTermPreview,
         },
-    },
-    setup(props) {
-        // data
-        const guid = toRef(props, 'id')
-        const currentTab = ref('1')
-        const previewEntity = ref<Category | Term | undefined>()
+        props: {
+            id: {
+                type: String,
+                required: true,
+                default: '',
+            },
+        },
+        setup(props) {
+            // data
+            const guid = toRef(props, 'id')
+            const currentTab = ref('1')
+            const previewEntity = ref<Category | Term | undefined>()
 
-        const {
-            entity: glossary,
-            title,
-            shortDescription,
-            qualifiedName,
-            statusObject,
-            error,
-            isLoading,
-            refetch
-        } = useGTCEntity<Glossary>('glossary', guid, guid.value)
+            const {
+                entity: glossary,
+                title,
+                shortDescription,
+                qualifiedName,
+                statusObject,
+                error,
+                isLoading,
+                refetch,
+            } = useGTCEntity<Glossary>('glossary', guid, guid.value)
 
-        const {
-            terms: glossaryTerms,
-            error: termsError,
-            isLoading: termsLoading,
-            fetchGlossaryTermsPaginated,
-        } = useGlossaryTerms()
+            const {
+                terms: glossaryTerms,
+                error: termsError,
+                isLoading: termsLoading,
+                fetchGlossaryTermsPaginated,
+            } = useGlossaryTerms()
 
-        const {
-            categories: glossaryCategories,
-            error: categoriesError,
-            isLoading: categoriesLoading,
-            fetchGlossaryCategoriesPaginated,
-        } = useGlossaryCategories()
+            const {
+                categories: glossaryCategories,
+                error: categoriesError,
+                isLoading: categoriesLoading,
+                fetchGlossaryCategoriesPaginated,
+            } = useGlossaryCategories()
 
-        // computed
+            // computed
 
-        // methods
-        const refreshCategoryTermList = (type: string) => {
-            if (type === 'category') {
-                fetchGlossaryCategoriesPaginated({
-                    refreshSamePage: true,
-                })
-            } else if (type === 'term') {
-                fetchGlossaryTermsPaginated({ refreshSamePage: true })
+            // methods
+            const refreshCategoryTermList = (type: string) => {
+                if (type === 'category') {
+                    fetchGlossaryCategoriesPaginated({
+                        refreshSamePage: true,
+                    })
+                } else if (type === 'term') {
+                    fetchGlossaryTermsPaginated({ refreshSamePage: true })
+                }
             }
-        }
 
-        const fetchNextCategoryOrTermList = (type: string) => {
-            if (type === 'category') {
-                fetchGlossaryCategoriesPaginated({
-                    limit: 5,
-                })
-            } else if (type === 'term') {
-                fetchGlossaryTermsPaginated({ limit: 5 })
+            const fetchNextCategoryOrTermList = (type: string) => {
+                if (type === 'category') {
+                    fetchGlossaryCategoriesPaginated({
+                        limit: 5,
+                    })
+                } else if (type === 'term') {
+                    fetchGlossaryTermsPaginated({ limit: 5 })
+                }
             }
-        }
 
-        const handleCategoryOrTermPreview = (entity: Category | Term) => {
-            previewEntity.value = entity
-        }
+            const handleCategoryOrTermPreview = (entity: Category | Term) => {
+                previewEntity.value = entity
+            }
 
-        // lifecycle methods and watchers
-        onMounted(() => {
-            fetchGlossaryTermsPaginated({ guid: guid.value, offset: 0 })
-            fetchGlossaryCategoriesPaginated({
-                guid: guid.value,
-                offset: 0,
+            // lifecycle methods and watchers
+            onMounted(() => {
+                fetchGlossaryTermsPaginated({ guid: guid.value, offset: 0 })
+                fetchGlossaryCategoriesPaginated({
+                    guid: guid.value,
+                    offset: 0,
+                })
             })
-        })
 
-        watch(guid, (newGuid) => {
-            fetchGlossaryTermsPaginated({
-                guid: newGuid,
-                offset: 0,
+            watch(guid, (newGuid) => {
+                fetchGlossaryTermsPaginated({
+                    guid: newGuid,
+                    offset: 0,
+                })
+                fetchGlossaryCategoriesPaginated({
+                    guid: newGuid,
+                    offset: 0,
+                })
             })
-            fetchGlossaryCategoriesPaginated({
-                guid: newGuid,
-                offset: 0,
-            })
-        })
 
-        return {
-            glossary,
-            title,
-            shortDescription,
-            error,
-            isLoading,
-            termsLoading,
-            GlossarySvg,
-            guid,
-            glossaryTerms,
-            glossaryCategories,
-            qualifiedName,
-            currentTab,
-            previewEntity,
-            statusObject,
-            refreshCategoryTermList,
-            fetchNextCategoryOrTermList,
-            refetch,
-            handleCategoryOrTermPreview,
-        }
-    },
-})
+            return {
+                glossary,
+                title,
+                shortDescription,
+                error,
+                isLoading,
+                termsLoading,
+                GlossarySvg,
+                guid,
+                glossaryTerms,
+                glossaryCategories,
+                qualifiedName,
+                currentTab,
+                previewEntity,
+                statusObject,
+                refreshCategoryTermList,
+                fetchNextCategoryOrTermList,
+                refetch,
+                handleCategoryOrTermPreview,
+            }
+        },
+    })
 </script>
 <style lang="less" module>
-.glossaryHome {
-    :global(.ant-tabs-nav) {
-        @apply ml-8;
+    .glossaryHome {
+        :global(.ant-tabs-nav) {
+            @apply ml-8;
+        }
+        :global(.ant-tabs-bar) {
+            @apply mb-0;
+        }
     }
-    :global(.ant-tabs-bar) {
-        @apply mb-0;
+    .tabClasses {
+        :global(.ant-tabs-tab) {
+            margin: 0px 32px 0px 0px !important;
+            padding: 0px 0px 20px 0px !important;
+        }
+        :global(.ant-tabs-nav) {
+            margin: 0px !important;
+        }
+        :global(.ant-tabs-tab-active) {
+            @apply text-gray-700 font-bold !important;
+        }
+        :global(.ant-tabs-bar) {
+            @apply px-5;
+        }
     }
-}
-.tabClasses {
-    :global(.ant-tabs-tab) {
-        margin: 0px 32px 0px 0px !important;
-        padding: 0px 0px 20px 0px !important;
-    }
-    :global(.ant-tabs-nav) {
-        margin: 0px !important;
-    }
-    :global(.ant-tabs-tab-active) {
-        @apply text-gray-700 font-bold !important;
-    }
-    :global(.ant-tabs-bar) {
-        @apply px-5 !important;
-    }
-}
 </style>
 
 <route lang="yaml">

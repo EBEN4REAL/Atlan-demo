@@ -183,7 +183,7 @@
             @apply m-0 p-0  !important;
         }
         :global(.ant-tabs-bar) {
-            @apply mb-0;
+            @apply mb-0 mx-0;
         }
     }
 </style>

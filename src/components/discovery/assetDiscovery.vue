@@ -324,8 +324,8 @@
                 initialBody = {
                     typeName: assetTypeListString,
                     termName: props.termName,
-                    // includeClassificationAttributes: true,
-                    // includeSubClassifications: true,
+                    includeClassificationAttributes: true,
+                    includeSubClassifications: true,
                     limit: limit.value,
                     offset: offset.value,
                     entityFilters: {},

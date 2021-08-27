@@ -1,6 +1,6 @@
 <template>
     <!-- tableauAsset -->
-    <tableauAsset v-if="assetType.includes('Tableau')" />
+    <tableauAsset v-if="assetType(assetData).includes('Tableau')" />
 
     <!-- nonBiAssets -->
     <nonBiAsset v-else />
@@ -8,26 +8,29 @@
 
 <script lang="ts">
     // Vue
-    import { defineComponent, ref, inject, computed } from 'vue'
+    import { defineComponent, inject, computed } from 'vue'
 
     // Components
     import nonBiAsset from '~/components/asset/assetProfile/tabs/overview/nonBiAsset/index.vue'
     import tableauAsset from '~/components/asset/assetProfile/tabs/overview/tableauAsset/index.vue'
 
+    // Composables
+    import useAssetInfo from '~/composables/asset/useAssetInfo'
+
     export default defineComponent({
         components: { nonBiAsset, tableauAsset },
         setup() {
-            /** DATA */
-            const assetType = ref('')
-
             /** INJECTIONS */
             const assetDataInjection = inject('assetData')
 
             /** COMPUTED */
             const assetData = computed(() => assetDataInjection?.asset)
-            assetType.value = assetData.value.typeName
+
+            /** METHODS */
+            const { assetType } = useAssetInfo()
 
             return {
+                assetData,
                 assetType,
             }
         },

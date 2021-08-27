@@ -14,7 +14,7 @@
                 v-if="item.typeName !== 'Column'"
                 :item="item"
                 :projection="projections"
-                class="w-full p-0 m-0 border-b"
+                class="w-full p-0 m-0 border-b cursor-pointer"
                 :css-classes="cssClasses"
                 :show-asset-type-icon="false"
                 :is-selected="item.guid === selectedAssetId"

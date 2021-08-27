@@ -1,9 +1,10 @@
 <template>
     <div>
         <!-- Search and Filter -->
-        <div class="flex items-center mb-4">
+        <div class="flex items-center w-1/2 mb-4">
             <div class="flex items-center flex-1">
                 <a-input-search
+                    v-model:value="queryText"
                     placeholder="Search related assets..."
                     class="mr-3"
                     size="default"
@@ -12,7 +13,11 @@
 
                 <a-popover trigger="click" placement="right">
                     <template #content>
-                        <!-- <preferences /> -->
+                        <a-checkbox-group
+                            v-model:value="checkedList"
+                            :options="plainOptions"
+                            class="flex flex-col"
+                        />
                     </template>
                     <a-button class="px-2"
                         ><atlan-icon icon="FilterDot" class="w-auto h-5"
@@ -28,92 +33,127 @@
                 :class="$style.relationstab"
                 @change="selectTab($event)"
             >
-                <a-tab-pane v-for="tab in tabs" :key="tab.id">
+                <a-tab-pane
+                    v-for="(item, index) in filteredAssets"
+                    :key="index"
+                >
                     <template #tab>
                         <div class="flex items-center">
-                            <span> {{ tab.name }} </span
-                            ><span class="chip">4</span>
+                            <span class="capitalize">
+                                {{ item.displayText }} </span
+                            ><span class="chip">{{ item.length }}</span>
                         </div>
                     </template>
 
                     <div>
-                        <div
-                            v-for="i in 5"
-                            :key="i"
-                            class="py-4 pl-4 border-b border-l-4 border-transparent cursor-pointer  hover:bg-primary-light"
-                            style="border-bottom-color: #d9d9d9 !important"
-                            :class="{
-                                'border-primary bg-primary-light':
-                                    currSelectedItem === i + 1,
-                            }"
-                            @click="
-                                currSelectedItem === i + 1
-                                    ? (currSelectedItem = 0)
-                                    : (currSelectedItem = i + 1)
-                            "
-                        >
-                            <h3 class="flex items-center text-lg font-semibold">
-                                instacart_top_beverage_users_orders
-                                <atlan-icon
-                                    icon="Verified"
-                                    class="w-auto h-4 ml-2"
-                                />
-                            </h3>
-                            <p>
-                                Transaction table stores all the information
-                                required for a trip before an actual trip is
-                                created, such as client,
-                            </p>
-                            <span class="text-xs">Owned by marco_arment</span>
-                        </div>
+                        <AssetTypeItems
+                            :projections="checkedList"
+                            :asset-type="item.displayText"
+                            :asset-id="assetData.guid"
+                            :css-classes="cssClasses"
+                            @preview="handlePreview"
+                        />
                     </div>
                 </a-tab-pane>
             </a-tabs>
+            <div v-if="filteredAssets.length === 0 && !isLoading">
+                <img
+                    :src="emptyScreen"
+                    alt="No assets found"
+                    class="w-64 m-auto mt-4"
+                />
+                <div class="mt-4 text-sm text-center text-gray">
+                    No assets found
+                </div>
+            </div>
         </div>
     </div>
 </template>
 
 <script lang="ts">
     // Vue
-    import { defineComponent, ref, provide } from 'vue'
+    import {
+        defineComponent,
+        ref,
+        onMounted,
+        watch,
+        inject,
+        computed,
+    } from 'vue'
+    // Components
+    import AssetTypeItems from '@/discovery/preview/tabs/relations/assetTypeItems.vue'
+    // Composables
+    import useEntityRelationships from '~/composables/asset/useEntityRelationships'
+    // Assets
+    import emptyScreen from '~/assets/images/empty_search.png'
 
     export default defineComponent({
-        setup() {
+        components: { AssetTypeItems },
+        emits: ['preview'],
+        setup(_, context) {
             /** DATA */
+            const relationshipAssetTypes = ref([])
+            const isLoading = ref(true)
+            const plainOptions = ['description', 'owners', 'business terms']
+            const checkedList = ref(['description', 'owners'])
             const activeKey = ref(1)
-            const data = ref({})
-            const currSelectedItem = ref(0)
-            const tabs = [
-                {
-                    id: 1,
-                    name: 'Worksheet',
-                    component: 'worksheet',
-                },
-                {
-                    id: 2,
-                    name: 'Dashboard',
-                    component: 'dashboard',
-                },
-                {
-                    id: 3,
-                    name: 'Source',
-                    component: 'source',
-                },
-            ]
+            const queryText = ref('')
+
+            /** INJECTIONS */
+            const assetDataInjection = inject('assetData')
+
+            /** COMPUTED */
+            const assetData = computed(() => assetDataInjection?.asset)
+            const filteredAssets = computed(() =>
+                relationshipAssetTypes.value.filter(
+                    (el) =>
+                        el.displayText
+                            .toLowerCase()
+                            .indexOf(queryText.value.toLowerCase()) !== -1
+                )
+            )
 
             /** METHODS */
+            // selectTab
             const selectTab = (val: number) => {
                 activeKey.value = val
             }
+            // fetchData
+            const fetchData = () => {
+                const { relationshipAssetTypes: x, isLoading: y } =
+                    useEntityRelationships(assetData.value.guid)
 
-            /** PROVIDER */
-            provide('assetData', data.value)
+                watch(y, () => {
+                    relationshipAssetTypes.value = x.value
+                    isLoading.value = y.value
+                })
+            }
+            // handlePreview
+            const handlePreview = (item) => {
+                context.emit('preview', item)
+            }
+
+            /** LIFECYCLES */
+            onMounted(fetchData)
+
+            /** WATCHERS */
+            watch(assetData, fetchData, { immediate: true })
 
             return {
+                queryText,
                 activeKey,
-                tabs,
-                currSelectedItem,
+                filteredAssets,
+                isLoading,
+                plainOptions,
+                checkedList,
+                assetData,
+                emptyScreen,
+                cssClasses: {
+                    paddingY: 'py-6',
+                    textSize: 'text-base',
+                },
                 selectTab,
+                handlePreview,
             }
         },
     })

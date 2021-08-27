@@ -7,7 +7,7 @@
         </div>
 
         <!-- Overview Table widget -->
-        <div class="mb-16">
+        <div v-if="showTablePreview" class="mb-16">
             <h2 class="mb-6 text-xl text-gray">Table preview</h2>
             <overview-table />
         </div>
@@ -33,6 +33,9 @@
     import overviewColumns from '~/components/asset/assetProfile/tabs/overview/nonBiAsset/overviewColumns.vue'
     import overviewTable from '~/components/asset/assetProfile/tabs/overview/nonBiAsset/overviewTable.vue'
 
+    // Composables
+    import useAssetInfo from '~/composables/asset/useAssetInfo'
+
     export default defineComponent({
         components: { overviewColumns, overviewTable, Readme },
         setup() {
@@ -41,8 +44,18 @@
 
             /** COMPUTED */
             const assetData = computed(() => assetDataInjection?.asset)
+            const showTablePreview = computed(
+                () =>
+                    !['TablePartition', 'MaterialisedView'].includes(
+                        assetType(assetData.value)
+                    )
+            )
 
-            return { assetData }
+            /** METHODS */
+            // useAssetInfo
+            const { assetType } = useAssetInfo()
+
+            return { assetData, showTablePreview, assetType }
         },
     })
 </script>

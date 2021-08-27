@@ -13,7 +13,7 @@
     />
     <splitpanes class="h-full default-theme">
         <!-- glossary sidebar -->
-        <pane min-size="12" max-size="50"  style="width: 264px" class="bg-white">
+        <pane min-size="12" max-size="50"  style="min-width: 264px" class="bg-white">
             <div>
                 <glossaryTree 
                     :glossary-list="glossaryList" 

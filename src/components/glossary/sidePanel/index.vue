@@ -14,48 +14,26 @@
                         </template>
                         <a-collapse-panel key="1" header="Details">
                             <div class="flex flex-col pl-6">
-                                <div class="flex space-x-16 mb-4">
+                                <div class="flex mb-4 space-x-16">
                                     <div class="flex flex-col">
                                         <span
-                                            class="
-                                                mb-2
-                                                text-sm
-                                                leading-5
-                                                text-gray-500
-                                            "
+                                            class="mb-2 text-sm leading-5 text-gray-500 "
                                         >
                                             Categories
                                         </span>
                                         <span
-                                            class="
-                                                p-0
-                                                m-0
-                                                text-sm
-                                                leading-5
-                                                text-gray-700
-                                            "
+                                            class="p-0 m-0 text-sm leading-5 text-gray-700 "
                                             >{{ categoryCount }}
                                         </span>
                                     </div>
                                     <div class="flex flex-col">
                                         <span
-                                            class="
-                                                mb-2
-                                                text-sm
-                                                leading-5
-                                                text-gray-500
-                                            "
+                                            class="mb-2 text-sm leading-5 text-gray-500 "
                                         >
                                             Terms
                                         </span>
                                         <span
-                                            class="
-                                                p-0
-                                                m-0
-                                                text-sm
-                                                leading-5
-                                                text-gray-700
-                                            "
+                                            class="p-0 m-0 text-sm leading-5 text-gray-700 "
                                             >{{ termCount }}
                                         </span>
                                     </div>
@@ -92,6 +70,14 @@
                                     v-if="glossaryTerms?.length"
                                     :terms="glossaryTerms"
                                 />
+                            </div>
+                        </a-collapse-panel>
+                        <a-collapse-panel key="properties" header="Properties">
+                            <div class="px-5 py-0 text-gray-500">
+                                <p class="p-0 m-0 mb-2">Formula</p>
+                                <p class="p-0 m-0 mb-6 text-sm">Add formula</p>
+                                <p class="p-0 m-0 mb-2">Abbreviation</p>
+                                <p class="p-0 m-0 text-sm">Add abbreviation</p>
                             </div>
                         </a-collapse-panel>
                     </a-collapse>
@@ -150,7 +136,7 @@
         setup(props) {
             const activeKey = ref(['1'])
 
-            const refreshEntity = inject<() => void  >('refreshEntity')
+            const refreshEntity = inject<() => void>('refreshEntity')
 
             const shortDescription = computed(
                 () => props.entity?.attributes?.shortDescription
@@ -168,7 +154,7 @@
                 categoryCount,
                 glossaryTerms,
                 activeKey,
-                refreshEntity
+                refreshEntity,
             }
         },
     })
@@ -176,7 +162,7 @@
 <style lang="less" module>
     .sidePanel {
         :global(.ant-collapse-header) {
-            @apply pl-6 m-0 font-bold text-sm text-gray-700 bg-white !important;
+            @apply pl-6 m-0  text-sm text-gray-700 bg-white !important;
         }
         :global(.ant-collapse-borderless > .ant-collapse-item) {
             @apply border-b border-gray-300 py-3  mt-0 !important;

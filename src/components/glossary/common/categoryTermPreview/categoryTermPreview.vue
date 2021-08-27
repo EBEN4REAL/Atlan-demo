@@ -1,6 +1,6 @@
 <template>
     <div
-        class="flex flex-col w-full  overflow-y-hidden border-l"
+        class="flex flex-col w-full overflow-y-hidden border-l"
         :class="$style.gtcPreview"
     >
         <div
@@ -60,7 +60,7 @@
 
         <a-tabs default-active-key="1" class="border-0">
             <a-tab-pane key="info" tab="Info">
-                <div class="h-screen overflow-auto pb-64">
+                <div class="h-screen pb-64 overflow-auto">
                     <a-collapse
                         v-model:activeKey="activeKey"
                         :bordered="false"
@@ -75,7 +75,10 @@
                                 <Description
                                     v-if="entity.guid"
                                     :selected-asset="entity"
-                                    @update:selected-asset="(updated) => $emit('updateAsset', updated)"
+                                    @update:selected-asset="
+                                        (updated) =>
+                                            $emit('updateAsset', updated)
+                                    "
                                 />
                                 <Owners
                                     v-if="entity.guid"
@@ -84,12 +87,18 @@
                                 <Experts
                                     v-if="entity.guid"
                                     :selected-asset="entity"
-                                    @update:selected-asset="(updated) => $emit('updateAsset', updated)"
+                                    @update:selected-asset="
+                                        (updated) =>
+                                            $emit('updateAsset', updated)
+                                    "
                                 />
                                 <Status
                                     v-if="entity.guid"
                                     :selected-asset="entity"
-                                    @update:selected-asset="(updated) => $emit('updateAsset', updated)"
+                                    @update:selected-asset="
+                                        (updated) =>
+                                            $emit('updateAsset', updated)
+                                    "
                                 />
                             </div>
                         </a-collapse-panel>
@@ -111,6 +120,15 @@
                         >
                             <div class="px-6 py-0">
                                 <RelatedTerms :entity="entity" />
+                            </div>
+                        </a-collapse-panel>
+
+                        <a-collapse-panel key="properties" header="Properties">
+                            <div class="px-5 py-0 text-gray-500">
+                                <p class="p-0 m-0 mb-2">Formula</p>
+                                <p class="p-0 m-0 mb-6 text-sm">X + Y + Z</p>
+                                <p class="p-0 m-0 mb-2">Abbreviation</p>
+                                <p class="p-0 m-0 text-sm">S2021</p>
                             </div>
                         </a-collapse-panel>
                     </a-collapse>
@@ -228,7 +246,7 @@
     .gtcPreview {
         height: calc(100vh - 50px);
         :global(.ant-collapse-header) {
-            @apply pl-5 py-4 m-0 font-bold text-sm text-gray-700 bg-white !important;
+            @apply pl-5 py-4 m-0  text-sm text-gray-700 bg-white !important;
         }
         :global(.ant-collapse-borderless > .ant-collapse-item) {
             @apply border-b border-gray-300 py-0 mt-0 !important;

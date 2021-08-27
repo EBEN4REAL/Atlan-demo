@@ -6,7 +6,7 @@
         <div class="z-30 pt-5 pb-3 pr-4 bg-white">
             <Header />
         </div>
-        <div class="asset-profile">
+        <div>
             <a-tabs
                 :active-key="activeKey"
                 :class="$style.profiletab"
@@ -130,7 +130,6 @@
             }
 
             /** PROVIDER */
-
             provide('assetData', data.value)
 
             return {
@@ -171,9 +170,10 @@ meta:
             @apply mb-0 pl-7;
         }
 
-        :global(.ant-tabs-content) {
+        :global(.ant-tabs-tabpane) {
             height: calc(100vh - 200px) !important;
-            overflow: scroll !important;
+            overflow-y: scroll !important;
+            overflow-x: hidden !important;
             @apply pr-0;
         }
         :global(.ant-tabs-ink-bar) {

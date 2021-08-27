@@ -33,8 +33,22 @@
         <div v-else-if="all.length" class="flex flex-row w-full mt-4">
             <div class="w-full">
                 <a-tabs default-active-key="1" class="border-0">
-                    <a-tab-pane key="1" :tab="`All (${all.length})`"
-                        ><div class="overflow-auto" style="max-height: 380px">
+                    <!-- TODO: fix tab-pane header UI  -->
+                    <a-tab-pane key="1">
+                        <template #tab>
+                            <div class="flex items-center">
+                                <p class="my-0">All</p>
+                                <div
+                                    v-if="all.length"
+                                    class="px-2 mx-2  bg-primary-light text-primary"
+                                >
+                                    {{ all.length }}
+                                </div>
+                            </div>
+                        </template>
+                        <!-- list starts here -->
+                        <!-- TODO: make panel scrollable -->
+                        <div class="overflow-auto pb-16" style="max-height: 380px">
                             <div v-for="asset in all" :key="asset.guid">
                                 <GtcEntityCard
                                     :class="{
@@ -49,8 +63,21 @@
                             </div>
                         </div>
                     </a-tab-pane>
-                    <a-tab-pane key="2" :tab="`Terms (${terms.length})`"
-                        ><div class="overflow-auto" style="max-height: 380px">
+                    <a-tab-pane key="2">
+                        <!--? why max-height is fixed to 380px  -->
+                        <template #tab>
+                            <div class="flex items-center">
+                                <p class="my-0">Terms</p>
+                                <div
+                                    v-if="terms.length"
+                                    class="px-2 mx-2  bg-primary-light text-primary"
+                                >
+                                    {{ terms.length }}
+                                </div>
+                            </div>
+                        </template>
+
+                        <div class="overflow-auto" style="max-height: 380px">
                             <div v-for="asset in terms" :key="asset.guid">
                                 <GtcEntityCard
                                     :class="{ 'hover:bg-gray-100': true }"
@@ -61,10 +88,21 @@
                             </div>
                         </div>
                     </a-tab-pane>
-                    <a-tab-pane
-                        key="3"
-                        :tab="`Categories (${categories.length})`"
-                        ><div class="overflow-auto" style="max-height: 380px">
+                    <a-tab-pane key="3">
+                        <template #tab>
+                            <div class="flex items-center">
+                                <p class="my-0">Categories</p>
+                                <div
+                                    v-if="categories.length"
+                                    class="px-2 mx-2  bg-primary-light text-primary"
+                                >
+                                    {{ categories.length }}
+                                </div>
+                            </div>
+                        </template>
+
+                        <!--? why max-height is fixed to 380px  -->
+                        <div class="overflow-auto" style="max-height: 380px">
                             <div v-for="asset in categories" :key="asset.guid">
                                 <GtcEntityCard
                                     :class="{ 'hover:bg-gray-100': true }"
@@ -88,6 +126,26 @@
         <div v-else-if="!all.length" class="mt-24">
             <EmptyView :showClearFiltersCTA="false" />
         </div>
+        <teleport to="#sidePanel">
+            <a-drawer
+                v-if="selectedEntity?.guid !== undefined && showPreviewPanel"
+                :visible="selectedEntity?.guid !== undefined && showPreviewPanel"
+                placement="right"
+                :mask="false"
+                :get-container="false"
+                :wrap-style="{ position: 'absolute', width: '100%' }"
+                :keyboard="false"
+                :destroy-on-close="true"
+                :closable="false"
+                width="100%"
+            >
+                <CategoryTermPreview
+                    :entity="selectedEntity"
+                    @closePreviewPanel="handlClosePreviewPanel"
+                    @updateAsset="updateSelectedAsset"
+                />
+            </a-drawer>
+        </teleport>
     </div>
 </template>
 
@@ -95,17 +153,21 @@
     import { defineComponent, computed, ref, toRef, watch, PropType } from 'vue'
     import { useDebounceFn } from '@vueuse/core'
 
+    // components
     import LoadingView from '@common/loaders/page.vue'
     import EmptyView from '@common/empty/discover.vue'
     import GtcEntityCard from './gtcEntityCard.vue'
     import GtcFilters from './common/gtcFilters.vue'
+    import CategoryTermPreview from '@/glossary/common/categoryTermPreview/categoryTermPreview.vue'
 
+    // composables
     import useGtcSearch from '~/composables/glossary/useGtcSearch'
 
+    // static
     import { Category, Term } from '~/types/glossary/glossary.interface'
 
     export default defineComponent({
-        components: { GtcEntityCard, EmptyView, LoadingView, GtcFilters },
+        components: { GtcEntityCard, EmptyView, LoadingView, GtcFilters, CategoryTermPreview },
         props: {
             qualifiedName: {
                 type: String,
@@ -124,16 +186,21 @@
                 required: true,
                 default: 'AtlasGlossary',
             },
+            showPreviewPanel: {
+                type: Boolean,
+                required: true,
+                default: false
+            }
         },
         emits: ['entityPreview'],
-        setup(props, context) {
+        setup(props, { emit }) {
+            // data
             const glossaryQualifiedName = toRef(props, 'qualifiedName')
             const searchQuery = ref<string>()
-
+            const selectedEntity = ref<Category | Term>()
+            const projection = ref(['status', 'description', 'owners'])
             const { entities, error, isLoading, fetchAssetsPaginated } =
                 useGtcSearch(glossaryQualifiedName)
-
-            const selectedEntity = ref<Category | Term>()
 
             const projectionOptions = [
                 { value: 'description', label: 'Description' },
@@ -144,12 +211,8 @@
                 // { value: 'popularity', label: 'Popularity' },
                 // { value: 'classifications', label: 'Classifications' },
             ]
-            const projection = ref(['status', 'description'])
 
-            const onEntitySelect = (entity: Category | Term) => {
-                selectedEntity.value = entity
-            }
-
+            // computed
             const terms = computed(() => {
                 if (props.type === 'AtlasGlossary') {
                     return (
@@ -212,6 +275,13 @@
                 () => [...terms.value, ...categories.value] ?? []
             )
 
+            // methods
+            const onEntitySelect = (entity: Category | Term) => {
+                selectedEntity.value = entity
+            }
+            const handlClosePreviewPanel = () => {
+                selectedEntity.value = undefined;
+            }
             const onSearch = useDebounceFn(() => {
                 fetchAssetsPaginated({
                     query: `${searchQuery.value ? `${searchQuery.value}` : ''}`,
@@ -227,13 +297,22 @@
                 fetchAssetsPaginated({ filters, offset: 0 })
             }
 
+            const updateSelectedAsset = (updatedAsset) => {
+                const idx = entities.value?.findIndex(
+                    (ast) => ast.guid === updatedAsset.guid
+                )
+                console.log(idx, 'yes')
+                if (idx > -1) entities.value[idx] = updatedAsset
+            }
+
+            // lifecycle methods and watchers
             watch(selectedEntity, (newSelectedEntity) => {
-                context.emit('entityPreview', newSelectedEntity)
+                emit('entityPreview', newSelectedEntity)
             })
 
-            watch(entities, (newEntities) => {
-                selectedEntity.value = newEntities[0];
-            })
+            // watch(entities, (newEntities) => {
+            //     selectedEntity.value = newEntities[0]
+            // })
 
             return {
                 glossaryQualifiedName,
@@ -246,6 +325,8 @@
                 onEntitySelect,
                 loadMore,
                 updateFilters,
+                handlClosePreviewPanel,
+                updateSelectedAsset,
                 selectedEntity,
                 isLoading,
                 projectionOptions,

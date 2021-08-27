@@ -54,7 +54,7 @@
                     :asset-type-map="assetTypeMap"
                     :total="totalSum"
                 ></AssetTabs>
-                <div
+                <!-- <div
                     class="flex items-center justify-between w-full px-3 py-2 border-b border-gray-300 "
                 >
                     <AssetPagination
@@ -66,7 +66,7 @@
                     <span v-else class="text-xs text-gray-500"
                         >Searching...</span
                     >
-                </div>
+                </div> -->
                 <div
                     v-if="
                         list && list.length <= 0 && !isLoading && !isValidating

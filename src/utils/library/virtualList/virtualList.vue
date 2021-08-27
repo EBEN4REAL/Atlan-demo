@@ -40,7 +40,7 @@
                 <slot :item="item" :index="idx + listIndices[0]"></slot>
             </div>
         </div>
-        <div class="footer">
+        <div class="footer" v-if="$slots?.footer">
             <slot name="footer" />
         </div>
     </div>

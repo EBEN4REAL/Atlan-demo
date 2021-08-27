@@ -40,7 +40,7 @@
                 <slot :item="item" :index="idx + listIndices[0]"></slot>
             </div>
         </div>
-        <div class="footer">
+        <div class="footer" v-if="$slots?.footer">
             <slot name="footer" />
         </div>
     </div>
@@ -134,9 +134,7 @@
 
             // Virtualize the container if there are more than 20 elements
             // for varible-height, always virtualize.
-            const isVirtualised = computed(
-                () => data.value?.length > 20 || variableHeight.value
-            )
+            const isVirtualised = computed(() => data.value?.length > 20)
 
             /** Slice of the data that is actually rendered on the screen */
             const pool = computed(() =>
@@ -214,6 +212,8 @@
                 listIndices,
                 loadBottom,
                 loadTop,
+                isVirtualised,
+                rowCount,
             }
         },
     })
@@ -232,7 +232,6 @@
         overflow: hidden;
     }
     .footer {
-        width: inherit;
-        @apply sticky bottom-4;
+        @apply py-6;
     }
 </style>

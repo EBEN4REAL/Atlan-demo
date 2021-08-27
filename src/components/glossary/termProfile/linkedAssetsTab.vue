@@ -1,3 +1,4 @@
+
 <template>
     <div class="w-full pb-6">
         <!-- <div class="mb-4">
@@ -50,8 +51,27 @@
             :show-filters="false"
             :initial-filters="initialFilters"
             :termName="termName"
-            @preview="(asset) => $emit('preview', asset)"
+            @preview="handlePreview"
         ></AssetDiscovery>
+        <teleport to="#sidePanel">
+            <a-drawer
+                v-if="selectedAsset?.guid !== undefined && showPreviewPanel"
+                :visible="selectedAsset?.guid !== undefined && showPreviewPanel"
+                placement="right"
+                :mask="false"
+                :get-container="false"
+                :wrap-style="{ position: 'absolute', width: '100%' }"
+                :keyboard="false"
+                :destroy-on-close="true"
+                :closable="false"
+                width="100%"
+            >
+                <AssetPreview
+                    page="discovery"
+                    :selected-asset="selectedAsset"
+                ></AssetPreview>
+            </a-drawer>
+        </teleport>
     </div>
 </template>
 <script lang="ts">
@@ -62,20 +82,22 @@
     import AssetList from '@/discovery/list/assetList.vue'
     import EmptyView from '@common/empty/discover.vue'
     import AssetDiscovery from '~/components/discovery/assetDiscovery.vue'
+    import AssetPreview from '~/components/discovery/preview/assetPreview.vue'
 
     import useTermLinkedAssets from '~/composables/glossary/useTermLinkedAssets'
-    import { getDecodedOptionsFromString } from '~/utils/routerQuery'
+    import { getDecodedOptionsFromString } from '~/utils/helper/routerQuery'
 
     interface PropsType {
         termQualifiedName: string
         termCount: number
+        showPreviewPanel: Boolean
     }
 
     export default defineComponent({
-        components: { AssetList, EmptyView, AssetDiscovery },
-        props: ['termQualifiedName', 'termCount'],
+        components: { AssetList, EmptyView, AssetDiscovery, AssetPreview },
+        props: ['termQualifiedName', 'termCount', 'showPreviewPanel'],
         emits: ['preview'],
-        setup(props: PropsType) {
+        setup(props: PropsType, { emit }) {
             const router = useRouter()
             const initialFilters = getDecodedOptionsFromString(router)
 
@@ -90,6 +112,8 @@
 
             const searchQuery = ref<string>()
 
+            const selectedAsset = ref()
+
             onMounted(() => {
                 if (termName.value) fetchLinkedAssets(termName.value)
             })
@@ -102,6 +126,10 @@
                 fetchLinkedAssets(termName.value, `*${searchQuery.value}*`)
             }, 0)
 
+            const handlePreview = (asset) => {
+                selectedAsset.value = asset;
+                emit('preview', asset)
+            }
             return {
                 termName,
                 assets,
@@ -112,6 +140,8 @@
                 onSearch,
                 initialFilters,
                 AssetDiscovery,
+                selectedAsset,
+                handlePreview
             }
         },
     })

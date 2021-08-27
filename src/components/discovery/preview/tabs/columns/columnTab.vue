@@ -4,6 +4,7 @@
             <SearchAndFilter
                 v-model:value="searchTerm"
                 :dot="!!filters.length"
+                :autofocus="true"
                 placeholder="Search columns"
             >
                 <template #filter>

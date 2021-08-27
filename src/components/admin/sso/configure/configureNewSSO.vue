@@ -240,7 +240,7 @@ import { copyToClipboard } from "~/utils/clipboard";
 
 import { IdentityProvider } from "~/api/auth/identityProvider";
 // @ts-ignore
-import { downloadFile } from "~/utils/download";
+import { downloadFile } from "~/utils/library/download";
 import { Tenant } from "~/api/auth/tenant";
 
 interface FormState {

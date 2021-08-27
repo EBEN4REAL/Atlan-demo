@@ -176,20 +176,17 @@
                             rounded
                         "
                     >
-                        <a-input
-                            v-input-focus
+                        <SearchAndFilter
+                            v-model:value="searchText"
+                            :autofocus="true"
                             :placeholder="
                                 activeOwnerTabKey === '1'
                                     ? `Search ${listUsers?.length} users`
                                     : `Search ${listGroups?.length} groups`
                             "
-                            v-model:value="searchText"
                             @change="handleOwnerSearch"
                         >
-                            <template #suffix>
-                                <AtlanIcon icon="Search" />
-                            </template>
-                        </a-input>
+                        </SearchAndFilter>
                         <div class="relative w-full">
                             <!-- <p
                                 class="
@@ -445,33 +442,28 @@
 </template>
 
 <script lang="ts">
-    import {
-        defineComponent,
-        PropType,
-        ref,
-        Ref,
-        toRefs,
-        watch,
-        inject,
-    } from 'vue'
+    import { defineComponent, PropType, ref, Ref, toRefs, watch } from 'vue'
     import OwnerInfoCard from '~/components/discovery/preview/hovercards/ownerInfo.vue'
     import updateOwners from '~/composables/asset/updateOwners'
     import fetchGroupList from '~/composables/group/fetchGroupList'
     import fetchUserList from '~/composables/user/fetchUserList'
+    import SearchAndFilter from '@/common/input/searchAndFilter.vue'
+
     import { useUserPreview } from '~/composables/user/showUserPreview'
     import { assetInterface } from '~/types/assets/asset.interface'
     import { groupInterface } from '~/types/groups/group.interface'
     import { userInterface } from '~/types/users/user.interface'
 
     export default defineComponent({
-        components: { OwnerInfoCard },
+        components: { OwnerInfoCard, SearchAndFilter },
         props: {
             selectedAsset: {
                 type: Object as PropType<assetInterface>,
                 required: true,
             },
         },
-        setup(props) {
+        emits: ['update:selectedAsset'],
+        setup(props, { emit }) {
             const { selectedAsset } = toRefs(props)
             const showOwnersDropdown: Ref<boolean> = ref(false)
             const activeOwnerTabKey = ref('1')
@@ -494,9 +486,6 @@
                 state: groupOwnerState,
                 mutate: mutateGroups,
             } = fetchGroupList(false)
-
-            const mutateSelectedAsset: (updatedAsset: assetInterface) => void =
-                inject('mutateSelectedAsset')
 
             const onSelectUser = (user: userInterface) => {
                 // unselect if already selected
@@ -603,7 +592,7 @@
                         5,
                         mappedSplittedOwners(ownerUsers, ownerGroups)
                     )
-                    mutateSelectedAsset(selectedAsset.value)
+                    emit('update:selectedAsset', selectedAsset.value)
                 },
                 {
                     immediate: true,

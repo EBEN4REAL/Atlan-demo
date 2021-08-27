@@ -129,127 +129,124 @@
     </div>
 </template>
 <script lang="ts">
-    import { defineComponent, computed, watch } from 'vue'
+import { defineComponent, computed, watch } from 'vue'
 
-    // import Owners from '@/discovery/preview/tabs/overview/details/owners.vue'
+// components
+import Owners from '@/preview/asset/tabs/overview/details/owners.vue'
+import GlossaryAddDescriptionCard from '@/glossary/glossaryAddDescriptionCard.vue'
+import { Components } from '~/api/atlas/client'
+// static
+import TermSvg from '~/assets/images/gtc/term/term.png'
+import CategorySvg from '~/assets/images/gtc/category/category.png'
 
-    import GlossaryAddDescriptionCard from '@/glossary/glossaryAddDescriptionCard.vue'
-    import { Components } from '~/api/atlas/client'
+interface PropsType {
+    terms: Components.Schemas.AtlasGlossaryTerm[]
+    categories: Components.Schemas.AtlasGlossaryCategory[]
+}
 
-    import TermSvg from '~/assets/images/gtc/term/term.png'
-    import CategorySvg from '~/assets/images/gtc/category/category.png'
-    import GlossaryAddDescriptionCard from '~/components/glossary/continueSettingUp/glossaryAddDescriptionCard.vue'
+export default defineComponent({
+    components: { GlossaryAddDescriptionCard },
+    props: ['terms', 'categories'],
+    emits: ['updateDescription', 'fetchNextCategoryOrTermList'],
+    setup(props: PropsType, context) {
+        // data
+        const descriptionTableColumns = [
+            {
+                title: 'Term/Category',
+                dataIndex: 'name',
+                key: 'name',
+                slots: { customRender: 'name' },
+            },
+            {
+                title: 'Description',
+                dataIndex: 'description',
+                key: 'description',
+                slots: { customRender: 'description' },
+            },
+        ]
 
-    interface PropsType {
-        terms: Components.Schemas.AtlasGlossaryTerm[]
-        categories: Components.Schemas.AtlasGlossaryCategory[]
-    }
+        const ownersTableColumns = [
+            {
+                title: 'Term/Category',
+                dataIndex: 'name',
+                key: 'name',
+                slots: { customRender: 'name' },
+            },
+            {
+                title: 'Description',
+                dataIndex: 'description',
+                key: 'description',
+                slots: { customRender: 'description' },
+            },
+            {
+                title: 'Assign Owner',
+                dataIndex: 'owners',
+                key: 'owners',
+                slots: { customRender: 'owners' },
+            },
+        ]
 
-    export default defineComponent({
-        components: { GlossaryAddDescriptionCard },
-        props: ['terms', 'categories'],
-        emits: ['updateDescription', 'fetchNextCategoryOrTermList'],
-        setup(props: PropsType, context) {
-            const categories = computed(
-                () =>
-                    props.categories?.map((category) => ({
-                        ...category,
-                        type: 'category',
-                    })) ?? []
-            )
-            const terms = computed(
-                () =>
-                    props.terms?.map((term) => ({ ...term, type: 'term' })) ??
-                    []
-            )
+        // computed
+        const categories = computed(
+            () =>
+                props.categories?.map((category) => ({
+                    ...category,
+                    type: 'category',
+                })) ?? []
+        )
+        const terms = computed(
+            () => props.terms?.map((term) => ({ ...term, type: 'term' })) ?? []
+        )
+        const missingDescription = computed(() => {
+            const entities = [...terms.value, ...categories.value]
+            return entities
+                .filter((entity) => !entity.shortDescription)
+                .map((entity) => ({ ...entity, shortDescription: '' }))
+                .slice(0, 5)
+        })
+        const missingLinkedAssets = computed(() =>
+            terms.value
+                .filter((term) => !term.assignedEntities?.length)
+                .slice(0, 5)
+        )
 
-            const missingDescription = computed(() => {
-                const entities = [...terms.value, ...categories.value]
-                return entities
-                    .filter((entity) => !entity.shortDescription)
-                    .map((entity) => ({ ...entity, shortDescription: '' }))
-                    .slice(0, 5)
-            })
-            watch(missingDescription, (newMissingDescription) => {
-                if (
-                    !newMissingDescription.find(
-                        (entity) => entity.type === 'term'
-                    )
-                ) {
-                    context.emit('fetchNextCategoryOrTermList', 'term')
-                }
-                if (
-                    !newMissingDescription.find(
-                        (entity) => entity.type === 'category'
-                    )
-                ) {
-                    context.emit('fetchNextCategoryOrTermList', 'category')
-                }
-            })
+        const missingOwners = computed(() =>
+            [...terms.value, ...categories.value]
+                .filter((entity) => !entity?.additionalAttributes?.owners)
+                .slice(0, 5)
+        )
 
-            const missingLinkedAssets = computed(() =>
-                terms.value
-                    .filter((term) => !term.assignedEntities?.length)
-                    .slice(0, 5)
-            )
-
-            const missingOwners = computed(() =>
-                [...terms.value, ...categories.value]
-                    .filter((entity) => !entity?.additionalAttributes?.owners)
-                    .slice(0, 5)
-            )
-
-            const descriptionTableColumns = [
-                {
-                    title: 'Term/Category',
-                    dataIndex: 'name',
-                    key: 'name',
-                    slots: { customRender: 'name' },
-                },
-                {
-                    title: 'Description',
-                    dataIndex: 'description',
-                    key: 'description',
-                    slots: { customRender: 'description' },
-                },
-            ]
-
-            const ownersTableColumns = [
-                {
-                    title: 'Term/Category',
-                    dataIndex: 'name',
-                    key: 'name',
-                    slots: { customRender: 'name' },
-                },
-                {
-                    title: 'Description',
-                    dataIndex: 'description',
-                    key: 'description',
-                    slots: { customRender: 'description' },
-                },
-                {
-                    title: 'Assign Owner',
-                    dataIndex: 'owners',
-                    key: 'owners',
-                    slots: { customRender: 'owners' },
-                },
-            ]
-            return {
-                TermSvg,
-                CategorySvg,
-                categories,
-                terms,
-                missingDescription,
-                missingLinkedAssets,
-                missingOwners,
-                descriptionTableColumns,
-                ownersTableColumns,
+        // lifecycle methods and watchers
+        watch(missingDescription, (newMissingDescription) => {
+            if (
+                !newMissingDescription.find((entity) => entity.type === 'term')
+            ) {
+                context.emit('fetchNextCategoryOrTermList', 'term')
             }
-        },
-    })
+            if (
+                !newMissingDescription.find(
+                    (entity) => entity.type === 'category'
+                )
+            ) {
+                context.emit('fetchNextCategoryOrTermList', 'category')
+            }
+        })
+        return {
+            TermSvg,
+            CategorySvg,
+            categories,
+            terms,
+            missingDescription,
+            missingLinkedAssets,
+            missingOwners,
+            descriptionTableColumns,
+            ownersTableColumns,
+        }
+    },
+})
 </script>
 <style lang="less" module>
-    .continueSettingUp {
-        background-color: #fff8f1;
-    }
+.continueSettingUp {
+    background-color: #fff8f1;
+}
 </style>

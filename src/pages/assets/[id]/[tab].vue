@@ -172,7 +172,8 @@ meta:
 
         :global(.ant-tabs-tabpane) {
             height: calc(100vh - 200px) !important;
-            overflow: scroll !important;
+            overflow-y: scroll !important;
+            overflow-x: hidden !important;
             @apply pr-0;
         }
         :global(.ant-tabs-ink-bar) {

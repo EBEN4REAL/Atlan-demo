@@ -1,5 +1,5 @@
 <template>
-    <div v-if="isLoading">
+    <div v-if="isLoading  && term?.guid !== id">
         <LoadingView />
     </div>
     <div v-else class="flex flex-row h-full" :class="$style.tabClasses">
@@ -9,7 +9,7 @@
                 currentTab === '1' || currentTab === '2' ? 'w-2/3' : 'w-full'
             "
         >
-            <div class="flex flex-row justify-between pl-8 pr-4 mt-6 mb-5">
+            <div class="flex flex-row justify-between pl-5 pr-5 mt-6 mb-5">
                 <div class="flex flex-row">
                     <div class="mr-5">
                         <img :src="TermSvg" />
@@ -51,7 +51,7 @@
                     class="border-0"
                 >
                     <a-tab-pane key="1" tab="Overview">
-                        <div class="px-8 mt-4">
+                        <div class="px-5 mt-4">
                             <GlossaryProfileOverview :entity="term" />
                         </div>
                     </a-tab-pane>
@@ -59,6 +59,7 @@
                         <div :class="$style.tabClasses">
                             <LinkedAssetsTab
                                 :term-qualified-name="qualifiedName"
+                                :show-preview-panel="currentTab === '2'"
                                 @preview="handlePreview"
                             />
                         </div>
@@ -66,23 +67,25 @@
                 </a-tabs>
             </div>
         </div>
-        <CategoryTermPreview
-            v-if="currentTab === '1' && term"
-            :entity="term"
-            :preview="false"
-        />
-        <div class="border-l" :class="$style.tabClasses">
-            <AssetPreview
-                v-if="currentTab === '2' && previewEntity"
-                page="discovery"
-                :selectedAsset="previewEntity"
-            ></AssetPreview>
+        <div id="sidePanel" class="relative h-full w-1/3">
+            <CategoryTermPreview
+                class="pt-6"
+                :entity="term"
+                :preview="false"
+                @updateAsset="refetch"
+            />
         </div>
+        <!-- <div v-if="currentTab === '2' && previewEntity" class="border-l" :class="$style.tabClasses">
+            <AssetPreview
+                page="discovery"
+                :selected-asset="previewEntity"
+            ></AssetPreview>
+        </div> -->
     </div>
 </template>
 
 <script lang="ts">
-    import { defineComponent, computed, toRef, ref } from 'vue'
+    import { defineComponent, computed, toRef, ref, provide } from 'vue'
 
     import GlossaryProfileOverview from '@/glossary/common/glossaryProfileOverview.vue'
     import TopAssets from '@/glossary/termProfile/topAssets.vue'
@@ -98,7 +101,6 @@
     import { Term } from '~/types/glossary/glossary.interface'
 
     import TermSvg from '~/assets/images/gtc/term/term.png'
-    import { List as StatusList } from '~/constant/status'
 
     export default defineComponent({
         components: {
@@ -125,17 +127,15 @@
 
             const {
                 entity: term,
+                title,
+                shortDescription,
+                qualifiedName,
+                statusObject,
                 error,
                 isLoading,
-            } = useGTCEntity<Term>('term', guid, 'profile')
+                refetch
+            } = useGTCEntity<Term>('term', guid)
 
-            const title = computed(() => term.value?.attributes?.name)
-            const shortDescription = computed(
-                () => term.value?.attributes?.shortDescription
-            )
-            const qualifiedName = computed(
-                () => term.value?.attributes?.qualifiedName
-            )
             const parentGlossaryName = computed(
                 () => term.value?.attributes?.qualifiedName?.split('@')[1] ?? ''
             )
@@ -143,16 +143,14 @@
             const linkedAssetsCount = computed(
                 () => term.value?.attributes?.assignedEntities?.length ?? 0
             )
-            const statusObject = computed(() =>
-                StatusList.find(
-                    (status) =>
-                        status.id === term.value?.attributes?.assetStatus
-                )
-            )
 
             const handlePreview = (entity: any) => {
                 previewEntity.value = entity
             }
+
+            // Providers
+            provide('refreshEntity', refetch);
+
             return {
                 term,
                 currentTab,
@@ -168,6 +166,7 @@
                 previewEntity,
                 statusObject,
                 handlePreview,
+                refetch
             }
         },
     })
@@ -198,7 +197,7 @@
             @apply text-gray-700 font-bold !important;
         }
         :global(.ant-tabs-bar) {
-            @apply px-5 !important;
+            @apply px-5 mb-0 !important;
         }
     }
 </style>

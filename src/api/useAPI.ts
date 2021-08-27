@@ -1,4 +1,4 @@
-import { Ref, ref, watch, watchEffect } from 'vue'
+import { Ref, ref, watch, watchEffect, computed } from 'vue'
 import { AxiosRequestConfig } from 'axios'
 import useSWRV, { IConfig } from 'swrv'
 
@@ -101,7 +101,7 @@ export const useAPI = <T>(
             isRef(options) ? options.value : options
         )
 
-        const isLoading = ref(!data.value && !error.value)
+        const isLoading = computed(() => !data.value && !error.value)
         return { data, error, isLoading, mutate, isValidating }
     }
     function getRequest(): any {
@@ -135,7 +135,6 @@ export const useAPI = <T>(
                 })
         }
     }
-    const isLoading = ref(true)
     const { state, execute, isReady, error } = useAsyncState<T>(
         () => getRequest(),
         <T>{},
@@ -143,10 +142,7 @@ export const useAPI = <T>(
             immediate: (isRef(options) ? options.value : options)?.immediate,
         }
     )
-
-    watch([state, error], () => {
-        if (state || error) isLoading.value = false
-    })
+    const isLoading = computed(() => !isReady.value)
 
     return {
         data: state,

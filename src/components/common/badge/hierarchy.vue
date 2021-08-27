@@ -38,7 +38,7 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, PropType, toRefs } from 'vue'
+    import { computed, defineComponent, PropType, toRefs } from 'vue'
     import useAssetInfo from '~/composables/asset/useAssetInfo'
     import { assetInterface } from '~/types/assets/asset.interface'
 
@@ -53,18 +53,18 @@
         },
         setup(props) {
             const { selectedAsset } = toRefs(props)
-            const { logo, getHierarchy, assetType } = useAssetInfo()
-            const hierarchyInfo = getHierarchy(selectedAsset.value)
-                .filter((data) => data.value)
-                .map((data) => ({
-                    id: data.id,
-                    label: data.label,
-                    text: data.value,
-                }))
+            const { getHierarchy, assetType } = useAssetInfo()
+            const hierarchyInfo = computed(() =>
+                getHierarchy(selectedAsset.value)
+                    .filter((data) => data.value)
+                    .map((data) => ({
+                        id: data.id,
+                        label: data.label,
+                        text: data.value,
+                    }))
+            )
 
-            return { hierarchyInfo, logo, assetType }
+            return { hierarchyInfo, assetType }
         },
     })
 </script>
-
-<style lang="less" scoped></style>

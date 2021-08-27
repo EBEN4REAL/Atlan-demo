@@ -156,6 +156,135 @@ export default function useAssetInfo() {
 
         return relations
     }
+    const getTableauHierarchy = (asset: assetInterface) => {
+        let filteredHierarchy = []
+        let hierarchyKeys = [
+            {
+                id: 'connectionName',
+                label: 'Server',
+                value: '',
+                icon: 'connectionName',
+            },
+            { id: 'siteName', label: 'Site', value: '', icon: 'SiteName' },
+        ]
+
+        /* project */
+        const TableauProject: any = []
+        // inserting projects if project is nested or not
+        const projectHierarchy =
+            [...attributes(asset)['projectHierarchy']] ?? []
+        projectHierarchy.push({
+            id: 'tableauProject',
+            label: 'Project',
+            value: attributes(asset)['projectName'],
+            icon: 'TableauProject',
+        })
+        const firstProject = projectHierarchy.shift()
+        TableauProject.push({
+            ...firstProject,
+            icon: 'TableauProject',
+            subProjects: projectHierarchy,
+        })
+
+        /* -----------------------------*/
+
+        const TableauWorkbook = [
+            {
+                id: 'tableauWorkbook',
+                label: 'Workbook',
+                value: attributes(asset)['name'],
+                icon: 'TableauWorkbook',
+            },
+        ]
+        const TableauWorksheet = [
+            {
+                id: 'tableauWorkbook',
+                label: 'Workbook',
+                value: attributes(asset)['workbookName'],
+                icon: 'TableauWorkbook',
+            },
+            {
+                id: 'tableauWorksheet',
+                label: 'Worksheet',
+                value: attributes(asset)['name'],
+                icon: 'TableauWorksheet',
+            },
+        ]
+        const TableauEmbeddedDatasource = [
+            {
+                id: 'tableauWorkbook',
+                label: 'Workbook',
+                value: attributes(asset)['workbookName'],
+                icon: 'TableauWorkbook',
+            },
+            {
+                id: 'tableauEmbeddedDatasource',
+                label: 'Embedded Datasource',
+                value: attributes(asset)['name'],
+                icon: 'TableauEmbeddedDatasource',
+            },
+        ]
+        const TableauPublishedDatasource = [
+            {
+                id: 'tableauWorkbook',
+                label: 'Workbook',
+                value: attributes(asset)['workbookName'],
+                icon: 'TableauWorkbook',
+            },
+            {
+                id: 'tableauPublishedDatasource',
+                label: 'Published Datasource',
+                value: attributes(asset)['name'],
+                icon: 'TableauPublishedDatasource',
+            },
+        ]
+
+        hierarchyKeys.forEach((item) => {
+            // console.log(attributes(asset),item.id)
+            filteredHierarchy.push({
+                id: item.id,
+                label: item.label,
+                icon: item.icon,
+                value: attributes(asset)[item.id],
+            })
+        })
+        switch (asset.typeName) {
+            case 'TableauWorkbook': {
+                filteredHierarchy = [...filteredHierarchy, ...TableauProject]
+                filteredHierarchy = [...filteredHierarchy, ...TableauWorkbook]
+                break
+            }
+            case 'TableauWorksheet': {
+                filteredHierarchy = [...filteredHierarchy, ...TableauProject]
+                filteredHierarchy = [...filteredHierarchy, ...TableauWorksheet]
+                break
+            }
+            case 'TableauDatasource': {
+                // isPublished - true (published datasoruce) or vice versa
+                if (attributes(asset)['isPublished']) {
+                    filteredHierarchy = [
+                        ...filteredHierarchy,
+                        ...TableauProject,
+                    ]
+                    filteredHierarchy = [
+                        ...filteredHierarchy,
+                        ...TableauPublishedDatasource,
+                    ]
+                } else {
+                    filteredHierarchy = [
+                        ...filteredHierarchy,
+                        ...TableauProject,
+                    ]
+                    filteredHierarchy = [
+                        ...filteredHierarchy,
+                        ...TableauEmbeddedDatasource,
+                    ]
+                }
+                break
+            }
+        }
+        return filteredHierarchy
+    }
 
     const getTableauProperties = (
         asset: Ref<assetInterface> | undefined,
@@ -211,5 +340,6 @@ export default function useAssetInfo() {
         assetStatus,
         getHierarchy,
         getTableauProperties,
+        getTableauHierarchy,
     }
 }

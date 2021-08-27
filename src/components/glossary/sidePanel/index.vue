@@ -1,16 +1,20 @@
 <template>
-    <div class="w-1/2 pt-4 border-l sidePanel" :class="$style.sidePanel">
+    <div class="w-full pt-4 border-l sidePanel" :class="$style.sidePanel">
         <a-tabs default-active-key="1">
             <a-tab-pane key="info" class="p-0 m-0" tab="Info">
                 <div class="h-screen pb-24 overflow-auto">
-                    <a-collapse :bordered="false" expand-icon-position="right">
+                    <a-collapse
+                        v-model:activeKey="activeKey"
+                        :bordered="false"
+                        expand-icon-position="right"
+                    >
                         <template #expandIcon="{ isActive }">
                             <fa v-if="isActive" icon="fas chevron-up" />
                             <fa v-else icon="fas chevron-down" />
                         </template>
                         <a-collapse-panel key="1" header="Details">
                             <div class="flex flex-col pl-6">
-                                <div class="flex space-x-16">
+                                <div class="flex space-x-16 mb-4">
                                     <div class="flex flex-col">
                                         <span
                                             class="
@@ -58,19 +62,22 @@
                                 </div>
                                 <Description
                                     v-if="entity.guid"
-                                    :selectedAsset="entity"
+                                    :selected-asset="entity"
+                                    @update:selected-asset="refreshEntity"
                                 />
                                 <Owners
                                     v-if="entity.guid"
-                                    :selectedAsset="entity"
+                                    :selected-asset="entity"
                                 />
                                 <Experts
                                     v-if="entity.guid"
-                                    :selectedAsset="entity"
+                                    :selected-asset="entity"
+                                    @update:selected-asset="refreshEntity"
                                 />
                                 <Status
                                     v-if="entity.guid"
-                                    :selectedAsset="entity"
+                                    :selected-asset="entity"
+                                    @update:selected-asset="refreshEntity"
                                 />
                             </div>
                         </a-collapse-panel>
@@ -101,7 +108,7 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, PropType, computed, ref, toRef } from 'vue'
+    import { defineComponent, PropType, computed, ref, inject } from 'vue'
 
     import GlossaryTopTerms from '@/glossary/common/glossaryTopTerms.vue'
     import Owners from '@/discovery/preview/tabs/info/assetDetails/owners.vue'
@@ -141,6 +148,10 @@
             },
         },
         setup(props) {
+            const activeKey = ref(['1'])
+
+            const refreshEntity = inject<() => void  >('refreshEntity')
+
             const shortDescription = computed(
                 () => props.entity?.attributes?.shortDescription
             )
@@ -156,6 +167,8 @@
                 termCount,
                 categoryCount,
                 glossaryTerms,
+                activeKey,
+                refreshEntity
             }
         },
     })
@@ -183,7 +196,7 @@
             @apply m-0 p-0  !important;
         }
         :global(.ant-tabs-bar) {
-            @apply mb-0;
+            @apply mb-0 mx-0;
         }
     }
 </style>

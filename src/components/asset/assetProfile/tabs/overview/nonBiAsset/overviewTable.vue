@@ -2,7 +2,7 @@
     <div>
         <!-- Table -->
         <div
-            class="overflow-auto border border-gray-light"
+            class="overflow-y-scroll border border-gray-light"
             style="max-width: calc(100vw - 28rem); max-height: 20rem"
         >
             <a-table

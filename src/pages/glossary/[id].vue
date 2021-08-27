@@ -3,9 +3,7 @@
         <LoadingView />
     </div>
     <div v-else class="flex flex-row h-full" :class="$style.tabClasses">
-        <div
-            class="h-full w-2/3"
-        >
+        <div class="w-2/3 h-full">
             <!-- top section -->
             <div class="flex flex-row justify-between pl-5 pr-4 mt-6 mb-5">
                 <div class="flex flex-row">
@@ -36,7 +34,7 @@
                         <fa icon="fal upload" class="h-3 mr-2" />
                         <span>Share</span>
                     </a-button>
-                    <ThreeDotMenu :entity="glossary" />
+                    <ThreeDotMenu :entity="glossary" :showLinks="false" />
                     <!-- <a-dropdown :trigger="['click']">
                         <a-button class="px-2.5" @click.prevent>
                             <fa icon="fal ellipsis-v" class="h-4" />
@@ -77,15 +75,19 @@
                     <a-tab-pane key="1" tab="Overview">
                         <div class="px-5 mt-4">
                             <GlossaryProfileOverview :entity="glossary" />
-                            <GlossaryContinueSettingUp
-                                v-if="!isLoading || !termsLoading || !categoriesLoading"
+                            <!-- <GlossaryContinueSettingUp
+                                v-if="
+                                    !isLoading ||
+                                    !termsLoading ||
+                                    !categoriesLoading
+                                "
                                 :terms="glossaryTerms"
                                 :categories="glossaryCategories"
                                 @updateDescription="refreshCategoryTermList"
                                 @fetchNextCategoryOrTermList="
                                     fetchNextCategoryOrTermList
                                 "
-                            />
+                            /> -->
                         </div>
                     </a-tab-pane>
                     <a-tab-pane key="2" tab="Terms & Categories">
@@ -241,7 +243,7 @@
             })
 
             // Providers
-            provide('refreshEntity', refetch);
+            provide('refreshEntity', refetch)
 
             return {
                 glossary,

@@ -1,5 +1,5 @@
 <template>
-    <div v-if="isLoading  && term?.guid !== id">
+    <div v-if="isLoading && term?.guid !== id">
         <LoadingView />
     </div>
     <div v-else class="flex flex-row h-full" :class="$style.tabClasses">
@@ -39,9 +39,8 @@
                         <fa icon="fal upload" class="h-3 mr-2" />
                         <span>Share</span>
                     </a-button>
-                    <a-button class="px-2.5">
-                        <fa icon="fal ellipsis-v" class="h-4" />
-                    </a-button>
+
+                    <ThreeDotMenu :entity="term" :showLinks="false" />
                 </div>
             </div>
             <div class="m-0">
@@ -67,7 +66,7 @@
                 </a-tabs>
             </div>
         </div>
-        <div id="sidePanel" class="relative h-full w-1/3">
+        <div id="sidePanel" class="relative w-1/3 h-full">
             <CategoryTermPreview
                 class="pt-6"
                 :entity="term"
@@ -87,6 +86,7 @@
 <script lang="ts">
     import { defineComponent, computed, toRef, ref, provide } from 'vue'
 
+    import ThreeDotMenu from '@/glossary/common/threeDotMenu.vue'
     import GlossaryProfileOverview from '@/glossary/common/glossaryProfileOverview.vue'
     import TopAssets from '@/glossary/termProfile/topAssets.vue'
     import LinkedAssetsTab from '@/glossary/termProfile/linkedAssetsTab.vue'
@@ -112,6 +112,7 @@
             LoadingView,
             CategoryTermPreview,
             AssetPreview,
+            ThreeDotMenu,
         },
         props: {
             id: {
@@ -133,7 +134,7 @@
                 statusObject,
                 error,
                 isLoading,
-                refetch
+                refetch,
             } = useGTCEntity<Term>('term', guid)
 
             const parentGlossaryName = computed(
@@ -149,7 +150,7 @@
             }
 
             // Providers
-            provide('refreshEntity', refetch);
+            provide('refreshEntity', refetch)
 
             return {
                 term,
@@ -166,7 +167,7 @@
                 previewEntity,
                 statusObject,
                 handlePreview,
-                refetch
+                refetch,
             }
         },
     })

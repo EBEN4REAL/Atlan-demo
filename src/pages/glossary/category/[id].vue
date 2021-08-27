@@ -3,9 +3,7 @@
         <LoadingView />
     </div>
     <div v-else class="flex flex-row h-full" :class="$style.tabClasses">
-        <div
-            class="h-full w-2/3"
-        >
+        <div class="w-2/3 h-full">
             <div class="flex flex-row justify-between pl-5 pr-4 my-6">
                 <div class="flex flex-row">
                     <div class="mr-5">
@@ -35,9 +33,8 @@
                         <fa icon="fal upload" class="h-3 mr-2" />
                         <span>Share</span>
                     </a-button>
-                    <a-button class="px-2.5">
-                        <fa icon="fal ellipsis-v" class="h-4" />
-                    </a-button>
+
+                    <ThreeDotMenu :entity="category" :showLinks="false" />
                 </div>
             </div>
             <div class="m-0">
@@ -68,10 +65,9 @@
             </div>
         </div>
 
-        <div id="sidePanel" class="relative h-full w-1/3">
+        <div id="sidePanel" class="relative w-1/3 h-full">
             <SidePanel :entity="category" :top-terms="categoryTerms" />
         </div>
-
     </div>
 </template>
 
@@ -83,10 +79,11 @@
         onMounted,
         toRef,
         ref,
-        provide
+        provide,
     } from 'vue'
 
     // components
+    import ThreeDotMenu from '@/glossary/common/threeDotMenu.vue'
     import GlossaryProfileOverview from '@/glossary/common/glossaryProfileOverview.vue'
     import LoadingView from '@common/loaders/page.vue'
     import SidePanel from '@/glossary/sidePanel/index.vue'
@@ -98,10 +95,7 @@
     import useCategoryTerms from '~/composables/glossary/useCategoryTerms'
 
     // static
-    import {
-        Category,
-        Term,
-    } from '~/types/glossary/glossary.interface'
+    import { Category, Term } from '~/types/glossary/glossary.interface'
     import CategorySvg from '~/assets/images/gtc/category/category.png'
 
     export default defineComponent({
@@ -111,6 +105,7 @@
             LoadingView,
             SidePanel,
             CategoryTermPreview,
+            ThreeDotMenu,
         },
         props: {
             id: {
@@ -172,10 +167,10 @@
                     guid: newGuid,
                     refreshSamePage: true,
                 })
-            });
+            })
 
             // Providers
-            provide('refreshEntity', refetch);
+            provide('refreshEntity', refetch)
 
             return {
                 category,

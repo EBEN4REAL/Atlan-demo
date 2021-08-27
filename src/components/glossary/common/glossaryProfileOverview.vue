@@ -2,7 +2,7 @@
     <div class="w-full p-0 mb-6">
         <Readme
             class="min-w-full"
-            placeholder="Add some details here..."
+            :placeholder="placeholder"
             :parent-asset-id="guid"
             :showBorders="false"
             :showPaddingX="false"
@@ -30,6 +30,8 @@
             },
         },
         setup(props) {
+            const placeholder = `Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+Aliquam rutrum blandit nisi. Quisque eget nisi eu sem cursus venenatis.`
             const shortDescription = computed(
                 () => props.entity?.attributes?.shortDescription
             )
@@ -63,6 +65,7 @@
                 guid,
                 showCategoryCountComputed,
                 showTermCountComputed,
+                placeholder,
             }
         },
     })

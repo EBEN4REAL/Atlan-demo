@@ -6,23 +6,54 @@
             </a-button>
             <template #overlay>
                 <a-menu>
-                    <a-menu-item @click="redirectToProfile">
+                    <a-menu-item v-if="showLinks" @click="redirectToProfile">
                         <div class="flex items-center">
                             <AtlanIcon icon="Link" class="m-0 mr-2" />
-                            <p class="p-0 m-0">Go to term profile</p>
+                            <p class="p-0 m-0">
+                                Go to
+                                {{ assetTypeLabel[entity.typeName] }}
+                                profile
+                            </p>
                         </div>
                     </a-menu-item>
                     <a-menu-item
+                        v-if="showLinks"
                         class="flex items-center"
                         @click="handleCopyProfileLink"
                     >
                         <div class="flex items-center">
                             <AtlanIcon icon="CopyOutlined" class="m-0 mr-2" />
-                            <p class="p-0 m-0">Copy term profile link</p>
+                            <p class="p-0 m-0">
+                                Copy
+                                {{ assetTypeLabel[entity.typeName] }}
+                                profile link
+                            </p>
                         </div>
                     </a-menu-item>
-                    <a-menu-divider />
 
+                    <a-menu-divider v-if="showLinks" />
+                    <a-menu-item
+                        v-if="entity?.typeName !== 'AtlasGlossaryTerm'"
+                        class="flex items-center"
+                    >
+                        <div class="flex items-center">
+                            <AtlanIcon icon="Link" class="m-0 mr-2" />
+                            <p class="p-0 m-0">Add term</p>
+                        </div>
+                    </a-menu-item>
+                    <a-menu-item
+                        v-if="entity?.typeName !== 'AtlasGlossaryTerm'"
+                        class="flex items-center"
+                    >
+                        <div class="flex items-center">
+                            <AtlanIcon icon="Link" class="m-0 mr-2" />
+                            <p class="p-0 m-0">Add category</p>
+                        </div>
+                    </a-menu-item>
+
+                    <a-menu-divider
+                        v-if="entity?.typeName !== 'AtlasGlossaryTerm'"
+                    />
                     <a-sub-menu key="status">
                         <template #title>
                             <div class="flex items-center justify-between">
@@ -103,17 +134,30 @@
             redirectToProfile: {
                 type: Function,
                 required: false,
-                default: () => undefined,
+                default: undefined,
+            },
+            showLinks: {
+                type: Boolean,
+                required: false,
+                default: () => true,
             },
         },
         setup(props) {
+            const assetTypeLabel = {
+                AtlasGlossaryTerm: 'term',
+                AtlasGlossaryCategory: 'category',
+                AtlasGlossary: 'glossary',
+            }
             const handleCopyProfileLink = () => {
                 const baseUrl = window.location.origin
-                const text = `${baseUrl}/glossary/term/${props?.entity?.guid}`
+                const text = `${baseUrl}/glossary/${
+                    assetTypeLabel[props.entity.typeName]
+                }/${props?.entity?.guid}`
                 copyToClipboard(text)
             }
 
-            return { handleCopyProfileLink }
+            console.log(assetTypeLabel[props.entity.typeName])
+            return { handleCopyProfileLink, assetTypeLabel }
         },
     })
 </script>

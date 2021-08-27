@@ -20,6 +20,7 @@ import Schema from '~/assets/images/icons/schema.svg'
 import Connection from '~/assets/images/icons/connection.svg'
 import AddUser from '~/assets/images/icons/add-user.svg'
 import Link from '~/assets/images/icons/link.svg'
+import Add from '~/assets/images/icons/add.svg'
 
 export default {
     BookmarkFilled,
@@ -44,4 +45,5 @@ export default {
     Connection,
     AddUser,
     Link,
+    Add,
 }

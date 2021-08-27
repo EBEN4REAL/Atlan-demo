@@ -1,6 +1,6 @@
 <template>
     <button
-        :tabindex="$attrs.onClick ? 0 : undefined"
+        :tabindex="!disabled && $attrs.onClick ? 0 : undefined"
         class="flex items-center gap-2 px-3 m-1 text-gray-700 border rounded-full cursor-pointer  border-gray-light bg-gray-light"
         style="height: 30px"
     >
@@ -8,8 +8,8 @@
         <span v-if="label">{{ label }}</span>
 
         <button
-            v-if="$attrs.onAction"
-            :tabindex="$attrs.onAction ? 0 : undefined"
+            v-if="!disabled && hasAction"
+            :tabindex="!disabled && hasAction ? 0 : undefined"
             @click.stop="emitActions"
         >
             <slot v-if="$slots.action" name="action" />
@@ -31,14 +31,19 @@
                 type: Boolean,
                 default: () => false,
             },
+            hasAction: {
+                type: Boolean,
+                default: () => false,
+            },
         },
         // Do not uncomment, else code will break
-        // emits: ['action'],
+        emits: ['action'],
         setup(prop, { emit }) {
             const { disabled } = toRefs(prop)
             function emitActions() {
                 if (!disabled.value) emit('action')
             }
+            console.log()
             return { emitActions }
         },
     })

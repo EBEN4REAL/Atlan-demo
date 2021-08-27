@@ -50,7 +50,7 @@
             <template #header>
                 <div class="flex items-center px-5 py-4">
                     <!-- first letter to be uppercase -->
-                    <p class="my-0 font-bold">
+                    <p class="my-0">
                         {{ item.displayText.charAt(0).toUpperCase()
                         }}{{ item.displayText.slice(1) }}
                     </p>
@@ -123,11 +123,14 @@
             }
 
             // filter required data
-            const filteredRelationshipAssets = computed(() => relationshipAssets.value.filter((el) => (
+            const filteredRelationshipAssets = computed(() =>
+                relationshipAssets.value.filter(
+                    (el) =>
                         el.displayText
                             .toLowerCase()
                             .indexOf(queryText.value.toLowerCase()) !== -1
-                    )))
+                )
+            )
             watch(selectedAsset, fetchData, { immediate: true })
 
             onMounted(fetchData)

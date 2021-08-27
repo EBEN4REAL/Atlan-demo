@@ -114,6 +114,7 @@
                 :wrap-style="{ position: 'absolute' }"
                 :keyboard="false"
                 :destroy-on-close="true"
+                :zIndex="30"
                 :closable="false"
             >
                 <ColumnPreview

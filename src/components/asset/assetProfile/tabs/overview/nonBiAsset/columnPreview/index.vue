@@ -3,11 +3,19 @@
         <div class="px-5">
             <div class="flex items-start justify-between mt-5 mb-4 text-sm">
                 <div class="w-full">
-                    <Tooltip
-                        :tooltip-text="selectedRow?.column_name"
-                        classes="mb-0.5 text-base font-bold text-gray-700 capitalize"
-                    />
-                    <div class="text-gray-500">Column</div>
+                    <div class="flex items-center mb-0.5">
+                        <component
+                            :is="images[selectedRow?.data_type]"
+                            class="w-4 h-4 mr-1.5 mb-0.5"
+                        ></component>
+                        <Tooltip
+                            :tooltip-text="selectedRow?.column_name"
+                            classes="text-base font-bold text-gray-700 capitalize"
+                        />
+                    </div>
+                    <div class="text-gray-500">
+                        {{ selectedRow?.data_type }}
+                    </div>
                 </div>
                 <div class="flex">
                     <div class="mr-4 icon-btn">
@@ -53,6 +61,7 @@
         Ref,
     } from 'vue'
     import useColumnDetailsTabList from './tabs/useTabList'
+    import { images } from '~/constant/datatype'
 
     export default defineComponent({
         name: 'ColumnPreview',
@@ -85,6 +94,7 @@
                 activeKey,
                 filteredTabs,
                 handleChange,
+                images,
             }
         },
     })

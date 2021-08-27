@@ -138,15 +138,12 @@ export default function useAssetInfo() {
     const getHierarchy = (asset: assetInterface) => {
         const assetType = AssetTypeList.find((a) => a.id == asset.typeName)
         const relations: any[] = []
-        console.log('xxx assetType:', assetType)
 
         if (assetType) {
             const filtered = AssetTypeList.filter((a) =>
                 assetType.parents?.includes(a.id)
             )
 
-            console.log('xxx filtered:', filtered)
-            console.log('xxx attributes(asset):', attributes(asset))
             filtered.forEach((f) => {
                 relations.push({
                     ...f,
@@ -155,7 +152,6 @@ export default function useAssetInfo() {
                     value: attributes(asset)[f.nameAttribute],
                 })
             })
-            console.log('xxx relations:', relations)
         }
 
         return relations

@@ -3,30 +3,22 @@
         <div class="flex">
             <!-- back button -->
             <div>
-                <a-button
-                    :ghost="true"
-                    class="px-2 mr-1 border-0 outline-none"
-                    @click="$router.back()"
-                    ><atlan-icon
+                <button class="px-1 py-0.5 mx-1" @click="$router.back()">
+                    <atlan-icon
                         icon="ChevronDown"
                         class="w-auto transform rotate-90 h-7"
-                /></a-button>
+                    />
+                </button>
             </div>
             <div>
-                <!-- asset logo -->
-                <div class="flex">
-                    <AssetLogo class="self-start pt-2" :asset="assetData" />
-                    <div
-                        class="flex items-center mt-1 mb-2 text-xl font-bold lowercase "
-                    >
-                        <span>{{ title(assetData) }}</span>
-                        <StatusBadge
-                            :key="assetData.guid"
-                            :show-no-status="false"
-                            :status-id="status(assetData)"
-                            class="flex-none ml-2"
-                        ></StatusBadge>
-                    </div>
+                <div class="flex items-center">
+                    <!-- asset logo -->
+                    <AssetLogo :asset="assetData" variant="lg" />
+
+                    <span class="text-xl font-bold">{{
+                        assetData.attributes.name
+                    }}</span>
+                    <atlan-icon icon="Verified" class="w-auto h-4 ml-2" />
                 </div>
                 <!-- asset source hierarchy -->
                 <HierarchyBar class="py-1 mt-1" :selected-asset="assetData" />

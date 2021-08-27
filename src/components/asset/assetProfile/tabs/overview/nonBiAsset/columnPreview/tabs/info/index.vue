@@ -122,7 +122,7 @@
                         localStorage.getItem('column_preview_info_tab') as any
                     ) as string[]
 
-                return ['columnDetails', 'linkedAsset', 'usage']
+                return ['columnDetails', 'linkedAsset']
             }
             function setUserDefaultCollapseOrderInInfoTab(
                 activeKeyOrder: string[]

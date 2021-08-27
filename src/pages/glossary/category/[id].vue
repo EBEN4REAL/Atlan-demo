@@ -26,10 +26,10 @@
                     </div>
                 </div>
                 <div class="flex flex-row space-x-2">
-                    <a-button class="px-2.5">
+                    <a-button class="px-2">
                         <fa icon="fal bookmark" />
                     </a-button>
-                    <a-button class="px-2.5 flex align-middle">
+                    <a-button class="px-2 flex align-middle">
                         <fa icon="fal upload" class="h-3 mr-2" />
                         <span>Share</span>
                     </a-button>

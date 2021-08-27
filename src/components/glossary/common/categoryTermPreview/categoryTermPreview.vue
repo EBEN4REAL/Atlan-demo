@@ -28,7 +28,7 @@
                 </span>
             </div>
             <div class="flex flex-row space-x-2">
-                <a-button class="px-2.5">
+                <a-button class="px-2">
                     <fa icon="fal bookmark" />
                 </a-button>
                 <a-button

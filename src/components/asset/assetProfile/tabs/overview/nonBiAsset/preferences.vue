@@ -30,7 +30,7 @@
             const typeFiltersSelected = ref([])
 
             /** INJECTIONS */
-            const updateTypeFilterInj = inject('updateTypeFilter')
+            const handleFilterInj = inject('handleFilter')
             const typeFiltersInj = inject('typeFilters')
             typeFilters.value = typeFiltersInj.value
             typeFiltersSelected.value = typeFiltersInj.value
@@ -38,7 +38,7 @@
             /** METHODS */
             const updateType = (e: []) => {
                 typeFiltersSelected.value = e
-                updateTypeFilterInj(e)
+                handleFilterInj(e)
             }
 
             return {

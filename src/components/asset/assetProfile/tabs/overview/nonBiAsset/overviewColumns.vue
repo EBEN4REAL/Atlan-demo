@@ -2,7 +2,7 @@
     <div>
         <!-- Search and Filter -->
         <div class="flex items-center justify-between mb-4">
-            <div class="flex items-center flex-1">
+            <div class="flex items-center w-1/2">
                 <a-input-search
                     :value="query"
                     placeholder="Search columns..."
@@ -21,23 +21,17 @@
                     /></a-button>
                 </a-popover>
             </div>
-            <div class="flex justify-end flex-1">
-                <a-button class="flex items-center">
-                    <span>View column profile</span>
-                    <atlan-icon icon="ArrowRight" class="w-auto h-4 ml-2"
-                /></a-button>
-            </div>
         </div>
         <!-- Table -->
         <div
-            class="overflow-scroll border-t border-gray-light"
+            class="overflow-auto border border-gray-light"
             style="max-width: calc(100vw - 28rem); max-height: 20rem"
         >
             <a-table
                 :columns="columns"
                 :data-source="columnsData.filteredList"
                 :pagination="false"
-                :scroll="{ x: true }"
+                :scroll="{ x: 'calc(700px + 50%)', y: 240 }"
                 :loading="!columnsData.filteredList"
                 :custom-row="customRow"
                 :row-class-name="rowClassName"
@@ -117,26 +111,23 @@
 <script lang="ts">
     // Vue
     import { defineComponent, inject, watch, computed, ref, provide } from 'vue'
-
+    // Components
+    import SearchAndFilter from '@/common/input/searchAndFilter.vue'
+    import preferences from './preferences.vue'
     // Composables
     import useColumns from '~/composables/asset/useColumns'
     import useColumnsFilter from '~/composables/asset/useColumnsFilter'
     import { images, dataTypeList } from '~/constant/datatype'
 
-    // Components
-    import preferences from './preferences.vue'
-
     export default defineComponent({
-        components: { preferences },
+        components: { preferences, SearchAndFilter },
         setup() {
             /** DATA */
             const query = ref('')
             const filters = ref([])
-            const filtersSelected = ref([])
+            const typeFilters = ref([])
             const columnsData = ref({})
             const selectedRow = ref(null)
-            // const typeFilter = ref('')
-            const statusFilter = ref('')
 
             /** INJECTIONS */
             const assetDataInjection = inject('assetData')
@@ -150,15 +141,12 @@
                 const filtersIdSet = new Set()
                 dataTypeList.forEach((i) => {
                     filteredList.forEach((j) => {
-                        if (
-                            i.type.includes(j.attributes.dataType) ||
-                            i.type.includes(j.attributes.dataType.toLowerCase())
-                        )
+                        if (i.type.includes(j.attributes.dataType))
                             filtersIdSet.add(i.id)
                     })
                 })
                 filters.value = Array.from(filtersIdSet)
-                filtersSelected.value = Array.from(filtersIdSet)
+                typeFilters.value = Array.from(filtersIdSet)
             }
 
             //  filterByQuery
@@ -168,9 +156,10 @@
             }
 
             // handleFilter
-            const handleFilter = () => {
-                const { columnList } = columnsData.value
+            const handleFilter = (val) => {
+                if (val) typeFilters.value = val
 
+                const { columnList } = columnsData.value
                 filterColumnsList(columnList)
             }
 
@@ -179,7 +168,7 @@
                 const { filteredList } = useColumnsFilter(
                     columnList,
                     query,
-                    filtersSelected
+                    typeFilters
                 )
 
                 if (filters.value.length === 0)
@@ -188,11 +177,7 @@
                 const getDataType = (type) => {
                     let label = ''
                     dataTypeList.forEach((i) => {
-                        if (
-                            i.type.includes(type) ||
-                            i.type.includes(type.toLowerCase())
-                        )
-                            label = i.label
+                        if (i.type.includes(type)) label = i.label
                     })
                     return label
                 }
@@ -232,20 +217,11 @@
                     ? 'bg-primary-light'
                     : 'bg-transparent'
 
-            const updateTypeFilter = (val) => {
-                filtersSelected.value = val
-                handleFilter()
-            }
-            const updateStatusFilter = (val) => {
-                statusFilter.value = val
-            }
-
             /** PROVIDERS */
-            provide('updateTypeFilter', updateTypeFilter)
-            provide('typeFilters', filtersSelected)
-            provide('updateStatusFilter', updateStatusFilter)
+            provide('handleFilter', handleFilter)
+            provide('typeFilters', typeFilters)
 
-            /** Watchers */
+            /** WATCHERS */
             watch(columnList, () => {
                 filterColumnsList(columnList.value)
             })
@@ -253,16 +229,15 @@
             return {
                 rowClassName,
                 customRow,
-                selectedRow,
                 filterByQuery,
-                // filterByType,
+                selectedRow,
                 columnsData,
                 query,
                 images,
-                filters,
-                filtersSelected,
                 columns: [
                     {
+                        width: 50,
+                        fixed: 'left',
                         title: '#',
                         dataIndex: 'hash_index',
                         slots: { customRender: 'hash_index' },
@@ -271,6 +246,7 @@
                         sorter: (a, b) => a.hash_index - b.hash_index,
                     },
                     {
+                        width: 200,
                         title: 'Column name',
                         dataIndex: 'column_name',
                         slots: { customRender: 'column_name' },
@@ -278,18 +254,20 @@
                         sorter: (a, b) => a.column_name > b.column_name,
                     },
                     {
+                        width: 100,
                         title: 'Data type',
                         dataIndex: 'data_type',
                         key: 'data_type',
                     },
                     {
+                        width: 100,
                         title: 'Description',
                         dataIndex: 'description',
                         key: 'description',
-                        width: 300,
                         ellipsis: true,
                     },
                     {
+                        width: 150,
                         title: 'Popularity',
                         sorter: true,
                         dataIndex: 'popularity',
@@ -297,12 +275,14 @@
                         key: 'popularity',
                     },
                     {
+                        width: 150,
                         title: 'Terms',
                         dataIndex: 'terms',
                         slots: { customRender: 'terms' },
                         key: 'terms',
                     },
                     {
+                        width: 150,
                         title: 'Classifications',
                         dataIndex: 'classifications',
                         slots: { customRender: 'classifications' },

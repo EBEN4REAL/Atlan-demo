@@ -4,7 +4,7 @@
         @click="$emit('gtcCardClicked', entity)"
     >
         <!-- projections start here -->
-        <div class="flex flex-row">
+        <div class="flex flex-row w-full">
             <div class="mr-4">
                 <img
                     v-if="entity.typeName === 'AtlasGlossary'"
@@ -23,7 +23,7 @@
 
             <div class="flex flex-col w-3/4 ml-1">
                 <span
-                    class="flex items-center text-base leading-6 text-gray-700 cursor-pointer  hover:underline"
+                    class="flex items-center text-base leading-6 text-gray-700 cursor-pointer hover:underline"
                     @click="redirectToProfile"
                 >
                     <Tooltip :tooltip-text="entity.displayText" />
@@ -46,7 +46,7 @@
                         projection?.includes('owners') &&
                         getCombinedUsersAndGroups(entity).length
                     "
-                    class="flex items-baseline mt-1 mr-4 text-xs leading-5  text-gray"
+                    class="flex items-baseline mt-1 mr-4 text-xs leading-5 text-gray"
                 >
                     <span
                         class="mr-1"

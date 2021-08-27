@@ -33,6 +33,7 @@
         <div v-else-if="all.length" class="flex flex-row w-full mt-4">
             <div class="w-full">
                 <a-tabs
+                    v-model:activeKey="activeKey"
                     default-active-key="1"
                     class="border-0"
                     :class="$style.glossaryTermsTab"
@@ -43,7 +44,12 @@
                                 <p class="my-0">All</p>
                                 <div
                                     v-if="all.length"
-                                    class="px-2 mx-2  bg-primary-light text-primary"
+                                    class="px-2 mx-2"
+                                    :class="
+                                        activeKey === '1'
+                                            ? 'bg-primary-light text-primary'
+                                            : 'bg-gray-100 text-gray-500'
+                                    "
                                 >
                                     {{ all.length }}
                                 </div>
@@ -74,7 +80,12 @@
                                 <p class="my-0">Terms</p>
                                 <div
                                     v-if="terms.length"
-                                    class="px-2 mx-2  bg-primary-light text-primary"
+                                    class="px-2 mx-2"
+                                    :class="
+                                        activeKey === '2'
+                                            ? 'bg-primary-light text-primary'
+                                            : 'bg-gray-100 text-gray-500'
+                                    "
                                 >
                                     {{ terms.length }}
                                 </div>
@@ -101,7 +112,12 @@
                                 <p class="my-0">Categories</p>
                                 <div
                                     v-if="categories.length"
-                                    class="px-2 mx-2  bg-primary-light text-primary"
+                                    class="px-2 mx-2"
+                                    :class="
+                                        activeKey === '3'
+                                            ? 'bg-primary-light text-primary'
+                                            : 'bg-gray-100 text-gray-500'
+                                    "
                                 >
                                     {{ categories.length }}
                                 </div>
@@ -211,6 +227,7 @@
             // data
             const glossaryQualifiedName = toRef(props, 'qualifiedName')
             const searchQuery = ref<string>()
+            const activeKey = ref<string>('1')
             const selectedEntity = ref<Category | Term>()
             const projection = ref(['status', 'description', 'owners'])
             const { entities, error, isLoading, fetchAssetsPaginated } =
@@ -328,6 +345,9 @@
             //     selectedEntity.value = newEntities[0]
             // })
 
+            watch(activeKey, () => {
+                console.log(activeKey.value)
+            })
             return {
                 glossaryQualifiedName,
                 searchQuery,
@@ -345,6 +365,7 @@
                 isLoading,
                 projectionOptions,
                 projection,
+                activeKey,
             }
         },
     })

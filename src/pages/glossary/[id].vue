@@ -105,8 +105,8 @@
             </div>
         </div>
 
-        <div id="sidePanel" class="relative h-full w-1/3">
-            <SidePanel :entity="glossary" :top-terms="glossaryTerms" />
+        <div id="sidePanel" class="relative w-1/3">
+            <SidePanel  :entity="glossary" :top-terms="glossaryTerms" />
         </div>
     </div>
 </template>

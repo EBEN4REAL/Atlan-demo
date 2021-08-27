@@ -128,6 +128,7 @@
         </div>
         <teleport to="#sidePanel">
             <a-drawer
+                v-if="selectedEntity?.guid !== undefined && showPreviewPanel"
                 :visible="selectedEntity?.guid !== undefined && showPreviewPanel"
                 placement="right"
                 :mask="false"

@@ -7,29 +7,21 @@
                 variant="lg"
             /> -->
             <div>
-                <a-button
-                    :ghost="true"
-                    class="px-2 mr-1 border-0 outline-none"
-                    style="margin-top: -2px"
-                    @click="$router.back()"
-                    ><atlan-icon
+                <button class="px-1 py-0.5 mx-1" @click="$router.back()">
+                    <atlan-icon
                         icon="ChevronDown"
                         class="w-auto transform rotate-90 h-7"
-                /></a-button>
+                    />
+                </button>
             </div>
             <div>
-                <div class="flex">
-                    <!-- <component
-                        :is="assetData.typeName"
-                        class="flex-none w-auto h-6 mt-1 mr-1"
-                    ></component> -->
-                    <AssetLogo class="self-start pt-2" :asset="assetData" />
-                    <div
-                        class="flex items-center mt-1 mb-2 text-xl font-bold lowercase "
-                    >
-                        <span>{{ assetData.attributes.name }}</span>
-                        <atlan-icon icon="Verified" class="w-auto h-4 ml-2" />
-                    </div>
+                <div class="flex items-center">
+                    <AssetLogo :asset="assetData" variant="lg" />
+
+                    <span class="text-xl font-bold">{{
+                        assetData.attributes.name
+                    }}</span>
+                    <atlan-icon icon="Verified" class="w-auto h-4 ml-2" />
                 </div>
                 <!-- <div class="flex text-sm">
                     <div class="flex items-center mr-6 capitalize">

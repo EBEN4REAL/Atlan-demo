@@ -147,7 +147,7 @@
             </a-tab-pane>
             <a-tab-pane key="activity" tab="Activity">
                 <div class="h-screen overflow-auto pb-52">
-                    <Activity :selecte-asset="entity" />
+                    <Activity :selected-asset="entity" />
                 </div>
             </a-tab-pane>
             <!-- <a-tab-pane key="requests" tab="Requests"> Requests </a-tab-pane> -->

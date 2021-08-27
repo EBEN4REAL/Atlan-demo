@@ -2,7 +2,7 @@
     <div>
         <!-- Search and Filter -->
         <div class="flex items-center justify-between mb-4">
-            <div class="flex items-center flex-1">
+            <div class="flex items-center w-1/2">
                 <a-input-search
                     :value="query"
                     placeholder="Search columns..."
@@ -11,27 +11,27 @@
                     :allow-clear="true"
                     @change="filterByQuery"
                 ></a-input-search>
-                <a-button class="px-2"
-                    ><atlan-icon icon="FilterDot" class="w-auto h-5"
-                /></a-button>
-            </div>
-            <div class="flex justify-end flex-1">
-                <a-button class="flex items-center">
-                    <span>View column profile</span>
-                    <atlan-icon icon="ArrowRight" class="w-auto h-4 ml-2"
-                /></a-button>
+
+                <a-popover trigger="click" placement="right">
+                    <template #content>
+                        <preferences />
+                    </template>
+                    <a-button class="px-2"
+                        ><atlan-icon icon="FilterDot" class="w-auto h-5"
+                    /></a-button>
+                </a-popover>
             </div>
         </div>
         <!-- Table -->
         <div
-            class="overflow-y-scroll border-t border-gray-light"
+            class="overflow-y-scroll border border-gray-light"
             style="max-width: calc(100vw - 28rem); max-height: 20rem"
         >
             <a-table
                 :columns="columns"
                 :data-source="columnsData.filteredList"
                 :pagination="false"
-                :scroll="{ x: true }"
+                :scroll="{ x: 'calc(700px + 50%)', y: 240 }"
                 :loading="!columnsData.filteredList"
                 :custom-row="customRow"
                 :row-class-name="rowClassName"
@@ -128,23 +128,23 @@
 
 <script lang="ts">
     // Vue
-    import { defineComponent, inject, watch, computed, ref } from 'vue'
-
+    import { defineComponent, inject, watch, computed, ref, provide } from 'vue'
+    // Components
+    import SearchAndFilter from '@/common/input/searchAndFilter.vue'
+    import preferences from './preferences.vue'
+    import ColumnPreview from './columnPreview/index.vue'
     // Composables
     import useColumns from '~/composables/asset/useColumns'
     import useColumnsFilter from '~/composables/asset/useColumnsFilter'
     import { images, dataTypeList } from '~/constant/datatype'
 
-    // Components
-    import ColumnPreview from './columnPreview/index.vue'
-
     export default defineComponent({
-        components: { ColumnPreview },
+        components: { preferences, SearchAndFilter, ColumnPreview },
         setup() {
             /** DATA */
             const query = ref('')
             const filters = ref([])
-            const filtersSelected = ref([])
+            const typeFilters = ref([])
             const columnsData = ref({})
             const selectedRow = ref(null)
             const selectedRowData = ref({})
@@ -164,18 +164,13 @@
                 dataTypeList.forEach((i) => {
                     filteredList.forEach(
                         (j: { attributes: { dataType: string } }) => {
-                            if (
-                                i.type.includes(j.attributes.dataType) ||
-                                i.type.includes(
-                                    j.attributes.dataType.toLowerCase()
-                                )
-                            )
+                            if (i.type.includes(j.attributes.dataType))
                                 filtersIdSet.add(i.id)
                         }
                     )
                 })
                 filters.value = Array.from(filtersIdSet)
-                filtersSelected.value = Array.from(filtersIdSet)
+                typeFilters.value = Array.from(filtersIdSet)
             }
 
             //  filterByQuery
@@ -184,16 +179,11 @@
                 handleFilter()
             }
 
-            // filterByType
-            const filterByType = (e: never[]) => {
-                filtersSelected.value = e
-                handleFilter()
-            }
-
             // handleFilter
-            const handleFilter = () => {
-                const { columnList } = columnsData.value
+            const handleFilter = (val) => {
+                if (val) typeFilters.value = val
 
+                const { columnList } = columnsData.value
                 filterColumnsList(columnList)
             }
 
@@ -202,7 +192,7 @@
                 const { filteredList } = useColumnsFilter(
                     columnList,
                     query,
-                    filtersSelected
+                    typeFilters
                 )
 
                 if (filters.value.length === 0)
@@ -211,11 +201,7 @@
                 const getDataType = (type: string) => {
                     let label = ''
                     dataTypeList.forEach((i) => {
-                        if (
-                            i.type.includes(type) ||
-                            i.type.includes(type.toLowerCase())
-                        )
-                            label = i.label
+                        if (i.type.includes(type)) label = i.label
                     })
                     return label
                 }
@@ -282,7 +268,11 @@
                     ? 'bg-primary-light'
                     : 'bg-transparent'
 
-            /** Watchers */
+            /** PROVIDERS */
+            provide('handleFilter', handleFilter)
+            provide('typeFilters', typeFilters)
+
+            /** WATCHERS */
             watch(columnList, () => {
                 filterColumnsList(columnList.value)
             })
@@ -290,19 +280,18 @@
             return {
                 rowClassName,
                 customRow,
-                selectedRow,
                 filterByQuery,
-                filterByType,
+                handleCloseColumnSidebar,
+                selectedRow,
                 columnsData,
                 query,
                 images,
-                filters,
-                filtersSelected,
                 showColumnPreview,
                 selectedRowData,
-                handleCloseColumnSidebar,
                 columns: [
                     {
+                        width: 50,
+                        fixed: 'left',
                         title: '#',
                         dataIndex: 'hash_index',
                         slots: { customRender: 'hash_index' },
@@ -314,6 +303,7 @@
                         ) => a.hash_index - b.hash_index,
                     },
                     {
+                        width: 200,
                         title: 'Column name',
                         dataIndex: 'column_name',
                         slots: { customRender: 'column_name' },
@@ -324,16 +314,20 @@
                         ) => a.column_name > b.column_name,
                     },
                     {
+                        width: 100,
                         title: 'Data type',
                         dataIndex: 'data_type',
                         key: 'data_type',
                     },
                     {
+                        width: 100,
                         title: 'Description',
                         dataIndex: 'description',
                         key: 'description',
+                        ellipsis: true,
                     },
                     {
+                        width: 150,
                         title: 'Popularity',
                         sorter: true,
                         dataIndex: 'popularity',
@@ -341,12 +335,14 @@
                         key: 'popularity',
                     },
                     {
+                        width: 150,
                         title: 'Terms',
                         dataIndex: 'terms',
                         slots: { customRender: 'terms' },
                         key: 'terms',
                     },
                     {
+                        width: 150,
                         title: 'Classifications',
                         dataIndex: 'classifications',
                         slots: { customRender: 'classifications' },

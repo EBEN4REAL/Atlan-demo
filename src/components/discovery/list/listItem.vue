@@ -73,13 +73,11 @@
                 >
                     <!-- Owners -->
                     <div
-                        v-if="
-                            projection?.includes('owners') &&
-                            getCombinedUsersAndGroups(item).length
-                        "
+                        v-if="projection?.includes('owners')"
                         class="flex items-baseline mt-1 mr-4 text-xs leading-5  text-gray"
                     >
                         <span
+                            v-if="getCombinedUsersAndGroups(item).length"
                             class="mr-1"
                             v-html="
                                 'Owned by ' +
@@ -89,6 +87,14 @@
                                 )
                             "
                         />
+                        <span
+                            v-if="
+                                !getCombinedUsersAndGroups(item).length &&
+                                assetType(item).includes('Tableau')
+                            "
+                            class="text-sm font-light text-gray-400"
+                            >no owners assigned</span
+                        >
                     </div>
                     <!-- Row/Col-->
                     <div
@@ -140,14 +146,22 @@
                 </div>
                 <!-- Description -->
                 <div
-                    v-if="
-                        projection?.includes('description') &&
-                        description(item)?.length
-                    "
+                    v-if="projection?.includes('description')"
                     class="max-w-lg mt-1 text-sm truncate-overflow"
                 >
-                    {{ description(item) }}
+                    <span v-if="description(item)?.length">{{
+                        description(item)
+                    }}</span>
+                    <span
+                        v-if="
+                            !description(item)?.length &&
+                            assetType(item).includes('Tableau')
+                        "
+                        class="font-light text-gray-400"
+                        >no description available</span
+                    >
                 </div>
+
                 <!-- Hierarchy bar -->
                 <HierarchyBar
                     v-if="projection?.includes('heirarchy')"
@@ -221,6 +235,7 @@
                 logo,
                 dataTypeImage,
                 dataType,
+                assetType,
                 title,
                 status,
                 rowCount,
@@ -279,6 +294,7 @@
                 logo,
                 dataTypeImage,
                 dataType,
+                assetType,
                 title,
                 status,
                 rowCount,

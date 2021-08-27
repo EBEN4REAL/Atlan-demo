@@ -1,5 +1,5 @@
 <template>
-    <div v-if="isLoading" class="">
+    <div v-if="isLoading && category?.guid !== id">
         <LoadingView />
     </div>
     <div v-else class="flex flex-row h-full" :class="$style.tabClasses">
@@ -51,7 +51,7 @@
                             <GlossaryProfileOverview :entity="category" />
                         </div>
                     </a-tab-pane>
-                    <a-tab-pane key="2" tab="Terms & Categories">
+                    <a-tab-pane key="2" tab="Terms">
                         <GlossaryTermsAndCategoriesTab
                             :qualified-name="parentGlossaryQualifiedName"
                             :guid="guid"
@@ -83,6 +83,7 @@
         onMounted,
         toRef,
         ref,
+        provide
     } from 'vue'
 
     // components
@@ -98,7 +99,6 @@
 
     // static
     import {
-        Glossary,
         Category,
         Term,
     } from '~/types/glossary/glossary.interface'
@@ -133,6 +133,7 @@
                 statusObject,
                 error,
                 isLoading,
+                refetch,
             } = useGTCEntity<Category>('category', guid)
 
             const {
@@ -171,7 +172,11 @@
                     guid: newGuid,
                     refreshSamePage: true,
                 })
-            })
+            });
+
+            // Providers
+            provide('refreshEntity', refetch);
+
             return {
                 category,
                 categoryTerms,

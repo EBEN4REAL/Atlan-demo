@@ -1,5 +1,5 @@
 <template>
-    <div v-if="isLoading">
+    <div v-if="isLoading && glossary?.guid !== id">
         <LoadingView />
     </div>
     <div v-else class="flex flex-row h-full" :class="$style.tabClasses">
@@ -78,7 +78,7 @@
                         <div class="px-5 mt-4">
                             <GlossaryProfileOverview :entity="glossary" />
                             <GlossaryContinueSettingUp
-                                v-if="!isLoading"
+                                v-if="!isLoading || !termsLoading || !categoriesLoading"
                                 :terms="glossaryTerms"
                                 :categories="glossaryCategories"
                                 @updateDescription="refreshCategoryTermList"
@@ -112,7 +112,7 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, watch, onMounted, toRef, ref } from 'vue'
+    import { defineComponent, watch, onMounted, toRef, ref, provide } from 'vue'
 
     // components
     import GlossaryTermsAndCategoriesTab from '@/glossary/glossaryTermsAndCategoriesTab.vue'
@@ -240,6 +240,9 @@
                 })
             })
 
+            // Providers
+            provide('refreshEntity', refetch);
+
             return {
                 glossary,
                 title,
@@ -247,6 +250,7 @@
                 error,
                 isLoading,
                 termsLoading,
+                categoriesLoading,
                 GlossarySvg,
                 guid,
                 glossaryTerms,

@@ -100,8 +100,6 @@ const useGTCEntity = <T extends Glossary | Category | Term>(type: 'glossary' | '
     );
 
     watch(entityGuid, (newGuid) => {
-        console.log('bruhh', cache,entityGuid.value, newGuid, getBody());
-
         body.value = getBody()
         mutate()
     });
@@ -111,7 +109,7 @@ const useGTCEntity = <T extends Glossary | Category | Term>(type: 'glossary' | '
         mutate()
     }
 
-    return { entity, title, shortDescription, qualifiedName, statusObject, error, isLoading, refetch }
+    return { entity, title, shortDescription, qualifiedName, statusObject, error, isLoading, refetch, mutate }
 }
 
 export default useGTCEntity;

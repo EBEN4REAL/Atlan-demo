@@ -62,19 +62,22 @@
                                 </div>
                                 <Description
                                     v-if="entity.guid"
-                                    :selectedAsset="entity"
+                                    :selected-asset="entity"
+                                    @update:selected-asset="refreshEntity"
                                 />
                                 <Owners
                                     v-if="entity.guid"
-                                    :selectedAsset="entity"
+                                    :selected-asset="entity"
                                 />
                                 <Experts
                                     v-if="entity.guid"
-                                    :selectedAsset="entity"
+                                    :selected-asset="entity"
+                                    @update:selected-asset="refreshEntity"
                                 />
                                 <Status
                                     v-if="entity.guid"
-                                    :selectedAsset="entity"
+                                    :selected-asset="entity"
+                                    @update:selected-asset="refreshEntity"
                                 />
                             </div>
                         </a-collapse-panel>
@@ -105,7 +108,7 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, PropType, computed, ref, toRef } from 'vue'
+    import { defineComponent, PropType, computed, ref, inject } from 'vue'
 
     import GlossaryTopTerms from '@/glossary/common/glossaryTopTerms.vue'
     import Owners from '@/discovery/preview/tabs/info/assetDetails/owners.vue'
@@ -147,6 +150,8 @@
         setup(props) {
             const activeKey = ref(['1'])
 
+            const refreshEntity = inject<() => void  >('refreshEntity')
+
             const shortDescription = computed(
                 () => props.entity?.attributes?.shortDescription
             )
@@ -163,6 +168,7 @@
                 categoryCount,
                 glossaryTerms,
                 activeKey,
+                refreshEntity
             }
         },
     })

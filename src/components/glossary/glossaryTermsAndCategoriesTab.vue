@@ -141,6 +141,7 @@
                 <CategoryTermPreview
                     :entity="selectedEntity"
                     @closePreviewPanel="handlClosePreviewPanel"
+                    @updateAsset="updateSelectedAsset"
                 />
             </a-drawer>
         </teleport>
@@ -295,6 +296,14 @@
                 fetchAssetsPaginated({ filters, offset: 0 })
             }
 
+            const updateSelectedAsset = (updatedAsset) => {
+                const idx = entities.value?.findIndex(
+                    (ast) => ast.guid === updatedAsset.guid
+                )
+                console.log(idx, 'yes')
+                if (idx > -1) entities.value[idx] = updatedAsset
+            }
+
             // lifecycle methods and watchers
             watch(selectedEntity, (newSelectedEntity) => {
                 emit('entityPreview', newSelectedEntity)
@@ -316,6 +325,7 @@
                 loadMore,
                 updateFilters,
                 handlClosePreviewPanel,
+                updateSelectedAsset,
                 selectedEntity,
                 isLoading,
                 projectionOptions,

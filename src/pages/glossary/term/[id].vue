@@ -1,5 +1,5 @@
 <template>
-    <div v-if="isLoading">
+    <div v-if="isLoading  && term?.guid !== id">
         <LoadingView />
     </div>
     <div v-else class="flex flex-row h-full" :class="$style.tabClasses">
@@ -66,12 +66,14 @@
                 </a-tabs>
             </div>
         </div>
-        <CategoryTermPreview
-            v-if="currentTab === '1' && term"
-            :entity="term"
-            :preview="false"
-            class="pt-6"
-        />
+        <div id="sidePanel" class="relative h-full w-1/3">
+            <CategoryTermPreview
+                class="pt-6"
+                :entity="term"
+                :preview="false"
+                @updateAsset="refetch"
+            />
+        </div>
         <div class="border-l" :class="$style.tabClasses">
             <AssetPreview
                 v-if="currentTab === '2' && previewEntity"
@@ -83,7 +85,7 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, computed, toRef, ref } from 'vue'
+    import { defineComponent, computed, toRef, ref, provide } from 'vue'
 
     import GlossaryProfileOverview from '@/glossary/common/glossaryProfileOverview.vue'
     import TopAssets from '@/glossary/termProfile/topAssets.vue'
@@ -131,7 +133,8 @@
                 statusObject,
                 error,
                 isLoading,
-            } = useGTCEntity<Term>('term', guid, 'profile')
+                refetch
+            } = useGTCEntity<Term>('term', guid)
 
             const parentGlossaryName = computed(
                 () => term.value?.attributes?.qualifiedName?.split('@')[1] ?? ''
@@ -144,6 +147,10 @@
             const handlePreview = (entity: any) => {
                 previewEntity.value = entity
             }
+
+            // Providers
+            provide('refreshEntity', refetch);
+
             return {
                 term,
                 currentTab,
@@ -159,6 +166,7 @@
                 previewEntity,
                 statusObject,
                 handlePreview,
+                refetch
             }
         },
     })

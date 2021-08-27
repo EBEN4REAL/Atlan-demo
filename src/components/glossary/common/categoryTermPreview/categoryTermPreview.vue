@@ -74,19 +74,22 @@
                             <div class="flex flex-col pl-6">
                                 <Description
                                     v-if="entity.guid"
-                                    :selectedAsset="entity"
+                                    :selected-asset="entity"
+                                    @update:selected-asset="(updated) => $emit('updateAsset', updated)"
                                 />
                                 <Owners
                                     v-if="entity.guid"
-                                    :selectedAsset="entity"
+                                    :selected-asset="entity"
                                 />
                                 <Experts
                                     v-if="entity.guid"
-                                    :selectedAsset="entity"
+                                    :selected-asset="entity"
+                                    @update:selected-asset="(updated) => $emit('updateAsset', updated)"
                                 />
                                 <Status
                                     v-if="entity.guid"
-                                    :selectedAsset="entity"
+                                    :selected-asset="entity"
+                                    @update:selected-asset="(updated) => $emit('updateAsset', updated)"
                                 />
                             </div>
                         </a-collapse-panel>
@@ -97,7 +100,7 @@
                             header="Governance"
                         >
                             <div class="px-6 py-0">
-                                <Classifications :selectedAsset="entity" />
+                                <Classifications :selected-asset="entity" />
                             </div>
                         </a-collapse-panel>
 
@@ -120,13 +123,13 @@
             >
                 <div class="h-screen overflow-auto pb-52">
                     <LinkedAssets
-                        :termQualifiedName="entity.attributes.qualifiedName"
+                        :term-qualified-name="entity.attributes.qualifiedName"
                     />
                 </div>
             </a-tab-pane>
             <a-tab-pane key="activity" tab="Activity">
                 <div class="h-screen overflow-auto pb-52">
-                    <Activity :selectedAsset="entity" />
+                    <Activity :selecte-asset="entity" />
                 </div>
             </a-tab-pane>
             <!-- <a-tab-pane key="requests" tab="Requests"> Requests </a-tab-pane> -->
@@ -136,14 +139,14 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, PropType, computed, ref, toRef } from 'vue'
+    import { defineComponent, PropType, computed, ref } from 'vue'
     import { useRouter } from 'vue-router'
 
     import Owners from '@/discovery/preview/tabs/info/assetDetails/owners.vue'
     import Experts from '@/discovery/preview/tabs/info/assetDetails/experts.vue'
     import Description from '@/discovery/preview/tabs/info/assetDetails/description.vue'
     import Status from '@/discovery/preview/tabs/info/assetDetails/status.vue'
-    import Activity from '~/components/discovery/preview/tabs/activity/activityTab.vue'
+    import Activity from '@/discovery/preview/tabs/activity/activityTab.vue'
     import Classifications from '@/discovery/preview/tabs/info/governance/classifications.vue'
     import RelatedTerms from '@/glossary/termProfile/relatedTerms.vue'
     import LinkedAssets from './linkedAssets.vue'
@@ -179,11 +182,12 @@
                 default: true,
             },
         },
-        emits: ['closePreviewPanel'],
+        emits: ['closePreviewPanel', 'updateAsset'],
         setup(props, context) {
             const router = useRouter()
             const activeKey = ref(['details'])
 
+            // computed
             const shortDescription = computed(
                 () => props.entity?.attributes?.shortDescription
             )
@@ -196,6 +200,7 @@
                 )
             )
 
+            // methods
             const redirectToProfile = () => {
                 if (props.entity.typeName === 'AtlasGlossaryCategory')
                     router.push(`/glossary/category/${props.entity.guid}`)
@@ -205,6 +210,7 @@
             const handlClosePreviewPanel = () => {
                 context.emit('closePreviewPanel')
             }
+
             return {
                 TermSvg,
                 CategorySvg,

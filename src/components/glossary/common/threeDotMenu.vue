@@ -1,6 +1,6 @@
 <template>
-    <div>
-        <a-dropdown :trigger="['click']">
+    <div class="group-hover:opacity-100" :class="isVisible ? 'opacity-100' : ''" >
+        <a-dropdown v-model:visible="isVisible" :trigger="['click']">
             <a-button class="px-2.5" @click.prevent>
                 <fa icon="fal ellipsis-v" class="h-4" />
             </a-button>
@@ -115,7 +115,7 @@
     </div>
 </template>
 <script lang="ts">
-    import { defineComponent, computed, PropType } from 'vue'
+    import { defineComponent, ref, PropType } from 'vue'
     // components
     // import Status from '@/discovery/preview/tabs/info/assetDetails/status.vue'
     import Owners from '@/glossary/common/owners.vue'
@@ -143,6 +143,8 @@
             },
         },
         setup(props) {
+            const isVisible = ref(false);
+
             const assetTypeLabel = {
                 AtlasGlossaryTerm: 'term',
                 AtlasGlossaryCategory: 'category',
@@ -157,7 +159,7 @@
             }
 
             console.log(assetTypeLabel[props.entity.typeName])
-            return { handleCopyProfileLink, assetTypeLabel }
+            return { handleCopyProfileLink, assetTypeLabel, isVisible }
         },
     })
 </script>

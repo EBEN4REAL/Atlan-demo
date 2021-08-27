@@ -1,6 +1,6 @@
 <template>
     <div
-        class="flex justify-between py-4 pr-4 border-b rounded pl-9"
+        class="flex justify-between py-4 pr-4 border-b rounded pl-9 group"
         @click="$emit('gtcCardClicked', entity)"
     >
         <!-- projections start here -->
@@ -61,7 +61,8 @@
                 </div>
             </div>
         </div>
-        <ThreeDotMenu :entity="entity" :redirectToProfile="redirectToProfile" />
+        <!-- TODO: replace with 3-dot menu component -->
+        <ThreeDotMenu :entity="entity" :redirectToProfile="redirectToProfile" class="opacity-0 "/>
     </div>
 </template>
 <script lang="ts">

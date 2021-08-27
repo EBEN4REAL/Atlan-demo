@@ -30,10 +30,9 @@
         <div v-if="isLoading && !all.length">
             <LoadingView />
         </div>
-        <div v-else-if="all.length" class="flex flex-row w-full mt-4">
+        <div v-else-if="all.length" class="flex flex-row w-full mt-4" >
             <div class="w-full">
-                <a-tabs default-active-key="1" class="border-0">
-                    <!-- TODO: fix tab-pane header UI  -->
+                <a-tabs default-active-key="1" class="border-0" :class="$style.glossaryTermsTab">
                     <a-tab-pane key="1">
                         <template #tab>
                             <div class="flex items-center">
@@ -66,7 +65,6 @@
                         </div>
                     </a-tab-pane>
                     <a-tab-pane key="2">
-                        <!--? why max-height is fixed to 380px  -->
                         <template #tab>
                             <div class="flex items-center">
                                 <p class="my-0">Terms</p>
@@ -106,8 +104,7 @@
                             </div>
                         </template>
 
-                        <!--? why max-height is fixed to 380px  -->
-                        <div class="overflow-auto" style="max-height: 380px">
+                        <div class="overflow-auto">
                             <div v-for="asset in categories" :key="asset.guid">
                                 <GtcEntityCard
                                     :class="{ 'hover:bg-gray-100': true }"
@@ -348,9 +345,14 @@
         },
     })
 </script>
-<style lang="less">
+<style lang="less" module>
     .secondaryHeading {
         @apply tracking-widest text-xs text-gray leading-5;
+    }
+    .glossaryTermsTab {
+        :global(.ant-tabs-tabpane .ant-tabs-tabpane-active){
+            @apply h-1/3 overflow-auto;
+        }
     }
 </style>
 

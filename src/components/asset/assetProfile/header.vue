@@ -19,37 +19,23 @@
                     <div
                         class="flex items-center mt-1 mb-2 text-xl font-bold lowercase "
                     >
-                        <span>{{ assetData.attributes.name }}</span>
-                        <atlan-icon icon="Verified" class="w-auto h-4 ml-2" />
+                        <span>{{ title(assetData) }}</span>
+                        <StatusBadge
+                            :key="assetData.guid"
+                            :show-no-status="false"
+                            :status-id="status(assetData)"
+                            class="flex-none ml-2"
+                        ></StatusBadge>
                     </div>
                 </div>
                 <!-- asset source hierarchy -->
-                <div class="flex items-center">
-                    <div
-                        v-for="(item, index) in hierarchyInfo"
-                        :key="index"
-                        class="flex items-center"
-                    >
-                        <div>
-                            <span class="text-gray-500"
-                                >{{ item.label }} :</span
-                            >
-                            <span class="ml-1">{{ item.text }}</span>
-                        </div>
-                        <div
-                            v-if="index !== hierarchyInfo.length - 1"
-                            class="mx-3"
-                        >
-                            &bull;
-                        </div>
-                    </div>
-                </div>
+                <HierarchyBar class="py-1 mt-1" :selected-asset="assetData" />
             </div>
         </div>
         <!-- CTAs -->
         <div class="flex">
             <a-button
-                v-if="assetType.includes('Tableau')"
+                v-if="assetType(assetData).includes('Tableau')"
                 class="flex items-center mr-2"
             >
                 <span class="mt-1 text-sm">Open in Tableau</span></a-button
@@ -67,51 +53,32 @@
 
 <script lang="ts">
     // Vue
-    import { defineComponent, computed, inject, ref } from 'vue'
+    import { defineComponent, computed, inject } from 'vue'
     // Components
     import AssetLogo from '@/common/icon/assetIcon.vue'
-
-    // Util
+    import HierarchyBar from '@common/badge/hierarchy.vue'
+    import StatusBadge from '@common/badge/status/index.vue'
+    // Composables
     import useAssetInfo from '~/composables/asset/useAssetInfo'
-    // import { SourceList } from '~/constant/source'
 
     export default defineComponent({
-        components: { AssetLogo },
+        components: { AssetLogo, HierarchyBar, StatusBadge },
         setup() {
-            /** DATA */
-            const assetType = ref('')
-
             /** INJECTIONS */
             const assetDataInjection = inject('assetData')
 
             /** COMPUTED */
             const assetData = computed(() => assetDataInjection?.asset)
-            assetType.value = assetData.value.typeName
-
-            // const integrationIcon = computed(() => {
-            //     const item = SourceList.find(
-            //         (src: { id: string }) =>
-            //             src.id === assetData.value.attributes.integrationName
-            //     )
-            //     return item?.image
-            // })
 
             /** METHODS */
-            // hierarchyInfo
-            const { logo, getHierarchy } = useAssetInfo()
-            const hierarchyInfo = getHierarchy(assetData.value)
-                .filter((data) => data.value)
-                .map((data) => ({
-                    label: data.label,
-                    text: data.value,
-                }))
+            // useAssetInfo
+            const { status, title, assetType } = useAssetInfo()
 
             return {
-                hierarchyInfo,
-                logo,
-                assetType,
                 assetData,
-                // integrationIcon,
+                status,
+                title,
+                assetType,
             }
         },
     })

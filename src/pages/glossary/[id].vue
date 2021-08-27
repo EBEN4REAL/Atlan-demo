@@ -35,34 +35,6 @@
                         <span>Share</span>
                     </a-button>
                     <ThreeDotMenu :entity="glossary" :showLinks="false" />
-                    <!-- <a-dropdown :trigger="['click']">
-                        <a-button class="px-2.5" @click.prevent>
-                            <fa icon="fal ellipsis-v" class="h-4" />
-                        </a-button>
-                        <template #overlay>
-                            <a-menu>
-                                <a-menu-item>Add Term</a-menu-item>
-                                <a-menu-item>Add Category</a-menu-item>
-                                <a-menu-divider />
-                                <a-sub-menu key="status" title="No status">
-                                    <a-menu-item>Verified</a-menu-item>
-                                    <a-menu-item>Work in Progress</a-menu-item>
-                                    <a-menu-item>Warning</a-menu-item>
-                                    <a-menu-item>Deprecated</a-menu-item>
-                                </a-sub-menu>
-                                <a-sub-menu key="owner" title="Add Owner">
-                                    <a-menu-item>5d menu item</a-menu-item>
-                                    <a-menu-item>6th menu item</a-menu-item>
-                                </a-sub-menu>
-                                <a-sub-menu key="expert" title="Add Expert">
-                                    <a-menu-item>5d menu item</a-menu-item>
-                                    <a-menu-item>6th menu item</a-menu-item>
-                                </a-sub-menu>
-                                <a-menu-divider />
-                                <a-menu-item>Archive</a-menu-item>
-                            </a-menu>
-                        </template>
-                    </a-dropdown> -->
                 </div>
             </div>
             <!-- tabs start here  -->
@@ -107,7 +79,7 @@
             </div>
         </div>
 
-        <div id="sidePanel" class="relative w-1/3 ">
+        <div id="sidePanel" class="relative w-1/3">
             <SidePanel :entity="glossary" :top-terms="glossaryTerms" />
         </div>
     </div>

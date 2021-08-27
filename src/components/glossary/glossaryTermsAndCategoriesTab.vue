@@ -47,8 +47,10 @@
                             </div>
                         </template>
                         <!-- list starts here -->
-                        <!-- TODO: make panel scrollable -->
-                        <div class="overflow-auto pb-16" style="max-height: 380px">
+                        <div
+                            class="pb-16 overflow-auto"
+                            style="max-height: calc(100vh - 380px)"
+                        >
                             <div v-for="asset in all" :key="asset.guid">
                                 <GtcEntityCard
                                     :class="{
@@ -77,7 +79,10 @@
                             </div>
                         </template>
 
-                        <div class="overflow-auto" style="max-height: 380px">
+                        <div
+                            class="overflow-auto"
+                            style="max-height: calc(100vh - 380px)"
+                        >
                             <div v-for="asset in terms" :key="asset.guid">
                                 <GtcEntityCard
                                     :class="{ 'hover:bg-gray-100': true }"
@@ -129,7 +134,9 @@
         <teleport to="#sidePanel">
             <a-drawer
                 v-if="selectedEntity?.guid !== undefined && showPreviewPanel"
-                :visible="selectedEntity?.guid !== undefined && showPreviewPanel"
+                :visible="
+                    selectedEntity?.guid !== undefined && showPreviewPanel
+                "
                 placement="right"
                 :mask="false"
                 :get-container="false"
@@ -167,7 +174,13 @@
     import { Category, Term } from '~/types/glossary/glossary.interface'
 
     export default defineComponent({
-        components: { GtcEntityCard, EmptyView, LoadingView, GtcFilters, CategoryTermPreview },
+        components: {
+            GtcEntityCard,
+            EmptyView,
+            LoadingView,
+            GtcFilters,
+            CategoryTermPreview,
+        },
         props: {
             qualifiedName: {
                 type: String,
@@ -189,8 +202,8 @@
             showPreviewPanel: {
                 type: Boolean,
                 required: true,
-                default: false
-            }
+                default: false,
+            },
         },
         emits: ['entityPreview'],
         setup(props, { emit }) {
@@ -280,7 +293,7 @@
                 selectedEntity.value = entity
             }
             const handlClosePreviewPanel = () => {
-                selectedEntity.value = undefined;
+                selectedEntity.value = undefined
             }
             const onSearch = useDebounceFn(() => {
                 fetchAssetsPaginated({

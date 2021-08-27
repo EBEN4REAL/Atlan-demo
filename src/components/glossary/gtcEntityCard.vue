@@ -26,9 +26,8 @@
                     class="flex items-center text-base leading-6 text-gray-700 cursor-pointer  hover:underline"
                     @click="redirectToProfile"
                 >
-                    <p class="my-0">
-                        {{ entity.displayText }}
-                    </p>
+                    <Tooltip :tooltip-text="entity.displayText" />
+
                     <component
                         :is="statusObject?.icon"
                         v-if="statusObject && projection.includes('status')"
@@ -62,74 +61,7 @@
                 </div>
             </div>
         </div>
-        <!-- TODO: replace with 3-dot menu component -->
         <ThreeDotMenu :entity="entity" :redirectToProfile="redirectToProfile" />
-        <!-- <div>
-            <a-dropdown :trigger="['click']">
-                <a-button class="px-2.5" @click.prevent>
-                    <fa icon="fal ellipsis-v" class="h-4" />
-                </a-button>
-                <template #overlay>
-                    <a-menu>
-                        <a-menu-item @click="redirectToProfile">
-                            <template #icon>
-                                <Fa
-                                    class="w-auto h-3 text-white"
-                                    icon="fal external-link-alt"
-                            /></template>
-                            Go to term profile</a-menu-item
-                        >
-                        <a-menu-item>
-                            <template #icon>
-                                <Fa
-                                    class="w-auto h-3 text-white group-hover:text-primary"
-                                    icon="fal external-link-alt"
-                            /></template>
-                            Copy term profile link</a-menu-item
-                        >
-                        <a-menu-divider />
-
-                        <a-menu-item>
-                            <Status
-                                v-if="entity.guid"
-                                :selectedAsset="entity"
-                            />
-                        </a-menu-item>
-                        <a-sub-menu key="owner" title="Add Owner">
-                            <template #icon>
-                                <fa
-                                    icon="fal trash-alt"
-                                    class="w-auto h-3 mr-2"
-                                ></fa>
-                            </template>
-                            <a-menu-item class="bg-white">
-                                <Owners :selectedAsset="entity" />
-                            </a-menu-item>
-                        </a-sub-menu>
-                        <a-sub-menu key="expert" title="Add Expert">
-                            <template #icon>
-                                <fa
-                                    icon="fal trash-alt"
-                                    class="w-auto h-3 mr-2"
-                                ></fa>
-                            </template>
-                            <a-menu-item>5d menu item</a-menu-item>
-                            <a-menu-item>6th menu item</a-menu-item>
-                        </a-sub-menu>
-                        <a-menu-divider />
-                        <a-menu-item>
-                            <template #icon>
-                                <fa
-                                    icon="fal trash-alt"
-                                    class="w-auto h-3 mr-2"
-                                ></fa>
-                            </template>
-                            Archive</a-menu-item
-                        >
-                    </a-menu>
-                </template>
-            </a-dropdown>
-        </div> -->
     </div>
 </template>
 <script lang="ts">
@@ -139,6 +71,7 @@
     import Status from '@/discovery/preview/tabs/info/assetDetails/status.vue'
     import Owners from '@/glossary/common/owners.vue'
     import ThreeDotMenu from '@/glossary/common/threeDotMenu.vue'
+    import Tooltip from '@common/ellipsis/index.vue'
 
     // Composables
     import useAssetInfo from '~/composables/asset/useAssetInfo'
@@ -157,7 +90,7 @@
     import { List as StatusList } from '~/constant/status'
 
     export default defineComponent({
-        components: { Status, Owners, ThreeDotMenu },
+        components: { Status, Owners, ThreeDotMenu, Tooltip },
         props: {
             entity: {
                 type: Object as PropType<Glossary | Category | Term>,

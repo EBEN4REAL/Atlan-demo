@@ -1,5 +1,5 @@
 <template>
-    <div class="flex flex-wrap items-center flex-grow w-10">
+    <div class="flex flex-wrap items-center flex-grow w-10 gap-x-1 gap-y-1.5">
         <template v-for="(item, index) in data">
             <a-popover
                 :mouseEnterDelay="0.3"

@@ -59,6 +59,7 @@
                         <div :class="$style.tabClasses">
                             <LinkedAssetsTab
                                 :term-qualified-name="qualifiedName"
+                                :show-preview-panel="currentTab === '2'"
                                 @preview="handlePreview"
                             />
                         </div>
@@ -74,13 +75,12 @@
                 @updateAsset="refetch"
             />
         </div>
-        <div class="border-l" :class="$style.tabClasses">
+        <!-- <div v-if="currentTab === '2' && previewEntity" class="border-l" :class="$style.tabClasses">
             <AssetPreview
-                v-if="currentTab === '2' && previewEntity"
                 page="discovery"
                 :selected-asset="previewEntity"
             ></AssetPreview>
-        </div>
+        </div> -->
     </div>
 </template>
 

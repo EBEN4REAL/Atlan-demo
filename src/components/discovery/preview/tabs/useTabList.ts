@@ -72,6 +72,7 @@ export default function useAssetDetailsTabList(
             component: 'lineage',
             visibleOn: ['discovery'],
         },
+
     ]
 
     const filteredTabs = computed(() => {

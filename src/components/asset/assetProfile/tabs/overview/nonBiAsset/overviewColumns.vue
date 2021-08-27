@@ -24,7 +24,7 @@
         </div>
         <!-- Table -->
         <div
-            class="overflow-scroll border-t border-gray-light"
+            class="overflow-y-scroll border-t border-gray-light"
             style="max-width: calc(100vw - 28rem); max-height: 20rem"
         >
             <a-table
@@ -33,7 +33,20 @@
                 :pagination="false"
                 :scroll="{ x: true }"
                 :loading="!columnsData.filteredList"
+                :custom-row="customRow"
+                :row-class-name="rowClassName"
             >
+                <!-- hash_index col -->
+                <template #hash_index="{ text, record }">
+                    <div
+                        :class="{
+                            'border-primary': record.key === selectedRow,
+                        }"
+                        class="absolute top-0 left-0 flex items-center justify-center w-full h-full border-l-4 border-transparent "
+                    >
+                        {{ text }}
+                    </div>
+                </template>
                 <!-- column_name col -->
                 <template #column_name="{ text, record }">
                     <div class="flex items-center">
@@ -92,6 +105,24 @@
                 </template>
             </a-table>
         </div>
+        <teleport to="#overAssetColumnPreview">
+            <a-drawer
+                v-model:visible="showColumnPreview"
+                placement="right"
+                :mask="false"
+                :get-container="false"
+                :wrap-style="{ position: 'absolute' }"
+                :keyboard="false"
+                :destroy-on-close="true"
+                :closable="false"
+            >
+                <ColumnPreview
+                    :selected-row="selectedRowData"
+                    page="columnPreview"
+                    @closeColumnSidebar="handleCloseColumnSidebar"
+                />
+            </a-drawer>
+        </teleport>
     </div>
 </template>
 
@@ -104,13 +135,20 @@
     import useColumnsFilter from '~/composables/asset/useColumnsFilter'
     import { images, dataTypeList } from '~/constant/datatype'
 
+    // Components
+    import ColumnPreview from './columnPreview/index.vue'
+
     export default defineComponent({
+        components: { ColumnPreview },
         setup() {
             /** DATA */
             const query = ref('')
             const filters = ref([])
             const filtersSelected = ref([])
             const columnsData = ref({})
+            const selectedRow = ref(null)
+            const selectedRowData = ref({})
+            const showColumnPreview = ref<boolean>(false)
 
             /** INJECTIONS */
             const assetDataInjection = inject('assetData')
@@ -119,30 +157,35 @@
             const assetData = computed(() => assetDataInjection?.asset)
 
             /** METHODS */
+
             // getColumnTypes
-            const getColumnTypes = (filteredList) => {
+            const getColumnTypes = (filteredList: any[]) => {
                 const filtersIdSet = new Set()
                 dataTypeList.forEach((i) => {
-                    filteredList.forEach((j) => {
-                        if (
-                            i.type.includes(j.attributes.dataType) ||
-                            i.type.includes(j.attributes.dataType.toLowerCase())
-                        )
-                            filtersIdSet.add(i.id)
-                    })
+                    filteredList.forEach(
+                        (j: { attributes: { dataType: string } }) => {
+                            if (
+                                i.type.includes(j.attributes.dataType) ||
+                                i.type.includes(
+                                    j.attributes.dataType.toLowerCase()
+                                )
+                            )
+                                filtersIdSet.add(i.id)
+                        }
+                    )
                 })
                 filters.value = Array.from(filtersIdSet)
                 filtersSelected.value = Array.from(filtersIdSet)
             }
 
             //  filterByQuery
-            const filterByQuery = (e) => {
+            const filterByQuery = (e: { target: { value: string } }) => {
                 query.value = e.target.value
                 handleFilter()
             }
 
             // filterByType
-            const filterByType = (e) => {
+            const filterByType = (e: never[]) => {
                 filtersSelected.value = e
                 handleFilter()
             }
@@ -155,7 +198,7 @@
             }
 
             // filterColumnsList
-            const filterColumnsList = (columnList) => {
+            const filterColumnsList = (columnList: any) => {
                 const { filteredList } = useColumnsFilter(
                     columnList,
                     query,
@@ -165,7 +208,7 @@
                 if (filters.value.length === 0)
                     getColumnTypes(filteredList.value)
 
-                const getDataType = (type) => {
+                const getDataType = (type: string) => {
                     let label = ''
                     dataTypeList.forEach((i) => {
                         if (
@@ -176,16 +219,26 @@
                     })
                     return label
                 }
-                const filteredListData = filteredList.value.map((i) => ({
-                    key: i.attributes.order,
-                    hash_index: i.attributes.order,
-                    column_name: i.attributes.name,
-                    data_type: getDataType(i.attributes.dataType),
-                    description: i.attributes.description || '---',
-                    popularity: i.attributes.popularityScore || 8,
-                    terms: 'N/A',
-                    classifications: 'N/A',
-                }))
+                const filteredListData = filteredList.value.map(
+                    (i: {
+                        attributes: {
+                            order: any
+                            name: any
+                            dataType: any
+                            description: any
+                            popularityScore: any
+                        }
+                    }) => ({
+                        key: i.attributes.order,
+                        hash_index: i.attributes.order,
+                        column_name: i.attributes.name,
+                        data_type: getDataType(i.attributes.dataType),
+                        description: i.attributes.description || '---',
+                        popularity: i.attributes.popularityScore || 8,
+                        terms: 'N/A',
+                        classifications: 'N/A',
+                    })
+                )
 
                 columnsData.value = {
                     filteredList: filteredListData,
@@ -196,12 +249,48 @@
             // useColumns
             const { columnList } = useColumns(assetData.value.guid)
 
+            const handleCloseColumnSidebar = () => {
+                showColumnPreview.value = false
+                selectedRow.value = null
+                selectedRowData.value = {}
+            }
+            // customRow Antd
+            const customRow = (record: { key: null }) => ({
+                onClick: () => {
+                    if (selectedRow.value === record.key)
+                        handleCloseColumnSidebar()
+                    else {
+                        selectedRow.value = record.key
+                        columnsData.value.filteredList.forEach(
+                            (singleRow: {}) => {
+                                if (singleRow.key === record.key) {
+                                    selectedRowData.value = singleRow
+                                }
+                            }
+                        )
+                        showColumnPreview.value = true
+                    }
+                    // emit record here for column asset preview
+
+                    console.log(selectedRowData.value)
+                },
+            })
+
+            // rowClassName Antd
+            const rowClassName = (record: { key: null }, index: any) =>
+                record.key === selectedRow.value
+                    ? 'bg-primary-light'
+                    : 'bg-transparent'
+
             /** Watchers */
             watch(columnList, () => {
                 filterColumnsList(columnList.value)
             })
 
             return {
+                rowClassName,
+                customRow,
+                selectedRow,
                 filterByQuery,
                 filterByType,
                 columnsData,
@@ -209,20 +298,30 @@
                 images,
                 filters,
                 filtersSelected,
+                showColumnPreview,
+                selectedRowData,
+                handleCloseColumnSidebar,
                 columns: [
                     {
                         title: '#',
                         dataIndex: 'hash_index',
+                        slots: { customRender: 'hash_index' },
                         key: 'hash_index',
                         defaultSortOrder: 'ascend',
-                        sorter: (a, b) => a.hash_index - b.hash_index,
+                        sorter: (
+                            a: { hash_index: number },
+                            b: { hash_index: number }
+                        ) => a.hash_index - b.hash_index,
                     },
                     {
                         title: 'Column name',
                         dataIndex: 'column_name',
                         slots: { customRender: 'column_name' },
                         key: 'column_name',
-                        sorter: (a, b) => a.column_name > b.column_name,
+                        sorter: (
+                            a: { column_name: number },
+                            b: { column_name: number }
+                        ) => a.column_name > b.column_name,
                     },
                     {
                         title: 'Data type',
@@ -260,11 +359,15 @@
 </script>
 
 <style lang="less" scoped>
+    :global(.ant-drawer-content-wrapper) {
+        width: 420px !important;
+        background-color: white !important;
+    }
     :global(.ant-table th) {
         @apply whitespace-nowrap font-bold !important;
     }
     :global(.ant-table td) {
-        @apply max-w-xs !important;
+        @apply max-w-xs relative cursor-pointer !important;
     }
     :global(.ant-progress-status-success .ant-progress-bg) {
         background-color: #1890ff !important;

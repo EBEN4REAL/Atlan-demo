@@ -25,6 +25,7 @@
                 :page="page"
             ></AssetPreview>
         </div>
+        <div id="overAssetColumnPreview" class="relative"></div>
     </div>
 </template>
 

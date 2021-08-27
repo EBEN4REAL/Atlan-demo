@@ -46,19 +46,18 @@
             ></a-input-search>
         </div>
         <div v-if="!isLoading">
-            <div class="flex px-4 space-x-2">
+            <div class="flex pr-4 space-x-2">
                 <div
-                    class=" flex justify-center w-full text-base font-bold leading-5 cursor-pointer "
+                    class="pl-6 flex justify-start w-full text-base leading-5 cursor-pointer "
                     @click="redirectToProfile('glossary', parentGlossary.guid)"
                 >
-                    <span class="flex my-auto">
-                        {{ parentGlossary?.displayText }}
+                    <span class="flex my-auto" :class="{'text-primary': currentGuid === parentGlossary?.guid}">
+                        {{ parentGlossary?.displayText ?? parentGlossary?.uniqueAttributes?.qualifiedName }}
                     </span>
                 </div>
                 <a-button
                     class="
                         p-2
-                        px-2.5
                         flex flex-col
                         justify-center
                         bg-primary-light
@@ -171,6 +170,11 @@ export default defineComponent({
             type: Boolean,
             required: false,
             default: false
+        },
+        currentGuid: {
+            type: String,
+            required: true,
+            default: ''
         }
     },
     setup(props, { emit }) {

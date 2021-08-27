@@ -22,6 +22,7 @@
                     :on-load-data="onLoadData" 
                     :parent-glossary="parentGlossary" 
                     :is-loading="isInitingTree"
+                    :current-guid="currentGuid"
                 />
             </div>
         </pane>

@@ -4,7 +4,7 @@
             <div class="flex mb-2 space-x-2">
                 <a-input-search
                     v-model:value="searchQuery"
-                    :placeholder="`Search ${qualifiedName.split('@'[1])}...`"
+                    :placeholder="`Search ${qualifiedName.split('@'[1])}....`"
                     @change="onSearch"
                 ></a-input-search>
                 <a-popover trigger="click">
@@ -30,9 +30,13 @@
         <div v-if="isLoading && !all.length">
             <LoadingView />
         </div>
-        <div v-else-if="all.length" class="flex flex-row w-full mt-4" >
+        <div v-else-if="all.length" class="flex flex-row w-full mt-4">
             <div class="w-full">
-                <a-tabs default-active-key="1" class="border-0" :class="$style.glossaryTermsTab">
+                <a-tabs
+                    default-active-key="1"
+                    class="border-0"
+                    :class="$style.glossaryTermsTab"
+                >
                     <a-tab-pane key="1">
                         <template #tab>
                             <div class="flex items-center">
@@ -350,7 +354,7 @@
         @apply tracking-widest text-xs text-gray leading-5;
     }
     .glossaryTermsTab {
-        :global(.ant-tabs-tabpane .ant-tabs-tabpane-active){
+        :global(.ant-tabs-tabpane .ant-tabs-tabpane-active) {
             @apply h-1/3 overflow-auto;
         }
     }

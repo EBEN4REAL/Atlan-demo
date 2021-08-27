@@ -10,7 +10,7 @@
             "
         >
             <div class="flex flex-row justify-between pl-5 pr-5 mt-6 mb-5">
-                <div class="flex flex-row">
+                <div class="flex flex-row w-full">
                     <div class="mr-5">
                         <img :src="TermSvg" />
                     </div>
@@ -35,7 +35,7 @@
                     <a-button class="px-2">
                         <fa icon="fal bookmark" />
                     </a-button>
-                    <a-button class="px-2 flex align-middle">
+                    <a-button class="flex px-2 align-middle">
                         <fa icon="fal upload" class="h-3 mr-2" />
                         <span>Share</span>
                     </a-button>
@@ -54,7 +54,7 @@
                             <GlossaryProfileOverview :entity="term" />
                         </div>
                     </a-tab-pane>
-                    <a-tab-pane key="2" tab="Linked Terms">
+                    <a-tab-pane key="2" tab="Linked Assets">
                         <div :class="$style.tabClasses">
                             <LinkedAssetsTab
                                 :term-qualified-name="qualifiedName"

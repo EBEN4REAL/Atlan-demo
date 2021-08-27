@@ -73,7 +73,7 @@
                             </div>
                         </a-collapse-panel>
                         <a-collapse-panel key="properties" header="Properties">
-                            <div class="px-5 py-0 text-gray-500">
+                            <div class="px-6 py-0 text-gray-500">
                                 <p class="p-0 m-0 mb-2">Formula</p>
                                 <p class="p-0 m-0 mb-6 text-sm">Add formula</p>
                                 <p class="p-0 m-0 mb-2">Abbreviation</p>
@@ -173,7 +173,7 @@
         }
 
         :global(.ant-collapse-content) {
-            @apply mt-4 bg-white !important;
+            @apply m-0 bg-white !important;
         }
         :global(.ant-collapse-content-box) {
             @apply m-0 p-0  bg-transparent !important;
@@ -182,7 +182,7 @@
             @apply m-0 p-0  !important;
         }
         :global(.ant-tabs-bar) {
-            @apply mb-0 mx-0;
+            @apply mb-0 mx-0 px-6 !important;
         }
     }
 </style>

@@ -59,7 +59,7 @@
     </bubble-menu> -->
 
         <!-- TODO: removed px-7 to make it generic - test edge cases -->
-        <editor-content :editor="editor" class="pt-3" />
+        <editor-content :editor="editor" />
     </div>
 </template>
 

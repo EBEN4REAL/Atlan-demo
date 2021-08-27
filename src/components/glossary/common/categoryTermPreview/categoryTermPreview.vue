@@ -124,7 +124,7 @@
                         </a-collapse-panel>
 
                         <a-collapse-panel key="properties" header="Properties">
-                            <div class="px-5 py-0 text-gray-500">
+                            <div class="px-6 py-0 text-gray-500">
                                 <p class="p-0 m-0 mb-2">Formula</p>
                                 <p class="p-0 m-0 mb-6 text-sm">X + Y + Z</p>
                                 <p class="p-0 m-0 mb-2">Abbreviation</p>
@@ -246,7 +246,7 @@
     .gtcPreview {
         height: calc(100vh - 50px);
         :global(.ant-collapse-header) {
-            @apply pl-5 py-4 m-0  text-sm text-gray-700 bg-white !important;
+            @apply pl-6 py-4 m-0  text-sm text-gray-700 bg-white !important;
         }
         :global(.ant-collapse-borderless > .ant-collapse-item) {
             @apply border-b border-gray-300 py-0 mt-0 !important;
@@ -257,7 +257,7 @@
         }
 
         :global(.ant-collapse-content) {
-            @apply mt-4 pb-4 bg-white !important;
+            @apply mt-0 pb-4 bg-white !important;
         }
         :global(.ant-collapse-content-box) {
             @apply m-0 p-0  bg-transparent !important;

@@ -95,9 +95,9 @@
         defineComponent,
         provide,
         ref,
-        ToRefs,
-        toRefs,
+        inject,
         watch,
+        computed,
         onMounted,
     } from 'vue'
 
@@ -115,11 +115,7 @@
             LineageHeader,
             LoadingView,
         },
-        props: ['asset'],
-        setup(props) {
-            /** PROPS */
-            const { asset }: ToRefs = toRefs(props)
-
+        setup() {
             /** DATA */
             const lineage = ref({})
             const depth = ref(1)
@@ -131,12 +127,17 @@
             const lineage_graph_wrapper_ref = ref(null)
             const lineage_lines_wrapper_ref = ref(null)
 
+            /** INJECTIONS */
+            const assetDataInjection = inject('assetData')
+
+            /** COMPUTED */
+            const assetData = computed(() => assetDataInjection?.asset)
+
             /** METHODS */
             // fetch
             const fetch = () => {
-                console.log('lineage - fetch')
                 const { data } = useLineage(
-                    asset.value.guid,
+                    assetData.value.guid,
                     depth.value,
                     direction.value
                 )
@@ -164,7 +165,7 @@
                 fetch()
             }
 
-            watch(asset, () => {
+            watch(assetData, () => {
                 reloadLineage()
             })
 
@@ -201,7 +202,7 @@
 
             /** PROVIDERS */
             provide('lineage', lineage)
-            provide('asset', asset)
+            provide('asset', assetData)
             provide('linesWrapper', lineage_lines_wrapper_ref)
             provide('reloadLineage', reloadLineage)
             provide('depth', depth)
@@ -218,6 +219,7 @@
             onMounted(fetch)
 
             return {
+                assetData,
                 lineage,
                 loadingLineage,
                 lineageFullscreen: false,

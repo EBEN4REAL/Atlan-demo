@@ -147,6 +147,7 @@ export default function useAssetInfo() {
             filtered.forEach((f) => {
                 relations.push({
                     ...f,
+                    guid: asset.guid,
                     qualifiedName: attributes(asset)[f.qualifiedNameAttribute],
                     value: attributes(asset)[f.nameAttribute],
                 })

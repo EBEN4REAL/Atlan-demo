@@ -48,7 +48,7 @@
                             <GlossaryProfileOverview :entity="category" />
                         </div>
                     </a-tab-pane>
-                    <a-tab-pane key="2" tab="Terms">
+                    <a-tab-pane key="2" tab="Terms & Category">
                         <GlossaryTermsAndCategoriesTab
                             :qualified-name="parentGlossaryQualifiedName"
                             :guid="guid"

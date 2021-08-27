@@ -1,5 +1,5 @@
 <template>
-    <component class="w-auto h-4" :is="svgIcon" />
+    <component :style="{ height: '1rem' }" class="w-auto" :is="svgIcon" />
 </template>
 
 <script lang="ts">

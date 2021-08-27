@@ -1,21 +1,25 @@
 <template>
-    <slot name="header"></slot>
     <div class="flex flex-wrap items-center flex-grow w-10">
         <template v-for="(item, index) in data">
             <a-popover
+                :mouseEnterDelay="0.3"
                 v-if="popoverTrigger"
                 placement="leftTop"
                 :trigger="popoverTrigger"
             >
                 <template #content>
-                    <slot name="popover"></slot>
+                    <slot name="popover" :item="item" :index="index"></slot>
                 </template>
                 <Pill
                     :label="item[labelKey]"
                     @action="handleDelete(index)"
                     @click="handleClick(item, index)"
                     :has-action="!readOnly"
-                />
+                >
+                    <template #prefix>
+                        <slot name="pillPrefix"></slot>
+                    </template>
+                </Pill>
             </a-popover>
             <Pill
                 v-else
@@ -26,9 +30,9 @@
             />
         </template>
         <slot name="suffix"></slot>
-        <Pill v-if="!readOnly" @click="handleAdd"
-            ><template #prefix> <AtlanIcon icon="Add"></AtlanIcon> </template
-        ></Pill>
+        <Pill v-if="!readOnly" @click="handleAdd">
+            <template #prefix> <AtlanIcon icon="Add" /> </template>
+        </Pill>
     </div>
 </template>
 

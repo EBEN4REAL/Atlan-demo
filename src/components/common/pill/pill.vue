@@ -1,7 +1,8 @@
 <template>
+    <!-- TODO: Add disabled styles -->
     <button
         :tabindex="!disabled && $attrs.onClick ? 0 : undefined"
-        class="flex items-center gap-2 px-3 m-1 text-gray-700 border rounded-full cursor-pointer  border-gray-light bg-gray-light"
+        class="flex items-center gap-2 px-3 m-1 text-gray-700 transition duration-300 border rounded-full cursor-pointer  border-gray-light bg-gray-light hover:border-primary hover:bg-primary hover:text-white"
         style="height: 30px"
     >
         <slot name="prefix"></slot>
@@ -13,7 +14,7 @@
             @click.stop="emitActions"
         >
             <slot v-if="$slots.action" name="action" />
-            <AtlanIcon v-else icon="Cancel" />
+            <AtlanIcon v-else class="h-3" icon="Cancel" />
         </button>
     </button>
 </template>

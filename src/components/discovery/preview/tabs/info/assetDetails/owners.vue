@@ -6,135 +6,45 @@
                 v-if="ownerUsers.length > 0"
                 class="flex flex-wrap text-sm border border-transparent rounded"
             >
-                <template
-                    v-for="owner in splittedOwners.a"
-                    :key="owner.username"
+                <PillGroup
+                    :data="ownerList"
+                    label-key="username"
+                    popover-trigger="hover"
+                    @add="toggleOwnerPopover"
+                    @delete="handleRemoveOwner"
                 >
-                    <OwnerInfoCard
-                        :username="owner.username"
-                        :type="owner.type"
-                    >
-                        <div
+                    <template #pillPrefix>
+                        <img
+                            src="https://picsum.photos/id/237/50/50"
+                            alt="view"
+                            class="w-4 h-4 rounded-full"
+                        />
+                    </template>
+                    <template #popover="{ item }"
+                        ><OwnerInfoCard :user="item"
+                    /></template>
+                    <template #suffix>
+                        <span
+                            v-if="splittedOwners.b.length > 0"
                             class="
-                                relative
-                                flex
-                                items-center
-                                px-3
-                                py-1.5
+                                px-1
+                                py-0.5
+                                text-sm
+                                rounded
+                                text-primary
                                 mr-3
-                                mb-2
-                                rounded-full
-                                bg-gray-light
-                                text-gray-700
-                                group
-                                hover:bg-primary hover:text-white
+                                cursor-pointer
                             "
+                            @click="() => toggleAllOwners()"
                         >
-                            <img
-                                src="https://picsum.photos/id/237/50/50"
-                                alt="view"
-                                class="w-4 h-4 mr-2 rounded-full"
-                            />
-                            <div
-                                class="
-                                    mb-0
-                                    truncate
-                                    text-sm
-                                    capitalize
-                                    max-owner-name-width
-                                    ...
-                                "
-                            >
-                                {{ owner.username }}
-                            </div>
-                            <div
-                                class="absolute flex items-center justify-center pl-3 pr-1 text-white bg-transparent border-none rounded-full opacity-0 cursor-pointer  group-hover:opacity-100 owners-cross-btn"
-                                @click.stop="() => handleRemoveOwner(owner)"
-                            >
-                                <div class="flex items-center justify-center">
-                                    <fa icon="fal times-circle" class="" />
-                                </div>
-                            </div>
-                        </div>
-                    </OwnerInfoCard>
-                </template>
-                <template
-                    v-for="owner in splittedOwners.b"
-                    v-if="showAll"
-                    :key="owner.username"
-                >
-                    <OwnerInfoCard
-                        :username="owner.username"
-                        :type="owner.type"
-                    >
-                        <div
-                            class="
-                                relative
-                                flex
-                                items-center
-                                px-3
-                                py-1.5
-                                mr-3
-                                rounded-full
-                                bg-gray-light
-                                text-gray-700
-                                group
-                                hover:bg-primary hover:text-white
-                            "
-                            @click.stop="() => handleClickUser(owner.username)"
-                        >
-                            <img
-                                src="https://picsum.photos/id/237/50/50"
-                                alt="view"
-                                class="w-4 h-4 mr-2 rounded-full"
-                            />
-                            <div
-                                class="
-                                    mb-0
-                                    truncate
-                                    text-sm
-                                    capitalize
-                                    max-owner-name-width
-                                    ...
-                                "
-                            >
-                                {{ owner.username }}
-                            </div>
-                            <div
-                                class="absolute flex items-center justify-center pl-3 pr-1 text-white bg-transparent border-none rounded-full opacity-0 cursor-pointer  group-hover:opacity-100 owners-cross-btn"
-                                @click.stop="() => handleRemoveOwner(owner)"
-                            >
-                                <div class="flex items-center justify-center">
-                                    <fa icon="fal times-circle" class="" />
-                                </div>
-                            </div>
-                        </div>
-                    </OwnerInfoCard>
-                </template>
-                <div
-                    v-if="splittedOwners.b.length > 0 && !showAll"
-                    class="flex items-center mr-3 cursor-pointer"
-                    @click="() => toggleAllOwners(true)"
-                >
-                    <span class="px-1 py-0.5 text-sm rounded text-primary">
-                        and {{ splittedOwners.b.length }} more
-                    </span>
-                </div>
-                <div
-                    v-if="splittedOwners.b.length > 0 && showAll"
-                    class="flex items-center justify-center mr-3 cursor-pointer"
-                    @click="() => toggleAllOwners(false)"
-                >
-                    <span class="px-1 py-0.5 text-sm rounded text-primary">
-                        show less
-                    </span>
-                </div>
-                <a-button
-                    class="flex items-center justify-center w-8 h-8 px-2 py-2 mr-3 text-gray-700 border-none rounded-full  bg-gray-light hover:bg-primary hover:text-white"
-                    @click.stop="toggleOwnerPopover"
-                >
-                    <fa icon="fal plus" />
-                </a-button>
+                            {{
+                                showAll
+                                    ? 'Show less'
+                                    : `and ${splittedOwners.b.length} more`
+                            }}
+                        </span>
+                    </template>
+                </PillGroup>
             </div>
             <a-popover
                 v-model:visible="showOwnersDropdown"
@@ -442,12 +352,21 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, PropType, ref, Ref, toRefs, watch } from 'vue'
+    import {
+        computed,
+        defineComponent,
+        PropType,
+        ref,
+        Ref,
+        toRefs,
+        watch,
+    } from 'vue'
     import OwnerInfoCard from '~/components/discovery/preview/hovercards/ownerInfo.vue'
     import updateOwners from '~/composables/asset/updateOwners'
     import fetchGroupList from '~/composables/group/fetchGroupList'
     import fetchUserList from '~/composables/user/fetchUserList'
     import SearchAndFilter from '@/common/input/searchAndFilter.vue'
+    import PillGroup from '~/components/common/pill/pillGroup.vue'
 
     import { useUserPreview } from '~/composables/user/showUserPreview'
     import { assetInterface } from '~/types/assets/asset.interface'
@@ -455,7 +374,7 @@
     import { userInterface } from '~/types/users/user.interface'
 
     export default defineComponent({
-        components: { OwnerInfoCard, SearchAndFilter },
+        components: { OwnerInfoCard, SearchAndFilter, PillGroup },
         props: {
             selectedAsset: {
                 type: Object as PropType<assetInterface>,
@@ -567,6 +486,13 @@
             const splittedOwners = ref(
                 splitArray(5, mappedSplittedOwners(ownerUsers, ownerGroups))
             )
+
+            const ownerList = computed(() =>
+                showAll.value
+                    ? [...splittedOwners.value.a, ...splittedOwners.value.b]
+                    : splittedOwners.value.a
+            )
+
             const closePopover = () => {
                 showOwnersDropdown.value = false
             }
@@ -617,8 +543,8 @@
                     mutateGroups()
                 }
             }
-            const toggleAllOwners = (state: boolean) => {
-                showAll.value = state
+            const toggleAllOwners = () => {
+                showAll.value = !showAll.value
             }
 
             const handleRemoveOwner = (owner: {
@@ -673,6 +599,7 @@
                 selectedAsset,
                 handleRemoveOwner,
                 handleCancelUpdateOwnerPopover,
+                ownerList,
             }
         },
     })

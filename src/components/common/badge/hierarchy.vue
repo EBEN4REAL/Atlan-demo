@@ -36,7 +36,7 @@
     import { computed, defineComponent, PropType, toRefs } from 'vue'
     import useAssetInfo from '~/composables/asset/useAssetInfo'
     import { assetInterface } from '~/types/assets/asset.interface'
-    // import AssetChip from '~/components/common/icon/assetChip.vue'
+    import AssetChip from '~/components/common/icon/assetChip.vue'
     export default defineComponent({
         name: 'HierarchyBar',
         components: { AssetChip },

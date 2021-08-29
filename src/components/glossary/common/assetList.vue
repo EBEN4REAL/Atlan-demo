@@ -1,0 +1,119 @@
+<template>
+    <VirtualList :data="list" data-key="guid" :variable-height="false">
+        <template #default="{ item }">
+            <GtcEntityCard
+                :class="{
+                    'hover:bg-gray-100': true,
+                    'bg-primary-light hover:bg-primary-light':
+                        selectedEntity?.guid === item.guid,
+                }"
+                :entity="item"
+                :projection="projection"
+                @gtcCardClicked="handleGtcCardClicked"
+            />
+        </template>
+        <template #footer>
+            <div class="flex items-center justify-center">
+                <button
+                    :disabled="isLoading"
+                    class="flex items-center justify-between py-2 transition-all duration-300 rounded-full  bg-primary-light text-primary"
+                    :class="isLoading ? 'px-2 w-9' : 'px-5 w-32'"
+                    @click="$emit('loadMore')"
+                >
+                    <template v-if="!isLoading">
+                        <p
+                            class="m-0 mr-1 overflow-hidden text-sm transition-all duration-300  overflow-ellipsis whitespace-nowrap"
+                        >
+                            Load more
+                        </p>
+                        <AtlanIcon icon="ArrowDown" />
+                    </template>
+                    <svg
+                        v-else
+                        class="w-5 h-5 text-primary animate-spin"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                    >
+                        <circle
+                            class="opacity-25"
+                            cx="12"
+                            cy="12"
+                            r="10"
+                            stroke="currentColor"
+                            stroke-width="4"
+                        ></circle>
+                        <path
+                            class="opacity-75"
+                            fill="currentColor"
+                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                        ></path>
+                    </svg>
+                </button>
+            </div>
+        </template>
+    </VirtualList>
+    <!-- <ListItem
+        :v-for="item in list"
+        :key="item[keyField]"
+        :item="item"
+        :score="score[item.guid]"
+        :projection="projection"
+        @click="handlePreview(item)"
+    ></ListItem> -->
+    <!-- TODO: Add loading state -->
+</template>
+
+<script lang="ts">
+    import { defineComponent, SetupContext, ref, toRefs, watch } from 'vue'
+    import GtcEntityCard from '@/glossary/gtcEntityCard.vue'
+    import VirtualList from '~/utils/library/virtualList/virtualList.vue'
+    import { Category, Term } from '~/types/glossary/glossary.interface'
+
+    export default defineComponent({
+        name: 'AssetList',
+        components: {
+            GtcEntityCard,
+            VirtualList,
+        },
+        props: {
+            list: {
+                type: Array,
+                required: false,
+                default() {
+                    return []
+                },
+            },
+            projection: {
+                type: Array,
+                required: false,
+                default() {
+                    return []
+                },
+            },
+            isLoading: {
+                type: Boolean,
+                required: true,
+                default() {
+                    return false
+                },
+            },
+            isLoadMore: {
+                type: Boolean,
+                required: true,
+                default() {
+                    return false
+                },
+            },
+        },
+        emits: ['loadMore', 'gtcCardClicked'],
+        setup(props, ctx: SetupContext) {
+            const selectedEntity = ref<Category | Term>()
+
+            const handleGtcCardClicked = (entity: Category | Term) => {
+                selectedEntity.value = entity
+                ctx.emit('gtcCardClicked', entity)
+            }
+            return { selectedEntity, handleGtcCardClicked }
+        },
+    })
+</script>

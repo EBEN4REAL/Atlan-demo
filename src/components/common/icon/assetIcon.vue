@@ -1,18 +1,17 @@
 <template>
-    <div
-        :style="{ borderRadius: variant == 'lg' ? '4px' : '2px' }"
-        class="flex items-center flex-none mr-2 bg-white"
-    >
+    <div class="flex items-center flex-none mr-2 bg-white rounded">
         <div
             v-if="imageRequired"
-            :style="{ borderRadius: variant == 'lg' ? '4px' : '2px' }"
-            class="border border-r-0 border-gray-300 rounded-tr-none rounded-br-none "
-            :class="variant == 'lg' ? 'p-1' : 'p-0.5'"
+            class="border border-r-0 rounded-tl rounded-bl"
+            :style="{
+                padding: variant == 'lg' ? '5px' : '3px',
+                borderColor: color,
+            }"
         >
             <img
                 :src="logoSrc"
                 class="flex-none w-auto bg-white"
-                :class="variant == 'lg' ? 'h-5 m-0.5' : 'h-3 m-0.5'"
+                :class="variant == 'lg' ? 'h-5' : 'h-3.5'"
             />
         </div>
 
@@ -21,12 +20,10 @@
                 backgroundColor: color,
                 borderColor: color,
                 lineHeight:
-                    variant == 'lg' ? '28px !important' : '18px !important',
-                borderTopRightRadius: variant == 'lg' ? '4px' : '2px',
-                borderBottomRightRadius: variant == 'lg' ? '4px' : '2px',
+                    variant == 'lg' ? '26px !important' : '18px !important',
             }"
-            class="px-1 font-bold tracking-wide text-white border"
-            :class="variant == 'lg' ? 'text-xl pt-1' : 'text-sm pt-0.5'"
+            class="px-1 tracking-wide border rounded-tr rounded-br text-gray"
+            :class="variant == 'lg' ? 'text-base pt-1' : 'text-sm pt-0.5'"
             >{{ text }}</span
         >
     </div>
@@ -37,7 +34,7 @@
     import { defineComponent, PropType, computed, toRefs } from 'vue'
     import { assetInterface } from '~/types/assets/asset.interface'
     import useAssetInfo from '~/composables/asset/useAssetInfo'
-    import { colorMap, abbreviationMap } from './assetIconMap'
+    import { abbreviationMap } from './assetIconMap'
     export default defineComponent({
         name: 'AssetIcon',
         props: {
@@ -54,18 +51,23 @@
                 required: false,
                 default: true,
             },
+            selected: {
+                type: Boolean,
+                required: false,
+                default: false,
+            },
         },
         setup(prop) {
-            const { asset } = toRefs(prop)
+            const { asset, selected } = toRefs(prop)
             const { logo } = useAssetInfo()
-            const color = computed(
-                () => colorMap[asset.value.attributes.integrationName]
+            const color = computed(() =>
+                selected.value ? '#E6E6EB' : '#F3F3F3'
             )
             const text = computed(
                 () => abbreviationMap[asset.value.typeName] || 'AST'
             )
             const logoSrc = computed(() => logo(asset.value))
-            return { color, logoSrc, text, asset }
+            return { color, logoSrc, text }
         },
     })
 </script>

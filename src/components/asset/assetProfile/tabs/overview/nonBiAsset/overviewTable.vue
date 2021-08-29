@@ -2,15 +2,15 @@
     <div>
         <!-- Table -->
         <div
-            class="overflow-scroll border-t border-gray-light"
+            class="overflow-y-scroll border border-gray-light"
             style="max-width: calc(100vw - 28rem); max-height: 20rem"
         >
             <a-table
                 :columns="tableColumns"
                 :data-source="results"
                 :pagination="false"
-                :scroll="{ x: true }"
-                :loading="results.length === 0"
+                :scroll="{ x: 'calc(700px + 50%)', y: 240 }"
+                :loading="isLoading"
             >
             </a-table>
         </div>
@@ -55,15 +55,17 @@
 
                 return useAPI('PREVIEW_TABLE', 'POST', { body })
             }
-            const { data, error } = getTableData()
+
+            const { data, isLoading } = getTableData()
 
             /** WATCHERS */
-            watch([data, error], () => {
-                if (data.value && error.value === undefined) {
+            watch([data], () => {
+                if (data.value) {
                     tableColumns.value.push({
+                        width: 50,
+                        fixed: 'left',
                         title: '#',
                         dataIndex: 'hash_index',
-                        width: 5,
                         ellipsis: true,
                     })
                     // convert data from API in Antd-table format
@@ -79,7 +81,7 @@
                     data.value.results.forEach((val, index) => {
                         let obj = { hash_index: index + 1 }
                         data.value.columns.forEach((col, i) => {
-                            obj[col.columnName] = val[i]
+                            obj[col.columnName] = val[i] || '---'
                         })
                         // add key to object
                         obj = { ...obj, key: index }
@@ -91,7 +93,7 @@
             return {
                 tableColumns,
                 results,
-                error,
+                isLoading,
             }
         },
     })

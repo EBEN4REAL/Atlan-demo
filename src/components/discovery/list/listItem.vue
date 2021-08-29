@@ -25,7 +25,11 @@
                         class="flex-none w-auto h-5 mr-2"
                     ></component> -->
                     <!-- <AssetLogo :asset="item" /> -->
-                    <AssetLogo v-if="showAssetTypeIcon" :asset="item" />
+                    <AssetLogo
+                        v-if="showAssetTypeIcon"
+                        :asset="item"
+                        :selected="isSelected"
+                    />
                     <!-- remove cssClasses prop -->
                     <router-link
                         :class="
@@ -34,7 +38,7 @@
                                 : 'text-lg'
                         "
                         :to="`/assets/${item.guid}/overview`"
-                        class="flex-shrink mb-0 overflow-hidden font-bold leading-6 tracking-wide truncate cursor-pointer  text-gray hover:underline overflow-ellipsis whitespace-nowrap"
+                        class="flex-shrink mb-0 overflow-hidden leading-6 tracking-wide truncate cursor-pointer  text-gray hover:underline overflow-ellipsis whitespace-nowrap"
                     >
                         {{ title(item) }}
                     </router-link>
@@ -69,13 +73,11 @@
                 >
                     <!-- Owners -->
                     <div
-                        v-if="
-                            projection?.includes('owners') &&
-                            getCombinedUsersAndGroups(item).length
-                        "
+                        v-if="projection?.includes('owners')"
                         class="flex items-baseline mt-1 mr-4 text-xs leading-5  text-gray"
                     >
                         <span
+                            v-if="getCombinedUsersAndGroups(item).length"
                             class="mr-1"
                             v-html="
                                 'Owned by ' +
@@ -85,6 +87,14 @@
                                 )
                             "
                         />
+                        <span
+                            v-if="
+                                !getCombinedUsersAndGroups(item).length &&
+                                assetType(item).includes('Tableau')
+                            "
+                            class="text-sm font-light text-gray-400"
+                            >no owners assigned</span
+                        >
                     </div>
                     <!-- Row/Col-->
                     <div
@@ -136,14 +146,22 @@
                 </div>
                 <!-- Description -->
                 <div
-                    v-if="
-                        projection?.includes('description') &&
-                        description(item)?.length
-                    "
+                    v-if="projection?.includes('description')"
                     class="max-w-lg mt-1 text-sm truncate-overflow"
                 >
-                    {{ description(item) }}
+                    <span v-if="description(item)?.length">{{
+                        description(item)
+                    }}</span>
+                    <span
+                        v-if="
+                            !description(item)?.length &&
+                            assetType(item).includes('Tableau')
+                        "
+                        class="font-light text-gray-400"
+                        >no description available</span
+                    >
                 </div>
+
                 <!-- Hierarchy bar -->
                 <HierarchyBar
                     v-if="projection?.includes('heirarchy')"
@@ -217,6 +235,7 @@
                 logo,
                 dataTypeImage,
                 dataType,
+                assetType,
                 title,
                 status,
                 rowCount,
@@ -275,6 +294,7 @@
                 logo,
                 dataTypeImage,
                 dataType,
+                assetType,
                 title,
                 status,
                 rowCount,

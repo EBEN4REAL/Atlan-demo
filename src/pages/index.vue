@@ -1,30 +1,83 @@
 <template>
-    <div class="grid h-full grid-cols-12 p-6 gap-x-12">
-        <div class="col-span-12 sm:col-span-8">
-            <div class="flex items-center w-full align-middle">
-                <div class="flex flex-col w-full">
-                    <p
-                        class="mb-2 text-xl font-bold tracking-tight text-gray-900 "
-                    >
-                        Welcome Home, {{ fullName }}
-                    </p>
-                    <a-input-search
-                        placeholder="Search all your assets.."
-                        size="large"
-                    >
-                        <template #prefix>
-                            <img
-                                :src="displayNameHTML"
-                                class="w-auto h-8 mr-3"
-                            />
-                        </template>
+
+    <div class="bg-primary-light p-5 grid justify-items-center">
+        <div class="flex items-center mb-5 w-3/4">
+                <div class="flex flex-col w-full pt-5">
+                    <a-input-search class="p2" placeholder="Search assets across Atlan..." size="large"> 
                     </a-input-search>
+                </div>
+    </div>
+    </div>
+
+
+    <div class="grid justify-items-center">
+        <div class="flex items-center mb-5 w-3/4">
+
+
+
+
+    <div class="grid h-full grid-cols-12 p-6 gap-x-12">
+        <div class="col-span-12 sm:col-span-8 mt-10">
+            <div class="text-white relative">
+                <h3 class="text-xl font-bold text-gray">Your Saved Searches</h3>
+
+                <div class="grid grid-cols-12">
+                    <div class="p-5 mr-5 border rounded-md col-span-4">
+                        <p class="text-gray font-bold">Sample Saved Search</p>
+                        <p class="text-gray-500">
+                            set of all Tableau sales dashboards, reports and
+                            data sources from 2020
+                        </p>
+                    </div>
+
+                    <div class="p-5 mr-5 border rounded-md col-span-4">
+                        <p class="text-gray font-bold">Sample Saved Search</p>
+                        <p class="text-gray-500">
+                            set of all Tableau sales dashboards, reports and
+                            data sources from 2020
+                        </p>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <div
-            class="hidden h-full p-3 mt-3 bg-white border rounded-md  sm:col-span-4 sm:block"
+        <div class="col-span-12 sm:col-span-8 mt-10">
+            <div class="text-white relative">
+                <h3 class="text-xl font-bold text-gray">NASA's Saved Searches</h3>
+
+                <div class="grid grid-cols-12">
+                    <div class="p-5 mr-5 border rounded-md col-span-4">
+                        <p class="text-gray font-bold">Sample Saved Search</p>
+                        <p class="text-gray-500">
+                            set of all Tableau sales dashboards, reports and
+                            data sources from 2020
+                        </p>
+                    </div>
+
+                    <div class="p-5 mr-5 border rounded-md col-span-4">
+                        <p class="text-gray font-bold">Sample Saved Search</p>
+                        <p class="text-gray-500">
+                            set of all Tableau sales dashboards, reports and
+                            data sources from 2020
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+    </div>
+        <!--div
+            class="
+                hidden
+                h-full
+                p-3
+                mt-3
+                bg-white
+                border
+                rounded-md
+                sm:col-span-4 sm:block
+            "
         >
             <div class="flex items-center justify-between p-5 align-middle">
                 <div class="flex items-center">
@@ -35,7 +88,15 @@
                     />
                     <div class="flex flex-col ml-2">
                         <p
-                            class="mb-0 text-lg leading-none tracking-tight text-gray-800 truncate  text-semibold"
+                            class="
+                                mb-0
+                                text-lg
+                                leading-none
+                                tracking-tight
+                                text-gray-800
+                                truncate
+                                text-semibold
+                            "
                         >
                             {{ fullName }}
                         </p>
@@ -43,7 +104,13 @@
                             @{{ username }}
                         </p>
                         <p
-                            class="mt-0 mb-0 text-sm tracking-tight text-gray-800 "
+                            class="
+                                mt-0
+                                mb-0
+                                text-sm
+                                tracking-tight
+                                text-gray-800
+                            "
                         >
                             <fa
                                 icon="fal user-tag"
@@ -69,12 +136,12 @@
                     @updatedUser="handleUpdateUser"
                 />
                 <div class="mt-4">
-                    <p class="mb-2 leading-none text-gray-400">Saved Filters</p>
+                    <p class="mb-2 leading-none text-gray">Saved Filters</p>
                     <SavedList></SavedList>
                 </div>
             </div>
 
-            <!-- <a-menu mode="inline" class="bg-transparent">
+            <a-menu mode="inline" class="bg-transparent">
           <a-menu-item key="1">
             <span>Home</span>
           </a-menu-item>
@@ -92,9 +159,9 @@
               <span>Projects</span>
             </a-menu-item>
           </a-menu-item-group>
-      </a-menu>-->
-        </div>
-    </div>
+      </a-menu>
+        </div-->
+
 </template>
 
 <script lang="ts">

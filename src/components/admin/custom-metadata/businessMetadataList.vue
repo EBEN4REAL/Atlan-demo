@@ -24,7 +24,7 @@
           >*</sup
         >
       </div>
-      <div class="mb-1 text-sm text-gray-400">
+      <div class="mb-1 text-sm text-gray">
         {{
           isUpdateBmSameAsCurrentBm(item)
             ? updatedBm.description || "-"
@@ -32,7 +32,7 @@
         }}
       </div>
       <div class="font-size-sm">
-        <span class="text-sm text-gray-400"
+        <span class="text-sm text-gray"
           >{{
             isUpdateBmSameAsCurrentBm(item)
               ? updatedBm.attributeDefs.length || 0

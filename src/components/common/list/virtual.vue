@@ -9,7 +9,7 @@
 
 <script lang="ts">
     import { defineComponent } from 'vue'
-    import VirtualList from '~/lib/virtualList.vue'
+    import VirtualList from '~/utils/library/virtualList/virtualList.vue'
 
     export default defineComponent({
         components: { VirtualList },

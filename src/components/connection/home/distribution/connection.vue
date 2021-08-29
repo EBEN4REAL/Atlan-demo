@@ -95,7 +95,7 @@
       <div class="col-span-6">
         <table class="table table-report">
           <!-- <thead>
-            <tr class="font-normal text-gray-400">
+            <tr class="font-normal text-gray">
               <th class="pr-8 text-sm">Connector</th>
               <th class="pr-8 text-sm">New</th>
               <th class="pr-8 text-sm">Updated</th>

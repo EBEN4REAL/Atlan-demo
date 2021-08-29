@@ -5,7 +5,7 @@
         </p>
 
         <div class="relative flex items-center justify-between w-full">
-            <p class="mb-0 text-sm text-gray-400">
+            <p class="mb-0 text-sm text-gray">
                 Manage classification tags to build access policies.
                 <!-- <span class="ml-2 text-primary">Documentation</span> -->
             </p>
@@ -76,8 +76,8 @@
         <a-modal
             :visible="modalVisible"
             title="Add"
-            :on-cancel="closeModal"
-            :destroy-on-close="true"
+            @cancel="closeModal"
+            :destroyOnClose="true"
             :footer="null"
         >
             <a-form
@@ -217,7 +217,10 @@
                 name: '',
                 description: '',
             })
-            const urlValidationRegex = new RegExp('^[a-zA-Z]*$', 'g')
+            const urlValidationRegex = new RegExp(
+                '^[a-zA-Z][a-zA-Z0-9\s_]*',
+                'g'
+            )
             const rules = {
                 name: [
                     {

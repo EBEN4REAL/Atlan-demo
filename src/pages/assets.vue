@@ -1,42 +1,45 @@
 <template>
     <div class="flex w-full h-full">
-        <div v-show="!isItem" class="w-3/4 item-stretch">
-            <div class="flex w-full h-full">
+        <div class="flex-1 item-stretch" style="max-width: 70%">
+            <div class="flex h-full">
+                <router-view
+                    v-if="isItem"
+                    @updateAssetPreview="handlePreview"
+                    @preview="handlePreview"
+                ></router-view>
                 <AssetDiscovery
+                    v-else
                     :initial-filters="initialFilters"
                     @preview="handlePreview"
+                    ref="assetDiscovery"
                 ></AssetDiscovery>
             </div>
         </div>
-        <div v-show="isItem" class="w-3/4 item-stretch">
-            <div class="flex w-full h-full">
-                <router-view @updateAssetPreview="handlePreview"></router-view>
-            </div>
-        </div>
         <div
-            class="flex flex-col h-full bg-white border-l  asset-preview-container"
-            style="overflow: hidden"
+            class="z-20 flex flex-col h-full bg-white border-l  asset-preview-container"
         >
             <AssetPreview
                 v-if="selected"
-                :selected-asset="selected"
+                :selectedAsset="selected"
+                @asset-mutation="propagateToAssetList"
+                :page="page"
             ></AssetPreview>
         </div>
+        <div id="overAssetColumnPreview" class="relative"></div>
     </div>
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref, watch, computed, Ref } from 'vue'
-    import AssetDiscovery from '@/discovery/asset/index.vue'
-    import AssetPreview from '@/preview/asset/v2/index.vue'
+    import AssetDiscovery from '~/components/discovery/assetDiscovery.vue'
+    import AssetPreview from '@/discovery/preview/assetPreview.vue'
     import { useHead } from '@vueuse/head'
+    import { computed, defineComponent, ref, Ref, watch } from 'vue'
     import { useRoute, useRouter } from 'vue-router'
     import { Classification } from '~/api/atlas/classification'
     import { useClassificationStore } from '~/components/admin/classifications/_store'
-    import { getDecodedOptionsFromString } from '~/utils/routerQuery'
-
-    import { typedefsInterface } from '~/types/typedefs/typedefs.interface'
     import { assetInterface } from '~/types/assets/asset.interface'
+    import { typedefsInterface } from '~/types/typedefs/typedefs.interface'
+    import { getDecodedOptionsFromString } from '~/utils/helper/routerQuery'
 
     export interface initialFiltersType {
         facetsFilters: any
@@ -49,31 +52,22 @@
             AssetDiscovery,
         },
         setup() {
-            const router = useRouter()
-            const route = useRoute()
-
-            const id = computed(() => route.params.id)
-            const isItem = computed(() => {
-                if (route.params.id) {
-                    return true
-                }
-                return false
-            })
-            // onMounted(() => {
-            //   const id = route.params.id;
-            // });
-
-            const initialFilters: initialFiltersType =
-                getDecodedOptionsFromString(router)
-
-            const selected: Ref<assetInterface | undefined> = ref(undefined)
-
             useHead({
                 title: 'Discover assets',
             })
+            const router = useRouter()
+            const route = useRoute()
+            const isItem = computed(() => route.params.id)
+            const assetDiscovery: Ref<Element | null> = ref(null)
+            const initialFilters: initialFiltersType =
+                getDecodedOptionsFromString(router)
+            const selected: Ref<assetInterface | undefined> = ref(undefined)
             const handlePreview = (selectedItem: assetInterface) => {
                 selected.value = selectedItem
             }
+            const page = computed(() =>
+                isItem.value ? 'profile' : 'discovery'
+            )
 
             /* Making the network request here to fetch the latest changes of classifications. 
             So that everytime user visit the discover page it will be in sync to latest data not with store
@@ -100,19 +94,28 @@
                 }
             })
 
+            function propagateToAssetList(updatedAsset: assetInterface) {
+                if (assetDiscovery.value)
+                    assetDiscovery.value.mutateAssetInList(updatedAsset)
+                handlePreview(updatedAsset)
+            }
+
             return {
                 initialFilters,
                 selected,
                 handlePreview,
-                id,
                 isItem,
+                page,
+                propagateToAssetList,
+                assetDiscovery,
             }
         },
     })
 </script>
-<style lang="less" scoped>
+<style scoped>
     .asset-preview-container {
-        width: 30%;
+        width: 420px;
+        min-width: 420px;
     }
 </style>
 <route lang="yaml">

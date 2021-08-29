@@ -16,7 +16,6 @@ export default function useConnectionsList(
         state,
         STATES,
         isLoading,
-        isError,
         isValidating,
         query,
         refresh,
@@ -36,8 +35,8 @@ export default function useConnectionsList(
         console.log(state.value)
         store.setStatus({
             isLoading: isLoading.value,
-            isValidating: isValidating.value,
-            isError: isError.value,
+            isValidating: isValidating?.value,
+            isError: error.value,
             isStaleError: [STATES.STALE_IF_ERROR].includes(state.value),
             isSuccess: [STATES.SUCCESS].includes(state.value),
             error,

@@ -3,7 +3,7 @@
     <div class="flex flex-row justify-between">
       <div class="flex">
         <a-button class="mr-3" @click="$emit('showUserGroups')">
-          <fa class="text-gray-dark" icon="fal chevron-left" />
+          <fa class="text-gray-500" icon="fal chevron-left" />
         </a-button>
         <a-input-search
           v-model:value="searchText"
@@ -63,7 +63,7 @@
                         >({{ group.memberCountString }})</span
                       >
                     </div>
-                    <div class="text-gray-400">@{{ group.alias }}</div>
+                    <div class="text-gray">@{{ group.alias }}</div>
                   </div>
                 </div>
               </div>

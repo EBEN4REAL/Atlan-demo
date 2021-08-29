@@ -1,15 +1,117 @@
 <template>
-    {{ id }}
-    {{ isLoading }}
-    {{ data }}
-    {{ error }}
+    <div v-if="isLoading && category?.guid !== id">
+        <LoadingView />
+    </div>
+    <div v-else class="flex flex-row h-full" :class="$style.tabClasses">
+        <div
+            class="h-full w-2/3"
+        >
+            <div class="flex flex-row justify-between pl-5 pr-4 my-6">
+                <div class="flex flex-row">
+                    <div class="mr-5">
+                        <img :src="CategorySvg" />
+                    </div>
+                    <div class="flex flex-col w-3/4">
+                        <div class="flex">
+                            <span class="mr-3 text-xl font-bold leading-6">{{
+                                title
+                            }}</span>
+                            <component
+                                :is="statusObject?.icon"
+                                v-if="statusObject"
+                                class="inline-flex self-center w-auto h-4 mb-1"
+                            />
+                        </div>
+                        <span class="mt-1 text-sm leading-5 text-gray-500">{{
+                            shortDescription
+                        }}</span>
+                    </div>
+                </div>
+                <div class="flex flex-row space-x-2">
+                    <a-button class="px-2.5">
+                        <fa icon="fal bookmark" />
+                    </a-button>
+                    <a-button class="px-2.5 flex align-middle">
+                        <fa icon="fal upload" class="h-3 mr-2" />
+                        <span>Share</span>
+                    </a-button>
+                    <a-button class="px-2.5">
+                        <fa icon="fal ellipsis-v" class="h-4" />
+                    </a-button>
+                </div>
+            </div>
+            <div class="m-0">
+                <a-tabs
+                    v-model:activeKey="currentTab"
+                    default-active-key="1"
+                    class="border-0"
+                >
+                    <a-tab-pane key="1" tab="Overview">
+                        <div class="px-8 mt-4">
+                            <GlossaryProfileOverview :entity="category" />
+                        </div>
+                    </a-tab-pane>
+                    <a-tab-pane key="2" tab="Terms">
+                        <GlossaryTermsAndCategoriesTab
+                            :qualified-name="parentGlossaryQualifiedName"
+                            :guid="guid"
+                            :show-preview-panel="currentTab === '2'"
+                            type="AtlasGlossaryCategory"
+                            @entityPreview="handleCategoryOrTermPreview"
+                        />
+                    </a-tab-pane>
+                    <a-tab-pane key="4" tab="Bots"> Bots </a-tab-pane>
+                    <a-tab-pane key="5" tab="Permissions">
+                        Permissions
+                    </a-tab-pane>
+                </a-tabs>
+            </div>
+        </div>
+
+        <div id="sidePanel" class="relative h-full w-1/3">
+            <SidePanel :entity="category" :top-terms="categoryTerms" />
+        </div>
+
+    </div>
 </template>
 
 <script lang="ts">
-    import { defineComponent, computed, watch, onMounted } from 'vue'
+    import {
+        defineComponent,
+        computed,
+        watch,
+        onMounted,
+        toRef,
+        ref,
+        provide
+    } from 'vue'
+
+    // components
+    import GlossaryProfileOverview from '@/glossary/common/glossaryProfileOverview.vue'
+    import LoadingView from '@common/loaders/page.vue'
+    import SidePanel from '@/glossary/sidePanel/index.vue'
+    import CategoryTermPreview from '@/glossary/common/categoryTermPreview/categoryTermPreview.vue'
+    import GlossaryTermsAndCategoriesTab from '@/glossary/glossaryTermsAndCategoriesTab.vue'
+
+    // composables
     import useGTCEntity from '~/composables/glossary/useGtcEntity'
+    import useCategoryTerms from '~/composables/glossary/useCategoryTerms'
+
+    // static
+    import {
+        Category,
+        Term,
+    } from '~/types/glossary/glossary.interface'
+    import CategorySvg from '~/assets/images/gtc/category/category.png'
 
     export default defineComponent({
+        components: {
+            GlossaryProfileOverview,
+            GlossaryTermsAndCategoriesTab,
+            LoadingView,
+            SidePanel,
+            CategoryTermPreview,
+        },
         props: {
             id: {
                 type: String,
@@ -18,29 +120,110 @@
             },
         },
         setup(props) {
-            const id = computed(() => props.id)
-
-            const { data, error, isLoading, fetchEntity } =
-                useGTCEntity('category')
-
-            onMounted(() => {
-                fetchEntity(id.value)
-            })
-
-            watch(id, (newGuid) => {
-                fetchEntity(newGuid)
-            })
-
-            return {
-                data,
+            // data
+            const guid = toRef(props, 'id')
+            const currentTab = ref('1')
+            const previewEntity = ref<Category | Term | undefined>()
+            const showPreviewPanel = ref(false)
+            const {
+                entity: category,
+                title,
+                shortDescription,
+                qualifiedName,
+                statusObject,
                 error,
                 isLoading,
-                id,
+                refetch,
+            } = useGTCEntity<Category>('category', guid)
+
+            const {
+                data: categoryTerms,
+                error: termsError,
+                isLoading: termsLoading,
+                fetchCategoryTermsPaginated,
+            } = useCategoryTerms()
+
+            // computed
+            const termCount = computed(
+                () => category.value?.attributes?.terms?.length ?? 0
+            )
+            const parentGlossaryQualifiedName = computed(
+                () =>
+                    category.value?.attributes?.qualifiedName?.split('@')[1] ??
+                    ''
+            )
+
+            // methods
+            const handleCategoryOrTermPreview = (entity: Category | Term) => {
+                previewEntity.value = entity
+                showPreviewPanel.value = true
+            }
+            const handlClosePreviewPanel = () => {
+                showPreviewPanel.value = false
+            }
+
+            // lifecycle methods and watchers
+            onMounted(() => {
+                fetchCategoryTermsPaginated({ guid: guid.value, offset: 0 })
+            })
+
+            watch(guid, (newGuid) => {
+                fetchCategoryTermsPaginated({
+                    guid: newGuid,
+                    refreshSamePage: true,
+                })
+            });
+
+            // Providers
+            provide('refreshEntity', refetch);
+
+            return {
+                category,
+                categoryTerms,
+                currentTab,
+                previewEntity,
+                showPreviewPanel,
+                title,
+                shortDescription,
+                termCount,
+                parentGlossaryQualifiedName,
+                error,
+                isLoading,
+                termsLoading,
+                CategorySvg,
+                guid,
+                statusObject,
+                handleCategoryOrTermPreview,
+                handlClosePreviewPanel,
             }
         },
     })
 </script>
-
+<style lang="less" module>
+    .categoryHome {
+        :global(.ant-tabs-nav) {
+            @apply ml-8;
+        }
+        :global(.ant-tabs-bar) {
+            @apply mb-0;
+        }
+    }
+    .tabClasses {
+        :global(.ant-tabs-tab) {
+            margin: 0px 32px 0px 0px !important;
+            padding: 0px 0px 18px 0px !important;
+        }
+        :global(.ant-tabs-nav) {
+            margin: 0px !important;
+        }
+        :global(.ant-tabs-tab-active) {
+            @apply text-gray-700 font-bold !important;
+        }
+        :global(.ant-tabs-bar) {
+            @apply px-5 mb-0 !important;
+        }
+    }
+</style>
 <route lang="yaml">
 meta:
     layout: default

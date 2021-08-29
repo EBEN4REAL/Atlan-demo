@@ -1,5 +1,5 @@
 <template>
-    <div class="w-full h-full bg-white border border-t-0 editor">
+    <div class="w-full h-full bg-white editor">
         <editor-menu :editable="editable" :editor="editor" />
 
         <bubble-menu
@@ -39,7 +39,7 @@
                             </span>
                         </div>
                         <div
-                            class="flex justify-between ml-2 text-xs text-gray-400 "
+                            class="flex justify-between ml-2 text-xs text-gray"
                         >
                             <span class="">Min: 5</span><span>Max: 200</span>
                         </div>
@@ -58,7 +58,8 @@
       <selection-menu :editor="editor" :editable="editable" />
     </bubble-menu> -->
 
-        <editor-content :editor="editor" class="pt-3 px-7" />
+        <!-- TODO: removed px-7 to make it generic - test edge cases -->
+        <editor-content :editor="editor" class="pt-3" />
     </div>
 </template>
 
@@ -131,18 +132,18 @@
                         imageWidth: {
                             default: 100,
                             renderHTML: (attributes) => ({
-                                    imageWidth: attributes.imageWidth,
-                                }),
+                                imageWidth: attributes.imageWidth,
+                            }),
                         },
                         style: {
                             default: null,
                             renderHTML: (attributes) => ({
-                                    style: `width: ${
-                                        attributes.imageWidth
-                                    }% !important; ${
-                                        attributes.style ? attributes.style : ''
-                                    }`,
-                                }),
+                                style: `width: ${
+                                    attributes.imageWidth
+                                }% !important; ${
+                                    attributes.style ? attributes.style : ''
+                                }`,
+                            }),
                         },
                     }
                 },
@@ -319,7 +320,7 @@
             border-left: 2px solid rgba(#161515, 0.1) !important;
 
             p {
-                @apply p-2 bg-gray-50 rounded !important;
+                @apply p-2 bg-gray-100 rounded !important;
             }
         }
 
@@ -343,14 +344,14 @@
             float: left;
             pointer-events: none;
             height: 0;
-            @apply text-gray-400;
+            @apply text-gray;
         }
         p.is-editor-empty:first-child::before {
             content: attr(data-placeholder);
             float: left;
             pointer-events: none;
             height: 0;
-            @apply text-gray-400;
+            @apply text-gray;
         }
     }
 </style>

@@ -15,7 +15,7 @@
   <script lang="ts">
 import { defineComponent, ref, reactive, toRaw } from "vue";
 // @ts-ignore
-import xmlToJson from "~/utils/xmltojson";
+import xmlToJson from "~/utils/library/xmltojson";
 
 export default defineComponent({
   name: "ImportMetadataFromXML",

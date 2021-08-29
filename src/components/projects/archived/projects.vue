@@ -3,11 +3,11 @@
     <!-- <a-layout-header
       theme="light"
 
-      class="flex items-center px-0 leading-none align-middle text-primary-muted bg-primary-500"
+      class="flex items-center px-0 leading-none align-middle text-primary-light bg-primary-focus"
       style="height: 42px"
     >
       <div
-        class="flex items-center h-full px-4 mr-3 align-middle border-r border-primary-400 hover:bg-primary-600"
+        class="flex items-center h-full px-4 mr-3 align-middle border-r border-gray-300 hover:bg-primary-focus"
         @click="handleBack"
       >
         <fa icon="fal chevron-left" class="text-xl"></fa>

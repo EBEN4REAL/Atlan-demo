@@ -177,7 +177,7 @@ import {
 // * Plugins
 
 // * Utils
-import { generateUUID } from "~/utils/generator";
+import { generateUUID } from "~/utils/helper/generator";
 
 // * Composables
 import useAssetQualifiedName from "~/composables/asset/useAssetQualifiedName";

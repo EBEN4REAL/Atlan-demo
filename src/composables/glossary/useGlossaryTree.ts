@@ -144,6 +144,7 @@ export default function useGlossaryTree(list: ComputedRef<GlossaryType[] | undef
             treeData.value = updatedTreeData;
         }
     })
+
     const onLoadData = async (treeNode: any) => {
         treeNode.dataRef.isOpen = true;
         if (treeNode.dataRef.children) {

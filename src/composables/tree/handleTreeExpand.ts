@@ -18,15 +18,15 @@ export default function handleTreeExpand(
         // triggered by select
         if (!event.node.isLeaf && event.event === 'select') {
             const key: string = event.node.eventKey
-            const isExpanded = expandedKeys.value.includes(key)
+            const isExpanded = expandedKeys.value?.includes(key)
             if (!isExpanded) {
                 if (isAccordion && event.node.dataRef.isRoot) {
                     expandedKeys.value = []
                 }
-                expandedKeys.value.push(key)
+                expandedKeys.value?.push(key)
             } else if (isExpanded) {
-                const index = expandedKeys.value.indexOf(key)
-                expandedKeys.value.splice(index, 1)
+                const index = expandedKeys.value?.indexOf(key)
+                expandedKeys.value?.splice(index, 1)
             }
             expandedKeys.value = [...expandedKeys.value]
         }
@@ -41,7 +41,7 @@ export default function handleTreeExpand(
             if (selectedKeys.value.includes(selected)) {
                 selectedKeys.value = []
             } else {
-                selectedKeys.value = selected
+                selectedKeys.value = [selected]
             }
             emit('select', event.node.eventKey)
         }

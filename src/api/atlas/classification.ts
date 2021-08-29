@@ -2,7 +2,8 @@ import { Ref } from 'vue'
 import { useAPI } from '~/api/useAPI'
 import { classificationInterface } from '~/types/classifications/classification.interface'
 
-const getClassificationList = <T>({ cache }: { cache: boolean }) => useAPI<T>('GET_CLASSIFICATION_LIST', 'GET', {
+const getClassificationList = <T>({ cache }: { cache: boolean }) =>
+    useAPI<T>('GET_CLASSIFICATION_LIST', 'GET', {
         cache,
     })
 
@@ -14,7 +15,8 @@ const createClassification = <T>({
     payload: {
         classificationDefs: classificationInterface[]
     }
-}) => useAPI<T>('CREATE_CLASSIFICATION', 'POST', {
+}) =>
+    useAPI<T>('CREATE_CLASSIFICATION', 'POST', {
         cache,
         body: payload,
     })
@@ -38,21 +40,24 @@ const updateClassification = <T>({
 const archiveClassification = <T>({
     cache,
     typeName,
+    entityGuid,
 }: {
     cache: string | undefined
     typeName: string
-}) => useAPI<T>('ARCHIVE_CLASSIFICATION', 'DELETE', {
+    entityGuid: string
+}) =>
+    useAPI<T>('ARCHIVE_CLASSIFICATION', 'DELETE', {
         cache,
-        pathVariables: { typeName },
+        pathVariables: { typeName, entityGuid },
     })
 
-const linkClassification = ({
+const linkClassification = <T>({
     cache,
     entityGuid,
     payload,
 }: {
     cache: string | undefined
-    entityGuid: boolean
+    entityGuid: string
     payload: Ref<{
         attributes: Object
         propagate: boolean
@@ -60,7 +65,8 @@ const linkClassification = ({
         typeName: string
         validityPeriods: Array<any>
     }>
-}) => useAPI('LINK_CLASSIFICATION', 'POST', {
+}) =>
+    useAPI<T>('LINK_CLASSIFICATION', 'POST', {
         cache,
         body: payload,
         pathVariables: { entityGuid },

@@ -1,22 +1,27 @@
 <template>
-    <LoadingView v-if="loading" />
-    <ErrorView v-else-if="error" :error="error" />
+    <LoadingView v-if="!data?.asset" />
+    <ErrorView v-else-if="data?.error" :error="data?.error" />
 
-    <div v-else class="w-full bg-gray-100">
-        <div class="h-24 p-4 bg-white">
-            <AssetHeader :asset="response?.entities[0]" />
+    <div v-if="data?.asset" class="w-full">
+        <div class="z-30 pt-5 pb-3 pr-4 bg-white">
+            <Header />
         </div>
-        <div class="asset-profile">
-            <a-tabs v-model="activeKey" @change="selectTab($event)">
+        <div>
+            <a-tabs
+                :active-key="activeKey"
+                :class="$style.profiletab"
+                @change="selectTab($event)"
+            >
                 <a-tab-pane v-for="tab in tabs" :key="tab.id" :tab="tab.name">
                     <component
                         :is="tab.component"
+                        :key="activeKey || id"
                         :ref="
                             (el) => {
                                 refs[tab.id] = el
                             }
                         "
-                        :asset="response?.entities[0] || {}"
+                        @preview="handlePreview"
                     ></component>
                 </a-tab-pane>
             </a-tabs>
@@ -31,42 +36,52 @@
         ref,
         defineAsyncComponent,
         watch,
+        onMounted,
+        provide,
     } from 'vue'
     import { useRoute, useRouter } from 'vue-router'
 
     // Components
     import LoadingView from '@common/loaders/section.vue'
     import ErrorView from '@common/error/index.vue'
-    import AssetHeader from '~/components/asset/assetProfile/assetHeader.vue'
+    import Header from '~/components/asset/assetProfile/header.vue'
     import useAsset from '~/composables/asset/useAsset'
 
     export default defineComponent({
         components: {
-            AssetHeader,
+            Header,
             LoadingView,
             ErrorView,
             overview: defineAsyncComponent(
-                () =>
-                    import('~/components/asset/assetProfile/tabs/overview.vue')
+                () => import('@/asset/assetProfile/tabs/overview/index.vue')
             ),
             lineage: defineAsyncComponent(
-                () => import('~/components/asset/assetProfile/tabs/lineage.vue')
+                () => import('@/asset/assetProfile/tabs/lineage/index.vue')
+            ),
+            settings: defineAsyncComponent(
+                () => import('@/asset/assetProfile/tabs/settings/index.vue')
             ),
         },
         setup(_, context) {
             /** DATA */
-            const activeKey = ref('1')
+            const activeKey = ref(1)
+            const data = ref({})
             const refs: { [key: string]: any } = ref({})
             const tabs = [
                 {
-                    id: '1',
+                    id: 1,
                     name: 'Overview',
                     component: 'overview',
                 },
                 {
-                    id: '2',
+                    id: 2,
                     name: 'Lineage',
                     component: 'lineage',
+                },
+                {
+                    id: 3,
+                    name: 'Settings',
+                    component: 'settings',
                 },
             ]
 
@@ -78,32 +93,53 @@
             const id = computed(() => route?.params?.id || '')
 
             /** METHODS */
-            const selectTab = (activeKey: string) => {
-                const selectedTab = tabs.find((i) => i.id === activeKey)
+            const selectTab = (val: number) => {
+                activeKey.value = val
+                const selectedTab = tabs.find((i) => i.id === val)
                 router.replace(
                     `/assets/${id.value}/${selectedTab?.name.toLowerCase()}`
                 )
             }
-            const { response, error, loading } = useAsset({
-                entityId: id.value,
+
+            const fetch = () => {
+                const { data: response, error } = useAsset({
+                    entityId: id.value,
+                })
+
+                watch(response, () => {
+                    data.value.asset = response.value?.entities?.[0]
+                    data.value.error = error.value
+
+                    context.emit('updateAssetPreview', data.value.asset ?? [])
+                })
+            }
+
+            onMounted(() => {
+                const tab = route?.params?.tab
+                if (!tab) return
+                const currTab = tabs.find(
+                    (i) => i.name.toLowerCase() === tab.toLowerCase()
+                )
+                activeKey.value = currTab.id
+                fetch()
             })
 
-            watch(response, () => {
-                if (response.value?.entities?.length)
-                    context.emit(
-                        'updateAssetPreview',
-                        response.value?.entities[0] ?? []
-                    )
-            })
+            watch(id, () => fetch())
+            const handlePreview = (item) => {
+                context.emit('preview', item)
+            }
+
+            /** PROVIDER */
+            provide('assetData', data.value)
 
             return {
+                id,
                 activeKey,
                 tabs,
+                handlePreview,
                 refs,
+                data,
                 selectTab,
-                response,
-                error,
-                loading,
             }
         },
     })
@@ -114,10 +150,38 @@ meta:
     requiresAuth: true
 </route>
 
-<style lang="less">
-    .asset-profile {
-        .ant-tabs-bar {
-            @apply px-4 bg-white  !important;
+<style lang="less" module>
+    .profiletab {
+        :global(.ant-tabs-tab) {
+            padding-left: 2px;
+            padding-right: 2px;
+            @apply pb-5 mr-5 text-gray-500 text-sm tracking-wide;
+        }
+        :global(.ant-tabs-tab:first-child) {
+            @apply ml-5;
+        }
+        :global(.ant-tabs-nav-container-scrolling .ant-tabs-tab:first-child) {
+            @apply ml-0;
+        }
+        :global(.ant-tabs-tab-active) {
+            @apply text-gray font-bold;
+        }
+        :global(.ant-tabs-bar) {
+            @apply mb-0 pl-7;
+        }
+
+        :global(.ant-tabs-tabpane) {
+            height: calc(100vh - 200px) !important;
+            overflow-y: scroll !important;
+            overflow-x: hidden !important;
+            @apply pr-0;
+        }
+        :global(.ant-tabs-ink-bar) {
+            @apply rounded-t-sm;
+            margin-bottom: 1px;
+        }
+        :global(.ant-tabs-tabpane) {
+            @apply px-0 pb-0 !important;
         }
     }
 </style>

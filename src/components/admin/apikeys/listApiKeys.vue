@@ -29,7 +29,7 @@
         <div class="flex items-center align-middle">
           <div class="truncate">
             <div class="truncate">{{ key.name }}</div>
-            <p class="mb-0 text-gray-400">{{ timeAgo(key.created_at) }} ago</p>
+            <p class="mb-0 text-gray">{{ timeAgo(key.created_at) }} ago</p>
           </div>
         </div>
       </template>
@@ -40,7 +40,7 @@
         >{{key.created_by}}</div>
       </template>
       <template #apiKey="{ text: key }">
-        <div class="inline-flex items-center px-2 py-0.5 bg-gray-100 rounded text-gray-dark">
+        <div class="inline-flex items-center px-2 py-0.5 bg-gray-100 rounded text-gray-500">
           <div>{{ key.code.slice(key.code.length - 22) }}</div>
         </div>
       </template>

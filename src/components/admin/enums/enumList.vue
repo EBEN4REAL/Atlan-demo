@@ -10,10 +10,10 @@
         "
       >
         <p class="mb-1 text-sm text-primary">{{ item.name }}</p>
-        <p class="mb-1 text-sm text-gray-400">
+        <p class="mb-1 text-sm text-gray">
           {{ item.elementDefs.length }} elements(s)
         </p>
-        <p class="mb-0 text-sm text-gray-400">
+        <p class="mb-0 text-sm text-gray">
           Updated {{ updateTime(item.updateTime) }} by
           {{ item.updatedBy }}
         </p>

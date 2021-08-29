@@ -1,182 +1,70 @@
 <template>
-  <a-layout class="min-h-full">
-    <a-layout-header
-      style="height: 32px; padding: 0 0px; line-height: 32px"
-      class="shadow-sm"
-    >
-      <div
-        class="flex items-center justify-between px-3 align-middle border-b shadow-sm "
-        :class="$style.topbar"
-      >
-        <div class="flex items-center align-middle">
-          <img
-            src="https://atlan.com/assets/img/logo.40c9d1d3.svg"
-            class="w-auto h-3 mr-3"
-          />
-          <!-- <a-input
-            style="min-width: 400px"
-            placeholder="Click or Cmd/Ctrl+K"
-            size="small"
-            class="text-white placeholder-gray-300 bg-opacity-50 rounded bg-primary-200 border-primary-500"
-          >
-          </a-input>-->
-        </div>
-        <div></div>
-        <div class="flex space-x-3 text-white">
-          <fa icon="fal bell w-3"></fa>
-          <fa icon="fal gift"></fa>
-          <fa icon="fal question-circle"></fa>
-          <div class="text-center border-b border-primary-500">
-            <UserPersonalAvatar></UserPersonalAvatar>
-          </div>
-        </div>
-      </div>
-    </a-layout-header>
+    <a-layout class="min-h-full">
+        <a-layout-header class="z-30 h-12 p-0 m-0">
+            <div class="h-full px-5 bg-white border-b">
+                <NavMenu :page="activeKey[0]" @change="handleChange" />
+            </div>
+        </a-layout-header>
 
-    <a-layout class="h-full">
-      <a-layout-sider
-        :collapsed="true"
-        :collapsed-width="60"
-        :class="$style.sidebar"
-        :collapsible="false"
-      >
-        <div class="flex flex-col h-full">
-          <Sidebar class="flex-grow mt-2" />
-          <a-button
-            class="mx-1 mb-3"
-            size="large"
-            type="ghost"
-            @click="handleNewPage"
-          >
-            <fa icon="fal plug" class="text-white"></fa>
-          </a-button>
-        </div>
-      </a-layout-sider>
-      <a-layout-content
-        class="overflow-hidden"
-        style="height: calc(100vh - 32px) !important"
-      >
-        <router-view class="flex-grow" />
-      </a-layout-content>
+        <a-layout class="h-full">
+            <a-layout-content
+                class="overflow-hidden"
+                style="height: calc(100vh - 48px) !important"
+            >
+                <router-view class="flex-grow" />
+            </a-layout-content>
+        </a-layout>
     </a-layout>
-  </a-layout>
-  <PreviewDrawer />
-  <!-- <div class="mx-auto mt-5" @click="themeToggle">[Default Layout]</div> -->
+    <PreviewDrawer />
+    <!-- <div class="mx-auto mt-5" @click="themeToggle">[Default Layout]</div> -->
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
-import PageLoader from "@common/loaders/page.vue";
-import KeycloakMixin from "~/mixins/keycloak";
-import Sidebar from "./sidebar/index.vue";
-import UserPersonalAvatar from "~/components/common/avatar/me.vue";
-import PreviewDrawer from "~/components/common/previewDrawer.vue";
+    import { defineComponent, ref, onMounted } from 'vue'
+    import { useRouter } from 'vue-router'
 
-export default defineComponent({
-  name: "HelloWorld",
-  components: {
-    PageLoader,
-    Sidebar,
-    UserPersonalAvatar,
-    PreviewDrawer,
-  },
-  mixins: [KeycloakMixin],
-  props: {},
-  data() {
-    return {};
-  },
-  computed: {},
-  mounted() {},
-  methods: {
-    handleNewPage() {
-      this.$router.push("/connections");
-    },
-  },
+    import KeycloakMixin from '~/mixins/keycloak'
+    import PreviewDrawer from '~/components/common/previewDrawer.vue'
+    import NavMenu from '~/components/common/navMenu.vue'
 
-  // mixins: [KeycloakMixin],
-  // const getDarkTheme = () => import("~/styles/dark.less");
-  // const getLightTheme = () => import("~/styles/light.less");
+    export default defineComponent({
+        name: 'Default Layout',
+        components: {
+            PreviewDrawer,
+            NavMenu,
+        },
+        mixins: [KeycloakMixin],
+        setup() {
+            const router = useRouter()
 
-  //   function themeToggle() {
-  //     const htmlTag = document.querySelector("html");
-  //     if (htmlTag.classList.contains("dark")) {
-  //       htmlTag.className = "light";
-  //     } else {
-  //       htmlTag.className = "dark";
-  //     }
+            const activeKey = ref(['/'])
+            const pages: Record<string, string> = {
+                home: '/',
+                assets: '/assets',
+                glossary: '/glossary',
+                insights: '/insights',
+                connections: '/connections',
+                admin: '/admin',
+            }
 
-  //     getCurrentTheme().forEach((element: string) => {
-  //       if (element === "dark") {
-  //         getDarkTheme();
-  //       } else {
-  //         getLightTheme();
-  //       }
-  //     });
-  //   };
+            const handleChange = (key: string) => {
+                if (key && Object.keys(pages).find((page) => page === key)) {
+                    activeKey.value = [key]
+                    router.push(pages[key])
+                }
+            }
 
-  // const getCurrentTheme = function (): any {
-  //   const htmlTag = document.querySelector("html");
-  //   return htmlTag?.classList;
-  // };
-});
+            onMounted(() => {
+                const { currentRoute } = router
+                const page = currentRoute.value.path.split('/')[1]
+                if (Object.keys(pages).find((item) => item === page)) {
+                    activeKey.value = [page]
+                }
+            })
+            return {
+                handleChange,
+                activeKey,
+            }
+        },
+    })
 </script>
-
-<style lang="less" module>
-.topbar {
-  @apply bg-gradient-to-r from-primary-600 via-primary-700 to-primary-800    !important;
-}
-
-.sidebar {
-  @apply bg-gradient-to-b from-primary-600 via-primary-700 to-primary-800    !important;
-  .sidebartab {
-    :global(.ant-tabs-tab) {
-      @apply text-primary-muted !important;
-      padding: 8px 12px !important;
-      max-width: 60px !important;
-    }
-    :global(.ant-tabs-ink-bar) {
-      @apply bg-primary-600;
-      border-top-right-radius: 1px !important;
-      border-bottom-right-radius: 1px !important;
-      width: 3px !important;
-      right: auto !important;
-    }
-    :global(.ant-tabs-left-bar) {
-      border: 0px !important;
-      min-width: 60px !important;
-    }
-    :global(.ant-tabs-nav-container) {
-      margin-right: 0px !important;
-    }
-    :global(.ant-tabs-nav-wrap) {
-      margin-right: 0px !important;
-    }
-    :global(.ant-tabs-tab-active) {
-      @apply bg-primary-100 bg-opacity-5 text-primary-muted !important;
-      transition: background-color 0.2s cubic-bezier(0.645, 0.045, 0.355, 1);
-    }
-  }
-}
-
-// .sidebarMenu {
-//   @apply mt-3 !important;
-//   width: 48px !important;
-//   border: 0px !important;
-//   background: transparent !important;
-
-//   &:global(.ant-menu-inline-collapsed) {
-//     :global(.ant-menu-item) {
-//       @apply text-primary-muted mb-3 rounded-lg ease-in transition-colors text-center text-xl leading-6 !important;
-//       padding: 8px 0px !important;
-//       margin-left: 6px !important;
-
-//       margin-right: 6px !important;
-//       height: inherit !important;
-
-//       &:global(.ant-menu-item-selected) {
-//         @apply bg-gray-50 text-primary !important;
-//       }
-//     }
-//   }
-// }
-</style>

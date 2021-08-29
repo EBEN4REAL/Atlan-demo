@@ -1,5 +1,5 @@
 <template>
-  <p class="mb-0 text-sm text-gray-400" style="word-break: break-word">
+  <p class="mb-0 text-sm text-gray" style="word-break: break-word">
     <span v-if="createdAtString || createdBy">
       Created {{ createdAtString }}
       <span v-if="createdBy">

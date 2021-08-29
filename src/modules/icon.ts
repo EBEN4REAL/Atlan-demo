@@ -20,7 +20,6 @@ import { faCompressAlt } from '@fortawesome/pro-light-svg-icons/faCompressAlt'
 import { faPlus } from '@fortawesome/pro-light-svg-icons/faPlus'
 import { faSearch } from '@fortawesome/pro-light-svg-icons/faSearch'
 import { faUser } from '@fortawesome/pro-light-svg-icons/faUser'
-import { faUsers } from '@fortawesome/pro-light-svg-icons/faUsers'
 import { faCheckCircle } from '@fortawesome/pro-light-svg-icons/faCheckCircle'
 import { faCircleNotch } from '@fortawesome/pro-light-svg-icons/faCircleNotch'
 import { faCheck } from '@fortawesome/pro-light-svg-icons/faCheck'
@@ -33,10 +32,7 @@ import { faTrash } from '@fortawesome/pro-light-svg-icons/faTrash'
 import { faQuestionCircle } from '@fortawesome/pro-light-svg-icons/faQuestionCircle'
 import { faInfo } from '@fortawesome/pro-light-svg-icons/faInfo'
 import { faInfoCircle } from '@fortawesome/pro-light-svg-icons/faInfoCircle'
-import { faChevronRight } from '@fortawesome/pro-light-svg-icons/faChevronRight'
 import { faChevronLeft } from '@fortawesome/pro-light-svg-icons/faChevronLeft'
-import { faChevronDown } from '@fortawesome/pro-light-svg-icons/faChevronDown'
-import { faChevronUp } from '@fortawesome/pro-light-svg-icons/faChevronUp'
 import { faCommentsAlt } from '@fortawesome/pro-light-svg-icons/faCommentsAlt'
 import { faShare } from '@fortawesome/pro-light-svg-icons/faShare'
 import { faComment } from '@fortawesome/pro-light-svg-icons/faComment'
@@ -60,6 +56,7 @@ import { faShield } from '@fortawesome/pro-light-svg-icons/faShield'
 import { faUserEdit } from '@fortawesome/pro-light-svg-icons/faUserEdit'
 import { faPencilAlt } from '@fortawesome/pro-light-svg-icons/faPencilAlt'
 import { faSync } from '@fortawesome/pro-light-svg-icons/faSync'
+import { faUpload } from '@fortawesome/pro-light-svg-icons/faUpload'
 import { faChevronDoubleLeft } from '@fortawesome/pro-light-svg-icons/faChevronDoubleLeft'
 
 import { faGlobe } from '@fortawesome/pro-light-svg-icons/faGlobe'
@@ -109,6 +106,10 @@ import { faCalendarAlt } from '@fortawesome/pro-light-svg-icons/faCalendarAlt'
 // Solid Icons
 import { faCaretLeft } from '@fortawesome/pro-solid-svg-icons/faCaretLeft'
 import { faCaretRight } from '@fortawesome/pro-solid-svg-icons/faCaretRight'
+import { faChevronDown } from '@fortawesome/pro-solid-svg-icons/faChevronDown'
+import { faChevronUp } from '@fortawesome/pro-solid-svg-icons/faChevronUp'
+import { faChevronLeft as faSolidChevronLeft } from '@fortawesome/pro-solid-svg-icons/faChevronLeft'
+import { faChevronRight } from '@fortawesome/pro-solid-svg-icons/faChevronRight'
 import { faSlidersV } from '@fortawesome/pro-solid-svg-icons/faSlidersV'
 import { faSync as faSyncSolid } from '@fortawesome/pro-solid-svg-icons/faSync'
 import { faBadgeCheck } from '@fortawesome/pro-solid-svg-icons/faBadgeCheck'
@@ -120,6 +121,7 @@ import { faCheckCircle as faSolidCheckCircle } from '@fortawesome/pro-solid-svg-
 import { faKey } from '@fortawesome/pro-solid-svg-icons/faKey'
 import { faLock as faSolidLock } from '@fortawesome/pro-solid-svg-icons/faLock'
 import { faCaretDown } from '@fortawesome/pro-solid-svg-icons/faCaretDown'
+import { faLongArrowAltDown } from '@fortawesome/pro-solid-svg-icons/faLongArrowAltDown'
 
 import { faBold } from '@fortawesome/pro-solid-svg-icons/faBold'
 import { faItalic } from '@fortawesome/pro-solid-svg-icons/faItalic'
@@ -129,6 +131,7 @@ import { faUnderline } from '@fortawesome/pro-solid-svg-icons/faUnderline'
 import { faListOl } from '@fortawesome/pro-solid-svg-icons/faListOl'
 import { faListUl } from '@fortawesome/pro-solid-svg-icons/faListUl'
 import { faCode } from '@fortawesome/pro-solid-svg-icons/faCode'
+import { faUsers } from '@fortawesome/pro-solid-svg-icons/faUsers'
 import { faQuoteLeft } from '@fortawesome/pro-solid-svg-icons/faQuoteLeft'
 import { faUndo } from '@fortawesome/pro-solid-svg-icons/faUndo'
 import { faRedo } from '@fortawesome/pro-solid-svg-icons/faRedo'
@@ -139,7 +142,10 @@ import { faAlignLeft } from '@fortawesome/pro-solid-svg-icons/faAlignLeft'
 import { faAlignCenter } from '@fortawesome/pro-solid-svg-icons/faAlignCenter'
 import { faAlignRight } from '@fortawesome/pro-solid-svg-icons/faAlignRight'
 import { faFileImage } from '@fortawesome/pro-solid-svg-icons/faFileImage'
+import { faSortAmountUp } from '@fortawesome/pro-solid-svg-icons/faSortAmountUp'
 import { faSpinner } from '@fortawesome/pro-light-svg-icons/faSpinner'
+import { faAngleDown } from '@fortawesome/pro-solid-svg-icons/faAngleDown'
+import { faAngleUp } from '@fortawesome/pro-solid-svg-icons/faAngleUp'
 import { UserModule } from '~/types'
 
 // You can add your icons directly in this plugin. See other examples for how you
@@ -154,7 +160,10 @@ import Icon from '~/components/common/icon/index.vue'
 
 library.add(
     faTable,
+    faUpload,
     faBookmark,
+    faAngleUp,
+    faAngleDown,
     faThList,
     faDatabase,
     faBox,
@@ -189,13 +198,12 @@ library.add(
     faInfoCircle,
     faChevronRight,
     faChevronLeft,
-    faChevronDown,
-    faChevronUp,
+    faSolidChevronLeft,
     faExclamationCircle,
     faListAlt,
     faPlug,
     faShare,
-    faComment,
+    faComment, faLongArrowAltDown,
     faCommentsAlt,
     faFilter,
     faEye,
@@ -254,6 +262,9 @@ library.add(
 library.add(
     faCaretLeft,
     faCaretRight,
+    faChevronRight,
+    faChevronDown,
+    faChevronUp,
     faSlidersV,
     faSyncSolid,
     faBadgeCheck,
@@ -276,6 +287,7 @@ library.add(
     faUndo,
     faRedo,
     faSolidLink,
+    faSortAmountUp,
     // faPencil,
     faSquare,
     faAlignLeft,

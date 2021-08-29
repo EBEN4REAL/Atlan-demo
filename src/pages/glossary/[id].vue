@@ -1,128 +1,300 @@
 <template>
-    <div class="px-12 pr-0 mb-12">
-        <div class="flex flex-row mt-6 mb-5">
-            <div class="mr-5">
-                <img :src="GlossarySvg" />
-            </div>
-            <div class="flex flex-col">
-                <span class="secondaryHeading">GLOSSARY</span>
-                <h1 class="p-0 m-0 text-3xl font-normal leading-9 text-black">
-                    {{ title }}
-                </h1>
-                <div class="text-sm font-normal leading-6 text-gray-400">
-                    <span class="mr-3">Cerated 2 weeks ago by @anshul</span>
-                    <span>&bull;</span>
-                    <span class="ml-3">Edited 1 week ago by @anshul</span>
+    <div v-if="isLoading && glossary?.guid !== id">
+        <LoadingView />
+    </div>
+    <div v-else class="flex flex-row h-full" :class="$style.tabClasses">
+        <div
+            class="h-full w-2/3"
+        >
+            <!-- top section -->
+            <div class="flex flex-row justify-between pl-5 pr-4 mt-6 mb-5">
+                <div class="flex flex-row">
+                    <div class="mr-5">
+                        <img :src="GlossarySvg" />
+                    </div>
+                    <div class="flex flex-col w-3/4">
+                        <div class="flex">
+                            <span class="mr-3 text-xl font-bold leading-6">{{
+                                title
+                            }}</span>
+                            <component
+                                :is="statusObject?.icon"
+                                v-if="statusObject"
+                                class="inline-flex self-center w-auto h-4 mb-1"
+                            />
+                        </div>
+                        <span class="mt-1 text-sm leading-5 text-gray-500">{{
+                            shortDescription
+                        }}</span>
+                    </div>
+                </div>
+                <div class="flex flex-row space-x-2">
+                    <a-button class="px-2.5">
+                        <fa icon="fal bookmark" />
+                    </a-button>
+                    <a-button class="px-2.5 flex align-middle" @click="refetch">
+                        <fa icon="fal upload" class="h-3 mr-2" />
+                        <span>Share</span>
+                    </a-button>
+                    <ThreeDotMenu :entity="glossary" />
+                    <!-- <a-dropdown :trigger="['click']">
+                        <a-button class="px-2.5" @click.prevent>
+                            <fa icon="fal ellipsis-v" class="h-4" />
+                        </a-button>
+                        <template #overlay>
+                            <a-menu>
+                                <a-menu-item>Add Term</a-menu-item>
+                                <a-menu-item>Add Category</a-menu-item>
+                                <a-menu-divider />
+                                <a-sub-menu key="status" title="No status">
+                                    <a-menu-item>Verified</a-menu-item>
+                                    <a-menu-item>Work in Progress</a-menu-item>
+                                    <a-menu-item>Warning</a-menu-item>
+                                    <a-menu-item>Deprecated</a-menu-item>
+                                </a-sub-menu>
+                                <a-sub-menu key="owner" title="Add Owner">
+                                    <a-menu-item>5d menu item</a-menu-item>
+                                    <a-menu-item>6th menu item</a-menu-item>
+                                </a-sub-menu>
+                                <a-sub-menu key="expert" title="Add Expert">
+                                    <a-menu-item>5d menu item</a-menu-item>
+                                    <a-menu-item>6th menu item</a-menu-item>
+                                </a-sub-menu>
+                                <a-menu-divider />
+                                <a-menu-item>Archive</a-menu-item>
+                            </a-menu>
+                        </template>
+                    </a-dropdown> -->
                 </div>
             </div>
-        </div>
-        <div>
-            <a-tabs default-active-key="1" class="border-0">
-                <a-tab-pane key="1" tab="Overview">
-                    <div class="flex flex-row p-0 m-0">
-                        <GlossaryProfileOverview :glossary="glossary" />
-                        <GlossaryTopTerms
-                            v-if="glossaryTerms?.length"
-                            :terms="glossaryTerms"
+            <!-- tabs start here  -->
+            <div class="m-0">
+                <a-tabs
+                    v-model:activeKey="currentTab"
+                    default-active-key="1"
+                    class="border-0"
+                >
+                    <a-tab-pane key="1" tab="Overview">
+                        <div class="px-5 mt-4">
+                            <GlossaryProfileOverview :entity="glossary" />
+                            <GlossaryContinueSettingUp
+                                v-if="!isLoading || !termsLoading || !categoriesLoading"
+                                :terms="glossaryTerms"
+                                :categories="glossaryCategories"
+                                @updateDescription="refreshCategoryTermList"
+                                @fetchNextCategoryOrTermList="
+                                    fetchNextCategoryOrTermList
+                                "
+                            />
+                        </div>
+                    </a-tab-pane>
+                    <a-tab-pane key="2" tab="Terms & Categories">
+                        <GlossaryTermsAndCategoriesTab
+                            :qualified-name="qualifiedName"
+                            :guid="glossary?.guid"
+                            :type="glossary?.typeName"
+                            :show-preview-panel="currentTab === '2'"
+                            @entityPreview="handleCategoryOrTermPreview"
                         />
-                    </div>
-                    <hr />
-                    <GlossaryContinueSettingUp
-                        :terms="glossaryTerms"
-                        :categories="glossaryCategories"
-                    />
-                </a-tab-pane>
-                <a-tab-pane key="2" tab="Terms & Categories">
-                    Terms & Categories
-                </a-tab-pane>
-                <a-tab-pane key="3" tab="Activity"> Activity </a-tab-pane>
-                <a-tab-pane key="4" tab="Bots"> Bots </a-tab-pane>
-                <a-tab-pane key="5" tab="Permissions"> Permissions </a-tab-pane>
-            </a-tabs>
+                    </a-tab-pane>
+                    <a-tab-pane key="4" tab="Bots"> Bots </a-tab-pane>
+                    <a-tab-pane key="5" tab="Permissions">
+                        Permissions
+                    </a-tab-pane>
+                </a-tabs>
+            </div>
         </div>
-        <!-- <hr /> -->
+
+        <div id="sidePanel" class="relative w-1/3">
+            <SidePanel :entity="glossary" :top-terms="glossaryTerms" />
+        </div>
     </div>
 </template>
 
 <script lang="ts">
-    import { defineComponent, computed, watch, onMounted } from 'vue'
-    import GlossaryProfileOverview from '@/glossary/glossaryProfileOverview.vue'
-    import GlossaryTopTerms from '@/glossary/glossaryTopTerms.vue'
-    import GlossaryContinueSettingUp from '@/glossary/glossaryContinueSettingUp.vue'
-    import useGlossaryCategories from '~/composables/glossary/useGlossaryCategories'
-    import useGlossaryTerms from '~/composables/glossary/useGlossaryTerms'
+    import { defineComponent, watch, onMounted, toRef, ref, provide } from 'vue'
+
+    // components
+    import GlossaryTermsAndCategoriesTab from '@/glossary/glossaryTermsAndCategoriesTab.vue'
+    import LoadingView from '@common/loaders/page.vue'
+    import GlossaryProfileOverview from '@/glossary/common/glossaryProfileOverview.vue'
+    import GlossaryContinueSettingUp from '@/glossary/continueSettingUp/glossaryContinueSettingUp.vue'
+    import EntityHistory from '@/glossary/common/entityHistory.vue'
+    import SidePanel from '@/glossary/sidePanel/index.vue'
+    import CategoryTermPreview from '@/glossary/common/categoryTermPreview/categoryTermPreview.vue'
+    import ThreeDotMenu from '@/glossary/common/threeDotMenu.vue'
+
+    // composables
     import useGTCEntity from '~/composables/glossary/useGtcEntity'
+    import useGlossaryTerms from '~/composables/glossary/useGlossaryTerms'
+    import useGlossaryCategories from '~/composables/glossary/useGlossaryCategories'
+
+    // static
+    import {
+        Glossary,
+        Category,
+        Term,
+    } from '~/types/glossary/glossary.interface'
 
     import GlossarySvg from '~/assets/images/gtc/glossary/glossary.png'
-
-    interface Proptype {
-        id: string
-    }
 
     export default defineComponent({
         components: {
             GlossaryProfileOverview,
-            GlossaryTopTerms,
             GlossaryContinueSettingUp,
+            GlossaryTermsAndCategoriesTab,
+            EntityHistory,
+            LoadingView,
+            SidePanel,
+            CategoryTermPreview,
+            ThreeDotMenu,
         },
-        props: ['id'],
-        setup(props: Proptype) {
-            const id = computed(() => props.id)
+        props: {
+            id: {
+                type: String,
+                required: true,
+                default: '',
+            },
+        },
+        setup(props) {
+            // data
+            const guid = toRef(props, 'id')
+            const currentTab = ref('1')
+            const previewEntity = ref<Category | Term | undefined>()
+            const showPreviewPanel = ref(false)
 
             const {
-                data: glossary,
+                entity: glossary,
+                title,
+                shortDescription,
+                qualifiedName,
+                statusObject,
                 error,
                 isLoading,
-                fetchEntity,
-            } = useGTCEntity('glossary')
+                refetch,
+            } = useGTCEntity<Glossary>('glossary', guid)
+
             const {
-                data: glossaryTerms,
+                terms: glossaryTerms,
                 error: termsError,
-                loading: termsLoading,
-                fetchGlossaryTerms,
+                isLoading: termsLoading,
+                fetchGlossaryTermsPaginated,
             } = useGlossaryTerms()
+
             const {
-                data: glossaryCategories,
+                categories: glossaryCategories,
                 error: categoriesError,
-                loading: categoriesLoading,
-                fetchGlossaryCategories,
+                isLoading: categoriesLoading,
+                fetchGlossaryCategoriesPaginated,
             } = useGlossaryCategories()
 
-            const title = computed(() => glossary.value?.name)
-            const shortDescription = computed(
-                () => glossary.value?.shortDescription
-            )
-            const termCount = computed(() => glossary.value?.terms?.length ?? 0)
+            // computed
+
+            // methods
+            const refreshCategoryTermList = (type: string) => {
+                if (type === 'category') {
+                    fetchGlossaryCategoriesPaginated({
+                        refreshSamePage: true,
+                    })
+                } else if (type === 'term') {
+                    fetchGlossaryTermsPaginated({ refreshSamePage: true })
+                }
+            }
+
+            const fetchNextCategoryOrTermList = (type: string) => {
+                if (type === 'category') {
+                    fetchGlossaryCategoriesPaginated({
+                        limit: 5,
+                    })
+                } else if (type === 'term') {
+                    fetchGlossaryTermsPaginated({ limit: 5 })
+                }
+            }
+
+            const handleCategoryOrTermPreview = (entity: Category | Term) => {
+                previewEntity.value = entity
+                showPreviewPanel.value = true
+            }
+            const handlClosePreviewPanel = () => {
+                previewEntity.value = undefined
+                showPreviewPanel.value = false
+            }
+
+            // lifecycle methods and watchers
             onMounted(() => {
-                fetchEntity(id.value)
-                fetchGlossaryTerms(id.value)
-                fetchGlossaryCategories(id.value)
+                fetchGlossaryTermsPaginated({ guid: guid.value, offset: 0 })
+                fetchGlossaryCategoriesPaginated({
+                    guid: guid.value,
+                    offset: 0,
+                })
             })
 
-            watch(id, (newGuid) => {
-                fetchEntity(newGuid)
-                fetchGlossaryTerms(newGuid)
-                fetchGlossaryCategories(newGuid)
+            watch(guid, (newGuid) => {
+                fetchGlossaryTermsPaginated({
+                    guid: newGuid,
+                    offset: 0,
+                })
+                fetchGlossaryCategoriesPaginated({
+                    guid: newGuid,
+                    offset: 0,
+                })
             })
+
+            // Providers
+            provide('refreshEntity', refetch);
 
             return {
                 glossary,
                 title,
                 shortDescription,
-                termCount,
                 error,
                 isLoading,
+                termsLoading,
+                categoriesLoading,
                 GlossarySvg,
-                id,
+                guid,
                 glossaryTerms,
                 glossaryCategories,
+                qualifiedName,
+                currentTab,
+                previewEntity,
+                showPreviewPanel,
+                statusObject,
+                refreshCategoryTermList,
+                fetchNextCategoryOrTermList,
+                refetch,
+                handleCategoryOrTermPreview,
+                handlClosePreviewPanel,
             }
         },
     })
 </script>
-<style lang="less">
-    .secondaryHeading {
-        @apply tracking-widest text-xs text-gray-400 leading-5;
+<style lang="less" module>
+    .glossaryHome {
+        :global(.ant-tabs-nav) {
+            @apply ml-8;
+        }
+        :global(.ant-tabs-bar) {
+            @apply mb-0;
+        }
+    }
+    .tabClasses {
+        :global(.ant-tabs-tab) {
+            margin: 0px 32px 0px 0px !important;
+            padding: 0px 0px 20px 0px !important;
+        }
+        :global(.ant-tabs-nav) {
+            margin: 0px !important;
+        }
+        :global(.ant-tabs-tab-active) {
+            @apply text-gray-700 font-bold !important;
+        }
+        :global(.ant-tabs-bar) {
+            @apply px-5;
+        }
+        :global(.ant-tabs-bar) {
+            @apply mb-0 !important;
+        }
     }
 </style>
 

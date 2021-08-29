@@ -20,7 +20,7 @@
             />
             <AssetChip
                 v-else
-                :type-name="data.id"
+                :type-name="data.icon"
                 integration-name="tableau"
                 class="mr-2"
             />

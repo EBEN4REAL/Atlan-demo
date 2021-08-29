@@ -77,6 +77,7 @@
                                     items-center
                                     px-3
                                     py-1.5
+                                    mb-2
                                     mr-3
                                     rounded-full
                                     bg-gray-light

@@ -136,9 +136,6 @@
     import { getEncodedStringFromOptions } from '~/utils/helper/routerQuery'
     import { assetInterface } from '~/types/assets/asset.interface'
 
-
-
-
     export interface filterMapType {
         status: {
             checked?: Array<string>
@@ -592,6 +589,6 @@
 <style scoped>
     .facets {
         min-width: 264px;
-        width: 264px;
+        width: 25%;
     }
 </style>

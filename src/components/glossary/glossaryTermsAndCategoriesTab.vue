@@ -38,112 +38,45 @@
                     class="border-0"
                     :class="$style.glossaryTermsTab"
                 >
-                    <a-tab-pane key="1">
+                    <a-tab-pane v-for="(item, idx) in assetTypeList" :key="idx">
                         <template #tab>
                             <div class="flex items-center">
-                                <p class="my-0">All</p>
-                                <div
-                                    v-if="all.length"
-                                    class="px-2 mx-2"
-                                    :class="
-                                        activeKey === '1'
-                                            ? 'bg-primary-light text-primary'
-                                            : 'bg-gray-100 text-gray-500'
-                                    "
-                                >
-                                    {{ all.length }}
-                                </div>
-                            </div>
-                        </template>
-                        <!-- list starts here -->
-                        <div
-                            class="pb-16 overflow-auto"
-                            style="max-height: calc(100vh - 380px)"
-                        >
-                            <div v-for="asset in all" :key="asset.guid">
-                                <GtcEntityCard
+                                <p
+                                    class="my-0"
                                     :class="{
-                                        'hover:bg-gray-100': true,
-                                        'bg-blue-50':
-                                            selectedEntity?.guid === asset.guid,
+                                        'text-primary': activeKey === idx,
                                     }"
-                                    :entity="asset"
-                                    :projection="projection"
-                                    @gtcCardClicked="onEntitySelect"
-                                />
-                            </div>
-                        </div>
-                    </a-tab-pane>
-                    <a-tab-pane key="2">
-                        <template #tab>
-                            <div class="flex items-center">
-                                <p class="my-0">Terms</p>
+                                >
+                                    {{ item.name }}
+                                </p>
                                 <div
-                                    v-if="terms.length"
+                                    v-if="item.list.length"
                                     class="px-2 mx-2"
                                     :class="
-                                        activeKey === '2'
+                                        activeKey === idx
                                             ? 'bg-primary-light text-primary'
                                             : 'bg-gray-100 text-gray-500'
                                     "
                                 >
-                                    {{ terms.length }}
+                                    {{ item.list.length }}
                                 </div>
                             </div>
                         </template>
-
                         <div
                             class="overflow-auto"
                             style="max-height: calc(100vh - 380px)"
                         >
-                            <div v-for="asset in terms" :key="asset.guid">
-                                <GtcEntityCard
-                                    :class="{ 'hover:bg-gray-100': true }"
-                                    :entity="asset"
-                                    :projection="projection"
-                                    @gtcCardClicked="onEntitySelect"
-                                />
-                            </div>
-                        </div>
-                    </a-tab-pane>
-                    <a-tab-pane key="3">
-                        <template #tab>
-                            <div class="flex items-center">
-                                <p class="my-0">Categories</p>
-                                <div
-                                    v-if="categories.length"
-                                    class="px-2 mx-2"
-                                    :class="
-                                        activeKey === '3'
-                                            ? 'bg-primary-light text-primary'
-                                            : 'bg-gray-100 text-gray-500'
-                                    "
-                                >
-                                    {{ categories.length }}
-                                </div>
-                            </div>
-                        </template>
-
-                        <div class="overflow-auto">
-                            <div v-for="asset in categories" :key="asset.guid">
-                                <GtcEntityCard
-                                    :class="{ 'hover:bg-gray-100': true }"
-                                    :entity="asset"
-                                    :projection="projection"
-                                    @gtcCardClicked="onEntitySelect"
-                                />
-                            </div>
+                            <AssetList
+                                :list="item.list"
+                                :projection="projection"
+                                :isLoading="isLoading"
+                                @loadMore="loadMore"
+                                @gtcCardClicked="onEntitySelect"
+                            />
                         </div>
                     </a-tab-pane>
                 </a-tabs>
-                <a-button type="link" @click="loadMore">Load More</a-button>
             </div>
-            <!-- <div v-if="selectedEntity?.guid" class="w-1/3">
-                <Overview
-                    :item="selectedEntity"
-                    :selectedAssetData="selectedEntity"
-                ></Overview>
-            </div> -->
         </div>
         <div v-else-if="!all.length" class="mt-24">
             <EmptyView :showClearFiltersCTA="false" />
@@ -180,9 +113,10 @@
     // components
     import LoadingView from '@common/loaders/page.vue'
     import EmptyView from '@common/empty/discover.vue'
+    import CategoryTermPreview from '@/glossary/common/categoryTermPreview/categoryTermPreview.vue'
     import GtcEntityCard from './gtcEntityCard.vue'
     import GtcFilters from './common/gtcFilters.vue'
-    import CategoryTermPreview from '@/glossary/common/categoryTermPreview/categoryTermPreview.vue'
+    import AssetList from '@/glossary/common/assetList.vue'
 
     // composables
     import useGtcSearch from '~/composables/glossary/useGtcSearch'
@@ -192,6 +126,7 @@
 
     export default defineComponent({
         components: {
+            AssetList,
             GtcEntityCard,
             EmptyView,
             LoadingView,
@@ -227,7 +162,7 @@
             // data
             const glossaryQualifiedName = toRef(props, 'qualifiedName')
             const searchQuery = ref<string>()
-            const activeKey = ref<string>('1')
+            const activeKey = ref(0)
             const selectedEntity = ref<Category | Term>()
             const projection = ref(['status', 'description', 'owners'])
             const { entities, error, isLoading, fetchAssetsPaginated } =
@@ -306,6 +241,12 @@
                 () => [...terms.value, ...categories.value] ?? []
             )
 
+            const assetTypeList = computed(() => [
+                { name: 'All', list: [...all.value] },
+                { name: 'Terms', list: [...terms.value] },
+                { name: 'Categories', list: [...categories.value] },
+            ])
+
             // methods
             const onEntitySelect = (entity: Category | Term) => {
                 selectedEntity.value = entity
@@ -332,7 +273,6 @@
                 const idx = entities.value?.findIndex(
                     (ast) => ast.guid === updatedAsset.guid
                 )
-                console.log(idx, 'yes')
                 if (idx > -1) entities.value[idx] = updatedAsset
             }
 
@@ -341,13 +281,6 @@
                 emit('entityPreview', newSelectedEntity)
             })
 
-            // watch(entities, (newEntities) => {
-            //     selectedEntity.value = newEntities[0]
-            // })
-
-            watch(activeKey, () => {
-                console.log(activeKey.value)
-            })
             return {
                 glossaryQualifiedName,
                 searchQuery,
@@ -366,6 +299,7 @@
                 projectionOptions,
                 projection,
                 activeKey,
+                assetTypeList,
             }
         },
     })

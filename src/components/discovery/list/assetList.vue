@@ -110,27 +110,39 @@
                     return false
                 },
             },
+            automaticSelectFirstAsset: {
+                type: Boolean,
+                required: false,
+                default() {
+                    return false
+                },
+            },
         },
         emits: ['preview', 'loadMore'],
         setup(props, ctx: SetupContext) {
-            const { list } = toRefs(props)
+            const { list, automaticSelectFirstAsset } = toRefs(props)
             const selectedAssetId = ref('')
             function handlePreview(item: any) {
                 selectedAssetId.value = item.guid
                 ctx.emit('preview', item)
             }
 
-            // select first asset automatically
+            // select first asset automatically conditionally acc to  automaticSelectFirstAsset prop
 
-            watch(
-                list,
-                () => {
-                    if (list.value.length > 0) {
-                        selectedAssetId.value = list.value[0].guid
-                    }
-                },
-                { immediate: true }
-            )
+            if (automaticSelectFirstAsset.value) {
+                watch(
+                    list,
+                    () => {
+                        if (list.value.length > 0) {
+                            // for selecting in the list - blue bg
+                            selectedAssetId.value = list.value[0].guid
+                            // for previewing the first asset
+                            handlePreview(list.value[0])
+                        }
+                    },
+                    { immediate: true }
+                )
+            }
 
             return { handlePreview, selectedAssetId, list }
         },

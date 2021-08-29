@@ -39,7 +39,7 @@
     // import AssetChip from '~/components/common/icon/assetChip.vue'
     export default defineComponent({
         name: 'HierarchyBar',
-        components: {},
+        components: { AssetChip },
         props: {
             selectedAsset: {
                 type: Object as PropType<assetInterface>,

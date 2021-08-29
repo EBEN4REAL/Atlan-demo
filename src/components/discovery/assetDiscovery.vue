@@ -83,6 +83,7 @@
                     :projection="projection"
                     :is-loading="isLoading || isValidating"
                     :is-load-more="isLoadMore"
+                    :automaticSelectFirstAsset="true"
                     @preview="handlePreview"
                     @loadMore="loadMore"
                 ></AssetList>
@@ -521,15 +522,6 @@
             const handleClearFiltersFromList = () => {
                 assetFilterRef.value?.resetAllFilters()
             }
-            // select fist asset automatically
-
-            watch(list, () => {
-                if (list.value.length > 0) {
-                    handlePreview(list.value[0])
-                } else {
-                    handlePreview(undefined)
-                }
-            })
 
             onMounted(() => {
                 fetchBMonStore()

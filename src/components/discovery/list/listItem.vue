@@ -33,7 +33,11 @@
                                 ? cssClasses?.textSize
                                 : 'text-lg'
                         "
-                        :to="`/assets/${item.guid}/overview`"
+                        :to="
+                            isColumnAsset(item)
+                                ? getColumnUrl(item)
+                                : `/assets/${item.guid}/overview`
+                        "
                         class="flex-shrink mb-0 overflow-hidden font-bold leading-6 tracking-wide truncate cursor-pointer  text-gray hover:underline overflow-ellipsis whitespace-nowrap"
                     >
                         {{ title(item) }}
@@ -175,7 +179,7 @@
     import AssetLogo from '@/common/icon/assetIcon.vue'
     import HierarchyBar from '@common/badge/hierarchy.vue'
     import StatusBadge from '@common/badge/status/index.vue'
-    import { defineComponent, PropType } from 'vue'
+    import { defineComponent, PropType, computed } from 'vue'
     import { Components } from '~/api/atlas/client'
     import useAssetInfo from '~/composables/asset/useAssetInfo'
     import { assetInterface } from '~/types/assets/asset.interface'
@@ -285,7 +289,17 @@
                     (name) => name.length
                 )
             }
+
+            const isColumnAsset = (asset) => assetType(asset) === 'Column'
+
+            const getColumnUrl = (asset) => {
+                const tableGuid = asset.attributes.table.guid
+                return `/assets/${tableGuid}/overview?column=${asset.guid}`
+            }
+
             return {
+                isColumnAsset,
+                getColumnUrl,
                 description,
                 logo,
                 dataTypeImage,

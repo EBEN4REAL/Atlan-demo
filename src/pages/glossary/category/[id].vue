@@ -26,12 +26,13 @@
                     </div>
                 </div>
                 <div class="flex flex-row space-x-2">
-                    <a-button class="px-2">
-                        <fa icon="fal bookmark" />
-                    </a-button>
-                    <a-button class="flex px-2 align-middle">
-                        <fa icon="fal upload" class="h-3 mr-2" />
-                        <span>Share</span>
+                    <a-button class="px-2"
+                        ><atlan-icon icon="BookmarkOutlined" class="w-auto h-4"
+                    /></a-button>
+
+                    <a-button class="flex items-center"
+                        ><atlan-icon icon="Share" class="w-auto h-4 mr-2" />
+                        <span class="mt-1 text-sm">Share</span>
                     </a-button>
 
                     <ThreeDotMenu :entity="category" :showLinks="false" />
@@ -48,7 +49,7 @@
                             <GlossaryProfileOverview :entity="category" />
                         </div>
                     </a-tab-pane>
-                    <a-tab-pane key="2" tab="Terms & Categories">
+                    <a-tab-pane key="2" tab="Terms & Sub-Categories">
                         <GlossaryTermsAndCategoriesTab
                             :qualified-name="parentGlossaryQualifiedName"
                             :guid="guid"

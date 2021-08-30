@@ -156,6 +156,7 @@ export const BasicSearchAttributes = [
     'tableCount',
     'tableCrawledCount',
     'dataType',
+    'table',
     'tableName',
     'viewName',
     'lastUpdatedByJob',

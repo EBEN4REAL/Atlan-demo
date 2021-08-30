@@ -1,10 +1,10 @@
 <template>
-    <ul class="list-unstyled">
+    <ul class="mb-0 list-unstyled">
         <li
             v-for="(path, index) in getParentsFiltered"
             :key="path.id"
             :class="$style.item"
-            class="px-2 py-2 hover:bg-gray-100 hover:rounded"
+            class="py-2 hover:bg-gray-100 hover:rounded hierarchy-row"
         >
             <div
                 :class="$style.itemDots"
@@ -84,7 +84,7 @@
             position: absolute;
             top: calc(50% + 26px);
             transform: translateY(-50%);
-            left: 24px;
+            left: 15px;
             bottom: 0;
             width: 5px;
             height: 24px;
@@ -151,5 +151,14 @@
 
     .ellipsis {
         width: calc(100% - 3rem);
+    }
+</style>
+<style lang="less" scoped>
+    .hierarchy-row:first-child {
+        @apply pt-0 pb-2 !important;
+        padding-top: 0 !important;
+    }
+    .itemPicContainer:first-child {
+        margin-top: 0 !important;
     }
 </style>

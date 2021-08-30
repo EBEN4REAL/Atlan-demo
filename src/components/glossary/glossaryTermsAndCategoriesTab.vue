@@ -64,7 +64,7 @@
                         </template>
                         <div
                             class="overflow-auto"
-                            style="max-height: calc(100vh - 380px)"
+                            style="max-height: calc(100vh - 320px)"
                         >
                             <AssetList
                                 :list="item.list"

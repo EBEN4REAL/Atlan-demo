@@ -160,12 +160,12 @@
     import { defineComponent, PropType, computed, ref } from 'vue'
     import { useRouter } from 'vue-router'
 
-    import Owners from '@/discovery/preview/tabs/info/assetDetails/owners.vue'
-    import Experts from '@/discovery/preview/tabs/info/assetDetails/experts.vue'
-    import Description from '@/discovery/preview/tabs/info/assetDetails/description.vue'
-    import Status from '@/discovery/preview/tabs/info/assetDetails/status.vue'
+    import Owners from '@common/sidebar/owners.vue'
+    import Experts from '@common/sidebar/experts.vue'
+    import Description from '@common/sidebar/description.vue'
+    import Status from '@common/sidebar/status.vue'
     import Activity from '@/discovery/preview/tabs/activity/activityTab.vue'
-    import Classifications from '@/discovery/preview/tabs/info/governance/classifications.vue'
+    import Classifications from '@common/sidebar/classifications.vue'
     import RelatedTerms from '@/glossary/termProfile/relatedTerms.vue'
     import LinkedAssets from './linkedAssets.vue'
 

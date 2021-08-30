@@ -20,20 +20,17 @@
             :selected-asset="selectedAsset"
             @update:selected-asset="mutateSelectedAsset"
         />
-        <div class="flex w-full text-sm text-gray-500">
-            <Owners
-                v-if="selectedAsset.guid"
-                :selected-asset="selectedAsset"
-                @update:selected-asset="mutateSelectedAsset"
-            />
-        </div>
-        <div class="flex w-full text-sm text-gray-500">
-            <Experts
-                v-if="selectedAsset.guid"
-                :selected-asset="selectedAsset"
-                @update:selected-asset="mutateSelectedAsset"
-            />
-        </div>
+
+        <Owners
+            v-if="selectedAsset.guid"
+            :selected-asset="selectedAsset"
+            @update:selected-asset="mutateSelectedAsset"
+        />
+        <Experts
+            v-if="selectedAsset.guid"
+            :selected-asset="selectedAsset"
+            @update:selected-asset="mutateSelectedAsset"
+        />
         <Status
             v-if="selectedAsset.guid"
             :selected-asset="selectedAsset"
@@ -47,10 +44,10 @@
     import { computed, defineComponent, PropType, toRefs, inject } from 'vue'
     import useAssetInfo from '~/composables/asset/useAssetInfo'
     import { assetInterface } from '~/types/assets/asset.interface'
-    import Description from './description.vue'
-    import Experts from './experts.vue'
-    import Owners from './owners.vue'
-    import Status from './status.vue'
+    import Description from '@common/sidebar/description.vue'
+    import Owners from '@common/sidebar/owners.vue'
+    import Experts from '@common/sidebar/experts.vue'
+    import Status from '@common/sidebar/status.vue'
 
     export default defineComponent({
         name: 'AssetDetails',

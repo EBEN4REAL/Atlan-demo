@@ -13,14 +13,19 @@
     />
     <splitpanes class="h-full default-theme">
         <!-- glossary sidebar -->
-        <pane min-size="12" max-size="50"  style="min-width: 264px" class="bg-white">
+        <pane
+            min-size="12"
+            max-size="50"
+            style="min-width: 264px"
+            class="bg-white"
+        >
             <div>
-                <glossaryTree 
-                    :glossary-list="glossaryList" 
-                    :is-home="isHome" 
-                    :tree-data="treeData" 
-                    :on-load-data="onLoadData" 
-                    :parent-glossary="parentGlossary" 
+                <glossaryTree
+                    :glossary-list="glossaryList"
+                    :is-home="isHome"
+                    :tree-data="treeData"
+                    :on-load-data="onLoadData"
+                    :parent-glossary="parentGlossary"
                     :is-loading="isInitingTree"
                     :current-guid="currentGuid"
                 />
@@ -42,7 +47,7 @@
     import GlossaryTree from '@common/tree/glossary/index.vue'
     import CreateGlossaryModal from '@common/tree/glossary/createGlossaryModal.vue'
     import UpdateGlossaryModal from '@common/tree/glossary/updateGlossaryModal.vue'
-    import glossaryTree from '@/glossary/tree/glossaryTree.vue';
+    import glossaryTree from '@/glossary/tree/glossaryTree.vue'
 
     // composables
     import useGlossaryList from '~/composables/glossary/useGlossaryList'
@@ -72,7 +77,11 @@
             const route = useRoute()
             const router = useRouter()
             const currentGuid = ref<string>(route.params.id as string)
-            const type = ref(router.currentRoute.value.fullPath.split('/')[router.currentRoute.value.fullPath.split('/').length - 2] as 'glossary' | 'category' | 'term')
+            const type = ref(
+                router.currentRoute.value.fullPath.split('/')[
+                    router.currentRoute.value.fullPath.split('/').length - 2
+                ] as 'glossary' | 'category' | 'term'
+            )
             const parentGlossaryGuid = ref<string | undefined>('')
 
             const createGlossaryModalVisble = ref(false)
@@ -80,9 +89,11 @@
             const glossaryTreeRef = ref()
             const eventContext = ref({})
 
-            const { glossaryList, refetch: refetchGlossaryList } = useGlossaryList()
+            const { glossaryList, refetch: refetchGlossaryList } =
+                useGlossaryList()
 
-            const { treeData, onLoadData, parentGlossary, isInitingTree } = useTree(currentGuid, type)
+            const { treeData, onLoadData, parentGlossary, isInitingTree } =
+                useTree(currentGuid, type)
 
             // computed
             const isHome = computed(
@@ -122,16 +133,20 @@
 
             // watchers
             watch(isHome, (newIsHome) => {
-                if(newIsHome){
+                if (newIsHome) {
                     refetchGlossaryList()
                 }
-            });
+            })
 
             watch(
                 () => route.params.id,
                 (newId) => {
                     currentGuid.value = newId as string
-                    type.value = router.currentRoute.value.fullPath.split('/')[router.currentRoute.value.fullPath.split('/').length - 2]
+                    type.value =
+                        router.currentRoute.value.fullPath.split('/')[
+                            router.currentRoute.value.fullPath.split('/')
+                                .length - 2
+                        ]
                 }
             )
 
@@ -159,10 +174,9 @@
             }
         },
     })
-// fetch current guid element
-// if glossary, fetch cat and term (call loadData once)
-// if not glossary, fetch parent glossary and call loadData
-
+    // fetch current guid element
+    // if glossary, fetch cat and term (call loadData once)
+    // if not glossary, fetch parent glossary and call loadData
 </script>
 
 <route lang="yaml">

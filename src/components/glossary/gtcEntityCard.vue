@@ -76,7 +76,7 @@
     import { defineComponent, computed, PropType } from 'vue'
     import { useRouter } from 'vue-router'
     // components
-    import Status from '@/discovery/preview/tabs/info/assetDetails/status.vue'
+    import Status from '@common/sidebar/status.vue'
     import Owners from '@/glossary/common/owners.vue'
     import ThreeDotMenu from '@/glossary/common/threeDotMenu.vue'
     import Tooltip from '@common/ellipsis/index.vue'

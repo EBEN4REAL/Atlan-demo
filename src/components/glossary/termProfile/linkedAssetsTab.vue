@@ -1,4 +1,3 @@
-
 <template>
     <div class="w-full pb-6">
         <!-- <div class="mb-4">
@@ -127,7 +126,7 @@
             }, 0)
 
             const handlePreview = (asset) => {
-                selectedAsset.value = asset;
+                selectedAsset.value = asset
                 emit('preview', asset)
             }
             return {
@@ -141,7 +140,7 @@
                 initialFilters,
                 AssetDiscovery,
                 selectedAsset,
-                handlePreview
+                handlePreview,
             }
         },
     })

@@ -1,5 +1,8 @@
 <template>
-    <div class="group-hover:opacity-100" :class="isVisible ? 'opacity-100' : ''" >
+    <div
+        class="group-hover:opacity-100"
+        :class="isVisible ? 'opacity-100' : ''"
+    >
         <a-dropdown v-model:visible="isVisible" :trigger="['click']">
             <a-button class="px-2" @click.prevent>
                 <fa icon="fal ellipsis-v" class="h-4" />
@@ -11,7 +14,7 @@
                             <AtlanIcon icon="Link" class="m-0 mr-2" />
                             <p class="p-0 m-0">
                                 Go to
-                                {{ assetTypeLabel[entity.typeName] }}
+                                {{ assetTypeLabel[entity?.typeName] }}
                                 profile
                             </p>
                         </div>
@@ -25,7 +28,7 @@
                             <AtlanIcon icon="CopyOutlined" class="m-0 mr-2" />
                             <p class="p-0 m-0">
                                 Copy
-                                {{ assetTypeLabel[entity.typeName] }}
+                                {{ assetTypeLabel[entity?.typeName] }}
                                 profile link
                             </p>
                         </div>
@@ -58,7 +61,7 @@
                         <template #title>
                             <div class="flex items-center justify-between">
                                 <StatusBadge
-                                    :key="entity.guid"
+                                    :key="entity?.guid"
                                     :status-id="entity?.attributes?.assetStatus"
                                     :status-message="
                                         entity?.attributes?.assetStatusMessage
@@ -76,7 +79,7 @@
                         </template>
                         <a-menu-item class="m-0 bg-white">
                             <Status
-                                v-if="entity.guid"
+                                v-if="entity?.guid"
                                 :selectedAsset="entity"
                             />
                         </a-menu-item>
@@ -117,7 +120,7 @@
 <script lang="ts">
     import { defineComponent, ref, PropType } from 'vue'
     // components
-    // import Status from '@/discovery/preview/tabs/info/assetDetails/status.vue'
+    // import Status from '@common/sidebar/status.vue'
     import Owners from '@/glossary/common/owners.vue'
     import Status from '@/glossary/common/status.vue'
     import StatusBadge from '@common/badge/status/index.vue'
@@ -143,7 +146,7 @@
             },
         },
         setup(props) {
-            const isVisible = ref(false);
+            const isVisible = ref(false)
 
             const assetTypeLabel = {
                 AtlasGlossaryTerm: 'term',
@@ -153,12 +156,11 @@
             const handleCopyProfileLink = () => {
                 const baseUrl = window.location.origin
                 const text = `${baseUrl}/glossary/${
-                    assetTypeLabel[props.entity.typeName]
+                    assetTypeLabel[props.entity?.typeName]
                 }/${props?.entity?.guid}`
                 copyToClipboard(text)
             }
 
-            console.log(assetTypeLabel[props.entity.typeName])
             return { handleCopyProfileLink, assetTypeLabel, isVisible }
         },
     })

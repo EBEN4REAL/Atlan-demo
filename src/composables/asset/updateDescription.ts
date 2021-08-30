@@ -56,7 +56,16 @@ export default function updateDescription(selectedAsset: Ref<assetInterface>) {
                 localDescription.value
             selectedAsset.value.attributes.__modifiedBy =
                 username as unknown as string
-            selectedAsset.value.attributes.__modificationTimestamp = Date.now()
+            selectedAsset.value.attributes.__modificationTimestamp = Date.now();
+
+            if(
+                selectedAsset.value.typeName === 'AtlasGlossary' ||
+                selectedAsset.value.typeName === 'AtlasGlossaryCategory' ||
+                selectedAsset.value.typeName === 'AtlasGlossaryTerm'
+            ){
+                selectedAsset.value.attributes.shortDescription =
+                localDescription.value
+            }
         }
     })
 

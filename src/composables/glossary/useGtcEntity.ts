@@ -7,12 +7,13 @@ import { Glossary, Category, Term } from "~/types/glossary/glossary.interface";
 
 import { projection } from "~/api/atlas/utils";
 import { BaseAttributes, BasicSearchAttributes } from '~/constant/projection';
+import { List as StatusList } from '~/constant/status'
 
 /*
  * Uses the Atlas API to fetch a Glossary / Category / Term depending on 
  * the type
  */
-const useGTCEntity = <T extends Glossary | Category | Term>(type: 'glossary' | 'category' | 'term', entityGuid:Ref<string>, cache?: string) => {
+const useGTCEntity = <T extends Glossary | Category | Term>(type: 'glossary' | 'category' | 'term' | Ref<'glossary' | 'category' | 'term'>, entityGuid:Ref<string>, cache?: boolean) => {
     const keyMap = {
         glossary: 'AtlasGlossary',
         category: 'AtlasGlossaryCategory',
@@ -39,7 +40,7 @@ const useGTCEntity = <T extends Glossary | Category | Term>(type: 'glossary' | '
     ];
 
     const getBody = () => ({
-        typeName: keyMap[type],
+        typeName: keyMap[type.value ? type.value : type],
         excludeDeletedEntities: false,
         includeClassificationAttributes: true,
         includeSubClassifications: true,
@@ -83,9 +84,22 @@ const useGTCEntity = <T extends Glossary | Category | Term>(type: 'glossary' | '
         }
     })
 
-    const entity = computed(() => data.value?.entities ? data.value?.entities[0] as T : undefined)
+    const entity = computed(() => data.value?.entities ? data.value?.entities[0] as T : undefined);
+    const title = computed(() => entity.value?.attributes?.name);
+    const shortDescription = computed(
+        () => entity.value?.attributes?.shortDescription
+    );
+    const qualifiedName = computed(
+        () => entity.value?.attributes?.qualifiedName ?? ''
+    );
+    const statusObject = computed(() =>
+        StatusList.find(
+            (status) =>
+                status.id === entity.value?.attributes?.assetStatus
+        )
+    );
 
-    watch(entityGuid, () => {
+    watch(entityGuid, (newGuid) => {
         body.value = getBody()
         mutate()
     });
@@ -95,7 +109,7 @@ const useGTCEntity = <T extends Glossary | Category | Term>(type: 'glossary' | '
         mutate()
     }
 
-    return { entity, error, isLoading, refetch }
+    return { entity, title, shortDescription, qualifiedName, statusObject, error, isLoading, refetch, mutate }
 }
 
 export default useGTCEntity;

@@ -54,7 +54,7 @@
                     :asset-type-map="assetTypeMap"
                     :total="totalSum"
                 ></AssetTabs>
-                <div
+                <!-- <div
                     class="flex items-center justify-between w-full px-3 py-2 border-b border-gray-300 "
                 >
                     <AssetPagination
@@ -66,7 +66,7 @@
                     <span v-else class="text-xs text-gray-500"
                         >Searching...</span
                     >
-                </div>
+                </div> -->
                 <div
                     v-if="
                         list && list.length <= 0 && !isLoading && !isValidating
@@ -83,6 +83,7 @@
                     :projection="projection"
                     :is-loading="isLoading || isValidating"
                     :is-load-more="isLoadMore"
+                    :automaticSelectFirstAsset="true"
                     @preview="handlePreview"
                     @loadMore="loadMore"
                 ></AssetList>
@@ -521,15 +522,6 @@
             const handleClearFiltersFromList = () => {
                 assetFilterRef.value?.resetAllFilters()
             }
-            // select fist asset automatically
-
-            watch(list, () => {
-                if (list.value.length > 0) {
-                    handlePreview(list.value[0])
-                } else {
-                    handlePreview(undefined)
-                }
-            })
 
             onMounted(() => {
                 fetchBMonStore()
@@ -589,6 +581,6 @@
 <style scoped>
     .facets {
         min-width: 264px;
-        width: 264px;
+        width: 25%;
     }
 </style>

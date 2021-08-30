@@ -1,7 +1,7 @@
 <template>
     <div class="flex w-full h-full">
-        <div class="flex-1 item-stretch">
-            <div class="flex flex-1 h-full">
+        <div class="flex-1 item-stretch" style="max-width: 70%">
+            <div class="flex h-full">
                 <router-view
                     v-if="isItem"
                     @updateAssetPreview="handlePreview"
@@ -114,8 +114,8 @@
 </script>
 <style scoped>
     .asset-preview-container {
-        width: 420px;
-        /* min-width: 420px; */
+        width: 30%;
+        min-width: 420px;
     }
 </style>
 <route lang="yaml">

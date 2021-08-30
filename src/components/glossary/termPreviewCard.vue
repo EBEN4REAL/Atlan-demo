@@ -1,6 +1,6 @@
 <template>
   <div class="flex flex-row py-4 pl-6">
-    <div><img :src="TermSvg" /></div>
+    <div class="flex flex-col min-w-max"><img :width="20" :src="TermSvg" /></div>
     
     <div class="flex flex-col ml-4">
       <h3 class="mb-0.5 p-0 text-sm font-bold leading-5 text-gray-500">{{ term.name ?? term.displayText }}</h3>

@@ -18,10 +18,10 @@
                     </div>
                 </div>
                 <div class="flex">
-                    <div class="mr-4 icon-btn">
-                        <AtlanIcon class="mr-2" icon="Share" />
-                        <span class="text-sm">Share</span>
-                    </div>
+                    <a-button class="flex items-center mr-4"
+                        ><atlan-icon icon="Share" class="w-auto h-4 mr-2" />
+                        <span class="mt-1 text-sm">Share</span></a-button
+                    >
                     <a-button
                         type="text"
                         class="p-0 text-xl"
@@ -102,15 +102,6 @@
 <style lang="less" scoped>
     .tab-height {
         max-height: calc(100vh - 12rem);
-    }
-    .icon-btn {
-        @apply flex;
-        @apply py-2 ml-2 px-3;
-        @apply rounded;
-        @apply text-gray;
-        @apply border border-gray-300;
-        @apply cursor-pointer;
-        @apply hover:bg-gray-100;
     }
 </style>
 <style lang="less" module>

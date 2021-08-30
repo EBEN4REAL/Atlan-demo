@@ -18,6 +18,9 @@ import ArrowDown from '~/assets/images/icons/arrow-down.svg'
 import Database from '~/assets/images/icons/database.svg'
 import Schema from '~/assets/images/icons/schema.svg'
 import Connection from '~/assets/images/icons/connection.svg'
+import ChevronRight from '~/assets/images/icons/chevron-right.svg'
+import AddUser from '~/assets/images/icons/add-user.svg'
+import Link from '~/assets/images/icons/link.svg'
 
 export default {
     BookmarkFilled,
@@ -40,4 +43,7 @@ export default {
     NotificationDot,
     ArrowDown,
     Connection,
+    ChevronRight,
+    AddUser,
+    Link,
 }

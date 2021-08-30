@@ -108,13 +108,13 @@
                 () => import('./businessMetadata/index.vue')
             ),
             tableauProperties: defineAsyncComponent(
-                () => import('./tableau/properties/index.vue')
+                () => import('@common/sidebar/tableau/properties/index.vue')
             ),
             tableauPreview: defineAsyncComponent(
-                () => import('./tableau/preview/index.vue')
+                () => import('@common/sidebar/tableau/preview/index.vue')
             ),
             tableauHierarchy: defineAsyncComponent(
-                () => import('./tableau/hierarchy/index.vue')
+                () => import('@common/sidebar/tableau/hierarchy/index.vue')
             ),
         },
         setup(props) {

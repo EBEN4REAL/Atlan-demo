@@ -12,8 +12,8 @@
                 borderTopRightRadius: variant == 'lg' ? '4px' : '2px',
                 borderBottomRightRadius: variant == 'lg' ? '4px' : '2px',
             }"
-            class="px-1 font-bold tracking-wide text-white border"
-            :class="variant == 'lg' ? 'text-xl pt-1' : 'text-xs pt-0.5'"
+            class="flex items-center justify-center px-1 font-bold tracking-wide text-white border  min-width"
+            :class="variant == 'lg' ? 'text-xl pt-1' : 'text-sm pt-0.5'"
             >{{ text }}</span
         >
     </div>
@@ -50,9 +50,12 @@
     })
 </script>
 
-<style>
+<style lang="less" scoped>
     .test {
         height: 100%;
         width: 100%;
+    }
+    .min-width {
+        min-width: 36px;
     }
 </style>

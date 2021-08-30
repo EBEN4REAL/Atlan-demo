@@ -1,5 +1,6 @@
 import { watch, ref, Ref,computed, ComputedRef } from 'vue';
 import { TreeDataItem } from 'ant-design-vue/lib/tree/Tree';
+import { useRouter, useRoute } from 'vue-router'
 
 import { useAPI } from "~/api/useAPI"
 import { GET_GTC_ENTITY } from "~/api/keyMaps/glossary"
@@ -8,17 +9,26 @@ import { Components } from '~/api/atlas/client';
 
 import { Glossary as GlossaryApi } from '~/api/atlas/glossary'
 
-import { projection } from "~/api/atlas/utils";
-import { BaseAttributes, BasicSearchAttributes } from '~/constant/projection';
 
 // composables
 import useGTCEntity from '~/composables/glossary/useGtcEntity'
 
-const useTree = (currentGuid: Ref<string>, type: Ref<'glossary' | 'category' | 'term'>) => {
+const useTree = () => {
+    const route = useRoute()
+    const router = useRouter()
+
+
     const categoryMap: { [key: string]: Components.Schemas.AtlasRelatedCategoryHeader[] } = {};
     const treeData = ref<TreeDataItem[]>([]);
     const parentGlossary = ref<Glossary>();
     const isInitingTree = ref(false);
+
+    const currentGuid = ref<string>(route.params.id as string);
+    const type = ref(
+        router.currentRoute.value.fullPath.split('/')[
+            router.currentRoute.value.fullPath.split('/').length - 2
+        ] as 'glossary' | 'category' | 'term'
+    );
 
     const { entity, error, isLoading, refetch } = useGTCEntity<
     Glossary | Term | Category
@@ -29,7 +39,6 @@ const useTree = (currentGuid: Ref<string>, type: Ref<'glossary' | 'category' | '
     )
    
     const initTreeData = async (guid: string) => {
-
         const categoryList = await GlossaryApi.ListCategoryHeadersForGlossary(guid, {});
         const termsList = await GlossaryApi.ListTermsForGlossary(guid, {});
         categoryMap[guid] = categoryList;
@@ -124,13 +133,36 @@ const useTree = (currentGuid: Ref<string>, type: Ref<'glossary' | 'category' | '
         } 
         else if(newEntity?.typeName === 'AtlasGlossaryCategory' || newEntity?.typeName === 'AtlasGlossaryTerm') {
             if(!treeData.value?.length){
-                parentGlossary.value = newEntity.attributes.anchor
-                initTreeData(newEntity?.attributes?.anchor?.guid)
+                // parentGlossary.value = newEntity.attributes.anchor
+                // initTreeData(newEntity?.attributes?.anchor?.guid)
+                currentGuid.value = newEntity?.attributes?.anchor?.guid;
+                type.value = 'glossary';
+                refetch()
             }
         }
     });
 
-    return { treeData, onLoadData, parentGlossary, isInitingTree}
+
+    watch(
+        () => route.params.id,
+        (newId) => {
+            currentGuid.value = newId as string
+            type.value =
+                router.currentRoute.value.fullPath.split('/')[
+                    router.currentRoute.value.fullPath.split('/')
+                        .length - 2
+                ] as 'glossary' | 'category' | 'term'
+        }
+    );
+
+    return { 
+        treeData, 
+        currentGuid,
+        type, 
+        onLoadData, 
+        parentGlossary, 
+        isInitingTree
+    }
 }
 
 export default useTree;

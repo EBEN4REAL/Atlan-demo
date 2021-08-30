@@ -56,7 +56,7 @@
                         }}
                     </span>
                 </div>
-                <a-dropdown :trigger="['click']">
+                <a-dropdown :trigger="['click']"   class="m-4">
                     <a class="ant-dropdown-link" @click.prevent>
                         <a-button
                             class="flex flex-col justify-center p-2 border-none  bg-primary-light text-primary"
@@ -66,8 +66,11 @@
                     </a>
                     <template #overlay>
                         <a-menu>
-                            <a-menu-item key="0"> New term </a-menu-item>
+                            <a-menu-item key="0" @click="() => createCategory(parentGlossary?.guid, 'fcdb1b5d-dbdd-4b84-995c-9a9a7cfc6921')"> New term </a-menu-item>
                             <a-menu-item key="1"> New category </a-menu-item>
+                            <hr>
+                            <a-menu-item key="2"> Bulk Upload Terms </a-menu-item>
+                            <a-menu-item key="3"> Bulk Upload Categories </a-menu-item>
                         </a-menu>
                     </template>
                 </a-dropdown>
@@ -136,13 +139,14 @@
     import { Glossary } from '~/types/glossary/glossary.interface'
 
     // composables
-    import handleTreeExpand from '~/composables/tree/handleTreeExpand'
+    import handleTreeExpand from '~/composables/tree/handleTreeExpand';
+    import useCreateGlossary from '~/composables/glossary/useCreateGlossary';
 
     // constant
     import GlossarySvg from '~/assets/images/gtc/glossary/glossary.png'
     import CategorySvg from '~/assets/images/gtc/category/category.png'
     import TermSvg from '~/assets/images/gtc/term/term.png'
-    import { Glossary } from '~/api/atlas/glossary'
+    // import { Glossary } from '~/api/atlas/glossary'
 
     export default defineComponent({
         components: { LoadingView },
@@ -185,10 +189,9 @@
         },
         setup(props, { emit }) {
             // data
-            // const { data: glossaryList, loading, error, mutate } = Glossary.List()
-
             const { selectedKeys, expandedKeys, expandNode, selectNode } =
                 handleTreeExpand(emit)
+            const { createGlossary, createCategory } = useCreateGlossary();
 
             const router = useRouter()
 
@@ -201,28 +204,10 @@
             }
             const backToHome = () => router.push('/glossary')
 
-            const handleSubmit = () => {
-                const { data, error, isLoading } = Glossary.CreateGlossaryTerm(
-                    body.value,
-                    body
-                )
-
-                watch(
-                    [data, error, isLoading],
-                    ([newData, newError, newLoading]) => {
-                        entity.value = newData
-                        error.value = newError
-                        isLoading.value = newLoading
-
-                        name.value = ''
-                        description.value = ''
-                    }
-                )
-            }
-
             return {
                 redirectToProfile,
                 backToHome,
+                createCategory,
                 GlossarySvg,
                 CategorySvg,
                 TermSvg,

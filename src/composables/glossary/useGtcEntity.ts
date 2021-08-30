@@ -1,4 +1,4 @@
-import { watch, ref, Ref,computed } from 'vue';
+import { watch, ref, Ref,computed, isRef } from 'vue';
 
 import { useAPI } from "~/api/useAPI"
 import { GET_GTC_ENTITY } from "~/api/keyMaps/glossary"
@@ -40,7 +40,7 @@ const useGTCEntity = <T extends Glossary | Category | Term>(type: 'glossary' | '
     ];
 
     const getBody = () => ({
-        typeName: keyMap[type.value ? type.value : type],
+        typeName: keyMap[isRef(type) ? type.value : type],
         excludeDeletedEntities: false,
         includeClassificationAttributes: true,
         includeSubClassifications: true,

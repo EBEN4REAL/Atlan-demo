@@ -41,7 +41,7 @@
 <script lang="ts">
     import { defineComponent, ref, watch, computed } from 'vue'
     import { useHead } from '@vueuse/head'
-    import { useRouter, useRoute } from 'vue-router'
+    import { useRouter } from 'vue-router'
 
     // components
     import GlossaryTree from '@common/tree/glossary/index.vue'
@@ -74,14 +74,8 @@
             })
 
             // data
-            const route = useRoute()
             const router = useRouter()
-            const currentGuid = ref<string>(route.params.id as string)
-            const type = ref(
-                router.currentRoute.value.fullPath.split('/')[
-                    router.currentRoute.value.fullPath.split('/').length - 2
-                ] as 'glossary' | 'category' | 'term'
-            )
+
             const parentGlossaryGuid = ref<string | undefined>('')
 
             const createGlossaryModalVisble = ref(false)
@@ -92,9 +86,14 @@
             const { glossaryList, refetch: refetchGlossaryList } =
                 useGlossaryList()
 
-            const { treeData, onLoadData, parentGlossary, isInitingTree } =
-                useTree(currentGuid, type)
-
+            const { 
+                treeData, 
+                currentGuid, 
+                onLoadData, 
+                parentGlossary, 
+                isInitingTree 
+            } = useTree()
+                
             // computed
             const isHome = computed(
                 () =>
@@ -138,18 +137,6 @@
                 }
             })
 
-            watch(
-                () => route.params.id,
-                (newId) => {
-                    currentGuid.value = newId as string
-                    type.value =
-                        router.currentRoute.value.fullPath.split('/')[
-                            router.currentRoute.value.fullPath.split('/')
-                                .length - 2
-                        ]
-                }
-            )
-
             return {
                 handleOpenModal,
                 handleCloseModal,
@@ -164,8 +151,6 @@
                 glossaryTreeRef,
                 currentGuid,
                 parentGlossaryGuid,
-                type,
-                route,
                 glossaryList,
                 treeData,
                 parentGlossary,

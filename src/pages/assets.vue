@@ -114,7 +114,7 @@
 </script>
 <style scoped>
     .asset-preview-container {
-        width: 420px;
+        width: 30%;
         min-width: 420px;
     }
 </style>

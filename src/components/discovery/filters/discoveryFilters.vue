@@ -1,5 +1,5 @@
 <template>
-    <div class="flex justify-between items-center px-4 pl-5 py-3.5 text-xs">
+    <div class="flex justify-between items-center px-4 pl-5 py-3.5 text-sm">
         <div class="font-medium text-gray-500">
             {{ totalAppliedFiltersCount || 'No' }}
             {{ totalAppliedFiltersCount > 1 ? 'filters' : 'filter' }}
@@ -7,15 +7,15 @@
         </div>
         <div class="flex items-center text-gray-500">
             <div
-                class="px-3 py-1 text-sm font-medium text-gray-500 rounded cursor-pointer  hover:font-bold"
+                class="py-1 text-sm font-medium text-gray-500 rounded cursor-pointer  hover:font-bold"
                 @click="resetAllFilters"
             >
                 Reset
             </div>
-            <a-button
-                class="px-3 py-1 text-sm font-medium border-0 rounded  bg-primary-light text-primary"
+            <!-- <a-button
+                class="px-3 py-1 text-sm font-medium border-0 rounded bg-primary-light text-primary"
                 >Save</a-button
-            >
+            > -->
         </div>
     </div>
     <a-collapse

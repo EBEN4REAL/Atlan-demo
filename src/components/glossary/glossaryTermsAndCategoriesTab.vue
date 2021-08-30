@@ -30,52 +30,21 @@
         <div v-if="isLoading && !all.length">
             <LoadingView />
         </div>
-        <div v-else-if="all.length" class="flex flex-row w-full mt-4">
+        <div v-else-if="all.length" class="flex flex-row w-full">
             <div class="w-full">
-                <a-tabs
-                    v-model:activeKey="activeKey"
-                    default-active-key="1"
-                    class="border-0"
-                    :class="$style.glossaryTermsTab"
+                <div
+                    class="overflow-auto"
+                    style="max-height: calc(100vh - 250px)"
                 >
-                    <a-tab-pane v-for="(item, idx) in assetTypeList" :key="idx">
-                        <template #tab>
-                            <div class="flex items-center">
-                                <p
-                                    class="my-0"
-                                    :class="{
-                                        'text-primary': activeKey === idx,
-                                    }"
-                                >
-                                    {{ item.name }}
-                                </p>
-                                <div
-                                    v-if="item.list.length"
-                                    class="px-2 mx-2"
-                                    :class="
-                                        activeKey === idx
-                                            ? 'bg-primary-light text-primary'
-                                            : 'bg-gray-100 text-gray-500'
-                                    "
-                                >
-                                    {{ item.list.length }}
-                                </div>
-                            </div>
-                        </template>
-                        <div
-                            class="overflow-auto"
-                            style="max-height: calc(100vh - 320px)"
-                        >
-                            <AssetList
-                                :list="item.list"
-                                :projection="projection"
-                                :isLoading="isLoading"
-                                @loadMore="loadMore"
-                                @gtcCardClicked="onEntitySelect"
-                            />
-                        </div>
-                    </a-tab-pane>
-                </a-tabs>
+                    <AssetList
+                        :list="all"
+                        :projection="projection"
+                        :isLoading="isLoading"
+                        :selectedEntity="selectedEntity"
+                        @loadMore="loadMore"
+                        @gtcCardClicked="onEntitySelect"
+                    />
+                </div>
             </div>
         </div>
         <div v-else-if="!all.length" class="mt-24">
@@ -241,12 +210,6 @@
                 () => [...terms.value, ...categories.value] ?? []
             )
 
-            const assetTypeList = computed(() => [
-                { name: 'All', list: [...all.value] },
-                { name: 'Terms', list: [...terms.value] },
-                { name: 'Categories', list: [...categories.value] },
-            ])
-
             // methods
             const onEntitySelect = (entity: Category | Term) => {
                 selectedEntity.value = entity
@@ -286,8 +249,6 @@
                 searchQuery,
                 all,
                 entities,
-                terms,
-                categories,
                 onSearch,
                 onEntitySelect,
                 loadMore,
@@ -299,7 +260,6 @@
                 projectionOptions,
                 projection,
                 activeKey,
-                assetTypeList,
             }
         },
     })

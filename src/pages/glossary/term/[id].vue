@@ -14,7 +14,7 @@
                     <div class="mr-5">
                         <img :src="TermSvg" />
                     </div>
-                    <div class="flex flex-col w-3/4">
+                    <div class="flex flex-col w-full">
                         <div class="flex">
                             <span class="mr-3 text-xl font-bold leading-6">{{
                                 title

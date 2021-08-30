@@ -1,5 +1,5 @@
 <template>
-    <div v-if="isLoaded" class="">
+    <div v-if="!isLoaded" class="">
         <a-collapse
             v-model:activeKey="activeKey"
             :bordered="false"
@@ -18,7 +18,7 @@
                 </div>
             </template>
             <a-collapse-panel
-                v-for="item in panels"
+                v-for="item in dynamicList"
                 :key="item.id"
                 class="bg-transparent"
             >
@@ -29,14 +29,8 @@
                 </template>
                 <component
                     :is="item.component"
-                    :ref="
-                        (el) => {
-                            refMap[item.id] = el
-                        }
-                    "
                     :item="item"
-                    :data="dataMap[item.id]"
-                    :selected-asset="selectedAsset"
+                    :selected-asset="infoTabData"
                     :tab-data="componentData"
                     @change="handleChange"
                 ></component>
@@ -59,9 +53,12 @@
         defineAsyncComponent,
         Ref,
         PropType,
+        toRefs,
+        watch,
     } from 'vue'
     import { CollapsiblePanels } from './List'
     import { assetInterface } from '~/types/assets/asset.interface'
+    import useBusinessMetadataHelper from '~/composables/businessMetadata/useBusinessMetadataHelper'
 
     export default defineComponent({
         name: 'InfoTab',
@@ -75,11 +72,11 @@
             ),
             usage: defineAsyncComponent(() => import('./usage/index.vue')),
 
-            businessMetadata1: defineAsyncComponent(
-                () => import('./businessMetadata1/index.vue')
-            ),
-            businessMetadata2: defineAsyncComponent(
-                () => import('./businessMetadata2/index.vue')
+            businessMetadata: defineAsyncComponent(
+                () =>
+                    import(
+                        '~/components/discovery/preview/tabs/info/businessMetadata/index.vue'
+                    )
             ),
             columnProfile: defineAsyncComponent(
                 () => import('./columnProfile/index.vue')
@@ -103,14 +100,19 @@
             },
         },
 
-        setup() {
+        setup(props) {
             const refMap: Ref<{
                 [key: string]: any
             }> = ref({})
 
+            const { selectedAsset } = toRefs(props)
+
+            const { getApplicableBmGroups } = useBusinessMetadataHelper()
+
             // Mapping of Data to child compoentns
             const dataMap: { [key: string]: any } = ref({})
-            const localStorage = window.localStorage
+            const { localStorage } = window
+
             function getUserDefaultCollapseOrderInInfoTab(): string[] {
                 let activeKeyOrder: string[] | undefined
                 if (localStorage.getItem('column_preview_info_tab')) {
@@ -141,16 +143,34 @@
             const handleCollapseChange = () => {
                 setUserDefaultCollapseOrderInInfoTab(activeKey.value)
             }
+            const applicableBMList = (typeName: string) =>
+                getApplicableBmGroups(typeName)?.map((b) => ({
+                    component: 'businessMetadata',
+                    id: b.name,
+                    label: b.options.displayName,
+                    image: b.options.image || '',
+                })) || []
+            const dynamicList = ref<any>([])
 
-            const panels = CollapsiblePanels
+            watch(
+                [selectedAsset],
+                () => {
+                    dynamicList.value = [
+                        ...CollapsiblePanels,
+                        ...applicableBMList(props.infoTabData?.typeName),
+                    ]
+                },
+                { immediate: true }
+            )
 
             return {
                 handleCollapseChange,
-                panels,
+
                 activeKey,
                 refMap,
                 dataMap,
                 handleChange,
+                dynamicList,
             }
         },
     })

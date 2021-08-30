@@ -66,6 +66,9 @@
         ref,
         Ref,
         provide,
+        toRefs,
+        watch,
+        onMounted,
     } from 'vue'
     import useColumnDetailsTabList from './tabs/useTabList'
     import { images, dataTypeList } from '~/constant/datatype'
@@ -86,7 +89,9 @@
         },
         emits: ['closeColumnSidebar', 'assetMutation'],
 
-        setup({ emit }) {
+        setup(props, { emit }) {
+            const { selectedRow } = toRefs(props)
+
             const { filteredTabs } = useColumnDetailsTabList()
             const activeKey = ref(0)
             const isLoaded: Ref<boolean> = ref(true)
@@ -106,6 +111,14 @@
                 })
                 return label
             }
+            function init() {
+                isLoaded.value = false
+
+                infoTabData.value = selectedRow.value
+            }
+            watch(() => selectedRow.value.guid, init)
+            onMounted(init)
+
             return {
                 isLoaded,
                 infoTabData,

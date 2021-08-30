@@ -14,7 +14,7 @@
                             <AtlanIcon icon="Link" class="m-0 mr-2" />
                             <p class="p-0 m-0">
                                 Go to
-                                {{ assetTypeLabel[entity.typeName] }}
+                                {{ assetTypeLabel[entity?.typeName] }}
                                 profile
                             </p>
                         </div>
@@ -28,7 +28,7 @@
                             <AtlanIcon icon="CopyOutlined" class="m-0 mr-2" />
                             <p class="p-0 m-0">
                                 Copy
-                                {{ assetTypeLabel[entity.typeName] }}
+                                {{ assetTypeLabel[entity?.typeName] }}
                                 profile link
                             </p>
                         </div>
@@ -61,7 +61,7 @@
                         <template #title>
                             <div class="flex items-center justify-between">
                                 <StatusBadge
-                                    :key="entity.guid"
+                                    :key="entity?.guid"
                                     :status-id="entity?.attributes?.assetStatus"
                                     :status-message="
                                         entity?.attributes?.assetStatusMessage
@@ -79,7 +79,7 @@
                         </template>
                         <a-menu-item class="m-0 bg-white">
                             <Status
-                                v-if="entity.guid"
+                                v-if="entity?.guid"
                                 :selectedAsset="entity"
                             />
                         </a-menu-item>
@@ -156,7 +156,7 @@
             const handleCopyProfileLink = () => {
                 const baseUrl = window.location.origin
                 const text = `${baseUrl}/glossary/${
-                    assetTypeLabel[props.entity.typeName]
+                    assetTypeLabel[props.entity?.typeName]
                 }/${props?.entity?.guid}`
                 copyToClipboard(text)
             }

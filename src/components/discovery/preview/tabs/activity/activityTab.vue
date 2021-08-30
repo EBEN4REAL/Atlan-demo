@@ -1,10 +1,10 @@
 <template>
     <div class="flex justify-end px-8 py-4">
-        <!-- <fa
+        <fa
             icon="fa sync"
             class="text-lg cursor-pointer text-primary"
             @click="refreshAudits"
-        ></fa> -->
+        ></fa>
     </div>
     <div
         v-if="isLoading"

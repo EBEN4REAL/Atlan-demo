@@ -64,10 +64,18 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, SetupContext, ref, toRefs, watch } from 'vue'
+    import {
+        defineComponent,
+        SetupContext,
+        ref,
+        toRefs,
+        watch,
+        PropType,
+    } from 'vue'
     import GtcEntityCard from '@/glossary/gtcEntityCard.vue'
     import VirtualList from '~/utils/library/virtualList/virtualList.vue'
     import { Category, Term } from '~/types/glossary/glossary.interface'
+    import { assetInterface } from '~/types/assets/asset.interface'
 
     export default defineComponent({
         name: 'AssetList',
@@ -104,16 +112,21 @@
                     return false
                 },
             },
+            selectedEntity: {
+                type: Object as PropType<assetInterface>,
+                required: false,
+                default() {
+                    return undefined
+                },
+            },
         },
         emits: ['loadMore', 'gtcCardClicked'],
         setup(props, ctx: SetupContext) {
-            const selectedEntity = ref<Category | Term>()
-
             const handleGtcCardClicked = (entity: Category | Term) => {
-                selectedEntity.value = entity
                 ctx.emit('gtcCardClicked', entity)
             }
-            return { selectedEntity, handleGtcCardClicked }
+            console.log(props.selectedEntity)
+            return { handleGtcCardClicked }
         },
     })
 </script>

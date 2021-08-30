@@ -85,8 +85,8 @@
                                     class="min-w-full"
                                     @click="() => redirectToProfile(type, key)"
                                 >
-                                    <div class="flex content-center">
-                                        <span class="mr-2 p-0">
+                                    <div class="flex">
+                                        <span class="mr-2 my-auto p-0">
                                             <img
                                                 v-if="type === 'glossary'"
                                                 :src="GlossarySvg"

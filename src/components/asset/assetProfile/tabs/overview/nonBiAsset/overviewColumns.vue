@@ -24,8 +24,7 @@
         </div>
         <!-- Table -->
         <div
-            class="overflow-y-scroll border border-gray-light"
-            style="max-width: calc(100vw - 28rem); max-height: 20rem"
+            class="relative overflow-scroll border border-gray-light h-60 max-h-60"
         >
             <a-table
                 :columns="columns"
@@ -35,6 +34,7 @@
                 :loading="!columnsData.filteredList"
                 :custom-row="customRow"
                 :row-class-name="rowClassName"
+                class="absolute left-0 w-full"
             >
                 <!-- hash_index col -->
                 <template #hash_index="{ text, record }">
@@ -129,6 +129,8 @@
 <script lang="ts">
     // Vue
     import { defineComponent, inject, watch, computed, ref, provide } from 'vue'
+    import { useRoute, useRouter } from 'vue-router'
+
     // Components
     import SearchAndFilter from '@/common/input/searchAndFilter.vue'
     import preferences from './preferences.vue'
@@ -154,11 +156,14 @@
             /** INJECTIONS */
             const assetDataInjection = inject('assetData')
 
+            /** UTILS */
+            const route = useRoute()
+
             /** COMPUTED */
             const assetData = computed(() => assetDataInjection?.asset)
+            const column = computed(() => route?.query?.column || '')
 
             /** METHODS */
-
             // getColumnTypes
             const getColumnTypes = (filteredList: any[]) => {
                 const filtersIdSet = new Set()
@@ -260,7 +265,6 @@
 
                         showColumnPreview.value = true
                     }
-                    console.log(selectedRowData.value)
                 },
             })
 
@@ -279,7 +283,12 @@
                 filterColumnsList(columnList.value)
             })
 
+            watch(column, () => {
+                console.log('xxx column from url:', column)
+            })
+
             return {
+                column,
                 rowClassName,
                 customRow,
                 filterByQuery,

@@ -1,5 +1,8 @@
 <template>
-    <div class="group-hover:opacity-100" :class="isVisible ? 'opacity-100' : ''" >
+    <div
+        class="group-hover:opacity-100"
+        :class="isVisible ? 'opacity-100' : ''"
+    >
         <a-dropdown v-model:visible="isVisible" :trigger="['click']">
             <a-button class="px-2" @click.prevent>
                 <fa icon="fal ellipsis-v" class="h-4" />
@@ -143,7 +146,7 @@
             },
         },
         setup(props) {
-            const isVisible = ref(false);
+            const isVisible = ref(false)
 
             const assetTypeLabel = {
                 AtlasGlossaryTerm: 'term',
@@ -158,7 +161,6 @@
                 copyToClipboard(text)
             }
 
-            console.log(assetTypeLabel[props.entity.typeName])
             return { handleCopyProfileLink, assetTypeLabel, isVisible }
         },
     })

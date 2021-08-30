@@ -72,7 +72,7 @@
                                 />
                             </div>
                         </a-collapse-panel>
-                        <a-collapse-panel key="properties" header="Properties">
+                        <a-collapse-panel key="3" header="Properties">
                             <div class="px-6 py-0 text-gray-500">
                                 <p class="p-0 m-0 mb-2">Formula</p>
                                 <p class="p-0 m-0 mb-6 text-sm">Add formula</p>
@@ -94,7 +94,15 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, PropType, computed, ref, inject } from 'vue'
+    import {
+        defineComponent,
+        PropType,
+        computed,
+        ref,
+        inject,
+        watch,
+        defineAsyncComponent,
+    } from 'vue'
 
     import GlossaryTopTerms from '@/glossary/common/glossaryTopTerms.vue'
     import Owners from '@/discovery/preview/tabs/info/assetDetails/owners.vue'
@@ -109,6 +117,8 @@
         Term,
     } from '~/types/glossary/glossary.interface'
     import { Components } from '~/api/atlas/client'
+    import businessMetadataListVue from '~/components/admin/custom-metadata/businessMetadataList.vue'
+    import useBusinessMetadataHelper from '~/composables/businessMetadata/useBusinessMetadataHelper'
 
     export default defineComponent({
         components: {
@@ -118,6 +128,12 @@
             Status,
             Experts,
             Activity,
+            businessMetadata: defineAsyncComponent(
+                () =>
+                    import(
+                        '@/discovery/preview/tabs/info/businessMetadata/index.vue'
+                    )
+            ),
         },
         props: {
             entity: {
@@ -137,6 +153,7 @@
             const activeKey = ref(['1'])
 
             const refreshEntity = inject<() => void>('refreshEntity')
+            const { getApplicableBmGroups } = useBusinessMetadataHelper()
 
             const shortDescription = computed(
                 () => props.entity?.attributes?.shortDescription
@@ -148,6 +165,38 @@
                 () => props.entity?.attributes?.categories?.length ?? 0
             )
             const glossaryTerms = computed(() => props.topTerms ?? [])
+
+            // TODO: add BM panel
+
+            // const applicableBMList = (typeName: string) => {
+
+            // ?returning an empty array
+
+            //     const ar =
+            //         getApplicableBmGroups(typeName)?.map((b) => ({
+            //             component: 'businessMetadata',
+            //             id: b.name,
+            //             label: b.options.displayName,
+            //             image: b.options.image || '',
+            //         })) || []
+            //     console.log(typeName)
+            //     console.log(ar)
+            // }
+            // const dynamicList = ref([])
+            // applicableBMList(props.entity.typeName)
+            // // watch(
+            //     props.entity,
+            //     () => {
+            //         dynamicList.value = [
+            //             ...applicableBMList(props.entity.typeName),
+            //         ]
+            //         console.log(applicableBMList(props.entity.typeName))
+            //     },
+            //     { immediate: true }
+            // )
+
+            // console.log(dynamicList.value)
+            // console.log(props.entity.typeName)
             return {
                 shortDescription,
                 termCount,

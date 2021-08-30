@@ -132,7 +132,7 @@
 import { defineComponent, computed, watch } from 'vue'
 
 // components
-import Owners from '@/preview/asset/tabs/overview/details/owners.vue'
+import Owners from '@common/sidebar/owners.vue'
 import GlossaryAddDescriptionCard from '@/glossary/glossaryAddDescriptionCard.vue'
 import { Components } from '~/api/atlas/client'
 // static

@@ -105,10 +105,10 @@
     } from 'vue'
 
     import GlossaryTopTerms from '@/glossary/common/glossaryTopTerms.vue'
-    import Owners from '@/discovery/preview/tabs/info/assetDetails/owners.vue'
-    import Experts from '@/discovery/preview/tabs/info/assetDetails/experts.vue'
-    import Description from '@/discovery/preview/tabs/info/assetDetails/description.vue'
-    import Status from '@/discovery/preview/tabs/info/assetDetails/status.vue'
+    import Owners from '@common/sidebar/owners.vue'
+    import Experts from '@common/sidebar/experts.vue'
+    import Description from '@common/sidebar/description.vue'
+    import Status from '@common/sidebar/status.vue'
     import Activity from '~/components/discovery/preview/tabs/activity/activityTab.vue'
 
     import {

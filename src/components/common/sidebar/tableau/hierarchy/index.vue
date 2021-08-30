@@ -1,10 +1,10 @@
 <template>
-    <ul class="list-unstyled">
+    <ul class="mb-0 list-unstyled">
         <li
             v-for="(path, index) in getParentsFiltered"
             :key="path.id"
             :class="$style.item"
-            class="px-2 py-2 hover:bg-gray-100 hover:rounded"
+            class="px-5 py-2 hover:bg-gray-100 hover:rounded hierarchy-row"
         >
             <div
                 :class="$style.itemDots"
@@ -12,30 +12,42 @@
                 :style="{ backgroundImage: `url(${dottedUrl})` }"
             />
             <div :class="$style.itemPicContainer">
-                <div v-if="index === 0" :class="$style.itemPic" class="border">
-                    <img :src="logo(selectedAsset)" :class="$style.itemType" />
+                <div
+                    v-if="index === 0"
+                    :class="$style.itemPic"
+                    class="bg-white border"
+                >
+                    <a-tooltip placement="left">
+                        <template #title> Tableau Server </template>
+                        <img
+                            :src="logo(selectedAsset)"
+                            :class="$style.itemType"
+                        />
+                    </a-tooltip>
                 </div>
                 <div
                     v-else
-                    :class="$style.itemPic"
-                    class="flex items-center justify-center border"
+                    class="flex items-center justify-center border cursor-default "
                 >
-                    <TableauIcon :typeName="path.icon" />
+                    <a-tooltip placement="left">
+                        <template #title>
+                            {{ path.label }}
+                        </template>
+                        <TableauIcon :typeName="path.icon" />
+                    </a-tooltip>
                 </div>
             </div>
-            <div class="flex justify-between" :class="$style.ellipsis">
+            <div
+                class="flex items-center justify-between"
+                :class="$style.ellipsis"
+            >
                 <div v-if="path?.subProjects && path?.subProjects?.length > 0">
-                    <div class="flex flex-wrap max-w-full">
+                    <div class="flex flex-wrap max-w-full mt-1">
                         <div class="flex flex-col">
                             <p
                                 class="mb-0 text-sm text-blue-600 truncate  lh-sm"
                             >
-                                <a-tooltip placement="left">
-                                    <template #title>
-                                        {{ path.value ?? path.name }}
-                                    </template>
-                                    {{ path.value ?? path.name }}
-                                </a-tooltip>
+                                {{ path.value ?? path.name }}
                             </p>
                         </div>
 
@@ -44,9 +56,8 @@
                             :key="item.id"
                         >
                             <div class="flex">
-                                <div class="mx-1">
-                                    <!-- <AtlanIcon icon="ArrowRight" /> -->
-                                    ->
+                                <div class="mx-1 mt-0.5">
+                                    <AtlanIcon icon="ChevronRight" />
                                 </div>
                                 <p
                                     class="mb-0 text-sm text-blue-600 truncate  lh-sm"
@@ -56,27 +67,22 @@
                             </div>
                         </template>
                     </div>
-                    <div class="flex items-center justify-between mb-0">
+                    <!-- <div class="flex items-center justify-between mb-0">
                         <p class="mb-0 text-xs text-gray-500 line-height-1">
                             {{ 'Project' }}
                         </p>
-                    </div>
+                    </div> -->
                 </div>
 
-                <div class="flex flex-col max-w-full" v-else>
+                <div class="flex flex-col max-w-full mt-1" v-else>
                     <p class="mb-0 text-sm text-blue-600 truncate lh-sm">
-                        <a-tooltip placement="left">
-                            <template #title>
-                                {{ path.value }}
-                            </template>
-                            {{ path.value }}
-                        </a-tooltip>
+                        {{ path.value }}
                     </p>
-                    <div class="flex items-center justify-between mb-0">
+                    <!-- <div class="flex items-center justify-between mb-0">
                         <p class="mb-0 text-xs text-gray-500 line-height-1">
                             {{ path.label }}
                         </p>
-                    </div>
+                    </div> -->
                 </div>
             </div>
         </li>
@@ -125,13 +131,12 @@
         flex-direction: row;
         flex-wrap: nowrap;
         position: relative;
-        min-height: 58px;
 
         .itemDots {
             position: absolute;
             top: calc(50% + 26px);
             transform: translateY(-50%);
-            left: 24px;
+            left: 35px;
             bottom: 0;
             width: 5px;
             height: 24px;
@@ -156,6 +161,7 @@
         align-self: flex-start;
         position: relative;
         margin-right: 10px;
+        margin-top: 5px;
         overflow: hidden;
         // margin-left: rem(15);
     }
@@ -184,7 +190,7 @@
         width: 36px;
         height: 36px;
         border-radius: 50%;
-        line-height: 36px;
+        line-height: 30px;
         flex-shrink: 0;
         overflow: hidden;
     }
@@ -200,5 +206,14 @@
 
     .ellipsis {
         width: calc(100% - 3rem);
+    }
+</style>
+<style lang="less" scoped>
+    .hierarchy-row:first-child {
+        @apply pt-0 pb-2 !important;
+        padding-top: 0 !important;
+    }
+    .itemPicContainer:first-child {
+        margin-top: 0 !important;
     }
 </style>

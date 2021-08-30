@@ -119,7 +119,6 @@
             >
                 <ColumnPreview
                     :selected-row="selectedRowData"
-                    page="columnPreview"
                     @closeColumnSidebar="handleCloseColumnSidebar"
                 />
             </a-drawer>
@@ -147,6 +146,7 @@
             const filters = ref([])
             const typeFilters = ref([])
             const columnsData = ref({})
+            const columnPreviewData = ref({})
             const selectedRow = ref(null)
             const selectedRowData = ref({})
             const showColumnPreview = ref<boolean>(false)
@@ -226,6 +226,7 @@
                         classifications: 'N/A',
                     })
                 )
+                columnPreviewData.value = { filteredList }
 
                 columnsData.value = {
                     filteredList: filteredListData,
@@ -248,18 +249,15 @@
                         handleCloseColumnSidebar()
                     else {
                         selectedRow.value = record.key
-                        columnsData.value.filteredList.forEach(
+                        columnPreviewData.value.filteredList.forEach(
                             (singleRow: {}) => {
-                                if (singleRow.key === record.key) {
+                                if (singleRow.attributes.order === record.key) {
                                     selectedRowData.value = singleRow
                                 }
                             }
                         )
                         showColumnPreview.value = true
                     }
-                    // emit record here for column asset preview
-
-                    console.log(selectedRowData.value)
                 },
             })
 

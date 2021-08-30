@@ -5,16 +5,22 @@
                 <div class="w-full">
                     <div class="flex items-center mb-0.5">
                         <component
-                            :is="images[selectedRow?.data_type]"
+                            :is="
+                                images[
+                                    getDataType(
+                                        selectedRow?.attributes?.dataType
+                                    )
+                                ]
+                            "
                             class="w-4 h-4 mr-1.5 mb-0.5"
                         ></component>
                         <Tooltip
-                            :tooltip-text="selectedRow?.column_name"
+                            :tooltip-text="selectedRow?.attributes?.name"
                             classes="text-base font-bold text-gray-700 capitalize"
                         />
                     </div>
                     <div class="text-gray-500">
-                        {{ selectedRow?.data_type }}
+                        {{ getDataType(selectedRow?.attributes?.dataType) }}
                     </div>
                 </div>
                 <div class="flex">
@@ -42,7 +48,7 @@
                     :is="tab.component"
                     :component-data="dataMap[tab.id]"
                     :info-tab-data="infoTabData"
-                    :selected-row="selectedRow"
+                    :selected-asset="selectedRow"
                     :is-loaded="isLoaded"
                     @change="handleChange"
                 ></component>
@@ -61,7 +67,8 @@
         Ref,
     } from 'vue'
     import useColumnDetailsTabList from './tabs/useTabList'
-    import { images } from '~/constant/datatype'
+    import { images, dataTypeList } from '~/constant/datatype'
+    import { assetInterface } from '~/types/assets/asset.interface'
 
     export default defineComponent({
         name: 'ColumnPreview',
@@ -72,7 +79,7 @@
         },
         props: {
             selectedRow: {
-                type: Object as PropType<any>,
+                type: Object as PropType<assetInterface>,
                 required: true,
             },
         },
@@ -87,6 +94,13 @@
             const handleChange = (value: any) => {}
             const infoTabData: Ref<any> = ref({})
 
+            const getDataType = (type: string) => {
+                let label = ''
+                dataTypeList.forEach((i) => {
+                    if (i.type.includes(type)) label = i.label
+                })
+                return label
+            }
             return {
                 isLoaded,
                 infoTabData,
@@ -95,6 +109,7 @@
                 filteredTabs,
                 handleChange,
                 images,
+                getDataType,
             }
         },
     })

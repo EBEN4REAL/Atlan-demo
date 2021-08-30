@@ -65,6 +65,7 @@
         PropType,
         ref,
         Ref,
+        provide,
     } from 'vue'
     import useColumnDetailsTabList from './tabs/useTabList'
     import { images, dataTypeList } from '~/constant/datatype'
@@ -83,9 +84,9 @@
                 required: true,
             },
         },
-        emits: ['closeColumnSidebar'],
+        emits: ['closeColumnSidebar', 'assetMutation'],
 
-        setup() {
+        setup({ emit }) {
             const { filteredTabs } = useColumnDetailsTabList()
             const activeKey = ref(0)
             const isLoaded: Ref<boolean> = ref(true)
@@ -93,6 +94,10 @@
             const dataMap: { [id: string]: any } = ref({})
             const handleChange = (value: any) => {}
             const infoTabData: Ref<any> = ref({})
+
+            provide('mutateSelectedAsset', (updatedAsset: assetInterface) => {
+                emit('assetMutation', updatedAsset)
+            })
 
             const getDataType = (type: string) => {
                 let label = ''

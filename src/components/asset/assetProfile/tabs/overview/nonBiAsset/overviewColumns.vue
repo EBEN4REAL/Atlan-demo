@@ -245,6 +245,7 @@
             // customRow Antd
             const customRow = (record: { key: null }) => ({
                 onClick: () => {
+                    // Column preview trigger
                     if (selectedRow.value === record.key)
                         handleCloseColumnSidebar()
                     else {
@@ -256,8 +257,10 @@
                                 }
                             }
                         )
+
                         showColumnPreview.value = true
                     }
+                    console.log(selectedRowData.value)
                 },
             })
 

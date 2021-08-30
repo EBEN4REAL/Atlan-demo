@@ -36,7 +36,7 @@
                     "
                     :item="item"
                     :data="dataMap[item.id]"
-                    :selected-row="selectedRow"
+                    :selected-asset="selectedAsset"
                     :tab-data="componentData"
                     @change="handleChange"
                 ></component>
@@ -61,6 +61,7 @@
         PropType,
     } from 'vue'
     import { CollapsiblePanels } from './List'
+    import { assetInterface } from '~/types/assets/asset.interface'
 
     export default defineComponent({
         name: 'InfoTab',
@@ -90,11 +91,11 @@
                 type: Object as PropType<any>,
             },
             infoTabData: {
-                type: Object as PropType<any>,
+                type: Object as PropType<assetInterface>,
                 required: true,
             },
-            selectedRow: {
-                type: Object as PropType<any>,
+            selectedAsset: {
+                type: Object as PropType<assetInterface>,
                 required: true,
             },
             isLoaded: {

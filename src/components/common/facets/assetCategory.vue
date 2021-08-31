@@ -5,13 +5,16 @@
         @change="handleChange"
     >
         <div class="flex flex-col w-full">
-            <template v-for="item in list" :key="item.id">
-                <div class="mb-3 status">
+            <template v-for="(item, index) in list" :key="item.id">
+                <div class="pb-2.5 mb-3 border-b" v-if="index == 0">
                     <a-checkbox :value="item.id" class="w-full">
-                        <component
-                            class="inline-flex self-center w-auto h-4 mb-1"
-                            :is="item.icon"
-                        />
+                        <span class="mb-0 ml-1 text-gray">
+                            {{ item.label }}
+                        </span>
+                    </a-checkbox>
+                </div>
+                <div class="mb-3 status" v-else>
+                    <a-checkbox :value="item.id" class="w-full">
                         <span class="mb-0 ml-1 text-gray">
                             {{ item.label }}
                         </span>
@@ -25,7 +28,7 @@
 <script lang="ts">
     import { computed, defineComponent, PropType, ref, toRefs } from 'vue'
     import { Components } from '~/api/atlas/client'
-    import { List } from '~/constant/status'
+    import { List } from '~/constant/assetCategory'
     import { Collapse } from '~/types'
 
     export default defineComponent({

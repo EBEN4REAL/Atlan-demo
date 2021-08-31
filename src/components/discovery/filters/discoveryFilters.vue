@@ -44,7 +44,7 @@
             <template #header>
                 <div :key="dirtyTimestamp" class="select-none">
                     <div class="flex justify-between">
-                        <span>
+                        <span class="text-gray">
                             <img
                                 v-if="item.image"
                                 :src="item.image"
@@ -55,7 +55,7 @@
 
                         <div
                             v-if="isFilter(item.id) && !activeKey"
-                            class="absolute text-gray-500 opacity-0  carrot-top right-12 hover:font-bold group-hover:opacity-100"
+                            class="absolute text-gray-500 opacity-0  top-3 carrot-top right-12 hover:text-primary group-hover:opacity-100"
                             @click.stop.prevent="handleClear(item.id)"
                         >
                             Clear
@@ -63,7 +63,7 @@
 
                         <div
                             v-if="isFilter(item.id) && activeKey"
-                            class="absolute text-gray-500 opacity-0  top-3 right-12 hover:font-bold group-hover:opacity-100"
+                            class="absolute text-gray-500 opacity-0  top-3 right-12 hover:text-primary group-hover:opacity-100"
                             @click.stop.prevent="handleClear(item.id)"
                         >
                             Clear
@@ -105,6 +105,7 @@
     import { useClassificationStore } from '~/components/admin/classifications/_store'
     import useBusinessMetadataHelper from '~/composables/businessMetadata/useBusinessMetadataHelper'
     import { List as StatusList } from '~/constant/status'
+    import { List as AssetCategoryList } from '~/constant/assetCategory'
     import { List } from './filters'
 
     export default defineComponent({
@@ -112,6 +113,9 @@
         components: {
             Status: defineAsyncComponent(
                 () => import('@common/facets/status.vue')
+            ),
+            AssetCategory: defineAsyncComponent(
+                () => import('@common/facets/assetCategory.vue')
             ),
             Owners: defineAsyncComponent(
                 () => import('@common/facets/owners.vue')
@@ -142,6 +146,14 @@
             // console.log(props.initialFilters.facetsFilters, 'facetFilters')
             const activeKey: Ref<string> = ref('')
             const initialFilterMap = {
+                assetCategory: {
+                    condition:
+                        props.initialFilters.facetsFilters.assetCategory
+                            .condition,
+                    criterion:
+                        props.initialFilters.facetsFilters.assetCategory
+                            .criterion,
+                },
                 status: {
                     condition:
                         props.initialFilters.facetsFilters.status.condition,
@@ -211,6 +223,10 @@
 
             // Mapping of Data to child components
             const dataMap: { [key: string]: any } = ref({})
+            dataMap.value.assetCategory = {
+                checked:
+                    props.initialFilters.facetsFilters.assetCategory.checked,
+            }
             dataMap.value.status = {
                 checked: props.initialFilters.facetsFilters.status.checked,
             }
@@ -218,6 +234,7 @@
                 classifications: computed(
                     () => classificationsStore.classifications
                 ),
+                noClassificationsAssigned: false,
                 checked:
                     props.initialFilters.facetsFilters.classifications.checked,
             }
@@ -227,6 +244,7 @@
                 groupValue:
                     props.initialFilters.facetsFilters?.owners?.groupValue ||
                     [],
+                noOwnerAssigned: false,
             }
             dataMap.value.advanced = {
                 list: props.initialFilters.facetsFilters.advanced.list,
@@ -295,6 +313,11 @@
 
             const handleClear = (filterId: string) => {
                 switch (filterId) {
+                    case 'assetCategory': {
+                        dataMap.value[filterId].checked = []
+                        filterMap[filterId].criterion = []
+                        break
+                    }
                     case 'status': {
                         dataMap.value[filterId].checked = []
                         filterMap[filterId].criterion = []
@@ -302,12 +325,15 @@
                     }
                     case 'classifications': {
                         dataMap.value[filterId].checked = []
+                        dataMap.value[filterId].noClassificationsAssigned =
+                            false
                         filterMap[filterId].criterion = []
                         break
                     }
                     case 'owners': {
                         dataMap.value[filterId].userValue = []
                         dataMap.value[filterId].groupValue = []
+                        dataMap.value[filterId].noOwnerAssigned = false
                         filterMap[filterId].criterion = []
                         break
                     }
@@ -324,6 +350,25 @@
             }
             function getFiltersAppliedString(filterId: string) {
                 switch (filterId) {
+                    case 'assetCategory': {
+                        let facetFiltersData = dataMap.value[filterId].checked
+                        facetFiltersData = facetFiltersData.map(
+                            (assetCategoryId: string) =>
+                                AssetCategoryList?.find(
+                                    (assetCategory: any) =>
+                                        assetCategory.id === assetCategoryId
+                                ).label
+                        )
+                        if (facetFiltersData.length > 2) {
+                            return `${facetFiltersData
+                                .slice(0, 2)
+                                .join(', ')} +${
+                                facetFiltersData.length - 2
+                            } others`
+                        }
+
+                        return facetFiltersData.slice(0, 2).join(', ')
+                    }
                     case 'status': {
                         let facetFiltersData = dataMap.value[filterId].checked
                         facetFiltersData = facetFiltersData.map(
@@ -351,12 +396,21 @@
                                 facetFiltersData.length - 3
                             } others`
                         }
+                        let noClassificationsAssigned = dataMap.value[filterId]
+                            .noClassificationsAssigned
+                            ? 'No Classifications'
+                            : ''
 
-                        return facetFiltersData.slice(0, 3).join(', ')
+                        return (
+                            noClassificationsAssigned +
+                            facetFiltersData.slice(0, 3).join(', ')
+                        )
                     }
                     case 'owners': {
                         const users = dataMap.value[filterId].userValue
                         const groups = dataMap.value[filterId].groupValue
+                        const noOwnerAssigned =
+                            dataMap.value[filterId].noOwnerAssigned
                         let appliedOwnersString = ''
                         if (users && users?.length > 0) {
                             if (users?.length === 1)
@@ -374,6 +428,7 @@
                             else
                                 appliedOwnersString += `${groups.length} groups`
                         }
+                        if (noOwnerAssigned) appliedOwnersString += 'No Owners'
 
                         return appliedOwnersString
                     }
@@ -394,6 +449,7 @@
             }
 
             function resetAllFilters() {
+                dataMap.value.assetCategory.checked = []
                 dataMap.value.status.checked = []
                 dataMap.value.classifications.checked = []
                 dataMap.value.owners.userValue = []

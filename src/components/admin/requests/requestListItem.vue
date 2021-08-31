@@ -1,5 +1,9 @@
 <template>
-    <div class="flex items-center justify-between mb-2">
+    <div
+        class="flex items-center justify-between mb-2"
+        :class="{ 'border-2 border-primary-focus': selected }"
+        @click="$emit('select', request.id)"
+    >
         <div>
             <p class="mb-1">{{ request.id }}</p>
             <p class="mb-0">{{ request.message }}</p>
@@ -46,7 +50,13 @@
                 type: Object as PropType<RequestAttributes>,
                 required: true,
             },
+            selected: {
+                type: Boolean,
+                default: () => false,
+                required: false,
+            },
         },
+        emits: ['select'],
         setup(props) {
             const { request } = toRefs(props)
             const state = reactive({

@@ -66,10 +66,10 @@
                     </a>
                     <template #overlay>
                         <a-menu>
-                            <a-menu-item key="0" @click="createGlossary">
+                            <a-menu-item key="0" @click="createNewTerm">
                                 New term
                             </a-menu-item>
-                            <a-menu-item key="1"> New category </a-menu-item>
+                            <a-menu-item key="1" @click="createNewCategory"> New category </a-menu-item>
                             <hr />
                             <a-menu-item key="2">
                                 Bulk Upload Terms
@@ -180,7 +180,7 @@
             },
             parentGlossary: {
                 type: Object as PropType<Glossary>,
-                required: false,
+                required: true,
                 default: () => {},
             },
             isLoading: {
@@ -203,8 +203,7 @@
             // data
             const { selectedKeys, expandedKeys, expandNode, selectNode } =
                 handleTreeExpand(emit)
-            const { createGlossary, createCategory } = useCreateGlossary()
-            const { deleteTerm } = useDeleteGlossary()
+            const { createTerm, createCategory } = useCreateGlossary()
 
             const router = useRouter()
 
@@ -217,11 +216,18 @@
             }
             const backToHome = () => router.push('/glossary')
 
+            const createNewTerm = () => {
+                createTerm(props.parentGlossary?.guid ?? '')
+            }
+            const createNewCategory = () => {
+                createCategory(props.parentGlossary?.guid ?? '');
+            }
+
             return {
                 redirectToProfile,
                 backToHome,
-                createGlossary,
-                deleteTerm,
+                createNewCategory,
+                createNewTerm,
                 GlossarySvg,
                 CategorySvg,
                 TermSvg,

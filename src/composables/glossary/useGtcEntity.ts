@@ -1,4 +1,4 @@
-import { watch, ref, Ref,computed, isRef } from 'vue';
+import { watch, ref, Ref,computed, isRef, WritableComputedRef } from 'vue';
 
 import { useAPI } from "~/api/useAPI"
 import { GET_GTC_ENTITY } from "~/api/keyMaps/glossary"
@@ -75,7 +75,7 @@ const useGTCEntity = <T extends Glossary | Category | Term>(type: 'glossary' | '
     });
 
     body.value = getBody();
-    const { data, error, isValidating: isLoading, mutate } = useAPI<any>(GET_GTC_ENTITY, 'POST', {
+    const { data, error, isLoading, mutate } = useAPI<any>(GET_GTC_ENTITY, 'POST', {
         cache: cache ?? true,
         dependantFetchingKey: entityGuid,
         body,
@@ -85,7 +85,13 @@ const useGTCEntity = <T extends Glossary | Category | Term>(type: 'glossary' | '
     })
 
     const entity = computed(() => data.value?.entities ? data.value?.entities[0] as T : undefined);
-    const title = computed(() => entity.value?.attributes?.name);
+    const title: WritableComputedRef<string | undefined> = computed({
+        get: () => entity.value?.attributes?.name ?? '',
+        set: (val: string) => {
+            if(entity.value)
+                entity.value.attributes.name = val;
+        }
+    });
     const shortDescription = computed(
         () => entity.value?.attributes?.shortDescription
     );

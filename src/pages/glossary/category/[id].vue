@@ -46,6 +46,22 @@
                 >
                     <a-tab-pane key="1" tab="Overview">
                         <div class="px-8 mt-4">
+                            <div v-if="isNewCategory" class="mb-4">
+                                <p class="mb-1 p-0 text-sm leading-5 text-gray-700">Name</p>
+                                <div class="flex">
+                                    <a-input 
+                                        v-model:value="newName"
+                                        style="width: 200px"
+                                    />
+                                    <a-button 
+                                        v-if="newName" 
+                                        class="ml-4" 
+                                        type="primary"
+                                        @click="updateTitle"    
+                                    >Submit</a-button>
+                                </div>
+
+                            </div>
                             <GlossaryProfileOverview :entity="category" />
                         </div>
                     </a-tab-pane>
@@ -94,6 +110,7 @@
     // composables
     import useGTCEntity from '~/composables/glossary/useGtcEntity'
     import useCategoryTerms from '~/composables/glossary/useCategoryTerms'
+    import useUpdateGtcEntity from '~/composables/glossary/useUpdateGtcEntity'
 
     // static
     import { Category, Term } from '~/types/glossary/glossary.interface'
@@ -120,7 +137,9 @@
             const guid = toRef(props, 'id')
             const currentTab = ref('1')
             const previewEntity = ref<Category | Term | undefined>()
-            const showPreviewPanel = ref(false)
+            const showPreviewPanel = ref(false);
+            const newName = ref('');
+
             const {
                 entity: category,
                 title,
@@ -139,6 +158,8 @@
                 fetchCategoryTermsPaginated,
             } = useCategoryTerms()
 
+            const { data:updatedEntity, updateEntity }  = useUpdateGtcEntity()
+
             // computed
             const termCount = computed(
                 () => category.value?.attributes?.terms?.length ?? 0
@@ -147,7 +168,8 @@
                 () =>
                     category.value?.attributes?.qualifiedName?.split('@')[1] ??
                     ''
-            )
+            );
+            const isNewCategory = computed(() => title.value === 'New Category')
 
             // methods
             const handleCategoryOrTermPreview = (entity: Category | Term) => {
@@ -156,6 +178,17 @@
             }
             const handlClosePreviewPanel = () => {
                 showPreviewPanel.value = false
+            };
+
+            const updateTitle = () => {
+                updateEntity('category', category.value?.guid, {
+                    guid: category.value?.guid,
+                    name: newName.value,
+                    qualifiedName: qualifiedName.value,
+                    anchor: {
+                        glossaryGuid: category.value.attributes.anchor.guid
+                    }
+                });
             }
 
             // lifecycle methods and watchers
@@ -168,7 +201,12 @@
                     guid: newGuid,
                     refreshSamePage: true,
                 })
-            })
+            });
+
+            watch(updatedEntity, () => {
+                refetch();
+                newName.value = '';
+            } )
 
             // Providers
             provide('refreshEntity', refetch)
@@ -189,8 +227,11 @@
                 CategorySvg,
                 guid,
                 statusObject,
+                isNewCategory,
+                newName,
                 handleCategoryOrTermPreview,
                 handlClosePreviewPanel,
+                updateTitle
             }
         },
     })

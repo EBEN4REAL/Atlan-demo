@@ -19,7 +19,7 @@ const useDeleteGlossary = () => {
     
 
     const deleteGlossary = (guid: string, redirect?: boolean) => {
-        const { data, error: deleteError, isValidating } = useAPI(DELETE_GLOSSARY, 'DELETE', {
+        const { data, error: deleteError, isLoading:loading } = useAPI(DELETE_GLOSSARY, 'DELETE', {
             cache: false,
             pathVariables: {
                 guid
@@ -32,15 +32,15 @@ const useDeleteGlossary = () => {
         //     }
         // });
         if(redirect) redirectAfterDelete('glossary', guid)
-        watch([deleteError, isValidating], ([newError, newValidating]) => {
-            error.value = newError?.value;
-            isLoading.value = newValidating?.value
+        watch([deleteError, loading], ([newError, newLoading]) => {
+            error.value = newError;
+            isLoading.value = newLoading;
         });
     };
 
 
     const deleteCategory = (guid: string, redirect?: boolean, parentGlossaryGuid?: string,) => {
-        const { data, error:deleteError, isValidating } = useAPI(DELETE_GLOSSARY_CATEGORY, 'DELETE', {
+        const { data, error:deleteError, isLoading:loading } = useAPI(DELETE_GLOSSARY_CATEGORY, 'DELETE', {
             cache: false,
             pathVariables: {
                 guid
@@ -53,16 +53,16 @@ const useDeleteGlossary = () => {
         //     }
         // });
         if(redirect && parentGlossaryGuid) redirectAfterDelete('category', parentGlossaryGuid)
-        watch([deleteError, isValidating], ([newError, newValidating]) => {
-            error.value = newError?.value;
-            isLoading.value = newValidating?.value
+        watch([deleteError, loading], ([newError, newLoading]) => {
+            error.value = newError;
+            isLoading.value = newLoading
         });
     };
 
 
     const deleteTerm = (guid: string, redirect?: boolean, parentGlossaryGuid?: string) => {
 
-        const { data, error: deleteError, isValidating } = useAPI(DELETE_GLOSSARY_TERM, 'DELETE', {
+        const { data, error: deleteError, isLoading:loading } = useAPI(DELETE_GLOSSARY_TERM, 'DELETE', {
             cache: false,
             pathVariables: {
                 guid
@@ -76,9 +76,9 @@ const useDeleteGlossary = () => {
         // });
         if(redirect && parentGlossaryGuid) redirectAfterDelete('term', parentGlossaryGuid)
 
-        watch([deleteError, isValidating], ([newError, newValidating]) => {
-            error.value = newError?.value;
-            isLoading.value = newValidating?.value
+        watch([deleteError, loading], ([newError, newLoading]) => {
+            error.value = newError;
+            isLoading.value = newLoading;
         });
     };
 

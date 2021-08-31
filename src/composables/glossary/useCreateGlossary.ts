@@ -6,11 +6,13 @@ import { Components } from '~/api/atlas/client'
 import { useAPI } from "~/api/useAPI"
 import { CREATE_GLOSSARY, CREATE_GLOSSARY_CATEGORY, CREATE_GLOSSARY_TERM } from "~/api/keyMaps/glossary"
 
+import useUpdateGtcEntity  from "./useUpdateGtcEntity";
+
 const useCreateGlossary = () => {
     const error = ref<any>();
     const isLoading = ref<boolean | null>();
     const router = useRouter()
-    
+
     const redirectToProfile = (type: 'glossary' | 'category' | 'term', guid: string) => {
         error.value = null;
         isLoading.value = null;
@@ -33,6 +35,7 @@ const useCreateGlossary = () => {
             name: 'New Glossary',
             shortDescription: "",
             longDescription: "",
+            assetStatus: "draft",
         }
 
         const { data, error: createError, isValidating } = useAPI<Components.Schemas.AtlasGlossary>(CREATE_GLOSSARY, 'POST', {
@@ -58,11 +61,12 @@ const useCreateGlossary = () => {
             displayText: 'New Category',
             shortDescription: "",
             longDescription: "",
+            assetStatus: "draft",
             anchor: {
               glossaryGuid: parentGlossaryGuid,
             },
         }
-        if(parentCategoryGuid){
+        if(parentCategoryGuid) {
             body.value.parentCategory = {
                 categoryGuid: parentCategoryGuid,
             }
@@ -72,12 +76,19 @@ const useCreateGlossary = () => {
             cache: false,
             body: body.value,
         });
+        const { data:updateData, updateEntity } = useUpdateGtcEntity();
 
         watch(data, (newData) => {
             if(newData?.guid){
-                redirectToProfile('category', newData.guid)
+                updateEntity('category', newData.guid, {
+                    ...newData,
+                    name: 'New Category'
+                })
             }
         });
+        watch(updateData, (newData) => {
+            if(newData?.guid) redirectToProfile('category', newData.guid)
+        })
         watch([createError, isValidating], ([newError, newValidating]) => {
             error.value = newError?.value;
             isLoading.value = newValidating?.value
@@ -91,6 +102,7 @@ const useCreateGlossary = () => {
             displayText: 'New Term',
             shortDescription: "",
             longDescription: "",
+            assetStatus: "draft",
             anchor: {
               glossaryGuid: parentGlossaryGuid,
             },
@@ -107,12 +119,19 @@ const useCreateGlossary = () => {
             cache: false,
             body: body.value,
         });
+        const { data:updateData, updateEntity } = useUpdateGtcEntity();
 
         watch(data, (newData) => {
             if(newData?.guid){
-                redirectToProfile('term', newData.guid)
+                updateEntity('term', newData.guid, {
+                    ...newData,
+                    name: 'New Term'
+                })
             }
         });
+        watch(updateData, (newData) => {    
+            if(newData?.guid) redirectToProfile('term', newData.guid)
+        })
         watch([createError, isValidating], ([newError, newValidating]) => {
             error.value = newError?.value;
             isLoading.value = newValidating?.value

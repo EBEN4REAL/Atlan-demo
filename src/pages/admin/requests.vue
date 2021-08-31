@@ -1,5 +1,9 @@
 <template>
-    <RequestList :list="requestList" />
+    <RequestList
+        @approve="handleApproval"
+        @reject="handleRejection"
+        :list="requestList"
+    />
 </template>
 
 <script lang="ts">
@@ -14,9 +18,22 @@
             useHead({
                 title: 'Requests',
             })
-            const { response } = useRequests()
+            const { response, takeAction } = useRequests()
             const requestList = computed(() => response.value?.records || [])
-            return { requestList }
+
+            async function handleApproval(reqId: string) {
+                takeAction(reqId, {
+                    action: 'approved',
+                    message: 'testing approval',
+                })
+            }
+            async function handleRejection(reqId: string) {
+                takeAction(reqId, {
+                    action: 'rejected',
+                    message: 'testing rejection',
+                })
+            }
+            return { requestList, handleApproval, handleRejection }
         },
     })
 </script>

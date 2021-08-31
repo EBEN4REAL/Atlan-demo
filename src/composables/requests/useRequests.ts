@@ -1,4 +1,4 @@
-import { getRequests, actOnRequest } from '~/api/atlas/requests'
+import { getRequests, actOnRequest } from '~/api/heracles/requests'
 import { IRequestActionBody } from '~/types/atlas/requests'
 
 export default function useRequests() {

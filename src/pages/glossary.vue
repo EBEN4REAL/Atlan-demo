@@ -28,6 +28,7 @@
                     :parent-glossary="parentGlossary"
                     :is-loading="isInitingTree"
                     :current-guid="currentGuid"
+                    :loaded-keys="loadedKeys"
                 />
             </div>
         </pane>
@@ -87,7 +88,8 @@
                 useGlossaryList()
 
             const { 
-                treeData, 
+                treeData,
+                loadedKeys, 
                 currentGuid, 
                 onLoadData, 
                 parentGlossary, 
@@ -153,6 +155,7 @@
                 parentGlossaryGuid,
                 glossaryList,
                 treeData,
+                loadedKeys,
                 parentGlossary,
                 isInitingTree,
                 isHome,

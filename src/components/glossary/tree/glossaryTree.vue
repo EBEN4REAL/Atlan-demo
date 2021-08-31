@@ -78,7 +78,7 @@
             <div class="py-2 pl-6">
                 <a-tree
                     v-model:expandedKeys="expandedKeys"
-                    v-model:value="selectedKeys"
+                    v-model:selectedKeys="selectedKeys"
                     :tree-data="treeData"
                     :load-data="onLoadData"
                     :block-node="true"
@@ -186,6 +186,11 @@
                 required: true,
                 default: '',
             },
+            loadedKeys: {
+                type: Array as PropType<string[]>,
+                required: true,
+                default: () => []
+            }
         },
         setup(props, { emit }) {
             // data

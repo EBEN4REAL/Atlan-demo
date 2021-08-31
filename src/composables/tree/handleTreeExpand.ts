@@ -9,7 +9,7 @@ export default function handleTreeExpand(
     const selectedCacheKey = `${cacheKey}_selected`
     const expandedCacheKey = `${cacheKey}_expanded`
     const selectedKeys = ref([]) as Ref<string[]>
-    const expandedKeys = ref(store.get(expandedCacheKey)) as Ref<string[]>
+    const expandedKeys = ref([]) as Ref<string[]>
 
     const selectedCache = store.get(selectedCacheKey)
     const expandedCache = store.get(expandedCacheKey)

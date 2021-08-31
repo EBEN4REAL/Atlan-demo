@@ -22,19 +22,26 @@ const useTree = () => {
     const treeData = ref<TreeDataItem[]>([]);
     const parentGlossary = ref<Glossary>();
     const isInitingTree = ref(false);
+    const loadedKeys = ref<string[]>([]);
 
     const currentGuid = ref<string>(route.params.id as string);
-    const type = ref(
+    const fetchGuid = ref<string>(currentGuid.value);
+
+    const currentType = ref(
         router.currentRoute.value.fullPath.split('/')[
             router.currentRoute.value.fullPath.split('/').length - 2
         ] as 'glossary' | 'category' | 'term'
     );
+    const fetchType = ref(currentType.value)
 
-    const { entity, error, isLoading, refetch } = useGTCEntity<
+    const currentEntity = ref<Glossary | Category | Term>();
+    const { entity:fetchedEntity, error, isLoading, refetch } = useGTCEntity<
     Glossary | Term | Category
     >(
-    type,
-    currentGuid,
+    // type,
+    // currentGuid,
+    fetchType,
+    fetchGuid,
     false,
     )
    
@@ -56,6 +63,12 @@ const useTree = () => {
             )
         })
         isInitingTree.value = false;
+
+        // Logic to expand tree
+        // if(currentEntity.value?.typeName === 'AtlasGlossaryCategory'){
+        //     loadedKeys.value.push(currentEntity.value?.attributes?.parentCategory?.guid)
+            
+        // }
     }
 
     const onLoadData = async (treeNode: any) => {
@@ -120,23 +133,22 @@ const useTree = () => {
         }
     };
 
-    watch(currentGuid, () => {
-        if(type.value === 'glossary')
+    watch(fetchGuid, () => {
+        if(fetchType.value === 'glossary')
             isInitingTree.value = true;
     })
 
-    watch(entity, (newEntity) => {
+    watch(fetchedEntity, (newEntity) => {
         if(newEntity?.typeName === 'AtlasGlossary'){
             parentGlossary.value = newEntity
             treeData.value = [];
-            initTreeData(currentGuid.value)
+            initTreeData(fetchGuid.value)
         } 
         else if(newEntity?.typeName === 'AtlasGlossaryCategory' || newEntity?.typeName === 'AtlasGlossaryTerm') {
             if(!treeData.value?.length){
-                // parentGlossary.value = newEntity.attributes.anchor
-                // initTreeData(newEntity?.attributes?.anchor?.guid)
-                currentGuid.value = newEntity?.attributes?.anchor?.guid;
-                type.value = 'glossary';
+                currentEntity.value = fetchedEntity.value;
+                fetchGuid.value = newEntity?.attributes?.anchor?.guid;
+                fetchType.value = 'glossary';
                 refetch()
             }
         }
@@ -147,18 +159,22 @@ const useTree = () => {
         () => route.params.id,
         (newId) => {
             currentGuid.value = newId as string
-            type.value =
+            currentType.value = 
                 router.currentRoute.value.fullPath.split('/')[
                     router.currentRoute.value.fullPath.split('/')
                         .length - 2
-                ] as 'glossary' | 'category' | 'term'
+                ] as 'glossary' | 'category' | 'term';
+
+            fetchType.value = currentType.value;
+            fetchGuid.value = currentGuid.value;
         }
     );
 
     return { 
         treeData, 
+        loadedKeys,
         currentGuid,
-        type, 
+        currentType, 
         onLoadData, 
         parentGlossary, 
         isInitingTree

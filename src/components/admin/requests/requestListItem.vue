@@ -2,7 +2,7 @@
     <div
         class="flex items-center justify-between mb-2"
         :class="{ 'border-2 border-primary-focus': selected }"
-        @click="$emit('select', request.id)"
+        @click="$emit('select')"
     >
         <div>
             <p class="mb-1">{{ request.id }}</p>

@@ -1,29 +1,28 @@
 <template>
     <div class="w-full px-5">
-        <Terms :selected-row="selectedRow" />
-        <Classifications :selected-row="selectedRow" />
+        <Classification :selected-asset="selectedAsset" />
     </div>
 </template>
 
 <script lang="ts">
     import { defineComponent, PropType, toRefs, watch } from 'vue'
-    import Terms from './terms.vue'
-    import Classifications from './classifications.vue'
+    import Classification from '@common/sidebar/classifications.vue'
+    import { assetInterface } from '~/types/assets/asset.interface'
 
     export default defineComponent({
-        components: { Terms, Classifications },
+        components: { Classification },
         props: {
-            selectedRow: {
-                type: Object as PropType<any>,
+            selectedAsset: {
+                type: Object as PropType<assetInterface>,
                 required: true,
             },
         },
         setup(props) {
-            const { selectedRow } = toRefs(props)
+            const { selectedAsset } = toRefs(props)
             watch(
-                selectedRow,
+                selectedAsset,
                 () => {
-                    console.log('column changed governance', selectedRow)
+                    console.log('asset changed governance', selectedAsset)
                 },
                 {
                     immediate: true,
@@ -32,5 +31,3 @@
         },
     })
 </script>
-
-<style lang="less" scoped></style>

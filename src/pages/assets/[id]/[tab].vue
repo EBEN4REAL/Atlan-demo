@@ -45,6 +45,8 @@
     import LoadingView from '@common/loaders/section.vue'
     import ErrorView from '@common/error/index.vue'
     import Header from '~/components/asset/assetProfile/header.vue'
+
+    // Composables
     import useAsset from '~/composables/asset/useAsset'
 
     export default defineComponent({
@@ -93,6 +95,7 @@
             const id = computed(() => route?.params?.id || '')
 
             /** METHODS */
+            // selectTab
             const selectTab = (val: number) => {
                 activeKey.value = val
                 const selectedTab = tabs.find((i) => i.id === val)
@@ -101,6 +104,7 @@
                 )
             }
 
+            // fetch
             const fetch = () => {
                 const { data: response, error } = useAsset({
                     entityId: id.value,
@@ -114,20 +118,25 @@
                 })
             }
 
-            onMounted(() => {
+            // handlePreview
+            const handlePreview = (item) => {
+                context.emit('preview', item)
+            }
+
+            /** LIFECYCLES */
+            onMounted(async () => {
+                await fetch()
+
                 const tab = route?.params?.tab
                 if (!tab) return
                 const currTab = tabs.find(
                     (i) => i.name.toLowerCase() === tab.toLowerCase()
                 )
                 activeKey.value = currTab.id
-                fetch()
             })
 
+            /** WATCHERS */
             watch(id, () => fetch())
-            const handlePreview = (item) => {
-                context.emit('preview', item)
-            }
 
             /** PROVIDER */
             provide('assetData', data.value)

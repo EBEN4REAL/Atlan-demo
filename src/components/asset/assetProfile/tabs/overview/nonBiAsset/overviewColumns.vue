@@ -24,8 +24,7 @@
         </div>
         <!-- Table -->
         <div
-            class="overflow-y-scroll border border-gray-light"
-            style="max-width: calc(100vw - 28rem); max-height: 20rem"
+            class="relative overflow-scroll border border-gray-light h-60 max-h-60"
         >
             <a-table
                 :columns="columns"
@@ -35,6 +34,7 @@
                 :loading="!columnsData.filteredList"
                 :custom-row="customRow"
                 :row-class-name="rowClassName"
+                class="absolute left-0 w-full"
             >
                 <!-- hash_index col -->
                 <template #hash_index="{ text, record }">
@@ -114,11 +114,11 @@
                 :wrap-style="{ position: 'absolute' }"
                 :keyboard="false"
                 :destroy-on-close="true"
+                :zIndex="30"
                 :closable="false"
             >
                 <ColumnPreview
                     :selected-row="selectedRowData"
-                    page="columnPreview"
                     @closeColumnSidebar="handleCloseColumnSidebar"
                 />
             </a-drawer>
@@ -129,6 +129,8 @@
 <script lang="ts">
     // Vue
     import { defineComponent, inject, watch, computed, ref, provide } from 'vue'
+    import { useRoute, useRouter } from 'vue-router'
+
     // Components
     import SearchAndFilter from '@/common/input/searchAndFilter.vue'
     import preferences from './preferences.vue'
@@ -146,6 +148,7 @@
             const filters = ref([])
             const typeFilters = ref([])
             const columnsData = ref({})
+            const columnPreviewData = ref({})
             const selectedRow = ref(null)
             const selectedRowData = ref({})
             const showColumnPreview = ref<boolean>(false)
@@ -153,11 +156,14 @@
             /** INJECTIONS */
             const assetDataInjection = inject('assetData')
 
+            /** UTILS */
+            const route = useRoute()
+
             /** COMPUTED */
             const assetData = computed(() => assetDataInjection?.asset)
+            const column = computed(() => route?.query?.column || '')
 
             /** METHODS */
-
             // getColumnTypes
             const getColumnTypes = (filteredList: any[]) => {
                 const filtersIdSet = new Set()
@@ -225,6 +231,7 @@
                         classifications: 'N/A',
                     })
                 )
+                columnPreviewData.value = { filteredList }
 
                 columnsData.value = {
                     filteredList: filteredListData,
@@ -243,22 +250,21 @@
             // customRow Antd
             const customRow = (record: { key: null }) => ({
                 onClick: () => {
+                    // Column preview trigger
                     if (selectedRow.value === record.key)
                         handleCloseColumnSidebar()
                     else {
                         selectedRow.value = record.key
-                        columnsData.value.filteredList.forEach(
+                        columnPreviewData.value.filteredList.forEach(
                             (singleRow: {}) => {
-                                if (singleRow.key === record.key) {
+                                if (singleRow.attributes.order === record.key) {
                                     selectedRowData.value = singleRow
                                 }
                             }
                         )
+
                         showColumnPreview.value = true
                     }
-                    // emit record here for column asset preview
-
-                    console.log(selectedRowData.value)
                 },
             })
 
@@ -277,7 +283,12 @@
                 filterColumnsList(columnList.value)
             })
 
+            watch(column, () => {
+                console.log('xxx column from url:', column)
+            })
+
             return {
+                column,
                 rowClassName,
                 customRow,
                 filterByQuery,

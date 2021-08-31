@@ -7,7 +7,7 @@
 <script lang="ts">
     import { defineComponent, PropType } from 'vue'
     import { assetInterface } from '~/types/assets/asset.interface'
-    import Properties from './properties.vue'
+    import Properties from '@common/sidebar/properties.vue'
 
     export default defineComponent({
         components: { Properties },

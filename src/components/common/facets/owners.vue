@@ -34,7 +34,10 @@
                     </template>
                     <div v-if="ownersFilterOptionsData !== null" class="mr-1">
                         <a-badge
-                            :dot="ownersFilterOptionsData !== null"
+                            :dot="
+                                ownersFilterOptionsData !==
+                                ownerSortOptions[0].id
+                            "
                             :class="$style.badge"
                         >
                             <a-button class="px-2 py-1 ml-2 rounded">
@@ -84,12 +87,7 @@
                                 STATES.SUCCESS === userOwnerState &&
                                 userList.length < 1
                             "
-                            class="
-                                flex flex-col
-                                items-center
-                                justify-center
-                                h-full
-                            "
+                            class="flex flex-col items-center justify-center h-full "
                         >
                             <div class="flex flex-col items-center">
                                 <img
@@ -160,18 +158,7 @@
                                 STATES.SUCCESS === userOwnerState &&
                                 showMoreUsers
                             "
-                            class="
-                                flex
-                                items-center
-                                w-auto
-                                mb-0
-                                font-bold
-                                text-center
-                                cursor-pointer
-                                select-none
-                                outlined
-                                text-primary
-                            "
+                            class="flex items-center w-auto mb-0 font-bold text-center cursor-pointer select-none  outlined text-primary"
                             @click="toggleShowMore"
                         >
                             {{
@@ -197,12 +184,7 @@
                                 STATES.SUCCESS === groupOwnerState &&
                                 groupList.length < 1
                             "
-                            class="
-                                flex flex-col
-                                items-center
-                                justify-center
-                                h-full
-                            "
+                            class="flex flex-col items-center justify-center h-full "
                         >
                             <div class="flex flex-col items-center">
                                 <img
@@ -251,18 +233,7 @@
                                 GROUPSTATES.SUCCESS === groupOwnerState &&
                                 showMoreGroups
                             "
-                            class="
-                                flex
-                                items-center
-                                w-auto
-                                mb-0
-                                font-bold
-                                text-center
-                                cursor-pointer
-                                select-none
-                                outlined
-                                text-primary
-                            "
+                            class="flex items-center w-auto mb-0 font-bold text-center cursor-pointer select-none  outlined text-primary"
                             @click="toggleShowMoreGroups"
                         >
                             {{

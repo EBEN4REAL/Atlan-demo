@@ -66,7 +66,7 @@
                     </a>
                     <template #overlay>
                         <a-menu>
-                            <a-menu-item key="0" @click="() => createCategory(parentGlossary?.guid, 'fcdb1b5d-dbdd-4b84-995c-9a9a7cfc6921')"> New term </a-menu-item>
+                            <a-menu-item key="0" @click="createGlossary"> New term </a-menu-item>
                             <a-menu-item key="1"> New category </a-menu-item>
                             <hr>
                             <a-menu-item key="2"> Bulk Upload Terms </a-menu-item>
@@ -141,6 +141,7 @@
     // composables
     import handleTreeExpand from '~/composables/tree/handleTreeExpand';
     import useCreateGlossary from '~/composables/glossary/useCreateGlossary';
+    import useDeleteGlossary from '~/composables/glossary/useDeleteGlossary';
 
     // constant
     import GlossarySvg from '~/assets/images/gtc/glossary/glossary.png'
@@ -197,6 +198,7 @@
             const { selectedKeys, expandedKeys, expandNode, selectNode } =
                 handleTreeExpand(emit)
             const { createGlossary, createCategory } = useCreateGlossary();
+            const { deleteTerm } = useDeleteGlossary();
 
             const router = useRouter()
 
@@ -212,7 +214,8 @@
             return {
                 redirectToProfile,
                 backToHome,
-                createCategory,
+                createGlossary,
+                deleteTerm,
                 GlossarySvg,
                 CategorySvg,
                 TermSvg,

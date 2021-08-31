@@ -23,18 +23,15 @@
             </div>
         </div>
         <!-- Table -->
-        <div
-            class="relative overflow-scroll border  border-gray-light h-60 max-h-60"
-        >
+        <div class="relative border border-gray-light">
             <a-table
                 :columns="columns"
                 :data-source="columnsData.filteredList"
                 :pagination="false"
-                :scroll="{ x: 'calc(700px + 50%)', y: 240 }"
+                :scroll="{ y: 240 }"
                 :loading="!columnsData.filteredList"
                 :custom-row="customRow"
                 :row-class-name="rowClassName"
-                class="absolute left-0 w-full"
             >
                 <!-- hash_index col -->
                 <template #hash_index="{ text, record }">
@@ -54,8 +51,12 @@
                             :is="images[record.data_type]"
                             class="w-4 h-4 mr-3"
                         ></component>
-                        <span class="truncate">{{ text }}</span>
+                        <Tooltip :tooltip-text="text" />
                     </div>
+                </template>
+                <!-- description col -->
+                <template #description="{ text }">
+                    <Tooltip :tooltip-text="text" />
                 </template>
                 <!-- popularity col -->
                 <template #popularity="{ text }">
@@ -93,13 +94,15 @@
     import SearchAndFilter from '@/common/input/searchAndFilter.vue'
     import preferences from './preferences.vue'
     import ColumnPreview from './columnPreview/index.vue'
+    import Tooltip from '@/common/ellipsis/index.vue'
+
     // Composables
     import useColumns from '~/composables/asset/useColumns'
     import useColumnsFilter from '~/composables/asset/useColumnsFilter'
     import { images, dataTypeList } from '~/constant/datatype'
 
     export default defineComponent({
-        components: { preferences, SearchAndFilter, ColumnPreview },
+        components: { preferences, SearchAndFilter, ColumnPreview, Tooltip },
         setup() {
             /** DATA */
             const query = ref('')
@@ -285,17 +288,17 @@
                         ) => a.column_name > b.column_name,
                     },
                     {
-                        width: 100,
+                        width: 150,
                         title: 'Data type',
                         dataIndex: 'data_type',
                         key: 'data_type',
                     },
                     {
-                        width: 100,
+                        width: 150,
                         title: 'Description',
                         dataIndex: 'description',
                         key: 'description',
-                        ellipsis: true,
+                        slots: { customRender: 'description' },
                     },
                     {
                         width: 150,

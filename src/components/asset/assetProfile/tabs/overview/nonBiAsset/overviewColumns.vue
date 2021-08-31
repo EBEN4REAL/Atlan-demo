@@ -61,48 +61,6 @@
                 <template #popularity="{ text }">
                     <a-progress :percent="text" :show-info="false" />
                 </template>
-                <!-- terms col -->
-                <template #terms="{ text }">
-                    <div
-                        class="
-                            inline-flex
-                            px-3
-                            py-1.5
-                            rounded-full
-                            items-center
-                            cursor-pointer
-                            select-none
-                            text-sm text-primary
-                            hover:text-white hover:bg-primary
-                            whitespace-nowrap
-                            _bg-primary-light
-                        "
-                    >
-                        <fa icon="fal plus" class="" />
-                        <span class="ml-2">Add Terms</span>
-                    </div>
-                </template>
-                <!-- classifications col -->
-                <template #classifications="{ text }">
-                    <div
-                        class="
-                            inline-flex
-                            px-3
-                            py-1.5
-                            rounded-full
-                            items-center
-                            cursor-pointer
-                            select-none
-                            text-sm text-primary
-                            whitespace-nowrap
-                            hover:text-white hover:bg-primary
-                            _bg-primary-light
-                        "
-                    >
-                        <fa icon="fal plus" class="" />
-                        <span class="ml-2">Add Classifications</span>
-                    </div>
-                </template>
             </a-table>
         </div>
         <teleport to="#overAssetColumnPreview">
@@ -218,6 +176,7 @@
                             name: any
                             dataType: any
                             userDescription: any
+                            description: any
                             popularityScore: any
                         }
                     }) => ({
@@ -225,10 +184,11 @@
                         hash_index: i.attributes.order,
                         column_name: i.attributes.name,
                         data_type: getDataType(i.attributes.dataType),
-                        description: i.attributes.userDescription || '---',
+                        description:
+                            i.attributes.userDescription ||
+                            i.attributes.description ||
+                            '---',
                         popularity: i.attributes.popularityScore || 8,
-                        terms: 'N/A',
-                        classifications: 'N/A',
                     })
                 )
                 columnPreviewData.value = { filteredList }
@@ -344,20 +304,6 @@
                         dataIndex: 'popularity',
                         slots: { customRender: 'popularity' },
                         key: 'popularity',
-                    },
-                    {
-                        width: 150,
-                        title: 'Terms',
-                        dataIndex: 'terms',
-                        slots: { customRender: 'terms' },
-                        key: 'terms',
-                    },
-                    {
-                        width: 150,
-                        title: 'Classifications',
-                        dataIndex: 'classifications',
-                        slots: { customRender: 'classifications' },
-                        key: 'classifications',
                     },
                 ],
             }

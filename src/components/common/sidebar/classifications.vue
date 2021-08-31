@@ -1,7 +1,10 @@
 <template>
     <div class="text-sm text-gray-500">
         <p class="mb-3 text-sm">Classifications</p>
-        <div class="flex flex-wrap items-center lex">
+        <div
+            v-if="asset.classifications?.length > 0"
+            class="flex flex-wrap items-center"
+        >
             <PillGroup
                 :data="classificationsList"
                 label-key="typeName"

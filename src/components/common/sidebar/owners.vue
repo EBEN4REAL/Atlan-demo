@@ -2,10 +2,7 @@
     <div class="w-full mb-4 mr-2">
         <p class="mb-2">Owners</p>
         <div>
-            <div
-                v-if="ownerUsers.length > 0"
-                class="flex flex-wrap text-sm border border-transparent rounded"
-            >
+            <div v-if="ownerUsers.length > 0" class="flex flex-wrap text-sm">
                 <PillGroup
                     :data="ownerList"
                     label-key="username"

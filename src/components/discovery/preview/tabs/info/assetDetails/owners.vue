@@ -366,7 +366,7 @@
     import fetchGroupList from '~/composables/group/fetchGroupList'
     import fetchUserList from '~/composables/user/fetchUserList'
     import SearchAndFilter from '@/common/input/searchAndFilter.vue'
-    import PillGroup from '~/components/common/pill/pillGroup.vue'
+    import PillGroup from '~/components/UI/pill/pillGroup.vue'
 
     import { useUserPreview } from '~/composables/user/showUserPreview'
     import { assetInterface } from '~/types/assets/asset.interface'

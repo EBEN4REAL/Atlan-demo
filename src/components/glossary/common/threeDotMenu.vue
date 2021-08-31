@@ -140,7 +140,7 @@
     </div>
 </template>
 <script lang="ts">
-    import { defineComponent, ref, PropType } from 'vue'
+    import { defineComponent, ref, PropType, inject, onMounted } from 'vue'
     // components
     // import Status from '@common/sidebar/status.vue'
     import Owners from '@/glossary/common/owners.vue'
@@ -148,6 +148,11 @@
     import StatusBadge from '@common/badge/status/index.vue'
     import { copyToClipboard } from '~/utils/clipboard'
     import useDeleteGlossary from '~/composables/glossary/useDeleteGlossary'
+    import {
+        Glossary,
+        Category,
+        Term,
+    } from '~/types/glossary/glossary.interface'
 
     export default defineComponent({
         components: { Status, Owners, StatusBadge },
@@ -172,6 +177,8 @@
             // data
             const isVisible = ref(false)
             const isModalVisible = ref<boolean>(false)
+            const handleFetchListInj: Function | undefined =
+                inject('handleFetchList')
             const assetTypeLabel = {
                 AtlasGlossaryTerm: 'term',
                 AtlasGlossaryCategory: 'category',
@@ -184,6 +191,7 @@
                 error,
                 isLoading,
             } = useDeleteGlossary()
+
             const serviceMap = {
                 AtlasGlossaryTerm: deleteTerm,
                 AtlasGlossaryCategory: deleteCategory,
@@ -195,16 +203,13 @@
                 isVisible.value = false
             }
             const handleOk = () => {
-                serviceMap[props.entity.typeName](
+                serviceMap[props.entity?.typeName](
                     props.entity?.guid,
                     !props.showLinks,
                     props.entity?.attributes?.anchor?.guid
                 )
-                // deleteTerm(
-                //     props.entity?.guid,
-                //     !props.showLinks,
-                //     props.entity?.attributes?.anchor?.guid
-                // )
+                if (handleFetchListInj) handleFetchListInj(props.entity)
+
                 isModalVisible.value = false
             }
 
@@ -219,7 +224,6 @@
                 copyToClipboard(text)
             }
 
-            console.log(props.entity?.attributes?.anchor?.guid)
             return {
                 handleCopyProfileLink,
                 assetTypeLabel,

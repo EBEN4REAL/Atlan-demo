@@ -76,7 +76,15 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, computed, ref, toRef, watch, PropType } from 'vue'
+    import {
+        defineComponent,
+        computed,
+        ref,
+        toRef,
+        watch,
+        PropType,
+        provide,
+    } from 'vue'
     import { useDebounceFn } from '@vueuse/core'
 
     // components
@@ -134,8 +142,14 @@
             const activeKey = ref(0)
             const selectedEntity = ref<Category | Term>()
             const projection = ref(['status', 'description', 'owners'])
-            const { entities, error, isLoading, fetchAssetsPaginated } =
-                useGtcSearch(glossaryQualifiedName)
+            const {
+                entities,
+                error,
+                isLoading,
+                fetchAssetsPaginated,
+                fetchAssets,
+                deleteEntityFromList,
+            } = useGtcSearch(glossaryQualifiedName)
 
             const projectionOptions = [
                 { value: 'description', label: 'Description' },
@@ -239,16 +253,22 @@
                 if (idx > -1) entities.value[idx] = updatedAsset
             }
 
-            // lifecycle methods and watchers
+            const handleFetchList = (entity: Category | Term) => {
+                deleteEntityFromList(entity?.guid)
+            }
+            // lifecycle methods and watchers and  providers
             watch(selectedEntity, (newSelectedEntity) => {
                 emit('entityPreview', newSelectedEntity)
             })
+
+            provide('handleFetchList', handleFetchList)
 
             return {
                 glossaryQualifiedName,
                 searchQuery,
                 all,
                 entities,
+                handleFetchList,
                 onSearch,
                 onEntitySelect,
                 loadMore,

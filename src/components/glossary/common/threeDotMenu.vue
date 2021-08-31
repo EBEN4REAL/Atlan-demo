@@ -107,14 +107,36 @@
                     </a-sub-menu>
                     <a-menu-divider />
                     <a-menu-item class="text-red-700">
-                        <div class="flex items-center">
-                            <fa icon="fal trash-alt" class="mr-2"></fa>
-                            <p class="p-0 m-0">Archive</p>
-                        </div>
+                        <a-button
+                            class="w-full p-0 m-0 bg-transparent border-0 shadow-none outline-none "
+                            @click="showModal"
+                        >
+                            <div class="flex items-center text-red-700">
+                                <fa icon="fal trash-alt" class="mr-2"></fa>
+                                <p class="p-0 m-0">Archive</p>
+                            </div>
+                        </a-button>
                     </a-menu-item>
                 </a-menu>
             </template>
         </a-dropdown>
+        <a-modal
+            v-model:visible="isModalVisible"
+            :closable="false"
+            @ok="handleOk"
+        >
+            <template #footer>
+                <a-button key="back" @click="handleCancel">Cancel</a-button>
+                <a-button key="submit" danger @click="handleOk"
+                    >Delete</a-button
+                >
+            </template>
+            <template #title>
+                Delete {{ assetTypeLabel[entity?.typeName] }}</template
+            >
+            <p>Are you sure you want to delete {{ entity?.displayText }}?</p>
+            <p>Once deleted, cannot be undone!</p>
+        </a-modal>
     </div>
 </template>
 <script lang="ts">
@@ -125,6 +147,7 @@
     import Status from '@/glossary/common/status.vue'
     import StatusBadge from '@common/badge/status/index.vue'
     import { copyToClipboard } from '~/utils/clipboard'
+    import useDeleteGlossary from '~/composables/glossary/useDeleteGlossary'
 
     export default defineComponent({
         components: { Status, Owners, StatusBadge },
@@ -145,13 +168,48 @@
                 default: () => true,
             },
         },
-        setup(props) {
+        setup(props, context) {
+            // data
             const isVisible = ref(false)
-
+            const isModalVisible = ref<boolean>(false)
             const assetTypeLabel = {
                 AtlasGlossaryTerm: 'term',
                 AtlasGlossaryCategory: 'category',
                 AtlasGlossary: 'glossary',
+            }
+            const {
+                deleteGlossary,
+                deleteCategory,
+                deleteTerm,
+                error,
+                isLoading,
+            } = useDeleteGlossary()
+            const serviceMap = {
+                AtlasGlossaryTerm: deleteTerm,
+                AtlasGlossaryCategory: deleteCategory,
+                AtlasGlossary: deleteGlossary,
+            }
+
+            const showModal = () => {
+                isModalVisible.value = true
+                isVisible.value = false
+            }
+            const handleOk = () => {
+                serviceMap[props.entity.typeName](
+                    props.entity?.guid,
+                    !props.showLinks,
+                    props.entity?.attributes?.anchor?.guid
+                )
+                // deleteTerm(
+                //     props.entity?.guid,
+                //     !props.showLinks,
+                //     props.entity?.attributes?.anchor?.guid
+                // )
+                isModalVisible.value = false
+            }
+
+            const handleCancel = () => {
+                isModalVisible.value = false
             }
             const handleCopyProfileLink = () => {
                 const baseUrl = window.location.origin
@@ -161,7 +219,16 @@
                 copyToClipboard(text)
             }
 
-            return { handleCopyProfileLink, assetTypeLabel, isVisible }
+            console.log(props.entity?.attributes?.anchor?.guid)
+            return {
+                handleCopyProfileLink,
+                assetTypeLabel,
+                isVisible,
+                isModalVisible,
+                handleOk,
+                handleCancel,
+                showModal,
+            }
         },
     })
 </script>

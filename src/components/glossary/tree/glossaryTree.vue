@@ -56,7 +56,7 @@
                         }}
                     </span>
                 </div>
-                <a-dropdown :trigger="['click']"   class="m-4">
+                <a-dropdown :trigger="['click']">
                     <a class="ant-dropdown-link" @click.prevent>
                         <a-button
                             class="flex flex-col justify-center p-2 border-none  bg-primary-light text-primary"
@@ -66,11 +66,17 @@
                     </a>
                     <template #overlay>
                         <a-menu>
-                            <a-menu-item key="0" @click="createGlossary"> New term </a-menu-item>
+                            <a-menu-item key="0" @click="createGlossary">
+                                New term
+                            </a-menu-item>
                             <a-menu-item key="1"> New category </a-menu-item>
-                            <hr>
-                            <a-menu-item key="2"> Bulk Upload Terms </a-menu-item>
-                            <a-menu-item key="3"> Bulk Upload Categories </a-menu-item>
+                            <hr />
+                            <a-menu-item key="2">
+                                Bulk Upload Terms
+                            </a-menu-item>
+                            <a-menu-item key="3">
+                                Bulk Upload Categories
+                            </a-menu-item>
                         </a-menu>
                     </template>
                 </a-dropdown>
@@ -93,7 +99,7 @@
                                 @click="() => redirectToProfile(type, key)"
                             >
                                 <div class="flex">
-                                    <span class="mr-2 my-auto p-0">
+                                    <span class="p-0 my-auto mr-2">
                                         <img
                                             v-if="type === 'glossary'"
                                             :src="GlossarySvg"
@@ -139,9 +145,9 @@
     import { Glossary } from '~/types/glossary/glossary.interface'
 
     // composables
-    import handleTreeExpand from '~/composables/tree/handleTreeExpand';
-    import useCreateGlossary from '~/composables/glossary/useCreateGlossary';
-    import useDeleteGlossary from '~/composables/glossary/useDeleteGlossary';
+    import handleTreeExpand from '~/composables/tree/handleTreeExpand'
+    import useCreateGlossary from '~/composables/glossary/useCreateGlossary'
+    import useDeleteGlossary from '~/composables/glossary/useDeleteGlossary'
 
     // constant
     import GlossarySvg from '~/assets/images/gtc/glossary/glossary.png'
@@ -190,15 +196,15 @@
             loadedKeys: {
                 type: Array as PropType<string[]>,
                 required: true,
-                default: () => []
-            }
+                default: () => [],
+            },
         },
         setup(props, { emit }) {
             // data
             const { selectedKeys, expandedKeys, expandNode, selectNode } =
                 handleTreeExpand(emit)
-            const { createGlossary, createCategory } = useCreateGlossary();
-            const { deleteTerm } = useDeleteGlossary();
+            const { createGlossary, createCategory } = useCreateGlossary()
+            const { deleteTerm } = useDeleteGlossary()
 
             const router = useRouter()
 

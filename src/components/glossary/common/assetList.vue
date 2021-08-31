@@ -125,7 +125,6 @@
             const handleGtcCardClicked = (entity: Category | Term) => {
                 ctx.emit('gtcCardClicked', entity)
             }
-            console.log(props.selectedEntity)
             return { handleGtcCardClicked }
         },
     })

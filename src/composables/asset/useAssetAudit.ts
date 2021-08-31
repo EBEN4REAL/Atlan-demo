@@ -117,8 +117,8 @@ const useAssetAudit = (params: any, guid: string) => {
         typeof parsedDetails === 'object'
             ? parsedDetails?.typeName ?? ''
             : typeof parsedDetails === 'string'
-            ? parsedDetails
-            : ''
+                ? parsedDetails
+                : ''
 
     const filterTermTypeNameDisplayName = (parsedDetails: any) =>
         parsedDetails?.name ?? ''
@@ -158,7 +158,9 @@ const useAssetAudit = (params: any, guid: string) => {
 
             if (status) {
                 const value = attributes.assetStatus
+                const statusMessage = attributes.assetStatusMessage
                 const newStatus = statusList.find((stat) => stat.id === value)
+                newStatus.description = statusMessage
                 data.displayValue = 'status'
                 data.value = newStatus
                 return data

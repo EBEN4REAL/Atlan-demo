@@ -24,7 +24,7 @@
         </div>
         <!-- Table -->
         <div
-            class="relative overflow-scroll border  border-gray-light h-60 max-h-60"
+            class="relative overflow-scroll border border-gray-light h-60 max-h-60"
         >
             <a-table
                 :columns="columns"
@@ -114,11 +114,11 @@
                 :wrap-style="{ position: 'absolute' }"
                 :keyboard="false"
                 :destroy-on-close="true"
+                :zIndex="30"
                 :closable="false"
             >
                 <ColumnPreview
                     :selected-row="selectedRowData"
-                    page="columnPreview"
                     @closeColumnSidebar="handleCloseColumnSidebar"
                 />
             </a-drawer>
@@ -148,6 +148,7 @@
             const filters = ref([])
             const typeFilters = ref([])
             const columnsData = ref({})
+            const columnPreviewData = ref({})
             const selectedRow = ref(null)
             const selectedRowData = ref({})
             const showColumnPreview = ref<boolean>(false)
@@ -230,6 +231,7 @@
                         classifications: 'N/A',
                     })
                 )
+                columnPreviewData.value = { filteredList }
 
                 columnsData.value = {
                     filteredList: filteredListData,
@@ -248,17 +250,19 @@
             // customRow Antd
             const customRow = (record: { key: null }) => ({
                 onClick: () => {
+                    // Column preview trigger
                     if (selectedRow.value === record.key)
                         handleCloseColumnSidebar()
                     else {
                         selectedRow.value = record.key
-                        columnsData.value.filteredList.forEach(
+                        columnPreviewData.value.filteredList.forEach(
                             (singleRow: {}) => {
-                                if (singleRow.key === record.key) {
+                                if (singleRow.attributes.order === record.key) {
                                     selectedRowData.value = singleRow
                                 }
                             }
                         )
+
                         showColumnPreview.value = true
                     }
                 },

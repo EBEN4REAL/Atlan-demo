@@ -1,34 +1,27 @@
 <template>
-    <VirtualList v-if="list.length" :data="list" data-key="id">
-        <template #default="{ item, index }">
-            <div class="flex items-center justify-between mb-2">
-                <div class="h-8 rounded-sm">{{ index }} {{ item.id }}</div>
-                <span>{{ item.status }}</span>
-                <AtlanButton color="light" @click="$emit('approve', item.id)"
-                    >Approve</AtlanButton
-                >
-                <AtlanButton color="secondary" @click="$emit('reject', item.id)"
-                    >Reject</AtlanButton
-                >
-            </div>
+    <h2 class="mb-6 text-2xl font-bold">Requests</h2>
+    <VirtualList v-if="requestList.length" :data="requestList" data-key="id">
+        <template #default="{ item }">
+            <RequestListItem :request="item" />
         </template>
     </VirtualList>
 </template>
 
 <script lang="ts">
-    import { defineComponent } from 'vue'
+    import { defineComponent, computed } from 'vue'
     import VirtualList from '~/utils/library/virtualList/virtualList.vue'
-    import AtlanButton from '@/UI/button.vue'
+    import RequestListItem from './requestListItem.vue'
+
+    import { useRequestList } from '~/composables/requests/useRequests'
 
     export default defineComponent({
         name: 'RequestList',
-        components: { VirtualList, AtlanButton },
-        emits: ['approve', 'reject'],
-        props: {
-            list: {
-                type: Array,
-                default: () => [],
-            },
+        components: { VirtualList, RequestListItem },
+        setup() {
+            const { response } = useRequestList()
+            const requestList = computed(() => response.value?.records || [])
+
+            return { requestList }
         },
     })
 </script>

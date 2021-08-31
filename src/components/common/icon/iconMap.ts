@@ -22,6 +22,7 @@ import ChevronRight from '~/assets/images/icons/chevron-right.svg'
 import AddUser from '~/assets/images/icons/add-user.svg'
 import Link from '~/assets/images/icons/link.svg'
 import Add from '~/assets/images/icons/add.svg'
+import CircleLoader from '~/assets/images/icons/circle-loader.svg'
 
 export default {
     BookmarkFilled,
@@ -48,4 +49,5 @@ export default {
     AddUser,
     Link,
     Add,
+    CircleLoader,
 }

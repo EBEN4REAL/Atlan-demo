@@ -1,6 +1,6 @@
 <template>
     <div class="flex w-full h-full">
-        <div class="flex-1 item-stretch" style="max-width: 70%">
+        <div class="flex-1 item-stretch">
             <div class="flex h-full">
                 <router-view
                     v-if="isItem"
@@ -16,7 +16,7 @@
             </div>
         </div>
         <div
-            class="z-20 flex flex-col h-full bg-white border-l  asset-preview-container"
+            class="z-20 flex flex-col flex-1 h-full bg-white border-l  asset-preview-container"
         >
             <AssetPreview
                 v-if="selected"
@@ -64,6 +64,7 @@
             const selected: Ref<assetInterface | undefined> = ref(undefined)
             const handlePreview = (selectedItem: assetInterface) => {
                 selected.value = selectedItem
+                console.log(selectedItem)
             }
             const page = computed(() =>
                 isItem.value ? 'profile' : 'discovery'
@@ -114,8 +115,9 @@
 </script>
 <style scoped>
     .asset-preview-container {
-        width: 420px;
-        min-width: 420px;
+        width: 420px !important;
+        min-width: 420px !important;
+        max-width: 420px !important;
     }
 </style>
 <route lang="yaml">

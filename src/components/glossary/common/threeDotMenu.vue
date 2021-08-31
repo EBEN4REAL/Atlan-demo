@@ -86,7 +86,7 @@
 <script lang="ts">
     import { defineComponent, computed, PropType } from 'vue'
     // components
-    // import Status from '@/discovery/preview/tabs/info/assetDetails/status.vue'
+    // import Status from '@common/sidebar/status.vue'
     import Owners from '@/glossary/common/owners.vue'
     import Status from '@/glossary/common/status.vue'
     import StatusBadge from '@common/badge/status/index.vue'

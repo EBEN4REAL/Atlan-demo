@@ -6,6 +6,7 @@
         :overlay-style="{ maxWidth: width }"
         ><div :class="classes" :style="{ maxWidth: '95%' }">
             <a-typography-paragraph
+                :class="classes"
                 :ellipsis="{
                     rows: rows,
                     onEllipsis: () => (truncated = !truncated),

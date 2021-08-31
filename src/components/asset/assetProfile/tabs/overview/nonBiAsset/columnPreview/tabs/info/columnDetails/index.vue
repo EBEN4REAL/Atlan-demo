@@ -1,13 +1,16 @@
 <template>
     <div class="w-full px-5">
-        <Description :selected-row="selectedRow" />
+        <Description
+            :selected-asset="selectedAsset"
+            @update:selected-asset="mutateSelectedAsset"
+        />
     </div>
 </template>
 
 <script lang="ts">
-    import { defineComponent, PropType } from 'vue'
+    import { defineComponent, PropType, toRefs, inject } from 'vue'
+    import Description from '@common/sidebar/description.vue'
     import { assetInterface } from '~/types/assets/asset.interface'
-    import Description from './description.vue'
 
     export default defineComponent({
         name: 'ColumnDetails',
@@ -15,10 +18,19 @@
             Description,
         },
         props: {
-            selectedRow: {
-                type: Object as PropType<any>,
+            selectedAsset: {
+                type: Object as PropType<assetInterface>,
                 required: true,
             },
+        },
+        setup(props) {
+            const { selectedAsset } = toRefs(props)
+            const mutateSelectedAsset: (updatedAsset: assetInterface) => void =
+                inject('mutateSelectedAsset', () => {})
+
+            return {
+                mutateSelectedAsset,
+            }
         },
     })
 </script>

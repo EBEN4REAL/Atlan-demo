@@ -46,6 +46,7 @@
                     </template>
                 </PillGroup>
             </div>
+
             <a-popover
                 v-model:visible="showOwnersDropdown"
                 placement="left"
@@ -53,7 +54,8 @@
                 trigger="click"
             >
                 <div v-if="ownerUsers.length < 1" class="inline-flex mr-2">
-                    <div
+                    <button
+                        @click.stop="toggleOwnerPopover"
                         class="
                             flex
                             items-center
@@ -71,9 +73,8 @@
                             <fa icon="fal plus" class="" />
                         </span>
                         <span class="ml-2 text-sm">Add Owners</span>
-                    </div>
+                    </button>
                 </div>
-
                 <template #content>
                     <div
                         class="
@@ -534,7 +535,6 @@
             }
             const toggleOwnerPopover = () => {
                 showOwnersDropdown.value = !showOwnersDropdown.value
-
                 if (
                     !searchText.value &&
                     (!listUsers.value.length || !listGroups.value.length)

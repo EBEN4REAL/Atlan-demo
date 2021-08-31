@@ -2,8 +2,7 @@
     <div>
         <!-- Table -->
         <div
-            class="overflow-y-scroll border border-gray-light"
-            style="max-width: calc(100vw - 28rem); max-height: 20rem"
+            class="relative overflow-scroll border  border-gray-light h-60 max-h-60"
         >
             <a-table
                 :columns="tableColumns"
@@ -11,6 +10,7 @@
                 :pagination="false"
                 :scroll="{ x: 'calc(700px + 50%)', y: 240 }"
                 :loading="isLoading"
+                class="absolute left-0 w-full"
             >
             </a-table>
         </div>

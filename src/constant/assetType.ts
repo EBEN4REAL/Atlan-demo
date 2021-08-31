@@ -87,32 +87,38 @@ export const AssetTypeList = [
         id: 'TableauSite',
         label: 'Site',
         nameAttribute: 'siteName',
+        isDiscoverable: true,
         parents: [],
     },
     {
         id: 'TableauProject',
         label: 'Project',
         nameAttribute: 'projectName',
+        isDiscoverable: true,
         parents: ['TableauProject', 'TableauSite'],
     },
     {
         id: 'TableauWorkbook',
         label: 'Workbook',
+        isDiscoverable: true,
         parents: ['TableauProject'],
     },
     {
         id: 'TableauWorksheet',
         label: 'Tableau Worksheet',
+        isDiscoverable: true,
         parents: ['TableauWorkbook'],
     },
     {
         id: 'TableauDashboard',
         label: 'Tableau Dashboard',
+        isDiscoverable: true,
         parents: ['TableauWorkbook'],
     },
     {
         id: 'TableauDatasource',
         label: 'Tableau Datasource',
+        isDiscoverable: true,
         parents: ['TableauWorkbook'],
     },
     {

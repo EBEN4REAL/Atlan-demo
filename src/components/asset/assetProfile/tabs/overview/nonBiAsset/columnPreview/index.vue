@@ -3,11 +3,25 @@
         <div class="px-5">
             <div class="flex items-start justify-between mt-5 mb-4 text-sm">
                 <div class="w-full">
-                    <Tooltip
-                        :tooltip-text="selectedRow?.column_name"
-                        classes="mb-0.5 text-base font-bold text-gray-700 capitalize"
-                    />
-                    <div class="text-gray-500">Column</div>
+                    <div class="flex items-center mb-0.5">
+                        <component
+                            :is="
+                                images[
+                                    getDataType(
+                                        selectedRow?.attributes?.dataType
+                                    )
+                                ]
+                            "
+                            class="w-4 h-4 mr-1.5 mb-0.5"
+                        ></component>
+                        <Tooltip
+                            :tooltip-text="selectedRow?.attributes?.name"
+                            classes="text-base font-bold text-gray-700 capitalize"
+                        />
+                    </div>
+                    <div class="text-gray-500">
+                        {{ getDataType(selectedRow?.attributes?.dataType) }}
+                    </div>
                 </div>
                 <div class="flex">
                     <a-button class="flex items-center mr-4"
@@ -34,7 +48,7 @@
                     :is="tab.component"
                     :component-data="dataMap[tab.id]"
                     :info-tab-data="infoTabData"
-                    :selected-row="selectedRow"
+                    :selected-asset="selectedRow"
                     :is-loaded="isLoaded"
                     @change="handleChange"
                 ></component>
@@ -51,8 +65,14 @@
         PropType,
         ref,
         Ref,
+        provide,
+        toRefs,
+        watch,
+        onMounted,
     } from 'vue'
     import useColumnDetailsTabList from './tabs/useTabList'
+    import { images, dataTypeList } from '~/constant/datatype'
+    import { assetInterface } from '~/types/assets/asset.interface'
 
     export default defineComponent({
         name: 'ColumnPreview',
@@ -63,13 +83,15 @@
         },
         props: {
             selectedRow: {
-                type: Object as PropType<any>,
+                type: Object as PropType<assetInterface>,
                 required: true,
             },
         },
-        emits: ['closeColumnSidebar'],
+        emits: ['closeColumnSidebar', 'assetMutation'],
 
-        setup() {
+        setup(props, { emit }) {
+            const { selectedRow } = toRefs(props)
+
             const { filteredTabs } = useColumnDetailsTabList()
             const activeKey = ref(0)
             const isLoaded: Ref<boolean> = ref(true)
@@ -78,6 +100,25 @@
             const handleChange = (value: any) => {}
             const infoTabData: Ref<any> = ref({})
 
+            provide('mutateSelectedAsset', (updatedAsset: assetInterface) => {
+                emit('assetMutation', updatedAsset)
+            })
+
+            const getDataType = (type: string) => {
+                let label = ''
+                dataTypeList.forEach((i) => {
+                    if (i.type.includes(type)) label = i.label
+                })
+                return label
+            }
+            function init() {
+                isLoaded.value = false
+
+                infoTabData.value = selectedRow.value
+            }
+            watch(() => selectedRow.value.guid, init)
+            onMounted(init)
+
             return {
                 isLoaded,
                 infoTabData,
@@ -85,6 +126,8 @@
                 activeKey,
                 filteredTabs,
                 handleChange,
+                images,
+                getDataType,
             }
         },
     })

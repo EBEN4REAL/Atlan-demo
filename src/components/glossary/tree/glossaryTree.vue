@@ -180,7 +180,7 @@
             },
             parentGlossary: {
                 type: Object as PropType<Glossary>,
-                required: true,
+                required: false,
                 default: () => {},
             },
             isLoading: {

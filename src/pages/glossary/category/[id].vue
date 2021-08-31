@@ -181,12 +181,12 @@
             };
 
             const updateTitle = () => {
-                updateEntity('category', category.value?.guid, {
+                updateEntity('category', category.value?.guid ?? '', {
                     guid: category.value?.guid,
                     name: newName.value,
-                    qualifiedName: qualifiedName.value,
                     anchor: {
-                        glossaryGuid: category.value.attributes.anchor.guid
+                        glossaryGuid: category.value?.attributes?.anchor?.guid,
+                        relationGuid: '5b137b05-3e26-4901-884b-f0702cd2d288'
                     }
                 });
             }
@@ -200,7 +200,8 @@
                 fetchCategoryTermsPaginated({
                     guid: newGuid,
                     refreshSamePage: true,
-                })
+                });
+                newName.value = '';
             });
 
             watch(updatedEntity, () => {

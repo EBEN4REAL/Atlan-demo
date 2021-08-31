@@ -76,7 +76,7 @@ const useGTCEntity = <T extends Glossary | Category | Term>(type: 'glossary' | '
 
     body.value = getBody();
     const { data, error, isLoading, mutate } = useAPI<any>(GET_GTC_ENTITY, 'POST', {
-        cache: cache ?? true,
+        cache: false,
         dependantFetchingKey: entityGuid,
         body,
         options: {

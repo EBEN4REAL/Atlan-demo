@@ -81,7 +81,8 @@ const useCreateGlossary = () => {
         watch(data, (newData) => {
             if(newData?.guid){
                 updateEntity('category', newData.guid, {
-                    ...newData,
+                    guid: newData.guid,
+                    anchor: newData.anchor,
                     name: 'New Category'
                 })
             }

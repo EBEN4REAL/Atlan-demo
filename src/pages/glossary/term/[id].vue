@@ -52,6 +52,22 @@
                 >
                     <a-tab-pane key="1" tab="Overview">
                         <div class="px-5 mt-4">
+                            <div v-if="isNewTerm" class="mb-4">
+                                <p class="mb-1 p-0 text-sm leading-5 text-gray-700">Name</p>
+                                <div class="flex">
+                                    <a-input 
+                                        v-model:value="newName"
+                                        style="width: 200px"
+                                    />
+                                    <a-button 
+                                        v-if="newName" 
+                                        class="ml-4" 
+                                        type="primary"
+                                        @click="updateTitle"    
+                                    >Submit</a-button>
+                                </div>
+
+                            </div>
                             <GlossaryProfileOverview :entity="term" />
                         </div>
                     </a-tab-pane>
@@ -85,7 +101,7 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, computed, toRef, ref, provide } from 'vue'
+    import { defineComponent, computed, toRef, ref, provide, watch } from 'vue'
 
     import ThreeDotMenu from '@/glossary/common/threeDotMenu.vue'
     import GlossaryProfileOverview from '@/glossary/common/glossaryProfileOverview.vue'
@@ -98,6 +114,7 @@
     import AssetPreview from '~/components/discovery/preview/assetPreview.vue'
 
     import useGTCEntity from '~/composables/glossary/useGtcEntity'
+    import useUpdateGtcEntity from '~/composables/glossary/useUpdateGtcEntity'
 
     import { Term } from '~/types/glossary/glossary.interface'
 
@@ -126,6 +143,7 @@
             const guid = toRef(props, 'id')
             const currentTab = ref('1')
             const previewEntity = ref()
+            const newName = ref('');
 
             const {
                 entity: term,
@@ -138,6 +156,8 @@
                 refetch,
             } = useGTCEntity<Term>('term', guid)
 
+            const { data:updatedEntity, updateEntity }  = useUpdateGtcEntity()
+
             const parentGlossaryName = computed(
                 () => term.value?.attributes?.qualifiedName?.split('@')[1] ?? ''
             )
@@ -146,9 +166,27 @@
                 () => term.value?.attributes?.assignedEntities?.length ?? 0
             )
 
+            const isNewTerm = computed(() => title.value === 'New Term')
+
             const handlePreview = (entity: any) => {
                 previewEntity.value = entity
             }
+
+            const updateTitle = () => {
+                updateEntity('term', term.value?.guid ?? '', {
+                    guid: term.value?.guid,
+                    name: newName.value,
+                    qualifiedName: qualifiedName.value,
+                    anchor: {
+                        glossaryGuid: term.value?.attributes?.anchor?.guid
+                    }
+                });
+            }
+
+            watch(updatedEntity, () => {
+                refetch();
+                newName.value = '';
+            } )
 
             // Providers
             provide('refreshEntity', refetch)
@@ -167,8 +205,11 @@
                 parentGlossaryName,
                 previewEntity,
                 statusObject,
+                isNewTerm,
+                newName,
                 handlePreview,
                 refetch,
+                updateTitle,
             }
         },
     })

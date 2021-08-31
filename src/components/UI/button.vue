@@ -100,3 +100,34 @@
         }
     }
 </style>
+
+<!-- ///// Usage ////
+        <AtlanBtn color="light">Hello</AtlanBtn>
+        <AtlanBtn color="light" bold>Hello Bold</AtlanBtn>
+        <AtlanBtn color="light">
+            <template #prefix>
+                <AtlanIcon icon="AddUser"></AtlanIcon>
+            </template>
+            Hello
+            <template #suffix>
+                <AtlanIcon
+                    icon="ChevronDown"
+                    :class="'transform rotate-180'"
+                ></AtlanIcon>
+            </template>
+        </AtlanBtn>
+        <AtlanBtn color="light" size="sm">Hello Small </AtlanBtn>
+        <AtlanBtn color="light" size="sm" bold>Hello Small Bold</AtlanBtn>
+        <AtlanBtn color="light" size="sm">
+            <template #prefix>
+                <AtlanIcon icon="AddUser"></AtlanIcon>
+            </template>
+            Hello Small
+            <template #suffix>
+                <AtlanIcon
+                    icon="ChevronDown"
+                    :class="'transform rotate-180'"
+                ></AtlanIcon>
+            </template>
+        </AtlanBtn>
+   -->

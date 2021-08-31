@@ -1,34 +1,29 @@
-import { CheckboxArray } from '~/types'
+// import { CheckboxArray } from '~/types'
 
-export const List: CheckboxArray = [
-    {
-        id: 'all_categories',
-        label: 'All Categories',
-        description: 'All Categories',
-    },
+export const List: any = [
     {
         id: 'datasets',
+        include: ['View', 'Table', 'TablePartition'],
         label: 'Datasets',
         description: 'Datasets',
     },
     {
         id: 'fields',
         label: 'Fields',
+        include: ['Column'],
         description: 'Fields',
     },
     {
         id: 'visualizations',
         label: 'Visualizations',
+        include: [
+            'TableauSite',
+            'TableauProject',
+            'TableauWorkbook',
+            'TableauWorksheet',
+            'TableauDashboard',
+            'TableauDatasource',
+        ],
         description: 'Visualizations',
-    },
-    {
-        id: 'business_terms',
-        label: 'Business Terms',
-        description: 'Business Terms',
-    },
-    {
-        id: 'saved_queries',
-        label: 'Saved queries',
-        description: 'Saved queries',
     },
 ]

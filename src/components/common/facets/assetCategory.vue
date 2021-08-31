@@ -6,14 +6,14 @@
     >
         <div class="flex flex-col w-full">
             <template v-for="(item, index) in list" :key="item.id">
-                <div class="pb-2.5 mb-3 border-b" v-if="index == 0">
+                <!-- <div class="pb-2.5 mb-3 border-b" v-if="index == 0">
                     <a-checkbox :value="item.id" class="w-full">
                         <span class="mb-0 ml-1 text-gray">
                             {{ item.label }}
                         </span>
                     </a-checkbox>
-                </div>
-                <div class="mb-3 status" v-else>
+                </div> -->
+                <div class="mb-3 status">
                     <a-checkbox :value="item.id" class="w-full">
                         <span class="mb-0 ml-1 text-gray">
                             {{ item.label }}
@@ -50,19 +50,29 @@
             console.log(checkedValues.value, 'model')
             const handleChange = () => {
                 const criterion: Components.Schemas.FilterCriteria[] = []
-                data.value.checked.forEach((val) => {
-                    criterion.push({
-                        attributeName: 'assetStatus',
-                        attributeValue: val,
-                        operator: 'eq',
+                const selectedIds = []
+                data.value.checked.forEach((assetTypeId) => {
+                    selectedIds.push(assetTypeId)
+                    const includedAssetTypes = list.value.find(
+                        (asset) => asset.id === assetTypeId
+                    ).include
+                    includedAssetTypes.forEach((assetType) => {
+                        criterion.push({
+                            attributeName: 'typeName',
+                            attributeValue: assetType,
+                            operator: 'eq',
+                        })
                     })
                 })
+                console.log('criterion', criterion)
 
                 emit('change', {
                     id: props.item.id,
+
                     payload: {
                         condition: 'OR',
                         criterion,
+                        selectedIds,
                     } as Components.Schemas.FilterCriteria,
                 })
             }

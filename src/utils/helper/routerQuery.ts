@@ -2,6 +2,7 @@ import {
     AdvancedAttributeList,
     OperatorList,
 } from '~/constant/advancedAttributes'
+import { List as AssetCategoryList } from '~/constant/assetCategory'
 
 export interface criterion {
     attributeName: string
@@ -27,6 +28,13 @@ export function getEncodedStringFromOptions(options: any) {
         filterKeys.forEach((filterKey) => {
             let filterKeyValue = options.filters[filterKey]
             switch (filterKey) {
+                case 'assetCategory': {
+                    filterKeyValue = options.filters[filterKey].selectedIds
+                    filterKeyValue = filterKeyValue
+                        .map((selectedId: criterion) => selectedId)
+                        .join(',')
+                    break
+                }
                 case 'classifications': {
                     filterKeyValue = options.filters[filterKey].criterion
                     const tempNames: Array<string | undefined> = []
@@ -201,15 +209,23 @@ export function getDecodedOptionsFromString(router) {
         switch (facetFilterName) {
             case 'assetCategory': {
                 const facetFilterValues = facetFilterValuesString.split(',')
+                const selectedIds: string[] = []
                 facetFilterValues.forEach((facetFilterValue) => {
-                    criterion.push({
-                        attributeName: 'assetCategory',
-                        attributeValue: facetFilterValue,
-                        operator: 'eq',
+                    selectedIds.push(facetFilterValue)
+                    const includedAssetTypes = AssetCategoryList.find(
+                        (asset) => asset.id === facetFilterValue
+                    ).include
+                    includedAssetTypes.forEach((assetType) => {
+                        criterion.push({
+                            attributeName: 'typeName',
+                            attributeValue: assetType,
+                            operator: 'eq',
+                        })
                     })
                 })
                 facetsFilters.assetCategory.criterion = criterion
                 facetsFilters.assetCategory.checked = facetFilterValues
+                facetsFilters.assetCategory.selectedIds = selectedIds
                 break
             }
             case 'status': {

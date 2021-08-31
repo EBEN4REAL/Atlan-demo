@@ -138,6 +138,15 @@
     import { assetInterface } from '~/types/assets/asset.interface'
 
     export interface filterMapType {
+        assetCategory: {
+            checked?: Array<string>
+            condition: string
+            criterion: Array<{
+                attributeName: 'typeName'
+                attributeValue: string
+                operator: string
+            }>
+        }
         status: {
             checked?: Array<string>
             condition: string
@@ -227,6 +236,17 @@
             )
             const filters = ref(initialFilters.value.initialBodyCriterion)
             const filterMap = ref<filterMapType>({
+                assetCategory: {
+                    condition:
+                        initialFilters.value.facetsFilters.assetCategory
+                            .condition,
+                    criterion:
+                        initialFilters.value.facetsFilters.assetCategory
+                            .criterion,
+                    selectedIds:
+                        initialFilters.value.facetsFilters.assetCategory
+                            .selectedIds,
+                },
                 status: {
                     condition:
                         initialFilters.value.facetsFilters.status.condition,

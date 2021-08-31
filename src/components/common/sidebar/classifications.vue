@@ -1,152 +1,65 @@
 <template>
     <div class="text-sm text-gray-500">
         <p class="mb-3 text-sm">Classifications</p>
-        <div class="flex flex-wrap items-stretch items-center lex">
-            <template
-                v-for="(classification, index) in splittedClassifications.a"
-                :key="'classification-' + classification?.typeName + index"
+        <div class="flex flex-wrap items-center lex">
+            <PillGroup
+                :data="classificationsList"
+                label-key="typeName"
+                popover-trigger="hover"
+                @add="toggleLinkClassificationPopover"
+                @delete="unLinkClassification"
             >
-                <div
-                    class="
-                        relative
-                        flex
-                        items-stretch
-                        px-3
-                        py-1.5
-                        mb-3
-                        mr-3
-                        rounded-full
-                        bg-gray-light
-                        text-gray-700
-                        group
-                        justify-items-stretch
-                        hover:bg-primary hover:text-white
-                    "
-                >
-                    <div
-                        class="flex items-center leading-none align-middle rounded cursor-pointer  drop-shadow-sm"
-                        @click.prevent.stop="handleClassificationClick"
+                <template #popover="{ item }">
+                    <ClassificationInfoCard :classification="item"
+                /></template>
+                <template #suffix>
+                    <span
+                        v-if="splittedClassifications.b.length > 0"
+                        class="
+                            px-1
+                            py-0.5
+                            text-sm
+                            rounded
+                            text-primary
+                            mr-3
+                            cursor-pointer
+                        "
+                        @click="() => toggleAllClassifications()"
                     >
-                        <div
-                            class="
-                                text-sm
-                                classification-name-width
-                                truncate
-                                ...
-                            "
-                        >
-                            {{ classification?.typeName }}
-                        </div>
-                    </div>
-
-                    <div
-                        class="absolute flex items-center justify-center pl-3 pr-1 text-white bg-transparent border-none rounded-full opacity-0 cursor-pointer  group-hover:opacity-100 classification-cross-btn"
-                        @click.stop="() => unLinkClassification(classification)"
-                    >
-                        <div class="flex items-center justify-center">
-                            <fa icon="fal times-circle" class="" />
-                        </div>
-                    </div>
-                </div>
-            </template>
-            <template
-                v-for="(classification, index) in splittedClassifications.b"
-                v-if="showAll"
-                :key="'classification-' + classification?.typeName + index"
-            >
-                <div
-                    class="
-                        relative
-                        flex
-                        items-stretch
-                        px-3
-                        py-1.5
-                        mb-3
-                        mr-3
-                        rounded-full
-                        bg-gray-light
-                        text-gray-700
-                        group
-                        justify-items-stretch
-                        hover:bg-primary hover:text-white
-                    "
-                >
-                    <div
-                        class="flex items-center leading-none align-middle rounded cursor-pointer  drop-shadow-sm"
-                        @click.prevent.stop="handleClassificationClick"
-                    >
-                        <div
-                            class="
-                                text-sm
-                                classification-name-width
-                                truncate
-                                ...
-                            "
-                        >
-                            {{ classification?.typeName }}
-                        </div>
-                    </div>
-
-                    <div
-                        class="absolute flex items-center justify-center pl-3 pr-1 text-white bg-transparent border-none rounded-full opacity-0 cursor-pointer  group-hover:opacity-100 classification-cross-btn"
-                        @click.stop="() => unLinkClassification(classification)"
-                    >
-                        <div class="flex items-center justify-center">
-                            <fa icon="fal times-circle" class="" />
-                        </div>
-                    </div>
-                </div>
-            </template>
-            <div
-                v-if="splittedClassifications.b.length > 0 && !showAll"
-                class="flex items-center justify-center mb-3 mr-3 cursor-pointer "
-                @click="() => toggleAllClassifications(true)"
-            >
-                <span class="px-1 py-0.5 text-sm rounded text-primary">
-                    and {{ splittedClassifications.b.length }} more
-                </span>
-            </div>
-            <div
-                v-if="splittedClassifications.b.length > 0 && showAll"
-                class="flex items-center justify-center mb-3 mr-3 cursor-pointer "
-                @click="() => toggleAllClassifications(false)"
-            >
-                <span class="px-1 py-0.5 text-sm rounded text-primary">
-                    show less
-                </span>
-            </div>
-            <a-button
-                v-if="asset.classifications?.length > 0"
-                class="flex items-center justify-center w-8 h-8 px-2 py-2 mb-3 text-gray-700 border-none rounded-full  bg-gray-light hover:bg-primary hover:text-white"
-                @click.stop="openLinkClassificationPopover"
-            >
-                <fa icon="fal plus" />
-            </a-button>
+                        {{
+                            showAll
+                                ? 'Show less'
+                                : `and ${splittedClassifications.b.length} more`
+                        }}
+                    </span>
+                </template>
+            </PillGroup>
         </div>
         <a-popover
             v-model:visible="linkClassificationPopover"
             placement="left"
             trigger="click"
-            @visibleChange="handlePopoverVisibleChange"
         >
-            <div
-                v-if="asset.classifications?.length < 1"
-                class="
-                    items-center
-                    px-3
-                    py-1.5
-                    mr-3
-                    rounded-full
-                    text-sm
-                    cursor-pointer
-                    bg-gray-light
-                    text-gray-700
-                    inline-flex
-                    hover:bg-primary hover:text-white
-                "
-            >
-                <fa icon="fal plus" class="" />
-                <span class="ml-2">Add Classifications</span>
+            <div v-if="asset.classifications?.length < 1">
+                <button
+                    @click.stop="toggleLinkClassificationPopover"
+                    class="
+                        items-center
+                        px-3
+                        py-1.5
+                        mr-3
+                        rounded-full
+                        text-sm
+                        cursor-pointer
+                        bg-gray-light
+                        text-gray-700
+                        inline-flex
+                        hover:bg-primary hover:text-white
+                    "
+                >
+                    <fa icon="fal plus" class="" />
+                    <span class="ml-2">Add Classifications</span>
+                </button>
             </div>
             <template #content>
                 <div class="flex flex-col overflow-y-auto" style="width: 400px">
@@ -164,6 +77,9 @@
                             placeholder="Search for classifications"
                             @change="handleSelectedClassificationForLink"
                         >
+                            <!-- <template #dropdownRender="{ props }">
+                                
+                                 </template> -->
                             <template
                                 v-for="classification in availableClassificationsForLink"
                                 :key="classification.name"
@@ -326,6 +242,8 @@
     import { assetInterface } from '~/types/assets/asset.interface'
     import { classificationInterface } from '~/types/classifications/classification.interface'
     import { typedefsInterface } from '~/types/typedefs/typedefs.interface'
+    import PillGroup from '~/components/UI/pill/pillGroup.vue'
+    import ClassificationInfoCard from '~/components/discovery/preview/hovercards/classificationInfo.vue'
 
     export default defineComponent({
         props: {
@@ -334,6 +252,8 @@
                 required: true,
             },
         },
+        components: { PillGroup, ClassificationInfoCard },
+
         setup(props) {
             const selectedAsset = computed(() => props.selectedAsset)
             const classificationsStore = useClassificationStore()
@@ -351,22 +271,6 @@
 
             const createClassificationRef = ref(null)
             const showAddClassificationBtn = ref(false)
-
-            // Todo need to add showAddTagButton props using policy
-
-            /*
-      const evaluateAssetAccess = ($axios, params) => {
-    console.log(params);
-  
-    // return [{ username: "varun" }, { username: "krishna" }];
-    return $axios.$post(`${tenantPath($axios)}/access/evaluate`, {
-      ...params,
-      validateStatus(status) {
-        return status >= 200 && status < 300;
-      }
-    });
-  };
-  */
 
             /* classifications fxns */
             function getAvailableClassificationsForLink(
@@ -729,8 +633,25 @@
                     assetLinkedClassifcations.value
                 )
             })
-            const toggleAllClassifications = (state: boolean) => {
-                showAll.value = state
+            const toggleAllClassifications = () => {
+                showAll.value = !showAll.value
+            }
+            const classificationsList = computed(() =>
+                showAll.value
+                    ? [
+                          ...splittedClassifications.value.a,
+                          ...splittedClassifications.value.b,
+                      ]
+                    : splittedClassifications.value.a
+            )
+
+            const toggleLinkClassificationPopover = () => {
+                if (!linkClassificationPopover.value)
+                    linkClassificationPopover.value = true
+                else {
+                    showCreateClassificationPopover.value = false
+                    selectedClassificationForLink.value = []
+                }
             }
 
             return {
@@ -762,6 +683,8 @@
                 showAddClassificationBtn,
                 handlePopoverVisibleChange,
                 toggleAllClassifications,
+                classificationsList,
+                toggleLinkClassificationPopover,
                 showAll,
             }
         },

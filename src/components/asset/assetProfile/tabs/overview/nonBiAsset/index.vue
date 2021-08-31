@@ -1,14 +1,14 @@
 <template>
-    <div class="pl-12 pr-5 mt-8">
+    <div class="px-12 mt-6">
         <!-- Overview Columns widget -->
         <div class="mb-16">
-            <h2 class="mb-6 text-xl text-gray">Columns preview</h2>
+            <h2 class="mb-3 text-xl text-gray">Columns preview</h2>
             <overview-columns />
         </div>
 
         <!-- Overview Table widget -->
         <div v-if="showTablePreview" class="mb-16">
-            <h2 class="mb-6 text-xl text-gray">Table preview</h2>
+            <h2 class="mb-3 text-xl text-gray">Table preview</h2>
             <overview-table />
         </div>
 

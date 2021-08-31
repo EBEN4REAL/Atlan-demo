@@ -16,8 +16,8 @@
                     <template #content>
                         <preferences />
                     </template>
-                    <a-button class="px-2"
-                        ><atlan-icon icon="FilterDot" class="w-auto h-5"
+                    <a-button class="px-1.5"
+                        ><atlan-icon icon="FilterDot" class="h-5"
                     /></a-button>
                 </a-popover>
             </div>

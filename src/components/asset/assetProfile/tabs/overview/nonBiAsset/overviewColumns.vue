@@ -79,6 +79,7 @@
                 <ColumnPreview
                     :selected-row="selectedRowData"
                     @closeColumnSidebar="handleCloseColumnSidebar"
+                    @asset-mutation="propagateToColumnList"
                 />
             </a-drawer>
         </teleport>
@@ -100,6 +101,9 @@
     import useColumns from '~/composables/asset/useColumns'
     import useColumnsFilter from '~/composables/asset/useColumnsFilter'
     import { images, dataTypeList } from '~/constant/datatype'
+
+    // Interfaces
+    import { assetInterface } from '~/types/assets/asset.interface'
 
     export default defineComponent({
         components: { preferences, SearchAndFilter, ColumnPreview, Tooltip },
@@ -231,6 +235,11 @@
                 },
             })
 
+            const propagateToColumnList = (updatedAsset: assetInterface) => {
+                selectedRowData.value = updatedAsset
+                handleFilter()
+            }
+
             // rowClassName Antd
             const rowClassName = (record: { key: null }, index: any) =>
                 record.key === selectedRow.value
@@ -256,6 +265,7 @@
                 customRow,
                 filterByQuery,
                 handleCloseColumnSidebar,
+                propagateToColumnList,
                 selectedRow,
                 columnsData,
                 query,

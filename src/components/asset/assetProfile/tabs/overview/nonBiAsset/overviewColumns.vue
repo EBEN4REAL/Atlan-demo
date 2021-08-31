@@ -204,6 +204,17 @@
                     filteredList: filteredListData,
                     columnList,
                 }
+
+                // If redirected from asset column discovery
+                if (column.value !== '') {
+                    columnPreviewData.value.filteredList?.forEach(
+                        (singleRow: {}) => {
+                            if (singleRow.guid === column.value) {
+                                openColumnSidebar(singleRow.attributes.order)
+                            }
+                        }
+                    )
+                }
             }
 
             // useColumns
@@ -214,6 +225,17 @@
                 selectedRow.value = null
                 selectedRowData.value = {}
             }
+            const openColumnSidebar = (columnOrder) => {
+                selectedRow.value = columnOrder
+                columnPreviewData.value.filteredList.forEach(
+                    (singleRow: {}) => {
+                        if (singleRow.attributes.order === columnOrder) {
+                            selectedRowData.value = singleRow
+                        }
+                    }
+                )
+                showColumnPreview.value = true
+            }
             // customRow Antd
             const customRow = (record: { key: null }) => ({
                 onClick: () => {
@@ -221,16 +243,7 @@
                     if (selectedRow.value === record.key)
                         handleCloseColumnSidebar()
                     else {
-                        selectedRow.value = record.key
-                        columnPreviewData.value.filteredList.forEach(
-                            (singleRow: {}) => {
-                                if (singleRow.attributes.order === record.key) {
-                                    selectedRowData.value = singleRow
-                                }
-                            }
-                        )
-                        console.log(selectedRowData.value)
-                        showColumnPreview.value = true
+                        openColumnSidebar(record.key)
                     }
                 },
             })
@@ -253,10 +266,6 @@
             /** WATCHERS */
             watch(columnList, () => {
                 filterColumnsList(columnList.value)
-            })
-
-            watch(column, () => {
-                console.log('xxx column from url:', column)
             })
 
             return {

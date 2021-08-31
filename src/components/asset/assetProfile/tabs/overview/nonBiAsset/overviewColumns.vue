@@ -24,7 +24,7 @@
         </div>
         <!-- Table -->
         <div
-            class="relative overflow-scroll border border-gray-light h-60 max-h-60"
+            class="relative overflow-scroll border  border-gray-light h-60 max-h-60"
         >
             <a-table
                 :columns="columns"
@@ -217,7 +217,7 @@
                             order: any
                             name: any
                             dataType: any
-                            description: any
+                            userDescription: any
                             popularityScore: any
                         }
                     }) => ({
@@ -225,7 +225,7 @@
                         hash_index: i.attributes.order,
                         column_name: i.attributes.name,
                         data_type: getDataType(i.attributes.dataType),
-                        description: i.attributes.description || '---',
+                        description: i.attributes.userDescription || '---',
                         popularity: i.attributes.popularityScore || 8,
                         terms: 'N/A',
                         classifications: 'N/A',
@@ -262,7 +262,7 @@
                                 }
                             }
                         )
-
+                        console.log(selectedRowData.value)
                         showColumnPreview.value = true
                     }
                 },

@@ -149,7 +149,12 @@
             const searchQuery = ref<string>()
             const activeKey = ref(0)
             const selectedEntity = ref<Category | Term>()
-            const projection = ref(['status', 'description', 'owners'])
+            const projection = ref([
+                'status',
+                'description',
+                'owners',
+                'linkedAssets',
+            ])
             const {
                 entities,
                 error,
@@ -163,6 +168,7 @@
                 { value: 'description', label: 'Description' },
                 { value: 'owners', label: 'Owners' },
                 { value: 'status', label: 'Status' },
+                { value: 'linkedAssets', label: 'Linked Assets' },
                 // { value: 'heirarchy', label: 'Heirarchy' },
                 // { value: 'rows', label: 'Rows' },
                 // { value: 'popularity', label: 'Popularity' },

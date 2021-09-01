@@ -47,10 +47,11 @@
                 </a-button>
             </div>
         </div>
-        <div v-if="preview" class="flex mb-5">
-            <span class="pl-5 mr-2 text-xl font-bold leading-7 text-gray-700">{{
-                entity.displayText
-            }}</span>
+        <div v-if="preview" class="flex items-center mb-5">
+            <span
+                class="items-baseline pl-5 mr-2 text-xl font-bold leading-7 text-gray-700 "
+                >{{ entity.displayText }}</span
+            >
             <component
                 :is="statusObject?.icon"
                 v-if="statusObject"
@@ -166,7 +167,11 @@
     import RelatedTerms from '@/glossary/termProfile/relatedTerms.vue'
     import LinkedAssets from './linkedAssets.vue'
 
-    import { Category, Term, Glossary } from '~/types/glossary/glossary.interface'
+    import {
+        Category,
+        Term,
+        Glossary,
+    } from '~/types/glossary/glossary.interface'
     import { Components } from '~/api/atlas/client'
 
     import TermSvg from '~/assets/images/gtc/term/term.png'
@@ -202,7 +207,13 @@
             const router = useRouter()
             const activeKey = ref(['details'])
 
-            const updateTreeNode = inject<(guid: string | undefined, entity: Glossary | Category | Term) => void>('updateTreeNode');
+            const updateTreeNode =
+                inject<
+                    (
+                        guid: string | undefined,
+                        entity: Glossary | Category | Term
+                    ) => void
+                >('updateTreeNode')
 
             // computed
             const shortDescription = computed(
@@ -227,11 +238,13 @@
             const handlClosePreviewPanel = () => {
                 context.emit('closePreviewPanel')
             }
-            const updateEntityAndTree = (selectedAsset: Glossary | Category | Term) => {
-                if(updateTreeNode) updateTreeNode(selectedAsset.guid, selectedAsset)
+            const updateEntityAndTree = (
+                selectedAsset: Glossary | Category | Term
+            ) => {
+                if (updateTreeNode)
+                    updateTreeNode(selectedAsset.guid, selectedAsset)
                 context.emit('updateAsset', selectedAsset)
             }
-
 
             return {
                 TermSvg,

@@ -1,6 +1,6 @@
 <template>
     <div
-        class="flex justify-between py-4 pr-4 border-b pl-9 group"
+        class="flex justify-between py-4 pl-5 pr-4 border-b group"
         @click="$emit('gtcCardClicked', entity)"
     >
         <!-- projections start here -->
@@ -21,9 +21,9 @@
                 />
             </div>
 
-            <div class="flex flex-col w-3/4 ml-1">
+            <div class="flex flex-col justify-center w-3/4 ml-1 text-gray-700">
                 <span
-                    class="flex items-center text-base leading-6 text-gray-700 cursor-pointer "
+                    class="flex items-center text-lg leading-6 cursor-pointer"
                 >
                     <Tooltip
                         :tooltip-text="entity.displayText"
@@ -34,33 +34,53 @@
                     <component
                         :is="statusObject?.icon"
                         v-if="statusObject && projection.includes('status')"
-                        class="inline-flex w-auto h-4 mb-1 ml-2"
+                        class="inline-flex w-auto h-4 ml-2"
                     />
                 </span>
 
                 <div
-                    v-if="projection.includes('description')"
-                    class="text-sm leading-5 text-gray-500"
+                    v-if="
+                        projection.includes('description') &&
+                        entity?.attributes?.shortDescription !== '' &&
+                        entity?.attributes?.shortDescription !== undefined
+                    "
+                    class="mt-1 text-sm leading-5 text-gray-700"
                 >
                     {{ entity?.attributes?.shortDescription }}
                 </div>
-                <div
-                    v-if="
-                        projection?.includes('owners') &&
-                        getCombinedUsersAndGroups(entity).length
-                    "
-                    class="flex items-baseline mt-1 mr-4 text-xs leading-5  text-gray"
-                >
-                    <span
-                        class="mr-1"
-                        v-html="
-                            'Owned by ' +
-                            getTruncatedUsers(
-                                getCombinedUsersAndGroups(entity),
-                                20
-                            )
+                <div class="flex items-center w-full text-sm">
+                    <div
+                        v-if="
+                            projection.includes('linkedAssets') &&
+                            assetCount !== 0
                         "
-                    />
+                        class="mt-2 mr-4"
+                    >
+                        <p class="items-baseline p-0 m-0">
+                            <span class="font-bold">{{ assetCount }}</span>
+                            Linked Assets
+                        </p>
+                    </div>
+
+                    <div
+                        v-if="
+                            projection?.includes('owners') &&
+                            getCombinedUsersAndGroups(entity).length
+                        "
+                        class="flex items-center mt-2 text-sm leading-5 text-gray-700 "
+                    >
+                        <AtlanIcon icon="AddUser" class="m-0 mr-1" />
+
+                        <span
+                            class="mr-1"
+                            v-html="
+                                getTruncatedUsers(
+                                    getCombinedUsersAndGroups(entity),
+                                    20
+                                )
+                            "
+                        />
+                    </div>
                 </div>
             </div>
         </div>
@@ -73,7 +93,7 @@
     </div>
 </template>
 <script lang="ts">
-    import { defineComponent, computed, PropType } from 'vue'
+    import { defineComponent, computed, PropType, watch, onMounted } from 'vue'
     import { useRouter } from 'vue-router'
     // components
     import Status from '@common/sidebar/status.vue'
@@ -83,6 +103,7 @@
 
     // Composables
     import useAssetInfo from '~/composables/asset/useAssetInfo'
+    import useTermLinkedAssets from '~/composables/glossary/useTermLinkedAssets'
     // static
     import { assetInterface } from '~/types/assets/asset.interface'
     import TermSvg from '~/assets/images/gtc/term/term.png'
@@ -116,6 +137,8 @@
             const router = useRouter()
             const { ownerGroups, ownerUsers } = useAssetInfo()
 
+            const { linkedAssets, isLoading, error, fetchLinkedAssets } =
+                useTermLinkedAssets()
             // computed
             const statusObject = computed(() =>
                 StatusList.find(
@@ -124,6 +147,13 @@
                 )
             )
 
+            const termName = computed(() =>
+                props.entity.typeName === 'AtlasGlossaryTerm'
+                    ? props.entity?.attributes?.qualifiedName
+                    : undefined
+            )
+            const assets = computed(() => linkedAssets.value?.entities ?? [])
+            const assetCount = computed(() => assets.value?.length ?? 0)
             // methods
             // TODO: extract this function as a util function to be used at multiple places
             function getTruncatedUsers(arr: string[], wordCount: number = 30) {
@@ -152,18 +182,16 @@
                         truncated.length == 1 &&
                         truncated[0].length <
                             `${truncated.length} other(s)`.length
-                            ? `<b>${truncated[0]}</b>`
-                            : `<b>${truncated.length}</b> other(s)`
+                            ? `${truncated[0]}`
+                            : `${truncated.length} other(s)`
 
-                    return `<b>${displayArray.join(', ')}</b> and ${lastElm}`
+                    return `${displayArray.join(', ')} and ${lastElm}`
                 } else {
                     // Check if everything can be directly displayed
                     // If so then take the last element from array, append it with 'and'
                     const lastElm = displayArray.pop()
                     return displayArray.length
-                        ? `<b>${displayArray.join(
-                              ', '
-                          )}</b> and <b>${lastElm}</b>`
+                        ? `${displayArray.join(', ')} and ${lastElm}`
                         : lastElm
                 }
             }
@@ -182,6 +210,11 @@
                 else if (props.entity.typeName === 'AtlasGlossaryTerm')
                     router.push(`/glossary/term/${props.entity.guid}`)
             }
+
+            onMounted(() => {
+                if (termName.value) fetchLinkedAssets(termName.value)
+            })
+
             return {
                 TermSvg,
                 GlossarySvg,
@@ -190,6 +223,8 @@
                 redirectToProfile,
                 getTruncatedUsers,
                 getCombinedUsersAndGroups,
+                assetCount,
+                assets,
             }
         },
     })

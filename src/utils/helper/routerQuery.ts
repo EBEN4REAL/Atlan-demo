@@ -218,7 +218,7 @@ export function getDecodedOptionsFromString(router) {
                     ).include
                     includedAssetTypes.forEach((assetType) => {
                         criterion.push({
-                            attributeName: 'typeName',
+                            attributeName: '__typeName',
                             attributeValue: assetType,
                             operator: 'eq',
                         })

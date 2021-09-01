@@ -7,7 +7,7 @@
         </div>
         <div class="flex items-center text-gray-500">
             <div
-                class="py-1 text-sm font-medium text-gray-500 rounded cursor-pointer hover:font-bold"
+                class="py-1 text-sm font-medium text-gray-500 rounded cursor-pointer  hover:font-bold"
                 @click="resetAllFilters"
             >
                 Reset
@@ -55,7 +55,7 @@
 
                         <div
                             v-if="isFilter(item.id) && !activeKey"
-                            class="absolute text-gray-500 opacity-0 top-3 carrot-top right-12 hover:text-primary group-hover:opacity-100"
+                            class="absolute text-gray-500 opacity-0  top-5 carrot-top right-12 hover:text-primary group-hover:opacity-100"
                             @click.stop.prevent="handleClear(item.id)"
                         >
                             Clear
@@ -63,7 +63,7 @@
 
                         <div
                             v-if="isFilter(item.id) && activeKey"
-                            class="absolute text-gray-500 opacity-0 top-3 right-12 hover:text-primary group-hover:opacity-100"
+                            class="absolute text-gray-500 opacity-0  top-3 right-12 hover:text-primary group-hover:opacity-100"
                             @click.stop.prevent="handleClear(item.id)"
                         >
                             Clear
@@ -321,6 +321,7 @@
                     case 'assetCategory': {
                         dataMap.value[filterId].checked = []
                         filterMap[filterId].criterion = []
+                        filterMap[filterId].selectedIds = []
                         break
                     }
                     case 'status': {
@@ -457,7 +458,7 @@
                 dataMap.value.assetCategory.checked = []
                 dataMap.value.status.checked = []
                 dataMap.value.classifications.checked = []
-                dataMap.value.classifications.noClassificationsAssigned = false;
+                dataMap.value.classifications.noClassificationsAssigned = false
                 dataMap.value.owners.userValue = []
                 dataMap.value.owners.groupValue = []
                 dataMap.value.owners.noOwnerAssigned = false
@@ -472,6 +473,8 @@
                 const filterMapKeys = Object.keys(filterMap)
                 filterMapKeys.forEach((id) => {
                     filterMap[id].criterion = []
+                    if (filterMap[id]?.selectedIds)
+                        filterMap[id].selectedIds = []
                 })
                 setAppliedFiltersCount()
 

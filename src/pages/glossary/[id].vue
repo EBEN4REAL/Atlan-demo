@@ -67,6 +67,7 @@
                     <a-tab-pane key="2" tab="Terms & Categories">
                         <GlossaryTermsAndCategoriesTab
                             :qualified-name="qualifiedName"
+                            :display-text="title"
                             :guid="glossary?.guid"
                             :type="glossary?.typeName"
                             :show-preview-panel="currentTab === '2'"

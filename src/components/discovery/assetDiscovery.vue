@@ -93,7 +93,6 @@
 </template>
 
 <script lang="ts">
-    import useBusinessMetadata from '@/admin/custom-metadata/composables/useBusinessMetadata'
     import EmptyView from '@common/empty/discover.vue'
     import AssetPagination from '@common/pagination/index.vue'
     import HeirarchySelect from '@common/tree/heirarchy/index.vue'
@@ -283,9 +282,10 @@
                 true
             )
 
-            // * Get all available BMs and save on store
-            const { fetchBMonStore } = useBusinessMetadata()
             const store = useBusinessMetadataStore()
+            const BMListLoaded = computed(
+                () => store.getBusinessMetadataListLoaded
+            )
             const BMAttributeProjection = computed(
                 () => store.getBusinessMetadataListProjections
             )
@@ -528,23 +528,13 @@
             const handleClearFiltersFromList = () => {
                 assetFilterRef.value?.resetAllFilters()
             }
-            fetchBMonStore()
 
-            watch(
-                BMAttributeProjection,
-                (val) => {
-                    if (val?.length) updateBody()
-                },
-                {
-                    deep: true,
-                    immediate: true,
+            watch(BMListLoaded, (val) => {
+                if (val) {
+                    updateBody()
+                    now.value = true
+                    isAggregate.value = true
                 }
-            )
-
-            onMounted(() => {
-                updateBody()
-                now.value = true
-                isAggregate.value = true
             })
 
             return {
@@ -584,7 +574,6 @@
                 dynamicSearchPlaceholder,
                 setPlaceholder,
                 placeholderLabel,
-                BMAttributeProjection,
             }
         },
         data() {

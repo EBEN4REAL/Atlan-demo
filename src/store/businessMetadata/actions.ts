@@ -5,6 +5,7 @@ export interface Actions extends State, Getters {
   setData(businessMetadataList: []): void;
   setBusinessMetadataListError(error: string): void;
   setBusinessMetadataListLoading(loading: boolean): void;
+  setBusinessMetadataListLoaded(loading: boolean): void;
   businessMetadataAppendToList(value: object): void;
   updateBusinessMetadataInList(value: { guid: string }): void;
 }
@@ -18,6 +19,9 @@ export const actions: Actions = {
   },
   setBusinessMetadataListLoading(loading) {
     this.businessMetadataListLoading = loading;
+  },
+  setBusinessMetadataListLoaded(loaded) {
+    this.businessMetadataListLoaded = loaded;
   },
   businessMetadataAppendToList(value: { guid: string }) {
     if (this.businessMetadataList) {

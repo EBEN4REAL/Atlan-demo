@@ -10,14 +10,16 @@
                     v-if="entity.typeName === 'AtlasGlossary'"
                     :src="GlossarySvg"
                 />
-                <img
+                <AtlanIcon
                     v-else-if="entity.typeName === 'AtlasGlossaryCategory'"
-                    :src="CategorySvg"
-                    :width="25"
+                    icon="Category"
+                    class="h-6"
                 />
-                <img
+
+                <AtlanIcon
                     v-else-if="entity.typeName === 'AtlasGlossaryTerm'"
-                    :src="TermSvg"
+                    icon="Term"
+                    class="h-6 mt-1"
                 />
             </div>
 
@@ -95,7 +97,7 @@
                 </div>
             </div>
         </div>
-        <!-- TODO: replace with 3-dot menu component -->
+
         <ThreeDotMenu
             :entity="entity"
             :redirectToProfile="redirectToProfile"

@@ -22,6 +22,8 @@ import ChevronRight from '~/assets/images/icons/chevron-right.svg'
 import AddUser from '~/assets/images/icons/add-user.svg'
 import Link from '~/assets/images/icons/link.svg'
 import Add from '~/assets/images/icons/add.svg'
+import Term from '~/assets/images/icons/term.svg'
+import Category from '~/assets/images/icons/category.svg'
 
 export default {
     BookmarkFilled,
@@ -48,4 +50,6 @@ export default {
     AddUser,
     Link,
     Add,
+    Term,
+    Category,
 }

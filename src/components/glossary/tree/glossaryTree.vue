@@ -121,8 +121,15 @@
                                     </span>
                                     <span
                                         class="text-sm leading-5 text-gray-700"
-                                        >{{ title }} {{assetStatus}}</span
+                                        >{{ title }}</span
                                     >
+                                    <component
+                                        :is="StatusList.find(
+                                            (status) =>
+                                            status.id === assetStatus
+                                        )?.icon"
+                                        class="inline-flex w-auto h-4 mb-1 ml-2"
+                                    />
                                 </div>
                             </div>
                         </a-dropdown>
@@ -156,6 +163,8 @@
     import GlossarySvg from '~/assets/images/gtc/glossary/glossary.png'
     import CategorySvg from '~/assets/images/gtc/category/category.png'
     import TermSvg from '~/assets/images/gtc/term/term.png'
+    import { List as StatusList } from '~/constant/status'
+
     // import { Glossary } from '~/api/atlas/glossary'
 
     export default defineComponent({
@@ -255,6 +264,7 @@
                 GlossarySvg,
                 CategorySvg,
                 TermSvg,
+                StatusList,
                 // selectedKeys,
                 // expandedKeys,
                 // expandNode,

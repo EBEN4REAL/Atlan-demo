@@ -93,16 +93,16 @@ const useTree = (emit: any, cacheKey?: string, isAccordion?: boolean) => {
         }
         else if (treeNode.dataRef.type === "glossary") {
             try {
-                const response = await GlossaryApi.ListCategoryHeadersForGlossary(treeNode.dataRef.key, {}, { cache: true });
+                const response = await GlossaryApi.ListCategoryForGlossary(treeNode.dataRef.key, {}, { cache: true });
                 const termsList = await GlossaryApi.ListTermsForGlossary(treeNode.dataRef.key, {}, { cache: true });
                 categoryMap[treeNode.dataRef.key] = response;
                 response.forEach(element => {
                     if (!treeNode.dataRef.children) {
                         treeNode.dataRef.children = [];
                     }
-                    if (!element.parentCategoryGuid) {
+                    if (!element.parentCategory?.categoryGuid) {
                         treeNode.dataRef.children.push(
-                            { title: element.displayText, key: element.categoryGuid, glossaryID: treeNode.dataRef.key, type: "category", isRoot: true }
+                            { ...element, title: element.name, key: element.guid, glossaryID: treeNode.dataRef.key, type: "category", isRoot: true }
                         )
                     };
                 });
@@ -111,7 +111,7 @@ const useTree = (emit: any, cacheKey?: string, isAccordion?: boolean) => {
                         treeNode.dataRef.children = [];
                     }
                     treeNode.dataRef.children.push(
-                        { title: element.name, key: element.guid, glossaryID: treeNode.dataRef.key, type: "term", isLeaf: true }
+                        { ...element, title: element.name, key: element.guid, glossaryID: treeNode.dataRef.key, type: "term", isLeaf: true }
                     )
                 });
                 treeData.value = [...treeData.value];
@@ -131,7 +131,7 @@ const useTree = (emit: any, cacheKey?: string, isAccordion?: boolean) => {
                 }
 
                 treeNode.dataRef.children.push(
-                    { title: child.name, key: child.guid, glossaryID: treeNode.dataRef.glossaryID, categoryID: treeNode.dataRef.key, type: "category", isRoot: true, }
+                    { ...child, title: child.name, key: child.guid, glossaryID: treeNode.dataRef.glossaryID, categoryID: treeNode.dataRef.key, type: "category", isRoot: true, }
                 )
             });
             try {
@@ -144,7 +144,7 @@ const useTree = (emit: any, cacheKey?: string, isAccordion?: boolean) => {
                         nodeToParentKeyMap[element.guid] = treeNode.dataRef.key;
                     }
                     treeNode.dataRef.children.push(
-                        { title: element.name, key: element.guid, glossaryID: treeNode.dataRef.key, type: "term", isLeaf: true }
+                        { ...element,title: element.name, key: element.guid, glossaryID: treeNode.dataRef.key, type: "term", isLeaf: true }
                     )
                 });
                 loadedKeys.value.push(treeNode.dataRef.key)
@@ -195,7 +195,6 @@ const useTree = (emit: any, cacheKey?: string, isAccordion?: boolean) => {
     }
 
     const updateNode = (guid: string, entity: Glossary | Category | Term) => {
-        console.log('hello', guid, entity)
         if(nodeToParentKeyMap[guid] === 'root') {
             treeData.value = treeData.value.map((treeNode) => {
                 if(treeNode.key === guid) return {
@@ -204,12 +203,49 @@ const useTree = (emit: any, cacheKey?: string, isAccordion?: boolean) => {
                 }
                 return treeNode
             })
+        } else {
+            const parentStack:string[] = [guid];
+            const updatedTreeData: TreeDataItem[] =[];
+            const recursivelyFindPath = (currentGuid: string) => {
+                if(nodeToParentKeyMap[currentGuid] && nodeToParentKeyMap[currentGuid] !== 'root') {
+                    parentStack.push(nodeToParentKeyMap[currentGuid])
+                    recursivelyFindPath(nodeToParentKeyMap[currentGuid])
+                }
+            };
+            const updateNodeNested = (node: TreeDataItem): TreeDataItem => {
+                const currentPath = parentStack.pop();
+                if(node.key === guid || !currentPath) {
+                    return {
+                        ...node,
+                        assetStatus: entity.attributes.assetStatus
+                    }
+                }
+                return {
+                    ...node,
+                    children: node.children?.map((childNode: TreeDataItem) => {
+                        if(childNode.key === currentPath) {
+                            return updateNodeNested(childNode) 
+                        }
+                        return childNode;
+                    })
+                }
+            }
+            recursivelyFindPath(guid);
+            const parent = parentStack.pop();
+
+            treeData.value = treeData.value.map((node: TreeDataItem) => {
+                if(node.key === parent) return updateNodeNested(node);
+                return node;
+            })
         }
     }
 
     watch(fetchGuid, () => {
-        if(fetchType.value === 'glossary')
+        if(fetchType.value === 'glossary'){
             isInitingTree.value = true;
+            expandedKeys.value = [];
+            loadedKeys.value = []
+        }
     })
 
     watch(fetchedEntity, (newEntity) => {

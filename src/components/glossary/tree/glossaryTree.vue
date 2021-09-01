@@ -90,6 +90,7 @@
                     :loadedKeys="loadedKeys"
                     :tree-data="treeData"
                     :load-data="onLoadData"
+                    :draggable="true"
                     :block-node="true"
                     :auto-expand-parent="false"
                     @select="selectNode"
@@ -119,10 +120,6 @@
                                             :width="12"
                                         />
                                     </span>
-                                    <span
-                                        class="text-sm leading-5 text-gray-700"
-                                        >{{ title }}</span
-                                    >
                                     <component
                                         :is="StatusList.find(
                                             (status) =>
@@ -130,6 +127,10 @@
                                         )?.icon"
                                         class="inline-flex w-auto h-4 mb-1 ml-2"
                                     />
+                                    <span
+                                        class="text-sm leading-5 text-gray-700"
+                                        >{{ title }}</span
+                                    >
                                 </div>
                             </div>
                         </a-dropdown>
@@ -144,7 +145,7 @@
 </template>
 <script lang="ts">
     // library
-    import { defineComponent, computed, PropType, watch } from 'vue'
+    import { defineComponent, computed, PropType, watch, inject } from 'vue'
     import { useRouter } from 'vue-router'
     import { TreeDataItem } from 'ant-design-vue/lib/tree/Tree'
 
@@ -248,6 +249,7 @@
                 else router.push(`/glossary/${type}/${guid}`)
             }
             const backToHome = () => router.push('/glossary')
+
 
             const createNewTerm = () => {
                 createTerm(props.parentGlossary?.guid ?? '')

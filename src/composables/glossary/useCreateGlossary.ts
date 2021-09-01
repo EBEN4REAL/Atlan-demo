@@ -1,4 +1,4 @@
-import { watch, ref, Ref } from 'vue';
+import { watch, ref, Ref, inject } from 'vue';
 import { useRouter } from 'vue-router'
 import { generateUUID } from '~/utils/helper/generator'
 import { Components } from '~/api/atlas/client'
@@ -12,6 +12,8 @@ const useCreateGlossary = () => {
     const error = ref<any>();
     const isLoading = ref<boolean | null>();
     const router = useRouter()
+
+    const refetchGlossaryTree = inject<() => void>('refetchGlossaryTree')
 
     const redirectToProfile = (type: 'glossary' | 'category' | 'term', guid: string) => {
         error.value = null;
@@ -88,7 +90,12 @@ const useCreateGlossary = () => {
             }
         });
         watch(updateData, (newData) => {
-            if(newData?.guid) redirectToProfile('category', newData.guid)
+            if(newData?.guid) {
+                if(refetchGlossaryTree) {
+                    refetchGlossaryTree()
+                }
+                redirectToProfile('category', newData.guid)
+            }
         })
         watch([createError, isValidating], ([newError, newValidating]) => {
             error.value = newError?.value;
@@ -131,7 +138,12 @@ const useCreateGlossary = () => {
             }
         });
         watch(updateData, (newData) => {    
-            if(newData?.guid) redirectToProfile('term', newData.guid)
+            if(newData?.guid) {
+                if(refetchGlossaryTree) {
+                    refetchGlossaryTree()
+                }
+                redirectToProfile('term', newData.guid)
+            }
         })
         watch([createError, isValidating], ([newError, newValidating]) => {
             error.value = newError?.value;

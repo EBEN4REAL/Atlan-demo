@@ -240,6 +240,10 @@ const useTree = (emit: any, cacheKey?: string, isAccordion?: boolean) => {
         }
     }
 
+    const refetchGlossary = () => {
+        refetch()
+    }
+
     watch(fetchGuid, () => {
         if(fetchType.value === 'glossary'){
             isInitingTree.value = true;
@@ -432,6 +436,7 @@ const useTree = (emit: any, cacheKey?: string, isAccordion?: boolean) => {
         expandNode,
         selectNode,
         updateNode,
+        refetchGlossary
     }
 }
 

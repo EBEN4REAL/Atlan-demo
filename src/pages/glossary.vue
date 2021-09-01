@@ -102,7 +102,8 @@
                 expandedKeys, 
                 expandNode, 
                 selectNode,
-                updateNode
+                updateNode,
+                refetchGlossary
             } = useTree(emit)
                 
             // computed
@@ -149,7 +150,8 @@
             });
 
             provide('updateTreeNode', updateNode)
-
+            provide('refetchGlossaryTree', refetchGlossary);
+            
             return {
                 handleOpenModal,
                 handleCloseModal,

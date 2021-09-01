@@ -3,7 +3,7 @@
         class="group-hover:opacity-100"
         :class="isVisible ? 'opacity-100' : ''"
     >
-        <a-dropdown v-model:visible="isVisible" :trigger="['click']">
+        <a-dropdown v-model:visible="isVisible" :trigger="['click']" @click.stop="() => {}">
             <a-button class="px-2" @click.prevent>
                 <fa icon="fal ellipsis-v" class="h-4" />
             </a-button>

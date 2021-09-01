@@ -136,6 +136,7 @@
     import { SearchParameters } from '~/types/atlas/attributes'
     import { getEncodedStringFromOptions } from '~/utils/helper/routerQuery'
     import { assetInterface } from '~/types/assets/asset.interface'
+    import { useBusinessMetadataStore } from '~/store/businessMetadata'
 
     export interface filterMapType {
         status: {
@@ -284,6 +285,10 @@
 
             // * Get all available BMs and save on store
             const { fetchBMonStore } = useBusinessMetadata()
+            const store = useBusinessMetadataStore()
+            const BMAttributeProjection = computed(
+                () => store.getBusinessMetadataListProjections
+            )
 
             const state = ref('active')
             const assetTypeLabel = computed(() => {
@@ -353,6 +358,7 @@
                         ...BaseAttributes,
                         ...BasicSearchAttributes,
                         ...tableauAttributes,
+                        ...BMAttributeProjection.value,
                     ],
                     aggregationAttributes: [],
                 }
@@ -522,12 +528,24 @@
             const handleClearFiltersFromList = () => {
                 assetFilterRef.value?.resetAllFilters()
             }
+            fetchBMonStore()
+
+            watch(
+                () => BMAttributeProjection.value,
+                (val) => {
+                    console.log({ val })
+                    if (val?.length) updateBody()
+                },
+                {
+                    deep: true,
+                    immediate: true,
+                }
+            )
 
             onMounted(() => {
-                fetchBMonStore()
+                updateBody()
                 now.value = true
                 isAggregate.value = true
-                updateBody()
             })
 
             return {
@@ -567,6 +585,7 @@
                 dynamicSearchPlaceholder,
                 setPlaceholder,
                 placeholderLabel,
+                BMAttributeProjection,
             }
         },
         data() {

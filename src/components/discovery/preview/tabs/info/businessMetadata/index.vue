@@ -160,7 +160,7 @@
 
             const { enumListData: enumsList } = useEnums()
 
-            const readOnly = ref(true)
+            const readOnly = ref(false)
 
             const applicableList = ref(
                 getApplicableAttributes(

@@ -329,8 +329,9 @@ const useTree = (emit: any, cacheKey?: string, isAccordion?: boolean) => {
                     if(childNode.key === currentPath) {
                         const updatedNode = await updateNodeNested(childNode) 
                         updatedChildren.push(updatedNode);
+                    } else {
+                        updatedChildren.push(childNode);
                     }
-                    updatedChildren.push(childNode);
                 }
                 return {
                     ...node,

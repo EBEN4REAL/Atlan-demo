@@ -114,10 +114,10 @@ const useCreateGlossary = () => {
         })
         watch(updateData, (newData) => {
             if (newData?.guid) {
+                redirectToProfile('category', newData.guid)
                 if (refetchGlossaryTree) {
                     refetchGlossaryTree(parentCategoryGuid ?? 'root')
                 }
-                redirectToProfile('category', newData.guid)
             }
         })
         watch([createError, isValidating], ([newError, newValidating]) => {
@@ -172,10 +172,10 @@ const useCreateGlossary = () => {
         })
         watch(updateData, (newData) => {
             if (newData?.guid) {
+                redirectToProfile('term', newData.guid)
                 if (refetchGlossaryTree) {
                     refetchGlossaryTree(parentCategoryGuid ?? 'root')
                 }
-                redirectToProfile('term', newData.guid)
             }
         })
         watch([createError, isValidating], ([newError, newValidating]) => {

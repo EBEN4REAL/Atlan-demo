@@ -84,15 +84,32 @@
                 </div>
                 <div
                     v-if="
-                        projection.includes('description') && parentCategories
+                        entity.typeName === 'AtlasGlossaryCategory' && 
+                        projection.includes('heirarchy') && 
+                        parentCategory
                     "
                     class="flex items-center mt-2 text-sm leading-5 text-gray-700 "
                 >
                     <div
-                        v-for="item in parentCategories"
                         class="px-3 py-1 mr-2 bg-white border rounded-3xl"
                     >
-                        {{ item }}
+                        {{ parentCategory }}
+                    </div>
+                </div>
+                <div
+                    v-else-if="
+                        entity.typeName === 'AtlasGlossaryTerm' && 
+                        projection.includes('heirarchy') && 
+                        parentCategories
+                    "
+                    class="flex items-center mt-2 text-sm leading-5 text-gray-700 "
+                >
+                    <div
+                        v-for="category in parentCategories"
+                        :key="category"
+                        class="px-3 py-1 mr-2 bg-white border rounded-3xl"
+                    >
+                        {{ category }}
                     </div>
                 </div>
             </div>
@@ -167,7 +184,27 @@
             )
             const assets = computed(() => linkedAssets.value?.entities ?? [])
             const assetCount = computed(() => assets.value?.length ?? 0)
+            
+            const parentCategory = computed(() => {
+                if(props.entity?.typeName === 'AtlasGlossaryCategory'){
+                    const catQualifiedName =
+                        props.entity?.attributes?.parentCategory?.uniqueAttributes
+                            ?.qualifiedName
+                    return catQualifiedName?.split(/[@.]/)[0]
+                }
+                return ''
+            });
+            const parentCategories = computed(() => {
+                if(props.entity?.typeName === 'AtlasGlossaryTerm'){
+                    const catQualifiedName =
+                        props.entity?.attributes?.categories?.map((category) => category?.uniqueAttributes
+                            ?.qualifiedName)
+                    return catQualifiedName?.map((qualifiedName) => qualifiedName.split(/[@.]/)[0])
+                }
+                return []
+            });
             // methods
+
             // TODO: extract this function as a util function to be used at multiple places
             function getTruncatedUsers(arr: string[], wordCount: number = 30) {
                 const strSize: number[] = [0]
@@ -227,14 +264,8 @@
             onMounted(() => {
                 if (termName.value) fetchLinkedAssets(termName.value)
             })
-            const parentCategories = computed(() => {
-                const catQualifiedName =
-                    props.entity?.attributes?.parentCategory?.uniqueAttributes
-                        ?.qualifiedName
-                return catQualifiedName?.split(/[@.]/)
-            })
+            
 
-            console.log(termName.value)
             return {
                 TermSvg,
                 GlossarySvg,
@@ -245,7 +276,8 @@
                 getCombinedUsersAndGroups,
                 assetCount,
                 assets,
-                parentCategories,
+                parentCategory,
+                parentCategories
             }
         },
     })

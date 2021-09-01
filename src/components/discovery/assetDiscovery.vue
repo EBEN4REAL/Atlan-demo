@@ -2,7 +2,7 @@
     <div class="flex w-full">
         <div
             v-if="showFilters"
-            class="flex flex-col h-full bg-white border-r facets"
+            class="flex flex-col h-full overflow-y-auto bg-white border-r  facets"
         >
             <AssetFilters
                 :ref="
@@ -138,6 +138,15 @@
     import { useBusinessMetadataStore } from '~/store/businessMetadata'
 
     export interface filterMapType {
+        assetCategory: {
+            checked?: Array<string>
+            condition: string
+            criterion: Array<{
+                attributeName: 'typeName'
+                attributeValue: string
+                operator: string
+            }>
+        }
         status: {
             checked?: Array<string>
             condition: string
@@ -227,6 +236,17 @@
             )
             const filters = ref(initialFilters.value.initialBodyCriterion)
             const filterMap = ref<filterMapType>({
+                assetCategory: {
+                    condition:
+                        initialFilters.value.facetsFilters.assetCategory
+                            .condition,
+                    criterion:
+                        initialFilters.value.facetsFilters.assetCategory
+                            .criterion,
+                    selectedIds:
+                        initialFilters.value.facetsFilters.assetCategory
+                            .selectedIds,
+                },
                 status: {
                     condition:
                         initialFilters.value.facetsFilters.status.condition,

@@ -10,15 +10,14 @@
                     <template #title>
                         <span>Copy GUID</span>
                     </template>
-                    <a-button
-                        size="small"
-                        class="border-none rounded"
+                    <div
+                        class="flex items-center justify-center border-none rounded cursor-pointer "
                         @click="copyAPI(selectedAsset?.guid)"
                     >
-                        <span class="ml-1 -mt-1">
+                        <span class="ml-2 -mt-1">
                             <AtlanIcon icon="CopyOutlined"
                         /></span>
-                    </a-button>
+                    </div>
                 </a-tooltip>
             </div>
             <p class="mb-0 text-gray-700">{{ selectedAsset?.guid }}</p>

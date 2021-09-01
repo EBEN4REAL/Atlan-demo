@@ -2,6 +2,7 @@ import {
     AdvancedAttributeList,
     OperatorList,
 } from '~/constant/advancedAttributes'
+import { List as AssetCategoryList } from '~/constant/assetCategory'
 
 export interface criterion {
     attributeName: string
@@ -27,6 +28,14 @@ export function getEncodedStringFromOptions(options: any) {
         filterKeys.forEach((filterKey) => {
             let filterKeyValue = options.filters[filterKey]
             switch (filterKey) {
+                case 'assetCategory': {
+                    filterKeyValue =
+                        options.filters[filterKey]?.selectedIds ?? []
+                    filterKeyValue = filterKeyValue
+                        .map((selectedId: criterion) => selectedId)
+                        .join(',')
+                    break
+                }
                 case 'classifications': {
                     filterKeyValue = options.filters[filterKey].criterion
                     const tempNames: Array<string | undefined> = []
@@ -51,16 +60,16 @@ export function getEncodedStringFromOptions(options: any) {
                     const uniqueOwnerAttributes = new Set(
                         filterKeyValue.map((e: criterion) => e.attributeName)
                     )
-                        ;[...uniqueOwnerAttributes].map((uniqueOwnerAttribute) => {
-                            ownerString += `${uniqueOwnerAttribute}:`
-                            filterKeyValue.forEach((e: criterion) => {
-                                if (e.attributeName === uniqueOwnerAttribute) {
-                                    ownerString += `${e.attributeValue},`
-                                }
-                            })
-                            ownerString = ownerString.slice(0, -1)
-                            ownerString += '&'
+                    ;[...uniqueOwnerAttributes].map((uniqueOwnerAttribute) => {
+                        ownerString += `${uniqueOwnerAttribute}:`
+                        filterKeyValue.forEach((e: criterion) => {
+                            if (e.attributeName === uniqueOwnerAttribute) {
+                                ownerString += `${e.attributeValue},`
+                            }
                         })
+                        ownerString = ownerString.slice(0, -1)
+                        ownerString += '&'
+                    })
                     ownerString = ownerString.slice(0, -1)
                     filterKeyValue = ownerString
                     break
@@ -85,7 +94,9 @@ export function getEncodedStringFromOptions(options: any) {
                     filterKeyValue = filterKeyValue
                         .map(
                             (e: criterion) =>
-                                (e.attributeName ? `${e.attributeName.split('.')[1]}:` : '') +
+                                (e.attributeName
+                                    ? `${e.attributeName.split('.')[1]}:`
+                                    : '') +
                                 (e.attributeValue
                                     ? `${e.attributeValue}:`
                                     : '-:') +
@@ -94,7 +105,6 @@ export function getEncodedStringFromOptions(options: any) {
                         .join(',')
                     filterKeyValue = filterKeyValue.slice(0, -1)
                     break
-
                 }
             }
             // TODO include business met data and other filters
@@ -163,6 +173,11 @@ export function getDecodedOptionsFromString(router) {
     const facetsFiltersStrings = filters?.split(':::')
     const initialBodyCriterion: Array<any> = []
     const facetsFilters: filterMapType = {
+        assetCategory: {
+            checked: [],
+            condition: 'OR',
+            criterion: [],
+        },
         status: {
             checked: [],
             condition: 'OR',
@@ -193,6 +208,27 @@ export function getDecodedOptionsFromString(router) {
         const criterion: Array<criterion> = []
 
         switch (facetFilterName) {
+            case 'assetCategory': {
+                const facetFilterValues = facetFilterValuesString.split(',')
+                const selectedIds: string[] = []
+                facetFilterValues.forEach((facetFilterValue) => {
+                    selectedIds.push(facetFilterValue)
+                    const includedAssetTypes = AssetCategoryList.find(
+                        (asset) => asset.id === facetFilterValue
+                    ).include
+                    includedAssetTypes.forEach((assetType) => {
+                        criterion.push({
+                            attributeName: '__typeName',
+                            attributeValue: assetType,
+                            operator: 'eq',
+                        })
+                    })
+                })
+                facetsFilters.assetCategory.criterion = criterion
+                facetsFilters.assetCategory.checked = facetFilterValues
+                facetsFilters.assetCategory.selectedIds = selectedIds
+                break
+            }
             case 'status': {
                 const facetFilterValues = facetFilterValuesString.split(',')
                 facetFilterValues.forEach((facetFilterValue) => {
@@ -323,25 +359,26 @@ export function getDecodedOptionsFromString(router) {
                 const allFilters = facetFilterValuesString.split(',')
                 const applied = {}
                 const criterion = []
-                allFilters.forEach(att => {
-                    const [a, v, o] = att.split(':');
+                allFilters.forEach((att) => {
+                    const [a, v, o] = att.split(':')
                     applied[a] = {
                         ...(applied[a] || {}),
-                        [o]: v
+                        [o]: v,
                     }
-                    criterion.push(
-                        {
-                            attributeName: `${facetFilterName}.${a}`,
-                            attributeValue: (v === '-' && ['isNull', 'notNull'].includes(o)) ? '' : v,
-                            operator: o,
-                        }
-                    )
+                    criterion.push({
+                        attributeName: `${facetFilterName}.${a}`,
+                        attributeValue:
+                            v === '-' && ['isNull', 'notNull'].includes(o)
+                                ? ''
+                                : v,
+                        operator: o,
+                    })
                 })
 
                 facetsFilters[facetFilterName] = {
-                    applied, criterion
+                    applied,
+                    criterion,
                 }
-
             }
         }
 

@@ -1,5 +1,5 @@
 <template>
-    <div class="px-4 py-1 pb-3 pl-5">
+    <div class="px-4 pl-5">
         <div class="flex justify-between mb-1">
             <a-input
                 v-input-focus
@@ -226,14 +226,14 @@
                             totalGroupCount - groupList.length > 0 &&
                             queryText.length < 1
                         "
-                        class="mt-2"
+                        class="mt-3"
                     >
                         <div
                             v-if="
                                 GROUPSTATES.SUCCESS === groupOwnerState &&
                                 showMoreGroups
                             "
-                            class="flex items-center w-auto mb-0 font-bold text-center cursor-pointer select-none  outlined text-primary"
+                            class="flex items-center w-auto mb-3 font-bold text-center cursor-pointer select-none  outlined text-primary"
                             @click="toggleShowMoreGroups"
                         >
                             {{
@@ -245,20 +245,29 @@
                     </div>
                 </a-tab-pane>
             </a-tabs>
-            <!-- <div>
+            <div>
                 <a-checkbox
-                    v-model:checked="noOwnersAssigned"
-                    class="pt-4 border-t"
+                    v-model:checked="data.noOwnerAssigned"
+                    @change="noOwnersToggle"
+                    class="w-full py-3 border-t"
                 >
-                    no owners assigned
+                    No Owners assigned
                 </a-checkbox>
-            </div> -->
+            </div>
         </div>
     </div>
 </template>
 
 <script lang="ts">
-    import { defineComponent, PropType, ref, Ref, toRefs, watch } from 'vue'
+    import {
+        defineComponent,
+        PropType,
+        ref,
+        Ref,
+        toRefs,
+        watch,
+        computed,
+    } from 'vue'
     import Groups from '@common/selector/groups/index.vue'
     import Users from '@common/selector/users/index.vue'
     import { Collapse } from '~/types'
@@ -294,7 +303,6 @@
             const activeOwnerTabKey = ref('1')
             const showMoreUsers = ref(true)
             const showMoreGroups = ref(true)
-            const noOwnersAssigned = ref(false)
             const queryText = ref('')
             // own info
             const { username: myUsername, name: myName } = whoami()
@@ -314,6 +322,8 @@
                 handleChange()
             }
             const handleChange = () => {
+                // make no owners unchecked
+                data.value.noOwnerAssigned = false
                 data.value.userValue.forEach((name: string) => {
                     criterion.value.push({
                         attributeName: 'ownerUsers',
@@ -329,6 +339,30 @@
                     })
                 })
 
+                emit('change', {
+                    id: props.item.id,
+                    payload: {
+                        condition: 'OR',
+                        criterion: criterion.value,
+                    } as Components.Schemas.FilterCriteria,
+                })
+                criterion.value = []
+            }
+            const noOwnersToggle = () => {
+                if (data.value.noOwnerAssigned) {
+                    data.value.userValue = []
+                    data.value.groupValue = []
+                    criterion.value = []
+                    criterion.value.push({
+                        attributeName: 'ownerUsers',
+                        attributeValue: '-',
+                        operator: 'is_null',
+                    })
+                } else {
+                    data.value.userValue = []
+                    data.value.groupValue = []
+                    criterion.value = []
+                }
                 emit('change', {
                     id: props.item.id,
                     payload: {
@@ -425,7 +459,6 @@
                         }
                         return user.username !== myUsername.value
                     })
-                    console.log(ownUserObj, 'ownUser')
                     if (Object.keys(ownUserObj).length > 0) {
                         userList.value = [ownUserObj, ...userList.value]
                     } else {
@@ -489,7 +522,6 @@
                                 return 0
                             })
                         }
-                        console.log(modifiedData, 'sort')
                         return modifiedData
                     }
                     case 'dsc': {
@@ -530,7 +562,7 @@
                 data,
                 emptyScreen,
                 queryText,
-                noOwnersAssigned,
+                noOwnersToggle,
                 totalUsersCount,
                 totalGroupCount,
                 userOwnerState,

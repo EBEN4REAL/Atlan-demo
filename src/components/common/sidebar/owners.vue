@@ -1,5 +1,5 @@
 <template>
-    <div class="w-full mb-4 mr-2">
+    <div class="w-full mb-4 mr-2 text-sm text-gray-500">
         <p class="mb-2">Owners</p>
         <div>
             <div

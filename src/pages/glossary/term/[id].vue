@@ -154,7 +154,7 @@
                 error,
                 isLoading,
                 refetch,
-            } = useGTCEntity<Term>('term', guid)
+            } = useGTCEntity<Term>('term', guid, guid.value)
 
             const { data:updatedEntity, updateEntity }  = useUpdateGtcEntity()
 

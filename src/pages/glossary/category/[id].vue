@@ -149,7 +149,7 @@
                 error,
                 isLoading,
                 refetch,
-            } = useGTCEntity<Category>('category', guid)
+            } = useGTCEntity<Category>('category', guid, guid.value)
 
             const {
                 data: categoryTerms,
@@ -186,7 +186,6 @@
                     name: newName.value,
                     anchor: {
                         glossaryGuid: category.value?.attributes?.anchor?.guid,
-                        relationGuid: '5b137b05-3e26-4901-884b-f0702cd2d288'
                     }
                 });
             }

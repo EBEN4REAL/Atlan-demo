@@ -66,25 +66,28 @@
                     </a>
                     <template #overlay>
                         <a-menu>
-                            <a-menu-item key="0" @click="createNewTerm">
-                                New term
-                            </a-menu-item>
-                            <a-menu-item key="1" @click="createNewCategory"> New category </a-menu-item>
-                            <hr />
-                            <a-menu-item key="2">
-                                Bulk Upload Terms
-                            </a-menu-item>
-                            <a-menu-item key="3">
-                                Bulk Upload Categories
-                            </a-menu-item>
+                            <div class="py-1 px-2" :class="$style.createDropdownStyles">
+                                <a-menu-item key="0" @click="createNewTerm">
+                                    New term
+                                </a-menu-item>
+                                <a-menu-item key="1" @click="createNewCategory"> New category </a-menu-item>
+                                <hr class="my-1" />
+                                <a-menu-item key="2">
+                                    Bulk Upload Terms
+                                </a-menu-item>
+                                <a-menu-item key="3">
+                                    Bulk Upload Categories
+                                </a-menu-item>
+                            </div>
                         </a-menu>
                     </template>
                 </a-dropdown>
             </div>
             <div class="py-2 pl-6">
                 <a-tree
-                    v-model:expandedKeys="expandedKeys"
-                    v-model:selectedKeys="selectedKeys"
+                    :expandedKeys="expandedKeys"
+                    :selectedKeys="selectedKeys"
+                    :loadedKeys="loadedKeys"
                     :tree-data="treeData"
                     :load-data="onLoadData"
                     :block-node="true"
@@ -92,7 +95,7 @@
                     @select="selectNode"
                     @expand="expandNode"
                 >
-                    <template #title="{ title, type, key }">
+                    <template #title="{ title, type, key, assetStatus }">
                         <a-dropdown :trigger="['contextmenu']">
                             <div
                                 class="min-w-full"
@@ -118,7 +121,7 @@
                                     </span>
                                     <span
                                         class="text-sm leading-5 text-gray-700"
-                                        >{{ title }}</span
+                                        >{{ title }} {{assetStatus}}</span
                                     >
                                 </div>
                             </div>
@@ -178,6 +181,16 @@
                 required: false,
                 default: () => {},
             },
+            expandNode: {
+                type: Function,
+                required: false,
+                default: () => {},
+            },
+            selectNode: {
+                type: Function,
+                required: false,
+                default: () => {},
+            },
             parentGlossary: {
                 type: Object as PropType<Glossary>,
                 required: false,
@@ -198,11 +211,22 @@
                 required: true,
                 default: () => [],
             },
+            selectedKeys: {
+                type: Array as PropType<string[]>,
+                required: true,
+                default: () => [],
+            },
+            expandedKeys: {
+                type: Array as PropType<string[]>,
+                required: true,
+                default: () => [],
+            },
+
         },
         setup(props, { emit }) {
             // data
-            const { selectedKeys, expandedKeys, expandNode, selectNode } =
-                handleTreeExpand(emit)
+            // const { selectedKeys, expandedKeys, expandNode, selectNode } =
+            //     handleTreeExpand(emit)
             const { createTerm, createCategory } = useCreateGlossary()
 
             const router = useRouter()
@@ -231,11 +255,18 @@
                 GlossarySvg,
                 CategorySvg,
                 TermSvg,
-                selectedKeys,
-                expandedKeys,
-                expandNode,
-                selectNode,
+                // selectedKeys,
+                // expandedKeys,
+                // expandNode,
+                // selectNode,
             }
         },
     })
 </script>
+<style lang="less" module>
+.createDropdownStyles {
+    :global(.ant-dropdown-menu-item){
+        @apply m-0 p-1 text-sm leading-5 rounded;
+    }
+}
+</style>

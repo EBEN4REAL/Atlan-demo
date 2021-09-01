@@ -50,6 +50,15 @@ const ListCategoryHeadersForGlossary = (glossaryID: string, params?: any, option
     return response;
 }
 
+const ListCategoryForGlossary = (glossaryID: string, params?: any, options?: AxiosRequestConfig, config?: IConfig) => {
+    const data = getAxiosClient().get(getAPIPath(serviceAlias, `/glossary/${glossaryID}/categories`), {
+        params,
+        ...options,
+    });
+    const response = data as unknown as Components.Schemas.AtlasGlossaryCategory[]
+    return response;
+}
+
 const ListTermsForGlossary = (glossaryID: string, params?: any, options?: AxiosRequestConfig, config?: IConfig) => {
     const data = getAxiosClient().get(getAPIPath(serviceAlias, `/glossary/${glossaryID}/terms/optimized`), {
         params,
@@ -163,6 +172,7 @@ export const Glossary = {
     GetTerm,
     List,
     ListCategoryHeadersForGlossary,
+    ListCategoryForGlossary,
     ListTermsForGlossary,
     ListTermsForCategory,
     CreateGlossary,

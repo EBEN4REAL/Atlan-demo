@@ -95,10 +95,7 @@
                                 <Status
                                     v-if="entity.guid"
                                     :selected-asset="entity"
-                                    @update:selected-asset="
-                                        (updated) =>
-                                            $emit('updateAsset', updated)
-                                    "
+                                    @update:selected-asset="updateEntityAndTree"
                                 />
                             </div>
                         </a-collapse-panel>
@@ -157,7 +154,7 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, PropType, computed, ref } from 'vue'
+    import { defineComponent, PropType, computed, ref, inject } from 'vue'
     import { useRouter } from 'vue-router'
 
     import Owners from '@common/sidebar/owners.vue'
@@ -169,7 +166,7 @@
     import RelatedTerms from '@/glossary/termProfile/relatedTerms.vue'
     import LinkedAssets from './linkedAssets.vue'
 
-    import { Category, Term } from '~/types/glossary/glossary.interface'
+    import { Category, Term, Glossary } from '~/types/glossary/glossary.interface'
     import { Components } from '~/api/atlas/client'
 
     import TermSvg from '~/assets/images/gtc/term/term.png'
@@ -205,6 +202,8 @@
             const router = useRouter()
             const activeKey = ref(['details'])
 
+            const updateTreeNode = inject<(guid: string | undefined, entity: Glossary | Category | Term) => void>('updateTreeNode');
+
             // computed
             const shortDescription = computed(
                 () => props.entity?.attributes?.shortDescription
@@ -228,6 +227,11 @@
             const handlClosePreviewPanel = () => {
                 context.emit('closePreviewPanel')
             }
+            const updateEntityAndTree = (selectedAsset: Glossary | Category | Term) => {
+                if(updateTreeNode) updateTreeNode(selectedAsset.guid, selectedAsset)
+                context.emit('updateAsset', selectedAsset)
+            }
+
 
             return {
                 TermSvg,
@@ -238,6 +242,7 @@
                 statusObject,
                 redirectToProfile,
                 activeKey,
+                updateEntityAndTree,
             }
         },
     })

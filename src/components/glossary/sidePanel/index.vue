@@ -55,7 +55,7 @@
                                 <Status
                                     v-if="entity.guid"
                                     :selected-asset="entity"
-                                    @update:selected-asset="refreshEntity"
+                                    @update:selected-asset="updateEntityAndTree"
                                 />
                             </div>
                         </a-collapse-panel>
@@ -153,6 +153,8 @@
             const activeKey = ref(['1'])
 
             const refreshEntity = inject<() => void>('refreshEntity')
+            const updateTreeNode = inject<(guid: string | undefined, entity: Glossary | Category | Term) => void>('updateTreeNode');
+
             const { getApplicableBmGroups } = useBusinessMetadataHelper()
 
             const shortDescription = computed(
@@ -165,6 +167,13 @@
                 () => props.entity?.attributes?.categories?.length ?? 0
             )
             const glossaryTerms = computed(() => props.topTerms ?? [])
+
+            const updateEntityAndTree = (selectedAsset:  Glossary | Category | Term) => {
+                if(refreshEntity)
+                    refreshEntity()
+                if(updateTreeNode){
+                    updateTreeNode(selectedAsset.guid, selectedAsset)}
+            }
 
             // TODO: add BM panel
 
@@ -204,6 +213,7 @@
                 glossaryTerms,
                 activeKey,
                 refreshEntity,
+                updateEntityAndTree,
             }
         },
     })

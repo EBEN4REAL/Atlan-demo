@@ -25,10 +25,14 @@
                     :is-home="isHome"
                     :tree-data="treeData"
                     :on-load-data="onLoadData"
+                    :select-node="selectNode"
+                    :expand-node="expandNode"
                     :parent-glossary="parentGlossary"
                     :is-loading="isInitingTree"
                     :current-guid="currentGuid"
                     :loaded-keys="loadedKeys"
+                    :selected-keys="selectedKeys"
+                    :expanded-keys="expandedKeys"
                 />
             </div>
         </pane>
@@ -40,7 +44,7 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref, watch, computed } from 'vue'
+    import { defineComponent, ref, watch, computed, provide} from 'vue'
     import { useHead } from '@vueuse/head'
     import { useRouter } from 'vue-router'
 
@@ -69,7 +73,7 @@
             UpdateGlossaryModal,
         },
         props: ['id', 'class'],
-        setup() {
+        setup(props, { emit }) {
             useHead({
                 title: 'Glossary',
             })
@@ -93,8 +97,13 @@
                 currentGuid, 
                 onLoadData, 
                 parentGlossary, 
-                isInitingTree 
-            } = useTree()
+                isInitingTree,
+                selectedKeys, 
+                expandedKeys, 
+                expandNode, 
+                selectNode,
+                updateNode
+            } = useTree(emit)
                 
             // computed
             const isHome = computed(
@@ -137,7 +146,9 @@
                 if (newIsHome) {
                     refetchGlossaryList()
                 }
-            })
+            });
+
+            provide('updateTreeNode', updateNode)
 
             return {
                 handleOpenModal,
@@ -147,6 +158,8 @@
                 backToHome,
                 backToGlossary,
                 onLoadData,
+                expandNode, 
+                selectNode,
                 createGlossaryModalVisble,
                 updateGlossaryModalVisble,
                 eventContext,
@@ -156,6 +169,8 @@
                 glossaryList,
                 treeData,
                 loadedKeys,
+                selectedKeys, 
+                expandedKeys, 
                 parentGlossary,
                 isInitingTree,
                 isHome,

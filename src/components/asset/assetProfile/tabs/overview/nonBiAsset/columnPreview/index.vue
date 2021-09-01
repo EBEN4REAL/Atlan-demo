@@ -24,11 +24,7 @@
                     </div>
                 </div>
                 <div class="flex">
-                    <!-- <a-button class="flex items-center mr-4"
-                        ><atlan-icon icon="Share" class="w-auto h-4 mr-2" />
-                        <span class="mt-1 text-sm">Share</span></a-button
-                    > -->
-                    <AtlanBtn color="secondary" size="sm">
+                    <AtlanBtn color="secondary" size="sm" padding="compact">
                         <template #prefix>
                             <atlan-icon icon="Share" />
                         </template>
@@ -36,7 +32,7 @@
                     </AtlanBtn>
                     <a-button
                         type="text"
-                        class="p-0 text-xl"
+                        class="p-0 ml-3 text-xl"
                         @click="$emit('closeColumnSidebar')"
                         ><fa icon="fal times"></fa
                     ></a-button>

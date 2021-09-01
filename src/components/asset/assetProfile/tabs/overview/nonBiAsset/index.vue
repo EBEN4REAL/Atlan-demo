@@ -1,7 +1,7 @@
 <template>
     <div class="px-12 my-6">
         <!-- Overview Columns widget -->
-        <div class="mb-16">
+        <div class="mb-10">
             <h2 class="mb-3 text-xl text-gray">Columns preview</h2>
             <overview-columns />
         </div>

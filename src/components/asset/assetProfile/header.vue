@@ -40,10 +40,12 @@
             <a-button class="px-2 mr-2"
                 ><atlan-icon icon="BookmarkOutlined" class="w-auto h-4"
             /></a-button>
-            <a-button class="flex items-center"
-                ><atlan-icon icon="Share" class="w-auto h-4 mr-2" />
-                <span class="mt-1 text-sm">Share</span></a-button
-            >
+            <AtlanBtn color="secondary" size="sm" padding="compact">
+                <template #prefix>
+                    <atlan-icon icon="Share" />
+                </template>
+                Share
+            </AtlanBtn>
         </div>
     </div>
 </template>
@@ -55,11 +57,13 @@
     import AssetLogo from '@/common/icon/assetIcon.vue'
     import HierarchyBar from '@common/badge/hierarchy.vue'
     import StatusBadge from '@common/badge/status/index.vue'
+    import AtlanBtn from '~/components/UI/button.vue'
+
     // Composables
     import useAssetInfo from '~/composables/asset/useAssetInfo'
 
     export default defineComponent({
-        components: { AssetLogo, HierarchyBar, StatusBadge },
+        components: { AssetLogo, HierarchyBar, StatusBadge, AtlanBtn },
 
         setup() {
             /** INJECTIONS */

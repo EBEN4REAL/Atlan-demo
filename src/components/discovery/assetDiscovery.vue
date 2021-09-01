@@ -531,9 +531,8 @@
             fetchBMonStore()
 
             watch(
-                () => BMAttributeProjection.value,
+                BMAttributeProjection,
                 (val) => {
-                    console.log({ val })
                     if (val?.length) updateBody()
                 },
                 {

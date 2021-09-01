@@ -28,6 +28,12 @@
                         ><atlan-icon icon="Share" class="w-auto h-4 mr-2" />
                         <span class="mt-1 text-sm">Share</span></a-button
                     >
+                    <!-- <AtlanBtn color="secondary" size="sm">
+                        <template #prefix>
+                            <atlan-icon icon="Share" />
+                        </template>
+                        Share
+                    </AtlanBtn> -->
                     <a-button
                         type="text"
                         class="p-0 text-xl"
@@ -58,7 +64,6 @@
 </template>
 
 <script lang="ts">
-    import Tooltip from '@common/ellipsis/index.vue'
     import {
         defineAsyncComponent,
         defineComponent,
@@ -74,10 +79,14 @@
     import { images, dataTypeList } from '~/constant/datatype'
     import { assetInterface } from '~/types/assets/asset.interface'
 
+    import Tooltip from '@common/ellipsis/index.vue'
+    import AtlanBtn from '~/components/UI/button.vue'
+
     export default defineComponent({
         name: 'ColumnPreview',
         components: {
             Tooltip,
+            AtlanBtn,
             info: defineAsyncComponent(() => import('./tabs/info/index.vue')),
             chat: defineAsyncComponent(() => import('./tabs/chat/index.vue')),
         },

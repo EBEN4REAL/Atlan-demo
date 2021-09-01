@@ -5,7 +5,7 @@
     >
         <!-- projections start here -->
         <div class="flex flex-row w-full">
-            <div class="mr-4">
+            <div class="mr-2">
                 <img
                     v-if="entity.typeName === 'AtlasGlossary'"
                     :src="GlossarySvg"
@@ -22,12 +22,10 @@
             </div>
 
             <div class="flex flex-col justify-center w-3/4 ml-1 text-gray-700">
-                <span
-                    class="flex items-center text-lg leading-6 cursor-pointer"
-                >
+                <span class="flex items-center cursor-pointer">
                     <Tooltip
                         :tooltip-text="entity.displayText"
-                        class="hover:underline"
+                        class="text-lg font-normal leading-7 text-gray-700  hover:underline"
                         @click="redirectToProfile"
                     />
 
@@ -56,7 +54,7 @@
                         "
                         class="mt-2 mr-4"
                     >
-                        <p class="items-baseline p-0 m-0">
+                        <p class="items-baseline p-0 m-0 font-normal">
                             <span class="font-bold">{{ assetCount }}</span>
                             Linked Assets
                         </p>
@@ -80,6 +78,19 @@
                                 )
                             "
                         />
+                    </div>
+                </div>
+                <div
+                    v-if="
+                        projection.includes('description') && parentCategories
+                    "
+                    class="flex items-center mt-2 text-sm leading-5 text-gray-700 "
+                >
+                    <div
+                        v-for="item in parentCategories"
+                        class="px-3 py-1 mr-2 bg-white border rounded-3xl"
+                    >
+                        {{ item }}
                     </div>
                 </div>
             </div>
@@ -214,7 +225,14 @@
             onMounted(() => {
                 if (termName.value) fetchLinkedAssets(termName.value)
             })
+            const parentCategories = computed(() => {
+                const catQualifiedName =
+                    props.entity?.attributes?.parentCategory?.uniqueAttributes
+                        ?.qualifiedName
+                return catQualifiedName?.split(/[@.]/)
+            })
 
+            console.log(termName.value)
             return {
                 TermSvg,
                 GlossarySvg,
@@ -225,6 +243,7 @@
                 getCombinedUsersAndGroups,
                 assetCount,
                 assets,
+                parentCategories,
             }
         },
     })

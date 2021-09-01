@@ -277,7 +277,6 @@
 
             provide('handleFetchList', handleFetchList)
 
-            console.log(props.displayText)
             return {
                 glossaryQualifiedName,
                 searchQuery,

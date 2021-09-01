@@ -28,9 +28,10 @@
                 </span>
             </div>
             <div class="flex flex-row space-x-2">
-                <a-button class="px-2">
-                    <fa icon="fal bookmark" />
-                </a-button>
+                <a-button class="px-2"
+                    ><atlan-icon icon="BookmarkOutlined" class="w-auto h-4"
+                /></a-button>
+
                 <a-button
                     class="flex flex-col justify-center pt-1 text-xs border-0  text-primary bg-primary-light"
                     @click="redirectToProfile"

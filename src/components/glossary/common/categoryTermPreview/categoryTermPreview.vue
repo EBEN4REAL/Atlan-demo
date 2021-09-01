@@ -1,6 +1,6 @@
 <template>
     <div
-        class="flex flex-col w-full  overflow-y-hidden border-l"
+        class="flex flex-col w-full overflow-y-hidden border-l"
         :class="$style.gtcPreview"
     >
         <div
@@ -28,7 +28,7 @@
                 </span>
             </div>
             <div class="flex flex-row space-x-2">
-                <a-button class="px-2.5">
+                <a-button class="px-2">
                     <fa icon="fal bookmark" />
                 </a-button>
                 <a-button
@@ -60,7 +60,7 @@
 
         <a-tabs default-active-key="1" class="border-0">
             <a-tab-pane key="info" tab="Info">
-                <div class="h-screen overflow-auto pb-64">
+                <div class="h-screen pb-64 overflow-auto">
                     <a-collapse
                         v-model:activeKey="activeKey"
                         :bordered="false"
@@ -75,7 +75,10 @@
                                 <Description
                                     v-if="entity.guid"
                                     :selected-asset="entity"
-                                    @update:selected-asset="(updated) => $emit('updateAsset', updated)"
+                                    @update:selected-asset="
+                                        (updated) =>
+                                            $emit('updateAsset', updated)
+                                    "
                                 />
                                 <Owners
                                     v-if="entity.guid"
@@ -84,12 +87,15 @@
                                 <Experts
                                     v-if="entity.guid"
                                     :selected-asset="entity"
-                                    @update:selected-asset="(updated) => $emit('updateAsset', updated)"
+                                    @update:selected-asset="
+                                        (updated) =>
+                                            $emit('updateAsset', updated)
+                                    "
                                 />
                                 <Status
                                     v-if="entity.guid"
                                     :selected-asset="entity"
-                                    @update:selected-asset="(updated) => $emit('updateAsset', updated)"
+                                    @update:selected-asset="updateEntityAndTree"
                                 />
                             </div>
                         </a-collapse-panel>
@@ -113,6 +119,15 @@
                                 <RelatedTerms :entity="entity" />
                             </div>
                         </a-collapse-panel>
+
+                        <a-collapse-panel key="properties" header="Properties">
+                            <div class="px-6 py-0 text-gray-500">
+                                <p class="p-0 m-0 mb-2">Formula</p>
+                                <p class="p-0 m-0 mb-6 text-sm">X + Y + Z</p>
+                                <p class="p-0 m-0 mb-2">Abbreviation</p>
+                                <p class="p-0 m-0 text-sm">S2021</p>
+                            </div>
+                        </a-collapse-panel>
                     </a-collapse>
                 </div>
             </a-tab-pane>
@@ -129,7 +144,7 @@
             </a-tab-pane>
             <a-tab-pane key="activity" tab="Activity">
                 <div class="h-screen overflow-auto pb-52">
-                    <Activity :selecte-asset="entity" />
+                    <Activity :selected-asset="entity" />
                 </div>
             </a-tab-pane>
             <!-- <a-tab-pane key="requests" tab="Requests"> Requests </a-tab-pane> -->
@@ -139,7 +154,7 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, PropType, computed, ref } from 'vue'
+    import { defineComponent, PropType, computed, ref, inject } from 'vue'
     import { useRouter } from 'vue-router'
 
     import Owners from '@common/sidebar/owners.vue'
@@ -151,7 +166,7 @@
     import RelatedTerms from '@/glossary/termProfile/relatedTerms.vue'
     import LinkedAssets from './linkedAssets.vue'
 
-    import { Category, Term } from '~/types/glossary/glossary.interface'
+    import { Category, Term, Glossary } from '~/types/glossary/glossary.interface'
     import { Components } from '~/api/atlas/client'
 
     import TermSvg from '~/assets/images/gtc/term/term.png'
@@ -187,6 +202,8 @@
             const router = useRouter()
             const activeKey = ref(['details'])
 
+            const updateTreeNode = inject<(guid: string | undefined, entity: Glossary | Category | Term) => void>('updateTreeNode');
+
             // computed
             const shortDescription = computed(
                 () => props.entity?.attributes?.shortDescription
@@ -210,6 +227,11 @@
             const handlClosePreviewPanel = () => {
                 context.emit('closePreviewPanel')
             }
+            const updateEntityAndTree = (selectedAsset: Glossary | Category | Term) => {
+                if(updateTreeNode) updateTreeNode(selectedAsset.guid, selectedAsset)
+                context.emit('updateAsset', selectedAsset)
+            }
+
 
             return {
                 TermSvg,
@@ -220,6 +242,7 @@
                 statusObject,
                 redirectToProfile,
                 activeKey,
+                updateEntityAndTree,
             }
         },
     })
@@ -228,7 +251,7 @@
     .gtcPreview {
         height: calc(100vh - 50px);
         :global(.ant-collapse-header) {
-            @apply pl-5 py-4 m-0 font-bold text-sm text-gray-700 bg-white !important;
+            @apply pl-6 py-4 m-0  text-sm text-gray-700 bg-white !important;
         }
         :global(.ant-collapse-borderless > .ant-collapse-item) {
             @apply border-b border-gray-300 py-0 mt-0 !important;
@@ -239,7 +262,7 @@
         }
 
         :global(.ant-collapse-content) {
-            @apply mt-4 pb-4 bg-white !important;
+            @apply mt-0 pb-4 bg-white !important;
         }
         :global(.ant-collapse-content-box) {
             @apply m-0 p-0  bg-transparent !important;

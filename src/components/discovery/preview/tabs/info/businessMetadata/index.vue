@@ -131,7 +131,14 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, PropType, ref, computed, watch } from 'vue'
+    import {
+        defineComponent,
+        PropType,
+        ref,
+        computed,
+        watch,
+        onMounted,
+    } from 'vue'
     import useEnums from '@/admin/enums/composables/useEnums'
     import { assetInterface } from '~/types/assets/asset.interface'
     import useBusinessMetadataHelper from '~/composables/businessMetadata/useBusinessMetadataHelper'
@@ -160,7 +167,7 @@
 
             const { enumListData: enumsList } = useEnums()
 
-            const readOnly = ref(true)
+            const readOnly = ref(false)
 
             const applicableList = ref(
                 getApplicableAttributes(
@@ -278,6 +285,20 @@
                 applicableList.value[index].value = value
                 updateAttribute(index)
             }
+
+            watch(
+                () => props.selectedAsset.guid,
+                (val) => {
+                    applicableList.value = getApplicableAttributes(
+                        props.item.id,
+                        props.selectedAsset.typeName
+                    )
+                    setAttributesList()
+                },
+                {
+                    immediate: true,
+                }
+            )
 
             setAttributesList()
 

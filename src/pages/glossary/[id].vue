@@ -3,16 +3,14 @@
         <LoadingView />
     </div>
     <div v-else class="flex flex-row h-full" :class="$style.tabClasses">
-        <div
-            class="h-full w-2/3"
-        >
+        <div class="w-2/3 h-full">
             <!-- top section -->
             <div class="flex flex-row justify-between pl-5 pr-4 mt-6 mb-5">
                 <div class="flex flex-row">
                     <div class="mr-5">
                         <img :src="GlossarySvg" />
                     </div>
-                    <div class="flex flex-col w-3/4">
+                    <div class="flex flex-col w-full">
                         <div class="flex">
                             <span class="mr-3 text-xl font-bold leading-6">{{
                                 title
@@ -29,42 +27,16 @@
                     </div>
                 </div>
                 <div class="flex flex-row space-x-2">
-                    <a-button class="px-2.5">
-                        <fa icon="fal bookmark" />
+                    <a-button class="px-2"
+                        ><atlan-icon icon="BookmarkOutlined" class="w-auto h-4"
+                    /></a-button>
+
+                    <a-button class="flex items-center"
+                        ><atlan-icon icon="Share" class="w-auto h-4 mr-2" />
+                        <span class="mt-1 text-sm">Share</span>
                     </a-button>
-                    <a-button class="px-2.5 flex align-middle" @click="refetch">
-                        <fa icon="fal upload" class="h-3 mr-2" />
-                        <span>Share</span>
-                    </a-button>
-                    <ThreeDotMenu :entity="glossary" />
-                    <!-- <a-dropdown :trigger="['click']">
-                        <a-button class="px-2.5" @click.prevent>
-                            <fa icon="fal ellipsis-v" class="h-4" />
-                        </a-button>
-                        <template #overlay>
-                            <a-menu>
-                                <a-menu-item>Add Term</a-menu-item>
-                                <a-menu-item>Add Category</a-menu-item>
-                                <a-menu-divider />
-                                <a-sub-menu key="status" title="No status">
-                                    <a-menu-item>Verified</a-menu-item>
-                                    <a-menu-item>Work in Progress</a-menu-item>
-                                    <a-menu-item>Warning</a-menu-item>
-                                    <a-menu-item>Deprecated</a-menu-item>
-                                </a-sub-menu>
-                                <a-sub-menu key="owner" title="Add Owner">
-                                    <a-menu-item>5d menu item</a-menu-item>
-                                    <a-menu-item>6th menu item</a-menu-item>
-                                </a-sub-menu>
-                                <a-sub-menu key="expert" title="Add Expert">
-                                    <a-menu-item>5d menu item</a-menu-item>
-                                    <a-menu-item>6th menu item</a-menu-item>
-                                </a-sub-menu>
-                                <a-menu-divider />
-                                <a-menu-item>Archive</a-menu-item>
-                            </a-menu>
-                        </template>
-                    </a-dropdown> -->
+
+                    <ThreeDotMenu :entity="glossary" :showLinks="false" />
                 </div>
             </div>
             <!-- tabs start here  -->
@@ -77,15 +49,19 @@
                     <a-tab-pane key="1" tab="Overview">
                         <div class="px-5 mt-4">
                             <GlossaryProfileOverview :entity="glossary" />
-                            <GlossaryContinueSettingUp
-                                v-if="!isLoading || !termsLoading || !categoriesLoading"
+                            <!-- <GlossaryContinueSettingUp
+                                v-if="
+                                    !isLoading ||
+                                    !termsLoading ||
+                                    !categoriesLoading
+                                "
                                 :terms="glossaryTerms"
                                 :categories="glossaryCategories"
                                 @updateDescription="refreshCategoryTermList"
                                 @fetchNextCategoryOrTermList="
                                     fetchNextCategoryOrTermList
                                 "
-                            />
+                            /> -->
                         </div>
                     </a-tab-pane>
                     <a-tab-pane key="2" tab="Terms & Categories">
@@ -241,7 +217,7 @@
             })
 
             // Providers
-            provide('refreshEntity', refetch);
+            provide('refreshEntity', refetch)
 
             return {
                 glossary,

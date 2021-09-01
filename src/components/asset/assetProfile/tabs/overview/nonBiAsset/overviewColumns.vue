@@ -16,25 +16,22 @@
                     <template #content>
                         <preferences />
                     </template>
-                    <a-button class="px-2"
-                        ><atlan-icon icon="FilterDot" class="w-auto h-5"
+                    <a-button class="px-1.5"
+                        ><atlan-icon icon="FilterDot" class="h-5"
                     /></a-button>
                 </a-popover>
             </div>
         </div>
         <!-- Table -->
-        <div
-            class="relative overflow-scroll border border-gray-light h-60 max-h-60"
-        >
+        <div class="relative border border-gray-light">
             <a-table
                 :columns="columns"
                 :data-source="columnsData.filteredList"
                 :pagination="false"
-                :scroll="{ x: 'calc(700px + 50%)', y: 240 }"
+                :scroll="{ y: 240 }"
                 :loading="!columnsData.filteredList"
                 :custom-row="customRow"
                 :row-class-name="rowClassName"
-                class="absolute left-0 w-full"
             >
                 <!-- hash_index col -->
                 <template #hash_index="{ text, record }">
@@ -54,54 +51,16 @@
                             :is="images[record.data_type]"
                             class="w-4 h-4 mr-3"
                         ></component>
-                        <span class="truncate">{{ text }}</span>
+                        <Tooltip :tooltip-text="text" />
                     </div>
+                </template>
+                <!-- description col -->
+                <template #description="{ text }">
+                    <Tooltip :tooltip-text="text" />
                 </template>
                 <!-- popularity col -->
                 <template #popularity="{ text }">
                     <a-progress :percent="text" :show-info="false" />
-                </template>
-                <!-- terms col -->
-                <template #terms="{ text }">
-                    <div
-                        class="
-                            inline-flex
-                            px-3
-                            py-1.5
-                            rounded-full
-                            items-center
-                            cursor-pointer
-                            select-none
-                            text-sm text-primary
-                            hover:text-white hover:bg-primary
-                            whitespace-nowrap
-                            _bg-primary-light
-                        "
-                    >
-                        <fa icon="fal plus" class="" />
-                        <span class="ml-2">Add Terms</span>
-                    </div>
-                </template>
-                <!-- classifications col -->
-                <template #classifications="{ text }">
-                    <div
-                        class="
-                            inline-flex
-                            px-3
-                            py-1.5
-                            rounded-full
-                            items-center
-                            cursor-pointer
-                            select-none
-                            text-sm text-primary
-                            whitespace-nowrap
-                            hover:text-white hover:bg-primary
-                            _bg-primary-light
-                        "
-                    >
-                        <fa icon="fal plus" class="" />
-                        <span class="ml-2">Add Classifications</span>
-                    </div>
                 </template>
             </a-table>
         </div>
@@ -120,6 +79,7 @@
                 <ColumnPreview
                     :selected-row="selectedRowData"
                     @closeColumnSidebar="handleCloseColumnSidebar"
+                    @asset-mutation="propagateToColumnList"
                 />
             </a-drawer>
         </teleport>
@@ -135,13 +95,18 @@
     import SearchAndFilter from '@/common/input/searchAndFilter.vue'
     import preferences from './preferences.vue'
     import ColumnPreview from './columnPreview/index.vue'
+    import Tooltip from '@/common/ellipsis/index.vue'
+
     // Composables
     import useColumns from '~/composables/asset/useColumns'
     import useColumnsFilter from '~/composables/asset/useColumnsFilter'
     import { images, dataTypeList } from '~/constant/datatype'
 
+    // Interfaces
+    import { assetInterface } from '~/types/assets/asset.interface'
+
     export default defineComponent({
-        components: { preferences, SearchAndFilter, ColumnPreview },
+        components: { preferences, SearchAndFilter, ColumnPreview, Tooltip },
         setup() {
             /** DATA */
             const query = ref('')
@@ -217,6 +182,7 @@
                             order: any
                             name: any
                             dataType: any
+                            userDescription: any
                             description: any
                             popularityScore: any
                         }
@@ -225,10 +191,11 @@
                         hash_index: i.attributes.order,
                         column_name: i.attributes.name,
                         data_type: getDataType(i.attributes.dataType),
-                        description: i.attributes.description || '---',
+                        description:
+                            i.attributes.userDescription ||
+                            i.attributes.description ||
+                            '---',
                         popularity: i.attributes.popularityScore || 8,
-                        terms: 'N/A',
-                        classifications: 'N/A',
                     })
                 )
                 columnPreviewData.value = { filteredList }
@@ -236,6 +203,17 @@
                 columnsData.value = {
                     filteredList: filteredListData,
                     columnList,
+                }
+
+                // If redirected from asset column discovery
+                if (column.value !== '') {
+                    columnPreviewData.value.filteredList?.forEach(
+                        (singleRow: {}) => {
+                            if (singleRow.guid === column.value) {
+                                openColumnSidebar(singleRow.attributes.order)
+                            }
+                        }
+                    )
                 }
             }
 
@@ -247,6 +225,17 @@
                 selectedRow.value = null
                 selectedRowData.value = {}
             }
+            const openColumnSidebar = (columnOrder) => {
+                selectedRow.value = columnOrder
+                columnPreviewData.value.filteredList.forEach(
+                    (singleRow: {}) => {
+                        if (singleRow.attributes.order === columnOrder) {
+                            selectedRowData.value = singleRow
+                        }
+                    }
+                )
+                showColumnPreview.value = true
+            }
             // customRow Antd
             const customRow = (record: { key: null }) => ({
                 onClick: () => {
@@ -254,19 +243,15 @@
                     if (selectedRow.value === record.key)
                         handleCloseColumnSidebar()
                     else {
-                        selectedRow.value = record.key
-                        columnPreviewData.value.filteredList.forEach(
-                            (singleRow: {}) => {
-                                if (singleRow.attributes.order === record.key) {
-                                    selectedRowData.value = singleRow
-                                }
-                            }
-                        )
-
-                        showColumnPreview.value = true
+                        openColumnSidebar(record.key)
                     }
                 },
             })
+
+            const propagateToColumnList = (updatedAsset: assetInterface) => {
+                selectedRowData.value = updatedAsset
+                handleFilter()
+            }
 
             // rowClassName Antd
             const rowClassName = (record: { key: null }, index: any) =>
@@ -283,16 +268,13 @@
                 filterColumnsList(columnList.value)
             })
 
-            watch(column, () => {
-                console.log('xxx column from url:', column)
-            })
-
             return {
                 column,
                 rowClassName,
                 customRow,
                 filterByQuery,
                 handleCloseColumnSidebar,
+                propagateToColumnList,
                 selectedRow,
                 columnsData,
                 query,
@@ -325,17 +307,17 @@
                         ) => a.column_name > b.column_name,
                     },
                     {
-                        width: 100,
+                        width: 150,
                         title: 'Data type',
                         dataIndex: 'data_type',
                         key: 'data_type',
                     },
                     {
-                        width: 100,
+                        width: 150,
                         title: 'Description',
                         dataIndex: 'description',
                         key: 'description',
-                        ellipsis: true,
+                        slots: { customRender: 'description' },
                     },
                     {
                         width: 150,
@@ -344,20 +326,6 @@
                         dataIndex: 'popularity',
                         slots: { customRender: 'popularity' },
                         key: 'popularity',
-                    },
-                    {
-                        width: 150,
-                        title: 'Terms',
-                        dataIndex: 'terms',
-                        slots: { customRender: 'terms' },
-                        key: 'terms',
-                    },
-                    {
-                        width: 150,
-                        title: 'Classifications',
-                        dataIndex: 'classifications',
-                        slots: { customRender: 'classifications' },
-                        key: 'classifications',
                     },
                 ],
             }

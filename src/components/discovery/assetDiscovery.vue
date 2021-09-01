@@ -93,7 +93,6 @@
 </template>
 
 <script lang="ts">
-    import useBusinessMetadata from '@/admin/custom-metadata/composables/useBusinessMetadata'
     import EmptyView from '@common/empty/discover.vue'
     import AssetPagination from '@common/pagination/index.vue'
     import HeirarchySelect from '@common/tree/heirarchy/index.vue'
@@ -136,6 +135,7 @@
     import { SearchParameters } from '~/types/atlas/attributes'
     import { getEncodedStringFromOptions } from '~/utils/helper/routerQuery'
     import { assetInterface } from '~/types/assets/asset.interface'
+    import { useBusinessMetadataStore } from '~/store/businessMetadata'
 
     export interface filterMapType {
         status: {
@@ -282,8 +282,13 @@
                 true
             )
 
-            // * Get all available BMs and save on store
-            const { fetchBMonStore } = useBusinessMetadata()
+            const store = useBusinessMetadataStore()
+            const BMListLoaded = computed(
+                () => store.getBusinessMetadataListLoaded
+            )
+            const BMAttributeProjection = computed(
+                () => store.getBusinessMetadataListProjections
+            )
 
             const state = ref('active')
             const assetTypeLabel = computed(() => {
@@ -353,6 +358,7 @@
                         ...BaseAttributes,
                         ...BasicSearchAttributes,
                         ...tableauAttributes,
+                        ...BMAttributeProjection.value,
                     ],
                     aggregationAttributes: [],
                 }
@@ -523,11 +529,20 @@
                 assetFilterRef.value?.resetAllFilters()
             }
 
+            watch(BMListLoaded, (val) => {
+                if (val) {
+                    now.value = true
+                    isAggregate.value = true
+                    updateBody()
+                }
+            })
+
             onMounted(() => {
-                fetchBMonStore()
-                now.value = true
-                isAggregate.value = true
-                updateBody()
+                if (BMListLoaded.value) {
+                    now.value = true
+                    isAggregate.value = true
+                    updateBody()
+                }
             })
 
             return {

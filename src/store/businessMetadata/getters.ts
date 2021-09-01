@@ -7,6 +7,7 @@ export type Getters = {
     getBusinessMetadataList(state: State): object[] | null,
     getBusinessMetadataListError(state: State): string | null,
     getBusinessMetadataListLoading(state: State): boolean;
+    getBusinessMetadataListLoaded(state: State): boolean;
 };
 
 export const getters: Getters = {
@@ -29,5 +30,8 @@ export const getters: Getters = {
     },
     getBusinessMetadataListLoading(state) {
         return state.businessMetadataListLoading
+    },
+    getBusinessMetadataListLoaded(state) {
+        return state.businessMetadataListLoaded
     }
 };

@@ -1,9 +1,7 @@
 <template>
     <div>
         <!-- Table -->
-        <div
-            class="relative overflow-scroll border  border-gray-light h-60 max-h-60"
-        >
+        <div class="relative border border-gray-light h-60 max-h-60">
             <a-table
                 :columns="tableColumns"
                 :data-source="results"

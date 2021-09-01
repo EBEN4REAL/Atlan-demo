@@ -1,5 +1,5 @@
 <template>
-    <div class="px-12 mt-6">
+    <div class="px-12 my-6">
         <!-- Overview Columns widget -->
         <div class="mb-16">
             <h2 class="mb-3 text-xl text-gray">Columns preview</h2>
@@ -13,7 +13,7 @@
         </div>
 
         <!-- Readme widget -->
-        <div class="pb-6">
+        <div>
             <Readme
                 class="w-full border-0"
                 :show-borders="false"

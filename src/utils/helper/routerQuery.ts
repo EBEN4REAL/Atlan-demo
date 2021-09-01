@@ -29,7 +29,8 @@ export function getEncodedStringFromOptions(options: any) {
             let filterKeyValue = options.filters[filterKey]
             switch (filterKey) {
                 case 'assetCategory': {
-                    filterKeyValue = options.filters[filterKey].selectedIds
+                    filterKeyValue =
+                        options.filters[filterKey]?.selectedIds ?? []
                     filterKeyValue = filterKeyValue
                         .map((selectedId: criterion) => selectedId)
                         .join(',')

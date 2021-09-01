@@ -58,7 +58,7 @@
                     ).include
                     includedAssetTypes.forEach((assetType) => {
                         criterion.push({
-                            attributeName: 'typeName',
+                            attributeName: '__typeName',
                             attributeValue: assetType,
                             operator: 'eq',
                         })
@@ -68,11 +68,10 @@
 
                 emit('change', {
                     id: props.item.id,
-
+                    selectedIds,
                     payload: {
                         condition: 'OR',
                         criterion,
-                        selectedIds,
                     } as Components.Schemas.FilterCriteria,
                 })
             }

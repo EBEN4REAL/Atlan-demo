@@ -308,12 +308,12 @@
                     criterion.push({
                         attributeName: '__classificationNames',
                         attributeValue: '-',
-                        operator: 'not_contains',
+                        operator: 'is_null',
                     })
                     criterion.push({
                         attributeName: '__propagatedClassificationNames',
                         attributeValue: '-',
-                        operator: 'not_contains',
+                        operator: 'is_null',
                     })
                 } else {
                     data.value.checked = []

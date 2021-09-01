@@ -266,7 +266,6 @@ const useTree = (emit: any, cacheKey?: string, isAccordion?: boolean) => {
                         { ...category, title: category.name, key: category.guid, glossaryID: parentGlossary.value?.guid, type: "category", isRoot: true, }
                     )
                 }
-                
             });
             termsList.forEach((term) => {
                 const existingTerm = treeData.value.find((entity) => entity.guid === term.guid);
@@ -279,6 +278,80 @@ const useTree = (emit: any, cacheKey?: string, isAccordion?: boolean) => {
                 }
             })
             
+            treeData.value = updatedTreeData;
+        } else {
+            const parentStack:string[] = [guid];
+            const recursivelyFindPath = (currentGuid: string) => {
+                if(nodeToParentKeyMap[currentGuid] && nodeToParentKeyMap[currentGuid] !== 'root') {
+                    parentStack.push(nodeToParentKeyMap[currentGuid])
+                    recursivelyFindPath(nodeToParentKeyMap[currentGuid])
+                }
+            };
+            const updateNodeNested = async (node: TreeDataItem) => {
+                const currentPath = parentStack.pop();
+                if(node.key === guid || !currentPath) {
+                    const categoryList = await GlossaryApi.ListCategoryForGlossary(parentGlossary.value?.guid ?? '', {}, {});
+                    const termsList = await GlossaryApi.ListTermsForCategory(guid, {}, { });
+
+                    const updatedChildren: TreeDataItem[] = [];
+                    
+                    categoryList.forEach((category) => {
+                        const existingCategory = node.children?.find((entity) => entity.guid === category.guid);
+                        
+                        if(existingCategory) {
+                            updatedChildren.push(existingCategory)
+                        } else if (category.parentCategory?.categoryGuid === node.key){
+                            updatedChildren.push(
+                                { ...category, title: category.name, key: category.guid, glossaryID: parentGlossary.value?.guid, categoryID: node.key, type: "category", isRoot: true, }
+                            )
+                        }
+                    })
+
+                    termsList.forEach((term) => {
+                        const existingTerm = node.children?.find((entity) => entity.guid === term.guid)
+                        if(existingTerm){
+                            updatedChildren.push(existingTerm)
+                        } else {
+                            updatedChildren.push(
+                                { ...term,title: term.name, key: term.guid, glossaryID: parentGlossary.value?.guid, type: "term", isLeaf: true }
+                            )
+                        }
+                    });
+                    return {
+                        ...node,
+                        children: updatedChildren
+                    }
+                }
+                const updatedChildren:TreeDataItem[] = [];
+
+                // eslint-disable-next-line no-restricted-syntax
+                for(const childNode of node?.children ?? []){
+                    if(childNode.key === currentPath) {
+                        const updatedNode = await updateNodeNested(childNode) 
+                        updatedChildren.push(updatedNode);
+                    }
+                    updatedChildren.push(childNode);
+                }
+                return {
+                    ...node,
+                    children: updatedChildren
+                }
+            }
+            recursivelyFindPath(guid);
+            const parent = parentStack.pop();
+
+            const updatedTreeData: TreeDataItem[] = [];
+
+            // eslint-disable-next-line no-restricted-syntax
+            for(const node of treeData.value){
+                if(node.key === parent){
+                    const updatedNode =  await updateNodeNested(node);
+                    updatedTreeData.push(updatedNode)
+                } else {
+                    updatedTreeData.push(node)
+                }
+            };
+
             treeData.value = updatedTreeData;
         }
     }

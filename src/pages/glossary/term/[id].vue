@@ -180,12 +180,7 @@
 
             const updateTitle = () => {
                 updateEntity('term', term.value?.guid ?? '', {
-                    guid: term.value?.guid,
                     name: newName.value,
-                    qualifiedName: qualifiedName.value,
-                    anchor: {
-                        glossaryGuid: term.value?.attributes?.anchor?.guid,
-                    },
                 })
             }
 

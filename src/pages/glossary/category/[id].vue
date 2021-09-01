@@ -187,11 +187,7 @@
 
             const updateTitle = () => {
                 updateEntity('category', category.value?.guid ?? '', {
-                    guid: category.value?.guid,
                     name: newName.value,
-                    anchor: {
-                        glossaryGuid: category.value?.attributes?.anchor?.guid,
-                    },
                 })
             }
 

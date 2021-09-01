@@ -116,5 +116,5 @@ jobs:
         fields: repo,commit,workflow,message,author,took # default: repo,commit
         text: "- @infra, Job ${{ job.status }} :rocket:"
       env:
-        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }} # required
+        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
       if: failure() # Pick up events even if the job fails or is canceled.

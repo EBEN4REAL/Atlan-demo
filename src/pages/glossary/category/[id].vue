@@ -3,15 +3,13 @@
         <LoadingView />
     </div>
     <div v-else class="flex flex-row h-full" :class="$style.tabClasses">
-        <div
-            class="h-full w-2/3"
-        >
+        <div class="w-2/3 h-full">
             <div class="flex flex-row justify-between pl-5 pr-4 my-6">
                 <div class="flex flex-row">
                     <div class="mr-5">
                         <img :src="CategorySvg" />
                     </div>
-                    <div class="flex flex-col w-3/4">
+                    <div class="flex flex-col w-full">
                         <div class="flex">
                             <span class="mr-3 text-xl font-bold leading-6">{{
                                 title
@@ -28,16 +26,16 @@
                     </div>
                 </div>
                 <div class="flex flex-row space-x-2">
-                    <a-button class="px-2.5">
-                        <fa icon="fal bookmark" />
+                    <a-button class="px-2"
+                        ><atlan-icon icon="BookmarkOutlined" class="w-auto h-4"
+                    /></a-button>
+
+                    <a-button class="flex items-center"
+                        ><atlan-icon icon="Share" class="w-auto h-4 mr-2" />
+                        <span class="mt-1 text-sm">Share</span>
                     </a-button>
-                    <a-button class="px-2.5 flex align-middle">
-                        <fa icon="fal upload" class="h-3 mr-2" />
-                        <span>Share</span>
-                    </a-button>
-                    <a-button class="px-2.5">
-                        <fa icon="fal ellipsis-v" class="h-4" />
-                    </a-button>
+
+                    <ThreeDotMenu :entity="category" :showLinks="false" />
                 </div>
             </div>
             <div class="m-0">
@@ -48,10 +46,26 @@
                 >
                     <a-tab-pane key="1" tab="Overview">
                         <div class="px-8 mt-4">
+                            <div v-if="isNewCategory" class="mb-4">
+                                <p class="mb-1 p-0 text-sm leading-5 text-gray-700">Name</p>
+                                <div class="flex">
+                                    <a-input 
+                                        v-model:value="newName"
+                                        style="width: 200px"
+                                    />
+                                    <a-button 
+                                        v-if="newName" 
+                                        class="ml-4" 
+                                        type="primary"
+                                        @click="updateTitle"    
+                                    >Submit</a-button>
+                                </div>
+
+                            </div>
                             <GlossaryProfileOverview :entity="category" />
                         </div>
                     </a-tab-pane>
-                    <a-tab-pane key="2" tab="Terms">
+                    <a-tab-pane key="2" tab="Terms & Sub-Categories">
                         <GlossaryTermsAndCategoriesTab
                             :qualified-name="parentGlossaryQualifiedName"
                             :guid="guid"
@@ -60,18 +74,17 @@
                             @entityPreview="handleCategoryOrTermPreview"
                         />
                     </a-tab-pane>
-                    <a-tab-pane key="4" tab="Bots"> Bots </a-tab-pane>
+                    <!-- <a-tab-pane key="4" tab="Bots"> Bots </a-tab-pane>
                     <a-tab-pane key="5" tab="Permissions">
                         Permissions
-                    </a-tab-pane>
+                    </a-tab-pane> -->
                 </a-tabs>
             </div>
         </div>
 
-        <div id="sidePanel" class="relative h-full w-1/3">
+        <div id="sidePanel" class="relative w-1/3 h-full">
             <SidePanel :entity="category" :top-terms="categoryTerms" />
         </div>
-
     </div>
 </template>
 
@@ -83,10 +96,11 @@
         onMounted,
         toRef,
         ref,
-        provide
+        provide,
     } from 'vue'
 
     // components
+    import ThreeDotMenu from '@/glossary/common/threeDotMenu.vue'
     import GlossaryProfileOverview from '@/glossary/common/glossaryProfileOverview.vue'
     import LoadingView from '@common/loaders/page.vue'
     import SidePanel from '@/glossary/sidePanel/index.vue'
@@ -96,12 +110,10 @@
     // composables
     import useGTCEntity from '~/composables/glossary/useGtcEntity'
     import useCategoryTerms from '~/composables/glossary/useCategoryTerms'
+    import useUpdateGtcEntity from '~/composables/glossary/useUpdateGtcEntity'
 
     // static
-    import {
-        Category,
-        Term,
-    } from '~/types/glossary/glossary.interface'
+    import { Category, Term } from '~/types/glossary/glossary.interface'
     import CategorySvg from '~/assets/images/gtc/category/category.png'
 
     export default defineComponent({
@@ -111,6 +123,7 @@
             LoadingView,
             SidePanel,
             CategoryTermPreview,
+            ThreeDotMenu,
         },
         props: {
             id: {
@@ -124,7 +137,9 @@
             const guid = toRef(props, 'id')
             const currentTab = ref('1')
             const previewEntity = ref<Category | Term | undefined>()
-            const showPreviewPanel = ref(false)
+            const showPreviewPanel = ref(false);
+            const newName = ref('');
+
             const {
                 entity: category,
                 title,
@@ -134,7 +149,7 @@
                 error,
                 isLoading,
                 refetch,
-            } = useGTCEntity<Category>('category', guid)
+            } = useGTCEntity<Category>('category', guid, guid.value)
 
             const {
                 data: categoryTerms,
@@ -142,6 +157,8 @@
                 isLoading: termsLoading,
                 fetchCategoryTermsPaginated,
             } = useCategoryTerms()
+
+            const { data:updatedEntity, updateEntity }  = useUpdateGtcEntity()
 
             // computed
             const termCount = computed(
@@ -151,7 +168,8 @@
                 () =>
                     category.value?.attributes?.qualifiedName?.split('@')[1] ??
                     ''
-            )
+            );
+            const isNewCategory = computed(() => title.value === 'New Category')
 
             // methods
             const handleCategoryOrTermPreview = (entity: Category | Term) => {
@@ -160,6 +178,16 @@
             }
             const handlClosePreviewPanel = () => {
                 showPreviewPanel.value = false
+            };
+
+            const updateTitle = () => {
+                updateEntity('category', category.value?.guid ?? '', {
+                    guid: category.value?.guid,
+                    name: newName.value,
+                    anchor: {
+                        glossaryGuid: category.value?.attributes?.anchor?.guid,
+                    }
+                });
             }
 
             // lifecycle methods and watchers
@@ -171,11 +199,17 @@
                 fetchCategoryTermsPaginated({
                     guid: newGuid,
                     refreshSamePage: true,
-                })
+                });
+                newName.value = '';
             });
 
+            watch(updatedEntity, () => {
+                refetch();
+                newName.value = '';
+            } )
+
             // Providers
-            provide('refreshEntity', refetch);
+            provide('refreshEntity', refetch)
 
             return {
                 category,
@@ -193,8 +227,11 @@
                 CategorySvg,
                 guid,
                 statusObject,
+                isNewCategory,
+                newName,
                 handleCategoryOrTermPreview,
                 handlClosePreviewPanel,
+                updateTitle
             }
         },
     })

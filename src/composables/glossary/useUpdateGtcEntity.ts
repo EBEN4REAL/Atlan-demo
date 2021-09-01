@@ -1,45 +1,42 @@
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
 
 import { useAPI } from "~/api/useAPI"
 import { UPDATE_GLOSSARY, UPDATE_GLOSSARY_CATEGORY, UPDATE_GLOSSARY_TERM } from "~/api/keyMaps/glossary"
 import { Components } from "~/api/atlas/client";
 
 
-
-const useUpdateGtcEntity = (type: 'glossary' | 'category' | 'term') => {
+const useUpdateGtcEntity = () => {
     const keyMap = {
         glossary: UPDATE_GLOSSARY,
         category: UPDATE_GLOSSARY_CATEGORY,
         term: UPDATE_GLOSSARY_TERM,
     }
 
-    const entityGuid = ref<string>();
-    const entityType = ref<'glossary' | 'category' | 'term'>(type)
-    const pathObject = ref({
-        guid: entityGuid
-    })
-    const updateBody = ref()
+    const data = ref<Components.Schemas.AtlasGlossary | Components.Schemas.AtlasGlossaryCategory | Components.Schemas.AtlasGlossaryTerm>()
+    const error = ref<any>()
+    const isUpdating = ref<boolean>()
+    
+    const updateEntity = (entityType: 'glossary' | 'category' | 'term', guid: string, body: any) => {
+        const { data: updateData, error: updateError, isLoading } = useAPI<Components.Schemas.AtlasGlossary | Components.Schemas.AtlasGlossaryCategory | Components.Schemas.AtlasGlossaryTerm>(keyMap[entityType], 'PUT', {
+            cache: false,
+            pathVariables: {
+                guid
+            },
+            body,
+            options: {
+                revalidateOnFocus: false
+            }
+        });
 
-    const { data, error, isValidating: isLoading, mutate } = useAPI<Components.Schemas.AtlasGlossary | Components.Schemas.AtlasGlossary>(keyMap[entityType.value], 'PUT', {
-        cache: true,
-        dependantFetchingKey: entityGuid,
-        pathVariables: pathObject,
-        body: updateBody,
-        options: {
-            revalidateOnFocus: false
-        }
-    })
-
-    const updateEntity = (guid: string, body: any) => {
-        entityGuid.value = guid;
-        pathObject.value = { guid };
-        updateBody.value = body;
-
-        mutate()
+        watch(updateData, (newData) => {
+            data.value = newData;
+        });
+        watch(updateError, (newError) => {error.value = newError})
+        watch(isLoading, (loading) => {isUpdating.value = loading})
     }
 
 
-    return { data, error, isLoading, updateEntity }
+    return { data, error, isUpdating, updateEntity }
 }
 
 export default useUpdateGtcEntity;

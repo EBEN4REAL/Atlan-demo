@@ -1,8 +1,5 @@
 <template>
-    <div v-if="isLoading && term?.guid !== id">
-        <LoadingView />
-    </div>
-    <div v-else class="flex flex-row h-full" :class="$style.tabClasses">
+    <div class="flex flex-row h-full" :class="$style.tabClasses">
         <div
             class="h-full overflow-auto"
             :class="
@@ -14,7 +11,7 @@
                     <div class="mr-5">
                         <img :src="TermSvg" />
                     </div>
-                    <div class="flex flex-col w-full">
+                    <div class="flex flex-col w-3/4">
                         <div class="flex">
                             <span class="mr-3 text-xl font-bold leading-6">{{
                                 title
@@ -32,13 +29,12 @@
                     </div>
                 </div>
                 <div class="flex flex-row space-x-2">
-                    <a-button class="px-2"
-                        ><atlan-icon icon="BookmarkOutlined" class="w-auto h-4"
-                    /></a-button>
-
-                    <a-button class="flex items-center"
-                        ><atlan-icon icon="Share" class="w-auto h-4 mr-2" />
-                        <span class="mt-1 text-sm">Share</span>
+                    <a-button class="px-2">
+                        <fa icon="fal bookmark" />
+                    </a-button>
+                    <a-button class="flex px-2 align-middle">
+                        <fa icon="fal upload" class="h-3 mr-2" />
+                        <span>Share</span>
                     </a-button>
 
                     <ThreeDotMenu :entity="term" :showLinks="false" />
@@ -52,22 +48,6 @@
                 >
                     <a-tab-pane key="1" tab="Overview">
                         <div class="px-5 mt-4">
-                            <div v-if="isNewTerm" class="mb-4">
-                                <p class="mb-1 p-0 text-sm leading-5 text-gray-700">Name</p>
-                                <div class="flex">
-                                    <a-input 
-                                        v-model:value="newName"
-                                        style="width: 200px"
-                                    />
-                                    <a-button 
-                                        v-if="newName" 
-                                        class="ml-4" 
-                                        type="primary"
-                                        @click="updateTitle"    
-                                    >Submit</a-button>
-                                </div>
-
-                            </div>
                             <GlossaryProfileOverview :entity="term" />
                         </div>
                     </a-tab-pane>
@@ -101,7 +81,7 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, computed, toRef, ref, provide, watch } from 'vue'
+    import { defineComponent, computed, toRef, ref, provide } from 'vue'
 
     import ThreeDotMenu from '@/glossary/common/threeDotMenu.vue'
     import GlossaryProfileOverview from '@/glossary/common/glossaryProfileOverview.vue'
@@ -114,7 +94,6 @@
     import AssetPreview from '~/components/discovery/preview/assetPreview.vue'
 
     import useGTCEntity from '~/composables/glossary/useGtcEntity'
-    import useUpdateGtcEntity from '~/composables/glossary/useUpdateGtcEntity'
 
     import { Term } from '~/types/glossary/glossary.interface'
 
@@ -143,7 +122,6 @@
             const guid = toRef(props, 'id')
             const currentTab = ref('1')
             const previewEntity = ref()
-            const newName = ref('');
 
             const {
                 entity: term,
@@ -154,9 +132,7 @@
                 error,
                 isLoading,
                 refetch,
-            } = useGTCEntity<Term>('term', guid, guid.value)
-
-            const { data:updatedEntity, updateEntity }  = useUpdateGtcEntity()
+            } = useGTCEntity<Term>('term', guid)
 
             const parentGlossaryName = computed(
                 () => term.value?.attributes?.qualifiedName?.split('@')[1] ?? ''
@@ -166,27 +142,9 @@
                 () => term.value?.attributes?.assignedEntities?.length ?? 0
             )
 
-            const isNewTerm = computed(() => title.value === 'New Term')
-
             const handlePreview = (entity: any) => {
                 previewEntity.value = entity
             }
-
-            const updateTitle = () => {
-                updateEntity('term', term.value?.guid ?? '', {
-                    guid: term.value?.guid,
-                    name: newName.value,
-                    qualifiedName: qualifiedName.value,
-                    anchor: {
-                        glossaryGuid: term.value?.attributes?.anchor?.guid
-                    }
-                });
-            }
-
-            watch(updatedEntity, () => {
-                refetch();
-                newName.value = '';
-            } )
 
             // Providers
             provide('refreshEntity', refetch)
@@ -205,11 +163,8 @@
                 parentGlossaryName,
                 previewEntity,
                 statusObject,
-                isNewTerm,
-                newName,
                 handlePreview,
                 refetch,
-                updateTitle,
             }
         },
     })

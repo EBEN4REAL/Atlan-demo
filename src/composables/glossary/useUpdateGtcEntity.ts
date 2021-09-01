@@ -1,4 +1,4 @@
-import { ref, watch } from 'vue';
+import { ref, watch, inject } from 'vue';
 
 import { useAPI } from "~/api/useAPI"
 import { UPDATE_GLOSSARY, UPDATE_GLOSSARY_CATEGORY, UPDATE_GLOSSARY_TERM } from "~/api/keyMaps/glossary"
@@ -16,6 +16,8 @@ const useUpdateGtcEntity = () => {
     const error = ref<any>()
     const isUpdating = ref<boolean>()
     
+    const updateTreeNode = inject<any>('updateTreeNode');
+
     const updateEntity = (entityType: 'glossary' | 'category' | 'term', guid: string, body: any) => {
         const { data: updateData, error: updateError, isLoading } = useAPI<Components.Schemas.AtlasGlossary | Components.Schemas.AtlasGlossaryCategory | Components.Schemas.AtlasGlossaryTerm>(keyMap[entityType], 'PUT', {
             cache: false,
@@ -30,6 +32,12 @@ const useUpdateGtcEntity = () => {
 
         watch(updateData, (newData) => {
             data.value = newData;
+            if(newData) {
+                if(updateTreeNode){
+                    updateTreeNode({guid: newData.guid, name: newData.name, assetStatus: newData.assetStatus ?? 'is_null'})
+                }
+            }
+            
         });
         watch(updateError, (newError) => {error.value = newError})
         watch(isLoading, (loading) => {isUpdating.value = loading})

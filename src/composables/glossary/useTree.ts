@@ -194,12 +194,19 @@ const useTree = (emit: any, cacheKey?: string, isAccordion?: boolean) => {
         
     }
 
-    const updateNode = (guid: string, entity: Glossary | Category | Term) => {
+    const updateNode = ({guid, entity, name, assetStatus}: {
+        guid: string,
+        entity?: Glossary | Category | Term,
+        name?: string,
+        assetStatus?: string
+    }) => {
         if(nodeToParentKeyMap[guid] === 'root') {
             treeData.value = treeData.value.map((treeNode) => {
                 if(treeNode.key === guid) return {
                     ...treeNode,
-                    assetStatus: entity.attributes.assetStatus
+                    assetStatus: entity?.attributes?.assetStatus ?? assetStatus ?? treeNode.assetStatus,
+                    name: entity?.attributes?.name ?? name ?? treeNode.name,
+                    title: entity?.attributes?.name ?? name ?? treeNode.title
                 }
                 return treeNode
             })
@@ -216,7 +223,9 @@ const useTree = (emit: any, cacheKey?: string, isAccordion?: boolean) => {
                 if(node.key === guid || !currentPath) {
                     return {
                         ...node,
-                        assetStatus: entity.attributes.assetStatus
+                        assetStatus: entity?.attributes?.assetStatus ?? assetStatus ?? node.assetStatus,
+                        name: entity?.attributes?.name ?? name ?? node.name,
+                        title: entity?.attributes?.name ?? name ?? node.title
                     }
                 }
                 return {

@@ -208,12 +208,7 @@
             const activeKey = ref(['details'])
 
             const updateTreeNode =
-                inject<
-                    (
-                        guid: string | undefined,
-                        entity: Glossary | Category | Term
-                    ) => void
-                >('updateTreeNode')
+                inject<any>('updateTreeNode')
 
             // computed
             const shortDescription = computed(
@@ -242,7 +237,7 @@
                 selectedAsset: Glossary | Category | Term
             ) => {
                 if (updateTreeNode)
-                    updateTreeNode(selectedAsset.guid, selectedAsset)
+                    updateTreeNode({guid: selectedAsset.guid, entity: selectedAsset})
                 context.emit('updateAsset', selectedAsset)
             }
 

@@ -153,7 +153,7 @@
             const activeKey = ref(['1'])
 
             const refreshEntity = inject<() => void>('refreshEntity')
-            const updateTreeNode = inject<(guid: string | undefined, entity: Glossary | Category | Term) => void>('updateTreeNode');
+            const updateTreeNode = inject<any>('updateTreeNode');
 
             const { getApplicableBmGroups } = useBusinessMetadataHelper()
 
@@ -172,7 +172,8 @@
                 if(refreshEntity)
                     refreshEntity()
                 if(updateTreeNode){
-                    updateTreeNode(selectedAsset.guid, selectedAsset)}
+                    updateTreeNode({guid: selectedAsset.guid, entity: selectedAsset})
+                }
             }
 
             // TODO: add BM panel

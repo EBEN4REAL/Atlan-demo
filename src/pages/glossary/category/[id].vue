@@ -47,20 +47,24 @@
                     <a-tab-pane key="1" tab="Overview">
                         <div class="px-8 mt-4">
                             <div v-if="isNewCategory" class="mb-4">
-                                <p class="mb-1 p-0 text-sm leading-5 text-gray-700">Name</p>
+                                <p
+                                    class="p-0 mb-1 text-sm leading-5 text-gray-700 "
+                                >
+                                    Name
+                                </p>
                                 <div class="flex">
-                                    <a-input 
+                                    <a-input
                                         v-model:value="newName"
                                         style="width: 200px"
                                     />
-                                    <a-button 
-                                        v-if="newName" 
-                                        class="ml-4" 
+                                    <a-button
+                                        v-if="newName"
+                                        class="ml-4"
                                         type="primary"
-                                        @click="updateTitle"    
-                                    >Submit</a-button>
+                                        @click="updateTitle"
+                                        >Submit</a-button
+                                    >
                                 </div>
-
                             </div>
                             <GlossaryProfileOverview :entity="category" />
                         </div>
@@ -68,6 +72,7 @@
                     <a-tab-pane key="2" tab="Terms & Sub-Categories">
                         <GlossaryTermsAndCategoriesTab
                             :qualified-name="parentGlossaryQualifiedName"
+                            :display-text="title"
                             :guid="guid"
                             :show-preview-panel="currentTab === '2'"
                             type="AtlasGlossaryCategory"
@@ -137,8 +142,8 @@
             const guid = toRef(props, 'id')
             const currentTab = ref('1')
             const previewEntity = ref<Category | Term | undefined>()
-            const showPreviewPanel = ref(false);
-            const newName = ref('');
+            const showPreviewPanel = ref(false)
+            const newName = ref('')
 
             const {
                 entity: category,
@@ -158,7 +163,7 @@
                 fetchCategoryTermsPaginated,
             } = useCategoryTerms()
 
-            const { data:updatedEntity, updateEntity }  = useUpdateGtcEntity()
+            const { data: updatedEntity, updateEntity } = useUpdateGtcEntity()
 
             // computed
             const termCount = computed(
@@ -168,7 +173,7 @@
                 () =>
                     category.value?.attributes?.qualifiedName?.split('@')[1] ??
                     ''
-            );
+            )
             const isNewCategory = computed(() => title.value === 'New Category')
 
             // methods
@@ -178,7 +183,7 @@
             }
             const handlClosePreviewPanel = () => {
                 showPreviewPanel.value = false
-            };
+            }
 
             const updateTitle = () => {
                 updateEntity('category', category.value?.guid ?? '', {
@@ -186,8 +191,8 @@
                     name: newName.value,
                     anchor: {
                         glossaryGuid: category.value?.attributes?.anchor?.guid,
-                    }
-                });
+                    },
+                })
             }
 
             // lifecycle methods and watchers
@@ -199,14 +204,14 @@
                 fetchCategoryTermsPaginated({
                     guid: newGuid,
                     refreshSamePage: true,
-                });
-                newName.value = '';
-            });
+                })
+                newName.value = ''
+            })
 
             watch(updatedEntity, () => {
-                refetch();
-                newName.value = '';
-            } )
+                refetch()
+                newName.value = ''
+            })
 
             // Providers
             provide('refreshEntity', refetch)
@@ -231,7 +236,7 @@
                 newName,
                 handleCategoryOrTermPreview,
                 handlClosePreviewPanel,
-                updateTitle
+                updateTitle,
             }
         },
     })

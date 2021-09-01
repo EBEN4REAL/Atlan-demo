@@ -18,7 +18,12 @@
                     <span class="text-xl font-bold">{{
                         assetData.attributes.name
                     }}</span>
-                    <atlan-icon icon="Verified" class="w-auto h-4 ml-2" />
+                    <StatusBadge
+                        :key="assetData.guid"
+                        :show-no-status="false"
+                        :status-id="status(assetData)"
+                        class="ml-2"
+                    ></StatusBadge>
                 </div>
                 <!-- asset source hierarchy -->
                 <HierarchyBar class="py-1 mt-1" :selected-asset="assetData" />
@@ -55,6 +60,7 @@
 
     export default defineComponent({
         components: { AssetLogo, HierarchyBar, StatusBadge },
+
         setup() {
             /** INJECTIONS */
             const assetDataInjection = inject('assetData')

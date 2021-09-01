@@ -531,9 +531,17 @@
 
             watch(BMListLoaded, (val) => {
                 if (val) {
-                    updateBody()
                     now.value = true
                     isAggregate.value = true
+                    updateBody()
+                }
+            })
+
+            onMounted(() => {
+                if (BMListLoaded.value) {
+                    now.value = true
+                    isAggregate.value = true
+                    updateBody()
                 }
             })
 

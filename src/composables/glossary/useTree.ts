@@ -205,7 +205,6 @@ const useTree = (emit: any, cacheKey?: string, isAccordion?: boolean) => {
             })
         } else {
             const parentStack:string[] = [guid];
-            const updatedTreeData: TreeDataItem[] =[];
             const recursivelyFindPath = (currentGuid: string) => {
                 if(nodeToParentKeyMap[currentGuid] && nodeToParentKeyMap[currentGuid] !== 'root') {
                     parentStack.push(nodeToParentKeyMap[currentGuid])
@@ -240,8 +239,39 @@ const useTree = (emit: any, cacheKey?: string, isAccordion?: boolean) => {
         }
     }
 
-    const refetchGlossary = () => {
-        refetch()
+    const refetchGlossary = async (guid: string | 'root') => {
+        if(guid === 'root' && parentGlossary.value?.guid) {
+
+            const categoryList = await GlossaryApi.ListCategoryForGlossary(parentGlossary.value?.guid, {}, {});
+            const termsList = await GlossaryApi.ListTermsForGlossary(parentGlossary.value?.guid, {}, { });
+            categoryMap[parentGlossary.value?.guid] = categoryList;
+
+            const updatedTreeData: TreeDataItem[]  = [];
+
+            categoryList.forEach((category) => {
+                const existingCategory = treeData.value.find((entity) => entity.guid === category.guid);
+                if(existingCategory) {
+                    updatedTreeData.push(existingCategory)
+                } else if (!category.parentCategory?.categoryGuid) {
+                    updatedTreeData.push(
+                        { ...category, title: category.name, key: category.guid, glossaryID: parentGlossary.value?.guid, type: "category", isRoot: true, }
+                    )
+                }
+                
+            });
+            termsList.forEach((term) => {
+                const existingTerm = treeData.value.find((entity) => entity.guid === term.guid);
+                if(existingTerm) {
+                    updatedTreeData.push(existingTerm)
+                } else {
+                    updatedTreeData.push(
+                        { ...term, title: term.name, key: term.guid, glossaryID: parentGlossary.value?.guid, type: "term", isLeaf: true }
+                    )
+                }
+            })
+            
+            treeData.value = updatedTreeData;
+        }
     }
 
     watch(fetchGuid, () => {

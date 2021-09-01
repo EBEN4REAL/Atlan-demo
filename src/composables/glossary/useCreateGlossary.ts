@@ -17,7 +17,7 @@ const useCreateGlossary = () => {
     const isLoading = ref<boolean | null>()
     const router = useRouter()
 
-    const refetchGlossaryTree = inject<() => void>('refetchGlossaryTree')
+    const refetchGlossaryTree = inject<(guid: string | 'root') => void>('refetchGlossaryTree')
 
     const redirectToProfile = (
         type: 'glossary' | 'category' | 'term',
@@ -112,7 +112,7 @@ const useCreateGlossary = () => {
         watch(updateData, (newData) => {
             if (newData?.guid) {
                 if (refetchGlossaryTree) {
-                    refetchGlossaryTree()
+                    refetchGlossaryTree(parentCategoryGuid ?? 'root')
                 }
                 redirectToProfile('category', newData.guid)
             }
@@ -170,7 +170,7 @@ const useCreateGlossary = () => {
         watch(updateData, (newData) => {
             if (newData?.guid) {
                 if (refetchGlossaryTree) {
-                    refetchGlossaryTree()
+                    refetchGlossaryTree(parentCategoryGuid ?? 'root')
                 }
                 redirectToProfile('term', newData.guid)
             }

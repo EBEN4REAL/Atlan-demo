@@ -1,7 +1,10 @@
 <template>
     <div
         class="flex items-center justify-between mb-2"
-        :class="{ 'border-2 border-primary-focus': selected }"
+        :class="{
+            'bg-primary-light': selected,
+            'border-2 border-primary': active,
+        }"
         @click="$emit('select')"
     >
         <div>
@@ -51,6 +54,11 @@
                 required: true,
             },
             selected: {
+                type: Boolean,
+                default: () => false,
+                required: false,
+            },
+            active: {
                 type: Boolean,
                 default: () => false,
                 required: false,

@@ -1,10 +1,11 @@
 <template>
-    <h2 class="mb-6 text-2xl font-bold">Requests {{ [...current.keys()] }}</h2>
+    <h2 class="mb-6 text-2xl font-bold">Requests</h2>
     <VirtualList v-if="requestList.length" :data="requestList" data-key="id">
         <template #default="{ item, index }">
             <RequestListItem
                 :request="item"
                 :selected="isSelected(item.id)"
+                :active="index === selectedIndex"
                 @select="selectRequest(item.id, index)"
             />
         </template>
@@ -24,7 +25,8 @@
         components: { VirtualList, RequestListItem },
         setup() {
             // keyboard navigation stuff
-            const { current, Shift_ArrowDown, Shift_ArrowUp } = useMagicKeys()
+            const { Shift, ArrowUp, ArrowDown, x, Meta, Control } =
+                useMagicKeys()
             const selectedList = ref(new Set<string>())
             const selectedIndex = ref(-1)
 
@@ -39,15 +41,7 @@
                 /** Check if the currently pressed key is not this array,
                  * then clear the set, else directly add the new item to the set
                  */
-                if (
-                    [
-                        'MetaRight',
-                        'MetaLeft',
-                        'ControlLeft',
-                        'ControlRight',
-                    ].every((key) => !current.has(key))
-                )
-                    selectedList.value.clear()
+                if (!Meta.value && !Control.value) selectedList.value.clear()
 
                 // Remove the request id if already present in the set
                 if (selectedList.value.has(guid))
@@ -60,17 +54,36 @@
                 else selectedIndex.value = -1
             }
 
-            whenever(Shift_ArrowDown, () => {
-                if (selectedIndex.value < requestList.value.length - 1)
-                    selectedList.value.add(
-                        requestList.value[++selectedIndex.value].id
-                    )
+            whenever(ArrowUp, () => {
+                if (selectedIndex.value > -1) {
+                    selectedIndex.value--
+                    if (Shift.value)
+                        selectedList.value.add(
+                            requestList.value[selectedIndex.value].id
+                        )
+                }
             })
-            whenever(Shift_ArrowUp, () => {
-                if (selectedIndex.value > -1)
-                    selectedList.value.add(
-                        requestList.value[selectedIndex.value--].id
-                    )
+
+            whenever(ArrowDown, () => {
+                if (selectedIndex.value < requestList.value.length - 1) {
+                    selectedIndex.value++
+                    if (Shift.value)
+                        selectedList.value.add(
+                            requestList.value[selectedIndex.value].id
+                        )
+                }
+            })
+
+            whenever(x, () => {
+                if (
+                    selectedIndex.value > -1 &&
+                    selectedIndex.value < requestList.value.length - 1
+                ) {
+                    const guid = requestList.value[selectedIndex.value].id
+                    if (selectedList.value.has(guid))
+                        selectedList.value.delete(guid)
+                    else selectedList.value.add(guid)
+                }
             })
 
             return {
@@ -79,7 +92,6 @@
                 selectRequest,
                 selectedList,
                 selectedIndex,
-                current,
             }
         },
     })

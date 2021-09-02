@@ -262,6 +262,7 @@ const useTree = (emit: any, cacheKey?: string, isAccordion?: boolean) => {
                 if(existingCategory) {
                     updatedTreeData.push(existingCategory)
                 } else if (!category.parentCategory?.categoryGuid) {
+                    nodeToParentKeyMap[category.guid] = 'root'
                     updatedTreeData.push(
                         { ...category, title: category.name, key: category.guid, glossaryID: parentGlossary.value?.guid, type: "category", isRoot: true, }
                     )
@@ -272,6 +273,7 @@ const useTree = (emit: any, cacheKey?: string, isAccordion?: boolean) => {
                 if(existingTerm) {
                     updatedTreeData.push(existingTerm)
                 } else {
+                    nodeToParentKeyMap[term.guid] = 'root'
                     updatedTreeData.push(
                         { ...term, title: term.name, key: term.guid, glossaryID: parentGlossary.value?.guid, type: "term", isLeaf: true }
                     )
@@ -292,6 +294,7 @@ const useTree = (emit: any, cacheKey?: string, isAccordion?: boolean) => {
                 if(node.key === guid || !currentPath) {
                     const categoryList = await GlossaryApi.ListCategoryForGlossary(parentGlossary.value?.guid ?? '', {}, {});
                     const termsList = await GlossaryApi.ListTermsForCategory(guid, {}, { });
+                    categoryMap[parentGlossary.value?.guid ?? ''] = categoryList;
 
                     const updatedChildren: TreeDataItem[] = [];
                     
@@ -301,6 +304,7 @@ const useTree = (emit: any, cacheKey?: string, isAccordion?: boolean) => {
                         if(existingCategory) {
                             updatedChildren.push(existingCategory)
                         } else if (category.parentCategory?.categoryGuid === node.key){
+                            nodeToParentKeyMap[category?.guid ?? ''] = node.key;
                             updatedChildren.push(
                                 { ...category, title: category.name, key: category.guid, glossaryID: parentGlossary.value?.guid, categoryID: node.key, type: "category", isRoot: true, }
                             )
@@ -312,6 +316,7 @@ const useTree = (emit: any, cacheKey?: string, isAccordion?: boolean) => {
                         if(existingTerm){
                             updatedChildren.push(existingTerm)
                         } else {
+                            nodeToParentKeyMap[term?.guid ?? ''] = node.key;
                             updatedChildren.push(
                                 { ...term,title: term.name, key: term.guid, glossaryID: parentGlossary.value?.guid, type: "term", isLeaf: true }
                             )

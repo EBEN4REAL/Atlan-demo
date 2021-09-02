@@ -3,28 +3,30 @@
 export const AdvancedAttributeList = [
     {
         value: "__guid",
-        label: "guid",
+        label: "Unique ID (GUID)",
         typeName: "string",
+    },
+    {
+        value: "__modifiedBy",
+        label: "last updated by",
+        typeName: "users",
         children: [],
     },
-    // {
-    //     value: "__modifiedBy",
-    //     label: "last updated by",
-    //     typeName: "users",
-    //     children: [],
-    // },
     // {
     //     value: "__modificationTimestamp",
     //     label: "last updated at",
     //     typeName: "date",
-    //     children: [],
     // },
-    // {
-    //     value: "__timestamp",
-    //     label: "created at",
-    //     typeName: "date",
-    //     children: [],
-    // },
+    {
+        value: "__timestamp",
+        label: "created at",
+        typeName: "date",
+    },
+    {
+        value: "__popularityScore",
+        label: "Popularity Score",
+        typeName: "number",
+    },
     // {
     //     value: "__createdBy",
     //     label: "created by",
@@ -34,7 +36,7 @@ export const AdvancedAttributeList = [
     // {
     //     value: "name",
     //     label: "name",
-    //     type: "string",
+    //     typeName: "string",
     //     children: [],
     // },
     // {

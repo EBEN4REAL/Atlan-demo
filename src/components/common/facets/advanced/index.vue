@@ -11,7 +11,7 @@
             >
                 <AttributeItem
                     :a="a"
-                    :applied="{}"
+                    :applied="data.applied[a.value] || {}"
                     @handleAttributeInput="setAdvancefilter"
                     :operators="operatorsMap[a.typeName]"
                 />
@@ -21,10 +21,8 @@
 </template>
 
 <script lang="ts">
-    import { computed, defineComponent, PropType, ref } from 'vue'
+    import { defineComponent, PropType, ref } from 'vue'
     import AttributeItem from '../common/attributeItems.vue'
-
-    import DynamicInput from '@common/input/dynamic.vue'
 
     import {
         AdvancedAttributeList,
@@ -60,35 +58,55 @@
                 },
             },
         },
-        emits: ['change'],
+        emits: ['change', 'update:data'],
         setup(props, { emit }) {
-            const list = ref([...props.data.list])
+            const isEmptyObject = (obj: Object) =>
+                Object.keys(obj).length === 0 && obj.constructor === Object
 
-            const handleOperandChange = (index) => {
-                console.log(list.value[index])
-                const selected = list.value[index].operand
-                console.log(selected)
-                handleChange()
-            }
+            const setAdvancefilter = (
+                a: { name: string },
+                appliedValueMap: Object
+            ) => {
+                console.log(a, appliedValueMap)
+                // ? if appliedValueMap === {} i.e all applied filters removed, remove the entry
+                const newDataMap = {
+                    ...props.data,
+                    applied: {
+                        ...props.data.applied,
+                        [a.value]: appliedValueMap,
+                    },
+                }
+                if (isEmptyObject(appliedValueMap))
+                    delete newDataMap.applied[a.name]
+                emit('update:data', newDataMap)
 
-            const handleChange = () => {
                 const criterion: Components.Schemas.FilterCriteria[] = []
-                console.log(list.value, 'listt')
 
-                list.value.forEach((element) => {
-                    console.log(element)
-                    if (!element.isInput) {
+                // ? populate criterion object with filters previously applied
+                Object.entries(props.data.applied).forEach((attribute) => {
+                    Object.entries(attribute[1]).forEach((o) => {
                         criterion.push({
-                            attributeName: element.operator[0],
-                            operator: element.operator[1],
+                            attributeName: attribute[0],
+                            operator: o[0],
+                            attributeValue: o[1],
                         })
-                    } else if (element.operand !== '') {
-                        criterion.push({
-                            attributeName: element.operator[0],
-                            operator: element.operator[1],
-                            attributeValue: element.operand,
-                        })
+                    })
+                })
+
+                // ? add new filter to criterion
+                Object.keys(appliedValueMap).forEach((key: string) => {
+                    const alreadyAppliedIndex = criterion.findIndex(
+                        (c) => c.attributeName === a.value && c.operator === key
+                    )
+
+                    const filter = {
+                        attributeName: a.value,
+                        operator: key,
+                        attributeValue: appliedValueMap[key],
                     }
+                    if (alreadyAppliedIndex > -1)
+                        criterion[alreadyAppliedIndex] = filter
+                    else criterion.push(filter)
                 })
 
                 emit('change', {
@@ -100,8 +118,6 @@
                 })
             }
 
-            const setAdvancefilter = () => {}
-
             return {
                 AdvancedAttributeList,
                 setAdvancefilter,
@@ -110,3 +126,9 @@
         },
     })
 </script>
+
+<style>
+    .ant-popover-arrow {
+        display: none;
+    }
+</style>

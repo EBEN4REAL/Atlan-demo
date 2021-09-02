@@ -1,4 +1,13 @@
 export type RequestAction = 'approved' | 'rejected'
+export type RequestType =
+    | 'attribute'
+    | 'bm_attribute'
+    | 'create_typedef'
+    | 'create_glossary'
+    | 'create_category'
+    | 'create_term'
+    | 'term_link'
+    | 'attach_classification'
 
 export interface IActionDetails {
     message: string
@@ -22,7 +31,7 @@ export interface RequestAttributes {
     is_active: boolean
     created_at: Date
     updated_at: Date
-    created_by: string
+    created_by: Record<string, any>
     updated_by: string
     tenant_id: string
     source_type: 'static' | 'atlas'
@@ -34,7 +43,7 @@ export interface RequestAttributes {
     destination_attribute: string
     destination_value: string
     entity_type: string
-    re: string
+    re: RequestType
     confidence_score: number
     bot_run_id: string
     approved_by: IActionDetails[]

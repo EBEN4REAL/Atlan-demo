@@ -34,7 +34,7 @@ import CategoryIssue from '~/assets/images/icons/category-issue.svg'
 import CategoryVerified from '~/assets/images/icons/category-verified.svg'
 import CategoryWip from '~/assets/images/icons/category-wip.svg'
 
-export default {
+export const iconMap = {
     BookmarkFilled,
     CopyOutlined,
     BookmarkOutlined,
@@ -71,3 +71,5 @@ export default {
     CategoryVerified,
     CategoryWip,
 }
+
+export type iconName = keyof typeof iconMap

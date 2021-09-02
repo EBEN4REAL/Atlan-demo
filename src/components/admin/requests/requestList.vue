@@ -1,5 +1,10 @@
 <template>
-    <h2 class="mb-6 text-2xl font-bold">Requests</h2>
+    <p class="mb-2 text-2xl">Requests</p>
+    <p class="mb-0 text-sm text-gray">Manage org-wide requests</p>
+    <SearchAndFilter
+        v-model:value="searchTerm"
+        class="max-w-xl pt-6 mb-4"
+    ></SearchAndFilter>
     <VirtualList v-if="requestList.length" :data="requestList" data-key="id">
         <template #default="{ item, index }">
             <RequestListItem
@@ -19,10 +24,11 @@
     import VirtualList from '~/utils/library/virtualList/virtualList.vue'
     import RequestListItem from './requestListItem.vue'
     import { useRequestList } from '~/composables/requests/useRequests'
+    import SearchAndFilter from '~/components/common/input/searchAndFilter.vue'
 
     export default defineComponent({
         name: 'RequestList',
-        components: { VirtualList, RequestListItem },
+        components: { VirtualList, RequestListItem, SearchAndFilter },
         setup() {
             // keyboard navigation stuff
             const { Shift, ArrowUp, ArrowDown, x, Meta, Control } =
@@ -32,6 +38,7 @@
 
             const { response } = useRequestList()
             const requestList = computed(() => response.value?.records || [])
+            const searchTerm = ref('')
 
             function isSelected(guid: string): boolean {
                 return selectedList.value.has(guid)
@@ -92,6 +99,7 @@
                 selectRequest,
                 selectedList,
                 selectedIndex,
+                searchTerm,
             }
         },
     })

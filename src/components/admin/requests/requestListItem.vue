@@ -1,18 +1,47 @@
 <template>
     <div
-        class="flex items-center justify-between mb-2"
+        class="grid items-center justify-between grid-cols-10 my-1 gap-x-4"
+        style="height: 50px"
         :class="{
             'bg-primary-light': selected,
-            'border-2 border-primary': active,
+            'ring-1 ring-primary': active,
         }"
         @click="$emit('select')"
     >
-        <div>
-            <p class="mb-1">{{ request.id }}</p>
-            <p class="mb-0">{{ request.message }}</p>
+        <div class="flex items-center col-span-4 overflow-hidden">
+            <a-checkbox :checked="selected" class="mr-4" />
+            <AssetPiece
+                v-if="request.destination_qf_name"
+                :asset-qf-name="request.destination_qf_name"
+            />
+            <span v-else class="text-sm overflow-ellipsis">
+                {{ primaryText[request.re](request) }}
+            </span>
         </div>
-        <span>{{ request.status }}</span>
-        <AtlanIcon
+        <!-- RHS -->
+        <div class="flex items-center col-span-4">
+            <AtlanIcon class="mr-4" :icon="requestTypeIcon[request.re]" />
+
+            <ClassificationPiece
+                v-if="request?.payload?.classificationDefs"
+                :data="request.payload.classificationDefs"
+            />
+
+            <AssetPiece
+                v-if="request.source_qf_name"
+                :asset-qf-name="request.source_qf_name"
+            />
+
+            <AttrPiece
+                v-if="request.destination_attribute"
+                :name="request.destination_attribute"
+                :value="request.destination_value"
+            />
+        </div>
+        <div><UserPiece :user="request.createdByUser" /></div>
+        <div><DatePiece label="Created At" :date="request.created_at" /></div>
+
+        <!-- <AtlanIcon
             v-if="state.isLoading && !state.error"
             icon="CircleLoader"
             class="w-5 h-5 text-gray animate-spin"
@@ -24,7 +53,7 @@
             <AtlanButton color="light" @click="handleApproval">
                 Approve
             </AtlanButton>
-        </template>
+        </template> -->
     </div>
 </template>
 
@@ -42,12 +71,27 @@
     import VirtualList from '~/utils/library/virtualList/virtualList.vue'
     import AtlanButton from '@/UI/button.vue'
 
-    import { takeAction } from '~/composables/requests/useRequests'
+    import ClassificationPiece from './pieces/classifications.vue'
+    import AssetPiece from './pieces/asset.vue'
+    import AttrPiece from './pieces/attributeUpdate.vue'
+    import UserPiece from './pieces/user.vue'
+    import DatePiece from './pieces/date.vue'
+
     import { RequestAttributes } from '~/types/atlas/requests'
+    import { takeAction } from '~/composables/requests/useRequests'
+    import { primaryText, requestTypeIcon } from './requestType'
 
     export default defineComponent({
         name: 'RequestListItem',
-        components: { VirtualList, AtlanButton },
+        components: {
+            VirtualList,
+            AtlanButton,
+            ClassificationPiece,
+            AssetPiece,
+            AttrPiece,
+            UserPiece,
+            DatePiece,
+        },
         props: {
             request: {
                 type: Object as PropType<RequestAttributes>,
@@ -102,6 +146,8 @@
             return {
                 handleApproval,
                 handleRejection,
+                primaryText,
+                requestTypeIcon,
                 state,
             }
         },

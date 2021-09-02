@@ -17,7 +17,7 @@
 
         <div class="flex flex-col items-stretch flex-1 mt-3 mb-1 bg-white w-80">
             <div class="flex flex-col h-full">
-                <div class="flex px-3 mb-1">
+                <!-- <div class="flex px-3 mb-1">
                     <ConnectorDropdown
                         :data="connectorsPayload"
                         @change="handleChangeConnectors"
@@ -29,7 +29,7 @@
                         :data="connectorsPayload"
                         @label-change="setPlaceholder($event, 'asset')"
                     ></AssetDropdown>
-                </div>
+                </div> -->
                 <SearchAndFilter
                     v-model:value="queryText"
                     class="mx-3 mt-1"
@@ -45,6 +45,9 @@
                             @state="handleState"
                         />
                     </template>
+                    <!-- <template #buttonAggregation>
+                        <span>({{ projection.length }})</span>
+                    </template> -->
                 </SearchAndFilter>
 
                 <AssetTabs
@@ -236,6 +239,12 @@
             )
             const filters = ref(initialFilters.value.initialBodyCriterion)
             const filterMap = ref<filterMapType>({
+                connector: {
+                    condition:
+                        initialFilters.value.facetsFilters.connector.condition,
+                    criterion:
+                        initialFilters.value.facetsFilters.connector.criterion,
+                },
                 assetCategory: {
                     condition:
                         initialFilters.value.facetsFilters.assetCategory
@@ -527,6 +536,7 @@
             }
             const handleChangeConnectors = (payload: any) => {
                 connectorsPayload.value = payload
+                console.log('connector Change', payload)
                 const routerOptions = getRouterOptions()
                 const routerQuery = getEncodedStringFromOptions(routerOptions)
                 pushQueryToRouter(routerQuery)

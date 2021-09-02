@@ -19,17 +19,13 @@
                         class="flex items-center w-full"
                     >
                         <div class="flex items-center">
-                            <span class="mb-0 ml-1 text-gray">
-                                {{ item.label }}
-                            </span>
                             <a-tooltip>
+                                <span class="mb-0 ml-1 text-gray">
+                                    {{ item.label }}
+                                </span>
                                 <template #title>
                                     {{ item.include.join(', ') }}</template
                                 >
-                                <span
-                                    class="flex items-center ml-2  hover:text-primary"
-                                    ><fa icon="fal info-circle"
-                                /></span>
                             </a-tooltip>
                         </div>
                     </a-checkbox>

@@ -28,6 +28,14 @@ export function getEncodedStringFromOptions(options: any) {
         filterKeys.forEach((filterKey) => {
             let filterKeyValue = options.filters[filterKey]
             switch (filterKey) {
+                case 'connector': {
+                    filterKeyValue =
+                        options.filters[filterKey]?.selectedIds ?? []
+                    filterKeyValue = filterKeyValue
+                        .map((selectedId: criterion) => selectedId)
+                        .join(',')
+                    break
+                }
                 case 'assetCategory': {
                     filterKeyValue =
                         options.filters[filterKey]?.selectedIds ?? []
@@ -173,6 +181,11 @@ export function getDecodedOptionsFromString(router) {
     const facetsFiltersStrings = filters?.split(':::')
     const initialBodyCriterion: Array<any> = []
     const facetsFilters: filterMapType = {
+        connector: {
+            checked: [],
+            condition: 'OR',
+            criterion: [],
+        },
         assetCategory: {
             checked: [],
             condition: 'OR',
@@ -208,6 +221,26 @@ export function getDecodedOptionsFromString(router) {
         const criterion: Array<criterion> = []
 
         switch (facetFilterName) {
+            case 'connector': {
+                const facetFilterValues = facetFilterValuesString.split(',')
+                const selectedIds: string[] = []
+                facetFilterValues.forEach((facetFilterValue) => {
+                    selectedIds.push(facetFilterValue)
+                    const includedAssetTypes = AssetCategoryList.find(
+                        (asset) => asset.id === facetFilterValue
+                    ).include
+                    includedAssetTypes.forEach((assetType) => {
+                        criterion.push({
+                            attributeName: '__typeName',
+                            attributeValue: assetType,
+                            operator: 'eq',
+                        })
+                    })
+                })
+                facetsFilters.connector.criterion = criterion
+                facetsFilters.connector.checked = facetFilterValues
+                break
+            }
             case 'assetCategory': {
                 const facetFilterValues = facetFilterValuesString.split(',')
                 const selectedIds: string[] = []

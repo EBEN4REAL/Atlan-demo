@@ -2,8 +2,25 @@ import { CollapseArray } from '~/types'
 
 export const List: CollapseArray = [
     {
+        id: 'connector',
+        label: 'Connector',
+        component: 'connector',
+        overallCondition: 'OR',
+        filters: [
+            {
+                attributeName: 'connector',
+                condition: 'OR',
+                isMultiple: false,
+                operator: 'eq',
+            },
+        ],
+        isDeleted: false,
+        isDisabled: false,
+        exclude: false,
+    },
+    {
         id: 'assetCategory',
-        label: 'Asset Category',
+        label: 'Category',
         component: 'assetCategory',
         overallCondition: 'OR',
         filters: [

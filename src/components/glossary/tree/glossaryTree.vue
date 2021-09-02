@@ -104,31 +104,57 @@
                                 @click="() => redirectToProfile(type, key)"
                             >
                                 <div class="flex justify-between group">
-                                    <div class="flex">
-                                        <span class="p-0 my-auto mr-2">
+                                    <div class="flex m-0">
+                                        <span  v-if="type === 'glossary'" class="p-0 my-auto mr-2">
                                             <img
-                                                v-if="type === 'glossary'"
                                                 :src="GlossarySvg"
                                                 :width="15"
                                             />
-                                            <img
-                                                v-if="type === 'category'"
-                                                :src="CategorySvg"
-                                                :width="15"
+                                        </span>
+                                        <span  v-else-if="type === 'term'" class="p-0 my-auto mr-2">
+                                            <AtlanIcon
+                                                v-if="assetStatus === 'deprecated'"
+                                                icon="TermDeprecated"
                                             />
-                                            <img
-                                                v-if="type === 'term'"
-                                                :src="TermSvg"
-                                                :width="12"
+                                            <AtlanIcon
+                                                v-else-if="assetStatus === 'issue'"
+                                                icon="TermIssue"
+                                            />
+                                            <AtlanIcon
+                                                v-else-if="assetStatus === 'draft'"
+                                                icon="TermWip"
+                                            />
+                                            <AtlanIcon
+                                                v-else-if="assetStatus === 'verified'"
+                                                icon="TermVerified"
+                                            />
+                                            <AtlanIcon
+                                                v-else
+                                                icon="Term"
                                             />
                                         </span>
-                                        <component
-                                            :is="StatusList.find(
-                                                (status) =>
-                                                status.id === assetStatus
-                                            )?.icon"
-                                            class="inline-flex w-auto my-auto h-4 mb-1 ml-2"
-                                        />
+                                        <span  v-else-if="type === 'category'" class="p-0 my-auto mr-2">
+                                            <AtlanIcon
+                                                v-if="assetStatus === 'deprecated'"
+                                                icon="CategoryDeprecated"
+                                            />
+                                            <AtlanIcon
+                                                v-else-if="assetStatus === 'issue'"
+                                                icon="CategoryIssue"
+                                            />
+                                            <AtlanIcon
+                                                v-else-if="assetStatus === 'draft'"
+                                                icon="CategoryWip"
+                                            />
+                                            <AtlanIcon
+                                                v-else-if="assetStatus === 'verified'"
+                                                icon="CategoryVerified"
+                                            />
+                                            <AtlanIcon
+                                                v-else
+                                                icon="Category"
+                                            />
+                                        </span>
                                         <span
                                             class="text-sm my-auto leading-5 text-gray-700"
                                             >{{ title }}</span
@@ -136,7 +162,7 @@
                                     </div>
 
                                     <a-dropdown v-if="type === 'category'" :trigger="['hover']">
-                                        <span class="flex justify-center content-center p-0 m-0 h-6 w-6 border rounded opacity-0 group-hover:opacity-100" @click.prevent>
+                                        <span class="flex justify-center content-center p-0 m-0 h-5 w-5 border rounded opacity-0 group-hover:opacity-100" @click.prevent>
                                             <fa icon="fal ellipsis-v" class="h-3 w-3" />
                                         </span>
                                         <template #overlay>

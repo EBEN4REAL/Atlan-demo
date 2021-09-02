@@ -23,7 +23,15 @@ import AddUser from '~/assets/images/icons/add-user.svg'
 import Link from '~/assets/images/icons/link.svg'
 import Add from '~/assets/images/icons/add.svg'
 import Term from '~/assets/images/icons/term.svg'
+import TermDeprecated from '~/assets/images/icons/term-deprecated.svg'
+import TermIssue from '~/assets/images/icons/term-issue.svg'
+import TermVerified from '~/assets/images/icons/term-verified.svg'
+import TermWip from '~/assets/images/icons/term-wip.svg'
 import Category from '~/assets/images/icons/category.svg'
+import CategoryDeprecated from '~/assets/images/icons/category-deprecated.svg'
+import CategoryIssue from '~/assets/images/icons/category-issue.svg'
+import CategoryVerified from '~/assets/images/icons/category-verified.svg'
+import CategoryWip from '~/assets/images/icons/category-wip.svg'
 
 export default {
     BookmarkFilled,
@@ -51,5 +59,13 @@ export default {
     Link,
     Add,
     Term,
+    TermDeprecated,
+    TermIssue,
+    TermVerified,
+    TermWip,
     Category,
+    CategoryDeprecated,
+    CategoryIssue,
+    CategoryVerified,
+    CategoryWip
 }

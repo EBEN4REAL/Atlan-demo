@@ -83,7 +83,7 @@
                 const criterion: Components.Schemas.FilterCriteria[] = []
 
                 // ? populate criterion object with filters previously applied
-                Object.entries(props.data.applied).forEach((attribute) => {
+                Object.entries(newDataMap.applied).forEach((attribute) => {
                     Object.entries(attribute[1]).forEach((o) => {
                         criterion.push({
                             attributeName: attribute[0],

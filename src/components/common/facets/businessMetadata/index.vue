@@ -125,10 +125,10 @@
                 const criterion: Components.Schemas.FilterCriteria[] = []
 
                 // ? populate criterion object with filters previously applied
-                Object.entries(props.data.applied).forEach((attribute) => {
+                Object.entries(newDataMap.applied).forEach((attribute) => {
                     Object.entries(attribute[1]).forEach((o) => {
                         criterion.push({
-                            attributeName: `${props.data.list.name}.${attribute[0]}`,
+                            attributeName: `${newDataMap.list.name}.${attribute[0]}`,
                             operator: o[0],
                             attributeValue: o[1],
                         })

@@ -9,20 +9,39 @@
                     <div class="mr-5">
                         <img :src="CategorySvg" />
                     </div>
-                    <div class="flex flex-col w-full">
+                    <div class="flex flex-col justify-center w-full">
                         <div class="flex">
                             <span class="mr-3 text-xl font-bold leading-6">{{
                                 title
                             }}</span>
-                            <component
-                                :is="statusObject?.icon"
-                                v-if="statusObject"
-                                class="inline-flex self-center w-auto h-4 mb-1"
-                            />
+
+                            <a-popover
+                                v-if="statusMessage"
+                                trigger="hover"
+                                placement="rightTop"
+                            >
+                                <template #content>
+                                    <p>{{ statusMessage }}</p>
+                                </template>
+                                <component
+                                    :is="statusObject?.icon"
+                                    v-if="statusObject"
+                                    class="inline-flex self-center w-auto h-4 mb-1 "
+                                />
+                            </a-popover>
+                            <div v-else>
+                                <component
+                                    :is="statusObject?.icon"
+                                    v-if="statusObject"
+                                    class="inline-flex self-center w-auto h-4 mb-1 "
+                                />
+                            </div>
                         </div>
-                        <span class="mt-1 text-sm leading-5 text-gray-500">{{
-                            shortDescription
-                        }}</span>
+                        <span
+                            class="mt-1 text-sm leading-5 text-gray-500"
+                            v-if="shortDescription !== ''"
+                            >{{ shortDescription }}</span
+                        >
                     </div>
                 </div>
                 <div class="flex flex-row space-x-2">
@@ -32,7 +51,7 @@
 
                     <a-button class="flex items-center"
                         ><atlan-icon icon="Share" class="w-auto h-4 mr-2" />
-                        <span class="mt-1 text-sm">Share</span>
+                        <span class="text-sm">Share</span>
                     </a-button>
 
                     <ThreeDotMenu :entity="category" :showLinks="false" />
@@ -150,6 +169,7 @@
                 title,
                 shortDescription,
                 qualifiedName,
+                statusMessage,
                 statusObject,
                 error,
                 isLoading,
@@ -219,6 +239,7 @@
                 previewEntity,
                 showPreviewPanel,
                 title,
+                statusMessage,
                 shortDescription,
                 termCount,
                 parentGlossaryQualifiedName,

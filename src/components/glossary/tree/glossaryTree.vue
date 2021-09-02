@@ -11,13 +11,17 @@
             @click="() => redirectToProfile('glossary', glossary.guid)"
         >
             <div
-                class="flex flex-col justify-center px-3 text-sm leading-5 text-gray-700 cursor-pointer  h-9 group hover:bg-primary-light hover:text-primary"
+                class="flex flex-col justify-center px-3 mr-2 text-sm leading-5 text-gray-700 cursor-pointer  h-9 group hover:bg-primary-light hover:text-primary"
             >
                 <div class="flex flex-row justify-between">
                     {{ glossary.displayText }}
-                    <Fa
+                    <!-- <Fa
                         class="w-auto h-3 text-white group-hover:text-primary"
                         icon="fal external-link-alt"
+                    /> -->
+                    <atlan-icon
+                        class="w-auto h-5 text-white group-hover:text-primary"
+                        icon="ArrowRight"
                     />
                 </div>
             </div>
@@ -66,11 +70,16 @@
                     </a>
                     <template #overlay>
                         <a-menu>
-                            <div class="py-1 px-2" :class="$style.createDropdownStyles">
+                            <div
+                                class="px-2 py-1"
+                                :class="$style.createDropdownStyles"
+                            >
                                 <a-menu-item key="0" @click="createNewTerm">
                                     New Term
                                 </a-menu-item>
-                                <a-menu-item key="1" @click="createNewCategory"> New Category </a-menu-item>
+                                <a-menu-item key="1" @click="createNewCategory">
+                                    New Category
+                                </a-menu-item>
                                 <hr class="my-1" />
                                 <a-menu-item key="2">
                                     Bulk Upload Terms
@@ -83,7 +92,7 @@
                     </template>
                 </a-dropdown>
             </div>
-            <div class="py-2 pl-6">
+            <div class="py-2 pl-6 pr-2" :class="$style.treeStyles">
                 <a-tree
                     :expandedKeys="expandedKeys"
                     :selectedKeys="selectedKeys"
@@ -97,87 +106,141 @@
                     @expand="expandNode"
                     @drop="dragAndDrop"
                 >
-                    <template #title="{ title, type, key, assetStatus, glossaryID }">
+                    <template
+                        #title="{ title, type, key, assetStatus, glossaryID }"
+                    >
                         <a-dropdown :trigger="['contextmenu']">
                             <div
                                 class="min-w-full"
                                 @click="() => redirectToProfile(type, key)"
                             >
-                                <div class="flex justify-between group">
+                                <div class="flex justify-between mr-2 group">
                                     <div class="flex m-0">
-                                        <span  v-if="type === 'glossary'" class="p-0 my-auto mr-2">
+                                        <span
+                                            v-if="type === 'glossary'"
+                                            class="p-0 my-auto mr-2"
+                                        >
                                             <img
                                                 :src="GlossarySvg"
                                                 :width="15"
                                             />
                                         </span>
-                                        <span  v-else-if="type === 'term'" class="p-0 my-auto mr-2">
+                                        <span
+                                            v-else-if="type === 'term'"
+                                            class="p-0 my-auto mr-2"
+                                        >
                                             <AtlanIcon
-                                                v-if="assetStatus === 'deprecated'"
+                                                v-if="
+                                                    assetStatus === 'deprecated'
+                                                "
                                                 icon="TermDeprecated"
                                             />
                                             <AtlanIcon
-                                                v-else-if="assetStatus === 'issue'"
+                                                v-else-if="
+                                                    assetStatus === 'issue'
+                                                "
                                                 icon="TermIssue"
                                             />
                                             <AtlanIcon
-                                                v-else-if="assetStatus === 'draft'"
+                                                v-else-if="
+                                                    assetStatus === 'draft'
+                                                "
                                                 icon="TermWip"
                                             />
                                             <AtlanIcon
-                                                v-else-if="assetStatus === 'verified'"
+                                                v-else-if="
+                                                    assetStatus === 'verified'
+                                                "
                                                 icon="TermVerified"
                                             />
-                                            <AtlanIcon
-                                                v-else
-                                                icon="Term"
-                                            />
+                                            <AtlanIcon v-else icon="Term" />
                                         </span>
-                                        <span  v-else-if="type === 'category'" class="p-0 my-auto mr-2">
+                                        <span
+                                            v-else-if="type === 'category'"
+                                            class="p-0 my-auto mr-2"
+                                        >
                                             <AtlanIcon
-                                                v-if="assetStatus === 'deprecated'"
+                                                v-if="
+                                                    assetStatus === 'deprecated'
+                                                "
                                                 icon="CategoryDeprecated"
                                             />
                                             <AtlanIcon
-                                                v-else-if="assetStatus === 'issue'"
+                                                v-else-if="
+                                                    assetStatus === 'issue'
+                                                "
                                                 icon="CategoryIssue"
                                             />
                                             <AtlanIcon
-                                                v-else-if="assetStatus === 'draft'"
+                                                v-else-if="
+                                                    assetStatus === 'draft'
+                                                "
                                                 icon="CategoryWip"
                                             />
                                             <AtlanIcon
-                                                v-else-if="assetStatus === 'verified'"
+                                                v-else-if="
+                                                    assetStatus === 'verified'
+                                                "
                                                 icon="CategoryVerified"
                                             />
-                                            <AtlanIcon
-                                                v-else
-                                                icon="Category"
-                                            />
+                                            <AtlanIcon v-else icon="Category" />
                                         </span>
                                         <span
-                                            class="text-sm my-auto leading-5 text-gray-700"
+                                            class="my-auto text-sm leading-5 text-gray-700 "
                                             >{{ title }}</span
                                         >
                                     </div>
 
-                                    <a-dropdown v-if="type === 'category'" :trigger="['hover']">
-                                        <span class="flex justify-center content-center p-0 m-0 h-5 w-5 border rounded opacity-0 group-hover:opacity-100" @click.prevent>
-                                            <fa icon="fal ellipsis-v" class="h-3 w-3" />
+                                    <a-dropdown
+                                        v-if="type === 'category'"
+                                        :trigger="['hover']"
+                                    >
+                                        <span
+                                            class="flex content-center justify-center w-5 h-5 p-0 m-0 border rounded opacity-0  group-hover:opacity-100"
+                                            @click.prevent
+                                        >
+                                            <fa
+                                                icon="fal ellipsis-v"
+                                                class="w-3 h-3"
+                                            />
                                         </span>
                                         <template #overlay>
                                             <a-menu>
-                                                <div class="py-1 px-2" :class="$style.createDropdownStyles">
-                                                    <a-menu-item key="0" @click="() => createTerm(glossaryID, key)">
+                                                <div
+                                                    class="px-2 py-1"
+                                                    :class="
+                                                        $style.createDropdownStyles
+                                                    "
+                                                >
+                                                    <a-menu-item
+                                                        key="0"
+                                                        @click="
+                                                            () =>
+                                                                createTerm(
+                                                                    glossaryID,
+                                                                    key
+                                                                )
+                                                        "
+                                                    >
                                                         New Term
                                                     </a-menu-item>
-                                                    <a-menu-item key="1" @click="() => createCategory(glossaryID, key)"> New Category </a-menu-item>
+                                                    <a-menu-item
+                                                        key="1"
+                                                        @click="
+                                                            () =>
+                                                                createCategory(
+                                                                    glossaryID,
+                                                                    key
+                                                                )
+                                                        "
+                                                    >
+                                                        New Category
+                                                    </a-menu-item>
                                                 </div>
                                             </a-menu>
                                         </template>
                                     </a-dropdown>
                                 </div>
-                                        
                             </div>
                         </a-dropdown>
                     </template>
@@ -212,11 +275,12 @@
     import CategorySvg from '~/assets/images/gtc/category/category.png'
     import TermSvg from '~/assets/images/gtc/term/term.png'
     import { List as StatusList } from '~/constant/status'
+    import AtlanIcon from '~/components/common/icon/atlanIcon.vue'
 
     // import { Glossary } from '~/api/atlas/glossary'
 
     export default defineComponent({
-        components: { LoadingView, ThreeDotMenu },
+        components: { LoadingView, ThreeDotMenu, AtlanIcon },
         props: {
             glossaryList: {
                 type: Object as PropType<Glossary[]>,
@@ -237,7 +301,7 @@
                 type: Function,
                 required: false,
                 default: () => {},
-            },          
+            },
             dragAndDrop: {
                 type: Function,
                 required: false,
@@ -283,7 +347,6 @@
                 required: true,
                 default: () => [],
             },
-
         },
         setup(props, { emit }) {
             // data
@@ -302,12 +365,11 @@
             }
             const backToHome = () => router.push('/glossary')
 
-
             const createNewTerm = () => {
                 createTerm(props.parentGlossary?.guid ?? '')
             }
             const createNewCategory = () => {
-                createCategory(props.parentGlossary?.guid ?? '');
+                createCategory(props.parentGlossary?.guid ?? '')
             }
 
             return {
@@ -330,9 +392,14 @@
     })
 </script>
 <style lang="less" module>
-.createDropdownStyles {
-    :global(.ant-dropdown-menu-item){
-        @apply m-0 p-1 text-sm leading-5 rounded;
+    .createDropdownStyles {
+        :global(.ant-dropdown-menu-item) {
+            @apply m-0 p-1 text-sm leading-5 rounded;
+        }
     }
-}
+    .treeStyles {
+        :global(.ant-tree-switcher) {
+            @apply pt-1;
+        }
+    }
 </style>

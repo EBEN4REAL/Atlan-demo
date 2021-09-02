@@ -13,7 +13,7 @@
                             <fa v-else icon="fas chevron-down" />
                         </template>
                         <a-collapse-panel key="1" header="Details">
-                            <div class="flex flex-col pl-6">
+                            <div class="flex flex-col pb-2 pl-6 pr-2">
                                 <div class="flex mt-2 mb-4 space-x-16">
                                     <div class="flex flex-col">
                                         <span
@@ -153,7 +153,7 @@
             const activeKey = ref(['1'])
 
             const refreshEntity = inject<() => void>('refreshEntity')
-            const updateTreeNode = inject<any>('updateTreeNode');
+            const updateTreeNode = inject<any>('updateTreeNode')
 
             const { getApplicableBmGroups } = useBusinessMetadataHelper()
 
@@ -168,11 +168,15 @@
             )
             const glossaryTerms = computed(() => props.topTerms ?? [])
 
-            const updateEntityAndTree = (selectedAsset:  Glossary | Category | Term) => {
-                if(refreshEntity)
-                    refreshEntity()
-                if(updateTreeNode){
-                    updateTreeNode({guid: selectedAsset.guid, entity: selectedAsset})
+            const updateEntityAndTree = (
+                selectedAsset: Glossary | Category | Term
+            ) => {
+                if (refreshEntity) refreshEntity()
+                if (updateTreeNode) {
+                    updateTreeNode({
+                        guid: selectedAsset.guid,
+                        entity: selectedAsset,
+                    })
                 }
             }
 

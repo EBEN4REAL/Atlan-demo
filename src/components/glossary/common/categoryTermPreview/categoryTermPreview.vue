@@ -73,7 +73,7 @@
                             <fa v-else icon="fas chevron-down" />
                         </template>
                         <a-collapse-panel key="details" header="Details">
-                            <div class="flex flex-col pl-6">
+                            <div class="flex flex-col pl-6 pr-2">
                                 <Description
                                     v-if="entity.guid"
                                     :selected-asset="entity"
@@ -208,8 +208,7 @@
             const router = useRouter()
             const activeKey = ref(['details'])
 
-            const updateTreeNode =
-                inject<any>('updateTreeNode')
+            const updateTreeNode = inject<any>('updateTreeNode')
 
             // computed
             const shortDescription = computed(
@@ -238,7 +237,10 @@
                 selectedAsset: Glossary | Category | Term
             ) => {
                 if (updateTreeNode)
-                    updateTreeNode({guid: selectedAsset.guid, entity: selectedAsset})
+                    updateTreeNode({
+                        guid: selectedAsset.guid,
+                        entity: selectedAsset,
+                    })
                 context.emit('updateAsset', selectedAsset)
             }
 

@@ -50,10 +50,7 @@
                 </div>
                 <div class="flex items-center w-full text-sm">
                     <div
-                        v-if="
-                            projection.includes('linkedAssets') &&
-                            assetCount !== 0
-                        "
+                        v-if="projection.includes('linkedAssets')"
                         class="mt-2 mr-4"
                     >
                         <p class="items-baseline p-0 m-0 font-normal">

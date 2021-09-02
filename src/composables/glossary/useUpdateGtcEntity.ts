@@ -18,7 +18,7 @@ const useUpdateGtcEntity = () => {
     
     const updateTreeNode = inject<any>('updateTreeNode');
 
-    const updateEntity = (entityType: 'glossary' | 'category' | 'term', guid: string, body: any) => {
+    const updateEntity = (entityType: 'glossary' | 'category' | 'term', guid: string, body: any, updateTree?: boolean) => {
         const { data: updateData, error: updateError, isLoading } = useAPI<Components.Schemas.AtlasGlossary | Components.Schemas.AtlasGlossaryCategory | Components.Schemas.AtlasGlossaryTerm>(keyMap[entityType], 'PUT', {
             cache: false,
             pathVariables: {
@@ -33,7 +33,7 @@ const useUpdateGtcEntity = () => {
         watch(updateData, (newData) => {
             data.value = newData;
             if(newData) {
-                if(updateTreeNode){
+                if(updateTreeNode && (updateTree ?? true)){
                     updateTreeNode({guid: newData.guid, name: newData.name, assetStatus: newData.assetStatus ?? 'is_null'})
                 }
             }

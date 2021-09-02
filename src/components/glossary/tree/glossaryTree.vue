@@ -95,6 +95,7 @@
                     :auto-expand-parent="false"
                     @select="selectNode"
                     @expand="expandNode"
+                    @drop="dragAndDrop"
                 >
                     <template #title="{ title, type, key, assetStatus }">
                         <a-dropdown :trigger="['contextmenu']">
@@ -187,6 +188,11 @@
                 default: () => {},
             },
             onLoadData: {
+                type: Function,
+                required: false,
+                default: () => {},
+            },          
+            dragAndDrop: {
                 type: Function,
                 required: false,
                 default: () => {},

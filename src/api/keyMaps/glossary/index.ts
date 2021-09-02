@@ -17,6 +17,9 @@ export const UPDATE_GLOSSARY = 'UPDATE_GLOSSARY';
 export const UPDATE_GLOSSARY_CATEGORY = 'UPDATE_GLOSSARY_CATEGORY';
 export const UPDATE_GLOSSARY_TERM = 'UPDATE_GLOSSARY_TERM';
 
+export const UPDATE_GLOSSARY_CATEGORY_FULL = 'UPDATE_GLOSSARY_CATEGORY_FULL';
+export const UPDATE_GLOSSARY_TERM_FULL = 'UPDATE_GLOSSARY_TERM_FULL';
+
 export const GET_GLOSSARY_TERMS = 'GET_GLOSSARY_TERMS';
 export const GET_GLOSSARY_CATEGORIES = 'GET_GLOSSARY_CATEGORIES';
 
@@ -43,6 +46,10 @@ const groupsMap: Record<string, (...params:any) => string> = {
     [UPDATE_GLOSSARY]: ({ guid }: Record<string, string>) => getAPIPath('auth/atlas', `/glossary/${guid}`),
     [UPDATE_GLOSSARY_CATEGORY]: ({ guid }: Record<string, string>) => getAPIPath('auth/atlas', `/glossary/category/${guid}/partial`),
     [UPDATE_GLOSSARY_TERM]: ({ guid }: Record<string, string>) => getAPIPath('auth/atlas', `/glossary/term/${guid}/partial`),
+
+    [UPDATE_GLOSSARY_CATEGORY_FULL]: ({ guid }: Record<string, string>) => getAPIPath('auth/atlas', `/glossary/category/${guid}`),
+    [UPDATE_GLOSSARY_TERM_FULL]: ({ guid }: Record<string, string>) => getAPIPath('auth/atlas', `/glossary/term/${guid}`),
+
 
     [GET_GLOSSARY_CATEGORIES]: ({ guid, limit, offset, searchText }: Record<string, any>) => getAPIPath('auth/atlas', `/glossary/${guid}/categories?limit=${limit ?? -1}${offset  ? `&offset=${offset}` : ''}${searchText ? `&searchText=${searchText}` : ''}`),
     [GET_GLOSSARY_TERMS]: ({ guid, limit, offset, searchText }: Record<string, string>) => getAPIPath('auth/atlas', `/glossary/${guid}/terms?limit=${limit ?? -1}${offset  ? `&offset=${offset}` : ''}${searchText ? `&searchText=${searchText}` : ''}`),

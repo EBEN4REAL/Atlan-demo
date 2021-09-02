@@ -5,6 +5,8 @@ import { useRouter, useRoute } from 'vue-router'
 import { Glossary, Category, Term } from "~/types/glossary/glossary.interface";
 import { Components } from '~/api/atlas/client';
 
+import useUpdateGtcEntity from '~/composables/glossary/useUpdateGtcEntity'
+
 import { Glossary as GlossaryApi } from '~/api/atlas/glossary'
 import store from '~/utils/storage'
 
@@ -131,7 +133,7 @@ const useTree = (emit: any, cacheKey?: string, isAccordion?: boolean) => {
                 }
 
                 treeNode.dataRef.children.push(
-                    { ...child, title: child.name, key: child.guid, glossaryID: treeNode.dataRef.glossaryID, categoryID: treeNode.dataRef.key, type: "category", isRoot: true, }
+                    { ...child, title: child.name, key: child.guid, glossaryID: treeNode.dataRef.glossaryID, parentCategoryId: treeNode.dataRef.key, type: "category", isRoot: true, }
                 )
             });
             try {
@@ -144,7 +146,7 @@ const useTree = (emit: any, cacheKey?: string, isAccordion?: boolean) => {
                         nodeToParentKeyMap[element.guid] = treeNode.dataRef.key;
                     }
                     treeNode.dataRef.children.push(
-                        { ...element,title: element.name, key: element.guid, glossaryID: treeNode.dataRef.key, type: "term", isLeaf: true }
+                        { ...element,title: element.name, key: element.guid, glossaryID: treeNode.dataRef.key, parentCategoryId: treeNode.dataRef.key, type: "term", isLeaf: true }
                     )
                 });
                 loadedKeys.value.push(treeNode.dataRef.key)
@@ -294,7 +296,6 @@ const useTree = (emit: any, cacheKey?: string, isAccordion?: boolean) => {
                     const categoryList = await GlossaryApi.ListCategoryForGlossary(parentGlossary.value?.guid ?? '', {}, {});
                     const termsList = await GlossaryApi.ListTermsForCategory(guid, {}, { });
                     categoryMap[parentGlossary.value?.guid ?? ''] = categoryList;
-
                     const updatedChildren: TreeDataItem[] = [];
                     
                     categoryList.forEach((category) => {
@@ -305,7 +306,7 @@ const useTree = (emit: any, cacheKey?: string, isAccordion?: boolean) => {
                         } else if (category.parentCategory?.categoryGuid === node.key){
                             nodeToParentKeyMap[category?.guid ?? ''] = node.key as string;
                             updatedChildren.push(
-                                { ...category, title: category.name, key: category.guid, glossaryID: parentGlossary.value?.guid, categoryID: node.key, type: "category", isRoot: true, }
+                                { ...category, title: category.name, key: category.guid, glossaryID: parentGlossary.value?.guid, parentCategoryId: node.key, type: "category", isRoot: true, }
                             )
                         }
                     })
@@ -317,10 +318,11 @@ const useTree = (emit: any, cacheKey?: string, isAccordion?: boolean) => {
                         } else {
                             nodeToParentKeyMap[term?.guid ?? ''] = node.key as string;
                             updatedChildren.push(
-                                { ...term,title: term.name, key: term.guid, glossaryID: parentGlossary.value?.guid, type: "term", isLeaf: true }
+                                { ...term,title: term.name, key: term.guid, glossaryID: parentGlossary.value?.guid, parentCategoryId: node.key, type: "term", isLeaf: true }
                             )
                         }
                     });
+
                     return {
                         ...node,
                         children: updatedChildren
@@ -361,6 +363,49 @@ const useTree = (emit: any, cacheKey?: string, isAccordion?: boolean) => {
         }
     }
 
+    const dragAndDropNode = async ({ dragNode, node}) =>{
+        const { data: updatedEntity, updateEntity } = useUpdateGtcEntity()
+        
+        if(node.dataRef.type === 'category') {
+            if(dragNode.dataRef.type === 'term'){
+                if(dragNode.dataRef.categories?.length) {
+                    const newCategories = dragNode.dataRef.categories?.filter((category: any) => category.categoryGuid !== dragNode.dataRef.parentCategoryId);
+                    newCategories.push({
+                        categoryGuid: node.dataRef.guid
+                    });
+                    const { data } =  GlossaryApi.UpdateGlossaryTerm(dragNode.dataRef.guid, {
+                        ...dragNode.dataRef,
+                        categories: newCategories,
+                    })
+                    watch(data, async (newData) => {
+                        if(newData.guid){
+                            await refetchGlossary(node.dataRef.guid)
+                            refetchGlossary(dragNode.dataRef.parentCategoryId)
+                        }
+                    })
+
+                } else {
+                    const newCategories = [{
+                        categoryGuid: node.dataRef.guid
+                    }];
+                    const { data } =  GlossaryApi.UpdateGlossaryTerm(dragNode.dataRef.guid, {
+                        ...dragNode.dataRef,
+                        categories: newCategories,
+                    });
+
+                    watch(data, async (newData) => {
+                        if(newData?.guid) {
+                            await refetchGlossary('root')
+                            refetchGlossary(node.dataRef.guid)
+                        }
+                    })
+                    // updateEntity('term', dragNode.dataRef.guid, {
+                    //     categories: newCategories,
+                    // })
+                }
+            }
+        }
+    }
     watch(fetchGuid, () => {
         if(fetchType.value === 'glossary'){
             isInitingTree.value = true;
@@ -415,6 +460,7 @@ const useTree = (emit: any, cacheKey?: string, isAccordion?: boolean) => {
         onLoadData, 
         expandNode,
         selectNode,
+        dragAndDropNode,
         updateNode,
         refetchGlossary
     }

@@ -7,50 +7,22 @@ export const AdvancedAttributeList = [
         typeName: "string",
     },
     {
-        value: "__modifiedBy",
-        label: "last updated by",
+        value: "assetStatusUpdatedBy",
+        label: "Last updated by",
         typeName: "users",
         children: [],
     },
-    // {
-    //     value: "__modificationTimestamp",
-    //     label: "last updated at",
-    //     typeName: "date",
-    // },
     {
         value: "__timestamp",
-        label: "created at",
+        label: "Created at",
         typeName: "date",
     },
     {
-        value: "__popularityScore",
+        value: "popularityScore",
         label: "Popularity Score",
         typeName: "number",
     },
-    // {
-    //     value: "__createdBy",
-    //     label: "created by",
-    //     typeName: "users",
-    //     children: [],
-    // },
-    // {
-    //     value: "name",
-    //     label: "name",
-    //     typeName: "string",
-    //     children: [],
-    // },
-    // {
-    //     value: "description",
-    //     label: "description",
-    //     type: "string",
-    //     children: [],
-    // },
-    // {
-    //     value: "userDescription",
-    //     label: "user description",
-    //     type: "string",
-    //     children: [],
-    // },
+
 ];
 
 
@@ -189,6 +161,7 @@ export const operatorsMap = {
     users: [
         { label: 'Equal', value: 'eq' },
         { label: 'Doesn’t equal', value: 'neq' },
+        { label: 'Contains', value: 'contains' },
         { label: 'Is Null', value: 'isNull' },
         { label: 'Is not Null', value: 'notNull' },
     ],

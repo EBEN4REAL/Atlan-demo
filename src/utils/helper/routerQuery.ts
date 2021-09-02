@@ -24,16 +24,23 @@ export function getEncodedStringFromOptions(options: any) {
 
     if (options.filters) {
         const filterKeys = Object.keys(options.filters)
+        console.log(filterKeys, 'filterkey', options.filters)
         const filtersString: Array<string> = []
         filterKeys.forEach((filterKey) => {
             let filterKeyValue = options.filters[filterKey]
             switch (filterKey) {
                 case 'connector': {
-                    filterKeyValue =
-                        options.filters[filterKey]?.selectedIds ?? []
-                    filterKeyValue = filterKeyValue
-                        .map((selectedId: criterion) => selectedId)
-                        .join(',')
+                    let connectorPyloadStirng = ''
+                    let criterion = options.filters[filterKey].criterion
+                    if (criterion.length == 1) {
+                        connectorPyloadStirng += `connector:${criterion[0].attributeValue}`
+                    }
+                    if (criterion.length == 2) {
+                        connectorPyloadStirng += `connector:${criterion[0].attributeValue}`
+                        connectorPyloadStirng += `,connection:${criterion[1].attributeValue}`
+                    }
+
+                    filterKeyValue = connectorPyloadStirng
                     break
                 }
                 case 'assetCategory': {
@@ -127,17 +134,17 @@ export function getEncodedStringFromOptions(options: any) {
             routerQuery.filters = filtersString.join(':::')
         }
     }
-    if (options.connectorsPayload) {
-        const payload = options.connectorsPayload
-        let connectorPyloadStirng = ''
-        if (payload.connector) {
-            connectorPyloadStirng += `connector:${payload.connector}`
-        }
-        if (payload.connection) {
-            connectorPyloadStirng += `,connection:${payload.connection}`
-        }
-        routerQuery.connectorsPayload = connectorPyloadStirng
-    }
+    // if (options.connectorsPayload) {
+    //     const payload = options.connectorsPayload
+    //     let connectorPyloadStirng = ''
+    //     if (payload.connector) {
+    //         connectorPyloadStirng += `connector:${payload.connector}`
+    //     }
+    //     if (payload.connection) {
+    //         connectorPyloadStirng += `,connection:${payload.connection}`
+    //     }
+    //     routerQuery.connectorsPayload = connectorPyloadStirng
+    // }
 
     // if (options.sortBy) {
     //   routerQuery.sortBy = options.sortBy;
@@ -183,7 +190,7 @@ export function getDecodedOptionsFromString(router) {
     const facetsFilters: filterMapType = {
         connector: {
             checked: [],
-            condition: 'OR',
+            condition: 'AND',
             criterion: [],
         },
         assetCategory: {
@@ -218,27 +225,41 @@ export function getDecodedOptionsFromString(router) {
         const facetFilter = facetFilterString.split('::')
         const facetFilterName = facetFilter[0] // name
         const facetFilterValuesString = facetFilter[1] // verified,draft
-        const criterion: Array<criterion> = []
+        let criterion: Array<criterion> = []
 
         switch (facetFilterName) {
             case 'connector': {
                 const facetFilterValues = facetFilterValuesString.split(',')
-                const selectedIds: string[] = []
-                facetFilterValues.forEach((facetFilterValue) => {
-                    selectedIds.push(facetFilterValue)
-                    const includedAssetTypes = AssetCategoryList.find(
-                        (asset) => asset.id === facetFilterValue
-                    ).include
-                    includedAssetTypes.forEach((assetType) => {
-                        criterion.push({
-                            attributeName: '__typeName',
-                            attributeValue: assetType,
-                            operator: 'eq',
-                        })
-                    })
+                console.log(facetFilterValues, 'facetFilterValues', facetFilter)
+                const connectorsPayloadCriterion: criterion = []
+                const conenctorData = {}
+                facetFilterValues.forEach((connectorValue) => {
+                    const subConnectorValues = connectorValue.split(':')
+                    console.log(subConnectorValues, 'subconector')
+                    if (subConnectorValues[0] === 'connector') {
+                        conenctorData.connector = subConnectorValues[1]
+                    } else {
+                        conenctorData.connection = subConnectorValues[1]
+                    }
                 })
-                facetsFilters.connector.criterion = criterion
-                facetsFilters.connector.checked = facetFilterValues
+                connectorsPayload = conenctorData
+
+                connectorsPayloadCriterion.push({
+                    attributeName: 'integrationName',
+                    attributeValue: connectorsPayload.connector,
+                    operator: '=',
+                })
+                if (facetFilterValues.length > 1) {
+                    connectorsPayloadCriterion.push({
+                        attributeName: 'connectionQualifiedName',
+                        attributeValue: connectorsPayload.connection,
+                        operator: '=',
+                    })
+                }
+
+                facetsFilters.connector.criterion = connectorsPayloadCriterion
+                facetsFilters.connector.checked = conenctorData
+                criterion = [...connectorsPayloadCriterion, ...criterion]
                 break
             }
             case 'assetCategory': {
@@ -415,38 +436,50 @@ export function getDecodedOptionsFromString(router) {
             }
         }
 
-        if (connectorsPayload) {
-            // const connectorsPayloadCriterion: criterion = [];
-            const connectorValues = connectorsPayloadString.split(',')
-            const conenctorData = {}
-            connectorValues.forEach((connectorValue) => {
-                const subConnectorValues = connectorValue.split(':')
-                console.log(subConnectorValues, 'subconector')
-                if (subConnectorValues[0] === 'connector') {
-                    conenctorData.connector = subConnectorValues[1]
-                } else {
-                    conenctorData.connection = subConnectorValues[1]
-                }
-            })
-            connectorsPayload = conenctorData
+        // if (connectorsPayload) {
+        //     // const connectorsPayloadCriterion: criterion = [];
+        //     const connectorValues = connectorsPayloadString.split(',')
+        //     const conenctorData = {}
+        //     connectorValues.forEach((connectorValue) => {
+        //         const subConnectorValues = connectorValue.split(':')
+        //         console.log(subConnectorValues, 'subconector')
+        //         if (subConnectorValues[0] === 'connector') {
+        //             conenctorData.connector = subConnectorValues[1]
+        //         } else {
+        //             conenctorData.connection = subConnectorValues[1]
+        //         }
+        //     })
+        //     connectorsPayload = conenctorData
 
-            // connectorsPayloadCriterion.push({
-            //   attributeName: "integrationName",
-            //   attributeValue: connectorsPayload.connections,
-            //   operator: "=",
-            // });
-            // connectorsPayloadCriterion.push({
-            //   attributeName: "connectionQualifiedName",
-            //   attributeValue: connectorsPayload.connections,
-            //   operator: "=",
-            // });
-            // criterion = [...criterion, connectorsPayloadCriterion];
+        //     // connectorsPayloadCriterion.push({
+        //     //   attributeName: "integrationName",
+        //     //   attributeValue: connectorsPayload.connections,
+        //     //   operator: "=",
+        //     // });
+        //     // connectorsPayloadCriterion.push({
+        //     //   attributeName: "connectionQualifiedName",
+        //     //   attributeValue: connectorsPayload.connections,
+        //     //   operator: "=",
+        //     // });
+        //     // criterion = [...criterion, connectorsPayloadCriterion];
+        // }
+        switch (facetFilterName) {
+            case 'connector': {
+                initialBodyCriterion.push({
+                    condition: 'AND',
+                    criterion,
+                })
+                break
+            }
+            default: {
+                initialBodyCriterion.push({
+                    condition: 'OR',
+                    criterion,
+                })
+            }
         }
-        initialBodyCriterion.push({
-            condition: 'OR',
-            criterion,
-        })
     })
+    console.log(initialBodyCriterion, facetsFilters, 'facetsFilters')
     return {
         connectorsPayload,
         initialBodyCriterion,

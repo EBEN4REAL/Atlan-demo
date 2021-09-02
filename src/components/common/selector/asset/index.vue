@@ -93,7 +93,8 @@
             )
             const handleChange = (checkedValues: string) => {
                 emit('update:modelValue', checkedValues)
-                emit('change', checkedValues)
+                console.log(props.filters, 'root')
+                emit('change', checkedValues, props.filters)
             }
 
             const handleSearch = useDebounceFn((val) => {

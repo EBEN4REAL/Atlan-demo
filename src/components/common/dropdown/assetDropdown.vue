@@ -8,7 +8,7 @@
                     :type-name="item.typeName"
                     :filters="getFilter(index)"
                     :disabled="isDisabled(index)"
-                    @change="handleChange($event, item.level)"
+                    @change="handleChange($event, item.level, filters)"
                     :placeholder="`Select ${item.name}`"
                 ></AssetSelector>
             </div>
@@ -37,7 +37,7 @@
                 },
             },
         },
-        emits: ['labelChange'],
+        emits: ['labelChange', 'change'],
         setup(props, { emit }) {
             const asset: { [key: string]: any } = ref({})
 
@@ -67,6 +67,11 @@
                 const baseFilter = {
                     condition: 'AND',
                     criterion: [
+                        {
+                            attributeName: 'integrationName',
+                            attributeValue: props.data?.connector,
+                            operator: 'eq',
+                        },
                         {
                             attributeName: 'connectionQualifiedName',
                             attributeValue: props.data?.connection,
@@ -113,7 +118,7 @@
 
             const dirtyTimestamp = ref('')
             const selectorValue = ref(`All ${list.value[0]?.name}s`)
-            const handleChange = (value: any, level: number) => {
+            const handleChange = (value: any, level: number, filters: any) => {
                 // Reset all values which are more than this level
                 list.value.forEach((lv) => {
                     if (lv.level > level) {
@@ -121,6 +126,8 @@
                     }
                 })
                 setSelectorValue()
+                console.log(filters, 'filters')
+                // emit('change', filters)
                 // assetDirty[index] = Date.now().toString();
                 // dirtyTimestamp.value = Date.now().toString();
             }

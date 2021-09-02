@@ -36,7 +36,7 @@
                 </a-radio-group>
             </div> -->
         </div>
-        <div class="pt-4">
+        <div class="pt-4 pb-4">
             <p class="mb-3 font-bold text-gray-500">DISPLAY PROPERTIES</p>
             <div class="flex flex-wrap">
                 <template v-for="item in properties" :key="item.id">
@@ -52,6 +52,16 @@
                         {{ item.label }}
                     </div>
                 </template>
+            </div>
+        </div>
+        <div class="pt-4 border-t">
+            <div class="">
+                <CustomRadioButton
+                    class=""
+                    :list="radioButtonData"
+                    @change="handleChangeState"
+                    v-model:data="state"
+                />
             </div>
         </div>
         <!-- <div class="px-3 border-r border-gray-200 border-dashed">
@@ -107,9 +117,10 @@
 
 <script lang="ts">
     import { defineComponent, Ref, ref } from 'vue'
+    import CustomRadioButton from '@common/radio/customRadioButton.vue'
 
     export default defineComponent({
-        components: {},
+        components: { CustomRadioButton },
         props: {
             defaultProjection: {
                 type: Array,
@@ -131,6 +142,7 @@
         setup(props, { emit }) {
             const projection: Ref<any[]> = ref([])
             const totalFiltersApplied = ref(0)
+            const selectedAssetType = ref('all')
             if (props.defaultProjection?.length > 0) {
                 projection.value = props.defaultProjection || []
             }
@@ -200,7 +212,23 @@
                 },
             ]
 
+            const radioButtonData = [
+                {
+                    id: 'all',
+                    label: 'All',
+                },
+                {
+                    id: 'active',
+                    label: 'Active',
+                },
+                {
+                    id: 'deleted',
+                    label: 'Deleted',
+                },
+            ]
+
             return {
+                radioButtonData,
                 togglePropertySelect,
                 isProjectionSelected,
                 properties,

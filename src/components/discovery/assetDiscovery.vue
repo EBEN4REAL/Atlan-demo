@@ -238,6 +238,7 @@
                 initialFilters.value.connectorsPayload
             )
             const filters = ref(initialFilters.value.initialBodyCriterion)
+            console.log('initialFIters', filters.value)
             const filterMap = ref<filterMapType>({
                 connector: {
                     condition:
@@ -416,30 +417,30 @@
                         initialBody.excludeDeletedEntities = true
                     }
                 }
-                const connectorCritera = {
-                    condition: 'OR',
-                    criterion: [],
-                }
-                const connectionCriteria = {
-                    condition: 'OR',
-                    criterion: [],
-                }
-                if (connectorsPayload.value?.connector) {
-                    connectorCritera.criterion?.push({
-                        attributeName: 'integrationName',
-                        attributeValue: connectorsPayload.value?.connector,
-                        operator: 'eq',
-                    })
-                }
-                if (connectorsPayload.value?.connection) {
-                    connectorCritera.criterion?.push({
-                        attributeName: 'connectionQualifiedName',
-                        attributeValue: connectorsPayload.value?.connection,
-                        operator: 'eq',
-                    })
-                }
-                initialBody.entityFilters.criterion.push(connectorCritera)
-                initialBody.entityFilters.criterion.push(connectionCriteria)
+                // const connectorCritera = {
+                //     condition: 'AND',
+                //     criterion: [],
+                // }
+                // const connectionCriteria = {
+                //     condition: 'OR',
+                //     criterion: [],
+                // }
+                // if (connectorsPayload.value?.connector) {
+                //     connectorCritera.criterion?.push({
+                //         attributeName: 'integrationName',
+                //         attributeValue: connectorsPayload.value?.connector,
+                //         operator: 'eq',
+                //     })
+                // }
+                // if (connectorsPayload.value?.connection) {
+                //     connectorCritera.criterion?.push({
+                //         attributeName: 'connectionQualifiedName',
+                //         attributeValue: connectorsPayload.value?.connection,
+                //         operator: 'eq',
+                //     })
+                // }
+                // initialBody.entityFilters.criterion.push(connectorCritera)
+                // initialBody.entityFilters.criterion.push(connectionCriteria)
                 if (sortOrder.value !== 'default') {
                     const split = sortOrder.value.split('|')
                     if (split.length > 1) {

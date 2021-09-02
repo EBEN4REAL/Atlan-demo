@@ -233,8 +233,9 @@
             // Mapping of Data to child components
             const dataMap: { [key: string]: any } = ref({})
             dataMap.value.connector = {
+                connectorsPayload:
+                    props.initialFilters.facetsFilters.connector.checked,
                 checked: props.initialFilters.facetsFilters.connector.checked,
-                connectorsPayload: props.initialFilters.connectorsPayload,
             }
             dataMap.value.assetCategory = {
                 checked:
@@ -332,7 +333,14 @@
             const handleClear = (filterId: string) => {
                 switch (filterId) {
                     case 'connector': {
-                        dataMap.value[filterId].checked = []
+                        dataMap.value[filterId].connectorsPayload = {
+                            connection: undefined,
+                            connector: undefined,
+                        }
+                        dataMap.value[filterId].checked = {
+                            connection: undefined,
+                            connector: undefined,
+                        }
                         filterMap[filterId].criterion = []
                         break
                     }
@@ -375,23 +383,14 @@
             function getFiltersAppliedString(filterId: string) {
                 switch (filterId) {
                     case 'connector': {
-                        let facetFiltersData = dataMap.value[filterId].checked
-                        facetFiltersData = facetFiltersData.map(
-                            (assetCategoryId: string) =>
-                                AssetCategoryList?.find(
-                                    (assetCategory: any) =>
-                                        assetCategory.id === assetCategoryId
-                                ).label
-                        )
-                        if (facetFiltersData.length > 2) {
-                            return `${facetFiltersData
-                                .slice(0, 2)
-                                .join(', ')} +${
-                                facetFiltersData.length - 2
-                            } others`
+                        let facetFiltersData =
+                            dataMap.value[filterId].connectorsPayload
+                        let str = ''
+                        console.log(facetFiltersData, 'applied')
+                        if (facetFiltersData?.connector) {
+                            str += facetFiltersData?.connector
                         }
-
-                        return facetFiltersData.slice(0, 2).join(', ')
+                        return str
                     }
                     case 'assetCategory': {
                         let facetFiltersData = dataMap.value[filterId].checked
@@ -492,7 +491,15 @@
             }
 
             function resetAllFilters() {
-                dataMap.value.connector.checked = []
+                dataMap.value.connector.connectorsPayload = []
+                dataMap.value.connector.connectorsPayload = {
+                    connection: undefined,
+                    connector: undefined,
+                }
+                dataMap.value.connector.checked = {
+                    connection: undefined,
+                    connector: undefined,
+                }
                 dataMap.value.assetCategory.checked = []
                 dataMap.value.status.checked = []
                 dataMap.value.classifications.checked = []

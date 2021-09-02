@@ -96,6 +96,7 @@
                             <Status
                                 v-if="entity?.guid"
                                 :selectedAsset="entity"
+                                @update:selectedAsset="updateTree"
                             />
                         </a-menu-item>
                     </a-sub-menu>
@@ -195,7 +196,9 @@
             const isVisible = ref(false)
             const isModalVisible = ref<boolean>(false)
             const handleFetchListInj: Function | undefined =
-                inject('handleFetchList')
+                inject('handleFetchList');
+            const updateTreeNode: Function | undefined = inject<any>('updateTreeNode')
+
             const assetTypeLabel = {
                 AtlasGlossaryTerm: 'term',
                 AtlasGlossaryCategory: 'category',
@@ -260,11 +263,21 @@
                     )
             }
 
+            const updateTree = (selectedAsset: Glossary | Category | Term) => {
+                if(updateTreeNode){
+                    updateTreeNode({
+                        guid: selectedAsset.guid,
+                        entity: selectedAsset,
+                    })
+                }
+            }
+
             return {
                 handleCopyProfileLink,
                 assetTypeLabel,
                 isVisible,
                 isModalVisible,
+                updateTree,
                 handleOk,
                 handleCancel,
                 showModal,

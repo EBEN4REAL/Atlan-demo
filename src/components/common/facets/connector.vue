@@ -67,16 +67,65 @@
         emits: ['change'],
         setup(props, { emit }) {
             const { data } = toRefs(props)
+            const tabIds = ref([])
             const selectedValue = ref(
                 data.value.checked?.connection
                     ? data.value.checked?.connection
                     : data.value.checked?.connector
             )
-            watch(data.value, () => {
-                if (!data.value.checked?.connector) {
-                    selectedValue.value = undefined
+            const setVisibleTabIds = (connectorType: string) => {
+                if (connectorType) {
+                    if (connectorType === 'tableau') {
+                        tabIds.value = [
+                            'TableauSite',
+                            'TableauProject',
+                            'TableauWorkbook',
+                            'TableauWorksheet',
+                            'TableauDashboard',
+                            'TableauDatasource',
+                            'TableauDatasourceField',
+                        ]
+                    } else {
+                        tabIds.value = [
+                            'Connection',
+                            'Database',
+                            'Schema',
+                            'View',
+                            'Table',
+                            'TablePartition',
+                            'MaterialisedView',
+                            'Column',
+                        ]
+                    }
+                } else {
+                    tabIds.value = [
+                        'Connection',
+                        'Database',
+                        'Schema',
+                        'View',
+                        'Table',
+                        'TablePartition',
+                        'MaterialisedView',
+                        'Column',
+                        'TableauSite',
+                        'TableauProject',
+                        'TableauWorkbook',
+                        'TableauWorksheet',
+                        'TableauDashboard',
+                        'TableauDatasource',
+                        'TableauDatasourceField',
+                    ]
                 }
-            })
+            }
+            watch(
+                data.value,
+                () => {
+                    if (!data.value.checked?.connector) {
+                        selectedValue.value = undefined
+                    }
+                },
+                { immediate: true }
+            )
             const store = useConnectionsStore()
             const connectorsPayload = ref(data.value.connectorsPayload)
             const filteredList = computed(() => store.getSourceList)
@@ -181,14 +230,20 @@
                         operator: 'eq',
                     })
                 }
+                setVisibleTabIds(data.value.connectorsPayload?.connector)
+                console.log(tabIds.value, 'tabsIds')
 
-                emit('change', {
-                    id: props.item.id,
-                    payload: {
-                        condition: 'AND',
-                        criterion,
-                    } as Components.Schemas.FilterCriteria,
-                })
+                emit(
+                    'change',
+                    {
+                        id: props.item.id,
+                        payload: {
+                            condition: 'AND',
+                            criterion,
+                        } as Components.Schemas.FilterCriteria,
+                    },
+                    tabIds.value
+                )
             }
             const handleChange = (entityFilters: any) => {
                 // emit('change', {

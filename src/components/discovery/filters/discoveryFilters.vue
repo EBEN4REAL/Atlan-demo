@@ -107,6 +107,7 @@
     import { List as StatusList } from '~/constant/status'
     import { List as AssetCategoryList } from '~/constant/assetCategory'
     import { List } from './filters'
+    import { AssetTypeList } from '~/constant/assetType'
 
     export default defineComponent({
         name: 'DiscoveryFacets',
@@ -142,7 +143,7 @@
                 },
             },
         },
-        emits: ['refresh'],
+        emits: ['refresh', 'modifyTabs'],
         setup(props, { emit }) {
             const classificationsStore = useClassificationStore()
             const { bmFiltersList, bmDataMap } = useBusinessMetadataHelper()
@@ -306,8 +307,11 @@
                 })
                 emit('refresh', filters, filterMap)
             }
+            const modifyTabs = (tabsIds) => {
+                emit('modifyTabs', tabsIds)
+            }
 
-            const handleChange = (value: any) => {
+            const handleChange = (value: any, tabsIds: string[]) => {
                 filterMap[value.id] = value.payload
                 if (value?.selectedIds)
                     filterMap[value.id] = {
@@ -318,6 +322,7 @@
                 console.log(dirtyTimestamp.value)
                 setAppliedFiltersCount()
                 refresh()
+                modifyTabs(tabsIds)
                 // updateChangesInStore(value);
             }
 
@@ -329,6 +334,15 @@
             }
 
             const totalAppliedFiltersCount = ref(0)
+
+            const resetTabs = () => {
+                const tabsIds = AssetTypeList.filter(
+                    (item) => item.isDiscoverable == true
+                ).map((item) => {
+                    return item.id
+                })
+                return tabsIds
+            }
 
             const handleClear = (filterId: string) => {
                 switch (filterId) {
@@ -342,12 +356,14 @@
                             connector: undefined,
                         }
                         filterMap[filterId].criterion = []
+                        emit('modifyTabs', resetTabs())
                         break
                     }
                     case 'assetCategory': {
                         dataMap.value[filterId].checked = []
                         filterMap[filterId].criterion = []
                         filterMap[filterId].selectedIds = []
+                        emit('modifyTabs', resetTabs())
                         break
                     }
                     case 'status': {
@@ -521,6 +537,8 @@
                     if (filterMap[id]?.selectedIds)
                         filterMap[id].selectedIds = []
                 })
+                // reset tabs
+                emit('modifyTabs', resetTabs())
                 setAppliedFiltersCount()
 
                 refresh()

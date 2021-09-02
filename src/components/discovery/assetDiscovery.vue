@@ -12,6 +12,7 @@
                 "
                 :initial-filters="initialFilters"
                 @refresh="handleFilterChange"
+                @modifyTabs="modifyTabs"
             ></AssetFilters>
         </div>
 
@@ -292,9 +293,36 @@
             assetTypeList.value = AssetTypeList.filter(
                 (item) => item.isDiscoverable == true
             )
-            const assetTypeListString = assetTypeList.value
-                .map((item) => item.id)
-                .join(',')
+            const assetTypeListString = computed(() =>
+                assetTypeList.value.map((item) => item.id).join(',')
+            )
+
+            const modifyTabs = (visibleTabs) => {
+                let assetTypes = []
+                if (visibleTabs) {
+                    console.log(visibleTabs, 'tabs')
+                    visibleTabs.forEach((visibleTabId) => {
+                        AssetTypeList.forEach((asset) => {
+                            if (
+                                asset.id === visibleTabId &&
+                                asset.isDiscoverable == true
+                            ) {
+                                assetTypes.push(asset)
+                            }
+                        })
+                    })
+                } else {
+                    assetTypes = AssetTypeList.filter(
+                        (item) => item.isDiscoverable == true
+                    )
+                }
+                assetTypes.unshift({
+                    id: 'Catalog',
+                    label: 'All',
+                })
+                assetTypeList.value = assetTypes
+            }
+
             const {
                 list,
                 replaceBody,
@@ -306,7 +334,7 @@
                 mutateAssetInList,
             } = useAssetList(
                 now,
-                assetTypeListString,
+                assetTypeListString.value,
                 initialBody,
                 assetType.value,
                 true
@@ -377,7 +405,7 @@
 
             const updateBody = () => {
                 initialBody = {
-                    typeName: assetTypeListString,
+                    typeName: assetTypeListString.value,
                     termName: props.termName,
                     includeClassificationAttributes: true,
                     includeSubClassifications: true,
@@ -577,6 +605,7 @@
             })
 
             return {
+                modifyTabs,
                 handleClearFiltersFromList,
                 assetFilterRef,
                 isFilterVisible,

@@ -61,11 +61,13 @@
             const handleChange = () => {
                 const criterion: Components.Schemas.FilterCriteria[] = []
                 const selectedIds = []
+                let includedAssets = []
                 data.value.checked.forEach((assetTypeId) => {
                     selectedIds.push(assetTypeId)
                     const includedAssetTypes = list.value.find(
                         (asset) => asset.id === assetTypeId
                     ).include
+                    includedAssets = [...includedAssets, ...includedAssetTypes]
                     includedAssetTypes.forEach((assetType) => {
                         criterion.push({
                             attributeName: '__typeName',
@@ -74,16 +76,23 @@
                         })
                     })
                 })
-                console.log('criterion', criterion)
+                if (data.value.checked.length < 1) {
+                    includedAssets = undefined
+                }
+                console.log('includedAssets', includedAssets)
 
-                emit('change', {
-                    id: props.item.id,
-                    selectedIds,
-                    payload: {
-                        condition: 'OR',
-                        criterion,
-                    } as Components.Schemas.FilterCriteria,
-                })
+                emit(
+                    'change',
+                    {
+                        id: props.item.id,
+                        selectedIds,
+                        payload: {
+                            condition: 'OR',
+                            criterion,
+                        } as Components.Schemas.FilterCriteria,
+                    },
+                    includedAssets
+                )
             }
 
             return {

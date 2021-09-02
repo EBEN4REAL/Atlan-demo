@@ -153,7 +153,7 @@
                 'status',
                 'description',
                 'owners',
-                'linkedAssets',
+                'heirarchy',
                 // 'heirarchy'
             ])
             const {
@@ -169,7 +169,7 @@
                 { value: 'description', label: 'Description' },
                 { value: 'owners', label: 'Owners' },
                 { value: 'status', label: 'Status' },
-                { value: 'linkedAssets', label: 'Linked Assets' },
+                { value: 'heirarchy', label: 'Heirarchy' },
                 // { value: 'heirarchy', label: 'Heirarchy' },
                 // { value: 'rows', label: 'Rows' },
                 // { value: 'popularity', label: 'Popularity' },

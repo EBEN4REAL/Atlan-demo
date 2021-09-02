@@ -32,6 +32,7 @@ interface GlossaryAttributes extends BaseAttributes {
 type CategoryAttributes = Omit<GlossaryAttributes, 'categories'> & {
     parentCategory: RelatedEntity;
     anchor: RelatedEntity;
+    childrenCategories: RelatedEntity[];
 }
 type TermAttributes = Omit<GlossaryAttributes, 'terms'> & {
     synonyms?: RelatedEntity;

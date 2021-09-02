@@ -9,6 +9,12 @@
                 :parent-asset-id="assetData"
             />
         </div>
+        <!-- Overview Image Preview -->
+
+        <div v-if="imagePreview" class="mb-16">
+            <h2 class="mb-6 text-xl text-gray">Preview</h2>
+            <overview-image-preview :image-preview="imagePreview" />
+        </div>
 
         <!-- Overview Relations -->
         <div class="mb-16">
@@ -20,22 +26,30 @@
 
 <script lang="ts">
     // Vue
-    import { defineComponent, inject, computed } from 'vue'
+    import { defineComponent, inject, computed, ref } from 'vue'
 
     // Components
     import Readme from '@/common/readme/index.vue'
     import overviewRelations from '~/components/asset/assetProfile/tabs/overview/tableauAsset/overviewRelations.vue'
+    import overviewImagePreview from '~/components/asset/assetProfile/tabs/overview/tableauAsset/overviewImagePreview.vue'
+
+    // Composables
+    import useAssetInfo from '~/composables/asset/useAssetInfo'
 
     export default defineComponent({
-        components: { overviewRelations, Readme },
+        components: { overviewRelations, overviewImagePreview, Readme },
         setup() {
             /** INJECTIONS */
             const assetDataInjection = inject('assetData')
 
             /** COMPUTED */
             const assetData = computed(() => assetDataInjection?.asset)
+            const imagePreview = ref<string>('')
 
-            return { assetData }
+            const { previewURL } = useAssetInfo()
+            imagePreview.value = previewURL(assetData.value)
+
+            return { assetData, imagePreview }
         },
     })
 </script>

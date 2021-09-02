@@ -158,6 +158,14 @@
                 filterColumnsList(columnList)
             }
 
+            const scrollToElement = (selectedRow) => {
+                const el = selectedRow.scrollToMe
+
+                if (el) {
+                    el.scrollIntoView({ behavior: 'smooth' })
+                }
+            }
+
             // filterColumnsList
             const filterColumnsList = (columnList: any) => {
                 const { filteredList } = useColumnsFilter(
@@ -214,6 +222,7 @@
                             }
                         }
                     )
+                    scrollToElement(selectedRow)
                 }
             }
 

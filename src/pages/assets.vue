@@ -4,6 +4,7 @@
             <div class="flex h-full">
                 <router-view
                     v-if="isItem"
+                    :updateProfile="updateProfile"
                     @updateAssetPreview="handlePreview"
                     @preview="handlePreview"
                 ></router-view>
@@ -59,6 +60,8 @@
             const router = useRouter()
             const route = useRoute()
             const isItem = computed(() => route.params.id)
+            const updateProfile = ref<boolean>(false)
+
             const assetDiscovery: Ref<Element | null> = ref(null)
             const initialFilters: initialFiltersType =
                 getDecodedOptionsFromString(router)
@@ -104,6 +107,7 @@
                 if (assetDiscovery.value)
                     assetDiscovery.value.mutateAssetInList(updatedAsset)
                 handlePreview(updatedAsset)
+                updateProfile.value = true
             }
 
             return {

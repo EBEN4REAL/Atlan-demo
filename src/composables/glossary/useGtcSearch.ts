@@ -64,6 +64,7 @@ export default function useGtcSearch(qualifiedName: Ref<string>) {
                 'anchor',
                 'ownerUsers',
                 'ownerGroups',
+                "assignedEntities",
                 ...relatedTerms,
                 ...BaseAttributes,
                 ...BasicSearchAttributes,

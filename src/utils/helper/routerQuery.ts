@@ -82,7 +82,7 @@ export function getEncodedStringFromOptions(options: any) {
                                 (e.attributeName ? `${e.attributeName}:` : '') +
                                 (e.attributeValue
                                     ? `${e.attributeValue}:`
-                                    : '') +
+                                    : '-:') +
                                 (e.operator ? `${e.operator}:` : '')
                         )
                         .join(',')

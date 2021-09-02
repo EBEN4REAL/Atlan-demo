@@ -68,9 +68,9 @@
                         <a-menu>
                             <div class="py-1 px-2" :class="$style.createDropdownStyles">
                                 <a-menu-item key="0" @click="createNewTerm">
-                                    New term
+                                    New Term
                                 </a-menu-item>
-                                <a-menu-item key="1" @click="createNewCategory"> New category </a-menu-item>
+                                <a-menu-item key="1" @click="createNewCategory"> New Category </a-menu-item>
                                 <hr class="my-1" />
                                 <a-menu-item key="2">
                                     Bulk Upload Terms
@@ -97,42 +97,61 @@
                     @expand="expandNode"
                     @drop="dragAndDrop"
                 >
-                    <template #title="{ title, type, key, assetStatus }">
+                    <template #title="{ title, type, key, assetStatus, glossaryID }">
                         <a-dropdown :trigger="['contextmenu']">
                             <div
                                 class="min-w-full"
                                 @click="() => redirectToProfile(type, key)"
                             >
-                                <div class="flex">
-                                    <span class="p-0 my-auto mr-2">
-                                        <img
-                                            v-if="type === 'glossary'"
-                                            :src="GlossarySvg"
-                                            :width="15"
+                                <div class="flex justify-between group">
+                                    <div class="flex">
+                                        <span class="p-0 my-auto mr-2">
+                                            <img
+                                                v-if="type === 'glossary'"
+                                                :src="GlossarySvg"
+                                                :width="15"
+                                            />
+                                            <img
+                                                v-if="type === 'category'"
+                                                :src="CategorySvg"
+                                                :width="15"
+                                            />
+                                            <img
+                                                v-if="type === 'term'"
+                                                :src="TermSvg"
+                                                :width="12"
+                                            />
+                                        </span>
+                                        <component
+                                            :is="StatusList.find(
+                                                (status) =>
+                                                status.id === assetStatus
+                                            )?.icon"
+                                            class="inline-flex w-auto my-auto h-4 mb-1 ml-2"
                                         />
-                                        <img
-                                            v-if="type === 'category'"
-                                            :src="CategorySvg"
-                                            :width="15"
-                                        />
-                                        <img
-                                            v-if="type === 'term'"
-                                            :src="TermSvg"
-                                            :width="12"
-                                        />
-                                    </span>
-                                    <component
-                                        :is="StatusList.find(
-                                            (status) =>
-                                            status.id === assetStatus
-                                        )?.icon"
-                                        class="inline-flex w-auto h-4 mb-1 ml-2"
-                                    />
-                                    <span
-                                        class="text-sm leading-5 text-gray-700"
-                                        >{{ title }}</span
-                                    >
+                                        <span
+                                            class="text-sm my-auto leading-5 text-gray-700"
+                                            >{{ title }}</span
+                                        >
+                                    </div>
+
+                                    <a-dropdown v-if="type === 'category'" :trigger="['hover']">
+                                        <span class="flex justify-center content-center p-0 m-0 h-6 w-6 border rounded opacity-0 group-hover:opacity-100" @click.prevent>
+                                            <fa icon="fal ellipsis-v" class="h-3 w-3" />
+                                        </span>
+                                        <template #overlay>
+                                            <a-menu>
+                                                <div class="py-1 px-2" :class="$style.createDropdownStyles">
+                                                    <a-menu-item key="0" @click="() => createTerm(glossaryID, key)">
+                                                        New Term
+                                                    </a-menu-item>
+                                                    <a-menu-item key="1" @click="() => createCategory(glossaryID, key)"> New Category </a-menu-item>
+                                                </div>
+                                            </a-menu>
+                                        </template>
+                                    </a-dropdown>
                                 </div>
+                                        
                             </div>
                         </a-dropdown>
                     </template>
@@ -152,6 +171,7 @@
 
     // components
     import LoadingView from '@common/loaders/section.vue'
+    import ThreeDotMenu from '@/glossary/common/threeDotMenu.vue'
 
     // import { Glossary } from '~/api/atlas/glossary'
     import { Glossary } from '~/types/glossary/glossary.interface'
@@ -170,7 +190,7 @@
     // import { Glossary } from '~/api/atlas/glossary'
 
     export default defineComponent({
-        components: { LoadingView },
+        components: { LoadingView, ThreeDotMenu },
         props: {
             glossaryList: {
                 type: Object as PropType<Glossary[]>,
@@ -269,6 +289,8 @@
                 backToHome,
                 createNewCategory,
                 createNewTerm,
+                createTerm,
+                createCategory,
                 GlossarySvg,
                 CategorySvg,
                 TermSvg,

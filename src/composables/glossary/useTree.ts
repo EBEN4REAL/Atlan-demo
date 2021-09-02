@@ -406,6 +406,7 @@ const useTree = (emit: any, cacheKey?: string, isAccordion?: boolean) => {
             }
         }
     }
+    
     watch(fetchGuid, () => {
         if(fetchType.value === 'glossary'){
             isInitingTree.value = true;

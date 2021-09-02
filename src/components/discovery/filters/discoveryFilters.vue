@@ -465,6 +465,7 @@
                 dataMap.value.owners.userValue = []
                 dataMap.value.owners.groupValue = []
                 dataMap.value.owners.noOwnerAssigned = false
+                dataMap.value.advanced.applied = {}
 
                 // ? remove bm applied data
                 bmFiltersList.value

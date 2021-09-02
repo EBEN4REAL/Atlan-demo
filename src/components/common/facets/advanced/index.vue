@@ -1,14 +1,7 @@
 <template>
     <span>
         <div class="mr-2 overflow-y-auto" style="max-height: 25rem">
-            <div
-                v-for="(a, x) in AdvancedAttributeList.map((a) => ({
-                    ...a,
-                    options: { displayName: a.label },
-                }))"
-                :key="x"
-                class="mx-5"
-            >
+            <div v-for="(a, x) in AdvancedAttributeList" :key="x" class="mx-5">
                 <AttributeItem
                     :a="a"
                     :applied="data.applied[a.value] || {}"
@@ -21,7 +14,7 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, PropType, ref } from 'vue'
+    import { defineComponent, PropType } from 'vue'
     import AttributeItem from '../common/attributeItems.vue'
 
     import {
@@ -47,14 +40,7 @@
                 type: Object,
                 required: false,
                 default() {
-                    return []
-                },
-            },
-            modelValue: {
-                type: Array,
-                required: false,
-                default() {
-                    return []
+                    return {}
                 },
             },
         },
@@ -67,7 +53,6 @@
                 a: { name: string },
                 appliedValueMap: Object
             ) => {
-                console.log(a, appliedValueMap)
                 // ? if appliedValueMap === {} i.e all applied filters removed, remove the entry
                 const newDataMap = {
                     ...props.data,

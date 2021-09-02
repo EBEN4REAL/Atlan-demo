@@ -10,11 +10,11 @@
             />
         </div>
         <!-- Overview Image Preview -->
-
+        <!-- 
         <div v-if="imagePreview" class="mb-16">
             <h2 class="mb-6 text-xl text-gray">Preview</h2>
             <overview-image-preview :image-preview="imagePreview" />
-        </div>
+        </div> -->
 
         <!-- Overview Relations -->
         <div class="mb-16">

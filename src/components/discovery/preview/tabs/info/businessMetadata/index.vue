@@ -137,7 +137,7 @@
         ref,
         computed,
         watch,
-        onMounted,
+        inject,
     } from 'vue'
     import useEnums from '@/admin/enums/composables/useEnums'
     import { assetInterface } from '~/types/assets/asset.interface'
@@ -164,6 +164,9 @@
                 formatDisplayValue,
                 isLink,
             } = useBusinessMetadataHelper()
+
+            const mutateSelectedAsset: (updatedAsset: assetInterface) => void =
+                inject('mutateSelectedAsset', () => {})
 
             const { enumListData: enumsList } = useEnums()
 
@@ -239,6 +242,40 @@
                 return mappedPayload
             })
 
+            const mutatedAsset = computed(() => {
+                if (props?.selectedAsset?.attributes) {
+                    // ? clean all bm attribute from
+                    const tempAsset = JSON.parse(
+                        JSON.stringify(props.selectedAsset)
+                    )
+
+                    const currentAttributes = Object.keys(
+                        props.selectedAsset.attributes
+                    ).filter((attr) => attr.split('.').length > 1)
+
+                    currentAttributes.forEach(
+                        (a) => delete tempAsset.attributes[a]
+                    )
+
+                    // ? add new payload attributes
+                    const newAttributes = {}
+                    Object.keys(payload.value).forEach((p) => {
+                        Object.entries(payload.value[p]).forEach((e) => {
+                            newAttributes[`${p}.${e[0]}`] = e[1]
+                        })
+                    })
+
+                    return {
+                        ...tempAsset,
+                        attributes: {
+                            ...tempAsset.attributes,
+                            ...newAttributes,
+                        },
+                    }
+                }
+                return null
+            })
+
             // const hasError = ref(false)
             const loading = ref('')
             const activeIndex = ref(null)
@@ -271,6 +308,8 @@
                                 'Some error occured please try again.'
                         // hasError.value = true
                     } else if (isReady.value) {
+                        if (mutatedAsset.value)
+                            mutateSelectedAsset(mutatedAsset.value)
                         loading.value = 'success'
                         applicableList.value[index].error = false
                         // hasError.value = false
@@ -314,6 +353,8 @@
                 readOnly,
                 formatDisplayValue,
                 isLink,
+                mutateSelectedAsset,
+                mutatedAsset,
                 debounce: createDebounce(),
             }
         },

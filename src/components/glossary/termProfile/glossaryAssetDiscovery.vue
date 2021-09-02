@@ -1,20 +1,5 @@
 <template>
     <div class="flex w-full">
-        <div
-            v-if="showFilters"
-            class="flex flex-col h-full overflow-y-auto bg-white border-r  facets"
-        >
-            <AssetFilters
-                :ref="
-                    (el) => {
-                        assetFilterRef = el
-                    }
-                "
-                :initial-filters="initialFilters"
-                @refresh="handleFilterChange"
-            ></AssetFilters>
-        </div>
-
         <div class="flex flex-col items-stretch flex-1 mt-3 mb-1 bg-white w-80">
             <div class="flex flex-col h-full">
                 <div class="flex px-3 mb-1">
@@ -30,23 +15,30 @@
                         @label-change="setPlaceholder($event, 'asset')"
                     ></AssetDropdown>
                 </div>
-                <SearchAndFilter
-                    v-model:value="queryText"
-                    class="mx-3 mt-1"
-                    :placeholder="dynamicSearchPlaceholder"
-                    :autofocus="true"
-                    @change="handleSearchChange"
-                >
-                    <template #filter>
-                        <Preferences
-                            :default-projection="projection"
-                            @change="handleChangePreferences"
-                            @sort="handleChangeSort"
-                            @state="handleState"
-                        />
-                    </template>
-                </SearchAndFilter>
-
+                <div class="flex items-center justify-between w-full pr-4">
+                    <SearchAndFilter
+                        v-model:value="queryText"
+                        class="w-full mx-3 mt-1"
+                        :placeholder="dynamicSearchPlaceholder"
+                        :autofocus="true"
+                        @change="handleSearchChange"
+                    >
+                        <template #filter>
+                            <Preferences
+                                :default-projection="projection"
+                                @change="handleChangePreferences"
+                                @sort="handleChangeSort"
+                                @state="handleState"
+                            />
+                        </template>
+                    </SearchAndFilter>
+                    <a-button
+                        type="primary"
+                        @click="handleLinkAssets"
+                        class="px-3"
+                        >Link assets</a-button
+                    >
+                </div>
                 <AssetTabs
                     v-model="assetType"
                     @update:model-value="handleTabChange"
@@ -54,19 +46,6 @@
                     :asset-type-map="assetTypeMap"
                     :total="totalSum"
                 ></AssetTabs>
-                <!-- <div
-                    class="flex items-center justify-between w-full px-3 py-2 border-b border-gray-300 "
-                >
-                    <AssetPagination
-                        v-if="!isLoading && !isValidating"
-                        :label="assetTypeLabel"
-                        :list-count="list.length"
-                        :total-count="totalCount"
-                    ></AssetPagination>
-                    <span v-else class="text-xs text-gray-500"
-                        >Searching...</span
-                    >
-                </div> -->
                 <div
                     v-if="
                         list && list.length <= 0 && !isLoading && !isValidating
@@ -78,12 +57,13 @@
                 <AssetList
                     v-else
                     ref="assetlist"
-                    :list="list"
+                    :list="entities"
                     :score="searchScoreList"
                     :projection="projection"
                     :is-loading="isLoading || isValidating"
                     :is-load-more="isLoadMore"
-                    :automaticSelectFirstAsset="true"
+                    :showCheckBox="showCheckBox"
+                    :automaticSelectFirstAsset="false"
                     @preview="handlePreview"
                     @loadMore="loadMore"
                 ></AssetList>
@@ -115,7 +95,7 @@
     import { useRouter } from 'vue-router'
     import AssetTabs from '~/components/discovery/list/assetTypeTabs.vue'
     import Preferences from '~/components/discovery/list/preference.vue'
-    import AssetList from '~/components/discovery/list/assetList.vue'
+    import AssetList from '@/glossary/termProfile/glossaryAssetList.vue'
     import AssetFilters from '~/components/discovery/filters/discoveryFilters.vue'
     import AssetDropdown from '~/components/common/dropdown/assetDropdown.vue'
     import ConnectorDropdown from '~/components/common/dropdown/connectorDropdown.vue'
@@ -136,6 +116,8 @@
     import { getEncodedStringFromOptions } from '~/utils/helper/routerQuery'
     import { assetInterface } from '~/types/assets/asset.interface'
     import { useBusinessMetadataStore } from '~/store/businessMetadata'
+
+    import entities from './tempEntityList'
 
     export interface filterMapType {
         assetCategory: {
@@ -228,6 +210,7 @@
             const events = tracking.getEventsName()
             const filterMode = ref('custom')
             const now = ref(false)
+            const showCheckBox = ref(false)
             let initialBody: SearchParameters = reactive({})
             const assetType = ref('Catalog')
             const queryText = ref(initialFilters.value.searchText)
@@ -564,8 +547,11 @@
                     updateBody()
                 }
             })
-            console.log(list)
 
+            const handleLinkAssets = () => {
+                showCheckBox.value = !showCheckBox.value
+            }
+            console.log(entities)
             return {
                 handleClearFiltersFromList,
                 assetFilterRef,
@@ -603,6 +589,9 @@
                 dynamicSearchPlaceholder,
                 setPlaceholder,
                 placeholderLabel,
+                entities,
+                showCheckBox,
+                handleLinkAssets,
             }
         },
         data() {

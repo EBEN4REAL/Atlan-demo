@@ -1,5 +1,7 @@
 <template>
-    <div class="flex justify-between items-center px-4 pl-5 py-3.5 text-sm">
+    <div
+        class="flex items-center justify-between px-4 py-1 text-sm bg-gray-100 border-b border-gray-200 "
+    >
         <div class="font-medium text-gray-500">
             {{ totalAppliedFiltersCount || 'No' }}
             {{ totalAppliedFiltersCount > 1 ? 'filters' : 'filter' }}
@@ -30,7 +32,7 @@
             <div class="">
                 <AtlanIcon
                     icon="ChevronDown"
-                    class="ml-1 transition-transform transform"
+                    class="ml-1 text-gray-500 transition-transform transform"
                     :class="isActive ? '-rotate-180' : 'rotate-0'"
                 />
             </div>
@@ -39,46 +41,38 @@
             v-for="item in dynamicList"
             :key="item.id"
             :class="activeKey === item.id ? 'bg-gray-100' : ''"
-            class="relative bg-transparent hover:bg-gray-100 group"
+            class="relative group"
         >
             <template #header>
-                <div :key="dirtyTimestamp" class="select-none">
-                    <div class="flex justify-between">
-                        <span class="text-gray">
-                            <img
-                                v-if="item.image"
-                                :src="item.image"
-                                class="float-left w-auto h-5 mr-2"
-                            />
-                            {{ item.label }}</span
-                        >
-
-                        <div
-                            v-if="isFilter(item.id) && !activeKey"
-                            class="absolute text-gray-500 opacity-0  top-5 carrot-top right-12 hover:text-primary group-hover:opacity-100"
-                            @click.stop.prevent="handleClear(item.id)"
-                        >
-                            Clear
+                <div :key="dirtyTimestamp" class="mr-8 select-none">
+                    <div class="flex items-center justify-between align-middle">
+                        <div class="flex flex-col flex-1">
+                            <div>
+                                <span class="text-gray">
+                                    <img
+                                        v-if="item.image"
+                                        :src="item.image"
+                                        class="float-left w-auto h-5 mr-2"
+                                    />
+                                    {{ item.label }}</span
+                                >
+                            </div>
+                            <div
+                                v-if="activeKey !== item.id"
+                                class="text-gray-500"
+                            >
+                                {{ getFiltersAppliedString(item.id) }}
+                            </div>
                         </div>
 
                         <div
-                            v-if="isFilter(item.id) && activeKey"
-                            class="absolute text-gray-500 opacity-0  top-3 right-12 hover:text-primary group-hover:opacity-100"
+                            v-if="isFilter(item.id)"
+                            class="text-xs text-gray-500 opacity-0  hover:text-primary group-hover:opacity-100"
                             @click.stop.prevent="handleClear(item.id)"
                         >
                             Clear
                         </div>
                     </div>
-                    <div
-                        v-if="activeKey !== item.id"
-                        class="absolute text-gray-500"
-                    >
-                        {{ getFiltersAppliedString(item.id) }}
-                    </div>
-                    <div
-                        v-if="isFilter(item.id) && activeKey !== item.id"
-                        class="py-2.5"
-                    ></div>
                 </div>
             </template>
 
@@ -525,15 +519,13 @@
         }
 
         :global(.ant-collapse-header) {
-            @apply px-4 pl-5 !important;
+            @apply px-4 !important;
             @apply py-3 !important;
-            @apply border-t;
+            @apply border-none;
         }
 
         :global(.ant-collapse-item:last-child) {
-            @apply border-solid;
             @apply border-gray-300;
-            @apply border-b !important;
         }
 
         :global(.ant-collapse-content-box) {

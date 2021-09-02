@@ -1,26 +1,28 @@
 <template>
-    <div class="px-4">
+    <div class="px-4 mt-1">
         <div class="flex">
-            <a-input
+            <a-input-search
                 ref="searchText"
                 v-model:value="classificationSearchText"
                 type="text"
-                class="bg-white rounded shadow-none form-control border-right-0"
+                class=""
+                size="small"
+                :allowClear="true"
                 :placeholder="`Search ${classificationsList.length} classifications`"
                 @change="handleClassificationsSearch"
             >
-                <template #prefix>
+                <!-- <template #prefix>
                     <fa icon="fal search" class="ml-2 mr-1 text-gray-500" />
-                </template>
-                <template #suffix>
+                </template> -->
+                <!-- <template #suffix>
                     <fa
                         v-if="classificationSearchText"
                         icon="fal times-circle"
                         class="ml-2 mr-1 text-red-600"
                         @click="clearSearchText"
                     />
-                </template>
-            </a-input>
+                </template> -->
+            </a-input-search>
             <a-popover trigger="click" placement="rightTop">
                 <template #content class="rounded">
                     <div class="p-0">
@@ -106,9 +108,7 @@
                         class="h-40 overflow-y-scroll"
                     >
                         <template
-                            v-for="item in !hideClassifications
-                                ? classificationsList
-                                : classificationsList?.slice(0, 5)"
+                            v-for="item in classificationsList"
                             :key="item?.guid + classificationFilterOptionsData"
                         >
                             <a-checkbox
@@ -116,7 +116,7 @@
                                 :value="item.name"
                                 class="w-full mb-3"
                             >
-                                <span class="mb-0 ml-1 text-gray-500 truncated">
+                                <span class="mb-0 truncated">
                                     {{ item?.displayName }}
                                 </span>
                             </a-checkbox>
@@ -141,28 +141,6 @@
                                 </span>
                             </a-checkbox>
                         </template>
-                    </div>
-
-                    <div
-                        v-if="
-                            hideClassifications &&
-                            classificationSearchText === '' &&
-                            classificationsList.length > 5
-                        "
-                        class="flex items-center w-auto my-3 font-bold text-center cursor-pointer select-none  outlined text-primary"
-                        @click="toggleClassifications"
-                    >
-                        {{ `Show ${classificationsList.length - 5} more` }}
-                    </div>
-                    <div
-                        v-else-if="
-                            !hideClassifications &&
-                            classificationSearchText === ''
-                        "
-                        class="flex items-center w-auto my-3 font-bold text-center cursor-pointer select-none  outlined text-primary"
-                        @click="toggleClassifications"
-                    >
-                        {{ `Show less` }}
                     </div>
                 </div>
             </a-checkbox-group>

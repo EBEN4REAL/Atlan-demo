@@ -1,20 +1,17 @@
 <template>
-    <div class="px-4 pl-5">
+    <div class="px-4">
         <div class="flex justify-between mb-1">
-            <a-input
+            <a-input-search
                 v-input-focus
                 :placeholder="
                     activeOwnerTabKey === '1'
                         ? `Search ${userList?.length} users`
                         : `Search ${groupList?.length} groups`
                 "
-                class="rounded"
+                :allowClear="true"
                 @change="handleOwnerSearch"
             >
-                <template #prefix>
-                    <fa icon="fal search" />
-                </template>
-            </a-input>
+            </a-input-search>
             <div class="">
                 <a-popover trigger="click" placement="rightTop">
                     <template #content class="rounded">

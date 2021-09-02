@@ -22,7 +22,7 @@ type Filters = {
 export default function useGtcSearch(qualifiedName: Ref<string>) {
     const requestQuery = ref<string>()
     const offsetLocal = ref(0)
-    const defaultLimit = 10
+    const defaultLimit = 50
     const limitLocal = ref<number>(defaultLimit)
     const localFilters = ref<Filters>()
 

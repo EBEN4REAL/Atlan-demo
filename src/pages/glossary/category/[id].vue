@@ -244,6 +244,7 @@
                 shortDescription,
                 termCount,
                 parentGlossaryQualifiedName,
+                qualifiedName,
                 error,
                 isLoading,
                 termsLoading,

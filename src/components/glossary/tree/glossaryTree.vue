@@ -248,8 +248,8 @@
             </div>
             <div v-else class="flex flex-col justify-center text-center mt-14 text-gray-500 text-base leading-6 ">
                 <AtlanIcon icon="EmptyGlossary" class="h-40" />
-                <p class="m-0 mt-20">The Glossary is empty</p>
-                <p class="m-0">create a few terms!</p>
+                <p class="m-0 mt-20">The Glossary is empty,</p>
+                <p class="m-0">Create a few terms!</p>
             </div>
         </div>
         <div v-else class="mt-4">

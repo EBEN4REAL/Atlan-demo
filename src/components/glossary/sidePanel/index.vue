@@ -164,7 +164,15 @@
                 () => props.entity?.attributes?.terms?.length ?? 0
             )
             const categoryCount = computed(
-                () => props.entity?.attributes?.childrenCategories?.length ?? 0
+                () => {
+                    if(props.entity?.typeName === 'AtlasGlossary'){
+                        return props.entity?.attributes?.categories?.length ?? 0;
+                    } 
+                    if (props.entity?.typeName === 'AtlasGlossaryCategory'){
+                        return props.entity?.attributes?.childrenCategories?.length ?? 0
+                    }
+                    return 0
+                }
             )
             const glossaryTerms = computed(() => props.topTerms ?? [])
 

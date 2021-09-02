@@ -67,6 +67,8 @@
                 <AssetPreview
                     page="discovery"
                     :selected-asset="selectedAsset"
+                    :showCrossIcon="true"
+                    @closePreviewPanel="handleClosePreviewPanel"
                 ></AssetPreview>
             </a-drawer>
         </teleport>
@@ -98,11 +100,12 @@
             GlossaryAssetDiscovery,
             AssetPreview,
         },
-        props: ['termQualifiedName', 'termCount', 'showPreviewPanel'],
+        props: ['termQualifiedName', 'termCount'],
         emits: ['preview'],
         setup(props: PropsType, { emit }) {
             const router = useRouter()
             const initialFilters = getDecodedOptionsFromString(router)
+            const showPreviewPanel = ref(false)
 
             const termName = computed(() => props.termQualifiedName)
 
@@ -131,13 +134,20 @@
 
             const handlePreview = (asset) => {
                 selectedAsset.value = asset
+                showPreviewPanel.value = true
                 emit('preview', asset)
+            }
+            const handleClosePreviewPanel = () => {
+                selectedAsset.value = undefined
+                showPreviewPanel.value = false
             }
             return {
                 termName,
                 initialFilters,
                 selectedAsset,
                 handlePreview,
+                handleClosePreviewPanel,
+                showPreviewPanel,
             }
         },
     })

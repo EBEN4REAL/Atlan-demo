@@ -16,6 +16,14 @@
                         <AtlanIcon class="mr-2" icon="Share" />
                         <span class="text-sm">Share</span>
                     </div>
+                    <div v-if="showCrossIcon" class="flex items-center mx-2">
+                        <a-button
+                            class="px-1 border-0 outline-none"
+                            @click="$emit('closePreviewPanel')"
+                        >
+                            <AtlanIcon icon="Cancel" />
+                        </a-button>
+                    </div>
                 </div>
             </div>
             <div class="flex items-center pb-1">
@@ -110,8 +118,12 @@
                 type: String,
                 required: true,
             },
+            showCrossIcon: {
+                type: Boolean,
+                required: false,
+            },
         },
-        emits: ['assetMutation'],
+        emits: ['assetMutation', 'closePreviewPanel'],
         setup(props, { emit }) {
             const { selectedAsset, page } = toRefs(props)
             const { filteredTabs } = useAssetDetailsTabList(page, selectedAsset)

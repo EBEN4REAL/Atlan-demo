@@ -64,7 +64,6 @@
 <script lang="ts">
     import { defineComponent, ref, onMounted, watch } from 'vue'
     import Tooltip from '@common/ellipsis/index.vue'
-    import { operatorsMap as map } from './constants'
     import useBusinessMetadataHelper from '~/composables/businessMetadata/useBusinessMetadataHelper'
     import DynamicComponents from './dynamicComponents.vue'
 
@@ -80,22 +79,23 @@
                 type: Object,
                 required: true,
             },
+            operators: {
+                type: Array,
+                required: true,
+            },
         },
         emits: ['handleAttributeInput'],
         setup(props, { emit }) {
             const { getDatatypeOfAttribute } = useBusinessMetadataHelper()
-            const operatorsMap = ref([])
             const isVisible = ref(false)
-            operatorsMap.value = JSON.parse(
-                JSON.stringify(
-                    map[getDatatypeOfAttribute(props.a.typeName)] || map['enum']
-                )
-            ).map((o) => ({ ...o, checked: false }))
             const appliedValues = ref({})
 
             const operatorHasValue = (o: string) =>
                 !['isNull', 'notNull'].includes(o)
 
+            const operatorsMap = ref(
+                JSON.parse(JSON.stringify(props.operators))
+            )
             /**
              * @param {String} operator - operator of the checkbox
              * @desc - checks if filter is already applied & emit apply remove filter

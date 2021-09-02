@@ -4,51 +4,51 @@ export const AdvancedAttributeList = [
     {
         value: "__guid",
         label: "guid",
-        type: "string",
+        typeName: "string",
         children: [],
     },
-    {
-        value: "__modifiedBy",
-        label: "last updated by",
-        type: "users",
-        children: [],
-    },
-    {
-        value: "__modificationTimestamp",
-        label: "last updated at",
-        type: "date",
-        children: [],
-    },
-    {
-        value: "__timestamp",
-        label: "created at",
-        type: "date",
-        children: [],
-    },
-    {
-        value: "__createdBy",
-        label: "created by",
-        type: "users",
-        children: [],
-    },
-    {
-        value: "name",
-        label: "name",
-        type: "string",
-        children: [],
-    },
-    {
-        value: "description",
-        label: "description",
-        type: "string",
-        children: [],
-    },
-    {
-        value: "userDescription",
-        label: "user description",
-        type: "string",
-        children: [],
-    },
+    // {
+    //     value: "__modifiedBy",
+    //     label: "last updated by",
+    //     typeName: "users",
+    //     children: [],
+    // },
+    // {
+    //     value: "__modificationTimestamp",
+    //     label: "last updated at",
+    //     typeName: "date",
+    //     children: [],
+    // },
+    // {
+    //     value: "__timestamp",
+    //     label: "created at",
+    //     typeName: "date",
+    //     children: [],
+    // },
+    // {
+    //     value: "__createdBy",
+    //     label: "created by",
+    //     typeName: "users",
+    //     children: [],
+    // },
+    // {
+    //     value: "name",
+    //     label: "name",
+    //     type: "string",
+    //     children: [],
+    // },
+    // {
+    //     value: "description",
+    //     label: "description",
+    //     type: "string",
+    //     children: [],
+    // },
+    // {
+    //     value: "userDescription",
+    //     label: "user description",
+    //     type: "string",
+    //     children: [],
+    // },
 ];
 
 
@@ -151,3 +151,44 @@ export const OperatorList = [
         isInput: false,
     },
 ];
+
+export const operatorsMap = {
+    string: [
+        { label: 'Equal', value: 'eq' },
+        { label: 'Doesn’t equal', value: 'neq' },
+        { label: 'Contains', value: 'contains' },
+        { label: 'Begins with', value: 'startsWith' },
+        { label: 'Ends with', value: 'endsWith' },
+        { label: 'Is Null', value: 'isNull' },
+        { label: 'Is Not Null', value: 'notNull' },
+    ],
+    date: [
+        { label: 'Greater than', value: 'gt' },
+        { label: 'Less than', value: 'lt' },
+        { label: 'Is Null', value: 'isNull' },
+        { label: 'Is Not Null', value: 'notNull' },
+    ],
+    boolean: [
+        { label: 'Equal', value: 'eq' },
+        { label: 'Doesn’t equal', value: 'neq' },
+        { label: 'Is Null', value: 'isNull' },
+        { label: 'Is not Null', value: 'notNull' },
+    ],
+    number: [
+        { label: 'Equal', value: 'eq' },
+        { label: 'Doesn’t equal', value: 'neq' },
+        { label: 'Greater than', value: 'gt' },
+        { label: 'Less than', value: 'lt' },
+        { label: 'Greater than or equal to', value: 'gte' },
+        { label: 'Less than or equal to', value: 'lte' },
+        { label: 'Is Null', value: 'isNull' },
+        { label: 'Is not Null', value: 'notNull' },
+    ],
+    users: [
+        { label: 'Equal', value: 'eq' },
+        { label: 'Doesn’t equal', value: 'neq' },
+        { label: 'Is Null', value: 'isNull' },
+        { label: 'Is not Null', value: 'notNull' },
+    ],
+};
+

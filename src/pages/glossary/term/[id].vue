@@ -11,8 +11,8 @@
         >
             <div class="flex flex-row justify-between pl-5 pr-5 mt-6 mb-5">
                 <div class="flex flex-row w-full">
-                    <div class="mr-5">
-                        <img :src="TermSvg" />
+                    <div class="mr-3">
+                        <AtlanIcon icon="Term" class="h-6 mt-1" />
                     </div>
                     <div class="flex flex-col justify-center w-full">
                         <div class="flex">

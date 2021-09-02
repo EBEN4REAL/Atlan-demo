@@ -29,7 +29,9 @@
                         @label-change="setPlaceholder($event, 'asset')"
                     ></AssetDropdown>
                 </div>
-                <div class="flex items-center justify-between w-full px-3 mt-4">
+                <div
+                    class="flex items-center justify-between w-full px-3 mt-4 mb-2 "
+                >
                     <SearchAndFilter
                         v-model:value="queryText"
                         class="w-full mx-3 mt-1"

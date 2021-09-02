@@ -6,9 +6,10 @@
         <div class="w-2/3 h-full">
             <div class="flex flex-row justify-between pl-5 pr-4 my-6">
                 <div class="flex flex-row">
-                    <div class="mr-5">
-                        <img :src="CategorySvg" />
+                    <div class="mr-3">
+                        <AtlanIcon icon="Category" class="h-6" />
                     </div>
+
                     <div class="flex flex-col justify-center w-full">
                         <div class="flex">
                             <span class="mr-3 text-xl font-bold leading-6">{{

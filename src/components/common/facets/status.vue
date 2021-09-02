@@ -1,7 +1,7 @@
 <template>
     <a-checkbox-group
         v-model:value="data.checked"
-        class="w-full px-4 py-1 pb-3 bg-gray-100"
+        class="w-full px-4 py-1 pb-3"
         @change="handleChange"
     >
         <div class="flex flex-col w-full">
@@ -12,7 +12,7 @@
                             class="inline-flex self-center w-auto h-4 mb-1"
                             :is="item.icon"
                         />
-                        <span class="mb-0 ml-1 text-gray-700">
+                        <span class="mb-0 ml-1 text-gray">
                             {{ item.label }}
                         </span>
                     </a-checkbox>

@@ -1,5 +1,7 @@
 <template>
-    <div class="flex justify-between items-center px-4 pl-5 py-3.5 text-sm">
+    <div
+        class="flex items-center justify-between px-4 py-1 text-sm bg-gray-100 border-b border-gray-200 "
+    >
         <div class="font-medium text-gray-500">
             {{ totalAppliedFiltersCount || 'No' }}
             {{ totalAppliedFiltersCount > 1 ? 'filters' : 'filter' }}
@@ -30,7 +32,7 @@
             <div class="">
                 <AtlanIcon
                     icon="ChevronDown"
-                    class="ml-1 transition-transform transform"
+                    class="ml-1 text-gray-500 transition-transform transform"
                     :class="isActive ? '-rotate-180' : 'rotate-0'"
                 />
             </div>
@@ -39,46 +41,38 @@
             v-for="item in dynamicList"
             :key="item.id"
             :class="activeKey === item.id ? 'bg-gray-100' : ''"
-            class="relative bg-transparent hover:bg-gray-100 group"
+            class="relative group"
         >
             <template #header>
-                <div :key="dirtyTimestamp" class="select-none">
-                    <div class="flex justify-between">
-                        <span>
-                            <img
-                                v-if="item.image"
-                                :src="item.image"
-                                class="float-left w-auto h-5 mr-2"
-                            />
-                            {{ item.label }}</span
-                        >
-
-                        <div
-                            v-if="isFilter(item.id) && !activeKey"
-                            class="absolute text-gray-500 opacity-0  carrot-top right-12 hover:font-bold group-hover:opacity-100"
-                            @click.stop.prevent="handleClear(item.id)"
-                        >
-                            Clear
+                <div :key="dirtyTimestamp" class="mr-8 select-none">
+                    <div class="flex items-center justify-between align-middle">
+                        <div class="flex flex-col flex-1">
+                            <div>
+                                <span class="text-gray">
+                                    <img
+                                        v-if="item.image"
+                                        :src="item.image"
+                                        class="float-left w-auto h-5 mr-2"
+                                    />
+                                    {{ item.label }}</span
+                                >
+                            </div>
+                            <div
+                                v-if="activeKey !== item.id"
+                                class="text-gray-500"
+                            >
+                                {{ getFiltersAppliedString(item.id) }}
+                            </div>
                         </div>
 
                         <div
-                            v-if="isFilter(item.id) && activeKey"
-                            class="absolute text-gray-500 opacity-0  top-3 right-12 hover:font-bold group-hover:opacity-100"
+                            v-if="isFilter(item.id)"
+                            class="text-xs text-gray-500 opacity-0  hover:text-primary group-hover:opacity-100"
                             @click.stop.prevent="handleClear(item.id)"
                         >
                             Clear
                         </div>
                     </div>
-                    <div
-                        v-if="activeKey !== item.id"
-                        class="absolute text-gray-500"
-                    >
-                        {{ getFiltersAppliedString(item.id) }}
-                    </div>
-                    <div
-                        v-if="isFilter(item.id) && activeKey !== item.id"
-                        class="py-2.5"
-                    ></div>
                 </div>
             </template>
 
@@ -105,6 +99,7 @@
     import { useClassificationStore } from '~/components/admin/classifications/_store'
     import useBusinessMetadataHelper from '~/composables/businessMetadata/useBusinessMetadataHelper'
     import { List as StatusList } from '~/constant/status'
+    import { List as AssetCategoryList } from '~/constant/assetCategory'
     import { List } from './filters'
 
     export default defineComponent({
@@ -112,6 +107,9 @@
         components: {
             Status: defineAsyncComponent(
                 () => import('@common/facets/status.vue')
+            ),
+            AssetCategory: defineAsyncComponent(
+                () => import('@common/facets/assetCategory.vue')
             ),
             Owners: defineAsyncComponent(
                 () => import('@common/facets/owners.vue')
@@ -142,6 +140,14 @@
             // console.log(props.initialFilters.facetsFilters, 'facetFilters')
             const activeKey: Ref<string> = ref('')
             const initialFilterMap = {
+                assetCategory: {
+                    condition:
+                        props.initialFilters.facetsFilters.assetCategory
+                            .condition,
+                    criterion:
+                        props.initialFilters.facetsFilters.assetCategory
+                            .criterion,
+                },
                 status: {
                     condition:
                         props.initialFilters.facetsFilters.status.condition,
@@ -211,6 +217,10 @@
 
             // Mapping of Data to child components
             const dataMap: { [key: string]: any } = ref({})
+            dataMap.value.assetCategory = {
+                checked:
+                    props.initialFilters.facetsFilters.assetCategory.checked,
+            }
             dataMap.value.status = {
                 checked: props.initialFilters.facetsFilters.status.checked,
             }
@@ -218,6 +228,7 @@
                 classifications: computed(
                     () => classificationsStore.classifications
                 ),
+                noClassificationsAssigned: false,
                 checked:
                     props.initialFilters.facetsFilters.classifications.checked,
             }
@@ -227,6 +238,7 @@
                 groupValue:
                     props.initialFilters.facetsFilters?.owners?.groupValue ||
                     [],
+                noOwnerAssigned: false,
             }
             dataMap.value.advanced = {
                 list: props.initialFilters.facetsFilters.advanced.list,
@@ -277,6 +289,11 @@
 
             const handleChange = (value: any) => {
                 filterMap[value.id] = value.payload
+                if (value?.selectedIds)
+                    filterMap[value.id] = {
+                        ...filterMap[value.id],
+                        selectedIds: value?.selectedIds,
+                    }
                 dirtyTimestamp.value = `dirty_${Date.now().toString()}`
                 console.log(dirtyTimestamp.value)
                 setAppliedFiltersCount()
@@ -295,6 +312,12 @@
 
             const handleClear = (filterId: string) => {
                 switch (filterId) {
+                    case 'assetCategory': {
+                        dataMap.value[filterId].checked = []
+                        filterMap[filterId].criterion = []
+                        filterMap[filterId].selectedIds = []
+                        break
+                    }
                     case 'status': {
                         dataMap.value[filterId].checked = []
                         filterMap[filterId].criterion = []
@@ -302,12 +325,15 @@
                     }
                     case 'classifications': {
                         dataMap.value[filterId].checked = []
+                        dataMap.value[filterId].noClassificationsAssigned =
+                            false
                         filterMap[filterId].criterion = []
                         break
                     }
                     case 'owners': {
                         dataMap.value[filterId].userValue = []
                         dataMap.value[filterId].groupValue = []
+                        dataMap.value[filterId].noOwnerAssigned = false
                         filterMap[filterId].criterion = []
                         break
                     }
@@ -324,6 +350,25 @@
             }
             function getFiltersAppliedString(filterId: string) {
                 switch (filterId) {
+                    case 'assetCategory': {
+                        let facetFiltersData = dataMap.value[filterId].checked
+                        facetFiltersData = facetFiltersData.map(
+                            (assetCategoryId: string) =>
+                                AssetCategoryList?.find(
+                                    (assetCategory: any) =>
+                                        assetCategory.id === assetCategoryId
+                                ).label
+                        )
+                        if (facetFiltersData.length > 2) {
+                            return `${facetFiltersData
+                                .slice(0, 2)
+                                .join(', ')} +${
+                                facetFiltersData.length - 2
+                            } others`
+                        }
+
+                        return facetFiltersData.slice(0, 2).join(', ')
+                    }
                     case 'status': {
                         let facetFiltersData = dataMap.value[filterId].checked
                         facetFiltersData = facetFiltersData.map(
@@ -351,12 +396,21 @@
                                 facetFiltersData.length - 3
                             } others`
                         }
+                        let noClassificationsAssigned = dataMap.value[filterId]
+                            .noClassificationsAssigned
+                            ? 'No Classifications'
+                            : ''
 
-                        return facetFiltersData.slice(0, 3).join(', ')
+                        return (
+                            noClassificationsAssigned +
+                            facetFiltersData.slice(0, 3).join(', ')
+                        )
                     }
                     case 'owners': {
                         const users = dataMap.value[filterId].userValue
                         const groups = dataMap.value[filterId].groupValue
+                        const noOwnerAssigned =
+                            dataMap.value[filterId].noOwnerAssigned
                         let appliedOwnersString = ''
                         if (users && users?.length > 0) {
                             if (users?.length === 1)
@@ -374,6 +428,7 @@
                             else
                                 appliedOwnersString += `${groups.length} groups`
                         }
+                        if (noOwnerAssigned) appliedOwnersString += 'No Owners'
 
                         return appliedOwnersString
                     }
@@ -394,10 +449,13 @@
             }
 
             function resetAllFilters() {
+                dataMap.value.assetCategory.checked = []
                 dataMap.value.status.checked = []
                 dataMap.value.classifications.checked = []
+                dataMap.value.classifications.noClassificationsAssigned = false
                 dataMap.value.owners.userValue = []
                 dataMap.value.owners.groupValue = []
+                dataMap.value.owners.noOwnerAssigned = false
 
                 // ? remove bm applied data
                 bmFiltersList.value
@@ -409,6 +467,8 @@
                 const filterMapKeys = Object.keys(filterMap)
                 filterMapKeys.forEach((id) => {
                     filterMap[id].criterion = []
+                    if (filterMap[id]?.selectedIds)
+                        filterMap[id].selectedIds = []
                 })
                 setAppliedFiltersCount()
 
@@ -450,15 +510,13 @@
         }
 
         :global(.ant-collapse-header) {
-            @apply px-4 pl-5 !important;
+            @apply px-4 !important;
             @apply py-3 !important;
-            @apply border-t;
+            @apply border-none;
         }
 
         :global(.ant-collapse-item:last-child) {
-            @apply border-solid;
             @apply border-gray-300;
-            @apply border-b !important;
         }
 
         :global(.ant-collapse-content-box) {

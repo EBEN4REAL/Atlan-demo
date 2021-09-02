@@ -2,6 +2,23 @@ import { CollapseArray } from '~/types'
 
 export const List: CollapseArray = [
     {
+        id: 'assetCategory',
+        label: 'Category',
+        component: 'assetCategory',
+        overallCondition: 'OR',
+        filters: [
+            {
+                attributeName: 'assetCategory',
+                condition: 'OR',
+                isMultiple: false,
+                operator: 'eq',
+            },
+        ],
+        isDeleted: false,
+        isDisabled: false,
+        exclude: false,
+    },
+    {
         id: 'status',
         label: 'Status',
         component: 'status',
@@ -64,27 +81,27 @@ export const List: CollapseArray = [
         isDisabled: false,
         exclude: false,
     },
-    // {
-    //     id: 'advanced',
-    //     label: 'Advanced',
-    //     component: 'advanced',
-    //     overallCondition: 'OR',
-    //     filters: [
-    //         {
-    //             attributeName: 'ownerUsers',
-    //             condition: 'OR',
-    //             isMultiple: true,
-    //             operator: 'contains',
-    //         },
-    //         {
-    //             attributeName: 'ownerGroups',
-    //             condition: 'OR',
-    //             isMultiple: true,
-    //             operator: 'contains',
-    //         },
-    //     ],
-    //     isDeleted: false,
-    //     isDisabled: false,
-    //     exclude: true,
-    // },
+    {
+        id: 'advanced',
+        label: 'Advanced',
+        component: 'advanced',
+        overallCondition: 'OR',
+        filters: [
+            {
+                attributeName: 'ownerUsers',
+                condition: 'OR',
+                isMultiple: true,
+                operator: 'contains',
+            },
+            {
+                attributeName: 'ownerGroups',
+                condition: 'OR',
+                isMultiple: true,
+                operator: 'contains',
+            },
+        ],
+        isDeleted: false,
+        isDisabled: false,
+        exclude: false,
+    },
 ]

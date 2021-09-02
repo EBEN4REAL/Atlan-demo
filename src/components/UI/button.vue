@@ -1,7 +1,7 @@
 <template>
     <button
-        :class="[size, color]"
-        class="flex items-center justify-center flex-none px-8  gap-x-1 atlan-btn"
+        :class="[size, color, padding]"
+        class="flex items-center justify-center flex-none gap-x-1 atlan-btn"
     >
         <slot name="prefix" />
         <slot v-if="$slots.label" name="label" />
@@ -25,6 +25,11 @@
             color: {
                 type: String as PropType<'primary' | 'secondary' | 'light'>,
                 default: () => 'primary',
+                required: false,
+            },
+            padding: {
+                type: String as PropType<'large' | 'compact'>,
+                default: () => 'large',
                 required: false,
             },
             bold: {
@@ -51,6 +56,14 @@
 
         &.sm {
             height: 30px;
+        }
+
+        &.large {
+            @apply px-8;
+        }
+
+        &.compact {
+            @apply px-3;
         }
 
         &.primary {

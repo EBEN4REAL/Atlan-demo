@@ -41,14 +41,14 @@ export default function useBusinessMetadata() {
                 {
                     ...(tempBm.guid === 'new'
                         ? {
-                              category: 'BUSINESS_METADATA',
-                              typeVersion: '1.1',
-                              version: 1,
-                              attributeDefs: tempBm.attributeDefs,
-                              description: tempBm.description,
-                              name: tempBm.name,
-                              options: tempBm.options,
-                          }
+                            category: 'BUSINESS_METADATA',
+                            typeVersion: '1.1',
+                            version: 1,
+                            attributeDefs: tempBm.attributeDefs,
+                            description: tempBm.description,
+                            name: tempBm.name,
+                            options: tempBm.options,
+                        }
                         : tempBm),
                 },
             ],
@@ -121,6 +121,7 @@ export default function useBusinessMetadata() {
                         })
                     )
                     store.setData(list)
+                    store.setBusinessMetadataListLoaded(true);
                 }
             }
         )

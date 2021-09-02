@@ -1,147 +1,139 @@
 <template>
     <div
-        class="flex justify-between py-4 pr-4 border-b rounded pl-9"
+        class="flex justify-between py-4 pl-5 pr-4 border-b group"
         @click="$emit('gtcCardClicked', entity)"
     >
         <!-- projections start here -->
-        <div class="flex flex-row">
-            <div class="mr-4">
+        <div class="flex flex-row w-full">
+            <div class="mr-2">
                 <img
                     v-if="entity.typeName === 'AtlasGlossary'"
                     :src="GlossarySvg"
                 />
-                <img
+                <AtlanIcon
                     v-else-if="entity.typeName === 'AtlasGlossaryCategory'"
-                    :src="CategorySvg"
-                    :width="25"
+                    icon="Category"
+                    class="h-6"
                 />
-                <img
+
+                <AtlanIcon
                     v-else-if="entity.typeName === 'AtlasGlossaryTerm'"
-                    :src="TermSvg"
+                    icon="Term"
+                    class="h-6 mt-1"
                 />
             </div>
 
-            <div class="flex flex-col w-3/4 ml-1">
-                <span
-                    class="flex items-center text-base leading-6 text-gray-700 cursor-pointer  hover:underline"
-                    @click="redirectToProfile"
-                >
-                    <p class="my-0">
-                        {{ entity.displayText }}
-                    </p>
+            <div class="flex flex-col justify-center w-3/4 ml-1 text-gray-700">
+                <span class="flex items-center cursor-pointer">
+                    <Tooltip
+                        :tooltip-text="entity.displayText"
+                        class="text-lg font-normal leading-7 text-gray-700  hover:underline"
+                        @click="redirectToProfile"
+                    />
+
                     <component
                         :is="statusObject?.icon"
                         v-if="statusObject && projection.includes('status')"
-                        class="inline-flex w-auto h-4 mb-1 ml-2"
+                        class="inline-flex w-auto h-4 ml-2"
                     />
                 </span>
 
                 <div
-                    v-if="projection.includes('description')"
-                    class="text-sm leading-5 text-gray-500"
+                    v-if="
+                        projection.includes('description') &&
+                        entity?.attributes?.shortDescription !== '' &&
+                        entity?.attributes?.shortDescription !== undefined
+                    "
+                    class="mt-1 text-sm leading-5 text-gray-700"
                 >
                     {{ entity?.attributes?.shortDescription }}
                 </div>
+                <div class="flex items-center w-full text-sm">
+                    <div
+                        v-if="
+                            projection.includes('linkedAssets') &&
+                            assetCount !== 0
+                        "
+                        class="mt-2 mr-4"
+                    >
+                        <p class="items-baseline p-0 m-0 font-normal">
+                            <span class="font-bold">{{ assetCount }}</span>
+                            Linked Assets
+                        </p>
+                    </div>
+
+                    <div
+                        v-if="
+                            projection?.includes('owners') &&
+                            getCombinedUsersAndGroups(entity).length
+                        "
+                        class="flex items-center mt-2 text-sm leading-5 text-gray-700 "
+                    >
+                        <AtlanIcon icon="AddUser" class="m-0 mr-1" />
+
+                        <span
+                            class="mr-1"
+                            v-html="
+                                getTruncatedUsers(
+                                    getCombinedUsersAndGroups(entity),
+                                    20
+                                )
+                            "
+                        />
+                    </div>
+                </div>
                 <div
                     v-if="
-                        projection?.includes('owners') &&
-                        getCombinedUsersAndGroups(entity).length
+                        entity.typeName === 'AtlasGlossaryCategory' && 
+                        projection.includes('heirarchy') && 
+                        parentCategory
                     "
-                    class="flex items-baseline mt-1 mr-4 text-xs leading-5  text-gray"
+                    class="flex items-center mt-2 text-sm leading-5 text-gray-700 "
                 >
-                    <span
-                        class="mr-1"
-                        v-html="
-                            'Owned by ' +
-                            getTruncatedUsers(
-                                getCombinedUsersAndGroups(entity),
-                                20
-                            )
-                        "
-                    />
+                    <div
+                        class="px-3 py-1 mr-2 bg-white border rounded-3xl"
+                    >
+                        {{ parentCategory }}
+                    </div>
+                </div>
+                <div
+                    v-else-if="
+                        entity.typeName === 'AtlasGlossaryTerm' && 
+                        projection.includes('heirarchy') && 
+                        parentCategories
+                    "
+                    class="flex items-center mt-2 text-sm leading-5 text-gray-700 "
+                >
+                    <div
+                        v-for="category in parentCategories"
+                        :key="category"
+                        class="px-3 py-1 mr-2 bg-white border rounded-3xl"
+                    >
+                        {{ category }}
+                    </div>
                 </div>
             </div>
         </div>
-        <!-- TODO: replace with 3-dot menu component -->
-        <ThreeDotMenu :entity="entity" :redirectToProfile="redirectToProfile" />
-        <!-- <div>
-            <a-dropdown :trigger="['click']">
-                <a-button class="px-2.5" @click.prevent>
-                    <fa icon="fal ellipsis-v" class="h-4" />
-                </a-button>
-                <template #overlay>
-                    <a-menu>
-                        <a-menu-item @click="redirectToProfile">
-                            <template #icon>
-                                <Fa
-                                    class="w-auto h-3 text-white"
-                                    icon="fal external-link-alt"
-                            /></template>
-                            Go to term profile</a-menu-item
-                        >
-                        <a-menu-item>
-                            <template #icon>
-                                <Fa
-                                    class="w-auto h-3 text-white group-hover:text-primary"
-                                    icon="fal external-link-alt"
-                            /></template>
-                            Copy term profile link</a-menu-item
-                        >
-                        <a-menu-divider />
 
-                        <a-menu-item>
-                            <Status
-                                v-if="entity.guid"
-                                :selectedAsset="entity"
-                            />
-                        </a-menu-item>
-                        <a-sub-menu key="owner" title="Add Owner">
-                            <template #icon>
-                                <fa
-                                    icon="fal trash-alt"
-                                    class="w-auto h-3 mr-2"
-                                ></fa>
-                            </template>
-                            <a-menu-item class="bg-white">
-                                <Owners :selectedAsset="entity" />
-                            </a-menu-item>
-                        </a-sub-menu>
-                        <a-sub-menu key="expert" title="Add Expert">
-                            <template #icon>
-                                <fa
-                                    icon="fal trash-alt"
-                                    class="w-auto h-3 mr-2"
-                                ></fa>
-                            </template>
-                            <a-menu-item>5d menu item</a-menu-item>
-                            <a-menu-item>6th menu item</a-menu-item>
-                        </a-sub-menu>
-                        <a-menu-divider />
-                        <a-menu-item>
-                            <template #icon>
-                                <fa
-                                    icon="fal trash-alt"
-                                    class="w-auto h-3 mr-2"
-                                ></fa>
-                            </template>
-                            Archive</a-menu-item
-                        >
-                    </a-menu>
-                </template>
-            </a-dropdown>
-        </div> -->
+        <ThreeDotMenu
+            :entity="entity"
+            :redirectToProfile="redirectToProfile"
+            class="opacity-0"
+        />
     </div>
 </template>
 <script lang="ts">
-    import { defineComponent, computed, PropType } from 'vue'
+    import { defineComponent, computed, PropType, watch, onMounted } from 'vue'
     import { useRouter } from 'vue-router'
     // components
     import Status from '@common/sidebar/status.vue'
     import Owners from '@/glossary/common/owners.vue'
     import ThreeDotMenu from '@/glossary/common/threeDotMenu.vue'
+    import Tooltip from '@common/ellipsis/index.vue'
 
     // Composables
     import useAssetInfo from '~/composables/asset/useAssetInfo'
+    import useTermLinkedAssets from '~/composables/glossary/useTermLinkedAssets'
     // static
     import { assetInterface } from '~/types/assets/asset.interface'
     import TermSvg from '~/assets/images/gtc/term/term.png'
@@ -157,7 +149,7 @@
     import { List as StatusList } from '~/constant/status'
 
     export default defineComponent({
-        components: { Status, Owners, ThreeDotMenu },
+        components: { Status, Owners, ThreeDotMenu, Tooltip },
         props: {
             entity: {
                 type: Object as PropType<Glossary | Category | Term>,
@@ -175,6 +167,8 @@
             const router = useRouter()
             const { ownerGroups, ownerUsers } = useAssetInfo()
 
+            const { linkedAssets, isLoading, error, fetchLinkedAssets } =
+                useTermLinkedAssets()
             // computed
             const statusObject = computed(() =>
                 StatusList.find(
@@ -183,7 +177,34 @@
                 )
             )
 
+            const termName = computed(() =>
+                props.entity.typeName === 'AtlasGlossaryTerm'
+                    ? props.entity?.attributes?.qualifiedName
+                    : undefined
+            )
+            const assets = computed(() => linkedAssets.value?.entities ?? [])
+            const assetCount = computed(() => assets.value?.length ?? 0)
+            
+            const parentCategory = computed(() => {
+                if(props.entity?.typeName === 'AtlasGlossaryCategory'){
+                    const catQualifiedName =
+                        props.entity?.attributes?.parentCategory?.uniqueAttributes
+                            ?.qualifiedName
+                    return catQualifiedName?.split(/[@.]/)[0]
+                }
+                return ''
+            });
+            const parentCategories = computed(() => {
+                if(props.entity?.typeName === 'AtlasGlossaryTerm'){
+                    const catQualifiedName =
+                        props.entity?.attributes?.categories?.map((category) => category?.uniqueAttributes
+                            ?.qualifiedName)
+                    return catQualifiedName?.map((qualifiedName) => qualifiedName.split(/[@.]/)[0])
+                }
+                return []
+            });
             // methods
+
             // TODO: extract this function as a util function to be used at multiple places
             function getTruncatedUsers(arr: string[], wordCount: number = 30) {
                 const strSize: number[] = [0]
@@ -211,18 +232,16 @@
                         truncated.length == 1 &&
                         truncated[0].length <
                             `${truncated.length} other(s)`.length
-                            ? `<b>${truncated[0]}</b>`
-                            : `<b>${truncated.length}</b> other(s)`
+                            ? `${truncated[0]}`
+                            : `${truncated.length} other(s)`
 
-                    return `<b>${displayArray.join(', ')}</b> and ${lastElm}`
+                    return `${displayArray.join(', ')} and ${lastElm}`
                 } else {
                     // Check if everything can be directly displayed
                     // If so then take the last element from array, append it with 'and'
                     const lastElm = displayArray.pop()
                     return displayArray.length
-                        ? `<b>${displayArray.join(
-                              ', '
-                          )}</b> and <b>${lastElm}</b>`
+                        ? `${displayArray.join(', ')} and ${lastElm}`
                         : lastElm
                 }
             }
@@ -241,6 +260,12 @@
                 else if (props.entity.typeName === 'AtlasGlossaryTerm')
                     router.push(`/glossary/term/${props.entity.guid}`)
             }
+
+            onMounted(() => {
+                if (termName.value) fetchLinkedAssets(termName.value)
+            })
+            
+
             return {
                 TermSvg,
                 GlossarySvg,
@@ -249,6 +274,10 @@
                 redirectToProfile,
                 getTruncatedUsers,
                 getCombinedUsersAndGroups,
+                assetCount,
+                assets,
+                parentCategory,
+                parentCategories
             }
         },
     })

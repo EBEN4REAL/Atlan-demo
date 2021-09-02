@@ -14,48 +14,26 @@
                         </template>
                         <a-collapse-panel key="1" header="Details">
                             <div class="flex flex-col pl-6">
-                                <div class="flex space-x-16 mb-4">
+                                <div class="flex mt-2 mb-4 space-x-16">
                                     <div class="flex flex-col">
                                         <span
-                                            class="
-                                                mb-2
-                                                text-sm
-                                                leading-5
-                                                text-gray-500
-                                            "
+                                            class="mb-2 text-sm leading-5 text-gray-500 "
                                         >
                                             Categories
                                         </span>
                                         <span
-                                            class="
-                                                p-0
-                                                m-0
-                                                text-sm
-                                                leading-5
-                                                text-gray-700
-                                            "
+                                            class="p-0 m-0 text-sm leading-5 text-gray-700 "
                                             >{{ categoryCount }}
                                         </span>
                                     </div>
                                     <div class="flex flex-col">
                                         <span
-                                            class="
-                                                mb-2
-                                                text-sm
-                                                leading-5
-                                                text-gray-500
-                                            "
+                                            class="mb-2 text-sm leading-5 text-gray-500 "
                                         >
                                             Terms
                                         </span>
                                         <span
-                                            class="
-                                                p-0
-                                                m-0
-                                                text-sm
-                                                leading-5
-                                                text-gray-700
-                                            "
+                                            class="p-0 m-0 text-sm leading-5 text-gray-700 "
                                             >{{ termCount }}
                                         </span>
                                     </div>
@@ -77,7 +55,7 @@
                                 <Status
                                     v-if="entity.guid"
                                     :selected-asset="entity"
-                                    @update:selected-asset="refreshEntity"
+                                    @update:selected-asset="updateEntityAndTree"
                                 />
                             </div>
                         </a-collapse-panel>
@@ -94,6 +72,14 @@
                                 />
                             </div>
                         </a-collapse-panel>
+                        <a-collapse-panel key="3" header="Properties">
+                            <div class="px-6 py-0 text-gray-500">
+                                <p class="p-0 m-0 mb-2">Formula</p>
+                                <p class="p-0 m-0 mb-6 text-sm">Add formula</p>
+                                <p class="p-0 m-0 mb-2">Abbreviation</p>
+                                <p class="p-0 m-0 text-sm">Add abbreviation</p>
+                            </div>
+                        </a-collapse-panel>
                     </a-collapse>
                 </div>
             </a-tab-pane>
@@ -108,7 +94,15 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, PropType, computed, ref, inject } from 'vue'
+    import {
+        defineComponent,
+        PropType,
+        computed,
+        ref,
+        inject,
+        watch,
+        defineAsyncComponent,
+    } from 'vue'
 
     import GlossaryTopTerms from '@/glossary/common/glossaryTopTerms.vue'
     import Owners from '@common/sidebar/owners.vue'
@@ -123,6 +117,8 @@
         Term,
     } from '~/types/glossary/glossary.interface'
     import { Components } from '~/api/atlas/client'
+    import businessMetadataListVue from '~/components/admin/custom-metadata/businessMetadataList.vue'
+    import useBusinessMetadataHelper from '~/composables/businessMetadata/useBusinessMetadataHelper'
 
     export default defineComponent({
         components: {
@@ -132,6 +128,12 @@
             Status,
             Experts,
             Activity,
+            businessMetadata: defineAsyncComponent(
+                () =>
+                    import(
+                        '@/discovery/preview/tabs/info/businessMetadata/index.vue'
+                    )
+            ),
         },
         props: {
             entity: {
@@ -150,7 +152,10 @@
         setup(props) {
             const activeKey = ref(['1'])
 
-            const refreshEntity = inject<() => void  >('refreshEntity')
+            const refreshEntity = inject<() => void>('refreshEntity')
+            const updateTreeNode = inject<any>('updateTreeNode');
+
+            const { getApplicableBmGroups } = useBusinessMetadataHelper()
 
             const shortDescription = computed(
                 () => props.entity?.attributes?.shortDescription
@@ -159,16 +164,57 @@
                 () => props.entity?.attributes?.terms?.length ?? 0
             )
             const categoryCount = computed(
-                () => props.entity?.attributes?.categories?.length ?? 0
+                () => props.entity?.attributes?.childrenCategories?.length ?? 0
             )
             const glossaryTerms = computed(() => props.topTerms ?? [])
+
+            const updateEntityAndTree = (selectedAsset:  Glossary | Category | Term) => {
+                if(refreshEntity)
+                    refreshEntity()
+                if(updateTreeNode){
+                    updateTreeNode({guid: selectedAsset.guid, entity: selectedAsset})
+                }
+            }
+
+            // TODO: add BM panel
+
+            // const applicableBMList = (typeName: string) => {
+
+            // ?returning an empty array
+
+            //     const ar =
+            //         getApplicableBmGroups(typeName)?.map((b) => ({
+            //             component: 'businessMetadata',
+            //             id: b.name,
+            //             label: b.options.displayName,
+            //             image: b.options.image || '',
+            //         })) || []
+            //     console.log(typeName)
+            //     console.log(ar)
+            // }
+            // const dynamicList = ref([])
+            // applicableBMList(props.entity.typeName)
+            // // watch(
+            //     props.entity,
+            //     () => {
+            //         dynamicList.value = [
+            //             ...applicableBMList(props.entity.typeName),
+            //         ]
+            //         console.log(applicableBMList(props.entity.typeName))
+            //     },
+            //     { immediate: true }
+            // )
+
+            // console.log(dynamicList.value)
+            // console.log(props.entity.typeName)
             return {
                 shortDescription,
                 termCount,
                 categoryCount,
                 glossaryTerms,
                 activeKey,
-                refreshEntity
+                refreshEntity,
+                updateEntityAndTree,
             }
         },
     })
@@ -176,7 +222,7 @@
 <style lang="less" module>
     .sidePanel {
         :global(.ant-collapse-header) {
-            @apply pl-6 m-0 font-bold text-sm text-gray-700 bg-white !important;
+            @apply pl-6 m-0  text-sm text-gray-700 bg-white !important;
         }
         :global(.ant-collapse-borderless > .ant-collapse-item) {
             @apply border-b border-gray-300 py-3  mt-0 !important;
@@ -187,7 +233,7 @@
         }
 
         :global(.ant-collapse-content) {
-            @apply mt-4 bg-white !important;
+            @apply m-0 bg-white !important;
         }
         :global(.ant-collapse-content-box) {
             @apply m-0 p-0  bg-transparent !important;
@@ -196,7 +242,7 @@
             @apply m-0 p-0  !important;
         }
         :global(.ant-tabs-bar) {
-            @apply mb-0 mx-0;
+            @apply mb-0 mx-0 px-6 !important;
         }
     }
 </style>

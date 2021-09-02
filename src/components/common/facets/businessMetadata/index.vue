@@ -1,31 +1,16 @@
 <template>
     <span>
-        <div v-if="data.list.attributeDefs.length > 10" class="pr-1 mx-5 mb-3">
-            <a-input
+        <div v-if="data.list.attributeDefs.length > 10" class="px-4 mt-1 mb-2">
+            <a-input-search
                 ref="searchText"
                 v-model:value="attributeSearchText"
                 type="text"
-                class="pr-1 bg-white rounded shadow-none border-right-0"
+                :allowClear="true"
                 :placeholder="`Search ${data.list.attributeDefs.length} attributes`"
             >
-                <template #prefix>
-                    <fa icon="fal search" class="mr-1 text-gray-500" />
-                </template>
-                <template #suffix>
-                    <fa
-                        v-if="attributeSearchText"
-                        icon="fal times"
-                        class="ml-2 mr-1 cursor-pointer"
-                        @click="() => (attributeSearchText = '')"
-                    />
-                </template>
-            </a-input>
+            </a-input-search>
         </div>
-        <div
-            ref="container"
-            class="mr-2 overflow-y-auto"
-            style="max-height: 25rem"
-        >
+        <div ref="container" class="overflow-y-auto" style="max-height: 25rem">
             <div
                 v-for="(a, x) in attributeSearchText.length
                     ? filterList(data.list.attributeDefs)
@@ -34,7 +19,7 @@
                           showAll ? data.list.attributeDefs.length : 10
                       )"
                 :key="x"
-                class="mx-5"
+                class="px-4"
             >
                 <AttributeItem
                     :a="a"
@@ -43,7 +28,7 @@
                 />
             </div>
         </div>
-        <div class="m-3">
+        <div class="px-4 mb-2">
             <div
                 v-if="
                     !showAll &&

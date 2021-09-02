@@ -13,15 +13,27 @@
     />
     <splitpanes class="h-full default-theme">
         <!-- glossary sidebar -->
-        <pane min-size="12" max-size="50"  style="width: 264px" class="bg-white">
+        <pane
+            min-size="12"
+            max-size="50"
+            style="min-width: 264px"
+            class="bg-white"
+        >
             <div>
-                <glossaryTree 
-                    :glossary-list="glossaryList" 
-                    :is-home="isHome" 
-                    :tree-data="treeData" 
-                    :on-load-data="onLoadData" 
-                    :parent-glossary="parentGlossary" 
+                <glossaryTree
+                    :glossary-list="glossaryList"
+                    :is-home="isHome"
+                    :tree-data="treeData"
+                    :on-load-data="onLoadData"
+                    :select-node="selectNode"
+                    :expand-node="expandNode"
+                    :drag-and-drop="dragAndDropNode"
+                    :parent-glossary="parentGlossary"
                     :is-loading="isInitingTree"
+                    :current-guid="currentGuid"
+                    :loaded-keys="loadedKeys"
+                    :selected-keys="selectedKeys"
+                    :expanded-keys="expandedKeys"
                 />
             </div>
         </pane>
@@ -33,15 +45,15 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref, watch, computed } from 'vue'
+    import { defineComponent, ref, watch, computed, provide} from 'vue'
     import { useHead } from '@vueuse/head'
-    import { useRouter, useRoute } from 'vue-router'
+    import { useRouter } from 'vue-router'
 
     // components
     import GlossaryTree from '@common/tree/glossary/index.vue'
     import CreateGlossaryModal from '@common/tree/glossary/createGlossaryModal.vue'
     import UpdateGlossaryModal from '@common/tree/glossary/updateGlossaryModal.vue'
-    import glossaryTree from '@/glossary/tree/glossaryTree.vue';
+    import glossaryTree from '@/glossary/tree/glossaryTree.vue'
 
     // composables
     import useGlossaryList from '~/composables/glossary/useGlossaryList'
@@ -62,16 +74,14 @@
             UpdateGlossaryModal,
         },
         props: ['id', 'class'],
-        setup() {
+        setup(props, { emit }) {
             useHead({
                 title: 'Glossary',
             })
 
             // data
-            const route = useRoute()
             const router = useRouter()
-            const currentGuid = ref<string>(route.params.id as string)
-            const type = ref(router.currentRoute.value.fullPath.split('/')[router.currentRoute.value.fullPath.split('/').length - 2] as 'glossary' | 'category' | 'term')
+
             const parentGlossaryGuid = ref<string | undefined>('')
 
             const createGlossaryModalVisble = ref(false)
@@ -79,10 +89,25 @@
             const glossaryTreeRef = ref()
             const eventContext = ref({})
 
-            const { glossaryList, refetch: refetchGlossaryList } = useGlossaryList()
+            const { glossaryList, refetch: refetchGlossaryList } =
+                useGlossaryList()
 
-            const { treeData, onLoadData, parentGlossary, isInitingTree } = useTree(currentGuid, type)
-
+            const { 
+                treeData,
+                loadedKeys, 
+                currentGuid, 
+                onLoadData, 
+                parentGlossary, 
+                isInitingTree,
+                selectedKeys, 
+                expandedKeys, 
+                expandNode, 
+                selectNode,
+                dragAndDropNode,
+                updateNode,
+                refetchGlossary
+            } = useTree(emit)
+                
             // computed
             const isHome = computed(
                 () =>
@@ -121,18 +146,13 @@
 
             // watchers
             watch(isHome, (newIsHome) => {
-                if(newIsHome){
+                if (newIsHome) {
                     refetchGlossaryList()
                 }
             });
 
-            watch(
-                () => route.params.id,
-                (newId) => {
-                    currentGuid.value = newId as string
-                    type.value = router.currentRoute.value.fullPath.split('/')[router.currentRoute.value.fullPath.split('/').length - 2]
-                }
-            )
+            provide('updateTreeNode', updateNode)
+            provide('refetchGlossaryTree', refetchGlossary);
 
             return {
                 handleOpenModal,
@@ -142,26 +162,29 @@
                 backToHome,
                 backToGlossary,
                 onLoadData,
+                expandNode, 
+                selectNode,
+                dragAndDropNode,
                 createGlossaryModalVisble,
                 updateGlossaryModalVisble,
                 eventContext,
                 glossaryTreeRef,
                 currentGuid,
                 parentGlossaryGuid,
-                type,
-                route,
                 glossaryList,
                 treeData,
+                loadedKeys,
+                selectedKeys, 
+                expandedKeys, 
                 parentGlossary,
                 isInitingTree,
                 isHome,
             }
         },
     })
-// fetch current guid element
-// if glossary, fetch cat and term (call loadData once)
-// if not glossary, fetch parent glossary and call loadData
-
+    // fetch current guid element
+    // if glossary, fetch cat and term (call loadData once)
+    // if not glossary, fetch parent glossary and call loadData
 </script>
 
 <route lang="yaml">

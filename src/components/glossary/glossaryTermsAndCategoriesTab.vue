@@ -1,10 +1,12 @@
 <template>
     <div>
-        <div class="p-4 bg-gray-100">
+        <div class="p-4 bg-gray-100 shadow">
             <div class="flex mb-2 space-x-2">
                 <a-input-search
                     v-model:value="searchQuery"
-                    :placeholder="`Search ${qualifiedName.split('@'[1])}...`"
+                    :placeholder="`Search ${
+                        displayText || qualifiedName.split('@'[1])
+                    }....`"
                     @change="onSearch"
                 ></a-input-search>
                 <a-popover trigger="click">
@@ -30,98 +32,22 @@
         <div v-if="isLoading && !all.length">
             <LoadingView />
         </div>
-        <div v-else-if="all.length" class="flex flex-row w-full mt-4">
+        <div v-else-if="all.length" class="flex flex-row w-full">
             <div class="w-full">
-                <a-tabs default-active-key="1" class="border-0">
-                    <!-- TODO: fix tab-pane header UI  -->
-                    <a-tab-pane key="1">
-                        <template #tab>
-                            <div class="flex items-center">
-                                <p class="my-0">All</p>
-                                <div
-                                    v-if="all.length"
-                                    class="px-2 mx-2  bg-primary-light text-primary"
-                                >
-                                    {{ all.length }}
-                                </div>
-                            </div>
-                        </template>
-                        <!-- list starts here -->
-                        <!-- TODO: make panel scrollable -->
-                        <div class="overflow-auto pb-16" style="max-height: 380px">
-                            <div v-for="asset in all" :key="asset.guid">
-                                <GtcEntityCard
-                                    :class="{
-                                        'hover:bg-gray-100': true,
-                                        'bg-blue-50':
-                                            selectedEntity?.guid === asset.guid,
-                                    }"
-                                    :entity="asset"
-                                    :projection="projection"
-                                    @gtcCardClicked="onEntitySelect"
-                                />
-                            </div>
-                        </div>
-                    </a-tab-pane>
-                    <a-tab-pane key="2">
-                        <!--? why max-height is fixed to 380px  -->
-                        <template #tab>
-                            <div class="flex items-center">
-                                <p class="my-0">Terms</p>
-                                <div
-                                    v-if="terms.length"
-                                    class="px-2 mx-2  bg-primary-light text-primary"
-                                >
-                                    {{ terms.length }}
-                                </div>
-                            </div>
-                        </template>
-
-                        <div class="overflow-auto" style="max-height: 380px">
-                            <div v-for="asset in terms" :key="asset.guid">
-                                <GtcEntityCard
-                                    :class="{ 'hover:bg-gray-100': true }"
-                                    :entity="asset"
-                                    :projection="projection"
-                                    @gtcCardClicked="onEntitySelect"
-                                />
-                            </div>
-                        </div>
-                    </a-tab-pane>
-                    <a-tab-pane key="3">
-                        <template #tab>
-                            <div class="flex items-center">
-                                <p class="my-0">Categories</p>
-                                <div
-                                    v-if="categories.length"
-                                    class="px-2 mx-2  bg-primary-light text-primary"
-                                >
-                                    {{ categories.length }}
-                                </div>
-                            </div>
-                        </template>
-
-                        <!--? why max-height is fixed to 380px  -->
-                        <div class="overflow-auto" style="max-height: 380px">
-                            <div v-for="asset in categories" :key="asset.guid">
-                                <GtcEntityCard
-                                    :class="{ 'hover:bg-gray-100': true }"
-                                    :entity="asset"
-                                    :projection="projection"
-                                    @gtcCardClicked="onEntitySelect"
-                                />
-                            </div>
-                        </div>
-                    </a-tab-pane>
-                </a-tabs>
-                <a-button type="link" @click="loadMore">Load More</a-button>
+                <div
+                    class="overflow-auto"
+                    style="max-height: calc(100vh - 250px)"
+                >
+                    <AssetList
+                        :list="all"
+                        :projection="projection"
+                        :isLoading="isLoading"
+                        :selectedEntity="selectedEntity"
+                        @loadMore="loadMore"
+                        @gtcCardClicked="onEntitySelect"
+                    />
+                </div>
             </div>
-            <!-- <div v-if="selectedEntity?.guid" class="w-1/3">
-                <Overview
-                    :item="selectedEntity"
-                    :selectedAssetData="selectedEntity"
-                ></Overview>
-            </div> -->
         </div>
         <div v-else-if="!all.length" class="mt-24">
             <EmptyView :showClearFiltersCTA="false" />
@@ -129,7 +55,9 @@
         <teleport to="#sidePanel">
             <a-drawer
                 v-if="selectedEntity?.guid !== undefined && showPreviewPanel"
-                :visible="selectedEntity?.guid !== undefined && showPreviewPanel"
+                :visible="
+                    selectedEntity?.guid !== undefined && showPreviewPanel
+                "
                 placement="right"
                 :mask="false"
                 :get-container="false"
@@ -150,15 +78,24 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, computed, ref, toRef, watch, PropType } from 'vue'
+    import {
+        defineComponent,
+        computed,
+        ref,
+        toRef,
+        watch,
+        PropType,
+        provide,
+    } from 'vue'
     import { useDebounceFn } from '@vueuse/core'
 
     // components
     import LoadingView from '@common/loaders/page.vue'
     import EmptyView from '@common/empty/discover.vue'
+    import CategoryTermPreview from '@/glossary/common/categoryTermPreview/categoryTermPreview.vue'
     import GtcEntityCard from './gtcEntityCard.vue'
     import GtcFilters from './common/gtcFilters.vue'
-    import CategoryTermPreview from '@/glossary/common/categoryTermPreview/categoryTermPreview.vue'
+    import AssetList from '@/glossary/common/assetList.vue'
 
     // composables
     import useGtcSearch from '~/composables/glossary/useGtcSearch'
@@ -167,13 +104,25 @@
     import { Category, Term } from '~/types/glossary/glossary.interface'
 
     export default defineComponent({
-        components: { GtcEntityCard, EmptyView, LoadingView, GtcFilters, CategoryTermPreview },
+        components: {
+            AssetList,
+            GtcEntityCard,
+            EmptyView,
+            LoadingView,
+            GtcFilters,
+            CategoryTermPreview,
+        },
         props: {
             qualifiedName: {
                 type: String,
                 required: true,
                 default: '',
             },
+            displayText: {
+                type: String,
+                required: false,
+            },
+
             guid: {
                 type: String,
                 required: true,
@@ -189,23 +138,38 @@
             showPreviewPanel: {
                 type: Boolean,
                 required: true,
-                default: false
-            }
+                default: false,
+            },
         },
         emits: ['entityPreview'],
         setup(props, { emit }) {
             // data
             const glossaryQualifiedName = toRef(props, 'qualifiedName')
+
             const searchQuery = ref<string>()
+            const activeKey = ref(0)
             const selectedEntity = ref<Category | Term>()
-            const projection = ref(['status', 'description', 'owners'])
-            const { entities, error, isLoading, fetchAssetsPaginated } =
-                useGtcSearch(glossaryQualifiedName)
+            const projection = ref([
+                'status',
+                'description',
+                'owners',
+                'linkedAssets',
+                // 'heirarchy'
+            ])
+            const {
+                entities,
+                error,
+                isLoading,
+                fetchAssetsPaginated,
+                fetchAssets,
+                deleteEntityFromList,
+            } = useGtcSearch(glossaryQualifiedName)
 
             const projectionOptions = [
                 { value: 'description', label: 'Description' },
                 { value: 'owners', label: 'Owners' },
                 { value: 'status', label: 'Status' },
+                { value: 'linkedAssets', label: 'Linked Assets' },
                 // { value: 'heirarchy', label: 'Heirarchy' },
                 // { value: 'rows', label: 'Rows' },
                 // { value: 'popularity', label: 'Popularity' },
@@ -280,7 +244,7 @@
                 selectedEntity.value = entity
             }
             const handlClosePreviewPanel = () => {
-                selectedEntity.value = undefined;
+                selectedEntity.value = undefined
             }
             const onSearch = useDebounceFn(() => {
                 fetchAssetsPaginated({
@@ -301,26 +265,25 @@
                 const idx = entities.value?.findIndex(
                     (ast) => ast.guid === updatedAsset.guid
                 )
-                console.log(idx, 'yes')
                 if (idx > -1) entities.value[idx] = updatedAsset
             }
 
-            // lifecycle methods and watchers
+            const handleFetchList = (entity: Category | Term) => {
+                deleteEntityFromList(entity?.guid)
+            }
+            // lifecycle methods and watchers and  providers
             watch(selectedEntity, (newSelectedEntity) => {
                 emit('entityPreview', newSelectedEntity)
             })
 
-            // watch(entities, (newEntities) => {
-            //     selectedEntity.value = newEntities[0]
-            // })
+            provide('handleFetchList', handleFetchList)
 
             return {
                 glossaryQualifiedName,
                 searchQuery,
                 all,
                 entities,
-                terms,
-                categories,
+                handleFetchList,
                 onSearch,
                 onEntitySelect,
                 loadMore,
@@ -331,13 +294,19 @@
                 isLoading,
                 projectionOptions,
                 projection,
+                activeKey,
             }
         },
     })
 </script>
-<style lang="less">
+<style lang="less" module>
     .secondaryHeading {
         @apply tracking-widest text-xs text-gray leading-5;
+    }
+    .glossaryTermsTab {
+        :global(.ant-tabs-tabpane .ant-tabs-tabpane-active) {
+            @apply h-1/3 overflow-auto;
+        }
     }
 </style>
 

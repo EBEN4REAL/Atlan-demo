@@ -4,6 +4,7 @@
             <div class="flex h-full">
                 <router-view
                     v-if="isItem"
+                    :updateProfile="updateProfile"
                     @updateAssetPreview="handlePreview"
                     @preview="handlePreview"
                 ></router-view>
@@ -30,6 +31,7 @@
 </template>
 
 <script lang="ts">
+    import useBusinessMetadata from '@/admin/custom-metadata/composables/useBusinessMetadata'
     import AssetDiscovery from '~/components/discovery/assetDiscovery.vue'
     import AssetPreview from '@/discovery/preview/assetPreview.vue'
     import { useHead } from '@vueuse/head'
@@ -58,6 +60,8 @@
             const router = useRouter()
             const route = useRoute()
             const isItem = computed(() => route.params.id)
+            const updateProfile = ref<boolean>(false)
+
             const assetDiscovery: Ref<Element | null> = ref(null)
             const initialFilters: initialFiltersType =
                 getDecodedOptionsFromString(router)
@@ -69,6 +73,10 @@
             const page = computed(() =>
                 isItem.value ? 'profile' : 'discovery'
             )
+
+            // * Get all available BMs and save on store
+            const { fetchBMonStore } = useBusinessMetadata()
+            fetchBMonStore()
 
             /* Making the network request here to fetch the latest changes of classifications. 
             So that everytime user visit the discover page it will be in sync to latest data not with store
@@ -99,6 +107,7 @@
                 if (assetDiscovery.value)
                     assetDiscovery.value.mutateAssetInList(updatedAsset)
                 handlePreview(updatedAsset)
+                updateProfile.value = true
             }
 
             return {

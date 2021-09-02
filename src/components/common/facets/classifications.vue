@@ -1,26 +1,28 @@
 <template>
-    <div class="px-4 py-1 pb-3">
+    <div class="px-4 mt-1">
         <div class="flex">
-            <a-input
+            <a-input-search
                 ref="searchText"
                 v-model:value="classificationSearchText"
                 type="text"
-                class="bg-white rounded shadow-none form-control border-right-0"
+                class=""
+                size="small"
+                :allowClear="true"
                 :placeholder="`Search ${classificationsList.length} classifications`"
                 @change="handleClassificationsSearch"
             >
-                <template #prefix>
+                <!-- <template #prefix>
                     <fa icon="fal search" class="ml-2 mr-1 text-gray-500" />
-                </template>
-                <template #suffix>
+                </template> -->
+                <!-- <template #suffix>
                     <fa
                         v-if="classificationSearchText"
                         icon="fal times-circle"
                         class="ml-2 mr-1 text-red-600"
                         @click="clearSearchText"
                     />
-                </template>
-            </a-input>
+                </template> -->
+            </a-input-search>
             <a-popover trigger="click" placement="rightTop">
                 <template #content class="rounded">
                     <div class="p-0">
@@ -106,9 +108,7 @@
                         class="h-40 overflow-y-scroll"
                     >
                         <template
-                            v-for="item in !hideClassifications
-                                ? classificationsList
-                                : classificationsList?.slice(0, 5)"
+                            v-for="item in classificationsList"
                             :key="item?.guid + classificationFilterOptionsData"
                         >
                             <a-checkbox
@@ -116,7 +116,7 @@
                                 :value="item.name"
                                 class="w-full mb-3"
                             >
-                                <span class="mb-0 ml-1 text-gray-500 truncated">
+                                <span class="mb-0 truncated">
                                     {{ item?.displayName }}
                                 </span>
                             </a-checkbox>
@@ -142,31 +142,18 @@
                             </a-checkbox>
                         </template>
                     </div>
-
-                    <div
-                        v-if="
-                            hideClassifications &&
-                            classificationSearchText === '' &&
-                            classificationsList.length > 5
-                        "
-                        class="flex items-center w-auto mt-3 mb-0 font-bold text-center cursor-pointer select-none  outlined text-primary"
-                        @click="toggleClassifications"
-                    >
-                        {{ `Show ${classificationsList.length - 5} more` }}
-                    </div>
-                    <div
-                        v-else-if="
-                            !hideClassifications &&
-                            classificationSearchText === ''
-                        "
-                        class="flex items-center w-auto mt-3 mb-0 font-bold text-center cursor-pointer select-none  outlined text-primary"
-                        @click="toggleClassifications"
-                    >
-                        {{ `Show less` }}
-                    </div>
                 </div>
             </a-checkbox-group>
             <p v-else class="text-center text-gray-300">No Classifications</p>
+            <div>
+                <a-checkbox
+                    v-model:checked="data.noClassificationsAssigned"
+                    @change="noClassificationsToggle"
+                    class="w-full py-3 border-t"
+                >
+                    No Classifications assigned
+                </a-checkbox>
+            </div>
         </div>
     </div>
 </template>
@@ -204,6 +191,7 @@
             const filteredClassificationList = ref([])
             const { data } = toRefs(props)
             const hideClassifications = ref(true)
+            const noClassificationsAssigned = ref(false)
             const classificationFilterOptionsData = ref('asc')
             const classificationFilterCheckboxes = [
                 {
@@ -240,6 +228,8 @@
 
             const handleChange = () => {
                 const criterion: Components.Schemas.FilterCriteria[] = []
+                // make no classifications unchecked
+                data.value.noClassificationsAssigned = false
                 switch (addedByFilterOptionsData.value) {
                     case 'all': {
                         data.value.checked.forEach((val) => {
@@ -288,6 +278,34 @@
                 })
             }
 
+            const noClassificationsToggle = () => {
+                let criterion: Components.Schemas.FilterCriteria[] = []
+
+                if (data.value.noClassificationsAssigned) {
+                    data.value.checked = []
+                    criterion.push({
+                        attributeName: '__classificationNames',
+                        attributeValue: '-',
+                        operator: 'is_null',
+                    })
+                    criterion.push({
+                        attributeName: '__propagatedClassificationNames',
+                        attributeValue: '-',
+                        operator: 'is_null',
+                    })
+                } else {
+                    data.value.checked = []
+                    criterion = []
+                }
+                console.log(props.item.id, 'idd')
+                emit('change', {
+                    id: props.item.id,
+                    payload: {
+                        condition: operationFilterOptionsData.value,
+                        criterion,
+                    } as Components.Schemas.FilterCriteria,
+                })
+            }
             const sortClassificationsByOrder = (
                 sortingOrder: string | null,
                 data: any
@@ -407,6 +425,8 @@
                 classificationSearchText,
                 clearSearchText,
                 handleChange,
+                noClassificationsAssigned,
+                noClassificationsToggle,
                 handleClassificationsSearch,
                 hideClassifications,
                 classificationFilterCheckboxes,

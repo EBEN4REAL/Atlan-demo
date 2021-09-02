@@ -1,5 +1,5 @@
 <template>
-    <div v-if="isLoading  && term?.guid !== id">
+    <div v-if="isLoading && term?.guid !== id">
         <LoadingView />
     </div>
     <div v-else class="flex flex-row h-full" :class="$style.tabClasses">
@@ -10,11 +10,11 @@
             "
         >
             <div class="flex flex-row justify-between pl-5 pr-5 mt-6 mb-5">
-                <div class="flex flex-row">
+                <div class="flex flex-row w-full">
                     <div class="mr-5">
                         <img :src="TermSvg" />
                     </div>
-                    <div class="flex flex-col w-3/4">
+                    <div class="flex flex-col w-full">
                         <div class="flex">
                             <span class="mr-3 text-xl font-bold leading-6">{{
                                 title
@@ -32,16 +32,18 @@
                     </div>
                 </div>
                 <div class="flex flex-row space-x-2">
-                    <a-button class="px-2.5">
-                        <fa icon="fal bookmark" />
+                    <a-button class="px-2"
+                        ><atlan-icon
+                            icon="BookmarkOutlined"
+                            class="w-auto h-4 text-gray-700"
+                    /></a-button>
+
+                    <a-button class="flex items-center"
+                        ><atlan-icon icon="Share" class="w-auto h-4 mr-2" />
+                        <span class="mt-1 text-sm">Share</span>
                     </a-button>
-                    <a-button class="px-2.5 flex align-middle">
-                        <fa icon="fal upload" class="h-3 mr-2" />
-                        <span>Share</span>
-                    </a-button>
-                    <a-button class="px-2.5">
-                        <fa icon="fal ellipsis-v" class="h-4" />
-                    </a-button>
+
+                    <ThreeDotMenu :entity="term" :showLinks="false" />
                 </div>
             </div>
             <div class="m-0">
@@ -52,10 +54,30 @@
                 >
                     <a-tab-pane key="1" tab="Overview">
                         <div class="px-5 mt-4">
+                            <div v-if="isNewTerm" class="mb-4">
+                                <p
+                                    class="p-0 mb-1 text-sm leading-5 text-gray-700 "
+                                >
+                                    Name
+                                </p>
+                                <div class="flex">
+                                    <a-input
+                                        v-model:value="newName"
+                                        style="width: 200px"
+                                    />
+                                    <a-button
+                                        v-if="newName"
+                                        class="ml-4"
+                                        type="primary"
+                                        @click="updateTitle"
+                                        >Submit</a-button
+                                    >
+                                </div>
+                            </div>
                             <GlossaryProfileOverview :entity="term" />
                         </div>
                     </a-tab-pane>
-                    <a-tab-pane key="2" tab="Linked Terms">
+                    <a-tab-pane key="2" tab="Linked Assets">
                         <div :class="$style.tabClasses">
                             <LinkedAssetsTab
                                 :term-qualified-name="qualifiedName"
@@ -67,7 +89,7 @@
                 </a-tabs>
             </div>
         </div>
-        <div id="sidePanel" class="relative h-full w-1/3">
+        <div id="sidePanel" class="relative w-1/3 h-full">
             <CategoryTermPreview
                 class="pt-6"
                 :entity="term"
@@ -85,8 +107,9 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, computed, toRef, ref, provide } from 'vue'
+    import { defineComponent, computed, toRef, ref, provide, watch } from 'vue'
 
+    import ThreeDotMenu from '@/glossary/common/threeDotMenu.vue'
     import GlossaryProfileOverview from '@/glossary/common/glossaryProfileOverview.vue'
     import TopAssets from '@/glossary/termProfile/topAssets.vue'
     import LinkedAssetsTab from '@/glossary/termProfile/linkedAssetsTab.vue'
@@ -97,6 +120,7 @@
     import AssetPreview from '~/components/discovery/preview/assetPreview.vue'
 
     import useGTCEntity from '~/composables/glossary/useGtcEntity'
+    import useUpdateGtcEntity from '~/composables/glossary/useUpdateGtcEntity'
 
     import { Term } from '~/types/glossary/glossary.interface'
 
@@ -112,6 +136,7 @@
             LoadingView,
             CategoryTermPreview,
             AssetPreview,
+            ThreeDotMenu,
         },
         props: {
             id: {
@@ -124,6 +149,7 @@
             const guid = toRef(props, 'id')
             const currentTab = ref('1')
             const previewEntity = ref()
+            const newName = ref('')
 
             const {
                 entity: term,
@@ -133,8 +159,10 @@
                 statusObject,
                 error,
                 isLoading,
-                refetch
-            } = useGTCEntity<Term>('term', guid)
+                refetch,
+            } = useGTCEntity<Term>('term', guid, guid.value)
+
+            const { data: updatedEntity, updateEntity } = useUpdateGtcEntity()
 
             const parentGlossaryName = computed(
                 () => term.value?.attributes?.qualifiedName?.split('@')[1] ?? ''
@@ -144,12 +172,25 @@
                 () => term.value?.attributes?.assignedEntities?.length ?? 0
             )
 
+            const isNewTerm = computed(() => title.value === 'New Term')
+
             const handlePreview = (entity: any) => {
                 previewEntity.value = entity
             }
 
+            const updateTitle = () => {
+                updateEntity('term', term.value?.guid ?? '', {
+                    name: newName.value,
+                })
+            }
+
+            watch(updatedEntity, () => {
+                refetch()
+                newName.value = ''
+            })
+
             // Providers
-            provide('refreshEntity', refetch);
+            provide('refreshEntity', refetch)
 
             return {
                 term,
@@ -165,8 +206,11 @@
                 parentGlossaryName,
                 previewEntity,
                 statusObject,
+                isNewTerm,
+                newName,
                 handlePreview,
-                refetch
+                refetch,
+                updateTitle,
             }
         },
     })

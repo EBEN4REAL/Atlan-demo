@@ -38,13 +38,14 @@
             <a-tab-pane
                 v-for="(tab, index) in filteredTabs"
                 :key="index"
-                class="px-4 pb-4 overflow-y-auto tab-height"
+                class="px-4 pb-4 overflow-y-auto"
+                :style="{ height: tabHeights[page] }"
                 :tab="tab.name"
             >
                 <component
                     :is="tab.component"
                     :component-data="dataMap[tab.id]"
-                    :info-tab-data="infoTabData"
+                    :info-tab-data="selectedAsset"
                     :page="page"
                     :selected-asset="selectedAsset"
                     :is-loaded="isLoaded"
@@ -70,7 +71,6 @@
         watch,
         provide,
     } from 'vue'
-    import useAsset from '~/composables/asset/useAsset'
     import useAssetInfo from '~/composables/asset/useAssetInfo'
     import { assetInterface } from '~/types/assets/asset.interface'
     import useAssetDetailsTabList from '../../discovery/preview/tabs/useTabList'
@@ -123,6 +123,11 @@
             const handleChange = () => {}
             const infoTabData: Ref<any> = ref({})
 
+            const tabHeights = {
+                discovery: 'calc(100vh - 12.2rem)',
+                profile: 'calc(100vh - 6.5rem)',
+            }
+
             function getAssetEntitity(data: Ref): any {
                 if (data.value?.entities.length > 0)
                     return data.value?.entities[0]
@@ -140,23 +145,6 @@
 
             function init() {
                 isLoaded.value = false
-                // const { data, error } = useAsset({
-                //     entityId: selectedAsset.value.guid,
-                // })
-                // assetType.value = selectedAsset.value.typeName
-                // watch([data, error], () => {
-                //     if (data.value && error.value === undefined) {
-                //         const entitiy = getAssetEntitity(data)
-                //         infoTabData.value = entitiy
-                //         isLoaded.value = false
-                //         console.log(infoTabData.value, 'info tab Data')
-                //     } else {
-                //         console.log(
-                //             error.value,
-                //             '------ assetInfo failed to fetch ------ '
-                //         )
-                //     }
-                // })
                 infoTabData.value = selectedAsset.value
                 console.log(infoTabData.value, 'info tab Data')
             }
@@ -164,6 +152,7 @@
             onMounted(init)
 
             return {
+                tabHeights,
                 page,
                 isLoaded,
                 infoTabData,
@@ -179,9 +168,6 @@
     })
 </script>
 <style lang="less" scoped>
-    .tab-height {
-        max-height: calc(100vh - 12rem);
-    }
     .icon-btn {
         @apply flex;
         @apply py-2 ml-2 px-3;

@@ -2,7 +2,7 @@
     <div class="flex w-full">
         <div
             v-if="showFilters"
-            class="flex flex-col h-full bg-white border-r facets"
+            class="flex flex-col h-full overflow-y-auto bg-white border-r  facets"
         >
             <AssetFilters
                 :ref="
@@ -93,7 +93,6 @@
 </template>
 
 <script lang="ts">
-    import useBusinessMetadata from '@/admin/custom-metadata/composables/useBusinessMetadata'
     import EmptyView from '@common/empty/discover.vue'
     import AssetPagination from '@common/pagination/index.vue'
     import HeirarchySelect from '@common/tree/heirarchy/index.vue'
@@ -136,8 +135,18 @@
     import { SearchParameters } from '~/types/atlas/attributes'
     import { getEncodedStringFromOptions } from '~/utils/helper/routerQuery'
     import { assetInterface } from '~/types/assets/asset.interface'
+    import { useBusinessMetadataStore } from '~/store/businessMetadata'
 
     export interface filterMapType {
+        assetCategory: {
+            checked?: Array<string>
+            condition: string
+            criterion: Array<{
+                attributeName: 'typeName'
+                attributeValue: string
+                operator: string
+            }>
+        }
         status: {
             checked?: Array<string>
             condition: string
@@ -227,6 +236,17 @@
             )
             const filters = ref(initialFilters.value.initialBodyCriterion)
             const filterMap = ref<filterMapType>({
+                assetCategory: {
+                    condition:
+                        initialFilters.value.facetsFilters.assetCategory
+                            .condition,
+                    criterion:
+                        initialFilters.value.facetsFilters.assetCategory
+                            .criterion,
+                    selectedIds:
+                        initialFilters.value.facetsFilters.assetCategory
+                            .selectedIds,
+                },
                 status: {
                     condition:
                         initialFilters.value.facetsFilters.status.condition,
@@ -282,8 +302,13 @@
                 true
             )
 
-            // * Get all available BMs and save on store
-            const { fetchBMonStore } = useBusinessMetadata()
+            const store = useBusinessMetadataStore()
+            const BMListLoaded = computed(
+                () => store.getBusinessMetadataListLoaded
+            )
+            const BMAttributeProjection = computed(
+                () => store.getBusinessMetadataListProjections
+            )
 
             const state = ref('active')
             const assetTypeLabel = computed(() => {
@@ -353,6 +378,7 @@
                         ...BaseAttributes,
                         ...BasicSearchAttributes,
                         ...tableauAttributes,
+                        ...BMAttributeProjection.value,
                     ],
                     aggregationAttributes: [],
                 }
@@ -523,11 +549,20 @@
                 assetFilterRef.value?.resetAllFilters()
             }
 
+            watch(BMListLoaded, (val) => {
+                if (val) {
+                    now.value = true
+                    isAggregate.value = true
+                    updateBody()
+                }
+            })
+
             onMounted(() => {
-                fetchBMonStore()
-                now.value = true
-                isAggregate.value = true
-                updateBody()
+                if (BMListLoaded.value) {
+                    now.value = true
+                    isAggregate.value = true
+                    updateBody()
+                }
             })
 
             return {

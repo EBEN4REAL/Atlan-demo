@@ -33,7 +33,7 @@
                 </template>
             </template>
             <div
-                class="relative flex items-center h-8 pl-2 cursor-pointer  hover:text-primary hover:bg-primary-light"
+                class="relative flex items-center h-8 pl-2 rounded cursor-pointer  hover:text-primary hover:bg-primary-light"
                 :class="
                     isVisible
                         ? 'border rounded  border-primary bg-primary-light  text-primary'

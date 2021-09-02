@@ -1,37 +1,38 @@
 import { Components } from "~/api/atlas/client";
 
 interface BaseAttributes {
-    __createdBy: String;
-    __guid: String;
+    __createdBy: string;
+    __guid: string;
     __modificationTimestamp: Number;
-    __modifiedBy: String
-    __state: String
+    __modifiedBy: string
+    __state: string
     __timestamp: Number
 }
 interface RelatedEntity {
     guid: string,
-    typeName: String,
+    typeName: string,
     uniqueAttributes: {
-        qualifiedName: String
+        qualifiedName: string
     }
 }
 
 // GTC Entity Attributes
 interface GlossaryAttributes extends BaseAttributes {
-    qualifiedName: String,
-    name: String,
-    shortDescription?: String,
+    qualifiedName: string,
+    name: string,
+    shortDescription?: string,
     assetStatus?: "draft" | "verified" | "issue",
-    assetStatusUpdatedBy?: String,
+    assetStatusUpdatedBy?: string,
     assetStatusUpdatedAt?: 0,
-    ownerUsers?: String
-    ownerGroups?: String
+    ownerUsers?: string
+    ownerGroups?: string
     terms?: RelatedEntity[],
     categories?: RelatedEntity[],
 }
 type CategoryAttributes = Omit<GlossaryAttributes, 'categories'> & {
     parentCategory: RelatedEntity;
     anchor: RelatedEntity;
+    childrenCategories: RelatedEntity[];
 }
 type TermAttributes = Omit<GlossaryAttributes, 'terms'> & {
     synonyms?: RelatedEntity;

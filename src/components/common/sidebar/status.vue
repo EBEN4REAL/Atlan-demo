@@ -62,31 +62,35 @@
             </template>
             <div
                 ref="animationPoint"
-                class="inline-flex flex-col text-xs text-gray-500 cursor-pointer "
+                class="inline-flex text-xs text-gray-500 cursor-pointer"
             >
-                <p class="mt-1 mb-1.5 text-sm">Status</p>
-                <StatusBadge
-                    :key="selectedAsset.guid"
-                    :status-id="selectedAsset?.attributes?.assetStatus"
-                    :status-message="
-                        selectedAsset?.attributes?.assetStatusMessage
-                    "
-                    :show-chip-style-status="true"
-                    :show-no-status="true"
-                    :show-label="true"
-                ></StatusBadge>
+                <div class="mr-8">
+                    <p class="mb-1.5 text-sm">Status</p>
+                    <StatusBadge
+                        :key="selectedAsset.guid"
+                        :status-id="selectedAsset?.attributes?.assetStatus"
+                        :status-message="
+                            selectedAsset?.attributes?.assetStatusMessage
+                        "
+                        :show-chip-style-status="true"
+                        :show-no-status="true"
+                        :show-label="true"
+                    ></StatusBadge>
+                </div>
+
+                <div
+                    v-if="selectedAsset?.attributes?.assetStatusMessage"
+                    class="px-2"
+                >
+                    <p class="mb-3.5 text-sm">Status message</p>
+                    <p
+                        v-linkified
+                        class="mb-0 text-xs font-semibold text-gray-500"
+                        v-html="statusMessage"
+                    ></p>
+                </div>
             </div>
         </a-popover>
-        <div
-            v-if="selectedAsset?.attributes?.assetStatusMessage"
-            class="px-2 mt-1"
-        >
-            <p
-                v-linkified
-                class="mb-0 text-xs font-semibold text-gray-500"
-                v-html="statusMessage"
-            ></p>
-        </div>
     </div>
 </template>
 

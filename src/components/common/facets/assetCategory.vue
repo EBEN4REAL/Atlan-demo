@@ -1,7 +1,7 @@
 <template>
     <a-checkbox-group
         v-model:value="data.checked"
-        class="w-full px-4 py-1 pb-3 bg-gray-100"
+        class="w-full px-4 py-1 pb-3"
         @change="handleChange"
     >
         <div class="flex flex-col w-full">
@@ -27,7 +27,7 @@
                                     {{ item.include.join(', ') }}</template
                                 >
                                 <span
-                                    class="flex items-center ml-2  hover:text-primary"
+                                    class="flex items-center ml-2 text-xs text-gray-500  hover:text-primary"
                                     ><fa icon="fal info-circle"
                                 /></span>
                             </a-tooltip>

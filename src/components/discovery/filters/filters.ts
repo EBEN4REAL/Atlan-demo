@@ -3,7 +3,7 @@ import { CollapseArray } from '~/types'
 export const List: CollapseArray = [
     {
         id: 'assetCategory',
-        label: 'Asset Category',
+        label: 'Category',
         component: 'assetCategory',
         overallCondition: 'OR',
         filters: [

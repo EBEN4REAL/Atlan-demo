@@ -1,14 +1,10 @@
 <template>
     <span>
-        <div
-            ref="container"
-            class="mr-2 overflow-y-auto"
-            style="max-height: 25rem"
-        >
+        <div ref="container" class="overflow-y-auto" style="max-height: 25rem">
             <div
                 v-for="item in AdvancedAttributeList"
                 :key="item.id"
-                class="mx-5"
+                class="px-4"
             >
                 <!-- <AttributeItem
                     :a="a"

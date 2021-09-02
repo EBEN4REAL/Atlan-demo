@@ -1,13 +1,27 @@
 <template>
     <div class="flex w-full">
-        <div class="flex flex-col items-stretch flex-1 mt-3 mb-1 bg-white w-80">
+        <div class="flex flex-col items-stretch flex-1 mb-1 bg-white w-80">
             <div class="flex flex-col h-full">
-                <div class="flex px-3 mb-1">
-                    <ConnectorDropdown
-                        :data="connectorsPayload"
-                        @change="handleChangeConnectors"
-                        @label-change="setPlaceholder($event, 'connector')"
-                    ></ConnectorDropdown>
+                <div class="flex mb-1">
+                    <div
+                        v-if="showCheckBox"
+                        class="flex items-center justify-between w-full px-5 py-3 bg-gray-100 "
+                    >
+                        <p class="p-0 m-0">Choose assets to link</p>
+                        <div class="flex items-center">
+                            <a-button
+                                @click="handleCancelLinkAssets"
+                                class="px-3 mx-2 text-gray-700 bg-transparent outline-none "
+                                >Cancel</a-button
+                            >
+                            <a-button
+                                @click="handleConfirmLinkAssets"
+                                class="px-6 text-white outline-none bg-primary"
+                                >Link</a-button
+                            >
+                        </div>
+                    </div>
+
                     <AssetDropdown
                         v-if="connectorsPayload.connection"
                         :connector="filteredConnector"
@@ -15,7 +29,7 @@
                         @label-change="setPlaceholder($event, 'asset')"
                     ></AssetDropdown>
                 </div>
-                <div class="flex items-center justify-between w-full pr-4">
+                <div class="flex items-center justify-between w-full px-3 mt-4">
                     <SearchAndFilter
                         v-model:value="queryText"
                         class="w-full mx-3 mt-1"
@@ -33,9 +47,9 @@
                         </template>
                     </SearchAndFilter>
                     <a-button
-                        type="primary"
+                        v-if="!showCheckBox"
                         @click="handleLinkAssets"
-                        class="px-3"
+                        class="px-3 text-white outline-none bg-primary"
                         >Link assets</a-button
                     >
                 </div>
@@ -62,6 +76,7 @@
                     :projection="projection"
                     :is-loading="isLoading || isValidating"
                     :is-load-more="isLoadMore"
+                    :isSelected="isSelected"
                     :showCheckBox="showCheckBox"
                     :automaticSelectFirstAsset="false"
                     @preview="handlePreview"
@@ -197,6 +212,13 @@
                 type: Boolean,
                 required: false,
                 default: true,
+            },
+            isSelected: {
+                type: Boolean,
+                required: true,
+                default() {
+                    return false
+                },
             },
         },
         emits: ['preview'],
@@ -551,6 +573,12 @@
             const handleLinkAssets = () => {
                 showCheckBox.value = !showCheckBox.value
             }
+            const handleCancelLinkAssets = () => {
+                showCheckBox.value = false
+            }
+            const handleConfirmLinkAssets = () => {
+                showCheckBox.value = false
+            }
             console.log(entities)
             return {
                 handleClearFiltersFromList,
@@ -592,6 +620,8 @@
                 entities,
                 showCheckBox,
                 handleLinkAssets,
+                handleCancelLinkAssets,
+                handleConfirmLinkAssets,
             }
         },
         data() {

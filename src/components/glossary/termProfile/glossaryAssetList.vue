@@ -1,22 +1,14 @@
 <template>
-    gtc
-    {{ showCheckBox }}
     <VirtualList :data="list" data-key="guid" :variable-height="false">
         <template #default="{ item }">
-            <div
-                class="flex items-center w-full pl-5 border-b hover:bg-gray-100"
-            >
-                <a-checkbox v-model:checked="checked" v-if="showCheckBox">
-                </a-checkbox>
-                <ListItem
-                    :item="item"
-                    :is-selected="item.guid === selectedAssetId"
-                    :score="score[item.guid]"
-                    :projection="projection"
-                    @click="handlePreview(item)"
-                    class="w-full border-0"
-                ></ListItem>
-            </div>
+            <ListItem
+                :item="item"
+                :is-selected="item.guid === selectedAssetId && isSelected"
+                :score="score[item.guid]"
+                :projection="projection"
+                @click="handlePreview(item)"
+                :showCheckBox="showCheckBox"
+            ></ListItem>
         </template>
         <template #footer>
             <div
@@ -129,6 +121,13 @@
             showCheckBox: {
                 type: Boolean,
                 required: false,
+                default() {
+                    return false
+                },
+            },
+            isSelected: {
+                type: Boolean,
+                required: true,
                 default() {
                     return false
                 },

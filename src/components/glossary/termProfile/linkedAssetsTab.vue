@@ -49,6 +49,7 @@
         <GlossaryAssetDiscovery
             :show-filters="false"
             :initial-filters="initialFilters"
+            :isSelected="isSelected"
             @preview="handlePreview"
         ></GlossaryAssetDiscovery>
         <teleport to="#sidePanel">
@@ -106,7 +107,7 @@
             const router = useRouter()
             const initialFilters = getDecodedOptionsFromString(router)
             const showPreviewPanel = ref(false)
-
+            const isSelected = ref(false)
             const termName = computed(() => props.termQualifiedName)
 
             // const { linkedAssets, isLoading, error, fetchLinkedAssets } =
@@ -135,10 +136,12 @@
             const handlePreview = (asset) => {
                 selectedAsset.value = asset
                 showPreviewPanel.value = true
+                isSelected.value = true
                 emit('preview', asset)
             }
             const handleClosePreviewPanel = () => {
                 selectedAsset.value = undefined
+                isSelected.value = false
                 showPreviewPanel.value = false
             }
             return {
@@ -148,6 +151,7 @@
                 handlePreview,
                 handleClosePreviewPanel,
                 showPreviewPanel,
+                isSelected,
             }
         },
     })

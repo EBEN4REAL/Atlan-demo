@@ -14,6 +14,8 @@
             class="flex items-start flex-1 pr-5 w-96"
             :class="cssClasses?.paddingY ? cssClasses?.paddingY : 'py-6'"
         >
+            <a-checkbox v-if="showCheckBox" class="self-center mr-6">
+            </a-checkbox>
             <div
                 class="box-border flex flex-col flex-1 overflow-hidden lg:pr-16"
             >
@@ -231,6 +233,11 @@
                 type: Boolean,
                 required: false,
                 default: () => true,
+            },
+            showCheckBox: {
+                type: Boolean,
+                required: false,
+                default: () => false,
             },
         },
         setup() {

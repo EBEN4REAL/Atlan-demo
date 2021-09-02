@@ -164,7 +164,7 @@
                 () => props.entity?.attributes?.terms?.length ?? 0
             )
             const categoryCount = computed(
-                () => props.entity?.attributes?.categories?.length ?? 0
+                () => props.entity?.attributes?.childrenCategories?.length ?? 0
             )
             const glossaryTerms = computed(() => props.topTerms ?? [])
 

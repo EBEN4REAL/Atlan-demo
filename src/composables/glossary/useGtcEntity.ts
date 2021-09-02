@@ -54,6 +54,7 @@ const useGTCEntity = <T extends Glossary | Category | Term>(type: 'glossary' | '
             "shortDescription",
             "parentCategory",
             "categories",
+            "childrenCategories",
             "terms",
             "tenantId",
             "anchor",

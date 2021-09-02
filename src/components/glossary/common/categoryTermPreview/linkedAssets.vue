@@ -1,6 +1,6 @@
 <template>
-    <div class="py-6 px-2">
-        <div class="mb-4 flex">
+    <div class="px-2 py-6">
+        <div class="flex mb-4">
             <a-input-search
                 v-model:value="searchQuery"
                 :placeholder="`Search ${assets?.length} assets...`"
@@ -130,7 +130,6 @@
             const onSearch = useDebounceFn(() => {
                 fetchLinkedAssets(termName.value, `*${searchQuery.value}*`)
             }, 0)
-
             return {
                 termName,
                 assets,

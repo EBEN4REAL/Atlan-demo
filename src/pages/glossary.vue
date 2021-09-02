@@ -27,6 +27,7 @@
                     :on-load-data="onLoadData"
                     :select-node="selectNode"
                     :expand-node="expandNode"
+                    :drag-and-drop="dragAndDropNode"
                     :parent-glossary="parentGlossary"
                     :is-loading="isInitingTree"
                     :current-guid="currentGuid"
@@ -102,6 +103,7 @@
                 expandedKeys, 
                 expandNode, 
                 selectNode,
+                dragAndDropNode,
                 updateNode,
                 refetchGlossary
             } = useTree(emit)
@@ -151,7 +153,7 @@
 
             provide('updateTreeNode', updateNode)
             provide('refetchGlossaryTree', refetchGlossary);
-            
+
             return {
                 handleOpenModal,
                 handleCloseModal,
@@ -162,6 +164,7 @@
                 onLoadData,
                 expandNode, 
                 selectNode,
+                dragAndDropNode,
                 createGlossaryModalVisble,
                 updateGlossaryModalVisble,
                 eventContext,

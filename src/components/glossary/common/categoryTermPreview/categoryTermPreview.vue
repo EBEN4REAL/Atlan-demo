@@ -28,9 +28,10 @@
                 </span>
             </div>
             <div class="flex flex-row space-x-2">
-                <a-button class="px-2">
-                    <fa icon="fal bookmark" />
-                </a-button>
+                <a-button class="px-2"
+                    ><atlan-icon icon="BookmarkOutlined" class="w-auto h-4"
+                /></a-button>
+
                 <a-button
                     class="flex flex-col justify-center pt-1 text-xs border-0  text-primary bg-primary-light"
                     @click="redirectToProfile"
@@ -47,10 +48,11 @@
                 </a-button>
             </div>
         </div>
-        <div v-if="preview" class="flex mb-5">
-            <span class="pl-5 mr-2 text-xl font-bold leading-7 text-gray-700">{{
-                entity.displayText
-            }}</span>
+        <div v-if="preview" class="flex items-center mb-5">
+            <span
+                class="items-baseline pl-5 mr-2 text-xl font-bold leading-7 text-gray-700 "
+                >{{ entity.displayText }}</span
+            >
             <component
                 :is="statusObject?.icon"
                 v-if="statusObject"
@@ -166,7 +168,11 @@
     import RelatedTerms from '@/glossary/termProfile/relatedTerms.vue'
     import LinkedAssets from './linkedAssets.vue'
 
-    import { Category, Term, Glossary } from '~/types/glossary/glossary.interface'
+    import {
+        Category,
+        Term,
+        Glossary,
+    } from '~/types/glossary/glossary.interface'
     import { Components } from '~/api/atlas/client'
 
     import TermSvg from '~/assets/images/gtc/term/term.png'
@@ -202,7 +208,8 @@
             const router = useRouter()
             const activeKey = ref(['details'])
 
-            const updateTreeNode = inject<(guid: string | undefined, entity: Glossary | Category | Term) => void>('updateTreeNode');
+            const updateTreeNode =
+                inject<any>('updateTreeNode')
 
             // computed
             const shortDescription = computed(
@@ -227,11 +234,13 @@
             const handlClosePreviewPanel = () => {
                 context.emit('closePreviewPanel')
             }
-            const updateEntityAndTree = (selectedAsset: Glossary | Category | Term) => {
-                if(updateTreeNode) updateTreeNode(selectedAsset.guid, selectedAsset)
+            const updateEntityAndTree = (
+                selectedAsset: Glossary | Category | Term
+            ) => {
+                if (updateTreeNode)
+                    updateTreeNode({guid: selectedAsset.guid, entity: selectedAsset})
                 context.emit('updateAsset', selectedAsset)
             }
-
 
             return {
                 TermSvg,

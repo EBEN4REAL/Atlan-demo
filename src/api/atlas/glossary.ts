@@ -4,7 +4,7 @@ import { Ref, toRefs } from "vue";
 import { fetcher, getAPIPath, getAxiosClient } from "~/api";
 import { Components } from "./client";
 
-import { CREATE_GLOSSARY, CREATE_GLOSSARY_CATEGORY, CREATE_GLOSSARY_TERM, DELETE_GLOSSARY, DELETE_GLOSSARY_CATEGORY, DELETE_GLOSSARY_TERM, GET_CATEGORY, UPDATE_GLOSSARY, UPDATE_GLOSSARY_CATEGORY, UPDATE_GLOSSARY_TERM } from "~/api/keyMaps/glossary"
+import { CREATE_GLOSSARY, CREATE_GLOSSARY_CATEGORY, CREATE_GLOSSARY_TERM, DELETE_GLOSSARY, DELETE_GLOSSARY_CATEGORY, DELETE_GLOSSARY_TERM, GET_CATEGORY, UPDATE_GLOSSARY, UPDATE_GLOSSARY_CATEGORY_FULL, UPDATE_GLOSSARY_TERM_FULL } from "~/api/keyMaps/glossary"
 import { useAPI } from "../useAPI";
 
 const serviceAlias = "auth/atlas";
@@ -146,7 +146,7 @@ const UpdateGlossary = (guid: string, body: Record<string, any>) => {
 }
 
 const UpdateGlossaryCategory = (guid: string, body: Record<string, any>) => {
-    const { data, error, isLoading } = useAPI<Components.Schemas.AtlasGlossary>(UPDATE_GLOSSARY_CATEGORY, "PUT", {
+    const { data, error, isLoading } = useAPI<Components.Schemas.AtlasGlossary>(UPDATE_GLOSSARY_CATEGORY_FULL, "PUT", {
         cache: false,
         pathVariables: {
             guid
@@ -157,7 +157,7 @@ const UpdateGlossaryCategory = (guid: string, body: Record<string, any>) => {
 }
 
 const UpdateGlossaryTerm = (guid: string, body: Record<string, any>) => {
-    const { data, error, isLoading } = useAPI<Components.Schemas.AtlasGlossary>(UPDATE_GLOSSARY_TERM, "PUT", {
+    const { data, error, isLoading } = useAPI<Components.Schemas.AtlasGlossary>(UPDATE_GLOSSARY_TERM_FULL, "PUT", {
         cache: false,
         pathVariables: {
             guid

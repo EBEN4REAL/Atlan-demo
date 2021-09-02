@@ -14,7 +14,7 @@
                         </template>
                         <a-collapse-panel key="1" header="Details">
                             <div class="flex flex-col pl-6">
-                                <div class="flex mb-4 space-x-16">
+                                <div class="flex mt-2 mb-4 space-x-16">
                                     <div class="flex flex-col">
                                         <span
                                             class="mb-2 text-sm leading-5 text-gray-500 "
@@ -153,7 +153,7 @@
             const activeKey = ref(['1'])
 
             const refreshEntity = inject<() => void>('refreshEntity')
-            const updateTreeNode = inject<(guid: string | undefined, entity: Glossary | Category | Term) => void>('updateTreeNode');
+            const updateTreeNode = inject<any>('updateTreeNode');
 
             const { getApplicableBmGroups } = useBusinessMetadataHelper()
 
@@ -172,7 +172,8 @@
                 if(refreshEntity)
                     refreshEntity()
                 if(updateTreeNode){
-                    updateTreeNode(selectedAsset.guid, selectedAsset)}
+                    updateTreeNode({guid: selectedAsset.guid, entity: selectedAsset})
+                }
             }
 
             // TODO: add BM panel

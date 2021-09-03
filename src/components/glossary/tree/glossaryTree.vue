@@ -38,7 +38,13 @@
         </div>
         <div class="px-4 pb-4">
             <a-input-search
-                placeholder="Search accross Glossaries"
+                :placeholder="
+                    currentGuid &&
+                    currentGuid === parentGlossary.guid &&
+                    parentGlossary.displayText
+                        ? `Search in ${parentGlossary.displayText}`
+                        : 'Search'
+                "
             ></a-input-search>
         </div>
         <div v-if="!isLoading" class="h-screen overflow-auto">
@@ -206,7 +212,7 @@
                                         :trigger="['hover']"
                                     >
                                         <span
-                                            class="flex content-center justify-center w-5 h-5 p-0 m-0 border rounded opacity-0  group-hover:opacity-100"
+                                            class="flex content-center justify-center w-5 h-5 p-0 m-0 rounded opacity-0  group-hover:opacity-100"
                                             @click.prevent
                                         >
                                             <fa

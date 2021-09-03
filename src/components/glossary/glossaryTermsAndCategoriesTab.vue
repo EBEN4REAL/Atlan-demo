@@ -1,6 +1,6 @@
 <template>
     <div>
-        <div class="p-4 bg-gray-100 shadow">
+        <div class="relative p-4 bg-gray-100 shadow">
             <div class="flex space-x-2">
                 <a-input-search
                     v-model:value="searchQuery"

@@ -7,11 +7,16 @@
             <!-- top section -->
             <div class="flex items-center justify-between mx-4 mt-3">
                 <div class="flex items-center mr-5">
-                    <AtlanIcon
-                        class="w-auto h-5 mr-3"
-                        icon="ArrowRight"
-                        style="transform: scaleX(-1)"
-                    />
+                    <a-button
+                        class="flex items-center p-0 m-0 border-0 shadow-none outline-none "
+                        @click="redirectToProfile"
+                    >
+                        <AtlanIcon
+                            class="w-auto h-5 mr-3"
+                            icon="ArrowRight"
+                            style="transform: scaleX(-1)"
+                        />
+                    </a-button>
 
                     <AtlanIcon icon="Glossary" class="h-5 m-0 mr-2" />
                     <span class="mr-3 text-sm">{{ title }}</span>
@@ -149,6 +154,7 @@
     import useGlossaryTerms from '~/composables/glossary/useGlossaryTerms'
     import useGlossaryCategories from '~/composables/glossary/useGlossaryCategories'
 
+    import { useRouter } from 'vue-router'
     // static
     import {
         Glossary,
@@ -188,6 +194,7 @@
                 AtlasGlossary: 'glossary',
             }
 
+            const router = useRouter()
             const {
                 entity: glossary,
                 title,
@@ -245,6 +252,9 @@
                 previewEntity.value = undefined
                 showPreviewPanel.value = false
             }
+            const redirectToProfile = () => {
+                router.push(`/glossary`)
+            }
 
             // lifecycle methods and watchers
             onMounted(() => {
@@ -293,6 +303,7 @@
                 handleCategoryOrTermPreview,
                 handlClosePreviewPanel,
                 assetTypeLabel,
+                redirectToProfile,
             }
         },
     })

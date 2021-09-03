@@ -8,7 +8,7 @@
                     class="text-gray-600  group-hover:text-primary group-focus:text-primary"
                     icon="Add"
                 />
-                <div class="ml-2">Create New Glossary</div></a-button
+                <div class="ml-2" @click="createGlossary">Create New Glossary</div></a-button
             >
             <a-input-search
                 placeholder="Search accross Glossaries"
@@ -385,7 +385,7 @@
             // data
             // const { selectedKeys, expandedKeys, expandNode, selectNode } =
             //     handleTreeExpand(emit)
-            const { createTerm, createCategory } = useCreateGlossary()
+            const { createTerm, createCategory, createGlossary } = useCreateGlossary()
 
             const router = useRouter()
 
@@ -411,6 +411,7 @@
                 createNewCategory,
                 createNewTerm,
                 createTerm,
+                createGlossary,
                 createCategory,
                 GlossarySvg,
                 CategorySvg,

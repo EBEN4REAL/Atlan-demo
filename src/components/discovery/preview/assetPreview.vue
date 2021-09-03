@@ -60,7 +60,7 @@
                 class="px-4 overflow-y-auto"
             >
                 <template #tab>
-                    <AtlanIcon icon="Share" />
+                    <AtlanIcon :icon="tab.icon" :class="activeKey===index?'text-primary':''" />
                 </template>
 
                 <div :style="{ height: tabHeights[page] }">

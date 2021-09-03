@@ -35,8 +35,18 @@ import CategoryWip from '~/assets/images/icons/category-wip.svg'
 import EmptyGlossary from '~/assets/images/icons/empty-glossary.svg'
 import Glossary from '~/assets/images/icons/glossary.svg'
 import KebabMenu from '~/assets/images/icons/kebab-menu-new.svg'
+import Overview from '~/assets/images/icons/overview.svg'
+import Lineage from '~/assets/images/icons/lineage.svg'
+import Activity from '~/assets/images/icons/activity.svg'
+import Columns from '~/assets/images/icons/columns.svg'
+import Relation from '~/assets/images/icons/relation.svg'
 
 export default {
+    Relation,
+    Overview,
+    Lineage,
+    Activity,
+    Columns,
     BookmarkFilled,
     CopyOutlined,
     BookmarkOutlined,
@@ -71,7 +81,10 @@ export default {
     CategoryIssue,
     CategoryVerified,
     CategoryWip,
+<<<<<<< HEAD
     EmptyGlossary,
     Glossary,
     KebabMenu,
+=======
+>>>>>>> development
 }

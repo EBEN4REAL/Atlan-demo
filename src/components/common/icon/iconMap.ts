@@ -32,8 +32,18 @@ import CategoryDeprecated from '~/assets/images/icons/category-deprecated.svg'
 import CategoryIssue from '~/assets/images/icons/category-issue.svg'
 import CategoryVerified from '~/assets/images/icons/category-verified.svg'
 import CategoryWip from '~/assets/images/icons/category-wip.svg'
+import Overview from '~/assets/images/icons/overview.svg'
+import Lineage from '~/assets/images/icons/lineage.svg'
+import Activity from '~/assets/images/icons/activity.svg'
+import Columns from '~/assets/images/icons/columns.svg'
+import Relation from '~/assets/images/icons/relation.svg'
 
 export default {
+    Relation,
+    Overview,
+    Lineage,
+    Activity,
+    Columns,
     BookmarkFilled,
     CopyOutlined,
     BookmarkOutlined,
@@ -67,5 +77,5 @@ export default {
     CategoryDeprecated,
     CategoryIssue,
     CategoryVerified,
-    CategoryWip
+    CategoryWip,
 }

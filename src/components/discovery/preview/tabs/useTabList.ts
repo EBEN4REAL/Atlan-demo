@@ -23,7 +23,7 @@ export default function useAssetDetailsTabList(
             name: 'Info',
             component: 'info',
             visibleOn: ['discovery', 'profile'],
-            icon: "Share"
+            icon: 'Overview',
         },
         {
             name: 'Columns',
@@ -38,13 +38,13 @@ export default function useAssetDetailsTabList(
                 'TableauDatasource',
             ],
             visibleOn: ['discovery', 'profile'],
-            icon: "Share"
+            icon: 'Columns',
         },
         {
             name: 'Activity',
             component: 'activity',
             visibleOn: ['discovery', 'profile'],
-            icon: "Share"
+            icon: 'Activity',
         },
         {
             name: 'Relations',
@@ -60,7 +60,7 @@ export default function useAssetDetailsTabList(
                 'Column',
             ],
             visibleOn: ['discovery'],
-            icon: "Share"
+            icon: 'Relation',
         },
         // {
         //     name: 'Chat',
@@ -76,9 +76,8 @@ export default function useAssetDetailsTabList(
             name: 'Lineage',
             component: 'lineage',
             visibleOn: ['discovery'],
-            icon: "Share"
+            icon: 'Lineage',
         },
-
     ]
 
     const filteredTabs = computed(() => {

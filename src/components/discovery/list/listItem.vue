@@ -154,19 +154,11 @@
                 <!-- Description -->
                 <div
                     v-if="projection?.includes('description')"
-                    class="max-w-lg mt-1 text-sm truncate-overflow"
+                    class="max-w-lg mt-1 text-xs truncate-overflow"
                 >
                     <span v-if="description(item)?.length">{{
                         description(item)
                     }}</span>
-                    <span
-                        v-if="
-                            !description(item)?.length &&
-                            assetType(item).includes('Tableau')
-                        "
-                        class="font-light text-gray-400"
-                        >no description available</span
-                    >
                 </div>
 
                 <!-- Hierarchy bar -->

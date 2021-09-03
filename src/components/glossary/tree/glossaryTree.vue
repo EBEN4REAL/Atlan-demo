@@ -1,6 +1,15 @@
 <template>
     <div v-if="isHome" class="px-2 py-4">
         <div class="px-2 pb-2">
+            <a-button
+                class="flex items-center justify-center w-full mb-2 group"
+            >
+                <AtlanIcon
+                    class="text-gray-600  group-hover:text-primary group-focus:text-primary"
+                    icon="Add"
+                />
+                <div class="ml-2">Create New Glossary</div></a-button
+            >
             <a-input-search
                 placeholder="Search accross Glossaries"
             ></a-input-search>

@@ -31,13 +31,21 @@
         </div>
         <!-- CTAs -->
         <div class="flex">
-            <a-button
+            <!-- <a-button
                 v-if="assetType(assetData).includes('Tableau')"
                 class="flex items-center mr-2"
             >
                 <span class="mt-1 text-sm">Open in Tableau</span></a-button
+            > -->
+            <AtlanBtn
+                v-if="assetType(assetData).includes('Tableau')"
+                color="secondary"
+                size="sm"
+                padding="compact"
             >
-            <a-button class="px-2 mr-2"
+                Open in Tableau
+            </AtlanBtn>
+            <a-button class="px-2 mx-2"
                 ><atlan-icon icon="BookmarkOutlined" class="w-auto h-4"
             /></a-button>
             <AtlanBtn color="secondary" size="sm" padding="compact">

@@ -39,7 +39,7 @@
             <div class="flex flex-row justify-between pl-5 pr-4 mt-4 mb-5">
                 <div class="flex flex-row">
                     <div class="flex flex-col justify-center w-full">
-                        <div class="flex">
+                        <div class="flex items-center">
                             <span class="mr-3 text-xl">{{ title }}</span>
                             <a-popover
                                 v-if="statusMessage"

@@ -1,7 +1,7 @@
 <template>
     <div>
         <div class="p-4 bg-gray-100 shadow">
-            <div class="flex mb-2 space-x-2">
+            <div class="flex space-x-2">
                 <a-input-search
                     v-model:value="searchQuery"
                     :placeholder="`Search ${

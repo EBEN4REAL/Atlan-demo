@@ -50,7 +50,10 @@
                 </div>
                 <div class="flex items-center w-full text-sm">
                     <div
-                        v-if="projection.includes('linkedAssets') && entity.typeName === 'AtlasGlossaryTerm'"
+                        v-if="
+                            projection.includes('linkedAssets') &&
+                            entity.typeName === 'AtlasGlossaryTerm'
+                        "
                         class="mt-2 mr-4"
                     >
                         <p class="items-baseline p-0 m-0 font-normal">
@@ -183,8 +186,10 @@
             )
             const assets = computed(() => linkedAssets.value?.entities ?? [])
             const assetCount = computed(() => {
-                if(props.entity.typeName === 'AtlasGlossaryTerm')
-                 return props.entity?.attributes?.assignedEntities?.length ?? 0
+                if (props.entity.typeName === 'AtlasGlossaryTerm')
+                    return (
+                        props.entity?.attributes?.assignedEntities?.length ?? 0
+                    )
                 return 0
             })
 
@@ -269,7 +274,9 @@
             // onMounted(() => {
             //     if (termName.value) fetchLinkedAssets(termName.value)
             // })
-
+            console.log(props.entity)
+            console.log(props.entity?.attributes?.categories)
+            console.log(props.entity?.attributes?.qualifiedName)
             return {
                 TermSvg,
                 GlossarySvg,

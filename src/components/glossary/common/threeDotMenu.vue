@@ -155,8 +155,27 @@
             <template #title>
                 Delete {{ assetTypeLabel[entity?.typeName] }}</template
             >
-            <p>Are you sure you want to delete {{ entity?.displayText }}?</p>
-            <p>Once deleted, cannot be undone!</p>
+            <div v-if="entity?.typeName === 'AtlasGlossary'">
+                <p>
+                    Warning: Deletion of {{ entity?.displayText }} will also
+                    result in permanent deletion of all its child categories and
+                    terms.
+                </p>
+            </div>
+            <div v-if="entity?.typeName === 'AtlasGlossaryCategory'">
+                <p>
+                    Warning: Deletion of {{ entity?.displayText }} will not lead
+                    to deletion of child terms. The terms will get unlinked from
+                    this category.
+                </p>
+            </div>
+            <div v-if="entity?.typeName === 'AtlasGlossaryTerm'">
+                <p>
+                    Warning: Deletion of {{ entity?.displayText }} will lead to
+                    permanent deletion of the term across categories. You may
+                    want to unlink the term instead.
+                </p>
+            </div>
         </a-modal>
     </div>
 </template>

@@ -122,7 +122,11 @@
                             </div>
                         </a-collapse-panel>
 
-                        <a-collapse-panel key="properties" header="Properties">
+                        <a-collapse-panel
+                            v-if="entity?.typeName === 'AtlasGlossaryTerm'"
+                            key="properties"
+                            header="Properties"
+                        >
                             <div class="px-6 py-0 text-gray-500">
                                 <p class="p-0 m-0 mb-2">Formula</p>
                                 <p class="p-0 m-0 mb-6 text-sm">X + Y + Z</p>
@@ -243,6 +247,8 @@
                     })
                 context.emit('updateAsset', selectedAsset)
             }
+
+            console.log(props.entity.typeName)
 
             return {
                 TermSvg,

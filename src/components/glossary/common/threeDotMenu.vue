@@ -96,6 +96,7 @@
                             <Status
                                 v-if="entity?.guid"
                                 :selectedAsset="entity"
+                                @update:selectedAsset="updateTree"
                             />
                         </a-menu-item>
                     </a-sub-menu>
@@ -194,8 +195,12 @@
             // data
             const isVisible = ref(false)
             const isModalVisible = ref<boolean>(false)
+            
             const handleFetchListInj: Function | undefined =
-                inject('handleFetchList')
+                inject('handleFetchList');
+            const updateTreeNode: Function | undefined = inject<any>('updateTreeNode')
+            const refetchGlossaryTree = inject<(guid: string | 'root') => void>('refetchGlossaryTree')
+
             const assetTypeLabel = {
                 AtlasGlossaryTerm: 'term',
                 AtlasGlossaryCategory: 'category',
@@ -228,6 +233,19 @@
                 )
                 if (handleFetchListInj) handleFetchListInj(props.entity)
 
+                if (refetchGlossaryTree) {
+                    if(props.entity?.typeName === 'AtlasGlossaryCategory') {
+                        refetchGlossaryTree(props.entity?.attributes?.parentCategory?.guid ?? 'root')
+                    } else if(props.entity?.typeName === 'AtlasGlossaryTerm') {
+                        if(props.entity?.attributes?.categories?.length) {
+                            props.entity?.attributes?.categories?.forEach((category) => {
+                                refetchGlossaryTree(category.guid);
+                            });
+                        } else {
+                            refetchGlossaryTree('root');
+                        }
+                    }
+                }
                 isModalVisible.value = false
             }
 
@@ -260,11 +278,21 @@
                     )
             }
 
+            const updateTree = (selectedAsset: Glossary | Category | Term) => {
+                if(updateTreeNode){
+                    updateTreeNode({
+                        guid: selectedAsset.guid,
+                        entity: selectedAsset,
+                    })
+                }
+            }
+
             return {
                 handleCopyProfileLink,
                 assetTypeLabel,
                 isVisible,
                 isModalVisible,
+                updateTree,
                 handleOk,
                 handleCancel,
                 showModal,

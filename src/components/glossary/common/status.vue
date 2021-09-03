@@ -94,6 +94,12 @@
                     handleCancel()
                 }
             })
+            watch(isReady, () => {
+                if (isReady.value) {
+                    emit('update:selectedAsset', selectedAsset.value)
+                }
+            });
+            
             return {
                 handleUpdate,
                 handleCancel,

@@ -182,12 +182,12 @@ const useTree = (emit: any, cacheKey?: string, isAccordion?: boolean) => {
     const selectNode = (selected: any, event: any) => {
         if (!event.node.isLeaf) {
             expandNode([], event)
-            selectedKeys.value = []
+            // selectedKeys.value = []
         } else {
             if (selectedKeys.value.includes(selected)) {
-                selectedKeys.value = []
+                // selectedKeys.value = []
             } else {
-                selectedKeys.value = [...selected]
+                // selectedKeys.value = [...selected]
             }
             emit('select', event.node.eventKey)
         }
@@ -443,6 +443,8 @@ const useTree = (emit: any, cacheKey?: string, isAccordion?: boolean) => {
 
             fetchType.value = currentType.value;
             fetchGuid.value = currentGuid.value;
+
+            selectedKeys.value = [currentGuid.value]
         }
     );
 

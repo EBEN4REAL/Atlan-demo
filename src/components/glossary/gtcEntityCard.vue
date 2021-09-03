@@ -50,7 +50,7 @@
                 </div>
                 <div class="flex items-center w-full text-sm">
                     <div
-                        v-if="projection.includes('linkedAssets')"
+                        v-if="projection.includes('linkedAssets') && entity.typeName === 'AtlasGlossaryTerm'"
                         class="mt-2 mr-4"
                     >
                         <p class="items-baseline p-0 m-0 font-normal">
@@ -182,7 +182,11 @@
                     : undefined
             )
             const assets = computed(() => linkedAssets.value?.entities ?? [])
-            const assetCount = computed(() => assets.value?.length ?? 0)
+            const assetCount = computed(() => {
+                if(props.entity.typeName === 'AtlasGlossaryTerm')
+                 return props.entity?.attributes?.assignedEntities?.length ?? 0
+                return 0
+            })
 
             const parentCategory = computed(() => {
                 if (props.entity?.typeName === 'AtlasGlossaryCategory') {
@@ -262,9 +266,9 @@
                     router.push(`/glossary/term/${props.entity.guid}`)
             }
 
-            onMounted(() => {
-                if (termName.value) fetchLinkedAssets(termName.value)
-            })
+            // onMounted(() => {
+            //     if (termName.value) fetchLinkedAssets(termName.value)
+            // })
 
             return {
                 TermSvg,

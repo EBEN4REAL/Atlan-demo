@@ -32,6 +32,7 @@ import CategoryDeprecated from '~/assets/images/icons/category-deprecated.svg'
 import CategoryIssue from '~/assets/images/icons/category-issue.svg'
 import CategoryVerified from '~/assets/images/icons/category-verified.svg'
 import CategoryWip from '~/assets/images/icons/category-wip.svg'
+import EmptyGlossary from '~/assets/images/icons/empty-glossary.svg'
 
 export default {
     BookmarkFilled,
@@ -67,5 +68,6 @@ export default {
     CategoryDeprecated,
     CategoryIssue,
     CategoryVerified,
-    CategoryWip
+    CategoryWip,
+    EmptyGlossary
 }

@@ -17,6 +17,7 @@
             <a-checkbox 
                 v-if="showCheckBox" 
                 class="self-center mr-6"
+                :checked="isChecked"
                 @click.stop
                 @change="(e) => $emit('listItem:check', e, item)" 
             />
@@ -224,6 +225,11 @@
                 },
             },
             isSelected: {
+                type: Boolean,
+                required: false,
+                default: () => false,
+            },
+            isChecked: {
                 type: Boolean,
                 required: false,
                 default: () => false,

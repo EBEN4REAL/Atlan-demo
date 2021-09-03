@@ -109,6 +109,7 @@
                         :isSelected="isSelected"
                         :showCheckBox="showCheckBox"
                         :automaticSelectFirstAsset="false"
+                        :selectedAssetList="checkedAssetList"
                         @preview="handlePreview"
                         @loadMore="loadMore"
                         @updateCheckedAssetList="modifyLinkList"

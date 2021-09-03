@@ -19,17 +19,13 @@
                         class="flex items-center w-full"
                     >
                         <div class="flex items-center">
-                            <span class="mb-0 ml-1 text-gray">
-                                {{ item.label }}
-                            </span>
                             <a-tooltip>
+                                <span class="mb-0 ml-1 text-gray">
+                                    {{ item.label }}
+                                </span>
                                 <template #title>
                                     {{ item.include.join(', ') }}</template
                                 >
-                                <span
-                                    class="flex items-center ml-2 text-xs text-gray-500  hover:text-primary"
-                                    ><fa icon="fal info-circle"
-                                /></span>
                             </a-tooltip>
                         </div>
                     </a-checkbox>
@@ -61,16 +57,63 @@
             const list = computed(() => List)
             const checkedValues = ref([])
             const { data } = toRefs(props)
+            const generateTabLists = (id: string, includedAssets: string[]) => {
+                let includedAssetsTypes = [...includedAssets]
+                switch (id) {
+                    case 'datasets': {
+                        includedAssetsTypes = [
+                            'View',
+                            'Table',
+                            'TablePartition',
+                            'MaterialisedView',
+                            ...includedAssetsTypes,
+                        ]
+                        break
+                    }
+                    case 'fields': {
+                        if (includedAssetsTypes.includes('View')) {
+                            includedAssetsTypes = [
+                                ...includedAssetsTypes,
+                                'Column',
+                            ]
+                        } else {
+                            includedAssetsTypes = [
+                                'Column',
+                                ...includedAssetsTypes,
+                            ]
+                        }
+                        break
+                    }
+                    case 'visualizations': {
+                        includedAssetsTypes = [
+                            ...includedAssetsTypes,
+                            'TableauSite',
+                            'TableauProject',
+                            'TableauWorkbook',
+                            'TableauWorksheet',
+                            'TableauDashboard',
+                            'TableauDatasource',
+                        ]
+                        break
+                    }
+                }
+                return includedAssetsTypes
+            }
             console.log(checkedValues.value, 'model')
             const handleChange = () => {
                 const criterion: Components.Schemas.FilterCriteria[] = []
                 const selectedIds = []
+                let includedAssets = []
                 data.value.checked.forEach((assetTypeId) => {
                     selectedIds.push(assetTypeId)
-                    const includedAssetTypes = list.value.find(
+                    const includedAsset = list.value.find(
                         (asset) => asset.id === assetTypeId
-                    ).include
-                    includedAssetTypes.forEach((assetType) => {
+                    )
+                    includedAssets = generateTabLists(
+                        includedAsset.id,
+                        includedAssets
+                    )
+                    includedAsset.include.forEach((assetType) => {
                         criterion.push({
                             attributeName: '__typeName',
                             attributeValue: assetType,
@@ -78,16 +121,23 @@
                         })
                     })
                 })
-                console.log('criterion', criterion)
+                if (data.value.checked.length < 1) {
+                    includedAssets = undefined
+                }
+                console.log('includedAssets', includedAssets)
 
-                emit('change', {
-                    id: props.item.id,
-                    selectedIds,
-                    payload: {
-                        condition: 'OR',
-                        criterion,
-                    } as Components.Schemas.FilterCriteria,
-                })
+                emit(
+                    'change',
+                    {
+                        id: props.item.id,
+                        selectedIds,
+                        payload: {
+                            condition: 'OR',
+                            criterion,
+                        } as Components.Schemas.FilterCriteria,
+                    },
+                    includedAssets
+                )
             }
 
             return {

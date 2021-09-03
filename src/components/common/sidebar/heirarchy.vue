@@ -4,7 +4,7 @@
             v-for="(path, index) in getParentsFiltered"
             :key="path.id"
             :class="$style.item"
-            class="py-2 hover:bg-gray-100 hover:rounded hierarchy-row"
+            class="hover:bg-gray-100 hover:rounded hierarchy-row"
         >
             <div
                 :class="$style.itemDots"
@@ -12,7 +12,11 @@
                 :style="{ backgroundImage: `url(${dottedUrl})` }"
             />
             <div :class="$style.itemPicContainer">
-                <div v-if="index === 0" :class="$style.itemPic" class="border">
+                <div
+                    v-if="index === 0"
+                    :class="$style.itemPic"
+                    class="bg-white border"
+                >
                     <img :src="logo(selectedAsset)" :class="$style.itemType" />
                 </div>
                 <div v-else :class="$style.itemPic" class="border">
@@ -82,7 +86,7 @@
 
         .itemDots {
             position: absolute;
-            top: calc(50% + 26px);
+            top: calc(50% + 22px);
             transform: translateY(-50%);
             left: 15px;
             bottom: 0;
@@ -109,6 +113,7 @@
         align-self: flex-start;
         position: relative;
         margin-right: 10px;
+        background-color: white;
         // margin-left: rem(15);
     }
 

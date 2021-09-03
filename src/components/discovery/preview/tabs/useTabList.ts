@@ -60,7 +60,7 @@ export default function useAssetDetailsTabList(
                 'Column',
             ],
             visibleOn: ['discovery'],
-            icon: 'Share',
+            icon: 'Relation',
         },
         // {
         //     name: 'Chat',

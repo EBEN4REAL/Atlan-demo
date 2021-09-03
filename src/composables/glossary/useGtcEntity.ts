@@ -83,7 +83,7 @@ const useGTCEntity = <T extends Glossary | Category | Term>(
     })
 
     body.value = getBody()
-    const { data, error, isLoading, mutate } = useAPI<any>(
+    const { data, error, isValidating:isLoading, mutate } = useAPI<any>(
         GET_GTC_ENTITY,
         'POST',
         {

@@ -668,11 +668,12 @@
             })
 
             watch(list, (newList) => {
-                console.log('yes yes')
                 if(!showCheckBox.value){
                     checkedAssetList.value = [...newList]
                 }
-            })
+            });
+
+            
             return {
                 handleClearFiltersFromList,
                 assetFilterRef,

@@ -4,7 +4,7 @@
             ref="searchBar"
             :value="value"
             :placeholder="placeholder"
-            size="default"
+            :size="size"
             :class="$style.searchbar"
             @change="$emit('change', $event)"
             @update:value="$emit('update:value', $event)"
@@ -34,6 +34,7 @@
             autofocus: { type: Boolean, default: () => false },
             dot: { type: Boolean, default: () => false },
             placeholder: { type: String, default: () => 'Search' },
+            size: { type: String, default: () => 'default' },
             value: { type: String },
         },
         emits: ['update:value', 'change'],

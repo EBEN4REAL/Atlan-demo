@@ -2,7 +2,7 @@
     <div class="flex w-full">
         <div
             v-if="showFilters"
-            class="flex flex-col h-full overflow-y-auto bg-white border-r  facets"
+            class="flex flex-col h-full overflow-y-auto bg-white border-r facets"
         >
             <AssetFilters
                 :ref="
@@ -16,24 +16,12 @@
             ></AssetFilters>
         </div>
 
-        <div class="flex flex-col items-stretch flex-1 mt-3 mb-1 bg-white w-80">
+        <div class="flex flex-col items-stretch flex-1 mb-1 w-80">
             <div class="flex flex-col h-full">
-                <!-- <div class="flex px-3 mb-1">
-                    <ConnectorDropdown
-                        :data="connectorsPayload"
-                        @change="handleChangeConnectors"
-                        @label-change="setPlaceholder($event, 'connector')"
-                    ></ConnectorDropdown>
-                    <AssetDropdown
-                        v-if="connectorsPayload.connection"
-                        :connector="filteredConnector"
-                        :data="connectorsPayload"
-                        @label-change="setPlaceholder($event, 'asset')"
-                    ></AssetDropdown>
-                </div> -->
                 <SearchAndFilter
                     v-model:value="queryText"
-                    class="mx-3 mt-1"
+                    class="mx-3 mt-3"
+                    size="large"
                     :placeholder="dynamicSearchPlaceholder"
                     :autofocus="true"
                     @change="handleSearchChange"
@@ -53,11 +41,13 @@
 
                 <AssetTabs
                     v-model="assetType"
+                    class="mb-2"
                     @update:model-value="handleTabChange"
                     :asset-type-list="assetTypeList"
                     :asset-type-map="assetTypeMap"
                     :total="totalSum"
                 ></AssetTabs>
+
                 <!-- <div
                     class="flex items-center justify-between w-full px-3 py-2 border-b border-gray-300 "
                 >

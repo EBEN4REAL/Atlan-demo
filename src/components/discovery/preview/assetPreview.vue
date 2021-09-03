@@ -136,8 +136,8 @@
             const infoTabData: Ref<any> = ref({})
 
             const tabHeights = {
-                discovery: 'calc(100vh - 12.2rem)',
-                profile: 'calc(100vh - 6.5rem)',
+                discovery: 'calc(100vh - 7.3rem)',
+                profile: 'calc(100.4vh - 0rem)',
             }
 
             function getAssetEntitity(data: Ref): any {

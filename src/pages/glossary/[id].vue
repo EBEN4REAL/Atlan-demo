@@ -142,8 +142,8 @@
                             @entityPreview="handleCategoryOrTermPreview"
                         />
                     </a-tab-pane>
-                    <a-tab-pane key="4" tab="Bots"> Bots </a-tab-pane>
-                    <a-tab-pane key="5" tab="Permissions">
+                    <a-tab-pane key="4" tab="Requests"> Bots </a-tab-pane>
+                    <a-tab-pane key="5" tab="Access Control">
                         Permissions
                     </a-tab-pane>
                 </a-tabs>

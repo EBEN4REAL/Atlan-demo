@@ -138,10 +138,10 @@
                             @entityPreview="handleCategoryOrTermPreview"
                         />
                     </a-tab-pane>
-                    <!-- <a-tab-pane key="4" tab="Bots"> Bots </a-tab-pane>
-                    <a-tab-pane key="5" tab="Permissions">
-                        Permissions
-                    </a-tab-pane> -->
+                    <a-tab-pane key="4" tab="Requests"> Requests </a-tab-pane>
+                    <a-tab-pane key="5" tab="Access Control">
+                        Access Control
+                    </a-tab-pane>
                 </a-tabs>
             </div>
         </div>

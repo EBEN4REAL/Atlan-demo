@@ -12,12 +12,10 @@
             </div>
             <div>
                 <div class="flex items-center">
-                    <!-- asset logo -->
-                    <AssetLogo :asset="assetData" variant="lg" />
+                    <span class="text-xl font-bold">
+                        {{ assetData.attributes.name }}
+                    </span>
 
-                    <span class="text-xl font-bold">{{
-                        assetData.attributes.name
-                    }}</span>
                     <StatusBadge
                         :key="assetData.guid"
                         :show-no-status="false"
@@ -25,6 +23,10 @@
                         class="ml-2"
                     ></StatusBadge>
                 </div>
+
+                <!-- asset logo -->
+                <AssetLogo :asset="assetData" variant="lg" />
+
                 <!-- asset source hierarchy -->
                 <HierarchyBar class="py-1 mt-1" :selected-asset="assetData" />
             </div>

@@ -9,7 +9,7 @@
         @click="$emit('select')"
     >
         <div class="flex items-center col-span-4 overflow-hidden">
-            <a-checkbox :checked="selected" class="mr-4" />
+            <!-- <a-checkbox :checked="selected" class="mr-4" /> -->
             <AssetPiece
                 v-if="request.destination_qf_name"
                 :asset-qf-name="request.destination_qf_name"

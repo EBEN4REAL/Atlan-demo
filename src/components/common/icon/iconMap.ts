@@ -81,10 +81,7 @@ export default {
     CategoryIssue,
     CategoryVerified,
     CategoryWip,
-<<<<<<< HEAD
     EmptyGlossary,
     Glossary,
     KebabMenu,
-=======
->>>>>>> development
 }

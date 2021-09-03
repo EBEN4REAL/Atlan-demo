@@ -47,7 +47,7 @@
                 <div :key="dirtyTimestamp" class="mr-8 select-none">
                     <div class="flex items-center justify-between align-middle">
                         <div class="flex flex-col flex-1">
-                            <div>
+                            <div class="tracking-wide">
                                 <span class="text-gray">
                                     <img
                                         v-if="item.image"

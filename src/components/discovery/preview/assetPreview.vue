@@ -1,24 +1,7 @@
 <template>
-    <div class="pt-1">
-        <div v-if="page === 'discovery'" class="px-5">
-            <div class="flex items-center justify-between mt-2 mb-4 text-sm">
-                <!-- <component
-                    :is="selectedAsset.typeName"
-                    class="w-auto h-8"
-                ></component> -->
-                <AssetLogo :asset="selectedAsset" variant="lg" />
-
-                <div class="flex">
-                    <div class="icon-btn">
-                        <AtlanIcon icon="BookmarkOutlined" />
-                    </div>
-                    <div class="icon-btn">
-                        <AtlanIcon class="mr-2" icon="Share" />
-                        <span class="text-sm">Share</span>
-                    </div>
-                </div>
-            </div>
-            <div class="flex items-center pb-1">
+    <div class="">
+        <div v-if="page === 'discovery'" class="px-5 py-2 border-b">
+            <div class="flex items-center">
                 <Tooltip
                     :tooltip-text="title(selectedAsset)"
                     classes="mb-0 text-lg font-bold text-gray"
@@ -33,24 +16,53 @@
                     ></StatusBadge>
                 </div>
             </div>
+            <div class="flex items-center justify-between text-sm">
+                <!-- <component
+                    :is="selectedAsset.typeName"
+                    class="w-auto h-8"
+                ></component> -->
+                <AssetLogo :asset="selectedAsset" variant="lg" />
+
+                <div class="flex space-x-2">
+                    <a-button class="flex items-center" size="small">
+                        <AtlanIcon icon="BookmarkOutlined" />
+                    </a-button>
+
+                    <a-button
+                        class="flex items-center align-middle"
+                        size="small"
+                    >
+                        <AtlanIcon icon="Share" />
+                    </a-button>
+                </div>
+            </div>
         </div>
-        <a-tabs v-model:activeKey="activeKey" :class="$style.previewtab">
+        <a-tabs
+            v-model:activeKey="activeKey"
+            :class="$style.previewtab"
+            tab-position="left"
+            class="h-full"
+        >
             <a-tab-pane
                 v-for="(tab, index) in filteredTabs"
                 :key="index"
-                class="px-4 pb-4 overflow-y-auto"
-                :style="{ height: tabHeights[page] }"
-                :tab="tab.name"
+                class="px-4 overflow-y-auto"
             >
-                <component
-                    :is="tab.component"
-                    :component-data="dataMap[tab.id]"
-                    :info-tab-data="selectedAsset"
-                    :page="page"
-                    :selected-asset="selectedAsset"
-                    :is-loaded="isLoaded"
-                    @change="handleChange"
-                ></component>
+                <template #tab>
+                    <AtlanIcon icon="Share" />
+                </template>
+
+                <div :style="{ height: tabHeights[page] }">
+                    <component
+                        :is="tab.component"
+                        :component-data="dataMap[tab.id]"
+                        :info-tab-data="selectedAsset"
+                        :page="page"
+                        :selected-asset="selectedAsset"
+                        :is-loaded="isLoaded"
+                        @change="handleChange"
+                    ></component>
+                </div>
             </a-tab-pane>
         </a-tabs>
     </div>
@@ -189,9 +201,7 @@
             @apply text-sm !important;
             @apply tracking-wide;
         }
-        :global(.ant-tabs-tab:first-child) {
-            @apply ml-5;
-        }
+
         :global(.ant-tabs-nav-container-scrolling .ant-tabs-tab:first-child) {
             @apply ml-0;
         }
@@ -201,9 +211,10 @@
         }
         :global(.ant-tabs-bar) {
             margin-bottom: 0px;
+            @apply bg-gray-100;
         }
         :global(.ant-tabs-content) {
-            padding-right: 0px;
+            @apply px-0;
         }
         :global(.ant-tabs-ink-bar) {
             @apply rounded-t-sm;

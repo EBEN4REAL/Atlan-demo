@@ -1,13 +1,6 @@
 <template>
-    <div class="flex items-center flex-none mr-2 bg-white rounded">
-        <div
-            v-if="imageRequired"
-            class="border border-r-0 rounded-tl rounded-bl"
-            :style="{
-                padding: variant == 'lg' ? '5px' : '3px',
-                borderColor: color,
-            }"
-        >
+    <div class="flex items-center flex-none">
+        <div v-if="imageRequired" class="">
             <img
                 :src="logoSrc"
                 class="flex-none w-auto bg-white"
@@ -15,17 +8,9 @@
             />
         </div>
 
-        <span
-            :style="{
-                backgroundColor: color,
-                borderColor: color,
-                lineHeight:
-                    variant == 'lg' ? '26px !important' : '18px !important',
-            }"
-            class="px-1 tracking-wide border rounded-tr rounded-br text-gray"
-            :class="variant == 'lg' ? 'text-base pt-1' : 'text-sm pt-0.5'"
-            >{{ text }}</span
-        >
+        <span class="pl-1 font-medium tracking-wide text-gray-500">{{
+            text
+        }}</span>
     </div>
 </template>
 
@@ -60,12 +45,8 @@
         setup(prop) {
             const { asset, selected } = toRefs(prop)
             const { logo } = useAssetInfo()
-            const color = computed(() =>
-                selected.value ? '#E6E6EB' : '#F3F3F3'
-            )
-            const text = computed(
-                () => abbreviationMap[asset.value.typeName] || 'AST'
-            )
+            const color = computed(() => (selected.value ? '#fff' : '#fff'))
+            const text = computed(() => asset.value.typeName)
             const logoSrc = computed(() => logo(asset.value))
             return { color, logoSrc, text }
         },

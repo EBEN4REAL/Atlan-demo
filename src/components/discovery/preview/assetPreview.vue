@@ -4,7 +4,7 @@
             <div class="flex items-center">
                 <Tooltip
                     :tooltip-text="title(selectedAsset)"
-                    classes="mb-0 text-lg font-bold text-gray"
+                    classes="mb-0 text-gray-700 font-semibold"
                 />
 
                 <div class="flex items-center">
@@ -49,7 +49,7 @@
                 class="px-4 overflow-y-auto"
             >
                 <template #tab>
-                    <AtlanIcon icon="Share" />
+                    <AtlanIcon :icon="tab.icon" :class="activeKey===index?'text-primary':''" />
                 </template>
 
                 <div :style="{ height: tabHeights[page] }">
@@ -136,8 +136,8 @@
             const infoTabData: Ref<any> = ref({})
 
             const tabHeights = {
-                discovery: 'calc(100vh - 12.2rem)',
-                profile: 'calc(100vh - 6.5rem)',
+                discovery: 'calc(100vh - 7.3rem)',
+                profile: 'calc(100.4vh - 0rem)',
             }
 
             function getAssetEntitity(data: Ref): any {
@@ -193,22 +193,13 @@
 <style lang="less" module>
     .previewtab {
         :global(.ant-tabs-tab) {
-            padding-left: 2px;
-            padding-right: 2px;
-            @apply pb-5;
-            @apply mr-5;
-            @apply text-gray-500;
-            @apply text-sm !important;
-            @apply tracking-wide;
+            @apply px-4 !important;
         }
 
         :global(.ant-tabs-nav-container-scrolling .ant-tabs-tab:first-child) {
             @apply ml-0;
         }
-        :global(.ant-tabs-tab-active) {
-            @apply text-gray;
-            @apply font-bold;
-        }
+
         :global(.ant-tabs-bar) {
             margin-bottom: 0px;
             @apply bg-gray-100;

@@ -65,7 +65,7 @@
                 class="inline-flex text-xs text-gray-500 cursor-pointer"
             >
                 <div class="mr-8">
-                    <p class="mb-1.5 text-sm">Status</p>
+                    <p class="mb-1 text-sm">Status</p>
                     <StatusBadge
                         :key="selectedAsset.guid"
                         :status-id="selectedAsset?.attributes?.assetStatus"
@@ -82,10 +82,10 @@
                     v-if="selectedAsset?.attributes?.assetStatusMessage"
                     class="px-2"
                 >
-                    <p class="mb-3.5 text-sm">Status message</p>
+                    <p class="mb-3.5 text-sm">Message</p>
                     <p
                         v-linkified
-                        class="mb-0 text-xs font-semibold text-gray-500"
+                        class="mb-0 text-xs text-gray"
                         v-html="statusMessage"
                     ></p>
                 </div>

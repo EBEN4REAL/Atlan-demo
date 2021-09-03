@@ -17,8 +17,9 @@
             <template #content>
                 <slot name="filter" />
             </template>
-            <a-button class="p-1 ml-2 rounded">
+            <a-button class="flex items-center p-1 ml-2 rounded">
                 <AtlanIcon :icon="dot ? 'FilterDot' : 'Filter'" class="h-6" />
+                <slot name="buttonAggregation" />
             </a-button>
         </a-popover>
     </div>

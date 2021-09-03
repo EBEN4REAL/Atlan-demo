@@ -46,22 +46,10 @@
             <div v-if="asset.classifications?.length < 1">
                 <button
                     @click.stop="toggleLinkClassificationPopover"
-                    class="
-                        items-center
-                        px-3
-                        py-1.5
-                        mr-3
-                        rounded-full
-                        text-sm
-                        cursor-pointer
-                        bg-gray-light
-                        text-gray-700
-                        inline-flex
-                        hover:bg-primary hover:text-white
-                    "
+                    class="inline-flex items-center px-3 py-1 mr-3 text-sm text-gray-700 border rounded-full cursor-pointer  hover:bg-primary hover:text-white"
                 >
-                    <fa icon="fal plus" class="" />
-                    <span class="ml-2">Add Classifications</span>
+                    <fa icon="fal plus" class="text-xs" />
+                    <span class="ml-2 text-xs">Add Classifications</span>
                 </button>
             </div>
             <template #content>

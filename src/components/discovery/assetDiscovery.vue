@@ -2,7 +2,7 @@
     <div class="flex w-full">
         <div
             v-if="showFilters"
-            class="flex flex-col h-full overflow-y-auto bg-white border-r  facets"
+            class="flex flex-col h-full overflow-y-auto bg-white border-r facets"
         >
             <AssetFilters
                 :ref="
@@ -12,6 +12,7 @@
                 "
                 :initial-filters="initialFilters"
                 @refresh="handleFilterChange"
+                @modifyTabs="modifyTabs"
             ></AssetFilters>
         </div>
 
@@ -33,6 +34,9 @@
                             @state="handleState"
                         />
                     </template>
+                    <!-- <template #buttonAggregation>
+                        <span>({{ projection.length }})</span>
+                    </template> -->
                 </SearchAndFilter>
 
                 <AssetTabs
@@ -225,7 +229,14 @@
                 initialFilters.value.connectorsPayload
             )
             const filters = ref(initialFilters.value.initialBodyCriterion)
+            console.log('initialFIters', filters.value)
             const filterMap = ref<filterMapType>({
+                connector: {
+                    condition:
+                        initialFilters.value.facetsFilters.connector.condition,
+                    criterion:
+                        initialFilters.value.facetsFilters.connector.criterion,
+                },
                 assetCategory: {
                     condition:
                         initialFilters.value.facetsFilters.assetCategory
@@ -272,9 +283,36 @@
             assetTypeList.value = AssetTypeList.filter(
                 (item) => item.isDiscoverable == true
             )
-            const assetTypeListString = assetTypeList.value
-                .map((item) => item.id)
-                .join(',')
+            const assetTypeListString = computed(() =>
+                assetTypeList.value.map((item) => item.id).join(',')
+            )
+
+            const modifyTabs = (visibleTabs) => {
+                let assetTypes = []
+                if (visibleTabs) {
+                    console.log(visibleTabs, 'tabs')
+                    visibleTabs.forEach((visibleTabId) => {
+                        AssetTypeList.forEach((asset) => {
+                            if (
+                                asset.id === visibleTabId &&
+                                asset.isDiscoverable == true
+                            ) {
+                                assetTypes.push(asset)
+                            }
+                        })
+                    })
+                } else {
+                    assetTypes = AssetTypeList.filter(
+                        (item) => item.isDiscoverable == true
+                    )
+                }
+                assetTypes.unshift({
+                    id: 'Catalog',
+                    label: 'All',
+                })
+                assetTypeList.value = assetTypes
+            }
+
             const {
                 list,
                 replaceBody,
@@ -286,7 +324,7 @@
                 mutateAssetInList,
             } = useAssetList(
                 now,
-                assetTypeListString,
+                assetTypeListString.value,
                 initialBody,
                 assetType.value,
                 true
@@ -357,7 +395,7 @@
 
             const updateBody = () => {
                 initialBody = {
-                    typeName: assetTypeListString,
+                    typeName: assetTypeListString.value,
                     termName: props.termName,
                     includeClassificationAttributes: true,
                     includeSubClassifications: true,
@@ -397,30 +435,30 @@
                         initialBody.excludeDeletedEntities = true
                     }
                 }
-                const connectorCritera = {
-                    condition: 'OR',
-                    criterion: [],
-                }
-                const connectionCriteria = {
-                    condition: 'OR',
-                    criterion: [],
-                }
-                if (connectorsPayload.value?.connector) {
-                    connectorCritera.criterion?.push({
-                        attributeName: 'integrationName',
-                        attributeValue: connectorsPayload.value?.connector,
-                        operator: 'eq',
-                    })
-                }
-                if (connectorsPayload.value?.connection) {
-                    connectorCritera.criterion?.push({
-                        attributeName: 'connectionQualifiedName',
-                        attributeValue: connectorsPayload.value?.connection,
-                        operator: 'eq',
-                    })
-                }
-                initialBody.entityFilters.criterion.push(connectorCritera)
-                initialBody.entityFilters.criterion.push(connectionCriteria)
+                // const connectorCritera = {
+                //     condition: 'AND',
+                //     criterion: [],
+                // }
+                // const connectionCriteria = {
+                //     condition: 'OR',
+                //     criterion: [],
+                // }
+                // if (connectorsPayload.value?.connector) {
+                //     connectorCritera.criterion?.push({
+                //         attributeName: 'integrationName',
+                //         attributeValue: connectorsPayload.value?.connector,
+                //         operator: 'eq',
+                //     })
+                // }
+                // if (connectorsPayload.value?.connection) {
+                //     connectorCritera.criterion?.push({
+                //         attributeName: 'connectionQualifiedName',
+                //         attributeValue: connectorsPayload.value?.connection,
+                //         operator: 'eq',
+                //     })
+                // }
+                // initialBody.entityFilters.criterion.push(connectorCritera)
+                // initialBody.entityFilters.criterion.push(connectionCriteria)
                 if (sortOrder.value !== 'default') {
                     const split = sortOrder.value.split('|')
                     if (split.length > 1) {
@@ -517,6 +555,7 @@
             }
             const handleChangeConnectors = (payload: any) => {
                 connectorsPayload.value = payload
+                console.log('connector Change', payload)
                 const routerOptions = getRouterOptions()
                 const routerQuery = getEncodedStringFromOptions(routerOptions)
                 pushQueryToRouter(routerQuery)
@@ -556,6 +595,7 @@
             })
 
             return {
+                modifyTabs,
                 handleClearFiltersFromList,
                 assetFilterRef,
                 isFilterVisible,

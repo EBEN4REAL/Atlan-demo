@@ -12,18 +12,7 @@
 
         <div
             v-else
-            class="
-                flex
-                items-center
-                px-3
-                py-1.5
-                mr-3
-                rounded-full
-                text-sm
-                cursor-pointer
-                bg-gray-light
-                text-gray-700
-            "
+            class="flex items-center px-3 py-1 mr-3 text-sm text-gray-700 border rounded-full cursor-pointer "
         >
             <span class="svg-icon">
                 <component class="w-auto h-4" :is="icon" />

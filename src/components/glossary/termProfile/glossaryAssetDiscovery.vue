@@ -1,5 +1,5 @@
 <template>
-    <div class="flex w-full">
+    <div class="flex w-full" :class="$style.tabClasses">
         <div class="flex flex-col items-stretch flex-1 mb-1 bg-white w-80">
             <div class="flex flex-col h-full">
                 <div class="flex" v-if="checkedAssetList.length">
@@ -673,7 +673,7 @@
                 }
             });
 
-            
+
             return {
                 handleClearFiltersFromList,
                 assetFilterRef,
@@ -730,9 +730,24 @@
     })
 </script>
 
-<style scoped>
+<style lang="less" module>
     .facets {
         min-width: 264px;
         width: 25%;
+    }
+    .tabClasses {
+        :global(.ant-tabs-tab) {
+            margin: 0px 32px 0px 0px;
+            padding: 0px 0px 18px 0px;
+        }
+        :global(.ant-tabs-nav) {
+            margin: 0px !important;
+        }
+        :global(.ant-tabs-tab-active) {
+            @apply text-gray-700 font-bold !important;
+        }
+        :global(.ant-tabs-bar) {
+            @apply px-1 mb-0 !important;
+        }
     }
 </style>

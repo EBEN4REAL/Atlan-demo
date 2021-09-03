@@ -1,18 +1,18 @@
 <!-- TODO: remove hardcoded prop classes and make component generic -->
 <template>
     <div
-        class="flex justify-between border-b border-gray-300 text-gray"
-        :class="isSelected ? 'bg-primary-light' : 'bg-white hover:bg-gray-100'"
+        class="flex mx-4 my-0.5 rounded border-gray-100 border"
+        :class="isSelected ? 'border-primary bg-white' : 'bg-white '"
     >
-        <!-- Selected asset pill -->
+        <!-- Selected asset pill 
         <div
-            class="self-stretch"
+            class="self-stretch w-5"
             :class="isSelected ? 'w-1 bg-primary mr-4' : 'w-5'"
-        ></div>
+        ></div>-->
         <!-- remove cssClasses prop -->
         <div
-            class="flex items-start flex-1 pr-5 w-96"
-            :class="cssClasses?.paddingY ? cssClasses?.paddingY : 'py-6'"
+            class="flex items-start flex-1 px-3 w-96"
+            :class="cssClasses?.paddingY ? cssClasses?.paddingY : 'py-3'"
         >
             <a-checkbox 
                 v-if="showCheckBox" 
@@ -32,24 +32,20 @@
                         class="flex-none w-auto h-5 mr-2"
                     ></component> -->
                     <!-- <AssetLogo :asset="item" /> -->
-                    <AssetLogo
-                        v-if="showAssetTypeIcon"
-                        :asset="item"
-                        :selected="isSelected"
-                    />
+
                     <!-- remove cssClasses prop -->
                     <router-link
                         :class="
                             cssClasses?.textSize
                                 ? cssClasses?.textSize
-                                : 'text-lg'
+                                : 'text-md'
                         "
                         :to="
                             isColumnAsset(item)
                                 ? getColumnUrl(item)
                                 : `/assets/${item.guid}/overview`
                         "
-                        class="flex-shrink mb-0 overflow-hidden leading-6 tracking-wide truncate cursor-pointer  text-gray hover:underline overflow-ellipsis whitespace-nowrap"
+                        class="flex-shrink mb-0 overflow-hidden font-semibold leading-6 truncate cursor-pointer  text-primary hover:underline overflow-ellipsis whitespace-nowrap"
                     >
                         {{ title(item) }}
                     </router-link>
@@ -60,18 +56,65 @@
                         class="flex-none ml-2"
                     ></StatusBadge>
                 </div>
-                <!-- Column data type -->
-                <div
-                    v-if="item.typeName.toLowerCase() === 'column'"
-                    class="flex items-center mt-1 mr-4"
-                >
-                    <component
-                        :is="dataTypeImage(item)"
-                        class="w-auto h-4"
-                    ></component>
-                    <span class="pt-0.5 ml-1 text-sm leading-none">{{
-                        dataType(item)
-                    }}</span>
+
+                <div class="flex items-center space-x-2">
+                    <AssetLogo
+                        v-if="showAssetTypeIcon"
+                        :asset="item"
+                        :selected="isSelected"
+                    />
+                    <!-- Column data type -->
+                    <div
+                        v-if="item.typeName.toLowerCase() === 'column'"
+                        class="flex items-center"
+                    >
+                        <component
+                            :is="dataTypeImage(item)"
+                            class="w-auto h-4"
+                        ></component>
+                        <span class="pt-0.5 ml-1 text-sm leading-none">{{
+                            dataType(item)
+                        }}</span>
+                    </div>
+                    <div
+                        v-if="
+                            ['table', 'view'].includes(
+                                item.typeName.toLowerCase()
+                            )
+                        "
+                        class="flex text-sm text-gray-500"
+                    >
+                        <span
+                            v-if="item?.typeName.toLowerCase() === 'table'"
+                            class="mr-2"
+                            ><span class="font-semibold tracking-tighter">{{
+                                rowCount(item, false)
+                            }}</span>
+                            rows</span
+                        >
+                        <span
+                            ><span class="font-semibold tracking-tighter">{{
+                                columnCount(item, false)
+                            }}</span>
+                            columns</span
+                        >
+                    </div>
+                    <div
+                        v-if="projection?.includes('owners')"
+                        class="flex items-baseline"
+                    >
+                        <span
+                            v-if="getCombinedUsersAndGroups(item).length"
+                            class="mr-1 text-gray-500"
+                            v-html="
+                                'owned by ' +
+                                getTruncatedUsers(
+                                    getCombinedUsersAndGroups(item),
+                                    20
+                                )
+                            "
+                        />
+                    </div>
                 </div>
                 <!-- Row?Col/Owner bar -->
                 <div
@@ -83,49 +126,9 @@
                     class="flex items-center"
                 >
                     <!-- Owners -->
-                    <div
-                        v-if="projection?.includes('owners')"
-                        class="flex items-baseline mt-1 mr-4 text-xs leading-5  text-gray"
-                    >
-                        <span
-                            v-if="getCombinedUsersAndGroups(item).length"
-                            class="mr-1"
-                            v-html="
-                                'Owned by ' +
-                                getTruncatedUsers(
-                                    getCombinedUsersAndGroups(item),
-                                    20
-                                )
-                            "
-                        />
-                        <span
-                            v-if="
-                                !getCombinedUsersAndGroups(item).length &&
-                                assetType(item).includes('Tableau')
-                            "
-                            class="text-sm font-light text-gray-400"
-                            >no owners assigned</span
-                        >
-                    </div>
+
                     <!-- Row/Col-->
-                    <div
-                        v-if="
-                            projection?.includes('rows') &&
-                            ['table', 'view'].includes(
-                                item.typeName.toLowerCase()
-                            )
-                        "
-                        class="flex mt-1 mr-2 text-sm"
-                    >
-                        <span
-                            v-if="item?.typeName.toLowerCase() === 'table'"
-                            class="mr-4"
-                            >{{ rowCount(item, false) }} Rows</span
-                        >
-                        <span class="mr-4"
-                            >{{ columnCount(item, false) }} Cols</span
-                        >
-                    </div>
+
                     <!-- Popularity -->
                     <!-- <div
                     class="pt-1 mr-2"
@@ -158,19 +161,11 @@
                 <!-- Description -->
                 <div
                     v-if="projection?.includes('description')"
-                    class="max-w-lg mt-1 text-sm truncate-overflow"
+                    class="max-w-lg mt-1 text-xs truncate-overflow"
                 >
                     <span v-if="description(item)?.length">{{
                         description(item)
                     }}</span>
-                    <span
-                        v-if="
-                            !description(item)?.length &&
-                            assetType(item).includes('Tableau')
-                        "
-                        class="font-light text-gray-400"
-                        >no description available</span
-                    >
                 </div>
 
                 <!-- Hierarchy bar -->
@@ -303,7 +298,7 @@
                 const lastElm = displayArray.pop()
                 return displayArray.length
                     ? `<b>${displayArray.join(', ')}</b> and <b>${lastElm}</b>`
-                    : lastElm
+                    : `<b>${lastElm}</b>`
             }
 
             function getCombinedUsersAndGroups(item: assetInterface) {

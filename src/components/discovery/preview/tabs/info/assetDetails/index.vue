@@ -26,11 +26,7 @@
             :selected-asset="selectedAsset"
             @update:selected-asset="mutateSelectedAsset"
         />
-        <Experts
-            v-if="selectedAsset.guid"
-            :selected-asset="selectedAsset"
-            @update:selected-asset="mutateSelectedAsset"
-        />
+
         <Status
             v-if="selectedAsset.guid"
             :selected-asset="selectedAsset"

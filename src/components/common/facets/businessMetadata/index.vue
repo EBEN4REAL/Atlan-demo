@@ -25,6 +25,7 @@
                     :a="a"
                     :applied="data.applied[a.name] || {}"
                     @handleAttributeInput="setBMfilter"
+                    :operators="getOperatorMap(a)"
                 />
             </div>
         </div>
@@ -59,8 +60,10 @@
     import { defineComponent, PropType, ref, provide } from 'vue'
     import useEnums from '@/admin/enums/composables/useEnums'
     import { Collapse } from '~/types'
-    import AttributeItem from './attributeItems.vue'
+    import AttributeItem from '../common/attributeItems.vue'
     import { Components } from '~/api/atlas/client'
+    import { operatorsMap as map } from '~/constant/business_metadata'
+    import useBusinessMetadataHelper from '~/composables/businessMetadata/useBusinessMetadataHelper'
 
     export default defineComponent({
         name: 'BusinessMetadata',
@@ -83,11 +86,19 @@
             const container = ref(null)
 
             const { enumListData: enumsList } = useEnums()
+            const { getDatatypeOfAttribute } = useBusinessMetadataHelper()
 
             const isEmptyObject = (obj: Object) =>
                 Object.keys(obj).length === 0 && obj.constructor === Object
 
             provide('enumsList', enumsList)
+
+            const getOperatorMap = (a) =>
+                JSON.parse(
+                    JSON.stringify(
+                        map[getDatatypeOfAttribute(a.typeName)] || map.enum
+                    )
+                ).map((o) => ({ ...o, checked: false }))
             /**
              * @param {String} a - attribute object of the filter to apply
              * @param {String} appliedValueMap - consists of 1 or more operators mapped with their values
@@ -114,10 +125,10 @@
                 const criterion: Components.Schemas.FilterCriteria[] = []
 
                 // ? populate criterion object with filters previously applied
-                Object.entries(props.data.applied).forEach((attribute) => {
+                Object.entries(newDataMap.applied).forEach((attribute) => {
                     Object.entries(attribute[1]).forEach((o) => {
                         criterion.push({
-                            attributeName: `${props.data.list.name}.${attribute[0]}`,
+                            attributeName: `${newDataMap.list.name}.${attribute[0]}`,
                             operator: o[0],
                             attributeValue: o[1],
                         })
@@ -168,6 +179,7 @@
                 showAll,
                 showScrollBar,
                 container,
+                getOperatorMap,
             }
         },
     })

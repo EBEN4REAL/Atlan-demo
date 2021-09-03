@@ -47,7 +47,7 @@
                 <div :key="dirtyTimestamp" class="mr-8 select-none">
                     <div class="flex items-center justify-between align-middle">
                         <div class="flex flex-col flex-1">
-                            <div>
+                            <div class="tracking-wide">
                                 <span class="text-gray">
                                     <img
                                         v-if="item.image"
@@ -101,12 +101,16 @@
     import { List as StatusList } from '~/constant/status'
     import { List as AssetCategoryList } from '~/constant/assetCategory'
     import { List } from './filters'
+    import { AssetTypeList } from '~/constant/assetType'
 
     export default defineComponent({
         name: 'DiscoveryFacets',
         components: {
             Status: defineAsyncComponent(
                 () => import('@common/facets/status.vue')
+            ),
+            Connector: defineAsyncComponent(
+                () => import('@common/facets/connector.vue')
             ),
             AssetCategory: defineAsyncComponent(
                 () => import('@common/facets/assetCategory.vue')
@@ -133,13 +137,19 @@
                 },
             },
         },
-        emits: ['refresh'],
+        emits: ['refresh', 'modifyTabs'],
         setup(props, { emit }) {
             const classificationsStore = useClassificationStore()
             const { bmFiltersList, bmDataMap } = useBusinessMetadataHelper()
             // console.log(props.initialFilters.facetsFilters, 'facetFilters')
             const activeKey: Ref<string> = ref('')
             const initialFilterMap = {
+                connector: {
+                    condition:
+                        props.initialFilters.facetsFilters.connector.condition,
+                    criterion:
+                        props.initialFilters.facetsFilters.connector.criterion,
+                },
                 assetCategory: {
                     condition:
                         props.initialFilters.facetsFilters.assetCategory
@@ -217,6 +227,11 @@
 
             // Mapping of Data to child components
             const dataMap: { [key: string]: any } = ref({})
+            dataMap.value.connector = {
+                connectorsPayload:
+                    props.initialFilters.facetsFilters.connector.checked,
+                checked: props.initialFilters.facetsFilters.connector.checked,
+            }
             dataMap.value.assetCategory = {
                 checked:
                     props.initialFilters.facetsFilters.assetCategory.checked,
@@ -241,7 +256,7 @@
                 noOwnerAssigned: false,
             }
             dataMap.value.advanced = {
-                list: props.initialFilters.facetsFilters.advanced.list,
+                applied: props.initialFilters.facetsFilters.advanced.applied,
             }
 
             function setAppliedFiltersCount() {
@@ -286,8 +301,11 @@
                 })
                 emit('refresh', filters, filterMap)
             }
+            const modifyTabs = (tabsIds) => {
+                emit('modifyTabs', tabsIds)
+            }
 
-            const handleChange = (value: any) => {
+            const handleChange = (value: any, tabsIds: string[]) => {
                 filterMap[value.id] = value.payload
                 if (value?.selectedIds)
                     filterMap[value.id] = {
@@ -298,6 +316,7 @@
                 console.log(dirtyTimestamp.value)
                 setAppliedFiltersCount()
                 refresh()
+                modifyTabs(tabsIds)
                 // updateChangesInStore(value);
             }
 
@@ -310,12 +329,35 @@
 
             const totalAppliedFiltersCount = ref(0)
 
+            const resetTabs = () => {
+                const tabsIds = AssetTypeList.filter(
+                    (item) => item.isDiscoverable == true
+                ).map((item) => {
+                    return item.id
+                })
+                return tabsIds
+            }
+
             const handleClear = (filterId: string) => {
                 switch (filterId) {
+                    case 'connector': {
+                        dataMap.value[filterId].connectorsPayload = {
+                            connection: undefined,
+                            connector: undefined,
+                        }
+                        dataMap.value[filterId].checked = {
+                            connection: undefined,
+                            connector: undefined,
+                        }
+                        filterMap[filterId].criterion = []
+                        emit('modifyTabs', resetTabs())
+                        break
+                    }
                     case 'assetCategory': {
                         dataMap.value[filterId].checked = []
                         filterMap[filterId].criterion = []
                         filterMap[filterId].selectedIds = []
+                        emit('modifyTabs', resetTabs())
                         break
                     }
                     case 'status': {
@@ -338,6 +380,8 @@
                         break
                     }
                     case 'advanced': {
+                        dataMap.value[filterId].applied = {}
+                        filterMap[filterId].criterion = []
                         break
                     }
                     default: {
@@ -350,6 +394,16 @@
             }
             function getFiltersAppliedString(filterId: string) {
                 switch (filterId) {
+                    case 'connector': {
+                        let facetFiltersData =
+                            dataMap.value[filterId].connectorsPayload
+                        let str = ''
+                        console.log(facetFiltersData, 'applied')
+                        if (facetFiltersData?.connector) {
+                            str += facetFiltersData?.connector
+                        }
+                        return str
+                    }
                     case 'assetCategory': {
                         let facetFiltersData = dataMap.value[filterId].checked
                         facetFiltersData = facetFiltersData.map(
@@ -433,7 +487,14 @@
                         return appliedOwnersString
                     }
                     case 'advanced': {
-                        return ''
+                        // ? default fall back to bm filter
+                        const totalCount = Object.values(
+                            dataMap.value[filterId]?.applied
+                        ).length
+
+                        return totalCount
+                            ? `${totalCount} condition(s) applied`
+                            : ''
                     }
                     default: {
                         // ? default fall back to bm filter
@@ -449,6 +510,15 @@
             }
 
             function resetAllFilters() {
+                dataMap.value.connector.connectorsPayload = []
+                dataMap.value.connector.connectorsPayload = {
+                    connection: undefined,
+                    connector: undefined,
+                }
+                dataMap.value.connector.checked = {
+                    connection: undefined,
+                    connector: undefined,
+                }
                 dataMap.value.assetCategory.checked = []
                 dataMap.value.status.checked = []
                 dataMap.value.classifications.checked = []
@@ -456,6 +526,7 @@
                 dataMap.value.owners.userValue = []
                 dataMap.value.owners.groupValue = []
                 dataMap.value.owners.noOwnerAssigned = false
+                dataMap.value.advanced.applied = {}
 
                 // ? remove bm applied data
                 bmFiltersList.value
@@ -470,6 +541,8 @@
                     if (filterMap[id]?.selectedIds)
                         filterMap[id].selectedIds = []
                 })
+                // reset tabs
+                emit('modifyTabs', resetTabs())
                 setAppliedFiltersCount()
 
                 refresh()

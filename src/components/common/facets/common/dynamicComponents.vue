@@ -34,6 +34,12 @@
             class="px-2 mr-2 shadow-none border-1"
             @change="() => debounce(() => handleChange(), 800)"
         />
+        <UserSelector
+            v-else-if="type === 'users'"
+            :modelValue="value"
+            @change="handleSelectUser"
+        />
+
         <div v-else>
             <a-select
                 v-model:value="value"
@@ -50,9 +56,11 @@
 
 <script lang="ts">
     import { defineComponent, ref, Ref, onMounted, inject } from 'vue'
+    import UserSelector from '@common/selector/users/index.vue'
     import useBusinessMetadataHelper from '~/composables/businessMetadata/useBusinessMetadataHelper'
 
     export default defineComponent({
+        components: { UserSelector },
         props: {
             type: {
                 type: [String, Object],
@@ -71,13 +79,12 @@
         },
         emits: ['handleChange'],
         setup(props, { emit }) {
-            const { getDatatypeOfAttribute, createDebounce } =
-                useBusinessMetadataHelper()
+            const { createDebounce } = useBusinessMetadataHelper()
             const value = ref(null)
             const enumsList: Ref<object[]> = inject('enumsList')
 
             const getEnumOptions = (enumName: string) => {
-                if (enumsList.value.length) {
+                if (enumsList?.value?.length) {
                     return (
                         enumsList.value
                             .find((e) => e.name === enumName)
@@ -94,11 +101,16 @@
                 emit('handleChange', props.operator, value.value)
             }
 
+            const handleSelectUser = (v: string) => {
+                value.value = v
+                handleChange()
+            }
+
             onMounted(() => {
                 value.value = props.defaultValue
             })
             return {
-                getDatatypeOfAttribute,
+                handleSelectUser,
                 value,
                 handleChange,
                 enumsList,

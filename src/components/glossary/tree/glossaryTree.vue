@@ -42,24 +42,30 @@
             ></a-input-search>
         </div>
         <div v-if="!isLoading" class="h-screen overflow-auto">
-            <div class="flex pr-4 space-x-2">
-                <div
-                    class="flex justify-start w-full pl-6 text-base leading-5 cursor-pointer "
-                    @click="redirectToProfile('glossary', parentGlossary.guid)"
-                >
-                    <span
-                        class="flex my-auto"
-                        :class="{
-                            'text-primary':
-                                currentGuid === parentGlossary?.guid,
-                        }"
+            <div class="flex justify-between px-4">
+                <div class="flex items-center ml-3">
+                    <AtlanIcon icon="Glossary" class="h-5 m-0 mr-2" />
+                    <div
+                        class="flex justify-start w-full text-base leading-5 cursor-pointer "
+                        @click="
+                            redirectToProfile('glossary', parentGlossary.guid)
+                        "
                     >
-                        {{
-                            parentGlossary?.displayText ??
-                            parentGlossary?.uniqueAttributes?.qualifiedName
-                        }}
-                    </span>
+                        <span
+                            class="flex my-auto"
+                            :class="{
+                                'text-primary':
+                                    currentGuid === parentGlossary?.guid,
+                            }"
+                        >
+                            {{
+                                parentGlossary?.displayText ??
+                                parentGlossary?.uniqueAttributes?.qualifiedName
+                            }}
+                        </span>
+                    </div>
                 </div>
+
                 <a-dropdown :trigger="['click']">
                     <a class="ant-dropdown-link" @click.prevent>
                         <a-button
@@ -92,7 +98,11 @@
                     </template>
                 </a-dropdown>
             </div>
-            <div v-if="treeData.length" class="py-2 pl-6 pr-2" :class="$style.treeStyles">
+            <div
+                v-if="treeData.length"
+                class="py-2 pl-6 pr-2"
+                :class="$style.treeStyles"
+            >
                 <a-tree
                     :expandedKeys="expandedKeys"
                     :selectedKeys="selectedKeys"
@@ -246,7 +256,10 @@
                     </template>
                 </a-tree>
             </div>
-            <div v-else class="flex flex-col justify-center text-center mt-14 text-gray-500 text-base leading-6 ">
+            <div
+                v-else
+                class="flex flex-col justify-center text-base leading-6 text-center text-gray-500  mt-14"
+            >
                 <AtlanIcon icon="EmptyGlossary" class="h-40" />
                 <p class="m-0 mt-20">The Glossary is empty,</p>
                 <p class="m-0">Create a few terms!</p>

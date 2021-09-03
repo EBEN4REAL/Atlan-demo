@@ -1,6 +1,6 @@
 <template>
-    <div class="w-full mb-4 mr-2 text-sm text-gray-500">
-        <p class="mb-2">Owners</p>
+    <div class="w-full mb-3 mr-2 text-sm text-gray-500">
+        <p class="mb-1">Owners</p>
         <div>
             <div v-if="ownerUsers.length > 0" class="flex flex-wrap text-sm">
                 <PillGroup
@@ -53,23 +53,12 @@
                 <div v-if="ownerUsers.length < 1" class="inline-flex mr-2">
                     <button
                         @click.stop="toggleOwnerPopover"
-                        class="
-                            flex
-                            items-center
-                            px-3
-                            py-1.5
-                            mr-3
-                            rounded-full
-                            cursor-pointer
-                            bg-gray-light
-                            text-gray-700
-                            hover:bg-primary hover:text-white
-                        "
+                        class="flex items-center px-3 py-1 mr-3 text-gray-700 border rounded-full cursor-pointer  hover:bg-primary hover:text-white"
                     >
-                        <span class="flex items-center text-sm">
+                        <span class="flex items-center text-xs">
                             <fa icon="fal plus" class="" />
                         </span>
-                        <span class="ml-2 text-sm">Add Owners</span>
+                        <span class="ml-2 text-xs">Add Owners</span>
                     </button>
                 </div>
                 <template #content>

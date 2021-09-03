@@ -34,6 +34,7 @@ import CategoryVerified from '~/assets/images/icons/category-verified.svg'
 import CategoryWip from '~/assets/images/icons/category-wip.svg'
 import EmptyGlossary from '~/assets/images/icons/empty-glossary.svg'
 import Glossary from '~/assets/images/icons/glossary.svg'
+import KebabMenu from '~/assets/images/icons/kebab-menu-new.svg'
 
 export default {
     BookmarkFilled,
@@ -72,4 +73,5 @@ export default {
     CategoryWip,
     EmptyGlossary,
     Glossary,
+    KebabMenu,
 }

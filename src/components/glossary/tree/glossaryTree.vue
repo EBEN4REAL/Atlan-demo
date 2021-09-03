@@ -224,10 +224,14 @@
                                             class="flex content-center justify-center w-5 h-5 p-0 m-0 rounded opacity-0  group-hover:opacity-100"
                                             @click.prevent
                                         >
-                                            <fa
+                                            <AtlanIcon
+                                                icon="KebabMenu"
+                                                class="h-3 mt-1"
+                                            />
+                                            <!-- <fa
                                                 icon="fal ellipsis-v"
                                                 class="w-3 h-3"
-                                            />
+                                            /> -->
                                         </span>
                                         <template #overlay>
                                             <a-menu>

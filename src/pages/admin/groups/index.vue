@@ -1,5 +1,5 @@
 <template>
-  <div class="bg-white">
+  <div>
     <p class="mb-2 text-2xl text-gray">Manage Groups</p>
     <div class="pb-6 text-sm text-gray">
       Add, remove and manage their members

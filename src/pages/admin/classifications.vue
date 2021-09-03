@@ -23,7 +23,7 @@
             min-size="25"
             max-size="50"
             size="25"
-            class="relative pr-6 bg-white"
+            class="relative py-4 pl-4 pr-6 bg-white"
         >
             <a-input
                 ref="searchText"
@@ -69,7 +69,7 @@
                 </div>
             </div>
         </pane>
-        <pane size="74" class="flex flex-col pl-6 bg-white">
+        <pane size="74" class="flex flex-col py-4 pl-6 pr-4 bg-white">
             <router-view class="flex-grow" />
         </pane>
 

@@ -46,7 +46,7 @@
                 ></div>
                 <div class="flex items-center justify-between w-96">
                     <Tooltip
-                        :tooltip-text="a.options.displayName || a.label"
+                        :tooltip-text="a.options?.displayName || a?.label"
                         classes="w-40"
                     />
                     <!-- <span>{{ a.options.displayName }}</span> -->

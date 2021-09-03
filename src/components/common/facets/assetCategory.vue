@@ -57,6 +57,48 @@
             const list = computed(() => List)
             const checkedValues = ref([])
             const { data } = toRefs(props)
+            const generateTabLists = (id: string, includedAssets: string[]) => {
+                let includedAssetsTypes = [...includedAssets]
+                switch (id) {
+                    case 'datasets': {
+                        includedAssetsTypes = [
+                            'View',
+                            'Table',
+                            'TablePartition',
+                            'MaterialisedView',
+                            ...includedAssetsTypes,
+                        ]
+                        break
+                    }
+                    case 'fields': {
+                        if (includedAssetsTypes.includes('View')) {
+                            includedAssetsTypes = [
+                                ...includedAssetsTypes,
+                                'Column',
+                            ]
+                        } else {
+                            includedAssetsTypes = [
+                                'Column',
+                                ...includedAssetsTypes,
+                            ]
+                        }
+                        break
+                    }
+                    case 'visualizations': {
+                        includedAssetsTypes = [
+                            ...includedAssetsTypes,
+                            'TableauSite',
+                            'TableauProject',
+                            'TableauWorkbook',
+                            'TableauWorksheet',
+                            'TableauDashboard',
+                            'TableauDatasource',
+                        ]
+                        break
+                    }
+                }
+                return includedAssetsTypes
+            }
             console.log(checkedValues.value, 'model')
             const handleChange = () => {
                 const criterion: Components.Schemas.FilterCriteria[] = []
@@ -64,11 +106,14 @@
                 let includedAssets = []
                 data.value.checked.forEach((assetTypeId) => {
                     selectedIds.push(assetTypeId)
-                    const includedAssetTypes = list.value.find(
+                    const includedAsset = list.value.find(
                         (asset) => asset.id === assetTypeId
-                    ).include
-                    includedAssets = [...includedAssets, ...includedAssetTypes]
-                    includedAssetTypes.forEach((assetType) => {
+                    )
+                    includedAssets = generateTabLists(
+                        includedAsset.id,
+                        includedAssets
+                    )
+                    includedAsset.include.forEach((assetType) => {
                         criterion.push({
                             attributeName: '__typeName',
                             attributeValue: assetType,

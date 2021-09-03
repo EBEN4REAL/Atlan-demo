@@ -13,7 +13,10 @@
                             style="width: 545px"
                         >
                             <p class="p-0 m-0">
-                                {{ checkedAssetList.length }} assets selected
+                                <span class="font-bold">{{
+                                    checkedAssetList.length
+                                }}</span>
+                                assets selected
                             </p>
                             <div class="flex items-center">
                                 <a-button

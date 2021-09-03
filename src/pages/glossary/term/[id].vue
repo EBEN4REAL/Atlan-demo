@@ -21,7 +21,6 @@
                             style="transform: scaleX(-1)"
                         />
                     </a-button>
-
                     <AtlanIcon icon="Glossary" class="h-5 m-0 mr-2" />
                     <span class="mr-1 text-sm">
                         {{

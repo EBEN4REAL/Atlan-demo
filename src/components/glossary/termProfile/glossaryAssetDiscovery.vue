@@ -10,13 +10,13 @@
                         <p class="p-0 m-0">Choose assets to link</p>
                         <div class="flex items-center">
                             <a-button
-                                @click="handleCancelLinkAssets"
                                 class="px-3 mx-2 text-gray-700 bg-transparent outline-none "
+                                @click="handleCancelLinkAssets"
                                 >Cancel</a-button
                             >
                             <a-button
-                                @click="handleConfirmLinkAssets"
                                 class="px-6 text-white outline-none bg-primary"
+                                @click="handleConfirmLinkAssets"
                                 >Link</a-button
                             >
                         </div>
@@ -73,7 +73,7 @@
                 <AssetList
                     v-else
                     ref="assetlist"
-                    :list="entities"
+                    :list="list"
                     :score="searchScoreList"
                     :projection="projection"
                     :is-loading="isLoading || isValidating"
@@ -83,6 +83,7 @@
                     :automaticSelectFirstAsset="false"
                     @preview="handlePreview"
                     @loadMore="loadMore"
+                    @updateCheckedAssetList="modifyLinkList"
                 ></AssetList>
             </div>
         </div>
@@ -133,6 +134,9 @@
     import { getEncodedStringFromOptions } from '~/utils/helper/routerQuery'
     import { assetInterface } from '~/types/assets/asset.interface'
     import { useBusinessMetadataStore } from '~/store/businessMetadata'
+    import { Components } from '~/api/atlas/client'
+
+    import useLinkAssets from '~/composables/glossary/useLinkAssets'
 
     import entities from './tempEntityList'
 
@@ -185,7 +189,7 @@
         }
     }
     export default defineComponent({
-        name: 'AssetDiscovery',
+        name: 'GlossaryAssetDiscovery',
         components: {
             AssetList,
             AssetTabs,
@@ -201,14 +205,17 @@
             initialFilters: {
                 type: Object as PropType<initialFiltersType>,
                 required: false,
-                default() {
-                    return {}
-                },
+                default: () => {},
             },
             termName: {
                 type: String,
-                required: false,
-                default: undefined,
+                required: true,
+                default: '',
+            },
+            termGuid: {
+                type: String,
+                required: true,
+                default: '',
             },
             showFilters: {
                 type: Boolean,
@@ -218,22 +225,20 @@
             isSelected: {
                 type: Boolean,
                 required: true,
-                default() {
-                    return false
-                },
+                default: false,
             },
         },
         emits: ['preview'],
         setup(props, { emit }) {
             // initializing the discovery store
-            const { initialFilters } = toRefs(props)
+            const { initialFilters, termName, termGuid } = toRefs(props)
             const assetFilterRef = ref()
             const isFilterVisible = ref(false)
             const router = useRouter()
             const tracking = useTracking()
             const events = tracking.getEventsName()
             const filterMode = ref('custom')
-            const now = ref(false)
+            const now = ref(true)
             const showCheckBox = ref(false)
             let initialBody: SearchParameters = reactive({})
             const assetType = ref('Catalog')
@@ -241,6 +246,7 @@
             const connectorsPayload = ref(
                 initialFilters.value.connectorsPayload
             )
+            const checkedAssetList = ref<Components.Schemas.AtlasEntityHeader[]>([]);
             const filters = ref(initialFilters.value.initialBodyCriterion)
             const filterMap = ref<filterMapType>({
                 assetCategory: {
@@ -292,6 +298,11 @@
             const assetTypeListString = assetTypeList.value
                 .map((item) => item.id)
                 .join(',')
+
+            const termQualifiedName = computed(() => {
+                if(!showCheckBox.value) return termName.value;
+                return undefined
+            })
             const {
                 list,
                 replaceBody,
@@ -375,7 +386,7 @@
             const updateBody = () => {
                 initialBody = {
                     typeName: assetTypeListString,
-                    termName: props.termName,
+                    termName: termQualifiedName.value,
                     includeClassificationAttributes: true,
                     includeSubClassifications: true,
                     limit: limit.value,
@@ -479,10 +490,10 @@
             const { projection } = useDiscoveryPreferences()
             const handleSearchChange = useDebounceFn(() => {
                 offset.value = 0
-                const routerOptions = getRouterOptions()
-                const routerQuery = getEncodedStringFromOptions(routerOptions)
+                // const routerOptions = getRouterOptions()
+                // const routerQuery = getEncodedStringFromOptions(routerOptions)
                 updateBody()
-                pushQueryToRouter(routerQuery)
+                // pushQueryToRouter(routerQuery)
                 tracking.trackEvent(events.EVENT_ASSET_SEARCH, {
                     trigger: 'discover',
                 })
@@ -560,28 +571,60 @@
                 if (val) {
                     now.value = true
                     isAggregate.value = true
-                    updateBody()
+                    // updateBody()
                 }
             })
 
             onMounted(() => {
-                if (BMListLoaded.value) {
-                    now.value = true
-                    isAggregate.value = true
-                    updateBody()
-                }
+                now.value = true
+                isAggregate.value = true
+                updateBody()
             })
 
             const handleLinkAssets = () => {
                 showCheckBox.value = !showCheckBox.value
+                
+                updateBody();
             }
             const handleCancelLinkAssets = () => {
-                showCheckBox.value = false
+                showCheckBox.value = false;
+                checkedAssetList.value = [];
+                updateBody()
             }
             const handleConfirmLinkAssets = () => {
-                showCheckBox.value = false
+                const { assignLinkedAssets } = useLinkAssets();
+
+                const { response } = assignLinkedAssets(termGuid.value, checkedAssetList.value)
+                watch(response, (data) => {
+                    showCheckBox.value = false;
+                    updateBody()
+                })
             }
-            console.log(entities)
+
+            const modifyLinkList = (e: Event, item: Components.Schemas.AtlasEntityHeader) => {
+                if(e?.target?.checked){
+                    if(!checkedAssetList.value.find((asset) => asset.guid === item.guid)){
+                        checkedAssetList.value.push(item)
+                    }
+                } else {
+                    checkedAssetList.value = checkedAssetList.value.filter(asset => asset.guid !== item.guid)
+                }
+            }
+
+            // watch(showCheckBox, () => {
+            //     updateBody()
+            // }, {
+            //     immediate: true
+            // });
+            watch(termName, () => {
+                updateBody()
+            });
+
+            // watch(entities, () => {
+            //     if(showCheckBox.value){
+            //         checkedAssetList.value = [...entities]    
+            //     }
+            // })
             return {
                 handleClearFiltersFromList,
                 assetFilterRef,
@@ -624,6 +667,9 @@
                 handleLinkAssets,
                 handleCancelLinkAssets,
                 handleConfirmLinkAssets,
+                modifyLinkList,
+                checkedAssetList,
+                termQualifiedName
             }
         },
         data() {

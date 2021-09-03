@@ -3,11 +3,12 @@
         <template #default="{ item }">
             <ListItem
                 :item="item"
-                :is-selected="item.guid === selectedAssetId && isSelected"
-                :score="score[item.guid]"
+                :is-selected="item?.guid === selectedAssetId && isSelected"
+                :score="score[item?.guid]"
                 :projection="projection"
-                @click="handlePreview(item)"
                 :showCheckBox="showCheckBox"
+                @click="handlePreview(item)"
+                @listItem:check="(e,item) => $emit('updateCheckedAssetList', e, item)"
             ></ListItem>
         </template>
         <template #footer>
@@ -133,10 +134,12 @@
                 },
             },
         },
-        emits: ['preview', 'loadMore'],
+        emits: ['preview', 'loadMore', 'updateCheckedAssetList'],
         setup(props, ctx: SetupContext) {
             const { list, automaticSelectFirstAsset } = toRefs(props)
             const selectedAssetId = ref('')
+
+
             function handlePreview(item: any) {
                 selectedAssetId.value = item.guid
                 ctx.emit('preview', item)
@@ -158,6 +161,8 @@
                     { immediate: true }
                 )
             }
+
+
 
             return { handlePreview, selectedAssetId, list }
         },

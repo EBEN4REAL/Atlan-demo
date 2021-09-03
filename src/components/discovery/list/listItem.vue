@@ -14,8 +14,12 @@
             class="flex items-start flex-1 pr-5 w-96"
             :class="cssClasses?.paddingY ? cssClasses?.paddingY : 'py-6'"
         >
-            <a-checkbox v-if="showCheckBox" class="self-center mr-6">
-            </a-checkbox>
+            <a-checkbox 
+                v-if="showCheckBox" 
+                class="self-center mr-6"
+                @click.stop
+                @change="(e) => $emit('listItem:check', e, item)" 
+            />
             <div
                 class="box-border flex flex-col flex-1 overflow-hidden lg:pr-16"
             >
@@ -240,6 +244,7 @@
                 default: () => false,
             },
         },
+        emits:['listItem:check'],
         setup() {
             const {
                 description,

@@ -38,11 +38,13 @@
         </div>
         <div class="px-4 pb-4">
             <a-input-search
-                :placeholder="`Search ${
-                    currentGuid
-                        ? `in ${parentGlossary.displayText}`
-                        : 'accross Glossaries'
-                }`"
+                :placeholder="
+                    currentGuid &&
+                    currentGuid === parentGlossary.guid &&
+                    parentGlossary.displayText
+                        ? `Search in ${parentGlossary.displayText}`
+                        : 'Search'
+                "
             ></a-input-search>
         </div>
         <div v-if="!isLoading" class="h-screen overflow-auto">

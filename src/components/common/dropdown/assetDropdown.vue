@@ -1,46 +1,18 @@
 <template>
-    <div class="">
-        <div class="">
-            <div class="flex gap-x-2">
-                <a-popover placement="bottomLeft" trigger="click">
-                    <template #content>
-                        <div class="flex flex-col pb-1 gap-y-3">
-                            <template
-                                v-for="(item, index) in list"
-                                :key="item.typeName"
-                            >
-                                <div>
-                                    <p class="mb-0 text-gray-500">
-                                        {{ item.name }}
-                                    </p>
-                                    <AssetSelector
-                                        :key="getKey(index)"
-                                        v-model:value="asset[item.attribute]"
-                                        :type-name="item.typeName"
-                                        :filters="getFilter(index)"
-                                        :disabled="isDisabled(index)"
-                                        style="width: 200px"
-                                        @change="
-                                            handleChange($event, item.level)
-                                        "
-                                    ></AssetSelector>
-                                </div>
-                            </template>
-                        </div>
-                    </template>
-                    <div class="flex pr-3 cursor-pointer">
-                        <p v-if="list?.length > 0" class="connector-btn">
-                            <component
-                                :is="list[0].typeName"
-                                class="w-auto h-3 mr-1"
-                            />
-                            {{ selectorValue }}
-                            <AtlanIcon icon="ChevronDown" class="ml-2" />
-                        </p>
-                    </div>
-                </a-popover>
+    <div class="flex flex-col w-full pb-1 mt-4 gap-y-4">
+        <template v-for="(item, index) in list" :key="item.typeName">
+            <div>
+                <AssetSelector
+                    :key="getKey(index)"
+                    v-model:value="asset[item.attribute]"
+                    :type-name="item.typeName"
+                    :filters="getFilter(index)"
+                    :disabled="isDisabled(index)"
+                    @change="handleChange($event, item.level, filters)"
+                    :placeholder="`Select ${item.name}`"
+                ></AssetSelector>
             </div>
-        </div>
+        </template>
     </div>
 </template>
 
@@ -65,7 +37,7 @@
                 },
             },
         },
-        emits: ['labelChange'],
+        emits: ['labelChange', 'change'],
         setup(props, { emit }) {
             const asset: { [key: string]: any } = ref({})
 
@@ -95,6 +67,11 @@
                 const baseFilter = {
                     condition: 'AND',
                     criterion: [
+                        {
+                            attributeName: 'integrationName',
+                            attributeValue: props.data?.connector,
+                            operator: 'eq',
+                        },
                         {
                             attributeName: 'connectionQualifiedName',
                             attributeValue: props.data?.connection,
@@ -141,7 +118,7 @@
 
             const dirtyTimestamp = ref('')
             const selectorValue = ref(`All ${list.value[0]?.name}s`)
-            const handleChange = (value: any, level: number) => {
+            const handleChange = (value: any, level: number, filters: any) => {
                 // Reset all values which are more than this level
                 list.value.forEach((lv) => {
                     if (lv.level > level) {
@@ -149,6 +126,8 @@
                     }
                 })
                 setSelectorValue()
+                console.log(filters, 'filters')
+                // emit('change', filters)
                 // assetDirty[index] = Date.now().toString();
                 // dirtyTimestamp.value = Date.now().toString();
             }

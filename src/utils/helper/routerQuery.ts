@@ -16,7 +16,7 @@ export function getEncodedStringFromOptions(options: any) {
         limit: string
         filters: string
         connectorsPayload: string
-    } = { }
+    } = {}
 
     if (options.searchText) {
         routerQuery.searchText = options.searchText
@@ -24,10 +24,25 @@ export function getEncodedStringFromOptions(options: any) {
 
     if (options.filters) {
         const filterKeys = Object.keys(options.filters)
+        console.log(filterKeys, 'filterkey', options.filters)
         const filtersString: Array<string> = []
         filterKeys.forEach((filterKey) => {
             let filterKeyValue = options.filters[filterKey]
             switch (filterKey) {
+                case 'connector': {
+                    let connectorPyloadStirng = ''
+                    let criterion = options.filters[filterKey].criterion
+                    if (criterion.length == 1) {
+                        connectorPyloadStirng += `connector:${criterion[0].attributeValue}`
+                    }
+                    if (criterion.length == 2) {
+                        connectorPyloadStirng += `connector:${criterion[0].attributeValue}`
+                        connectorPyloadStirng += `,connection:${criterion[1].attributeValue}`
+                    }
+
+                    filterKeyValue = connectorPyloadStirng
+                    break
+                }
                 case 'assetCategory': {
                     filterKeyValue =
                         options.filters[filterKey]?.selectedIds ?? []
@@ -60,16 +75,16 @@ export function getEncodedStringFromOptions(options: any) {
                     const uniqueOwnerAttributes = new Set(
                         filterKeyValue.map((e: criterion) => e.attributeName)
                     )
-                        ;[...uniqueOwnerAttributes].map((uniqueOwnerAttribute) => {
-                            ownerString += `${uniqueOwnerAttribute}:`
-                            filterKeyValue.forEach((e: criterion) => {
-                                if (e.attributeName === uniqueOwnerAttribute) {
-                                    ownerString += `${e.attributeValue},`
-                                }
-                            })
-                            ownerString = ownerString.slice(0, -1)
-                            ownerString += '&'
+                    ;[...uniqueOwnerAttributes].map((uniqueOwnerAttribute) => {
+                        ownerString += `${uniqueOwnerAttribute}:`
+                        filterKeyValue.forEach((e: criterion) => {
+                            if (e.attributeName === uniqueOwnerAttribute) {
+                                ownerString += `${e.attributeValue},`
+                            }
                         })
+                        ownerString = ownerString.slice(0, -1)
+                        ownerString += '&'
+                    })
                     ownerString = ownerString.slice(0, -1)
                     filterKeyValue = ownerString
                     break
@@ -119,17 +134,17 @@ export function getEncodedStringFromOptions(options: any) {
             routerQuery.filters = filtersString.join(':::')
         }
     }
-    if (options.connectorsPayload) {
-        const payload = options.connectorsPayload
-        let connectorPyloadStirng = ''
-        if (payload.connector) {
-            connectorPyloadStirng += `connector:${payload.connector}`
-        }
-        if (payload.connection) {
-            connectorPyloadStirng += `,connection:${payload.connection}`
-        }
-        routerQuery.connectorsPayload = connectorPyloadStirng
-    }
+    // if (options.connectorsPayload) {
+    //     const payload = options.connectorsPayload
+    //     let connectorPyloadStirng = ''
+    //     if (payload.connector) {
+    //         connectorPyloadStirng += `connector:${payload.connector}`
+    //     }
+    //     if (payload.connection) {
+    //         connectorPyloadStirng += `,connection:${payload.connection}`
+    //     }
+    //     routerQuery.connectorsPayload = connectorPyloadStirng
+    // }
 
     // if (options.sortBy) {
     //   routerQuery.sortBy = options.sortBy;
@@ -168,11 +183,16 @@ export function getDecodedOptionsFromString(router) {
     const filters = url.searchParams.get('filters')
     const searchText = url.searchParams.get('searchText')
     const connectorsPayloadString = url.searchParams.get('connectorsPayload')
-    let connectorsPayload = { }
+    let connectorsPayload = {}
     const limit = url.searchParams.get('limit')
     const facetsFiltersStrings = filters?.split(':::')
     const initialBodyCriterion: Array<any> = []
     const facetsFilters: filterMapType = {
+        connector: {
+            checked: [],
+            condition: 'AND',
+            criterion: [],
+        },
         assetCategory: {
             checked: [],
             condition: 'OR',
@@ -205,9 +225,43 @@ export function getDecodedOptionsFromString(router) {
         const facetFilter = facetFilterString.split('::')
         const facetFilterName = facetFilter[0] // name
         const facetFilterValuesString = facetFilter[1] // verified,draft
-        const criterion: Array<criterion> = []
+        let criterion: Array<criterion> = []
 
         switch (facetFilterName) {
+            case 'connector': {
+                const facetFilterValues = facetFilterValuesString.split(',')
+                console.log(facetFilterValues, 'facetFilterValues', facetFilter)
+                const connectorsPayloadCriterion: criterion = []
+                const conenctorData = {}
+                facetFilterValues.forEach((connectorValue) => {
+                    const subConnectorValues = connectorValue.split(':')
+                    console.log(subConnectorValues, 'subconector')
+                    if (subConnectorValues[0] === 'connector') {
+                        conenctorData.connector = subConnectorValues[1]
+                    } else {
+                        conenctorData.connection = subConnectorValues[1]
+                    }
+                })
+                connectorsPayload = conenctorData
+
+                connectorsPayloadCriterion.push({
+                    attributeName: 'integrationName',
+                    attributeValue: connectorsPayload.connector,
+                    operator: '=',
+                })
+                if (facetFilterValues.length > 1) {
+                    connectorsPayloadCriterion.push({
+                        attributeName: 'connectionQualifiedName',
+                        attributeValue: connectorsPayload.connection,
+                        operator: '=',
+                    })
+                }
+
+                facetsFilters.connector.criterion = connectorsPayloadCriterion
+                facetsFilters.connector.checked = conenctorData
+                criterion = [...connectorsPayloadCriterion, ...criterion]
+                break
+            }
             case 'assetCategory': {
                 const facetFilterValues = facetFilterValuesString.split(',')
                 const selectedIds: string[] = []
@@ -296,12 +350,12 @@ export function getDecodedOptionsFromString(router) {
             }
             case 'advanced': {
                 const allFilters = facetFilterValuesString.split(',')
-                const applied = { }
+                const applied = {}
                 const criterion = []
                 allFilters.forEach((att) => {
                     const [a, v, o] = att.split(':')
                     applied[a] = {
-                        ...(applied[a] || { }),
+                        ...(applied[a] || {}),
                         [o]: v,
                     }
                     criterion.push({
@@ -322,12 +376,12 @@ export function getDecodedOptionsFromString(router) {
             }
             default: {
                 const allFilters = facetFilterValuesString.split(',')
-                const applied = { }
+                const applied = {}
                 const criterion = []
                 allFilters.forEach((att) => {
                     const [a, v, o] = att.split(':')
                     applied[a] = {
-                        ...(applied[a] || { }),
+                        ...(applied[a] || {}),
                         [o]: v,
                     }
                     criterion.push({
@@ -347,38 +401,50 @@ export function getDecodedOptionsFromString(router) {
             }
         }
 
-        if (connectorsPayload) {
-            // const connectorsPayloadCriterion: criterion = [];
-            const connectorValues = connectorsPayloadString.split(',')
-            const conenctorData = { }
-            connectorValues.forEach((connectorValue) => {
-                const subConnectorValues = connectorValue.split(':')
-                console.log(subConnectorValues, 'subconector')
-                if (subConnectorValues[0] === 'connector') {
-                    conenctorData.connector = subConnectorValues[1]
-                } else {
-                    conenctorData.connection = subConnectorValues[1]
-                }
-            })
-            connectorsPayload = conenctorData
+        // if (connectorsPayload) {
+        //     // const connectorsPayloadCriterion: criterion = [];
+        //     const connectorValues = connectorsPayloadString.split(',')
+        //     const conenctorData = {}
+        //     connectorValues.forEach((connectorValue) => {
+        //         const subConnectorValues = connectorValue.split(':')
+        //         console.log(subConnectorValues, 'subconector')
+        //         if (subConnectorValues[0] === 'connector') {
+        //             conenctorData.connector = subConnectorValues[1]
+        //         } else {
+        //             conenctorData.connection = subConnectorValues[1]
+        //         }
+        //     })
+        //     connectorsPayload = conenctorData
 
-            // connectorsPayloadCriterion.push({
-            //   attributeName: "integrationName",
-            //   attributeValue: connectorsPayload.connections,
-            //   operator: "=",
-            // });
-            // connectorsPayloadCriterion.push({
-            //   attributeName: "connectionQualifiedName",
-            //   attributeValue: connectorsPayload.connections,
-            //   operator: "=",
-            // });
-            // criterion = [...criterion, connectorsPayloadCriterion];
+        //     // connectorsPayloadCriterion.push({
+        //     //   attributeName: "integrationName",
+        //     //   attributeValue: connectorsPayload.connections,
+        //     //   operator: "=",
+        //     // });
+        //     // connectorsPayloadCriterion.push({
+        //     //   attributeName: "connectionQualifiedName",
+        //     //   attributeValue: connectorsPayload.connections,
+        //     //   operator: "=",
+        //     // });
+        //     // criterion = [...criterion, connectorsPayloadCriterion];
+        // }
+        switch (facetFilterName) {
+            case 'connector': {
+                initialBodyCriterion.push({
+                    condition: 'AND',
+                    criterion,
+                })
+                break
+            }
+            default: {
+                initialBodyCriterion.push({
+                    condition: 'OR',
+                    criterion,
+                })
+            }
         }
-        initialBodyCriterion.push({
-            condition: 'OR',
-            criterion,
-        })
     })
+    console.log(initialBodyCriterion, facetsFilters, 'facetsFilters')
     return {
         connectorsPayload,
         initialBodyCriterion,

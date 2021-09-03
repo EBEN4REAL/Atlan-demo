@@ -7,6 +7,7 @@ const themeColors = {
     },
     gray: {
       DEFAULT: "#3E4359",
+      light: '#F3F3F3',
       500: "#6F7590",
       300: "#E6E6EB",
       100: "#FAFAFA",

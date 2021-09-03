@@ -241,7 +241,7 @@
                 noOwnerAssigned: false,
             }
             dataMap.value.advanced = {
-                list: props.initialFilters.facetsFilters.advanced.list,
+                applied: props.initialFilters.facetsFilters.advanced.applied,
             }
 
             function setAppliedFiltersCount() {
@@ -338,6 +338,8 @@
                         break
                     }
                     case 'advanced': {
+                        dataMap.value[filterId].applied = {}
+                        filterMap[filterId].criterion = []
                         break
                     }
                     default: {
@@ -433,7 +435,14 @@
                         return appliedOwnersString
                     }
                     case 'advanced': {
-                        return ''
+                        // ? default fall back to bm filter
+                        const totalCount = Object.values(
+                            dataMap.value[filterId]?.applied
+                        ).length
+
+                        return totalCount
+                            ? `${totalCount} condition(s) applied`
+                            : ''
                     }
                     default: {
                         // ? default fall back to bm filter
@@ -456,6 +465,7 @@
                 dataMap.value.owners.userValue = []
                 dataMap.value.owners.groupValue = []
                 dataMap.value.owners.noOwnerAssigned = false
+                dataMap.value.advanced.applied = {}
 
                 // ? remove bm applied data
                 bmFiltersList.value

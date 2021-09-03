@@ -1,7 +1,7 @@
 import { ref } from 'vue'
 import { useAPI } from '~/api/useAPI'
 
-import { GET_TERM_LINKED_ASSETS } from '~/api/keyMaps/glossary'
+import { GET_TERM_LINKED_ASSETS, ASSIGN_TERM_LINKED_ASSETS } from '~/api/keyMaps/glossary'
 
 import { projection } from '~/api/atlas/utils'
 import { BaseAttributes, BasicSearchAttributes } from '~/constant/projection'
@@ -50,7 +50,7 @@ export default function useTermLinkedAssets() {
         GET_TERM_LINKED_ASSETS,
         'POST',
         {
-            cache: true,
+            cache: false,
             body,
             dependantFetchingKey: termQualifiedName,
             options: {
@@ -68,6 +68,7 @@ export default function useTermLinkedAssets() {
 
         if (termName || query) mutate()
     }
+
 
     return {
         linkedAssets,

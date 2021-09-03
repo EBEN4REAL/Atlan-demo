@@ -1,8 +1,9 @@
 <template>
     <div class="">
         <div v-if="page === 'discovery'" class="px-5 py-2 border-b">
-            <div class="flex items-center">
-                <Tooltip
+            <div class="flex items-center justify-between">
+                <div class="flex w-full">
+                    <Tooltip
                     :tooltip-text="title(selectedAsset)"
                     classes="mb-0 text-gray-700 font-semibold"
                 />
@@ -15,7 +16,17 @@
                         class="ml-1.5"
                     ></StatusBadge>
                 </div>
+                </div>
+                <div v-if="showCrossIcon" class="flex items-center mx-2">
+                    <a-button
+                        class="px-1 border-0 outline-none"
+                        @click="$emit('closePreviewPanel')"
+                    >
+                        <AtlanIcon icon="Cancel" />
+                    </a-button>
+                </div>
             </div>
+            
             <div class="flex items-center justify-between text-sm">
                 <!-- <component
                     :is="selectedAsset.typeName"
@@ -122,8 +133,12 @@
                 type: String,
                 required: true,
             },
+            showCrossIcon: {
+                type: Boolean,
+                required: false,
+            },
         },
-        emits: ['assetMutation'],
+        emits: ['assetMutation', 'closePreviewPanel'],
         setup(props, { emit }) {
             const { selectedAsset, page } = toRefs(props)
             const { filteredTabs } = useAssetDetailsTabList(page, selectedAsset)
@@ -197,7 +212,7 @@
         }
 
         :global(.ant-tabs-nav-container-scrolling .ant-tabs-tab:first-child) {
-            @apply ml-0;
+            @apply ml-0 !important;
         }
 
         :global(.ant-tabs-bar) {
@@ -205,7 +220,7 @@
             @apply bg-gray-100;
         }
         :global(.ant-tabs-content) {
-            @apply px-0;
+            @apply px-0 !important;
         }
         :global(.ant-tabs-ink-bar) {
             @apply rounded-t-sm;

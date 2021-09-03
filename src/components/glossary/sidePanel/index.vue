@@ -13,7 +13,7 @@
                             <fa v-else icon="fas chevron-down" />
                         </template>
                         <a-collapse-panel key="1" header="Details">
-                            <div class="flex flex-col pl-6">
+                            <div class="flex flex-col pb-2 pl-6 pr-2">
                                 <div class="flex mt-2 mb-4 space-x-16">
                                     <div class="flex flex-col">
                                         <span
@@ -70,14 +70,6 @@
                                     v-if="glossaryTerms?.length"
                                     :terms="glossaryTerms"
                                 />
-                            </div>
-                        </a-collapse-panel>
-                        <a-collapse-panel key="3" header="Properties">
-                            <div class="px-6 py-0 text-gray-500">
-                                <p class="p-0 m-0 mb-2">Formula</p>
-                                <p class="p-0 m-0 mb-6 text-sm">Add formula</p>
-                                <p class="p-0 m-0 mb-2">Abbreviation</p>
-                                <p class="p-0 m-0 text-sm">Add abbreviation</p>
                             </div>
                         </a-collapse-panel>
                     </a-collapse>
@@ -153,7 +145,7 @@
             const activeKey = ref(['1'])
 
             const refreshEntity = inject<() => void>('refreshEntity')
-            const updateTreeNode = inject<any>('updateTreeNode');
+            const updateTreeNode = inject<any>('updateTreeNode')
 
             const { getApplicableBmGroups } = useBusinessMetadataHelper()
 
@@ -163,18 +155,33 @@
             const termCount = computed(
                 () => props.entity?.attributes?.terms?.length ?? 0
             )
-            const categoryCount = computed(
-                () => props.entity?.attributes?.childrenCategories?.length ?? 0
-            )
+            const categoryCount = computed(() => {
+                if (props.entity?.typeName === 'AtlasGlossary') {
+                    return props.entity?.attributes?.categories?.length ?? 0
+                }
+                if (props.entity?.typeName === 'AtlasGlossaryCategory') {
+                    return (
+                        props.entity?.attributes?.childrenCategories?.length ??
+                        0
+                    )
+                }
+                return 0
+            })
             const glossaryTerms = computed(() => props.topTerms ?? [])
 
-            const updateEntityAndTree = (selectedAsset:  Glossary | Category | Term) => {
-                if(refreshEntity)
-                    refreshEntity()
-                if(updateTreeNode){
-                    updateTreeNode({guid: selectedAsset.guid, entity: selectedAsset})
+            const updateEntityAndTree = (
+                selectedAsset: Glossary | Category | Term
+            ) => {
+                if (refreshEntity) refreshEntity()
+                if (updateTreeNode) {
+                    updateTreeNode({
+                        guid: selectedAsset.guid,
+                        entity: selectedAsset,
+                    })
                 }
             }
+
+            console.log(props.entity.typeName)
 
             // TODO: add BM panel
 

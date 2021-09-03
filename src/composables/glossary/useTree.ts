@@ -182,12 +182,12 @@ const useTree = (emit: any, cacheKey?: string, isAccordion?: boolean) => {
     const selectNode = (selected: any, event: any) => {
         if (!event.node.isLeaf) {
             expandNode([], event)
-            selectedKeys.value = []
+            // selectedKeys.value = []
         } else {
             if (selectedKeys.value.includes(selected)) {
-                selectedKeys.value = []
+                // selectedKeys.value = []
             } else {
-                selectedKeys.value = [...selected]
+                // selectedKeys.value = [...selected]
             }
             emit('select', event.node.eventKey)
         }
@@ -407,6 +407,11 @@ const useTree = (emit: any, cacheKey?: string, isAccordion?: boolean) => {
         }
     }
     
+    const reInitTree = ()  =>  {
+        fetchGuid.value = currentGuid.value;
+        refetch()
+    }
+
     watch(fetchGuid, () => {
         if(fetchType.value === 'glossary'){
             isInitingTree.value = true;
@@ -416,10 +421,12 @@ const useTree = (emit: any, cacheKey?: string, isAccordion?: boolean) => {
     })
 
     watch(fetchedEntity, (newEntity) => {
+        console.log('new Entity', newEntity)
         if(newEntity?.typeName === 'AtlasGlossary'){
             parentGlossary.value = newEntity
             treeData.value = [];
             initTreeData(fetchGuid.value)
+            // refetchGlossary('root')
         } 
         else if(newEntity?.typeName === 'AtlasGlossaryCategory' || newEntity?.typeName === 'AtlasGlossaryTerm') {
             if(!treeData.value?.length){
@@ -443,6 +450,8 @@ const useTree = (emit: any, cacheKey?: string, isAccordion?: boolean) => {
 
             fetchType.value = currentType.value;
             fetchGuid.value = currentGuid.value;
+
+            selectedKeys.value = [currentGuid.value]
         }
     );
 
@@ -458,6 +467,7 @@ const useTree = (emit: any, cacheKey?: string, isAccordion?: boolean) => {
         expandedKeys,
         selectedCache,
         expandedCache,
+        reInitTree,
         onLoadData, 
         expandNode,
         selectNode,

@@ -1,15 +1,18 @@
 <template>
     <div v-if="isHome" class="px-2 py-4">
-        <div class="px-2 pb-2">
-            <a-button
-                class="flex items-center justify-center w-full mb-2 group"
+        <div class="flex flex-col px-2 pb-2">
+            <AtlanBtn
+                @click="createGlossary"
+                class="mb-2"
+                color="secondary"
+                size="sm"
             >
-                <AtlanIcon
-                    class="text-gray-600  group-hover:text-primary group-focus:text-primary"
-                    icon="Add"
-                />
-                <div class="ml-2" @click="createGlossary">Create New Glossary</div></a-button
-            >
+                <template #prefix>
+                    <AtlanIcon icon="Add" />
+                    Create New Glossary
+                </template>
+            </AtlanBtn>
+
             <a-input-search
                 placeholder="Search accross Glossaries"
             ></a-input-search>
@@ -390,7 +393,8 @@
             // data
             // const { selectedKeys, expandedKeys, expandNode, selectNode } =
             //     handleTreeExpand(emit)
-            const { createTerm, createCategory, createGlossary } = useCreateGlossary()
+            const { createTerm, createCategory, createGlossary } =
+                useCreateGlossary()
 
             const router = useRouter()
 

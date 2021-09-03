@@ -1,7 +1,7 @@
 <template>
     <a-popover placement="left">
         <template #content>
-            <div class="flex flex-col hovercard text-gray">
+            <div class="flex flex-col w-56 text-gray">
                 <div class="flex justify-between mb-2 text-sm">
                     <span class="text-gray-500">TERM</span>
                     <span v-if="term.isPropagated" class="text-primary"
@@ -51,9 +51,3 @@
         },
     })
 </script>
-
-<style scoped>
-    .hovercard {
-        max-width: 226px;
-    }
-</style>

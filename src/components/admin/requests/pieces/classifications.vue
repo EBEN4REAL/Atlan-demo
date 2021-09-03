@@ -5,8 +5,11 @@
         popover-trigger="hover"
         read-only
     >
+        <template #pillPrefix>
+            <AtlanIcon icon="Shield"></AtlanIcon>
+        </template>
         <template #popover="{ item }">
-            <ClassificationInfoCard :classification="item"
+            <ClassificationInfoCard :classification="item" class="w-32"
         /></template>
     </PillGroup>
 </template>

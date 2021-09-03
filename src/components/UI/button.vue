@@ -23,7 +23,9 @@
                 required: false,
             },
             color: {
-                type: String as PropType<'primary' | 'secondary' | 'light'>,
+                type: String as PropType<
+                    'primary' | 'secondary' | 'light' | 'success' | 'error'
+                >,
                 default: () => 'primary',
                 required: false,
             },
@@ -100,6 +102,38 @@
             @apply bg-primary-light;
             @apply text-primary;
             @apply border border-primary-light;
+
+            &:hover {
+                @apply opacity-90;
+            }
+            &:focus {
+                @apply ring-2 ring-primary-focus;
+            }
+            &:active {
+                box-shadow: 0px 3px 4px 0px #00000033 inset;
+            }
+        }
+
+        &.success {
+            @apply bg-success;
+            @apply text-white;
+            @apply border border-success;
+
+            &:hover {
+                @apply opacity-90;
+            }
+            &:focus {
+                @apply ring-2 ring-primary-focus;
+            }
+            &:active {
+                box-shadow: 0px 3px 4px 0px #00000033 inset;
+            }
+        }
+
+        &.error {
+            @apply bg-error;
+            @apply text-white;
+            @apply border border-error;
 
             &:hover {
                 @apply opacity-90;

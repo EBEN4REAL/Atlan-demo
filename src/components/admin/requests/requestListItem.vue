@@ -19,7 +19,7 @@
             </span>
         </div>
         <!-- RHS -->
-        <div class="flex items-center col-span-4">
+        <div class="flex items-center col-span-3">
             <AtlanIcon class="mr-4" :icon="requestTypeIcon[request.re]" />
 
             <ClassificationPiece
@@ -37,23 +37,34 @@
                 :name="request.destination_attribute"
                 :value="request.destination_value"
             />
-        </div>
-        <div><UserPiece :user="request.createdByUser" /></div>
-        <div><DatePiece label="Created At" :date="request.created_at" /></div>
 
-        <!-- <AtlanIcon
-            v-if="state.isLoading && !state.error"
-            icon="CircleLoader"
-            class="w-5 h-5 text-gray animate-spin"
-        ></AtlanIcon>
-        <template v-else>
-            <AtlanButton color="secondary" @click="handleRejection">
-                Reject
-            </AtlanButton>
-            <AtlanButton color="light" @click="handleApproval">
-                Approve
-            </AtlanButton>
-        </template> -->
+            <TermPiece
+                v-if="request.re === 'create_term' && request.payload"
+                :data="request.payload"
+            />
+        </div>
+
+        <div class="flex items-center justify-around col-span-3">
+            <template v-if="selected">
+                <AtlanIcon
+                    v-if="state.isLoading && !state.error"
+                    icon="CircleLoader"
+                    class="w-5 h-5 text-gray animate-spin"
+                ></AtlanIcon>
+                <template v-else>
+                    <AtlanButton color="error" @click="handleRejection" bold>
+                        Reject
+                    </AtlanButton>
+                    <AtlanButton color="success" @click="handleApproval" bold>
+                        Approve
+                    </AtlanButton>
+                </template>
+            </template>
+            <template v-else>
+                <UserPiece :user="request.createdByUser" />
+                <DatePiece label="Created At" :date="request.created_at" />
+            </template>
+        </div>
     </div>
 </template>
 
@@ -76,6 +87,7 @@
     import AttrPiece from './pieces/attributeUpdate.vue'
     import UserPiece from './pieces/user.vue'
     import DatePiece from './pieces/date.vue'
+    import TermPiece from './pieces/term.vue'
 
     import { RequestAttributes } from '~/types/atlas/requests'
     import { takeAction } from '~/composables/requests/useRequests'
@@ -91,6 +103,7 @@
             AttrPiece,
             UserPiece,
             DatePiece,
+            TermPiece,
         },
         props: {
             request: {

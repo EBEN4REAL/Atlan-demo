@@ -1,6 +1,6 @@
 <template>
     <div
-        class="flex justify-between py-4 pl-5 pr-4 border-b group"
+        class="flex justify-between py-4 pl-5 pr-4 border-b cursor-pointer  group"
         @click="$emit('gtcCardClicked', entity)"
     >
         <!-- projections start here -->

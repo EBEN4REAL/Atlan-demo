@@ -10,15 +10,26 @@
             <div class="flex flex-row space-x-2 align-middle">
                 <div class="flex flex-col justify-center">
                     <span>
-                        <img
+                        <!-- <img
                             v-if="entity.typeName === 'AtlasGlossaryCategory'"
                             :src="CategorySvg"
                             :width="25"
+                        /> -->
+                        <AtlanIcon
+                            icon="Category"
+                            class="h-5 m-0 mb-1"
+                            v-if="entity.typeName === 'AtlasGlossaryCategory'"
                         />
-                        <img
+
+                        <AtlanIcon
+                            icon="Term"
+                            class="h-5 m-0"
+                            v-else-if="entity.typeName === 'AtlasGlossaryTerm'"
+                        />
+                        <!-- <img
                             v-else-if="entity.typeName === 'AtlasGlossaryTerm'"
                             :src="TermSvg"
-                        />
+                        /> -->
                     </span>
                 </div>
                 <span

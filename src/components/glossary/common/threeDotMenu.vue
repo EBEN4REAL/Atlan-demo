@@ -13,7 +13,8 @@
                 :class="{ ' border-0 shadow-none outline-none': !showLinks }"
                 @click.prevent
             >
-                <fa icon="fal ellipsis-v" class="h-4" />
+                <!-- <fa icon="fal ellipsis-v" class="h-4" /> -->
+                <AtlanIcon icon="KebabMenu" class="h-4 m-0" />
             </a-button>
             <template #overlay>
                 <a-menu>

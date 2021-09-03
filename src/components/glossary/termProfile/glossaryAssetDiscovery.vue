@@ -667,11 +667,13 @@
                 updateBody()
             })
 
-            // watch(entities, () => {
-            //     if(showCheckBox.value){
-            //         checkedAssetList.value = [...entities]
-            //     }
-            // })
+            watch(list, (newList) => {
+                if(!showCheckBox.value){
+                    checkedAssetList.value = [...newList]
+                }
+            });
+
+            
             return {
                 handleClearFiltersFromList,
                 assetFilterRef,

@@ -4,7 +4,7 @@
             <ListItem
                 :item="item"
                 :is-selected="item?.guid === selectedAssetId && isSelected"
-                :isChecked="selectedAssetList.find((asset) => asset.guid === item.guid)"
+                :isChecked="selectedAssetList.filter((asset) => asset.guid === item.guid).length"
                 :score="score[item?.guid]"
                 :projection="projection"
                 :showCheckBox="showCheckBox"

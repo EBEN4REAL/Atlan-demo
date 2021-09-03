@@ -96,6 +96,26 @@
                 >
                     <a-tab-pane key="1" tab="Overview">
                         <div class="px-5 mt-4">
+                            <div v-if="isNewGlossary" class="mb-4">
+                                <p
+                                    class="p-0 mb-1 text-sm leading-5 text-gray-700 "
+                                >
+                                    Name
+                                </p>
+                                <div class="flex">
+                                    <a-input
+                                        v-model:value="newName"
+                                        style="width: 200px"
+                                    />
+                                    <a-button
+                                        v-if="newName"
+                                        class="ml-4"
+                                        type="primary"
+                                        @click="updateTitle"
+                                        >Submit</a-button
+                                    >
+                                </div>
+                            </div>
                             <GlossaryProfileOverview :entity="glossary" />
                             <!-- <GlossaryContinueSettingUp
                                 v-if="
@@ -137,7 +157,7 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, watch, onMounted, toRef, ref, provide } from 'vue'
+    import { defineComponent, watch, onMounted, toRef, ref, provide, computed, inject } from 'vue'
 
     // components
     import GlossaryTermsAndCategoriesTab from '@/glossary/glossaryTermsAndCategoriesTab.vue'
@@ -153,6 +173,7 @@
     import useGTCEntity from '~/composables/glossary/useGtcEntity'
     import useGlossaryTerms from '~/composables/glossary/useGlossaryTerms'
     import useGlossaryCategories from '~/composables/glossary/useGlossaryCategories'
+    import useUpdateGtcEntity from '~/composables/glossary/useUpdateGtcEntity'
 
     import { useRouter } from 'vue-router'
     // static
@@ -193,6 +214,8 @@
                 AtlasGlossaryCategory: 'category',
                 AtlasGlossary: 'glossary',
             }
+            const newName = ref('')
+
 
             const router = useRouter()
             const {
@@ -206,6 +229,8 @@
                 refetch,
                 statusMessage,
             } = useGTCEntity<Glossary>('glossary', guid)
+
+            const isNewGlossary = computed(() => title.value === 'New Glossary')
 
             const {
                 terms: glossaryTerms,
@@ -221,9 +246,13 @@
                 fetchGlossaryCategoriesPaginated,
             } = useGlossaryCategories()
 
+            const { data: updatedEntity, updateEntity } = useUpdateGtcEntity()
+
             // computed
 
             // methods
+            const reInitTree = inject('reInitTree')
+
             const refreshCategoryTermList = (type: string) => {
                 if (type === 'category') {
                     fetchGlossaryCategoriesPaginated({
@@ -255,7 +284,17 @@
             const redirectToProfile = () => {
                 router.push(`/glossary`)
             }
-
+            const updateTitle = () => {
+                updateEntity('glossary', glossary.value?.guid ?? '', {
+                    name: newName.value,
+                });
+                if(reInitTree) {
+                    console.log(reInitTree, 'hello')
+                    setTimeout(() => {
+                        reInitTree()
+                    }, 2000)
+                }
+            }
             // lifecycle methods and watchers
             onMounted(() => {
                 fetchGlossaryTermsPaginated({ guid: guid.value, offset: 0 })
@@ -274,6 +313,11 @@
                     guid: newGuid,
                     offset: 0,
                 })
+            })
+
+            watch(updatedEntity, () => {
+                refetch()
+                newName.value = ''
             })
 
             // Providers
@@ -297,6 +341,8 @@
                 previewEntity,
                 showPreviewPanel,
                 statusObject,
+                isNewGlossary,
+                newName,
                 refreshCategoryTermList,
                 fetchNextCategoryOrTermList,
                 refetch,
@@ -304,6 +350,7 @@
                 handlClosePreviewPanel,
                 assetTypeLabel,
                 redirectToProfile,
+                updateTitle,
             }
         },
     })

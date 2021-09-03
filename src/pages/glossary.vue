@@ -105,7 +105,8 @@
                 selectNode,
                 dragAndDropNode,
                 updateNode,
-                refetchGlossary
+                refetchGlossary,
+                reInitTree
             } = useTree(emit)
                 
             // computed
@@ -153,6 +154,7 @@
 
             provide('updateTreeNode', updateNode)
             provide('refetchGlossaryTree', refetchGlossary);
+            provide('reInitTree', reInitTree);
 
             return {
                 handleOpenModal,

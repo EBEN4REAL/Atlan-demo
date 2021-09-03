@@ -25,7 +25,7 @@
                         }}
                         /</span
                     >
-                    <AtlanIcon icon="Category" class="h-5 m-0 mr-2" />
+                    <AtlanIcon icon="Category" class="h-5 m-0 mb-1 mr-2" />
                     <span class="mr-3 text-sm">{{ title }}</span>
                 </div>
                 <div class="flex flex-row">

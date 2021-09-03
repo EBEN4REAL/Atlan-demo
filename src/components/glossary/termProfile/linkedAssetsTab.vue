@@ -49,7 +49,9 @@
         <GlossaryAssetDiscovery
             :show-filters="false"
             :initial-filters="initialFilters"
-            :isSelected="isSelected"
+            :is-selected="isSelected"
+            :term-name="termQualifiedName"
+            :term-guid="termGuid"
             @preview="handlePreview"
         ></GlossaryAssetDiscovery>
         <teleport to="#sidePanel">
@@ -68,7 +70,7 @@
                 <AssetPreview
                     page="discovery"
                     :selected-asset="selectedAsset"
-                    :showCrossIcon="true"
+                    :show-cross-icon="true"
                     @closePreviewPanel="handleClosePreviewPanel"
                 ></AssetPreview>
             </a-drawer>
@@ -90,6 +92,7 @@
 
     interface PropsType {
         termQualifiedName: string
+        termGuid: string
         termCount: number
         showPreviewPanel: Boolean
     }
@@ -101,7 +104,7 @@
             GlossaryAssetDiscovery,
             AssetPreview,
         },
-        props: ['termQualifiedName', 'termCount'],
+        props: ['termQualifiedName', 'termCount', 'showPreviewPanel', 'termGuid'],
         emits: ['preview'],
         setup(props: PropsType, { emit }) {
             const router = useRouter()

@@ -99,6 +99,7 @@
                         <div :class="$style.tabClasses">
                             <LinkedAssetsTab
                                 :term-qualified-name="qualifiedName"
+                                :term-guid="id"
                                 :show-preview-panel="currentTab === '2'"
                                 @preview="handlePreview"
                             />
@@ -208,6 +209,9 @@
                 newName.value = ''
             })
 
+            watch(guid, () => {
+                currentTab.value = '1'
+            })
             // Providers
             provide('refreshEntity', refetch)
 

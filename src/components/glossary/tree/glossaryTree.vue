@@ -309,11 +309,12 @@
     import TermSvg from '~/assets/images/gtc/term/term.png'
     import { List as StatusList } from '~/constant/status'
     import AtlanIcon from '~/components/common/icon/atlanIcon.vue'
+    import AtlanBtn from '~/components/UI/button.vue'
 
     // import { Glossary } from '~/api/atlas/glossary'
 
     export default defineComponent({
-        components: { LoadingView, ThreeDotMenu, AtlanIcon },
+        components: { LoadingView, ThreeDotMenu, AtlanIcon, AtlanBtn },
         props: {
             glossaryList: {
                 type: Object as PropType<Glossary[]>,

@@ -49,9 +49,9 @@
             <a-input-search
                 :placeholder="
                     currentGuid &&
-                    currentGuid === parentGlossary.guid &&
-                    parentGlossary.displayText
-                        ? `Search in ${parentGlossary.displayText}`
+                    currentGuid === parentGlossary?.guid &&
+                    parentGlossary?.displayText
+                        ? `Search in ${parentGlossary?.displayText}`
                         : 'Search'
                 "
             ></a-input-search>

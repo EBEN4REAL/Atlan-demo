@@ -2,32 +2,59 @@
     <div class="flex w-full">
         <div class="flex flex-col items-stretch flex-1 mb-1 bg-white w-80">
             <div class="flex flex-col h-full">
-                <div class="flex mb-1">
+                <div class="flex" v-if="checkedAssetList.length">
                     <div
-                        v-if="showCheckBox"
-                        class="flex items-center justify-between w-full px-5 py-3 bg-gray-100 "
+                        class="fixed left-0 z-10 flex justify-between w-full  bottom-8"
                     >
-                        <p class="p-0 m-0">Choose assets to link</p>
-                        <div class="flex items-center">
-                            <a-button
-                                class="px-3 mx-2 text-gray-700 bg-transparent outline-none "
-                                @click="handleCancelLinkAssets"
-                                >Cancel</a-button
-                            >
-                            <a-button
-                                class="px-6 text-white outline-none bg-primary"
-                                @click="handleConfirmLinkAssets"
-                                >Link</a-button
-                            >
+                        <div style="width: 264px"></div>
+                        <div
+                            v-if="showCheckBox"
+                            class="flex items-center justify-between px-5 py-3 bg-gray-100 shadow-lg "
+                            style="width: 545px"
+                        >
+                            <p class="p-0 m-0">
+                                <span class="font-bold">{{
+                                    checkedAssetList.length
+                                }}</span>
+                                assets selected
+                            </p>
+                            <div class="flex items-center">
+                                <a-button
+                                    class="px-3 mx-2 text-gray-700 bg-transparent outline-none "
+                                    @click="handleCancelLinkAssets"
+                                    >Cancel</a-button
+                                >
+                                <a-button
+                                    class="px-6 text-white outline-none  bg-primary"
+                                    @click="handleConfirmLinkAssets"
+                                    >Link</a-button
+                                >
+                            </div>
                         </div>
+                        <div style="width: 391px"></div>
                     </div>
-
                     <AssetDropdown
                         v-if="connectorsPayload.connection"
                         :connector="filteredConnector"
                         :data="connectorsPayload"
                         @label-change="setPlaceholder($event, 'asset')"
                     ></AssetDropdown>
+                </div>
+                <div
+                    class="flex items-center px-5 py-3 bg-gray-100"
+                    v-if="showCheckBox"
+                >
+                    <a-button
+                        class="p-0 mr-3 text-gray-700 bg-transparent border-0 shadow-none outline-none "
+                        @click="handleCancelLinkAssets"
+                    >
+                        <AtlanIcon
+                            class="w-auto h-5"
+                            icon="ArrowRight"
+                            style="transform: scaleX(-1)"
+                        />
+                    </a-button>
+                    Link Assets
                 </div>
                 <div
                     class="flex items-center justify-between w-full px-3 mt-4 mb-2 "
@@ -70,21 +97,27 @@
                 >
                     <EmptyView @event="handleClearFiltersFromList"></EmptyView>
                 </div>
-                <AssetList
+                <div
                     v-else
-                    ref="assetlist"
-                    :list="list"
-                    :score="searchScoreList"
-                    :projection="projection"
-                    :is-loading="isLoading || isValidating"
-                    :is-load-more="isLoadMore"
-                    :isSelected="isSelected"
-                    :showCheckBox="showCheckBox"
-                    :automaticSelectFirstAsset="false"
-                    @preview="handlePreview"
-                    @loadMore="loadMore"
-                    @updateCheckedAssetList="modifyLinkList"
-                ></AssetList>
+                    class="overflow-auto"
+                    style="max-height: calc(100vh - 250px)"
+                >
+                    <AssetList
+                        ref="assetlist"
+                        :list="list"
+                        :score="searchScoreList"
+                        :projection="projection"
+                        :is-loading="isLoading || isValidating"
+                        :is-load-more="isLoadMore"
+                        :isSelected="isSelected"
+                        :showCheckBox="showCheckBox"
+                        :automaticSelectFirstAsset="false"
+                        :selectedAssetList="checkedAssetList"
+                        @preview="handlePreview"
+                        @loadMore="loadMore"
+                        @updateCheckedAssetList="modifyLinkList"
+                    ></AssetList>
+                </div>
             </div>
         </div>
     </div>
@@ -246,7 +279,9 @@
             const connectorsPayload = ref(
                 initialFilters.value.connectorsPayload
             )
-            const checkedAssetList = ref<Components.Schemas.AtlasEntityHeader[]>([]);
+            const checkedAssetList = ref<
+                Components.Schemas.AtlasEntityHeader[]
+            >([])
             const filters = ref(initialFilters.value.initialBodyCriterion)
             const filterMap = ref<filterMapType>({
                 assetCategory: {
@@ -300,7 +335,7 @@
                 .join(',')
 
             const termQualifiedName = computed(() => {
-                if(!showCheckBox.value) return termName.value;
+                if (!showCheckBox.value) return termName.value
                 return undefined
             })
             const {
@@ -583,31 +618,43 @@
 
             const handleLinkAssets = () => {
                 showCheckBox.value = !showCheckBox.value
-                
-                updateBody();
+
+                updateBody()
             }
             const handleCancelLinkAssets = () => {
-                showCheckBox.value = false;
-                checkedAssetList.value = [];
+                showCheckBox.value = false
+                checkedAssetList.value = []
                 updateBody()
             }
             const handleConfirmLinkAssets = () => {
-                const { assignLinkedAssets } = useLinkAssets();
+                const { assignLinkedAssets } = useLinkAssets()
 
-                const { response } = assignLinkedAssets(termGuid.value, checkedAssetList.value)
+                const { response } = assignLinkedAssets(
+                    termGuid.value,
+                    checkedAssetList.value
+                )
                 watch(response, (data) => {
-                    showCheckBox.value = false;
+                    showCheckBox.value = false
                     updateBody()
                 })
             }
 
-            const modifyLinkList = (e: Event, item: Components.Schemas.AtlasEntityHeader) => {
-                if(e?.target?.checked){
-                    if(!checkedAssetList.value.find((asset) => asset.guid === item.guid)){
+            const modifyLinkList = (
+                e: Event,
+                item: Components.Schemas.AtlasEntityHeader
+            ) => {
+                if (e?.target?.checked) {
+                    if (
+                        !checkedAssetList.value.find(
+                            (asset) => asset.guid === item.guid
+                        )
+                    ) {
                         checkedAssetList.value.push(item)
                     }
                 } else {
-                    checkedAssetList.value = checkedAssetList.value.filter(asset => asset.guid !== item.guid)
+                    checkedAssetList.value = checkedAssetList.value.filter(
+                        (asset) => asset.guid !== item.guid
+                    )
                 }
             }
 
@@ -618,11 +665,11 @@
             // });
             watch(termName, () => {
                 updateBody()
-            });
+            })
 
             // watch(entities, () => {
             //     if(showCheckBox.value){
-            //         checkedAssetList.value = [...entities]    
+            //         checkedAssetList.value = [...entities]
             //     }
             // })
             return {
@@ -669,7 +716,7 @@
                 handleConfirmLinkAssets,
                 modifyLinkList,
                 checkedAssetList,
-                termQualifiedName
+                termQualifiedName,
             }
         },
         data() {

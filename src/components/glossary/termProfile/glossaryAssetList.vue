@@ -4,6 +4,7 @@
             <ListItem
                 :item="item"
                 :is-selected="item?.guid === selectedAssetId && isSelected"
+                :isChecked="selectedAssetList.find((asset) => asset.guid === item.guid)"
                 :score="score[item?.guid]"
                 :projection="projection"
                 :showCheckBox="showCheckBox"
@@ -133,6 +134,11 @@
                     return false
                 },
             },
+            selectedAssetList: {
+                type: Array,
+                required: false,
+                default: () => []
+            }
         },
         emits: ['preview', 'loadMore', 'updateCheckedAssetList'],
         setup(props, ctx: SetupContext) {

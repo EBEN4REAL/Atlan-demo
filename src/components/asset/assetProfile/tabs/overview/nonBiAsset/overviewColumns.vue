@@ -41,7 +41,7 @@
                         }"
                         class="absolute top-0 left-0 flex items-center justify-center w-full h-full border-l-4 border-transparent "
                     >
-                        {{ text }}
+                        <span class="mr-1">{{ text }}</span>
                     </div>
                 </template>
                 <!-- column_name col -->
@@ -73,7 +73,6 @@
                 :wrap-style="{ position: 'absolute' }"
                 :keyboard="false"
                 :destroy-on-close="true"
-                :zIndex="30"
                 :closable="false"
             >
                 <ColumnPreview
@@ -310,8 +309,7 @@
                 selectedRowData,
                 columns: [
                     {
-                        width: 50,
-                        fixed: 'left',
+                        width: 40,
                         title: '#',
                         dataIndex: 'hash_index',
                         slots: { customRender: 'hash_index' },
@@ -368,6 +366,12 @@
     :global(.ant-table th) {
         @apply whitespace-nowrap font-bold !important;
     }
+    :global(.ant-table) {
+        -webkit-box-sizing: border-box !important;
+        -moz-box-sizing: border-box !important;
+        box-sizing: border-box !important;
+    }
+
     :global(.ant-table td) {
         @apply max-w-xs relative cursor-pointer !important;
     }

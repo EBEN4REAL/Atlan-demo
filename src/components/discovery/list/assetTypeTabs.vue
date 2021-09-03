@@ -2,7 +2,7 @@
     <div class="w-full">
         <a-tabs
             v-model:activeKey="assetType"
-            class="w-full mt-3"
+            class="w-full"
             :class="$style.assetbar"
             @change="handleChange"
         >
@@ -178,7 +178,7 @@
         :global(.ant-tabs-tab) {
             padding-left: 2px !important;
             padding-right: 2px !important;
-            @apply pb-5 !important;
+
             @apply mr-4 !important;
             @apply text-gray-500;
             @apply text-sm !important;
@@ -210,7 +210,7 @@
 
 <style scoped>
     .chip {
-        @apply px-1 pt-1 pb-0.5 mx-1;
+        @apply px-1 pt-0.5 pb-0.5 mx-1;
         @apply rounded;
         @apply tracking-wide;
         @apply text-xs;

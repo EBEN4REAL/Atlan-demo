@@ -1,27 +1,10 @@
 <template>
-    <div class="pt-1">
-        <div v-if="page === 'discovery'" class="px-5">
-            <div class="flex items-center justify-between mt-2 mb-4 text-sm">
-                <!-- <component
-                    :is="selectedAsset.typeName"
-                    class="w-auto h-8"
-                ></component> -->
-                <AssetLogo :asset="selectedAsset" variant="lg" />
-
-                <div class="flex">
-                    <div class="icon-btn">
-                        <AtlanIcon icon="BookmarkOutlined" />
-                    </div>
-                    <div class="icon-btn">
-                        <AtlanIcon class="mr-2" icon="Share" />
-                        <span class="text-sm">Share</span>
-                    </div>
-                </div>
-            </div>
-            <div class="flex items-center pb-1">
+    <div class="">
+        <div v-if="page === 'discovery'" class="px-5 py-2 border-b">
+            <div class="flex items-center">
                 <Tooltip
                     :tooltip-text="title(selectedAsset)"
-                    classes="mb-0 text-lg font-bold text-gray"
+                    classes="mb-0 text-gray-700 font-semibold"
                 />
 
                 <div class="flex items-center">
@@ -33,24 +16,53 @@
                     ></StatusBadge>
                 </div>
             </div>
+            <div class="flex items-center justify-between text-sm">
+                <!-- <component
+                    :is="selectedAsset.typeName"
+                    class="w-auto h-8"
+                ></component> -->
+                <AssetLogo :asset="selectedAsset" variant="lg" />
+
+                <div class="flex space-x-2">
+                    <a-button class="flex items-center" size="small">
+                        <AtlanIcon icon="BookmarkOutlined" />
+                    </a-button>
+
+                    <a-button
+                        class="flex items-center align-middle"
+                        size="small"
+                    >
+                        <AtlanIcon icon="Share" />
+                    </a-button>
+                </div>
+            </div>
         </div>
-        <a-tabs v-model:activeKey="activeKey" :class="$style.previewtab">
+        <a-tabs
+            v-model:activeKey="activeKey"
+            :class="$style.previewtab"
+            tab-position="left"
+            class="h-full"
+        >
             <a-tab-pane
                 v-for="(tab, index) in filteredTabs"
                 :key="index"
-                class="px-4 pb-4 overflow-y-auto"
-                :style="{ height: tabHeights[page] }"
-                :tab="tab.name"
+                class="px-4 overflow-y-auto"
             >
-                <component
-                    :is="tab.component"
-                    :component-data="dataMap[tab.id]"
-                    :info-tab-data="selectedAsset"
-                    :page="page"
-                    :selected-asset="selectedAsset"
-                    :is-loaded="isLoaded"
-                    @change="handleChange"
-                ></component>
+                <template #tab>
+                    <AtlanIcon icon="Share" />
+                </template>
+
+                <div :style="{ height: tabHeights[page] }">
+                    <component
+                        :is="tab.component"
+                        :component-data="dataMap[tab.id]"
+                        :info-tab-data="selectedAsset"
+                        :page="page"
+                        :selected-asset="selectedAsset"
+                        :is-loaded="isLoaded"
+                        @change="handleChange"
+                    ></component>
+                </div>
             </a-tab-pane>
         </a-tabs>
     </div>
@@ -124,8 +136,8 @@
             const infoTabData: Ref<any> = ref({})
 
             const tabHeights = {
-                discovery: 'calc(100vh - 12.2rem)',
-                profile: 'calc(100vh - 6.5rem)',
+                discovery: 'calc(100vh - 7.3rem)',
+                profile: 'calc(100.4vh - 0rem)',
             }
 
             function getAssetEntitity(data: Ref): any {
@@ -181,29 +193,19 @@
 <style lang="less" module>
     .previewtab {
         :global(.ant-tabs-tab) {
-            padding-left: 2px;
-            padding-right: 2px;
-            @apply pb-5;
-            @apply mr-5;
-            @apply text-gray-500;
-            @apply text-sm !important;
-            @apply tracking-wide;
+            @apply px-4 !important;
         }
-        :global(.ant-tabs-tab:first-child) {
-            @apply ml-5;
-        }
+
         :global(.ant-tabs-nav-container-scrolling .ant-tabs-tab:first-child) {
             @apply ml-0;
         }
-        :global(.ant-tabs-tab-active) {
-            @apply text-gray;
-            @apply font-bold;
-        }
+
         :global(.ant-tabs-bar) {
             margin-bottom: 0px;
+            @apply bg-gray-100;
         }
         :global(.ant-tabs-content) {
-            padding-right: 0px;
+            @apply px-0;
         }
         :global(.ant-tabs-ink-bar) {
             @apply rounded-t-sm;

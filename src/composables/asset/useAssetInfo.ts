@@ -98,6 +98,13 @@ export default function useAssetInfo() {
     const updatedAt = (asset: assetInterface) => {
         return useTimeAgo(attributes(asset).__modificationTimestamp).value
     }
+    const previewURL = (asset: assetInterface) => {
+        const customAttributes = JSON.parse(attributes(asset).__customAttributes.split())
+        if (customAttributes.previewURL)
+            return customAttributes.previewURL
+        return null
+    }
+
 
     const lastCrawled = (asset: assetInterface) => {
         return useTimeAgo(attributes(asset).connectionLastSyncedAt).value
@@ -263,17 +270,17 @@ export default function useAssetInfo() {
             },
             attributes(asset)['isPublished']
                 ? {
-                      id: 'tableauPublishedDatasource',
-                      label: 'Published Datasource',
-                      value: attributes(asset)['datasourceName'],
-                      icon: 'TableauPublishedDatasource',
-                  }
+                    id: 'tableauPublishedDatasource',
+                    label: 'Published Datasource',
+                    value: attributes(asset)['datasourceName'],
+                    icon: 'TableauPublishedDatasource',
+                }
                 : {
-                      id: 'tableauEmbeddedDatasource',
-                      label: 'Embedded Datasource',
-                      value: attributes(asset)['datasourceName'],
-                      icon: 'TableauEmbeddedDatasource',
-                  },
+                    id: 'tableauEmbeddedDatasource',
+                    label: 'Embedded Datasource',
+                    value: attributes(asset)['datasourceName'],
+                    icon: 'TableauEmbeddedDatasource',
+                },
             {
                 id: 'tableauDatasourceField',
                 label: 'Tableau DatasourceField',
@@ -438,5 +445,6 @@ export default function useAssetInfo() {
         getHierarchy,
         getTableauProperties,
         getTableauHierarchy,
+        previewURL,
     }
 }

@@ -24,9 +24,9 @@ module.exports = {
                     focus: '#BDCDF4',
                     light: '#F4F6FD',
                 },
-                body: '#fff',
+                body: '#f8f8fd',
                 gray: {
-                    DEFAULT: '#535b62',
+                    DEFAULT: '#3E4359',
                     light: '#F3F3F3',
                     500: '#6F7590',
                     300: '#E6E6EB',

@@ -3,7 +3,7 @@
 export const List: any = [
     {
         id: 'datasets',
-        include: ['View', 'Table', 'TablePartition'],
+        include: ['View', 'Table', 'TablePartition', 'MaterialisedView'],
         label: 'Datasets',
         description: 'Datasets',
     },

@@ -43,6 +43,7 @@
             modelValue: {
                 type: String,
                 required: false,
+                default: () => '',
             },
         },
         emits: ['update:modelValue', 'change'],

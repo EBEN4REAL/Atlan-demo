@@ -1,50 +1,32 @@
 <template>
-    <div class="flex flex-col">
-        <template v-for="(item, index) in list" :key="item.id">
-            <div class="flex flex-col space-y-1 border-b border-gray-200">
-                <div class="flex items-center mb-1">
-                    <a-cascader
-                        v-model:value="item.operator"
-                        :options="options"
-                        placeholder="Please select"
-                        @change="handleOperatorChange(index)"
-                    />
-                    <div
-                        class="ml-2 leading-none hover:text-red-500"
-                        @click="handleRemove(index)"
-                    >
-                        <fa icon="fal times-circle"></fa>
-                    </div>
-                </div>
-                <DynamicInput
-                    v-if="item.isInput"
-                    v-model="item.operand"
-                    :data-type="item.type"
-                    @change="handleOperandChange(index)"
-                ></DynamicInput>
+    <span>
+        <div class="mr-2 overflow-y-auto" style="max-height: 25rem">
+            <div v-for="(a, x) in AdvancedAttributeList" :key="x" class="mx-5">
+                <AttributeItem
+                    :a="a"
+                    :applied="data.applied[a.value] || {}"
+                    @handleAttributeInput="setAdvancefilter"
+                    :operators="operatorsMap[a.typeName]"
+                />
             </div>
-        </template>
-    </div>
-    <a-button block size="small" class="mt-2" @click="handleAdd"
-        ><fa icon="fal plus"></fa
-    ></a-button>
+        </div>
+    </span>
 </template>
 
 <script lang="ts">
-    import { computed, defineComponent, PropType, ref } from 'vue'
-
-    import DynamicInput from '@common/input/dynamic.vue'
+    import { defineComponent, PropType } from 'vue'
+    import AttributeItem from '../common/attributeItems.vue'
 
     import {
         AdvancedAttributeList,
-        OperatorList,
+        operatorsMap,
     } from '~/constant/advancedAttributes'
     import { Collapse } from '~/types'
     import { Components } from '~/api/atlas/client'
 
     export default defineComponent({
         components: {
-            DynamicInput,
+            AttributeItem,
         },
         props: {
             item: {
@@ -58,82 +40,58 @@
                 type: Object,
                 required: false,
                 default() {
-                    return []
-                },
-            },
-            modelValue: {
-                type: Array,
-                required: false,
-                default() {
-                    return []
+                    return {}
                 },
             },
         },
-        emits: ['change'],
+        emits: ['change', 'update:data'],
         setup(props, { emit }) {
-            const list = ref([...props.data.list])
+            const isEmptyObject = (obj: Object) =>
+                Object.keys(obj).length === 0 && obj.constructor === Object
 
-            const options = ref([])
-            AdvancedAttributeList.forEach((item) => {
-                const temp = item
-                temp.children = OperatorList.filter((op) =>
-                    op.allowedType.includes(item.type)
-                )
-                options.value.push(temp)
-            })
-            const handleAdd = () => {
-                list.value.push({
-                    id: Date.now(),
-                })
-            }
-            const handleRemove = (index) => {
-                list.value.splice(index, 1)
-                handleChange()
-            }
-
-            const handleOperatorChange = (index) => {
-                const selected = list.value[index].operator
-
-                if (selected?.length > 0) {
-                    const found = options.value.find(
-                        (op) => op.value === selected[0]
-                    )
-                    list.value[index].type = found?.type
-                    const foundOperator = OperatorList.find(
-                        (op) => op.value === selected[1]
-                    )
-                    list.value[index].isInput = foundOperator?.isInput
-                    if (!list.value[index].isInput) {
-                        handleChange()
-                    }
+            const setAdvancefilter = (
+                a: { name: string },
+                appliedValueMap: Object
+            ) => {
+                // ? if appliedValueMap === {} i.e all applied filters removed, remove the entry
+                const newDataMap = {
+                    ...props.data,
+                    applied: {
+                        ...props.data.applied,
+                        [a.value]: appliedValueMap,
+                    },
                 }
-            }
+                if (isEmptyObject(appliedValueMap))
+                    delete newDataMap.applied[a.name]
+                emit('update:data', newDataMap)
 
-            const handleOperandChange = (index) => {
-                console.log(list.value[index])
-                const selected = list.value[index].operand
-                console.log(selected)
-                handleChange()
-            }
-
-            const handleChange = () => {
                 const criterion: Components.Schemas.FilterCriteria[] = []
-                console.log(list.value, 'listt')
 
-                list.value.forEach((element) => {
-                    console.log(element)
-                    if (!element.isInput) {
+                // ? populate criterion object with filters previously applied
+                Object.entries(newDataMap.applied).forEach((attribute) => {
+                    Object.entries(attribute[1]).forEach((o) => {
                         criterion.push({
-                            attributeName: element.operator[0],
-                            operator: element.operator[1],
+                            attributeName: attribute[0],
+                            operator: o[0],
+                            attributeValue: o[1],
                         })
-                    } else if (element.operand !== '') {
-                        criterion.push({
-                            attributeName: element.operator[0],
-                            operator: element.operator[1],
-                            attributeValue: element.operand,
-                        })
+                    })
+                })
+
+                // ? add new filter to criterion
+                Object.keys(appliedValueMap).forEach((key: string) => {
+                    const alreadyAppliedIndex = criterion.findIndex(
+                        (c) => c.attributeName === a.value && c.operator === key
+                    )
+
+                    const filter = {
+                        attributeName: a.value,
+                        operator: key,
+                        attributeValue: appliedValueMap[key],
                     }
+                    if (alreadyAppliedIndex > -1)
+                        criterion[alreadyAppliedIndex] = filter
+                    else criterion.push(filter)
                 })
 
                 emit('change', {
@@ -145,20 +103,17 @@
                 })
             }
 
-            const clear = () => {
-                list.value = []
-                handleChange()
-            }
-
             return {
-                options,
-                list,
-                handleAdd,
-                handleRemove,
-                handleOperatorChange,
-                handleOperandChange,
-                clear,
+                AdvancedAttributeList,
+                setAdvancefilter,
+                operatorsMap,
             }
         },
     })
 </script>
+
+<style>
+    .ant-popover-arrow {
+        display: none;
+    }
+</style>

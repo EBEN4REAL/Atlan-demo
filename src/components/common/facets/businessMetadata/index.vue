@@ -1,31 +1,16 @@
 <template>
     <span>
-        <div v-if="data.list.attributeDefs.length > 10" class="pr-1 mx-5 mb-3">
-            <a-input
+        <div v-if="data.list.attributeDefs.length > 10" class="px-4 mt-1 mb-2">
+            <a-input-search
                 ref="searchText"
                 v-model:value="attributeSearchText"
                 type="text"
-                class="pr-1 bg-white rounded shadow-none border-right-0"
+                :allowClear="true"
                 :placeholder="`Search ${data.list.attributeDefs.length} attributes`"
             >
-                <template #prefix>
-                    <fa icon="fal search" class="mr-1 text-gray-500" />
-                </template>
-                <template #suffix>
-                    <fa
-                        v-if="attributeSearchText"
-                        icon="fal times"
-                        class="ml-2 mr-1 cursor-pointer"
-                        @click="() => (attributeSearchText = '')"
-                    />
-                </template>
-            </a-input>
+            </a-input-search>
         </div>
-        <div
-            ref="container"
-            class="mr-2 overflow-y-auto"
-            style="max-height: 25rem"
-        >
+        <div ref="container" class="overflow-y-auto" style="max-height: 25rem">
             <div
                 v-for="(a, x) in attributeSearchText.length
                     ? filterList(data.list.attributeDefs)
@@ -34,16 +19,17 @@
                           showAll ? data.list.attributeDefs.length : 10
                       )"
                 :key="x"
-                class="mx-5"
+                class="px-4"
             >
                 <AttributeItem
                     :a="a"
                     :applied="data.applied[a.name] || {}"
                     @handleAttributeInput="setBMfilter"
+                    :operators="getOperatorMap(a)"
                 />
             </div>
         </div>
-        <div class="m-3">
+        <div class="px-4 mb-2">
             <div
                 v-if="
                     !showAll &&
@@ -74,8 +60,10 @@
     import { defineComponent, PropType, ref, provide } from 'vue'
     import useEnums from '@/admin/enums/composables/useEnums'
     import { Collapse } from '~/types'
-    import AttributeItem from './attributeItems.vue'
+    import AttributeItem from '../common/attributeItems.vue'
     import { Components } from '~/api/atlas/client'
+    import { operatorsMap as map } from '~/constant/business_metadata'
+    import useBusinessMetadataHelper from '~/composables/businessMetadata/useBusinessMetadataHelper'
 
     export default defineComponent({
         name: 'BusinessMetadata',
@@ -98,11 +86,19 @@
             const container = ref(null)
 
             const { enumListData: enumsList } = useEnums()
+            const { getDatatypeOfAttribute } = useBusinessMetadataHelper()
 
             const isEmptyObject = (obj: Object) =>
                 Object.keys(obj).length === 0 && obj.constructor === Object
 
             provide('enumsList', enumsList)
+
+            const getOperatorMap = (a) =>
+                JSON.parse(
+                    JSON.stringify(
+                        map[getDatatypeOfAttribute(a.typeName)] || map.enum
+                    )
+                ).map((o) => ({ ...o, checked: false }))
             /**
              * @param {String} a - attribute object of the filter to apply
              * @param {String} appliedValueMap - consists of 1 or more operators mapped with their values
@@ -129,10 +125,10 @@
                 const criterion: Components.Schemas.FilterCriteria[] = []
 
                 // ? populate criterion object with filters previously applied
-                Object.entries(props.data.applied).forEach((attribute) => {
+                Object.entries(newDataMap.applied).forEach((attribute) => {
                     Object.entries(attribute[1]).forEach((o) => {
                         criterion.push({
-                            attributeName: `${props.data.list.name}.${attribute[0]}`,
+                            attributeName: `${newDataMap.list.name}.${attribute[0]}`,
                             operator: o[0],
                             attributeValue: o[1],
                         })
@@ -183,6 +179,7 @@
                 showAll,
                 showScrollBar,
                 container,
+                getOperatorMap,
             }
         },
     })

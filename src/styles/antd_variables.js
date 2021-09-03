@@ -10,7 +10,7 @@ const getAntDesignVariables = {
     'link-color': themeColors.primary.DEFAULT,
     'heading-color': themeColors.gray.DEFAULT,
     'text-color': themeColors.gray.DEFAULT,
-    'font-family': 'Avenir',
+    'font-family': 'Avenir, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, Noto Sans, sans-serif, Apple Color Emoji,Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji !important;',
     'border-radius-base': '4px',
     // Table
     'table-header-bg': themeColors.gray[100],

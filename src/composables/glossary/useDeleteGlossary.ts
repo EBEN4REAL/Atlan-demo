@@ -1,4 +1,4 @@
-import { watch, ref } from 'vue';
+import { watch, ref, inject } from 'vue';
 import { useRouter } from 'vue-router'
 
 import { useAPI } from "~/api/useAPI"
@@ -9,6 +9,8 @@ const useDeleteGlossary = () => {
     const isLoading = ref<boolean | null>();
     const router = useRouter()
     
+    const refetchGlossaryTree = inject<(guid: string | 'root') => void>('refetchGlossaryTree')
+
     const redirectAfterDelete = (type: 'glossary' | 'category' | 'term', guid: string) => {
         error.value = null;
         isLoading.value = null;
@@ -52,7 +54,13 @@ const useDeleteGlossary = () => {
         //         redirectAfterDelete('category', newData.guid)
         //     }
         // });
-        if(redirect && parentGlossaryGuid) redirectAfterDelete('category', parentGlossaryGuid)
+        if (refetchGlossaryTree) {
+            // TODO: replace with immediate parent guid instead of parentGlossaryGuid
+            refetchGlossaryTree('root')
+        }
+        if(redirect && parentGlossaryGuid) { 
+            redirectAfterDelete('category', parentGlossaryGuid)
+        }
         watch([deleteError, loading], ([newError, newLoading]) => {
             error.value = newError;
             isLoading.value = newLoading
@@ -74,7 +82,13 @@ const useDeleteGlossary = () => {
             //     redirectAfterDelete('term', newData.guid)
             // }
         // });
-        if(redirect && parentGlossaryGuid) redirectAfterDelete('term', parentGlossaryGuid)
+        if (refetchGlossaryTree) {
+            // TODO: replace with immediate parent guid instead of parentGlossaryGuid
+            refetchGlossaryTree('root')
+        }
+        if(redirect && parentGlossaryGuid) {
+            redirectAfterDelete('term', parentGlossaryGuid)
+        }
 
         watch([deleteError, loading], ([newError, newLoading]) => {
             error.value = newError;

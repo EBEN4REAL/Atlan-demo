@@ -45,7 +45,7 @@
                 <component
                     :is="tab.component"
                     :component-data="dataMap[tab.id]"
-                    :info-tab-data="infoTabData"
+                    :info-tab-data="selectedAsset"
                     :page="page"
                     :selected-asset="selectedAsset"
                     :is-loaded="isLoaded"

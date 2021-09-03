@@ -28,7 +28,7 @@
                 :columns="columns"
                 :data-source="columnsData.filteredList"
                 :pagination="false"
-                :scroll="{ y: 240 }"
+                :scroll="{ y: 240, scrollToFirstRowOnChange: true }"
                 :loading="!columnsData.filteredList"
                 :custom-row="customRow"
                 :row-class-name="rowClassName"
@@ -88,7 +88,15 @@
 
 <script lang="ts">
     // Vue
-    import { defineComponent, inject, watch, computed, ref, provide } from 'vue'
+    import {
+        defineComponent,
+        inject,
+        watch,
+        computed,
+        ref,
+        provide,
+        nextTick,
+    } from 'vue'
     import { useRoute, useRouter } from 'vue-router'
 
     // Components
@@ -158,6 +166,19 @@
                 filterColumnsList(columnList)
             }
 
+            const scrollToElement = (selectedRow) => {
+                const tableRow = document.querySelector(
+                    `tr[data-row-key="${selectedRow}"]`
+                )
+
+                if (tableRow) {
+                    tableRow.scrollIntoView({
+                        block: 'nearest',
+                        inline: 'nearest',
+                    })
+                }
+            }
+
             // filterColumnsList
             const filterColumnsList = (columnList: any) => {
                 const { filteredList } = useColumnsFilter(
@@ -214,6 +235,12 @@
                             }
                         }
                     )
+                    /* setTimeout(() => {
+                        scrollToElement(selectedRow.value)
+                    }, 500) */
+                    nextTick(() => {
+                        scrollToElement(selectedRow.value)
+                    })
                 }
             }
 

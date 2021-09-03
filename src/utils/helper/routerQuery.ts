@@ -1,7 +1,7 @@
-import {
-    AdvancedAttributeList,
-    OperatorList,
-} from '~/constant/advancedAttributes'
+// import {
+//     AdvancedAttributeList,
+//     OperatorList,
+// } from '~/constant/advancedAttributes'
 import { List as AssetCategoryList } from '~/constant/assetCategory'
 
 export interface criterion {
@@ -97,7 +97,7 @@ export function getEncodedStringFromOptions(options: any) {
                                 (e.attributeName ? `${e.attributeName}:` : '') +
                                 (e.attributeValue
                                     ? `${e.attributeValue}:`
-                                    : '') +
+                                    : '-:') +
                                 (e.operator ? `${e.operator}:` : '')
                         )
                         .join(',')
@@ -215,7 +215,7 @@ export function getDecodedOptionsFromString(router) {
             criterion: [],
         },
         advanced: {
-            list: [],
+            applied: [],
             condition: 'OR',
             criterion: [],
         },
@@ -349,63 +349,28 @@ export function getDecodedOptionsFromString(router) {
                 break
             }
             case 'advanced': {
-                const facetFilterValues = facetFilterValuesString.split(',')
-                const options: Array<any> = []
-                AdvancedAttributeList.forEach((item) => {
-                    const temp = item
-                    temp.children = OperatorList.filter((op) =>
-                        op.allowedType.includes(item.type)
-                    )
-                    options.push(temp)
-                })
-                try {
-                    let tmp: {
-                        isInput: boolean | undefined
-                        operand: string
-                        type: string
-                        operator: Array<string>
+                const allFilters = facetFilterValuesString.split(',')
+                const applied = {}
+                const criterion = []
+                allFilters.forEach((att) => {
+                    const [a, v, o] = att.split(':')
+                    applied[a] = {
+                        ...(applied[a] || {}),
+                        [o]: v,
                     }
-                    facetFilterValues.forEach((facetFilterValue) => {
-                        tmp = {
-                            isInput: false,
-                            operand: '',
-                            type: '',
-                            operator: [],
-                        }
-                        const subFacetFilterValues = facetFilterValue.split(':')
-                        let attributeName: string
-                        let attributeValue: any
-                        let operator: any
-                        attributeName = subFacetFilterValues[0]
-                        if (subFacetFilterValues.length > 0)
-                            attributeValue = subFacetFilterValues[1]
-                        if (subFacetFilterValues.length > 1)
-                            operator = subFacetFilterValues[2]
-
-                        const found = options.find(
-                            (op) => op.value === attributeName
-                        )
-                        tmp.type = found?.type
-                        const foundOperator = OperatorList.find(
-                            (op) => op.value === operator
-                        )
-                        tmp.isInput = foundOperator?.isInput
-                        tmp.operand = attributeValue
-                        const operatorArray = []
-                        operatorArray.push(attributeName)
-                        if (operator) operatorArray.push(operator)
-                        tmp.operator = operatorArray
-
-                        criterion.push({
-                            attributeName,
-                            attributeValue,
-                            operator,
-                        })
+                    criterion.push({
+                        attributeName: a,
+                        attributeValue:
+                            v === '-' && ['isNull', 'notNull'].includes(o)
+                                ? ''
+                                : v,
+                        operator: o,
                     })
-                    facetsFilters.advanced.criterion = criterion
-                    facetsFilters.advanced.list.push(tmp)
-                } catch (err) {
-                    console.log(err)
+                })
+
+                facetsFilters[facetFilterName] = {
+                    applied,
+                    criterion,
                 }
                 break
             }

@@ -1,10 +1,12 @@
 <template>
     <div>
-        <div class="p-4 bg-gray-100">
+        <div class="p-4 bg-gray-100 shadow">
             <div class="flex mb-2 space-x-2">
                 <a-input-search
                     v-model:value="searchQuery"
-                    :placeholder="`Search ${qualifiedName.split('@'[1])}....`"
+                    :placeholder="`Search ${
+                        displayText || qualifiedName.split('@'[1])
+                    }....`"
                     @change="onSearch"
                 ></a-input-search>
                 <a-popover trigger="click">
@@ -116,6 +118,11 @@
                 required: true,
                 default: '',
             },
+            displayText: {
+                type: String,
+                required: false,
+            },
+
             guid: {
                 type: String,
                 required: true,
@@ -138,10 +145,17 @@
         setup(props, { emit }) {
             // data
             const glossaryQualifiedName = toRef(props, 'qualifiedName')
+
             const searchQuery = ref<string>()
             const activeKey = ref(0)
             const selectedEntity = ref<Category | Term>()
-            const projection = ref(['status', 'description', 'owners'])
+            const projection = ref([
+                'status',
+                'description',
+                'owners',
+                'linkedAssets',
+                // 'heirarchy'
+            ])
             const {
                 entities,
                 error,
@@ -155,6 +169,7 @@
                 { value: 'description', label: 'Description' },
                 { value: 'owners', label: 'Owners' },
                 { value: 'status', label: 'Status' },
+                { value: 'linkedAssets', label: 'Linked Assets' },
                 // { value: 'heirarchy', label: 'Heirarchy' },
                 // { value: 'rows', label: 'Rows' },
                 // { value: 'popularity', label: 'Popularity' },

@@ -3,13 +3,21 @@
         class="group-hover:opacity-100"
         :class="isVisible ? 'opacity-100' : ''"
     >
-        <a-dropdown v-model:visible="isVisible" :trigger="['click']" @click.stop="() => {}">
+        <a-dropdown
+            v-model:visible="isVisible"
+            :trigger="['click']"
+            @click.stop="() => {}"
+        >
             <a-button class="px-2" @click.prevent>
                 <fa icon="fal ellipsis-v" class="h-4" />
             </a-button>
             <template #overlay>
                 <a-menu>
-                    <a-menu-item v-if="showLinks" @click="redirectToProfile">
+                    <a-menu-item
+                        v-if="showLinks"
+                        key="profileLink"
+                        @click="redirectToProfile"
+                    >
                         <div class="flex items-center">
                             <AtlanIcon icon="Link" class="m-0 mr-2" />
                             <p class="p-0 m-0">
@@ -21,6 +29,7 @@
                     </a-menu-item>
                     <a-menu-item
                         v-if="showLinks"
+                        key="copyLink"
                         class="flex items-center"
                         @click="handleCopyProfileLink"
                     >
@@ -37,6 +46,8 @@
                     <a-menu-divider v-if="showLinks" />
                     <a-menu-item
                         v-if="entity?.typeName !== 'AtlasGlossaryTerm'"
+                        key="add"
+                        @click="createNewTerm"
                         class="flex items-center"
                     >
                         <div class="flex items-center">
@@ -46,7 +57,9 @@
                     </a-menu-item>
                     <a-menu-item
                         v-if="entity?.typeName !== 'AtlasGlossaryTerm'"
+                        key="addCat"
                         class="flex items-center"
+                        @click="createNewCategory"
                     >
                         <div class="flex items-center">
                             <AtlanIcon icon="Link" class="m-0 mr-2" />
@@ -72,11 +85,13 @@
                                     class="p-0"
                                 ></StatusBadge>
                                 <AtlanIcon
-                                    class="pt-1 transform -rotate-90"
+                                    class="pt-1 ml-4 transform -rotate-90"
                                     icon="ChevronDown"
                                 />
                             </div>
                         </template>
+                        <template #expandIcon><div></div> </template>
+
                         <a-menu-item class="m-0 bg-white">
                             <Status
                                 v-if="entity?.guid"
@@ -96,17 +111,18 @@
                                     <p class="p-0 m-0">Add Owner</p>
                                 </div>
                                 <AtlanIcon
-                                    class="pt-1 transform -rotate-90"
+                                    class="pt-1 ml-4 transform -rotate-90"
                                     icon="ChevronDown"
                                 />
                             </div>
                         </template>
+                        <template #expandIcon><div></div> </template>
                         <a-menu-item class="m-0 bg-white">
                             <Owners :selectedAsset="entity"
                         /></a-menu-item>
                     </a-sub-menu>
                     <a-menu-divider />
-                    <a-menu-item class="text-red-700">
+                    <a-menu-item key="archive" class="text-red-700">
                         <a-button
                             class="w-full p-0 m-0 bg-transparent border-0 shadow-none outline-none "
                             @click="showModal"
@@ -148,6 +164,7 @@
     import StatusBadge from '@common/badge/status/index.vue'
     import { copyToClipboard } from '~/utils/clipboard'
     import useDeleteGlossary from '~/composables/glossary/useDeleteGlossary'
+    import useCreateGlossary from '~/composables/glossary/useCreateGlossary'
     import {
         Glossary,
         Category,
@@ -192,6 +209,7 @@
                 isLoading,
             } = useDeleteGlossary()
 
+            const { createTerm, createCategory } = useCreateGlossary()
             const serviceMap = {
                 AtlasGlossaryTerm: deleteTerm,
                 AtlasGlossaryCategory: deleteCategory,
@@ -223,6 +241,24 @@
                 }/${props?.entity?.guid}`
                 copyToClipboard(text)
             }
+            const createNewTerm = () => {
+                if (props.entity?.typeName === 'AtlasGlossary')
+                    createTerm(props.entity?.guid ?? '')
+                else
+                    createTerm(
+                        props.entity?.attributes?.anchor?.guid ?? '',
+                        props.entity.guid
+                    )
+            }
+            const createNewCategory = () => {
+                if (props.entity?.typeName === 'AtlasGlossary')
+                    createCategory(props.entity?.guid ?? '')
+                else
+                    createCategory(
+                        props.entity?.attributes?.anchor?.guid ?? '',
+                        props.entity.guid
+                    )
+            }
 
             return {
                 handleCopyProfileLink,
@@ -232,6 +268,8 @@
                 handleOk,
                 handleCancel,
                 showModal,
+                createNewTerm,
+                createNewCategory,
             }
         },
     })

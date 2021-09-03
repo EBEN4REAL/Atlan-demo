@@ -96,7 +96,7 @@
             const isLoading = ref(true)
             const plainOptions = ['description', 'owners', 'business terms']
             const checkedList = ref(['description', 'owners'])
-            const activeKey = ref(1)
+            const activeKey = ref(0)
             const queryText = ref('')
 
             /** INJECTIONS */
@@ -134,7 +134,9 @@
             }
 
             /** LIFECYCLES */
-            onMounted(fetchData)
+            onMounted(async () => {
+                await fetchData()
+            })
 
             /** WATCHERS */
             watch(assetData, fetchData, { immediate: true })

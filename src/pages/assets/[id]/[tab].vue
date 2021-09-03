@@ -38,6 +38,7 @@
         watch,
         onMounted,
         provide,
+        toRefs,
     } from 'vue'
     import { useRoute, useRouter } from 'vue-router'
 
@@ -64,11 +65,16 @@
                 () => import('@/asset/assetProfile/tabs/settings/index.vue')
             ),
         },
-        setup(_, context) {
+        props: {
+            updateProfile: { type: Boolean, required: true },
+        },
+        emits: ['preview', 'updateAssetPreview'],
+        setup(props, context) {
             /** DATA */
             const activeKey = ref(1)
             const data = ref({})
             const refs: { [key: string]: any } = ref({})
+            const { updateProfile } = toRefs(props)
             const tabs = [
                 {
                     id: 1,
@@ -137,6 +143,7 @@
 
             /** WATCHERS */
             watch(id, () => fetch())
+            watch(updateProfile, () => fetch())
 
             /** PROVIDER */
             provide('assetData', data.value)
@@ -181,8 +188,7 @@ meta:
 
         :global(.ant-tabs-tabpane) {
             height: calc(100vh - 200px) !important;
-            overflow-y: scroll !important;
-            overflow-x: hidden !important;
+            overflow: auto !important;
             @apply pr-0;
         }
         :global(.ant-tabs-ink-bar) {

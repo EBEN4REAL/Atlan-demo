@@ -33,7 +33,9 @@
                 </div>
                 <div class="flex flex-row space-x-2">
                     <a-button class="px-2"
-                        ><atlan-icon icon="BookmarkOutlined" class="w-auto h-4"
+                        ><atlan-icon
+                            icon="BookmarkOutlined"
+                            class="w-auto h-4 text-gray-700"
                     /></a-button>
 
                     <a-button class="flex items-center"
@@ -53,20 +55,24 @@
                     <a-tab-pane key="1" tab="Overview">
                         <div class="px-5 mt-4">
                             <div v-if="isNewTerm" class="mb-4">
-                                <p class="mb-1 p-0 text-sm leading-5 text-gray-700">Name</p>
+                                <p
+                                    class="p-0 mb-1 text-sm leading-5 text-gray-700 "
+                                >
+                                    Name
+                                </p>
                                 <div class="flex">
-                                    <a-input 
+                                    <a-input
                                         v-model:value="newName"
                                         style="width: 200px"
                                     />
-                                    <a-button 
-                                        v-if="newName" 
-                                        class="ml-4" 
+                                    <a-button
+                                        v-if="newName"
+                                        class="ml-4"
                                         type="primary"
-                                        @click="updateTitle"    
-                                    >Submit</a-button>
+                                        @click="updateTitle"
+                                        >Submit</a-button
+                                    >
                                 </div>
-
                             </div>
                             <GlossaryProfileOverview :entity="term" />
                         </div>
@@ -143,7 +149,7 @@
             const guid = toRef(props, 'id')
             const currentTab = ref('1')
             const previewEntity = ref()
-            const newName = ref('');
+            const newName = ref('')
 
             const {
                 entity: term,
@@ -156,7 +162,7 @@
                 refetch,
             } = useGTCEntity<Term>('term', guid, guid.value)
 
-            const { data:updatedEntity, updateEntity }  = useUpdateGtcEntity()
+            const { data: updatedEntity, updateEntity } = useUpdateGtcEntity()
 
             const parentGlossaryName = computed(
                 () => term.value?.attributes?.qualifiedName?.split('@')[1] ?? ''
@@ -174,19 +180,14 @@
 
             const updateTitle = () => {
                 updateEntity('term', term.value?.guid ?? '', {
-                    guid: term.value?.guid,
                     name: newName.value,
-                    qualifiedName: qualifiedName.value,
-                    anchor: {
-                        glossaryGuid: term.value?.attributes?.anchor?.guid
-                    }
-                });
+                })
             }
 
             watch(updatedEntity, () => {
-                refetch();
-                newName.value = '';
-            } )
+                refetch()
+                newName.value = ''
+            })
 
             // Providers
             provide('refreshEntity', refetch)

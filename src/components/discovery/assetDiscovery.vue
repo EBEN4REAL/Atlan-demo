@@ -2,7 +2,7 @@
     <div class="flex w-full">
         <div
             v-if="showFilters"
-            class="flex flex-col h-full overflow-y-auto bg-white border-r facets"
+            class="flex flex-col h-full overflow-y-auto bg-white border-r  facets"
         >
             <AssetFilters
                 :ref="
@@ -130,6 +130,10 @@
     import { getEncodedStringFromOptions } from '~/utils/helper/routerQuery'
     import { assetInterface } from '~/types/assets/asset.interface'
     import { useBusinessMetadataStore } from '~/store/businessMetadata'
+    import {
+        initialTabsForConnector,
+        initialTabsForAssetCategory,
+    } from './useTabMapped'
 
     export interface filterMapType {
         assetCategory: {
@@ -229,6 +233,7 @@
                 initialFilters.value.connectorsPayload
             )
             const filters = ref(initialFilters.value.initialBodyCriterion)
+
             console.log('initialFIters', filters.value)
             const filterMap = ref<filterMapType>({
                 connector: {
@@ -278,23 +283,27 @@
             const limit = ref(parseInt(initialFilters.value.limit) || 20)
             const offset = ref(0)
             const sortOrder = ref('default')
+
             // Get All Disoverable Asset Types
             const assetTypeList = ref([])
-            assetTypeList.value = AssetTypeList.filter(
-                (item) => item.isDiscoverable == true
+            const initialTabs = ref([])
+
+            initialTabs.value = initialTabsForConnector(
+                initialFilters.value.facetsFilters.connector.criterion
             )
-            const assetTypeListString = computed(() =>
-                assetTypeList.value.map((item) => item.id).join(',')
+            const assetCategoryTabs = initialTabsForAssetCategory(
+                initialFilters.value.facetsFilters.assetCategory.selectedIds
             )
+            if (assetCategoryTabs.length > 0)
+                initialTabs.value = assetCategoryTabs
 
             const modifyTabs = (visibleTabs) => {
                 let assetTypes = []
-                if (visibleTabs) {
-                    console.log(visibleTabs, 'tabs')
-                    visibleTabs.forEach((visibleTabId) => {
+                if (visibleTabs.length > 0) {
+                    visibleTabs.forEach((id) => {
                         AssetTypeList.forEach((asset) => {
                             if (
-                                asset.id === visibleTabId &&
+                                asset.id === id &&
                                 asset.isDiscoverable == true
                             ) {
                                 assetTypes.push(asset)
@@ -312,6 +321,20 @@
                 })
                 assetTypeList.value = assetTypes
             }
+            if (initialTabs.value.length > 0) {
+                modifyTabs(initialTabs.value)
+            } else {
+                assetTypeList.value = AssetTypeList.filter(
+                    (item) => item.isDiscoverable == true
+                )
+                assetTypeList.value.unshift({
+                    id: 'Catalog',
+                    label: 'All',
+                })
+            }
+            const assetTypeListString = computed(() =>
+                assetTypeList.value.map((item) => item.id).join(',')
+            )
 
             const {
                 list,
@@ -384,10 +407,6 @@
                 return sum
             })
             // Push all asset type
-            assetTypeList.value.unshift({
-                id: 'Catalog',
-                label: 'All',
-            })
             const assetlist = ref(null)
             const isLoadMore = computed(
                 () => totalCount.value > list.value.length

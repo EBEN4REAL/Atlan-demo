@@ -13,14 +13,14 @@
             <template #title="node">
                 <div class="flex items-center" v-if="node?.img">
                     <img :src="node.img" class="w-auto h-3 mr-1" />
-                    <span class="font-bold">{{ node.value }}</span>
+                    <span class="">{{ node.value }}</span>
                 </div>
-                <div class="flex items-center" v-if="node?.integrationName">
+                <div class="flex items-center" v-if="node?.intregationName">
                     <img
-                        :src="getImage(node.integrationName)"
+                        :src="getImage(node?.intregationName)"
                         class="w-auto h-3 mr-1"
                     />
-                    {{ node.integrationName }}
+                    <span class="">{{ node.name }}</span>
                 </div>
             </template>
         </a-tree-select>
@@ -157,16 +157,19 @@
                             connectorId
                         ) {
                             return {
-                                title:
-                                    connection.attributes.displayName ||
-                                    connection.attributes.name,
                                 key: connection.attributes.qualifiedName,
+                                name:
+                                    connection.attributes.displayName ||
+                                    connection.attributes.qualifiedName,
                                 value: connection.attributes.qualifiedName,
                                 connector:
                                     connection.attributes.integrationName,
                                 connection: connection.attributes.qualifiedName,
                                 intregationName:
                                     connection?.attributes?.integrationName,
+                                slots: {
+                                    title: 'title',
+                                },
                             }
                         }
                     })

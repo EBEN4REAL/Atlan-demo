@@ -1,39 +1,35 @@
 import { AxiosRequestConfig } from 'axios'
-import { Ref } from 'vue'
+import { Ref, isRef } from 'vue'
 import { IConfig } from 'swrv'
 import { AsyncStateOptions } from '@vueuse/core'
 import { IRequestActionBody, RequestAttributes } from '~/types/atlas/requests'
-import { useAPI } from '~/api/useAPI'
+import { useAPI, useAPIPromise } from '~/api/useAPI'
 import { LIST_REQUESTS, ACT_ON_REQUEST } from '~/api/keyMaps/heracles/request'
 
 export const getRequests = (
     params?: any,
     options?: IConfig & AxiosRequestConfig
 ) => {
-    const { data, error, isLoading, mutate, isValidating } = useAPI<{
+    const { data, error, mutate, isLoading } = useAPI<{
         records: RequestAttributes[]
     }>(LIST_REQUESTS, 'GET', {
         // TODO: Change it to a proper cache key later
-        cache: false,
+        cache: 'req' + JSON.stringify(isRef(params) ? params.value : params),
         options,
         params,
     })
 
-    return { response: data, error, isLoading, mutate, isValidating }
+    return { response: data, error, mutate, isLoading }
 }
 
 export const actOnRequest = (
     id: string,
-    body: IRequestActionBody | Ref<IRequestActionBody>,
-    options?: IConfig & AxiosRequestConfig & AsyncStateOptions
+    body: IRequestActionBody | Ref<IRequestActionBody>
 ) => {
-    const { data, error, isLoading, mutate } = useAPI(ACT_ON_REQUEST, 'POST', {
-        cache: false,
+    return useAPIPromise(ACT_ON_REQUEST, 'POST', {
         pathVariables: { id },
-        options,
         body,
     })
-    return { response: data, error, isLoading, mutate }
 }
 
 // getRequests()

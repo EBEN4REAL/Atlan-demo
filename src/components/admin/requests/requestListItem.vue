@@ -49,7 +49,7 @@
 
         <div class="flex items-center justify-around col-span-3">
             <AtlanIcon
-                v-if="state.isLoading && !state.error"
+                v-if="state.isLoading"
                 icon="CircleLoader"
                 class="w-5 h-5 text-gray animate-spin"
             ></AtlanIcon>
@@ -60,7 +60,7 @@
                 <template v-if="request.status === 'active'">
                     <AtlanButton
                         color="secondary"
-                        @click="handleRejection"
+                        @click.stop="handleRejection"
                         padding="compact"
                     >
                         <template #prefix
@@ -70,7 +70,7 @@
                     </AtlanButton>
                     <AtlanButton
                         color="secondary"
-                        @click="handleApproval"
+                        @click.stop="handleApproval"
                         padding="compact"
                     >
                         <template #prefix
@@ -96,14 +96,7 @@
 </template>
 
 <script lang="ts">
-    import {
-        defineComponent,
-        PropType,
-        reactive,
-        ref,
-        toRefs,
-        watch,
-    } from 'vue'
+    import { defineComponent, PropType, reactive, toRefs } from 'vue'
     import { message } from 'ant-design-vue'
 
     import VirtualList from '~/utils/library/virtualList/virtualList.vue'
@@ -117,7 +110,10 @@
     import TermPiece from './pieces/term.vue'
 
     import { RequestAttributes } from '~/types/atlas/requests'
-    import { takeAction } from '~/composables/requests/useRequests'
+    import {
+        approveRequest,
+        declineRequest,
+    } from '~/composables/requests/useRequests'
     import { primaryText, requestTypeIcon } from './requestType'
 
     export default defineComponent({
@@ -148,40 +144,45 @@
                 required: false,
             },
         },
-        emits: ['select'],
-        setup(props) {
+        emits: ['select', 'action'],
+        setup(props, { emit }) {
             const { request } = toRefs(props)
             const state = reactive({
-                error: ref({}),
-                isLoading: ref(false),
+                isLoading: false,
                 message: '',
             })
 
+            function raiseErrorMessage(msg?: string) {
+                message.error(msg || 'Request modification failed, try again')
+            }
+
             async function handleApproval() {
-                const { error, isLoading } = takeAction(request.value.id, {
-                    action: 'approved',
-                    message: state.message,
-                })
-                state.error = error
-                state.isLoading = isLoading
+                state.isLoading = true
+                try {
+                    await approveRequest(request.value.id, state.message)
+                    request.value.message = state.message
+                    request.value.status = 'approved'
+                    emit('action', request.value)
+                    message.success('Request approved')
+                } catch (error) {
+                    raiseErrorMessage()
+                }
+                state.isLoading = false
             }
 
             async function handleRejection() {
-                const { error, isLoading } = takeAction(request.value.id, {
-                    action: 'rejected',
-                    message: state.message,
-                })
-                state.error = error
-                state.isLoading = isLoading
-            }
-
-            watch(
-                () => state.error,
-                () => {
-                    if (state.error)
-                        message.error('Request modification failed, try again')
+                state.isLoading = true
+                try {
+                    await declineRequest(request.value.id, state.message)
+                    request.value.message = state.message
+                    request.value.status = 'rejected'
+                    emit('action', request.value)
+                    message.success('Request declined')
+                } catch (error) {
+                    raiseErrorMessage()
                 }
-            )
+                state.isLoading = false
+            }
 
             return {
                 handleApproval,

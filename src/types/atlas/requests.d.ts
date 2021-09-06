@@ -9,6 +9,8 @@ export type RequestType =
     | 'term_link'
     | 'attach_classification'
 
+export type RequestStatus = 'approved' | 'rejected' | 'active'
+
 export interface IActionDetails {
     message: string
     timestamp: Date
@@ -22,7 +24,7 @@ export interface IAssignedApprovers {
 
 export interface IRequestActionBody {
     action: RequestAction
-    message: string
+    message?: string
 }
 
 export interface RequestAttributes {
@@ -48,7 +50,7 @@ export interface RequestAttributes {
     bot_run_id: string
     approved_by: IActionDetails[]
     rejected_by: IActionDetails[]
-    status: 'approved' | 'rejected' | 'active'
+    status: RequestStatus
     message: string
     requests_batch: string
     approval_type: string

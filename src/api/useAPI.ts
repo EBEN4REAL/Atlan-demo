@@ -5,7 +5,6 @@ import useSWRV, { IConfig } from 'swrv'
 import { AsyncStateOptions, useAsyncState } from '@vueuse/core'
 import { fetcher, fetcherPost, deleter, updater } from '~/api'
 import keyMaps from '~/api/keyMaps/index'
-import { List } from '~/components/discovery/filters/filters'
 
 interface useGetAPIParams {
     cache?: string | boolean
@@ -92,7 +91,7 @@ export const useAPI = <T>(
             getKey,
             () =>
                 useAPIPromise(key, method, {
-                    params,
+                    params: isRef(params) ? params.value : params,
                     body,
                     pathVariables,
                     options,
@@ -107,7 +106,7 @@ export const useAPI = <T>(
         const { state, execute, isReady, error } = useAsyncState<T>(
             () =>
                 useAPIPromise(key, method, {
-                    params,
+                    params: isRef(params) ? params.value : params,
                     body,
                     pathVariables,
                     options,

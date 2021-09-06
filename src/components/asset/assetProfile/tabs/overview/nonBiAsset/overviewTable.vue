@@ -1,11 +1,11 @@
 <template>
     <div>
         <!-- Table -->
-        <div class="relative border border-gray-light h-60 max-h-60">
+        <div class="relative h-80">
             <a-table
                 :columns="tableColumns"
                 :data-source="results"
-                :pagination="false"
+                :pagination="{ position: 'bottom' }"
                 :scroll="{ x: 'calc(700px + 50%)', y: 240 }"
                 :loading="isLoading"
                 class="absolute left-0 w-full"
@@ -65,6 +65,7 @@
                         title: '#',
                         dataIndex: 'hash_index',
                         ellipsis: true,
+                        align: 'center',
                     })
                     // convert data from API in Antd-table format
                     data.value.columns.forEach((col) => {
@@ -101,14 +102,13 @@
     :global(.ant-table th) {
         @apply whitespace-nowrap font-bold !important;
     }
+    :global(.ant-table) {
+        @apply border border-gray-light !important;
+    }
     :global(.ant-table td) {
         @apply max-w-xs !important;
     }
     :global(.ant-progress-status-success .ant-progress-bg) {
         background-color: #1890ff !important;
-    }
-
-    :global(.ant-table-row-cell-ellipsis .ant-table-column-title) {
-        @apply lowercase !important;
     }
 </style>

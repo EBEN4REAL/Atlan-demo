@@ -9,41 +9,94 @@
                 currentTab === '1' || currentTab === '2' ? 'w-2/3' : 'w-full'
             "
         >
-            <div class="flex flex-row justify-between pl-5 pr-5 mt-6 mb-5">
+            <div class="flex items-center justify-between mx-4 mt-3">
+                <div class="flex items-center mr-5">
+                    <a-button
+                        class="flex items-center p-0 m-0 border-0 shadow-none outline-none "
+                        @click="redirectToProfile"
+                    >
+                        <AtlanIcon
+                            class="w-auto h-5 mr-3"
+                            icon="ArrowRight"
+                            style="transform: scaleX(-1)"
+                        />
+                    </a-button>
+                    <AtlanIcon icon="Glossary" class="h-5 m-0 mr-2" />
+                    <span class="mr-1 text-sm">
+                        {{
+                            term?.attributes?.anchor?.uniqueAttributes
+                                ?.qualifiedName
+                        }}
+                        /</span
+                    >
+                    <AtlanIcon icon="Term" class="h-5 m-0 mr-2" />
+                    <span class="mr-3 text-sm">{{ title }}</span>
+                </div>
+
+                <div class="flex flex-row">
+                    <a-button
+                        class="flex items-center px-2 border-0 shadow-none outline-none "
+                        ><atlan-icon
+                            icon="BookmarkOutlined"
+                            class="w-auto h-4"
+                        />
+                        <span class="ml-2 text-sm">Bookmark</span>
+                    </a-button>
+
+                    <a-button
+                        class="flex items-center border-0 shadow-none outline-none "
+                        ><atlan-icon icon="Share" class="w-auto h-4 mr-2" />
+                        <span class="text-sm">Share</span>
+                    </a-button>
+
+                    <ThreeDotMenu :entity="term" :showLinks="false" />
+                </div>
+            </div>
+
+            <div class="flex flex-row justify-between pl-5 pr-5 mt-5 mb-5">
                 <div class="flex flex-row w-full">
-                    <div class="mr-5">
-                        <img :src="TermSvg" />
-                    </div>
-                    <div class="flex flex-col w-full">
+                    <div class="flex flex-col justify-center w-full">
                         <div class="flex">
                             <span class="mr-3 text-xl font-bold leading-6">{{
                                 title
                             }}</span>
-                            <component
-                                :is="statusObject?.icon"
-                                v-if="statusObject"
-                                class="inline-flex self-center w-auto h-4 mb-1"
-                            />
+                            <a-popover
+                                v-if="statusMessage"
+                                trigger="hover"
+                                placement="rightTop"
+                            >
+                                <template #content>
+                                    <p>{{ statusMessage }}</p>
+                                </template>
+                                <component
+                                    :is="statusObject?.icon"
+                                    v-if="statusObject"
+                                    class="inline-flex self-center w-auto h-4 mb-1 "
+                                />
+                            </a-popover>
+                            <div v-else>
+                                <component
+                                    :is="statusObject?.icon"
+                                    v-if="statusObject"
+                                    class="inline-flex self-center w-auto h-4 mb-1 "
+                                />
+                            </div>
                         </div>
+                        <div class="flex items-center mt-1">
+                            <span
+                                class="mr-4 text-sm leading-5 text-gray-500"
+                                >{{
+                                    assetTypeLabel[term.typeName].toUpperCase()
+                                }}</span
+                            >
 
-                        <span class="mt-1 text-sm leading-5 text-gray-500">{{
-                            shortDescription
-                        }}</span>
+                            <span
+                                class="text-sm leading-5 text-gray-500"
+                                v-if="shortDescription !== ''"
+                                >{{ shortDescription }}</span
+                            >
+                        </div>
                     </div>
-                </div>
-                <div class="flex flex-row space-x-2">
-                    <a-button class="px-2"
-                        ><atlan-icon
-                            icon="BookmarkOutlined"
-                            class="w-auto h-4 text-gray-700"
-                    /></a-button>
-
-                    <a-button class="flex items-center"
-                        ><atlan-icon icon="Share" class="w-auto h-4 mr-2" />
-                        <span class="mt-1 text-sm">Share</span>
-                    </a-button>
-
-                    <ThreeDotMenu :entity="term" :showLinks="false" />
                 </div>
             </div>
             <div class="m-0">
@@ -81,10 +134,15 @@
                         <div :class="$style.tabClasses">
                             <LinkedAssetsTab
                                 :term-qualified-name="qualifiedName"
+                                :term-guid="id"
                                 :show-preview-panel="currentTab === '2'"
                                 @preview="handlePreview"
                             />
                         </div>
+                    </a-tab-pane>
+                    <a-tab-pane key="4" tab="Requests"> Bots </a-tab-pane>
+                    <a-tab-pane key="5" tab="Access Control">
+                        Permissions
                     </a-tab-pane>
                 </a-tabs>
             </div>
@@ -126,6 +184,7 @@
 
     import TermSvg from '~/assets/images/gtc/term/term.png'
 
+    import { useRouter } from 'vue-router'
     export default defineComponent({
         components: {
             GlossaryProfileOverview,
@@ -150,6 +209,12 @@
             const currentTab = ref('1')
             const previewEntity = ref()
             const newName = ref('')
+            const assetTypeLabel = {
+                AtlasGlossaryTerm: 'term',
+                AtlasGlossaryCategory: 'category',
+                AtlasGlossary: 'glossary',
+            }
+            const router = useRouter()
 
             const {
                 entity: term,
@@ -158,6 +223,7 @@
                 qualifiedName,
                 statusObject,
                 error,
+                statusMessage,
                 isLoading,
                 refetch,
             } = useGTCEntity<Term>('term', guid, guid.value)
@@ -183,16 +249,22 @@
                     name: newName.value,
                 })
             }
-
+            const redirectToProfile = () => {
+                router.push(`/glossary/${term.value?.attributes?.anchor?.guid}`)
+            }
             watch(updatedEntity, () => {
                 refetch()
                 newName.value = ''
             })
 
+            watch(guid, () => {
+                currentTab.value = '1'
+            })
             // Providers
             provide('refreshEntity', refetch)
 
             return {
+                redirectToProfile,
                 term,
                 currentTab,
                 error,
@@ -200,6 +272,7 @@
                 guid,
                 TermSvg,
                 title,
+                statusMessage,
                 shortDescription,
                 qualifiedName,
                 linkedAssetsCount,
@@ -211,6 +284,7 @@
                 handlePreview,
                 refetch,
                 updateTitle,
+                assetTypeLabel,
             }
         },
     })
@@ -231,8 +305,8 @@
     }
     .tabClasses {
         :global(.ant-tabs-tab) {
-            margin: 0px 32px 0px 0px !important;
-            padding: 0px 0px 18px 0px !important;
+            margin: 0px 32px 0px 0px;
+            padding: 0px 0px 18px 0px;
         }
         :global(.ant-tabs-nav) {
             margin: 0px !important;
@@ -241,7 +315,7 @@
             @apply text-gray-700 font-bold !important;
         }
         :global(.ant-tabs-bar) {
-            @apply px-5 mb-0 !important;
+            @apply px-5 mb-0;
         }
     }
 </style>

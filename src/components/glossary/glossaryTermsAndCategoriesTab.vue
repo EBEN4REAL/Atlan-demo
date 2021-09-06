@@ -1,7 +1,7 @@
 <template>
     <div>
-        <div class="p-4 bg-gray-100 shadow">
-            <div class="flex mb-2 space-x-2">
+        <div class="relative p-4 bg-gray-100 shadow">
+            <div class="flex space-x-2">
                 <a-input-search
                     v-model:value="searchQuery"
                     :placeholder="`Search ${
@@ -153,8 +153,8 @@
                 'status',
                 'description',
                 'owners',
+                // 'heirarchy',
                 'linkedAssets',
-                // 'heirarchy'
             ])
             const {
                 entities,
@@ -169,6 +169,7 @@
                 { value: 'description', label: 'Description' },
                 { value: 'owners', label: 'Owners' },
                 { value: 'status', label: 'Status' },
+                // { value: 'heirarchy', label: 'Heirarchy' },
                 { value: 'linkedAssets', label: 'Linked Assets' },
                 // { value: 'heirarchy', label: 'Heirarchy' },
                 // { value: 'rows', label: 'Rows' },

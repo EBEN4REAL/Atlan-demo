@@ -14,6 +14,7 @@
   <div>
     <ErrorView v-if="[STATES.ERROR, STATES.STALE_IF_ERROR].includes(state)"></ErrorView>
     <a-table
+      v-else
       id="apiKeysList"
       :table-layout="'fixed'"
       :pagination="{ pageSize: 7 }"

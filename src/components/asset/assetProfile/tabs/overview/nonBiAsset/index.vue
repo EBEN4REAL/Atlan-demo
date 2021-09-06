@@ -13,9 +13,9 @@
         </div>
 
         <!-- Readme widget -->
-        <div>
+        <div class="p-5 mb-10 bg-white border border-gray-light">
             <Readme
-                class="w-full border-0"
+                class="w-full"
                 :show-borders="false"
                 :show-padding-x="false"
                 :parent-asset-id="assetData"

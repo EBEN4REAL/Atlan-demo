@@ -32,6 +32,9 @@ import CategoryDeprecated from '~/assets/images/icons/category-deprecated.svg'
 import CategoryIssue from '~/assets/images/icons/category-issue.svg'
 import CategoryVerified from '~/assets/images/icons/category-verified.svg'
 import CategoryWip from '~/assets/images/icons/category-wip.svg'
+import EmptyGlossary from '~/assets/images/icons/empty-glossary.svg'
+import Glossary from '~/assets/images/icons/glossary.svg'
+import KebabMenu from '~/assets/images/icons/kebab-menu-new.svg'
 import Overview from '~/assets/images/icons/overview.svg'
 import Lineage from '~/assets/images/icons/lineage.svg'
 import Activity from '~/assets/images/icons/activity.svg'
@@ -78,4 +81,7 @@ export default {
     CategoryIssue,
     CategoryVerified,
     CategoryWip,
+    EmptyGlossary,
+    Glossary,
+    KebabMenu,
 }

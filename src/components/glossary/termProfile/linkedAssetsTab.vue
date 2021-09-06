@@ -46,12 +46,14 @@
         <div v-else class="mt-24">
             <EmptyView :showClearFiltersCTA="false" />
         </div> -->
-        <AssetDiscovery
+        <GlossaryAssetDiscovery
             :show-filters="false"
             :initial-filters="initialFilters"
-            :termName="termName"
+            :is-selected="isSelected"
+            :term-name="termQualifiedName"
+            :term-guid="termGuid"
             @preview="handlePreview"
-        ></AssetDiscovery>
+        ></GlossaryAssetDiscovery>
         <teleport to="#sidePanel">
             <a-drawer
                 v-if="selectedAsset?.guid !== undefined && showPreviewPanel"
@@ -68,6 +70,8 @@
                 <AssetPreview
                     page="discovery"
                     :selected-asset="selectedAsset"
+                    :show-cross-icon="true"
+                    @closePreviewPanel="handleClosePreviewPanel"
                 ></AssetPreview>
             </a-drawer>
         </teleport>
@@ -80,7 +84,7 @@
 
     import AssetList from '@/discovery/list/assetList.vue'
     import EmptyView from '@common/empty/discover.vue'
-    import AssetDiscovery from '~/components/discovery/assetDiscovery.vue'
+    import GlossaryAssetDiscovery from '@/glossary/termProfile/glossaryAssetDiscovery.vue'
     import AssetPreview from '~/components/discovery/preview/assetPreview.vue'
 
     import useTermLinkedAssets from '~/composables/glossary/useTermLinkedAssets'
@@ -88,59 +92,69 @@
 
     interface PropsType {
         termQualifiedName: string
+        termGuid: string
         termCount: number
         showPreviewPanel: Boolean
     }
 
     export default defineComponent({
-        components: { AssetList, EmptyView, AssetDiscovery, AssetPreview },
-        props: ['termQualifiedName', 'termCount', 'showPreviewPanel'],
+        components: {
+            AssetList,
+            EmptyView,
+            GlossaryAssetDiscovery,
+            AssetPreview,
+        },
+        props: ['termQualifiedName', 'termCount', 'showPreviewPanel', 'termGuid'],
         emits: ['preview'],
         setup(props: PropsType, { emit }) {
             const router = useRouter()
             const initialFilters = getDecodedOptionsFromString(router)
-
+            const showPreviewPanel = ref(false)
+            const isSelected = ref(false)
             const termName = computed(() => props.termQualifiedName)
 
-            const { linkedAssets, isLoading, error, fetchLinkedAssets } =
-                useTermLinkedAssets()
+            // const { linkedAssets, isLoading, error, fetchLinkedAssets } =
+            //     useTermLinkedAssets()
 
-            const assets = computed(() => linkedAssets.value?.entities ?? [])
-            const assetCount = computed(() => assets.value?.length ?? 0)
-            const numberOfTerms = computed(() => props.termCount ?? 5)
+            // const assets = computed(() => linkedAssets.value?.entities ?? [])
+            // const assetCount = computed(() => assets.value?.length ?? 0)
+            // const numberOfTerms = computed(() => props.termCount ?? 5)
 
             const searchQuery = ref<string>()
 
             const selectedAsset = ref()
 
-            onMounted(() => {
-                if (termName.value) fetchLinkedAssets(termName.value)
-            })
+            // onMounted(() => {
+            //     if (termName.value) fetchLinkedAssets(termName.value)
+            // })
 
-            watch(termName, (newTermName) => {
-                if (newTermName) fetchLinkedAssets(newTermName)
-            })
+            // watch(termName, (newTermName) => {
+            //     if (newTermName) fetchLinkedAssets(newTermName)
+            // })
 
-            const onSearch = useDebounceFn(() => {
-                fetchLinkedAssets(termName.value, `*${searchQuery.value}*`)
-            }, 0)
+            // const onSearch = useDebounceFn(() => {
+            //     fetchLinkedAssets(termName.value, `*${searchQuery.value}*`)
+            // }, 0)
 
             const handlePreview = (asset) => {
                 selectedAsset.value = asset
+                showPreviewPanel.value = true
+                isSelected.value = true
                 emit('preview', asset)
+            }
+            const handleClosePreviewPanel = () => {
+                selectedAsset.value = undefined
+                isSelected.value = false
+                showPreviewPanel.value = false
             }
             return {
                 termName,
-                assets,
-                isLoading,
-                assetCount,
-                numberOfTerms,
-                searchQuery,
-                onSearch,
                 initialFilters,
-                AssetDiscovery,
                 selectedAsset,
                 handlePreview,
+                handleClosePreviewPanel,
+                showPreviewPanel,
+                isSelected,
             }
         },
     })

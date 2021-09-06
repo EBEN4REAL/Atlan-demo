@@ -61,6 +61,7 @@ module.exports = {
             fontWeight: ['hover'],
             borderColor: ['hover', 'focus'],
             display: ['group-hover'],
+            textColor: ['group-focus'],
         },
     },
     plugins: [

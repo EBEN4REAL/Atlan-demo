@@ -19,6 +19,47 @@ interface useGetAPIParams {
     // axiosOptions?: AxiosRequestConfig
 }
 
+export function apiPromise(
+    key: string,
+    method: 'GET' | 'POST' | 'DELETE' | 'PUT',
+    { params, body, pathVariables, options }: useGetAPIParams
+) {
+    const url = computed(() =>
+        keyMaps[key]({
+            ...(isRef(pathVariables) ? pathVariables.value : pathVariables),
+        })
+    )
+
+    switch (method) {
+        case 'GET':
+            return fetcher(
+                url.value,
+                params,
+                isRef(options) ? options.value : options
+            )
+        case 'POST':
+            return fetcherPost(
+                url.value,
+                isRef(body) ? body.value : body,
+                isRef(options) ? options.value : options
+            )
+        case 'DELETE':
+            return deleter(url.value, isRef(options) ? options.value : options)
+        case 'PUT':
+            return updater(
+                url.value,
+                isRef(body) ? body.value : body,
+                isRef(options) ? options.value : options
+            )
+        default:
+            return fetcher(
+                url.value,
+                params,
+                isRef(options) ? options.value : options
+            )
+    }
+}
+
 /** *
  * @param key - Used as an identifier for the cache when making requests with SWRV
  * @param method - The HTTP reqeust method to use
@@ -38,22 +79,6 @@ export const useAPI = <T>(
         dependantFetchingKey,
     }: useGetAPIParams
 ) => {
-    const url = ref(
-        keyMaps[key]({
-            ...(isRef(pathVariables) ? pathVariables.value : pathVariables),
-        })
-    )
-
-    watchEffect(
-        () => {
-            if (isRef(pathVariables))
-                url.value = keyMaps[key]({ ...pathVariables?.value })
-        },
-        {
-            flush: 'sync',
-        }
-    )
-
     if (cache) {
         // If using cache, make a generic swrv request
         const getKey = () => {
@@ -65,91 +90,43 @@ export const useAPI = <T>(
         const { data, error, mutate, isValidating } = useSWRV<T>(
             getKey,
             () => {
-                // Choose the fetcher function based on the method type
-                switch (method) {
-                    case 'GET':
-                        return fetcher(
-                            url.value,
-                            params,
-                            isRef(options) ? options.value : options
-                        )
-                    case 'POST':
-                        return fetcherPost(
-                            url.value,
-                            isRef(body) ? body.value : body,
-                            isRef(options) ? options.value : options
-                        )
-                    case 'DELETE':
-                        return deleter(
-                            url.value,
-                            isRef(options) ? options.value : options
-                        )
-                    case 'PUT':
-                        return updater(
-                            url.value,
-                            isRef(body) ? body.value : body,
-                            isRef(options) ? options.value : options
-                        )
-                    default:
-                        return fetcher(
-                            url.value,
-                            params,
-                            isRef(options) ? options.value : options
-                        )
-                }
+                return apiPromise(key, method, {
+                    params,
+                    body,
+                    pathVariables,
+                    options,
+                })
             },
             isRef(options) ? options.value : options
         )
 
         const isLoading = computed(() => !data.value && !error.value)
         return { data, error, isLoading, mutate, isValidating }
-    }
-    function getRequest(): any {
-        switch (method) {
-            case 'POST':
-                return getAxiosClient().post<T>(
-                    url.value,
-                    isRef(body) ? body.value : body,
-                    {
-                        params,
-                        ...(isRef(options) ? options.value : options),
-                    }
-                )
-            case 'DELETE':
-                return getAxiosClient().delete<T>(url.value, {
-                    ...(isRef(options) ? options.value : options),
-                })
-            case 'PUT':
-                return getAxiosClient().put<T>(
-                    url.value,
-                    isRef(body) ? body.value : body,
-                    {
-                        params,
-                        ...(isRef(options) ? options.value : options),
-                    }
-                )
-            default:
-                return getAxiosClient().get<T>(url.value, {
+    } else {
+        // else return useAsyncState wrapped request
+        const { state, execute, isReady, error } = useAsyncState<T>(
+            () =>
+                apiPromise(key, method, {
                     params,
-                    ...(isRef(options) ? options.value : options),
-                })
-        }
-    }
-    const { state, execute, isReady, error } = useAsyncState<T>(
-        () => getRequest(),
-        <T>{},
-        {
-            immediate: (isRef(options) ? options.value : options)?.immediate,
-        }
-    )
-    const isLoading = computed(() => !isReady.value)
+                    body,
+                    pathVariables,
+                    options,
+                }),
+            <T>{},
+            {
+                immediate: (isRef(options) ? options.value : options)
+                    ?.immediate,
+            }
+        )
+        const isLoading = computed(() => !isReady.value)
 
-    return {
-        data: state,
-        mutate: execute,
-        error,
-        isReady,
-        isLoading,
+        return {
+            data: state,
+            mutate: execute,
+            error,
+            isReady,
+            isLoading,
+        }
     }
 }
 

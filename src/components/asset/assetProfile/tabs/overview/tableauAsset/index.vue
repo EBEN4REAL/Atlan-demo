@@ -1,7 +1,7 @@
 <template>
-    <div class="pl-12 pr-5 mt-8">
+    <div class="px-12 mt-8">
         <!-- Readme widget -->
-        <div class="pb-6">
+        <div class="p-5 mb-10 bg-white border border-gray-light">
             <Readme
                 class="w-full border-0"
                 :show-borders="false"

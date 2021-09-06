@@ -23,7 +23,15 @@
                 class="bg-transparent"
             >
                 <template #header>
-                    <div :key="item.id" class="flex text-sm select-none header">
+                    <div
+                        :key="item.id"
+                        class="flex text-sm text-gray-700 select-none header"
+                    >
+                        <img
+                            v-if="item.image"
+                            :src="item.image"
+                            class="w-auto h-5 mr-2"
+                        />
                         {{ item.label }}
                     </div>
                 </template>
@@ -57,7 +65,7 @@
         toRefs,
         watch,
     } from 'vue'
-    import { useInfoPanels } from './List'
+    import { CollapsiblePanels } from './List'
     import { assetInterface } from '~/types/assets/asset.interface'
     import useBusinessMetadataHelper from '~/composables/businessMetadata/useBusinessMetadataHelper'
 
@@ -81,6 +89,12 @@
             ),
             columnProfile: defineAsyncComponent(
                 () => import('./columnProfile/index.vue')
+            ),
+            assetDetails: defineAsyncComponent(
+                () =>
+                    import(
+                        '~/components/discovery/preview/tabs/info/assetDetails/index.vue'
+                    )
             ),
             properties: defineAsyncComponent(
                 () =>
@@ -176,15 +190,18 @@
             watch(
                 [selectedAsset, page],
                 () => {
-                    const infoTab = useInfoPanels(page, selectedAsset)
+                    /*  const infoTab = useInfoPanels(page, selectedAsset)
                     const panels = [...infoTab?.panels]
                     const properties = infoTab?.properties
-                    const propertiesPanel = panels.pop()
                     tableauProperties.value = properties ?? []
                     dynamicList.value = [
                         ...panels,
                         ...applicableBMList(props.infoTabData.typeName),
-                        propertiesPanel,
+                    ] */
+
+                    dynamicList.value = [
+                        ...CollapsiblePanels,
+                        ...applicableBMList(props.infoTabData.typeName),
                     ]
                 },
                 { immediate: true }

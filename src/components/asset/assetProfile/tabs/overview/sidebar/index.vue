@@ -2,7 +2,7 @@
     <div class="pt-1">
         <div class="px-5">
             <div class="flex items-start justify-between mt-5 mb-4 text-sm">
-                <div class="w-full">
+                <div v-if="page === 'nonBiOverview'" class="w-full">
                     <div class="flex items-center mb-0.5">
                         <component
                             :is="
@@ -21,6 +21,14 @@
                     </div>
                     <div class="text-gray-500">
                         {{ getDataType(selectedAsset?.attributes?.dataType) }}
+                    </div>
+                </div>
+                <div v-else class="w-full">
+                    <div class="flex items-center mb-0.5">
+                        <Tooltip
+                            :tooltip-text="selectedAsset?.attributes?.name"
+                            classes="text-base font-bold text-gray-700 capitalize"
+                        />
                     </div>
                 </div>
                 <div class="flex">
@@ -72,12 +80,13 @@
         watch,
         onMounted,
     } from 'vue'
-    import useAssetDetailsTabList from './tabs/useTabList'
-    import { images, dataTypeList } from '~/constant/datatype'
-    import { assetInterface } from '~/types/assets/asset.interface'
 
     import Tooltip from '@common/ellipsis/index.vue'
     import AtlanBtn from '~/components/UI/button.vue'
+
+    import useAssetDetailsTabList from './tabs/useTabList'
+    import { images, dataTypeList } from '~/constant/datatype'
+    import { assetInterface } from '~/types/assets/asset.interface'
 
     export default defineComponent({
         name: 'PreviewSidebar',

@@ -45,7 +45,7 @@
                         </div>
                     </template>
 
-                    <div>
+                    <div class="w-full">
                         <AssetTypeItems
                             :projections="checkedList"
                             :asset-type="item.displayText"

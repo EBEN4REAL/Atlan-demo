@@ -1,4 +1,4 @@
-import { Ref } from 'vue'
+/* import { Ref } from 'vue'
 import { assetInterface } from '~/types/assets/asset.interface'
 
 type collapsiblePanels = {
@@ -247,3 +247,28 @@ export function useInfoPanels(
     }
 }
 
+ */
+
+// eslint-disable-next-line import/prefer-default-export
+export const CollapsiblePanels = [
+    {
+        id: 'columnDetails',
+        label: 'Details',
+        component: 'columnDetails',
+    },
+    {
+        id: 'linkedAsset',
+        label: 'Governance',
+        component: 'linkedAsset',
+    },
+    {
+        id: 'usage',
+        label: 'Usage',
+        component: 'usage',
+    },
+    {
+        id: 'columnProfile',
+        label: 'Column Profile',
+        component: 'columnProfile',
+    },
+]

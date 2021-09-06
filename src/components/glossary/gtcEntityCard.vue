@@ -1,6 +1,6 @@
 <template>
     <div
-        class="flex justify-between py-4 pl-5 pr-4 border-b group"
+        class="flex justify-between py-4 pl-5 pr-4 border-b cursor-pointer  group"
         @click="$emit('gtcCardClicked', entity)"
     >
         <!-- projections start here -->
@@ -52,7 +52,7 @@
                     <div
                         v-if="
                             projection.includes('linkedAssets') &&
-                            assetCount !== 0
+                            entity.typeName === 'AtlasGlossaryTerm'
                         "
                         class="mt-2 mr-4"
                     >
@@ -84,22 +84,24 @@
                 </div>
                 <div
                     v-if="
-                        entity.typeName === 'AtlasGlossaryCategory' && 
-                        projection.includes('heirarchy') && 
+                        entity.typeName === 'AtlasGlossaryCategory' &&
+                        projection.includes('heirarchy') &&
                         parentCategory
                     "
                     class="flex items-center mt-2 text-sm leading-5 text-gray-700 "
                 >
                     <div
+                        v-for="category in parentCategory"
+                        :key="category"
                         class="px-3 py-1 mr-2 bg-white border rounded-3xl"
                     >
-                        {{ parentCategory }}
+                        {{ category }}
                     </div>
                 </div>
                 <div
                     v-else-if="
-                        entity.typeName === 'AtlasGlossaryTerm' && 
-                        projection.includes('heirarchy') && 
+                        entity.typeName === 'AtlasGlossaryTerm' &&
+                        projection.includes('heirarchy') &&
                         parentCategories
                     "
                     class="flex items-center mt-2 text-sm leading-5 text-gray-700 "
@@ -183,26 +185,34 @@
                     : undefined
             )
             const assets = computed(() => linkedAssets.value?.entities ?? [])
-            const assetCount = computed(() => assets.value?.length ?? 0)
-            
+            const assetCount = computed(() => {
+                if (props.entity.typeName === 'AtlasGlossaryTerm')
+                    return (
+                        props.entity?.attributes?.assignedEntities?.length ?? 0
+                    )
+                return 0
+            })
+
             const parentCategory = computed(() => {
-                if(props.entity?.typeName === 'AtlasGlossaryCategory'){
+                if (props.entity?.typeName === 'AtlasGlossaryCategory') {
                     const catQualifiedName =
-                        props.entity?.attributes?.parentCategory?.uniqueAttributes
-                            ?.qualifiedName
-                    return catQualifiedName?.split(/[@.]/)[0]
+                        props.entity?.attributes?.parentCategory
+                            ?.uniqueAttributes?.qualifiedName
+                    return catQualifiedName?.split(/[@.]/)
                 }
                 return ''
-            });
+            })
             const parentCategories = computed(() => {
-                if(props.entity?.typeName === 'AtlasGlossaryTerm'){
+                if (props.entity?.typeName === 'AtlasGlossaryTerm') {
                     const catQualifiedName =
-                        props.entity?.attributes?.categories?.map((category) => category?.uniqueAttributes
-                            ?.qualifiedName)
-                    return catQualifiedName?.map((qualifiedName) => qualifiedName.split(/[@.]/)[0])
+                        props.entity?.attributes?.categories?.map(
+                            (category) =>
+                                category?.uniqueAttributes?.qualifiedName
+                        )
+                    return catQualifiedName[0]?.split(/[@.]/)
                 }
                 return []
-            });
+            })
             // methods
 
             // TODO: extract this function as a util function to be used at multiple places
@@ -261,11 +271,12 @@
                     router.push(`/glossary/term/${props.entity.guid}`)
             }
 
-            onMounted(() => {
-                if (termName.value) fetchLinkedAssets(termName.value)
-            })
-            
-
+            // onMounted(() => {
+            //     if (termName.value) fetchLinkedAssets(termName.value)
+            // })
+            console.log(props.entity)
+            console.log(props.entity?.attributes?.categories)
+            console.log(props.entity?.attributes?.qualifiedName)
             return {
                 TermSvg,
                 GlossarySvg,
@@ -277,7 +288,7 @@
                 assetCount,
                 assets,
                 parentCategory,
-                parentCategories
+                parentCategories,
             }
         },
     })

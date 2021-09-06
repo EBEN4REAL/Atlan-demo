@@ -1,66 +1,94 @@
 <template>
-    <div class="flex w-full">
-        <div
-            v-if="showFilters"
-            class="flex flex-col h-full overflow-y-auto bg-white border-r facets"
-        >
-            <AssetFilters
-                :ref="
-                    (el) => {
-                        assetFilterRef = el
-                    }
-                "
-                :initial-filters="initialFilters"
-                @refresh="handleFilterChange"
-                @modifyTabs="modifyTabs"
-            ></AssetFilters>
-        </div>
-
-        <div class="flex flex-col items-stretch flex-1 mb-1 w-80">
+    <div class="flex w-full" :class="$style.tabClasses">
+        <div class="flex flex-col items-stretch flex-1 mb-1 bg-white w-80">
             <div class="flex flex-col h-full">
-                <SearchAndFilter
-                    v-model:value="queryText"
-                    class="mx-3 mt-3"
-                    size="large"
-                    :placeholder="dynamicSearchPlaceholder"
-                    :autofocus="true"
-                    @change="handleSearchChange"
+                <div class="flex" v-if="checkedAssetList.length">
+                    <div
+                        class="fixed left-0 z-10 flex justify-between w-full  bottom-8"
+                    >
+                        <div style="width: 264px"></div>
+                        <div
+                            v-if="showCheckBox"
+                            class="flex items-center justify-between px-5 py-3 bg-gray-100 shadow-lg "
+                            style="width: 545px"
+                        >
+                            <p class="p-0 m-0">
+                                <span class="font-bold">{{
+                                    checkedAssetList.length
+                                }}</span>
+                                assets selected
+                            </p>
+                            <div class="flex items-center">
+                                <a-button
+                                    class="px-3 mx-2 text-gray-700 bg-transparent outline-none "
+                                    @click="handleCancelLinkAssets"
+                                    >Cancel</a-button
+                                >
+                                <a-button
+                                    class="px-6 text-white outline-none  bg-primary"
+                                    @click="handleConfirmLinkAssets"
+                                    >Link</a-button
+                                >
+                            </div>
+                        </div>
+                        <div style="width: 391px"></div>
+                    </div>
+                    <AssetDropdown
+                        v-if="connectorsPayload.connection"
+                        :connector="filteredConnector"
+                        :data="connectorsPayload"
+                        @label-change="setPlaceholder($event, 'asset')"
+                    ></AssetDropdown>
+                </div>
+                <div
+                    class="flex items-center px-5 py-3 bg-gray-100"
+                    v-if="showCheckBox"
                 >
-                    <template #filter>
-                        <Preferences
-                            :default-projection="projection"
-                            @change="handleChangePreferences"
-                            @sort="handleChangeSort"
-                            @state="handleState"
+                    <a-button
+                        class="p-0 mr-3 text-gray-700 bg-transparent border-0 shadow-none outline-none "
+                        @click="handleCancelLinkAssets"
+                    >
+                        <AtlanIcon
+                            class="w-auto h-5"
+                            icon="ArrowRight"
+                            style="transform: scaleX(-1)"
                         />
-                    </template>
-                    <!-- <template #buttonAggregation>
-                        <span>({{ projection.length }})</span>
-                    </template> -->
-                </SearchAndFilter>
-
+                    </a-button>
+                    Link Assets
+                </div>
+                <div
+                    class="flex items-center justify-between w-full px-3 mt-4 mb-2 "
+                >
+                    <SearchAndFilter
+                        v-model:value="queryText"
+                        class="w-full mx-3 mt-1"
+                        :placeholder="dynamicSearchPlaceholder"
+                        :autofocus="true"
+                        @change="handleSearchChange"
+                    >
+                        <template #filter>
+                            <Preferences
+                                :default-projection="projection"
+                                @change="handleChangePreferences"
+                                @sort="handleChangeSort"
+                                @state="handleState"
+                            />
+                        </template>
+                    </SearchAndFilter>
+                    <a-button
+                        v-if="!showCheckBox"
+                        @click="handleLinkAssets"
+                        class="px-3 text-white outline-none bg-primary"
+                        >Link assets</a-button
+                    >
+                </div>
                 <AssetTabs
                     v-model="assetType"
-                    class="mb-2"
                     @update:model-value="handleTabChange"
                     :asset-type-list="assetTypeList"
                     :asset-type-map="assetTypeMap"
                     :total="totalSum"
                 ></AssetTabs>
-
-                <!-- <div
-                    class="flex items-center justify-between w-full px-3 py-2 border-b border-gray-300 "
-                >
-                    <AssetPagination
-                        v-if="!isLoading && !isValidating"
-                        :label="assetTypeLabel"
-                        :list-count="list.length"
-                        :total-count="totalCount"
-                    ></AssetPagination>
-                    <span v-else class="text-xs text-gray-500"
-                        >Searching...</span
-                    >
-                </div> -->
                 <div
                     v-if="
                         list && list.length <= 0 && !isLoading && !isValidating
@@ -69,18 +97,27 @@
                 >
                     <EmptyView @event="handleClearFiltersFromList"></EmptyView>
                 </div>
-                <AssetList
+                <div
                     v-else
-                    ref="assetlist"
-                    :list="list"
-                    :score="searchScoreList"
-                    :projection="projection"
-                    :is-loading="isLoading || isValidating"
-                    :is-load-more="isLoadMore"
-                    :automaticSelectFirstAsset="true"
-                    @preview="handlePreview"
-                    @loadMore="loadMore"
-                ></AssetList>
+                    class="overflow-auto"
+                    style="max-height: calc(100vh - 250px)"
+                >
+                    <AssetList
+                        ref="assetlist"
+                        :list="list"
+                        :score="searchScoreList"
+                        :projection="projection"
+                        :is-loading="isLoading || isValidating"
+                        :is-load-more="isLoadMore"
+                        :isSelected="isSelected"
+                        :showCheckBox="showCheckBox"
+                        :automaticSelectFirstAsset="false"
+                        :selectedAssetList="checkedAssetList"
+                        @preview="handlePreview"
+                        @loadMore="loadMore"
+                        @updateCheckedAssetList="modifyLinkList"
+                    ></AssetList>
+                </div>
             </div>
         </div>
     </div>
@@ -109,7 +146,7 @@
     import { useRouter } from 'vue-router'
     import AssetTabs from '~/components/discovery/list/assetTypeTabs.vue'
     import Preferences from '~/components/discovery/list/preference.vue'
-    import AssetList from '~/components/discovery/list/assetList.vue'
+    import AssetList from '@/glossary/termProfile/glossaryAssetList.vue'
     import AssetFilters from '~/components/discovery/filters/discoveryFilters.vue'
     import AssetDropdown from '~/components/common/dropdown/assetDropdown.vue'
     import ConnectorDropdown from '~/components/common/dropdown/connectorDropdown.vue'
@@ -130,6 +167,11 @@
     import { getEncodedStringFromOptions } from '~/utils/helper/routerQuery'
     import { assetInterface } from '~/types/assets/asset.interface'
     import { useBusinessMetadataStore } from '~/store/businessMetadata'
+    import { Components } from '~/api/atlas/client'
+
+    import useLinkAssets from '~/composables/glossary/useLinkAssets'
+
+    import entities from './tempEntityList'
 
     export interface filterMapType {
         assetCategory: {
@@ -180,7 +222,7 @@
         }
     }
     export default defineComponent({
-        name: 'AssetDiscovery',
+        name: 'GlossaryAssetDiscovery',
         components: {
             AssetList,
             AssetTabs,
@@ -196,47 +238,52 @@
             initialFilters: {
                 type: Object as PropType<initialFiltersType>,
                 required: false,
-                default() {
-                    return {}
-                },
+                default: () => {},
             },
             termName: {
                 type: String,
-                required: false,
-                default: undefined,
+                required: true,
+                default: '',
+            },
+            termGuid: {
+                type: String,
+                required: true,
+                default: '',
             },
             showFilters: {
                 type: Boolean,
                 required: false,
                 default: true,
             },
+            isSelected: {
+                type: Boolean,
+                required: true,
+                default: false,
+            },
         },
         emits: ['preview'],
         setup(props, { emit }) {
             // initializing the discovery store
-            const { initialFilters } = toRefs(props)
+            const { initialFilters, termName, termGuid } = toRefs(props)
             const assetFilterRef = ref()
             const isFilterVisible = ref(false)
             const router = useRouter()
             const tracking = useTracking()
             const events = tracking.getEventsName()
             const filterMode = ref('custom')
-            const now = ref(false)
+            const now = ref(true)
+            const showCheckBox = ref(false)
             let initialBody: SearchParameters = reactive({})
             const assetType = ref('Catalog')
             const queryText = ref(initialFilters.value.searchText)
             const connectorsPayload = ref(
                 initialFilters.value.connectorsPayload
             )
+            const checkedAssetList = ref<
+                Components.Schemas.AtlasEntityHeader[]
+            >([])
             const filters = ref(initialFilters.value.initialBodyCriterion)
-            console.log('initialFIters', filters.value)
             const filterMap = ref<filterMapType>({
-                connector: {
-                    condition:
-                        initialFilters.value.facetsFilters.connector.condition,
-                    criterion:
-                        initialFilters.value.facetsFilters.connector.criterion,
-                },
                 assetCategory: {
                     condition:
                         initialFilters.value.facetsFilters.assetCategory
@@ -283,36 +330,14 @@
             assetTypeList.value = AssetTypeList.filter(
                 (item) => item.isDiscoverable == true
             )
-            const assetTypeListString = computed(() =>
-                assetTypeList.value.map((item) => item.id).join(',')
-            )
+            const assetTypeListString = assetTypeList.value
+                .map((item) => item.id)
+                .join(',')
 
-            const modifyTabs = (visibleTabs) => {
-                let assetTypes = []
-                if (visibleTabs) {
-                    console.log(visibleTabs, 'tabs')
-                    visibleTabs.forEach((visibleTabId) => {
-                        AssetTypeList.forEach((asset) => {
-                            if (
-                                asset.id === visibleTabId &&
-                                asset.isDiscoverable == true
-                            ) {
-                                assetTypes.push(asset)
-                            }
-                        })
-                    })
-                } else {
-                    assetTypes = AssetTypeList.filter(
-                        (item) => item.isDiscoverable == true
-                    )
-                }
-                assetTypes.unshift({
-                    id: 'Catalog',
-                    label: 'All',
-                })
-                assetTypeList.value = assetTypes
-            }
-
+            const termQualifiedName = computed(() => {
+                if (!showCheckBox.value) return termName.value
+                return undefined
+            })
             const {
                 list,
                 replaceBody,
@@ -324,7 +349,7 @@
                 mutateAssetInList,
             } = useAssetList(
                 now,
-                assetTypeListString.value,
+                assetTypeListString,
                 initialBody,
                 assetType.value,
                 true
@@ -395,8 +420,8 @@
 
             const updateBody = () => {
                 initialBody = {
-                    typeName: assetTypeListString.value,
-                    termName: props.termName,
+                    typeName: assetTypeListString,
+                    termName: termQualifiedName.value,
                     includeClassificationAttributes: true,
                     includeSubClassifications: true,
                     limit: limit.value,
@@ -435,30 +460,30 @@
                         initialBody.excludeDeletedEntities = true
                     }
                 }
-                // const connectorCritera = {
-                //     condition: 'AND',
-                //     criterion: [],
-                // }
-                // const connectionCriteria = {
-                //     condition: 'OR',
-                //     criterion: [],
-                // }
-                // if (connectorsPayload.value?.connector) {
-                //     connectorCritera.criterion?.push({
-                //         attributeName: 'integrationName',
-                //         attributeValue: connectorsPayload.value?.connector,
-                //         operator: 'eq',
-                //     })
-                // }
-                // if (connectorsPayload.value?.connection) {
-                //     connectorCritera.criterion?.push({
-                //         attributeName: 'connectionQualifiedName',
-                //         attributeValue: connectorsPayload.value?.connection,
-                //         operator: 'eq',
-                //     })
-                // }
-                // initialBody.entityFilters.criterion.push(connectorCritera)
-                // initialBody.entityFilters.criterion.push(connectionCriteria)
+                const connectorCritera = {
+                    condition: 'OR',
+                    criterion: [],
+                }
+                const connectionCriteria = {
+                    condition: 'OR',
+                    criterion: [],
+                }
+                if (connectorsPayload.value?.connector) {
+                    connectorCritera.criterion?.push({
+                        attributeName: 'integrationName',
+                        attributeValue: connectorsPayload.value?.connector,
+                        operator: 'eq',
+                    })
+                }
+                if (connectorsPayload.value?.connection) {
+                    connectorCritera.criterion?.push({
+                        attributeName: 'connectionQualifiedName',
+                        attributeValue: connectorsPayload.value?.connection,
+                        operator: 'eq',
+                    })
+                }
+                initialBody.entityFilters.criterion.push(connectorCritera)
+                initialBody.entityFilters.criterion.push(connectionCriteria)
                 if (sortOrder.value !== 'default') {
                     const split = sortOrder.value.split('|')
                     if (split.length > 1) {
@@ -500,10 +525,10 @@
             const { projection } = useDiscoveryPreferences()
             const handleSearchChange = useDebounceFn(() => {
                 offset.value = 0
-                const routerOptions = getRouterOptions()
-                const routerQuery = getEncodedStringFromOptions(routerOptions)
+                // const routerOptions = getRouterOptions()
+                // const routerQuery = getEncodedStringFromOptions(routerOptions)
                 updateBody()
-                pushQueryToRouter(routerQuery)
+                // pushQueryToRouter(routerQuery)
                 tracking.trackEvent(events.EVENT_ASSET_SEARCH, {
                     trigger: 'discover',
                 })
@@ -555,7 +580,6 @@
             }
             const handleChangeConnectors = (payload: any) => {
                 connectorsPayload.value = payload
-                console.log('connector Change', payload)
                 const routerOptions = getRouterOptions()
                 const routerQuery = getEncodedStringFromOptions(routerOptions)
                 pushQueryToRouter(routerQuery)
@@ -582,21 +606,75 @@
                 if (val) {
                     now.value = true
                     isAggregate.value = true
-                    updateBody()
+                    // updateBody()
                 }
             })
 
             onMounted(() => {
-                if (BMListLoaded.value) {
-                    now.value = true
-                    isAggregate.value = true
-                    updateBody()
-                }
+                now.value = true
+                isAggregate.value = true
+                updateBody()
             })
-            console.log(list)
+
+            const handleLinkAssets = () => {
+                showCheckBox.value = !showCheckBox.value
+
+                updateBody()
+            }
+            const handleCancelLinkAssets = () => {
+                showCheckBox.value = false
+                checkedAssetList.value = []
+                updateBody()
+            }
+            const handleConfirmLinkAssets = () => {
+                const { assignLinkedAssets } = useLinkAssets()
+
+                const { response } = assignLinkedAssets(
+                    termGuid.value,
+                    checkedAssetList.value
+                )
+                watch(response, (data) => {
+                    showCheckBox.value = false
+                    updateBody()
+                })
+            }
+
+            const modifyLinkList = (
+                e: Event,
+                item: Components.Schemas.AtlasEntityHeader
+            ) => {
+                if (e?.target?.checked) {
+                    if (
+                        !checkedAssetList.value.find(
+                            (asset) => asset.guid === item.guid
+                        )
+                    ) {
+                        checkedAssetList.value.push(item)
+                    }
+                } else {
+                    checkedAssetList.value = checkedAssetList.value.filter(
+                        (asset) => asset.guid !== item.guid
+                    )
+                }
+            }
+
+            // watch(showCheckBox, () => {
+            //     updateBody()
+            // }, {
+            //     immediate: true
+            // });
+            watch(termName, () => {
+                updateBody()
+            })
+
+            watch(list, (newList) => {
+                if(!showCheckBox.value){
+                    checkedAssetList.value = [...newList]
+                }
+            });
+
 
             return {
-                modifyTabs,
                 handleClearFiltersFromList,
                 assetFilterRef,
                 isFilterVisible,
@@ -633,6 +711,14 @@
                 dynamicSearchPlaceholder,
                 setPlaceholder,
                 placeholderLabel,
+                entities,
+                showCheckBox,
+                handleLinkAssets,
+                handleCancelLinkAssets,
+                handleConfirmLinkAssets,
+                modifyLinkList,
+                checkedAssetList,
+                termQualifiedName,
             }
         },
         data() {
@@ -644,9 +730,24 @@
     })
 </script>
 
-<style scoped>
+<style lang="less" module>
     .facets {
         min-width: 264px;
         width: 25%;
+    }
+    .tabClasses {
+        :global(.ant-tabs-tab) {
+            margin: 0px 32px 0px 0px;
+            padding: 0px 0px 18px 0px;
+        }
+        :global(.ant-tabs-nav) {
+            margin: 0px !important;
+        }
+        :global(.ant-tabs-tab-active) {
+            @apply text-gray-700 font-bold !important;
+        }
+        :global(.ant-tabs-bar) {
+            @apply px-1 mb-0 !important;
+        }
     }
 </style>

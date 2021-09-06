@@ -35,11 +35,23 @@ import CategoryVerified from '~/assets/images/icons/category-verified.svg'
 import CategoryWip from '~/assets/images/icons/category-wip.svg'
 import Shield from '~/assets/images/icons/shield.svg'
 import Edit from '~/assets/images/icons/edit.svg'
-import KebabVertical from '~/assets/images/icons/kebab-vertical.svg'
 import Decline from '~/assets/images/icons/decline.svg'
 import Approve from '~/assets/images/icons/approve.svg'
+import EmptyGlossary from '~/assets/images/icons/empty-glossary.svg'
+import Glossary from '~/assets/images/icons/glossary.svg'
+import KebabMenu from '~/assets/images/icons/kebab-menu-new.svg'
+import Overview from '~/assets/images/icons/overview.svg'
+import Lineage from '~/assets/images/icons/lineage.svg'
+import Activity from '~/assets/images/icons/activity.svg'
+import Columns from '~/assets/images/icons/columns.svg'
+import Relation from '~/assets/images/icons/relation.svg'
 
 export const iconMap = {
+    Relation,
+    Overview,
+    Lineage,
+    Activity,
+    Columns,
     BookmarkFilled,
     CopyOutlined,
     BookmarkOutlined,
@@ -77,9 +89,11 @@ export const iconMap = {
     CategoryWip,
     Shield,
     Edit,
-    KebabVertical,
     Approve,
     Decline,
+    EmptyGlossary,
+    Glossary,
+    KebabMenu,
 }
 
 export type iconName = keyof typeof iconMap

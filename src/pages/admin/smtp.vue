@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="p-5"> 
     <SmtpForm />
   </div>
 </template>

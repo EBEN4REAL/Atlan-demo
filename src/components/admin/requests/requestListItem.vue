@@ -80,7 +80,7 @@
                     </AtlanButton>
                     <AtlanButton color="secondary" padding="compact"
                         ><template #label
-                            ><AtlanIcon icon="KebabVertical" />
+                            ><AtlanIcon icon="KebabMenu" />
                         </template>
                     </AtlanButton>
                 </template>

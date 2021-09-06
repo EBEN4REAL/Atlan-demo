@@ -4,38 +4,97 @@
     </div>
     <div v-else class="flex flex-row h-full" :class="$style.tabClasses">
         <div class="w-2/3 h-full">
-            <div class="flex flex-row justify-between pl-5 pr-4 my-6">
+            <div class="flex items-center justify-between mx-4 mt-3">
+                <div class="flex items-center mr-5">
+                    <a-button
+                        class="flex items-center p-0 m-0 border-0 shadow-none outline-none "
+                        @click="redirectToProfile"
+                    >
+                        <AtlanIcon
+                            class="w-auto h-5 mr-3"
+                            icon="ArrowRight"
+                            style="transform: scaleX(-1)"
+                        />
+                    </a-button>
+
+                    <AtlanIcon icon="Glossary" class="h-5 m-0 mr-2" />
+                    <span class="mr-1 text-sm">
+                        {{
+                            category?.attributes?.anchor?.uniqueAttributes
+                                ?.qualifiedName
+                        }}
+                        /</span
+                    >
+                    <AtlanIcon icon="Category" class="h-5 m-0 mb-1 mr-2" />
+                    <span class="mr-3 text-sm">{{ title }}</span>
+                </div>
                 <div class="flex flex-row">
-                    <div class="mr-5">
-                        <img :src="CategorySvg" />
-                    </div>
-                    <div class="flex flex-col w-full">
+                    <a-button
+                        class="flex items-center px-2 border-0 shadow-none outline-none "
+                        ><atlan-icon
+                            icon="BookmarkOutlined"
+                            class="w-auto h-4"
+                        />
+                        <span class="ml-2 text-sm">Bookmark</span>
+                    </a-button>
+
+                    <a-button
+                        class="flex items-center border-0 shadow-none outline-none "
+                        ><atlan-icon icon="Share" class="w-auto h-4 mr-2" />
+                        <span class="text-sm">Share</span>
+                    </a-button>
+
+                    <ThreeDotMenu :entity="category" :showLinks="false" />
+                </div>
+            </div>
+
+            <div class="flex flex-row justify-between pl-5 pr-4 my-5">
+                <div class="flex flex-row">
+                    <div class="flex flex-col justify-center w-full">
                         <div class="flex">
                             <span class="mr-3 text-xl font-bold leading-6">{{
                                 title
                             }}</span>
-                            <component
-                                :is="statusObject?.icon"
-                                v-if="statusObject"
-                                class="inline-flex self-center w-auto h-4 mb-1"
-                            />
+
+                            <a-popover
+                                v-if="statusMessage"
+                                trigger="hover"
+                                placement="rightTop"
+                            >
+                                <template #content>
+                                    <p>{{ statusMessage }}</p>
+                                </template>
+                                <component
+                                    :is="statusObject?.icon"
+                                    v-if="statusObject"
+                                    class="inline-flex self-center w-auto h-4 mb-1 "
+                                />
+                            </a-popover>
+                            <div v-else>
+                                <component
+                                    :is="statusObject?.icon"
+                                    v-if="statusObject"
+                                    class="inline-flex self-center w-auto h-4 mb-1 "
+                                />
+                            </div>
                         </div>
-                        <span class="mt-1 text-sm leading-5 text-gray-500">{{
-                            shortDescription
-                        }}</span>
+                        <div class="flex items-center mt-1">
+                            <span
+                                class="mr-4 text-sm leading-5 text-gray-500"
+                                >{{
+                                    assetTypeLabel[
+                                        category.typeName
+                                    ].toUpperCase()
+                                }}</span
+                            >
+
+                            <span
+                                class="text-sm leading-5 text-gray-500"
+                                v-if="shortDescription !== ''"
+                                >{{ shortDescription }}</span
+                            >
+                        </div>
                     </div>
-                </div>
-                <div class="flex flex-row space-x-2">
-                    <a-button class="px-2"
-                        ><atlan-icon icon="BookmarkOutlined" class="w-auto h-4"
-                    /></a-button>
-
-                    <a-button class="flex items-center"
-                        ><atlan-icon icon="Share" class="w-auto h-4 mr-2" />
-                        <span class="mt-1 text-sm">Share</span>
-                    </a-button>
-
-                    <ThreeDotMenu :entity="category" :showLinks="false" />
                 </div>
             </div>
             <div class="m-0">
@@ -79,10 +138,10 @@
                             @entityPreview="handleCategoryOrTermPreview"
                         />
                     </a-tab-pane>
-                    <!-- <a-tab-pane key="4" tab="Bots"> Bots </a-tab-pane>
-                    <a-tab-pane key="5" tab="Permissions">
-                        Permissions
-                    </a-tab-pane> -->
+                    <a-tab-pane key="4" tab="Requests"> Requests </a-tab-pane>
+                    <a-tab-pane key="5" tab="Access Control">
+                        Access Control
+                    </a-tab-pane>
                 </a-tabs>
             </div>
         </div>
@@ -108,6 +167,7 @@
     import ThreeDotMenu from '@/glossary/common/threeDotMenu.vue'
     import GlossaryProfileOverview from '@/glossary/common/glossaryProfileOverview.vue'
     import LoadingView from '@common/loaders/page.vue'
+    import { useRouter } from 'vue-router'
     import SidePanel from '@/glossary/sidePanel/index.vue'
     import CategoryTermPreview from '@/glossary/common/categoryTermPreview/categoryTermPreview.vue'
     import GlossaryTermsAndCategoriesTab from '@/glossary/glossaryTermsAndCategoriesTab.vue'
@@ -144,12 +204,19 @@
             const previewEntity = ref<Category | Term | undefined>()
             const showPreviewPanel = ref(false)
             const newName = ref('')
+            const assetTypeLabel = {
+                AtlasGlossaryTerm: 'term',
+                AtlasGlossaryCategory: 'category',
+                AtlasGlossary: 'glossary',
+            }
 
+            const router = useRouter()
             const {
                 entity: category,
                 title,
                 shortDescription,
                 qualifiedName,
+                statusMessage,
                 statusObject,
                 error,
                 isLoading,
@@ -190,6 +257,11 @@
                     name: newName.value,
                 })
             }
+            const redirectToProfile = () => {
+                router.push(
+                    `/glossary/${category.value?.attributes?.anchor?.guid}`
+                )
+            }
 
             // lifecycle methods and watchers
             onMounted(() => {
@@ -219,9 +291,11 @@
                 previewEntity,
                 showPreviewPanel,
                 title,
+                statusMessage,
                 shortDescription,
                 termCount,
                 parentGlossaryQualifiedName,
+                qualifiedName,
                 error,
                 isLoading,
                 termsLoading,
@@ -233,6 +307,8 @@
                 handleCategoryOrTermPreview,
                 handlClosePreviewPanel,
                 updateTitle,
+                assetTypeLabel,
+                redirectToProfile,
             }
         },
     })

@@ -1,8 +1,6 @@
 <template>
     <div>
-        <div
-            v-if="termsLoading"
-        >
+        <div v-if="termsLoading">
             <LoadingView />
         </div>
         <div
@@ -23,60 +21,57 @@
                 />
             </div>
         </div>
-        <div class="items-start my-1">
-            <a-button type="link">See all {{ termCount }} terms -></a-button>
-        </div>
     </div>
 </template>
 <script lang="ts">
-import { defineComponent, computed, onMounted } from 'vue'
-import { useHead } from '@vueuse/head'
+    import { defineComponent, computed, onMounted } from 'vue'
+    import { useHead } from '@vueuse/head'
 
-import TermPreviewCard from '@/glossary/termPreviewCard.vue'
-import LoadingView from '@common/loaders/page.vue'
+    import TermPreviewCard from '@/glossary/termPreviewCard.vue'
+    import LoadingView from '@common/loaders/page.vue'
 
-import { Components } from '~/api/atlas/client'
-import useGlossaryTerms from '~/composables/glossary/useGlossaryTerms'
+    import { Components } from '~/api/atlas/client'
+    import useGlossaryTerms from '~/composables/glossary/useGlossaryTerms'
 
-interface PropsType {
-    terms?: Components.Schemas.AtlasGlossaryTerm[]
-    glossaryGuid?: string
-    numberOfTerms: number
-}
+    interface PropsType {
+        terms?: Components.Schemas.AtlasGlossaryTerm[]
+        glossaryGuid?: string
+        numberOfTerms: number
+    }
 
-export default defineComponent({
-    components: { TermPreviewCard, LoadingView },
-    props: ['terms', 'numberOfTerms'],
-    setup(props: PropsType) {
-        const terms = computed(() => props.terms)
-        const glossaryGuid = computed(() => props.glossaryGuid)
+    export default defineComponent({
+        components: { TermPreviewCard, LoadingView },
+        props: ['terms', 'numberOfTerms'],
+        setup(props: PropsType) {
+            const terms = computed(() => props.terms)
+            const glossaryGuid = computed(() => props.glossaryGuid)
 
-        const {
-            data: glossaryTerms,
-            termsError,
-            termsLoading,
-            fetchGlossaryTerms,
-        } = useGlossaryTerms()
+            const {
+                data: glossaryTerms,
+                termsError,
+                termsLoading,
+                fetchGlossaryTerms,
+            } = useGlossaryTerms()
 
-        const numberOfTerms = computed(() => props.numberOfTerms ?? 5)
+            const numberOfTerms = computed(() => props.numberOfTerms ?? 5)
 
-        const termsList = computed(() => {
-            if (glossaryGuid.value) return glossaryTerms?.value
-            if (terms.value?.length) return terms?.value
-            return []
-        })
-        const termCount = computed(() => termsList.value?.length)
+            const termsList = computed(() => {
+                if (glossaryGuid.value) return glossaryTerms?.value
+                if (terms.value?.length) return terms?.value
+                return []
+            })
+            const termCount = computed(() => termsList.value?.length)
 
-        onMounted(() => {
-            if (glossaryGuid.value) fetchGlossaryTerms(glossaryGuid.value)
-        })
+            onMounted(() => {
+                if (glossaryGuid.value) fetchGlossaryTerms(glossaryGuid.value)
+            })
 
-        return {
-            termsList,
-            termCount,
-            numberOfTerms,
-            termsLoading,
-        }
-    },
-})
+            return {
+                termsList,
+                termCount,
+                numberOfTerms,
+                termsLoading,
+            }
+        },
+    })
 </script>

@@ -10,15 +10,26 @@
             <div class="flex flex-row space-x-2 align-middle">
                 <div class="flex flex-col justify-center">
                     <span>
-                        <img
+                        <!-- <img
                             v-if="entity.typeName === 'AtlasGlossaryCategory'"
                             :src="CategorySvg"
                             :width="25"
+                        /> -->
+                        <AtlanIcon
+                            icon="Category"
+                            class="h-5 m-0 mb-1"
+                            v-if="entity.typeName === 'AtlasGlossaryCategory'"
                         />
-                        <img
+
+                        <AtlanIcon
+                            icon="Term"
+                            class="h-5 m-0"
+                            v-else-if="entity.typeName === 'AtlasGlossaryTerm'"
+                        />
+                        <!-- <img
                             v-else-if="entity.typeName === 'AtlasGlossaryTerm'"
                             :src="TermSvg"
-                        />
+                        /> -->
                     </span>
                 </div>
                 <span
@@ -73,7 +84,7 @@
                             <fa v-else icon="fas chevron-down" />
                         </template>
                         <a-collapse-panel key="details" header="Details">
-                            <div class="flex flex-col pl-6">
+                            <div class="flex flex-col pl-6 pr-2">
                                 <Description
                                     v-if="entity.guid"
                                     :selected-asset="entity"
@@ -122,7 +133,11 @@
                             </div>
                         </a-collapse-panel>
 
-                        <a-collapse-panel key="properties" header="Properties">
+                        <a-collapse-panel
+                            v-if="entity?.typeName === 'AtlasGlossaryTerm'"
+                            key="properties"
+                            header="Properties"
+                        >
                             <div class="px-6 py-0 text-gray-500">
                                 <p class="p-0 m-0 mb-2">Formula</p>
                                 <p class="p-0 m-0 mb-6 text-sm">X + Y + Z</p>
@@ -208,8 +223,7 @@
             const router = useRouter()
             const activeKey = ref(['details'])
 
-            const updateTreeNode =
-                inject<any>('updateTreeNode')
+            const updateTreeNode = inject<any>('updateTreeNode')
 
             // computed
             const shortDescription = computed(
@@ -238,9 +252,14 @@
                 selectedAsset: Glossary | Category | Term
             ) => {
                 if (updateTreeNode)
-                    updateTreeNode({guid: selectedAsset.guid, entity: selectedAsset})
+                    updateTreeNode({
+                        guid: selectedAsset.guid,
+                        entity: selectedAsset,
+                    })
                 context.emit('updateAsset', selectedAsset)
             }
+
+            console.log(props.entity.typeName)
 
             return {
                 TermSvg,

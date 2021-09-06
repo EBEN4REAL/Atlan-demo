@@ -65,7 +65,7 @@
         toRefs,
         watch,
     } from 'vue'
-    import { CollapsiblePanels } from './List'
+    import { useInfoPanels } from './List'
     import { assetInterface } from '~/types/assets/asset.interface'
     import useBusinessMetadataHelper from '~/composables/businessMetadata/useBusinessMetadataHelper'
 
@@ -190,9 +190,8 @@
             watch(
                 [selectedAsset, page],
                 () => {
-                    /*  const infoTab = useInfoPanels(page, selectedAsset)
-                    const panels = [...infoTab?.panels]
-                    const properties = infoTab?.properties
+                    const infoTab = useInfoPanels(page)
+                    /* const properties = infoTab?.properties
                     tableauProperties.value = properties ?? []
                     dynamicList.value = [
                         ...panels,
@@ -200,7 +199,7 @@
                     ] */
 
                     dynamicList.value = [
-                        ...CollapsiblePanels,
+                        ...infoTab,
                         ...applicableBMList(props.infoTabData.typeName),
                     ]
                 },

@@ -24,12 +24,10 @@
                     </div>
                 </div>
                 <div v-else class="w-full">
-                    <div class="flex items-center mb-0.5">
-                        <Tooltip
-                            :tooltip-text="selectedAsset?.attributes?.name"
-                            classes="text-base font-bold text-gray-700 capitalize"
-                        />
-                    </div>
+                    <Tooltip
+                        :tooltip-text="selectedAsset?.attributes?.name"
+                        classes="text-base font-bold text-gray-700 capitalize"
+                    />
                 </div>
                 <div class="flex">
                     <AtlanBtn color="secondary" size="sm" padding="compact">

@@ -64,7 +64,7 @@
                 </template>
             </a-table>
         </div>
-        <teleport to="#overAssetColumnPreview">
+        <teleport to="#overAssetPreviewSidebar">
             <a-drawer
                 v-model:visible="showColumnPreview"
                 placement="right"
@@ -75,10 +75,11 @@
                 :destroy-on-close="true"
                 :closable="false"
             >
-                <ColumnPreview
-                    :selected-row="selectedRowData"
-                    @closeColumnSidebar="handleCloseColumnSidebar"
+                <PreviewSidebar
+                    :selected-asset="selectedRowData"
+                    @closeSidebar="handleCloseColumnSidebar"
                     @asset-mutation="propagateToColumnList"
+                    page="nonBiOverview"
                 />
             </a-drawer>
         </teleport>
@@ -101,7 +102,7 @@
     // Components
     import SearchAndFilter from '@/common/input/searchAndFilter.vue'
     import preferences from './preferences.vue'
-    import ColumnPreview from './columnPreview/index.vue'
+    import PreviewSidebar from '~/components/asset/assetProfile/tabs/overview/sidebar/index.vue'
     import Tooltip from '@/common/ellipsis/index.vue'
 
     // Composables
@@ -113,7 +114,7 @@
     import { assetInterface } from '~/types/assets/asset.interface'
 
     export default defineComponent({
-        components: { preferences, SearchAndFilter, ColumnPreview, Tooltip },
+        components: { preferences, SearchAndFilter, PreviewSidebar, Tooltip },
         setup() {
             /** DATA */
             const query = ref('')

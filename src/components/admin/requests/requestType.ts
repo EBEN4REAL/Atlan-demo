@@ -17,7 +17,7 @@ export const primaryText: Record<
 
 // Check iconMap.ts for available icons
 export const requestTypeIcon: Record<RequestType, iconName> = {
-    attribute: 'Link',
+    attribute: 'Edit',
     create_typedef: 'Link',
     create_glossary: 'Link',
     create_category: 'Link',

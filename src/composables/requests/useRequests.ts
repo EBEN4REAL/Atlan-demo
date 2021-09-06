@@ -3,7 +3,7 @@ import { IRequestActionBody } from '~/types/atlas/requests'
 import { AsyncStateOptions } from '@vueuse/core'
 import { Ref } from 'vue'
 
-export function useRequestList() {
+export function useRequestList(searchTerm: Ref<String>) {
     const { response, error } = getRequests()
     return { response, error }
 }

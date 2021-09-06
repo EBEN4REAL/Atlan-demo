@@ -3,11 +3,12 @@
         <template #content>
             <UserInfo :user="user" />
         </template>
-        <Pill :label="user.username">
+        <Pill v-if="isPill" :label="user.username">
             <template #prefix>
                 <AtlanIcon icon="AddUser" />
             </template>
         </Pill>
+        <span v-else class="text-gray-500">{{ user.username }}</span>
     </a-popover>
 </template>
 
@@ -22,6 +23,11 @@
             user: {
                 type: Object,
                 required: true,
+            },
+            isPill: {
+                type: Boolean,
+                required: false,
+                default: () => true,
             },
         },
         components: { UserInfo, Pill },

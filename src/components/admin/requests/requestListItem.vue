@@ -1,10 +1,10 @@
 <template>
     <div
-        class="grid items-center justify-between grid-cols-10 my-1 gap-x-4"
+        class="grid items-center justify-between grid-cols-10 pl-4 my-1 bg-white border border-transparent rounded  gap-x-4"
         style="height: 50px"
         :class="{
             'bg-primary-light': selected,
-            'ring-1 ring-primary': active,
+            'border-primary': active,
         }"
         @click="$emit('select')"
     >
@@ -20,7 +20,10 @@
         </div>
         <!-- RHS -->
         <div class="flex items-center col-span-3">
-            <AtlanIcon class="mr-4" :icon="requestTypeIcon[request.re]" />
+            <AtlanIcon
+                class="mr-4 text-gray-500"
+                :icon="requestTypeIcon[request.re]"
+            />
 
             <ClassificationPiece
                 v-if="request?.payload?.classificationDefs"
@@ -45,23 +48,47 @@
         </div>
 
         <div class="flex items-center justify-around col-span-3">
-            <template v-if="selected">
-                <AtlanIcon
-                    v-if="state.isLoading && !state.error"
-                    icon="CircleLoader"
-                    class="w-5 h-5 text-gray animate-spin"
-                ></AtlanIcon>
-                <template v-else>
-                    <AtlanButton color="error" @click="handleRejection" bold>
-                        Reject
+            <AtlanIcon
+                v-if="state.isLoading && !state.error"
+                icon="CircleLoader"
+                class="w-5 h-5 text-gray animate-spin"
+            ></AtlanIcon>
+            <div
+                class="flex items-center justify-end gap-x-2"
+                v-else-if="selected"
+            >
+                <template v-if="request.status === 'active'">
+                    <AtlanButton
+                        color="secondary"
+                        @click="handleRejection"
+                        padding="compact"
+                    >
+                        <template #prefix
+                            ><AtlanIcon class="mr-1" icon="Decline" />
+                        </template>
+                        Decline
                     </AtlanButton>
-                    <AtlanButton color="success" @click="handleApproval" bold>
-                        Approve
+                    <AtlanButton
+                        color="secondary"
+                        @click="handleApproval"
+                        padding="compact"
+                    >
+                        <template #prefix
+                            ><AtlanIcon class="mr-1" icon="Approve" />
+                        </template>
+                        Accept
+                    </AtlanButton>
+                    <AtlanButton color="secondary" padding="compact"
+                        ><template #label
+                            ><AtlanIcon icon="KebabVertical" />
+                        </template>
                     </AtlanButton>
                 </template>
-            </template>
+                <div v-else-if="request.status === 'approved'">Approved</div>
+                <div v-else-if="request.status === 'rejected'">Rejected</div>
+            </div>
             <template v-else>
-                <UserPiece :user="request.createdByUser" />
+                <UserPiece :user="request.createdByUser" :is-pill="false" />
                 <DatePiece label="Created At" :date="request.created_at" />
             </template>
         </div>

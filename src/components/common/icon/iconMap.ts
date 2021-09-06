@@ -34,6 +34,10 @@ import CategoryIssue from '~/assets/images/icons/category-issue.svg'
 import CategoryVerified from '~/assets/images/icons/category-verified.svg'
 import CategoryWip from '~/assets/images/icons/category-wip.svg'
 import Shield from '~/assets/images/icons/shield.svg'
+import Edit from '~/assets/images/icons/edit.svg'
+import KebabVertical from '~/assets/images/icons/kebab-vertical.svg'
+import Decline from '~/assets/images/icons/decline.svg'
+import Approve from '~/assets/images/icons/approve.svg'
 
 export const iconMap = {
     BookmarkFilled,
@@ -72,6 +76,10 @@ export const iconMap = {
     CategoryVerified,
     CategoryWip,
     Shield,
+    Edit,
+    KebabVertical,
+    Approve,
+    Decline,
 }
 
 export type iconName = keyof typeof iconMap

@@ -1,9 +1,9 @@
-import { Ref, ref, watch, watchEffect, computed } from 'vue'
+import { Ref, computed } from 'vue'
 import { AxiosRequestConfig } from 'axios'
 import useSWRV, { IConfig } from 'swrv'
 
 import { AsyncStateOptions, useAsyncState } from '@vueuse/core'
-import { fetcher, fetcherPost, getAxiosClient, deleter, updater } from '~/api'
+import { fetcher, fetcherPost, deleter, updater } from '~/api'
 import keyMaps from '~/api/keyMaps/index'
 
 interface useGetAPIParams {
@@ -19,7 +19,7 @@ interface useGetAPIParams {
     // axiosOptions?: AxiosRequestConfig
 }
 
-export function apiPromise(
+export function useAPIPromise(
     key: string,
     method: 'GET' | 'POST' | 'DELETE' | 'PUT',
     { params, body, pathVariables, options }: useGetAPIParams
@@ -89,14 +89,13 @@ export const useAPI = <T>(
         }
         const { data, error, mutate, isValidating } = useSWRV<T>(
             getKey,
-            () => {
-                return apiPromise(key, method, {
+            () =>
+                useAPIPromise(key, method, {
                     params,
                     body,
                     pathVariables,
                     options,
-                })
-            },
+                }),
             isRef(options) ? options.value : options
         )
 
@@ -106,7 +105,7 @@ export const useAPI = <T>(
         // else return useAsyncState wrapped request
         const { state, execute, isReady, error } = useAsyncState<T>(
             () =>
-                apiPromise(key, method, {
+                useAPIPromise(key, method, {
                     params,
                     body,
                     pathVariables,

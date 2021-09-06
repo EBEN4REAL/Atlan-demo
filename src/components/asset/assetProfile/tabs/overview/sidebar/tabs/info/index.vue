@@ -32,6 +32,7 @@
                     :item="item"
                     :selected-asset="infoTabData"
                     :tab-data="componentData"
+                    :tableau-properties="tableauProperties ?? []"
                     @change="handleChange"
                 ></component>
             </a-collapse-panel>
@@ -56,7 +57,7 @@
         toRefs,
         watch,
     } from 'vue'
-    import { CollapsiblePanels } from './List'
+    import { useInfoPanels } from './List'
     import { assetInterface } from '~/types/assets/asset.interface'
     import useBusinessMetadataHelper from '~/composables/businessMetadata/useBusinessMetadataHelper'
 
@@ -81,6 +82,21 @@
             columnProfile: defineAsyncComponent(
                 () => import('./columnProfile/index.vue')
             ),
+            properties: defineAsyncComponent(
+                () =>
+                    import(
+                        '~/components/discovery/preview/tabs/info/properties/index.vue'
+                    )
+            ),
+            tableauProperties: defineAsyncComponent(
+                () => import('@common/sidebar/tableau/properties/index.vue')
+            ),
+            tableauPreview: defineAsyncComponent(
+                () => import('@common/sidebar/tableau/preview/index.vue')
+            ),
+            tableauHierarchy: defineAsyncComponent(
+                () => import('@common/sidebar/tableau/hierarchy/index.vue')
+            ),
         },
         props: {
             id: String,
@@ -98,6 +114,10 @@
             isLoaded: {
                 type: Boolean,
             },
+            page: {
+                type: String,
+                required: true,
+            },
         },
 
         setup(props) {
@@ -105,7 +125,7 @@
                 [key: string]: any
             }> = ref({})
 
-            const { selectedAsset } = toRefs(props)
+            const { selectedAsset, page } = toRefs(props)
 
             const { getApplicableBmGroups } = useBusinessMetadataHelper()
 
@@ -151,13 +171,20 @@
                     image: b.options.image || '',
                 })) || []
             const dynamicList = ref<any>([])
+            const tableauProperties = ref<any>([])
 
             watch(
-                [selectedAsset],
+                [selectedAsset, page],
                 () => {
+                    const infoTab = useInfoPanels(page, selectedAsset)
+                    const panels = [...infoTab?.panels]
+                    const properties = infoTab?.properties
+                    const propertiesPanel = panels.pop()
+                    tableauProperties.value = properties ?? []
                     dynamicList.value = [
-                        ...CollapsiblePanels,
-                        ...applicableBMList(props.infoTabData?.typeName),
+                        ...panels,
+                        ...applicableBMList(props.infoTabData.typeName),
+                        propertiesPanel,
                     ]
                 },
                 { immediate: true }
@@ -165,7 +192,7 @@
 
             return {
                 handleCollapseChange,
-
+                tableauProperties,
                 activeKey,
                 refMap,
                 dataMap,

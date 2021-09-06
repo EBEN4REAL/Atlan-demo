@@ -11,7 +11,6 @@ interface TabList {
     component: string
     icon: string
     visibleOn: Page[]
-    exclude?: string[]
 }
 
 export default function useAssetDetailsTabList(

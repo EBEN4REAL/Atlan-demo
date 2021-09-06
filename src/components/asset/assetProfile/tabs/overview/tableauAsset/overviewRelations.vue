@@ -68,6 +68,24 @@
             </div>
         </div>
     </div>
+    <teleport to="#overAssetPreviewSidebar">
+        <a-drawer
+            v-model:visible="showAssetSidebar"
+            placement="right"
+            :mask="false"
+            :get-container="false"
+            :wrap-style="{ position: 'absolute' }"
+            :keyboard="false"
+            :destroy-on-close="true"
+            :closable="false"
+        >
+            <PreviewSidebar
+                :selected-asset="selectedAssetData"
+                page="BiOverview"
+                @closeSidebar="handleCloseSidebar"
+            />
+        </a-drawer>
+    </teleport>
 </template>
 
 <script lang="ts">
@@ -82,13 +100,15 @@
     } from 'vue'
     // Components
     import AssetTypeItems from '@/discovery/preview/tabs/relations/assetTypeItems.vue'
+    import PreviewSidebar from '~/components/asset/assetProfile/tabs/overview/sidebar/index.vue'
+
     // Composables
     import useEntityRelationships from '~/composables/asset/useEntityRelationships'
     // Assets
     import emptyScreen from '~/assets/images/empty_search.png'
 
     export default defineComponent({
-        components: { AssetTypeItems },
+        components: { AssetTypeItems, PreviewSidebar },
         emits: ['preview'],
         setup(_, context) {
             /** DATA */
@@ -98,6 +118,8 @@
             const checkedList = ref(['description', 'owners'])
             const activeKey = ref(0)
             const queryText = ref('')
+            const showAssetSidebar = ref(false)
+            const selectedAssetData = ref({})
 
             /** INJECTIONS */
             const assetDataInjection = inject('assetData')
@@ -128,9 +150,15 @@
                     isLoading.value = y.value
                 })
             }
+            const handleCloseSidebar = () => {
+                showAssetSidebar.value = false
+                selectedAssetData.value = {}
+            }
+
             // handlePreview
             const handlePreview = (item) => {
-                context.emit('preview', item)
+                selectedAssetData.value = item
+                showAssetSidebar.value = true
             }
 
             /** LIFECYCLES */
@@ -156,6 +184,9 @@
                 },
                 selectTab,
                 handlePreview,
+                handleCloseSidebar,
+                selectedAssetData,
+                showAssetSidebar,
             }
         },
     })

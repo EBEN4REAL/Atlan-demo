@@ -77,9 +77,9 @@
             >
                 <PreviewSidebar
                     :selected-asset="selectedRowData"
+                    page="nonBiOverview"
                     @closeSidebar="handleCloseColumnSidebar"
                     @asset-mutation="propagateToColumnList"
-                    page="nonBiOverview"
                 />
             </a-drawer>
         </teleport>

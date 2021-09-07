@@ -1,4 +1,4 @@
-import { watch, ref, Ref,computed, ComputedRef } from 'vue';
+import { watch, ref, Ref,computed, ComputedRef, onMounted } from 'vue';
 import { TreeDataItem } from 'ant-design-vue/lib/tree/Tree';
 import { useRouter, useRoute } from 'vue-router'
 
@@ -412,8 +412,8 @@ const useTree = (emit: any, cacheKey?: string, isAccordion?: boolean) => {
         refetch()
     }
 
-    watch(fetchGuid, () => {
-        if(fetchType.value === 'glossary'){
+    watch(fetchGuid, (newGuid) => {
+        if(fetchType.value === 'glossary' && parentGlossary.value?.guid !== newGuid){
             isInitingTree.value = true;
             expandedKeys.value = [];
             loadedKeys.value = []
@@ -423,17 +423,19 @@ const useTree = (emit: any, cacheKey?: string, isAccordion?: boolean) => {
     watch(fetchedEntity, (newEntity) => {
         console.log('new Entity', newEntity)
         if(newEntity?.typeName === 'AtlasGlossary'){
-            parentGlossary.value = newEntity
-            treeData.value = [];
-            initTreeData(fetchGuid.value)
-            // refetchGlossary('root')
+            if( parentGlossary.value?.guid !== newEntity.guid) {
+                parentGlossary.value = newEntity
+                treeData.value = [];
+                initTreeData(fetchGuid.value)
+                // refetchGlossary('root')
+            }
         } 
         else if(newEntity?.typeName === 'AtlasGlossaryCategory' || newEntity?.typeName === 'AtlasGlossaryTerm') {
             if(!treeData.value?.length){
                 currentEntity.value = fetchedEntity.value;
                 fetchType.value = 'glossary';
                 fetchGuid.value = newEntity?.attributes?.anchor?.guid;
-                // refetch()
+                refetch()
             }
         }
     });

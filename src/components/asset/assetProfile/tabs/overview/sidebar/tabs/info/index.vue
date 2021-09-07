@@ -41,6 +41,7 @@
                     :selected-asset="infoTabData"
                     :tab-data="componentData"
                     :tableau-properties="tableauProperties ?? []"
+                    :page="page"
                     @change="handleChange"
                 ></component>
             </a-collapse-panel>
@@ -72,8 +73,8 @@
     export default defineComponent({
         name: 'InfoTab',
         components: {
-            columnDetails: defineAsyncComponent(
-                () => import('./columnDetails/index.vue')
+            assetDetails: defineAsyncComponent(
+                () => import('./assetDetails/index.vue')
             ),
 
             linkedAsset: defineAsyncComponent(
@@ -90,12 +91,7 @@
             columnProfile: defineAsyncComponent(
                 () => import('./columnProfile/index.vue')
             ),
-            assetDetails: defineAsyncComponent(
-                () =>
-                    import(
-                        '~/components/discovery/preview/tabs/info/assetDetails/index.vue'
-                    )
-            ),
+
             properties: defineAsyncComponent(
                 () =>
                     import(
@@ -139,7 +135,7 @@
                 [key: string]: any
             }> = ref({})
 
-            const { selectedAsset, page } = toRefs(props)
+            const { selectedAsset } = toRefs(props)
 
             const { getApplicableBmGroups } = useBusinessMetadataHelper()
 
@@ -195,6 +191,7 @@
                     const properties = infoTab?.properties
 
                     tableauProperties.value = properties ?? []
+
                     dynamicList.value = panels
                 },
                 { immediate: true }

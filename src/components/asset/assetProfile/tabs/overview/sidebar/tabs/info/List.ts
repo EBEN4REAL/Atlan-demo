@@ -14,11 +14,7 @@ type AssetTab = {
 }
 
 const CollapsiblePanels: { [key: string]: collapsiblePanels } = {
-    columnDetails: {
-        id: 'columnDetails',
-        label: 'Details',
-        component: 'columnDetails',
-    },
+
     assetDetails: {
         id: 'assetDetails',
         label: 'Details',
@@ -61,7 +57,6 @@ const CollapsiblePanels: { [key: string]: collapsiblePanels } = {
     },
 }
 const {
-    columnDetails,
     linkedAsset,
     assetDetails,
     properties,
@@ -74,7 +69,7 @@ const {
 
 export const InfoTabPanels: { [key: string]: AssetTab } = {
     Column: {
-        panels: [columnDetails, linkedAsset, usage, columnProfile],
+        panels: [assetDetails, linkedAsset, usage, columnProfile],
     },
     TableauWorkbook: {
         panels: [

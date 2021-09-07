@@ -83,6 +83,7 @@
                 :selected-asset="selectedAssetData"
                 page="BiOverview"
                 @closeSidebar="handleCloseSidebar"
+                @asset-mutation="propagateToAssetList"
             />
         </a-drawer>
     </teleport>
@@ -161,6 +162,10 @@
                 showAssetSidebar.value = true
             }
 
+            const propagateToAssetList = (updatedAsset: assetInterface) => {
+                selectedAssetData.value = updatedAsset
+            }
+
             /** LIFECYCLES */
             onMounted(async () => {
                 await fetchData()
@@ -187,6 +192,7 @@
                 handleCloseSidebar,
                 selectedAssetData,
                 showAssetSidebar,
+                propagateToAssetList,
             }
         },
     })

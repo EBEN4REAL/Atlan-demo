@@ -6,6 +6,7 @@
             placement="left"
             trigger="click"
             @visibleChange="handleVisibleChange"
+            :destroyTooltipOnHide="true"
         >
             <template #content>
                 <div class="">
@@ -92,6 +93,7 @@
 
             const descriptionInput = ref(description.value)
             const handleVisibleChange = () => {
+                descriptionInput.value = description.value
                 if (descriptionInput?.value) {
                     nextTick(() => {
                         descriptionInput?.value?.$el?.focus()

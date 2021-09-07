@@ -12,16 +12,18 @@ import {
 
 import useUpdateGtcEntity from './useUpdateGtcEntity'
 
-import whoami from "~/composables/user/whoami";
+import whoami from '~/composables/user/whoami'
 
 const useCreateGlossary = () => {
     const error = ref<any>()
     const isLoading = ref<boolean | null>()
     const router = useRouter()
 
-    const { username } = whoami();
+    const { username } = whoami()
 
-    const refetchGlossaryTree = inject<(guid: string | 'root') => void>('refetchGlossaryTree')
+    const refetchGlossaryTree = inject<(guid: string | 'root') => void>(
+        'refetchGlossaryTree'
+    )
 
     const redirectToProfile = (
         type: 'glossary' | 'category' | 'term',

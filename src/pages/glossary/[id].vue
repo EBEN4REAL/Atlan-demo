@@ -93,6 +93,7 @@
         computed,
         inject,
     } from 'vue'
+    import { useRouter } from 'vue-router'
 
     // components
     import GlossaryTermsAndCategoriesTab from '@/glossary/glossaryTermsAndCategoriesTab.vue'
@@ -106,12 +107,11 @@
     import ProfileHeader from '@/glossary/common/profileHeader.vue'
 
     // composables
-    import useGTCEntity from '~/composables/glossary/useGtcEntity'
-    import useGlossaryTerms from '~/composables/glossary/useGlossaryTerms'
-    import useGlossaryCategories from '~/composables/glossary/useGlossaryCategories'
-    import useUpdateGtcEntity from '~/composables/glossary/useUpdateGtcEntity'
+    import useGTCEntity from '~/components/glossary/composables/useGtcEntity'
+    import useGlossaryTerms from '~/components/glossary/composables/useGlossaryTerms'
+    import useGlossaryCategories from '~/components/glossary/composables/useGlossaryCategories'
+    import useUpdateGtcEntity from '~/components/glossary/composables/useUpdateGtcEntity'
 
-    import { useRouter } from 'vue-router'
     // static
     import {
         Glossary,

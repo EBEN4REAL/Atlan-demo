@@ -22,7 +22,13 @@
                         <div class="px-8 mt-4">
                             <div v-if="isNewCategory" class="mb-4">
                                 <p
-                                    class="p-0 mb-1 text-sm leading-5 text-gray-700 "
+                                    class="
+                                        p-0
+                                        mb-1
+                                        text-sm
+                                        leading-5
+                                        text-gray-700
+                                    "
                                 >
                                     Name
                                 </p>
@@ -89,9 +95,9 @@
     import ProfileHeader from '@/glossary/common/profileHeader.vue'
 
     // composables
-    import useGTCEntity from '~/composables/glossary/useGtcEntity'
-    import useCategoryTerms from '~/composables/glossary/useCategoryTerms'
-    import useUpdateGtcEntity from '~/composables/glossary/useUpdateGtcEntity'
+    import useGTCEntity from '~/components/glossary/composables/useGtcEntity'
+    import useCategoryTerms from '~/components/glossary/composables/useCategoryTerms'
+    import useUpdateGtcEntity from '~/components/glossary/composables/useUpdateGtcEntity'
 
     // static
     import { Category, Term } from '~/types/glossary/glossary.interface'

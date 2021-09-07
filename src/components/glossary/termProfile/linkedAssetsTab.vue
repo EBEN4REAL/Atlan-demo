@@ -87,7 +87,7 @@
     import GlossaryAssetDiscovery from '@/glossary/termProfile/glossaryAssetDiscovery.vue'
     import AssetPreview from '~/components/discovery/preview/assetPreview.vue'
 
-    import useTermLinkedAssets from '~/composables/glossary/useTermLinkedAssets'
+    import useTermLinkedAssets from '~/components/glossary/composables/useTermLinkedAssets'
     import { getDecodedOptionsFromString } from '~/utils/helper/routerQuery'
 
     interface PropsType {
@@ -104,7 +104,12 @@
             GlossaryAssetDiscovery,
             AssetPreview,
         },
-        props: ['termQualifiedName', 'termCount', 'showPreviewPanel', 'termGuid'],
+        props: [
+            'termQualifiedName',
+            'termCount',
+            'showPreviewPanel',
+            'termGuid',
+        ],
         emits: ['preview'],
         setup(props: PropsType, { emit }) {
             const router = useRouter()

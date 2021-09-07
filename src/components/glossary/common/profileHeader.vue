@@ -157,9 +157,12 @@
             )
 
             const redirectToProfile = () => {
-                router.push(
-                    `/glossary/${props.entity.value?.attributes?.anchor?.guid}`
-                )
+                if (props.entity?.typeName === 'AtlasGlossary')
+                    router.push('/glossary')
+                else
+                    router.push(
+                        `/glossary/${props.entity?.attributes?.anchor?.guid}`
+                    )
             }
             return {
                 redirectToProfile,

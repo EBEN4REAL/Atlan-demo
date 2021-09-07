@@ -26,7 +26,13 @@
                         <div class="px-5 mt-4">
                             <div v-if="isNewTerm" class="mb-4">
                                 <p
-                                    class="p-0 mb-1 text-sm leading-5 text-gray-700 "
+                                    class="
+                                        p-0
+                                        mb-1
+                                        text-sm
+                                        leading-5
+                                        text-gray-700
+                                    "
                                 >
                                     Name
                                 </p>
@@ -86,8 +92,8 @@
     import AssetPreview from '~/components/discovery/preview/assetPreview.vue'
     import ProfileHeader from '@/glossary/common/profileHeader.vue'
 
-    import useGTCEntity from '~/composables/glossary/useGtcEntity'
-    import useUpdateGtcEntity from '~/composables/glossary/useUpdateGtcEntity'
+    import useGTCEntity from '~/components/glossary/composables/useGtcEntity'
+    import useUpdateGtcEntity from '~/components/glossary/composables/useUpdateGtcEntity'
 
     import { Term } from '~/types/glossary/glossary.interface'
 

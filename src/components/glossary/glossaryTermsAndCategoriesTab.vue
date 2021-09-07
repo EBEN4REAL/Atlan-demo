@@ -98,7 +98,7 @@
     import AssetList from '@/glossary/common/assetList.vue'
 
     // composables
-    import useGtcSearch from '~/composables/glossary/useGtcSearch'
+    import useGtcSearch from '~/components/glossary/composables/useGtcSearch'
 
     // static
     import { Category, Term } from '~/types/glossary/glossary.interface'

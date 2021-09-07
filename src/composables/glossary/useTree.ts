@@ -53,6 +53,7 @@ const useTree = (emit: any, cacheKey?: string, isAccordion?: boolean) => {
     fetchType,
     fetchGuid,
     false,
+    false
     )
    
     const initTreeData = async (guid: string) => {
@@ -452,6 +453,14 @@ const useTree = (emit: any, cacheKey?: string, isAccordion?: boolean) => {
 
             fetchType.value = currentType.value;
             fetchGuid.value = currentGuid.value;
+            
+            if(!treeData.value?.length 
+                || !parentGlossary.value?.guid 
+                || (parentGlossary.value?.guid !== currentGuid.value 
+                    && currentType.value === 'glossary')){
+                refetch()
+            }
+
 
             selectedKeys.value = [currentGuid.value]
         }

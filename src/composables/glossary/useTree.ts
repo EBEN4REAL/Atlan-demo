@@ -1,4 +1,4 @@
-import { watch, ref, Ref,computed, ComputedRef } from 'vue';
+import { watch, ref, Ref,computed, ComputedRef, onMounted } from 'vue';
 import { TreeDataItem } from 'ant-design-vue/lib/tree/Tree';
 import { useRouter, useRoute } from 'vue-router'
 
@@ -53,6 +53,7 @@ const useTree = (emit: any, cacheKey?: string, isAccordion?: boolean) => {
     fetchType,
     fetchGuid,
     false,
+    false
     )
    
     const initTreeData = async (guid: string) => {
@@ -412,8 +413,8 @@ const useTree = (emit: any, cacheKey?: string, isAccordion?: boolean) => {
         refetch()
     }
 
-    watch(fetchGuid, () => {
-        if(fetchType.value === 'glossary'){
+    watch(fetchGuid, (newGuid) => {
+        if(fetchType.value === 'glossary' && parentGlossary.value?.guid !== newGuid){
             isInitingTree.value = true;
             expandedKeys.value = [];
             loadedKeys.value = []
@@ -423,16 +424,18 @@ const useTree = (emit: any, cacheKey?: string, isAccordion?: boolean) => {
     watch(fetchedEntity, (newEntity) => {
         console.log('new Entity', newEntity)
         if(newEntity?.typeName === 'AtlasGlossary'){
-            parentGlossary.value = newEntity
-            treeData.value = [];
-            initTreeData(fetchGuid.value)
-            // refetchGlossary('root')
+            if( parentGlossary.value?.guid !== newEntity.guid) {
+                parentGlossary.value = newEntity
+                treeData.value = [];
+                initTreeData(fetchGuid.value)
+                // refetchGlossary('root')
+            }
         } 
         else if(newEntity?.typeName === 'AtlasGlossaryCategory' || newEntity?.typeName === 'AtlasGlossaryTerm') {
             if(!treeData.value?.length){
                 currentEntity.value = fetchedEntity.value;
-                fetchGuid.value = newEntity?.attributes?.anchor?.guid;
                 fetchType.value = 'glossary';
+                fetchGuid.value = newEntity?.attributes?.anchor?.guid;
                 refetch()
             }
         }
@@ -450,6 +453,14 @@ const useTree = (emit: any, cacheKey?: string, isAccordion?: boolean) => {
 
             fetchType.value = currentType.value;
             fetchGuid.value = currentGuid.value;
+            
+            if(!treeData.value?.length 
+                || !parentGlossary.value?.guid 
+                || (parentGlossary.value?.guid !== currentGuid.value 
+                    && currentType.value === 'glossary')){
+                refetch()
+            }
+
 
             selectedKeys.value = [currentGuid.value]
         }

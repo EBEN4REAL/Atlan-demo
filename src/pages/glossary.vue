@@ -89,8 +89,16 @@
             const glossaryTreeRef = ref()
             const eventContext = ref({})
 
+            // computed
+            const isHome = computed(
+                () =>
+                    router.currentRoute.value.path.split('/')[
+                        router.currentRoute.value.path.split('/').length - 1
+                    ] === 'glossary'
+            )
+            
             const { glossaryList, refetch: refetchGlossaryList } =
-                useGlossaryList()
+                useGlossaryList(isHome)
 
             const { 
                 treeData,
@@ -109,14 +117,6 @@
                 reInitTree
             } = useTree(emit)
                 
-            // computed
-            const isHome = computed(
-                () =>
-                    router.currentRoute.value.path.split('/')[
-                        router.currentRoute.value.path.split('/').length - 1
-                    ] === 'glossary'
-            )
-
             // methods
             const handleOpenModal = (context: Record<string, string>) => {
                 createGlossaryModalVisble.value = true

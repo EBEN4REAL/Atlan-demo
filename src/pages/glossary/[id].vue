@@ -5,88 +5,14 @@
     <div v-else class="flex flex-row h-full" :class="$style.tabClasses">
         <div class="w-2/3 h-full">
             <!-- top section -->
-            <div class="flex items-center justify-between mx-4 mt-3">
-                <div class="flex items-center mr-5">
-                    <a-button
-                        class="flex items-center p-0 m-0 border-0 shadow-none outline-none "
-                        @click="redirectToProfile"
-                    >
-                        <AtlanIcon
-                            class="w-auto h-5 mr-3"
-                            icon="ArrowRight"
-                            style="transform: scaleX(-1)"
-                        />
-                    </a-button>
+            <ProfileHeader
+                :title="title"
+                :entity="glossary"
+                :statusMessage="statusMessage"
+                :statusObject="statusObject"
+                :shortDescription="shortDescription"
+            />
 
-                    <AtlanIcon icon="Glossary" class="h-5 m-0 mr-2" />
-                    <span class="mr-3 text-sm">{{ title }}</span>
-                </div>
-                <div class="flex flex-row">
-                    <a-button
-                        class="flex items-center px-2 border-0 shadow-none outline-none "
-                        ><atlan-icon
-                            icon="BookmarkOutlined"
-                            class="w-auto h-4"
-                        />
-                        <span class="ml-2 text-sm">Bookmark</span>
-                    </a-button>
-
-                    <a-button
-                        class="flex items-center border-0 shadow-none outline-none "
-                        ><atlan-icon icon="Share" class="w-auto h-4 mr-2" />
-                        <span class="text-sm">Share</span>
-                    </a-button>
-
-                    <ThreeDotMenu :entity="glossary" :showLinks="false" />
-                </div>
-            </div>
-
-            <div class="flex flex-row justify-between pl-5 pr-4 mt-4 mb-5">
-                <div class="flex flex-row">
-                    <div class="flex flex-col justify-center w-full">
-                        <div class="flex items-center">
-                            <span class="mr-3 text-xl">{{ title }}</span>
-                            <a-popover
-                                v-if="statusMessage"
-                                trigger="hover"
-                                placement="rightTop"
-                            >
-                                <template #content>
-                                    <p>{{ statusMessage }}</p>
-                                </template>
-                                <component
-                                    :is="statusObject?.icon"
-                                    v-if="statusObject"
-                                    class="inline-flex self-center w-auto h-4 mb-1 "
-                                />
-                            </a-popover>
-                            <div v-else>
-                                <component
-                                    :is="statusObject?.icon"
-                                    v-if="statusObject"
-                                    class="inline-flex self-center w-auto h-4 mb-1 "
-                                />
-                            </div>
-                        </div>
-                        <div class="flex items-center mt-1">
-                            <span
-                                class="mr-4 text-sm leading-5 text-gray-500"
-                                >{{
-                                    assetTypeLabel[
-                                        glossary.typeName
-                                    ].toUpperCase()
-                                }}</span
-                            >
-
-                            <span
-                                class="text-sm leading-5 text-gray-500"
-                                v-if="shortDescription !== ''"
-                                >{{ shortDescription }}</span
-                            >
-                        </div>
-                    </div>
-                </div>
-            </div>
             <!-- tabs start here  -->
             <div class="m-0">
                 <a-tabs
@@ -157,7 +83,16 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, watch, onMounted, toRef, ref, provide, computed, inject } from 'vue'
+    import {
+        defineComponent,
+        watch,
+        onMounted,
+        toRef,
+        ref,
+        provide,
+        computed,
+        inject,
+    } from 'vue'
 
     // components
     import GlossaryTermsAndCategoriesTab from '@/glossary/glossaryTermsAndCategoriesTab.vue'
@@ -168,6 +103,7 @@
     import SidePanel from '@/glossary/sidePanel/index.vue'
     import CategoryTermPreview from '@/glossary/common/categoryTermPreview/categoryTermPreview.vue'
     import ThreeDotMenu from '@/glossary/common/threeDotMenu.vue'
+    import ProfileHeader from '@/glossary/common/profileHeader.vue'
 
     // composables
     import useGTCEntity from '~/composables/glossary/useGtcEntity'
@@ -195,6 +131,7 @@
             SidePanel,
             CategoryTermPreview,
             ThreeDotMenu,
+            ProfileHeader,
         },
         props: {
             id: {
@@ -215,7 +152,6 @@
                 AtlasGlossary: 'glossary',
             }
             const newName = ref('')
-
 
             const router = useRouter()
             const {
@@ -287,8 +223,8 @@
             const updateTitle = () => {
                 updateEntity('glossary', glossary.value?.guid ?? '', {
                     name: newName.value,
-                });
-                if(reInitTree) {
+                })
+                if (reInitTree) {
                     console.log(reInitTree, 'hello')
                     setTimeout(() => {
                         reInitTree()

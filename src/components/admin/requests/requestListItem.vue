@@ -58,31 +58,10 @@
                 v-else-if="selected"
             >
                 <template v-if="request.status === 'active'">
-                    <AtlanButton
-                        color="secondary"
-                        @click.stop="handleRejection"
-                        padding="compact"
-                    >
-                        <template #prefix
-                            ><AtlanIcon class="mr-1" icon="Decline" />
-                        </template>
-                        Decline
-                    </AtlanButton>
-                    <AtlanButton
-                        color="secondary"
-                        @click.stop="handleApproval"
-                        padding="compact"
-                    >
-                        <template #prefix
-                            ><AtlanIcon class="mr-1" icon="Approve" />
-                        </template>
-                        Accept
-                    </AtlanButton>
-                    <AtlanButton color="secondary" padding="compact"
-                        ><template #label
-                            ><AtlanIcon icon="KebabMenu" />
-                        </template>
-                    </AtlanButton>
+                    <RequestActions
+                        @accept="handleApproval"
+                        @reject="handleRejection"
+                    />
                 </template>
                 <div v-else-if="request.status === 'approved'">Approved</div>
                 <div v-else-if="request.status === 'rejected'">Rejected</div>
@@ -101,6 +80,8 @@
 
     import VirtualList from '~/utils/library/virtualList/virtualList.vue'
     import AtlanButton from '@/UI/button.vue'
+
+    import RequestActions from './requestActions.vue'
 
     import ClassificationPiece from './pieces/classifications.vue'
     import AssetPiece from './pieces/asset.vue'
@@ -121,6 +102,7 @@
         components: {
             VirtualList,
             AtlanButton,
+            RequestActions,
             ClassificationPiece,
             AssetPiece,
             AttrPiece,

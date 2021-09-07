@@ -21,9 +21,7 @@ export function useRequestList(
     // TODO: Call API when seachterm changes with debounce
 
     let params = computed(() => generateRequestListParams(filters.value))
-    const { response, error, mutate, isLoading } = getRequests(params, {
-        revalidateOnFocus: false,
-    })
+    const { response, error, mutate, isLoading } = getRequests(params)
 
     watch(
         filters,

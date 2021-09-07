@@ -66,8 +66,8 @@
             }
 
             /***********************************************************************************
-                /////////// DO NOT REMOVE ANY COMMENTED CODE - They are for bulk select ////////////
-                ***********************************************************************************/
+            /////////// DO NOT REMOVE ANY COMMENTED CODE - They are for bulk select ////////////
+            ***********************************************************************************/
 
             function selectRequest(guid: string, index: number) {
                 /** Check if the currently pressed key is not this array,

@@ -13,8 +13,6 @@ export const getRequests = (
     const { data, error, mutate, isLoading } = useAPI<{
         records: RequestAttributes[]
     }>(LIST_REQUESTS, 'GET', {
-        // TODO: Change it to a proper cache key later
-        cache: 'req' + JSON.stringify(isRef(params) ? params.value : params),
         options,
         params,
     })

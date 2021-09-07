@@ -1,6 +1,3 @@
-/* import { Ref } from 'vue'
-import { assetInterface } from '~/types/assets/asset.interface'
-
 type collapsiblePanels = {
     id: string
     label: string
@@ -75,13 +72,10 @@ const {
     usage,
 } = CollapsiblePanels
 
-export const InfoTabInNonBiPreview: { [key: string]: AssetTab } = {
+export const InfoTabPanels: { [key: string]: AssetTab } = {
     Column: {
         panels: [columnDetails, linkedAsset, usage, columnProfile],
-    }
-}
-export const InfoTabInBiPreview: { [key: string]: AssetTab } = {
-
+    },
     TableauWorkbook: {
         panels: [
             tableauProperties,
@@ -234,127 +228,7 @@ export const InfoTabInBiPreview: { [key: string]: AssetTab } = {
 }
 
 export function useInfoPanels(
-    page: Ref<string>,
-    selectedAsset: Ref<assetInterface>
+    selectedAssetType: string
 ) {
-
-    switch (page.value) {
-        case 'nonBiOverview': {
-            return InfoTabInNonBiPreview[selectedAsset.value.typeName]
-
-        }
-        case 'BiOverview': {
-            return InfoTabInBiPreview[selectedAsset.value.typeName]
-
-        }
-        default: return null
-    }
-} */
-
-
-
-// eslint-disable-next-line import/prefer-default-export
-/* export const CollapsiblePanels = [
-    {
-        id: 'columnDetails',
-        label: 'Details',
-        component: 'columnDetails',
-    },
-    {
-        id: 'linkedAsset',
-        label: 'Governance',
-        component: 'linkedAsset',
-    },
-    {
-        id: 'usage',
-        label: 'Usage',
-        component: 'usage',
-    },
-    {
-        id: 'columnProfile',
-        label: 'Column Profile',
-        component: 'columnProfile',
-    },
-] */
-import { Ref } from 'vue'
-
-type collapsiblePanels = {
-    id: string
-    label: string
-    component: string
-}
-
-const CollapsiblePanels: { [key: string]: collapsiblePanels } = {
-    columnDetails: {
-        id: 'columnDetails',
-        label: 'Details',
-        component: 'columnDetails',
-    },
-    assetDetails: {
-        id: 'assetDetails',
-        label: 'Details',
-        component: 'assetDetails',
-    },
-    linkedAsset: {
-        id: 'linkedAsset',
-        label: 'Governance',
-        component: 'linkedAsset',
-    },
-    usage: {
-        id: 'usage',
-        label: 'Usage',
-        component: 'usage',
-    },
-
-    tableauProperties: {
-        id: 'tableauProperties',
-        label: 'Tableau Properties',
-        component: 'tableauProperties',
-    },
-
-    tableauHierarchy: {
-        id: 'tableauHierarchy',
-        label: 'Hierarchy',
-        component: 'tableauHierarchy',
-    },
-    columnProfile: {
-        id: 'columnProfile',
-        label: 'Column Profile',
-        component: 'columnProfile',
-    },
-}
-const {
-    columnDetails,
-    linkedAsset,
-    assetDetails,
-    tableauProperties,
-    tableauHierarchy,
-    columnProfile,
-    usage,
-} = CollapsiblePanels
-
-export const InfoTabInNonBiPreview = [columnDetails, linkedAsset, usage, columnProfile]
-
-export const InfoTabInBiPreview = [
-    tableauProperties,
-    assetDetails,
-    linkedAsset,
-    tableauHierarchy,
-]
-
-
-export function useInfoPanels(
-    page: Ref<string>,
-) {
-    switch (page.value) {
-        case 'nonBiOverview': {
-            return InfoTabInNonBiPreview
-
-        }
-        case 'BiOverview': {
-            return InfoTabInBiPreview
-
-        }
-        default: return null
-    }
+    return InfoTabPanels[selectedAssetType]
 }

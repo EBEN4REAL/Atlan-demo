@@ -218,7 +218,7 @@
             @apply text-gray font-bold;
         }
         :global(.ant-tabs-bar) {
-            @apply mb-0 pl-0;
+            @apply mb-5 pl-0;
         }
 
         :global(.ant-tabs-tabpane) {

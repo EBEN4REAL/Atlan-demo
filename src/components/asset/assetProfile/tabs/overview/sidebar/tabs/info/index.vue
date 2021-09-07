@@ -188,20 +188,14 @@
             const tableauProperties = ref<any>([])
 
             watch(
-                [selectedAsset, page],
+                selectedAsset,
                 () => {
-                    const infoTab = useInfoPanels(page)
-                    /* const properties = infoTab?.properties
-                    tableauProperties.value = properties ?? []
-                    dynamicList.value = [
-                        ...panels,
-                        ...applicableBMList(props.infoTabData.typeName),
-                    ] */
+                    const infoTab = useInfoPanels(selectedAsset.value.typeName)
+                    const panels = infoTab?.panels
+                    const properties = infoTab?.properties
 
-                    dynamicList.value = [
-                        ...infoTab,
-                        ...applicableBMList(props.infoTabData.typeName),
-                    ]
+                    tableauProperties.value = properties ?? []
+                    dynamicList.value = panels
                 },
                 { immediate: true }
             )

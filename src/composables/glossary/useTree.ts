@@ -431,9 +431,9 @@ const useTree = (emit: any, cacheKey?: string, isAccordion?: boolean) => {
         else if(newEntity?.typeName === 'AtlasGlossaryCategory' || newEntity?.typeName === 'AtlasGlossaryTerm') {
             if(!treeData.value?.length){
                 currentEntity.value = fetchedEntity.value;
-                fetchGuid.value = newEntity?.attributes?.anchor?.guid;
                 fetchType.value = 'glossary';
-                refetch()
+                fetchGuid.value = newEntity?.attributes?.anchor?.guid;
+                // refetch()
             }
         }
     });

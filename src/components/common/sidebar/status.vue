@@ -6,6 +6,8 @@
             placement="left"
             trigger="click"
             :class="$style.popover"
+            @visibleChange="handleVisibleChange"
+            :destroyTooltipOnHide="true"
         >
             <template #content>
                 <div class="flex flex-col" style="width: 300px p-4">
@@ -82,10 +84,10 @@
                     v-if="selectedAsset?.attributes?.assetStatusMessage"
                     class="px-2"
                 >
-                    <p class="mb-3.5 text-sm">Message</p>
+                    <p class="mb-2.5 text-sm">Message</p>
                     <p
                         v-linkified
-                        class="mb-0 text-xs text-gray"
+                        class="mb-0 text-sm text-gray"
                         v-html="statusMessage"
                     ></p>
                 </div>
@@ -130,13 +132,16 @@
             } = updateStatus(selectedAsset)
 
             const animationPoint = ref(null)
-            const message = ref('')
+            const message = ref(statusMessage.value)
 
             const handleUpdate = () => {
                 update()
             }
             const handleTextAreaUpdate = (e: any) => {
                 statusMessage.value = e.target.value
+            }
+            const handleVisibleChange = () => {
+                message.value = statusMessage.value
             }
 
             watch(isReady, () => {
@@ -172,6 +177,7 @@
                 }
             })
             return {
+                handleVisibleChange,
                 handleUpdate,
                 handleCancel,
                 handleTextAreaUpdate,

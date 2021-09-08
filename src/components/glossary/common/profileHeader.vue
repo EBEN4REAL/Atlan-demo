@@ -56,9 +56,17 @@
         <div class="flex flex-row w-full">
             <div class="flex flex-col justify-center w-full">
                 <div class="flex">
-                    <span class="mr-3 text-xl font-bold leading-6">{{
-                        title
-                    }}</span>
+                    <span
+                        v-if="!isNewEntity"
+                        class="mr-3 text-xl font-bold leading-6"
+                        >{{ title }}</span
+                    >
+
+                    <span
+                        v-if="isNewEntity"
+                        class="mr-3 text-xl italic leading-6 text-gray-500"
+                        >Untitled {{ assetTypeLabel[entity.typeName] }}
+                    </span>
                     <a-popover
                         v-if="statusMessage"
                         trigger="hover"
@@ -123,6 +131,11 @@
                 required: true,
                 default: '',
             },
+            isNewEntity: {
+                type: Boolean,
+                required: false,
+                default: false,
+            },
 
             statusObject: {
                 type: Object,
@@ -164,6 +177,7 @@
                         `/glossary/${props.entity?.attributes?.anchor?.guid}`
                     )
             }
+            console.log(props?.isNewEntity)
             return {
                 redirectToProfile,
                 linkedAssetsCount,

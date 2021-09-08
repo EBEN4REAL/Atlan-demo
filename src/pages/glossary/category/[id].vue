@@ -7,6 +7,7 @@
             <ProfileHeader
                 :title="title"
                 :entity="category"
+                :isNewEntity="isNewCategory"
                 :statusMessage="statusMessage"
                 :statusObject="statusObject"
                 :shortDescription="shortDescription"
@@ -22,13 +23,7 @@
                         <div class="px-8 mt-4">
                             <div v-if="isNewCategory" class="mb-4">
                                 <p
-                                    class="
-                                        p-0
-                                        mb-1
-                                        text-sm
-                                        leading-5
-                                        text-gray-700
-                                    "
+                                    class="p-0 mb-1 text-sm leading-5 text-gray-700 "
                                 >
                                     Name
                                 </p>

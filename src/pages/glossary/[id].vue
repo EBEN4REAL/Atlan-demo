@@ -8,6 +8,7 @@
             <ProfileHeader
                 :title="title"
                 :entity="glossary"
+                :isNewEntity="isNewGlossary"
                 :statusMessage="statusMessage"
                 :statusObject="statusObject"
                 :shortDescription="shortDescription"

@@ -12,6 +12,7 @@
             <ProfileHeader
                 :title="title"
                 :entity="term"
+                :isNewEntity="isNewTerm"
                 :statusMessage="statusMessage"
                 :statusObject="statusObject"
                 :shortDescription="shortDescription"
@@ -26,13 +27,7 @@
                         <div class="px-5 mt-4">
                             <div v-if="isNewTerm" class="mb-4">
                                 <p
-                                    class="
-                                        p-0
-                                        mb-1
-                                        text-sm
-                                        leading-5
-                                        text-gray-700
-                                    "
+                                    class="p-0 mb-1 text-sm leading-5 text-gray-700 "
                                 >
                                     Name
                                 </p>

@@ -23,7 +23,7 @@
             </div>
         </div>
         <!-- Table -->
-        <div class="relative border border-gray-light">
+        <div class="relative">
             <a-table
                 :columns="columns"
                 :data-source="columnsData.filteredList"
@@ -376,6 +376,9 @@
     :global(.ant-drawer-content-wrapper) {
         width: 420px !important;
         background-color: white !important;
+    }
+    :global(.ant-table) {
+        @apply border border-gray-light !important;
     }
     :global(.ant-table th) {
         @apply whitespace-nowrap font-bold !important;

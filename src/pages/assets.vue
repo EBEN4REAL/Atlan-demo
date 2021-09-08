@@ -16,6 +16,7 @@
                 ></AssetDiscovery>
             </div>
         </div>
+
         <div
             class="z-20 flex flex-col h-full bg-white border-l  asset-preview-container"
         >

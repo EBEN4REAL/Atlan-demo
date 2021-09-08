@@ -3,7 +3,7 @@
     <ErrorView v-else-if="data?.error" :error="data?.error" />
 
     <div v-if="data?.asset" class="w-full">
-        <div class="z-30 pt-5 pb-3 pr-4 bg-white">
+        <div class="pt-5 pb-3 pr-4 bg-white">
             <Header />
         </div>
         <div class="border-t border-gray-light">

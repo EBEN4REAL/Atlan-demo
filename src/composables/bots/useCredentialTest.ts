@@ -25,7 +25,7 @@ export default function useCredentialTest(dependentKey?: Ref<any>, initialBody?:
 
 
     const isLoading = computed(() => (([STATES.PENDING].includes(state.value) || [STATES.VALIDATING].includes(state.value)) && dependentKey?.value)
-            || isValidating.value && dependentKey?.value);
+        || isValidating.value && dependentKey?.value);
 
     const isSuccess = computed(() => ([STATES.SUCCESS].includes(state.value)));
 

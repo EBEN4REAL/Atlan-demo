@@ -26,7 +26,7 @@ export const getters: Getters = {
         return state.data.entities
     },
     getSourceMap() {
-        return this.getList?.map((i) => i.attributes.integrationName)
+        return [...new Set(this.getList?.map((i) => i.attributes.integrationName))]
     },
     getSourceList() {
         return SourceList.filter((s) =>
@@ -53,18 +53,18 @@ export const getters: Getters = {
                                         ?.toLowerCase()
                                         .includes(searchText?.toLowerCase()))
                             )
-                        } 
-                            return item.attributes.integrationName === src.id
-                        
+                        }
+                        return item.attributes.integrationName === src.id
+
                     })
                     .map((item) => ({
-                            key: item.guid,
-                            title:
-                                item.attributes.displayName ||
-                                item.attributes.name,
-                            type: 'connection',
-                            isLeaf: true,
-                        }))
+                        key: item.guid,
+                        title:
+                            item.attributes.displayName ||
+                            item.attributes.name,
+                        type: 'connection',
+                        isLeaf: true,
+                    }))
                     .sort((a, b) =>
                         a.title > b.title ? 1 : b.title > a.title ? -1 : 0
                     )

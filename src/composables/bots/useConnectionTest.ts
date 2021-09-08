@@ -1,9 +1,7 @@
 
 import { computed, reactive, Ref, ref, watch } from 'vue';
 import axios, { AxiosRequestConfig, CancelTokenSource } from 'axios';
-import { IConfig } from 'swrv';
-import { Connection } from '~/api2/connection';
-import useSWRVState from '~/api2/useSWRVState';
+import { Connection } from '~/api/auth/connection';
 
 
 export default function useConnectionTest(dependentKey?: Ref<any>, initialBody?: any, cacheSuffx?: string | "") {
@@ -20,16 +18,18 @@ export default function useConnectionTest(dependentKey?: Ref<any>, initialBody?:
 
 
     const cancelTokenSource: Ref<CancelTokenSource> = ref(axios.CancelToken.source());
-    const { data,
-        mutate, error, state, STATES, isValidating } = Connection.TestNetwork(body, asyncOptions, `${cacheSuffx}`, dependentKey);
+    const { data, mutate, error: isError } = Connection.TestNetwork(body, asyncOptions, dependentKey);
 
+    const isSuccess = ref(false);
+    const isLoading = ref(true);
+    watch([isError, data], (v) => {
+        isLoading.value = false;
+        if (v[1]?.message === "successful")
+            isSuccess.value = true;
+        else
+            isSuccess.value = false;
+    })
 
-    const isLoading = computed(() => (([STATES.PENDING].includes(state.value) || [STATES.VALIDATING].includes(state.value)) && dependentKey?.value)
-            || isValidating.value && dependentKey?.value);
-
-    const isSuccess = computed(() => ([STATES.SUCCESS].includes(state.value)));
-
-    const isError = computed(() => [STATES.ERROR].includes(state.value) || [STATES.STALE_IF_ERROR].includes(state.value));
 
     const alertType = computed(() => {
         if (isSuccess.value) {
@@ -52,10 +52,10 @@ export default function useConnectionTest(dependentKey?: Ref<any>, initialBody?:
 
 
     const errorMessage = computed(() => {
-        if (error.value?.message === "timeout") {
+        if (isError.value?.message === "timeout") {
             return "Request timed out. Please check your host/port"
         }
-        return error.value?.response?.data?.message;
+        return isError.value?.response?.data?.message;
     });
 
 
@@ -68,11 +68,11 @@ export default function useConnectionTest(dependentKey?: Ref<any>, initialBody?:
 
 
     const refresh = () => {
-        if ([STATES.PENDING].includes(state.value) || [STATES.VALIDATING].includes(state.value)) {
-            cancelTokenSource.value.cancel();
-            cancelTokenSource.value = axios.CancelToken.source();
-            asyncOptions.cancelToken = cancelTokenSource.value.token;
-        }
+        // if ([STATES.PENDING].includes(state.value) || [STATES.VALIDATING].includes(state.value)) {
+        //     cancelTokenSource.value.cancel();
+        //     cancelTokenSource.value = axios.CancelToken.source();
+        //     asyncOptions.cancelToken = cancelTokenSource.value.token;
+        // }
         mutate();
     };
 
@@ -85,17 +85,13 @@ export default function useConnectionTest(dependentKey?: Ref<any>, initialBody?:
 
     return {
         data,
-        state,
         isLoading,
         isSuccess,
         isError,
-        STATES,
         replaceBody,
         refresh,
         alertType,
         alertMessage,
-        error,
         errorMessage,
-        isValidating,
     }
 };

@@ -146,7 +146,7 @@
         </div>
 
         <div
-            class="grid grid-cols-12 gap-2 px-3 pt-3 border border-gray-200 rounded  flex-nowrap bg-gray-100"
+            class="grid grid-cols-12 gap-2 px-3 pt-3 bg-gray-100 border border-gray-200 rounded  flex-nowrap"
         >
             <div class="col-span-12">
                 <p class="mb-2 text-sm font-normal text-gray">Advanced</p>
@@ -164,12 +164,12 @@
                                 v-if="attr.info"
                                 :title="attr.info"
                                 placement="right"
-                                ><span class="ml-1"
-                                    ><fa
-                                        icon="fal info-circle"
-                                        class="pushtop"
-                                    ></fa></span
-                            ></a-tooltip>
+                            >
+                                <span class="ml-1">
+                                    <fa icon="fal info-circle" class="pushtop">
+                                    </fa>
+                                </span>
+                            </a-tooltip>
                         </template>
 
                         <DynamicInput
@@ -390,15 +390,13 @@
             const initialBody = {}
             const {
                 data,
-                state: stateNetwork,
-                error: errorNetwork,
+                isError: errorNetwork,
                 isLoading: isNetworkTestLoading,
                 isSuccess: isNetworkTestSuccess,
                 isError: isNetworkTestError,
                 alertType: networkAlertType,
                 alertMessage: networkAlertMessage,
                 errorMessage: networkErrorMessage,
-                isValidating,
                 replaceBody: replaceNetworkTestBody,
             } = useConnectionTest(now, initialBody)
 
@@ -522,7 +520,6 @@
 
             return {
                 data,
-                stateNetwork,
                 errorNetwork,
                 stateCredential,
                 hostLocal,
@@ -532,7 +529,6 @@
                 authAttributesLocal,
                 credential,
                 authTypes,
-                isValidating,
                 credentialGuid,
                 enumAttributes,
                 handleTest,

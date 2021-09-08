@@ -12,8 +12,8 @@ interface useGetAPIParams {
     body?: Ref<Record<string, any>> | Record<string, any>
     pathVariables?: Ref<Record<string, any>> | Record<string, any>
     options?:
-        | Ref<IConfig & AxiosRequestConfig & AsyncStateOptions>
-        | (IConfig & AxiosRequestConfig & AsyncStateOptions)
+    | Ref<IConfig & AxiosRequestConfig & AsyncStateOptions>
+    | (IConfig & AxiosRequestConfig & AsyncStateOptions)
     dependantFetchingKey?: Ref
     // swrOptions?: IConfig,
     // axiosOptions?: AxiosRequestConfig
@@ -26,6 +26,7 @@ interface useGetAPIParams {
  * @param body - The payload to send while making a `POST` request
  * @param options - SWRV or Axios specefic configuration objects
  */
+// eslint-disable-next-line import/prefer-default-export
 export const useAPI = <T>(
     key: string,
     method: 'GET' | 'POST' | 'DELETE' | 'PUT',

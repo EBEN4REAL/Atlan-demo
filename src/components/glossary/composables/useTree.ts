@@ -307,7 +307,7 @@ const useTree = (emit: any, cacheKey?: string, isAccordion?: boolean) => {
         }
     }
 
-    const refetchGlossary = async (guid: string | 'root') => {
+    const refetchNode = async (guid: string | 'root') => {
         if (guid === 'root' && parentGlossary.value?.guid) {
             const categoryList = await GlossaryApi.ListCategoryForGlossary(
                 parentGlossary.value?.guid,
@@ -608,7 +608,7 @@ const useTree = (emit: any, cacheKey?: string, isAccordion?: boolean) => {
         selectNode,
         dragAndDropNode,
         updateNode,
-        refetchGlossary,
+        refetchNode,
     }
 }
 

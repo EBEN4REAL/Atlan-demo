@@ -113,7 +113,7 @@
                 selectNode,
                 dragAndDropNode,
                 updateNode,
-                refetchGlossary,
+                refetchNode,
                 reInitTree,
             } = useTree(emit)
 
@@ -153,7 +153,7 @@
             })
 
             provide('updateTreeNode', updateNode)
-            provide('refetchGlossaryTree', refetchGlossary)
+            provide('refetchGlossaryTree', refetchNode)
             provide('reInitTree', reInitTree)
 
             return {

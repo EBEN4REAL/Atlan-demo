@@ -135,7 +135,7 @@
                 [key: string]: any
             }> = ref({})
 
-            const { selectedAsset } = toRefs(props)
+            const { selectedAsset, infoTabData } = toRefs(props)
 
             const { getApplicableBmGroups } = useBusinessMetadataHelper()
 
@@ -192,6 +192,12 @@
 
                     tableauProperties.value = properties ?? []
 
+                    console.log('INFO TAB DATA', infoTabData.value)
+
+                    console.log(
+                        'TABLEAU PROPERTIES DATA',
+                        tableauProperties.value
+                    )
                     dynamicList.value = panels
                 },
                 { immediate: true }

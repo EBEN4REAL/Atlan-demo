@@ -167,7 +167,9 @@
                 statusMessage,
             } = useGTCEntity<Glossary>('glossary', guid)
 
-            const isNewGlossary = computed(() => title.value === 'New Glossary')
+            const isNewGlossary = computed(
+                () => title.value === 'Untitled Glossary'
+            )
 
             const {
                 terms: glossaryTerms,

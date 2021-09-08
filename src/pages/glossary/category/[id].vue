@@ -159,7 +159,9 @@
                     category.value?.attributes?.qualifiedName?.split('@')[1] ??
                     ''
             )
-            const isNewCategory = computed(() => title.value === 'New Category')
+            const isNewCategory = computed(
+                () => title.value === 'Untitled Category'
+            )
 
             // methods
             const handleCategoryOrTermPreview = (entity: Category | Term) => {

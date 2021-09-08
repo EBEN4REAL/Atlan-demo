@@ -46,7 +46,7 @@ const useCreateGlossary = () => {
     const createGlossary = () => {
         body.value = {
             qualifiedName: generateUUID(),
-            name: 'New Glossary',
+            name: 'Untitled Glossary',
             shortDescription: '',
             longDescription: '',
             assetStatus: 'draft',
@@ -78,7 +78,7 @@ const useCreateGlossary = () => {
     ) => {
         body.value = {
             name: generateUUID(),
-            displayText: 'New Category',
+            displayText: 'Untitled Category',
             shortDescription: '',
             longDescription: '',
             assetStatus: 'draft',
@@ -110,7 +110,7 @@ const useCreateGlossary = () => {
         watch(data, (newData) => {
             if (newData?.guid) {
                 updateEntity('category', newData.guid, {
-                    name: 'New Category',
+                    name: 'Untitled Category',
                 })
             }
         })
@@ -134,7 +134,7 @@ const useCreateGlossary = () => {
     ) => {
         body.value = {
             name: generateUUID(),
-            displayText: 'New Term',
+            displayText: 'Untitled Term',
             shortDescription: '',
             longDescription: '',
             assetStatus: 'draft',
@@ -168,7 +168,7 @@ const useCreateGlossary = () => {
         watch(data, (newData) => {
             if (newData?.guid) {
                 updateEntity('term', newData.guid, {
-                    name: 'New Term',
+                    name: 'Untitled Term',
                 })
             }
         })

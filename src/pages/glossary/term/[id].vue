@@ -143,7 +143,7 @@
                 () => term.value?.attributes?.assignedEntities?.length ?? 0
             )
 
-            const isNewTerm = computed(() => title.value === 'New Term')
+            const isNewTerm = computed(() => title.value === 'Untitled Term')
 
             const handlePreview = (entity: any) => {
                 previewEntity.value = entity

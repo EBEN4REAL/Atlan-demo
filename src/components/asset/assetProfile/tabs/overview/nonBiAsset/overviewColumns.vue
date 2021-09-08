@@ -27,7 +27,7 @@
             <a-table
                 :columns="columns"
                 :data-source="columnsData.filteredList"
-                :pagination="false"
+                :pagination="{ position: 'bottom' }"
                 :scroll="{ y: 240, scrollToFirstRowOnChange: true }"
                 :loading="!columnsData.filteredList"
                 :custom-row="customRow"
@@ -167,16 +167,29 @@
             }
 
             const scrollToElement = (selectedRow) => {
-                const tableRow = document.querySelector(
-                    `tr[data-row-key="${selectedRow}"]`
-                )
-
-                if (tableRow) {
-                    tableRow.scrollIntoView({
-                        block: 'nearest',
-                        inline: 'nearest',
-                    })
+                let paginationOfSelectedColumn
+                if (selectedRow % 10 === 0) {
+                    paginationOfSelectedColumn = selectedRow / 10
+                } else {
+                    paginationOfSelectedColumn =
+                        Math.floor(selectedRow / 10) + 1
                 }
+                document
+                    .querySelector(`li[title="${paginationOfSelectedColumn}"]`)
+                    .click()
+
+                setTimeout(() => {
+                    const tableRow = document.querySelector(
+                        `tr[data-row-key="${selectedRow}"]`
+                    )
+
+                    if (tableRow) {
+                        tableRow.scrollIntoView({
+                            block: 'nearest',
+                            inline: 'nearest',
+                        })
+                    }
+                }, 500)
             }
 
             // filterColumnsList

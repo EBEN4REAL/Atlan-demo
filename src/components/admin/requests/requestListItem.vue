@@ -79,7 +79,7 @@
     import { message } from 'ant-design-vue'
 
     import VirtualList from '~/utils/library/virtualList/virtualList.vue'
-    import AtlanButton from '@/UI/button.vue'
+    import RequestModal from './requestDetailsModal.vue'
 
     import RequestActions from './requestActions.vue'
 
@@ -101,8 +101,8 @@
         name: 'RequestListItem',
         components: {
             VirtualList,
-            AtlanButton,
             RequestActions,
+            RequestModal,
             ClassificationPiece,
             AssetPiece,
             AttrPiece,

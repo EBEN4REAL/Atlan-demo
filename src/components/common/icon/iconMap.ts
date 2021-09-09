@@ -40,6 +40,8 @@ import Lineage from '~/assets/images/icons/lineage.svg'
 import Activity from '~/assets/images/icons/activity.svg'
 import Columns from '~/assets/images/icons/columns.svg'
 import Relation from '~/assets/images/icons/relation.svg'
+import ShareNew from '~/assets/images/icons/shareNew.svg'
+import User from '~/assets/images/icons/user.svg'
 
 export default {
     Relation,
@@ -84,4 +86,6 @@ export default {
     EmptyGlossary,
     Glossary,
     KebabMenu,
+    ShareNew,
+    User,
 }

@@ -53,19 +53,15 @@
                 icon="CircleLoader"
                 class="w-5 h-5 text-gray animate-spin"
             ></AtlanIcon>
-            <div
-                class="flex items-center justify-end gap-x-2"
-                v-else-if="selected"
-            >
-                <template v-if="request.status === 'active'">
-                    <RequestActions
-                        @accept="handleApproval"
-                        @reject="handleRejection"
-                    />
-                </template>
+            <template v-else-if="selected">
+                <RequestActions
+                    v-if="request.status === 'active'"
+                    @accept="handleApproval"
+                    @reject="handleRejection"
+                />
                 <div v-else-if="request.status === 'approved'">Approved</div>
                 <div v-else-if="request.status === 'rejected'">Rejected</div>
-            </div>
+            </template>
             <template v-else>
                 <UserPiece :user="request.createdByUser" :is-pill="false" />
                 <DatePiece label="Created At" :date="request.created_at" />
@@ -79,7 +75,6 @@
     import { message } from 'ant-design-vue'
 
     import VirtualList from '~/utils/library/virtualList/virtualList.vue'
-    import RequestModal from './requestDetailsModal.vue'
 
     import RequestActions from './requestActions.vue'
 
@@ -102,7 +97,6 @@
         components: {
             VirtualList,
             RequestActions,
-            RequestModal,
             ClassificationPiece,
             AssetPiece,
             AttrPiece,

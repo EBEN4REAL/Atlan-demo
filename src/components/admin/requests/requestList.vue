@@ -7,21 +7,26 @@
         </template>
     </SearchAndFilter>
     <div v-if="listLoading">Loading</div>
-    <VirtualList
-        v-else-if="requestList.length && !listLoading"
-        :data="requestList"
-        data-key="id"
-    >
-        <template #default="{ item, index }">
-            <RequestListItem
-                :request="item"
-                :selected="isSelected(item.id)"
-                :active="index === selectedIndex"
-                @select="selectRequest(item.id, index)"
-                @action="handleRequestAction($event, index)"
-            />
-        </template>
-    </VirtualList>
+    <template v-else-if="requestList.length && !listLoading">
+        <RequestModal
+            :request="requestList[selectedIndex]"
+            v-model:visible="isDetailsVisible"
+            @up="traverseUp"
+            @down="traverseDown"
+        ></RequestModal>
+        <VirtualList :data="requestList" data-key="id">
+            <template #default="{ item, index }">
+                <RequestListItem
+                    :request="item"
+                    :selected="isSelected(item.id)"
+                    :active="index === selectedIndex"
+                    @select="selectRequest(item.id, index)"
+                    @action="handleRequestAction($event, index)"
+                />
+            </template>
+        </VirtualList>
+    </template>
+
     <div v-else>Empty state</div>
 </template>
 
@@ -34,6 +39,8 @@
     import VirtualList from '~/utils/library/virtualList/virtualList.vue'
     import RequestListItem from './requestListItem.vue'
     import RequestFilters from './requestFilters.vue'
+    import RequestModal from './modal/requestDetailsBase.vue'
+
     import { RequestAttributes, RequestStatus } from '~/types/atlas/requests'
     import { message } from 'ant-design-vue'
 
@@ -44,13 +51,15 @@
             RequestListItem,
             SearchAndFilter,
             RequestFilters,
+            RequestModal,
         },
         setup() {
             // keyboard navigation stuff
-            const { Shift, ArrowUp, ArrowDown, x, Meta, Control } =
+            const { Shift, ArrowUp, ArrowDown, x, Meta, Control, Space } =
                 useMagicKeys()
             const selectedList = ref(new Set<string>())
-            const selectedIndex = ref(-1)
+            const selectedIndex = ref(0)
+            const isDetailsVisible = ref(false)
             const searchTerm = ref('')
             const filters = ref({ status: ['active'] as RequestStatus[] })
 
@@ -62,12 +71,14 @@
             const requestList = computed(() => response.value?.records || [])
 
             function isSelected(guid: string): boolean {
-                return selectedList.value.has(guid)
+                // TODO: change this when adding bulk support
+                // return selectedList.value.has(guid)
+                return false
             }
 
             /***********************************************************************************
-            /////////// DO NOT REMOVE ANY COMMENTED CODE - They are for bulk select ////////////
-            ***********************************************************************************/
+                /////////// DO NOT REMOVE ANY COMMENTED CODE - They are for bulk select ////////////
+                ***********************************************************************************/
 
             function selectRequest(guid: string, index: number) {
                 /** Check if the currently pressed key is not this array,
@@ -84,19 +95,21 @@
                 // Set it to -1 if nothing is selected
                 if (selectedList.value.size) selectedIndex.value = index
                 else selectedIndex.value = -1
+
+                isDetailsVisible.value = true
             }
 
-            whenever(ArrowUp, () => {
-                if (selectedIndex.value > -1) {
+            const traverseUp = () => {
+                if (selectedIndex.value > 0) {
                     selectedIndex.value--
                     if (Shift.value)
                         selectedList.value.add(
                             requestList.value[selectedIndex.value].id
                         )
                 }
-            })
+            }
 
-            whenever(ArrowDown, () => {
+            const traverseDown = () => {
                 if (selectedIndex.value < requestList.value.length - 1) {
                     selectedIndex.value++
                     if (Shift.value)
@@ -104,7 +117,9 @@
                             requestList.value[selectedIndex.value].id
                         )
                 }
-            })
+            }
+            whenever(ArrowUp, traverseUp)
+            whenever(ArrowDown, traverseDown)
 
             whenever(x, () => {
                 if (
@@ -117,6 +132,11 @@
                     else selectedList.value.add(guid)
                 }
             })
+
+            whenever(
+                Space,
+                () => (isDetailsVisible.value = !isDetailsVisible.value)
+            )
 
             function handleRequestAction(req: RequestAttributes, idx: number) {
                 if (filters.value.status.includes(req.status)) {
@@ -141,6 +161,9 @@
                 filters,
                 listLoading,
                 listError,
+                isDetailsVisible,
+                traverseUp,
+                traverseDown,
             }
         },
     })

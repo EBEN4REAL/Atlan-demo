@@ -26,3 +26,19 @@ export const requestTypeIcon: Record<RequestType, iconName> = {
     term_link: 'Link',
     attach_classification: 'Link',
 }
+
+export const attributeCopyMapping: Record<string, string> = {
+    assetStatus: 'Status',
+    userDescription: 'Description',
+}
+
+export const typeCopyMapping: Record<string, string> = {
+    attribute: 'Update',
+    create_typedef: 'Create Classification',
+    create_glossary: 'Create Glossary',
+    create_category: 'Create Category',
+    create_term: 'Create Term',
+    bm_attribute: 'Update',
+    term_link: 'Link Term',
+    attach_classification: 'Attach Classification',
+}

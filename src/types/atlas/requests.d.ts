@@ -44,6 +44,7 @@ export interface RequestAttributes {
     destination_qf_name: string
     destination_attribute: string
     destination_value: string
+    destinationEntity: assetInterface
     entity_type: string
     re: RequestType
     confidence_score: number

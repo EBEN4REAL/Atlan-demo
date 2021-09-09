@@ -80,12 +80,10 @@
     } from 'vue'
 
     // components
-    import ThreeDotMenu from '@/glossary/common/threeDotMenu.vue'
     import GlossaryProfileOverview from '@/glossary/common/glossaryProfileOverview.vue'
     import LoadingView from '@common/loaders/page.vue'
     import { useRouter } from 'vue-router'
     import SidePanel from '@/glossary/sidePanel/index.vue'
-    import CategoryTermPreview from '@/glossary/common/categoryTermPreview/categoryTermPreview.vue'
     import GlossaryTermsAndCategoriesTab from '@/glossary/glossaryTermsAndCategoriesTab.vue'
     import ProfileHeader from '@/glossary/common/profileHeader.vue'
 
@@ -104,8 +102,6 @@
             GlossaryTermsAndCategoriesTab,
             LoadingView,
             SidePanel,
-            CategoryTermPreview,
-            ThreeDotMenu,
             ProfileHeader,
         },
         props: {
@@ -122,13 +118,8 @@
             const previewEntity = ref<Category | Term | undefined>()
             const showPreviewPanel = ref(false)
             const newName = ref('')
-            const assetTypeLabel = {
-                AtlasGlossaryTerm: 'term',
-                AtlasGlossaryCategory: 'category',
-                AtlasGlossary: 'glossary',
-            }
-
             const router = useRouter()
+
             const {
                 entity: category,
                 title,
@@ -227,7 +218,6 @@
                 handleCategoryOrTermPreview,
                 handlClosePreviewPanel,
                 updateTitle,
-                assetTypeLabel,
                 redirectToProfile,
             }
         },

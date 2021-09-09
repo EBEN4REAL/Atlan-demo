@@ -44,19 +44,6 @@
                                 </div>
                             </div>
                             <GlossaryProfileOverview :entity="glossary" />
-                            <!-- <GlossaryContinueSettingUp
-                                v-if="
-                                    !isLoading ||
-                                    !termsLoading ||
-                                    !categoriesLoading
-                                "
-                                :terms="glossaryTerms"
-                                :categories="glossaryCategories"
-                                @updateDescription="refreshCategoryTermList"
-                                @fetchNextCategoryOrTermList="
-                                    fetchNextCategoryOrTermList
-                                "
-                            /> -->
                         </div>
                     </a-tab-pane>
                     <a-tab-pane key="2" tab="Terms & Categories">
@@ -97,14 +84,10 @@
     import { useRouter } from 'vue-router'
 
     // components
-    import GlossaryTermsAndCategoriesTab from '@/glossary/glossaryTermsAndCategoriesTab.vue'
     import LoadingView from '@common/loaders/page.vue'
+    import GlossaryTermsAndCategoriesTab from '@/glossary/glossaryTermsAndCategoriesTab.vue'
     import GlossaryProfileOverview from '@/glossary/common/glossaryProfileOverview.vue'
-    import GlossaryContinueSettingUp from '@/glossary/continueSettingUp/glossaryContinueSettingUp.vue'
-    import EntityHistory from '@/glossary/common/entityHistory.vue'
     import SidePanel from '@/glossary/sidePanel/index.vue'
-    import CategoryTermPreview from '@/glossary/common/categoryTermPreview/categoryTermPreview.vue'
-    import ThreeDotMenu from '@/glossary/common/threeDotMenu.vue'
     import ProfileHeader from '@/glossary/common/profileHeader.vue'
 
     // composables
@@ -125,13 +108,9 @@
     export default defineComponent({
         components: {
             GlossaryProfileOverview,
-            GlossaryContinueSettingUp,
             GlossaryTermsAndCategoriesTab,
-            EntityHistory,
             LoadingView,
             SidePanel,
-            CategoryTermPreview,
-            ThreeDotMenu,
             ProfileHeader,
         },
         props: {
@@ -147,11 +126,6 @@
             const currentTab = ref('1')
             const previewEntity = ref<Category | Term | undefined>()
             const showPreviewPanel = ref(false)
-            const assetTypeLabel = {
-                AtlasGlossaryTerm: 'term',
-                AtlasGlossaryCategory: 'category',
-                AtlasGlossary: 'glossary',
-            }
             const newName = ref('')
 
             const router = useRouter()
@@ -228,7 +202,6 @@
                     name: newName.value,
                 })
                 if (reInitTree) {
-                    console.log(reInitTree, 'hello')
                     setTimeout(() => {
                         reInitTree()
                     }, 2000)
@@ -287,7 +260,6 @@
                 refetch,
                 handleCategoryOrTermPreview,
                 handlClosePreviewPanel,
-                assetTypeLabel,
                 redirectToProfile,
                 updateTitle,
             }

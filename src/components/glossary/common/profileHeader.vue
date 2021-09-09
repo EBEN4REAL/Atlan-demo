@@ -107,9 +107,12 @@
 
 <script lang="ts">
     import { defineComponent, computed } from 'vue'
-
-    import ThreeDotMenu from '@/glossary/common/threeDotMenu.vue'
     import { useRouter } from 'vue-router'
+
+    // components
+    import ThreeDotMenu from '@/glossary/common/threeDotMenu.vue'
+    // assets
+    import assetTypeLabel from '@/glossary/constants/assetTypeLabel'
 
     export default defineComponent({
         components: {
@@ -149,11 +152,11 @@
             },
         },
         setup(props) {
-            const assetTypeLabel = {
-                AtlasGlossaryTerm: 'term',
-                AtlasGlossaryCategory: 'category',
-                AtlasGlossary: 'glossary',
-            }
+            // const assetTypeLabel = {
+            //     AtlasGlossaryTerm: 'term',
+            //     AtlasGlossaryCategory: 'category',
+            //     AtlasGlossary: 'glossary',
+            // }
             const router = useRouter()
 
             const parentGlossaryName = computed(
@@ -177,7 +180,6 @@
                         `/glossary/${props.entity?.attributes?.anchor?.guid}`
                     )
             }
-            console.log(props?.isNewEntity)
             return {
                 redirectToProfile,
                 linkedAssetsCount,

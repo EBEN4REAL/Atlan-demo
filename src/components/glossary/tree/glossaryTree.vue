@@ -48,6 +48,7 @@
             <fa icon="fas chevron-left" class="mr-2" />
             <span>Back to Glossary Home</span>
         </div>
+
         <div class="px-4 pb-4">
             <a-input-search
                 :placeholder="
@@ -153,65 +154,15 @@
                                                 :width="15"
                                             />
                                         </span>
-                                        <span
-                                            v-else-if="type === 'term'"
-                                            class="p-0 my-auto mr-2"
-                                        >
+                                        <span v-else class="p-0 my-auto mr-2">
                                             <AtlanIcon
-                                                v-if="
-                                                    assetStatus === 'deprecated'
+                                                :icon="
+                                                    getEntityStatusIcon(
+                                                        type,
+                                                        assetStatus
+                                                    )
                                                 "
-                                                icon="TermDeprecated"
                                             />
-                                            <AtlanIcon
-                                                v-else-if="
-                                                    assetStatus === 'issue'
-                                                "
-                                                icon="TermIssue"
-                                            />
-                                            <AtlanIcon
-                                                v-else-if="
-                                                    assetStatus === 'draft'
-                                                "
-                                                icon="TermWip"
-                                            />
-                                            <AtlanIcon
-                                                v-else-if="
-                                                    assetStatus === 'verified'
-                                                "
-                                                icon="TermVerified"
-                                            />
-                                            <AtlanIcon v-else icon="Term" />
-                                        </span>
-                                        <span
-                                            v-else-if="type === 'category'"
-                                            class="p-0 my-auto mr-2"
-                                        >
-                                            <AtlanIcon
-                                                v-if="
-                                                    assetStatus === 'deprecated'
-                                                "
-                                                icon="CategoryDeprecated"
-                                            />
-                                            <AtlanIcon
-                                                v-else-if="
-                                                    assetStatus === 'issue'
-                                                "
-                                                icon="CategoryIssue"
-                                            />
-                                            <AtlanIcon
-                                                v-else-if="
-                                                    assetStatus === 'draft'
-                                                "
-                                                icon="CategoryWip"
-                                            />
-                                            <AtlanIcon
-                                                v-else-if="
-                                                    assetStatus === 'verified'
-                                                "
-                                                icon="CategoryVerified"
-                                            />
-                                            <AtlanIcon v-else icon="Category" />
                                         </span>
                                         <span
                                             class="my-auto text-sm leading-5 text-gray-700 "
@@ -426,6 +377,24 @@
                 createCategory(props.parentGlossary?.guid ?? '')
             }
 
+            // to get correct icon from type and status
+            const getEntityStatusIcon = (
+                type: String,
+                assetStatus: String
+            ): String => {
+                if (
+                    assetStatus === undefined ||
+                    assetStatus === '' ||
+                    assetStatus === 'is_null'
+                )
+                    return `${type?.charAt(0).toUpperCase()}${type?.slice(1)}`
+
+                return `${type?.charAt(0).toUpperCase()}${type?.slice(
+                    1
+                )}${assetStatus?.charAt(0).toUpperCase()}${assetStatus?.slice(
+                    1
+                )}`
+            }
             return {
                 redirectToProfile,
                 backToHome,
@@ -438,6 +407,7 @@
                 CategorySvg,
                 TermSvg,
                 StatusList,
+                getEntityStatusIcon,
                 // selectedKeys,
                 // expandedKeys,
                 // expandNode,

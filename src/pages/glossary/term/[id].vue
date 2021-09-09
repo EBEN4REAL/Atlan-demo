@@ -171,7 +171,6 @@
                 error,
                 isLoading,
                 guid,
-                TermSvg,
                 title,
                 statusMessage,
                 shortDescription,

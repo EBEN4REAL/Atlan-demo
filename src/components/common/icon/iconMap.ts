@@ -26,12 +26,12 @@ import Term from '~/assets/images/icons/term.svg'
 import TermDeprecated from '~/assets/images/icons/term-deprecated.svg'
 import TermIssue from '~/assets/images/icons/term-issue.svg'
 import TermVerified from '~/assets/images/icons/term-verified.svg'
-import TermWip from '~/assets/images/icons/term-wip.svg'
+import TermDraft from '~/assets/images/icons/term-wip.svg'
 import Category from '~/assets/images/icons/category.svg'
 import CategoryDeprecated from '~/assets/images/icons/category-deprecated.svg'
 import CategoryIssue from '~/assets/images/icons/category-issue.svg'
 import CategoryVerified from '~/assets/images/icons/category-verified.svg'
-import CategoryWip from '~/assets/images/icons/category-wip.svg'
+import CategoryDraft from '~/assets/images/icons/category-wip.svg'
 import EmptyGlossary from '~/assets/images/icons/empty-glossary.svg'
 import Glossary from '~/assets/images/icons/glossary.svg'
 import KebabMenu from '~/assets/images/icons/kebab-menu-new.svg'
@@ -77,12 +77,12 @@ export default {
     TermDeprecated,
     TermIssue,
     TermVerified,
-    TermWip,
+    TermDraft,
     Category,
     CategoryDeprecated,
     CategoryIssue,
     CategoryVerified,
-    CategoryWip,
+    CategoryDraft,
     EmptyGlossary,
     Glossary,
     KebabMenu,

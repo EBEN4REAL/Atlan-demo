@@ -20,6 +20,28 @@
             > -->
         </div>
     </div>
+
+    <Connector
+        v-model:data="dataMap['connector']"
+        :item="{
+            id: 'connector',
+            label: 'Connector',
+            component: 'connector',
+            overallCondition: 'OR',
+            filters: [
+                {
+                    attributeName: 'connector',
+                    condition: 'OR',
+                    isMultiple: false,
+                    operator: 'eq',
+                },
+            ],
+            isDeleted: false,
+            isDisabled: false,
+            exclude: false,
+        }"
+        @change="handleChange"
+    ></Connector>
     <a-collapse
         v-model:activeKey="activeKey"
         expand-icon-position="right"

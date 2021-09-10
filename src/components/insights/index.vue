@@ -1,7 +1,8 @@
 <template>
     <div class="flex h-full">
-        <SideNav />
-        <Explorer />
+        <div class="flex">
+            <Sidebar />
+        </div>
         <Playground />
         <AssetSidebar />
     </div>
@@ -9,13 +10,12 @@
 
 <script lang="ts">
     import { defineComponent } from 'vue'
-    import SideNav from '~/components/insights/sideNav.vue'
-    import Explorer from '~/components/insights/explorer.vue'
+    import Sidebar from '~/components/insights/sidebar/index.vue'
     import Playground from '~/components/insights/playground/index.vue'
     import AssetSidebar from '~/components/insights/assetSidebar.vue'
 
     export default defineComponent({
-        components: { SideNav, Explorer, Playground, AssetSidebar },
+        components: { Sidebar, Playground, AssetSidebar },
         props: {},
         setup(props) {},
     })

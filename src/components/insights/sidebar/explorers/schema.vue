@@ -5,7 +5,7 @@
         <div
             class="flex items-center justify-center w-full h-full rounded  placeholder"
         >
-            Explorer
+            Schema Explorer
         </div>
     </div>
 </template>

@@ -1,7 +1,7 @@
 <!-- TODO: remove hardcoded prop classes and make component generic -->
 <template>
     <div
-        class="flex mx-4 my-0.5 rounded border-gray-100 border"
+        class="flex mx-6 my-0.5 rounded border-gray-200 border"
         :class="isSelected ? 'border-primary bg-white' : 'bg-white '"
     >
         <!-- Selected asset pill 
@@ -14,12 +14,12 @@
             class="flex items-start flex-1 px-3 w-96"
             :class="cssClasses?.paddingY ? cssClasses?.paddingY : 'py-3'"
         >
-            <a-checkbox 
-                v-if="showCheckBox" 
+            <a-checkbox
+                v-if="showCheckBox"
                 class="self-center mr-6"
                 :checked="isChecked"
                 @click.stop
-                @change="(e) => $emit('listItem:check', e, item)" 
+                @change="(e) => $emit('listItem:check', e, item)"
             />
             <div
                 class="box-border flex flex-col flex-1 overflow-hidden lg:pr-16"
@@ -245,7 +245,7 @@
                 default: () => false,
             },
         },
-        emits:['listItem:check'],
+        emits: ['listItem:check'],
         setup() {
             const {
                 description,

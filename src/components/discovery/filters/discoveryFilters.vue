@@ -62,7 +62,7 @@
         <a-collapse-panel
             v-for="item in dynamicList"
             :key="item.id"
-            :class="activeKey === item.id ? 'bg-gray-100' : ''"
+            :class="activeKey === item.id ? '' : ''"
             class="relative group"
         >
             <template #header>

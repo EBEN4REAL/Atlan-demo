@@ -28,7 +28,7 @@
     import Item from '~/components/discovery/list/listItem.vue'
     import LoadingView from '@common/loaders/section.vue'
 
-    import useTermLinkedAssets from '~/composables/glossary/useTermLinkedAssets'
+    import useTermLinkedAssets from '~/components/glossary/composables/useTermLinkedAssets'
 
     interface PropsType {
         termQualifiedName: string

@@ -135,7 +135,6 @@
 
     // Composables
     import useAssetInfo from '~/composables/asset/useAssetInfo'
-    import useTermLinkedAssets from '~/composables/glossary/useTermLinkedAssets'
     // static
     import { assetInterface } from '~/types/assets/asset.interface'
     import TermSvg from '~/assets/images/gtc/term/term.png'
@@ -169,8 +168,6 @@
             const router = useRouter()
             const { ownerGroups, ownerUsers } = useAssetInfo()
 
-            const { linkedAssets, isLoading, error, fetchLinkedAssets } =
-                useTermLinkedAssets()
             // computed
             const statusObject = computed(() =>
                 StatusList.find(
@@ -184,7 +181,6 @@
                     ? props.entity?.attributes?.qualifiedName
                     : undefined
             )
-            const assets = computed(() => linkedAssets.value?.entities ?? [])
             const assetCount = computed(() => {
                 if (props.entity.typeName === 'AtlasGlossaryTerm')
                     return (
@@ -274,9 +270,6 @@
             // onMounted(() => {
             //     if (termName.value) fetchLinkedAssets(termName.value)
             // })
-            console.log(props.entity)
-            console.log(props.entity?.attributes?.categories)
-            console.log(props.entity?.attributes?.qualifiedName)
             return {
                 TermSvg,
                 GlossarySvg,
@@ -286,7 +279,6 @@
                 getTruncatedUsers,
                 getCombinedUsersAndGroups,
                 assetCount,
-                assets,
                 parentCategory,
                 parentCategories,
             }

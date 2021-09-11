@@ -45,7 +45,7 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref, watch, computed, provide} from 'vue'
+    import { defineComponent, ref, watch, computed, provide } from 'vue'
     import { useHead } from '@vueuse/head'
     import { useRouter } from 'vue-router'
 
@@ -56,8 +56,8 @@
     import glossaryTree from '@/glossary/tree/glossaryTree.vue'
 
     // composables
-    import useGlossaryList from '~/composables/glossary/useGlossaryList'
-    import useTree from '~/composables/glossary/useTree'
+    import useGlossaryList from '~/components/glossary/composables/useGlossaryList'
+    import useTree from '~/components/glossary/composables/useTree'
 
     // types
     import {
@@ -89,26 +89,6 @@
             const glossaryTreeRef = ref()
             const eventContext = ref({})
 
-            const { glossaryList, refetch: refetchGlossaryList } =
-                useGlossaryList()
-
-            const { 
-                treeData,
-                loadedKeys, 
-                currentGuid, 
-                onLoadData, 
-                parentGlossary, 
-                isInitingTree,
-                selectedKeys, 
-                expandedKeys, 
-                expandNode, 
-                selectNode,
-                dragAndDropNode,
-                updateNode,
-                refetchGlossary,
-                reInitTree
-            } = useTree(emit)
-                
             // computed
             const isHome = computed(
                 () =>
@@ -116,6 +96,26 @@
                         router.currentRoute.value.path.split('/').length - 1
                     ] === 'glossary'
             )
+
+            const { glossaryList, refetch: refetchGlossaryList } =
+                useGlossaryList(isHome)
+
+            const {
+                treeData,
+                loadedKeys,
+                currentGuid,
+                onLoadData,
+                parentGlossary,
+                isInitingTree,
+                selectedKeys,
+                expandedKeys,
+                expandNode,
+                selectNode,
+                dragAndDropNode,
+                updateNode,
+                refetchNode,
+                reInitTree,
+            } = useTree(emit)
 
             // methods
             const handleOpenModal = (context: Record<string, string>) => {
@@ -150,11 +150,11 @@
                 if (newIsHome) {
                     refetchGlossaryList()
                 }
-            });
+            })
 
             provide('updateTreeNode', updateNode)
-            provide('refetchGlossaryTree', refetchGlossary);
-            provide('reInitTree', reInitTree);
+            provide('refetchGlossaryTree', refetchNode)
+            provide('reInitTree', reInitTree)
 
             return {
                 handleOpenModal,
@@ -164,7 +164,7 @@
                 backToHome,
                 backToGlossary,
                 onLoadData,
-                expandNode, 
+                expandNode,
                 selectNode,
                 dragAndDropNode,
                 createGlossaryModalVisble,
@@ -176,8 +176,8 @@
                 glossaryList,
                 treeData,
                 loadedKeys,
-                selectedKeys, 
-                expandedKeys, 
+                selectedKeys,
+                expandedKeys,
                 parentGlossary,
                 isInitingTree,
                 isHome,

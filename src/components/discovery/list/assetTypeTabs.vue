@@ -178,7 +178,8 @@
         :global(.ant-tabs-tab) {
             padding-left: 2px !important;
             padding-right: 2px !important;
-
+            padding-top: 8px !important;
+            padding-bottom: 8px !important;
             @apply mr-4 !important;
             @apply text-gray-500;
             @apply text-sm !important;

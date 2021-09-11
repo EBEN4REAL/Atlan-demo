@@ -23,7 +23,19 @@
             @click="() => redirectToProfile('glossary', glossary.guid)"
         >
             <div
-                class="flex flex-col justify-center px-3 mr-2 text-sm leading-5 text-gray-700 cursor-pointer  h-9 group hover:bg-primary-light hover:text-primary"
+                class="
+                    flex flex-col
+                    justify-center
+                    px-3
+                    mr-2
+                    text-sm
+                    leading-5
+                    text-gray-700
+                    cursor-pointer
+                    h-9
+                    group
+                    hover:bg-primary-light hover:text-primary
+                "
             >
                 <div class="flex flex-row justify-between">
                     {{ glossary.displayText }}
@@ -41,7 +53,17 @@
     </div>
     <div v-else>
         <div
-            class="flex py-2 pl-4 mb-4 text-sm leading-5 text-gray-500 bg-gray-100 cursor-pointer "
+            class="
+                flex
+                py-2
+                pl-4
+                mb-4
+                text-sm
+                leading-5
+                text-gray-500
+                bg-gray-100
+                cursor-pointer
+            "
             type="link"
             @click="backToHome"
         >
@@ -64,7 +86,14 @@
                 <div class="flex items-center ml-3">
                     <AtlanIcon icon="Glossary" class="h-5 m-0 mr-2" />
                     <div
-                        class="flex justify-start w-full text-base leading-5 cursor-pointer "
+                        class="
+                            flex
+                            justify-start
+                            w-full
+                            text-base
+                            leading-5
+                            cursor-pointer
+                        "
                         @click="
                             redirectToProfile('glossary', parentGlossary.guid)
                         "
@@ -87,7 +116,14 @@
                 <a-dropdown :trigger="['click']">
                     <a class="ant-dropdown-link" @click.prevent>
                         <a-button
-                            class="flex flex-col justify-center p-2 border-none  bg-primary-light text-primary"
+                            class="
+                                flex flex-col
+                                justify-center
+                                p-2
+                                border-none
+                                bg-primary-light
+                                text-primary
+                            "
                         >
                             <fa icon="fal plus" />
                         </a-button>
@@ -214,7 +250,12 @@
                                             <AtlanIcon v-else icon="Category" />
                                         </span>
                                         <span
-                                            class="my-auto text-sm leading-5 text-gray-700 "
+                                            class="
+                                                my-auto
+                                                text-sm
+                                                leading-5
+                                                text-gray-700
+                                            "
                                             >{{ title }}</span
                                         >
                                     </div>
@@ -224,7 +265,18 @@
                                         :trigger="['hover']"
                                     >
                                         <span
-                                            class="flex content-center justify-center w-5 h-5 p-0 m-0 rounded opacity-0  group-hover:opacity-100"
+                                            class="
+                                                flex
+                                                content-center
+                                                justify-center
+                                                w-5
+                                                h-5
+                                                p-0
+                                                m-0
+                                                rounded
+                                                opacity-0
+                                                group-hover:opacity-100
+                                            "
                                             @click.prevent
                                         >
                                             <AtlanIcon
@@ -280,7 +332,14 @@
             </div>
             <div
                 v-else
-                class="flex flex-col justify-center text-base leading-6 text-center text-gray-500  mt-14"
+                class="
+                    flex flex-col
+                    justify-center
+                    text-base
+                    leading-6
+                    text-center text-gray-500
+                    mt-14
+                "
             >
                 <AtlanIcon icon="EmptyGlossary" class="h-40" />
                 <p class="m-0 mt-20">The Glossary is empty,</p>
@@ -307,8 +366,8 @@
 
     // composables
     import handleTreeExpand from '~/composables/tree/handleTreeExpand'
-    import useCreateGlossary from '~/composables/glossary/useCreateGlossary'
-    import useDeleteGlossary from '~/composables/glossary/useDeleteGlossary'
+    import useCreateGlossary from '~/components/glossary/composables/useCreateGlossary'
+    import useDeleteGlossary from '~/components/glossary/composables/useDeleteGlossary'
 
     // constant
     import GlossarySvg from '~/assets/images/gtc/glossary/glossary.png'

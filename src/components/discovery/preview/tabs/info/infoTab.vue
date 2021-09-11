@@ -63,7 +63,6 @@
         defineAsyncComponent,
         Ref,
         PropType,
-        computed,
         toRefs,
         watch,
     } from 'vue'
@@ -175,15 +174,18 @@
                 [selectedAsset, page],
                 () => {
                     let infoTab = useInfoPanels(page, selectedAsset)
-                    let panels = [...infoTab?.panels]
-                    let properties = infoTab?.properties
-                    let propertiesPanel = panels.pop()
-                    tableauProperties.value = properties ?? []
-                    dynamicList.value = [
-                        ...panels,
-                        ...applicableBMList(props.infoTabData.typeName),
-                        propertiesPanel,
-                    ]
+
+                    if (infoTab) {
+                        let panels = [...infoTab?.panels]
+                        let properties = infoTab?.properties
+                        let propertiesPanel = panels.pop()
+                        tableauProperties.value = properties ?? []
+                        dynamicList.value = [
+                            ...panels,
+                            ...applicableBMList(props.infoTabData.typeName),
+                            propertiesPanel,
+                        ]
+                    }
                 },
                 { immediate: true }
             )
@@ -204,8 +206,7 @@
 <style lang="less" module>
     .filter {
         :global(.ant-collapse-item) {
-            @apply border-b;
-            @apply border-gray-300;
+            @apply border-none;
         }
 
         :global(.ant-collapse-header) {
@@ -222,7 +223,7 @@
             padding-right: 0px;
             padding-left: 0px;
             padding-top: 0px !important;
-            @apply pb-4 !important;
+            @apply pb-0 !important;
         }
     }
 </style>

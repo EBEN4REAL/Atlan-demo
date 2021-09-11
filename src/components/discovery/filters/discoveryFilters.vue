@@ -20,6 +20,28 @@
             > -->
         </div>
     </div>
+
+    <Connector
+        v-model:data="dataMap['connector']"
+        :item="{
+            id: 'connector',
+            label: 'Connector',
+            component: 'connector',
+            overallCondition: 'OR',
+            filters: [
+                {
+                    attributeName: 'connector',
+                    condition: 'OR',
+                    isMultiple: false,
+                    operator: 'eq',
+                },
+            ],
+            isDeleted: false,
+            isDisabled: false,
+            exclude: false,
+        }"
+        @change="handleChange"
+    ></Connector>
     <a-collapse
         v-model:activeKey="activeKey"
         expand-icon-position="right"
@@ -40,7 +62,7 @@
         <a-collapse-panel
             v-for="item in dynamicList"
             :key="item.id"
-            :class="activeKey === item.id ? 'bg-gray-100' : ''"
+            :class="activeKey === item.id ? '' : ''"
             class="relative group"
         >
             <template #header>

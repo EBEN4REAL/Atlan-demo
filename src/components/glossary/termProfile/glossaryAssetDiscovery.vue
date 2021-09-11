@@ -4,12 +4,28 @@
             <div class="flex flex-col h-full">
                 <div class="flex" v-if="checkedAssetList.length">
                     <div
-                        class="fixed left-0 z-10 flex justify-between w-full  bottom-8"
+                        class="
+                            fixed
+                            left-0
+                            z-10
+                            flex
+                            justify-between
+                            w-full
+                            bottom-8
+                        "
                     >
                         <div style="width: 264px"></div>
                         <div
                             v-if="showCheckBox"
-                            class="flex items-center justify-between px-5 py-3 bg-gray-100 shadow-lg "
+                            class="
+                                flex
+                                items-center
+                                justify-between
+                                px-5
+                                py-3
+                                bg-gray-100
+                                shadow-lg
+                            "
                             style="width: 545px"
                         >
                             <p class="p-0 m-0">
@@ -20,12 +36,23 @@
                             </p>
                             <div class="flex items-center">
                                 <a-button
-                                    class="px-3 mx-2 text-gray-700 bg-transparent outline-none "
+                                    class="
+                                        px-3
+                                        mx-2
+                                        text-gray-700
+                                        bg-transparent
+                                        outline-none
+                                    "
                                     @click="handleCancelLinkAssets"
                                     >Cancel</a-button
                                 >
                                 <a-button
-                                    class="px-6 text-white outline-none  bg-primary"
+                                    class="
+                                        px-6
+                                        text-white
+                                        outline-none
+                                        bg-primary
+                                    "
                                     @click="handleConfirmLinkAssets"
                                     >Link</a-button
                                 >
@@ -45,7 +72,15 @@
                     v-if="showCheckBox"
                 >
                     <a-button
-                        class="p-0 mr-3 text-gray-700 bg-transparent border-0 shadow-none outline-none "
+                        class="
+                            p-0
+                            mr-3
+                            text-gray-700
+                            bg-transparent
+                            border-0
+                            shadow-none
+                            outline-none
+                        "
                         @click="handleCancelLinkAssets"
                     >
                         <AtlanIcon
@@ -57,7 +92,15 @@
                     Link Assets
                 </div>
                 <div
-                    class="flex items-center justify-between w-full px-3 mt-4 mb-2 "
+                    class="
+                        flex
+                        items-center
+                        justify-between
+                        w-full
+                        px-3
+                        mt-4
+                        mb-2
+                    "
                 >
                     <SearchAndFilter
                         v-model:value="queryText"
@@ -169,7 +212,7 @@
     import { useBusinessMetadataStore } from '~/store/businessMetadata'
     import { Components } from '~/api/atlas/client'
 
-    import useLinkAssets from '~/composables/glossary/useLinkAssets'
+    import useLinkAssets from '~/components/glossary/composables/useLinkAssets'
 
     import entities from './tempEntityList'
 
@@ -668,11 +711,10 @@
             })
 
             watch(list, (newList) => {
-                if(!showCheckBox.value){
+                if (!showCheckBox.value) {
                     checkedAssetList.value = [...newList]
                 }
-            });
-
+            })
 
             return {
                 handleClearFiltersFromList,

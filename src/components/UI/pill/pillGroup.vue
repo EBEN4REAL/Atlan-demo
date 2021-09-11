@@ -30,8 +30,13 @@
             />
         </template>
         <slot name="suffix"></slot>
-        <Pill v-if="!readOnly" @click="handleAdd">
-            <template #prefix> <AtlanIcon icon="Add" /> </template>
+        <Pill v-if="!readOnly" @click="handleAdd" class="group">
+            <template #prefix>
+                <AtlanIcon
+                    icon="Add"
+                    class="h-4 text-primary group-hover:text-white"
+                />
+            </template>
         </Pill>
     </div>
 </template>

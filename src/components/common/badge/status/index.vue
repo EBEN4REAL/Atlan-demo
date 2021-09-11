@@ -10,27 +10,33 @@
             </p>
         </div>
 
-        <div
-            v-else
-            class="flex items-center px-3 py-1 mr-3 text-sm text-gray-700 border rounded-full cursor-pointer "
-        >
-            <span class="svg-icon">
-                <component class="w-auto h-4" :is="icon" />
-            </span>
+        <div v-else class="flex items-center">
+            <div
+                class="inline-flex items-center px-3 py-1 mr-3 text-sm text-gray-700 border rounded-full cursor-pointer "
+            >
+                <span class="svg-icon">
+                    <component class="w-auto h-4" :is="icon" />
+                </span>
 
-            <p v-if="showLabel" class="mb-0 ml-2">
-                {{ label }}
+                <p v-if="showLabel" class="mb-0 ml-1">
+                    {{ label }}
+                </p>
+            </div>
+            <p
+                v-if="showLabel && statusId && statusUpdatedBy"
+                class="mt-1 mb-0 text-xs leading-none text-gray-700"
+            >
+                {{ timeAgo(statusUpdatedAt) }}
+                by
+                {{ statusUpdatedBy }}
             </p>
         </div>
-
         <p
-            v-if="showLabel && statusId && statusUpdatedBy"
-            class="mt-1 mb-0 text-xs leading-none text-gray-700"
-        >
-            {{ timeAgo(statusUpdatedAt) }}
-            by
-            {{ statusUpdatedBy }}
-        </p>
+            v-linkified
+            v-if="statusMessage"
+            class="mt-1 mb-0 text-sm text-gray"
+            v-html="statusMessage"
+        ></p>
     </div>
 </template>
 

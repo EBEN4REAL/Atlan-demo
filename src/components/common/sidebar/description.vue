@@ -1,6 +1,6 @@
 <template>
     <div class="mb-3 text-xs text-gray-500">
-        <p class="mb-1 text-sm">Description</p>
+        <p class="mb-1 text-xs">Description</p>
         <a-popover
             v-model:visible="isCompleted"
             placement="left"
@@ -41,12 +41,12 @@
                 </p>
                 <div v-else>
                     <div
-                        class="flex items-center px-3 py-1 mr-3 text-gray-700 border rounded-full cursor-pointer  hover:bg-primary hover:text-white"
+                        class="flex items-center cursor-pointer  text-primary hover:text-primary hover:underline"
                     >
-                        <span class="flex items-center text-xs">
+                        <!-- <span class="flex items-center text-xs">
                             <fa icon="fal plus" />
-                        </span>
-                        <span class="ml-2 text-xs">Add Description</span>
+                        </span> -->
+                        <span class="text-xs">Update description</span>
                     </div>
                 </div>
             </div>

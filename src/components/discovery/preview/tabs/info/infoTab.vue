@@ -204,8 +204,7 @@
 <style lang="less" module>
     .filter {
         :global(.ant-collapse-item) {
-            @apply border-b;
-            @apply border-gray-300;
+            @apply border-none;
         }
 
         :global(.ant-collapse-header) {

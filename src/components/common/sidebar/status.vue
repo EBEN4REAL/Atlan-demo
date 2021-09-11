@@ -170,6 +170,22 @@
             const animationPoint = ref(null)
             const message = ref(statusMessage.value)
 
+            const rules = {
+                statusType: [
+                    {
+                        required: true,
+                        message: 'Please select a status type',
+                        trigger: 'change',
+                    },
+                ],
+                message: [
+                    {
+                        required: true,
+                        message: 'Please input a status message',
+                        trigger: 'blur',
+                    },
+                ],
+            }
             const handleUpdate = () => {
                 statusFormRef.value
                     .validate()
@@ -229,7 +245,7 @@
                 handleTextAreaUpdate,
                 handleStatusIdUpdate,
                 statusFormState,
-
+                rules,
                 isReady,
                 state,
                 statusId,

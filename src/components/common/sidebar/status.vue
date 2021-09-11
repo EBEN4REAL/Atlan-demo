@@ -229,7 +229,7 @@
                 handleTextAreaUpdate,
                 handleStatusIdUpdate,
                 statusFormState,
-                rules,
+
                 isReady,
                 state,
                 statusId,

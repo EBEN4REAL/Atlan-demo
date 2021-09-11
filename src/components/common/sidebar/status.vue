@@ -5,80 +5,63 @@
             class="p-0"
             placement="left"
             trigger="click"
-            :destroy-tooltip-on-hide="true"
             :class="$style.popover"
-            @visibleChange="handleVisibleChange"
-            :destroyTooltipOnHide="true"
+            :destroy-tooltip-on-hide="true"
         >
-            <template #content
-                ><a-form
-                    ref="statusFormRef"
-                    :rules="rules"
-                    :model="statusFormState"
-                >
-                    <div class="flex flex-col" style="width: 300px p-4">
-                        <div class="">
-                            <a-form-item
-                                ref="statusType"
-                                name="statusType"
-                                class="mb-3"
-                            >
-                                <a-radio-group
-                                    class="w-full"
-                                    @change="handleStatusIdUpdate"
-                                    v-model:value="statusFormState.statusType"
+            <template #content>
+                <div class="flex flex-col" style="width: 300px p-4">
+                    <div class="">
+                        <a-radio-group
+                            v-model:value="statusType"
+                            class="w-full mb-3"
+                            @change="handleStatusRadioUpdate"
+                        >
+                            <div class="flex flex-col">
+                                <a-radio
+                                    v-for="item in List"
+                                    :key="item.id"
+                                    :value="item.id"
+                                    class="mb-1"
                                 >
-                                    <div class="flex flex-col">
-                                        <a-radio
-                                            v-for="item in List"
-                                            :key="item.id"
-                                            :value="item.id"
-                                            class="mb-1"
-                                        >
-                                            <span class="align-middle">
-                                                <span
-                                                    class="text-gray-700  svg-icon"
-                                                >
-                                                    <component
-                                                        :is="item.icon"
-                                                        class="w-auto h-4 ml-1 mr-2  pushtop"
-                                                    />
-                                                    {{ item.label }}
-                                                </span>
-                                            </span>
-                                        </a-radio>
-                                    </div>
-                                </a-radio-group></a-form-item
-                            >
-                        </div>
+                                    <span class="align-middle">
+                                        <span class="text-gray-700 svg-icon">
+                                            <component
+                                                :is="item.icon"
+                                                class="w-auto h-4 ml-1 mr-2  pushtop"
+                                            />
+                                            {{ item.label }}
+                                        </span>
+                                    </span>
+                                </a-radio>
+                            </div>
+                        </a-radio-group>
                     </div>
-                    <div class="mt-1 border-t border-gray-100">
-                        <a-form-item ref="message" name="message">
-                            <a-textarea
-                                v-model:value="statusFormState.message"
-                                placeholder="Add a status message"
-                                show-count
-                                :maxlength="180"
-                                style="width: 280px"
-                                :rows="5"
-                                class=""
-                                @change="handleTextAreaUpdate"
-                            ></a-textarea
-                        ></a-form-item>
-                        <div class="flex justify-end w-full mt-4 space-x-4">
-                            <a-button class="px-4" @click="handleCancel"
-                                >Cancel</a-button
-                            >
-                            <a-button
-                                type="primary"
-                                class="px-4"
-                                :loading="isLoading"
-                                @click="handleUpdate"
-                                >Update</a-button
-                            >
-                        </div>
-                    </div></a-form
-                >
+                </div>
+                <div class="mt-1 border-t border-gray-100">
+                    <a-textarea
+                        v-model:value="message"
+                        placeholder="Add a status message"
+                        show-count
+                        :maxlength="180"
+                        style="width: 280px"
+                        :rows="5"
+                        class=""
+                        @change="handleTextAreaUpdate"
+                        :disabled="textAreaDisabled"
+                    ></a-textarea>
+                    <div class="flex justify-end w-full mt-4 space-x-4">
+                        <a-button class="px-4" @click="handleCancel"
+                            >Cancel</a-button
+                        >
+                        <a-button
+                            type="primary"
+                            class="px-4"
+                            :loading="isLoading"
+                            @click="handleUpdate"
+                            >Update</a-button
+                        >
+                    </div>
+                </div>
             </template>
             <div
                 ref="animationPoint"
@@ -93,10 +76,10 @@
                             selectedAsset?.attributes?.assetStatusMessage
                         "
                         :show-chip-style-status="true"
-                        :statusUpdatedAt="
+                        :status-updated-at="
                             selectedAsset?.attributes?.assetStatusUpdatedAt
                         "
-                        :statusUpdatedBy="
+                        :status-updated-by="
                             selectedAsset?.attributes?.assetStatusUpdatedBy
                         "
                         :show-no-status="true"
@@ -121,17 +104,9 @@
 </template>
 
 <script lang="ts">
-    import {
-        defineComponent,
-        ref,
-        watch,
-        PropType,
-        toRefs,
-        reactive,
-    } from 'vue'
+    import { defineComponent, ref, watch, PropType, toRefs } from 'vue'
     import { useMagicKeys } from '@vueuse/core'
     import StatusBadge from '@common/badge/status/index.vue'
-
     import { List } from '~/constant/status'
     import updateStatus from '~/composables/asset/updateStatus'
     import confetti from '~/utils/confetti'
@@ -139,7 +114,6 @@
 
     export default defineComponent({
         components: { StatusBadge },
-
         props: {
             selectedAsset: {
                 type: Object as PropType<assetInterface>,
@@ -150,12 +124,6 @@
         setup(props, { emit }) {
             // const isLoading = ref(false);
             const { selectedAsset } = toRefs(props)
-            const statusFormRef = ref()
-
-            const statusFormState = reactive({
-                message: '',
-                statusType: 1,
-            })
             const {
                 handleCancel,
                 update,
@@ -166,44 +134,28 @@
                 isCompleted,
                 isLoading,
             } = updateStatus(selectedAsset)
-
             const animationPoint = ref(null)
-            const message = ref(statusMessage.value)
 
-            const rules = {
-                statusType: [
-                    {
-                        required: true,
-                        message: 'Please select a status type',
-                        trigger: 'change',
-                    },
-                ],
-                message: [
-                    {
-                        required: true,
-                        message: 'Please input a status message',
-                        trigger: 'blur',
-                    },
-                ],
-            }
+            const message = ref(statusMessage.value)
+            const statusType = ref(statusId.value)
+            const textAreaDisabled = ref(false)
+
             const handleUpdate = () => {
-                statusFormRef.value
-                    .validate()
-                    .then(() => {
-                        update()
-                        statusFormRef.value.resetFields()
-                    })
-                    .catch((err) => {})
+                statusMessage.value = message.value
+                statusId.value = statusType.value
+
+                update()
             }
             const handleTextAreaUpdate = (e: any) => {
-                statusMessage.value = e.target.value
+                message.value = e.target.value
             }
-            const handleVisibleChange = () => {
-                message.value = statusMessage.value
-            }
-
-            const handleStatusIdUpdate = (e: any) => {
-                statusId.value = e.target.value
+            const handleStatusRadioUpdate = (e: any) => {
+                textAreaDisabled.value = false
+                statusType.value = e.target.value
+                if (e.target.value === 'is_null') {
+                    message.value = ''
+                    textAreaDisabled.value = true
+                }
             }
 
             watch(isReady, () => {
@@ -229,23 +181,21 @@
                     emit('update:selectedAsset', selectedAsset.value)
                 }
             })
-
             const keys = useMagicKeys()
             const esc = keys.Escape
-
             watch(esc, (v) => {
                 if (v) {
                     handleCancel()
                 }
             })
             return {
-                handleVisibleChange,
                 handleUpdate,
                 handleCancel,
                 handleTextAreaUpdate,
-                handleStatusIdUpdate,
-                statusFormState,
-                rules,
+                handleStatusRadioUpdate,
+                message,
+                textAreaDisabled,
+                statusType,
                 isReady,
                 state,
                 statusId,
@@ -254,7 +204,6 @@
                 List,
                 animationPoint,
                 isLoading,
-                statusFormRef,
             }
         },
     })

@@ -28,7 +28,7 @@
             >
                 {{ timeAgo(statusUpdatedAt) }}
                 by
-                {{ statusUpdatedBy }}
+                <span class="capitalize">{{ statusUpdatedBy }}</span>
             </p>
         </div>
         <p

@@ -2,11 +2,10 @@
     <LoadingView v-if="!data?.asset" />
     <ErrorView v-else-if="data?.error" :error="data?.error" />
 
-    <div v-if="data?.asset" class="w-full">
-        <div class="pt-5 pb-3 pr-4 bg-white">
-            <Header />
-        </div>
-        <div class="border-t border-gray-light">
+    <div v-if="data?.asset" class="w-full h-full">
+        <div class="flex flex-col">
+            <Header class="px-3 pt-3 bg-white" />
+
             <a-tabs
                 :active-key="activeKey"
                 :class="$style.profiletab"
@@ -14,6 +13,7 @@
             >
                 <a-tab-pane v-for="tab in tabs" :key="tab.id" :tab="tab.name">
                     <component
+                        class="bg-transparent"
                         :is="tab.component"
                         :key="activeKey || id"
                         :ref="
@@ -184,10 +184,11 @@ meta:
         }
         :global(.ant-tabs-bar) {
             @apply mb-0 pl-7;
+            @apply bg-white;
         }
 
         :global(.ant-tabs-tabpane) {
-            height: calc(100vh - 200px) !important;
+            height: calc(100vh - 170px) !important;
             overflow: auto !important;
             @apply pr-0;
         }

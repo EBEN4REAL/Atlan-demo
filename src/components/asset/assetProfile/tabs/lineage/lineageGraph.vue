@@ -507,21 +507,7 @@
         }
     }
 
-    :global(.ant-collapse-content-box) {
-        @apply p-0 bg-transparent !important;
-    }
-    :global(.ant-collapse-header) {
-        @apply font-bold bg-white p-0 border-0 border-b-0 !important;
-    }
-    :global(.ant-collapse-borderless > .ant-collapse-item) {
-        @apply border-b-0 !important;
-    }
-
     :global(.anticon) {
         @apply z-10 !important;
-    }
-
-    :global(.ant-collapse-content) {
-        @apply bg-white !important;
     }
 </style>

@@ -10,11 +10,11 @@
             />
         </div>
         <!-- Overview Image Preview -->
-        <!-- 
+
         <div v-if="imagePreview" class="mb-16">
             <h2 class="mb-6 text-xl text-gray">Preview</h2>
             <overview-image-preview :image-preview="imagePreview" />
-        </div> -->
+        </div>
 
         <!-- Overview Relations -->
         <div class="mb-16">
@@ -36,6 +36,8 @@
     // Composables
     import useAssetInfo from '~/composables/asset/useAssetInfo'
 
+    import { getAPIPath } from '~/api'
+
     export default defineComponent({
         components: { overviewRelations, overviewImagePreview, Readme },
         setup() {
@@ -47,7 +49,10 @@
             const imagePreview = ref<string>('')
 
             const { previewURL } = useAssetInfo()
-            imagePreview.value = previewURL(assetData.value)
+            imagePreview.value = `/api${getAPIPath(
+                '/auth',
+                previewURL(assetData.value)
+            )}`
 
             return { assetData, imagePreview }
         },

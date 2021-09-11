@@ -99,10 +99,7 @@
                             columns</span
                         >
                     </div>
-                    <div
-                        v-if="projection?.includes('owners')"
-                        class="flex items-baseline"
-                    >
+                    <div class="flex items-baseline">
                         <span
                             v-if="getCombinedUsersAndGroups(item).length"
                             class="mr-1 text-gray-500"

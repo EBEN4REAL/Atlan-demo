@@ -4,7 +4,7 @@
 
     <div v-if="data?.asset" class="w-full h-full">
         <div class="flex flex-col">
-            <Header class="px-3 pt-3 bg-white" />
+            <Header class="px-5 pt-3 bg-white" />
 
             <a-tabs
                 :active-key="activeKey"

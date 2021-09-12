@@ -12,5 +12,7 @@ export interface activeInlineTabInterface {
     assetSidebar: {
         isVisible: boolean
         assetInfo: Object
+        title: string
+        id: string
     }
 }

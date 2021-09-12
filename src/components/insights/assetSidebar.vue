@@ -1,15 +1,46 @@
 <template>
-    <div class="flex items-center justify-center w-full h-full placeholder">
-        Asset Sidebar
+    <div class="w-full h-full placeholder">
+        <div class="flex items-center justify-end w-full p-3">
+            <span
+                class="flex items-center justify-center"
+                @click="() => closeAssetSidebar(activeTab)"
+            >
+                <fa icon="fal times" class="mb-0 text-lg cursor-pointer" />
+            </span>
+        </div>
+        <div class="flex flex-col items-center justify-center w-full h-full">
+            <p>Asset Sidebar</p>
+            <p>Tab - {{ activeTab.label }}</p>
+            <p v-if="activeTab && activeTab?.assetSidebar">
+                Table - {{ activeTab.assetSidebar.title }}
+            </p>
+        </div>
     </div>
 </template>
 
 <script lang="ts">
-    import { defineComponent } from 'vue'
+    import { defineComponent, PropType, toRefs } from 'vue'
+    import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
+
     export default defineComponent({
         components: {},
-        props: {},
-        setup(props) {},
+        props: {
+            activeTab: {
+                type: Object as PropType<activeInlineTabInterface>,
+                required: true,
+            },
+        },
+        emits: ['closeAssetSidebar'],
+        setup(props, { emit }) {
+            const { activeTab } = toRefs(props)
+            const closeAssetSidebar = (activeTab: activeInlineTabInterface) => {
+                emit('closeAssetSidebar', activeTab)
+            }
+            return {
+                activeTab,
+                closeAssetSidebar,
+            }
+        },
     })
 </script>
 <style lang="less" scoped>

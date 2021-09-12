@@ -34,21 +34,37 @@
             <pane max-size="20" min-size="0">
                 <!--explorer pane start -->
                 <component
+                    v-if="activeTab && activeTab.component && activeInlineTab"
                     :is="activeTab.component"
+                    :inlineTabs="inlineTabs"
+                    :activeInlineTab="activeInlineTab"
                     @openSavedQueryInNewTab="openSavedQueryInNewTab"
-                    v-if="activeTab && activeTab.component"
+                    @openAssetSidebar="openAssetSidebar"
                 ></component>
                 <!--explorer pane end -->
             </pane>
-            <pane max-size="100" min-size="60">
+            <pane
+                :size="activeInlineTab?.assetSidebar?.isVisible ? 60 : 80"
+                :min-size="activeInlineTab?.assetSidebar?.isVisible ? 60 : 80"
+            >
                 <Playground
                     :tabs="tabsArray"
                     v-model:activeInlineTabKey="activeInlineTabKey"
                     v-model:tabRef="inlineTabRef"
                 />
             </pane>
-            <pane max-size="20" min-size="0">
-                <AssetSidebar />
+            <pane
+                max-size="20"
+                :size="activeInlineTab?.assetSidebar?.isVisible ? 20 : 0"
+                min-size="0"
+                v-if="
+                    activeInlineTab && activeInlineTab?.assetSidebar?.isVisible
+                "
+            >
+                <AssetSidebar
+                    :activeTab="activeInlineTab"
+                    @closeAssetSidebar="closeAssetSidebar"
+                />
             </pane>
         </splitpanes>
     </div>
@@ -67,6 +83,7 @@
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
     import { TabInterface } from '~/types/insights/tab.interface'
     import { SavedQueryInterface } from '~/types/insights/savedQuery.interface'
+    import { tableInterface } from '~/types/insights/table.interface'
 
     export default defineComponent({
         components: {
@@ -96,8 +113,10 @@
                     },
                     favico: 'https://atlan.com/favicon.ico',
                     assetSidebar: {
-                        isVisible: true,
+                        isVisible: false,
                         assetInfo: {},
+                        title: '',
+                        id: '',
                     },
                 },
                 {
@@ -114,6 +133,8 @@
                     assetSidebar: {
                         isVisible: false,
                         assetInfo: {},
+                        title: '',
+                        id: '',
                     },
                 },
                 {
@@ -128,49 +149,98 @@
                     },
                     favico: 'https://atlan.com/favicon.ico',
                     assetSidebar: {
-                        isVisible: true,
+                        isVisible: false,
                         assetInfo: {},
+                        title: '',
+                        id: '',
                     },
                 },
             ])
+
             const activeTab = computed(() =>
                 tabsList.find((tab) => tab.id === activeTabId.value)
             )
+            const activeInlineTab = computed(() =>
+                tabsArray.value.find(
+                    (tab) => tab.key === activeInlineTabKey.value
+                )
+            )
+            const inlineTabs = computed(() => inlineTabRef.value?.tabs ?? [])
             const changeTab = (tab: TabInterface) => {
                 activeTabId.value = tab.id
+            }
+            const isInlineTabAlreadyOpened = (
+                inlineTab: activeInlineTabInterface
+            ) => {
+                let bool = false
+                inlineTabRef.value.tabs.forEach((tab) => {
+                    if (tab.key === inlineTab.key) bool = true
+                })
+                return bool
             }
             const openSavedQueryInNewTab = (
                 savedQuery: SavedQueryInterface
             ) => {
-                console.log(savedQuery, 'savedQUery')
-                const key = 'tab' + Date.now()
-                inlineTabRef.value.addTab({
+                const newTab = {
                     label: savedQuery.label,
-                    key,
+                    key: savedQuery.id,
                     favico: 'https://atlan.com/favicon.ico',
                     isSaved: true,
-                    queryId: 'abcd-01-01',
+                    queryId: savedQuery.id,
                     explorer: {},
                     playground: {
                         editorTitle: savedQuery.editor,
                         resultTitle: savedQuery.result,
                     },
                     assetSidebar: {
-                        isVisible: true,
+                        isVisible: false,
                         assetInfo: {},
+                        title: '',
+                        id: '',
                     },
-                })
-                activeInlineTabKey.value = key
+                }
+                if (!isInlineTabAlreadyOpened(newTab)) {
+                    inlineTabRef.value.addTab(newTab)
+                    activeInlineTabKey.value = newTab.key
+                } else {
+                    // show user that this tab is already opened
+                }
+            }
+            const closeAssetSidebar = (activeTab: activeInlineTabInterface) => {
+                const index = tabsArray.value.findIndex(
+                    (tab) => tab.key === activeTab.key
+                )
+                if (index !== -1) {
+                    tabsArray.value[index].assetSidebar.isVisible = false
+                    tabsArray.value[index].assetSidebar.title = ''
+                    tabsArray.value[index].assetSidebar.id = ''
+                }
+                console.log(tabsArray, 'tabsArray')
+            }
+
+            const openAssetSidebar = (table: tableInterface) => {
+                const index = tabsArray.value.findIndex(
+                    (tab) => tab.key === activeInlineTab.value.key
+                )
+                if (index !== -1) {
+                    tabsArray.value[index].assetSidebar.isVisible = true
+                    tabsArray.value[index].assetSidebar.title = table.label
+                    tabsArray.value[index].assetSidebar.id = table.id
+                }
             }
             return {
+                inlineTabs,
                 activeTab,
                 activeTabId,
                 tabsList,
                 activeInlineTabKey,
+                activeInlineTab,
                 inlineTabRef,
                 tabsArray,
                 changeTab,
                 openSavedQueryInNewTab,
+                closeAssetSidebar,
+                openAssetSidebar,
             }
         },
     })
@@ -195,14 +265,14 @@
         opacity: 1;
     }
     :global(.splitpanes--vertical > .splitpanes__splitter):before {
-        left: -15px !important;
-        right: -15px !important;
-        height: 100% !important;
+        left: -15px;
+        right: -15px;
+        height: 100%;
     }
     :global(.splitpanes--horizontal > .splitpanes__splitter):before {
-        top: -15px !important;
-        bottom: -15px !important;
-        width: 100% !important;
+        top: -15px;
+        bottom: -15px;
+        width: 100%;
     }
 </style>
 <style lang="less" scoped>

@@ -21,11 +21,11 @@
                 </template>
             </vue3-tabs-chrome>
         </div>
-        <splitpanes horizontal>
-            <pane min-size="50" max-size="100" size="50">
+        <splitpanes horizontal :push-other-panes="false">
+            <pane max-size="100" size="50" min-size="50">
                 <Editor :selectedTab="selectedTab"
             /></pane>
-            <pane max-size="50" size="50">
+            <pane min-size="0" max-size="50">
                 <div class="flex text-gray py-1.5 px-3">Result</div>
                 <Result :selectedTab="selectedTab"
             /></pane>

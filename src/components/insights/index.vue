@@ -1,9 +1,10 @@
 <template>
     <div class="flex h-full">
-        <div class="w-24 sidebar">
+        <!--Sidebar navigation pane start -->
+        <div class="w-20 sidebar">
             <template v-for="tab in tabsList" :key="tab.id">
                 <div
-                    class="flex flex-col items-center my-2 text-xs"
+                    class="flex flex-col items-center my-8 text-xs"
                     @click="() => changeTab(tab)"
                 >
                     <AtlanIcon
@@ -28,17 +29,23 @@
                 </div>
             </template>
         </div>
-        <splitpanes>
-            <pane max-size="27" size="27" min-size="0" class="border-r">
-                <component :is="activeTab.component"></component>
+        <!--Sidebar navigation pane end -->
+        <splitpanes :class="$style.splitpane__styles">
+            <pane max-size="20" size="20" min-size="0">
+                <!--explorer pane start -->
+                <component
+                    :is="activeTab.component"
+                    v-if="activeTab && activeTab.component"
+                ></component>
+                <!--explorer pane end -->
             </pane>
-            <pane>
+            <pane max-size="100" size="60" min-size="60">
                 <Playground
                     :tabs="tabsArray"
                     v-model:activeInlineTabKey="activeInlineTabKey"
                 />
             </pane>
-            <pane class="" max-size="20" size="20" min-size="0">
+            <pane max-size="20" size="20" min-size="0">
                 <AssetSidebar />
             </pane>
         </splitpanes>
@@ -48,19 +55,17 @@
 <script lang="ts">
     import { defineComponent, ref, Ref, computed } from 'vue'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
-    import Sidebar from '~/components/insights/sidebar/index.vue'
     import Playground from '~/components/insights/playground/index.vue'
     import AssetSidebar from '~/components/insights/assetSidebar.vue'
     import useInsightsTabList from './useTabList'
     import { TabInterface } from '~/types/insights/tab.interface'
-    import Schema from './sidebar/explorers/schema.vue'
-    import Queries from './sidebar/explorers/queries.vue'
-    import History from './sidebar/explorers/history.vue'
-    import Schedule from './sidebar/explorers/schedule.vue'
+    import Schema from './explorers/schema.vue'
+    import Queries from './explorers/queries.vue'
+    import History from './explorers/history.vue'
+    import Schedule from './explorers/schedule.vue'
 
     export default defineComponent({
         components: {
-            Sidebar,
             Playground,
             AssetSidebar,
             schema: Schema,
@@ -141,20 +146,33 @@
     })
 </script>
 <style lang="less" module>
-    .splitpane {
-        :global(.splitpanes__splitter:before) {
+    .splitpane__styles {
+        :global(.splitpanes__splitter) {
+            background-color: #e5e7eb;
+            position: relative;
+        }
+        :global(.splitpanes__splitter):hover {
+            @apply bg-primary;
+        }
+        :global(.splitpanes__splitter):before {
             content: '';
             position: absolute;
             left: 0;
             top: 0;
-            transition: opacity 0.4s;
-            background-color: rgba(255, 0, 0, 0.3);
             opacity: 0;
             z-index: 1;
         }
-        :global(.splitpanes--vertical > .splitpanes__splitter:before) {
-            left: -30px;
-            right: -30px;
+        :global(.splitpanes__splitter):hover:before {
+            opacity: 1;
+        }
+        :global(.splitpanes__splitter):before {
+            left: -10px !important;
+            right: -10px !important;
+            height: 100% !important;
+        }
+        :global(.splitpanes--horizontal > .splitpanes__splitter):before {
+            left: -10px;
+            right: -10px;
             height: 100%;
         }
     }

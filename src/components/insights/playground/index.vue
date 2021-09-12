@@ -26,41 +26,13 @@
                 <Editor :selectedTab="selectedTab"
             /></pane>
             <pane max-size="50" size="50">
-                <div class="flex border-b border-t text-gray py-1.5 px-3">
+                <div class="flex text-gray py-1.5 px-3">
                     Result {{ activeInlineTabKey }}
                 </div>
                 <Result :selectedTab="selectedTab"
             /></pane>
         </splitpanes>
     </div>
-    <!-- <div class="flex flex-col flex-1 h-full bg-white">
-        <div class="flex text-gray">
-            <vue3-tabs-chrome
-                :ref="setTabRef"
-                :tabs="tabs"
-                v-model="activeInlineTabKey"
-                @click="onTabClick"
-                @remove="onTabRemove"
-                :minWidth="80"
-            >
-                <template #after>
-                    <div class="ml-0">
-                        <span
-                            class="inline-flex items-center justify-center p-2 rounded-full btn-add hover:bg-gray-300"
-                            @click="handleAdd"
-                        >
-                            <fa icon="fal plus" class="" />
-                        </span>
-                    </div>
-                </template>
-            </vue3-tabs-chrome>
-        </div>
-        <Editor :selectedTab="selectedTab" />
-        <div class="flex border-b border-t text-gray py-1.5 px-3">
-            Result {{ activeInlineTabKey }}
-        </div>
-        <Result :selectedTab="selectedTab" />
-    </div> -->
 </template>
 
 <script lang="ts">

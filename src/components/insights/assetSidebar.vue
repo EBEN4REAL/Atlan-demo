@@ -1,6 +1,12 @@
 <template>
     <div class="w-full h-full placeholder">
-        <div class="flex items-center justify-end w-full p-3">
+        <div class="flex items-center justify-between w-full p-3">
+            <span
+                v-if="activeTab && activeTab?.assetSidebar"
+                class="font-bold text-gray"
+            >
+                {{ activeTab.assetSidebar.title }}
+            </span>
             <span
                 class="flex items-center justify-center"
                 @click="() => closeAssetSidebar(activeTab)"
@@ -11,9 +17,6 @@
         <div class="flex flex-col items-center justify-center w-full h-full">
             <p>Asset Sidebar</p>
             <p>Tab - {{ activeTab.label }}</p>
-            <p v-if="activeTab && activeTab?.assetSidebar">
-                Table - {{ activeTab.assetSidebar.title }}
-            </p>
         </div>
     </div>
 </template>

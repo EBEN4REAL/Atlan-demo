@@ -1,26 +1,31 @@
 <template>
-    <div class="flex flex-col items-center w-full h-full p-3 bg-white">
-        <div class="w-full h-32 mb-3 rounded placeholder"></div>
-        <template v-for="table in tables" :key="table.id">
-            <div
-                class="flex items-center justify-center w-full px-2 py-2 mb-3 rounded cursor-pointer  placeholder"
-                @click="() => openAssetSidebar(table)"
-                :class="
-                    isAssetSidebarOpened(table)
-                        ? 'active-placeholder'
-                        : 'placeholder'
-                "
-            >
-                {{ table.label }}
-            </div>
-        </template>
+    <div class="flex flex-col items-center w-full h-full bg-white">
+        <div class="w-full p-3 pb-0">
+            <div class="w-full h-40 mb-3 rounded placeholder"></div>
+        </div>
+        <div class="w-full p-3 pt-0 overflow-y-auto scrollable-container">
+            <template v-for="table in tables" :key="table.id">
+                <div
+                    class="flex items-center justify-center w-full px-2 py-2 mb-3 rounded cursor-pointer  placeholder"
+                    @click="() => openAssetSidebar(table)"
+                    :class="
+                        isAssetSidebarOpened(table)
+                            ? 'active-placeholder'
+                            : 'placeholder'
+                    "
+                >
+                    {{ table.label }}
+                </div>
+            </template>
+        </div>
     </div>
 </template>
 
 <script lang="ts">
-    import { defineComponent, PropType, Ref, toRefs, computed } from 'vue'
+    import { defineComponent, PropType, toRefs } from 'vue'
     import { tableInterface } from '~/types/insights/table.interface'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
+    import { tablesData } from './tablesDemoData'
 
     export default defineComponent({
         components: {},
@@ -37,20 +42,7 @@
         emits: ['openAssetSidebar'],
         setup(props, { emit }) {
             const { activeInlineTab } = toRefs(props)
-            const tables: tableInterface[] = [
-                {
-                    id: '1y',
-                    label: ' Table 1',
-                },
-                {
-                    id: '2y',
-                    label: 'Table 2',
-                },
-                {
-                    id: '3y',
-                    label: 'Table 3',
-                },
-            ]
+            const tables: tableInterface[] = tablesData
 
             const openAssetSidebar = (table: tableInterface) => {
                 emit('openAssetSidebar', table)
@@ -79,6 +71,9 @@
     }
     .active-placeholder {
         @apply bg-primary text-white;
+    }
+    .scrollable-container {
+        height: calc(100vh - 14rem);
     }
 </style>
 

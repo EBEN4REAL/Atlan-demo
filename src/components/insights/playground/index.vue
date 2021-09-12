@@ -1,74 +1,139 @@
 <template>
-    <div class="flex flex-col flex-1 h-full bg-white">
-        <div class="flex py-1.5 px-3 border-b text-gray">
+    <div class="flex flex-col w-full h-full bg-white">
+        <div class="flex text-gray">
             <vue3-tabs-chrome
                 :ref="setTabRef"
                 :tabs="tabs"
-                v-model:modelValue="tab"
-                :minHiddenWidth="120"
-            />
-            <div class="btns">
-                <button class="btn" @click="handleAdd">new Tab</button>
-                <button class="btn" @click="handleRemove">
-                    Remove Active Tab
-                </button>
-            </div>
+                v-model="activeInlineTabKey"
+                @click="onTabClick"
+                @remove="onTabRemove"
+                :minWidth="80"
+            >
+                <template #after>
+                    <div class="ml-0">
+                        <span
+                            class="inline-flex items-center justify-center p-2 rounded-full  btn-add hover:bg-gray-300"
+                            @click="handleAdd"
+                        >
+                            <fa icon="fal plus" class="" />
+                        </span>
+                    </div>
+                </template>
+            </vue3-tabs-chrome>
         </div>
-        <Editor />
-        <div class="flex border-b border-t text-gray py-1.5 px-3">Result</div>
-        <Result />
+        <splitpanes horizontal>
+            <pane min-size="50" max-size="100" size="50">
+                <Editor :selectedTab="selectedTab"
+            /></pane>
+            <pane max-size="50" size="50">
+                <div class="flex border-b border-t text-gray py-1.5 px-3">
+                    Result {{ activeInlineTabKey }}
+                </div>
+                <Result :selectedTab="selectedTab"
+            /></pane>
+        </splitpanes>
     </div>
+    <!-- <div class="flex flex-col flex-1 h-full bg-white">
+        <div class="flex text-gray">
+            <vue3-tabs-chrome
+                :ref="setTabRef"
+                :tabs="tabs"
+                v-model="activeInlineTabKey"
+                @click="onTabClick"
+                @remove="onTabRemove"
+                :minWidth="80"
+            >
+                <template #after>
+                    <div class="ml-0">
+                        <span
+                            class="inline-flex items-center justify-center p-2 rounded-full btn-add hover:bg-gray-300"
+                            @click="handleAdd"
+                        >
+                            <fa icon="fal plus" class="" />
+                        </span>
+                    </div>
+                </template>
+            </vue3-tabs-chrome>
+        </div>
+        <Editor :selectedTab="selectedTab" />
+        <div class="flex border-b border-t text-gray py-1.5 px-3">
+            Result {{ activeInlineTabKey }}
+        </div>
+        <Result :selectedTab="selectedTab" />
+    </div> -->
 </template>
 
 <script lang="ts">
-    import { defineComponent, reactive, ref } from 'vue'
-    import Vue3TabsChrome from './vue3-chrome-tabs.vue'
+    import { defineComponent, ref, PropType, toRefs, computed } from 'vue'
+    import Vue3TabsChrome from './vue3-tabs-chrome.vue'
     import Editor from '~/components/insights/playground/editor.vue'
     import Result from '~/components/insights/playground/result.vue'
-    import 'vue3-tabs-chrome/dist/vue3-tabs-chrome.css'
+    import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
 
     export default defineComponent({
         components: { Editor, Result, Vue3TabsChrome },
-        props: {},
-        setup(props) {
+        props: {
+            tabs: {
+                type: Object as PropType<activeInlineTabInterface[]>,
+                required: true,
+            },
+            activeInlineTabKey: {
+                type: String,
+                required: true,
+            },
+        },
+        emits: ['update:activeInlineTabKey'],
+        setup(props, { emit }) {
+            const { activeInlineTabKey, tabs } = toRefs(props)
+            const selectedTab = computed(() =>
+                tabs.value.find((tab) => tab.key === activeInlineTabKey.value)
+            )
             const tabRef = ref()
-            const tab = ref('google')
-            const tabs = reactive([
-                {
-                    label: 'google',
-                    key: 'google',
-                    favicon: 'https://bing.com/favicon.ico',
-                },
-                {
-                    label: 'facebook',
-                    key: 'facebook',
-                    favicon: 'https://juejin.cn/favicon.ico',
-                },
-                {
-                    label: 'New Tab',
-                    key: 'costom key',
-                },
-            ])
             const setTabRef = (el) => {
                 tabRef.value = el
             }
-
-            const handleAdd = () => {
+            const handleRemove = () => {
+                tabRef.value.removeTab(activeInlineTabKey.value)
+            }
+            const handleAdd = (tab1, alltabs) => {
+                console.log(tab1, tabRef.value.tabs, 'tabs')
                 const key = 'tab' + Date.now()
                 tabRef.value.addTab({
                     label: 'New Tab',
                     key,
+                    favico: 'https://atlan.com/favicon.ico',
+                    isSaved: true,
+                    queryId: 'abcd-01-01',
+                    explorer: {},
+                    playground: {
+                        editorTitle: `${key} Editor`,
+                        resultTitle: `${key} Result`,
+                    },
+                    assetSidebar: {
+                        isVisible: true,
+                        assetInfo: {},
+                    },
                 })
-
-                tab.value = key
+                emit('update:activeInlineTabKey', key)
+            }
+            const onTabClick = (event, tab, index) => {
+                emit('update:activeInlineTabKey', tab.key)
+            }
+            const onTabRemove = (tab, index) => {
+                const tabs = tabRef.value.tabs
+                const len = tabs.length
+                if (tabs.length > 0) {
+                    const activeKey = tabs[len - 1].key
+                    emit('update:activeInlineTabKey', activeKey)
+                }
             }
 
-            const handleRemove = () => {
-                tabRef.value.removeTab(tab.value)
-            }
             return {
+                onTabRemove,
+                onTabClick,
+                selectedTab,
                 tabs,
-                tab,
+                activeInlineTabKey,
                 handleAdd,
                 handleRemove,
                 setTabRef,

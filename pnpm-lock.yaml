@@ -118,7 +118,7 @@ specifiers:
   vue-numerals: ^4.0.6
   vue-router: ^4.0.11
   vue-tsc: ^0.3.0
-  vue3-tabs-chrome: ^0.2.1
+  vue3-tabs-chrome: 0.2.1
   vue3-tel-input: ^1.0.4
   vue3-timepicker: ^1.0.0-beta.2
   workbox-precaching: ^6.2.4

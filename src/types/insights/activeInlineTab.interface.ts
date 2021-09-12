@@ -1,9 +1,14 @@
 export interface activeInlineTabInterface {
-    tabId: string
-    tabTitle: String
-    isActive: boolean
+    key: string
+    label: String
+    isSaved: boolean
+    queryId: string | undefined
     explorer: Object
-    playground: Object
+    favico: string | undefined
+    playground: {
+        editorTitle: string
+        resultTitle: string
+    }
     assetSidebar: {
         isVisible: boolean
         assetInfo: Object

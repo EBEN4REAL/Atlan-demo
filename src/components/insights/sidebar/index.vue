@@ -1,6 +1,6 @@
 <template>
-    <div class="flex flex-col items-center h-full bg-white">
-        <a-tabs
+    <div class="w-full bg-white">
+        <!-- <a-tabs
             v-model:activeKey="activeTabId"
             :class="$style.sidebartab"
             tab-position="left"
@@ -39,7 +39,7 @@
                     <component :is="tab.component"></component>
                 </div>
             </a-tab-pane>
-        </a-tabs>
+        </a-tabs> -->
     </div>
 </template>
 

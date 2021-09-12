@@ -569,13 +569,13 @@
 
 <style lang="less" scoped>
     .vue3-tabs-chrome {
-        @bg: #dee1e6;
+        @bg: #f4f4f4;
         @gap: 7px;
         @divider: #a9adb0;
         @speed: 150ms;
-        padding-top: 10px;
         background-color: @bg;
         position: relative;
+        width: 100%;
         .tabs-content {
             height: 34px;
             position: relative;

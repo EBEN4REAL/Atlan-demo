@@ -1,25 +1,34 @@
 <template>
-    <div class="container p-3 rounded">
+    <div class="w-full h-full p-3 rounded">
         <div
             class="flex items-center justify-center w-full h-full rounded  placeholder"
         >
-            Result
+            Result - {{ selectedTab?.playground?.resultTitle }}
         </div>
     </div>
 </template>
 
 <script lang="ts">
-    import { defineComponent } from 'vue'
+    import { defineComponent, PropType, toRefs } from 'vue'
+    import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
+
     export default defineComponent({
         components: {},
-        props: {},
-        setup(props) {},
+        props: {
+            selectedTab: {
+                type: Object as PropType<activeInlineTabInterface>,
+                required: true,
+            },
+        },
+        setup(props) {
+            const { selectedTab } = toRefs(props)
+            return {
+                selectedTab,
+            }
+        },
     })
 </script>
 <style lang="less" scoped>
-    .container {
-        flex: 0.4;
-    }
     .placeholder {
         background-color: #f4f4f4;
     }

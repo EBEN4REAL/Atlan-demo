@@ -1,6 +1,6 @@
 <template>
     <div
-        class="flex items-center justify-center h-full border-r  placeholder w-72"
+        class="flex items-center justify-center h-full border-l border-r  placeholder"
     >
         Asset Sidebar
     </div>

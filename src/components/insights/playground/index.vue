@@ -26,9 +26,7 @@
                 <Editor :selectedTab="selectedTab"
             /></pane>
             <pane max-size="50" size="50">
-                <div class="flex text-gray py-1.5 px-3">
-                    Result {{ activeInlineTabKey }}
-                </div>
+                <div class="flex text-gray py-1.5 px-3">Result</div>
                 <Result :selectedTab="selectedTab"
             /></pane>
         </splitpanes>
@@ -36,7 +34,7 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref, PropType, toRefs, computed } from 'vue'
+    import { defineComponent, ref, PropType, toRefs, computed, Ref } from 'vue'
     import Vue3TabsChrome from './vue3-tabs-chrome.vue'
     import Editor from '~/components/insights/playground/editor.vue'
     import Result from '~/components/insights/playground/result.vue'
@@ -45,6 +43,10 @@
     export default defineComponent({
         components: { Editor, Result, Vue3TabsChrome },
         props: {
+            tabRef: {
+                type: Object as PropType<Ref<any>>,
+                required: true,
+            },
             tabs: {
                 type: Object as PropType<activeInlineTabInterface[]>,
                 required: true,
@@ -54,15 +56,15 @@
                 required: true,
             },
         },
-        emits: ['update:activeInlineTabKey'],
+        emits: ['update:activeInlineTabKey', 'update:tabRef'],
         setup(props, { emit }) {
-            const { activeInlineTabKey, tabs } = toRefs(props)
+            const { activeInlineTabKey, tabs, tabRef } = toRefs(props)
             const selectedTab = computed(() =>
                 tabs.value.find((tab) => tab.key === activeInlineTabKey.value)
             )
-            const tabRef = ref()
             const setTabRef = (el) => {
-                tabRef.value = el
+                // tabRef.value = el
+                emit('update:tabRef', el)
             }
             const handleRemove = () => {
                 tabRef.value.removeTab(activeInlineTabKey.value)
@@ -74,8 +76,8 @@
                     label: 'New Tab',
                     key,
                     favico: 'https://atlan.com/favicon.ico',
-                    isSaved: true,
-                    queryId: 'abcd-01-01',
+                    isSaved: false,
+                    queryId: undefined,
                     explorer: {},
                     playground: {
                         editorTitle: `${key} Editor`,

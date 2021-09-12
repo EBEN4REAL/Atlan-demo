@@ -1,5 +1,6 @@
 <template>
-    <div class="flex items-center justify-center w-full h-full p-3 bg-white">
+    <div class="flex flex-col items-center w-full h-full p-3 bg-white">
+        <div class="w-full h-32 mb-3 rounded placeholder"></div>
         <div
             class="flex items-center justify-center w-full h-full rounded  placeholder"
         >

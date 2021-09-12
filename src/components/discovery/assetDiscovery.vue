@@ -20,8 +20,7 @@
             <div class="flex flex-col h-full">
                 <SearchAndFilter
                     v-model:value="queryText"
-                    class="mx-3 mt-3"
-                    size="large"
+                    class="mx-6 mt-4"
                     :placeholder="dynamicSearchPlaceholder"
                     :autofocus="true"
                     @change="handleSearchChange"
@@ -41,7 +40,7 @@
 
                 <AssetTabs
                     v-model="assetType"
-                    class="mb-2"
+                    class="mt-1 mb-3"
                     @update:model-value="handleTabChange"
                     :asset-type-list="assetTypeList"
                     :asset-type-map="assetTypeMap"

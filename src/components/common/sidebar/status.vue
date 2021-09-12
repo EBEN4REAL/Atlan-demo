@@ -64,10 +64,10 @@
             </template>
             <div
                 ref="animationPoint"
-                class="inline-flex text-xs text-gray-500 cursor-pointer"
+                class="flex flex-col text-xs text-gray-500 cursor-pointer"
             >
-                <div class="mr-8">
-                    <p class="mb-1 text-sm">Status</p>
+                <div class="mb-3">
+                    <p class="mb-1 text-xs">Status</p>
                     <StatusBadge
                         :key="selectedAsset.guid"
                         :status-id="selectedAsset?.attributes?.assetStatus"
@@ -75,22 +75,28 @@
                             selectedAsset?.attributes?.assetStatusMessage
                         "
                         :show-chip-style-status="true"
+                        :statusUpdatedAt="
+                            selectedAsset?.attributes?.assetStatusUpdatedAt
+                        "
+                        :statusUpdatedBy="
+                            selectedAsset?.attributes?.assetStatusUpdatedBy
+                        "
                         :show-no-status="true"
                         :show-label="true"
                     ></StatusBadge>
                 </div>
 
-                <div
+                <!-- <div
                     v-if="selectedAsset?.attributes?.assetStatusMessage"
-                    class="px-2"
+                    class=""
                 >
-                    <p class="mb-2.5 text-sm">Message</p>
+                    <p class="mb-1 text-xs">Message</p>
                     <p
                         v-linkified
                         class="mb-0 text-sm text-gray"
                         v-html="statusMessage"
                     ></p>
-                </div>
+                </div> -->
             </div>
         </a-popover>
     </div>

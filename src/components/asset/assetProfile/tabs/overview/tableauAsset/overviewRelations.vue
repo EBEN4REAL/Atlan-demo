@@ -45,12 +45,13 @@
                         </div>
                     </template>
 
-                    <div>
+                    <div class="w-full">
                         <AssetTypeItems
                             :projections="checkedList"
                             :asset-type="item.displayText"
                             :asset-id="assetData.guid"
                             :css-classes="cssClasses"
+                            page="BiOverview"
                             @preview="handlePreview"
                         />
                     </div>
@@ -82,6 +83,7 @@
     } from 'vue'
     // Components
     import AssetTypeItems from '@/discovery/preview/tabs/relations/assetTypeItems.vue'
+
     // Composables
     import useEntityRelationships from '~/composables/asset/useEntityRelationships'
     // Assets
@@ -128,10 +130,9 @@
                     isLoading.value = y.value
                 })
             }
+
             // handlePreview
-            const handlePreview = (item) => {
-                context.emit('preview', item)
-            }
+            const handlePreview = (item) => {}
 
             /** LIFECYCLES */
             onMounted(async () => {
@@ -187,7 +188,7 @@
             @apply text-gray font-bold;
         }
         :global(.ant-tabs-bar) {
-            @apply mb-0 pl-0;
+            @apply mb-5 pl-0;
         }
 
         :global(.ant-tabs-tabpane) {

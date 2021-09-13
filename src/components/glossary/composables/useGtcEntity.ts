@@ -19,7 +19,8 @@ const useGTCEntity = <T extends Glossary | Category | Term>(
         | 'term'
         | Ref<'glossary' | 'category' | 'term'>,
     entityGuid: Ref<string>,
-    cache?: boolean | string
+    cache?: boolean | string,
+    watchForGuidChange: boolean = true,
 ) => {
     const keyMap = {
         glossary: 'AtlasGlossary',
@@ -122,8 +123,10 @@ const useGTCEntity = <T extends Glossary | Category | Term>(
     )
 
     watch(entityGuid, (newGuid) => {
-        body.value = getBody()
-        mutate()
+        if(watchForGuidChange) {
+            body.value = getBody()
+            mutate()
+        }
     })
 
     const refetch = () => {

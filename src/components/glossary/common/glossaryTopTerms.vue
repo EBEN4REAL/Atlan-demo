@@ -31,7 +31,7 @@
     import LoadingView from '@common/loaders/page.vue'
 
     import { Components } from '~/api/atlas/client'
-    import useGlossaryTerms from '~/composables/glossary/useGlossaryTerms'
+    import useGlossaryTerms from '~/components/glossary/composables/useGlossaryTerms'
 
     interface PropsType {
         terms?: Components.Schemas.AtlasGlossaryTerm[]

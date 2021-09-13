@@ -23,7 +23,15 @@
                 class="bg-transparent"
             >
                 <template #header>
-                    <div :key="item.id" class="flex text-sm select-none header">
+                    <div
+                        :key="item.id"
+                        class="flex text-sm text-gray-700 select-none header"
+                    >
+                        <img
+                            v-if="item.image"
+                            :src="item.image"
+                            class="w-auto h-5 mr-2"
+                        />
                         {{ item.label }}
                     </div>
                 </template>
@@ -32,6 +40,8 @@
                     :item="item"
                     :selected-asset="infoTabData"
                     :tab-data="componentData"
+                    :tableau-properties="tableauProperties ?? []"
+                    :page="page"
                     @change="handleChange"
                 ></component>
             </a-collapse-panel>
@@ -56,15 +66,15 @@
         toRefs,
         watch,
     } from 'vue'
-    import { CollapsiblePanels } from './List'
+    import { useInfoPanels } from './List'
     import { assetInterface } from '~/types/assets/asset.interface'
     import useBusinessMetadataHelper from '~/composables/businessMetadata/useBusinessMetadataHelper'
 
     export default defineComponent({
         name: 'InfoTab',
         components: {
-            columnDetails: defineAsyncComponent(
-                () => import('./columnDetails/index.vue')
+            assetDetails: defineAsyncComponent(
+                () => import('./assetDetails/index.vue')
             ),
 
             linkedAsset: defineAsyncComponent(
@@ -80,6 +90,22 @@
             ),
             columnProfile: defineAsyncComponent(
                 () => import('./columnProfile/index.vue')
+            ),
+
+            properties: defineAsyncComponent(
+                () =>
+                    import(
+                        '~/components/discovery/preview/tabs/info/properties/index.vue'
+                    )
+            ),
+            tableauProperties: defineAsyncComponent(
+                () => import('@common/sidebar/tableau/properties/index.vue')
+            ),
+            tableauPreview: defineAsyncComponent(
+                () => import('@common/sidebar/tableau/preview/index.vue')
+            ),
+            tableauHierarchy: defineAsyncComponent(
+                () => import('@common/sidebar/tableau/hierarchy/index.vue')
             ),
         },
         props: {
@@ -98,6 +124,10 @@
             isLoaded: {
                 type: Boolean,
             },
+            page: {
+                type: String,
+                required: true,
+            },
         },
 
         setup(props) {
@@ -105,7 +135,7 @@
                 [key: string]: any
             }> = ref({})
 
-            const { selectedAsset } = toRefs(props)
+            const { selectedAsset, infoTabData } = toRefs(props)
 
             const { getApplicableBmGroups } = useBusinessMetadataHelper()
 
@@ -151,21 +181,31 @@
                     image: b.options.image || '',
                 })) || []
             const dynamicList = ref<any>([])
+            const tableauProperties = ref<any>([])
 
             watch(
-                [selectedAsset],
+                selectedAsset,
                 () => {
-                    dynamicList.value = [
-                        ...CollapsiblePanels,
-                        ...applicableBMList(props.infoTabData?.typeName),
-                    ]
+                    const infoTab = useInfoPanels(selectedAsset.value.typeName)
+                    const panels = infoTab?.panels
+                    const properties = infoTab?.properties
+
+                    tableauProperties.value = properties ?? []
+
+                    console.log('INFO TAB DATA', infoTabData.value)
+
+                    console.log(
+                        'TABLEAU PROPERTIES DATA',
+                        tableauProperties.value
+                    )
+                    dynamicList.value = panels
                 },
                 { immediate: true }
             )
 
             return {
                 handleCollapseChange,
-
+                tableauProperties,
                 activeKey,
                 refMap,
                 dataMap,

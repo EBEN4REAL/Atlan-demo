@@ -1,26 +1,42 @@
 <template>
-    <div class="w-full px-4 py-1 pb-3 bg-gray-100">
+    <div class="w-full px-4 pt-3 pb-0">
         <a-tree-select
             v-model:value="selectedValue"
             style="width: 100%"
             :dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"
             :tree-data="treeData"
             placeholder="Select a connector"
+            dropdownClassName="connectorDropdown"
             :allowClear="true"
             @select="handleNodeSelect"
             @change="handleSelectChange"
         >
             <template #title="node">
                 <div class="flex items-center" v-if="node?.img">
-                    <img :src="node.img" class="w-auto h-3 mr-1" />
-                    <span class="font-bold">{{ node.value }}</span>
+                    <img :src="node.img" class="w-auto h-3 mr-2" />
+                    <span class="">{{
+                        capitalizeFirstLetter(node.value)
+                    }}</span>
                 </div>
                 <div class="flex items-center" v-if="node?.integrationName">
                     <img
-                        :src="getImage(node.integrationName)"
-                        class="w-auto h-3 mr-1"
+                        :src="getImage(node?.integrationName)"
+                        class="w-auto h-3 mr-2"
                     />
-                    {{ node.integrationName }}
+                    <span class="">{{ node.name }}</span>
+                </div>
+            </template>
+
+            <template #dropdownRender="{ menuNode: menu }">
+                <v-nodes :vnodes="menu" />
+                <a-divider style="margin: 4px 0" />
+                <div
+                    style="padding: 4px 8px; cursor: pointer"
+                    @mousedown="(e) => e.preventDefault()"
+                    @click="addItem"
+                >
+                    <plus-outlined />
+                    Add item
                 </div>
             </template>
         </a-tree-select>
@@ -35,6 +51,7 @@
 </template>
 
 <script lang="ts">
+    import { capitalizeFirstLetter } from '~/utils/string'
     import {
         computed,
         defineComponent,
@@ -157,16 +174,19 @@
                             connectorId
                         ) {
                             return {
-                                title:
-                                    connection.attributes.displayName ||
-                                    connection.attributes.name,
                                 key: connection.attributes.qualifiedName,
+                                name:
+                                    connection.attributes.displayName ||
+                                    connection.attributes.qualifiedName,
                                 value: connection.attributes.qualifiedName,
                                 connector:
                                     connection.attributes.integrationName,
                                 connection: connection.attributes.qualifiedName,
-                                intregationName:
+                                integrationName:
                                     connection?.attributes?.integrationName,
+                                slots: {
+                                    title: 'title',
+                                },
                             }
                         }
                     })
@@ -282,12 +302,21 @@
                 checkedValues,
                 value,
                 treeData,
+                capitalizeFirstLetter,
             }
         },
     })
 </script>
-<style lang="less" scoped>
-    .status:last-child {
-        margin-bottom: 0 !important;
+<style lang="less">
+    .connectorDropdown {
+        .ant-select-tree-switcher {
+            width: 18px !important;
+            height: 24px !important;
+            line-height: 24px !important;
+            margin-top: -4px !important;
+        }
+        .ant-select-switcher-icon {
+            font-weight: normal !important;
+        }
     }
 </style>

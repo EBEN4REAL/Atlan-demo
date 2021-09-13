@@ -92,14 +92,14 @@
                 `selector_${initialBody.typeName}`
             )
             const handleChange = (checkedValues: string) => {
-                emit('update:modelValue', checkedValues)
-                console.log(props.filters, 'root')
-                emit('change', checkedValues, props.filters)
+                // emit('update:modelValue', checkedValues)
+                // console.log(props.filters, 'root')
+                // emit('change', checkedValues, props.filters)
             }
 
             const handleSearch = useDebounceFn((val) => {
-                initialBody.query = val
-                replaceBody(initialBody)
+                // initialBody.query = val
+                // replaceBody(initialBody)
             }, 100)
 
             return {

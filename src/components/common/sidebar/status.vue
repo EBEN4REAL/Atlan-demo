@@ -6,13 +6,15 @@
             placement="left"
             trigger="click"
             :class="$style.popover"
+            :destroy-tooltip-on-hide="true"
         >
             <template #content>
                 <div class="flex flex-col" style="width: 300px p-4">
                     <div class="">
                         <a-radio-group
-                            v-model:value="statusId"
+                            v-model:value="statusType"
                             class="w-full mb-3"
+                            @change="handleStatusRadioUpdate"
                         >
                             <div class="flex flex-col">
                                 <a-radio
@@ -45,6 +47,7 @@
                         :rows="5"
                         class=""
                         @change="handleTextAreaUpdate"
+                        :disabled="textAreaDisabled"
                     ></a-textarea>
                     <div class="flex justify-end w-full mt-4 space-x-4">
                         <a-button class="px-4" @click="handleCancel"
@@ -62,10 +65,10 @@
             </template>
             <div
                 ref="animationPoint"
-                class="inline-flex text-xs text-gray-500 cursor-pointer"
+                class="flex flex-col text-xs text-gray-500 cursor-pointer"
             >
-                <div class="mr-8">
-                    <p class="mb-1 text-sm">Status</p>
+                <div class="mb-3">
+                    <p class="mb-1 text-xs">Status</p>
                     <StatusBadge
                         :key="selectedAsset.guid"
                         :status-id="selectedAsset?.attributes?.assetStatus"
@@ -73,32 +76,37 @@
                             selectedAsset?.attributes?.assetStatusMessage
                         "
                         :show-chip-style-status="true"
+                        :status-updated-at="
+                            selectedAsset?.attributes?.assetStatusUpdatedAt
+                        "
+                        :status-updated-by="
+                            selectedAsset?.attributes?.assetStatusUpdatedBy
+                        "
                         :show-no-status="true"
                         :show-label="true"
                     ></StatusBadge>
                 </div>
 
-                <div
+                <!-- <div
                     v-if="selectedAsset?.attributes?.assetStatusMessage"
-                    class="px-2"
+                    class=""
                 >
-                    <p class="mb-3.5 text-sm">Message</p>
+                    <p class="mb-1 text-xs">Message</p>
                     <p
                         v-linkified
-                        class="mb-0 text-xs text-gray"
+                        class="mb-0 text-sm text-gray"
                         v-html="statusMessage"
                     ></p>
-                </div>
+                </div> -->
             </div>
         </a-popover>
     </div>
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref, watch, PropType, toRefs, inject } from 'vue'
+    import { defineComponent, ref, watch, PropType, toRefs } from 'vue'
     import { useMagicKeys } from '@vueuse/core'
     import StatusBadge from '@common/badge/status/index.vue'
-
     import { List } from '~/constant/status'
     import updateStatus from '~/composables/asset/updateStatus'
     import confetti from '~/utils/confetti'
@@ -106,7 +114,6 @@
 
     export default defineComponent({
         components: { StatusBadge },
-
         props: {
             selectedAsset: {
                 type: Object as PropType<assetInterface>,
@@ -117,7 +124,6 @@
         setup(props, { emit }) {
             // const isLoading = ref(false);
             const { selectedAsset } = toRefs(props)
-
             const {
                 handleCancel,
                 update,
@@ -128,15 +134,28 @@
                 isCompleted,
                 isLoading,
             } = updateStatus(selectedAsset)
-
             const animationPoint = ref(null)
-            const message = ref('')
+
+            const message = ref(statusMessage.value)
+            const statusType = ref(statusId.value)
+            const textAreaDisabled = ref(false)
 
             const handleUpdate = () => {
+                statusMessage.value = message.value
+                statusId.value = statusType.value
+
                 update()
             }
             const handleTextAreaUpdate = (e: any) => {
-                statusMessage.value = e.target.value
+                message.value = e.target.value
+            }
+            const handleStatusRadioUpdate = (e: any) => {
+                textAreaDisabled.value = false
+                statusType.value = e.target.value
+                if (e.target.value === 'is_null') {
+                    message.value = ''
+                    textAreaDisabled.value = true
+                }
             }
 
             watch(isReady, () => {
@@ -162,10 +181,8 @@
                     emit('update:selectedAsset', selectedAsset.value)
                 }
             })
-
             const keys = useMagicKeys()
             const esc = keys.Escape
-
             watch(esc, (v) => {
                 if (v) {
                     handleCancel()
@@ -175,8 +192,10 @@
                 handleUpdate,
                 handleCancel,
                 handleTextAreaUpdate,
+                handleStatusRadioUpdate,
                 message,
-                selectedAsset,
+                textAreaDisabled,
+                statusType,
                 isReady,
                 state,
                 statusId,

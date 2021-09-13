@@ -44,7 +44,11 @@
                 <div v-if="page === 'nonBiOverview'" class="text-gray-500">
                     {{ getDataType(selectedAsset?.attributes?.dataType) }}
                 </div>
-                <AssetLogo v-else :asset="selectedAsset" variant="md" />
+                <AssetLogo
+                    v-if="page === 'discovery'"
+                    :asset="selectedAsset"
+                    variant="md"
+                />
 
                 <div class="flex space-x-2">
                     <a-button class="flex items-center" size="small">
@@ -204,7 +208,6 @@
 
             return {
                 tabHeights,
-                page,
                 isLoaded,
                 infoTabData,
                 title,

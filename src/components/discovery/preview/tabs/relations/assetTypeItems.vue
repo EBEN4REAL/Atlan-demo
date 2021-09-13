@@ -36,9 +36,10 @@
             :destroy-on-close="true"
             :closable="false"
         >
-            <PreviewSidebar
+            <AssetPreview
                 :selected-asset="selectedAssetData"
-                page="BiOverview"
+                page="biOverview"
+                :show-cross-icon="true"
                 @closeSidebar="handleCloseSidebar"
                 @asset-mutation="propagateToAssetList"
             />
@@ -53,11 +54,16 @@
     import useAssetInfo from '~/composables/asset/useAssetInfo'
     import useBiRelations from '~/composables/asset/useBiRelations'
     import VirtualList from '~/utils/library/virtualList/virtualList.vue'
-    import PreviewSidebar from '~/components/asset/assetProfile/tabs/overview/sidebar/index.vue'
     import { assetInterface } from '~/types/assets/asset.interface'
+    import AssetPreview from '~/components/discovery/preview/assetPreview.vue'
 
     export default defineComponent({
-        components: { ListItem, VirtualList, ColumnListItem, PreviewSidebar },
+        components: {
+            ListItem,
+            VirtualList,
+            ColumnListItem,
+            AssetPreview,
+        },
         props: {
             assetType: {
                 type: String,
@@ -144,5 +150,3 @@
         },
     })
 </script>
-
-<style lang="less" scoped></style>

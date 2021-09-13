@@ -39,6 +39,7 @@
                 <component
                     :is="item.component"
                     :item="item"
+                    :page="page"
                     :selected-asset="infoTabData"
                     :tab-data="componentData"
                     :tableauProperties="tableauProperties ?? []"
@@ -101,9 +102,6 @@
             ),
             tableauPreview: defineAsyncComponent(
                 () => import('@common/sidebar/tableau/preview/index.vue')
-            ),
-            tableauHierarchy: defineAsyncComponent(
-                () => import('@common/sidebar/tableau/hierarchy/index.vue')
             ),
         },
         props: {

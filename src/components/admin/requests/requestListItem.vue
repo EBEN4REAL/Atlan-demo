@@ -26,29 +26,37 @@
             />
 
             <ClassificationPiece
-                v-if="request?.payload?.classificationDefs"
+                v-if="
+                    request?.re === 'create_typedef' &&
+                    request?.payload?.classificationDefs
+                "
                 :data="request.payload.classificationDefs"
             />
 
             <ClassificationPiece
-                v-if="request?.re === 'attach_classification'"
+                v-else-if="request?.re === 'attach_classification'"
                 :typeName="request.payload.typeName"
             />
 
-            <AssetPiece
-                v-if="request.source_qf_name"
-                :asset-qf-name="request.source_qf_name"
+            <TermPiece
+                v-else-if="request.re === 'create_term' && request.payload"
+                :data="request.payload"
+            />
+
+            <TermPiece
+                v-else-if="request.re === 'term_link'"
+                :data="request.sourceEntity.attributes"
             />
 
             <AttrPiece
-                v-if="request.destination_attribute"
+                v-else-if="request.destination_attribute"
                 :name="request.destination_attribute"
                 :value="request.destination_value"
             />
 
-            <TermPiece
-                v-if="request.re === 'create_term' && request.payload"
-                :data="request.payload"
+            <AssetPiece
+                v-else-if="request.source_qf_name"
+                :asset-qf-name="request.source_qf_name"
             />
         </div>
 

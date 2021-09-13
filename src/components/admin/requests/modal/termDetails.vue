@@ -13,7 +13,10 @@
                 class="text-sm text-gray-500 overflow-ellipsis"
                 >{{ data.shortDescription }}
             </span>
-            <p class="m-0 text-sm text-gray-500 overflow-ellipsis">
+            <p
+                v-if="data.anchor"
+                class="m-0 text-sm text-gray-500 overflow-ellipsis"
+            >
                 Glossary:
                 <span class="text-gray">{{ data.anchor.displayText }}</span>
             </p>

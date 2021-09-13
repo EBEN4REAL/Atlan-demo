@@ -45,6 +45,11 @@
                 :data="request.payload"
             />
 
+            <TermDetails
+                v-if="request.re === 'term_link'"
+                :data="request.sourceEntity.attributes"
+            />
+
             <div v-if="request.message">
                 <p class="mb-1 text-sm text-gray-500">Requestor Note</p>
                 <span class="text-gray">{{ request.message }}</span>

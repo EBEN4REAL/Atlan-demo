@@ -18,16 +18,18 @@
                 </div>
                 <span class="mb-1 text-sm font-bold">{{ item.name }}</span>
                 <!-- TODO: Change this to a link to the specified glossary -->
-                <span class="mb-4 text-xs text-gray-500">{{
-                    item.anchor.displayText
-                }}</span>
+                <span
+                    v-if="item.anchor?.displayText"
+                    class="mb-4 text-xs text-gray-500"
+                    >{{ item.anchor.displayText }}</span
+                >
 
-                <div v-if="item?.shortDescription">
+                <template v-if="item?.shortDescription">
                     <span class="mb-1 text-xs text-gray-500">Description</span>
                     <span class="mb-4 text-sm">{{
                         item.shortDescription
                     }}</span>
-                </div>
+                </template>
 
                 <div v-if="item?.categories?.length">
                     <span class="mb-1 text-xs text-gray-500">Categories</span>

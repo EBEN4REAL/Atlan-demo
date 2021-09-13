@@ -41,6 +41,7 @@ export interface RequestAttributes {
     source_guid: string
     source_qf_name: string
     source_attribute: string
+    sourceEntity: assetInterface
     destination_guid: string
     destination_qf_name: string
     destination_attribute: string

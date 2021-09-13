@@ -214,8 +214,6 @@
 
     import useLinkAssets from '~/components/glossary/composables/useLinkAssets'
 
-    import entities from './tempEntityList'
-
     export interface filterMapType {
         assetCategory: {
             checked?: Array<string>
@@ -749,7 +747,6 @@
                 dynamicSearchPlaceholder,
                 setPlaceholder,
                 placeholderLabel,
-                entities,
                 showCheckBox,
                 handleLinkAssets,
                 handleCancelLinkAssets,

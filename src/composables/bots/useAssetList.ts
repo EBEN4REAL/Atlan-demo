@@ -42,6 +42,7 @@ export default function useAssetList(
         excludeDeletedEntities: true,
         aggregationAttributes: ['__typeName.keyword'],
         typeName,
+        termName: body.value.termName,
     }
     const {
         assetTypeList,
@@ -82,6 +83,7 @@ export default function useAssetList(
                 excludeDeletedEntities: body.value.excludeDeletedEntities,
                 aggregationAttributes: ['__typeName.keyword'],
                 typeName,
+                termName: body.value.termName,
                 entityFilters: {
                     condition: body.value.entityFilters?.condition,
                     criterion: newCriterion,

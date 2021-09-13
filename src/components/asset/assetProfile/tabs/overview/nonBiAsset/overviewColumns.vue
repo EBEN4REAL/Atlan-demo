@@ -98,12 +98,11 @@
         provide,
         nextTick,
     } from 'vue'
-    import { useRoute, useRouter } from 'vue-router'
+    import { useRoute } from 'vue-router'
 
     // Components
     import SearchAndFilter from '@/common/input/searchAndFilter.vue'
     import preferences from './preferences.vue'
-    import PreviewSidebar from '~/components/asset/assetProfile/tabs/overview/sidebar/index.vue'
     import Tooltip from '@/common/ellipsis/index.vue'
     import AssetPreview from '@/discovery/preview/assetPreview.vue'
 
@@ -119,7 +118,6 @@
         components: {
             preferences,
             SearchAndFilter,
-            PreviewSidebar,
             Tooltip,
             AssetPreview,
         },

@@ -4,99 +4,14 @@
     </div>
     <div v-else class="flex flex-row h-full" :class="$style.tabClasses">
         <div class="w-2/3 h-full">
-            <div class="flex items-center justify-between mx-4 mt-3">
-                <div class="flex items-center mr-5">
-                    <a-button
-                        class="flex items-center p-0 m-0 border-0 shadow-none outline-none "
-                        @click="redirectToProfile"
-                    >
-                        <AtlanIcon
-                            class="w-auto h-5 mr-3"
-                            icon="ArrowRight"
-                            style="transform: scaleX(-1)"
-                        />
-                    </a-button>
+            <ProfileHeader
+                :title="title"
+                :entity="category"
+                :statusMessage="statusMessage"
+                :statusObject="statusObject"
+                :shortDescription="shortDescription"
+            />
 
-                    <AtlanIcon icon="Glossary" class="h-5 m-0 mr-2" />
-                    <span class="mr-1 text-sm">
-                        {{
-                            category?.attributes?.anchor?.uniqueAttributes
-                                ?.qualifiedName
-                        }}
-                        /</span
-                    >
-                    <AtlanIcon icon="Category" class="h-5 m-0 mb-1 mr-2" />
-                    <span class="mr-3 text-sm">{{ title }}</span>
-                </div>
-                <div class="flex flex-row">
-                    <a-button
-                        class="flex items-center px-2 border-0 shadow-none outline-none "
-                        ><atlan-icon
-                            icon="BookmarkOutlined"
-                            class="w-auto h-4"
-                        />
-                        <span class="ml-2 text-sm">Bookmark</span>
-                    </a-button>
-
-                    <a-button
-                        class="flex items-center border-0 shadow-none outline-none "
-                        ><atlan-icon icon="Share" class="w-auto h-4 mr-2" />
-                        <span class="text-sm">Share</span>
-                    </a-button>
-
-                    <ThreeDotMenu :entity="category" :showLinks="false" />
-                </div>
-            </div>
-
-            <div class="flex flex-row justify-between pl-5 pr-4 my-5">
-                <div class="flex flex-row">
-                    <div class="flex flex-col justify-center w-full">
-                        <div class="flex">
-                            <span class="mr-3 text-xl font-bold leading-6">{{
-                                title
-                            }}</span>
-
-                            <a-popover
-                                v-if="statusMessage"
-                                trigger="hover"
-                                placement="rightTop"
-                            >
-                                <template #content>
-                                    <p>{{ statusMessage }}</p>
-                                </template>
-                                <component
-                                    :is="statusObject?.icon"
-                                    v-if="statusObject"
-                                    class="inline-flex self-center w-auto h-4 mb-1 "
-                                />
-                            </a-popover>
-                            <div v-else>
-                                <component
-                                    :is="statusObject?.icon"
-                                    v-if="statusObject"
-                                    class="inline-flex self-center w-auto h-4 mb-1 "
-                                />
-                            </div>
-                        </div>
-                        <div class="flex items-center mt-1">
-                            <span
-                                class="mr-4 text-sm leading-5 text-gray-500"
-                                >{{
-                                    assetTypeLabel[
-                                        category.typeName
-                                    ].toUpperCase()
-                                }}</span
-                            >
-
-                            <span
-                                class="text-sm leading-5 text-gray-500"
-                                v-if="shortDescription !== ''"
-                                >{{ shortDescription }}</span
-                            >
-                        </div>
-                    </div>
-                </div>
-            </div>
             <div class="m-0">
                 <a-tabs
                     v-model:activeKey="currentTab"
@@ -107,7 +22,13 @@
                         <div class="px-8 mt-4">
                             <div v-if="isNewCategory" class="mb-4">
                                 <p
-                                    class="p-0 mb-1 text-sm leading-5 text-gray-700 "
+                                    class="
+                                        p-0
+                                        mb-1
+                                        text-sm
+                                        leading-5
+                                        text-gray-700
+                                    "
                                 >
                                     Name
                                 </p>
@@ -171,11 +92,12 @@
     import SidePanel from '@/glossary/sidePanel/index.vue'
     import CategoryTermPreview from '@/glossary/common/categoryTermPreview/categoryTermPreview.vue'
     import GlossaryTermsAndCategoriesTab from '@/glossary/glossaryTermsAndCategoriesTab.vue'
+    import ProfileHeader from '@/glossary/common/profileHeader.vue'
 
     // composables
-    import useGTCEntity from '~/composables/glossary/useGtcEntity'
-    import useCategoryTerms from '~/composables/glossary/useCategoryTerms'
-    import useUpdateGtcEntity from '~/composables/glossary/useUpdateGtcEntity'
+    import useGTCEntity from '~/components/glossary/composables/useGtcEntity'
+    import useCategoryTerms from '~/components/glossary/composables/useCategoryTerms'
+    import useUpdateGtcEntity from '~/components/glossary/composables/useUpdateGtcEntity'
 
     // static
     import { Category, Term } from '~/types/glossary/glossary.interface'
@@ -189,6 +111,7 @@
             SidePanel,
             CategoryTermPreview,
             ThreeDotMenu,
+            ProfileHeader,
         },
         props: {
             id: {

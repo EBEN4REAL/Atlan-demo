@@ -1,21 +1,21 @@
 <template>
     <div class="">
-        <div v-if="page === 'discovery'" class="px-5 py-2 border-b">
-            <div class="flex items-center justify-between">
+        <div v-if="page === 'discovery'" class="px-5 py-3 border-b">
+            <div class="flex items-center justify-between mb-0">
                 <div class="flex w-full">
                     <Tooltip
-                    :tooltip-text="title(selectedAsset)"
-                    classes="mb-0 text-gray-700 font-semibold"
-                />
+                        :tooltip-text="title(selectedAsset)"
+                        classes="mb-0 text-gray-700 font-semibold text-lg"
+                    />
 
-                <div class="flex items-center">
-                    <StatusBadge
-                        :key="selectedAsset.guid"
-                        :show-no-status="false"
-                        :status-id="selectedAsset?.attributes?.assetStatus"
-                        class="ml-1.5"
-                    ></StatusBadge>
-                </div>
+                    <div class="flex items-center">
+                        <StatusBadge
+                            :key="selectedAsset.guid"
+                            :show-no-status="false"
+                            :status-id="selectedAsset?.attributes?.assetStatus"
+                            class="ml-1.5"
+                        ></StatusBadge>
+                    </div>
                 </div>
                 <div v-if="showCrossIcon" class="flex items-center mx-2">
                     <a-button
@@ -26,17 +26,17 @@
                     </a-button>
                 </div>
             </div>
-            
+
             <div class="flex items-center justify-between text-sm">
                 <!-- <component
                     :is="selectedAsset.typeName"
                     class="w-auto h-8"
                 ></component> -->
-                <AssetLogo :asset="selectedAsset" variant="lg" />
+                <AssetLogo :asset="selectedAsset" variant="md" />
 
                 <div class="flex space-x-2">
                     <a-button class="flex items-center" size="small">
-                        <AtlanIcon icon="BookmarkOutlined" />
+                        <AtlanIcon icon="Bookmark" />
                     </a-button>
 
                     <a-button
@@ -60,7 +60,10 @@
                 class="px-4 overflow-y-auto"
             >
                 <template #tab>
-                    <AtlanIcon :icon="tab.icon" :class="activeKey===index?'text-primary':''" />
+                    <AtlanIcon
+                        :icon="tab.icon"
+                        :class="activeKey === index ? 'text-primary' : ''"
+                    />
                 </template>
 
                 <div :style="{ height: tabHeights[page] }">
@@ -217,7 +220,6 @@
 
         :global(.ant-tabs-bar) {
             margin-bottom: 0px;
-            @apply bg-gray-100;
         }
         :global(.ant-tabs-content) {
             @apply px-0 !important;

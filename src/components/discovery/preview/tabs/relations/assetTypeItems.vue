@@ -14,7 +14,7 @@
                 v-if="item.typeName !== 'Column'"
                 :item="item"
                 :projection="projections"
-                class="w-full p-0 m-0 border-b cursor-pointer"
+                class="p-0 m-0 border-b cursor-pointer"
                 :css-classes="cssClasses"
                 :show-asset-type-icon="false"
                 :is-selected="item.guid === selectedAssetId"
@@ -25,18 +25,39 @@
             </div>
         </template>
     </VirtualList>
+    <teleport to="#overAssetPreviewSidebar">
+        <a-drawer
+            v-model:visible="showAssetSidebar"
+            placement="right"
+            :mask="false"
+            :get-container="false"
+            :wrap-style="{ position: 'absolute' }"
+            :keyboard="false"
+            :destroy-on-close="true"
+            :closable="false"
+        >
+            <PreviewSidebar
+                :selected-asset="selectedAssetData"
+                page="BiOverview"
+                @closeSidebar="handleCloseSidebar"
+                @asset-mutation="propagateToAssetList"
+            />
+        </a-drawer>
+    </teleport>
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref, watch } from 'vue'
+    import { defineComponent, ref, watch, toRefs } from 'vue'
     import ListItem from '~/components/discovery/list/listItem.vue'
     import ColumnListItem from '~/components/discovery/preview/tabs/columns/columnListItem.vue'
     import useAssetInfo from '~/composables/asset/useAssetInfo'
     import useBiRelations from '~/composables/asset/useBiRelations'
     import VirtualList from '~/utils/library/virtualList/virtualList.vue'
+    import PreviewSidebar from '~/components/asset/assetProfile/tabs/overview/sidebar/index.vue'
+    import { assetInterface } from '~/types/assets/asset.interface'
 
     export default defineComponent({
-        components: { ListItem, VirtualList, ColumnListItem },
+        components: { ListItem, VirtualList, ColumnListItem, PreviewSidebar },
         props: {
             assetType: {
                 type: String,
@@ -57,15 +78,40 @@
                 required: false,
                 default: () => {},
             },
+            page: {
+                type: String,
+                required: false,
+                default: () => '',
+            },
         },
         emits: ['preview'],
         setup(props, context) {
+            const { page } = toRefs(props)
+
             const selectedAssetId = ref('')
             const { dataTypeImage } = useAssetInfo()
+
+            const showAssetSidebar = ref(false)
+            const selectedAssetData = ref({})
+
+            const handleCloseSidebar = () => {
+                showAssetSidebar.value = false
+                selectedAssetData.value = {}
+                selectedAssetId.value = ''
+            }
+
             function handlePreview(item: any) {
                 selectedAssetId.value = item.guid
                 // ctx.emit('preview', item)
                 context.emit('preview', item)
+                if (page.value === 'BiOverview') {
+                    selectedAssetData.value = item
+                    showAssetSidebar.value = true
+                }
+            }
+
+            const propagateToAssetList = (updatedAsset: assetInterface) => {
+                selectedAssetData.value = updatedAsset
             }
 
             // gets the list of related assets for the ListItem component
@@ -90,6 +136,10 @@
                 handlePreview,
                 dataTypeImage,
                 selectedAssetId,
+                handleCloseSidebar,
+                selectedAssetData,
+                showAssetSidebar,
+                propagateToAssetList,
             }
         },
     })

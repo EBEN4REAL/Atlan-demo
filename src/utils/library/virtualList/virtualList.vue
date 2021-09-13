@@ -232,6 +232,6 @@
         overflow: hidden;
     }
     .footer {
-        @apply py-6;
+        @apply py-3;
     }
 </style>

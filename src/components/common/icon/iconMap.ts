@@ -1,4 +1,5 @@
 import BookmarkFilled from '~/assets/images/icons/bookmark-filled.svg'
+import Bookmark from '~/assets/images/icons/bookmark.svg'
 import BookmarkOutlined from '~/assets/images/icons/bookmark-outline.svg'
 import CopyOutlined from '~/assets/images/icons/copy.svg'
 import ChevronDown from '~/assets/images/icons/chevron-down.svg'
@@ -54,6 +55,7 @@ export const iconMap = {
     Columns,
     BookmarkFilled,
     CopyOutlined,
+    Bookmark,
     BookmarkOutlined,
     ChevronDown,
     ChevronUp,

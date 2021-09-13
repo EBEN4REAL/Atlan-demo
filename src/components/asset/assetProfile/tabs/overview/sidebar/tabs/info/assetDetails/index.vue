@@ -4,22 +4,43 @@
             :selected-asset="selectedAsset"
             @update:selected-asset="mutateSelectedAsset"
         />
+        <Owners
+            v-if="page === 'BiOverview'"
+            :selected-asset="selectedAsset"
+            @update:selected-asset="mutateSelectedAsset"
+        />
+
+        <Status
+            v-if="page === 'BiOverview'"
+            :selected-asset="selectedAsset"
+            @update:selected-asset="mutateSelectedAsset"
+        />
     </div>
 </template>
 
 <script lang="ts">
     import { defineComponent, PropType, toRefs, inject } from 'vue'
     import Description from '@common/sidebar/description.vue'
+    import Owners from '@common/sidebar/owners.vue'
+    import Experts from '@common/sidebar/experts.vue'
+    import Status from '@common/sidebar/status.vue'
     import { assetInterface } from '~/types/assets/asset.interface'
 
     export default defineComponent({
-        name: 'ColumnDetails',
+        name: 'AssetDetails',
         components: {
+            Experts,
             Description,
+            Status,
+            Owners,
         },
         props: {
             selectedAsset: {
                 type: Object as PropType<assetInterface>,
+                required: true,
+            },
+            page: {
+                type: String,
                 required: true,
             },
         },

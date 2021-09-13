@@ -2,7 +2,7 @@
     <div class="flex flex-col py-1 rounded preference-container">
         <div class="">
             <div class="flex items-center justify-between text-gray">
-                <span class="mr-6">Order By</span>
+                <span class="mr-6 text-gray-500">Order By</span>
                 <a-select
                     v-model:value="sorting"
                     @change="handeChangeSorting"
@@ -36,8 +36,8 @@
                 </a-radio-group>
             </div> -->
         </div>
-        <div class="pt-4 pb-4">
-            <p class="mb-3 font-bold text-gray-500">DISPLAY PROPERTIES</p>
+        <div class="pt-3">
+            <p class="mb-1 text-gray-500">Display Properties</p>
             <div class="flex flex-wrap">
                 <template v-for="item in properties" :key="item.id">
                     <div
@@ -54,7 +54,8 @@
                 </template>
             </div>
         </div>
-        <div class="pt-4 border-t">
+        <div class="pt-3">
+            <p class="mb-1 text-gray-500">State</p>
             <div class="">
                 <CustomRadioButton
                     class=""
@@ -183,20 +184,12 @@
                     label: 'Description',
                 },
                 {
-                    id: 'owners',
-                    label: 'Owners',
-                },
-                {
                     id: 'terms',
                     label: 'Business Terms',
                 },
                 {
                     id: 'classifications',
                     label: 'Classifications',
-                },
-                {
-                    id: 'rows',
-                    label: 'Rows & Cols',
                 },
                 {
                     id: 'hierarchy',
@@ -214,16 +207,16 @@
 
             const radioButtonData = [
                 {
-                    id: 'all',
-                    label: 'All',
-                },
-                {
                     id: 'active',
                     label: 'Active',
                 },
                 {
-                    id: 'deleted',
-                    label: 'Deleted',
+                    id: 'archived',
+                    label: 'Archived',
+                },
+                {
+                    id: 'all',
+                    label: 'All',
                 },
             ]
 

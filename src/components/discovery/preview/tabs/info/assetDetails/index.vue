@@ -2,16 +2,16 @@
     <div class="w-full px-5">
         <div
             v-if="isSelectedAssetHaveRowsAndColumns(selectedAsset)"
-            class="flex items-center w-full gap-16 mb-4"
+            class="flex items-center w-full gap-16 mb-3"
         >
             <RowInfoHoverCard :row-count="rows">
                 <div class="flex flex-col text-sm cursor-pointer">
-                    <span class="mb-2 text-sm text-gray-500">Rows</span>
+                    <span class="mb-1 text-xs text-gray-500">Rows</span>
                     <span class="text-gray-700">{{ rows }}</span>
                 </div>
             </RowInfoHoverCard>
             <div class="flex flex-col text-sm">
-                <span class="mb-2 text-sm text-gray-500">Cols</span>
+                <span class="mb-1 text-xs text-gray-500">Columns</span>
                 <span class="text-gray-700">{{ cols }}</span>
             </div>
         </div>

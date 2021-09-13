@@ -19,7 +19,7 @@
                         class="flex items-center w-full"
                     >
                         <div class="flex items-center">
-                            <a-tooltip>
+                            <a-tooltip placement="right">
                                 <span class="mb-0 ml-1 text-gray">
                                     {{ item.label }}
                                 </span>

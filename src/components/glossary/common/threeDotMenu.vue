@@ -130,7 +130,15 @@
                     <a-menu-divider />
                     <a-menu-item key="archive" class="text-red-700">
                         <a-button
-                            class="w-full p-0 m-0 bg-transparent border-0 shadow-none outline-none "
+                            class="
+                                w-full
+                                p-0
+                                m-0
+                                bg-transparent
+                                border-0
+                                shadow-none
+                                outline-none
+                            "
                             @click="showModal"
                         >
                             <div class="flex items-center text-red-700">
@@ -188,8 +196,8 @@
     import Status from '@/glossary/common/status.vue'
     import StatusBadge from '@common/badge/status/index.vue'
     import { copyToClipboard } from '~/utils/clipboard'
-    import useDeleteGlossary from '~/composables/glossary/useDeleteGlossary'
-    import useCreateGlossary from '~/composables/glossary/useCreateGlossary'
+    import useDeleteGlossary from '~/components/glossary/composables/useDeleteGlossary'
+    import useCreateGlossary from '~/components/glossary/composables/useCreateGlossary'
     import {
         Glossary,
         Category,

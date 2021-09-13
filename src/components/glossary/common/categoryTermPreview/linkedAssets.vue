@@ -85,7 +85,7 @@
     import EmptyView from '@common/empty/discover.vue'
     import AssetDiscovery from '~/components/discovery/assetDiscovery.vue'
 
-    import useTermLinkedAssets from '~/composables/glossary/useTermLinkedAssets'
+    import useTermLinkedAssets from '~/components/glossary/composables/useTermLinkedAssets'
     import { getDecodedOptionsFromString } from '~/utils/helper/routerQuery'
 
     export default defineComponent({

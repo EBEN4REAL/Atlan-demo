@@ -9,96 +9,13 @@
                 currentTab === '1' || currentTab === '2' ? 'w-2/3' : 'w-full'
             "
         >
-            <div class="flex items-center justify-between mx-4 mt-3">
-                <div class="flex items-center mr-5">
-                    <a-button
-                        class="flex items-center p-0 m-0 border-0 shadow-none outline-none "
-                        @click="redirectToProfile"
-                    >
-                        <AtlanIcon
-                            class="w-auto h-5 mr-3"
-                            icon="ArrowRight"
-                            style="transform: scaleX(-1)"
-                        />
-                    </a-button>
-                    <AtlanIcon icon="Glossary" class="h-5 m-0 mr-2" />
-                    <span class="mr-1 text-sm">
-                        {{
-                            term?.attributes?.anchor?.uniqueAttributes
-                                ?.qualifiedName
-                        }}
-                        /</span
-                    >
-                    <AtlanIcon icon="Term" class="h-5 m-0 mr-2" />
-                    <span class="mr-3 text-sm">{{ title }}</span>
-                </div>
-
-                <div class="flex flex-row">
-                    <a-button
-                        class="flex items-center px-2 border-0 shadow-none outline-none "
-                        ><atlan-icon
-                            icon="BookmarkOutlined"
-                            class="w-auto h-4"
-                        />
-                        <span class="ml-2 text-sm">Bookmark</span>
-                    </a-button>
-
-                    <a-button
-                        class="flex items-center border-0 shadow-none outline-none "
-                        ><atlan-icon icon="Share" class="w-auto h-4 mr-2" />
-                        <span class="text-sm">Share</span>
-                    </a-button>
-
-                    <ThreeDotMenu :entity="term" :showLinks="false" />
-                </div>
-            </div>
-
-            <div class="flex flex-row justify-between pl-5 pr-5 mt-5 mb-5">
-                <div class="flex flex-row w-full">
-                    <div class="flex flex-col justify-center w-full">
-                        <div class="flex">
-                            <span class="mr-3 text-xl font-bold leading-6">{{
-                                title
-                            }}</span>
-                            <a-popover
-                                v-if="statusMessage"
-                                trigger="hover"
-                                placement="rightTop"
-                            >
-                                <template #content>
-                                    <p>{{ statusMessage }}</p>
-                                </template>
-                                <component
-                                    :is="statusObject?.icon"
-                                    v-if="statusObject"
-                                    class="inline-flex self-center w-auto h-4 mb-1 "
-                                />
-                            </a-popover>
-                            <div v-else>
-                                <component
-                                    :is="statusObject?.icon"
-                                    v-if="statusObject"
-                                    class="inline-flex self-center w-auto h-4 mb-1 "
-                                />
-                            </div>
-                        </div>
-                        <div class="flex items-center mt-1">
-                            <span
-                                class="mr-4 text-sm leading-5 text-gray-500"
-                                >{{
-                                    assetTypeLabel[term.typeName].toUpperCase()
-                                }}</span
-                            >
-
-                            <span
-                                class="text-sm leading-5 text-gray-500"
-                                v-if="shortDescription !== ''"
-                                >{{ shortDescription }}</span
-                            >
-                        </div>
-                    </div>
-                </div>
-            </div>
+            <ProfileHeader
+                :title="title"
+                :entity="term"
+                :statusMessage="statusMessage"
+                :statusObject="statusObject"
+                :shortDescription="shortDescription"
+            />
             <div class="m-0">
                 <a-tabs
                     v-model:activeKey="currentTab"
@@ -109,7 +26,13 @@
                         <div class="px-5 mt-4">
                             <div v-if="isNewTerm" class="mb-4">
                                 <p
-                                    class="p-0 mb-1 text-sm leading-5 text-gray-700 "
+                                    class="
+                                        p-0
+                                        mb-1
+                                        text-sm
+                                        leading-5
+                                        text-gray-700
+                                    "
                                 >
                                     Name
                                 </p>
@@ -155,30 +78,22 @@
                 @updateAsset="refetch"
             />
         </div>
-        <!-- <div v-if="currentTab === '2' && previewEntity" class="border-l" :class="$style.tabClasses">
-            <AssetPreview
-                page="discovery"
-                :selected-asset="previewEntity"
-            ></AssetPreview>
-        </div> -->
     </div>
 </template>
 
 <script lang="ts">
     import { defineComponent, computed, toRef, ref, provide, watch } from 'vue'
 
-    import ThreeDotMenu from '@/glossary/common/threeDotMenu.vue'
     import GlossaryProfileOverview from '@/glossary/common/glossaryProfileOverview.vue'
-    import TopAssets from '@/glossary/termProfile/topAssets.vue'
     import LinkedAssetsTab from '@/glossary/termProfile/linkedAssetsTab.vue'
     import EntityHistory from '@/glossary/common/entityHistory.vue'
-    import LoadingView from '@common/loaders/page.vue'
     import RelatedTerms from '@/glossary/termProfile/relatedTerms.vue'
     import CategoryTermPreview from '@/glossary/common/categoryTermPreview/categoryTermPreview.vue'
     import AssetPreview from '~/components/discovery/preview/assetPreview.vue'
+    import ProfileHeader from '@/glossary/common/profileHeader.vue'
 
-    import useGTCEntity from '~/composables/glossary/useGtcEntity'
-    import useUpdateGtcEntity from '~/composables/glossary/useUpdateGtcEntity'
+    import useGTCEntity from '~/components/glossary/composables/useGtcEntity'
+    import useUpdateGtcEntity from '~/components/glossary/composables/useUpdateGtcEntity'
 
     import { Term } from '~/types/glossary/glossary.interface'
 
@@ -188,14 +103,9 @@
     export default defineComponent({
         components: {
             GlossaryProfileOverview,
-            TopAssets,
-            RelatedTerms,
             LinkedAssetsTab,
-            EntityHistory,
-            LoadingView,
             CategoryTermPreview,
-            AssetPreview,
-            ThreeDotMenu,
+            ProfileHeader,
         },
         props: {
             id: {

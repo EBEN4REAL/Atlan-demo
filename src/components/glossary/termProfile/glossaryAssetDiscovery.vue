@@ -322,7 +322,11 @@
             )
             const checkedAssetList = ref<
                 Components.Schemas.AtlasEntityHeader[]
-            >([])
+            >([]);
+            const uncheckedAssetList = ref<
+                Components.Schemas.AtlasEntityHeader[]
+            >([]);
+
             const filters = ref(initialFilters.value.initialBodyCriterion)
             const filterMap = ref<filterMapType>({
                 assetCategory: {
@@ -655,16 +659,25 @@
 
             const handleLinkAssets = () => {
                 showCheckBox.value = !showCheckBox.value
+                isAggregate.value = true
 
                 updateBody()
             }
             const handleCancelLinkAssets = () => {
                 showCheckBox.value = false
                 checkedAssetList.value = []
+                uncheckedAssetList.value = []
+                isAggregate.value = true
+
                 updateBody()
             }
             const handleConfirmLinkAssets = () => {
-                const { assignLinkedAssets } = useLinkAssets()
+                const { assignLinkedAssets, unLinkAssets } = useLinkAssets()
+                
+                const { response: unlinkResponse } = unLinkAssets(
+                    termGuid.value,
+                    uncheckedAssetList.value
+                )
 
                 const { response } = assignLinkedAssets(
                     termGuid.value,
@@ -688,10 +701,20 @@
                     ) {
                         checkedAssetList.value.push(item)
                     }
+                    uncheckedAssetList.value = uncheckedAssetList.value.filter(
+                        (asset) => asset.guid !== item.guid
+                    )
                 } else {
                     checkedAssetList.value = checkedAssetList.value.filter(
                         (asset) => asset.guid !== item.guid
                     )
+                    if (
+                        !uncheckedAssetList.value.find(
+                            (asset) => asset.guid === item.guid
+                        )
+                    ) {
+                        uncheckedAssetList.value.push(item)
+                    }
                 }
             }
 
@@ -707,6 +730,7 @@
             watch(list, (newList) => {
                 if (!showCheckBox.value) {
                     checkedAssetList.value = [...newList]
+                    uncheckedAssetList.value = []
                 }
             })
 
@@ -753,6 +777,7 @@
                 handleConfirmLinkAssets,
                 modifyLinkList,
                 checkedAssetList,
+                uncheckedAssetList,
                 termQualifiedName,
             }
         },

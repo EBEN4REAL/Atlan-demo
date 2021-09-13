@@ -61,6 +61,7 @@
     import { Components } from '~/api/atlas/client'
 
     export default defineComponent({
+        name: 'ConnectionKey',
         components: {
             Loader,
             ErrorView,
@@ -143,13 +144,12 @@
             handleBack() {
                 this.$router.push('/connections')
             },
-            handlePreview(selectedItem: any) {},
+            handlePreview(_selectedItem: any) {},
         },
     })
 </script>
 
-<style lang="less" module>
-</style>
+<style lang="less" module></style>
 
 <route lang="yaml">
 meta:

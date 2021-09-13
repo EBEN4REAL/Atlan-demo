@@ -307,6 +307,7 @@
     import useCredentialTestbyID from '~/composables/bots/useCredentialTestByID'
 
     export default defineComponent({
+        name: 'CredentialForm',
         components: { RadioButton, DynamicInput },
         props: {
             item: {

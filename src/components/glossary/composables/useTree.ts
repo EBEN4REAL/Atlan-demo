@@ -13,7 +13,7 @@ import store from '~/utils/storage'
 // composables
 import useGTCEntity from '~/components/glossary/composables/useGtcEntity'
 
-const useTree = (emit: any, cacheKey?: string, isAccordion?: boolean) => {
+const useTree = (emit: any, optimisticUpdate?: boolean, cacheKey?: string, isAccordion?: boolean) => {
     const route = useRoute()
     const router = useRouter()
 
@@ -477,6 +477,7 @@ const useTree = (emit: any, cacheKey?: string, isAccordion?: boolean) => {
     const reOrderNodes = (nodeKey: string, fromGuid: string, toGuid: string, updatedCategories: any) => {
         let parentStack: string[] = [fromGuid]
         let nodeToReorder: TreeDataItem;
+
         const recursivelyFindPath = (currentGuid: string) => {
             if (
                 nodeToParentKeyMap[currentGuid] &&
@@ -537,13 +538,10 @@ const useTree = (emit: any, cacheKey?: string, isAccordion?: boolean) => {
         const toParent = parentStack.pop()
 
         treeData.value = treeData.value.map((node: TreeDataItem) => {
-            if (node.key === toParent) return removeNode(node)
-            return node
-        });
-        treeData.value = treeData.value.map((node: TreeDataItem) => {
             if (node.key === toParent) return addNode(node)
             return node
         });
+
         nodeToParentKeyMap[nodeKey] = toGuid;
     }
 
@@ -553,6 +551,10 @@ const useTree = (emit: any, cacheKey?: string, isAccordion?: boolean) => {
         if (node.dataRef.type === 'category') {
             if (dragNode.dataRef.type === 'term') {
                 if (dragNode.dataRef.categories?.length) {
+                    const orignalCategories = dragNode.dataRef.categories;
+                    const fromGuid = dragNode.dataRef.parentCategoryId;
+                    const toGuid = node.dataRef.guid;
+
                     const newCategories = dragNode.dataRef.categories?.filter(
                         (category: any) =>
                             category.categoryGuid !==
@@ -561,20 +563,39 @@ const useTree = (emit: any, cacheKey?: string, isAccordion?: boolean) => {
                     newCategories.push({
                         categoryGuid: node.dataRef.guid,
                     })
-                    const { data } = GlossaryApi.UpdateGlossaryTerm(
-                        dragNode.dataRef.guid,
-                        {
-                            ...dragNode.dataRef,
-                            categories: newCategories,
-                        }
-                    )
-                    watch(data, async (newData) => {
-                        if (newData.guid) {
-                            // await refetchNode(node.dataRef.guid)
-                            // refetchNode(dragNode.dataRef.parentCategoryId)
-                            reOrderNodes(newData.guid, dragNode.dataRef.parentCategoryId, node.dataRef.guid, newData.categories)
-                        }
-                    })
+                    if(optimisticUpdate) {
+
+                        reOrderNodes(dragNode.dataRef.guid, fromGuid, toGuid, newCategories)
+    
+                        const { data, error: dropError } = GlossaryApi.UpdateGlossaryTerm(
+                            dragNode.dataRef.guid,
+                            {
+                                ...dragNode.dataRef,
+                                categories: newCategories,
+                            }
+                        )
+                        watch(dropError, (err) => {
+                            setTimeout(() => {
+                                reOrderNodes(dragNode.dataRef.guid, toGuid, fromGuid, orignalCategories)
+                            }, 1500)
+                        })
+                    } else {
+                        const { data, error: dropError } = GlossaryApi.UpdateGlossaryTerm(
+                            dragNode.dataRef.guid,
+                            {
+                                ...dragNode.dataRef,
+                                categories: newCategories,
+                            }
+                        )
+
+                        watch(data, async (newData) => {
+                            if (newData.guid) {
+                                // await refetchNode(node.dataRef.guid)
+                                // refetchNode(dragNode.dataRef.parentCategoryId)
+                                reOrderNodes(dragNode.dataRef.guid, dragNode.dataRef.parentCategoryId, node.dataRef.guid, newCategories)
+                            }
+                        })
+                    }
                 } else {
                     const newCategories = [
                         {

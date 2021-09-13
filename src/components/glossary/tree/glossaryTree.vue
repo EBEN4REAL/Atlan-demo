@@ -60,7 +60,7 @@
                 "
             ></a-input-search>
         </div>
-        <div v-if="!isLoading" class="h-screen overflow-auto">
+        <div v-if="!isLoading" class="h-screen overflow-auto pb-48">
             <div class="flex justify-between px-4">
                 <div class="flex items-center ml-3">
                     <AtlanIcon icon="Glossary" class="h-5 m-0 mr-2" />
@@ -272,6 +272,7 @@
     import handleTreeExpand from '~/composables/tree/handleTreeExpand'
     import useCreateGlossary from '~/components/glossary/composables/useCreateGlossary'
     import useDeleteGlossary from '~/components/glossary/composables/useDeleteGlossary'
+    import useGtcSearch from '~/components/glossary/composables/useGtcSearch'
 
     // constant
     import GlossarySvg from '~/assets/images/gtc/glossary/glossary.png'

@@ -547,7 +547,6 @@ const useTree = (emit: any, optimisticUpdate?: boolean, cacheKey?: string, isAcc
 
     const dragAndDropNode = async ({ dragNode, node }) => {
         const { data: updatedEntity, updateEntity } = useUpdateGtcEntity()
-
         if (node.dataRef.type === 'category') {
             if (dragNode.dataRef.type === 'term') {
                 if (dragNode.dataRef.categories?.length) {
@@ -641,7 +640,6 @@ const useTree = (emit: any, optimisticUpdate?: boolean, cacheKey?: string, isAcc
     })
 
     watch(fetchedEntity, (newEntity) => {
-        console.log('new Entity', newEntity)
         if (newEntity?.typeName === 'AtlasGlossary') {
             if (parentGlossary.value?.guid !== newEntity.guid) {
                 parentGlossary.value = newEntity

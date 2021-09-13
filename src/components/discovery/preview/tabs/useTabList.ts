@@ -43,7 +43,7 @@ export default function useAssetDetailsTabList(
         {
             name: 'Activity',
             component: 'activity',
-            visibleOn: ['discovery', 'profile', 'biOverview'],
+            visibleOn: ['discovery', 'profile', 'biOverview', 'nonBiOverview'],
             icon: 'Activity',
         },
         {

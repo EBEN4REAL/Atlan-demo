@@ -1,5 +1,5 @@
 <template>
-    <div class="">
+    <div>
         <div v-if="page !== 'profile'" class="px-5 py-3 border-b">
             <div class="flex items-center justify-between mb-0">
                 <div class="flex items-center w-full">
@@ -10,7 +10,7 @@
                             ]
                         "
                         v-if="page === 'nonBiOverview'"
-                        class="w-4 h-4 mr-1.5 mb-0.5"
+                        class="w-4 h-4 mr-1.5"
                     ></component>
                     <Tooltip
                         :tooltip-text="selectedAsset?.attributes?.name"
@@ -26,7 +26,7 @@
                         ></StatusBadge>
                     </div>
                 </div>
-                <div v-if="showCrossIcon" class="flex items-center mx-2">
+                <div v-if="showCrossIcon" class="flex items-center ml-2">
                     <a-button
                         class="px-1 border-0 outline-none"
                         @click="$emit('closeSidebar')"
@@ -45,7 +45,7 @@
                     {{ getDataType(selectedAsset?.attributes?.dataType) }}
                 </div>
                 <AssetLogo
-                    v-if="page === 'discovery'"
+                    v-if="page === 'discovery' || page === 'biOverview'"
                     :asset="selectedAsset"
                     variant="md"
                 />
@@ -171,8 +171,10 @@
             const infoTabData: Ref<any> = ref({})
 
             const tabHeights = {
-                discovery: 'calc(100vh - 7.3rem)',
-                profile: 'calc(100.4vh - 0rem)',
+                discovery: 'calc(100vh - 7.8rem)',
+                profile: 'calc(100vh - 3rem)',
+                biOverview: 'calc(100vh - 8.06rem)',
+                nonBiOverview: 'calc(100vh - 8.3rem)',
             }
 
             function getAssetEntitity(data: Ref): any {
@@ -201,7 +203,6 @@
             function init() {
                 isLoaded.value = false
                 infoTabData.value = selectedAsset.value
-                console.log(infoTabData.value, 'info tab Data')
             }
             watch(() => selectedAsset.value.guid, init)
             onMounted(init)

@@ -84,8 +84,10 @@
                         resultTitle: `${key} Result`,
                     },
                     assetSidebar: {
-                        isVisible: true,
+                        isVisible: false,
                         assetInfo: {},
+                        title: '',
+                        id: '',
                     },
                 })
                 emit('update:activeInlineTabKey', key)

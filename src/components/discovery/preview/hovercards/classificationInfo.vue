@@ -8,7 +8,7 @@
             >
         </div>
         <span class="mb-4 text-sm font-bold">{{
-            classification.typeName
+            classification.displayName || classification.typeName
         }}</span>
 
         <span class="mb-1 text-xs text-gray-500">Description</span>

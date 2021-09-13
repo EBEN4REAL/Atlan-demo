@@ -30,6 +30,11 @@
                 :data="request.payload.classificationDefs"
             />
 
+            <ClassificationPiece
+                v-if="request?.re === 'attach_classification'"
+                :typeName="request.payload.typeName"
+            />
+
             <AssetPiece
                 v-if="request.source_qf_name"
                 :asset-qf-name="request.source_qf_name"

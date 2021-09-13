@@ -31,9 +31,10 @@ export interface RequestAttributes {
     id: string
     version: string
     is_active: boolean
-    created_at: Date
-    updated_at: Date
+    created_at: string
+    updated_at: string
     created_by: Record<string, any>
+    createdByUser: Record<string, any>
     updated_by: string
     tenant_id: string
     source_type: 'static' | 'atlas'

@@ -29,6 +29,16 @@
                 :value="request.destination_value"
                 v-if="request.re === 'attribute'"
             />
+
+            <ClassificationDetails
+                :typeName="request.payload.typeName"
+                v-if="request.re === 'attach_classification'"
+            />
+
+            <ClassificationDetails
+                :data="request.payload?.classificationDefs?.[0]"
+                v-if="request.re === 'create_typedef'"
+            />
         </div>
 
         <template #footer>
@@ -68,6 +78,7 @@
     } from '../requestType'
     import RequestActions from '../requestActions.vue'
     import AssetDetails from './assetDetails.vue'
+    import ClassificationDetails from './classificationDetails.vue'
     import AttributeChange from './attributeChange.vue'
     import AtlanButton from '@/UI/button.vue'
 
@@ -81,6 +92,7 @@
             AssetDetails,
             AttributeChange,
             AtlanButton,
+            ClassificationDetails,
         },
         props: {
             request: {
@@ -93,6 +105,7 @@
             const { request } = toRefs(props)
             const requestTitle = computed(() => {
                 let title = `${typeCopyMapping[request.value.re]} `
+                // Attribute change title
                 if (['bm_attribute', 'attribute'].includes(request.value.re)) {
                     title += AssetTypeList.find(
                         (ast) => ast.id == request.value.entity_type
@@ -105,8 +118,22 @@
                     }`
                 }
 
+                // Linking stuff to asset
+                if (
+                    ['term_link', 'attach_classification'].includes(
+                        request.value.re
+                    )
+                ) {
+                    title +=
+                        'to ' +
+                        AssetTypeList.find(
+                            (ast) => ast.id == request.value.entity_type
+                        )?.label
+                }
+
                 return title
             })
+
             return { requestTitle, requestTypeIcon }
         },
     })

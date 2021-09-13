@@ -19,7 +19,7 @@
                 required: false,
             },
             date: {
-                type: Date,
+                type: String,
                 required: true,
             },
         },

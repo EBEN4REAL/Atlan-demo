@@ -1,9 +1,16 @@
-import { Ref, ref, watch, watchEffect, computed } from 'vue'
+import { Ref, ref, watchEffect, computed } from 'vue'
 import { AxiosRequestConfig } from 'axios'
 import useSWRV, { IConfig } from 'swrv'
 
 import { AsyncStateOptions, useAsyncState } from '@vueuse/core'
-import { fetcher, fetcherPost, getAxiosClient, deleter, updater } from '~/api'
+import {
+    fetcher,
+    fetcherPost,
+    getAxiosClient,
+    deleter,
+    updater,
+    APIFn,
+} from '~/api'
 import keyMaps from '~/api/keyMaps/index'
 
 interface useGetAPIParams {
@@ -155,4 +162,139 @@ export const useAPI = <T>(
 
 function isRef(arg: any): arg is Ref {
     return arg && arg.value && typeof arg.value === 'object'
+}
+
+// #####################################################################
+// ##################     New useAPI    ################################
+// #####################################################################
+type HTTPVerb = 'GET' | 'POST' | 'DELETE' | 'PUT'
+
+interface baseAPIParams {
+    params?: Record<string, any> | URLSearchParams
+    body?: Ref<Record<string, any>> | Record<string, any>
+    pathVariables?: Ref<Record<string, any>> | Record<string, any>
+    options?: Ref<AxiosRequestConfig> | AxiosRequestConfig
+}
+
+interface SWRVAPIParams extends baseAPIParams {
+    immediate?: boolean
+    options?: Ref<IConfig & AxiosRequestConfig> | (IConfig & AxiosRequestConfig)
+}
+
+interface AsyncStateAPIParams<T> extends baseAPIParams {
+    initialState?: T
+}
+
+export function resolveUrl(
+    path: APIFn,
+    pathVariables?: Ref<Record<string, any>> | Record<string, any>
+) {
+    return path({
+        ...(isRef(pathVariables) ? pathVariables.value : pathVariables),
+    })
+}
+
+export function useAPIPromise(
+    url: string,
+    method: HTTPVerb,
+    { params, body, options }: useGetAPIParams
+) {
+    switch (method) {
+        case 'GET':
+            return fetcher(
+                url,
+                params,
+                isRef(options) ? options.value : options
+            )
+        case 'POST':
+            return fetcherPost(
+                url,
+                isRef(body) ? body.value : body,
+                isRef(options) ? options.value : options
+            )
+        case 'DELETE':
+            return deleter(url, isRef(options) ? options.value : options)
+        case 'PUT':
+            return updater(
+                url,
+                isRef(body) ? body.value : body,
+                isRef(options) ? options.value : options
+            )
+        default:
+            return fetcher(
+                url,
+                params,
+                isRef(options) ? options.value : options
+            )
+    }
+}
+
+export const useAPISWRV = <T>(
+    path: APIFn,
+    method: HTTPVerb,
+    cacheKey: Ref<string> | string,
+    { params, body, pathVariables, options, immediate = true }: SWRVAPIParams
+) => {
+    const url = computed(() => resolveUrl(path, pathVariables))
+
+    const getKey = computed(() =>
+        immediate ? (isRef(cacheKey) ? cacheKey.value : cacheKey) : null
+    )
+
+    const { data, error, mutate, isValidating } = useSWRV<T>(
+        getKey.value,
+        () =>
+            useAPIPromise(url.value, method, {
+                params,
+                body,
+                options,
+            }),
+        isRef(options) ? options.value : options
+    )
+
+    const isLoading = computed(() => !data.value && !error.value)
+    return { data, error, isLoading, mutate, isValidating }
+}
+
+export const useAPIAsyncState = <T>(
+    path: APIFn,
+    method: HTTPVerb,
+    {
+        params,
+        body,
+        pathVariables,
+        options,
+        initialState = <T>{},
+    }: AsyncStateAPIParams<T>,
+    asyncOpts: AsyncStateOptions
+) => {
+    // Variable to check if the promise has been executed atleast once
+    let isExecuted = false
+
+    const url = computed(() => resolveUrl(path, pathVariables))
+
+    const { state, execute, isReady, error } = useAsyncState<T>(
+        () => {
+            isExecuted = true
+            return useAPIPromise(url.value, method, {
+                params,
+                body,
+                options,
+            })
+        },
+        initialState,
+        asyncOpts
+    )
+
+    const isLoading = computed(
+        () => isExecuted && !isReady.value && !error.value
+    )
+
+    return {
+        data: state,
+        mutate: execute,
+        error,
+        isReady,
+        isLoading,
+    }
 }

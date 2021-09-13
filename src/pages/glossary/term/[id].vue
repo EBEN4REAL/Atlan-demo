@@ -85,6 +85,7 @@
     import LinkedAssetsTab from '@/glossary/termProfile/linkedAssetsTab.vue'
     import CategoryTermPreview from '@/glossary/common/categoryTermPreview/categoryTermPreview.vue'
     import ProfileHeader from '@/glossary/common/profileHeader.vue'
+    import LoadingView from '@common/loaders/page.vue'
 
     // composables
     import useGTCEntity from '~/components/glossary/composables/useGtcEntity'
@@ -99,6 +100,7 @@
             LinkedAssetsTab,
             CategoryTermPreview,
             ProfileHeader,
+            LoadingView,
         },
         props: {
             id: {

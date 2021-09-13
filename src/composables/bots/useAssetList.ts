@@ -11,6 +11,7 @@ export default function useAssetList(
     isAggregation?: boolean
 ) {
     const cancelTokenSource = ref(axios.CancelToken.source())
+    console.log('cancelToken ', cancelTokenSource)
     const list: Ref<assetInterface[]> = ref([])
     const {
         data,

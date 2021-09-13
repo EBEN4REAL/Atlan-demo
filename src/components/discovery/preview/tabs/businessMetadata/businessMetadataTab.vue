@@ -1,9 +1,11 @@
 <template>
     <div>
         <a-collapse
+            v-if="applicableBMList(infoTabData.typeName).length"
             v-model:activeKey="activeKey"
             :class="$style.collapse"
-            v-if="applicableBMList(infoTabData.typeName).length"
+            :bordered="false"
+            class="bg-transparent"
         >
             <template #expandIcon="{ isActive }">
                 <div class="">
@@ -99,20 +101,15 @@
     .collapse {
         :global(.ant-collapse-item) {
             @apply border-none;
-            @apply bg-gray-100;
         }
 
         :global(.ant-collapse-header) {
             @apply px-5 !important;
             @apply py-4 !important;
-            @apply bg-gray-100 !important;
         }
 
         :global(.ant-collapse-arrow) {
             left: 90% !important;
-        }
-        :global(.ant-collapse-content) {
-            @apply border-none !important;
         }
 
         :global(.ant-collapse-content-box) {
@@ -120,7 +117,7 @@
             padding-left: 0px;
             padding-top: 0px !important;
             @apply pb-0 !important;
-            @apply bg-gray-100;
+            @apply border-b;
         }
     }
 </style>

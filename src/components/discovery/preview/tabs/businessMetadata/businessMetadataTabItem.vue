@@ -1,17 +1,14 @@
 <template>
     <div class="px-5 py-2">
         <div v-for="(a, x) in applicableList" :key="x">
-            <div
-                class="flex gap-6 gap-y-0 group"
-                :class="a.error ? '' : 'mb-4'"
-            >
-                <div class="w-40 text-gray-700">
+            <div class="gap-6 gap-y-0 group" :class="a.error ? '' : 'mb-4'">
+                <div class="mb-3 text-gray-700">
                     {{ a.options.displayName }}
                 </div>
 
                 <div
                     v-if="readOnly"
-                    class="flex items-center self-start flex-grow w-32 break-all "
+                    class="flex items-center self-start flex-grow break-all"
                 >
                     <a
                         v-if="isLink(a.value, a.options.displayName)"
@@ -29,7 +26,7 @@
                         }}</span
                     >
                 </div>
-                <div v-else class="flex items-center self-start flex-grow w-32">
+                <div v-else class="flex items-center self-start flex-grow">
                     <a-input
                         v-if="getDatatypeOfAttribute(a.typeName) === 'number'"
                         v-model:value="a.value"
@@ -69,9 +66,9 @@
                         v-else-if="
                             getDatatypeOfAttribute(a.typeName) === 'text'
                         "
-                        :auto-size="true"
                         v-model:value="a.value"
-                        :showCount="true"
+                        :auto-size="true"
+                        :show-count="true"
                         :maxlength="parseInt(a.options.maxStrLength) + 100"
                         placeholder="Type..."
                         type="text"
@@ -80,9 +77,9 @@
                     />
                     <div v-else class="flex-grow shadow-none border-1">
                         <a-select
+                            v-model:value="a.value"
                             placeholder="Unassigned"
                             style="width: 100%"
-                            v-model:value="a.value"
                             :show-arrow="true"
                             class=""
                             :options="getEnumOptions(a.typeName)"
@@ -123,7 +120,7 @@
                     </div>
                 </div>
             </div>
-            <div class="pr-3 mb-4 text-warning" v-if="a.error">
+            <div v-if="a.error" class="pr-3 mb-4 text-warning">
                 {{ a.error }}
             </div>
         </div>

@@ -71,7 +71,7 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref, Ref, computed } from 'vue'
+    import { defineComponent, ref, Ref, computed, watch } from 'vue'
     import Playground from '~/components/insights/playground/index.vue'
     import AssetSidebar from '~/components/insights/assetSidebar.vue'
     import Schema from './explorers/schema.vue'
@@ -79,7 +79,10 @@
     import History from './explorers/history.vue'
     import Schedule from './explorers/schedule.vue'
 
+    import { inlineTabsDemoData } from './demoInlineTabData'
     import useInsightsTabList from './useTabList'
+    import { useLocalStorageSync } from './useLocalStorageSync'
+
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
     import { TabInterface } from '~/types/insights/tab.interface'
     import { SavedQueryInterface } from '~/types/insights/savedQuery.interface'
@@ -97,65 +100,19 @@
         props: {},
         setup(props) {
             const { allTabs: tabsList } = useInsightsTabList()
+            const {
+                syncInlineTabsInLocalStorage,
+                getInlineTabsFromLocalStorage,
+                syncActiveInlineTabKeyInLocalStorage,
+                getActiveInlineTabKeyFromLocalStorage,
+            } = useLocalStorageSync()
             const inlineTabRef = ref()
             const activeTabId = ref(tabsList[0].id)
-            const activeInlineTabKey = ref('1')
-            const tabsArray: Ref<activeInlineTabInterface[]> = ref([
-                {
-                    key: '1',
-                    label: 'ABCDE',
-                    isSaved: true,
-                    queryId: 'abcd-01-01',
-                    explorer: {},
-                    playground: {
-                        editorTitle: 'ABCDE EDITOR',
-                        resultTitle: 'ABCDE Result',
-                    },
-                    favico: 'https://atlan.com/favicon.ico',
-                    assetSidebar: {
-                        isVisible: false,
-                        assetInfo: {},
-                        title: '',
-                        id: '',
-                    },
-                },
-                {
-                    key: '2',
-                    label: 'ADBE',
-                    isSaved: false,
-                    queryId: undefined,
-                    explorer: {},
-                    playground: {
-                        editorTitle: 'ADBE EDITOR',
-                        resultTitle: 'ADBE Result',
-                    },
-                    favico: 'https://atlan.com/favicon.ico',
-                    assetSidebar: {
-                        isVisible: false,
-                        assetInfo: {},
-                        title: '',
-                        id: '',
-                    },
-                },
-                {
-                    key: '3',
-                    label: 'BCDE',
-                    isSaved: false,
-                    queryId: undefined,
-                    explorer: {},
-                    playground: {
-                        editorTitle: 'BCDE EDITOR',
-                        resultTitle: 'BCDE Result',
-                    },
-                    favico: 'https://atlan.com/favicon.ico',
-                    assetSidebar: {
-                        isVisible: false,
-                        assetInfo: {},
-                        title: '',
-                        id: '',
-                    },
-                },
-            ])
+            const tabsArray: Ref<activeInlineTabInterface[]> = ref(
+                setInlineTabsArray()
+            )
+            const activeInlineTabKey = ref(setActiveInlineTabKey())
+            // console.log(setActiveInlineTabKey(), 'activeKey')
 
             const activeTab = computed(() =>
                 tabsList.find((tab) => tab.id === activeTabId.value)
@@ -202,6 +159,8 @@
                 if (!isInlineTabAlreadyOpened(newTab)) {
                     inlineTabRef.value.addTab(newTab)
                     activeInlineTabKey.value = newTab.key
+                    // syncying inline tabarray in localstorage
+                    syncInlineTabsInLocalStorage(tabsArray.value)
                 } else {
                     // show user that this tab is already opened
                 }
@@ -216,6 +175,8 @@
                     tabsArray.value[index].assetSidebar.id = ''
                 }
                 console.log(tabsArray, 'tabsArray')
+                // syncying inline tabarray in localstorage
+                syncInlineTabsInLocalStorage(tabsArray.value)
             }
 
             const openAssetSidebar = (table: tableInterface) => {
@@ -226,8 +187,41 @@
                     tabsArray.value[index].assetSidebar.isVisible = true
                     tabsArray.value[index].assetSidebar.title = table.label
                     tabsArray.value[index].assetSidebar.id = table.id
+                    // syncying inline tabarray in localstorage
+                    syncInlineTabsInLocalStorage(tabsArray.value)
                 }
             }
+
+            function setActiveInlineTabKey() {
+                // checking if localstorage already have active tab key
+                const localStorageActiveInlineKey =
+                    getActiveInlineTabKeyFromLocalStorage()
+                console.log(localStorageActiveInlineKey, 'localStorageKey')
+                if (localStorageActiveInlineKey !== undefined) {
+                    const activeTab = tabsArray.value.find(
+                        (tab) => tab.key === localStorageActiveInlineKey
+                    )
+                    if (activeTab) return activeTab.key
+                }
+                if (tabsArray.value.length > 0) return tabsArray.value[0].key
+                return ''
+            }
+            function setInlineTabsArray() {
+                // checking if localstorage already have active tabs
+                const localStorageInlineTabs = getInlineTabsFromLocalStorage()
+                if (localStorageInlineTabs.length > 0) {
+                    console.log(localStorageInlineTabs, 'local')
+                    return localStorageInlineTabs
+                }
+                return inlineTabsDemoData
+            }
+
+            /* Watchers for syncing in localstorage*/
+            watch(activeInlineTabKey, () => {
+                syncActiveInlineTabKeyInLocalStorage(activeInlineTabKey.value)
+                // syncying inline tabarray in localstorage
+                syncInlineTabsInLocalStorage(tabsArray.value)
+            })
             return {
                 inlineTabs,
                 activeTab,

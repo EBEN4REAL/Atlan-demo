@@ -69,7 +69,7 @@
                         v-model:value="a.value"
                         :auto-size="true"
                         :show-count="true"
-                        :maxlength="parseInt(a.options.maxStrLength) + 100"
+                        :maxlength="parseInt(a.options.maxStrLength)"
                         placeholder="Type..."
                         type="text"
                         class="flex-grow shadow-none"

@@ -48,13 +48,12 @@
     import { defineComponent } from 'vue'
 
     import PillGroup from '~/components/UI/pill/pillGroup.vue'
-    import ClassificationInfoCard from '~/components/discovery/preview/hovercards/classificationInfo.vue'
 
     export default defineComponent({
         props: {
             data: { type: Object, required: true, default: () => {} },
         },
-        components: { PillGroup, ClassificationInfoCard },
+        components: { PillGroup },
         setup(props) {},
     })
 </script>

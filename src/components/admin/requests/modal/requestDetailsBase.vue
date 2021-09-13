@@ -16,7 +16,7 @@
             </div>
         </template>
 
-        <div class="flex flex-col gap-y-6">
+        <div class="flex flex-col h-64 overflow-y-auto gap-y-6 max-h-64">
             <!-- TOP SECTION -->
             <AssetDetails
                 v-if="request.destinationEntity"
@@ -39,6 +39,22 @@
                 :data="request.payload?.classificationDefs?.[0]"
                 v-if="request.re === 'create_typedef'"
             />
+
+            <TermDetails
+                v-if="request.re === 'create_term'"
+                :data="request.payload"
+            />
+
+            <div v-if="request.message">
+                <p class="mb-1 text-sm text-gray-500">Requestor Note</p>
+                <span class="text-gray">{{ request.message }}</span>
+            </div>
+
+            <p class="mt-auto mb-0 text-gray-500">
+                Requested {{ createdTimeAgo }} by
+                <UserPiece :user="request.createdByUser" :is-pill="false" /> •
+                {{ createdDate }}
+            </p>
         </div>
 
         <template #footer>
@@ -71,16 +87,20 @@
 
 <script lang="ts">
     import { computed, defineComponent, PropType, toRefs } from 'vue'
+    import { useTimeAgo } from '@vueuse/core'
     import {
         attributeCopyMapping,
         typeCopyMapping,
         requestTypeIcon,
     } from '../requestType'
+    import AtlanButton from '@/UI/button.vue'
     import RequestActions from '../requestActions.vue'
     import AssetDetails from './assetDetails.vue'
     import ClassificationDetails from './classificationDetails.vue'
+    import TermDetails from './termDetails.vue'
     import AttributeChange from './attributeChange.vue'
-    import AtlanButton from '@/UI/button.vue'
+
+    import UserPiece from '../pieces/user.vue'
 
     import { RequestAttributes } from '~/types/atlas/requests'
     import { AssetTypeList } from '~/constant/assetType'
@@ -93,6 +113,8 @@
             AttributeChange,
             AtlanButton,
             ClassificationDetails,
+            TermDetails,
+            UserPiece,
         },
         props: {
             request: {
@@ -134,7 +156,17 @@
                 return title
             })
 
-            return { requestTitle, requestTypeIcon }
+            const createdTimeAgo = useTimeAgo(request.value.created_at)
+            const createdDate = computed(() =>
+                new Date(request.value.created_at).toLocaleDateString()
+            )
+
+            return {
+                requestTitle,
+                requestTypeIcon,
+                createdTimeAgo,
+                createdDate,
+            }
         },
     })
 </script>

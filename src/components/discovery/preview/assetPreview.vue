@@ -1,10 +1,19 @@
 <template>
     <div class="">
-        <div v-if="page === 'discovery'" class="px-5 py-3 border-b">
+        <div v-if="page !== 'profile'" class="px-5 py-3 border-b">
             <div class="flex items-center justify-between mb-0">
-                <div class="flex w-full">
+                <div class="flex items-center w-full">
+                    <component
+                        :is="
+                            images[
+                                getDataType(selectedAsset?.attributes?.dataType)
+                            ]
+                        "
+                        v-if="page === 'nonBiOverview'"
+                        class="w-4 h-4 mr-1.5 mb-0.5"
+                    ></component>
                     <Tooltip
-                        :tooltip-text="title(selectedAsset)"
+                        :tooltip-text="selectedAsset?.attributes?.name"
                         classes="mb-0 text-gray-700 font-semibold text-lg"
                     />
 
@@ -20,7 +29,7 @@
                 <div v-if="showCrossIcon" class="flex items-center mx-2">
                     <a-button
                         class="px-1 border-0 outline-none"
-                        @click="$emit('closePreviewPanel')"
+                        @click="$emit('closeSidebar')"
                     >
                         <AtlanIcon icon="Cancel" />
                     </a-button>
@@ -32,7 +41,10 @@
                     :is="selectedAsset.typeName"
                     class="w-auto h-8"
                 ></component> -->
-                <AssetLogo :asset="selectedAsset" variant="md" />
+                <div v-if="page === 'nonBiOverview'" class="text-gray-500">
+                    {{ getDataType(selectedAsset?.attributes?.dataType) }}
+                </div>
+                <AssetLogo v-else :asset="selectedAsset" variant="md" />
 
                 <div class="flex space-x-2">
                     <a-button class="flex items-center" size="small">
@@ -83,9 +95,6 @@
 </template>
 
 <script lang="ts">
-    import AssetLogo from '@/common/icon/assetIcon.vue'
-    import StatusBadge from '@common/badge/status/index.vue'
-    import Tooltip from '@common/ellipsis/index.vue'
     import {
         defineAsyncComponent,
         defineComponent,
@@ -97,9 +106,13 @@
         watch,
         provide,
     } from 'vue'
+    import Tooltip from '@common/ellipsis/index.vue'
+    import StatusBadge from '@common/badge/status/index.vue'
+    import AssetLogo from '@/common/icon/assetIcon.vue'
     import useAssetInfo from '~/composables/asset/useAssetInfo'
     import { assetInterface } from '~/types/assets/asset.interface'
     import useAssetDetailsTabList from '../../discovery/preview/tabs/useTabList'
+    import { images, dataTypeList } from '~/constant/datatype'
 
     export default defineComponent({
         name: 'AssetPreview',
@@ -141,7 +154,7 @@
                 required: false,
             },
         },
-        emits: ['assetMutation', 'closePreviewPanel'],
+        emits: ['assetMutation', 'closeSidebar'],
         setup(props, { emit }) {
             const { selectedAsset, page } = toRefs(props)
             const { filteredTabs } = useAssetDetailsTabList(page, selectedAsset)
@@ -162,6 +175,14 @@
                 if (data.value?.entities.length > 0)
                     return data.value?.entities[0]
                 return {}
+            }
+
+            const getDataType = (type: string) => {
+                let label = ''
+                dataTypeList.forEach((i) => {
+                    if (i.type.includes(type)) label = i.label
+                })
+                return label
             }
 
             provide('mutateSelectedAsset', (updatedAsset: assetInterface) => {
@@ -193,6 +214,8 @@
                 filteredTabs,
                 assetStatus,
                 handleChange,
+                images,
+                getDataType,
             }
         },
     })

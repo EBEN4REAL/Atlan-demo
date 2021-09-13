@@ -72,6 +72,40 @@
 
     export default defineComponent({
         name: 'InfoTab',
+        components: {
+            assetDetails: defineAsyncComponent(
+                () => import('./assetDetails/index.vue')
+            ),
+            properties: defineAsyncComponent(
+                () => import('./properties/index.vue')
+            ),
+            linkedAsset: defineAsyncComponent(
+                () => import('./governance/index.vue')
+            ),
+            heirarchy: defineAsyncComponent(
+                () => import('./heirarchy/index.vue')
+            ),
+            businessMetadata: defineAsyncComponent(
+                () => import('./businessMetadata/index.vue')
+            ),
+            usage: defineAsyncComponent(() => import('./usage/index.vue')),
+
+            columnProfile: defineAsyncComponent(
+                () => import('./columnProfile/index.vue')
+            ),
+            tableauHierarchy: defineAsyncComponent(
+                () => import('@common/sidebar/tableau/hierarchy/index.vue')
+            ),
+            tableauProperties: defineAsyncComponent(
+                () => import('@common/sidebar/tableau/properties/index.vue')
+            ),
+            tableauPreview: defineAsyncComponent(
+                () => import('@common/sidebar/tableau/preview/index.vue')
+            ),
+            tableauHierarchy: defineAsyncComponent(
+                () => import('@common/sidebar/tableau/hierarchy/index.vue')
+            ),
+        },
         props: {
             id: String,
             componentData: {
@@ -93,32 +127,7 @@
                 required: true,
             },
         },
-        components: {
-            assetDetails: defineAsyncComponent(
-                () => import('./assetDetails/index.vue')
-            ),
-            properties: defineAsyncComponent(
-                () => import('./properties/index.vue')
-            ),
-            linkedAsset: defineAsyncComponent(
-                () => import('./governance/index.vue')
-            ),
-            heirarchy: defineAsyncComponent(
-                () => import('./heirarchy/index.vue')
-            ),
-            businessMetadata: defineAsyncComponent(
-                () => import('./businessMetadata/index.vue')
-            ),
-            tableauProperties: defineAsyncComponent(
-                () => import('@common/sidebar/tableau/properties/index.vue')
-            ),
-            tableauPreview: defineAsyncComponent(
-                () => import('@common/sidebar/tableau/preview/index.vue')
-            ),
-            tableauHierarchy: defineAsyncComponent(
-                () => import('@common/sidebar/tableau/hierarchy/index.vue')
-            ),
-        },
+
         setup(props) {
             const refMap: Ref<{
                 [key: string]: any
@@ -167,18 +176,18 @@
                     label: b.options.displayName,
                     image: b.options.image || '',
                 })) || []
-            const dynamicList = ref([])
-            let tableauProperties = ref([])
+            const dynamicList = ref<any>([])
+            const tableauProperties = ref<any>([])
 
             watch(
                 [selectedAsset, page],
                 () => {
-                    let infoTab = useInfoPanels(page, selectedAsset)
+                    const infoTab = useInfoPanels(page, selectedAsset)
 
                     if (infoTab) {
-                        let panels = [...infoTab?.panels]
-                        let properties = infoTab?.properties
-                        let propertiesPanel = panels.pop()
+                        const panels = [...infoTab?.panels]
+                        const properties = infoTab?.properties
+                        const propertiesPanel = panels.pop()
                         tableauProperties.value = properties ?? []
                         dynamicList.value = [
                             ...panels,

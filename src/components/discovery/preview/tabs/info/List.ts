@@ -241,13 +241,13 @@ export const InfoTabInAssetInDiscovery: { [key: string]: AssetTab } = {
 
 export const InfoTabInAssetProfile: { [key: string]: AssetTab } = {
     Connection: {
-        panels: [assetDetails, linkedAsset, heirarchy, properties],
+        panels: [assetDetails, linkedAsset, properties],
     },
     Database: {
-        panels: [assetDetails, linkedAsset, heirarchy, properties],
+        panels: [assetDetails, linkedAsset, properties],
     },
     Schema: {
-        panels: [assetDetails, linkedAsset, heirarchy, properties],
+        panels: [assetDetails, linkedAsset, properties],
     },
     View: {
         panels: [assetDetails, linkedAsset, heirarchy, properties],

@@ -43,6 +43,7 @@ import Columns from '~/assets/images/icons/columns.svg'
 import Relation from '~/assets/images/icons/relation.svg'
 import ShareNew from '~/assets/images/icons/shareNew.svg'
 import User from '~/assets/images/icons/user.svg'
+import Chats from '~/assets/images/icons/chats.svg'
 
 export default {
     Relation,
@@ -90,4 +91,5 @@ export default {
     KebabMenu,
     ShareNew,
     User,
+    Chats,
 }

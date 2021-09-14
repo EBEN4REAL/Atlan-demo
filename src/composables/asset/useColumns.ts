@@ -4,6 +4,10 @@ import { fetcher } from '~/api'
 import { GET_ASSET_RELATIONSHIP } from '~/api/keyMaps/asset'
 import keyMaps from '~/api/keyMaps'
 
+
+import { BaseAttributes } from '~/constant/projection'
+import { useBusinessMetadataStore } from '~/store/businessMetadata'
+
 function constructRequest(guid: string) {
     const finalParams = new URLSearchParams()
     const attributes = [
@@ -20,6 +24,8 @@ function constructRequest(guid: string) {
         'foreign key',
         'tenantId',
         'popularityScore',
+        ...BaseAttributes,
+        ...useBusinessMetadataStore().getBusinessMetadataListProjections,
     ]
 
     const paramsObj: any = {

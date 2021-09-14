@@ -32,7 +32,7 @@ export default function useAssetInfo() {
     const logo = (asset: assetInterface) => {
         let img = ''
         const found = SourceList.find(
-            (src) => src.id === attributes(asset).integrationName
+            (src) => src.id === attributes(asset)?.integrationName
         )
         if (found) img = found.image
 
@@ -96,7 +96,7 @@ export default function useAssetInfo() {
         return attributes(asset).__modifiedBy
     }
     const updatedAt = (asset: assetInterface) => {
-        return useTimeAgo(attributes(asset).__modificationTimestamp).value
+        return useTimeAgo(attributes(asset)?.__modificationTimestamp).value
     }
     const previewURL = (asset: assetInterface) => {
         const customAttributes = JSON.parse(attributes(asset).__customAttributes.split())

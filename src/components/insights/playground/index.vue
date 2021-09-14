@@ -41,7 +41,7 @@
 <script lang="ts">
     import { defineComponent, PropType, toRefs, computed, Ref } from 'vue'
     import Vue3TabsChrome from './vue3-tabs-chrome.vue'
-    import Editor from '~/components/insights/playground/editor.vue'
+    import Editor from '~/components/insights/playground/editor/index.vue'
     import ResultsPane from '~/components/insights/playground/resultsPane/index.vue'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
     import NoActiveInlineTab from './noActiveInlineTab.vue'

@@ -29,7 +29,6 @@
                 </div>
             </template>
         </div>
-        <!-- {{ explorerPaneSize }} -->
         <!--Sidebar navigation pane end -->
         <splitpanes :class="$style.splitpane__styles" @resize="paneResize">
             <pane :max-size="20" :size="explorerPaneSize">
@@ -78,15 +77,15 @@
 <script lang="ts">
     import { defineComponent, ref, Ref, computed, watch } from 'vue'
     import Playground from '~/components/insights/playground/index.vue'
-    import AssetSidebar from '~/components/insights/assetSidebar.vue'
+    import AssetSidebar from '~/components/insights/assetSidebar/index.vue'
     import Schema from './explorers/schema.vue'
     import Queries from './explorers/queries.vue'
     import History from './explorers/history.vue'
     import Schedule from './explorers/schedule.vue'
 
-    import { inlineTabsDemoData } from './demoInlineTabData'
-    import useInsightsTabList from './useTabList'
-    import { useLocalStorageSync } from './useLocalStorageSync'
+    import { inlineTabsDemoData } from './common/dummyData/demoInlineTabData'
+    import useInsightsTabList from './common/composables/useTabList'
+    import { useLocalStorageSync } from './common/composables/useLocalStorageSync'
 
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
     import { TabInterface } from '~/types/insights/tab.interface'
@@ -247,7 +246,6 @@
             /* Watchers for syncing in localstorage*/
             watch(activeInlineTabKey, () => {
                 syncActiveInlineTabKeyInLocalStorage(activeInlineTabKey.value)
-                // syncying inline tabarray in localstorage
                 syncInlineTabsInLocalStorage(tabsArray.value)
             })
             return {
@@ -365,6 +363,12 @@
         height: 1px;
 
         margin-top: 1px;
+    }
+    :global(.splitpanes--horizontal > .splitpanes__splitter):hover:before {
+        @apply bg-primary !important;
+    }
+    :global(.splitpanes--horizontal > .splitpanes__splitter):hover:after {
+        @apply bg-primary !important;
     }
 </style>
 <style lang="less" scoped>

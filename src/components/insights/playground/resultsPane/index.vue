@@ -73,10 +73,6 @@
             @apply px-3 !important;
         }
 
-        :global(.ant-tabs-nav-container-scrolling .ant-tabs-tab:first-child) {
-            @apply ml-0 !important;
-        }
-
         :global(.ant-tabs-bar) {
             margin-bottom: 0px;
         }

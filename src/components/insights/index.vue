@@ -41,11 +41,7 @@
                 <!--explorer pane end -->
             </pane>
             <pane
-                :size="
-                    activeInlineTab?.assetSidebar?.isVisible
-                        ? 60 + 20 - explorerPaneSize
-                        : 80 + 20 - explorerPaneSize
-                "
+                :size="activeInlineTab?.assetSidebar?.isVisible ? 60 : 80"
                 :min-size="activeInlineTab?.assetSidebar?.isVisible ? 60 : 80"
             >
                 <Playground
@@ -96,27 +92,18 @@
         },
         props: {},
         setup(props) {
-            /* ---- Panes size ----- */
+            /* ---- Panes  ----- */
+            /* TODO: Collapse panes if it reach  threshold */
             const explorerThreshold = 10
             const explorerPaneCollapsed = ref(false)
             const assetSidebarThreshold = 10
             const explorerPaneSize = ref(20)
             const paneResize = (event: any) => {
                 if (event.length > 0) {
-                    /* Collapse first pane if it reach threshold */
                     // explorerPaneSize.value = event[0].size
-                    if (event[0].size <= explorerThreshold) {
-                        explorerPaneSize.value = 0
-                        explorerPaneCollapsed.value = true
-                        console.log('inside')
-                    }
-                    // else {
-                    //     explorerPaneSize.value = event[0].size
-                    //     console.log('inside else')
-                    // }
                 }
             }
-            /* ---- Panes size ----- */
+            /* ---- Panes  ----- */
             const { allTabs: tabsList } = useInsightsTabList()
             const {
                 syncInlineTabsInLocalStorage,

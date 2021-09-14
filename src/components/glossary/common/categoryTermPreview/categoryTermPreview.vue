@@ -7,37 +7,18 @@
             v-if="preview"
             class="flex flex-row justify-between px-5 py-8 align-middle"
         >
-            <div class="flex flex-row space-x-2 align-middle">
-                <div class="flex flex-col justify-center">
-                    <span>
-                        <!-- <img
-                            v-if="entity.typeName === 'AtlasGlossaryCategory'"
-                            :src="CategorySvg"
-                            :width="25"
-                        /> -->
-                        <AtlanIcon
-                            icon="Category"
-                            class="h-5 m-0 mb-1"
-                            v-if="entity.typeName === 'AtlasGlossaryCategory'"
-                        />
-
-                        <AtlanIcon
-                            icon="Term"
-                            class="h-5 m-0"
-                            v-else-if="entity.typeName === 'AtlasGlossaryTerm'"
-                        />
-                        <!-- <img
-                            v-else-if="entity.typeName === 'AtlasGlossaryTerm'"
-                            :src="TermSvg"
-                        /> -->
-                    </span>
-                </div>
+            <div v-if="preview" class="flex items-center pb-5 border-b">
                 <span
-                    v-if="type"
-                    class="flex flex-col justify-center text-sm font-bold text-gray-500 "
-                    >{{ type === 'AtlasGlossaryTerm' ? 'Term' : 'Category' }}
-                </span>
+                    class="items-baseline pl-5 mr-2 text-xl font-bold leading-7 text-gray-700 "
+                    >{{ entity.displayText }}</span
+                >
+                <component
+                    :is="statusObject?.icon"
+                    v-if="statusObject"
+                    class="inline-flex self-center w-auto h-5"
+                />
             </div>
+
             <div class="flex flex-row space-x-2">
                 <a-button class="px-2"
                     ><atlan-icon icon="BookmarkOutlined" class="w-auto h-4"
@@ -59,20 +40,47 @@
                 </a-button>
             </div>
         </div>
-        <div v-if="preview" class="flex items-center mb-5">
+        <div class="flex flex-row space-x-2 align-middle">
+            <div class="flex flex-col justify-center">
+                <span>
+                    <!-- <img
+                            v-if="entity.typeName === 'AtlasGlossaryCategory'"
+                            :src="CategorySvg"
+                            :width="25"
+                        /> -->
+                    <AtlanIcon
+                        icon="Category"
+                        class="h-5 m-0 mb-1"
+                        v-if="entity.typeName === 'AtlasGlossaryCategory'"
+                    />
+
+                    <AtlanIcon
+                        icon="Term"
+                        class="h-5 m-0"
+                        v-else-if="entity.typeName === 'AtlasGlossaryTerm'"
+                    />
+                    <!-- <img
+                            v-else-if="entity.typeName === 'AtlasGlossaryTerm'"
+                            :src="TermSvg"
+                        /> -->
+                </span>
+            </div>
             <span
-                class="items-baseline pl-5 mr-2 text-xl font-bold leading-7 text-gray-700 "
-                >{{ entity.displayText }}</span
-            >
-            <component
-                :is="statusObject?.icon"
-                v-if="statusObject"
-                class="inline-flex self-center w-auto h-5"
-            />
+                v-if="type"
+                class="flex flex-col justify-center text-sm font-bold text-gray-500 "
+                >{{ type === 'AtlasGlossaryTerm' ? 'Term' : 'Category' }}
+            </span>
         </div>
 
-        <a-tabs default-active-key="1" class="border-0">
-            <a-tab-pane key="info" tab="Info">
+        <a-tabs
+            default-active-key="1"
+            class="h-full border-0"
+            tab-position="left"
+        >
+            <a-tab-pane key="info">
+                <template #tab>
+                    <AtlanIcon icon="Overview" class="mt-1" />
+                </template>
                 <div class="h-screen pb-64 overflow-auto">
                     <a-collapse
                         v-model:activeKey="activeKey"
@@ -151,15 +159,20 @@
             <a-tab-pane
                 v-if="entity.typeName === 'AtlasGlossaryTerm' && preview"
                 key="linkedAssets"
-                tab="Linked Assets"
             >
+                <template #tab>
+                    <AtlanIcon icon="Term" class="mt-1" />
+                </template>
                 <div class="h-screen overflow-auto pb-52">
                     <LinkedAssets
                         :term-qualified-name="entity.attributes.qualifiedName"
                     />
                 </div>
             </a-tab-pane>
-            <a-tab-pane key="activity" tab="Activity">
+            <a-tab-pane key="activity">
+                <template #tab>
+                    <AtlanIcon icon="Activity" />
+                </template>
                 <div class="h-screen overflow-auto pb-52">
                     <Activity :selected-asset="entity" />
                 </div>
@@ -279,7 +292,7 @@
             @apply pl-6 py-4 m-0  text-sm text-gray-700 bg-white !important;
         }
         :global(.ant-collapse-borderless > .ant-collapse-item) {
-            @apply border-b border-gray-300 py-0 mt-0 !important;
+            @apply py-0 mt-0 border-0 !important;
         }
 
         :global(.ant-collapse) {
@@ -296,7 +309,16 @@
             @apply m-0 p-0  !important;
         }
         :global(.ant-tabs-bar) {
-            @apply mb-0 mx-auto !important;
+            @apply mb-0 mx-0 p-0 m-0 !important;
+        }
+        :global(.ant-tabs-tab) {
+            @apply py-2 mb-4 px-4 !important;
+        }
+        :global(.ant-tabs) {
+            @apply px-0 !important;
+        }
+        :global(.ant-tabs-content) {
+            @apply p-0 !important;
         }
     }
 </style>

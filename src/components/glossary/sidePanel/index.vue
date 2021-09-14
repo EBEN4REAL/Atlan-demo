@@ -244,7 +244,7 @@
             @apply m-0  text-sm text-gray-700 bg-white !important;
         }
         :global(.ant-collapse-borderless > .ant-collapse-item) {
-            @apply border-b border-gray-300   mt-0 !important;
+            @apply border-0   mt-0 !important;
         }
 
         :global(.ant-collapse) {

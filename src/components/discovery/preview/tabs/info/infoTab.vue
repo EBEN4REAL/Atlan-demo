@@ -106,9 +106,6 @@
             heirarchy: defineAsyncComponent(
                 () => import('./heirarchy/index.vue')
             ),
-            businessMetadata: defineAsyncComponent(
-                () => import('./businessMetadata/index.vue')
-            ),
             tableauProperties: defineAsyncComponent(
                 () => import('@common/sidebar/tableau/properties/index.vue')
             ),
@@ -125,7 +122,6 @@
             }> = ref({})
             const { selectedAsset, page } = toRefs(props)
 
-            const { getApplicableBmGroups } = useBusinessMetadataHelper()
             // Mapping of Data to child compoentns
             const dataMap: { [key: string]: any } = ref({})
             const { localStorage } = window
@@ -160,13 +156,6 @@
                 setUserDefaultCollapseOrderInInfoTab(activeKey.value)
             }
 
-            const applicableBMList = (typeName: string) =>
-                getApplicableBmGroups(typeName)?.map((b) => ({
-                    component: 'businessMetadata',
-                    id: b.name,
-                    label: b.options.displayName,
-                    image: b.options.image || '',
-                })) || []
             const dynamicList = ref([])
             let tableauProperties = ref([])
 
@@ -180,11 +169,7 @@
                         let properties = infoTab?.properties
                         let propertiesPanel = panels.pop()
                         tableauProperties.value = properties ?? []
-                        dynamicList.value = [
-                            ...panels,
-                            ...applicableBMList(props.infoTabData.typeName),
-                            propertiesPanel,
-                        ]
+                        dynamicList.value = [...panels, propertiesPanel]
                     }
                 },
                 { immediate: true }

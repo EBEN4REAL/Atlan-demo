@@ -145,6 +145,9 @@
             lineage: defineAsyncComponent(
                 () => import('./tabs/lineage/lineageTab.vue')
             ),
+            businessMetadataTab: defineAsyncComponent(
+                () => import('./tabs/businessMetadata/businessMetadataTab.vue')
+            ),
         },
         props: {
             selectedAsset: {

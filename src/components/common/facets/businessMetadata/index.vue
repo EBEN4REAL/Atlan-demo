@@ -5,7 +5,7 @@
                 ref="searchText"
                 v-model:value="attributeSearchText"
                 type="text"
-                :allowClear="true"
+                :allow-clear="true"
                 :placeholder="`Search ${data.list.attributeDefs.length} attributes`"
             >
             </a-input-search>
@@ -24,8 +24,8 @@
                 <AttributeItem
                     :a="a"
                     :applied="data.applied[a.name] || {}"
-                    @handleAttributeInput="setBMfilter"
                     :operators="getOperatorMap(a)"
+                    @handleAttributeInput="setBMfilter"
                 />
             </div>
         </div>
@@ -162,9 +162,9 @@
             const filterList = (list: any[]) =>
                 list.filter(
                     (a: { options: { displayName: string | string[] } }) =>
-                        a.options.displayName.includes(
-                            attributeSearchText.value
-                        )
+                        a.options.displayName
+                            .toLowerCase()
+                            .includes(attributeSearchText.value.toLowerCase())
                 )
 
             const showScrollBar = () => {

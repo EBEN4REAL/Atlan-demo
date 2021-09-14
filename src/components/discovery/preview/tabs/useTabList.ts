@@ -26,6 +26,12 @@ export default function useAssetDetailsTabList(
             icon: 'Overview',
         },
         {
+            name: 'Custom Metadata',
+            component: 'businessMetadataTab',
+            visibleOn: ['discovery', 'profile', 'biOverview', 'nonBiOverview'],
+            icon: 'Metadata',
+        },
+        {
             name: 'Columns',
             component: 'columns',
             exclude: [

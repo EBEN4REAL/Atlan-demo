@@ -4,12 +4,12 @@
 
 <script lang="ts">
     import { toRefs, defineComponent, computed, PropType } from 'vue'
-    import { iconMap, iconName } from './iconMap'
+    import iconMap from './iconMap'
     export default defineComponent({
         name: 'AtlanIcons',
         props: {
             icon: {
-                type: String as PropType<iconName>,
+                type: String as PropType<keyof typeof iconMap>,
                 required: true,
             },
         },

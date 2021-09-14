@@ -51,7 +51,7 @@ import ShareNew from '~/assets/images/icons/shareNew.svg'
 import User from '~/assets/images/icons/user.svg'
 import Metadata from '~/assets/images/icons/metadata.svg'
 
-export const iconMap = {
+export default {
     Metadata,
     Relation,
     Overview,
@@ -105,5 +105,3 @@ export const iconMap = {
     ShareNew,
     User,
 }
-
-export type iconName = keyof typeof iconMap

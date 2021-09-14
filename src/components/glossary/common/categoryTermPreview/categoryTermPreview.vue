@@ -45,7 +45,7 @@
 
                 <a-button
                     class="flex flex-col justify-center pt-1 text-xs border-0  text-primary bg-primary-light"
-                    @click="redirectToProfile"
+                    @click="redirectToProfile(entity?.typeName, entity?.guid)"
                 >
                     Open
                     {{ type === 'AtlasGlossaryTerm' ? 'Term' : 'Category' }}
@@ -173,25 +173,25 @@
 <script lang="ts">
     import { defineComponent, PropType, computed, ref, inject } from 'vue'
     import { useRouter } from 'vue-router'
-
+    // components
     import Owners from '@common/sidebar/owners.vue'
+    import Classifications from '@common/sidebar/classifications.vue'
     import Experts from '@common/sidebar/experts.vue'
     import Description from '@common/sidebar/description.vue'
     import Status from '@common/sidebar/status.vue'
     import Activity from '@/discovery/preview/tabs/activity/activityTab.vue'
-    import Classifications from '@common/sidebar/classifications.vue'
     import RelatedTerms from '@/glossary/termProfile/relatedTerms.vue'
     import LinkedAssets from './linkedAssets.vue'
+    import { Components } from '~/api/atlas/client'
+
+    //  utils
+    import redirectToProfile from '@/glossary/utils/redirectToProfile'
 
     import {
         Category,
         Term,
         Glossary,
     } from '~/types/glossary/glossary.interface'
-    import { Components } from '~/api/atlas/client'
-
-    import TermSvg from '~/assets/images/gtc/term/term.png'
-    import CategorySvg from '~/assets/images/gtc/category/category.png'
 
     import { List as StatusList } from '~/constant/status'
 
@@ -239,12 +239,12 @@
             )
 
             // methods
-            const redirectToProfile = () => {
-                if (props.entity.typeName === 'AtlasGlossaryCategory')
-                    router.push(`/glossary/category/${props.entity.guid}`)
-                else if (props.entity.typeName === 'AtlasGlossaryTerm')
-                    router.push(`/glossary/term/${props.entity.guid}`)
-            }
+            // const redirectToProfile = () => {
+            //     if (props.entity.typeName === 'AtlasGlossaryCategory')
+            //         router.push(`/glossary/category/${props.entity.guid}`)
+            //     else if (props.entity.typeName === 'AtlasGlossaryTerm')
+            //         router.push(`/glossary/term/${props.entity.guid}`)
+            // }
             const handlClosePreviewPanel = () => {
                 context.emit('closePreviewPanel')
             }
@@ -259,11 +259,8 @@
                 context.emit('updateAsset', selectedAsset)
             }
 
-            console.log(props.entity.typeName)
-
+            console.log(useRouter)
             return {
-                TermSvg,
-                CategorySvg,
                 shortDescription,
                 type,
                 handlClosePreviewPanel,

@@ -7,6 +7,7 @@
             <ProfileHeader
                 :title="title"
                 :entity="category"
+                :isNewEntity="isNewCategory"
                 :statusMessage="statusMessage"
                 :statusObject="statusObject"
                 :shortDescription="shortDescription"
@@ -22,13 +23,7 @@
                         <div class="px-8 mt-4">
                             <div v-if="isNewCategory" class="mb-4">
                                 <p
-                                    class="
-                                        p-0
-                                        mb-1
-                                        text-sm
-                                        leading-5
-                                        text-gray-700
-                                    "
+                                    class="p-0 mb-1 text-sm leading-5 text-gray-700 "
                                 >
                                     Name
                                 </p>
@@ -85,12 +80,10 @@
     } from 'vue'
 
     // components
-    import ThreeDotMenu from '@/glossary/common/threeDotMenu.vue'
     import GlossaryProfileOverview from '@/glossary/common/glossaryProfileOverview.vue'
     import LoadingView from '@common/loaders/page.vue'
     import { useRouter } from 'vue-router'
     import SidePanel from '@/glossary/sidePanel/index.vue'
-    import CategoryTermPreview from '@/glossary/common/categoryTermPreview/categoryTermPreview.vue'
     import GlossaryTermsAndCategoriesTab from '@/glossary/glossaryTermsAndCategoriesTab.vue'
     import ProfileHeader from '@/glossary/common/profileHeader.vue'
 
@@ -109,8 +102,6 @@
             GlossaryTermsAndCategoriesTab,
             LoadingView,
             SidePanel,
-            CategoryTermPreview,
-            ThreeDotMenu,
             ProfileHeader,
         },
         props: {
@@ -127,13 +118,8 @@
             const previewEntity = ref<Category | Term | undefined>()
             const showPreviewPanel = ref(false)
             const newName = ref('')
-            const assetTypeLabel = {
-                AtlasGlossaryTerm: 'term',
-                AtlasGlossaryCategory: 'category',
-                AtlasGlossary: 'glossary',
-            }
-
             const router = useRouter()
+
             const {
                 entity: category,
                 title,
@@ -164,7 +150,9 @@
                     category.value?.attributes?.qualifiedName?.split('@')[1] ??
                     ''
             )
-            const isNewCategory = computed(() => title.value === 'New Category')
+            const isNewCategory = computed(
+                () => title.value === 'Untitled Category'
+            )
 
             // methods
             const handleCategoryOrTermPreview = (entity: Category | Term) => {
@@ -230,7 +218,6 @@
                 handleCategoryOrTermPreview,
                 handlClosePreviewPanel,
                 updateTitle,
-                assetTypeLabel,
                 redirectToProfile,
             }
         },

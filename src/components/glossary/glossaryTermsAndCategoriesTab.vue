@@ -36,7 +36,7 @@
             <div class="w-full">
                 <div
                     class="overflow-auto"
-                    style="max-height: calc(100vh - 250px)"
+                    style="max-height: calc(100vh - 300px)"
                 >
                     <AssetList
                         :list="all"

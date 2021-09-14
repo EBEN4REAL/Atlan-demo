@@ -44,7 +44,7 @@
 
             <a-button
                 class="flex items-center border-0 shadow-none outline-none"
-                ><atlan-icon icon="Share" class="w-auto h-4 mr-2" />
+                ><atlan-icon icon="ShareNew" class="w-auto h-4 mr-1" />
                 <span class="text-sm">Share</span>
             </a-button>
 
@@ -56,9 +56,17 @@
         <div class="flex flex-row w-full">
             <div class="flex flex-col justify-center w-full">
                 <div class="flex">
-                    <span class="mr-3 text-xl font-bold leading-6">{{
-                        title
-                    }}</span>
+                    <span
+                        v-if="!isNewEntity"
+                        class="mr-3 text-xl font-bold leading-6"
+                        >{{ title }}</span
+                    >
+
+                    <span
+                        v-if="isNewEntity"
+                        class="mr-3 text-xl italic leading-6 text-gray-500"
+                        >Untitled {{ assetTypeLabel[entity.typeName] }}
+                    </span>
                     <a-popover
                         v-if="statusMessage"
                         trigger="hover"
@@ -99,9 +107,12 @@
 
 <script lang="ts">
     import { defineComponent, computed } from 'vue'
-
-    import ThreeDotMenu from '@/glossary/common/threeDotMenu.vue'
     import { useRouter } from 'vue-router'
+
+    // components
+    import ThreeDotMenu from '@/glossary/common/threeDotMenu.vue'
+    // assets
+    import assetTypeLabel from '@/glossary/constants/assetTypeLabel'
 
     export default defineComponent({
         components: {
@@ -123,6 +134,11 @@
                 required: true,
                 default: '',
             },
+            isNewEntity: {
+                type: Boolean,
+                required: false,
+                default: false,
+            },
 
             statusObject: {
                 type: Object,
@@ -136,11 +152,11 @@
             },
         },
         setup(props) {
-            const assetTypeLabel = {
-                AtlasGlossaryTerm: 'term',
-                AtlasGlossaryCategory: 'category',
-                AtlasGlossary: 'glossary',
-            }
+            // const assetTypeLabel = {
+            //     AtlasGlossaryTerm: 'term',
+            //     AtlasGlossaryCategory: 'category',
+            //     AtlasGlossary: 'glossary',
+            // }
             const router = useRouter()
 
             const parentGlossaryName = computed(

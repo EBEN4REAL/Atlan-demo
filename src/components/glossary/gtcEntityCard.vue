@@ -69,7 +69,7 @@
                         "
                         class="flex items-center mt-2 text-sm leading-5 text-gray-700 "
                     >
-                        <AtlanIcon icon="AddUser" class="m-0 mr-1" />
+                        <AtlanIcon icon="User" class="m-0 mr-1" />
 
                         <span
                             class="mr-1"

@@ -38,7 +38,7 @@
     import SearchAndFilter from '~/components/common/input/searchAndFilter.vue'
     import VirtualList from '~/utils/library/virtualList/virtualList.vue'
     import RequestListItem from './requestListItem.vue'
-    import RequestFilters from './requestFilters.vue'
+    import RequestFilters from './filters/requestFilters.vue'
     import RequestModal from './modal/requestDetailsBase.vue'
 
     import { RequestAttributes, RequestStatus } from '~/types/atlas/requests'
@@ -61,7 +61,7 @@
             const selectedIndex = ref(0)
             const isDetailsVisible = ref(false)
             const searchTerm = ref('')
-            const filters = ref({ status: ['active'] as RequestStatus[] })
+            const filters = ref({ status: 'active' as RequestStatus })
 
             const {
                 response,

@@ -3,13 +3,13 @@ import { Ref, computed, watch } from 'vue'
 import { RequestStatus } from '~/types/atlas/requests'
 
 export interface RequestListFilters {
-    status: RequestStatus[]
+    status: RequestStatus
 }
 
 function generateRequestListParams(filters: RequestListFilters) {
     const params: Record<string, any> = {}
     for (const [key, value] of Object.entries(filters)) {
-        params[key] = Array.isArray(value) ? { $in: value } : { $eq: value }
+        params[key] = Array.isArray(value) ? { $in: value } : value
     }
     return { filter: params }
 }

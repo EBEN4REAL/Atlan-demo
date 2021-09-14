@@ -15,36 +15,38 @@
                 :asset-qf-name="request.destination_qf_name"
             />
             <span v-else class="text-sm overflow-ellipsis">
-                {{ primaryText[request.re](request) }}
+                {{ primaryText[request.request_type](request) }}
             </span>
         </div>
         <!-- RHS -->
         <div class="flex items-center col-span-3">
             <AtlanIcon
                 class="mr-4 text-gray-500"
-                :icon="requestTypeIcon[request.re]"
+                :icon="requestTypeIcon[request.request_type]"
             />
 
             <ClassificationPiece
                 v-if="
-                    request?.re === 'create_typedef' &&
+                    request?.request_type === 'create_typedef' &&
                     request?.payload?.classificationDefs
                 "
                 :data="request.payload.classificationDefs"
             />
 
             <ClassificationPiece
-                v-else-if="request?.re === 'attach_classification'"
+                v-else-if="request?.request_type === 'attach_classification'"
                 :typeName="request.payload.typeName"
             />
 
             <TermPiece
-                v-else-if="request.re === 'create_term' && request.payload"
+                v-else-if="
+                    request.request_type === 'create_term' && request.payload
+                "
                 :data="request.payload"
             />
 
             <TermPiece
-                v-else-if="request.re === 'term_link'"
+                v-else-if="request.request_type === 'term_link'"
                 :data="request.sourceEntity.attributes"
             />
 

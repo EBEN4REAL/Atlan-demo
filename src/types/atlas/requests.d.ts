@@ -48,7 +48,7 @@ export interface RequestAttributes {
     destination_value: string
     destinationEntity: assetInterface
     entity_type: string
-    re: RequestType
+    request_type: RequestType
     confidence_score: number
     bot_run_id: string
     approved_by: IActionDetails[]

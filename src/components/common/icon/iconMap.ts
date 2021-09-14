@@ -41,7 +41,7 @@ import Lineage from '~/assets/images/icons/lineage.svg'
 import Activity from '~/assets/images/icons/activity.svg'
 import Columns from '~/assets/images/icons/columns.svg'
 import Relation from '~/assets/images/icons/relation.svg'
-import Metadata from '~/assets/images/icons/Metadata.svg'
+import Metadata from '~/assets/images/icons/metadata.svg'
 
 export default {
     Metadata,

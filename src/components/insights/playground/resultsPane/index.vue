@@ -1,7 +1,10 @@
 <template>
     <a-tabs
-        v-model:activeKey="activeKey"
+        :activeKey="activeResultsPaneTab"
         :class="$style.result_pane"
+        @change="
+            (activeKey) => resultsPaneTabChange(activeKey, activeInlineTab)
+        "
         class="h-full"
     >
         <a-tab-pane
@@ -25,9 +28,14 @@
         defineComponent,
         PropType,
         toRefs,
+        Ref,
+        ref,
+        inject,
+        computed,
         defineAsyncComponent,
     } from 'vue'
     import useInsightsTabList from './useTabList'
+    import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
 
     export default defineComponent({
         components: {
@@ -44,7 +52,25 @@
         props: {},
         setup(props) {
             const { allTabs: tabsList } = useInsightsTabList()
+            const activeInlineTab = inject(
+                'activeInlineTab'
+            ) as Ref<activeInlineTabInterface>
+
+            /*
+                @params - activeKey: string
+                @params - activeInlineTab: activeInlineTabInterface
+             */
+            const resultsPaneTabChange = inject(
+                'resultsPaneTabChange'
+            ) as Function
+
+            const activeResultsPaneTab = computed(
+                () => activeInlineTab.value.playground.resultsPane.activeTab
+            )
             return {
+                resultsPaneTabChange,
+                activeResultsPaneTab,
+                activeInlineTab,
                 tabsList,
             }
         },

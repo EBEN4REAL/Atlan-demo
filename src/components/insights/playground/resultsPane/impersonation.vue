@@ -3,19 +3,26 @@
         <div
             class="flex items-center justify-center w-full h-full rounded  placeholder"
         >
-            Impersonation
+            Impersonation - {{ activeInlineTab.label }}
         </div>
     </div>
 </template>
 
 <script lang="ts">
-    import { defineComponent, PropType, toRefs } from 'vue'
+    import { defineComponent, Ref, inject } from 'vue'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
 
     export default defineComponent({
         components: {},
         props: {},
-        setup(props) {},
+        setup(props) {
+            const activeInlineTab = inject(
+                'activeInlineTab'
+            ) as Ref<activeInlineTabInterface>
+            return {
+                activeInlineTab,
+            }
+        },
     })
 </script>
 <style lang="less" scoped>

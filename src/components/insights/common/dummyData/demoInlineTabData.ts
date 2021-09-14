@@ -9,7 +9,7 @@ export const inlineTabsDemoData: activeInlineTabInterface[] = [
         playground: {
             editorTitle: 'ABCDE EDITOR',
             resultsPane: {
-                activeTab: 'result',
+                activeTab: 0,
                 result: {
                     title: 'ABCDE Result',
                 },
@@ -39,7 +39,7 @@ export const inlineTabsDemoData: activeInlineTabInterface[] = [
         playground: {
             editorTitle: 'ADBE EDITOR',
             resultsPane: {
-                activeTab: 'result',
+                activeTab: 0,
                 result: {
                     title: 'ADBE Result',
                 },
@@ -69,7 +69,7 @@ export const inlineTabsDemoData: activeInlineTabInterface[] = [
         playground: {
             editorTitle: 'BCDE EDITOR',
             resultsPane: {
-                activeTab: 'result',
+                activeTab: 0,
                 result: {
                     title: 'BCDE Result',
                 },

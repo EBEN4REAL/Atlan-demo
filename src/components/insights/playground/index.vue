@@ -86,7 +86,7 @@
                     playground: {
                         editorTitle: `${key} Editor`,
                         resultsPane: {
-                            activeTab: 'result',
+                            activeTab: 0,
                             result: {
                                 title: `${key} Result`,
                             },

@@ -165,7 +165,7 @@
                     playground: {
                         editorTitle: savedQuery.editor,
                         resultsPane: {
-                            activeTab: 'result',
+                            activeTab: 0,
                             result: {
                                 title: savedQuery.result,
                             },
@@ -222,6 +222,20 @@
                     }
                 }
             }
+            const resultsPaneTabChange = (
+                resultPaneActiveKey: number,
+                activeTab: activeInlineTabInterface
+            ) => {
+                const index = tabsArray.value.findIndex(
+                    (tab) => tab.key === activeTab.key
+                )
+                if (index !== -1) {
+                    tabsArray.value[index].playground.resultsPane.activeTab =
+                        resultPaneActiveKey
+                }
+                // syncying inline tabarray in localstorage
+                syncInlineTabsInLocalStorage(tabsArray.value)
+            }
 
             function setActiveInlineTabKey() {
                 // checking if localstorage already have active tab key
@@ -248,7 +262,7 @@
             }
 
             /*---------- PROVIDERS FOR CHILDRENS -----------------
-            ---Be careful to add a property/function otherwise it will pollute the whole flow--
+            ---Be careful to add a property/function otherwise it will pollute the whole flow for childrens--
             */
 
             // properties
@@ -259,6 +273,7 @@
             // functions
             provide('closeAssetSidebar', closeAssetSidebar)
             provide('openAssetSidebar', openAssetSidebar)
+            provide('resultsPaneTabChange', resultsPaneTabChange)
 
             /*-------------------------------------*/
 

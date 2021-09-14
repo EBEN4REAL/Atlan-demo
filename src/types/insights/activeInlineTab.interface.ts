@@ -8,7 +8,7 @@ export interface activeInlineTabInterface {
     playground: {
         editorTitle: string
         resultsPane: {
-            activeTab: string
+            activeTab: number
             result: {
                 title: string
             }

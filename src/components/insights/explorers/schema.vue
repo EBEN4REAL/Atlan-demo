@@ -22,7 +22,7 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, PropType, Ref, inject } from 'vue'
+    import { defineComponent, Ref, inject } from 'vue'
     import { tableInterface } from '~/types/insights/table.interface'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
     import { tablesData } from './tablesDemoData'

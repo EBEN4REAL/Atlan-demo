@@ -18,7 +18,7 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, PropType, inject, Ref } from 'vue'
+    import { defineComponent, inject, Ref } from 'vue'
     import { SavedQueryInterface } from '~/types/insights/savedQuery.interface'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
 

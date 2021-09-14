@@ -26,10 +26,7 @@
 <script lang="ts">
     import {
         defineComponent,
-        PropType,
-        toRefs,
         Ref,
-        ref,
         inject,
         computed,
         defineAsyncComponent,

@@ -21,7 +21,11 @@
                 </template>
             </vue3-tabs-chrome>
         </div>
-        <splitpanes horizontal :push-other-panes="false">
+        <splitpanes
+            horizontal
+            :push-other-panes="false"
+            v-if="activeInlineTabKey"
+        >
             <pane max-size="100" size="50" min-size="50">
                 <Editor :selectedTab="selectedTab"
             /></pane>
@@ -30,18 +34,20 @@
                 <Result :selectedTab="selectedTab"
             /></pane>
         </splitpanes>
+        <NoActiveInlineTab v-else />
     </div>
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref, PropType, toRefs, computed, Ref } from 'vue'
+    import { defineComponent, PropType, toRefs, computed, Ref } from 'vue'
     import Vue3TabsChrome from './vue3-tabs-chrome.vue'
     import Editor from '~/components/insights/playground/editor.vue'
     import Result from '~/components/insights/playground/result.vue'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
+    import NoActiveInlineTab from './noActiveInlineTab.vue'
 
     export default defineComponent({
-        components: { Editor, Result, Vue3TabsChrome },
+        components: { Editor, Result, Vue3TabsChrome, NoActiveInlineTab },
         props: {
             tabRef: {
                 type: Object as PropType<Ref<any>>,
@@ -101,6 +107,8 @@
                 if (tabs.length > 0) {
                     const activeKey = tabs[len - 1].key
                     emit('update:activeInlineTabKey', activeKey)
+                } else {
+                    emit('update:activeInlineTabKey', undefined)
                 }
             }
 

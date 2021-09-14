@@ -1,5 +1,5 @@
 <template>
-    <div class="flex flex-col items-center w-full h-full bg-white">
+    <div class="flex flex-col items-center w-full h-full bg-white border-r">
         <div class="w-full p-3 pb-0">
             <div class="w-full h-40 mb-3 rounded placeholder"></div>
         </div>

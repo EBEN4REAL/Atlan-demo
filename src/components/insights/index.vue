@@ -29,12 +29,13 @@
                 </div>
             </template>
         </div>
+        <!-- {{ explorerPaneSize }} -->
         <!--Sidebar navigation pane end -->
-        <splitpanes :class="$style.splitpane__styles">
-            <pane max-size="20" min-size="0">
+        <splitpanes :class="$style.splitpane__styles" @resize="paneResize">
+            <pane :max-size="20" :size="explorerPaneSize">
                 <!--explorer pane start -->
                 <component
-                    v-if="activeTab && activeTab.component && activeInlineTab"
+                    v-if="activeTab && activeTab.component"
                     :is="activeTab.component"
                     :inlineTabs="inlineTabs"
                     :activeInlineTab="activeInlineTab"
@@ -44,7 +45,11 @@
                 <!--explorer pane end -->
             </pane>
             <pane
-                :size="activeInlineTab?.assetSidebar?.isVisible ? 60 : 80"
+                :size="
+                    activeInlineTab?.assetSidebar?.isVisible
+                        ? 60 + 20 - explorerPaneSize
+                        : 80 + 20 - explorerPaneSize
+                "
                 :min-size="activeInlineTab?.assetSidebar?.isVisible ? 60 : 80"
             >
                 <Playground
@@ -54,9 +59,9 @@
                 />
             </pane>
             <pane
-                max-size="20"
+                :max-size="20"
                 :size="activeInlineTab?.assetSidebar?.isVisible ? 20 : 0"
-                min-size="0"
+                :min-size="0"
                 v-if="
                     activeInlineTab && activeInlineTab?.assetSidebar?.isVisible
                 "
@@ -99,6 +104,27 @@
         },
         props: {},
         setup(props) {
+            /* ---- Panes size ----- */
+            const explorerThreshold = 10
+            const explorerPaneCollapsed = ref(false)
+            const assetSidebarThreshold = 10
+            const explorerPaneSize = ref(20)
+            const paneResize = (event: any) => {
+                if (event.length > 0) {
+                    /* Collapse first pane if it reach threshold */
+                    // explorerPaneSize.value = event[0].size
+                    if (event[0].size <= explorerThreshold) {
+                        explorerPaneSize.value = 0
+                        explorerPaneCollapsed.value = true
+                        console.log('inside')
+                    }
+                    // else {
+                    //     explorerPaneSize.value = event[0].size
+                    //     console.log('inside else')
+                    // }
+                }
+            }
+            /* ---- Panes size ----- */
             const { allTabs: tabsList } = useInsightsTabList()
             const {
                 syncInlineTabsInLocalStorage,
@@ -180,15 +206,17 @@
             }
 
             const openAssetSidebar = (table: tableInterface) => {
-                const index = tabsArray.value.findIndex(
-                    (tab) => tab.key === activeInlineTab.value.key
-                )
-                if (index !== -1) {
-                    tabsArray.value[index].assetSidebar.isVisible = true
-                    tabsArray.value[index].assetSidebar.title = table.label
-                    tabsArray.value[index].assetSidebar.id = table.id
-                    // syncying inline tabarray in localstorage
-                    syncInlineTabsInLocalStorage(tabsArray.value)
+                if (activeInlineTab.value) {
+                    const index = tabsArray.value.findIndex(
+                        (tab) => tab.key === activeInlineTab.value?.key
+                    )
+                    if (index !== -1) {
+                        tabsArray.value[index].assetSidebar.isVisible = true
+                        tabsArray.value[index].assetSidebar.title = table.label
+                        tabsArray.value[index].assetSidebar.id = table.id
+                        // syncying inline tabarray in localstorage
+                        syncInlineTabsInLocalStorage(tabsArray.value)
+                    }
                 }
             }
 
@@ -231,6 +259,8 @@
                 activeInlineTab,
                 inlineTabRef,
                 tabsArray,
+                explorerPaneSize,
+                paneResize,
                 changeTab,
                 openSavedQueryInNewTab,
                 closeAssetSidebar,
@@ -241,32 +271,100 @@
 </script>
 <style lang="less" module>
     :global(.splitpanes__splitter) {
-        background-color: #e5e7eb;
+        background-color: #fff;
+        -webkit-box-sizing: border-box;
+        box-sizing: border-box;
         position: relative;
+        -ms-flex-negative: 0;
+
+        flex-shrink: 0;
     }
-    :global(.splitpanes__splitter):hover {
-        @apply bg-primary;
+
+    :global(.splitpanes--vertical > .splitpanes__splitter) {
+        background-color: #fff;
+        position: relative;
+        width: 8px;
+        margin-left: -1px;
+        box-sizing: border-box;
+        position: relative;
+        touch-action: none;
+        @apply border-r border-l !important;
     }
-    :global(.splitpanes__splitter):before {
-        content: '';
-        position: absolute;
-        left: 0;
-        top: 0;
-        opacity: 0;
-        z-index: 1;
-    }
-    :global(.splitpanes__splitter):hover:before {
-        opacity: 1;
+    :global(.splitpanes--horizontal > .splitpanes__splitter) {
+        background-color: #fff;
+        position: relative;
+        height: 8px;
+        margin-top: -1px;
+        box-sizing: border-box;
+        position: relative;
+        touch-action: none;
+        @apply border-t border-b !important;
     }
     :global(.splitpanes--vertical > .splitpanes__splitter):before {
-        left: -15px;
-        right: -15px;
-        height: 100%;
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        background-color: rgba(0, 0, 0, 0.15);
+        -webkit-transition: background-color 0.3s;
+        transition: background-color 0.3s;
+
+        margin-left: -2px;
+
+        transform: translateY(-50%);
+        width: 1px;
+        height: 30px;
+    }
+    :global(.splitpanes--vertical > .splitpanes__splitter):hover:before {
+        @apply bg-primary !important;
+    }
+    :global(.splitpanes--vertical > .splitpanes__splitter):hover:after {
+        @apply bg-primary !important;
+    }
+    :global(.splitpanes--vertical > .splitpanes__splitter):after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        background-color: rgba(0, 0, 0, 0.15);
+        -webkit-transition: background-color 0.3s;
+        transition: background-color 0.3s;
+
+        transform: translateY(-50%);
+        width: 1px;
+        height: 30px;
+
+        margin-left: 1px;
     }
     :global(.splitpanes--horizontal > .splitpanes__splitter):before {
-        top: -15px;
-        bottom: -15px;
-        width: 100%;
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        background-color: rgba(0, 0, 0, 0.15);
+        -webkit-transition: background-color 0.3s;
+        transition: background-color 0.3s;
+
+        margin-top: -2px;
+
+        transform: translateX(-50%);
+        width: 30px;
+        height: 1px;
+    }
+    :global(.splitpanes--horizontal > .splitpanes__splitter):after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        background-color: rgba(0, 0, 0, 0.15);
+        -webkit-transition: background-color 0.3s;
+        transition: background-color 0.3s;
+
+        transform: translateX(-50%);
+        width: 30px;
+        height: 1px;
+
+        margin-top: 1px;
     }
 </style>
 <style lang="less" scoped>

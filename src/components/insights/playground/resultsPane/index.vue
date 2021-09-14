@@ -41,6 +41,7 @@
             queries: defineAsyncComponent(() => import('./queries.vue')),
             filters: defineAsyncComponent(() => import('./filters.vue')),
             joins: defineAsyncComponent(() => import('./joins.vue')),
+            downstream: defineAsyncComponent(() => import('./downstream.vue')),
             impersonation: defineAsyncComponent(
                 () => import('./impersonation.vue')
             ),

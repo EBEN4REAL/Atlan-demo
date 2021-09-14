@@ -1,10 +1,10 @@
 // Always match the exclude fields with these assettypes
 // import { AssetTypeList } from '~/constant/assetType'
-import { ref, computed, Ref } from 'vue'
+import { computed, Ref } from 'vue'
 import { assetInterface } from '~/types/assets/asset.interface'
 
 // Keep adding pages here as and when required
-type Page = 'discovery' | 'profile'
+type Page = 'discovery' | 'profile' | 'biOverview' | 'nonBiOverview'
 
 interface TabList {
     name: string
@@ -22,8 +22,14 @@ export default function useAssetDetailsTabList(
         {
             name: 'Info',
             component: 'info',
-            visibleOn: ['discovery', 'profile'],
+            visibleOn: ['discovery', 'profile', 'biOverview', 'nonBiOverview'],
             icon: 'Overview',
+        },
+        {
+            name: 'Custom Metadata',
+            component: 'businessMetadataTab',
+            visibleOn: ['discovery', 'profile', 'biOverview', 'nonBiOverview'],
+            icon: 'Metadata',
         },
         {
             name: 'Columns',
@@ -43,7 +49,7 @@ export default function useAssetDetailsTabList(
         {
             name: 'Activity',
             component: 'activity',
-            visibleOn: ['discovery', 'profile'],
+            visibleOn: ['discovery', 'profile', 'biOverview', 'nonBiOverview'],
             icon: 'Activity',
         },
         {
@@ -65,7 +71,8 @@ export default function useAssetDetailsTabList(
         // {
         //     name: 'Chat',
         //     component: 'chat',
-        //     visibleOn: ["discovery", "profile"],
+        //     visibleOn: ['biOverview', 'nonBiOverview'],
+        //     icon: 'Chat',
         // },
         // {
         //     name: 'Actions',

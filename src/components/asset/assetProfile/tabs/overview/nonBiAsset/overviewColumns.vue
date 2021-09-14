@@ -75,9 +75,10 @@
                 :destroy-on-close="true"
                 :closable="false"
             >
-                <PreviewSidebar
+                <AssetPreview
                     :selected-asset="selectedRowData"
                     page="nonBiOverview"
+                    :show-cross-icon="true"
                     @closeSidebar="handleCloseColumnSidebar"
                     @asset-mutation="propagateToColumnList"
                 />
@@ -97,13 +98,13 @@
         provide,
         nextTick,
     } from 'vue'
-    import { useRoute, useRouter } from 'vue-router'
+    import { useRoute } from 'vue-router'
 
     // Components
     import SearchAndFilter from '@/common/input/searchAndFilter.vue'
     import preferences from './preferences.vue'
-    import PreviewSidebar from '~/components/asset/assetProfile/tabs/overview/sidebar/index.vue'
     import Tooltip from '@/common/ellipsis/index.vue'
+    import AssetPreview from '@/discovery/preview/assetPreview.vue'
 
     // Composables
     import useColumns from '~/composables/asset/useColumns'
@@ -114,7 +115,12 @@
     import { assetInterface } from '~/types/assets/asset.interface'
 
     export default defineComponent({
-        components: { preferences, SearchAndFilter, PreviewSidebar, Tooltip },
+        components: {
+            preferences,
+            SearchAndFilter,
+            Tooltip,
+            AssetPreview,
+        },
         setup() {
             /** DATA */
             const query = ref('')

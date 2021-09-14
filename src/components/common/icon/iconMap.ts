@@ -28,7 +28,7 @@ import Term from '~/assets/images/icons/term.svg'
 import TermDeprecated from '~/assets/images/icons/term-deprecated.svg'
 import TermIssue from '~/assets/images/icons/term-issue.svg'
 import TermVerified from '~/assets/images/icons/term-verified.svg'
-import TermWip from '~/assets/images/icons/term-wip.svg'
+import TermDraft from '~/assets/images/icons/term-wip.svg'
 import Category from '~/assets/images/icons/category.svg'
 import CategoryDeprecated from '~/assets/images/icons/category-deprecated.svg'
 import CategoryIssue from '~/assets/images/icons/category-issue.svg'
@@ -38,6 +38,7 @@ import Shield from '~/assets/images/icons/shield.svg'
 import Edit from '~/assets/images/icons/edit.svg'
 import Decline from '~/assets/images/icons/decline.svg'
 import Approve from '~/assets/images/icons/approve.svg'
+import CategoryDraft from '~/assets/images/icons/category-wip.svg'
 import EmptyGlossary from '~/assets/images/icons/empty-glossary.svg'
 import Glossary from '~/assets/images/icons/glossary.svg'
 import KebabMenu from '~/assets/images/icons/kebab-menu-new.svg'
@@ -46,8 +47,12 @@ import Lineage from '~/assets/images/icons/lineage.svg'
 import Activity from '~/assets/images/icons/activity.svg'
 import Columns from '~/assets/images/icons/columns.svg'
 import Relation from '~/assets/images/icons/relation.svg'
+import ShareNew from '~/assets/images/icons/shareNew.svg'
+import User from '~/assets/images/icons/user.svg'
+import Metadata from '~/assets/images/icons/metadata.svg'
 
 export const iconMap = {
+    Metadata,
     Relation,
     Overview,
     Lineage,
@@ -83,7 +88,7 @@ export const iconMap = {
     TermDeprecated,
     TermIssue,
     TermVerified,
-    TermWip,
+    TermDraft,
     Category,
     CategoryDeprecated,
     CategoryIssue,
@@ -93,9 +98,12 @@ export const iconMap = {
     Edit,
     Approve,
     Decline,
+    CategoryDraft,
     EmptyGlossary,
     Glossary,
     KebabMenu,
+    ShareNew,
+    User,
 }
 
 export type iconName = keyof typeof iconMap

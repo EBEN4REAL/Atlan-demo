@@ -23,19 +23,7 @@
             @click="() => redirectToProfile('glossary', glossary.guid)"
         >
             <div
-                class="
-                    flex flex-col
-                    justify-center
-                    px-3
-                    mr-2
-                    text-sm
-                    leading-5
-                    text-gray-700
-                    cursor-pointer
-                    h-9
-                    group
-                    hover:bg-primary-light hover:text-primary
-                "
+                class="flex flex-col justify-center px-3 mr-2 text-sm leading-5 text-gray-700 cursor-pointer  h-9 group hover:bg-primary-light hover:text-primary"
             >
                 <div class="flex flex-row justify-between">
                     {{ glossary.displayText }}
@@ -53,23 +41,14 @@
     </div>
     <div v-else>
         <div
-            class="
-                flex
-                py-2
-                pl-4
-                mb-4
-                text-sm
-                leading-5
-                text-gray-500
-                bg-gray-100
-                cursor-pointer
-            "
+            class="flex py-2 pl-4 mb-4 text-sm leading-5 text-gray-500 bg-gray-100 cursor-pointer "
             type="link"
             @click="backToHome"
         >
             <fa icon="fas chevron-left" class="mr-2" />
             <span>Back to Glossary Home</span>
         </div>
+
         <div class="px-4 pb-4">
             <a-input-search
                 :placeholder="
@@ -81,19 +60,12 @@
                 "
             ></a-input-search>
         </div>
-        <div v-if="!isLoading" class="h-screen overflow-auto">
+        <div v-if="!isLoading" class="h-screen pb-48 overflow-auto">
             <div class="flex justify-between px-4">
                 <div class="flex items-center ml-3">
                     <AtlanIcon icon="Glossary" class="h-5 m-0 mr-2" />
                     <div
-                        class="
-                            flex
-                            justify-start
-                            w-full
-                            text-base
-                            leading-5
-                            cursor-pointer
-                        "
+                        class="flex justify-start w-full text-base leading-5 cursor-pointer "
                         @click="
                             redirectToProfile('glossary', parentGlossary.guid)
                         "
@@ -116,14 +88,7 @@
                 <a-dropdown :trigger="['click']">
                     <a class="ant-dropdown-link" @click.prevent>
                         <a-button
-                            class="
-                                flex flex-col
-                                justify-center
-                                p-2
-                                border-none
-                                bg-primary-light
-                                text-primary
-                            "
+                            class="flex flex-col justify-center p-2 border-none  bg-primary-light text-primary"
                         >
                             <fa icon="fal plus" />
                         </a-button>
@@ -184,78 +149,28 @@
                                             v-if="type === 'glossary'"
                                             class="p-0 my-auto mr-2"
                                         >
-                                            <img
+                                            <!-- <img
                                                 :src="GlossarySvg"
                                                 :width="15"
+                                            /> -->
+
+                                            <AtlanIcon
+                                                icon="Glossary"
+                                                class="h-5"
+                                            />
+                                        </span>
+                                        <span v-else class="p-0 my-auto mr-2">
+                                            <AtlanIcon
+                                                :icon="
+                                                    getEntityStatusIcon(
+                                                        type,
+                                                        assetStatus
+                                                    )
+                                                "
                                             />
                                         </span>
                                         <span
-                                            v-else-if="type === 'term'"
-                                            class="p-0 my-auto mr-2"
-                                        >
-                                            <AtlanIcon
-                                                v-if="
-                                                    assetStatus === 'deprecated'
-                                                "
-                                                icon="TermDeprecated"
-                                            />
-                                            <AtlanIcon
-                                                v-else-if="
-                                                    assetStatus === 'issue'
-                                                "
-                                                icon="TermIssue"
-                                            />
-                                            <AtlanIcon
-                                                v-else-if="
-                                                    assetStatus === 'draft'
-                                                "
-                                                icon="TermWip"
-                                            />
-                                            <AtlanIcon
-                                                v-else-if="
-                                                    assetStatus === 'verified'
-                                                "
-                                                icon="TermVerified"
-                                            />
-                                            <AtlanIcon v-else icon="Term" />
-                                        </span>
-                                        <span
-                                            v-else-if="type === 'category'"
-                                            class="p-0 my-auto mr-2"
-                                        >
-                                            <AtlanIcon
-                                                v-if="
-                                                    assetStatus === 'deprecated'
-                                                "
-                                                icon="CategoryDeprecated"
-                                            />
-                                            <AtlanIcon
-                                                v-else-if="
-                                                    assetStatus === 'issue'
-                                                "
-                                                icon="CategoryIssue"
-                                            />
-                                            <AtlanIcon
-                                                v-else-if="
-                                                    assetStatus === 'draft'
-                                                "
-                                                icon="CategoryWip"
-                                            />
-                                            <AtlanIcon
-                                                v-else-if="
-                                                    assetStatus === 'verified'
-                                                "
-                                                icon="CategoryVerified"
-                                            />
-                                            <AtlanIcon v-else icon="Category" />
-                                        </span>
-                                        <span
-                                            class="
-                                                my-auto
-                                                text-sm
-                                                leading-5
-                                                text-gray-700
-                                            "
+                                            class="my-auto text-sm leading-5 text-gray-700 "
                                             >{{ title }}</span
                                         >
                                     </div>
@@ -265,28 +180,13 @@
                                         :trigger="['hover']"
                                     >
                                         <span
-                                            class="
-                                                flex
-                                                content-center
-                                                justify-center
-                                                w-5
-                                                h-5
-                                                p-0
-                                                m-0
-                                                rounded
-                                                opacity-0
-                                                group-hover:opacity-100
-                                            "
+                                            class="flex content-center justify-center w-5 h-5 p-0 m-0 rounded opacity-0  group-hover:opacity-100"
                                             @click.prevent
                                         >
                                             <AtlanIcon
                                                 icon="KebabMenu"
                                                 class="h-3 mt-1"
                                             />
-                                            <!-- <fa
-                                                icon="fal ellipsis-v"
-                                                class="w-3 h-3"
-                                            /> -->
                                         </span>
                                         <template #overlay>
                                             <a-menu>
@@ -306,7 +206,15 @@
                                                                 )
                                                         "
                                                     >
-                                                        New Term
+                                                        <div
+                                                            class="flex items-center "
+                                                        >
+                                                            <AtlanIcon
+                                                                icon="Link"
+                                                                class="m-0 mr-2"
+                                                            />
+                                                            New Term
+                                                        </div>
                                                     </a-menu-item>
                                                     <a-menu-item
                                                         key="1"
@@ -318,7 +226,15 @@
                                                                 )
                                                         "
                                                     >
-                                                        New Category
+                                                        <div
+                                                            class="flex items-center "
+                                                        >
+                                                            <AtlanIcon
+                                                                icon="Link"
+                                                                class="m-0 mr-2"
+                                                            />
+                                                            New Category
+                                                        </div>
                                                     </a-menu-item>
                                                 </div>
                                             </a-menu>
@@ -332,14 +248,7 @@
             </div>
             <div
                 v-else
-                class="
-                    flex flex-col
-                    justify-center
-                    text-base
-                    leading-6
-                    text-center text-gray-500
-                    mt-14
-                "
+                class="flex flex-col justify-center text-base leading-6 text-center text-gray-500  mt-14"
             >
                 <AtlanIcon icon="EmptyGlossary" class="h-40" />
                 <p class="m-0 mt-20">The Glossary is empty,</p>
@@ -368,11 +277,9 @@
     import handleTreeExpand from '~/composables/tree/handleTreeExpand'
     import useCreateGlossary from '~/components/glossary/composables/useCreateGlossary'
     import useDeleteGlossary from '~/components/glossary/composables/useDeleteGlossary'
+    import useGtcSearch from '~/components/glossary/composables/useGtcSearch'
 
     // constant
-    import GlossarySvg from '~/assets/images/gtc/glossary/glossary.png'
-    import CategorySvg from '~/assets/images/gtc/category/category.png'
-    import TermSvg from '~/assets/images/gtc/term/term.png'
     import { List as StatusList } from '~/constant/status'
     import AtlanIcon from '~/components/common/icon/atlanIcon.vue'
     import AtlanBtn from '~/components/UI/button.vue'
@@ -473,6 +380,24 @@
                 createCategory(props.parentGlossary?.guid ?? '')
             }
 
+            // to get correct icon from type and status
+            const getEntityStatusIcon = (
+                type: String,
+                assetStatus: String
+            ): String => {
+                if (
+                    assetStatus === undefined ||
+                    assetStatus === '' ||
+                    assetStatus === 'is_null'
+                )
+                    return `${type?.charAt(0).toUpperCase()}${type?.slice(1)}`
+
+                return `${type?.charAt(0).toUpperCase()}${type?.slice(
+                    1
+                )}${assetStatus?.charAt(0).toUpperCase()}${assetStatus?.slice(
+                    1
+                )}`
+            }
             return {
                 redirectToProfile,
                 backToHome,
@@ -481,10 +406,8 @@
                 createTerm,
                 createGlossary,
                 createCategory,
-                GlossarySvg,
-                CategorySvg,
-                TermSvg,
                 StatusList,
+                getEntityStatusIcon,
                 // selectedKeys,
                 // expandedKeys,
                 // expandNode,

@@ -103,8 +103,6 @@
         Term,
     } from '~/types/glossary/glossary.interface'
 
-    import GlossarySvg from '~/assets/images/gtc/glossary/glossary.png'
-
     export default defineComponent({
         components: {
             GlossaryProfileOverview,
@@ -244,7 +242,6 @@
                 isLoading,
                 termsLoading,
                 categoriesLoading,
-                GlossarySvg,
                 guid,
                 glossaryTerms,
                 glossaryCategories,

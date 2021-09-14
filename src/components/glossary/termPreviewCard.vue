@@ -1,8 +1,6 @@
 <template>
     <div class="flex flex-row py-4 pl-6">
         <div class="flex flex-col min-w-max">
-            <!-- <img :width="20" :src="TermSvg" /> -->
-
             <AtlanIcon icon="Term" class="h-6 mt-1" />
         </div>
 
@@ -24,8 +22,6 @@
 
     import { Components } from '~/api/atlas/client'
 
-    import TermSvg from '~/assets/images/gtc/term/term.png'
-
     interface PropsType {
         term: Components.Schemas.AtlasGlossaryTerm
     }
@@ -37,7 +33,6 @@
             const term = computed(() => props.term)
             return {
                 term,
-                TermSvg,
             }
         },
     })

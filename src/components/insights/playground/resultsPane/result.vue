@@ -1,9 +1,9 @@
 <template>
-    <div class="w-full p-3 rounded box">
+    <div class="w-full h-full p-3 rounded box">
         <div
             class="flex items-center justify-center w-full h-full rounded  placeholder"
         >
-            Result - {{ selectedTab?.playground?.resultsPane?.result.title }}
+            Result
         </div>
     </div>
 </template>
@@ -14,18 +14,8 @@
 
     export default defineComponent({
         components: {},
-        props: {
-            selectedTab: {
-                type: Object as PropType<activeInlineTabInterface>,
-                required: true,
-            },
-        },
-        setup(props) {
-            const { selectedTab } = toRefs(props)
-            return {
-                selectedTab,
-            }
-        },
+        props: {},
+        setup(props) {},
     })
 </script>
 <style lang="less" scoped>

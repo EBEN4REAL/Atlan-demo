@@ -7,7 +7,19 @@ export interface activeInlineTabInterface {
     favico: string | undefined
     playground: {
         editorTitle: string
-        resultTitle: string
+        resultsPane: {
+            activeTab: string
+            result: {
+                title: string
+            }
+            metadata: Object
+            queries: Object
+            joins: Object
+            filters: Object
+            impersonation: Object
+            downstream: Object
+            sqlHelp: Object
+        }
     }
     assetSidebar: {
         isVisible: boolean

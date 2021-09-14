@@ -30,8 +30,8 @@
                 <Editor :selectedTab="selectedTab"
             /></pane>
             <pane min-size="0" max-size="50">
-                <div class="flex text-gray py-1.5 px-3">Result</div>
-                <Result :selectedTab="selectedTab"
+                <!-- <div class="flex text-gray py-1.5 px-3">Result</div> -->
+                <ResultsPane :selectedTab="selectedTab"
             /></pane>
         </splitpanes>
         <NoActiveInlineTab v-else />
@@ -42,12 +42,12 @@
     import { defineComponent, PropType, toRefs, computed, Ref } from 'vue'
     import Vue3TabsChrome from './vue3-tabs-chrome.vue'
     import Editor from '~/components/insights/playground/editor.vue'
-    import Result from '~/components/insights/playground/result.vue'
+    import ResultsPane from '~/components/insights/playground/resultsPane/index.vue'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
     import NoActiveInlineTab from './noActiveInlineTab.vue'
 
     export default defineComponent({
-        components: { Editor, Result, Vue3TabsChrome, NoActiveInlineTab },
+        components: { Editor, ResultsPane, Vue3TabsChrome, NoActiveInlineTab },
         props: {
             tabRef: {
                 type: Object as PropType<Ref<any>>,
@@ -87,7 +87,19 @@
                     explorer: {},
                     playground: {
                         editorTitle: `${key} Editor`,
-                        resultTitle: `${key} Result`,
+                        resultsPane: {
+                            activeTab: 'result',
+                            result: {
+                                title: `${key} Result`,
+                            },
+                            metadata: {},
+                            queries: {},
+                            joins: {},
+                            filters: {},
+                            impersonation: {},
+                            downstream: {},
+                            sqlHelp: {},
+                        },
                     },
                     assetSidebar: {
                         isVisible: false,

@@ -8,7 +8,19 @@ export const inlineTabsDemoData: activeInlineTabInterface[] = [
         explorer: {},
         playground: {
             editorTitle: 'ABCDE EDITOR',
-            resultTitle: 'ABCDE Result',
+            resultsPane: {
+                activeTab: 'result',
+                result: {
+                    title: 'ABCDE Result',
+                },
+                metadata: {},
+                queries: {},
+                joins: {},
+                filters: {},
+                impersonation: {},
+                downstream: {},
+                sqlHelp: {},
+            },
         },
         favico: 'https://atlan.com/favicon.ico',
         assetSidebar: {
@@ -26,7 +38,19 @@ export const inlineTabsDemoData: activeInlineTabInterface[] = [
         explorer: {},
         playground: {
             editorTitle: 'ADBE EDITOR',
-            resultTitle: 'ADBE Result',
+            resultsPane: {
+                activeTab: 'result',
+                result: {
+                    title: 'ADBE Result',
+                },
+                metadata: {},
+                queries: {},
+                joins: {},
+                filters: {},
+                impersonation: {},
+                downstream: {},
+                sqlHelp: {},
+            },
         },
         favico: 'https://atlan.com/favicon.ico',
         assetSidebar: {
@@ -44,7 +68,19 @@ export const inlineTabsDemoData: activeInlineTabInterface[] = [
         explorer: {},
         playground: {
             editorTitle: 'BCDE EDITOR',
-            resultTitle: 'BCDE Result',
+            resultsPane: {
+                activeTab: 'result',
+                result: {
+                    title: 'BCDE Result',
+                },
+                metadata: {},
+                queries: {},
+                joins: {},
+                filters: {},
+                impersonation: {},
+                downstream: {},
+                sqlHelp: {},
+            },
         },
         favico: 'https://atlan.com/favicon.ico',
         assetSidebar: {

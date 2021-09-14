@@ -1,6 +1,6 @@
 <template>
     <div
-        class="grid items-center justify-between grid-cols-10 pl-4 my-1 bg-white border border-transparent rounded  gap-x-4"
+        class="grid items-center justify-between grid-cols-10 pl-4 my-1 bg-white border border-transparent rounded  group gap-x-4 hover:bg-primary-light"
         style="height: 50px"
         :class="{
             'bg-primary-light': selected,
@@ -60,24 +60,35 @@
             />
         </div>
 
-        <div class="flex items-center justify-around col-span-3">
+        <div class="flex items-center justify-end col-span-3 pr-4">
             <AtlanIcon
                 v-if="state.isLoading"
                 icon="CircleLoader"
                 class="w-5 h-5 text-gray animate-spin"
             ></AtlanIcon>
-            <template v-else-if="selected">
-                <RequestActions
-                    v-if="request.status === 'active'"
-                    @accept="handleApproval"
-                    @reject="handleRejection"
-                />
-                <div v-else-if="request.status === 'approved'">Approved</div>
-                <div v-else-if="request.status === 'rejected'">Rejected</div>
-            </template>
+            <!-- <div v-else-if="selected"> -->
             <template v-else>
-                <UserPiece :user="request.createdByUser" :is-pill="false" />
-                <DatePiece label="Created At" :date="request.created_at" />
+                <div
+                    class="items-center justify-around hidden group-hover:flex"
+                >
+                    <RequestActions
+                        v-if="request.status === 'active'"
+                        @accept="handleApproval"
+                        @reject="handleRejection"
+                    />
+                    <div v-else-if="request.status === 'approved'">
+                        Approved
+                    </div>
+                    <div v-else-if="request.status === 'rejected'">
+                        Rejected
+                    </div>
+                </div>
+                <div
+                    class="flex items-center justify-around group-hover:hidden"
+                >
+                    <DatePiece label="Created At" :date="request.created_at" />
+                    <UserPiece :user="request.createdByUser" />
+                </div>
             </template>
         </div>
     </div>

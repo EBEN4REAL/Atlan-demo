@@ -152,7 +152,9 @@
                     playground: {
                         editorTitle: savedQuery.editor,
                         resultsPane: {
-                            activeTab: 0,
+                            activeTab:
+                                activeInlineTab.value?.playground.resultsPane
+                                    .activeTab ?? 0,
                             result: {
                                 title: savedQuery.result,
                             },
@@ -166,10 +168,12 @@
                         },
                     },
                     assetSidebar: {
-                        isVisible: false,
+                        // for taking the previous state from active tab
+                        isVisible:
+                            activeInlineTab.value?.assetSidebar.isVisible,
                         assetInfo: {},
-                        title: '',
-                        id: '',
+                        title: activeInlineTab.value?.assetSidebar.title,
+                        id: activeInlineTab.value?.assetSidebar.id,
                     },
                 }
                 if (!isInlineTabAlreadyOpened(newTab)) {

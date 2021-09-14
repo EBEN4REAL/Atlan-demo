@@ -81,7 +81,7 @@
                         resultsPane: {
                             activeTab:
                                 activeInlineTab.value.playground.resultsPane
-                                    .activeTab,
+                                    .activeTab ?? 0,
                             result: {
                                 title: `${key} Result`,
                             },

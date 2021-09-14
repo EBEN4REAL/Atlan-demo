@@ -10,9 +10,13 @@
     >
         <div class="flex items-center col-span-4 overflow-hidden">
             <!-- <a-checkbox :checked="selected" class="mr-4" /> -->
+            <AtlanIcon
+                class="mr-4 text-gray-500"
+                :icon="requestTypeIcon[request.request_type]"
+            />
             <AssetPiece
-                v-if="request.destination_qf_name"
-                :asset-qf-name="request.destination_qf_name"
+                v-if="request.destination_qualified_name"
+                :asset-qf-name="request.destination_qualified_name"
             />
             <span v-else class="text-sm overflow-ellipsis">
                 {{ primaryText[request.request_type](request) }}
@@ -20,11 +24,6 @@
         </div>
         <!-- RHS -->
         <div class="flex items-center col-span-3">
-            <AtlanIcon
-                class="mr-4 text-gray-500"
-                :icon="requestTypeIcon[request.request_type]"
-            />
-
             <ClassificationPiece
                 v-if="
                     request?.request_type === 'create_typedef' &&
@@ -57,8 +56,8 @@
             />
 
             <AssetPiece
-                v-else-if="request.source_qf_name"
-                :asset-qf-name="request.source_qf_name"
+                v-else-if="request.source_qualified_name"
+                :asset-qf-name="request.source_qualified_name"
             />
         </div>
 
@@ -86,10 +85,11 @@
                     </div>
                 </div>
                 <div
-                    class="flex items-center justify-around group-hover:hidden"
+                    class="flex items-center justify-end flex-grow  gap-x-2 group-hover:hidden"
                 >
+                    <UserPiece :user="request.createdByUser" :is-pill="false" />
+                    •
                     <DatePiece label="Created At" :date="request.created_at" />
-                    <UserPiece :user="request.createdByUser" />
                 </div>
             </template>
         </div>

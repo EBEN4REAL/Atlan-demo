@@ -44,6 +44,7 @@ import Relation from '~/assets/images/icons/relation.svg'
 import ShareNew from '~/assets/images/icons/shareNew.svg'
 import User from '~/assets/images/icons/user.svg'
 import Chats from '~/assets/images/icons/chats.svg'
+import OpenTermProfile from '~/assets/images/icons/OpenTermProfile.svg'
 
 export default {
     Relation,
@@ -92,4 +93,5 @@ export default {
     ShareNew,
     User,
     Chats,
+    OpenTermProfile,
 }

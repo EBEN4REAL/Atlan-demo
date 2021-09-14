@@ -1,36 +1,47 @@
 <template>
     <div class="flex items-start justify-between">
-        <div class="flex">
-            <!-- back button -->
-            <div>
-                <button class="px-1 py-0.5 mx-1" @click="$router.back()">
-                    <atlan-icon
-                        icon="ChevronDown"
-                        class="w-auto transform rotate-90 h-7"
-                    />
-                </button>
+        <div class="flex flex-col">
+            <div class="flex items-center">
+                <!-- back button -->
+                <div class="mr-3">
+                    <a-button class="px-1 py-1" @click="$router.back()">
+                        <atlan-icon
+                            icon="ChevronDown"
+                            class="w-auto transform rotate-90"
+                        />
+                    </a-button>
+                </div>
+                <div class="flex flex-col">
+                    <div class="flex">
+                        <Tooltip
+                            :tooltip-text="title(assetData)"
+                            classes="mb-0 text-gray-700 font-semibold text-lg"
+                        />
+
+                        <div class="flex items-center">
+                            <StatusBadge
+                                :key="assetData.guid"
+                                :show-no-status="false"
+                                :status-id="assetData?.attributes?.assetStatus"
+                                class="ml-1.5"
+                            ></StatusBadge>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <!-- asset logo -->
+                        <AssetLogo :asset="assetData" variant="" />
+                        <HierarchyBar
+                            class="py-1 mt-1"
+                            :selected-asset="assetData"
+                        />
+                    </div>
+                </div>
             </div>
             <div>
-                <div class="flex items-center">
-                    <span class="text-xl font-bold">
-                        {{ assetData.attributes.name }}
-                    </span>
-
-                    <StatusBadge
-                        :key="assetData.guid"
-                        :show-no-status="false"
-                        :status-id="status(assetData)"
-                        class="ml-2"
-                    ></StatusBadge>
-                </div>
-
-                <!-- asset logo -->
-                <AssetLogo :asset="assetData" variant="lg" />
-
                 <!-- asset source hierarchy -->
-                <HierarchyBar class="py-1 mt-1" :selected-asset="assetData" />
             </div>
         </div>
+
         <!-- CTAs -->
         <div class="flex">
             <!-- <a-button
@@ -48,7 +59,7 @@
                 Open in Tableau
             </AtlanBtn>
             <a-button class="px-2 mx-2"
-                ><atlan-icon icon="BookmarkOutlined" class="w-auto h-4"
+                ><atlan-icon icon="Bookmark" class="w-auto h-4"
             /></a-button>
             <AtlanBtn color="secondary" size="sm" padding="compact">
                 <template #prefix>
@@ -61,6 +72,7 @@
 </template>
 
 <script lang="ts">
+    import Tooltip from '@common/ellipsis/index.vue'
     // Vue
     import { defineComponent, computed, inject } from 'vue'
     // Components
@@ -73,7 +85,7 @@
     import useAssetInfo from '~/composables/asset/useAssetInfo'
 
     export default defineComponent({
-        components: { AssetLogo, HierarchyBar, StatusBadge, AtlanBtn },
+        components: { AssetLogo, HierarchyBar, StatusBadge, AtlanBtn, Tooltip },
 
         setup() {
             /** INJECTIONS */

@@ -12,7 +12,7 @@
 
         <div v-else class="flex items-center">
             <div
-                class="inline-flex items-center px-3 py-1 mr-3 text-sm text-gray-700 border rounded-full cursor-pointer "
+                class="inline-flex items-center px-3 py-1 mr-3 text-sm text-gray-700 border border-opacity-0 rounded-full cursor-pointer  hover:border-opacity-100 status-badge-margin"
             >
                 <span class="svg-icon">
                     <component class="w-auto h-4" :is="icon" />
@@ -28,7 +28,7 @@
             >
                 {{ timeAgo(statusUpdatedAt) }}
                 by
-                {{ statusUpdatedBy }}
+                <span class="capitalize">{{ statusUpdatedBy }}</span>
             </p>
         </div>
         <p
@@ -111,3 +111,9 @@
         },
     })
 </script>
+
+<style lang="less" scoped>
+    .status-badge-margin {
+        margin-left: -12px;
+    }
+</style>

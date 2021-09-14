@@ -130,15 +130,7 @@
                     <a-menu-divider />
                     <a-menu-item key="archive" class="text-red-700">
                         <a-button
-                            class="
-                                w-full
-                                p-0
-                                m-0
-                                bg-transparent
-                                border-0
-                                shadow-none
-                                outline-none
-                            "
+                            class="w-full p-0 m-0 bg-transparent border-0 shadow-none outline-none "
                             @click="showModal"
                         >
                             <div class="flex items-center text-red-700">
@@ -191,11 +183,13 @@
 <script lang="ts">
     import { defineComponent, ref, PropType, inject, onMounted } from 'vue'
     // components
-    // import Status from '@common/sidebar/status.vue'
+    import StatusBadge from '@common/badge/status/index.vue'
     import Owners from '@/glossary/common/owners.vue'
     import Status from '@/glossary/common/status.vue'
-    import StatusBadge from '@common/badge/status/index.vue'
+    // utils
     import { copyToClipboard } from '~/utils/clipboard'
+    import assetTypeLabel from '@/glossary/constants/assetTypeLabel'
+    // composables
     import useDeleteGlossary from '~/components/glossary/composables/useDeleteGlossary'
     import useCreateGlossary from '~/components/glossary/composables/useCreateGlossary'
     import {
@@ -236,11 +230,6 @@
                 'refetchGlossaryTree'
             )
 
-            const assetTypeLabel = {
-                AtlasGlossaryTerm: 'term',
-                AtlasGlossaryCategory: 'category',
-                AtlasGlossary: 'glossary',
-            }
             const {
                 deleteGlossary,
                 deleteCategory,
@@ -318,6 +307,7 @@
                     )
             }
 
+            // update tree on archive or create new entity
             const updateTree = (selectedAsset: Glossary | Category | Term) => {
                 if (updateTreeNode) {
                     updateTreeNode({
@@ -326,7 +316,6 @@
                     })
                 }
             }
-
             return {
                 handleCopyProfileLink,
                 assetTypeLabel,

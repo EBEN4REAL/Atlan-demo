@@ -24,8 +24,11 @@
                 </a-button>
             </a-popover>
         </div>
+        <div v-if="isLoading" class="mt-24" >
+            <LoadingView />
+        </div>
         <div
-            v-if="assets && assets.length <= 0 && !isLoading"
+            v-else-if="assets && assets.length <= 0 && !isLoading"
             class="flex-grow"
         >
             <EmptyView></EmptyView>
@@ -84,12 +87,13 @@
     import AssetList from '~/components/discovery/list/assetList.vue'
     import EmptyView from '@common/empty/discover.vue'
     import AssetDiscovery from '~/components/discovery/assetDiscovery.vue'
+    import LoadingView from '@common/loaders/section.vue'
 
     import useTermLinkedAssets from '~/components/glossary/composables/useTermLinkedAssets'
     import { getDecodedOptionsFromString } from '~/utils/helper/routerQuery'
 
     export default defineComponent({
-        components: { AssetList, EmptyView, AssetDiscovery },
+        components: { AssetList, EmptyView, AssetDiscovery, LoadingView },
         props: {
             termQualifiedName: {
                 type: String,

@@ -230,8 +230,6 @@
                 total: totalGroupCount,
                 state: groupOwnerState,
             } = fetchGroupList(now)
-            console.log('userList->', listUsers.value)
-            console.log('groupList->', listGroups.value)
 
             const onSelectUser = (user: userInterface) => {
                 // unselect if already selected
@@ -332,8 +330,6 @@
                     selectedGroups.value = []
                 }
             }
-            console.log(ownerUsers, 'ownersUsers')
-            console.log(selectedGroups, 'selectedGroups')
 
             watch(
                 [ownerUsers, ownerGroups],

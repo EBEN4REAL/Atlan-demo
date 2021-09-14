@@ -8,6 +8,7 @@
             <ProfileHeader
                 :title="title"
                 :entity="glossary"
+                :isNewEntity="isNewGlossary"
                 :statusMessage="statusMessage"
                 :statusObject="statusObject"
                 :shortDescription="shortDescription"
@@ -43,19 +44,6 @@
                                 </div>
                             </div>
                             <GlossaryProfileOverview :entity="glossary" />
-                            <!-- <GlossaryContinueSettingUp
-                                v-if="
-                                    !isLoading ||
-                                    !termsLoading ||
-                                    !categoriesLoading
-                                "
-                                :terms="glossaryTerms"
-                                :categories="glossaryCategories"
-                                @updateDescription="refreshCategoryTermList"
-                                @fetchNextCategoryOrTermList="
-                                    fetchNextCategoryOrTermList
-                                "
-                            /> -->
                         </div>
                     </a-tab-pane>
                     <a-tab-pane key="2" tab="Terms & Categories">
@@ -96,14 +84,10 @@
     import { useRouter } from 'vue-router'
 
     // components
-    import GlossaryTermsAndCategoriesTab from '@/glossary/glossaryTermsAndCategoriesTab.vue'
     import LoadingView from '@common/loaders/page.vue'
+    import GlossaryTermsAndCategoriesTab from '@/glossary/glossaryTermsAndCategoriesTab.vue'
     import GlossaryProfileOverview from '@/glossary/common/glossaryProfileOverview.vue'
-    import GlossaryContinueSettingUp from '@/glossary/continueSettingUp/glossaryContinueSettingUp.vue'
-    import EntityHistory from '@/glossary/common/entityHistory.vue'
     import SidePanel from '@/glossary/sidePanel/index.vue'
-    import CategoryTermPreview from '@/glossary/common/categoryTermPreview/categoryTermPreview.vue'
-    import ThreeDotMenu from '@/glossary/common/threeDotMenu.vue'
     import ProfileHeader from '@/glossary/common/profileHeader.vue'
 
     // composables
@@ -119,18 +103,12 @@
         Term,
     } from '~/types/glossary/glossary.interface'
 
-    import GlossarySvg from '~/assets/images/gtc/glossary/glossary.png'
-
     export default defineComponent({
         components: {
             GlossaryProfileOverview,
-            GlossaryContinueSettingUp,
             GlossaryTermsAndCategoriesTab,
-            EntityHistory,
             LoadingView,
             SidePanel,
-            CategoryTermPreview,
-            ThreeDotMenu,
             ProfileHeader,
         },
         props: {
@@ -146,11 +124,6 @@
             const currentTab = ref('1')
             const previewEntity = ref<Category | Term | undefined>()
             const showPreviewPanel = ref(false)
-            const assetTypeLabel = {
-                AtlasGlossaryTerm: 'term',
-                AtlasGlossaryCategory: 'category',
-                AtlasGlossary: 'glossary',
-            }
             const newName = ref('')
 
             const router = useRouter()
@@ -166,7 +139,9 @@
                 statusMessage,
             } = useGTCEntity<Glossary>('glossary', guid)
 
-            const isNewGlossary = computed(() => title.value === 'New Glossary')
+            const isNewGlossary = computed(
+                () => title.value === 'Untitled Glossary'
+            )
 
             const {
                 terms: glossaryTerms,
@@ -225,7 +200,6 @@
                     name: newName.value,
                 })
                 if (reInitTree) {
-                    console.log(reInitTree, 'hello')
                     setTimeout(() => {
                         reInitTree()
                     }, 2000)
@@ -268,7 +242,6 @@
                 isLoading,
                 termsLoading,
                 categoriesLoading,
-                GlossarySvg,
                 guid,
                 glossaryTerms,
                 glossaryCategories,
@@ -284,7 +257,6 @@
                 refetch,
                 handleCategoryOrTermPreview,
                 handlClosePreviewPanel,
-                assetTypeLabel,
                 redirectToProfile,
                 updateTitle,
             }

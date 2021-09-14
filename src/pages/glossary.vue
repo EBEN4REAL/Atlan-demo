@@ -115,7 +115,7 @@
                 updateNode,
                 refetchNode,
                 reInitTree,
-            } = useTree(emit)
+            } = useTree(emit, true)
 
             // methods
             const handleOpenModal = (context: Record<string, string>) => {

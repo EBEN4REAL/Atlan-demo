@@ -11,6 +11,7 @@ export default function useAssetList(
     isAggregation?: boolean
 ) {
     const cancelTokenSource = ref(axios.CancelToken.source())
+    console.log('cancelToken ', cancelTokenSource)
     const list: Ref<assetInterface[]> = ref([])
     const {
         data,
@@ -41,6 +42,7 @@ export default function useAssetList(
         excludeDeletedEntities: true,
         aggregationAttributes: ['__typeName.keyword'],
         typeName,
+        termName: body.value.termName,
     }
     const {
         assetTypeList,
@@ -81,6 +83,7 @@ export default function useAssetList(
                 excludeDeletedEntities: body.value.excludeDeletedEntities,
                 aggregationAttributes: ['__typeName.keyword'],
                 typeName,
+                termName: body.value.termName,
                 entityFilters: {
                     condition: body.value.entityFilters?.condition,
                     criterion: newCriterion,

@@ -26,20 +26,22 @@
             :push-other-panes="false"
             v-if="activeInlineTabKey"
         >
-            <pane max-size="100" size="50" min-size="50">
-                <Editor :selectedTab="selectedTab"
-            /></pane>
-            <pane min-size="0" max-size="50">
-                <!-- <div class="flex text-gray py-1.5 px-3">Result</div> -->
-                <ResultsPane :selectedTab="selectedTab"
-            /></pane>
+            <pane max-size="100" size="50" min-size="50"> <Editor /></pane>
+            <pane min-size="0" max-size="50"> <ResultsPane /></pane>
         </splitpanes>
         <NoActiveInlineTab v-else />
     </div>
 </template>
 
 <script lang="ts">
-    import { defineComponent, PropType, toRefs, computed, Ref } from 'vue'
+    import {
+        defineComponent,
+        PropType,
+        toRefs,
+        computed,
+        Ref,
+        inject,
+    } from 'vue'
     import Vue3TabsChrome from './vue3-tabs-chrome.vue'
     import Editor from '~/components/insights/playground/editor/index.vue'
     import ResultsPane from '~/components/insights/playground/resultsPane/index.vue'
@@ -53,10 +55,6 @@
                 type: Object as PropType<Ref<any>>,
                 required: true,
             },
-            tabs: {
-                type: Object as PropType<activeInlineTabInterface[]>,
-                required: true,
-            },
             activeInlineTabKey: {
                 type: String,
                 required: true,
@@ -64,12 +62,12 @@
         },
         emits: ['update:activeInlineTabKey', 'update:tabRef'],
         setup(props, { emit }) {
-            const { activeInlineTabKey, tabs, tabRef } = toRefs(props)
-            const selectedTab = computed(() =>
-                tabs.value.find((tab) => tab.key === activeInlineTabKey.value)
-            )
+            const { activeInlineTabKey, tabRef } = toRefs(props)
+            const tabs = inject('inlineTabs') as Ref<activeInlineTabInterface[]>
+            const activeInlineTab = inject(
+                'activeInlineTab'
+            ) as Ref<activeInlineTabInterface>
             const setTabRef = (el) => {
-                // tabRef.value = el
                 emit('update:tabRef', el)
             }
             const handleRemove = () => {
@@ -127,7 +125,7 @@
             return {
                 onTabRemove,
                 onTabClick,
-                selectedTab,
+                activeInlineTab,
                 tabs,
                 activeInlineTabKey,
                 handleAdd,

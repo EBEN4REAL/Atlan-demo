@@ -22,31 +22,26 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, PropType, toRefs } from 'vue'
+    import { defineComponent, PropType, Ref, inject } from 'vue'
     import { tableInterface } from '~/types/insights/table.interface'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
     import { tablesData } from './tablesDemoData'
 
     export default defineComponent({
         components: {},
-        props: {
-            inlineTabs: {
-                type: Object as PropType<activeInlineTabInterface[]>,
-                required: true,
-            },
-            activeInlineTab: {
-                type: Object as PropType<activeInlineTabInterface>,
-                required: true,
-            },
-        },
+        props: {},
         emits: ['openAssetSidebar'],
         setup(props, { emit }) {
-            const { activeInlineTab } = toRefs(props)
             const tables: tableInterface[] = tablesData
+            const activeInlineTab = inject(
+                'activeInlineTab'
+            ) as Ref<activeInlineTabInterface>
 
-            const openAssetSidebar = (table: tableInterface) => {
-                emit('openAssetSidebar', table)
-            }
+            /*
+                @params - table: tableInterface
+             */
+            const openAssetSidebar = inject('openAssetSidebar') as Function
+
             const isAssetSidebarOpened = (table: tableInterface) => {
                 if (
                     activeInlineTab.value &&

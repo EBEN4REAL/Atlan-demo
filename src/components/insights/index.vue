@@ -36,10 +36,7 @@
                 <component
                     v-if="activeTab && activeTab.component"
                     :is="activeTab.component"
-                    :inlineTabs="inlineTabs"
-                    :activeInlineTab="activeInlineTab"
                     @openSavedQueryInNewTab="openSavedQueryInNewTab"
-                    @openAssetSidebar="openAssetSidebar"
                 ></component>
                 <!--explorer pane end -->
             </pane>
@@ -52,7 +49,6 @@
                 :min-size="activeInlineTab?.assetSidebar?.isVisible ? 60 : 80"
             >
                 <Playground
-                    :tabs="tabsArray"
                     v-model:activeInlineTabKey="activeInlineTabKey"
                     v-model:tabRef="inlineTabRef"
                 />
@@ -65,17 +61,14 @@
                     activeInlineTab && activeInlineTab?.assetSidebar?.isVisible
                 "
             >
-                <AssetSidebar
-                    :activeTab="activeInlineTab"
-                    @closeAssetSidebar="closeAssetSidebar"
-                />
+                <AssetSidebar />
             </pane>
         </splitpanes>
     </div>
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref, Ref, computed, watch } from 'vue'
+    import { defineComponent, ref, Ref, computed, watch, provide } from 'vue'
     import Playground from '~/components/insights/playground/index.vue'
     import AssetSidebar from '~/components/insights/assetSidebar/index.vue'
     import Schema from './explorers/schema.vue'
@@ -147,7 +140,6 @@
                     (tab) => tab.key === activeInlineTabKey.value
                 )
             )
-            const inlineTabs = computed(() => inlineTabRef.value?.tabs ?? [])
             const changeTab = (tab: TabInterface) => {
                 activeTabId.value = tab.id
             }
@@ -172,7 +164,19 @@
                     explorer: {},
                     playground: {
                         editorTitle: savedQuery.editor,
-                        resultTitle: savedQuery.result,
+                        resultsPane: {
+                            activeTab: 'result',
+                            result: {
+                                title: savedQuery.result,
+                            },
+                            metadata: {},
+                            queries: {},
+                            joins: {},
+                            filters: {},
+                            impersonation: {},
+                            downstream: {},
+                            sqlHelp: {},
+                        },
                     },
                     assetSidebar: {
                         isVisible: false,
@@ -243,13 +247,27 @@
                 return inlineTabsDemoData
             }
 
+            /*---------- PROVIDERS FOR CHILDRENS -----------------
+            ---Be careful to add a property/function otherwise it will pollute the whole flow--
+            */
+
+            // properties
+            provide('activeInlineTab', activeInlineTab)
+            provide('activeInlineTabKey', activeInlineTabKey)
+            provide('inlineTabs', tabsArray)
+
+            // functions
+            provide('closeAssetSidebar', closeAssetSidebar)
+            provide('openAssetSidebar', openAssetSidebar)
+
+            /*-------------------------------------*/
+
             /* Watchers for syncing in localstorage*/
             watch(activeInlineTabKey, () => {
                 syncActiveInlineTabKeyInLocalStorage(activeInlineTabKey.value)
                 syncInlineTabsInLocalStorage(tabsArray.value)
             })
             return {
-                inlineTabs,
                 activeTab,
                 activeTabId,
                 tabsList,

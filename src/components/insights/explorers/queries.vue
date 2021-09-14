@@ -18,21 +18,18 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, PropType, Ref, toRefs, computed } from 'vue'
+    import { defineComponent, PropType, inject, Ref } from 'vue'
     import { SavedQueryInterface } from '~/types/insights/savedQuery.interface'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
 
     export default defineComponent({
         components: {},
-        props: {
-            inlineTabs: {
-                type: Object as PropType<activeInlineTabInterface[]>,
-                required: true,
-            },
-        },
+        props: {},
         emits: ['openSavedQueryInNewTab'],
         setup(props, { emit }) {
-            const { inlineTabs } = toRefs(props)
+            const inlineTabs = inject('inlineTabs') as Ref<
+                activeInlineTabInterface[]
+            >
             const savedQueries: SavedQueryInterface[] = [
                 {
                     id: '1x',

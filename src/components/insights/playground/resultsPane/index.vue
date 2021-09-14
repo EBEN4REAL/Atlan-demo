@@ -28,7 +28,6 @@
         defineAsyncComponent,
     } from 'vue'
     import useInsightsTabList from './useTabList'
-    import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
 
     export default defineComponent({
         components: {
@@ -42,12 +41,7 @@
             ),
             sqlHelp: defineAsyncComponent(() => import('./sqlHelp.vue')),
         },
-        props: {
-            selectedTab: {
-                type: Object as PropType<activeInlineTabInterface>,
-                required: true,
-            },
-        },
+        props: {},
         setup(props) {
             const { allTabs: tabsList } = useInsightsTabList()
             return {

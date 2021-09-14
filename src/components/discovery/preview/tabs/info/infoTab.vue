@@ -39,6 +39,7 @@
                 <component
                     :is="item.component"
                     :item="item"
+                    :page="page"
                     :selected-asset="infoTabData"
                     :tab-data="componentData"
                     :tableauProperties="tableauProperties ?? []"
@@ -68,10 +69,38 @@
     } from 'vue'
     import { useInfoPanels } from './List'
     import { assetInterface } from '~/types/assets/asset.interface'
-    import useBusinessMetadataHelper from '~/composables/businessMetadata/useBusinessMetadataHelper'
 
     export default defineComponent({
         name: 'InfoTab',
+        components: {
+            assetDetails: defineAsyncComponent(
+                () => import('./assetDetails/index.vue')
+            ),
+            properties: defineAsyncComponent(
+                () => import('./properties/index.vue')
+            ),
+            linkedAsset: defineAsyncComponent(
+                () => import('./governance/index.vue')
+            ),
+            heirarchy: defineAsyncComponent(
+                () => import('./heirarchy/index.vue')
+            ),
+
+            usage: defineAsyncComponent(() => import('./usage/index.vue')),
+
+            columnProfile: defineAsyncComponent(
+                () => import('./columnProfile/index.vue')
+            ),
+            tableauHierarchy: defineAsyncComponent(
+                () => import('@common/sidebar/tableau/hierarchy/index.vue')
+            ),
+            tableauProperties: defineAsyncComponent(
+                () => import('@common/sidebar/tableau/properties/index.vue')
+            ),
+            tableauPreview: defineAsyncComponent(
+                () => import('@common/sidebar/tableau/preview/index.vue')
+            ),
+        },
         props: {
             id: String,
             componentData: {
@@ -93,29 +122,7 @@
                 required: true,
             },
         },
-        components: {
-            assetDetails: defineAsyncComponent(
-                () => import('./assetDetails/index.vue')
-            ),
-            properties: defineAsyncComponent(
-                () => import('./properties/index.vue')
-            ),
-            linkedAsset: defineAsyncComponent(
-                () => import('./governance/index.vue')
-            ),
-            heirarchy: defineAsyncComponent(
-                () => import('./heirarchy/index.vue')
-            ),
-            tableauProperties: defineAsyncComponent(
-                () => import('@common/sidebar/tableau/properties/index.vue')
-            ),
-            tableauPreview: defineAsyncComponent(
-                () => import('@common/sidebar/tableau/preview/index.vue')
-            ),
-            tableauHierarchy: defineAsyncComponent(
-                () => import('@common/sidebar/tableau/hierarchy/index.vue')
-            ),
-        },
+
         setup(props) {
             const refMap: Ref<{
                 [key: string]: any
@@ -156,18 +163,18 @@
                 setUserDefaultCollapseOrderInInfoTab(activeKey.value)
             }
 
-            const dynamicList = ref([])
-            let tableauProperties = ref([])
+            const dynamicList = ref<any>([])
+            const tableauProperties = ref<any>([])
 
             watch(
                 [selectedAsset, page],
                 () => {
-                    let infoTab = useInfoPanels(page, selectedAsset)
+                    const infoTab = useInfoPanels(page, selectedAsset)
 
                     if (infoTab) {
-                        let panels = [...infoTab?.panels]
-                        let properties = infoTab?.properties
-                        let propertiesPanel = panels.pop()
+                        const panels = [...infoTab?.panels]
+                        const properties = infoTab?.properties
+                        const propertiesPanel = panels.pop()
                         tableauProperties.value = properties ?? []
                         dynamicList.value = [...panels, propertiesPanel]
                     }

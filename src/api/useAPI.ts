@@ -163,6 +163,41 @@ export function resolveUrl(
     })
 }
 
+export function useAPIPromise(
+    url: string,
+    method: HTTPVerb,
+    { params, body, options }: useGetAPIParams
+) {
+    switch (method) {
+        case 'GET':
+            return fetcher(
+                url,
+                params,
+                isRef(options) ? options.value : options
+            )
+        case 'POST':
+            return fetcherPost(
+                url,
+                isRef(body) ? body.value : body,
+                isRef(options) ? options.value : options
+            )
+        case 'DELETE':
+            return deleter(url, isRef(options) ? options.value : options)
+        case 'PUT':
+            return updater(
+                url,
+                isRef(body) ? body.value : body,
+                isRef(options) ? options.value : options
+            )
+        default:
+            return fetcher(
+                url,
+                params,
+                isRef(options) ? options.value : options
+            )
+    }
+}
+
 export const useAPISWRV = <T>(
     path: APIFn,
     method: HTTPVerb,

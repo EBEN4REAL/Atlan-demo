@@ -245,6 +245,8 @@
                     } else {
                         activeInlineTabKey.value = tabsArray.value[0].key
                     }
+                } else {
+                    activeInlineTabKey.value = undefined
                 }
             }
 

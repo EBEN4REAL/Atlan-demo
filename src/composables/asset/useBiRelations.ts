@@ -48,7 +48,7 @@ export default function useBiRelations(id: string, assetType: string) {
     const { execute, state, isReady, error } = useAsyncState(
         () => {
             const params = constructRequest(id?.value || id, assetType)
-            console.log(params.toString())
+
             return fetcher(keyMaps[GET_ASSET_RELATIONSHIP](), params, {})
         },
         { entities: [] },

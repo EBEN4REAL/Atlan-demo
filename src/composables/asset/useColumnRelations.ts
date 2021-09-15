@@ -22,6 +22,7 @@ function constructRequest(guid: string) {
         'primary key',
         'assetStatus',
         'tenantId',
+        'popularityScore',
     ]
 
     const paramsObj: any = {
@@ -71,8 +72,8 @@ export function useColumns(id: Ref<string>) {
                         : true) &&
                     (filters.value.length
                         ? allowedTypes.includes(
-                              item.attributes.dataType.toLowerCase()
-                          )
+                            item.attributes.dataType.toLowerCase()
+                        )
                         : true)
             ) || []
         )

@@ -45,13 +45,13 @@
                     {{ getDataType(selectedAsset?.attributes?.dataType) }}
                 </div>
                 <AssetLogo
-                    v-if="page === 'discovery'"
+                    v-if="page === 'discovery' || page === 'biOverview'"
                     :asset="selectedAsset"
                     variant="md"
                 />
-                <div v-if="page === 'biOverview'" class="text-gray-500">
+                <!--  <div v-if="page === 'biOverview'" class="text-gray-500">
                     {{ selectedAsset?.typeName }}
-                </div>
+                </div> -->
                 <div class="flex space-x-2">
                     <a-button class="flex items-center" size="small">
                         <AtlanIcon icon="Bookmark" />

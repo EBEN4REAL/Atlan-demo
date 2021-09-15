@@ -1,29 +1,26 @@
 <template>
-    <div class="w-full p-3 rounded box">
+    <div class="w-full h-full p-3 rounded box">
         <div
             class="flex items-center justify-center w-full h-full rounded  placeholder"
         >
-            Result - {{ selectedTab?.playground?.resultsPane?.result.title }}
+            Downstream - {{ activeInlineTab.label }}
         </div>
     </div>
 </template>
 
 <script lang="ts">
-    import { defineComponent, PropType, toRefs } from 'vue'
+    import { defineComponent, Ref, inject } from 'vue'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
 
     export default defineComponent({
         components: {},
-        props: {
-            selectedTab: {
-                type: Object as PropType<activeInlineTabInterface>,
-                required: true,
-            },
-        },
+        props: {},
         setup(props) {
-            const { selectedTab } = toRefs(props)
+            const activeInlineTab = inject(
+                'activeInlineTab'
+            ) as Ref<activeInlineTabInterface>
             return {
-                selectedTab,
+                activeInlineTab,
             }
         },
     })

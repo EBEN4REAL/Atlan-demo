@@ -1,8 +1,12 @@
 <template>
     <AssetLogo :selected="selected" :asset="assetWrappper" />
-    <span class="text-sm overflow-ellipsis">
-        {{ assetText }}
+    <span class="text-sm overflow-ellipsis text-gray">
+        {{ assetText[0] }}
     </span>
+    <AtlanIcon icon="ChevronDown" class="transform rotate-90" />
+    <span class="text-sm text-gray-500 overflow-ellipsis">
+        {{ assetText[1] }}</span
+    >
 </template>
 
 <script lang="ts">
@@ -28,7 +32,7 @@
             }))
 
             const assetText = computed(() =>
-                assetQfName.value.split('/').slice(-2).join('.')
+                assetQfName.value.split('/').slice(-2).reverse()
             )
 
             return { assetWrappper, assetText }

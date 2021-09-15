@@ -166,13 +166,13 @@ export function resolveUrl(
 export function useAPIPromise(
     url: string,
     method: HTTPVerb,
-    { params, body, options }: useGetAPIParams
+    { params, body, options }: baseAPIParams
 ) {
     switch (method) {
         case 'GET':
             return fetcher(
                 url,
-                params,
+                isRef(params) ? params.value : params,
                 isRef(options) ? options.value : options
             )
         case 'POST':
@@ -192,7 +192,7 @@ export function useAPIPromise(
         default:
             return fetcher(
                 url,
-                params,
+                isRef(params) ? params.value : params,
                 isRef(options) ? options.value : options
             )
     }
@@ -235,7 +235,7 @@ export const useAPIAsyncState = <T>(
         options,
         initialState = <T>{},
     }: AsyncStateAPIParams<T>,
-    asyncOpts: AsyncStateOptions
+    asyncOpts?: AsyncStateOptions
 ) => {
     // Variable to check if the promise has been executed atleast once
     let isExecuted = false

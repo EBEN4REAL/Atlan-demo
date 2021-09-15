@@ -1,15 +1,26 @@
 import { getRequests, actOnRequest } from '~/api/heracles/requests'
 import { Ref, computed, watch } from 'vue'
 import { RequestStatus } from '~/types/atlas/requests'
+import { useDebounceFn } from '@vueuse/core'
 
 export interface RequestListFilters {
-    status: RequestStatus[]
+    status: RequestStatus
 }
 
-function generateRequestListParams(filters: RequestListFilters) {
+function generateRequestListParams(
+    searchTerm: String,
+    filters: RequestListFilters
+) {
     const params: Record<string, any> = {}
+    if (searchTerm) {
+        params['$or'] = [
+            { destination_qualified_name: { $ilike: `%${searchTerm}%` } },
+        ]
+    }
     for (const [key, value] of Object.entries(filters)) {
-        params[key] = Array.isArray(value) ? { $in: value } : { $eq: value }
+        if (value?.length ?? value)
+            // Check if the value is valid or the length in case of array
+            params[key] = Array.isArray(value) ? { $in: value } : value
     }
     return { filter: params }
 }
@@ -18,18 +29,19 @@ export function useRequestList(
     searchTerm: Ref<String>,
     filters: Ref<RequestListFilters>
 ) {
-    // TODO: Call API when seachterm changes with debounce
-
-    let params = computed(() => generateRequestListParams(filters.value))
+    let params = computed(() =>
+        generateRequestListParams(searchTerm.value, filters.value)
+    )
     const { response, error, mutate, isLoading } = getRequests(params)
 
-    watch(
-        filters,
-        () => {
-            mutate()
-        },
-        { flush: 'post' }
-    )
+    const debouncedMutation = useDebounceFn(() => {
+        mutate()
+    }, 400)
+
+    watch([filters, searchTerm], debouncedMutation, {
+        flush: 'post',
+        deep: true,
+    })
 
     return { response, error, isLoading }
 }

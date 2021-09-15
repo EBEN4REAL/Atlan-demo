@@ -8,7 +8,7 @@
             <div class="flex items-center">
                 <AtlanIcon
                     class="mr-4 text-gray-500"
-                    :icon="requestTypeIcon[request.re]"
+                    :icon="requestTypeIcon[request.request_type]"
                 />
                 <span class="text-lg leading-5">
                     {{ requestTitle }}
@@ -27,26 +27,26 @@
             <AttributeChange
                 :attribute="request.destination_attribute"
                 :value="request.destination_value"
-                v-if="request.re === 'attribute'"
+                v-if="request.request_type === 'attribute'"
             />
 
             <ClassificationDetails
                 :typeName="request.payload.typeName"
-                v-if="request.re === 'attach_classification'"
+                v-if="request.request_type === 'attach_classification'"
             />
 
             <ClassificationDetails
                 :data="request.payload?.classificationDefs?.[0]"
-                v-if="request.re === 'create_typedef'"
+                v-if="request.request_type === 'create_typedef'"
             />
 
             <TermDetails
-                v-if="request.re === 'create_term'"
+                v-if="request.request_type === 'create_term'"
                 :data="request.payload"
             />
 
             <TermDetails
-                v-if="request.re === 'term_link'"
+                v-if="request.request_type === 'term_link'"
                 :data="request.sourceEntity.attributes"
             />
 
@@ -131,9 +131,13 @@
         setup(props) {
             const { request } = toRefs(props)
             const requestTitle = computed(() => {
-                let title = `${typeCopyMapping[request.value.re]} `
+                let title = `${typeCopyMapping[request.value.request_type]} `
                 // Attribute change title
-                if (['bm_attribute', 'attribute'].includes(request.value.re)) {
+                if (
+                    ['bm_attribute', 'attribute'].includes(
+                        request.value.request_type
+                    )
+                ) {
                     title += AssetTypeList.find(
                         (ast) => ast.id == request.value.entity_type
                     )?.label
@@ -148,7 +152,7 @@
                 // Linking stuff to asset
                 if (
                     ['term_link', 'attach_classification'].includes(
-                        request.value.re
+                        request.value.request_type
                     )
                 ) {
                     title +=

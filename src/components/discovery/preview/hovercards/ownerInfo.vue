@@ -1,5 +1,5 @@
 <template>
-    <div class="w-36">
+    <div class="w-56">
         <p class="mb-0 text-gray-500 uppercase">{{ user.type }}</p>
         <div class="my-2 text-gray-500">
             <div

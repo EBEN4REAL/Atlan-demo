@@ -36,7 +36,7 @@
             <div class="w-full">
                 <div
                     class="overflow-auto"
-                    style="max-height: calc(100vh - 250px)"
+                    style="max-height: calc(100vh - 300px)"
                 >
                     <AssetList
                         :list="all"
@@ -98,7 +98,7 @@
     import AssetList from '@/glossary/common/assetList.vue'
 
     // composables
-    import useGtcSearch from '~/composables/glossary/useGtcSearch'
+    import useGtcSearch from '~/components/glossary/composables/useGtcSearch'
 
     // static
     import { Category, Term } from '~/types/glossary/glossary.interface'

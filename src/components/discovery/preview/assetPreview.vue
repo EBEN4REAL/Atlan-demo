@@ -1,42 +1,60 @@
 <template>
-    <div class="">
-        <div v-if="page === 'discovery'" class="px-5 py-2 border-b">
-            <div class="flex items-center justify-between">
-                <div class="flex w-full">
+    <div>
+        <div v-if="page !== 'profile'" class="px-5 py-3 border-b">
+            <div class="flex items-center justify-between mb-0">
+                <div class="flex items-center w-full">
+                    <component
+                        :is="
+                            images[
+                                getDataType(selectedAsset?.attributes?.dataType)
+                            ]
+                        "
+                        v-if="page === 'nonBiOverview'"
+                        class="w-4 h-4 mr-1.5"
+                    ></component>
                     <Tooltip
-                    :tooltip-text="title(selectedAsset)"
-                    classes="mb-0 text-gray-700 font-semibold"
-                />
+                        :tooltip-text="selectedAsset?.attributes?.name"
+                        classes="mb-0 text-gray-700 font-semibold text-lg"
+                    />
 
-                <div class="flex items-center">
-                    <StatusBadge
-                        :key="selectedAsset.guid"
-                        :show-no-status="false"
-                        :status-id="selectedAsset?.attributes?.assetStatus"
-                        class="ml-1.5"
-                    ></StatusBadge>
+                    <div class="flex items-center">
+                        <StatusBadge
+                            :key="selectedAsset.guid"
+                            :show-no-status="false"
+                            :status-id="selectedAsset?.attributes?.assetStatus"
+                            class="ml-1.5"
+                        ></StatusBadge>
+                    </div>
                 </div>
-                </div>
-                <div v-if="showCrossIcon" class="flex items-center mx-2">
+                <div v-if="showCrossIcon" class="flex items-center ml-2">
                     <a-button
                         class="px-1 border-0 outline-none"
-                        @click="$emit('closePreviewPanel')"
+                        @click="$emit('closeSidebar')"
                     >
                         <AtlanIcon icon="Cancel" />
                     </a-button>
                 </div>
             </div>
-            
+
             <div class="flex items-center justify-between text-sm">
                 <!-- <component
                     :is="selectedAsset.typeName"
                     class="w-auto h-8"
                 ></component> -->
-                <AssetLogo :asset="selectedAsset" variant="lg" />
-
+                <div v-if="page === 'nonBiOverview'" class="text-gray-500">
+                    {{ getDataType(selectedAsset?.attributes?.dataType) }}
+                </div>
+                <AssetLogo
+                    v-if="page === 'discovery'"
+                    :asset="selectedAsset"
+                    variant="md"
+                />
+                <div v-if="page === 'biOverview'" class="text-gray-500">
+                    {{ selectedAsset?.typeName }}
+                </div>
                 <div class="flex space-x-2">
                     <a-button class="flex items-center" size="small">
-                        <AtlanIcon icon="BookmarkOutlined" />
+                        <AtlanIcon icon="Bookmark" />
                     </a-button>
 
                     <a-button
@@ -60,7 +78,10 @@
                 class="px-4 overflow-y-auto"
             >
                 <template #tab>
-                    <AtlanIcon :icon="tab.icon" :class="activeKey===index?'text-primary':''" />
+                    <AtlanIcon
+                        :icon="tab.icon"
+                        :class="activeKey === index ? 'text-primary' : ''"
+                    />
                 </template>
 
                 <div :style="{ height: tabHeights[page] }">
@@ -80,9 +101,6 @@
 </template>
 
 <script lang="ts">
-    import AssetLogo from '@/common/icon/assetIcon.vue'
-    import StatusBadge from '@common/badge/status/index.vue'
-    import Tooltip from '@common/ellipsis/index.vue'
     import {
         defineAsyncComponent,
         defineComponent,
@@ -94,9 +112,13 @@
         watch,
         provide,
     } from 'vue'
+    import Tooltip from '@common/ellipsis/index.vue'
+    import StatusBadge from '@common/badge/status/index.vue'
+    import AssetLogo from '@/common/icon/assetIcon.vue'
     import useAssetInfo from '~/composables/asset/useAssetInfo'
     import { assetInterface } from '~/types/assets/asset.interface'
     import useAssetDetailsTabList from '../../discovery/preview/tabs/useTabList'
+    import { images, dataTypeList } from '~/constant/datatype'
 
     export default defineComponent({
         name: 'AssetPreview',
@@ -123,6 +145,9 @@
             lineage: defineAsyncComponent(
                 () => import('./tabs/lineage/lineageTab.vue')
             ),
+            businessMetadataTab: defineAsyncComponent(
+                () => import('./tabs/businessMetadata/businessMetadataTab.vue')
+            ),
         },
         props: {
             selectedAsset: {
@@ -138,7 +163,7 @@
                 required: false,
             },
         },
-        emits: ['assetMutation', 'closePreviewPanel'],
+        emits: ['assetMutation', 'closeSidebar'],
         setup(props, { emit }) {
             const { selectedAsset, page } = toRefs(props)
             const { filteredTabs } = useAssetDetailsTabList(page, selectedAsset)
@@ -151,14 +176,24 @@
             const infoTabData: Ref<any> = ref({})
 
             const tabHeights = {
-                discovery: 'calc(100vh - 7.3rem)',
-                profile: 'calc(100.4vh - 0rem)',
+                discovery: 'calc(100vh - 7.8rem)',
+                profile: 'calc(100vh - 3rem)',
+                biOverview: 'calc(100vh - 8.06rem)',
+                nonBiOverview: 'calc(100vh - 8.3rem)',
             }
 
             function getAssetEntitity(data: Ref): any {
                 if (data.value?.entities.length > 0)
                     return data.value?.entities[0]
                 return {}
+            }
+
+            const getDataType = (type: string) => {
+                let label = ''
+                dataTypeList.forEach((i) => {
+                    if (i.type.includes(type)) label = i.label
+                })
+                return label
             }
 
             provide('mutateSelectedAsset', (updatedAsset: assetInterface) => {
@@ -173,14 +208,12 @@
             function init() {
                 isLoaded.value = false
                 infoTabData.value = selectedAsset.value
-                console.log(infoTabData.value, 'info tab Data')
             }
             watch(() => selectedAsset.value.guid, init)
             onMounted(init)
 
             return {
                 tabHeights,
-                page,
                 isLoaded,
                 infoTabData,
                 title,
@@ -190,6 +223,8 @@
                 filteredTabs,
                 assetStatus,
                 handleChange,
+                images,
+                getDataType,
             }
         },
     })
@@ -217,7 +252,6 @@
 
         :global(.ant-tabs-bar) {
             margin-bottom: 0px;
-            @apply bg-gray-100;
         }
         :global(.ant-tabs-content) {
             @apply px-0 !important;

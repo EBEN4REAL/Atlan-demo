@@ -9,96 +9,14 @@
                 currentTab === '1' || currentTab === '2' ? 'w-2/3' : 'w-full'
             "
         >
-            <div class="flex items-center justify-between mx-4 mt-3">
-                <div class="flex items-center mr-5">
-                    <a-button
-                        class="flex items-center p-0 m-0 border-0 shadow-none outline-none "
-                        @click="redirectToProfile"
-                    >
-                        <AtlanIcon
-                            class="w-auto h-5 mr-3"
-                            icon="ArrowRight"
-                            style="transform: scaleX(-1)"
-                        />
-                    </a-button>
-                    <AtlanIcon icon="Glossary" class="h-5 m-0 mr-2" />
-                    <span class="mr-1 text-sm">
-                        {{
-                            term?.attributes?.anchor?.uniqueAttributes
-                                ?.qualifiedName
-                        }}
-                        /</span
-                    >
-                    <AtlanIcon icon="Term" class="h-5 m-0 mr-2" />
-                    <span class="mr-3 text-sm">{{ title }}</span>
-                </div>
-
-                <div class="flex flex-row">
-                    <a-button
-                        class="flex items-center px-2 border-0 shadow-none outline-none "
-                        ><atlan-icon
-                            icon="BookmarkOutlined"
-                            class="w-auto h-4"
-                        />
-                        <span class="ml-2 text-sm">Bookmark</span>
-                    </a-button>
-
-                    <a-button
-                        class="flex items-center border-0 shadow-none outline-none "
-                        ><atlan-icon icon="Share" class="w-auto h-4 mr-2" />
-                        <span class="text-sm">Share</span>
-                    </a-button>
-
-                    <ThreeDotMenu :entity="term" :showLinks="false" />
-                </div>
-            </div>
-
-            <div class="flex flex-row justify-between pl-5 pr-5 mt-5 mb-5">
-                <div class="flex flex-row w-full">
-                    <div class="flex flex-col justify-center w-full">
-                        <div class="flex">
-                            <span class="mr-3 text-xl font-bold leading-6">{{
-                                title
-                            }}</span>
-                            <a-popover
-                                v-if="statusMessage"
-                                trigger="hover"
-                                placement="rightTop"
-                            >
-                                <template #content>
-                                    <p>{{ statusMessage }}</p>
-                                </template>
-                                <component
-                                    :is="statusObject?.icon"
-                                    v-if="statusObject"
-                                    class="inline-flex self-center w-auto h-4 mb-1 "
-                                />
-                            </a-popover>
-                            <div v-else>
-                                <component
-                                    :is="statusObject?.icon"
-                                    v-if="statusObject"
-                                    class="inline-flex self-center w-auto h-4 mb-1 "
-                                />
-                            </div>
-                        </div>
-                        <div class="flex items-center mt-1">
-                            <span
-                                class="mr-4 text-sm leading-5 text-gray-500"
-                                >{{
-                                    assetTypeLabel[term.typeName].toUpperCase()
-                                }}</span
-                            >
-
-                            <span
-                                class="text-sm leading-5 text-gray-500"
-                                v-if="shortDescription !== ''"
-                                >{{ shortDescription }}</span
-                            >
-                        </div>
-                    </div>
-                </div>
-            </div>
+            <ProfileHeader
+                :title="title"
+                :entity="term"
+                :isNewEntity="isNewTerm"
+                :statusMessage="statusMessage"
+                :statusObject="statusObject"
+                :shortDescription="shortDescription"
+            />
             <div class="m-0">
                 <a-tabs
                     v-model:activeKey="currentTab"
@@ -155,47 +73,34 @@
                 @updateAsset="refetch"
             />
         </div>
-        <!-- <div v-if="currentTab === '2' && previewEntity" class="border-l" :class="$style.tabClasses">
-            <AssetPreview
-                page="discovery"
-                :selected-asset="previewEntity"
-            ></AssetPreview>
-        </div> -->
     </div>
 </template>
 
 <script lang="ts">
     import { defineComponent, computed, toRef, ref, provide, watch } from 'vue'
+    import { useRouter } from 'vue-router'
 
-    import ThreeDotMenu from '@/glossary/common/threeDotMenu.vue'
+    // components
     import GlossaryProfileOverview from '@/glossary/common/glossaryProfileOverview.vue'
-    import TopAssets from '@/glossary/termProfile/topAssets.vue'
     import LinkedAssetsTab from '@/glossary/termProfile/linkedAssetsTab.vue'
-    import EntityHistory from '@/glossary/common/entityHistory.vue'
-    import LoadingView from '@common/loaders/page.vue'
-    import RelatedTerms from '@/glossary/termProfile/relatedTerms.vue'
     import CategoryTermPreview from '@/glossary/common/categoryTermPreview/categoryTermPreview.vue'
-    import AssetPreview from '~/components/discovery/preview/assetPreview.vue'
+    import ProfileHeader from '@/glossary/common/profileHeader.vue'
+    import LoadingView from '@common/loaders/page.vue'
 
-    import useGTCEntity from '~/composables/glossary/useGtcEntity'
-    import useUpdateGtcEntity from '~/composables/glossary/useUpdateGtcEntity'
+    // composables
+    import useGTCEntity from '~/components/glossary/composables/useGtcEntity'
+    import useUpdateGtcEntity from '~/components/glossary/composables/useUpdateGtcEntity'
 
+    // assets
     import { Term } from '~/types/glossary/glossary.interface'
 
-    import TermSvg from '~/assets/images/gtc/term/term.png'
-
-    import { useRouter } from 'vue-router'
     export default defineComponent({
         components: {
             GlossaryProfileOverview,
-            TopAssets,
-            RelatedTerms,
             LinkedAssetsTab,
-            EntityHistory,
-            LoadingView,
             CategoryTermPreview,
-            AssetPreview,
-            ThreeDotMenu,
+            ProfileHeader,
+            LoadingView,
         },
         props: {
             id: {
@@ -205,15 +110,11 @@
             },
         },
         setup(props) {
+            // data
             const guid = toRef(props, 'id')
             const currentTab = ref('1')
             const previewEntity = ref()
             const newName = ref('')
-            const assetTypeLabel = {
-                AtlasGlossaryTerm: 'term',
-                AtlasGlossaryCategory: 'category',
-                AtlasGlossary: 'glossary',
-            }
             const router = useRouter()
 
             const {
@@ -230,6 +131,7 @@
 
             const { data: updatedEntity, updateEntity } = useUpdateGtcEntity()
 
+            // computed
             const parentGlossaryName = computed(
                 () => term.value?.attributes?.qualifiedName?.split('@')[1] ?? ''
             )
@@ -238,8 +140,9 @@
                 () => term.value?.attributes?.assignedEntities?.length ?? 0
             )
 
-            const isNewTerm = computed(() => title.value === 'New Term')
+            const isNewTerm = computed(() => title.value === 'Untitled Term')
 
+            // methods
             const handlePreview = (entity: any) => {
                 previewEntity.value = entity
             }
@@ -270,7 +173,6 @@
                 error,
                 isLoading,
                 guid,
-                TermSvg,
                 title,
                 statusMessage,
                 shortDescription,
@@ -284,7 +186,6 @@
                 handlePreview,
                 refetch,
                 updateTitle,
-                assetTypeLabel,
             }
         },
     })

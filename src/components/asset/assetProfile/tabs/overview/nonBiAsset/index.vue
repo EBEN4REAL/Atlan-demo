@@ -1,19 +1,22 @@
 <template>
-    <div class="px-12 my-6">
+    <div class="p-6">
         <!-- Overview Columns widget -->
-        <div class="mb-10">
+        <div class="px-3 pt-5 pb-4 mb-10 bg-white border rounded-md">
             <h2 class="mb-3 text-xl text-gray">Columns preview</h2>
             <overview-columns />
         </div>
 
         <!-- Overview Table widget -->
-        <div v-if="showTablePreview" class="mb-16">
+        <div
+            v-if="showTablePreview"
+            class="px-3 pt-5 mb-10 bg-white border rounded-md"
+        >
             <h2 class="mb-3 text-xl text-gray">Table preview</h2>
             <overview-table />
         </div>
 
         <!-- Readme widget -->
-        <div class="p-5 mb-10 bg-white border border-gray-light">
+        <div class="px-3 py-4 mb-10 bg-white border rounded-md">
             <Readme
                 class="w-full"
                 :show-borders="false"

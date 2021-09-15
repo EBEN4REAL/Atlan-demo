@@ -23,11 +23,11 @@
             </div>
         </div>
         <!-- Table -->
-        <div class="relative border border-gray-light">
+        <div class="relative">
             <a-table
                 :columns="columns"
                 :data-source="columnsData.filteredList"
-                :pagination="false"
+                :pagination="{ position: 'bottom' }"
                 :scroll="{ y: 240, scrollToFirstRowOnChange: true }"
                 :loading="!columnsData.filteredList"
                 :custom-row="customRow"
@@ -64,7 +64,7 @@
                 </template>
             </a-table>
         </div>
-        <teleport to="#overAssetColumnPreview">
+        <teleport to="#overAssetPreviewSidebar">
             <a-drawer
                 v-model:visible="showColumnPreview"
                 placement="right"
@@ -75,9 +75,11 @@
                 :destroy-on-close="true"
                 :closable="false"
             >
-                <ColumnPreview
-                    :selected-row="selectedRowData"
-                    @closeColumnSidebar="handleCloseColumnSidebar"
+                <AssetPreview
+                    :selected-asset="selectedRowData"
+                    page="nonBiOverview"
+                    :show-cross-icon="true"
+                    @closeSidebar="handleCloseColumnSidebar"
                     @asset-mutation="propagateToColumnList"
                 />
             </a-drawer>
@@ -96,13 +98,13 @@
         provide,
         nextTick,
     } from 'vue'
-    import { useRoute, useRouter } from 'vue-router'
+    import { useRoute } from 'vue-router'
 
     // Components
     import SearchAndFilter from '@/common/input/searchAndFilter.vue'
     import preferences from './preferences.vue'
-    import ColumnPreview from './columnPreview/index.vue'
     import Tooltip from '@/common/ellipsis/index.vue'
+    import AssetPreview from '@/discovery/preview/assetPreview.vue'
 
     // Composables
     import useColumns from '~/composables/asset/useColumns'
@@ -113,7 +115,12 @@
     import { assetInterface } from '~/types/assets/asset.interface'
 
     export default defineComponent({
-        components: { preferences, SearchAndFilter, ColumnPreview, Tooltip },
+        components: {
+            preferences,
+            SearchAndFilter,
+            Tooltip,
+            AssetPreview,
+        },
         setup() {
             /** DATA */
             const query = ref('')
@@ -166,16 +173,29 @@
             }
 
             const scrollToElement = (selectedRow) => {
-                const tableRow = document.querySelector(
-                    `tr[data-row-key="${selectedRow}"]`
-                )
-
-                if (tableRow) {
-                    tableRow.scrollIntoView({
-                        block: 'nearest',
-                        inline: 'nearest',
-                    })
+                let paginationOfSelectedColumn
+                if (selectedRow % 10 === 0) {
+                    paginationOfSelectedColumn = selectedRow / 10
+                } else {
+                    paginationOfSelectedColumn =
+                        Math.floor(selectedRow / 10) + 1
                 }
+                document
+                    .querySelector(`li[title="${paginationOfSelectedColumn}"]`)
+                    .click()
+
+                setTimeout(() => {
+                    const tableRow = document.querySelector(
+                        `tr[data-row-key="${selectedRow}"]`
+                    )
+
+                    if (tableRow) {
+                        tableRow.scrollIntoView({
+                            block: 'nearest',
+                            inline: 'nearest',
+                        })
+                    }
+                }, 500)
             }
 
             // filterColumnsList
@@ -362,6 +382,9 @@
     :global(.ant-drawer-content-wrapper) {
         width: 420px !important;
         background-color: white !important;
+    }
+    :global(.ant-table) {
+        @apply border border-gray-light !important;
     }
     :global(.ant-table th) {
         @apply whitespace-nowrap font-bold !important;

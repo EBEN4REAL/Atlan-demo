@@ -2,11 +2,10 @@
     <LoadingView v-if="!data?.asset" />
     <ErrorView v-else-if="data?.error" :error="data?.error" />
 
-    <div v-if="data?.asset" class="w-full">
-        <div class="z-30 pt-5 pb-3 pr-4 bg-white">
-            <Header />
-        </div>
-        <div class="border-t border-gray-light">
+    <div v-if="data?.asset" class="w-full h-full">
+        <div class="flex flex-col">
+            <Header class="px-5 pt-3 bg-white" />
+
             <a-tabs
                 :active-key="activeKey"
                 :class="$style.profiletab"
@@ -14,6 +13,7 @@
             >
                 <a-tab-pane v-for="tab in tabs" :key="tab.id" :tab="tab.name">
                     <component
+                        class="bg-transparent"
                         :is="tab.component"
                         :key="activeKey || id"
                         :ref="
@@ -49,6 +49,7 @@
 
     // Composables
     import useAsset from '~/composables/asset/useAsset'
+    import { useBusinessMetadataStore } from '~/store/businessMetadata'
 
     export default defineComponent({
         components: {
@@ -110,18 +111,28 @@
                 )
             }
 
+            const store = useBusinessMetadataStore()
+            const BMListLoaded = computed(
+                () => store.getBusinessMetadataListLoaded
+            )
+
             // fetch
             const fetch = () => {
-                const { data: response, error } = useAsset({
-                    entityId: id.value,
-                })
+                if (BMListLoaded.value) {
+                    const { data: response, error } = useAsset({
+                        entityId: id.value,
+                    })
 
-                watch(response, () => {
-                    data.value.asset = response.value?.entities?.[0]
-                    data.value.error = error.value
+                    watch(response, () => {
+                        data.value.asset = response.value?.entities?.[0]
+                        data.value.error = error.value
 
-                    context.emit('updateAssetPreview', data.value.asset ?? [])
-                })
+                        context.emit(
+                            'updateAssetPreview',
+                            data.value.asset ?? []
+                        )
+                    })
+                }
             }
 
             // handlePreview
@@ -144,6 +155,9 @@
             /** WATCHERS */
             watch(id, () => fetch())
             watch(updateProfile, () => fetch())
+            watch(BMListLoaded, (v: boolean) => {
+                if (v) fetch()
+            })
 
             /** PROVIDER */
             provide('assetData', data.value)
@@ -184,10 +198,11 @@ meta:
         }
         :global(.ant-tabs-bar) {
             @apply mb-0 pl-7;
+            @apply bg-white;
         }
 
         :global(.ant-tabs-tabpane) {
-            height: calc(100vh - 200px) !important;
+            height: calc(100vh - 170px) !important;
             overflow: auto !important;
             @apply pr-0;
         }

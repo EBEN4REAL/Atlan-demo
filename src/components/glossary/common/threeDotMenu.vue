@@ -183,13 +183,15 @@
 <script lang="ts">
     import { defineComponent, ref, PropType, inject, onMounted } from 'vue'
     // components
-    // import Status from '@common/sidebar/status.vue'
+    import StatusBadge from '@common/badge/status/index.vue'
     import Owners from '@/glossary/common/owners.vue'
     import Status from '@/glossary/common/status.vue'
-    import StatusBadge from '@common/badge/status/index.vue'
+    // utils
     import { copyToClipboard } from '~/utils/clipboard'
-    import useDeleteGlossary from '~/composables/glossary/useDeleteGlossary'
-    import useCreateGlossary from '~/composables/glossary/useCreateGlossary'
+    import assetTypeLabel from '@/glossary/constants/assetTypeLabel'
+    // composables
+    import useDeleteGlossary from '~/components/glossary/composables/useDeleteGlossary'
+    import useCreateGlossary from '~/components/glossary/composables/useCreateGlossary'
     import {
         Glossary,
         Category,
@@ -228,11 +230,6 @@
                 'refetchGlossaryTree'
             )
 
-            const assetTypeLabel = {
-                AtlasGlossaryTerm: 'term',
-                AtlasGlossaryCategory: 'category',
-                AtlasGlossary: 'glossary',
-            }
             const {
                 deleteGlossary,
                 deleteCategory,
@@ -310,6 +307,7 @@
                     )
             }
 
+            // update tree on archive or create new entity
             const updateTree = (selectedAsset: Glossary | Category | Term) => {
                 if (updateTreeNode) {
                     updateTreeNode({
@@ -318,7 +316,6 @@
                     })
                 }
             }
-
             return {
                 handleCopyProfileLink,
                 assetTypeLabel,

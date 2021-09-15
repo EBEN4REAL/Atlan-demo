@@ -6,10 +6,16 @@
         <!-- projections start here -->
         <div class="flex flex-row w-full">
             <div class="mr-2">
-                <img
+                <!-- <img
                     v-if="entity.typeName === 'AtlasGlossary'"
                     :src="GlossarySvg"
+                /> -->
+                <AtlanIcon
+                    v-if="entity.typeName === 'AtlasGlossary'"
+                    icon="Glossary"
+                    class="h-6"
                 />
+
                 <AtlanIcon
                     v-else-if="entity.typeName === 'AtlasGlossaryCategory'"
                     icon="Category"
@@ -69,7 +75,7 @@
                         "
                         class="flex items-center mt-2 text-sm leading-5 text-gray-700 "
                     >
-                        <AtlanIcon icon="AddUser" class="m-0 mr-1" />
+                        <AtlanIcon icon="User" class="m-0 mr-1" />
 
                         <span
                             class="mr-1"
@@ -135,12 +141,8 @@
 
     // Composables
     import useAssetInfo from '~/composables/asset/useAssetInfo'
-    import useTermLinkedAssets from '~/composables/glossary/useTermLinkedAssets'
     // static
     import { assetInterface } from '~/types/assets/asset.interface'
-    import TermSvg from '~/assets/images/gtc/term/term.png'
-    import CategorySvg from '~/assets/images/gtc/category/category.png'
-    import GlossarySvg from '~/assets/images/gtc/glossary/glossary.png'
 
     import {
         Glossary,
@@ -169,8 +171,6 @@
             const router = useRouter()
             const { ownerGroups, ownerUsers } = useAssetInfo()
 
-            const { linkedAssets, isLoading, error, fetchLinkedAssets } =
-                useTermLinkedAssets()
             // computed
             const statusObject = computed(() =>
                 StatusList.find(
@@ -184,7 +184,6 @@
                     ? props.entity?.attributes?.qualifiedName
                     : undefined
             )
-            const assets = computed(() => linkedAssets.value?.entities ?? [])
             const assetCount = computed(() => {
                 if (props.entity.typeName === 'AtlasGlossaryTerm')
                     return (
@@ -274,19 +273,12 @@
             // onMounted(() => {
             //     if (termName.value) fetchLinkedAssets(termName.value)
             // })
-            console.log(props.entity)
-            console.log(props.entity?.attributes?.categories)
-            console.log(props.entity?.attributes?.qualifiedName)
             return {
-                TermSvg,
-                GlossarySvg,
-                CategorySvg,
                 statusObject,
                 redirectToProfile,
                 getTruncatedUsers,
                 getCombinedUsersAndGroups,
                 assetCount,
-                assets,
                 parentCategory,
                 parentCategories,
             }

@@ -1,0 +1,702 @@
+import { watch, ref, Ref, computed, ComputedRef, onMounted } from 'vue'
+import { TreeDataItem } from 'ant-design-vue/lib/tree/Tree'
+import { useRouter, useRoute } from 'vue-router'
+
+import { Glossary, Category, Term } from '~/types/glossary/glossary.interface'
+import { Components } from '~/api/atlas/client'
+
+import useUpdateGtcEntity from '~/components/glossary/composables/useUpdateGtcEntity'
+
+import { Glossary as GlossaryApi } from '~/api/atlas/glossary'
+import store from '~/utils/storage'
+
+// composables
+import useGTCEntity from '~/components/glossary/composables/useGtcEntity'
+
+const useTree = (emit: any, optimisticUpdate?: boolean, cacheKey?: string, isAccordion?: boolean) => {
+    const route = useRoute()
+    const router = useRouter()
+
+    // A map of node guids to the guid of their parent. Used for traversing the tree while doing local update
+    const nodeToParentKeyMap: Record<string, 'root' | string> = {}
+
+    const categoryMap: {
+        [key: string]: Components.Schemas.AtlasGlossaryCategory[]
+    } = {}
+    const treeData = ref<TreeDataItem[]>([])
+    const parentGlossary = ref<Glossary>()
+    const isInitingTree = ref(false)
+    const loadedKeys = ref<string[]>([])
+    const selectedCacheKey = `${cacheKey}_selected`
+    const expandedCacheKey = `${cacheKey}_expanded`
+    const selectedKeys = ref<string[]>([])
+    const expandedKeys = ref<string[]>([])
+
+    const selectedCache = store.get(selectedCacheKey)
+    const expandedCache = store.get(expandedCacheKey)
+
+    const currentGuid = ref<string>(route.params.id as string)
+    const fetchGuid = ref<string>(currentGuid.value)
+    const currentType = ref(
+        router.currentRoute.value.fullPath.split('/')[
+            router.currentRoute.value.fullPath.split('/').length - 2
+        ] as 'glossary' | 'category' | 'term'
+    )
+    const fetchType = ref(currentType.value)
+
+    const currentEntity = ref<Glossary | Category | Term>()
+    const {
+        entity: fetchedEntity,
+        error,
+        isLoading,
+        refetch,
+    } = useGTCEntity<Glossary | Term | Category>(
+        // type,
+        // currentGuid,
+        fetchType,
+        fetchGuid,
+        false,
+        false
+    )
+
+    const recursivelyFindPath = (targetGuid: string, initialStack?: string[]) => {
+        const parentStack = initialStack?.length ? initialStack : [targetGuid]
+
+        const findPath = (currGuid: string) => {
+            if (
+                nodeToParentKeyMap[currGuid] &&
+                nodeToParentKeyMap[currGuid] !== 'root'
+            ) {
+                parentStack.push(nodeToParentKeyMap[currGuid])
+                findPath(nodeToParentKeyMap[currGuid])
+            }
+        }
+
+        findPath(targetGuid);
+
+        return parentStack;
+    }
+    
+
+    const initTreeData = async (guid: string) => {
+        const categoryList = await GlossaryApi.ListCategoryForGlossary(guid, {})
+        const termsList = await GlossaryApi.ListTermsForGlossary(guid, {})
+        categoryMap[guid] = categoryList
+        treeData.value = []
+        categoryList.forEach((element) => {
+            if (!element.parentCategory?.categoryGuid) {
+                if (element.guid) nodeToParentKeyMap[element.guid] = 'root'
+
+                treeData.value.push({
+                    ...element,
+                    title: element.name,
+                    key: element.guid,
+                    glossaryID: guid,
+                    type: 'category',
+                })
+            }
+        })
+        termsList.forEach((element) => {
+            if (element.guid) nodeToParentKeyMap[element.guid] = 'root'
+
+            treeData.value.push({
+                ...element,
+                title: element.name,
+                key: element.guid,
+                glossaryID: guid,
+                type: 'term',
+                isLeaf: true,
+            })
+        })
+        isInitingTree.value = false
+        // selectedKeys.value.push(guid)
+        // Logic to expand tree
+        // if(currentEntity.value?.typeName === 'AtlasGlossaryCategory'){
+        //     loadedKeys.value.push(currentEntity.value?.attributes?.parentCategory?.guid)
+
+        // }
+    }
+
+    const onLoadData = async (treeNode: any) => {
+        treeNode.dataRef.isOpen = true
+        if (treeNode.dataRef.children) {
+        } else if (treeNode.dataRef.type === 'glossary') {
+            try {
+                const response = await GlossaryApi.ListCategoryForGlossary(
+                    treeNode.dataRef.key,
+                    {},
+                    { cache: true }
+                )
+                const termsList = await GlossaryApi.ListTermsForGlossary(
+                    treeNode.dataRef.key,
+                    {},
+                    { cache: true }
+                )
+                categoryMap[treeNode.dataRef.key] = response
+                response.forEach((element) => {
+                    if (!treeNode.dataRef.children) {
+                        treeNode.dataRef.children = []
+                    }
+                    if (!element.parentCategory?.categoryGuid) {
+                        treeNode.dataRef.children.push({
+                            ...element,
+                            title: element.name,
+                            key: element.guid,
+                            glossaryID: treeNode.dataRef.key,
+                            type: 'category',
+                            isRoot: true,
+                        })
+                    }
+                })
+                termsList.forEach((element) => {
+                    if (!treeNode.dataRef.children) {
+                        treeNode.dataRef.children = []
+                    }
+                    treeNode.dataRef.children.push({
+                        ...element,
+                        title: element.name,
+                        key: element.guid,
+                        glossaryID: treeNode.dataRef.key,
+                        type: 'term',
+                        isLeaf: true,
+                    })
+                })
+                treeData.value = [...treeData.value]
+                loadedKeys.value.push(treeNode.dataRef.key)
+            } catch (error) {
+                console.log(error)
+            }
+        } else if (treeNode.dataRef.type === 'category') {
+            // find all categories which are children
+            const children = categoryMap[treeNode.dataRef.glossaryID]?.filter(
+                (item) =>
+                    item.parentCategory?.categoryGuid === treeNode.dataRef.key
+            )
+            children?.forEach((child) => {
+                if (!treeNode.dataRef.children) {
+                    treeNode.dataRef.children = []
+                }
+                if (child.guid) {
+                    nodeToParentKeyMap[child.guid] = treeNode.dataRef.key
+                }
+
+                treeNode.dataRef.children.push({
+                    ...child,
+                    title: child.name,
+                    key: child.guid,
+                    glossaryID: treeNode.dataRef.glossaryID,
+                    parentCategoryId: treeNode.dataRef.key,
+                    type: 'category',
+                    isRoot: true,
+                })
+            })
+            try {
+                const termsList = await GlossaryApi.ListTermsForCategory(
+                    treeNode.dataRef.key,
+                    {},
+                    { cache: true }
+                )
+                termsList.forEach((element) => {
+                    if (!treeNode.dataRef.children) {
+                        treeNode.dataRef.children = []
+                    }
+                    if (element.guid) {
+                        nodeToParentKeyMap[element.guid] = treeNode.dataRef.key
+                    }
+                    treeNode.dataRef.children.push({
+                        ...element,
+                        title: element.name,
+                        key: element.guid,
+                        glossaryID: treeNode.dataRef.key,
+                        parentCategoryId: treeNode.dataRef.key,
+                        type: 'term',
+                        isLeaf: true,
+                    })
+                })
+                loadedKeys.value.push(treeNode.dataRef.key)
+            } catch (err) {
+                console.log(err)
+            }
+            treeData.value = [...treeData.value]
+        } else {
+        }
+    }
+
+    const expandNode = (expanded: string[], event: any) => {
+        // triggered by select
+        if (!event.node.isLeaf) {
+            const key: string = event.node.eventKey
+            const isExpanded = expandedKeys.value?.includes(key)
+            if (!isExpanded) {
+                if (isAccordion && event.node.dataRef.isRoot) {
+                    expandedKeys.value = []
+                }
+                expandedKeys.value?.push(key)
+            } else if (isExpanded) {
+                const index = expandedKeys.value?.indexOf(key)
+                expandedKeys.value?.splice(index, 1)
+            }
+            expandedKeys.value = [...expandedKeys.value]
+        }
+        store.set(expandedCacheKey, expandedKeys.value)
+    }
+
+    const selectNode = (selected: any, event: any) => {
+        if (!event.node.isLeaf) {
+            expandNode([], event)
+            // selectedKeys.value = []
+        } else {
+            if (selectedKeys.value.includes(selected)) {
+                // selectedKeys.value = []
+            } else {
+                // selectedKeys.value = [...selected]
+            }
+            emit('select', event.node.eventKey)
+        }
+        store.set(selectedCacheKey, selectedKeys.value)
+    }
+
+    const updateNode = ({
+        guid,
+        entity,
+        name,
+        assetStatus,
+    }: {
+        guid: string
+        entity?: Glossary | Category | Term
+        name?: string
+        assetStatus?: string
+    }) => {
+        if (nodeToParentKeyMap[guid] === 'root') {
+            treeData.value = treeData.value.map((treeNode) => {
+                if (treeNode.key === guid)
+                    return {
+                        ...treeNode,
+                        assetStatus:
+                            entity?.attributes?.assetStatus ??
+                            assetStatus ??
+                            treeNode.assetStatus,
+                        name: entity?.attributes?.name ?? name ?? treeNode.name,
+                        title:
+                            entity?.attributes?.name ?? name ?? treeNode.title,
+                    }
+                return treeNode
+            })
+        } else {
+            let parentStack: string[];
+
+            const updateNodeNested = (node: TreeDataItem): TreeDataItem => {
+                const currentPath = parentStack.pop()
+                if (node.key === guid || !currentPath) {
+                    return {
+                        ...node,
+                        assetStatus:
+                            entity?.attributes?.assetStatus ??
+                            assetStatus ??
+                            node.assetStatus,
+                        name: entity?.attributes?.name ?? name ?? node.name,
+                        title: entity?.attributes?.name ?? name ?? node.title,
+                    }
+                }
+                return {
+                    ...node,
+                    children: node.children?.map((childNode: TreeDataItem) => {
+                        if (childNode.key === currentPath) {
+                            return updateNodeNested(childNode)
+                        }
+                        return childNode
+                    }),
+                }
+            }
+            parentStack = recursivelyFindPath(guid)
+            const parent = parentStack.pop()
+
+            treeData.value = treeData.value.map((node: TreeDataItem) => {
+                if (node.key === parent) return updateNodeNested(node)
+                return node
+            })
+        }
+    }
+
+    const refetchNode = async (guid: string | 'root') => {
+        if (guid === 'root' && parentGlossary.value?.guid) {
+            const categoryList = await GlossaryApi.ListCategoryForGlossary(
+                parentGlossary.value?.guid,
+                {},
+                {}
+            )
+            const termsList = await GlossaryApi.ListTermsForGlossary(
+                parentGlossary.value?.guid,
+                {},
+                {}
+            )
+            categoryMap[parentGlossary.value?.guid] = categoryList
+
+            const updatedTreeData: TreeDataItem[] = []
+
+            categoryList.forEach((category) => {
+                const existingCategory = treeData.value.find(
+                    (entity) => entity.guid === category.guid
+                )
+                if (existingCategory) {
+                    updatedTreeData.push(existingCategory)
+                } else if (!category.parentCategory?.categoryGuid) {
+                    nodeToParentKeyMap[category.guid] = 'root'
+                    updatedTreeData.push({
+                        ...category,
+                        title: category.name,
+                        key: category.guid,
+                        glossaryID: parentGlossary.value?.guid,
+                        type: 'category',
+                        isRoot: true,
+                    })
+                }
+            })
+            termsList.forEach((term) => {
+                const existingTerm = treeData.value.find(
+                    (entity) => entity.guid === term.guid
+                )
+                if (existingTerm) {
+                    updatedTreeData.push(existingTerm)
+                } else {
+                    nodeToParentKeyMap[term.guid] = 'root'
+                    updatedTreeData.push({
+                        ...term,
+                        title: term.name,
+                        key: term.guid,
+                        glossaryID: parentGlossary.value?.guid,
+                        type: 'term',
+                        isLeaf: true,
+                    })
+                }
+            })
+
+            treeData.value = updatedTreeData
+        } else {
+            let parentStack: string[];
+
+            const updateNodeNested = async (node: TreeDataItem) => {
+                const currentPath = parentStack.pop()
+                if (node.key === guid || !currentPath) {
+                    const categoryList =
+                        await GlossaryApi.ListCategoryForGlossary(
+                            parentGlossary.value?.guid ?? '',
+                            {},
+                            {}
+                        )
+                    const termsList = await GlossaryApi.ListTermsForCategory(
+                        guid,
+                        {},
+                        {}
+                    )
+                    categoryMap[parentGlossary.value?.guid ?? ''] = categoryList
+                    const updatedChildren: TreeDataItem[] = []
+
+                    categoryList.forEach((category) => {
+                        const existingCategory = node.children?.find(
+                            (entity) => entity.guid === category.guid
+                        )
+
+                        if (existingCategory) {
+                            updatedChildren.push(existingCategory)
+                        } else if (
+                            category.parentCategory?.categoryGuid === node.key
+                        ) {
+                            nodeToParentKeyMap[category?.guid ?? ''] =
+                                node.key as string
+                            updatedChildren.push({
+                                ...category,
+                                title: category.name,
+                                key: category.guid,
+                                glossaryID: parentGlossary.value?.guid,
+                                parentCategoryId: node.key,
+                                type: 'category',
+                                isRoot: true,
+                            })
+                        }
+                    })
+
+                    termsList.forEach((term) => {
+                        const existingTerm = node.children?.find(
+                            (entity) => entity.guid === term.guid
+                        )
+                        if (existingTerm) {
+                            updatedChildren.push(existingTerm)
+                        } else {
+                            nodeToParentKeyMap[term?.guid ?? ''] =
+                                node.key as string
+                            updatedChildren.push({
+                                ...term,
+                                title: term.name,
+                                key: term.guid,
+                                glossaryID: parentGlossary.value?.guid,
+                                parentCategoryId: node.key,
+                                type: 'term',
+                                isLeaf: true,
+                            })
+                        }
+                    })
+
+                    return {
+                        ...node,
+                        children: updatedChildren,
+                    }
+                }
+                const updatedChildren: TreeDataItem[] = []
+
+                // eslint-disable-next-line no-restricted-syntax
+                for (const childNode of node?.children ?? []) {
+                    if (childNode.key === currentPath) {
+                        const updatedNode = await updateNodeNested(childNode)
+                        updatedChildren.push(updatedNode)
+                    } else {
+                        updatedChildren.push(childNode)
+                    }
+                }
+                return {
+                    ...node,
+                    children: updatedChildren,
+                }
+            }
+            parentStack = recursivelyFindPath(guid)
+            const parent = parentStack.pop()
+
+            const updatedTreeData: TreeDataItem[] = []
+
+            // eslint-disable-next-line no-restricted-syntax
+            for (const node of treeData.value) {
+                if (node.key === parent) {
+                    const updatedNode = await updateNodeNested(node)
+                    updatedTreeData.push(updatedNode)
+                } else {
+                    updatedTreeData.push(node)
+                }
+            }
+
+            treeData.value = updatedTreeData
+        }
+    }
+
+    const reOrderNodes = (nodeKey: string, fromGuid: string, toGuid: string, updatedCategories: any) => {
+        let parentStack: string[];
+        let nodeToReorder: TreeDataItem;
+
+        const removeNode = (node: TreeDataItem): TreeDataItem => {
+            const currentPath = parentStack.pop()
+            if (node.key === fromGuid && !currentPath) {
+                nodeToReorder = node.children?.find((childNode) => childNode.key === nodeKey);
+                return {
+                    ...node,
+                    children: node.children?.filter((childNode) => childNode.key !== nodeKey)
+                };
+            }
+            return {
+                ...node,
+                children: node.children?.map((childNode: TreeDataItem) => {
+                    if (childNode.key === currentPath) {
+                        return removeNode(childNode) ?? childNode
+                    }
+                    return childNode
+                }),
+            }
+        }
+        const addNode = (node: TreeDataItem): TreeDataItem => {
+            const currentPath = parentStack.pop()
+            const newChildren = []
+            if (node.key === nodeKey || !currentPath && nodeToReorder) {
+                nodeToReorder.parentCategoryId = toGuid;
+                nodeToReorder.parentCategory = toGuid;
+                nodeToReorder.categories = updatedCategories;
+                newChildren.push(nodeToReorder)
+            }
+            node.children?.forEach((childNode: TreeDataItem) => {
+                if (childNode.key === currentPath) {
+                    newChildren.push(addNode(childNode) ?? childNode)
+                }
+                newChildren.push(childNode)
+            });
+            return {
+                ...node,
+                children: newChildren,
+            }
+        }
+        parentStack = recursivelyFindPath(fromGuid)
+        const parent = parentStack.pop()
+
+        treeData.value = treeData.value.map((node: TreeDataItem) => {
+            if (node.key === parent) return removeNode(node)
+            return node
+        });
+
+        parentStack = recursivelyFindPath(toGuid)
+        const toParent = parentStack.pop()
+
+        treeData.value = treeData.value.map((node: TreeDataItem) => {
+            if (node.key === toParent) return addNode(node)
+            return node
+        });
+
+        nodeToParentKeyMap[nodeKey] = toGuid;
+    }
+
+    const dragAndDropNode = async ({ dragNode, node }) => {
+        const { data: updatedEntity, updateEntity } = useUpdateGtcEntity()
+        if (node.dataRef.type === 'category') {
+            if (dragNode.dataRef.type === 'term') {
+                if (dragNode.dataRef.categories?.length) {
+                    const orignalCategories = dragNode.dataRef.categories;
+                    const fromGuid = dragNode.dataRef.parentCategoryId;
+                    const toGuid = node.dataRef.guid;
+
+                    const newCategories = dragNode.dataRef.categories?.filter(
+                        (category: any) =>
+                            category.categoryGuid !==
+                            dragNode.dataRef.parentCategoryId
+                    )
+                    newCategories.push({
+                        categoryGuid: node.dataRef.guid,
+                    })
+                    if(optimisticUpdate) {
+
+                        reOrderNodes(dragNode.dataRef.guid, fromGuid, toGuid, newCategories)
+    
+                        const { data, error: dropError } = GlossaryApi.UpdateGlossaryTerm(
+                            dragNode.dataRef.guid,
+                            {
+                                ...dragNode.dataRef,
+                                categories: newCategories,
+                            }
+                        )
+                        watch(dropError, (err) => {
+                            setTimeout(() => {
+                                reOrderNodes(dragNode.dataRef.guid, toGuid, fromGuid, orignalCategories)
+                            }, 1500)
+                        })
+                    } else {
+                        const { data, error: dropError } = GlossaryApi.UpdateGlossaryTerm(
+                            dragNode.dataRef.guid,
+                            {
+                                ...dragNode.dataRef,
+                                categories: newCategories,
+                            }
+                        )
+
+                        watch(data, async (newData) => {
+                            if (newData.guid) {
+                                // await refetchNode(node.dataRef.guid)
+                                // refetchNode(dragNode.dataRef.parentCategoryId)
+                                reOrderNodes(dragNode.dataRef.guid, dragNode.dataRef.parentCategoryId, node.dataRef.guid, newCategories)
+                            }
+                        })
+                    }
+                } else {
+                    const newCategories = [
+                        {
+                            categoryGuid: node.dataRef.guid,
+                        },
+                    ]
+                    const { data } = GlossaryApi.UpdateGlossaryTerm(
+                        dragNode.dataRef.guid,
+                        {
+                            ...dragNode.dataRef,
+                            categories: newCategories,
+                        }
+                    )
+
+                    watch(data, async (newData) => {
+                        if (newData?.guid) {
+                            await refetchNode('root')
+                            refetchNode(node.dataRef.guid)
+                        }
+                    })
+                    // updateEntity('term', dragNode.dataRef.guid, {
+                    //     categories: newCategories,
+                    // })
+                }
+            }
+        }
+    }
+
+    const reInitTree = () => {
+        fetchGuid.value = currentGuid.value
+        refetch()
+    }
+
+    watch(fetchGuid, (newGuid) => {
+        if (
+            fetchType.value === 'glossary' &&
+            parentGlossary.value?.guid !== newGuid
+        ) {
+            isInitingTree.value = true
+            expandedKeys.value = []
+            loadedKeys.value = []
+        }
+    })
+
+    watch(fetchedEntity, (newEntity) => {
+        if (newEntity?.typeName === 'AtlasGlossary') {
+            if (parentGlossary.value?.guid !== newEntity.guid) {
+                parentGlossary.value = newEntity
+                treeData.value = []
+                initTreeData(fetchGuid.value)
+                // refetchGlossary('root')
+            }
+        } else if (
+            newEntity?.typeName === 'AtlasGlossaryCategory' ||
+            newEntity?.typeName === 'AtlasGlossaryTerm'
+        ) {
+            if (!treeData.value?.length) {
+                currentEntity.value = fetchedEntity.value
+                fetchType.value = 'glossary'
+                fetchGuid.value = newEntity?.attributes?.anchor?.guid
+                refetch()
+            }
+        }
+    })
+
+    watch(
+        () => route.params.id,
+        (newId) => {
+            currentGuid.value = newId as string
+            currentType.value = router.currentRoute.value.fullPath.split('/')[
+                router.currentRoute.value.fullPath.split('/').length - 2
+            ] as 'glossary' | 'category' | 'term'
+
+            fetchType.value = currentType.value
+            fetchGuid.value = currentGuid.value
+
+            if (
+                !treeData.value?.length ||
+                !parentGlossary.value?.guid ||
+                (parentGlossary.value?.guid !== currentGuid.value &&
+                    currentType.value === 'glossary')
+            ) {
+                refetch()
+            }
+
+            selectedKeys.value = [currentGuid.value]
+        }
+    )
+
+    return {
+        treeData,
+        loadedKeys,
+        currentGuid,
+        currentType,
+        parentGlossary,
+        isInitingTree,
+        selectedKeys,
+        expandedKeys,
+        selectedCache,
+        expandedCache,
+        reInitTree,
+        onLoadData,
+        expandNode,
+        selectNode,
+        dragAndDropNode,
+        updateNode,
+        refetchNode,
+    }
+}
+
+export default useTree

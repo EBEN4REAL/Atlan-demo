@@ -16,6 +16,8 @@
     "noUnusedLocals": true,
     "strictNullChecks": true,
     "forceConsistentCasingInFileNames": true,
+    "noImplicitAny":  false,
+    "allowJs": true,
     "types": [
       "vite/client",
       "vite-plugin-vue-layouts/client",

@@ -52,6 +52,16 @@ const CollapsiblePanels: { [key: string]: collapsiblePanels } = {
         label: 'Hierarchy',
         component: 'tableauHierarchy',
     },
+    usage: {
+        id: 'usage',
+        label: 'Usage',
+        component: 'usage',
+    },
+    columnProfile: {
+        id: 'columnProfile',
+        label: 'Column Profile',
+        component: 'columnProfile',
+    },
 }
 const {
     assetDetails,
@@ -61,6 +71,8 @@ const {
     tableauProperties,
     tableauPreview,
     tableauHierarchy,
+    columnProfile,
+    usage,
 } = CollapsiblePanels
 
 export const InfoTabInAssetInDiscovery: { [key: string]: AssetTab } = {
@@ -241,13 +253,13 @@ export const InfoTabInAssetInDiscovery: { [key: string]: AssetTab } = {
 
 export const InfoTabInAssetProfile: { [key: string]: AssetTab } = {
     Connection: {
-        panels: [assetDetails, linkedAsset, heirarchy, properties],
+        panels: [assetDetails, linkedAsset, properties],
     },
     Database: {
-        panels: [assetDetails, linkedAsset, heirarchy, properties],
+        panels: [assetDetails, linkedAsset, properties],
     },
     Schema: {
-        panels: [assetDetails, linkedAsset, heirarchy, properties],
+        panels: [assetDetails, linkedAsset, properties],
     },
     View: {
         panels: [assetDetails, linkedAsset, heirarchy, properties],
@@ -415,6 +427,164 @@ export const InfoTabInAssetProfile: { [key: string]: AssetTab } = {
     },
 }
 
+export const InfoTabInNonBiOverview: { [key: string]: AssetTab } = {
+    Column: {
+        panels: [assetDetails, linkedAsset, usage, columnProfile],
+    },
+}
+
+export const InfoTabInBiOverview: { [key: string]: AssetTab } = {
+    TableauWorkbook: {
+        panels: [
+            tableauProperties,
+            assetDetails,
+            linkedAsset,
+            tableauHierarchy,
+            properties,
+        ],
+        properties: [
+            {
+                id: 'projectName',
+                label: 'Project',
+                property: 'projectName',
+            },
+            {
+                id: '__timestamp',
+                label: 'Created on',
+                property: '__timestamp',
+            },
+            {
+                id: '__modificationTimestamp',
+                label: 'Modified on',
+                property: '__modificationTimestamp',
+            },
+        ],
+    },
+    TableauSite: {
+        panels: [
+            tableauProperties,
+            assetDetails,
+            linkedAsset,
+            tableauHierarchy,
+            properties,
+        ],
+        properties: [
+            {
+                id: 'connectionName',
+                label: 'Server',
+                property: 'connectionName',
+            },
+            {
+                id: '__timestamp',
+                label: 'Created on',
+                property: '__timestamp',
+            },
+        ],
+    },
+    TableauProject: {
+        panels: [
+            tableauProperties,
+            assetDetails,
+            linkedAsset,
+            tableauHierarchy,
+            properties,
+        ],
+        properties: [
+            {
+                id: 'siteName',
+                label: 'Site',
+                property: 'siteName',
+            },
+            {
+                id: '__timestamp',
+                label: 'Created on',
+                property: '__timestamp',
+            },
+        ],
+    },
+    TableauDashboard: {
+        panels: [
+
+            tableauProperties,
+            assetDetails,
+            linkedAsset,
+            tableauHierarchy,
+            properties,
+        ],
+        properties: [
+            {
+                id: 'workbookName',
+                label: 'Workbook',
+                property: 'workbookName',
+            },
+            {
+                id: '__timestamp',
+                label: 'Created on',
+                property: '__timestamp',
+            },
+            {
+                id: '__modificationTimestamp',
+                label: 'Modified on',
+                property: '__modificationTimestamp',
+            },
+        ],
+    },
+    TableauWorksheet: {
+        panels: [
+
+            tableauProperties,
+            assetDetails,
+            linkedAsset,
+            tableauHierarchy,
+            properties,
+        ],
+        properties: [
+            {
+                id: 'workbookName',
+                label: 'Workbook',
+                property: 'workbookName',
+            },
+            {
+                id: '__timestamp',
+                label: 'Created on',
+                property: '__timestamp',
+            },
+            {
+                id: '__modificationTimestamp',
+                label: 'Modified on',
+                property: '__modificationTimestamp',
+            },
+        ],
+    },
+    // in attributes if isPublished -true ( means it is a published datasoruce )/ isPublished - false ( means it is a embedded datasource)
+    TableauDatasource: {
+        panels: [
+            tableauProperties,
+            assetDetails,
+            linkedAsset,
+            tableauHierarchy,
+            properties,
+        ],
+        properties: [
+            {
+                id: 'projectName',
+                label: 'Project',
+                property: 'projectName',
+            },
+            {
+                id: '__timestamp',
+                label: 'Created on',
+                property: '__timestamp',
+            },
+            {
+                id: '__modificationTimestamp',
+                label: 'Modified on',
+                property: '__modificationTimestamp',
+            },
+        ],
+    },
+}
+
 export function useInfoPanels(
     page: Ref<string>,
     selectedAsset: Ref<assetInterface>
@@ -425,6 +595,12 @@ export function useInfoPanels(
         }
         case 'profile': {
             return InfoTabInAssetProfile[selectedAsset.value.typeName]
+        }
+        case 'biOverview': {
+            return InfoTabInBiOverview[selectedAsset.value.typeName]
+        }
+        case 'nonBiOverview': {
+            return InfoTabInNonBiOverview[selectedAsset.value.typeName]
         }
     }
 }

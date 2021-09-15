@@ -1,6 +1,6 @@
 <template>
     <div class="text-sm text-gray-500">
-        <p class="mb-3 text-sm">Classifications</p>
+        <p class="mb-1 text-xs">Classifications</p>
         <div
             v-if="asset.classifications?.length > 0"
             class="flex flex-wrap items-center"
@@ -44,13 +44,16 @@
             trigger="click"
         >
             <div v-if="asset.classifications?.length < 1">
-                <button
-                    @click.stop="toggleLinkClassificationPopover"
-                    class="inline-flex items-center px-3 py-1 mr-3 text-sm text-gray-700 border rounded-full cursor-pointer  hover:bg-primary hover:text-white"
-                >
-                    <fa icon="fal plus" class="text-xs" />
-                    <span class="ml-2 text-xs">Add Classifications</span>
-                </button>
+                <div @click.stop="toggleLinkClassificationPopover">
+                    <div
+                        class="flex items-center cursor-pointer  text-primary hover:text-primary hover:underline"
+                    >
+                        <!-- <span class="flex items-center text-xs">
+                            <fa icon="fal plus" />
+                        </span> -->
+                        <span class="text-xs">Add classifications</span>
+                    </div>
+                </div>
             </div>
             <template #content>
                 <div class="flex flex-col overflow-y-auto" style="width: 400px">
@@ -158,7 +161,7 @@
                             <span
                                 class="text-sm cursor-pointer text-primary"
                                 @click="showCreateClassificationForm"
-                                >&nbsp;new term</span
+                                >&nbsp;new classification</span
                             >
                         </div>
                         <div

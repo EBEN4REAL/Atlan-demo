@@ -2,14 +2,30 @@
     <div class="flex w-full" :class="$style.tabClasses">
         <div class="flex flex-col items-stretch flex-1 mb-1 bg-white w-80">
             <div class="flex flex-col h-full">
-                <div class="flex" v-if="checkedAssetList.length">
+                <div v-if="checkedAssetList.length" class="flex">
                     <div
-                        class="fixed left-0 z-10 flex justify-between w-full  bottom-8"
+                        class="
+                            fixed
+                            left-0
+                            z-10
+                            flex
+                            justify-between
+                            w-full
+                            bottom-8
+                        "
                     >
                         <div style="width: 264px"></div>
                         <div
                             v-if="showCheckBox"
-                            class="flex items-center justify-between px-5 py-3 bg-gray-100 shadow-lg "
+                            class="
+                                flex
+                                items-center
+                                justify-between
+                                px-5
+                                py-3
+                                bg-gray-100
+                                shadow-lg
+                            "
                             style="width: 545px"
                         >
                             <p class="p-0 m-0">
@@ -20,12 +36,23 @@
                             </p>
                             <div class="flex items-center">
                                 <a-button
-                                    class="px-3 mx-2 text-gray-700 bg-transparent outline-none "
+                                    class="
+                                        px-3
+                                        mx-2
+                                        text-gray-700
+                                        bg-transparent
+                                        outline-none
+                                    "
                                     @click="handleCancelLinkAssets"
                                     >Cancel</a-button
                                 >
                                 <a-button
-                                    class="px-6 text-white outline-none  bg-primary"
+                                    class="
+                                        px-6
+                                        text-white
+                                        outline-none
+                                        bg-primary
+                                    "
                                     @click="handleConfirmLinkAssets"
                                     >Link</a-button
                                 >
@@ -41,11 +68,19 @@
                     ></AssetDropdown>
                 </div>
                 <div
-                    class="flex items-center px-5 py-3 bg-gray-100"
                     v-if="showCheckBox"
+                    class="flex items-center px-5 py-3 bg-gray-100"
                 >
                     <a-button
-                        class="p-0 mr-3 text-gray-700 bg-transparent border-0 shadow-none outline-none "
+                        class="
+                            p-0
+                            mr-3
+                            text-gray-700
+                            bg-transparent
+                            border-0
+                            shadow-none
+                            outline-none
+                        "
                         @click="handleCancelLinkAssets"
                     >
                         <AtlanIcon
@@ -57,7 +92,15 @@
                     Link Assets
                 </div>
                 <div
-                    class="flex items-center justify-between w-full px-3 mt-4 mb-2 "
+                    class="
+                        flex
+                        items-center
+                        justify-between
+                        w-full
+                        px-3
+                        mt-4
+                        mb-2
+                    "
                 >
                     <SearchAndFilter
                         v-model:value="queryText"
@@ -77,17 +120,17 @@
                     </SearchAndFilter>
                     <a-button
                         v-if="!showCheckBox"
-                        @click="handleLinkAssets"
                         class="px-3 text-white outline-none bg-primary"
+                        @click="handleLinkAssets"
                         >Link assets</a-button
                     >
                 </div>
                 <AssetTabs
                     v-model="assetType"
-                    @update:model-value="handleTabChange"
                     :asset-type-list="assetTypeList"
                     :asset-type-map="assetTypeMap"
                     :total="totalSum"
+                    @update:model-value="handleTabChange"
                 ></AssetTabs>
                 <div
                     v-if="
@@ -169,9 +212,7 @@
     import { useBusinessMetadataStore } from '~/store/businessMetadata'
     import { Components } from '~/api/atlas/client'
 
-    import useLinkAssets from '~/composables/glossary/useLinkAssets'
-
-    import entities from './tempEntityList'
+    import useLinkAssets from '~/components/glossary/composables/useLinkAssets'
 
     export interface filterMapType {
         assetCategory: {
@@ -273,7 +314,7 @@
             const filterMode = ref('custom')
             const now = ref(true)
             const showCheckBox = ref(false)
-            let initialBody: SearchParameters = reactive({})
+
             const assetType = ref('Catalog')
             const queryText = ref(initialFilters.value.searchText)
             const connectorsPayload = ref(
@@ -281,7 +322,11 @@
             )
             const checkedAssetList = ref<
                 Components.Schemas.AtlasEntityHeader[]
-            >([])
+            >([]);
+            const uncheckedAssetList = ref<
+                Components.Schemas.AtlasEntityHeader[]
+            >([]);
+
             const filters = ref(initialFilters.value.initialBodyCriterion)
             const filterMap = ref<filterMapType>({
                 assetCategory: {
@@ -328,7 +373,7 @@
             // Get All Disoverable Asset Types
             const assetTypeList = ref([])
             assetTypeList.value = AssetTypeList.filter(
-                (item) => item.isDiscoverable == true
+                (item) => item.isDiscoverable === true
             )
             const assetTypeListString = assetTypeList.value
                 .map((item) => item.id)
@@ -338,6 +383,21 @@
                 if (!showCheckBox.value) return termName.value
                 return undefined
             })
+            let initialBody: SearchParameters = reactive({
+                    typeName: assetTypeListString,
+                    termName: termQualifiedName.value,
+                    includeClassificationAttributes: true,
+                    includeSubClassifications: true,
+                    limit: limit.value,
+                    offset: offset.value,
+                    entityFilters: {},
+                    attributes: [
+                        ...BaseAttributes,
+                        ...BasicSearchAttributes,
+                        ...tableauAttributes,
+                    ],
+                    aggregationAttributes: [],
+                })
             const {
                 list,
                 replaceBody,
@@ -355,13 +415,13 @@
                 true
             )
 
-            const store = useBusinessMetadataStore()
-            const BMListLoaded = computed(
-                () => store.getBusinessMetadataListLoaded
-            )
-            const BMAttributeProjection = computed(
-                () => store.getBusinessMetadataListProjections
-            )
+            // const store = useBusinessMetadataStore()
+            // const BMListLoaded = computed(
+            //     () => store.getBusinessMetadataListLoaded
+            // )
+            // const BMAttributeProjection = computed(
+            //     () => store.getBusinessMetadataListProjections
+            // )
 
             const state = ref('active')
             const assetTypeLabel = computed(() => {
@@ -431,7 +491,7 @@
                         ...BaseAttributes,
                         ...BasicSearchAttributes,
                         ...tableauAttributes,
-                        ...BMAttributeProjection.value,
+                        // ...BMAttributeProjection.value,
                     ],
                     aggregationAttributes: [],
                 }
@@ -498,9 +558,7 @@
                     initialBody.query = queryText.value
                 }
                 replaceBody(initialBody)
-                // if (assetlist.value && !dontScroll) {
-                // assetlist?.value.scrollToItem(0);
-                // }
+
             }
 
             function handleTabChange() {
@@ -508,27 +566,11 @@
                 offset.value = 0
                 updateBody()
             }
-            // watch(
-            //     assetType,
-            //     () => {
-            //         // ? Should these run only when all attributes are loaded? like BMAttributeProjection
-            //         updateBody()
-            //         if (!now.value) {
-            //             isAggregate.value = true
-            //             now.value = true
-            //         }
-            //     },
-            //     {
-            //         immediate: true,
-            //     }
-            // )
+
             const { projection } = useDiscoveryPreferences()
             const handleSearchChange = useDebounceFn(() => {
                 offset.value = 0
-                // const routerOptions = getRouterOptions()
-                // const routerQuery = getEncodedStringFromOptions(routerOptions)
                 updateBody()
-                // pushQueryToRouter(routerQuery)
                 tracking.trackEvent(events.EVENT_ASSET_SEARCH, {
                     trigger: 'discover',
                 })
@@ -602,32 +644,40 @@
                 assetFilterRef.value?.resetAllFilters()
             }
 
-            watch(BMListLoaded, (val) => {
-                if (val) {
-                    now.value = true
-                    isAggregate.value = true
-                    // updateBody()
-                }
-            })
+            // watch(BMListLoaded, (val) => {
+            //     if (val) {
+            //         now.value = true
+            //         isAggregate.value = true
+            //         updateBody()
+            //     }
+            // })
 
             onMounted(() => {
                 now.value = true
-                isAggregate.value = true
-                updateBody()
+                isAggregate.value = false
             })
 
             const handleLinkAssets = () => {
                 showCheckBox.value = !showCheckBox.value
+                isAggregate.value = true
 
                 updateBody()
             }
             const handleCancelLinkAssets = () => {
                 showCheckBox.value = false
                 checkedAssetList.value = []
+                uncheckedAssetList.value = []
+                isAggregate.value = true
+
                 updateBody()
             }
             const handleConfirmLinkAssets = () => {
-                const { assignLinkedAssets } = useLinkAssets()
+                const { assignLinkedAssets, unLinkAssets } = useLinkAssets()
+                
+                const { response: unlinkResponse } = unLinkAssets(
+                    termGuid.value,
+                    uncheckedAssetList.value
+                )
 
                 const { response } = assignLinkedAssets(
                     termGuid.value,
@@ -651,10 +701,20 @@
                     ) {
                         checkedAssetList.value.push(item)
                     }
+                    uncheckedAssetList.value = uncheckedAssetList.value.filter(
+                        (asset) => asset.guid !== item.guid
+                    )
                 } else {
                     checkedAssetList.value = checkedAssetList.value.filter(
                         (asset) => asset.guid !== item.guid
                     )
+                    if (
+                        !uncheckedAssetList.value.find(
+                            (asset) => asset.guid === item.guid
+                        )
+                    ) {
+                        uncheckedAssetList.value.push(item)
+                    }
                 }
             }
 
@@ -668,11 +728,11 @@
             })
 
             watch(list, (newList) => {
-                if(!showCheckBox.value){
+                if (!showCheckBox.value) {
                     checkedAssetList.value = [...newList]
+                    uncheckedAssetList.value = []
                 }
-            });
-
+            })
 
             return {
                 handleClearFiltersFromList,
@@ -711,13 +771,13 @@
                 dynamicSearchPlaceholder,
                 setPlaceholder,
                 placeholderLabel,
-                entities,
                 showCheckBox,
                 handleLinkAssets,
                 handleCancelLinkAssets,
                 handleConfirmLinkAssets,
                 modifyLinkList,
                 checkedAssetList,
+                uncheckedAssetList,
                 termQualifiedName,
             }
         },

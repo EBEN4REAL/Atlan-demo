@@ -1,16 +1,17 @@
 <template>
     <div class="flex flex-col w-full h-full bg-white">
         <div class="flex text-gray">
-            <vue3-tabs-chrome
-                :ref="setTabRef"
-                :tabs="tabs"
-                v-model="activeInlineTabKey"
-                @click="onTabClick"
-                @remove="onTabRemove"
-                :minWidth="80"
+            <a-tabs
+                v-model:activeKey="activeInlineTabKey"
+                :class="$style.inline_tabs"
+                hide-add
+                type="editable-card"
+                class="w-full"
+                @change="onTabClick"
+                @edit="onEdit"
             >
-                <template #after>
-                    <div class="ml-0">
+                <template #tabBarExtraContent>
+                    <div class="inline-flex items-center mr-2">
                         <span
                             class="inline-flex items-center justify-center p-2 rounded-full  btn-add hover:bg-gray-300"
                             @click="handleAdd"
@@ -19,15 +20,27 @@
                         </span>
                     </div>
                 </template>
-            </vue3-tabs-chrome>
+                <a-tab-pane v-for="tab in tabs" :key="tab.key" :closable="true">
+                    <template #tab>
+                        <div class="flex items-center justify-between">
+                            <img
+                                :src="tab.favico"
+                                class="w-4 h-4 mr-2 rounded"
+                                v-if="tab?.favico"
+                            />
+                            <span class="mr-2">{{ tab.label }}</span>
+                        </div>
+                    </template>
+                </a-tab-pane>
+            </a-tabs>
         </div>
         <splitpanes
             horizontal
             :push-other-panes="false"
             v-if="activeInlineTabKey"
         >
-            <pane max-size="100" size="60" min-size="40"> <Editor /></pane>
-            <pane min-size="0" size="40" max-size="60"> <ResultsPane /></pane>
+            <pane max-size="100" size="55" min-size="45"> <Editor /></pane>
+            <pane min-size="0" size="45" max-size="55"> <ResultsPane /></pane>
         </splitpanes>
         <NoActiveInlineTab v-else />
     </div>
@@ -35,19 +48,14 @@
 
 <script lang="ts">
     import { defineComponent, PropType, toRefs, Ref, inject } from 'vue'
-    import Vue3TabsChrome from './vue3-tabs-chrome.vue'
     import Editor from '~/components/insights/playground/editor/index.vue'
     import ResultsPane from '~/components/insights/playground/resultsPane/index.vue'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
     import NoActiveInlineTab from './noActiveInlineTab.vue'
 
     export default defineComponent({
-        components: { Editor, ResultsPane, Vue3TabsChrome, NoActiveInlineTab },
+        components: { Editor, ResultsPane, NoActiveInlineTab },
         props: {
-            tabRef: {
-                type: Object as PropType<Ref<any>>,
-                required: true,
-            },
             activeInlineTabKey: {
                 type: String,
                 required: true,
@@ -55,21 +63,19 @@
         },
         emits: ['update:activeInlineTabKey', 'update:tabRef'],
         setup(props, { emit }) {
-            const { activeInlineTabKey, tabRef } = toRefs(props)
+            const { activeInlineTabKey } = toRefs(props)
             const tabs = inject('inlineTabs') as Ref<activeInlineTabInterface[]>
             const activeInlineTab = inject(
                 'activeInlineTab'
             ) as Ref<activeInlineTabInterface>
-            const setTabRef = (el) => {
-                emit('update:tabRef', el)
-            }
-            const handleRemove = () => {
-                tabRef.value.removeTab(activeInlineTabKey.value)
-            }
-            const handleAdd = (tab1, alltabs) => {
-                console.log(tab1, tabRef.value.tabs, 'tabs')
-                const key = 'tab' + Date.now()
-                tabRef.value.addTab({
+            /*       
+                @params - inlineTabKey: string
+             */
+            const inlineTabRemove = inject('inlineTabRemove') as Function
+            const inlineTabAdd = inject('inlineTabAdd') as Function
+            const handleAdd = () => {
+                const key = String(tabs.value.length + 1)
+                const inlineTabData: activeInlineTabInterface = {
                     label: 'New Tab',
                     key,
                     favico: 'https://atlan.com/favicon.ico',
@@ -101,32 +107,27 @@
                         title: activeInlineTab.value.assetSidebar.title,
                         id: activeInlineTab.value.assetSidebar.id,
                     },
-                })
-                emit('update:activeInlineTabKey', key)
+                }
+                inlineTabAdd(inlineTabData)
             }
-            const onTabClick = (event, tab, index) => {
-                emit('update:activeInlineTabKey', tab.key)
+            const onTabClick = (activeKey) => {
+                emit('update:activeInlineTabKey', activeKey)
             }
-            const onTabRemove = (tab, index) => {
-                const tabs = tabRef.value.tabs
-                const len = tabs.length
-                if (tabs.length > 0) {
-                    const activeKey = tabs[len - 1].key
-                    emit('update:activeInlineTabKey', activeKey)
+            const onEdit = (targetKey: string | MouseEvent, action: string) => {
+                if (action === 'add') {
+                    handleAdd()
                 } else {
-                    emit('update:activeInlineTabKey', undefined)
+                    inlineTabRemove(targetKey as string)
                 }
             }
 
             return {
-                onTabRemove,
-                onTabClick,
                 activeInlineTab,
                 tabs,
                 activeInlineTabKey,
                 handleAdd,
-                handleRemove,
-                setTabRef,
+                onEdit,
+                onTabClick,
             }
         },
     })
@@ -152,7 +153,13 @@
         padding: 50px 30px;
     }
 </style>
-
+<style lang="less" module>
+    .inline_tabs {
+        :global(.ant-tabs-tab > div) {
+            @apply flex items-center !important;
+        }
+    }
+</style>
 <route lang="yaml">
 meta:
     layout: default

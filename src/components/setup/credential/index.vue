@@ -387,8 +387,9 @@
                 credentialGuid.value = props.defaultCredential?.guid
             }
 
-            const now = ref(false)
-            const initialBody = {}
+            /**
+             * @desc useConnectionTest - testing for connections
+             */
             const {
                 data,
                 isError: errorNetwork,
@@ -399,19 +400,18 @@
                 alertMessage: networkAlertMessage,
                 errorMessage: networkErrorMessage,
                 replaceBody: replaceNetworkTestBody,
-            } = useConnectionTest(initialBody, { immediate: false })
+            } = useConnectionTest({}, { immediate: false })
 
             const handleNetworkTest = () => {
                 replaceNetworkTestBody({
                     host: credential.host,
                     port: credential.port,
                 })
-                if (!now.value) {
-                    now.value = true
-                }
             }
 
-            const credNow = ref(false)
+            /**
+             * @desc useCredentialTest - testing for credentials with body
+             */
             const {
                 data: stateCredential,
                 isLoading: isCredTestLoading,
@@ -423,7 +423,9 @@
                 replaceBody: replaceCredentialTestBody,
             } = useCredentialTest(credentialGuid.value, { immediate: false })
 
-            const editNow = ref(false)
+            /**
+             * @desc useCredentialTest - testing for credentials with existing guid
+             */
             const {
                 isLoading: isCredIdTestLoading,
                 isSuccess: isCredIdTestSuccess,
@@ -440,25 +442,15 @@
                 if (props.isEdit) {
                     if (credential.login || credential.password) {
                         replaceCredentialTestBody(credential)
-                        if (!credNow.value) {
-                            credNow.value = true
-                        }
                     } else {
                         replaceCredID(credentialGuid.value)
-                        if (!editNow.value) {
-                            editNow.value = true
-                        }
                     }
                 } else {
                     replaceCredentialTestBody(credential)
-                    if (!credNow.value) {
-                        credNow.value = true
-                    }
                 }
             }
 
             const handleTest = () => {
-                console.log('handle Test')
                 handleNetworkTest()
                 handleCredentialTest()
             }
@@ -468,6 +460,9 @@
                 credential.password = ''
             }
 
+            /**
+             * ??
+             */
             watch(
                 [isNetworkTestLoading, isCredTestLoading, isCredIdTestLoading],
                 () => {
@@ -511,13 +506,17 @@
                 }
             )
 
+            /**
+             * @desc test the current credentials,
+             * return credentials if true else null
+             */
             const getCredential = async () => {
                 try {
                     await form.value.validate()
                     handleTest()
-                    return true
+                    return JSON.parse(JSON.stringify(credential))
                 } catch (err) {
-                    console.log('error', err)
+                    return null
                 }
             }
 

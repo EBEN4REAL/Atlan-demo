@@ -317,18 +317,27 @@
             )
 
             const credentialView = ref()
-
-            const credBody = ref({})
             const guid = ref('')
+            const initialBody = ref({})
 
-            const { execute } = updateCredential(guid, credBody, {
+            const {
+                data,
+                mutate,
+                isReady,
+                isError,
+                replaceBody: replaceCredentialBody,
+                isLoading,
+            } = updateCredential(guid, initialBody, {
                 immediate: false,
             })
 
             const handleUpdate = async () => {
                 guid.value = props.credential.guid
                 try {
-                    const res = await credentialView.value.getCredential()
+                    const credentialToUpdate =
+                        await credentialView.value.getCredential()
+                    console.log({ credentialToUpdate })
+                    replaceCredentialBody(credentialToUpdate)
                 } catch (err) {
                     console.log('error')
                 }

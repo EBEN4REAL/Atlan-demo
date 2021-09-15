@@ -1,7 +1,7 @@
 <template>
-    <div class="pl-12 pr-5 mt-8">
+    <div class="px-12 mt-8">
         <!-- Readme widget -->
-        <div class="pb-6">
+        <div class="p-5 mb-10 bg-white border border-gray-light">
             <Readme
                 class="w-full border-0"
                 :show-borders="false"
@@ -10,11 +10,11 @@
             />
         </div>
         <!-- Overview Image Preview -->
-        <!-- 
-        <div v-if="imagePreview" class="mb-16">
+
+        <div v-if="imageId" class="mb-10">
             <h2 class="mb-6 text-xl text-gray">Preview</h2>
             <overview-image-preview :image-preview="imagePreview" />
-        </div> -->
+        </div>
 
         <!-- Overview Relations -->
         <div class="mb-16">
@@ -26,7 +26,7 @@
 
 <script lang="ts">
     // Vue
-    import { defineComponent, inject, computed, ref } from 'vue'
+    import { defineComponent, inject, computed, ref, onMounted } from 'vue'
 
     // Components
     import Readme from '@/common/readme/index.vue'
@@ -35,6 +35,8 @@
 
     // Composables
     import useAssetInfo from '~/composables/asset/useAssetInfo'
+
+    import { getAPIPath } from '~/api'
 
     export default defineComponent({
         components: { overviewRelations, overviewImagePreview, Readme },
@@ -45,11 +47,19 @@
             /** COMPUTED */
             const assetData = computed(() => assetDataInjection?.asset)
             const imagePreview = ref<string>('')
+            const imageId = ref()
 
             const { previewURL } = useAssetInfo()
-            imagePreview.value = previewURL(assetData.value)
+            const fetch = () => {
+                imageId.value = previewURL(assetData.value)
 
-            return { assetData, imagePreview }
+                imagePreview.value = `/api${getAPIPath('/auth', imageId.value)}`
+            }
+            onMounted(() => {
+                fetch()
+            })
+
+            return { assetData, imagePreview, imageId }
         },
     })
 </script>

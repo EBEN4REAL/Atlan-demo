@@ -59,6 +59,25 @@ const useTree = (emit: any, optimisticUpdate?: boolean, cacheKey?: string, isAcc
         false
     )
 
+    const recursivelyFindPath = (targetGuid: string, initialStack?: string[]) => {
+        const parentStack = initialStack?.length ? initialStack : [targetGuid]
+
+        const findPath = (currGuid: string) => {
+            if (
+                nodeToParentKeyMap[currGuid] &&
+                nodeToParentKeyMap[currGuid] !== 'root'
+            ) {
+                parentStack.push(nodeToParentKeyMap[currGuid])
+                findPath(nodeToParentKeyMap[currGuid])
+            }
+        }
+
+        findPath(targetGuid);
+
+        return parentStack;
+    }
+    
+
     const initTreeData = async (guid: string) => {
         const categoryList = await GlossaryApi.ListCategoryForGlossary(guid, {})
         const termsList = await GlossaryApi.ListTermsForGlossary(guid, {})
@@ -264,16 +283,8 @@ const useTree = (emit: any, optimisticUpdate?: boolean, cacheKey?: string, isAcc
                 return treeNode
             })
         } else {
-            const parentStack: string[] = [guid]
-            const recursivelyFindPath = (currentGuid: string) => {
-                if (
-                    nodeToParentKeyMap[currentGuid] &&
-                    nodeToParentKeyMap[currentGuid] !== 'root'
-                ) {
-                    parentStack.push(nodeToParentKeyMap[currentGuid])
-                    recursivelyFindPath(nodeToParentKeyMap[currentGuid])
-                }
-            }
+            let parentStack: string[];
+
             const updateNodeNested = (node: TreeDataItem): TreeDataItem => {
                 const currentPath = parentStack.pop()
                 if (node.key === guid || !currentPath) {
@@ -297,7 +308,7 @@ const useTree = (emit: any, optimisticUpdate?: boolean, cacheKey?: string, isAcc
                     }),
                 }
             }
-            recursivelyFindPath(guid)
+            parentStack = recursivelyFindPath(guid)
             const parent = parentStack.pop()
 
             treeData.value = treeData.value.map((node: TreeDataItem) => {
@@ -362,16 +373,8 @@ const useTree = (emit: any, optimisticUpdate?: boolean, cacheKey?: string, isAcc
 
             treeData.value = updatedTreeData
         } else {
-            const parentStack: string[] = [guid]
-            const recursivelyFindPath = (currentGuid: string) => {
-                if (
-                    nodeToParentKeyMap[currentGuid] &&
-                    nodeToParentKeyMap[currentGuid] !== 'root'
-                ) {
-                    parentStack.push(nodeToParentKeyMap[currentGuid])
-                    recursivelyFindPath(nodeToParentKeyMap[currentGuid])
-                }
-            }
+            let parentStack: string[];
+
             const updateNodeNested = async (node: TreeDataItem) => {
                 const currentPath = parentStack.pop()
                 if (node.key === guid || !currentPath) {
@@ -455,7 +458,7 @@ const useTree = (emit: any, optimisticUpdate?: boolean, cacheKey?: string, isAcc
                     children: updatedChildren,
                 }
             }
-            recursivelyFindPath(guid)
+            parentStack = recursivelyFindPath(guid)
             const parent = parentStack.pop()
 
             const updatedTreeData: TreeDataItem[] = []
@@ -475,18 +478,9 @@ const useTree = (emit: any, optimisticUpdate?: boolean, cacheKey?: string, isAcc
     }
 
     const reOrderNodes = (nodeKey: string, fromGuid: string, toGuid: string, updatedCategories: any) => {
-        let parentStack: string[] = [fromGuid]
+        let parentStack: string[];
         let nodeToReorder: TreeDataItem;
 
-        const recursivelyFindPath = (currentGuid: string) => {
-            if (
-                nodeToParentKeyMap[currentGuid] &&
-                nodeToParentKeyMap[currentGuid] !== 'root'
-            ) {
-                parentStack.push(nodeToParentKeyMap[currentGuid])
-                recursivelyFindPath(nodeToParentKeyMap[currentGuid])
-            }
-        }
         const removeNode = (node: TreeDataItem): TreeDataItem => {
             const currentPath = parentStack.pop()
             if (node.key === fromGuid && !currentPath) {
@@ -526,15 +520,15 @@ const useTree = (emit: any, optimisticUpdate?: boolean, cacheKey?: string, isAcc
                 children: newChildren,
             }
         }
-        recursivelyFindPath(fromGuid)
+        parentStack = recursivelyFindPath(fromGuid)
         const parent = parentStack.pop()
 
         treeData.value = treeData.value.map((node: TreeDataItem) => {
             if (node.key === parent) return removeNode(node)
             return node
         });
-        parentStack = [toGuid];
-        recursivelyFindPath(toGuid)
+
+        parentStack = recursivelyFindPath(toGuid)
         const toParent = parentStack.pop()
 
         treeData.value = treeData.value.map((node: TreeDataItem) => {

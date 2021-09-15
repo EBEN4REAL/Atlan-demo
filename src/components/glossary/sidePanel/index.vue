@@ -121,8 +121,6 @@
         Term,
     } from '~/types/glossary/glossary.interface'
     import { Components } from '~/api/atlas/client'
-    import businessMetadataListVue from '~/components/admin/custom-metadata/businessMetadataList.vue'
-    import useBusinessMetadataHelper from '~/composables/businessMetadata/useBusinessMetadataHelper'
 
     export default defineComponent({
         components: {
@@ -132,12 +130,6 @@
             Status,
             Experts,
             Activity,
-            businessMetadata: defineAsyncComponent(
-                () =>
-                    import(
-                        '@/discovery/preview/tabs/info/businessMetadata/index.vue'
-                    )
-            ),
         },
         props: {
             entity: {
@@ -158,8 +150,6 @@
 
             const refreshEntity = inject<() => void>('refreshEntity')
             const updateTreeNode = inject<any>('updateTreeNode')
-
-            const { getApplicableBmGroups } = useBusinessMetadataHelper()
 
             const shortDescription = computed(
                 () => props.entity?.attributes?.shortDescription

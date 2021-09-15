@@ -2,26 +2,32 @@
     <div class="pt-1">
         <div class="px-5">
             <div class="flex items-start justify-between mt-5 mb-4 text-sm">
-                <div class="w-full">
+                <div v-if="page === 'nonBiOverview'" class="w-full">
                     <div class="flex items-center mb-0.5">
                         <component
                             :is="
                                 images[
                                     getDataType(
-                                        selectedRow?.attributes?.dataType
+                                        selectedAsset?.attributes?.dataType
                                     )
                                 ]
                             "
                             class="w-4 h-4 mr-1.5 mb-0.5"
                         ></component>
                         <Tooltip
-                            :tooltip-text="selectedRow?.attributes?.name"
+                            :tooltip-text="selectedAsset?.attributes?.name"
                             classes="text-base font-bold text-gray-700 capitalize"
                         />
                     </div>
                     <div class="text-gray-500">
-                        {{ getDataType(selectedRow?.attributes?.dataType) }}
+                        {{ getDataType(selectedAsset?.attributes?.dataType) }}
                     </div>
+                </div>
+                <div v-else class="w-full">
+                    <Tooltip
+                        :tooltip-text="selectedAsset?.attributes?.name"
+                        classes="text-base font-bold text-gray-700 capitalize"
+                    />
                 </div>
                 <div class="flex">
                     <AtlanBtn color="secondary" size="sm" padding="compact">
@@ -33,7 +39,7 @@
                     <a-button
                         type="text"
                         class="p-0 ml-3 text-xl"
-                        @click="$emit('closeColumnSidebar')"
+                        @click="$emit('closeSidebar')"
                         ><fa icon="fal times"></fa
                     ></a-button>
                 </div>
@@ -50,7 +56,8 @@
                     :is="tab.component"
                     :component-data="dataMap[tab.id]"
                     :info-tab-data="infoTabData"
-                    :selected-asset="selectedRow"
+                    :selected-asset="selectedAsset"
+                    :page="page"
                     :is-loaded="isLoaded"
                     @change="handleChange"
                 ></component>
@@ -71,33 +78,44 @@
         watch,
         onMounted,
     } from 'vue'
-    import useColumnDetailsTabList from './tabs/useTabList'
-    import { images, dataTypeList } from '~/constant/datatype'
-    import { assetInterface } from '~/types/assets/asset.interface'
 
     import Tooltip from '@common/ellipsis/index.vue'
     import AtlanBtn from '~/components/UI/button.vue'
 
+    import useAssetDetailsTabList from './tabs/useTabList'
+    import { images, dataTypeList } from '~/constant/datatype'
+    import { assetInterface } from '~/types/assets/asset.interface'
+
     export default defineComponent({
-        name: 'ColumnPreview',
+        name: 'PreviewSidebar',
         components: {
             Tooltip,
             AtlanBtn,
             info: defineAsyncComponent(() => import('./tabs/info/index.vue')),
             chat: defineAsyncComponent(() => import('./tabs/chat/index.vue')),
+            activity: defineAsyncComponent(
+                () =>
+                    import(
+                        '~/components/discovery/preview/tabs/activity/activityTab.vue'
+                    )
+            ),
         },
         props: {
-            selectedRow: {
+            selectedAsset: {
                 type: Object as PropType<assetInterface>,
                 required: true,
             },
+            page: {
+                type: String,
+                required: true,
+            },
         },
-        emits: ['closeColumnSidebar', 'assetMutation'],
+        emits: ['closeSidebar', 'assetMutation'],
 
         setup(props, { emit }) {
-            const { selectedRow } = toRefs(props)
+            const { selectedAsset, page } = toRefs(props)
+            const { filteredTabs } = useAssetDetailsTabList(page, selectedAsset)
 
-            const { filteredTabs } = useColumnDetailsTabList()
             const activeKey = ref(0)
             const isLoaded: Ref<boolean> = ref(true)
 
@@ -116,12 +134,20 @@
                 })
                 return label
             }
+
             function init() {
                 isLoaded.value = false
 
-                infoTabData.value = selectedRow.value
+                infoTabData.value = selectedAsset.value
             }
-            watch(() => selectedRow.value.guid, init)
+
+            watch(() => selectedAsset.value.guid, init)
+
+            watch(page, () => {
+                if (activeKey.value > filteredTabs.value.length)
+                    activeKey.value = 0
+            })
+
             onMounted(init)
 
             return {

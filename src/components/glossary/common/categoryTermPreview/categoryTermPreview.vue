@@ -3,8 +3,8 @@
         class="flex flex-col w-full overflow-y-hidden border-l"
         :class="$style.gtcPreview"
     >
-        <div class="flex items-center justify-between pt-6 mr-3">
-            <div v-if="preview" class="flex items-center">
+        <div v-if="preview" class="flex items-center justify-between pt-6 mr-3">
+            <div class="flex items-center">
                 <span
                     class="items-baseline pl-5 mr-2 text-xl font-bold leading-7 text-gray-700 "
                     >{{ entity.displayText }}</span

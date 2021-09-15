@@ -257,8 +257,7 @@
 
 <script lang="ts">
     import dayjs from 'dayjs'
-    // import { ValidateErrorEntity } from "ant-design-vue/es/form/interface";
-    import { defineComponent, PropType, ref } from 'vue'
+    import { defineComponent, PropType, ref, watch } from 'vue'
     import QueryView from '@/connection/overview/query.vue'
     import TotalView from '@/connection/overview/analytics/total.vue'
     import Lastrun from '@/connection/overview/lastrun/index.vue'
@@ -272,8 +271,9 @@
     import { ConnectionType } from '~/types/atlas/connection'
     import useBotModel from '~/composables/connection/useBotModel'
     import updateCredential from '~/composables/credential/updateCredential'
-    import { Connection } from '~/api/auth/connection'
-    import { Credential as CredentialService } from '~/api/auth/credential'
+    import useConnectionTest from '~/composables/bots/useConnectionTest'
+    import useCredentialTest from '~/composables/bots/useCredentialTest'
+    import useCredentialTestbyID from '~/composables/bots/useCredentialTestByID'
 
     export default defineComponent({
         name: 'DetailsView',
@@ -321,8 +321,6 @@
             const credBody = ref({})
             const guid = ref('')
 
-            const isUpdating = ref(false)
-
             const { execute } = updateCredential(guid, credBody, {
                 immediate: false,
             })
@@ -339,33 +337,39 @@
             const testingNetworkStatus = ref('')
             const testingNetworkMessage = ref('')
             const testingNetworkError = ref('')
-            const handleNetworkTest = async () => {
-                try {
-                    testingNetworkStatus.value = 'info'
-                    testingNetworkMessage.value = 'Cheking network connection'
-                    testingNetworkError.value = ''
-                    await Connection.TestNetwork({
+
+            const handleNetworkTest = () => {
+                testingNetworkStatus.value = 'info'
+                testingNetworkMessage.value = 'Cheking network connection'
+                testingNetworkError.value = ''
+
+                const { isError, isSuccess, errorMessage } = useConnectionTest(
+                    {
                         host: props.item?.attributes?.host,
                         port: 443,
-                    })
-                    testingNetworkStatus.value = 'success'
-                    testingNetworkMessage.value =
-                        'Network connection is successful'
-                    testingNetworkError.value =
-                        'Network conenction is successful'
-                    return true
-                } catch (err) {
-                    testingNetworkStatus.value = 'error'
-                    testingNetworkMessage.value = `Network connection failed`
+                    },
+                    { immediate: true }
+                )
 
-                    if (err.response) {
-                        testingNetworkError.value = err.response.data.message
-                    } else {
+                watch([isSuccess, isError], () => {
+                    if (isSuccess.value) {
+                        testingNetworkStatus.value = 'success'
+                        testingNetworkMessage.value =
+                            'Network connection is successful'
                         testingNetworkError.value =
-                            'Something went wrong. Please try again.'
+                            'Network conenction is successful'
+                    } else if (isError.value) {
+                        testingNetworkStatus.value = 'error'
+                        testingNetworkMessage.value = `Network connection failed`
+
+                        if (errorMessage.value) {
+                            testingNetworkError.value = errorMessage.value
+                        } else {
+                            testingNetworkError.value =
+                                'Something went wrong. Please try again.'
+                        }
                     }
-                    return false
-                }
+                })
             }
 
             const testCredStatus = ref('')
@@ -373,26 +377,31 @@
             const testCredError = ref('')
 
             const handleCredentialTest = async () => {
-                try {
-                    testCredStatus.value = 'info'
-                    testCredMessage.value = 'Checking authentication'
-                    testCredError.value = ''
-                    await CredentialService.TestCredentialByID(
-                        props.credential.guid
-                    )
-                    testCredStatus.value = 'success'
-                    testCredMessage.value = 'Authentication is successful'
-                    testCredError.value = 'Authentication is successful'
-                } catch (err) {
-                    testCredStatus.value = 'error'
-                    testCredMessage.value = `Network connection failed`
-                    if (err.response) {
-                        testCredError.value = err.response.data.message
-                    } else {
-                        testCredError.value =
-                            'Something went wrong. Please try again.'
+                testCredStatus.value = 'info'
+                testCredMessage.value = 'Checking authentication'
+                testCredError.value = ''
+                const { isSuccess, isError, errorMessage } =
+                    useCredentialTestbyID(props.credential.guid, {
+                        immediate: true,
+                    })
+
+                watch([isSuccess, isError], () => {
+                    if (isSuccess.value) {
+                        testCredStatus.value = 'success'
+                        testCredMessage.value = 'Authentication is successful'
+                        testCredError.value = 'Authentication is successful'
+                    } else if (isError.value) {
+                        testCredStatus.value = 'error'
+                        testCredMessage.value = `Network connection failed`
+
+                        if (errorMessage.value) {
+                            testCredError.value = errorMessage.value
+                        } else {
+                            testCredError.value =
+                                'Something went wrong. Please try again.'
+                        }
                     }
-                }
+                })
             }
 
             const handleEdit = () => {
@@ -426,25 +435,7 @@
                 dayjs,
             }
         },
-        computed: {
-            // authAttributesLocal(): any {
-            //   let found =
-            //     this.bot?.attributes?.config.attributes.credential.attributes.auth.find(
-            //       (element) => {
-            //         return (
-            //           element.attributes.id == this.credential?.attributes?.authType
-            //         );
-            //       }
-            //     );
-            //   let attr: any[] = [];
-            //   if (found) {
-            //     found.attributes.config?.forEach((e: { attributes: any }) => {
-            //       attr.push(e.attributes);
-            //     });
-            //   }
-            //   return attr;
-            // },
-        },
+        computed: {},
         mounted() {},
         methods: {},
     })

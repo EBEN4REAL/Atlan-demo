@@ -3,6 +3,7 @@ import { AxiosRequestConfig } from "axios";
 import { Components } from "./client";
 import { useAPIAsyncState, useAPIPromise } from '../useAPI';
 import { KeyMaps } from '../keyMap';
+import { AsyncStateOptions, useAsyncState } from '@vueuse/core'
 
 
 
@@ -32,28 +33,29 @@ const UpdateCredential = (
 const TestCredential = (
   body?: Ref<Components.Schemas.ConnectionTest>,
   options?: AxiosRequestConfig,
+  asyncOpts?: AsyncStateOptions
+
 ) => useAPIAsyncState<any>(KeyMaps.credential.CREDENTIAL_TEST, "POST", {
   body,
   options,
-});
-
-// TODO remove
-
-// async version
-// const TestCredentialByID = (
-//   id: string,
-//   options?: AxiosRequestConfig,
-// ) => useAPIAsyncState<any>(KeyMaps.credential.CREDENTIAL_TEST_BY_ID, "POST", {
-//   options,
-//   pathVariables: { id }
-// });
+}, asyncOpts);
 
 const TestCredentialByID = (
   id: string,
   options?: AxiosRequestConfig,
-) => useAPIPromise(KeyMaps.credential.CREDENTIAL_TEST_BY_ID({ id }), "POST", {
-  options,
-});
+  asyncOpts?: AsyncStateOptions | undefined
+) => useAPIAsyncState<any>(KeyMaps.credential.CREDENTIAL_TEST_BY_ID, "POST",
+  {
+    options,
+    pathVariables: { id }
+  }, asyncOpts);
+
+// const TestCredentialByID = (
+//   id: string,
+//   options?: AxiosRequestConfig,
+// ) => useAPIPromise(KeyMaps.credential.CREDENTIAL_TEST_BY_ID({ id }), "POST", {
+//   options,
+// });
 
 
 // eslint-disable-next-line import/prefer-default-export

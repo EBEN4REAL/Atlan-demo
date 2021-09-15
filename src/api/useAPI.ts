@@ -102,32 +102,32 @@ export const useAPI = <T>(
 
         const isLoading = computed(() => !data.value && !error.value)
         return { data, error, isLoading, mutate, isValidating }
-    } else {
-        // else return useAsyncState wrapped request
-        const { state, execute, isReady, error } = useAsyncState<T>(
-            () =>
-                useAPIPromiseOld(key, method, {
-                    params: isRef(params) ? params.value : params,
-                    body,
-                    pathVariables,
-                    options,
-                }),
-            <T>{},
-            {
-                immediate: (isRef(options) ? options.value : options)
-                    ?.immediate,
-            }
-        )
-        const isLoading = computed(() => !isReady.value)
-
-        return {
-            data: state,
-            mutate: execute,
-            error,
-            isReady,
-            isLoading,
-        }
     }
+    // else return useAsyncState wrapped request
+    const { state, execute, isReady, error } = useAsyncState<T>(
+        () =>
+            useAPIPromiseOld(key, method, {
+                params: isRef(params) ? params.value : params,
+                body,
+                pathVariables,
+                options,
+            }),
+        <T>{},
+        {
+            immediate: (isRef(options) ? options.value : options)
+                ?.immediate,
+        }
+    )
+    const isLoading = computed(() => !isReady.value)
+
+    return {
+        data: state,
+        mutate: execute,
+        error,
+        isReady,
+        isLoading,
+    }
+
 }
 
 function isRef(arg: any): arg is Ref {

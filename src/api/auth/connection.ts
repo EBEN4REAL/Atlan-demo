@@ -1,34 +1,25 @@
 import { AxiosRequestConfig } from "axios";
 import { Ref } from "vue";
 
+import { AsyncStateOptions } from "@vueuse/core";
 import { getAPIPath, getAxiosClient } from "~/api";
 import { Components } from "./client";
 
-import { useAPIPromise } from "../useAPI";
+import { useAPIAsyncState, useAPIPromise } from "../useAPI";
 import { KeyMaps } from '../keyMap';
 
 const serviceAlias = "auth";
 
-/*
-const TestNetwork = (
-  body?: Ref<Components.Schemas.ConnectionTest>,
-  options?: IConfig & AxiosRequestConfig,
-  dependantFetchingKey?: Ref<any>
-) => useAPI<any>(CONNECTION_TEST_NETWORK, "POST", {
-  body,
-  options,
-  dependantFetchingKey
-});
-*/
 
 const TestNetwork = (
   body?: Ref<Components.Schemas.ConnectionTest>,
-  options?: AxiosRequestConfig,
-) => useAPIPromise(KeyMaps.connection.CONNECTION_TEST_NETWORK(), "POST", {
-  body,
-  options,
-});
+  options?: object,
+  asyncOpts?: AsyncStateOptions | undefined,
 
+) => useAPIAsyncState<any>(KeyMaps.connection.CONNECTION_TEST_NETWORK, "POST", {
+  body,
+  options
+}, asyncOpts);
 
 const Setup = (
   body?: Components.Schemas.ConnectionSetup,

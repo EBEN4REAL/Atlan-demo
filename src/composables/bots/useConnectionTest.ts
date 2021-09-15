@@ -3,24 +3,29 @@ import axios, { AxiosRequestConfig, CancelTokenSource } from 'axios';
 import { Connection } from '~/api/auth/connection';
 
 
-export default function useConnectionTest(dependentKey?: Ref<any>, initialBody?: any, cacheSuffx?: string | "") {
+export default function useConnectionTest(initialBody?: any, asyncOpts?: object) {
 
-    const asyncOptions = {
-        dedupingInterval: 0,
-        shouldRetryOnError: false,
-        revalidateOnFocus: false,
-        revalidateDebounce: 0,
-    };
+    const cancelTokenSource: Ref<CancelTokenSource> = ref(axios.CancelToken.source());
+
     const body = ref({
         ...initialBody
     });
 
+    const options = ref({
+        // cancelToken: cancelTokenSource,
+    })
 
-    const cancelTokenSource: Ref<CancelTokenSource> = ref(axios.CancelToken.source());
-    const { data, mutate, error: isError } = Connection.TestNetwork(body, asyncOptions, dependentKey);
+
+    const { data, mutate, error: isError } = Connection.TestNetwork(body, options, asyncOpts);
 
     const isSuccess = ref(false);
-    const isLoading = ref(true);
+    const isLoading = ref(null);
+    if (asyncOpts.hasOwnProperty('immediate'))
+        isLoading.value = asyncOpts.immediate
+    else isLoading.value = true;
+
+
+
     watch([isError, data], (v) => {
         isLoading.value = false;
         if (v[1]?.message === "successful")
@@ -67,11 +72,12 @@ export default function useConnectionTest(dependentKey?: Ref<any>, initialBody?:
 
 
     const refresh = () => {
-        // if ([STATES.PENDING].includes(state.value) || [STATES.VALIDATING].includes(state.value)) {
-        //     cancelTokenSource.value.cancel();
-        //     cancelTokenSource.value = axios.CancelToken.source();
-        //     asyncOptions.cancelToken = cancelTokenSource.value.token;
-        // }
+        if (isLoading.value) {
+            cancelTokenSource.value.cancel();
+            cancelTokenSource.value = axios.CancelToken.source();
+            asyncOptions.value.cancelToken = cancelTokenSource.value.token;
+        }
+        isLoading.value = true;
         mutate();
     };
 
@@ -79,8 +85,6 @@ export default function useConnectionTest(dependentKey?: Ref<any>, initialBody?:
         body.value = payload;
         refresh();
     }
-
-
 
     return {
         data,

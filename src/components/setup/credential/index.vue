@@ -399,7 +399,7 @@
                 alertMessage: networkAlertMessage,
                 errorMessage: networkErrorMessage,
                 replaceBody: replaceNetworkTestBody,
-            } = useConnectionTest(now, initialBody)
+            } = useConnectionTest(initialBody, { immediate: false })
 
             const handleNetworkTest = () => {
                 replaceNetworkTestBody({
@@ -413,7 +413,7 @@
 
             const credNow = ref(false)
             const {
-                state: stateCredential,
+                data: stateCredential,
                 isLoading: isCredTestLoading,
                 isSuccess: isCredTestSuccess,
                 isError: isCredTestError,
@@ -421,7 +421,7 @@
                 alertMessage: credAlertMessage,
                 errorMessage: credErrorMessage,
                 replaceBody: replaceCredentialTestBody,
-            } = useCredentialTest(credNow, credentialGuid.value)
+            } = useCredentialTest(credentialGuid.value, { immediate: false })
 
             const editNow = ref(false)
             const {
@@ -432,7 +432,9 @@
                 alertMessage: credIdAlertMessage,
                 errorMessage: credIdErrorMessage,
                 replaceId: replaceCredID,
-            } = useCredentialTestbyID(editNow, credentialGuid.value)
+            } = useCredentialTestbyID(credentialGuid.value, {
+                immediate: false,
+            })
 
             const handleCredentialTest = () => {
                 if (props.isEdit) {

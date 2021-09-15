@@ -5,24 +5,23 @@ import { Credential } from '~/api/auth/credential';
 // import useSWRVState from '~/api2/useSWRVState';
 
 
-export default function useCredentialTest(dependentKey?: Ref<any>, initialBody?: any, cacheSuffx?: string | "") {
+export default function useCredentialTest(initialBody?: any, asyncOpts?: object) {
 
-    const asyncOptions = {
-        dedupingInterval: 0,
-        shouldRetryOnError: false,
-        revalidateOnFocus: false,
-        revalidateDebounce: 0,
-
-    };
+    const cancelTokenSource: Ref<CancelTokenSource> = ref(axios.CancelToken.source());
     const body = ref({
         ...initialBody
     });
+    const options = ref({
+        // cancelToken: cancelTokenSource
+    })
 
-    const cancelTokenSource: Ref<CancelTokenSource> = ref(axios.CancelToken.source());
-    const { data, mutate, error: isError, isReady } = Credential.TestCredential(body, asyncOptions);
+    const { data, mutate, error: isError, isReady } = Credential.TestCredential(body, options, asyncOpts);
 
     const isSuccess = ref(false);
-    const isLoading = ref(true);
+    const isLoading = ref(null);
+    if (asyncOpts.hasOwnProperty('immediate'))
+        isLoading.value = asyncOpts.immediate
+    else isLoading.value = true;
 
     watch([isError, data], (v) => {
         isLoading.value = false;
@@ -52,20 +51,21 @@ export default function useCredentialTest(dependentKey?: Ref<any>, initialBody?:
 
 
     const errorMessage = computed(() => {
-        if (error.value?.message === "timeout") {
+        if (isError.value?.message === "timeout") {
             return "Request timed out. Please check your host/port"
         }
-        return error.value?.response?.data?.message;
+        return isError.value?.response?.data?.message;
     });
 
 
 
     const refresh = () => {
-        // if ([STATES.PENDING].includes(state.value) || [STATES.VALIDATING].includes(state.value)) {
-        //     cancelTokenSource.value.cancel();
-        //     cancelTokenSource.value = axios.CancelToken.source();
-        //     asyncOptions.cancelToken = cancelTokenSource.value.token;
-        // }
+        if (isLoading.value) {
+            cancelTokenSource.value.cancel();
+            cancelTokenSource.value = axios.CancelToken.source();
+            asyncOptions.cancelToken = cancelTokenSource.value.token;
+        }
+        isLoading.value = true;
         mutate();
     };
 

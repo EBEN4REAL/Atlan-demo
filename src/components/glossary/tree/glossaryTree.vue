@@ -60,7 +60,7 @@
                 "
             ></a-input-search>
         </div>
-        <div v-if="!isLoading" class="h-screen overflow-auto pb-48">
+        <div v-if="!isLoading" class="h-screen pb-48 overflow-auto">
             <div class="flex justify-between px-4">
                 <div class="flex items-center ml-3">
                     <AtlanIcon icon="Glossary" class="h-5 m-0 mr-2" />
@@ -149,9 +149,14 @@
                                             v-if="type === 'glossary'"
                                             class="p-0 my-auto mr-2"
                                         >
-                                            <img
+                                            <!-- <img
                                                 :src="GlossarySvg"
                                                 :width="15"
+                                            /> -->
+
+                                            <AtlanIcon
+                                                icon="Glossary"
+                                                class="h-5"
                                             />
                                         </span>
                                         <span v-else class="p-0 my-auto mr-2">
@@ -275,9 +280,6 @@
     import useGtcSearch from '~/components/glossary/composables/useGtcSearch'
 
     // constant
-    import GlossarySvg from '~/assets/images/gtc/glossary/glossary.png'
-    import CategorySvg from '~/assets/images/gtc/category/category.png'
-    import TermSvg from '~/assets/images/gtc/term/term.png'
     import { List as StatusList } from '~/constant/status'
     import AtlanIcon from '~/components/common/icon/atlanIcon.vue'
     import AtlanBtn from '~/components/UI/button.vue'
@@ -404,9 +406,6 @@
                 createTerm,
                 createGlossary,
                 createCategory,
-                GlossarySvg,
-                CategorySvg,
-                TermSvg,
                 StatusList,
                 getEntityStatusIcon,
                 // selectedKeys,

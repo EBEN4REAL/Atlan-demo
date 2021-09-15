@@ -16,8 +16,19 @@
                     @click="() => reirectToProfile(type, key)"
                 >
                     <div class="flex content-center">
-                        <span class="mr-2 p-0">
-                            <img
+                        <span class="p-0 mr-2">
+                            <AtlanIcon
+                                icon="Glossary"
+                                v-if="type === 'glossary'"
+                            />
+
+                            <AtlanIcon
+                                icon="Glossary"
+                                v-if="type === 'Category'"
+                            />
+
+                            <AtlanIcon icon="Term" v-if="type === 'term'" />
+                            <!-- <img
                                 v-if="type === 'glossary'"
                                 :src="GlossarySvg"
                                 :width="15"
@@ -31,7 +42,7 @@
                                 v-if="type === 'term'"
                                 :src="TermSvg"
                                 :width="12"
-                            />
+                            /> -->
                         </span>
                         <span class="text-sm leading-5 text-gray-700">{{
                             title
@@ -74,9 +85,6 @@
     import handleTreeExpand from '~/composables/tree/handleTreeExpand'
     import { Glossary } from '~/api/atlas/glossary'
     import GlossaryContextMenu from './glossaryContextMenu.vue'
-    import GlossarySvg from '~/assets/images/gtc/glossary/glossary.png'
-    import CategorySvg from '~/assets/images/gtc/category/category.png'
-    import TermSvg from '~/assets/images/gtc/term/term.png'
     import { toRefs } from '@vueuse/core'
 
     export default defineComponent({
@@ -174,9 +182,6 @@
                 refreshTree,
                 glossaryTreeContextMenuClick,
                 reirectToProfile,
-                GlossarySvg,
-                CategorySvg,
-                TermSvg,
             }
         },
         data() {

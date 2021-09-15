@@ -571,6 +571,7 @@
             }
             setAppliedFiltersCount()
 
+            console.log(dynamicList, 'list')
             return {
                 resetAllFilters,
                 totalAppliedFiltersCount,

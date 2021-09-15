@@ -1,5 +1,5 @@
 <template>
-    <div class="flex flex-col items-center w-full h-full bg-white">
+    <div class="flex flex-col items-center w-full h-full bg-white border-r">
         <div class="w-full p-3 pb-0">
             <div class="w-full h-40 mb-3 rounded placeholder"></div>
         </div>
@@ -22,31 +22,26 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, PropType, toRefs } from 'vue'
+    import { defineComponent, Ref, inject } from 'vue'
     import { tableInterface } from '~/types/insights/table.interface'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
     import { tablesData } from './tablesDemoData'
 
     export default defineComponent({
         components: {},
-        props: {
-            inlineTabs: {
-                type: Object as PropType<activeInlineTabInterface[]>,
-                required: true,
-            },
-            activeInlineTab: {
-                type: Object as PropType<activeInlineTabInterface>,
-                required: true,
-            },
-        },
+        props: {},
         emits: ['openAssetSidebar'],
         setup(props, { emit }) {
-            const { activeInlineTab } = toRefs(props)
             const tables: tableInterface[] = tablesData
+            const activeInlineTab = inject(
+                'activeInlineTab'
+            ) as Ref<activeInlineTabInterface>
 
-            const openAssetSidebar = (table: tableInterface) => {
-                emit('openAssetSidebar', table)
-            }
+            /*
+                @params - table: tableInterface
+             */
+            const openAssetSidebar = inject('openAssetSidebar') as Function
+
             const isAssetSidebarOpened = (table: tableInterface) => {
                 if (
                     activeInlineTab.value &&

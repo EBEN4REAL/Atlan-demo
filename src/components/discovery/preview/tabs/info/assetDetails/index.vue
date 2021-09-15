@@ -22,13 +22,13 @@
         />
 
         <Owners
-            v-if="selectedAsset.guid"
+            v-if="selectedAsset.guid && page !== 'nonBiOverview'"
             :selected-asset="selectedAsset"
             @update:selected-asset="mutateSelectedAsset"
         />
 
         <Status
-            v-if="selectedAsset.guid"
+            v-if="selectedAsset.guid && page !== 'nonBiOverview'"
             :selected-asset="selectedAsset"
             @update:selected-asset="mutateSelectedAsset"
         />
@@ -57,6 +57,10 @@
         props: {
             selectedAsset: {
                 type: Object as PropType<assetInterface>,
+                required: true,
+            },
+            page: {
+                type: String,
                 required: true,
             },
         },

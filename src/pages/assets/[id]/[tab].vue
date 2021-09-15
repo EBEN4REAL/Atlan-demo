@@ -49,6 +49,7 @@
 
     // Composables
     import useAsset from '~/composables/asset/useAsset'
+    import { useBusinessMetadataStore } from '~/store/businessMetadata'
 
     export default defineComponent({
         components: {
@@ -110,18 +111,28 @@
                 )
             }
 
+            const store = useBusinessMetadataStore()
+            const BMListLoaded = computed(
+                () => store.getBusinessMetadataListLoaded
+            )
+
             // fetch
             const fetch = () => {
-                const { data: response, error } = useAsset({
-                    entityId: id.value,
-                })
+                if (BMListLoaded.value) {
+                    const { data: response, error } = useAsset({
+                        entityId: id.value,
+                    })
 
-                watch(response, () => {
-                    data.value.asset = response.value?.entities?.[0]
-                    data.value.error = error.value
+                    watch(response, () => {
+                        data.value.asset = response.value?.entities?.[0]
+                        data.value.error = error.value
 
-                    context.emit('updateAssetPreview', data.value.asset ?? [])
-                })
+                        context.emit(
+                            'updateAssetPreview',
+                            data.value.asset ?? []
+                        )
+                    })
+                }
             }
 
             // handlePreview
@@ -144,6 +155,9 @@
             /** WATCHERS */
             watch(id, () => fetch())
             watch(updateProfile, () => fetch())
+            watch(BMListLoaded, (v: boolean) => {
+                if (v) fetch()
+            })
 
             /** PROVIDER */
             provide('assetData', data.value)

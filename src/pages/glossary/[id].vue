@@ -103,8 +103,6 @@
         Term,
     } from '~/types/glossary/glossary.interface'
 
-    import GlossarySvg from '~/assets/images/gtc/glossary/glossary.png'
-
     export default defineComponent({
         components: {
             GlossaryProfileOverview,
@@ -244,7 +242,6 @@
                 isLoading,
                 termsLoading,
                 categoriesLoading,
-                GlossarySvg,
                 guid,
                 glossaryTerms,
                 glossaryCategories,
@@ -276,21 +273,17 @@
         }
     }
     .tabClasses {
-        :global(.ant-tabs-tab) {
-            margin: 0px 32px 0px 0px !important;
-            padding: 0px 0px 20px 0px !important;
-        }
-        :global(.ant-tabs-nav) {
-            margin: 0px !important;
-        }
         :global(.ant-tabs-tab-active) {
             @apply text-gray-700 font-bold !important;
         }
         :global(.ant-tabs-bar) {
-            @apply px-5;
+            @apply mb-0 !important;
+        }
+        :global(.ant-tabs-tab) {
+            @apply px-0;
         }
         :global(.ant-tabs-bar) {
-            @apply mb-0 !important;
+            @apply ml-5;
         }
     }
 </style>

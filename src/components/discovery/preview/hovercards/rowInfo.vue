@@ -1,7 +1,7 @@
 <template>
     <a-popover placement="left">
         <template #content>
-            <div class="flex flex-col hovercard">
+            <div class="flex flex-col w-56">
                 <span class="mb-2 text-sm text-gray-500">ROWS</span>
                 <span class="mb-1 text-sm font-bold text-gray">{{
                     displayCount
@@ -35,9 +35,3 @@
         },
     })
 </script>
-
-<style scoped>
-    .hovercard {
-        max-width: 226px;
-    }
-</style>

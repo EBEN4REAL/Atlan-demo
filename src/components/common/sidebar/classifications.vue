@@ -161,7 +161,7 @@
                             <span
                                 class="text-sm cursor-pointer text-primary"
                                 @click="showCreateClassificationForm"
-                                >&nbsp;new term</span
+                                >&nbsp;new classification</span
                             >
                         </div>
                         <div

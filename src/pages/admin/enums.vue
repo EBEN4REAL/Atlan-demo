@@ -44,7 +44,7 @@
         components: { EnumList, EnumDetails, AddEnumModal },
         setup() {
             useHead({
-                title: 'Billings',
+                title: 'Enums',
             })
             const { enumListData, selectedId, selectedEnum, addToList } =
                 useEnums()

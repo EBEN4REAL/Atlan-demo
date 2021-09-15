@@ -21,34 +21,31 @@
                 </template>
             </vue3-tabs-chrome>
         </div>
-        <splitpanes horizontal :push-other-panes="false">
-            <pane max-size="100" size="50" min-size="50">
-                <Editor :selectedTab="selectedTab"
-            /></pane>
-            <pane min-size="0" max-size="50">
-                <div class="flex text-gray py-1.5 px-3">Result</div>
-                <Result :selectedTab="selectedTab"
-            /></pane>
+        <splitpanes
+            horizontal
+            :push-other-panes="false"
+            v-if="activeInlineTabKey"
+        >
+            <pane max-size="100" size="50" min-size="50"> <Editor /></pane>
+            <pane min-size="0" max-size="50"> <ResultsPane /></pane>
         </splitpanes>
+        <NoActiveInlineTab v-else />
     </div>
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref, PropType, toRefs, computed, Ref } from 'vue'
+    import { defineComponent, PropType, toRefs, Ref, inject } from 'vue'
     import Vue3TabsChrome from './vue3-tabs-chrome.vue'
-    import Editor from '~/components/insights/playground/editor.vue'
-    import Result from '~/components/insights/playground/result.vue'
+    import Editor from '~/components/insights/playground/editor/index.vue'
+    import ResultsPane from '~/components/insights/playground/resultsPane/index.vue'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
+    import NoActiveInlineTab from './noActiveInlineTab.vue'
 
     export default defineComponent({
-        components: { Editor, Result, Vue3TabsChrome },
+        components: { Editor, ResultsPane, Vue3TabsChrome, NoActiveInlineTab },
         props: {
             tabRef: {
                 type: Object as PropType<Ref<any>>,
-                required: true,
-            },
-            tabs: {
-                type: Object as PropType<activeInlineTabInterface[]>,
                 required: true,
             },
             activeInlineTabKey: {
@@ -58,12 +55,12 @@
         },
         emits: ['update:activeInlineTabKey', 'update:tabRef'],
         setup(props, { emit }) {
-            const { activeInlineTabKey, tabs, tabRef } = toRefs(props)
-            const selectedTab = computed(() =>
-                tabs.value.find((tab) => tab.key === activeInlineTabKey.value)
-            )
+            const { activeInlineTabKey, tabRef } = toRefs(props)
+            const tabs = inject('inlineTabs') as Ref<activeInlineTabInterface[]>
+            const activeInlineTab = inject(
+                'activeInlineTab'
+            ) as Ref<activeInlineTabInterface>
             const setTabRef = (el) => {
-                // tabRef.value = el
                 emit('update:tabRef', el)
             }
             const handleRemove = () => {
@@ -81,13 +78,28 @@
                     explorer: {},
                     playground: {
                         editorTitle: `${key} Editor`,
-                        resultTitle: `${key} Result`,
+                        resultsPane: {
+                            activeTab:
+                                activeInlineTab.value.playground.resultsPane
+                                    .activeTab ?? 0,
+                            result: {
+                                title: `${key} Result`,
+                            },
+                            metadata: {},
+                            queries: {},
+                            joins: {},
+                            filters: {},
+                            impersonation: {},
+                            downstream: {},
+                            sqlHelp: {},
+                        },
                     },
                     assetSidebar: {
-                        isVisible: false,
+                        // for taking the previous state from active tab
+                        isVisible: activeInlineTab.value.assetSidebar.isVisible,
                         assetInfo: {},
-                        title: '',
-                        id: '',
+                        title: activeInlineTab.value.assetSidebar.title,
+                        id: activeInlineTab.value.assetSidebar.id,
                     },
                 })
                 emit('update:activeInlineTabKey', key)
@@ -101,13 +113,15 @@
                 if (tabs.length > 0) {
                     const activeKey = tabs[len - 1].key
                     emit('update:activeInlineTabKey', activeKey)
+                } else {
+                    emit('update:activeInlineTabKey', undefined)
                 }
             }
 
             return {
                 onTabRemove,
                 onTabClick,
-                selectedTab,
+                activeInlineTab,
                 tabs,
                 activeInlineTabKey,
                 handleAdd,

@@ -3,7 +3,7 @@ import { getEnv } from '~/modules/__env'
 import { axiosClient } from '~/modules/_axios'
 
 export type PathParams = Record<string, string>
-export type APIFn = (arg0?: PathParams) => string
+export type APIFn = (arg0: PathParams) => string
 
 export const getAPIPath = (serviceName: string, path = '') => {
     const realm = getEnv().DEFAULT_REALM

@@ -21,29 +21,19 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, inject, Ref, ref, toRefs } from 'vue'
+    import { defineComponent, inject, Ref } from 'vue'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
     import Monaco from './monaco/monaco.vue'
 
     export default defineComponent({
         components: { Monaco },
-        props: {
-            isQueryRunning: {
-                type: String,
-                required: true,
-            },
-        },
-        emits: ['queryRun'],
+        props: {},
         setup(props, { emit }) {
-            const { isQueryRunning } = toRefs(props)
             const activeInlineTab = inject(
                 'activeInlineTab'
             ) as Ref<activeInlineTabInterface>
-
-            const queryRun = () => {
-                emit('queryRun')
-            }
-
+            const isQueryRunning = inject('isQueryRunning') as Ref<string>
+            const queryRun = inject('queryRun') as Function
             return {
                 activeInlineTab,
                 isQueryRunning,

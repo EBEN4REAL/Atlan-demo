@@ -36,13 +36,9 @@
         </div>
         <div class="h-full" v-if="activeInlineTabKey">
             <splitpanes horizontal :push-other-panes="false">
-                <pane max-size="100" size="55" min-size="45">
-                    <Editor
-                        :isQueryRunning="isQueryRunning"
-                        @queryRun="queryRun"
-                /></pane>
+                <pane max-size="100" size="55" min-size="45"> <Editor /></pane>
                 <pane min-size="0" size="45" max-size="55">
-                    <ResultsPane :dataList="dataList" :columnList="columnList"
+                    <ResultsPane
                 /></pane>
             </splitpanes>
         </div>
@@ -51,7 +47,14 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, PropType, toRefs, Ref, inject } from 'vue'
+    import {
+        defineComponent,
+        PropType,
+        provide,
+        toRefs,
+        Ref,
+        inject,
+    } from 'vue'
     import Editor from '~/components/insights/playground/editor/index.vue'
     import ResultsPane from '~/components/insights/playground/resultsPane/index.vue'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
@@ -68,8 +71,12 @@
         },
         emits: ['update:activeInlineTabKey', 'update:tabRef'],
         setup(props, { emit }) {
-            const { queryRun, isQueryRunning, dataList, columnList } =
-                useRunQuery()
+            const {
+                queryRun,
+                isQueryRunning,
+                dataList: queryDataList,
+                columnList: queryColumnList,
+            } = useRunQuery()
             const { activeInlineTabKey } = toRefs(props)
             const tabs = inject('inlineTabs') as Ref<activeInlineTabInterface[]>
             const activeInlineTab = inject(
@@ -128,10 +135,21 @@
                     inlineTabRemove(targetKey as string)
                 }
             }
+            /*---------- PROVIDERS FOR CHILDRENS -----------------
+            ---Be careful to add a property/function otherwise it will pollute the whole flow for childrens--
+            */
+
+            // properties
+            provide('isQueryRunning', isQueryRunning)
+            provide('queryDataList', queryDataList)
+            provide('queryColumnList', queryColumnList)
+
+            // functions
+            provide('queryRun', queryRun)
+
+            /*-------------------------------------*/
 
             return {
-                dataList,
-                columnList,
                 isQueryRunning,
                 activeInlineTab,
                 tabs,

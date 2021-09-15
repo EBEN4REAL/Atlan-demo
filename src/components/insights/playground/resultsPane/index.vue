@@ -18,7 +18,7 @@
             </a-tab-pane>
         </a-tabs>
 
-        <component :is="activeResultsPaneTab.component"></component>
+        <component :is="activeResultsPaneTab?.component"></component>
     </div>
 </template>
 

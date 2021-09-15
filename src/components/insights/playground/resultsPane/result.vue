@@ -4,8 +4,8 @@
             <a-table
                 class="w-full h-full overflow-x-auto"
                 :class="$style.result_tab"
-                :data-source="dataList"
-                :columns="columnList"
+                :data-source="queryDataList"
+                :columns="queryColumnList"
                 :scroll="{ x: 500, y: 240 }"
             />
         </div>
@@ -29,13 +29,14 @@
             },
         },
         setup(props) {
-            const { dataList, columnList } = toRefs(props)
             const activeInlineTab = inject(
                 'activeInlineTab'
             ) as Ref<activeInlineTabInterface>
+            const queryDataList = inject('queryDataList') as Ref<any>
+            const queryColumnList = inject('queryColumnList') as Ref<any>
             return {
-                dataList,
-                columnList,
+                queryDataList,
+                queryColumnList,
                 activeInlineTab,
             }
         },

@@ -19,7 +19,7 @@ interface useGetAPIParams {
     // axiosOptions?: AxiosRequestConfig
 }
 
-export function useAPIPromise(
+function useAPIPromiseOld(
     key: string,
     method: 'GET' | 'POST' | 'DELETE' | 'PUT',
     { params, body, pathVariables, options }: useGetAPIParams
@@ -90,7 +90,7 @@ export const useAPI = <T>(
         const { data, error, mutate, isValidating } = useSWRV<T>(
             getKey,
             () =>
-                useAPIPromise(key, method, {
+                useAPIPromiseOld(key, method, {
                     params: isRef(params) ? params.value : params,
                     body,
                     pathVariables,
@@ -105,7 +105,7 @@ export const useAPI = <T>(
         // else return useAsyncState wrapped request
         const { state, execute, isReady, error } = useAsyncState<T>(
             () =>
-                useAPIPromise(key, method, {
+                useAPIPromiseOld(key, method, {
                     params: isRef(params) ? params.value : params,
                     body,
                     pathVariables,

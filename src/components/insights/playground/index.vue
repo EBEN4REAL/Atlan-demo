@@ -26,8 +26,8 @@
             :push-other-panes="false"
             v-if="activeInlineTabKey"
         >
-            <pane max-size="100" size="50" min-size="50"> <Editor /></pane>
-            <pane min-size="0" max-size="50"> <ResultsPane /></pane>
+            <pane max-size="100" size="60" min-size="40"> <Editor /></pane>
+            <pane min-size="0" size="40" max-size="60"> <ResultsPane /></pane>
         </splitpanes>
         <NoActiveInlineTab v-else />
     </div>

@@ -79,7 +79,7 @@
                         >
                             {{
                                 parentGlossary?.displayText ??
-                                parentGlossary?.uniqueAttributes?.qualifiedName
+                                parentGlossary?.attributes?.qualifiedName
                             }}
                         </span>
                     </div>

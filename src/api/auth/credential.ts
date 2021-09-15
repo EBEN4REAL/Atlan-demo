@@ -1,44 +1,62 @@
+import { Ref } from 'vue'
 import { AxiosRequestConfig } from "axios";
-import { getAPIPath, getAxiosClient } from "~/api";
 import { Components } from "./client";
+import { useAPIAsyncState, useAPIPromise } from '../useAPI';
+import { KeyMaps } from '../keyMap';
 
-const serviceAlias = "auth";
 
-export const URL = {
-  UPDATECRDENTIAL: "/credentials",
-  TESTCREDENTIAL: "/credentials/test",
-  TESTCREDENTIALBYGUID: "/credentials"
-}
+
+
+// TODO remove
+// const UpdateCredential = (
+//   id: String,
+//   body?: any,
+//   options?: AxiosRequestConfig
+// ) => getAxiosClient().post(
+//   getAPIPath(serviceAlias, `${URL.UPDATECRDENTIAL}/${id}`),
+//   body,
+//   options
+// );
 
 const UpdateCredential = (
-  id: String,
+  id: string,
   body?: any,
-  options?: AxiosRequestConfig
-) => getAxiosClient().post(
-    getAPIPath(serviceAlias, `${URL.UPDATECRDENTIAL}/${id}`),
-    body,
-    options
-  );
+  options?: AxiosRequestConfig,
+) => useAPIAsyncState<any>(KeyMaps.credential.CREDENTIAL_TEST_BY_ID, "POST", {
+  options,
+  pathVariables: { id }
+});
+
+
 
 const TestCredential = (
-  body?: any,
-  options?: AxiosRequestConfig
-) => getAxiosClient().post(
-    getAPIPath(serviceAlias, `${URL.TESTCREDENTIAL}`),
-    body,
-    options
-  );
+  body?: Ref<Components.Schemas.ConnectionTest>,
+  options?: AxiosRequestConfig,
+) => useAPIAsyncState<any>(KeyMaps.credential.CREDENTIAL_TEST, "POST", {
+  body,
+  options,
+});
+
+// TODO remove
+
+// async version
+// const TestCredentialByID = (
+//   id: string,
+//   options?: AxiosRequestConfig,
+// ) => useAPIAsyncState<any>(KeyMaps.credential.CREDENTIAL_TEST_BY_ID, "POST", {
+//   options,
+//   pathVariables: { id }
+// });
 
 const TestCredentialByID = (
-  id?: any,
-  options?: AxiosRequestConfig
-) => getAxiosClient().post(
-    getAPIPath(serviceAlias, `${URL.TESTCREDENTIALBYGUID}/${id}/test`),
-    options
-  );
+  id: string,
+  options?: AxiosRequestConfig,
+) => useAPIPromise(KeyMaps.credential.CREDENTIAL_TEST_BY_ID({ id }), "POST", {
+  options,
+});
 
 
-
+// eslint-disable-next-line import/prefer-default-export
 export const Credential = {
   UpdateCredential,
   TestCredential,

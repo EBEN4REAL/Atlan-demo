@@ -1,3 +1,5 @@
+import { getAPIPath } from "~/api";
+
 import asset from '~/api/keyMaps/asset'
 
 import businessMetadata from '~/api/keyMaps/businessMetadata'
@@ -17,6 +19,7 @@ import lineage from '~/api/keyMaps/atlas/lineage'
 import image from '~/api/keyMaps/auth/image'
 import policies from '~/api/keyMaps/auth/policies'
 import requests from '~/api/keyMaps/heracles/request'
+
 export default {
     ...asset,
     ...health,

@@ -236,7 +236,7 @@ export const useAPIAsyncState = <T>(
         options,
         initialState = <T>{},
     }: AsyncStateAPIParams<T>,
-    asyncOpts: AsyncStateOptions
+    asyncOpts?: AsyncStateOptions
 ) => {
     // Variable to check if the promise has been executed atleast once
     let isExecuted = false

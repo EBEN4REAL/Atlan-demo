@@ -1,15 +1,15 @@
 import { AxiosRequestConfig } from "axios";
-import { IConfig } from "swrv";
 import { Ref } from "vue";
 
 import { getAPIPath, getAxiosClient } from "~/api";
 import { Components } from "./client";
 
-import { useAPI } from "../useAPI";
-import { CONNECTION_TEST_NETWORK } from "../keyMaps/auth/connection";
+import { useAPIPromise } from "../useAPI";
+import { KeyMaps } from '../keyMap';
 
 const serviceAlias = "auth";
 
+/*
 const TestNetwork = (
   body?: Ref<Components.Schemas.ConnectionTest>,
   options?: IConfig & AxiosRequestConfig,
@@ -19,6 +19,16 @@ const TestNetwork = (
   options,
   dependantFetchingKey
 });
+*/
+
+const TestNetwork = (
+  body?: Ref<Components.Schemas.ConnectionTest>,
+  options?: AxiosRequestConfig,
+) => useAPIPromise(KeyMaps.connection.CONNECTION_TEST_NETWORK(), "POST", {
+  body,
+  options,
+});
+
 
 const Setup = (
   body?: Components.Schemas.ConnectionSetup,

@@ -336,11 +336,6 @@
                 }
             }
 
-            const handleTest = () => {
-                handleNetworkTest()
-                handleCredentialTest()
-            }
-
             const testingNetworkStatus = ref('')
             const testingNetworkMessage = ref('')
             const testingNetworkError = ref('')
@@ -403,6 +398,12 @@
             const handleEdit = () => {
                 visible.value = true
             }
+
+            const handleTest = () => {
+                handleNetworkTest()
+                handleCredentialTest()
+            }
+
             return {
                 handleEdit,
                 handleUpdate,

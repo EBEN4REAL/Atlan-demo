@@ -1,3 +1,4 @@
+/* eslint-disable import/prefer-default-export */
 import { getAPIPath, getHealthPath, PathParams } from '~/api'
 
 export const KeyMaps = {
@@ -146,8 +147,6 @@ export const KeyMaps = {
 
         UPDATE_GLOSSARY_CATEGORY_FULL: ({ guid }: PathParams) =>
             getAPIPath('auth/atlas', `/glossary/category/${guid}`),
-        UPDATE_GLOSSARY_TERM_FULL: ({ guid }: PathParams) =>
-            getAPIPath('auth/atlas', `/glossary/term/${guid}`),
 
         GET_GLOSSARY_CATEGORIES: ({
             guid,
@@ -157,15 +156,13 @@ export const KeyMaps = {
         }: Record<string, any>) =>
             getAPIPath(
                 'auth/atlas',
-                `/glossary/${guid}/categories?limit=${limit ?? -1}${
-                    offset ? `&offset=${offset}` : ''
+                `/glossary/${guid}/categories?limit=${limit ?? -1}${offset ? `&offset=${offset}` : ''
                 }${searchText ? `&searchText=${searchText}` : ''}`
             ),
         GET_GLOSSARY_TERMS: ({ guid, limit, offset, searchText }: PathParams) =>
             getAPIPath(
                 'auth/atlas',
-                `/glossary/${guid}/terms?limit=${limit ?? -1}${
-                    offset ? `&offset=${offset}` : ''
+                `/glossary/${guid}/terms?limit=${limit ?? -1}${offset ? `&offset=${offset}` : ''
                 }${searchText ? `&searchText=${searchText}` : ''}`
             ),
 
@@ -184,4 +181,16 @@ export const KeyMaps = {
     health: {
         PING_USER: () => getHealthPath('auth', '/debug/health'),
     },
+    credential: {
+        CREDENTIAL_TEST: () => getAPIPath('auth', `/credentials/test`),
+        CREDENTIAL_TEST_BY_ID: ({ id }: PathParams) => getAPIPath('auth', `/credentials/${id}/test`),
+        UPDATE_CREDENTIAL_BY_ID: ({ id }: PathParams) => getAPIPath('auth', `/credentials/${id}`),
+    },
+    connection: {
+        TEST_NETWORK: () => getAPIPath('auth', "/connections/test"),
+        Setup: () => getAPIPath('auth', "/connections"),
+        CONNECTION_SETUP: () => getAPIPath('auth/atlas', `/connections/setup`),
+        CONNECTION_TEST_NETWORK: () => getAPIPath('auth', `/connections/test`),
+        CONNECTION_ARCHIVE: ({ id }) => getAPIPath('auth', `/connections/${id}/archive`),
+    }
 }

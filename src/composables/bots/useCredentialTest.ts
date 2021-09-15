@@ -1,9 +1,8 @@
-
 import { computed, reactive, Ref, ref, watch } from 'vue';
 import axios, { AxiosRequestConfig, CancelTokenSource } from 'axios';
-import { IConfig } from 'swrv';
-import { Credential } from '~/api2/credential';
-import useSWRVState from '~/api2/useSWRVState';
+// import { IConfig } from 'swrv';
+import { Credential } from '~/api/auth/credential';
+// import useSWRVState from '~/api2/useSWRVState';
 
 
 export default function useCredentialTest(dependentKey?: Ref<any>, initialBody?: any, cacheSuffx?: string | "") {
@@ -20,17 +19,18 @@ export default function useCredentialTest(dependentKey?: Ref<any>, initialBody?:
     });
 
     const cancelTokenSource: Ref<CancelTokenSource> = ref(axios.CancelToken.source());
-    const { data, state, STATES,
-        mutate, error, isValidating } = Credential.TestCredential(body, asyncOptions, `${cacheSuffx}`, dependentKey);
+    const { data, mutate, error: isError, isReady } = Credential.TestCredential(body, asyncOptions);
 
+    const isSuccess = ref(false);
+    const isLoading = ref(true);
 
-    const isLoading = computed(() => (([STATES.PENDING].includes(state.value) || [STATES.VALIDATING].includes(state.value)) && dependentKey?.value)
-        || isValidating.value && dependentKey?.value);
-
-    const isSuccess = computed(() => ([STATES.SUCCESS].includes(state.value)));
-
-    const isError = computed(() => [STATES.ERROR].includes(state.value) || [STATES.STALE_IF_ERROR].includes(state.value));
-
+    watch([isError, data], (v) => {
+        isLoading.value = false;
+        if (v[1]?.message === "successful")
+            isSuccess.value = true;
+        else
+            isSuccess.value = false;
+    })
     const alertType = computed(() => {
         if (isSuccess.value) {
             return "success"
@@ -61,11 +61,11 @@ export default function useCredentialTest(dependentKey?: Ref<any>, initialBody?:
 
 
     const refresh = () => {
-        if ([STATES.PENDING].includes(state.value) || [STATES.VALIDATING].includes(state.value)) {
-            cancelTokenSource.value.cancel();
-            cancelTokenSource.value = axios.CancelToken.source();
-            asyncOptions.cancelToken = cancelTokenSource.value.token;
-        }
+        // if ([STATES.PENDING].includes(state.value) || [STATES.VALIDATING].includes(state.value)) {
+        //     cancelTokenSource.value.cancel();
+        //     cancelTokenSource.value = axios.CancelToken.source();
+        //     asyncOptions.cancelToken = cancelTokenSource.value.token;
+        // }
         mutate();
     };
 
@@ -75,8 +75,6 @@ export default function useCredentialTest(dependentKey?: Ref<any>, initialBody?:
     }
     return {
         data,
-        state,
-        STATES,
         isLoading,
         isError,
         isSuccess,
@@ -85,6 +83,5 @@ export default function useCredentialTest(dependentKey?: Ref<any>, initialBody?:
         errorMessage,
         replaceBody,
         refresh,
-        error
     }
 };

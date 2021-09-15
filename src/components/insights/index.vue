@@ -44,10 +44,7 @@
                 :size="activeInlineTab?.assetSidebar?.isVisible ? 60 : 80"
                 :min-size="activeInlineTab?.assetSidebar?.isVisible ? 60 : 80"
             >
-                <Playground
-                    v-model:activeInlineTabKey="activeInlineTabKey"
-                    v-model:tabRef="inlineTabRef"
-                />
+                <Playground v-model:activeInlineTabKey="activeInlineTabKey" />
             </pane>
             <pane
                 :max-size="20"
@@ -111,7 +108,6 @@
                 syncActiveInlineTabKeyInLocalStorage,
                 getActiveInlineTabKeyFromLocalStorage,
             } = useLocalStorageSync()
-            const inlineTabRef = ref()
             const activeTabId = ref(tabsList[0].id)
             const tabsArray: Ref<activeInlineTabInterface[]> = ref(
                 setInlineTabsArray()
@@ -134,7 +130,7 @@
                 inlineTab: activeInlineTabInterface
             ) => {
                 let bool = false
-                inlineTabRef.value.tabs.forEach((tab) => {
+                tabsArray.value.forEach((tab) => {
                     if (tab.key === inlineTab.key) bool = true
                 })
                 return bool
@@ -170,14 +166,15 @@
                     assetSidebar: {
                         // for taking the previous state from active tab
                         isVisible:
-                            activeInlineTab.value?.assetSidebar.isVisible,
+                            activeInlineTab.value?.assetSidebar.isVisible ??
+                            false,
                         assetInfo: {},
-                        title: activeInlineTab.value?.assetSidebar.title,
-                        id: activeInlineTab.value?.assetSidebar.id,
+                        title: activeInlineTab.value?.assetSidebar.title ?? '',
+                        id: activeInlineTab.value?.assetSidebar.id ?? '',
                     },
                 }
                 if (!isInlineTabAlreadyOpened(newTab)) {
-                    inlineTabRef.value.addTab(newTab)
+                    inlineTabAdd(newTab)
                     activeInlineTabKey.value = newTab.key
                     // syncying inline tabarray in localstorage
                     syncInlineTabsInLocalStorage(tabsArray.value)
@@ -228,6 +225,36 @@
                 syncInlineTabsInLocalStorage(tabsArray.value)
             }
 
+            const inlineTabRemove = (inlineTabKey: string) => {
+                let lastIndex = 0
+                tabsArray.value.forEach((tab, i) => {
+                    if (tab.key === inlineTabKey) {
+                        lastIndex = i - 1
+                    }
+                })
+                tabsArray.value = tabsArray.value.filter(
+                    (tab) => tab.key !== inlineTabKey
+                )
+                if (
+                    tabsArray.value.length &&
+                    activeInlineTabKey.value === inlineTabKey
+                ) {
+                    if (lastIndex >= 0) {
+                        activeInlineTabKey.value =
+                            tabsArray.value[lastIndex].key
+                    } else {
+                        activeInlineTabKey.value = tabsArray.value[0].key
+                    }
+                } else {
+                    activeInlineTabKey.value = undefined
+                }
+            }
+
+            function inlineTabAdd(inlineTab: activeInlineTabInterface) {
+                tabsArray.value.push(inlineTab)
+                activeInlineTabKey.value = inlineTab.key
+            }
+
             function setActiveInlineTabKey() {
                 // checking if localstorage already have active tab key
                 const localStorageActiveInlineKey =
@@ -265,6 +292,8 @@
             provide('closeAssetSidebar', closeAssetSidebar)
             provide('openAssetSidebar', openAssetSidebar)
             provide('resultsPaneTabChange', resultsPaneTabChange)
+            provide('inlineTabRemove', inlineTabRemove)
+            provide('inlineTabAdd', inlineTabAdd)
 
             /*-------------------------------------*/
 
@@ -279,7 +308,6 @@
                 tabsList,
                 activeInlineTabKey,
                 activeInlineTab,
-                inlineTabRef,
                 tabsArray,
                 explorerPaneSize,
                 paneResize,

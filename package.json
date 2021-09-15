@@ -45,7 +45,6 @@
         "axios": "^0.21.1",
         "cron-parser": "^3.5.0",
         "dayjs": "^1.10.6",
-        "draggabilly": "^2.3.0",
         "emoji-mart-vue-fast": "^10.0.1",
         "event-source-polyfill": "^1.0.25",
         "highlight.js": "^11.2.0",

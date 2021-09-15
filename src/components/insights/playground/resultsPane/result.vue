@@ -1,7 +1,7 @@
 <template>
-    <div class="w-full h-full p-3 rounded box">
+    <div class="w-full p-3 rounded box">
         <div
-            class="flex items-center justify-center w-full h-full rounded  placeholder"
+            class="flex items-center justify-center h-full rounded placeholder"
         >
             Result - {{ activeInlineTab.label }}
         </div>
@@ -30,7 +30,7 @@
         background-color: #f4f4f4;
     }
     .box {
-        height: 90.5%;
+        height: 90%;
     }
 </style>
 

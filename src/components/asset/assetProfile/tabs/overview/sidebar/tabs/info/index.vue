@@ -85,7 +85,7 @@
             businessMetadata: defineAsyncComponent(
                 () =>
                     import(
-                        '~/components/discovery/preview/tabs/info/businessMetadata/index.vue'
+                        '~/components/discovery/preview/tabs/businessMetadata/businessMetadataTab.vue'
                     )
             ),
             columnProfile: defineAsyncComponent(

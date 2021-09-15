@@ -11,8 +11,9 @@ import { Components } from '~/api/atlas/client'
 export default function useTermLinkedAssets() {
     const termQualifiedName = ref<string>()
     const requestQuery = ref<string>()
+    const body = ref();
 
-    const body = ref({
+   const getBody = () => ({
         termName: termQualifiedName.value,
         typeName: 'AtlanAsset',
         excludeDeletedEntities: true,
@@ -21,30 +22,18 @@ export default function useTermLinkedAssets() {
         includeSubTypes: true,
         attributes: [
             ...projection,
-            //   ...BUSINESS_METADATA_GET_ATTRIBUTE_PROJECTION,
-            //   ...CUSTOM_RELATIONSHIP_ATTRIBUTES_TABLE,
-            //   ...CUSTOM_RELATIONSHIP_ATTRIBUTES_COLUMN,
-            // "files",
-            // "table",
-            // "database",
             'atlanSchema',
-            // "profileSchedule",
-            // "isProfileScheduled",
-            // "order",
-            // "extra",
-            // "metadata",
-            // "commits",
             'assetStatus',
             ...BaseAttributes,
             ...BasicSearchAttributes,
         ],
-        query: requestQuery,
+        query: requestQuery.value,
     })
 
     const {
         data: linkedAssets,
         error,
-        isValidating: isLoading,
+        isLoading,
         mutate,
     } = useAPI<Components.Schemas.AtlasSearchResult>(
         GET_TERM_LINKED_ASSETS,
@@ -60,12 +49,11 @@ export default function useTermLinkedAssets() {
     )
 
     const fetchLinkedAssets = (termName: string, query?: string) => {
-        body.value.termName = termName
         termQualifiedName.value = termName
-
-        body.value.query = query ?? ''
         requestQuery.value = query ?? ''
 
+        body.value = getBody();
+        
         if (termName || query) mutate()
     }
 

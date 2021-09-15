@@ -12,6 +12,7 @@
             <ProfileHeader
                 :title="title"
                 :entity="term"
+                :isNewEntity="isNewTerm"
                 :statusMessage="statusMessage"
                 :statusObject="statusObject"
                 :shortDescription="shortDescription"
@@ -26,13 +27,7 @@
                         <div class="px-5 mt-4">
                             <div v-if="isNewTerm" class="mb-4">
                                 <p
-                                    class="
-                                        p-0
-                                        mb-1
-                                        text-sm
-                                        leading-5
-                                        text-gray-700
-                                    "
+                                    class="p-0 mb-1 text-sm leading-5 text-gray-700 "
                                 >
                                     Name
                                 </p>
@@ -83,29 +78,29 @@
 
 <script lang="ts">
     import { defineComponent, computed, toRef, ref, provide, watch } from 'vue'
+    import { useRouter } from 'vue-router'
 
+    // components
     import GlossaryProfileOverview from '@/glossary/common/glossaryProfileOverview.vue'
     import LinkedAssetsTab from '@/glossary/termProfile/linkedAssetsTab.vue'
-    import EntityHistory from '@/glossary/common/entityHistory.vue'
-    import RelatedTerms from '@/glossary/termProfile/relatedTerms.vue'
     import CategoryTermPreview from '@/glossary/common/categoryTermPreview/categoryTermPreview.vue'
-    import AssetPreview from '~/components/discovery/preview/assetPreview.vue'
     import ProfileHeader from '@/glossary/common/profileHeader.vue'
+    import LoadingView from '@common/loaders/page.vue'
 
+    // composables
     import useGTCEntity from '~/components/glossary/composables/useGtcEntity'
     import useUpdateGtcEntity from '~/components/glossary/composables/useUpdateGtcEntity'
 
+    // assets
     import { Term } from '~/types/glossary/glossary.interface'
 
-    import TermSvg from '~/assets/images/gtc/term/term.png'
-
-    import { useRouter } from 'vue-router'
     export default defineComponent({
         components: {
             GlossaryProfileOverview,
             LinkedAssetsTab,
             CategoryTermPreview,
             ProfileHeader,
+            LoadingView,
         },
         props: {
             id: {
@@ -115,15 +110,11 @@
             },
         },
         setup(props) {
+            // data
             const guid = toRef(props, 'id')
             const currentTab = ref('1')
             const previewEntity = ref()
             const newName = ref('')
-            const assetTypeLabel = {
-                AtlasGlossaryTerm: 'term',
-                AtlasGlossaryCategory: 'category',
-                AtlasGlossary: 'glossary',
-            }
             const router = useRouter()
 
             const {
@@ -140,6 +131,7 @@
 
             const { data: updatedEntity, updateEntity } = useUpdateGtcEntity()
 
+            // computed
             const parentGlossaryName = computed(
                 () => term.value?.attributes?.qualifiedName?.split('@')[1] ?? ''
             )
@@ -148,8 +140,9 @@
                 () => term.value?.attributes?.assignedEntities?.length ?? 0
             )
 
-            const isNewTerm = computed(() => title.value === 'New Term')
+            const isNewTerm = computed(() => title.value === 'Untitled Term')
 
+            // methods
             const handlePreview = (entity: any) => {
                 previewEntity.value = entity
             }
@@ -180,7 +173,6 @@
                 error,
                 isLoading,
                 guid,
-                TermSvg,
                 title,
                 statusMessage,
                 shortDescription,
@@ -194,7 +186,6 @@
                 handlePreview,
                 refetch,
                 updateTitle,
-                assetTypeLabel,
             }
         },
     })

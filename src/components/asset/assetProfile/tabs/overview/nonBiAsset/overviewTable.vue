@@ -1,7 +1,7 @@
 <template>
     <div>
         <!-- Table -->
-        <div class="relative h-80">
+        <div class="relative h-96">
             <a-table
                 :columns="tableColumns"
                 :data-source="results"

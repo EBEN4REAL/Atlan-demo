@@ -30,16 +30,13 @@
             </template>
         </div>
         <!--Sidebar navigation pane end -->
-        <splitpanes :class="$style.splitpane__styles">
-            <pane max-size="20" min-size="0">
+        <splitpanes :class="$style.splitpane__styles" @resize="paneResize">
+            <pane :max-size="20" :size="explorerPaneSize">
                 <!--explorer pane start -->
                 <component
-                    v-if="activeTab && activeTab.component && activeInlineTab"
+                    v-if="activeTab && activeTab.component"
                     :is="activeTab.component"
-                    :inlineTabs="inlineTabs"
-                    :activeInlineTab="activeInlineTab"
                     @openSavedQueryInNewTab="openSavedQueryInNewTab"
-                    @openAssetSidebar="openAssetSidebar"
                 ></component>
                 <!--explorer pane end -->
             </pane>
@@ -48,38 +45,37 @@
                 :min-size="activeInlineTab?.assetSidebar?.isVisible ? 60 : 80"
             >
                 <Playground
-                    :tabs="tabsArray"
                     v-model:activeInlineTabKey="activeInlineTabKey"
                     v-model:tabRef="inlineTabRef"
                 />
             </pane>
             <pane
-                max-size="20"
+                :max-size="20"
                 :size="activeInlineTab?.assetSidebar?.isVisible ? 20 : 0"
-                min-size="0"
+                :min-size="0"
                 v-if="
                     activeInlineTab && activeInlineTab?.assetSidebar?.isVisible
                 "
             >
-                <AssetSidebar
-                    :activeTab="activeInlineTab"
-                    @closeAssetSidebar="closeAssetSidebar"
-                />
+                <AssetSidebar />
             </pane>
         </splitpanes>
     </div>
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref, Ref, computed } from 'vue'
+    import { defineComponent, ref, Ref, computed, watch, provide } from 'vue'
     import Playground from '~/components/insights/playground/index.vue'
-    import AssetSidebar from '~/components/insights/assetSidebar.vue'
+    import AssetSidebar from '~/components/insights/assetSidebar/index.vue'
     import Schema from './explorers/schema.vue'
     import Queries from './explorers/queries.vue'
     import History from './explorers/history.vue'
     import Schedule from './explorers/schedule.vue'
 
-    import useInsightsTabList from './useTabList'
+    import { inlineTabsDemoData } from './common/dummyData/demoInlineTabData'
+    import useInsightsTabList from './common/composables/useTabList'
+    import { useLocalStorageSync } from './common/composables/useLocalStorageSync'
+
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
     import { TabInterface } from '~/types/insights/tab.interface'
     import { SavedQueryInterface } from '~/types/insights/savedQuery.interface'
@@ -96,66 +92,32 @@
         },
         props: {},
         setup(props) {
+            /* ---- Panes  ----- */
+            /* TODO: Collapse panes if it reach  threshold */
+            const explorerThreshold = 10
+            const explorerPaneCollapsed = ref(false)
+            const assetSidebarThreshold = 10
+            const explorerPaneSize = ref(20)
+            const paneResize = (event: any) => {
+                if (event.length > 0) {
+                    // explorerPaneSize.value = event[0].size
+                }
+            }
+            /* ---- Panes  ----- */
             const { allTabs: tabsList } = useInsightsTabList()
+            const {
+                syncInlineTabsInLocalStorage,
+                getInlineTabsFromLocalStorage,
+                syncActiveInlineTabKeyInLocalStorage,
+                getActiveInlineTabKeyFromLocalStorage,
+            } = useLocalStorageSync()
             const inlineTabRef = ref()
             const activeTabId = ref(tabsList[0].id)
-            const activeInlineTabKey = ref('1')
-            const tabsArray: Ref<activeInlineTabInterface[]> = ref([
-                {
-                    key: '1',
-                    label: 'ABCDE',
-                    isSaved: true,
-                    queryId: 'abcd-01-01',
-                    explorer: {},
-                    playground: {
-                        editorTitle: 'ABCDE EDITOR',
-                        resultTitle: 'ABCDE Result',
-                    },
-                    favico: 'https://atlan.com/favicon.ico',
-                    assetSidebar: {
-                        isVisible: false,
-                        assetInfo: {},
-                        title: '',
-                        id: '',
-                    },
-                },
-                {
-                    key: '2',
-                    label: 'ADBE',
-                    isSaved: false,
-                    queryId: undefined,
-                    explorer: {},
-                    playground: {
-                        editorTitle: 'ADBE EDITOR',
-                        resultTitle: 'ADBE Result',
-                    },
-                    favico: 'https://atlan.com/favicon.ico',
-                    assetSidebar: {
-                        isVisible: false,
-                        assetInfo: {},
-                        title: '',
-                        id: '',
-                    },
-                },
-                {
-                    key: '3',
-                    label: 'BCDE',
-                    isSaved: false,
-                    queryId: undefined,
-                    explorer: {},
-                    playground: {
-                        editorTitle: 'BCDE EDITOR',
-                        resultTitle: 'BCDE Result',
-                    },
-                    favico: 'https://atlan.com/favicon.ico',
-                    assetSidebar: {
-                        isVisible: false,
-                        assetInfo: {},
-                        title: '',
-                        id: '',
-                    },
-                },
-            ])
+            const tabsArray: Ref<activeInlineTabInterface[]> = ref(
+                setInlineTabsArray()
+            )
+            const activeInlineTabKey = ref(setActiveInlineTabKey())
+            // console.log(setActiveInlineTabKey(), 'activeKey')
 
             const activeTab = computed(() =>
                 tabsList.find((tab) => tab.id === activeTabId.value)
@@ -165,7 +127,6 @@
                     (tab) => tab.key === activeInlineTabKey.value
                 )
             )
-            const inlineTabs = computed(() => inlineTabRef.value?.tabs ?? [])
             const changeTab = (tab: TabInterface) => {
                 activeTabId.value = tab.id
             }
@@ -190,18 +151,36 @@
                     explorer: {},
                     playground: {
                         editorTitle: savedQuery.editor,
-                        resultTitle: savedQuery.result,
+                        resultsPane: {
+                            activeTab:
+                                activeInlineTab.value?.playground.resultsPane
+                                    .activeTab ?? 0,
+                            result: {
+                                title: savedQuery.result,
+                            },
+                            metadata: {},
+                            queries: {},
+                            joins: {},
+                            filters: {},
+                            impersonation: {},
+                            downstream: {},
+                            sqlHelp: {},
+                        },
                     },
                     assetSidebar: {
-                        isVisible: false,
+                        // for taking the previous state from active tab
+                        isVisible:
+                            activeInlineTab.value?.assetSidebar.isVisible,
                         assetInfo: {},
-                        title: '',
-                        id: '',
+                        title: activeInlineTab.value?.assetSidebar.title,
+                        id: activeInlineTab.value?.assetSidebar.id,
                     },
                 }
                 if (!isInlineTabAlreadyOpened(newTab)) {
                     inlineTabRef.value.addTab(newTab)
                     activeInlineTabKey.value = newTab.key
+                    // syncying inline tabarray in localstorage
+                    syncInlineTabsInLocalStorage(tabsArray.value)
                 } else {
                     // show user that this tab is already opened
                 }
@@ -216,20 +195,85 @@
                     tabsArray.value[index].assetSidebar.id = ''
                 }
                 console.log(tabsArray, 'tabsArray')
+                // syncying inline tabarray in localstorage
+                syncInlineTabsInLocalStorage(tabsArray.value)
             }
 
             const openAssetSidebar = (table: tableInterface) => {
-                const index = tabsArray.value.findIndex(
-                    (tab) => tab.key === activeInlineTab.value.key
-                )
-                if (index !== -1) {
-                    tabsArray.value[index].assetSidebar.isVisible = true
-                    tabsArray.value[index].assetSidebar.title = table.label
-                    tabsArray.value[index].assetSidebar.id = table.id
+                if (activeInlineTab.value) {
+                    const index = tabsArray.value.findIndex(
+                        (tab) => tab.key === activeInlineTab.value?.key
+                    )
+                    if (index !== -1) {
+                        tabsArray.value[index].assetSidebar.isVisible = true
+                        tabsArray.value[index].assetSidebar.title = table.label
+                        tabsArray.value[index].assetSidebar.id = table.id
+                        // syncying inline tabarray in localstorage
+                        syncInlineTabsInLocalStorage(tabsArray.value)
+                    }
                 }
             }
+            const resultsPaneTabChange = (
+                resultPaneActiveKey: number,
+                activeTab: activeInlineTabInterface
+            ) => {
+                const index = tabsArray.value.findIndex(
+                    (tab) => tab.key === activeTab.key
+                )
+                if (index !== -1) {
+                    tabsArray.value[index].playground.resultsPane.activeTab =
+                        resultPaneActiveKey
+                }
+                // syncying inline tabarray in localstorage
+                syncInlineTabsInLocalStorage(tabsArray.value)
+            }
+
+            function setActiveInlineTabKey() {
+                // checking if localstorage already have active tab key
+                const localStorageActiveInlineKey =
+                    getActiveInlineTabKeyFromLocalStorage()
+                console.log(localStorageActiveInlineKey, 'localStorageKey')
+                if (localStorageActiveInlineKey !== undefined) {
+                    const activeTab = tabsArray.value.find(
+                        (tab) => tab.key === localStorageActiveInlineKey
+                    )
+                    if (activeTab) return activeTab.key
+                }
+                if (tabsArray.value.length > 0) return tabsArray.value[0].key
+                return ''
+            }
+            function setInlineTabsArray() {
+                // checking if localstorage already have active tabs
+                const localStorageInlineTabs = getInlineTabsFromLocalStorage()
+                if (localStorageInlineTabs.length > 0) {
+                    console.log(localStorageInlineTabs, 'local')
+                    return localStorageInlineTabs
+                }
+                return inlineTabsDemoData
+            }
+
+            /*---------- PROVIDERS FOR CHILDRENS -----------------
+            ---Be careful to add a property/function otherwise it will pollute the whole flow for childrens--
+            */
+
+            // properties
+            provide('activeInlineTab', activeInlineTab)
+            provide('activeInlineTabKey', activeInlineTabKey)
+            provide('inlineTabs', tabsArray)
+
+            // functions
+            provide('closeAssetSidebar', closeAssetSidebar)
+            provide('openAssetSidebar', openAssetSidebar)
+            provide('resultsPaneTabChange', resultsPaneTabChange)
+
+            /*-------------------------------------*/
+
+            /* Watchers for syncing in localstorage*/
+            watch(activeInlineTabKey, () => {
+                syncActiveInlineTabKeyInLocalStorage(activeInlineTabKey.value)
+                syncInlineTabsInLocalStorage(tabsArray.value)
+            })
             return {
-                inlineTabs,
                 activeTab,
                 activeTabId,
                 tabsList,
@@ -237,6 +281,8 @@
                 activeInlineTab,
                 inlineTabRef,
                 tabsArray,
+                explorerPaneSize,
+                paneResize,
                 changeTab,
                 openSavedQueryInNewTab,
                 closeAssetSidebar,
@@ -247,32 +293,106 @@
 </script>
 <style lang="less" module>
     :global(.splitpanes__splitter) {
-        background-color: #e5e7eb;
+        background-color: #fff;
+        -webkit-box-sizing: border-box;
+        box-sizing: border-box;
         position: relative;
+        -ms-flex-negative: 0;
+
+        flex-shrink: 0;
     }
-    :global(.splitpanes__splitter):hover {
-        @apply bg-primary;
+
+    :global(.splitpanes--vertical > .splitpanes__splitter) {
+        background-color: #fff;
+        position: relative;
+        width: 8px;
+        margin-left: -1px;
+        box-sizing: border-box;
+        position: relative;
+        touch-action: none;
+        @apply border-r border-l !important;
     }
-    :global(.splitpanes__splitter):before {
-        content: '';
-        position: absolute;
-        left: 0;
-        top: 0;
-        opacity: 0;
-        z-index: 1;
-    }
-    :global(.splitpanes__splitter):hover:before {
-        opacity: 1;
+    :global(.splitpanes--horizontal > .splitpanes__splitter) {
+        background-color: #fff;
+        position: relative;
+        height: 8px;
+        margin-top: -1px;
+        box-sizing: border-box;
+        position: relative;
+        touch-action: none;
+        @apply border-t border-b !important;
     }
     :global(.splitpanes--vertical > .splitpanes__splitter):before {
-        left: -15px;
-        right: -15px;
-        height: 100%;
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        background-color: rgba(0, 0, 0, 0.15);
+        -webkit-transition: background-color 0.3s;
+        transition: background-color 0.3s;
+
+        margin-left: -2px;
+
+        transform: translateY(-50%);
+        width: 1px;
+        height: 30px;
+    }
+    :global(.splitpanes--vertical > .splitpanes__splitter):hover:before {
+        @apply bg-primary !important;
+    }
+    :global(.splitpanes--vertical > .splitpanes__splitter):hover:after {
+        @apply bg-primary !important;
+    }
+    :global(.splitpanes--vertical > .splitpanes__splitter):after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        background-color: rgba(0, 0, 0, 0.15);
+        -webkit-transition: background-color 0.3s;
+        transition: background-color 0.3s;
+
+        transform: translateY(-50%);
+        width: 1px;
+        height: 30px;
+
+        margin-left: 1px;
     }
     :global(.splitpanes--horizontal > .splitpanes__splitter):before {
-        top: -15px;
-        bottom: -15px;
-        width: 100%;
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        background-color: rgba(0, 0, 0, 0.15);
+        -webkit-transition: background-color 0.3s;
+        transition: background-color 0.3s;
+
+        margin-top: -2px;
+
+        transform: translateX(-50%);
+        width: 30px;
+        height: 1px;
+    }
+    :global(.splitpanes--horizontal > .splitpanes__splitter):after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        background-color: rgba(0, 0, 0, 0.15);
+        -webkit-transition: background-color 0.3s;
+        transition: background-color 0.3s;
+
+        transform: translateX(-50%);
+        width: 30px;
+        height: 1px;
+
+        margin-top: 1px;
+    }
+    :global(.splitpanes--horizontal > .splitpanes__splitter):hover:before {
+        @apply bg-primary !important;
+    }
+    :global(.splitpanes--horizontal > .splitpanes__splitter):hover:after {
+        @apply bg-primary !important;
     }
 </style>
 <style lang="less" scoped>

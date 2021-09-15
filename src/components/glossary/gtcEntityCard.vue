@@ -6,10 +6,16 @@
         <!-- projections start here -->
         <div class="flex flex-row w-full">
             <div class="mr-2">
-                <img
+                <!-- <img
                     v-if="entity.typeName === 'AtlasGlossary'"
                     :src="GlossarySvg"
+                /> -->
+                <AtlanIcon
+                    v-if="entity.typeName === 'AtlasGlossary'"
+                    icon="Glossary"
+                    class="h-6"
                 />
+
                 <AtlanIcon
                     v-else-if="entity.typeName === 'AtlasGlossaryCategory'"
                     icon="Category"
@@ -69,7 +75,7 @@
                         "
                         class="flex items-center mt-2 text-sm leading-5 text-gray-700 "
                     >
-                        <AtlanIcon icon="AddUser" class="m-0 mr-1" />
+                        <AtlanIcon icon="User" class="m-0 mr-1" />
 
                         <span
                             class="mr-1"
@@ -137,9 +143,6 @@
     import useAssetInfo from '~/composables/asset/useAssetInfo'
     // static
     import { assetInterface } from '~/types/assets/asset.interface'
-    import TermSvg from '~/assets/images/gtc/term/term.png'
-    import CategorySvg from '~/assets/images/gtc/category/category.png'
-    import GlossarySvg from '~/assets/images/gtc/glossary/glossary.png'
 
     import {
         Glossary,
@@ -271,9 +274,6 @@
             //     if (termName.value) fetchLinkedAssets(termName.value)
             // })
             return {
-                TermSvg,
-                GlossarySvg,
-                CategorySvg,
                 statusObject,
                 redirectToProfile,
                 getTruncatedUsers,

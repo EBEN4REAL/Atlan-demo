@@ -1,5 +1,5 @@
 <template>
-    <div class="flex flex-col hovercard text-gray">
+    <div class="flex flex-col w-56 text-gray">
         <div class="flex justify-between mb-2 text-sm">
             <!-- {{ classification }} -->
             <span class="text-gray-500">CLASSIFICATION</span>
@@ -8,7 +8,7 @@
             >
         </div>
         <span class="mb-4 text-sm font-bold">{{
-            classification.typeName
+            classification.displayName || classification.typeName
         }}</span>
 
         <span class="mb-1 text-xs text-gray-500">Description</span>
@@ -57,9 +57,3 @@
         },
     })
 </script>
-
-<style scoped>
-    .hovercard {
-        max-width: 226px;
-    }
-</style>

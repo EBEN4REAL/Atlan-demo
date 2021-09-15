@@ -23,6 +23,7 @@ import ChevronRight from '~/assets/images/icons/chevron-right.svg'
 import AddUser from '~/assets/images/icons/add-user.svg'
 import Link from '~/assets/images/icons/link.svg'
 import Add from '~/assets/images/icons/add.svg'
+import CircleLoader from '~/assets/images/icons/circle-loader.svg'
 import Term from '~/assets/images/icons/term.svg'
 import TermDeprecated from '~/assets/images/icons/term-deprecated.svg'
 import TermIssue from '~/assets/images/icons/term-issue.svg'
@@ -32,6 +33,11 @@ import Category from '~/assets/images/icons/category.svg'
 import CategoryDeprecated from '~/assets/images/icons/category-deprecated.svg'
 import CategoryIssue from '~/assets/images/icons/category-issue.svg'
 import CategoryVerified from '~/assets/images/icons/category-verified.svg'
+import CategoryWip from '~/assets/images/icons/category-wip.svg'
+import Shield from '~/assets/images/icons/shield.svg'
+import Edit from '~/assets/images/icons/edit.svg'
+import Decline from '~/assets/images/icons/decline.svg'
+import Approve from '~/assets/images/icons/approve.svg'
 import CategoryDraft from '~/assets/images/icons/category-wip.svg'
 import EmptyGlossary from '~/assets/images/icons/empty-glossary.svg'
 import Glossary from '~/assets/images/icons/glossary.svg'
@@ -79,6 +85,7 @@ export default {
     AddUser,
     Link,
     Add,
+    CircleLoader,
     Term,
     TermDeprecated,
     TermIssue,
@@ -88,6 +95,11 @@ export default {
     CategoryDeprecated,
     CategoryIssue,
     CategoryVerified,
+    CategoryWip,
+    Shield,
+    Edit,
+    Approve,
+    Decline,
     CategoryDraft,
     EmptyGlossary,
     Glossary,

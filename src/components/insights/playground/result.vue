@@ -3,7 +3,7 @@
         <div
             class="flex items-center justify-center w-full h-full rounded  placeholder"
         >
-            Result - {{ selectedTab?.playground?.resultTitle }}
+            Result - {{ selectedTab?.playground?.resultsPane?.result.title }}
         </div>
     </div>
 </template>

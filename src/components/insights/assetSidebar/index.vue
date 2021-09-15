@@ -2,45 +2,43 @@
     <div class="w-full h-full placeholder">
         <div class="flex items-center justify-between w-full p-3">
             <span
-                v-if="activeTab && activeTab?.assetSidebar"
+                v-if="activeInlineTab && activeInlineTab?.assetSidebar"
                 class="font-bold text-gray"
             >
-                {{ activeTab.assetSidebar.title }}
+                {{ activeInlineTab.assetSidebar.title }}
             </span>
             <span
                 class="flex items-center justify-center"
-                @click="() => closeAssetSidebar(activeTab)"
+                @click="() => closeAssetSidebar(activeInlineTab)"
             >
                 <fa icon="fal times" class="mb-0 text-lg cursor-pointer" />
             </span>
         </div>
         <div class="flex flex-col items-center justify-center w-full h-full">
             <p>Asset Sidebar</p>
-            <p>Tab - {{ activeTab.label }}</p>
+            <p>Tab - {{ activeInlineTab.label }}</p>
         </div>
     </div>
 </template>
 
 <script lang="ts">
-    import { defineComponent, PropType, toRefs } from 'vue'
+    import { defineComponent, Ref, inject } from 'vue'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
 
     export default defineComponent({
         components: {},
-        props: {
-            activeTab: {
-                type: Object as PropType<activeInlineTabInterface>,
-                required: true,
-            },
-        },
+        props: {},
         emits: ['closeAssetSidebar'],
         setup(props, { emit }) {
-            const { activeTab } = toRefs(props)
-            const closeAssetSidebar = (activeTab: activeInlineTabInterface) => {
-                emit('closeAssetSidebar', activeTab)
-            }
+            const activeInlineTab = inject(
+                'activeInlineTab'
+            ) as Ref<activeInlineTabInterface>
+            /*
+                @params - activeInlineTab: activeInlineTabInterface
+             */
+            const closeAssetSidebar = inject('closeAssetSidebar') as Function
             return {
-                activeTab,
+                activeInlineTab,
                 closeAssetSidebar,
             }
         },

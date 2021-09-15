@@ -94,7 +94,6 @@
 
     // static
     import { Category, Term } from '~/types/glossary/glossary.interface'
-    import CategorySvg from '~/assets/images/gtc/category/category.png'
 
     export default defineComponent({
         components: {
@@ -210,7 +209,6 @@
                 error,
                 isLoading,
                 termsLoading,
-                CategorySvg,
                 guid,
                 statusObject,
                 isNewCategory,

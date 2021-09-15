@@ -34,14 +34,18 @@
                 </a-tab-pane>
             </a-tabs>
         </div>
-        <splitpanes
-            horizontal
-            :push-other-panes="false"
-            v-if="activeInlineTabKey"
-        >
-            <pane max-size="100" size="55" min-size="45"> <Editor /></pane>
-            <pane min-size="0" size="45" max-size="55"> <ResultsPane /></pane>
-        </splitpanes>
+        <div class="h-full" v-if="activeInlineTabKey">
+            <splitpanes horizontal :push-other-panes="false">
+                <pane max-size="100" size="55" min-size="45">
+                    <Editor
+                        :isQueryRunning="isQueryRunning"
+                        @queryRun="queryRun"
+                /></pane>
+                <pane min-size="0" size="45" max-size="55">
+                    <ResultsPane :dataList="dataList" :columnList="columnList"
+                /></pane>
+            </splitpanes>
+        </div>
         <NoActiveInlineTab v-else />
     </div>
 </template>
@@ -52,6 +56,7 @@
     import ResultsPane from '~/components/insights/playground/resultsPane/index.vue'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
     import NoActiveInlineTab from './noActiveInlineTab.vue'
+    import useRunQuery from './common/composables/useRunQuery'
 
     export default defineComponent({
         components: { Editor, ResultsPane, NoActiveInlineTab },
@@ -63,6 +68,8 @@
         },
         emits: ['update:activeInlineTabKey', 'update:tabRef'],
         setup(props, { emit }) {
+            const { queryRun, isQueryRunning, dataList, columnList } =
+                useRunQuery()
             const { activeInlineTabKey } = toRefs(props)
             const tabs = inject('inlineTabs') as Ref<activeInlineTabInterface[]>
             const activeInlineTab = inject(
@@ -73,6 +80,7 @@
              */
             const inlineTabRemove = inject('inlineTabRemove') as Function
             const inlineTabAdd = inject('inlineTabAdd') as Function
+
             const handleAdd = () => {
                 const key = String(tabs.value.length + 1)
                 const inlineTabData: activeInlineTabInterface = {
@@ -122,12 +130,16 @@
             }
 
             return {
+                dataList,
+                columnList,
+                isQueryRunning,
                 activeInlineTab,
                 tabs,
                 activeInlineTabKey,
                 handleAdd,
                 onEdit,
                 onTabClick,
+                queryRun,
             }
         },
     })

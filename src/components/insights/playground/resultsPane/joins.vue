@@ -1,5 +1,5 @@
 <template>
-    <div class="w-full p-3 rounded box">
+    <div class="flex-1 p-3 rounded">
         <div
             class="flex items-center justify-center w-full h-full rounded  placeholder"
         >

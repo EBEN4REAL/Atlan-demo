@@ -370,7 +370,7 @@
                 </div>
             </div>
         </div>
-        <div v-else-if="searchQuery?.length && !searchResults?.length && !searchLoading">
+        <div v-else-if="searchQuery?.length && !searchResults?.length && !searchLoading" class="px-4">
             No results
         </div>
         <div v-else class="mt-4">
@@ -477,7 +477,7 @@
         setup(props, { emit }) {
             // data
             const searchQuery = ref<string>()
-            // const home = toRef(props, 'isHome')
+            const home = toRef(props, 'isHome')
             // const { selectedKeys, expandedKeys, expandNode, selectNode } =
             //     handleTreeExpand(emit)
             const { createTerm, createCategory, createGlossary } =
@@ -485,7 +485,7 @@
 
             const router = useRouter()
 
-            const parentGlossaryQualifiedName = computed(() => props?.parentGlossary?.attributes?.qualifiedName ?? '')
+            const parentGlossaryQualifiedName = computed(() => home.value ? '' : props?.parentGlossary?.attributes?.qualifiedName ?? '')
 
             const {
                 entities: searchResults,
@@ -541,10 +541,9 @@
                 )}`
             }
 
-            // watch(home, () => {
-            //     console.log('is home changes')
-            //     searchQuery.value = '';
-            // })
+            watch(home, () => {
+                searchQuery.value = '';
+            })
             return {
                 redirectToProfile,
                 backToHome,

@@ -18,7 +18,7 @@
             <template #content>
                 <slot name="filter" />
             </template>
-            <a-button class="flex items-center p-2 ml-2 rounded">
+            <a-button class="flex items-center p-2 rounded">
                 <AtlanIcon
                     :icon="dot ? 'FilterDot' : 'Filter'"
                     class="w-4 h-4"

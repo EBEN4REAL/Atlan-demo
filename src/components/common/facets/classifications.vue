@@ -1,20 +1,9 @@
 <template>
     <div class="px-4 mt-1">
         <div class="flex">
-            <!-- <a-input-search
-                v-model:value="classificationSearchText"
-                type="text"
-                class=""
-                size="small"
-                :allowClear="true"
-                :placeholder="`Search ${classificationsList.length} classifications`"
-                @change="handleClassificationsSearch"
-            >
-            </a-input-search> -->
             <SearchAndFilter
                 v-model:value="classificationSearchText"
                 :placeholder="`Search ${classificationsList.length} classifications`"
-                size="small"
                 :autofocus="true"
                 @change="handleClassificationsSearch"
             >

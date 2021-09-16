@@ -163,14 +163,3 @@
         },
     })
 </script>
-
-<style scoped>
-    .connector-btn {
-        @apply flex items-center h-8 px-2 mb-0;
-        @apply text-xs tracking-wide text-gray;
-        @apply rounded cursor-pointer;
-    }
-    .connector-btn:hover {
-        @apply bg-gray-100;
-    }
-</style>

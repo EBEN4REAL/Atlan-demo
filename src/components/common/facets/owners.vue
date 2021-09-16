@@ -1,67 +1,31 @@
 <template>
-    <div class="">
-        <div class="flex justify-between mx-4 mb-1">
-            <a-input-search
-                v-input-focus
-                :placeholder="
-                    activeOwnerTabKey === '1'
-                        ? `Search ${userList?.length} users`
-                        : `Search ${groupList?.length} groups`
-                "
-                :allowClear="true"
-                @change="handleOwnerSearch"
-            >
-            </a-input-search>
-            <div class="">
-                <a-popover trigger="click" placement="rightTop">
-                    <template #content class="rounded">
-                        <div class="p-0">
-                            <div class="flex justify-between mb-2">
-                                <p class="mb-0 text-sm text-gray-500">
-                                    Sort by
-                                </p>
-                            </div>
-                            <CustomRadioButton
-                                class="pb-2"
-                                :list="ownerSortOptions"
-                                v-model:data="ownersFilterOptionsData"
-                                @change="handleSortChange"
-                            />
-                        </div>
-                    </template>
-                    <div v-if="ownersFilterOptionsData !== null" class="">
-                        <a-badge
-                            :dot="
-                                ownersFilterOptionsData !==
-                                ownerSortOptions[0].id
-                            "
-                            :class="$style.badge"
-                        >
-                            <a-button class="px-2 py-1 ml-2 rounded">
-                                <span class="flex items-center justify-center">
-                                    <fa
-                                        icon="fas sort-amount-up"
-                                        class="hover:text-primary-500"
-                                    />
-                                </span>
-                            </a-button>
-                        </a-badge>
+    <div class="px-4">
+        <SearchAndFilter
+            v-model:value="queryText"
+            :placeholder="
+                activeOwnerTabKey === '1'
+                    ? `Search ${userList?.length} users`
+                    : `Search ${groupList?.length} groups`
+            "
+            :autofocus="true"
+            @change="handleOwnerSearch"
+            :dot="ownersFilterOptionsData !== ownerSortOptions[0].id"
+        >
+            <template #filter>
+                <div class="p-0">
+                    <div class="flex justify-between mb-2">
+                        <p class="mb-0 text-sm text-gray-500">Sort by</p>
                     </div>
-                    <div v-else class="mr-1">
-                        <a-button class="px-2 py-1 ml-2 rounded">
-                            <span class="flex items-center justify-center">
-                                <fa
-                                    icon="fas sort-amount-up"
-                                    class="hover:text-primary-500"
-                                />
-                            </span>
-                        </a-button>
-                    </div>
-                </a-popover>
-            </div>
-        </div>
-
-        <div class="relative mx-3">
+                    <CustomRadioButton
+                        class="pb-2"
+                        :list="ownerSortOptions"
+                        v-model:data="ownersFilterOptionsData"
+                        @change="handleSortChange"
+                    />
+                </div>
+            </template>
+        </SearchAndFilter>
+        <div class="relative w-full">
             <a-tabs
                 v-model:activeKey="activeOwnerTabKey"
                 :class="$style.previewtab"
@@ -256,195 +220,228 @@
 </template>
 
 <script lang="ts">
-    import {
-        defineComponent,
-        PropType,
-        ref,
-        Ref,
-        toRefs,
-        watch,
-        computed,
-    } from 'vue'
-    import Groups from '@common/selector/groups/index.vue'
-    import Users from '@common/selector/users/index.vue'
-    import CustomRadioButton from '@common/radio/customRadioButton.vue'
-    import { Collapse } from '~/types'
-    import { Components } from '~/api/atlas/client'
-    import fetchUserList from '~/composables/user/fetchUserList'
-    import fetchGroupList from '~/composables/group/fetchGroupList'
-    import { userInterface } from '~/types/users/user.interface'
-    import { groupInterface } from '~/types/groups/group.interface'
-    import whoami from '~/composables/user/whoami'
-    import emptyScreen from '~/assets/images/empty_search.png'
+        import {
+            defineComponent,
+            PropType,
+            ref,
+            Ref,
+            toRefs,
+            watch,
+            computed,
+        } from 'vue'
+        import Groups from '@common/selector/groups/index.vue'
+        import Users from '@common/selector/users/index.vue'
+        import CustomRadioButton from '@common/radio/customRadioButton.vue'
+        import { Collapse } from '~/types'
+        import { Components } from '~/api/atlas/client'
+        import fetchUserList from '~/composables/user/fetchUserList'
+        import fetchGroupList from '~/composables/group/fetchGroupList'
+        import { userInterface } from '~/types/users/user.interface'
+        import { groupInterface } from '~/types/groups/group.interface'
+    <<<<<<< HEAD
+    =======
+        import SearchAndFilter from '@/common/input/searchAndFilter.vue'
+        import CustomRadioButton from '@common/radio/customRadioButton.vue'
+    >>>>>>> ff99563c4f4a4b7ed9319bd637618aec33f1aed6
+        import whoami from '~/composables/user/whoami'
+        import emptyScreen from '~/assets/images/empty_search.png'
 
-    export default defineComponent({
-        name: 'OwnersFilter',
-        components: {
-            Groups,
-            Users,
-            CustomRadioButton,
-        },
-        props: {
-            item: {
-                type: Object as PropType<Collapse>,
-                required: true,
+        export default defineComponent({
+            name: 'OwnersFilter',
+            components: {
+                Groups,
+                Users,
+                CustomRadioButton,
+                SearchAndFilter,
             },
-            data: {
-                type: Object,
-                required: true,
+            props: {
+                item: {
+                    type: Object as PropType<Collapse>,
+                    required: true,
+                },
+                data: {
+                    type: Object,
+                    required: true,
+                },
             },
-        },
-        emits: ['change'],
-        setup(props, { emit }) {
-            const { data } = toRefs(props)
-            const activeOwnerTabKey = ref('1')
-            const showMoreUsers = ref(true)
-            const showMoreGroups = ref(true)
-            const queryText = ref('')
-            // own info
-            const { username: myUsername, name: myName } = whoami()
+            emits: ['change'],
+            setup(props, { emit }) {
+                const { data } = toRefs(props)
+                const activeOwnerTabKey = ref('1')
+                const showMoreUsers = ref(true)
+                const showMoreGroups = ref(true)
+                const queryText = ref('')
+                // own info
+                const { username: myUsername, name: myName } = whoami()
 
-            const criterion: Ref<Components.Schemas.FilterCriteria[]> = ref([])
-            console.log(
-                'propsValue',
-                data.value.userValue,
-                data.value.groupValue
-            )
+                const criterion: Ref<Components.Schemas.FilterCriteria[]> = ref([])
+                console.log(
+                    'propsValue',
+                    data.value.userValue,
+                    data.value.groupValue
+                )
 
-            const handleUsersChange = () => {
-                handleChange()
-            }
+                const handleUsersChange = () => {
+                    handleChange()
+                }
 
-            const handleGroupsChange = () => {
-                handleChange()
-            }
-            const handleChange = () => {
-                // make no owners unchecked
-                data.value.noOwnerAssigned = false
-                data.value.userValue.forEach((name: string) => {
-                    criterion.value.push({
-                        attributeName: 'ownerUsers',
-                        attributeValue: name,
-                        operator: 'contains',
+                const handleGroupsChange = () => {
+                    handleChange()
+                }
+                const handleChange = () => {
+                    // make no owners unchecked
+                    data.value.noOwnerAssigned = false
+                    data.value.userValue.forEach((name: string) => {
+                        criterion.value.push({
+                            attributeName: 'ownerUsers',
+                            attributeValue: name,
+                            operator: 'contains',
+                        })
                     })
-                })
-                data.value.groupValue.forEach((groupname: string) => {
-                    criterion.value.push({
-                        attributeName: 'ownerGroups',
-                        attributeValue: groupname,
-                        operator: 'contains',
+                    data.value.groupValue.forEach((groupname: string) => {
+                        criterion.value.push({
+                            attributeName: 'ownerGroups',
+                            attributeValue: groupname,
+                            operator: 'contains',
+                        })
                     })
-                })
 
-                emit('change', {
-                    id: props.item.id,
-                    payload: {
-                        condition: 'OR',
-                        criterion: criterion.value,
-                    } as Components.Schemas.FilterCriteria,
-                })
-                criterion.value = []
-            }
-            const noOwnersToggle = () => {
-                if (data.value.noOwnerAssigned) {
-                    data.value.userValue = []
-                    data.value.groupValue = []
-                    criterion.value = []
-                    criterion.value.push({
-                        attributeName: 'ownerUsers',
-                        attributeValue: '-',
-                        operator: 'is_null',
+                    emit('change', {
+                        id: props.item.id,
+                        payload: {
+                            condition: 'OR',
+                            criterion: criterion.value,
+                        } as Components.Schemas.FilterCriteria,
                     })
-                } else {
-                    data.value.userValue = []
-                    data.value.groupValue = []
                     criterion.value = []
                 }
-                emit('change', {
-                    id: props.item.id,
-                    payload: {
-                        condition: 'OR',
-                        criterion: criterion.value,
-                    } as Components.Schemas.FilterCriteria,
-                })
-                criterion.value = []
-            }
-
-            const handleOwnerSearch = (e?: Event) => {
-                if (e) {
-                    queryText.value = (<HTMLInputElement>e?.target)?.value
-                }
-                if (activeOwnerTabKey.value === '1') {
-                    handleUserSearch(queryText.value)
-                } else if (activeOwnerTabKey.value === '2') {
-                    // for groups
-                    handleGroupSearch(queryText.value)
-                }
-            }
-            const {
-                list: listUsers,
-                total: totalUsersCount,
-                filtered,
-                state: userOwnerState,
-                STATES,
-                mutate: mutateUsers,
-                setLimit: setLimit,
-                handleSearch: handleUserSearch,
-            } = fetchUserList()
-
-            const {
-                list: listGroups,
-                handleSearch: handleGroupSearch,
-                total: totalGroupCount,
-                STATES: GROUPSTATES,
-                state: groupOwnerState,
-                mutate: mutateGroups,
-                setLimit: setGroupLimit,
-            } = fetchGroupList()
-            const onSelectUser = (user: userInterface) => {
-                // unselect if already selected
-                if (data.value.userValue.includes(user.username)) {
-                    const index = data.value.userValue.indexOf(user.username)
-                    if (index > -1) {
-                        data.value.userValue.splice(index, 1)
+                const noOwnersToggle = () => {
+                    if (data.value.noOwnerAssigned) {
+                        data.value.userValue = []
+                        data.value.groupValue = []
+                        criterion.value = []
+                        criterion.value.push({
+                            attributeName: 'ownerUsers',
+                            attributeValue: '-',
+                            operator: 'is_null',
+                        })
+                    } else {
+                        data.value.userValue = []
+                        data.value.groupValue = []
+                        criterion.value = []
                     }
-                } else {
-                    data.value.userValue.push(user.username)
+                    emit('change', {
+                        id: props.item.id,
+                        payload: {
+                            condition: 'OR',
+                            criterion: criterion.value,
+                        } as Components.Schemas.FilterCriteria,
+                    })
+                    criterion.value = []
                 }
-            }
-            const onSelectGroup = (group: groupInterface) => {
-                // unselect if already selected
-                if (data.value.groupValue.includes(group.name)) {
-                    const index = data.value.groupValue.indexOf(group.name)
-                    if (index > -1) {
-                        data.value.groupValue.splice(index, 1)
-                    }
-                } else {
-                    data.value.groupValue.push(group.name)
-                }
-            }
-            function isOwner(username: string, owners: string[]) {
-                return owners.includes(username)
-            }
 
-            const ownersFilterOptionsData = ref('asc')
-            const ownerSortOptions = [
-                {
-                    id: 'asc',
-                    label: 'A-Z',
-                },
-                {
-                    id: 'dsc',
-                    label: 'Z-A',
-                },
-            ]
-            const userList: Ref<userInterface[]> = ref([])
-            const groupList: Ref<groupInterface[]> = ref([])
-            watch(
-                [listUsers, listGroups],
-                () => {
+                const handleOwnerSearch = () => {
+                    if (activeOwnerTabKey.value === '1') {
+                        handleUserSearch(queryText.value)
+                    } else if (activeOwnerTabKey.value === '2') {
+                        // for groups
+                        handleGroupSearch(queryText.value)
+                    }
+                }
+                const {
+                    list: listUsers,
+                    total: totalUsersCount,
+                    filtered,
+                    state: userOwnerState,
+                    STATES,
+                    mutate: mutateUsers,
+                    setLimit: setLimit,
+                    handleSearch: handleUserSearch,
+                } = fetchUserList()
+
+                const {
+                    list: listGroups,
+                    handleSearch: handleGroupSearch,
+                    total: totalGroupCount,
+                    STATES: GROUPSTATES,
+                    state: groupOwnerState,
+                    mutate: mutateGroups,
+                    setLimit: setGroupLimit,
+                } = fetchGroupList()
+                const onSelectUser = (user: userInterface) => {
+                    // unselect if already selected
+                    if (data.value.userValue.includes(user.username)) {
+                        const index = data.value.userValue.indexOf(user.username)
+                        if (index > -1) {
+                            data.value.userValue.splice(index, 1)
+                        }
+                    } else {
+                        data.value.userValue.push(user.username)
+                    }
+                }
+                const onSelectGroup = (group: groupInterface) => {
+                    // unselect if already selected
+                    if (data.value.groupValue.includes(group.name)) {
+                        const index = data.value.groupValue.indexOf(group.name)
+                        if (index > -1) {
+                            data.value.groupValue.splice(index, 1)
+                        }
+                    } else {
+                        data.value.groupValue.push(group.name)
+                    }
+                }
+                function isOwner(username: string, owners: string[]) {
+                    return owners.includes(username)
+                }
+
+                const ownersFilterOptionsData = ref('asc')
+                const ownerSortOptions = [
+                    {
+                        id: 'asc',
+                        label: 'A-Z',
+                    },
+                    {
+                        id: 'dsc',
+                        label: 'Z-A',
+                    },
+                ]
+                const userList: Ref<userInterface[]> = ref([])
+                const groupList: Ref<groupInterface[]> = ref([])
+                watch(
+                    [listUsers, listGroups],
+                    () => {
+                        userList.value = sortClassificationsByOrder(
+                            ownersFilterOptionsData.value,
+                            listUsers,
+                            'username'
+                        )
+                        // removing own username from list
+                        let ownUserObj: userInterface = {}
+                        userList.value = userList.value.filter((user) => {
+                            if (user.username === myUsername.value) {
+                                ownUserObj = user
+                            }
+                            return user.username !== myUsername.value
+                        })
+                        if (Object.keys(ownUserObj).length > 0) {
+                            userList.value = [ownUserObj, ...userList.value]
+                        } else {
+                            userList.value = [...userList.value]
+                        }
+                        groupList.value = sortClassificationsByOrder(
+                            ownersFilterOptionsData.value,
+                            listGroups,
+                            'name'
+                        )
+                    },
+                    {
+                        immediate: true,
+                    }
+                )
+
+                function handleSortChange(sortingOrder: string) {
                     userList.value = sortClassificationsByOrder(
-                        ownersFilterOptionsData.value,
+                        sortingOrder,
                         listUsers,
                         'username'
                     )
@@ -466,129 +463,99 @@
                         listGroups,
                         'name'
                     )
-                },
-                {
-                    immediate: true,
                 }
-            )
 
-            function handleSortChange(sortingOrder: string) {
-                userList.value = sortClassificationsByOrder(
-                    sortingOrder,
-                    listUsers,
-                    'username'
-                )
-                // removing own username from list
-                let ownUserObj: userInterface = {}
-                userList.value = userList.value.filter((user) => {
-                    if (user.username === myUsername.value) {
-                        ownUserObj = user
-                    }
-                    return user.username !== myUsername.value
-                })
-                if (Object.keys(ownUserObj).length > 0) {
-                    userList.value = [ownUserObj, ...userList.value]
-                } else {
-                    userList.value = [...userList.value]
-                }
-                groupList.value = sortClassificationsByOrder(
-                    ownersFilterOptionsData.value,
-                    listGroups,
-                    'name'
-                )
-            }
-
-            function sortClassificationsByOrder(
-                sortingOrder: string,
-                data: Ref<userInterface[] | groupInterface[]>,
-                key: string
-            ) {
-                switch (sortingOrder) {
-                    case 'asc': {
-                        let modifiedData: userInterface[] = []
-                        if (data?.value) {
-                            modifiedData = data.value.sort((dataA, dataB) => {
-                                const a = dataA[key].toLowerCase()
-                                const b = dataB[key].toLowerCase()
-                                if (a < b) {
-                                    return -1
-                                }
-                                if (a > b) {
-                                    return 1
-                                }
-                                return 0
-                            })
+                function sortClassificationsByOrder(
+                    sortingOrder: string,
+                    data: Ref<userInterface[] | groupInterface[]>,
+                    key: string
+                ) {
+                    switch (sortingOrder) {
+                        case 'asc': {
+                            let modifiedData: userInterface[] = []
+                            if (data?.value) {
+                                modifiedData = data.value.sort((dataA, dataB) => {
+                                    const a = dataA[key].toLowerCase()
+                                    const b = dataB[key].toLowerCase()
+                                    if (a < b) {
+                                        return -1
+                                    }
+                                    if (a > b) {
+                                        return 1
+                                    }
+                                    return 0
+                                })
+                            }
+                            return modifiedData
                         }
-                        return modifiedData
-                    }
-                    case 'dsc': {
-                        let modifiedData: groupInterface[] = []
-                        if (data?.value) {
-                            modifiedData = data.value.sort((dataA, dataB) => {
-                                const a = dataA[key].toLowerCase()
-                                const b = dataB[key].toLowerCase()
-                                if (a < b) {
-                                    return 1
-                                }
-                                if (a > b) {
-                                    return -1
-                                }
-                                return 0
-                            })
-                        }
+                        case 'dsc': {
+                            let modifiedData: groupInterface[] = []
+                            if (data?.value) {
+                                modifiedData = data.value.sort((dataA, dataB) => {
+                                    const a = dataA[key].toLowerCase()
+                                    const b = dataB[key].toLowerCase()
+                                    if (a < b) {
+                                        return 1
+                                    }
+                                    if (a > b) {
+                                        return -1
+                                    }
+                                    return 0
+                                })
+                            }
 
-                        return modifiedData
+                            return modifiedData
+                        }
                     }
                 }
-            }
-            function toggleShowMore() {
-                showMoreUsers.value = !showMoreUsers.value
-                setLimit(totalUsersCount.value)
-                mutateUsers()
-            }
-            function toggleShowMoreGroups() {
-                showMoreGroups.value = !showMoreGroups.value
-                setGroupLimit(totalGroupCount.value)
-                mutateGroups()
-            }
-            function onTabChange() {
-                if (queryText.value !== '') handleOwnerSearch()
-            }
+                function toggleShowMore() {
+                    showMoreUsers.value = !showMoreUsers.value
+                    setLimit(totalUsersCount.value)
+                    mutateUsers()
+                }
+                function toggleShowMoreGroups() {
+                    showMoreGroups.value = !showMoreGroups.value
+                    setGroupLimit(totalGroupCount.value)
+                    mutateGroups()
+                }
+                function onTabChange() {
+                    if (queryText.value !== '') handleOwnerSearch()
+                }
 
-            return {
-                data,
-                emptyScreen,
-                queryText,
-                noOwnersToggle,
-                totalUsersCount,
-                totalGroupCount,
-                userOwnerState,
-                groupOwnerState,
-                STATES,
-                GROUPSTATES,
-                ownersFilterOptionsData,
-                ownerSortOptions,
-                myUsername,
-                showMoreGroups,
-                onSelectGroup,
-                isOwner,
-                onSelectUser,
-                userList,
-                groupList,
-                handleOwnerSearch,
-                activeOwnerTabKey,
-                toggleShowMoreGroups,
-                toggleShowMore,
-                handleChange,
-                handleUsersChange,
-                handleGroupsChange,
-                handleSortChange,
-                onTabChange,
-                showMoreUsers,
-            }
-        },
-        mounted() {},
-    })
+                return {
+                    data,
+                    emptyScreen,
+                    queryText,
+                    noOwnersToggle,
+                    totalUsersCount,
+                    totalGroupCount,
+                    userOwnerState,
+                    groupOwnerState,
+                    STATES,
+                    GROUPSTATES,
+                    ownersFilterOptionsData,
+                    ownerSortOptions,
+                    myUsername,
+                    showMoreGroups,
+                    onSelectGroup,
+                    isOwner,
+                    onSelectUser,
+                    userList,
+                    groupList,
+                    handleOwnerSearch,
+                    activeOwnerTabKey,
+                    toggleShowMoreGroups,
+                    toggleShowMore,
+                    handleChange,
+                    handleUsersChange,
+                    handleGroupsChange,
+                    handleSortChange,
+                    onTabChange,
+                    showMoreUsers,
+                }
+            },
+            mounted() {},
+        })
 </script>
 
 <style lang="less" scoped>

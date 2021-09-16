@@ -1,6 +1,6 @@
 <template>
     <div class="px-4 mt-1">
-        <div class="flex">
+        <div class="">
             <SearchAndFilter
                 v-model:value="classificationSearchText"
                 :placeholder="`Search ${classificationsList.length} classifications`"

@@ -26,7 +26,7 @@
                 <a-tooltip placement="right" color="white">
                     <AtlanIcon
                         icon="Overview"
-                        class="mr-2 opacity-50 hover:opacity-100"
+                        class="opacity-50 hover:opacity-100"
                     />
                     <template #title>
                         <span class="text-gray-500">

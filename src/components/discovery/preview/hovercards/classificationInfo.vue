@@ -3,7 +3,7 @@
         <div class="flex justify-between mb-2 text-sm">
             <!-- {{ classification }} -->
             <span class="text-gray-500">CLASSIFICATION</span>
-            <span v-if="classification.propagated" class="text-primary"
+            <span v-if="classification.propagate" class="text-primary"
                 >Propagated</span
             >
         </div>
@@ -18,12 +18,12 @@
         <span class="text-sm" v-else>No description</span>
 
         <span
+            v-if="classification.propagatedBy"
             class="mt-4 mb-1 text-xs text-gray-500"
-            v-if="classification.propagated"
             >Propagated by</span
         >
         <div class="flex flex-wrap gap-3">
-            <span v-if="classification.propagated" class="text-primary">{{
+            <span v-if="classification.propagate" class="text-primary">{{
                 classification.propagatedBy
             }}</span>
         </div>

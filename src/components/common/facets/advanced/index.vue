@@ -1,7 +1,12 @@
 <template>
     <span>
-        <div class="mr-2 overflow-y-auto" style="max-height: 25rem">
-            <div v-for="(a, x) in finalAttributesList" :key="x" class="mx-5">
+        <div class="overflow-y-auto" style="max-height: 25rem">
+            <div
+                v-for="(a, x) in finalAttributesList"
+                :key="x"
+                class="ml-2"
+                style="margin-right: 0.5rem"
+            >
                 <AttributeItem
                     :a="a"
                     :applied="data.applied[a.value] || {}"
@@ -103,7 +108,7 @@
                 })
             }
             const finalAttributesList = computed(() =>
-                AdvancedAttributeList.filter(attribute=>!attribute.hide)
+                AdvancedAttributeList.filter((attribute) => !attribute.hide)
             )
             return {
                 finalAttributesList,

@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="">
         <a-popover
             v-model:visible="isVisible"
             title=""
@@ -42,9 +42,9 @@
             >
                 <div
                     v-if="Object.keys(applied).length && !isVisible"
-                    class="absolute w-2 h-2 mr-2 rounded-full  -left-2 bg-primary"
+                    class="absolute w-2 h-2 rounded-full -left-1 bg-primary"
                 ></div>
-                <div class="flex items-center justify-between w-96">
+                <div class="flex items-center justify-between w-full">
                     <Tooltip
                         :tooltip-text="a?.options?.displayName || a.label"
                         classes="w-40"

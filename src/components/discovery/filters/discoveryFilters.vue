@@ -1,15 +1,16 @@
 <template>
     <div
-        class="flex items-center justify-between px-4 py-1 text-sm bg-gray-100 border-b border-gray-200 "
+        class="flex items-center justify-between px-4 py-2 text-sm bg-gray-100 border-b border-gray-200 "
     >
         <div class="font-medium text-gray-500">
             {{ totalAppliedFiltersCount || 'No' }}
             {{ totalAppliedFiltersCount > 1 ? 'filters' : 'filter' }}
             applied
         </div>
-        <div class="flex items-center text-gray-500">
+        <div class="flex items-center">
             <div
-                class="py-1 text-sm font-medium text-gray-500 rounded cursor-pointer  hover:font-bold"
+                v-if="totalAppliedFiltersCount"
+                class="text-sm font-medium text-gray-500 rounded cursor-pointer  hover:text-gray-700"
                 @click="resetAllFilters"
             >
                 Reset

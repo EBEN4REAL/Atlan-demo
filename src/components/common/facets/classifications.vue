@@ -1,38 +1,21 @@
 <template>
     <div class="px-4 mt-1">
         <div class="flex">
-            <a-input-search
-                ref="searchText"
+            <SearchAndFilter
                 v-model:value="classificationSearchText"
-                type="text"
-                class=""
-                size="small"
-                :allowClear="true"
                 :placeholder="`Search ${classificationsList.length} classifications`"
+                :autofocus="true"
                 @change="handleClassificationsSearch"
             >
-                <!-- <template #prefix>
-                    <fa icon="fal search" class="ml-2 mr-1 text-gray-500" />
-                </template> -->
-                <!-- <template #suffix>
-                    <fa
-                        v-if="classificationSearchText"
-                        icon="fal times-circle"
-                        class="ml-2 mr-1 text-red-600"
-                        @click="clearSearchText"
-                    />
-                </template> -->
-            </a-input-search>
-            <a-popover trigger="click" placement="rightTop">
-                <template #content class="rounded">
+                <template #filter>
                     <div class="p-0">
                         <div class="flex justify-between mb-2">
                             <p class="mb-0 text-sm text-gray-500">Sort by</p>
                         </div>
                         <CustomRadioButton
+                            v-model:data="classificationFilterOptionsData"
                             class="pb-4 border-b"
                             :list="classificationFilterCheckboxes"
-                            v-model:data="classificationFilterOptionsData"
                         />
                     </div>
                     <div class="mt-4">
@@ -40,10 +23,10 @@
                             <p class="mb-0 text-sm text-gray-500">Operator</p>
                         </div>
                         <CustomRadioButton
+                            v-model:data="operationFilterOptionsData"
                             class="pb-4 border-b"
                             :list="operationFilterCheckboxes"
                             @change="handleChange"
-                            v-model:data="operationFilterOptionsData"
                         />
                     </div>
                     <div class="pb-2 mt-4">
@@ -52,8 +35,8 @@
                         </div>
                         <a-radio-group
                             v-model:value="addedByFilterOptionsData"
-                            @change="handleChange"
                             class="rounded"
+                            @change="handleChange"
                         >
                             <a-radio-button value="all">All</a-radio-button>
                             <a-radio-button value="user">User</a-radio-button>
@@ -63,17 +46,7 @@
                         </a-radio-group>
                     </div>
                 </template>
-                <div  class="mr-1">
-                    <a-button class="px-2 py-1 ml-2 rounded">
-                        <span class="flex items-center justify-center">
-                            <fa
-                                icon="fas sort-amount-up"
-                                class="hover:text-primary-500"
-                            />
-                        </span>
-                    </a-button>
-                </div>
-            </a-popover>
+            </SearchAndFilter>
         </div>
 
         <div class="mt-4">
@@ -130,8 +103,8 @@
             <div>
                 <a-checkbox
                     v-model:checked="data.noClassificationsAssigned"
-                    @change="noClassificationsToggle"
                     class="w-full py-3 border-t"
+                    @change="noClassificationsToggle"
                 >
                     No Classifications assigned
                 </a-checkbox>
@@ -149,14 +122,15 @@
         toRaw,
         watchEffect,
     } from 'vue'
+    import CustomRadioButton from '@common/radio/customRadioButton.vue'
+    import SearchAndFilter from '@/common/input/searchAndFilter.vue'
     import { Collapse } from '~/types'
     import { Components } from '~/api/atlas/client'
     import { classificationInterface } from '~/types/classifications/classification.interface'
-    import CustomRadioButton from '@common/radio/customRadioButton.vue'
-
+    
     export default defineComponent({
         name: 'Classifications',
-        components: { CustomRadioButton },
+        components: { CustomRadioButton, SearchAndFilter },
         props: {
             item: {
                 type: Object as PropType<Collapse>,
@@ -215,18 +189,25 @@
                 // eslint-disable-next-line default-case
                 switch (addedByFilterOptionsData.value) {
                     case 'all': {
+                        // Case `all` will always be a OR bw __classificationNames and __propagatedClassificationNames
                         data.value.checked.forEach((val) => {
-                            criterion.push({
+                            const subFilter:Components.Schemas.FilterCriteria = { 
+                                condition:'OR', criterion:[] as Components.Schemas.FilterCriteria[]
+                            };
+                            const subFilterCriterion: Components.Schemas.FilterCriteria[] = []
+                            subFilterCriterion.push({
                                 attributeName: '__classificationNames',
                                 attributeValue: val,
                                 operator: 'eq',
                             })
-                            criterion.push({
+                            subFilterCriterion.push({
                                 attributeName:
                                     '__propagatedClassificationNames',
                                 attributeValue: val,
                                 operator: 'eq',
                             })
+                            subFilter.criterion = subFilterCriterion;
+                            criterion.push(subFilter)
                         })
                         break
                     }
@@ -302,8 +283,10 @@
                                 classificationA: classificationInterface,
                                 classificationB: classificationInterface
                             ) => {
-                                const a = classificationA.displayName.toLowerCase()
-                                const b = classificationB.displayName.toLowerCase()
+                                const a =
+                                    classificationA.displayName.toLowerCase()
+                                const b =
+                                    classificationB.displayName.toLowerCase()
                                 if (a < b) {
                                     return -1
                                 }
@@ -321,8 +304,10 @@
                                 classificationA: classificationInterface,
                                 classificationB: classificationInterface
                             ) => {
-                                const a = classificationA.displayName.toLowerCase()
-                                const b = classificationB.displayName.toLowerCase()
+                                const a =
+                                    classificationA.displayName.toLowerCase()
+                                const b =
+                                    classificationB.displayName.toLowerCase()
                                 if (a < b) {
                                     return 1
                                 }

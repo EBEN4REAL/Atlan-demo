@@ -1,6 +1,6 @@
 <template>
-    <div class="px-4">
-        <div class="flex justify-between mb-1">
+    <div class="">
+        <div class="flex justify-between mx-4 mb-1">
             <a-input-search
                 v-input-focus
                 :placeholder="
@@ -29,7 +29,7 @@
                             />
                         </div>
                     </template>
-                    <div v-if="ownersFilterOptionsData !== null" class="mr-1">
+                    <div v-if="ownersFilterOptionsData !== null" class="">
                         <a-badge
                             :dot="
                                 ownersFilterOptionsData !==
@@ -61,13 +61,13 @@
             </div>
         </div>
 
-        <div class="relative w-full">
+        <div class="relative mx-3">
             <a-tabs
                 v-model:activeKey="activeOwnerTabKey"
                 :class="$style.previewtab"
                 @change="onTabChange"
             >
-                <a-tab-pane key="1">
+                <a-tab-pane key="1" class="">
                     <template #tab>
                         <span
                             class="text-sm"
@@ -267,18 +267,18 @@
     } from 'vue'
     import Groups from '@common/selector/groups/index.vue'
     import Users from '@common/selector/users/index.vue'
+    import CustomRadioButton from '@common/radio/customRadioButton.vue'
     import { Collapse } from '~/types'
     import { Components } from '~/api/atlas/client'
     import fetchUserList from '~/composables/user/fetchUserList'
     import fetchGroupList from '~/composables/group/fetchGroupList'
     import { userInterface } from '~/types/users/user.interface'
     import { groupInterface } from '~/types/groups/group.interface'
-    import CustomRadioButton from '@common/radio/customRadioButton.vue'
     import whoami from '~/composables/user/whoami'
     import emptyScreen from '~/assets/images/empty_search.png'
 
     export default defineComponent({
-        name: 'HelloWorld',
+        name: 'OwnersFilter',
         components: {
             Groups,
             Users,
@@ -610,7 +610,7 @@
 <style lang="less" module>
     .previewtab {
         :global(.ant-tabs-tab) {
-            @apply pb-3 px-1;
+            @apply pb-3 px-2;
             @apply mr-4;
             @apply text-gray-500;
             @apply text-xs;

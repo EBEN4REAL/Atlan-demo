@@ -7,18 +7,15 @@
             "
         >
             <div
-                id="description-sideabr"
+                id="description-sidebar"
                 class="inline-block text-sm cursor-pointer text-gray"
                 contenteditable
+                data-ph="Add description"
                 @blur="handleDescriptionEdit"
                 @keydown.enter="endEditDescription"
-                @keydown.esc="cancelEditDescription"
                 v-text="description"
             ></div>
         </div>
-        <!-- <span v-if="description" class="mb-0">
-                {{ description }}
-            </span>-->
 
         <span
             v-if="
@@ -47,27 +44,23 @@
         emits: ['update:selectedAsset'],
         setup(props, { emit }) {
             const { selectedAsset } = toRefs(props)
-            const { update, handleCancel, description } =
-                updateDescription(selectedAsset)
+            const { update, description } = updateDescription(selectedAsset)
 
             const showEditableDescription = ref<boolean>(false)
 
             const handleDescriptionEdit = (e: any) => {
                 description.value = e.target.innerText
-                showEditableDescription.value = false
                 update()
+                showEditableDescription.value = false
             }
 
             const endEditDescription = () => {
                 document.getElementById('description-sidebar').blur()
             }
 
-            const cancelEditDescription = () => {
-                handleCancel()
-            }
-
             const handleAddDescriptionClick = () => {
                 showEditableDescription.value = true
+                document.getElementById('description-sidebar').focus()
             }
 
             watch(description, () => {
@@ -78,7 +71,6 @@
                 description,
                 handleDescriptionEdit,
                 endEditDescription,
-                cancelEditDescription,
                 showEditableDescription,
                 handleAddDescriptionClick,
             }

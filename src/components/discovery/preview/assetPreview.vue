@@ -14,6 +14,7 @@
                     ></component>
 
                     <Tooltip
+                        v-if="page === 'discovery'"
                         :tooltip-text="selectedAsset?.attributes?.name"
                         classes="mb-0 text-gray-700 font-semibold text-lg cursor-pointer"
                         placement="left"
@@ -22,6 +23,12 @@
                                 ? getColumnUrl(selectedAsset)
                                 : `/assets/${selectedAsset.guid}/overview`
                         "
+                    />
+                    <Tooltip
+                        v-if="page !== 'discovery'"
+                        :tooltip-text="selectedAsset?.attributes?.name"
+                        classes="mb-0 text-gray-700 font-semibold text-lg"
+                        placement="left"
                     />
 
                     <div class="flex items-center">
@@ -206,8 +213,8 @@
             const isColumnAsset = (asset) => assetType(asset) === 'Column'
 
             const getColumnUrl = (asset) => {
-                const tableGuid = asset.attributes.table.guid
-                return `/assets/${tableGuid}/overview?column=${asset.guid}`
+                const tableGuid = asset.attributes?.table.guid
+                return `/assets/${tableGuid}/overview?column=${asset?.guid}`
             }
 
             provide('mutateSelectedAsset', (updatedAsset: assetInterface) => {

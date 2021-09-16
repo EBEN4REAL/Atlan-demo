@@ -280,6 +280,7 @@
                         }
                     }
                 )
+                console.log(selectedRowData.value)
                 showColumnPreview.value = true
             }
             // customRow Antd

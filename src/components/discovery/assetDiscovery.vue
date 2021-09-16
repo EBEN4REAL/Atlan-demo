@@ -2,14 +2,7 @@
     <div class="flex w-full">
         <div
             v-if="showFilters"
-            class="
-                flex flex-col
-                h-full
-                overflow-y-auto
-                bg-white
-                border-r
-                facets
-            "
+            class="flex flex-col h-full overflow-y-auto bg-white border-r  facets"
         >
             <AssetFilters
                 :ref="
@@ -347,7 +340,7 @@
             } = useAssetListing(assetTypeListString.value, false)
 
             const { assetTypeMap, isAggregateLoading, refreshAggregation } =
-                useAssetAggregation(assetTypeListString.value)
+                useAssetAggregation(assetTypeListString.value, false)
 
             const store = useBusinessMetadataStore()
             const BMListLoaded = computed(
@@ -520,12 +513,13 @@
                 offset.value = 0
                 const routerOptions = getRouterOptions()
                 const routerQuery = getEncodedStringFromOptions(routerOptions)
+                isAggregate.value = true
                 updateBody()
                 pushQueryToRouter(routerQuery)
                 tracking.trackEvent(events.EVENT_ASSET_SEARCH, {
                     trigger: 'discover',
                 })
-            }, 200)
+            }, 150)
             const handleChangePreferences = (payload: any) => {
                 projection.value = payload
             }
@@ -596,14 +590,14 @@
 
             watch(BMListLoaded, (val) => {
                 if (val) {
-                    isAggregate.value = false
+                    isAggregate.value = true
                     updateBody()
                 }
             })
 
             onMounted(() => {
                 if (BMListLoaded.value) {
-                    isAggregate.value = false
+                    isAggregate.value = true
                     updateBody()
                 }
             })

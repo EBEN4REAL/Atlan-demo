@@ -70,11 +70,11 @@ function formatters(formatKey: string, e: any) {
 }
 
 /** *
- * @param url - Path for making the network request
+ * @param path - Path fxn from keyMaps
  * @param includeAuthHeader - Boolean to include the authroization header or not
  * @param config - config object
  * @param headers - Standard req headers to send while making a request
- * @param params - The query params to send while making a `GET` request
+ * @param pathVariables - The path variables used in URL while making a `GET` request
  */
 
 export function useSSE({

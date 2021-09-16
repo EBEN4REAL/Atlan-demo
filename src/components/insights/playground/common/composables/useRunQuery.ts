@@ -1,7 +1,6 @@
 import { ref, toRaw, Ref, watch } from 'vue'
-// import useSSE from "~/api/useSSE";
 import { useSSE } from '~/modules/useSSE'
-import { useSSEKeyMaps } from '~/modules/useSSE/keyMaps'
+import { KeyMaps } from '~/api/keyMap'
 
 export default function useProject() {
     const columnList: Ref<
@@ -68,7 +67,7 @@ export default function useProject() {
             error,
             isLoading,
         } = useSSE({
-            path: useSSEKeyMaps.query.RUN_QUERY,
+            path: KeyMaps.query.RUN_QUERY,
             includeAuthHeader: true,
             pathVariables,
         })
@@ -83,11 +82,10 @@ export default function useProject() {
                     close()
                 })
                 subscribe('', (message: any) => {
-                    console.log(message)
-                    if (message.columns) setColumns(columnList, message.columns)
-                    if (message.rows)
+                    if (message?.columns)
+                        setColumns(columnList, message.columns)
+                    if (message?.rows)
                         setRows(dataList, columnList, message.rows)
-                    console.log(dataList.value)
                 })
                 isQueryRunning.value = 'success'
             } else {

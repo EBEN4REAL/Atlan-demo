@@ -194,10 +194,11 @@ export const KeyMaps = {
             defaultSchema,
             dataSourceName,
             length,
-        }: PathParams) =>
-            getAPIPath(
-                'heka/api/query',
+        }: PathParams) => {
+            return getAPIPath(
+                'api/query',
                 `/sql/stream?sql=${query}&defaultSchema=${defaultSchema}&dataSourceName=${dataSourceName}&length=${length}`
-            ),
+            )
+        },
     },
 }

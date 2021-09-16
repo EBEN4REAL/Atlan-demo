@@ -1,13 +1,14 @@
 <template>
     <a-select
         :value="modelValue"
-        :show-search="true"
-        :filter-option="true"
         style="width: 100%"
-        :allow-clear="true"
+        :class="$style.connector"
         @change="handleChange"
         :placeholder="placeholder"
         @search="handleSearch"
+        show-search
+        filter-option
+        allow-clear
     >
         <template #dropdownRender="{ menuNode: menu }">
             <v-nodes :vnodes="menu" />
@@ -16,6 +17,9 @@
                 {{ list.length }} of {{ selfAssetTypeMap[typeName] }}
                 {{ typeName }}
             </div>
+        </template>
+        <template #suffixIcon>
+            <AtlanIcon icon="ChevronDown" class="h-4 -mt-0.5 -ml-0.5" />
         </template>
         <template v-for="options in list" :key="options.guid">
             <a-select-option :value="options.attributes.qualifiedName">
@@ -115,5 +119,10 @@
         computed: {},
     })
 </script>
-
-<style lang="less" module></style>
+<style lang="less" module>
+    .connector {
+        :global(.ant-select-selector) {
+            box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05);
+        }
+    }
+</style>

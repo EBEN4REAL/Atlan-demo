@@ -1,8 +1,7 @@
 <template>
     <div class="px-4 mt-1">
         <div class="flex">
-            <a-input-search
-                ref="searchText"
+            <!-- <a-input-search
                 v-model:value="classificationSearchText"
                 type="text"
                 class=""
@@ -11,20 +10,15 @@
                 :placeholder="`Search ${classificationsList.length} classifications`"
                 @change="handleClassificationsSearch"
             >
-                <!-- <template #prefix>
-                    <fa icon="fal search" class="ml-2 mr-1 text-gray-500" />
-                </template> -->
-                <!-- <template #suffix>
-                    <fa
-                        v-if="classificationSearchText"
-                        icon="fal times-circle"
-                        class="ml-2 mr-1 text-red-600"
-                        @click="clearSearchText"
-                    />
-                </template> -->
-            </a-input-search>
-            <a-popover trigger="click" placement="rightTop">
-                <template #content class="rounded">
+            </a-input-search> -->
+            <SearchAndFilter
+                v-model:value="classificationSearchText"
+                :placeholder="`Search ${classificationsList.length} classifications`"
+                size="small"
+                :autofocus="true"
+                @change="handleClassificationsSearch"
+            >
+                <template #filter>
                     <div class="p-0">
                         <div class="flex justify-between mb-2">
                             <p class="mb-0 text-sm text-gray-500">Sort by</p>
@@ -63,17 +57,7 @@
                         </a-radio-group>
                     </div>
                 </template>
-                <div  class="mr-1">
-                    <a-button class="px-2 py-1 ml-2 rounded">
-                        <span class="flex items-center justify-center">
-                            <fa
-                                icon="fas sort-amount-up"
-                                class="hover:text-primary-500"
-                            />
-                        </span>
-                    </a-button>
-                </div>
-            </a-popover>
+            </SearchAndFilter>
         </div>
 
         <div class="mt-4">
@@ -153,10 +137,11 @@
     import { Components } from '~/api/atlas/client'
     import { classificationInterface } from '~/types/classifications/classification.interface'
     import CustomRadioButton from '@common/radio/customRadioButton.vue'
+    import SearchAndFilter from '@/common/input/searchAndFilter.vue'
 
     export default defineComponent({
         name: 'Classifications',
-        components: { CustomRadioButton },
+        components: { CustomRadioButton, SearchAndFilter },
         props: {
             item: {
                 type: Object as PropType<Collapse>,
@@ -302,8 +287,10 @@
                                 classificationA: classificationInterface,
                                 classificationB: classificationInterface
                             ) => {
-                                const a = classificationA.displayName.toLowerCase()
-                                const b = classificationB.displayName.toLowerCase()
+                                const a =
+                                    classificationA.displayName.toLowerCase()
+                                const b =
+                                    classificationB.displayName.toLowerCase()
                                 if (a < b) {
                                     return -1
                                 }
@@ -321,8 +308,10 @@
                                 classificationA: classificationInterface,
                                 classificationB: classificationInterface
                             ) => {
-                                const a = classificationA.displayName.toLowerCase()
-                                const b = classificationB.displayName.toLowerCase()
+                                const a =
+                                    classificationA.displayName.toLowerCase()
+                                const b =
+                                    classificationB.displayName.toLowerCase()
                                 if (a < b) {
                                     return 1
                                 }

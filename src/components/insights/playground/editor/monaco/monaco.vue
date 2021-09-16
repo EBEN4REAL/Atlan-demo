@@ -1,7 +1,5 @@
 <template>
-    <div class="w-full h-full editor_wrapper">
-        <div ref="monacoRoot" class="w-full monacoeditor"></div>
-    </div>
+    <div ref="monacoRoot" class="monacoeditor"></div>
 </template>
 
 <script lang="ts">
@@ -136,7 +134,7 @@
             onMounted(() => {
                 editor = monaco.editor.create(monacoRoot.value as HTMLElement, {
                     language: 'atlansql',
-                    value: `SELECT * from superstore_sales_data_2016-present`,
+                    value: `select * from WEB_SALES limit 100`,
                     renderLineHighlight: 'none',
                     theme: 'vs',
                     minimap: {
@@ -150,6 +148,7 @@
                     },
                 })
             })
+
             onUnmounted(() => {
                 editor.dispose()
             })
@@ -162,7 +161,7 @@
 
 <style scoped>
     .monacoeditor {
-        height: 87%;
+        height: 90% !important;
     }
     .editor_wrapper {
         overflow: hidden;

@@ -7,7 +7,6 @@ import ChevronUp from '~/assets/images/icons/chevron-up.svg'
 import ForeignKey from '~/assets/images/icons/foreign.svg'
 import PrimaryKey from '~/assets/images/icons/primary.svg'
 import Share from '~/assets/images/icons/share.svg'
-import Verified from '~/assets/images/icons/verified.svg'
 import Filter from '~/assets/images/icons/filter.svg'
 import FilterDot from '~/assets/images/icons/filter-dot.svg'
 import ArrowRight from '~/assets/images/icons/arrow-right.svg'
@@ -49,6 +48,8 @@ import Columns from '~/assets/images/icons/columns.svg'
 import Relation from '~/assets/images/icons/relation.svg'
 import ShareNew from '~/assets/images/icons/shareNew.svg'
 import User from '~/assets/images/icons/user.svg'
+import Chats from '~/assets/images/icons/chats.svg'
+import OpenTermProfile from '~/assets/images/icons/openTermProfile.svg'
 import Metadata from '~/assets/images/icons/metadata.svg'
 
 export default {
@@ -67,7 +68,6 @@ export default {
     ForeignKey,
     PrimaryKey,
     Share,
-    Verified,
     Cancel,
     Filter,
     FilterDot,
@@ -104,4 +104,6 @@ export default {
     KebabMenu,
     ShareNew,
     User,
+    Chats,
+    OpenTermProfile,
 }

@@ -3,6 +3,7 @@ import { watch, ref, Ref, computed, isRef, WritableComputedRef } from 'vue'
 import { useAPI } from '~/api/useAPI'
 import { GET_GTC_ENTITY } from '~/api/keyMaps/glossary'
 import { Glossary, Category, Term } from '~/types/glossary/glossary.interface'
+import { Components } from "~/api/atlas/client";
 
 import { projection } from '~/api/atlas/utils'
 import { BaseAttributes, BasicSearchAttributes } from '~/constant/projection'
@@ -100,6 +101,8 @@ const useGTCEntity = <T extends Glossary | Category | Term>(
     const entity = computed(() =>
         data.value?.entities ? (data.value?.entities[0] as T) : undefined
     )
+
+    const referredEntities = computed(() => data.value?.referredEntities as Record<string, Components.Schemas.AtlasEntityHeader> )
     const title: WritableComputedRef<string | undefined> = computed({
         get: () => entity.value?.attributes?.name ?? '',
         set: (val: string) => {
@@ -136,6 +139,7 @@ const useGTCEntity = <T extends Glossary | Category | Term>(
 
     return {
         entity,
+        referredEntities,
         title,
         shortDescription,
         qualifiedName,

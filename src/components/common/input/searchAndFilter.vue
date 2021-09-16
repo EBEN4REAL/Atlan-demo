@@ -8,6 +8,7 @@
             :class="$style.searchbar"
             @change="$emit('change', $event)"
             @update:value="$emit('update:value', $event)"
+            :allowClear="true"
         >
             <template #suffix>
                 <AtlanIcon icon="Search" />
@@ -17,8 +18,11 @@
             <template #content>
                 <slot name="filter" />
             </template>
-            <a-button class="flex items-center p-1 ml-2 rounded">
-                <AtlanIcon :icon="dot ? 'FilterDot' : 'Filter'" class="h-6" />
+            <a-button class="flex items-center p-2 rounded">
+                <AtlanIcon
+                    :icon="dot ? 'FilterDot' : 'Filter'"
+                    class="w-4 h-4"
+                />
                 <slot name="buttonAggregation" />
             </a-button>
         </a-popover>

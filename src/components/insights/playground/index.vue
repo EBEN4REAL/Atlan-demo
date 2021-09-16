@@ -34,24 +34,41 @@
                 </a-tab-pane>
             </a-tabs>
         </div>
-        <splitpanes
-            horizontal
-            :push-other-panes="false"
-            v-if="activeInlineTabKey"
-        >
-            <pane max-size="100" size="55" min-size="45"> <Editor /></pane>
-            <pane min-size="0" size="45" max-size="55"> <ResultsPane /></pane>
-        </splitpanes>
+        <div class="w-full h-full" v-if="activeInlineTabKey">
+            <splitpanes horizontal :push-other-panes="false">
+                <pane
+                    :max-size="100"
+                    :size="100 - paneSize"
+                    min-size="45"
+                    class="overflow-x-hidden"
+                >
+                    <Editor
+                /></pane>
+                <pane min-size="0" :size="paneSize" max-size="55">
+                    <ResultsPane
+                /></pane>
+            </splitpanes>
+        </div>
         <NoActiveInlineTab v-else />
     </div>
 </template>
 
 <script lang="ts">
-    import { defineComponent, PropType, toRefs, Ref, inject } from 'vue'
+    import {
+        defineComponent,
+        PropType,
+        provide,
+        toRefs,
+        Ref,
+        inject,
+        ref,
+    } from 'vue'
     import Editor from '~/components/insights/playground/editor/index.vue'
     import ResultsPane from '~/components/insights/playground/resultsPane/index.vue'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
     import NoActiveInlineTab from './noActiveInlineTab.vue'
+    import useRunQuery from './common/composables/useRunQuery'
+    import { useMagicKeys, whenever } from '@vueuse/core'
 
     export default defineComponent({
         components: { Editor, ResultsPane, NoActiveInlineTab },
@@ -63,6 +80,14 @@
         },
         emits: ['update:activeInlineTabKey', 'update:tabRef'],
         setup(props, { emit }) {
+            const {
+                queryRun,
+                isQueryRunning,
+                dataList: queryDataList,
+                columnList: queryColumnList,
+            } = useRunQuery()
+            const { arrowup } = useMagicKeys()
+            const paneSize = ref(45)
             const { activeInlineTabKey } = toRefs(props)
             const tabs = inject('inlineTabs') as Ref<activeInlineTabInterface[]>
             const activeInlineTab = inject(
@@ -73,6 +98,7 @@
              */
             const inlineTabRemove = inject('inlineTabRemove') as Function
             const inlineTabAdd = inject('inlineTabAdd') as Function
+
             const handleAdd = () => {
                 const key = String(tabs.value.length + 1)
                 const inlineTabData: activeInlineTabInterface = {
@@ -83,7 +109,9 @@
                     queryId: undefined,
                     explorer: {},
                     playground: {
-                        editorTitle: `${key} Editor`,
+                        editor: {
+                            text: 'SELECT * from superstore_sales_data_2016-present',
+                        },
                         resultsPane: {
                             activeTab:
                                 activeInlineTab.value.playground.resultsPane
@@ -120,14 +148,36 @@
                     inlineTabRemove(targetKey as string)
                 }
             }
+            /*---------- PROVIDERS FOR CHILDRENS -----------------
+            ---Be careful to add a property/function otherwise it will pollute the whole flow for childrens--
+            */
+
+            // properties
+            provide('isQueryRunning', isQueryRunning)
+            provide('queryDataList', queryDataList)
+            provide('queryColumnList', queryColumnList)
+
+            // functions
+            provide('queryRun', queryRun)
+
+            /*-------------------------------------*/
+
+            /* HOT KEYS */
+            whenever(arrowup, () => {
+                if (paneSize.value == 0) paneSize.value = 45
+                else paneSize.value = 0
+            })
 
             return {
+                isQueryRunning,
                 activeInlineTab,
                 tabs,
                 activeInlineTabKey,
+                paneSize,
                 handleAdd,
                 onEdit,
                 onTabClick,
+                queryRun,
             }
         },
     })

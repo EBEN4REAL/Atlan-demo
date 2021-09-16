@@ -144,7 +144,7 @@
         emits: ['entityPreview'],
         setup(props, { emit }) {
             // data
-            const glossaryQualifiedName = toRef(props, 'qualifiedName')
+            const glossaryQualifiedName = computed(() => props.qualifiedName)
 
             const searchQuery = ref<string>()
             const activeKey = ref(0)
@@ -158,6 +158,7 @@
             ])
             const {
                 entities,
+                referredEntities,
                 error,
                 isLoading,
                 fetchAssetsPaginated,
@@ -169,14 +170,14 @@
                 { value: 'description', label: 'Description' },
                 { value: 'owners', label: 'Owners' },
                 { value: 'status', label: 'Status' },
-                // { value: 'heirarchy', label: 'Heirarchy' },
+                { value: 'heirarchy', label: 'Heirarchy' },
                 { value: 'linkedAssets', label: 'Linked Assets' },
                 // { value: 'heirarchy', label: 'Heirarchy' },
                 // { value: 'rows', label: 'Rows' },
                 // { value: 'popularity', label: 'Popularity' },
                 // { value: 'classifications', label: 'Classifications' },
             ]
-
+            console.log()
             // computed
             const terms = computed(() => {
                 if (props.type === 'AtlasGlossary') {
@@ -278,6 +279,7 @@
             })
 
             provide('handleFetchList', handleFetchList)
+            provide('referredEntities', referredEntities)
 
             return {
                 glossaryQualifiedName,
@@ -296,6 +298,7 @@
                 projectionOptions,
                 projection,
                 activeKey,
+                referredEntities,
             }
         },
     })

@@ -7,10 +7,20 @@ export const AdvancedAttributeList = [
         typeName: "string",
     },
     {
-        value: "assetStatusUpdatedBy",
+        value: "__modificationTimestamp",
+        label: "Last updated at",
+        typeName: "date",
+    },
+    {
+        value: "__modifiedBy",
         label: "Last updated by",
         typeName: "users",
         children: [],
+    },
+    {
+        value: "__createdBy",
+        label: "Created by",
+        typeName: "users",
     },
     {
         value: "__timestamp",
@@ -21,7 +31,8 @@ export const AdvancedAttributeList = [
         value: "popularityScore",
         label: "Popularity Score",
         typeName: "number",
-    },
+        hide:true
+    }, 
 
 ];
 

@@ -222,18 +222,10 @@
     })
 </script>
 <style lang="less" module>
-    .categoryHome {
-        :global(.ant-tabs-nav) {
-            @apply ml-8;
-        }
-        :global(.ant-tabs-bar) {
-            @apply mb-0;
-        }
-    }
     .tabClasses {
         :global(.ant-tabs-tab) {
-            margin: 0px 32px 0px 0px !important;
-            padding: 0px 0px 18px 0px !important;
+            margin: 0px 32px 0px 0px;
+            padding: 0px 0px 18px 0px;
         }
         :global(.ant-tabs-nav) {
             margin: 0px !important;
@@ -242,7 +234,7 @@
             @apply text-gray-700 font-bold !important;
         }
         :global(.ant-tabs-bar) {
-            @apply px-5 mb-0 !important;
+            @apply px-5 mb-0;
         }
     }
 </style>

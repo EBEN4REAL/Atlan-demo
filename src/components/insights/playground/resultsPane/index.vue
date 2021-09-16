@@ -1,22 +1,25 @@
 <template>
-    <a-tabs
-        :activeKey="activeResultsPaneTabIndex"
-        :class="$style.result_pane"
-        @change="
-            (activeKey) => resultsPaneTabChange(activeKey, activeInlineTab)
-        "
-    >
-        <a-tab-pane
-            v-for="(tab, index) in tabsList"
-            :key="index"
-            class="px-4 overflow-y-auto"
+    <div class="flex flex-col w-full h-full">
+        <a-tabs
+            :activeKey="activeResultsPaneTabIndex"
+            :class="$style.result_pane"
+            @change="
+                (activeKey) => resultsPaneTabChange(activeKey, activeInlineTab)
+            "
         >
-            <template #tab>
-                {{ tab.name }}
-            </template>
-        </a-tab-pane>
-    </a-tabs>
-    <component :is="activeResultsPaneTab.component"></component>
+            <a-tab-pane
+                v-for="(tab, index) in tabsList"
+                :key="index"
+                class="px-4 overflow-y-auto"
+            >
+                <template #tab>
+                    {{ tab.name }}
+                </template>
+            </a-tab-pane>
+        </a-tabs>
+
+        <component :is="activeResultsPaneTab?.component"></component>
+    </div>
 </template>
 
 <script lang="ts">
@@ -96,6 +99,7 @@
 
         :global(.ant-tabs-bar) {
             margin-bottom: 0px;
+            @apply h-11 !important;
         }
         :global(.ant-tabs-content) {
             @apply px-0 !important;

@@ -10,7 +10,11 @@
             >
             </a-input-search>
         </div>
-        <div ref="container" class="overflow-y-auto" style="max-height: 25rem">
+        <div
+            ref="container"
+            class="mr-2 overflow-y-auto"
+            style="max-height: 25rem"
+        >
             <div
                 v-for="(a, x) in attributeSearchText.length
                     ? filterList(data.list.attributeDefs)
@@ -19,7 +23,7 @@
                           showAll ? data.list.attributeDefs.length : 10
                       )"
                 :key="x"
-                class="px-4"
+                class="ml-2"
             >
                 <AttributeItem
                     :a="a"
@@ -57,7 +61,7 @@
     </span>
 </template>
 <script lang="ts">
-    import { defineComponent, PropType, ref, provide } from 'vue'
+    import { defineComponent, PropType, ref, provide, nextTick } from 'vue'
     import useEnums from '@/admin/enums/composables/useEnums'
     import { Collapse } from '~/types'
     import AttributeItem from '../common/attributeItems.vue'
@@ -168,8 +172,10 @@
                 )
 
             const showScrollBar = () => {
-                container.value.scrollTop = 1
-                container.value.scrollTop = 0
+                nextTick(() => {
+                    container.value.scrollTop = 1
+                    container.value.scrollTop = 0
+                })
             }
 
             return {

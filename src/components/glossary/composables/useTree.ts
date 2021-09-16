@@ -47,6 +47,7 @@ const useTree = (emit: any, optimisticUpdate?: boolean, cacheKey?: string, isAcc
     const currentEntity = ref<Glossary | Category | Term>()
     const {
         entity: fetchedEntity,
+        referredEntities,
         error,
         isLoading,
         refetch,
@@ -55,10 +56,18 @@ const useTree = (emit: any, optimisticUpdate?: boolean, cacheKey?: string, isAcc
         // currentGuid,
         fetchType,
         fetchGuid,
-        false,
+        true,
         false
     )
 
+    /** * 
+     * @param targetGuid - guid / key of the node whose path needs to be found
+     * 
+     * Given the guid of a child node, finds and return the path to that node.  
+     * The last element of the returned array is the top parent of the node  
+     * 
+     * [ targetNode, ....., child2, child1, topParent ]  
+     */
     const recursivelyFindPath = (targetGuid: string, initialStack?: string[]) => {
         const parentStack = initialStack?.length ? initialStack : [targetGuid]
 
@@ -77,13 +86,19 @@ const useTree = (emit: any, optimisticUpdate?: boolean, cacheKey?: string, isAcc
         return parentStack;
     }
     
-
+    /**
+     * Reinitializes the entire tree while and **loses the expanded state of the tree**
+     * @param guid - Guid of the parent Glossary
+     */
     const initTreeData = async (guid: string) => {
-        const categoryList = await GlossaryApi.ListCategoryForGlossary(guid, {})
-        const termsList = await GlossaryApi.ListTermsForGlossary(guid, {})
+        const categoryList = await GlossaryApi.ListCategoryForGlossary(guid, {}) // all categories in a glossary
+        const termsList = await GlossaryApi.ListTermsForGlossary(guid, {}) // root level terms
+
         categoryMap[guid] = categoryList
         treeData.value = []
+        
         categoryList.forEach((element) => {
+            // if category is root level, i.e `categoryGuid` does not exist
             if (!element.parentCategory?.categoryGuid) {
                 if (element.guid) nodeToParentKeyMap[element.guid] = 'root'
 
@@ -117,10 +132,15 @@ const useTree = (emit: any, optimisticUpdate?: boolean, cacheKey?: string, isAcc
         // }
     }
 
+    /**
+     * Asynchronously fetches children of a node and appends them
+     */
     const onLoadData = async (treeNode: any) => {
         treeNode.dataRef.isOpen = true
+        
         if (treeNode.dataRef.children) {
-        } else if (treeNode.dataRef.type === 'glossary') {
+        } 
+        else if (treeNode.dataRef.type === 'glossary') {
             try {
                 const response = await GlossaryApi.ListCategoryForGlossary(
                     treeNode.dataRef.key,
@@ -172,6 +192,7 @@ const useTree = (emit: any, optimisticUpdate?: boolean, cacheKey?: string, isAcc
                 (item) =>
                     item.parentCategory?.categoryGuid === treeNode.dataRef.key
             )
+
             children?.forEach((child) => {
                 if (!treeNode.dataRef.children) {
                     treeNode.dataRef.children = []
@@ -218,7 +239,6 @@ const useTree = (emit: any, optimisticUpdate?: boolean, cacheKey?: string, isAcc
                 console.log(err)
             }
             treeData.value = [...treeData.value]
-        } else {
         }
     }
 
@@ -256,6 +276,14 @@ const useTree = (emit: any, optimisticUpdate?: boolean, cacheKey?: string, isAcc
         store.set(selectedCacheKey, selectedKeys.value)
     }
 
+    /**
+     * Locally updates the attributes of a node inside the tree 
+     * 
+     * @param guid - guid/key of the node that needs to be updated
+     * @param entity - The entire updated entity 
+     * @param name - new name
+     * @param assetStatus - new status
+     */
     const updateNode = ({
         guid,
         entity,
@@ -268,6 +296,7 @@ const useTree = (emit: any, optimisticUpdate?: boolean, cacheKey?: string, isAcc
         assetStatus?: string
     }) => {
         if (nodeToParentKeyMap[guid] === 'root') {
+            // if the node is at the root level, just loop through the treeData linearly
             treeData.value = treeData.value.map((treeNode) => {
                 if (treeNode.key === guid)
                     return {
@@ -287,6 +316,8 @@ const useTree = (emit: any, optimisticUpdate?: boolean, cacheKey?: string, isAcc
 
             const updateNodeNested = (node: TreeDataItem): TreeDataItem => {
                 const currentPath = parentStack.pop()
+
+                // if the target node is reached
                 if (node.key === guid || !currentPath) {
                     return {
                         ...node,
@@ -301,6 +332,7 @@ const useTree = (emit: any, optimisticUpdate?: boolean, cacheKey?: string, isAcc
                 return {
                     ...node,
                     children: node.children?.map((childNode: TreeDataItem) => {
+                        // if the current element is in the path that is needed to reach the target node
                         if (childNode.key === currentPath) {
                             return updateNodeNested(childNode)
                         }
@@ -308,6 +340,8 @@ const useTree = (emit: any, optimisticUpdate?: boolean, cacheKey?: string, isAcc
                     }),
                 }
             }
+
+            // find the path to the node
             parentStack = recursivelyFindPath(guid)
             const parent = parentStack.pop()
 
@@ -318,7 +352,13 @@ const useTree = (emit: any, optimisticUpdate?: boolean, cacheKey?: string, isAcc
         }
     }
 
+    /**
+     * Refreshes a node via API ( All attributes and new children ) while maintaining the state 
+     * 
+     * @param guid - guid/key of the node that needs to be refetched
+     */
     const refetchNode = async (guid: string | 'root') => {
+        // if the root level of the tree needs a refetch
         if (guid === 'root' && parentGlossary.value?.guid) {
             const categoryList = await GlossaryApi.ListCategoryForGlossary(
                 parentGlossary.value?.guid,
@@ -337,10 +377,13 @@ const useTree = (emit: any, optimisticUpdate?: boolean, cacheKey?: string, isAcc
             categoryList.forEach((category) => {
                 const existingCategory = treeData.value.find(
                     (entity) => entity.guid === category.guid
-                )
+                );
+                // if the category already exists,ignore it so as to maintain the expanded state
                 if (existingCategory) {
                     updatedTreeData.push(existingCategory)
                 } else if (!category.parentCategory?.categoryGuid) {
+                    // if a new category is found at the root level, append it
+
                     nodeToParentKeyMap[category.guid] = 'root'
                     updatedTreeData.push({
                         ...category,
@@ -356,6 +399,7 @@ const useTree = (emit: any, optimisticUpdate?: boolean, cacheKey?: string, isAcc
                 const existingTerm = treeData.value.find(
                     (entity) => entity.guid === term.guid
                 )
+                // if term already exists, append the existing one
                 if (existingTerm) {
                     updatedTreeData.push(existingTerm)
                 } else {
@@ -377,6 +421,8 @@ const useTree = (emit: any, optimisticUpdate?: boolean, cacheKey?: string, isAcc
 
             const updateNodeNested = async (node: TreeDataItem) => {
                 const currentPath = parentStack.pop()
+
+                // if the target node is reached
                 if (node.key === guid || !currentPath) {
                     const categoryList =
                         await GlossaryApi.ListCategoryForGlossary(
@@ -396,7 +442,8 @@ const useTree = (emit: any, optimisticUpdate?: boolean, cacheKey?: string, isAcc
                         const existingCategory = node.children?.find(
                             (entity) => entity.guid === category.guid
                         )
-
+                        // if current category already exists, append the existing one to maintain expanded state
+                        // else append the new one
                         if (existingCategory) {
                             updatedChildren.push(existingCategory)
                         } else if (
@@ -446,6 +493,7 @@ const useTree = (emit: any, optimisticUpdate?: boolean, cacheKey?: string, isAcc
 
                 // eslint-disable-next-line no-restricted-syntax
                 for (const childNode of node?.children ?? []) {
+                    // if the current node is in the path that is needed to reach the target node
                     if (childNode.key === currentPath) {
                         const updatedNode = await updateNodeNested(childNode)
                         updatedChildren.push(updatedNode)
@@ -458,6 +506,8 @@ const useTree = (emit: any, optimisticUpdate?: boolean, cacheKey?: string, isAcc
                     children: updatedChildren,
                 }
             }
+
+            // find the path to the node
             parentStack = recursivelyFindPath(guid)
             const parent = parentStack.pop()
 
@@ -646,10 +696,17 @@ const useTree = (emit: any, optimisticUpdate?: boolean, cacheKey?: string, isAcc
             newEntity?.typeName === 'AtlasGlossaryTerm'
         ) {
             if (!treeData.value?.length) {
+                if(referredEntities.value[newEntity?.attributes?.anchor?.guid]?.guid) {
+                    parentGlossary.value = referredEntities.value[newEntity.attributes.anchor.guid];
+
+                    if(parentGlossary.value?.guid)
+                        initTreeData(parentGlossary.value.guid)
+                } else {
+                    fetchType.value = 'glossary'
+                    fetchGuid.value = newEntity?.attributes?.anchor?.guid
+                    refetch()
+                }
                 currentEntity.value = fetchedEntity.value
-                fetchType.value = 'glossary'
-                fetchGuid.value = newEntity?.attributes?.anchor?.guid
-                refetch()
             }
         }
     })
@@ -677,6 +734,9 @@ const useTree = (emit: any, optimisticUpdate?: boolean, cacheKey?: string, isAcc
             selectedKeys.value = [currentGuid.value]
         }
     )
+    onMounted(() => {
+        isInitingTree.value = true
+    })
 
     return {
         treeData,

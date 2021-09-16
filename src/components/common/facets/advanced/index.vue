@@ -30,6 +30,7 @@
     import { Components } from '~/api/atlas/client'
 
     export default defineComponent({
+        name: 'PropertiesFilterWrapper',
         components: {
             AttributeItem,
         },
@@ -119,8 +120,8 @@
     })
 </script>
 
-<style>
-    .ant-popover-arrow {
+<style scoped>
+    :global(.ant-popover-arrow) {
         display: none;
     }
 </style>

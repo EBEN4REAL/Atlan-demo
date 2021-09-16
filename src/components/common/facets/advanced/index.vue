@@ -1,12 +1,12 @@
 <template>
     <span>
         <div class="mr-2 overflow-y-auto" style="max-height: 25rem">
-            <div v-for="(a, x) in AdvancedAttributeList" :key="x" class="mx-5">
+            <div v-for="(a, x) in finalAttributesList" :key="x" class="mx-5">
                 <AttributeItem
                     :a="a"
                     :applied="data.applied[a.value] || {}"
-                    @handleAttributeInput="setAdvancefilter"
                     :operators="operatorsMap[a.typeName]"
+                    @handleAttributeInput="setAdvancefilter"
                 />
             </div>
         </div>
@@ -14,7 +14,7 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, PropType } from 'vue'
+    import { computed, defineComponent, PropType } from 'vue'
     import AttributeItem from '../common/attributeItems.vue'
 
     import {
@@ -102,9 +102,11 @@
                     } as Components.Schemas.FilterCriteria,
                 })
             }
-
+            const finalAttributesList = computed(() =>
+                AdvancedAttributeList.filter(attribute=>!attribute.hide)
+            )
             return {
-                AdvancedAttributeList,
+                finalAttributesList,
                 setAdvancefilter,
                 operatorsMap,
             }

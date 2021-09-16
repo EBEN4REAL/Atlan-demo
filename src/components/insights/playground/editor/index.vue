@@ -1,6 +1,6 @@
 <template>
     <div class="w-full h-full px-3 pb-3 rounded">
-        <div class="w-full h-full overflow-hidden rounded">
+        <div class="w-full h-full overflow-x-hidden rounded">
             <div
                 class="flex items-center justify-between w-full mb-3  run-btn-wrapper"
             >

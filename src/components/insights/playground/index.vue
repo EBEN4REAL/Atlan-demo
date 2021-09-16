@@ -34,10 +34,17 @@
                 </a-tab-pane>
             </a-tabs>
         </div>
-        <div class="h-full" v-if="activeInlineTabKey">
+        <div class="w-full h-full" v-if="activeInlineTabKey">
             <splitpanes horizontal :push-other-panes="false">
-                <pane max-size="100" size="55" min-size="45"> <Editor /></pane>
-                <pane min-size="0" size="45" max-size="55">
+                <pane
+                    :max-size="100"
+                    :size="100 - paneSize"
+                    min-size="45"
+                    class="overflow-x-hidden"
+                >
+                    <Editor
+                /></pane>
+                <pane min-size="0" :size="paneSize" max-size="55">
                     <ResultsPane
                 /></pane>
             </splitpanes>
@@ -54,12 +61,14 @@
         toRefs,
         Ref,
         inject,
+        ref,
     } from 'vue'
     import Editor from '~/components/insights/playground/editor/index.vue'
     import ResultsPane from '~/components/insights/playground/resultsPane/index.vue'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
     import NoActiveInlineTab from './noActiveInlineTab.vue'
     import useRunQuery from './common/composables/useRunQuery'
+    import { useMagicKeys, whenever } from '@vueuse/core'
 
     export default defineComponent({
         components: { Editor, ResultsPane, NoActiveInlineTab },
@@ -77,6 +86,8 @@
                 dataList: queryDataList,
                 columnList: queryColumnList,
             } = useRunQuery()
+            const { arrowup } = useMagicKeys()
+            const paneSize = ref(45)
             const { activeInlineTabKey } = toRefs(props)
             const tabs = inject('inlineTabs') as Ref<activeInlineTabInterface[]>
             const activeInlineTab = inject(
@@ -149,11 +160,18 @@
 
             /*-------------------------------------*/
 
+            /* HOT KEYS */
+            whenever(arrowup, () => {
+                if (paneSize.value == 0) paneSize.value = 45
+                else paneSize.value = 0
+            })
+
             return {
                 isQueryRunning,
                 activeInlineTab,
                 tabs,
                 activeInlineTabKey,
+                paneSize,
                 handleAdd,
                 onEdit,
                 onTabClick,

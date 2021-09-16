@@ -31,7 +31,7 @@
         </div>
         <!--Sidebar navigation pane end -->
         <splitpanes :class="$style.splitpane__styles" @resize="paneResize">
-            <pane :max-size="20" :size="explorerPaneSize">
+            <pane :max-size="20" :size="explorerPaneSize" :min-size="0">
                 <!--explorer pane start -->
                 <component
                     v-if="activeTab && activeTab.component"
@@ -41,15 +41,24 @@
                 <!--explorer pane end -->
             </pane>
             <pane
-                :size="activeInlineTab?.assetSidebar?.isVisible ? 60 : 80"
+                :max-size="100"
+                :size="
+                    activeInlineTab?.assetSidebar?.isVisible
+                        ? 100 - (explorerPaneSize + assetSidebarPaneSize)
+                        : 100 - explorerPaneSize
+                "
                 :min-size="activeInlineTab?.assetSidebar?.isVisible ? 60 : 80"
             >
                 <Playground v-model:activeInlineTabKey="activeInlineTabKey" />
             </pane>
             <pane
                 :max-size="20"
-                :size="activeInlineTab?.assetSidebar?.isVisible ? 20 : 0"
                 :min-size="0"
+                :size="
+                    activeInlineTab?.assetSidebar?.isVisible
+                        ? assetSidebarPaneSize
+                        : 0
+                "
                 v-if="
                     activeInlineTab && activeInlineTab?.assetSidebar?.isVisible
                 "
@@ -77,6 +86,7 @@
     import { TabInterface } from '~/types/insights/tab.interface'
     import { SavedQueryInterface } from '~/types/insights/savedQuery.interface'
     import { tableInterface } from '~/types/insights/table.interface'
+    import { useMagicKeys, whenever, current } from '@vueuse/core'
 
     export default defineComponent({
         components: {
@@ -91,15 +101,26 @@
         setup(props) {
             /* ---- Panes  ----- */
             /* TODO: Collapse panes if it reach  threshold */
+            const { arrowleft, arrowright } = useMagicKeys()
             const explorerThreshold = 10
             const explorerPaneCollapsed = ref(false)
             const assetSidebarThreshold = 10
             const explorerPaneSize = ref(20)
+            const assetSidebarPaneSize = ref(20)
             const paneResize = (event: any) => {
                 if (event.length > 0) {
                     // explorerPaneSize.value = event[0].size
                 }
             }
+            whenever(arrowleft, () => {
+                if (explorerPaneSize.value == 0) explorerPaneSize.value = 20
+                else explorerPaneSize.value = 0
+            })
+            whenever(arrowright, () => {
+                if (assetSidebarPaneSize.value == 0)
+                    assetSidebarPaneSize.value = 20
+                else assetSidebarPaneSize.value = 0
+            })
             /* ---- Panes  ----- */
             const { allTabs: tabsList } = useInsightsTabList()
             const {
@@ -310,6 +331,7 @@
                 activeInlineTab,
                 tabsArray,
                 explorerPaneSize,
+                assetSidebarPaneSize,
                 paneResize,
                 changeTab,
                 openSavedQueryInNewTab,

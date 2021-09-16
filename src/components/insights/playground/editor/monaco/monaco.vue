@@ -1,5 +1,5 @@
 <template>
-    <div ref="monacoRoot" class="w-full h-full monacoeditor"></div>
+    <div ref="monacoRoot" class="monacoeditor"></div>
 </template>
 
 <script lang="ts">
@@ -160,7 +160,8 @@
 
 <style scoped>
     .monacoeditor {
-        height: 87%;
+        height: 90% !important;
+        /* width: calc(100% - 156px) !important; */
     }
     .editor_wrapper {
         overflow: hidden;

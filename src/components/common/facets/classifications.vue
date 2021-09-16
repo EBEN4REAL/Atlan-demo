@@ -7,7 +7,7 @@
                 type="text"
                 class=""
                 size="small"
-                :allowClear="true"
+                :allow-clear="true"
                 :placeholder="`Search ${classificationsList.length} classifications`"
                 @change="handleClassificationsSearch"
             >
@@ -30,9 +30,9 @@
                             <p class="mb-0 text-sm text-gray-500">Sort by</p>
                         </div>
                         <CustomRadioButton
+                            v-model:data="classificationFilterOptionsData"
                             class="pb-4 border-b"
                             :list="classificationFilterCheckboxes"
-                            v-model:data="classificationFilterOptionsData"
                         />
                     </div>
                     <div class="mt-4">
@@ -40,10 +40,10 @@
                             <p class="mb-0 text-sm text-gray-500">Operator</p>
                         </div>
                         <CustomRadioButton
+                            v-model:data="operationFilterOptionsData"
                             class="pb-4 border-b"
                             :list="operationFilterCheckboxes"
                             @change="handleChange"
-                            v-model:data="operationFilterOptionsData"
                         />
                     </div>
                     <div class="pb-2 mt-4">
@@ -52,8 +52,8 @@
                         </div>
                         <a-radio-group
                             v-model:value="addedByFilterOptionsData"
-                            @change="handleChange"
                             class="rounded"
+                            @change="handleChange"
                         >
                             <a-radio-button value="all">All</a-radio-button>
                             <a-radio-button value="user">User</a-radio-button>
@@ -130,8 +130,8 @@
             <div>
                 <a-checkbox
                     v-model:checked="data.noClassificationsAssigned"
-                    @change="noClassificationsToggle"
                     class="w-full py-3 border-t"
+                    @change="noClassificationsToggle"
                 >
                     No Classifications assigned
                 </a-checkbox>
@@ -149,10 +149,10 @@
         toRaw,
         watchEffect,
     } from 'vue'
+    import CustomRadioButton from '@common/radio/customRadioButton.vue'
     import { Collapse } from '~/types'
     import { Components } from '~/api/atlas/client'
     import { classificationInterface } from '~/types/classifications/classification.interface'
-    import CustomRadioButton from '@common/radio/customRadioButton.vue'
 
     export default defineComponent({
         name: 'Classifications',
@@ -215,18 +215,25 @@
                 // eslint-disable-next-line default-case
                 switch (addedByFilterOptionsData.value) {
                     case 'all': {
+                        // Case `all` will always be a OR bw __classificationNames and __propagatedClassificationNames
                         data.value.checked.forEach((val) => {
-                            criterion.push({
+                            const subFilter:Components.Schemas.FilterCriteria = { 
+                                condition:'OR', criterion:[] as Components.Schemas.FilterCriteria[]
+                            };
+                            const subFilterCriterion: Components.Schemas.FilterCriteria[] = []
+                            subFilterCriterion.push({
                                 attributeName: '__classificationNames',
                                 attributeValue: val,
                                 operator: 'eq',
                             })
-                            criterion.push({
+                            subFilterCriterion.push({
                                 attributeName:
                                     '__propagatedClassificationNames',
                                 attributeValue: val,
                                 operator: 'eq',
                             })
+                            subFilter.criterion = subFilterCriterion;
+                            criterion.push(subFilter)
                         })
                         break
                     }

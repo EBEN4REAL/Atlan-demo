@@ -225,7 +225,7 @@
                     bmFiltersList.value.forEach((bm) => {
                         if (props.initialFilters.facetsFilters[bm.id]) {
                             filterMap[bm.id] = {
-                                condition: 'or',
+                                condition: 'OR',
                                 criterion:
                                     props.initialFilters.facetsFilters[bm.id]
                                         .criterion,

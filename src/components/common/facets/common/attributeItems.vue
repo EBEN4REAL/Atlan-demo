@@ -85,7 +85,8 @@
         },
         emits: ['handleAttributeInput'],
         setup(props, { emit }) {
-            const { getDatatypeOfAttribute } = useBusinessMetadataHelper()
+            const { getDatatypeOfAttribute, isEmptyObject } =
+                useBusinessMetadataHelper()
             const isVisible = ref(false)
             const appliedValues = ref({})
 
@@ -151,8 +152,9 @@
                 () => props.applied,
                 (n, _o) => {
                     // check all checkbox if not checked <> sync
-                    //! trigger only when component is not triggering, i.e clear filter, or load default is triggering
-                    checkOperator(Object.keys(n))
+                    //* trigger only when component is not triggering, i.e clear filter, or load default is triggering
+                    if (isEmptyObject(n) && !isEmptyObject(_o))
+                        checkOperator(Object.keys(n))
                 },
                 {
                     deep: true,

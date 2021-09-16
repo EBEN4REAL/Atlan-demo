@@ -1,7 +1,5 @@
 <template>
-    <div class="w-full h-full editor_wrapper">
-        <div ref="monacoRoot" class="w-full monacoeditor"></div>
-    </div>
+    <div ref="monacoRoot" class="w-full h-full monacoeditor"></div>
 </template>
 
 <script lang="ts">

@@ -134,7 +134,7 @@
             onMounted(() => {
                 editor = monaco.editor.create(monacoRoot.value as HTMLElement, {
                     language: 'atlansql',
-                    value: `SELECT * from superstore_sales_data_2016-present`,
+                    value: `select * from WEB_SALES limit 100`,
                     renderLineHighlight: 'none',
                     theme: 'vs',
                     minimap: {

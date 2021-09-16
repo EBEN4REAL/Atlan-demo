@@ -188,4 +188,16 @@ export const KeyMaps = {
     health: {
         PING_USER: () => getHealthPath('auth', '/debug/health'),
     },
+    query: {
+        RUN_QUERY: ({
+            query,
+            defaultSchema,
+            dataSourceName,
+            length,
+        }: PathParams) =>
+            getAPIPath(
+                'heka/api/query',
+                `/sql/stream?sql=${query}&defaultSchema=${defaultSchema}&dataSourceName=${dataSourceName}&length=${length}`
+            ),
+    },
 }

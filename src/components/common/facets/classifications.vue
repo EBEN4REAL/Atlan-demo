@@ -1,5 +1,5 @@
 <template>
-    <div class="px-4 mt-1">
+    <div class="px-3 mt-1">
         <div class="flex">
             <a-input-search
                 ref="searchText"
@@ -63,7 +63,7 @@
                         </a-radio-group>
                     </div>
                 </template>
-                <div  class="mr-1">
+                <div class="mr-1">
                     <a-button class="px-2 py-1 ml-2 rounded">
                         <span class="flex items-center justify-center">
                             <fa
@@ -302,8 +302,10 @@
                                 classificationA: classificationInterface,
                                 classificationB: classificationInterface
                             ) => {
-                                const a = classificationA.displayName.toLowerCase()
-                                const b = classificationB.displayName.toLowerCase()
+                                const a =
+                                    classificationA.displayName.toLowerCase()
+                                const b =
+                                    classificationB.displayName.toLowerCase()
                                 if (a < b) {
                                     return -1
                                 }
@@ -321,8 +323,10 @@
                                 classificationA: classificationInterface,
                                 classificationB: classificationInterface
                             ) => {
-                                const a = classificationA.displayName.toLowerCase()
-                                const b = classificationB.displayName.toLowerCase()
+                                const a =
+                                    classificationA.displayName.toLowerCase()
+                                const b =
+                                    classificationB.displayName.toLowerCase()
                                 if (a < b) {
                                     return 1
                                 }

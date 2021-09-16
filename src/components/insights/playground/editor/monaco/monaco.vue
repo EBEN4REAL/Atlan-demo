@@ -148,6 +148,7 @@
                     },
                 })
             })
+
             onUnmounted(() => {
                 editor.dispose()
             })
@@ -161,7 +162,6 @@
 <style scoped>
     .monacoeditor {
         height: 90% !important;
-        /* width: calc(100% - 156px) !important; */
     }
     .editor_wrapper {
         overflow: hidden;

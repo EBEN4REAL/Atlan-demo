@@ -109,7 +109,9 @@
                     queryId: undefined,
                     explorer: {},
                     playground: {
-                        editorTitle: `${key} Editor`,
+                        editor: {
+                            text: 'SELECT * from superstore_sales_data_2016-present',
+                        },
                         resultsPane: {
                             activeTab:
                                 activeInlineTab.value.playground.resultsPane

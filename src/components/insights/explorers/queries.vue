@@ -34,19 +34,20 @@
                 {
                     id: '1x',
                     label: ' Saved Query 1',
-                    editor: 'Saved Query 1',
+                    editor: 'SELECT * from superstore_sales_data_2016-present',
                     result: 'Saved Query 1',
                 },
+
                 {
                     id: '2x',
                     label: 'Saved Query 2',
-                    editor: 'Saved Query 2',
+                    editor: 'SELECT * from superstore_sales_data_2016-present',
                     result: 'Saved Query 2',
                 },
                 {
                     id: '3x',
                     label: 'Saved Query 3',
-                    editor: 'Saved Query 3',
+                    editor: 'SELECT * from superstore_sales_data_2016-present',
                     result: 'Saved Query 3',
                 },
             ]

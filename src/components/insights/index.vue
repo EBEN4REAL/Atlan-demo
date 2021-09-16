@@ -167,7 +167,9 @@
                     queryId: savedQuery.id,
                     explorer: {},
                     playground: {
-                        editorTitle: savedQuery.editor,
+                        editor: {
+                            text: savedQuery.editor,
+                        },
                         resultsPane: {
                             activeTab:
                                 activeInlineTab.value?.playground.resultsPane
@@ -270,6 +272,18 @@
                     activeInlineTabKey.value = undefined
                 }
             }
+            const modifyActiveInlineTab = (
+                activeTab: activeInlineTabInterface
+            ) => {
+                const index = tabsArray.value.findIndex(
+                    (tab) => tab.key === activeTab.key
+                )
+                if (index !== -1) {
+                    tabsArray.value[index] = activeTab
+                }
+                // syncying inline tabarray in localstorage
+                syncInlineTabsInLocalStorage(tabsArray.value)
+            }
 
             function inlineTabAdd(inlineTab: activeInlineTabInterface) {
                 tabsArray.value.push(inlineTab)
@@ -315,6 +329,7 @@
             provide('resultsPaneTabChange', resultsPaneTabChange)
             provide('inlineTabRemove', inlineTabRemove)
             provide('inlineTabAdd', inlineTabAdd)
+            provide('modifyActiveInlineTab', modifyActiveInlineTab)
 
             /*-------------------------------------*/
 

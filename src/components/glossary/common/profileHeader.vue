@@ -95,7 +95,7 @@
                     }}</span>
 
                     <span
-                        class="text-sm leading-5 text-gray-500"
+                        class="text-sm leading-5 text-gray-500 truncate  overflow-ellipsis"
                         v-if="shortDescription !== ''"
                         >{{ shortDescription }}</span
                     >

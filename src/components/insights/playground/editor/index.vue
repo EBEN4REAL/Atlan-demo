@@ -1,6 +1,6 @@
 <template>
-    <div class="w-full h-full px-3 rounded">
-        <div class="w-full h-full rounded">
+    <div class="w-full h-full px-3 pb-3 rounded">
+        <div class="w-full h-full overflow-hidden rounded">
             <div
                 class="flex items-center justify-between w-full mb-3  run-btn-wrapper"
             >
@@ -11,7 +11,7 @@
                     type="primary"
                     class=""
                     :loading="isQueryRunning === 'loading' ? true : false"
-                    @click="runQuery"
+                    @click="queryRun"
                     >Run Query</a-button
                 >
             </div>
@@ -21,25 +21,23 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, inject, Ref, ref } from 'vue'
+    import { defineComponent, inject, Ref } from 'vue'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
     import Monaco from './monaco/monaco.vue'
 
     export default defineComponent({
         components: { Monaco },
         props: {},
-        setup(props) {
-            // const { selectedTab } = toRefs(props)
+        setup(props, { emit }) {
             const activeInlineTab = inject(
                 'activeInlineTab'
             ) as Ref<activeInlineTabInterface>
-
-            const isQueryRunning = ref(false)
-            const runQuery = () => {}
+            const isQueryRunning = inject('isQueryRunning') as Ref<string>
+            const queryRun = inject('queryRun') as Function
             return {
                 activeInlineTab,
                 isQueryRunning,
-                runQuery,
+                queryRun,
             }
         },
     })

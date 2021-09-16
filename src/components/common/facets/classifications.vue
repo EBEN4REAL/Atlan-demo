@@ -63,25 +63,7 @@
                         </a-radio-group>
                     </div>
                 </template>
-                <div
-                    v-if="classificationFilterOptionsData !== null"
-                    class="mr-1"
-                >
-                    <a-badge
-                        :dot="classificationFilterOptionsData !== null"
-                        :class="$style.badge"
-                    >
-                        <a-button class="px-2 py-1 ml-2 rounded">
-                            <span class="flex items-center justify-center">
-                                <fa
-                                    icon="fas sort-amount-up"
-                                    class="hover:text-primary-500"
-                                />
-                            </span>
-                        </a-button>
-                    </a-badge>
-                </div>
-                <div v-else class="mr-1">
+                <div  class="mr-1">
                     <a-button class="px-2 py-1 ml-2 rounded">
                         <span class="flex items-center justify-center">
                             <fa
@@ -230,6 +212,7 @@
                 const criterion: Components.Schemas.FilterCriteria[] = []
                 // make no classifications unchecked
                 data.value.noClassificationsAssigned = false
+                // eslint-disable-next-line default-case
                 switch (addedByFilterOptionsData.value) {
                     case 'all': {
                         data.value.checked.forEach((val) => {
@@ -319,8 +302,8 @@
                                 classificationA: classificationInterface,
                                 classificationB: classificationInterface
                             ) => {
-                                const a = classificationA.displayName
-                                const b = classificationB.displayName
+                                const a = classificationA.displayName.toLowerCase()
+                                const b = classificationB.displayName.toLowerCase()
                                 if (a < b) {
                                     return -1
                                 }
@@ -338,8 +321,8 @@
                                 classificationA: classificationInterface,
                                 classificationB: classificationInterface
                             ) => {
-                                const a = classificationA.displayName
-                                const b = classificationB.displayName
+                                const a = classificationA.displayName.toLowerCase()
+                                const b = classificationB.displayName.toLowerCase()
                                 if (a < b) {
                                     return 1
                                 }

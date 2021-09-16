@@ -48,7 +48,6 @@
         :bordered="false"
         class="relative bg-transparent"
         :class="$style.filter"
-        :accordion="true"
     >
         <template #expandIcon="{ isActive }">
             <div class="">
@@ -62,7 +61,6 @@
         <a-collapse-panel
             v-for="item in dynamicList"
             :key="item.id"
-            :class="activeKey === item.id ? '' : ''"
             class="relative group"
         >
             <template #header>
@@ -80,7 +78,7 @@
                                 >
                             </div>
                             <div
-                                v-if="activeKey !== item.id"
+                                v-if="!activeKey.includes(item.id)"
                                 class="text-gray-500"
                             >
                                 {{ getFiltersAppliedString(item.id) }}
@@ -89,7 +87,13 @@
 
                         <div
                             v-if="isFilter(item.id)"
-                            class="text-xs text-gray-500 opacity-0  hover:text-primary group-hover:opacity-100"
+                            class="
+                                text-xs text-gray-500
+                                opacity-0
+                                hover:text-primary
+                                group-hover:opacity-100
+                                pt-0.5
+                            "
                             @click.stop.prevent="handleClear(item.id)"
                         >
                             Clear
@@ -164,7 +168,7 @@
             const classificationsStore = useClassificationStore()
             const { bmFiltersList, bmDataMap } = useBusinessMetadataHelper()
             // console.log(props.initialFilters.facetsFilters, 'facetFilters')
-            const activeKey: Ref<string> = ref('')
+            const activeKey: Ref<string[]> = ref([])
             const initialFilterMap = {
                 connector: {
                     condition:
@@ -221,7 +225,7 @@
                     bmFiltersList.value.forEach((bm) => {
                         if (props.initialFilters.facetsFilters[bm.id]) {
                             filterMap[bm.id] = {
-                                condition: 'or',
+                                condition: 'OR',
                                 criterion:
                                     props.initialFilters.facetsFilters[bm.id]
                                         .criterion,
@@ -571,6 +575,7 @@
             }
             setAppliedFiltersCount()
 
+            console.log(dynamicList, 'list')
             return {
                 resetAllFilters,
                 totalAppliedFiltersCount,

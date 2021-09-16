@@ -67,7 +67,6 @@
         </div>
         <div id="sidePanel" class="relative w-1/3 h-full">
             <CategoryTermPreview
-                class="pt-6"
                 :entity="term"
                 :preview="false"
                 @updateAsset="refetch"

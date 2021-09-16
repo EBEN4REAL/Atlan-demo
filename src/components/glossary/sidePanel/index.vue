@@ -1,7 +1,11 @@
 <template>
-    <div class="w-full pt-4 border-l sidePanel" :class="$style.sidePanel">
-        <a-tabs default-active-key="1">
-            <a-tab-pane key="info" class="p-0 m-0" tab="Info">
+    <div class="w-full h-full border-l sidePanel" :class="$style.sidePanel">
+        <a-tabs default-active-key="1" tab-position="left" class="h-full">
+            <a-tab-pane key="info" class="p-0 m-0">
+                <template #tab>
+                    <AtlanIcon icon="Overview" class="mt-1" />
+                </template>
+
                 <div class="h-screen pb-24 overflow-auto">
                     <a-collapse
                         v-model:activeKey="activeKey"
@@ -13,7 +17,7 @@
                             <fa v-else icon="fas chevron-down" />
                         </template>
                         <a-collapse-panel key="1" header="Details">
-                            <div class="flex flex-col pb-2 pl-6 pr-2">
+                            <div class="flex flex-col pb-2 pl-4 pr-2">
                                 <div class="flex mt-2 mb-4 space-x-16">
                                     <div class="flex flex-col">
                                         <span
@@ -75,12 +79,20 @@
                     </a-collapse>
                 </div>
             </a-tab-pane>
-            <a-tab-pane key="activity" tab="Activity">
+            <a-tab-pane key="activity">
+                <template #tab>
+                    <AtlanIcon icon="Activity" />
+                </template>
                 <div class="h-screen overflow-auto">
                     <Activity :selectedAsset="entity" />
                 </div>
             </a-tab-pane>
-            <a-tab-pane key="chat" tab="Chat"> Chat </a-tab-pane>
+            <a-tab-pane key="chat">
+                <template #tab>
+                    <AtlanIcon icon="Chats" />
+                </template>
+                Chat
+            </a-tab-pane>
         </a-tabs>
     </div>
 </template>
@@ -96,11 +108,11 @@
         defineAsyncComponent,
     } from 'vue'
 
-    import GlossaryTopTerms from '@/glossary/common/glossaryTopTerms.vue'
     import Owners from '@common/sidebar/owners.vue'
     import Experts from '@common/sidebar/experts.vue'
     import Description from '@common/sidebar/description.vue'
     import Status from '@common/sidebar/status.vue'
+    import GlossaryTopTerms from '@/glossary/common/glossaryTopTerms.vue'
     import Activity from '~/components/discovery/preview/tabs/activity/activityTab.vue'
 
     import {
@@ -219,10 +231,10 @@
 <style lang="less" module>
     .sidePanel {
         :global(.ant-collapse-header) {
-            @apply pl-6 m-0  text-sm text-gray-700 bg-white !important;
+            @apply m-0  text-sm text-gray-700 bg-white !important;
         }
         :global(.ant-collapse-borderless > .ant-collapse-item) {
-            @apply border-b border-gray-300 py-3  mt-0 !important;
+            @apply border-0   mt-0 !important;
         }
 
         :global(.ant-collapse) {
@@ -239,7 +251,16 @@
             @apply m-0 p-0  !important;
         }
         :global(.ant-tabs-bar) {
-            @apply mb-0 mx-0 px-6 !important;
+            @apply mb-0 mx-0 p-0 m-0 !important;
+        }
+        :global(.ant-tabs-tab) {
+            @apply py-2 mb-4 px-4 !important;
+        }
+        :global(.ant-tabs) {
+            @apply px-0 !important;
+        }
+        :global(.ant-tabs-content) {
+            @apply p-0 !important;
         }
     }
 </style>

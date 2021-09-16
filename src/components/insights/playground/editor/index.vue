@@ -11,7 +11,7 @@
                     type="primary"
                     class=""
                     :loading="isQueryRunning === 'loading' ? true : false"
-                    @click="queryRun"
+                    @click="run"
                     >Run Query</a-button
                 >
             </div>
@@ -28,16 +28,35 @@
     export default defineComponent({
         components: { Monaco },
         props: {},
-        setup(props, { emit }) {
+        setup() {
             const activeInlineTab = inject(
                 'activeInlineTab'
             ) as Ref<activeInlineTabInterface>
             const isQueryRunning = inject('isQueryRunning') as Ref<string>
             const queryRun = inject('queryRun') as Function
+            /*       
+                @params - activeInlineTab: activeInlineTabInterface
+             */
+            const modifyActiveInlineTab = inject(
+                'modifyActiveInlineTab'
+            ) as Function
+
+            const getData = (dataList, columnList) => {
+                console.log(dataList, columnList, 'called from callback')
+                const activeInlineTabCopy: activeInlineTabInterface =
+                    Object.assign({}, activeInlineTab.value)
+                activeInlineTabCopy.playground.editor.dataList = dataList
+                activeInlineTabCopy.playground.editor.columnList = columnList
+                modifyActiveInlineTab(activeInlineTabCopy)
+            }
+            const run = () => {
+                queryRun(activeInlineTab.value, getData)
+            }
+
             return {
                 activeInlineTab,
                 isQueryRunning,
-                queryRun,
+                run,
             }
         },
     })

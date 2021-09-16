@@ -13,7 +13,7 @@
                 <template #tabBarExtraContent>
                     <div class="inline-flex items-center mr-2">
                         <span
-                            class="inline-flex items-center justify-center p-2 rounded-full  btn-add hover:bg-gray-300"
+                            class="inline-flex items-center justify-center p-2 rounded-full btn-add hover:bg-gray-300"
                             @click="handleAdd"
                         >
                             <fa icon="fal plus" class="" />
@@ -80,14 +80,9 @@
         },
         emits: ['update:activeInlineTabKey', 'update:tabRef'],
         setup(props, { emit }) {
-            const {
-                queryRun,
-                isQueryRunning,
-                dataList: queryDataList,
-                columnList: queryColumnList,
-            } = useRunQuery()
+            const { queryRun, isQueryRunning } = useRunQuery()
             const { arrowup } = useMagicKeys()
-            const paneSize = ref(45)
+            const paneSize = ref(55)
             const { activeInlineTabKey } = toRefs(props)
             const tabs = inject('inlineTabs') as Ref<activeInlineTabInterface[]>
             const activeInlineTab = inject(
@@ -98,9 +93,12 @@
              */
             const inlineTabRemove = inject('inlineTabRemove') as Function
             const inlineTabAdd = inject('inlineTabAdd') as Function
+            const modifyActiveInlineTabEditor = inject(
+                'modifyActiveInlineTabEditor'
+            ) as Function
 
             const handleAdd = () => {
-                const key = String(tabs.value.length + 1)
+                const key = String(new Date().getTime())
                 const inlineTabData: activeInlineTabInterface = {
                     label: 'New Tab',
                     key,
@@ -110,12 +108,14 @@
                     explorer: {},
                     playground: {
                         editor: {
-                            text: 'SELECT * from superstore_sales_data_2016-present',
+                            text: activeInlineTab.value?.playground?.editor.text??'select * from "WEB_SALES" limit 100',
+                            dataList: [],
+                            columnList: [],
                         },
                         resultsPane: {
                             activeTab:
-                                activeInlineTab.value.playground.resultsPane
-                                    .activeTab ?? 0,
+                                activeInlineTab.value?.playground?.resultsPane
+                                    ?.activeTab ?? 0,
                             result: {
                                 title: `${key} Result`,
                             },
@@ -130,10 +130,12 @@
                     },
                     assetSidebar: {
                         // for taking the previous state from active tab
-                        isVisible: activeInlineTab.value.assetSidebar.isVisible,
+                        isVisible:
+                            activeInlineTab.value?.assetSidebar?.isVisible ??
+                            false,
                         assetInfo: {},
-                        title: activeInlineTab.value.assetSidebar.title,
-                        id: activeInlineTab.value.assetSidebar.id,
+                        title: activeInlineTab.value?.assetSidebar.title ?? '',
+                        id: activeInlineTab.value?.assetSidebar.id ?? '',
                     },
                 }
                 inlineTabAdd(inlineTabData)
@@ -148,25 +150,35 @@
                     inlineTabRemove(targetKey as string)
                 }
             }
+
+            /* ----------Editor related functions -----------------*/
+            function onEditorContentChange(event, editorText) {
+                console.log(editorText)
+                const activeInlineTabCopy: activeInlineTabInterface =
+                    Object.assign({}, activeInlineTab.value)
+                activeInlineTabCopy.playground.editor.text = editorText
+                modifyActiveInlineTabEditor(activeInlineTabCopy)
+            }
+
+            /*---------------------------------------------*/
             /*---------- PROVIDERS FOR CHILDRENS -----------------
             ---Be careful to add a property/function otherwise it will pollute the whole flow for childrens--
             */
 
             // properties
             provide('isQueryRunning', isQueryRunning)
-            provide('queryDataList', queryDataList)
-            provide('queryColumnList', queryColumnList)
 
             // functions
             provide('queryRun', queryRun)
+            provide('onEditorContentChange', onEditorContentChange)
 
             /*-------------------------------------*/
 
             /* HOT KEYS */
-            whenever(arrowup, () => {
-                if (paneSize.value == 0) paneSize.value = 45
-                else paneSize.value = 0
-            })
+            // whenever(arrowup, () => {
+            //     if (paneSize.value == 0) paneSize.value = 45
+            //     else paneSize.value = 0
+            // })
 
             return {
                 isQueryRunning,

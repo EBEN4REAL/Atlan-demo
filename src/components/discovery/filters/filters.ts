@@ -53,29 +53,6 @@ export const List: CollapseArray = [
         exclude: false,
     },
     {
-        id: 'classifications',
-        label: 'Classifications',
-        component: 'classifications',
-        overallCondition: 'OR',
-        filters: [
-            {
-                attributeName: '__classificationNames',
-                condition: 'OR',
-                isMultiple: false,
-                operator: 'eq',
-            },
-            {
-                attributeName: '__propagatedClassificationNames',
-                condition: 'OR',
-                isMultiple: false,
-                operator: 'eq',
-            },
-        ],
-        isDeleted: false,
-        isDisabled: false,
-        exclude: false,
-    },
-    {
         id: 'owners',
         label: 'Owners',
         component: 'owners',
@@ -99,8 +76,32 @@ export const List: CollapseArray = [
         exclude: false,
     },
     {
+        id: 'classifications',
+        label: 'Classifications',
+        component: 'classifications',
+        overallCondition: 'OR',
+        filters: [
+            {
+                attributeName: '__classificationNames',
+                condition: 'OR',
+                isMultiple: false,
+                operator: 'eq',
+            },
+            {
+                attributeName: '__propagatedClassificationNames',
+                condition: 'OR',
+                isMultiple: false,
+                operator: 'eq',
+            },
+        ],
+        isDeleted: false,
+        isDisabled: false,
+        exclude: false,
+    },
+
+    {
         id: 'advanced',
-        label: 'Advanced',
+        label: 'Properties',
         component: 'advanced',
         overallCondition: 'OR',
         filters: [

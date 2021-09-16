@@ -126,6 +126,7 @@ export default function useGtcSearch(qualifiedName: ComputedRef<string>) {
     const entities: Ref<(Category | Term)[]> = ref<(Category | Term)[]>([])
     const terms = computed(() =>entities.value.filter((entity) => entity.typeName === 'AtlasGlossaryTerm'))
     const categories = computed(() =>entities.value.filter((entity) => entity.typeName === 'AtlasGlossaryCategory'))
+    const glossaries = computed(() =>entities.value.filter((entity) => entity.typeName === 'AtlasGlossary'))
     const referredEntities = ref<Record<string, Components.Schemas.AtlasEntityHeader>>()
 
     const {
@@ -224,6 +225,7 @@ export default function useGtcSearch(qualifiedName: ComputedRef<string>) {
         entities,
         terms,
         categories,
+        glossaries,
         error,
         isLoading,
         referredEntities,

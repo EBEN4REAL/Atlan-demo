@@ -14,10 +14,74 @@
             </AtlanBtn>
 
             <a-input-search
+                v-model:value="searchQuery"
                 placeholder="Search accross Glossaries"
+                @change="onSearch"
             ></a-input-search>
         </div>
+         <div v-if="searchResults?.length  && searchQuery?.length" class="px-4 h-full overflow-y-auto">
+            <div v-if="searchTerms?.length">
+                <div class="mb-2 text-gray-500">Terms</div>
+                <div v-for="term in searchTerms" 
+                    :key="term.guid" 
+                    class="flex flex-row p-2 hover:bg-primary-light cursor-pointer rounded"
+                    @click="redirectToProfile('term', term.guid)"
+                > 
+                    <div class="mb-1 flex space-x-2 content-center w-full">
+                        <span class="my-auto"><AtlanIcon :icon="getEntityStatusIcon('term', term.attributes.assetStatus)" class="w-auto h-5" /></span>
+                        <div class="flex flex-col w-full">
+                            <span class="text-md">{{ term.displayText }}</span>
+                            <Tooltip v-if="term.attributes.shortDescription" :tooltip-text="term.attributes.shortDescription" 
+                                :rows="1"
+                                classes="w-auto text-gray-500 text-xs"
+                            />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div v-if="
+            searchCategories?.length" class="mt-4">
+                <div class="mb-2 text-gray-500">Categories</div>
+                <div v-for="category in searchCategories" 
+                    :key="category.guid" 
+                    class="flex flex-row p-2 hover:bg-primary-light cursor-pointer rounded"
+                    @click="redirectToProfile('category', category.guid)"
+                > 
+                    <div class="mb-1 flex space-x-2 content-center w-full">
+                        <span class="my-auto"><AtlanIcon :icon="getEntityStatusIcon('category', category.attributes.assetStatus)" class="w-auto h-5"/></span>
+                        <div class="flex flex-col w-full">
+                            <span class="text-md">{{ category.displayText }}</span>
+                            <Tooltip v-if="category.attributes.shortDescription" :tooltip-text="category.attributes.shortDescription" 
+                                :rows="1"
+                                classes="w-auto text-gray-500 text-xs"
+                            />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div v-if="
+            searchGlossaries?.length" class="mt-4">
+                <div class="mb-2 text-gray-500">Glossaries</div>
+                <div v-for="glossary in searchGlossaries" 
+                    :key="glossary.guid" 
+                    class="flex flex-row p-2 hover:bg-primary-light cursor-pointer rounded"
+                    @click="redirectToProfile('glossary', glossary.guid)"
+                > 
+                    <div class="mb-1 flex space-x-2 content-center w-full">
+                        <span class="my-auto"><AtlanIcon icon="Glossary" class="w-auto h-5"/></span>
+                        <div class="flex flex-col w-full">
+                            <span class="text-md">{{ glossary.displayText }}</span>
+                            <Tooltip v-if="glossary.attributes.shortDescription" :tooltip-text="glossary.attributes.shortDescription" 
+                                :rows="1"
+                                classes="w-auto text-gray-500 text-xs"
+                            />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
         <div 
+            v-else-if="glossaryList.length"
             class="h-full pb-32 overflow-y-auto"
         >
             <div
@@ -278,7 +342,7 @@
                         <div class="flex flex-col w-full">
                             <span class="text-md">{{ term.displayText }}</span>
                             <Tooltip v-if="term.attributes.shortDescription" :tooltip-text="term.attributes.shortDescription" 
-                                :rows="2"
+                                :rows="1"
                                 classes="w-auto text-gray-500 text-xs"
                             />
                         </div>
@@ -298,7 +362,7 @@
                         <div class="flex flex-col w-full">
                             <span class="text-md">{{ category.displayText }}</span>
                             <Tooltip v-if="category.attributes.shortDescription" :tooltip-text="category.attributes.shortDescription" 
-                                :rows="2"
+                                :rows="1"
                                 classes="w-auto text-gray-500 text-xs"
                             />
                         </div>
@@ -427,6 +491,7 @@
                 entities: searchResults,
                 terms: searchTerms,
                 categories: searchCategories,
+                glossaries: searchGlossaries,
                 isLoading: searchLoading,
                 fetchAssetsPaginated: searchAssetsPaginated,
             } = useGtcSearch(parentGlossaryQualifiedName)
@@ -498,6 +563,7 @@
                 searchResults,
                 searchTerms,
                 searchCategories,
+                searchGlossaries,
                 searchLoading,
                 searchAssetsPaginated,
                 onSearch,

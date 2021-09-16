@@ -49,6 +49,8 @@ import Columns from '~/assets/images/icons/columns.svg'
 import Relation from '~/assets/images/icons/relation.svg'
 import ShareNew from '~/assets/images/icons/shareNew.svg'
 import User from '~/assets/images/icons/user.svg'
+import Chats from '~/assets/images/icons/chats.svg'
+import OpenTermProfile from '~/assets/images/icons/OpenTermProfile.svg'
 import Metadata from '~/assets/images/icons/metadata.svg'
 
 export default {
@@ -104,4 +106,6 @@ export default {
     KebabMenu,
     ShareNew,
     User,
+    Chats,
+    OpenTermProfile,
 }

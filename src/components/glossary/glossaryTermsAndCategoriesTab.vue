@@ -144,7 +144,7 @@
         emits: ['entityPreview'],
         setup(props, { emit }) {
             // data
-            const glossaryQualifiedName = toRef(props, 'qualifiedName')
+            const glossaryQualifiedName = computed(() => props.qualifiedName)
 
             const searchQuery = ref<string>()
             const activeKey = ref(0)

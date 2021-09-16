@@ -61,9 +61,7 @@
                     >
                 </div> -->
                 <div
-                    v-if="
-                        list && list.length <= 0 && !isLoading && !isValidating
-                    "
+                    v-if="list && list.length <= 0 && !isLoading"
                     class="flex-grow"
                 >
                     <EmptyView @event="handleClearFiltersFromList"></EmptyView>
@@ -74,7 +72,7 @@
                     :list="list"
                     :score="searchScoreList"
                     :projection="projection"
-                    :is-loading="isLoading || isValidating"
+                    :is-loading="isLoading"
                     :is-load-more="isLoadMore"
                     :automaticSelectFirstAsset="true"
                     @preview="handlePreview"
@@ -114,7 +112,7 @@
     import ConnectorDropdown from '~/components/common/dropdown/connectorDropdown.vue'
     // import { DISCOVERY_FETCH_LIST } from "~/constant/cache";
     // import { Components } from "~/api/atlas/client";
-    import useAssetList from '~/composables/bots/useAssetList'
+    import useAssetListing from './useAssetListing'
     import useDiscoveryPreferences from '~/composables/preference/useDiscoveryPreference'
     import { AssetTypeList } from '~/constant/assetType'
     import {
@@ -224,7 +222,7 @@
             const tracking = useTracking()
             const events = tracking.getEventsName()
             const filterMode = ref('custom')
-            const now = ref(false)
+
             let initialBody: SearchParameters = reactive({})
             const assetType = ref('Catalog')
             const queryText = ref(initialFilters.value.searchText)
@@ -335,22 +333,19 @@
                 assetTypeList.value.map((item) => item.id).join(',')
             )
 
+            const searchScoreList = []
+            const isAggregate = ref(false)
+            const assetTypeMap = ref({})
             const {
                 list,
                 replaceBody,
                 isLoading,
-                isValidating,
-                searchScoreList,
-                isAggregate,
-                assetTypeMap,
+                // isValidating,
+                // searchScoreList,
+                // isAggregate,
+                // assetTypeMap,
                 mutateAssetInList,
-            } = useAssetList(
-                now,
-                assetTypeListString.value,
-                initialBody,
-                assetType.value,
-                true
-            )
+            } = useAssetListing(assetTypeListString.value, initialBody, false)
 
             const store = useBusinessMetadataStore()
             const BMListLoaded = computed(
@@ -598,7 +593,6 @@
 
             watch(BMListLoaded, (val) => {
                 if (val) {
-                    now.value = true
                     isAggregate.value = true
                     updateBody()
                 }
@@ -606,7 +600,6 @@
 
             onMounted(() => {
                 if (BMListLoaded.value) {
-                    now.value = true
                     isAggregate.value = true
                     updateBody()
                 }
@@ -633,7 +626,6 @@
                 handleChangePreferences,
                 handleChangeSort,
                 isLoading,
-                isValidating,
                 handleChangeConnectors,
                 handleFilterChange,
                 handlePreview,

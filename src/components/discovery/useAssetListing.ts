@@ -7,7 +7,6 @@ import { BaseAttributes, tableauAttributes } from '~/constant/projection'
 
 export function useAssetListing(
     typeName?: string,
-    initialBody?: any,
     immediate: boolean = true,
     cacheSuffx?: string | ''
 ) {
@@ -25,7 +24,6 @@ export function useAssetListing(
                 offset: 0,
                 attributes: [...BaseAttributes, ...tableauAttributes],
                 entityFilters: {},
-                ...initialBody,
             },
             '',
             immediate,

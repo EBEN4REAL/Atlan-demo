@@ -2,7 +2,14 @@
     <div class="flex w-full">
         <div
             v-if="showFilters"
-            class="flex flex-col h-full overflow-y-auto bg-white border-r  facets"
+            class="
+                flex flex-col
+                h-full
+                overflow-y-auto
+                bg-white
+                border-r
+                facets
+            "
         >
             <AssetFilters
                 :ref="
@@ -222,7 +229,6 @@
             const events = tracking.getEventsName()
             const isAggregate = ref(true)
 
-            let initialBody: SearchParameters = reactive({})
             const assetType = ref('Catalog')
             const queryText = ref(initialFilters.value.searchText)
             const connectorsPayload = ref(
@@ -338,7 +344,7 @@
                 isLoading,
                 searchScoreList,
                 mutateAssetInList,
-            } = useAssetListing(assetTypeListString.value, initialBody, false)
+            } = useAssetListing(assetTypeListString.value, false)
 
             const { assetTypeMap, isAggregateLoading, refreshAggregation } =
                 useAssetAggregation(assetTypeListString.value)
@@ -403,7 +409,7 @@
             )
 
             const updateBody = () => {
-                initialBody = {
+                const initialBody = {
                     typeName: assetTypeListString.value,
                     termName: props.termName,
                     includeClassificationAttributes: true,
@@ -579,9 +585,7 @@
                 emit('preview', item)
             }
             const loadMore = () => {
-                if (list.value.length + limit.value < totalCount.value) {
-                    offset.value = list.value.length + limit.value
-                }
+                offset.value += limit.value
                 isAggregate.value = false
                 updateBody()
             }

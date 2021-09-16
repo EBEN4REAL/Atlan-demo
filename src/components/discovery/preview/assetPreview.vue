@@ -86,11 +86,22 @@
                 class="overflow-y-auto"
             >
                 <template #tab>
-                    <AtlanIcon
-                        :icon="tab.icon"
-                        :class="activeKey === index ? 'text-primary' : ''"
-                        class="h-6"
-                    />
+                    <a-tooltip
+                        placement="left"
+                        :title="tab.tooltip"
+                        :mouse-enter-delay="0.5"
+                        ><div
+                            class="flex items-center justify-center w-full h-full "
+                        >
+                            <AtlanIcon
+                                :icon="tab.icon"
+                                :class="
+                                    activeKey === index ? 'text-primary' : ''
+                                "
+                                class="h-6"
+                            />
+                        </div>
+                    </a-tooltip>
                 </template>
 
                 <div :style="{ height: tabHeights[page] }">
@@ -276,9 +287,6 @@
             height: 48px !important;
             width: 60px !important;
             @apply p-0 !important;
-            @apply flex !important;
-            @apply justify-center !important;
-            @apply items-center !important;
         }
         :global(.ant-tabs-tab:first-child) {
             @apply mt-4 !important;

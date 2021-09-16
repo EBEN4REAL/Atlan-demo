@@ -57,7 +57,7 @@
     </span>
 </template>
 <script lang="ts">
-    import { defineComponent, PropType, ref, provide } from 'vue'
+    import { defineComponent, PropType, ref, provide, nextTick } from 'vue'
     import useEnums from '@/admin/enums/composables/useEnums'
     import { Collapse } from '~/types'
     import AttributeItem from '../common/attributeItems.vue'
@@ -168,8 +168,10 @@
                 )
 
             const showScrollBar = () => {
-                container.value.scrollTop = 1
-                container.value.scrollTop = 0
+                nextTick(() => {
+                    container.value.scrollTop = 1
+                    container.value.scrollTop = 0
+                })
             }
 
             return {

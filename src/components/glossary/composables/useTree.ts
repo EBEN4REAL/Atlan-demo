@@ -734,6 +734,9 @@ const useTree = (emit: any, optimisticUpdate?: boolean, cacheKey?: string, isAcc
             selectedKeys.value = [currentGuid.value]
         }
     )
+    onMounted(() => {
+        isInitingTree.value = true
+    })
 
     return {
         treeData,

@@ -1,36 +1,24 @@
 import { Ref, ref, watch } from 'vue'
 import axios, { AxiosRequestConfig, CancelTokenSource } from 'axios'
-import { BaseAttributes, tableauAttributes } from '~/constant/projection'
 // import { Search } from '~/api2/search'
 import { useAPIAsyncState } from '~/api/useAPI'
 import { KeyMaps } from '~/api/keyMap'
 import { assetInterface } from '~/types/assets/asset.interface'
 
-export default function useSearchList(
-    typeName: string,
-    attributes: string[],
+export default function useAssetSearchList(
     initialBody?: any,
     cacheSuffx?: string | '',
     immediate?: boolean,
     cancelTokenSource?: CancelTokenSource
 ) {
     const list: Ref<assetInterface[]> = ref([])
+    const searchScoreList = ref({})
+
     const axiosOpts: AxiosRequestConfig = {
         cancelToken: cancelTokenSource?.token,
     }
 
-    const body = ref({
-        typeName,
-        excludeDeletedEntities: true,
-        includeClassificationAttributes: false,
-        includeSubClassifications: false,
-        includeSubTypes: true,
-        limit: 100,
-        offset: 0,
-        attributes: [...BaseAttributes, ...attributes, ...tableauAttributes],
-        entityFilters: {},
-        ...initialBody,
-    })
+    const body = ref(initialBody)
 
     // const cachekey = ref(`${cacheSuffx}`)
 
@@ -41,16 +29,24 @@ export default function useSearchList(
         KeyMaps.asset.BASIC_SEARCH,
         'POST',
         { body, options: axiosOpts },
-        { immediate }
+        { immediate, resetOnExecute: false }
     )
 
     watch(data, () => {
         if (body?.value?.offset > 0) {
             list.value = list.value.concat(data?.value?.entities)
+            searchScoreList.value = {
+                ...searchScoreList.value,
+                ...data?.value?.searchScore,
+            }
         } else if (data.value?.entities) {
             list.value = data.value?.entities
+            searchScoreList.value = {
+                ...data?.value?.searchScore,
+            }
         } else {
             list.value = []
+            searchScoreList.value = {}
         }
     })
 
@@ -79,6 +75,7 @@ export default function useSearchList(
 
     return {
         data,
+        searchScoreList,
         list,
         isLoading,
         error,

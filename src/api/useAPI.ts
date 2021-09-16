@@ -1,4 +1,4 @@
-import { Ref, computed } from 'vue'
+import { Ref, computed, ref } from 'vue'
 import { AxiosRequestConfig } from 'axios'
 import useSWRV, { IConfig } from 'swrv'
 
@@ -238,13 +238,13 @@ export const useAPIAsyncState = <T>(
     asyncOpts?: AsyncStateOptions
 ) => {
     // Variable to check if the promise has been executed atleast once
-    let isExecuted = false
+    let isExecuted = ref(false)
 
     const url = computed(() => resolveUrl(path, pathVariables))
 
     const { state, execute, isReady, error } = useAsyncState<T>(
         () => {
-            isExecuted = true
+            isExecuted.value = true
             return useAPIPromise(url.value, method, {
                 params,
                 body,
@@ -256,7 +256,7 @@ export const useAPIAsyncState = <T>(
     )
 
     const isLoading = computed(
-        () => isExecuted && !isReady.value && !error.value
+        () => isExecuted.value && !isReady.value && !error.value
     )
 
     return {

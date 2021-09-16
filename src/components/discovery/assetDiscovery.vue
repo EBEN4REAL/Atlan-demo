@@ -112,7 +112,7 @@
     import ConnectorDropdown from '~/components/common/dropdown/connectorDropdown.vue'
     // import { DISCOVERY_FETCH_LIST } from "~/constant/cache";
     // import { Components } from "~/api/atlas/client";
-    import useAssetListing from './useAssetListing'
+    import { useAssetListing, useAssetAggregation } from './useAssetListing'
     import useDiscoveryPreferences from '~/composables/preference/useDiscoveryPreference'
     import { AssetTypeList } from '~/constant/assetType'
     import {
@@ -125,7 +125,6 @@
     import { useConnectionsStore } from '~/store/connections'
     import { SearchParameters } from '~/types/atlas/attributes'
     import { getEncodedStringFromOptions } from '~/utils/helper/routerQuery'
-    import { assetInterface } from '~/types/assets/asset.interface'
     import { useBusinessMetadataStore } from '~/store/businessMetadata'
     import {
         initialTabsForConnector,
@@ -221,7 +220,7 @@
             const router = useRouter()
             const tracking = useTracking()
             const events = tracking.getEventsName()
-            const filterMode = ref('custom')
+            const isAggregate = ref(true)
 
             let initialBody: SearchParameters = reactive({})
             const assetType = ref('Catalog')
@@ -333,19 +332,16 @@
                 assetTypeList.value.map((item) => item.id).join(',')
             )
 
-            const searchScoreList = []
-            const isAggregate = ref(false)
-            const assetTypeMap = ref({})
             const {
                 list,
                 replaceBody,
                 isLoading,
-                // isValidating,
-                // searchScoreList,
-                // isAggregate,
-                // assetTypeMap,
+                searchScoreList,
                 mutateAssetInList,
             } = useAssetListing(assetTypeListString.value, initialBody, false)
+
+            const { assetTypeMap, isAggregateLoading, refreshAggregation } =
+                useAssetAggregation(assetTypeListString.value)
 
             const store = useBusinessMetadataStore()
             const BMListLoaded = computed(
@@ -427,6 +423,7 @@
                     condition: 'AND',
                     criterion: [...filters.value],
                 }
+
                 if (assetType.value !== 'Catalog') {
                     initialBody.entityFilters.criterion.push({
                         attributeName: '__typeName',
@@ -434,6 +431,7 @@
                         operator: 'eq',
                     })
                 }
+
                 if (state.value) {
                     if (state.value === 'all') {
                         initialBody.excludeDeletedEntities = false
@@ -486,6 +484,7 @@
                     initialBody.query = queryText.value
                 }
                 replaceBody(initialBody)
+                if (isAggregate.value) refreshAggregation(initialBody)
                 // if (assetlist.value && !dontScroll) {
                 // assetlist?.value.scrollToItem(0);
                 // }
@@ -593,14 +592,14 @@
 
             watch(BMListLoaded, (val) => {
                 if (val) {
-                    isAggregate.value = true
+                    isAggregate.value = false
                     updateBody()
                 }
             })
 
             onMounted(() => {
                 if (BMListLoaded.value) {
-                    isAggregate.value = true
+                    isAggregate.value = false
                     updateBody()
                 }
             })
@@ -619,7 +618,6 @@
                 assetTypeList,
                 assetTypeMap,
                 isAggregate,
-                filterMode,
                 replaceBody,
                 handleSearchChange,
                 projection,

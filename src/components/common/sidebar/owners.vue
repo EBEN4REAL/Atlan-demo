@@ -376,8 +376,8 @@
                         let modifiedData: userInterface[] = []
                         if (data?.value) {
                             modifiedData = data.value.sort((dataA, dataB) => {
-                                const a = dataA[key]
-                                const b = dataB[key]
+                                const a = dataA[key].toLowerCase()
+                                const b = dataB[key].toLowerCase()
                                 if (a < b) {
                                     return -1
                                 }
@@ -393,8 +393,8 @@
                         let modifiedData: groupInterface[] = []
                         if (data?.value) {
                             modifiedData = data.value.sort((dataA, dataB) => {
-                                const a = dataA[key]
-                                const b = dataB[key]
+                                const a = dataA[key].toLowerCase()
+                                const b = dataB[key].toLowerCase()
                                 if (a < b) {
                                     return 1
                                 }

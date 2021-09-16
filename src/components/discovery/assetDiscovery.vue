@@ -298,7 +298,7 @@
 
             const modifyTabs = (visibleTabs) => {
                 let assetTypes = []
-                if (visibleTabs.length > 0) {
+                if (visibleTabs?.length > 0) {
                     visibleTabs.forEach((id) => {
                         AssetTypeList.forEach((asset) => {
                             if (

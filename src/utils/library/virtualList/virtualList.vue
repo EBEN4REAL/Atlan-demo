@@ -31,13 +31,13 @@
                 <a-spin tip="Loading..." />
             </div>
         </div>
-        <div v-else>
+        <div v-else-if="data.length">
             <div
                 v-for="(item, idx) in data"
-                :key="idx + listIndices[0]"
+                :key="item[dataKey]"
                 class="flex-shrink-0 virtual-list-item"
             >
-                <slot :item="item" :index="idx + listIndices[0]"></slot>
+                <slot :item="item" :index="idx"></slot>
             </div>
         </div>
         <div class="footer" v-if="$slots?.footer">
@@ -193,7 +193,7 @@
             onMounted(init)
 
             watch(data, init)
-            watch([isVirtualised, data.value.length], (cVal) => {
+            watch([isVirtualised, data], (cVal) => {
                 // Reset the list when the mode is set to virtualised
                 // or when the length of list smaller than the last one
                 if (cVal || lastListLength > data.value.length) {

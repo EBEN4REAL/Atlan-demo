@@ -58,7 +58,6 @@ specifiers:
   cross-env: ^7.0.3
   dayjs: ^1.10.6
   dotenv: ^10.0.0
-  draggabilly: ^2.3.0
   emoji-mart-vue-fast: ^10.0.1
   eslint: ^7.32.0
   eslint-config-airbnb-base: ^14.2.1
@@ -158,7 +157,6 @@ dependencies:
   axios: 0.21.1
   cron-parser: 3.5.0
   dayjs: 1.10.6
-  draggabilly: 2.3.0
   emoji-mart-vue-fast: 10.0.1_vue@3.2.7
   event-source-polyfill: 1.0.25
   highlight.js: 11.2.0
@@ -4300,13 +4298,6 @@ packages:
     engines: {node: '>=10'}
     dev: true
 
-  /draggabilly/2.3.0:
-    resolution: {integrity: sha512-gSsHrIE3rYK9fhK2vQC83t2YsbKbAHQkLsxsXw9TI3LUziq8EZXjX8g7eaf/NlrtWTFqgz7FmP/kdIvLjt64wA==}
-    dependencies:
-      get-size: 2.0.3
-      unidragger: 2.3.1
-    dev: false
-
   /ee-first/1.1.1:
     resolution: {integrity: sha1-WQxhFWsK4vTwJVcyoViyZrxWsh0=}
     dev: true
@@ -4740,10 +4731,6 @@ packages:
     engines: {node: '>= 0.6'}
     dev: true
 
-  /ev-emitter/1.1.1:
-    resolution: {integrity: sha512-ipiDYhdQSCZ4hSbX4rMW+XzNKMD1prg/sTvoVmSLkuQ1MVlwjJQQA+sW8tMYR3BLUr9KjodFV4pvzunvRhd33Q==}
-    dev: false
-
   /event-source-polyfill/1.0.25:
     resolution: {integrity: sha512-hQxu6sN1Eq4JjoI7ITdQeGGUN193A2ra83qC0Ltm9I2UJVAten3OFVN6k5RX4YWeCS0BoC8xg/5czOCIHVosQg==}
     dev: false
@@ -5065,10 +5052,6 @@ packages:
     resolution: {integrity: sha512-pjzuKtY64GYfWizNAJ0fr9VqttZkNiK2iS430LtIHzjBEr6bX8Am2zm4sW4Ro5wjWW5cAlRL1qAMTcXbjNAO2Q==}
     engines: {node: '>=8.0.0'}
     dev: true
-
-  /get-size/2.0.3:
-    resolution: {integrity: sha512-lXNzT/h/dTjTxRbm9BXb+SGxxzkm97h/PCIKtlN/CBCxxmkkIVV21udumMS93MuVTDX583gqc94v3RjuHmI+2Q==}
-    dev: false
 
   /get-stdin/6.0.0:
     resolution: {integrity: sha512-jp4tHawyV7+fkkSKyvjuLZswblUtz+SQKzSWnBbii16BuZksJlU1wuBYXY75r+duh/llF1ur6oNwi+2ZzjKZ7g==}
@@ -9340,12 +9323,6 @@ packages:
     engines: {node: '>=4'}
     dev: true
 
-  /unidragger/2.3.1:
-    resolution: {integrity: sha512-u+IgG7AG0MXJTKcdzAIYxCm+W5FcnA9M28203Awl6jIcE3/+9OtEyUX4Wv64y7XNKEVRKPot52IV4V6x7FlF5Q==}
-    dependencies:
-      unipointer: 2.3.0
-    dev: false
-
   /unified/9.2.2:
     resolution: {integrity: sha512-Sg7j110mtefBD+qunSLO1lqOEKdrwBFBrR6Qd8f4uwkhWNlbkaqwHse6e7QvD3AP/MNoJdEDLaf8OxYyoWgorQ==}
     dependencies:
@@ -9356,12 +9333,6 @@ packages:
       trough: 1.0.5
       vfile: 4.2.1
     dev: true
-
-  /unipointer/2.3.0:
-    resolution: {integrity: sha512-m85sAoELCZhogI1owtJV3Dva7GxkHk2lI7A0otw3o0OwCuC/Q9gi7ehddigEYIAYbhkqNdri+dU1QQkrcBvirQ==}
-    dependencies:
-      ev-emitter: 1.1.1
-    dev: false
 
   /unique-string/2.0.0:
     resolution: {integrity: sha512-uNaeirEPvpZWSgzwsPGtU2zVSTrn/8L5q/IexZmH0eH6SA73CmAA5U4GwORTxQAZs95TAXLNqeLoPPNO5gZfWg==}

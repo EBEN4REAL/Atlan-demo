@@ -1,26 +1,25 @@
 <template>
-    <a-tabs
-        :activeKey="activeResultsPaneTab"
-        :class="$style.result_pane"
-        @change="
-            (activeKey) => resultsPaneTabChange(activeKey, activeInlineTab)
-        "
-        class="h-full"
-    >
-        <a-tab-pane
-            v-for="(tab, index) in tabsList"
-            :key="index"
-            class="px-4 overflow-y-auto"
+    <div class="flex flex-col w-full h-full">
+        <a-tabs
+            :activeKey="activeResultsPaneTabIndex"
+            :class="$style.result_pane"
+            @change="
+                (activeKey) => resultsPaneTabChange(activeKey, activeInlineTab)
+            "
         >
-            <template #tab>
-                {{ tab.name }}
-            </template>
+            <a-tab-pane
+                v-for="(tab, index) in tabsList"
+                :key="index"
+                class="px-4 overflow-y-auto"
+            >
+                <template #tab>
+                    {{ tab.name }}
+                </template>
+            </a-tab-pane>
+        </a-tabs>
 
-            <div class="tab__height">
-                <component :is="tab.component"></component>
-            </div>
-        </a-tab-pane>
-    </a-tabs>
+        <component :is="activeResultsPaneTab?.component"></component>
+    </div>
 </template>
 
 <script lang="ts">
@@ -62,12 +61,19 @@
                 'resultsPaneTabChange'
             ) as Function
 
-            const activeResultsPaneTab = computed(
-                () => activeInlineTab.value.playground.resultsPane.activeTab
+            const activeResultsPaneTabIndex = computed(
+                () =>
+                    activeInlineTab.value.playground.resultsPane.activeTab ?? 0
+            )
+            const activeResultsPaneTab = computed(() =>
+                tabsList.find(
+                    (tab, index) => index === activeResultsPaneTabIndex.value
+                )
             )
             return {
                 resultsPaneTabChange,
                 activeResultsPaneTab,
+                activeResultsPaneTabIndex,
                 activeInlineTab,
                 tabsList,
             }
@@ -82,7 +88,7 @@
         height: 90.5%;
     }
     .tab__height {
-        height: calc(100vh - 31.2rem);
+        height: calc(100vh - 33.2rem);
     }
 </style>
 <style lang="less" module>

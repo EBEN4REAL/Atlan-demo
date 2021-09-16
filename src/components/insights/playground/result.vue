@@ -1,10 +1,10 @@
 <template>
     <div class="w-full p-3 rounded box">
-        <div
-            class="flex items-center justify-center w-full h-full rounded  placeholder"
+        <!-- <div
+            class="flex items-center justify-center w-full h-full rounded placeholder"
         >
             Result - {{ selectedTab?.playground?.resultsPane?.result.title }}
-        </div>
+        </div> -->
     </div>
 </template>
 
@@ -31,9 +31,6 @@
 <style lang="less" scoped>
     .placeholder {
         background-color: #f4f4f4;
-    }
-    .box {
-        height: 90.5%;
     }
 </style>
 

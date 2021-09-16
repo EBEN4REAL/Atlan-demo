@@ -1,5 +1,5 @@
 <template>
-    <div class="w-full h-full p-3 rounded box">
+    <div class="flex-1 p-3 rounded">
         <div
             class="flex items-center justify-center w-full h-full rounded  placeholder"
         >
@@ -30,7 +30,7 @@
         background-color: #f4f4f4;
     }
     .box {
-        height: 90.5%;
+        height: 90%;
     }
 </style>
 

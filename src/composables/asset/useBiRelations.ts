@@ -4,6 +4,9 @@ import { fetcher } from '~/api'
 import { GET_ASSET_RELATIONSHIP } from '~/api/keyMaps/asset'
 import keyMaps from '~/api/keyMaps'
 
+import { BasicSearchAttributes, tableauAttributes } from '~/constant/projection'
+import { useBusinessMetadataStore } from '~/store/businessMetadata'
+
 // TODO : delete this composable and merge with ./useColumns.ts or make a generic composable to fetch all kinds or relationships
 function constructRequest(guid: string, assetType: string) {
     const finalParams = new URLSearchParams()
@@ -15,6 +18,9 @@ function constructRequest(guid: string, assetType: string) {
         'dataType',
         'order',
         'metadata',
+        ...BasicSearchAttributes,
+        ...useBusinessMetadataStore().getBusinessMetadataListProjections,
+        ...tableauAttributes,
     ]
 
     const paramsObj: any = {
@@ -24,6 +30,8 @@ function constructRequest(guid: string, assetType: string) {
         includeClassificationAttributes: true,
         guid,
         excludeDeletedEntities: true,
+        includeSubClassifications: true,
+        includeSubTypes: true,
     }
 
     attributes.forEach((val: string) => {
@@ -40,7 +48,7 @@ export default function useBiRelations(id: string, assetType: string) {
     const { execute, state, isReady, error } = useAsyncState(
         () => {
             const params = constructRequest(id?.value || id, assetType)
-            console.log(params.toString())
+
             return fetcher(keyMaps[GET_ASSET_RELATIONSHIP](), params, {})
         },
         { entities: [] },

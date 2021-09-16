@@ -1,11 +1,11 @@
 <template>
     <div class="w-full h-full px-3 pb-3 rounded">
-        <div class="w-full h-full overflow-hidden rounded">
+        <div class="w-full h-full overflow-x-hidden rounded">
             <div
                 class="flex items-center justify-between w-full mb-3  run-btn-wrapper"
             >
                 <div class="w-full">
-                    <p class="mb-1 text-base">Superstore sales data 2016</p>
+                    <p class="mb-1 text-base">WEB SALES</p>
                 </div>
                 <a-button
                     type="primary"

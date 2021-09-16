@@ -2,7 +2,7 @@
     <div class="flex-1 p-3 rounded">
         <div class="flex justify-center w-full h-full overflow-x-auto rounded">
             <a-table
-                class="w-full h-full overflow-x-auto"
+                class="w-full overflow-x-auto"
                 :class="$style.result_tab"
                 :data-source="queryDataList"
                 :columns="queryColumnList"

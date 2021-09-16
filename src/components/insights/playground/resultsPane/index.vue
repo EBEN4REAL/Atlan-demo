@@ -99,6 +99,7 @@
 
         :global(.ant-tabs-bar) {
             margin-bottom: 0px;
+            @apply h-11 !important;
         }
         :global(.ant-tabs-content) {
             @apply px-0 !important;

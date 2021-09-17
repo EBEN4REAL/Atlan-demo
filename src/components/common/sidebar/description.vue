@@ -8,9 +8,8 @@
         >
             <div
                 id="description-sidebar"
-                class="inline-block text-sm cursor-pointer text-gray"
+                class="inline-block p-2 text-sm cursor-pointer  text-gray focus:bg-gray-100 hover:bg-gray-100 focus:border-gray-light"
                 contenteditable
-                data-ph="Add description"
                 @blur="handleDescriptionEdit"
                 @keydown.enter="endEditDescription"
                 v-text="description"
@@ -77,3 +76,9 @@
         },
     })
 </script>
+
+<style lang="less" scoped>
+    #description-sidebar {
+        margin-left: -8px;
+    }
+</style>

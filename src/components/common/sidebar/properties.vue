@@ -1,6 +1,6 @@
 <template>
     <div class="flex flex-col space-y-3">
-        <div class="px-2">
+        <div>
             <div class="flex items-center">
                 <p class="mb-1 text-sm tracking-wide text-gray-500">
                     Unique ID (GUID)
@@ -22,7 +22,7 @@
             </div>
             <p class="mb-0 text-gray-700">{{ selectedAsset?.guid }}</p>
         </div>
-        <div class="px-2">
+        <div>
             <p class="mb-1 text-sm tracking-wide text-gray-500">Last updated</p>
             <p class="mb-0 text-gray-700">
                 {{ updatedAt(selectedAsset) }}
@@ -30,7 +30,7 @@
                 {{ modifiedBy(selectedAsset) }}
             </p>
         </div>
-        <div class="px-2">
+        <div>
             <p class="mb-1 text-sm tracking-wide text-gray-500">Created</p>
             <p class="mb-0 text-gray-700">
                 {{ createdAt(selectedAsset) }}
@@ -38,12 +38,18 @@
                 {{ createdBy(selectedAsset) }}
             </p>
         </div>
-        <div class="px-2">
+        <div>
             <p class="mb-1 text-sm tracking-wide text-gray-500">
                 Popularity Score
             </p>
             <p class="mb-0 text-gray-700">
                 {{ popularityScore(selectedAsset) }}
+            </p>
+        </div>
+        <div v-if="assetState(selectedAsset)">
+            <p class="mb-1 text-sm tracking-wide text-gray-500">State</p>
+            <p class="mb-0 text-gray-700 capitalize">
+                {{ assetState(selectedAsset) }}
             </p>
         </div>
     </div>
@@ -72,6 +78,7 @@
                 createdBy,
                 modifiedBy,
                 popularityScore,
+                assetState,
             } = useAssetInfo()
             const copyAPI = (text: string) => {
                 copyToClipboard(text)
@@ -86,6 +93,7 @@
                 createdBy,
                 modifiedBy,
                 popularityScore,
+                assetState,
             }
         },
     })

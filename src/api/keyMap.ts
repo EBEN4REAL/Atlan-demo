@@ -201,4 +201,12 @@ export const KeyMaps = {
             )
         },
     },
+    bots: {
+        WORKFLOW_LOG_STREAM: ({}: PathParams) => {
+            return getAPIPath(
+                'api/auth/argo',
+                `/workflows/default/atlan-init-tgx7h/log?logOptions.container=main&grep=&logOptions.follow=true`
+            )
+        },
+    },
 }

@@ -1,21 +1,28 @@
 <template>
     <div class="mb-3 text-xs text-gray-500">
         <p class="mb-1 text-xs">Description</p>
-        <div
-            v-if="
-                (description && description !== '') || showEditableDescription
-            "
-        >
-            <div
+        <div v-if="showEditableDescription">
+            <a-textarea
                 id="description-sidebar"
-                class="inline-block p-2 text-sm cursor-pointer  text-gray focus:bg-gray-100 hover:bg-gray-100 focus:border-gray-light"
-                contenteditable
+                v-model:value="descriptionInput"
+                class="inline-block w-full text-sm cursor-pointer  text-gray focus:bg-gray-100"
+                autofocus
+                placeholder="Add an asset description"
+                show-count
+                :maxlength="140"
+                :rows="4"
                 @blur="handleDescriptionEdit"
-                @keydown.enter="endEditDescription"
-                v-text="description"
-            ></div>
+                @pressEnter="endEditDescription"
+            >
+            </a-textarea>
         </div>
-
+        <span
+            v-if="description && description !== '' && !showEditableDescription"
+            class="inline-block text-sm cursor-pointer text-gray"
+            @click="handleAddDescriptionClick"
+        >
+            {{ description }}
+        </span>
         <span
             v-if="
                 (!description || description === '') && !showEditableDescription
@@ -29,7 +36,14 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, PropType, toRefs, ref, watch } from 'vue'
+    import {
+        defineComponent,
+        PropType,
+        toRefs,
+        ref,
+        watch,
+        nextTick,
+    } from 'vue'
     import updateDescription from '~/composables/asset/updateDescription'
     import { assetInterface } from '~/types/assets/asset.interface'
 
@@ -47,8 +61,9 @@
 
             const showEditableDescription = ref<boolean>(false)
 
+            const descriptionInput = ref()
             const handleDescriptionEdit = (e: any) => {
-                description.value = e.target.innerText
+                description.value = e.target.value
                 update()
                 showEditableDescription.value = false
             }
@@ -59,7 +74,10 @@
 
             const handleAddDescriptionClick = () => {
                 showEditableDescription.value = true
-                document.getElementById('description-sidebar').focus()
+                nextTick(() => {
+                    descriptionInput.value = description.value
+                    document.getElementById('description-sidebar').focus()
+                })
             }
 
             watch(description, () => {
@@ -72,6 +90,7 @@
                 endEditDescription,
                 showEditableDescription,
                 handleAddDescriptionClick,
+                descriptionInput,
             }
         },
     })
@@ -79,6 +98,5 @@
 
 <style lang="less" scoped>
     #description-sidebar {
-        margin-left: -8px;
     }
 </style>

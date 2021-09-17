@@ -442,7 +442,7 @@
                 if (state.value) {
                     if (state.value === 'all') {
                         initialBody.excludeDeletedEntities = false
-                    } else if (state.value === 'deleted') {
+                    } else if (state.value === 'archived') {
                         initialBody.excludeDeletedEntities = false
                         initialBody.entityFilters.criterion.push({
                             attributeName: '__state',

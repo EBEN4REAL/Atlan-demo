@@ -1,6 +1,8 @@
 import { ref, toRaw, Ref, watch } from 'vue'
-// import useSSE from "~/api/useSSE";
 import { useSSE } from '~/modules/useSSE'
+import { KeyMaps } from '~/api/keyMap'
+import { message } from 'ant-design-vue'
+import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
 
 export default function useProject() {
     const columnList: Ref<
@@ -17,20 +19,22 @@ export default function useProject() {
     const isQueryRunning = ref('')
 
     const setColumns = (columnList: Ref<any>, columns: any) => {
-        columnList.value = []
-        columns.map((col: any) => {
-            columnList.value.push({
-                title: col.columnName.split('_').join(' '),
-                dataIndex: col.columnName,
-                width: '9vw',
-                key: col.columnName,
+        if (columns.length > 0) {
+            columnList.value = []
+            columns.map((col: any) => {
+                columnList.value.push({
+                    title: col.columnName.split('_').join(' '),
+                    dataIndex: col.columnName,
+                    width: '9vw',
+                    key: col.columnName,
+                })
             })
-        })
+        }
     }
 
     const setRows = (dataList: Ref<any>, columnList: Ref<any>, rows: any) => {
+        const columns = toRaw(columnList.value)
         rows.map((result: any) => {
-            const columns = toRaw(columnList.value)
             let tmp = {}
             result.map((row, rowindex) => {
                 tmp = {
@@ -45,19 +49,33 @@ export default function useProject() {
         })
     }
 
-    const queryRun = () => {
+    const queryRun = (
+        activeInlineTab: activeInlineTabInterface,
+        getData: any
+    ) => {
+        let queryText = activeInlineTab.playground.editor.text
+        // by default limiting query to 100 if limit is not there
+        queryText = queryText.includes('limit')
+            ? queryText
+            : `${queryText} limit 100`
         isQueryRunning.value = 'loading'
         dataList.value = []
-        const query = btoa('select * from "WEB_SALES" limit 100')
-        const url = `https://alpha.atlan.com/heka/api/query/tenants/default/sql/stream?sql=${query}&defaultSchema=SNOWFLAKE_SAMPLE_DATA.TPCDS_SF10TCL&dataSourceName=default%2Fsnowflake%2Fp1sj4mk7g&length=16`
+        const query = encodeURIComponent(btoa(queryText))
+        const pathVariables = {
+            query,
+            defaultSchema: 'SNOWFLAKE_SAMPLE_DATA.TPCDS_SF10TCL',
+            dataSourceName: encodeURIComponent('default/snowflake/bvscezvng'),
+            length: 10,
+        }
 
         const {
             data: sse,
             error,
             isLoading,
         } = useSSE({
-            url,
+            path: KeyMaps.query.RUN_QUERY,
             includeAuthHeader: true,
+            pathVariables,
         })
 
         watch(isLoading, () => {
@@ -67,12 +85,16 @@ export default function useProject() {
                     if (e.error) {
                         console.error('lost connection; giving up!', e)
                     }
+                    isQueryRunning.value = ''
                     close()
                 })
                 subscribe('', (message: any) => {
-                    if (message.columns) setColumns(columnList, message.columns)
-                    if (message.results)
-                        setRows(dataList, columnList, message.results)
+                    if (message?.columns)
+                        setColumns(columnList, message.columns)
+                    if (message?.rows)
+                        setRows(dataList, columnList, message.rows)
+                    if (message?.status === 'completed')
+                        getData(dataList.value, columnList.value)
                 })
                 isQueryRunning.value = 'success'
             } else {

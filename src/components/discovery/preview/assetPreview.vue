@@ -12,9 +12,23 @@
                         v-if="page === 'nonBiOverview'"
                         class="w-4 h-4 mr-1.5"
                     ></component>
+
                     <Tooltip
+                        v-if="page === 'discovery'"
+                        :tooltip-text="selectedAsset?.attributes?.name"
+                        classes="mb-0 text-gray-700 font-semibold text-lg cursor-pointer"
+                        placement="left"
+                        :route-to="
+                            isColumnAsset(selectedAsset)
+                                ? getColumnUrl(selectedAsset)
+                                : `/assets/${selectedAsset.guid}/overview`
+                        "
+                    />
+                    <Tooltip
+                        v-if="page !== 'discovery'"
                         :tooltip-text="selectedAsset?.attributes?.name"
                         classes="mb-0 text-gray-700 font-semibold text-lg"
+                        placement="left"
                     />
 
                     <div class="flex items-center">
@@ -37,10 +51,6 @@
             </div>
 
             <div class="flex items-center justify-between text-sm">
-                <!-- <component
-                    :is="selectedAsset.typeName"
-                    class="w-auto h-8"
-                ></component> -->
                 <div v-if="page === 'nonBiOverview'" class="text-gray-500">
                     {{ getDataType(selectedAsset?.attributes?.dataType) }}
                 </div>
@@ -49,9 +59,7 @@
                     :asset="selectedAsset"
                     variant="md"
                 />
-                <!--  <div v-if="page === 'biOverview'" class="text-gray-500">
-                    {{ selectedAsset?.typeName }}
-                </div> -->
+
                 <div class="flex space-x-2">
                     <a-button class="flex items-center" size="small">
                         <AtlanIcon icon="Bookmark" />
@@ -75,13 +83,25 @@
             <a-tab-pane
                 v-for="(tab, index) in filteredTabs"
                 :key="index"
-                class="px-4 overflow-y-auto"
+                class="overflow-y-auto"
             >
                 <template #tab>
-                    <AtlanIcon
-                        :icon="tab.icon"
-                        :class="activeKey === index ? 'text-primary' : ''"
-                    />
+                    <a-tooltip
+                        placement="left"
+                        :title="tab.tooltip"
+                        :mouse-enter-delay="0.5"
+                        ><div
+                            class="flex items-center justify-center w-full h-full "
+                        >
+                            <AtlanIcon
+                                :icon="tab.icon"
+                                :class="
+                                    activeKey === index ? 'text-primary' : ''
+                                "
+                                class="h-6"
+                            />
+                        </div>
+                    </a-tooltip>
                 </template>
 
                 <div :style="{ height: tabHeights[page] }">
@@ -167,7 +187,8 @@
         setup(props, { emit }) {
             const { selectedAsset, page } = toRefs(props)
             const { filteredTabs } = useAssetDetailsTabList(page, selectedAsset)
-            const { assetTypeLabel, title, assetStatus } = useAssetInfo()
+            const { assetTypeLabel, title, assetStatus, assetType } =
+                useAssetInfo()
             const activeKey = ref(0)
             const isLoaded: Ref<boolean> = ref(true)
 
@@ -194,6 +215,12 @@
                     if (i.type.includes(type)) label = i.label
                 })
                 return label
+            }
+            const isColumnAsset = (asset) => assetType(asset) === 'Column'
+
+            const getColumnUrl = (asset) => {
+                const tableGuid = asset.attributes?.table.guid
+                return `/assets/${tableGuid}/overview?column=${asset?.guid}`
             }
 
             provide('mutateSelectedAsset', (updatedAsset: assetInterface) => {
@@ -225,6 +252,8 @@
                 handleChange,
                 images,
                 getDataType,
+                isColumnAsset,
+                getColumnUrl,
             }
         },
     })
@@ -242,17 +271,27 @@
 </style>
 <style lang="less" module>
     .previewtab {
-        :global(.ant-tabs-tab) {
-            @apply px-4 !important;
-        }
-
         :global(.ant-tabs-nav-container-scrolling .ant-tabs-tab:first-child) {
             @apply ml-0 !important;
+            @apply mt-4 !important;
         }
 
         :global(.ant-tabs-bar) {
-            margin-bottom: 0px;
+            margin-bottom: 0px !important;
         }
+        :global(.ant-tabs-nav-container) {
+            width: 60px !important;
+            @apply ml-0 !important;
+        }
+        :global(.ant-tabs-tab) {
+            height: 48px !important;
+            width: 60px !important;
+            @apply p-0 !important;
+        }
+        :global(.ant-tabs-tab:first-child) {
+            @apply mt-4 !important;
+        }
+
         :global(.ant-tabs-content) {
             @apply px-0 !important;
         }

@@ -13,7 +13,7 @@
                 <template #tabBarExtraContent>
                     <div class="inline-flex items-center mr-2">
                         <span
-                            class="inline-flex items-center justify-center p-2 rounded-full  btn-add hover:bg-gray-300"
+                            class="inline-flex items-center justify-center p-2 rounded-full btn-add hover:bg-gray-300"
                             @click="handleAdd"
                         >
                             <fa icon="fal plus" class="" />
@@ -34,10 +34,17 @@
                 </a-tab-pane>
             </a-tabs>
         </div>
-        <div class="h-full" v-if="activeInlineTabKey">
+        <div class="w-full h-full" v-if="activeInlineTabKey">
             <splitpanes horizontal :push-other-panes="false">
-                <pane max-size="100" size="55" min-size="45"> <Editor /></pane>
-                <pane min-size="0" size="45" max-size="55">
+                <pane
+                    :max-size="100"
+                    :size="100 - paneSize"
+                    min-size="45"
+                    class="overflow-x-hidden"
+                >
+                    <Editor
+                /></pane>
+                <pane min-size="0" :size="paneSize" max-size="55">
                     <ResultsPane
                 /></pane>
             </splitpanes>
@@ -54,12 +61,14 @@
         toRefs,
         Ref,
         inject,
+        ref,
     } from 'vue'
     import Editor from '~/components/insights/playground/editor/index.vue'
     import ResultsPane from '~/components/insights/playground/resultsPane/index.vue'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
     import NoActiveInlineTab from './noActiveInlineTab.vue'
     import useRunQuery from './common/composables/useRunQuery'
+    import { useMagicKeys, whenever } from '@vueuse/core'
 
     export default defineComponent({
         components: { Editor, ResultsPane, NoActiveInlineTab },
@@ -71,12 +80,9 @@
         },
         emits: ['update:activeInlineTabKey', 'update:tabRef'],
         setup(props, { emit }) {
-            const {
-                queryRun,
-                isQueryRunning,
-                dataList: queryDataList,
-                columnList: queryColumnList,
-            } = useRunQuery()
+            const { queryRun, isQueryRunning } = useRunQuery()
+            const { arrowup } = useMagicKeys()
+            const paneSize = ref(55)
             const { activeInlineTabKey } = toRefs(props)
             const tabs = inject('inlineTabs') as Ref<activeInlineTabInterface[]>
             const activeInlineTab = inject(
@@ -87,9 +93,12 @@
              */
             const inlineTabRemove = inject('inlineTabRemove') as Function
             const inlineTabAdd = inject('inlineTabAdd') as Function
+            const modifyActiveInlineTabEditor = inject(
+                'modifyActiveInlineTabEditor'
+            ) as Function
 
             const handleAdd = () => {
-                const key = String(tabs.value.length + 1)
+                const key = String(new Date().getTime())
                 const inlineTabData: activeInlineTabInterface = {
                     label: 'New Tab',
                     key,
@@ -98,11 +107,15 @@
                     queryId: undefined,
                     explorer: {},
                     playground: {
-                        editorTitle: `${key} Editor`,
+                        editor: {
+                            text: activeInlineTab.value?.playground?.editor.text??'select * from "WEB_SALES" limit 100',
+                            dataList: [],
+                            columnList: [],
+                        },
                         resultsPane: {
                             activeTab:
-                                activeInlineTab.value.playground.resultsPane
-                                    .activeTab ?? 0,
+                                activeInlineTab.value?.playground?.resultsPane
+                                    ?.activeTab ?? 0,
                             result: {
                                 title: `${key} Result`,
                             },
@@ -117,10 +130,12 @@
                     },
                     assetSidebar: {
                         // for taking the previous state from active tab
-                        isVisible: activeInlineTab.value.assetSidebar.isVisible,
+                        isVisible:
+                            activeInlineTab.value?.assetSidebar?.isVisible ??
+                            false,
                         assetInfo: {},
-                        title: activeInlineTab.value.assetSidebar.title,
-                        id: activeInlineTab.value.assetSidebar.id,
+                        title: activeInlineTab.value?.assetSidebar.title ?? '',
+                        id: activeInlineTab.value?.assetSidebar.id ?? '',
                     },
                 }
                 inlineTabAdd(inlineTabData)
@@ -135,25 +150,42 @@
                     inlineTabRemove(targetKey as string)
                 }
             }
+
+            /* ----------Editor related functions -----------------*/
+            function onEditorContentChange(event, editorText) {
+                console.log(editorText)
+                const activeInlineTabCopy: activeInlineTabInterface =
+                    Object.assign({}, activeInlineTab.value)
+                activeInlineTabCopy.playground.editor.text = editorText
+                modifyActiveInlineTabEditor(activeInlineTabCopy)
+            }
+
+            /*---------------------------------------------*/
             /*---------- PROVIDERS FOR CHILDRENS -----------------
             ---Be careful to add a property/function otherwise it will pollute the whole flow for childrens--
             */
 
             // properties
             provide('isQueryRunning', isQueryRunning)
-            provide('queryDataList', queryDataList)
-            provide('queryColumnList', queryColumnList)
 
             // functions
             provide('queryRun', queryRun)
+            provide('onEditorContentChange', onEditorContentChange)
 
             /*-------------------------------------*/
+
+            /* HOT KEYS */
+            // whenever(arrowup, () => {
+            //     if (paneSize.value == 0) paneSize.value = 45
+            //     else paneSize.value = 0
+            // })
 
             return {
                 isQueryRunning,
                 activeInlineTab,
                 tabs,
                 activeInlineTabKey,
+                paneSize,
                 handleAdd,
                 onEdit,
                 onTabClick,

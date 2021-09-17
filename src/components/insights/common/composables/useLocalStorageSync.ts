@@ -8,23 +8,9 @@ export function useLocalStorageSync() {
     function syncInlineTabsInLocalStorage(
         tabsArray: activeInlineTabInterface[]
     ) {
-        /* Necessary step to filter out other properties as it have additional tabs info like $el which
-         cause error if added to obj in local storage */
-        const filteredTabsArray = tabsArray.map((tab) => {
-            return {
-                label: tab.label,
-                key: tab.key,
-                favico: tab.favico,
-                isSaved: tab.isSaved,
-                queryId: tab.queryId,
-                explorer: tab.explorer,
-                playground: tab.playground,
-                assetSidebar: tab.assetSidebar,
-            }
-        })
         localStorage.setItem(
             InsightsLocalStorageKeys.inlinetabs,
-            JSON.stringify(filteredTabsArray)
+            JSON.stringify(tabsArray)
         )
     }
     function syncActiveInlineTabKeyInLocalStorage(activeInlineTabKey: string) {

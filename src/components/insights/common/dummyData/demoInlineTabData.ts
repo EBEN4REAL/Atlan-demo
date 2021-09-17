@@ -7,7 +7,11 @@ export const inlineTabsDemoData: activeInlineTabInterface[] = [
         queryId: 'abcd-01-01',
         explorer: {},
         playground: {
-            editorTitle: 'ABCDE EDITOR',
+            editor: {
+                text: 'select * from "WEB_SALES" limit 100',
+                dataList: [],
+                columnList: [],
+            },
             resultsPane: {
                 activeTab: 0,
                 result: {
@@ -37,7 +41,11 @@ export const inlineTabsDemoData: activeInlineTabInterface[] = [
         queryId: undefined,
         explorer: {},
         playground: {
-            editorTitle: 'ADBE EDITOR',
+            editor: {
+                text: 'select * from "WEB_SALES" limit 100',
+                dataList: [],
+                columnList: [],
+            },
             resultsPane: {
                 activeTab: 0,
                 result: {
@@ -67,7 +75,11 @@ export const inlineTabsDemoData: activeInlineTabInterface[] = [
         queryId: undefined,
         explorer: {},
         playground: {
-            editorTitle: 'BCDE EDITOR',
+            editor: {
+                text: 'select * from "WEB_SALES" limit 100',
+                dataList: [],
+                columnList: [],
+            },
             resultsPane: {
                 activeTab: 0,
                 result: {

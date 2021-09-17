@@ -38,15 +38,16 @@
 
 <script lang="ts">
     import { watch, defineComponent, ref, computed } from 'vue'
-    import ConnectionTree from '@/connection/tree/index.vue'
     import { useRouter } from 'vue-router'
     import { useHead } from '@vueuse/head'
     import { useDebounceFn } from '@vueuse/core'
+    import ConnectionTree from '@/connection/tree/index.vue'
     import useConnectionsList from '~/composables/bots/useConnectionList'
     import { CONNECTION_FETCH_LIST } from '~/constant/cache'
     import { useConnectionsStore } from '~/store/connections'
 
     export default defineComponent({
+        name: 'ConectionsPage',
         components: { ConnectionTree },
         setup() {
             // Fetch Connection to Global Store - Max 100

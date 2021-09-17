@@ -25,7 +25,7 @@ export default function useAssetSearchList(
     // const { data, mutate, error, isLoading, isLoading } =
     //     SearchBasic.BasicV2(cachekey.value, body, axiosOpts, dependentKey)
 
-    const { data, mutate, error, isLoading } = useAPIAsyncState<any>(
+    const { data, mutate, error, isLoading, isReady } = useAPIAsyncState<any>(
         KeyMaps.asset.BASIC_SEARCH,
         'POST',
         { body, options: axiosOpts },
@@ -84,5 +84,6 @@ export default function useAssetSearchList(
         replaceBody,
         body,
         mutate,
+        isReady,
     }
 }

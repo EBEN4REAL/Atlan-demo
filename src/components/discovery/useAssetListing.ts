@@ -12,7 +12,7 @@ export function useAssetListing(
 ) {
     const cancelTokenSource = axios.CancelToken.source()
 
-    const { isLoading, query, replaceBody, body, list, searchScoreList } =
+    const { query, replaceBody, body, list, searchScoreList, isReady, error } =
         useAssetSearchList(
             {
                 typeName: typeName || 'Catalog',
@@ -29,6 +29,8 @@ export function useAssetListing(
             immediate,
             cancelTokenSource
         )
+
+    const isLoading = computed(() => !isReady.value && !error.value)
 
     function mutateAssetInList(updatedAsset: assetInterface) {
         const idx = list.value.findIndex(

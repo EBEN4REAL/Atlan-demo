@@ -12,6 +12,12 @@
                 @add="toggleLinkClassificationPopover"
                 @delete="unLinkClassification"
             >
+                <template #pillPrefix>
+                    <AtlanIcon
+                        icon="Shield"
+                        class="text-pink-400 group-hover:text-white"
+                    />
+                </template>
                 <template #popover="{ item }">
                     <ClassificationInfoCard :classification="item"
                 /></template>

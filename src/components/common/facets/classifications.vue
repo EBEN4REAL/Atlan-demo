@@ -1,6 +1,6 @@
 <template>
     <div class="px-4 mt-1">
-        <div class="flex">
+        <div class="">
             <SearchAndFilter
                 v-model:value="classificationSearchText"
                 :placeholder="`Search ${classificationsList.length} classifications`"
@@ -127,7 +127,7 @@
     import { Collapse } from '~/types'
     import { Components } from '~/api/atlas/client'
     import { classificationInterface } from '~/types/classifications/classification.interface'
-    
+
     export default defineComponent({
         name: 'Classifications',
         components: { CustomRadioButton, SearchAndFilter },
@@ -191,10 +191,14 @@
                     case 'all': {
                         // Case `all` will always be a OR bw __classificationNames and __propagatedClassificationNames
                         data.value.checked.forEach((val) => {
-                            const subFilter:Components.Schemas.FilterCriteria = { 
-                                condition:'OR', criterion:[] as Components.Schemas.FilterCriteria[]
-                            };
-                            const subFilterCriterion: Components.Schemas.FilterCriteria[] = []
+                            const subFilter: Components.Schemas.FilterCriteria =
+                                {
+                                    condition: 'OR',
+                                    criterion:
+                                        [] as Components.Schemas.FilterCriteria[],
+                                }
+                            const subFilterCriterion: Components.Schemas.FilterCriteria[] =
+                                []
                             subFilterCriterion.push({
                                 attributeName: '__classificationNames',
                                 attributeValue: val,
@@ -206,7 +210,7 @@
                                 attributeValue: val,
                                 operator: 'eq',
                             })
-                            subFilter.criterion = subFilterCriterion;
+                            subFilter.criterion = subFilterCriterion
                             criterion.push(subFilter)
                         })
                         break

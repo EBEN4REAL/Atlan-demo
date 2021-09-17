@@ -18,7 +18,8 @@
         </div>
         <span
             v-if="description && description !== '' && !showEditableDescription"
-            class="inline-block text-sm cursor-pointer text-gray"
+            class="inline-block w-full p-2 text-sm rounded-sm cursor-pointer  text-gray hover:bg-gray-100"
+            style="margin-left: -8px"
             @click="handleAddDescriptionClick"
         >
             {{ description }}
@@ -63,8 +64,10 @@
 
             const descriptionInput = ref()
             const handleDescriptionEdit = (e: any) => {
-                description.value = e.target.value
-                update()
+                if (description.value !== e.target.value) {
+                    description.value = e.target.value
+                    update()
+                }
                 showEditableDescription.value = false
             }
 
@@ -95,8 +98,3 @@
         },
     })
 </script>
-
-<style lang="less" scoped>
-    #description-sidebar {
-    }
-</style>

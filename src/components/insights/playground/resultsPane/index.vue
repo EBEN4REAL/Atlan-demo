@@ -48,7 +48,7 @@
         },
         props: {},
         setup(props) {
-            const { allTabs: tabsList } = useInsightsTabList()
+            const { filteredTabs: tabsList } = useInsightsTabList()
             const activeInlineTab = inject(
                 'activeInlineTab'
             ) as Ref<activeInlineTabInterface>

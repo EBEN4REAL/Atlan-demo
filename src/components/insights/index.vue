@@ -112,15 +112,15 @@
                     // explorerPaneSize.value = event[0].size
                 }
             }
-            whenever(arrowleft, () => {
-                if (explorerPaneSize.value == 0) explorerPaneSize.value = 20
-                else explorerPaneSize.value = 0
-            })
-            whenever(arrowright, () => {
-                if (assetSidebarPaneSize.value == 0)
-                    assetSidebarPaneSize.value = 20
-                else assetSidebarPaneSize.value = 0
-            })
+            // whenever(arrowleft, () => {
+            //     if (explorerPaneSize.value == 0) explorerPaneSize.value = 20
+            //     else explorerPaneSize.value = 0
+            // })
+            // whenever(arrowright, () => {
+            //     if (assetSidebarPaneSize.value == 0)
+            //         assetSidebarPaneSize.value = 20
+            //     else assetSidebarPaneSize.value = 0
+            // })
             /* ---- Panes  ----- */
             const { allTabs: tabsList } = useInsightsTabList()
             const {
@@ -169,6 +169,8 @@
                     playground: {
                         editor: {
                             text: savedQuery.editor,
+                            dataList: [],
+                            columnList: [],
                         },
                         resultsPane: {
                             activeTab:
@@ -284,6 +286,19 @@
                 // syncying inline tabarray in localstorage
                 syncInlineTabsInLocalStorage(tabsArray.value)
             }
+            const modifyActiveInlineTabEditor = (
+                activeTab: activeInlineTabInterface
+            ) => {
+                const index = tabsArray.value.findIndex(
+                    (tab) => tab.key === activeTab.key
+                )
+                if (index !== -1) {
+                    tabsArray.value[index].playground.editor =
+                        activeTab.playground.editor
+                }
+                // syncying inline tabarray in localstorage
+                syncInlineTabsInLocalStorage(tabsArray.value)
+            }
 
             function inlineTabAdd(inlineTab: activeInlineTabInterface) {
                 tabsArray.value.push(inlineTab)
@@ -330,6 +345,7 @@
             provide('inlineTabRemove', inlineTabRemove)
             provide('inlineTabAdd', inlineTabAdd)
             provide('modifyActiveInlineTab', modifyActiveInlineTab)
+            provide('modifyActiveInlineTabEditor', modifyActiveInlineTabEditor)
 
             /*-------------------------------------*/
 

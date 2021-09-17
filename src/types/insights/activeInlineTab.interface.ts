@@ -8,6 +8,13 @@ export interface activeInlineTabInterface {
     playground: {
         editor: {
             text: string
+            dataList: Array<any>
+            columnList: Array<{
+                title: string
+                dataIndex: string
+                width: string
+                key: any
+            }>
         }
         resultsPane: {
             activeTab: number

@@ -153,3 +153,9 @@
         },
     })
 </script>
+
+<style scoped>
+    :global(.ant-tooltip-arrow) {
+        display: none;
+    }
+</style>

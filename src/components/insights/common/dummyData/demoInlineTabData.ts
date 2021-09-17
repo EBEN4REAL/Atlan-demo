@@ -8,7 +8,9 @@ export const inlineTabsDemoData: activeInlineTabInterface[] = [
         explorer: {},
         playground: {
             editor: {
-                text: 'SELECT * from superstore_sales_data_2016-present',
+                text: 'select * from "WEB_SALES" limit 100',
+                dataList: [],
+                columnList: [],
             },
             resultsPane: {
                 activeTab: 0,
@@ -40,7 +42,9 @@ export const inlineTabsDemoData: activeInlineTabInterface[] = [
         explorer: {},
         playground: {
             editor: {
-                text: 'SELECT * from superstore_sales_data_2016-present',
+                text: 'select * from "WEB_SALES" limit 100',
+                dataList: [],
+                columnList: [],
             },
             resultsPane: {
                 activeTab: 0,
@@ -72,7 +76,9 @@ export const inlineTabsDemoData: activeInlineTabInterface[] = [
         explorer: {},
         playground: {
             editor: {
-                text: 'SELECT * from superstore_sales_data_2016-present',
+                text: 'select * from "WEB_SALES" limit 100',
+                dataList: [],
+                columnList: [],
             },
             resultsPane: {
                 activeTab: 0,

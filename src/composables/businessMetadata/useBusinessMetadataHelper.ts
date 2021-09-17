@@ -31,6 +31,9 @@ export default function useBusinessMetadataHelper() {
         }
     }
 
+    const isEmptyObject = (obj: Object) =>
+        Object.keys(obj).length === 0 && obj.constructor === Object
+
     const getDatatypeOfAttribute = (typeName: string) => {
         if (typeName && typeof typeName !== 'undefined') {
             if (numberTypes.includes(typeName)) return `number`
@@ -171,6 +174,7 @@ export default function useBusinessMetadataHelper() {
         getApplicableBmGroups,
         getApplicableAttributes,
         isLink,
+        isEmptyObject,
         createDebounce, formatDisplayValue
     }
 }

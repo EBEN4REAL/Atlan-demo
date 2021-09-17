@@ -1,8 +1,16 @@
 <template>
     <div class="px-5 py-2">
         <div v-for="(a, x) in applicableList" :key="x">
-            <div class="gap-6 gap-y-0 group" :class="a.error ? '' : 'mb-4'">
-                <div class="mb-3 text-gray-700">
+            <div
+                class="gap-6 gap-y-0 group"
+                :class="
+                    a.error ||
+                    (getDatatypeOfAttribute(a.typeName) === 'text' && !readOnly)
+                        ? ''
+                        : 'mb-4'
+                "
+            >
+                <div class="mb-2 text-gray-700">
                     {{ a.options.displayName }}
                 </div>
 
@@ -26,7 +34,7 @@
                         }}</span
                     >
                 </div>
-                <div v-else class="flex items-center self-start flex-grow">
+                <div v-else class="flex self-start flex-grow">
                     <a-input
                         v-if="getDatatypeOfAttribute(a.typeName) === 'number'"
                         v-model:value="a.value"
@@ -86,7 +94,7 @@
                             @change="updateAttribute(x)"
                         />
                     </div>
-                    <div class="flex flex-none w-4 col-span-1 ml-3">
+                    <div class="w-4 col-span-1 ml-3">
                         <template v-if="loading !== '' && activeIndex === x">
                             <fa
                                 v-if="loading === 'loading'"

@@ -81,19 +81,19 @@ export default function useAssetInfo() {
             : getCountString(attributes(asset).columnCount)
     }
     const schemaName = (asset: assetInterface) => {
-        return attributes(asset).schemaName
+        return attributes(asset)?.schemaName
     }
     const databaseName = (asset: assetInterface) => {
-        return attributes(asset).databaseName
+        return attributes(asset)?.databaseName
     }
     const createdAt = (asset: assetInterface) => {
-        return useTimeAgo(attributes(asset).__timestamp).value
+        return useTimeAgo(attributes(asset)?.__timestamp).value
     }
     const createdBy = (asset: assetInterface) => {
-        return attributes(asset).__createdBy
+        return attributes(asset)?.__createdBy
     }
     const modifiedBy = (asset: assetInterface) => {
-        return attributes(asset).__modifiedBy
+        return attributes(asset)?.__modifiedBy
     }
     const updatedAt = (asset: assetInterface) => {
         return useTimeAgo(attributes(asset)?.__modificationTimestamp).value

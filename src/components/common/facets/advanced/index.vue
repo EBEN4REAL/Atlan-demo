@@ -1,12 +1,17 @@
 <template>
     <span>
-        <div class="mr-2 overflow-y-auto" style="max-height: 25rem">
-            <div v-for="(a, x) in AdvancedAttributeList" :key="x" class="mx-5">
+        <div class="overflow-y-auto" style="max-height: 25rem">
+            <div
+                v-for="(a, x) in finalAttributesList"
+                :key="x"
+                class="ml-2"
+                style="margin-right: 0.5rem"
+            >
                 <AttributeItem
                     :a="a"
                     :applied="data.applied[a.value] || {}"
-                    @handleAttributeInput="setAdvancefilter"
                     :operators="operatorsMap[a.typeName]"
+                    @handleAttributeInput="setAdvancefilter"
                 />
             </div>
         </div>
@@ -14,7 +19,7 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, PropType } from 'vue'
+    import { computed, defineComponent, PropType } from 'vue'
     import AttributeItem from '../common/attributeItems.vue'
 
     import {
@@ -25,6 +30,7 @@
     import { Components } from '~/api/atlas/client'
 
     export default defineComponent({
+        name: 'PropertiesFilterWrapper',
         components: {
             AttributeItem,
         },
@@ -102,9 +108,11 @@
                     } as Components.Schemas.FilterCriteria,
                 })
             }
-
+            const finalAttributesList = computed(() =>
+                AdvancedAttributeList.filter((attribute) => !attribute.hide)
+            )
             return {
-                AdvancedAttributeList,
+                finalAttributesList,
                 setAdvancefilter,
                 operatorsMap,
             }
@@ -112,8 +120,8 @@
     })
 </script>
 
-<style>
-    .ant-popover-arrow {
+<style scoped>
+    :global(.ant-popover-arrow) {
         display: none;
     }
 </style>

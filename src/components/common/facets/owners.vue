@@ -1,73 +1,37 @@
 <template>
-    <div class="px-4">
-        <div class="flex justify-between mb-1">
-            <a-input-search
-                v-input-focus
-                :placeholder="
-                    activeOwnerTabKey === '1'
-                        ? `Search ${userList?.length} users`
-                        : `Search ${groupList?.length} groups`
-                "
-                :allowClear="true"
-                @change="handleOwnerSearch"
-            >
-            </a-input-search>
-            <div class="">
-                <a-popover trigger="click" placement="rightTop">
-                    <template #content class="rounded">
-                        <div class="p-0">
-                            <div class="flex justify-between mb-2">
-                                <p class="mb-0 text-sm text-gray-500">
-                                    Sort by
-                                </p>
-                            </div>
-                            <CustomRadioButton
-                                class="pb-2"
-                                :list="ownerSortOptions"
-                                v-model:data="ownersFilterOptionsData"
-                                @change="handleSortChange"
-                            />
-                        </div>
-                    </template>
-                    <div v-if="ownersFilterOptionsData !== null" class="mr-1">
-                        <a-badge
-                            :dot="
-                                ownersFilterOptionsData !==
-                                ownerSortOptions[0].id
-                            "
-                            :class="$style.badge"
-                        >
-                            <a-button class="px-2 py-1 ml-2 rounded">
-                                <span class="flex items-center justify-center">
-                                    <fa
-                                        icon="fas sort-amount-up"
-                                        class="hover:text-primary-500"
-                                    />
-                                </span>
-                            </a-button>
-                        </a-badge>
+    <div class="px-4 mt-1">
+        <SearchAndFilter
+            v-model:value="queryText"
+            :placeholder="
+                activeOwnerTabKey === '1'
+                    ? `Search ${userList?.length} users`
+                    : `Search ${groupList?.length} groups`
+            "
+            :autofocus="true"
+            @change="handleOwnerSearch"
+            :dot="ownersFilterOptionsData !== ownerSortOptions[0].id"
+        >
+            <template #filter>
+                <div class="p-0">
+                    <div class="flex justify-between mb-2">
+                        <p class="mb-0 text-sm text-gray-500">Sort by</p>
                     </div>
-                    <div v-else class="mr-1">
-                        <a-button class="px-2 py-1 ml-2 rounded">
-                            <span class="flex items-center justify-center">
-                                <fa
-                                    icon="fas sort-amount-up"
-                                    class="hover:text-primary-500"
-                                />
-                            </span>
-                        </a-button>
-                    </div>
-                </a-popover>
-            </div>
-        </div>
-
+                    <CustomRadioButton
+                        class="pb-2"
+                        :list="ownerSortOptions"
+                        v-model:data="ownersFilterOptionsData"
+                        @change="handleSortChange"
+                    />
+                </div>
+            </template>
+        </SearchAndFilter>
         <div class="relative w-full">
             <a-tabs
                 v-model:activeKey="activeOwnerTabKey"
                 :class="$style.previewtab"
                 @change="onTabChange"
             >
-                <a-tab-pane key="1">
+                <a-tab-pane key="1" class="">
                     <template #tab>
                         <span
                             class="text-sm"
@@ -267,22 +231,25 @@
     } from 'vue'
     import Groups from '@common/selector/groups/index.vue'
     import Users from '@common/selector/users/index.vue'
+    import CustomRadioButton from '@common/radio/customRadioButton.vue'
     import { Collapse } from '~/types'
     import { Components } from '~/api/atlas/client'
     import fetchUserList from '~/composables/user/fetchUserList'
     import fetchGroupList from '~/composables/group/fetchGroupList'
     import { userInterface } from '~/types/users/user.interface'
     import { groupInterface } from '~/types/groups/group.interface'
+    import SearchAndFilter from '@/common/input/searchAndFilter.vue'
     import CustomRadioButton from '@common/radio/customRadioButton.vue'
     import whoami from '~/composables/user/whoami'
     import emptyScreen from '~/assets/images/empty_search.png'
 
     export default defineComponent({
-        name: 'HelloWorld',
+        name: 'OwnersFilter',
         components: {
             Groups,
             Users,
             CustomRadioButton,
+            SearchAndFilter,
         },
         props: {
             item: {
@@ -370,10 +337,7 @@
                 criterion.value = []
             }
 
-            const handleOwnerSearch = (e?: Event) => {
-                if (e) {
-                    queryText.value = (<HTMLInputElement>e?.target)?.value
-                }
+            const handleOwnerSearch = () => {
                 if (activeOwnerTabKey.value === '1') {
                     handleUserSearch(queryText.value)
                 } else if (activeOwnerTabKey.value === '2') {
@@ -508,8 +472,8 @@
                         let modifiedData: userInterface[] = []
                         if (data?.value) {
                             modifiedData = data.value.sort((dataA, dataB) => {
-                                const a = dataA[key]
-                                const b = dataB[key]
+                                const a = dataA[key].toLowerCase()
+                                const b = dataB[key].toLowerCase()
                                 if (a < b) {
                                     return -1
                                 }
@@ -525,8 +489,8 @@
                         let modifiedData: groupInterface[] = []
                         if (data?.value) {
                             modifiedData = data.value.sort((dataA, dataB) => {
-                                const a = dataA[key]
-                                const b = dataB[key]
+                                const a = dataA[key].toLowerCase()
+                                const b = dataB[key].toLowerCase()
                                 if (a < b) {
                                     return 1
                                 }
@@ -610,7 +574,7 @@
 <style lang="less" module>
     .previewtab {
         :global(.ant-tabs-tab) {
-            @apply pb-3 px-1;
+            @apply pb-3 px-2;
             @apply mr-4;
             @apply text-gray-500;
             @apply text-xs;

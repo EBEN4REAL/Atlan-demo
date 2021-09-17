@@ -1,5 +1,5 @@
 <template>
-    <div class="flex flex-row py-4 pl-6">
+    <div class="flex flex-row py-4 pl-4 pr-3">
         <div class="flex flex-col min-w-max">
             <AtlanIcon icon="Term" class="h-6 mt-1" />
         </div>

@@ -5,6 +5,7 @@
             style="width: 100%"
             :dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"
             :tree-data="treeData"
+            :class="$style.connector"
             placeholder="Select a connector"
             dropdownClassName="connectorDropdown"
             :allowClear="true"
@@ -25,6 +26,10 @@
                     />
                     <span class="">{{ node.name }}</span>
                 </div>
+            </template>
+
+            <template #suffixIcon>
+                <AtlanIcon icon="ChevronDown" class="h-4 -mt-0.5 -ml-0.5" />
             </template>
 
             <template #dropdownRender="{ menuNode: menu }">
@@ -317,6 +322,13 @@
         }
         .ant-select-switcher-icon {
             font-weight: normal !important;
+        }
+    }
+</style>
+<style lang="less" module>
+    .connector {
+        :global(.ant-select-selector) {
+            box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05);
         }
     }
 </style>

@@ -2,8 +2,9 @@
     <div class="flex flex-col py-1 rounded preference-container">
         <div class="">
             <div class="flex items-center justify-between text-gray">
-                <span class="mr-6 text-gray-500">Order By</span>
+                <span class="mr-6 text-gray">Order By</span>
                 <a-select
+                    class="text-gray-500"
                     v-model:value="sorting"
                     @change="handeChangeSorting"
                     style="width: 135px"
@@ -37,16 +38,16 @@
             </div> -->
         </div>
         <div class="pt-3">
-            <p class="mb-1 text-gray-500">Display Properties</p>
+            <p class="mb-1 text-gray">Display Properties</p>
             <div class="flex flex-wrap">
                 <template v-for="item in properties" :key="item.id">
                     <div
-                        class="px-2 py-1 mb-1 mr-1 rounded cursor-pointer  text-gray"
+                        class="px-2 py-1 mb-1 mr-1 border rounded cursor-pointer "
                         @click="() => togglePropertySelect(item)"
                         :class="
                             isProjectionSelected(item)
-                                ? 'bg-primary-light border border-white hover:bg-primary-light'
-                                : 'border'
+                                ? 'bg-primary-light border-white hover:bg-primary-light text-primary'
+                                : ' text-gray-500'
                         "
                     >
                         {{ item.label }}
@@ -55,7 +56,7 @@
             </div>
         </div>
         <div class="pt-3">
-            <p class="mb-1 text-gray-500">State</p>
+            <p class="mb-1 text-gray">State</p>
             <div class="">
                 <CustomRadioButton
                     class=""

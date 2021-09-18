@@ -1,5 +1,5 @@
 export const getCountString = (count: number) => {
-    if (count === 0 || !count) return '~'
+    if (count === 0 || !count) return '0'
 
     let countString = count.toLocaleString('en-US', {
         notation: 'compact',

@@ -97,14 +97,6 @@
                                     v-if="entity.guid"
                                     :selected-asset="entity"
                                 />
-                                <Experts
-                                    v-if="entity.guid"
-                                    :selected-asset="entity"
-                                    @update:selected-asset="
-                                        (updated) =>
-                                            $emit('updateAsset', updated)
-                                    "
-                                />
                                 <Status
                                     v-if="entity.guid"
                                     :selected-asset="entity"
@@ -292,7 +284,7 @@
         }
 
         :global(.ant-collapse-content) {
-            @apply mt-0 pb-4 bg-white !important;
+            @apply mt-0  bg-white !important;
         }
         :global(.ant-collapse-content-box) {
             @apply m-0 p-0  bg-transparent !important;

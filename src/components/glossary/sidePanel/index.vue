@@ -51,11 +51,6 @@
                                     v-if="entity.guid"
                                     :selected-asset="entity"
                                 />
-                                <Experts
-                                    v-if="entity.guid"
-                                    :selected-asset="entity"
-                                    @update:selected-asset="refreshEntity"
-                                />
                                 <Status
                                     v-if="entity.guid"
                                     :selected-asset="entity"

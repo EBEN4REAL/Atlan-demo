@@ -105,12 +105,16 @@
                     <span class="mr-4 text-sm leading-5 text-gray-500">{{
                         assetTypeLabel[entity.typeName].toUpperCase()
                     }}</span>
-
-                    <span
-                        v-if="shortDescription !== ''"
-                        class="text-sm leading-5 text-gray-500 truncate  overflow-ellipsis"
-                        >{{ shortDescription }}</span
-                    >
+                    <a-popover trigger="hover" placement="bottom">
+                        <template #content>
+                            <p class="w-60">{{ shortDescription }}</p>
+                        </template>
+                        <span
+                            v-if="shortDescription !== ''"
+                            class="text-sm leading-5 text-gray-500 truncate  overflow-ellipsis"
+                            >{{ shortDescription }}</span
+                        >
+                    </a-popover>
                 </div>
             </div>
         </div>

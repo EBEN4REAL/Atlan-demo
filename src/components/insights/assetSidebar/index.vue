@@ -24,20 +24,19 @@
 <script lang="ts">
     import { defineComponent, Ref, inject } from 'vue'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
+    import { useAssetSidebar } from '~/components/insights/common/composables/useAssetSidebar'
 
     export default defineComponent({
         components: {},
         props: {},
-        emits: ['closeAssetSidebar'],
         setup(props, { emit }) {
             const activeInlineTab = inject(
                 'activeInlineTab'
             ) as Ref<activeInlineTabInterface>
-            /*
-                @params - activeInlineTab: activeInlineTabInterface
-             */
-            const closeAssetSidebar = inject('closeAssetSidebar') as Function
+            const tabs = inject('inlineTabs') as Ref<activeInlineTabInterface[]>
+            const { closeAssetSidebar } = useAssetSidebar(tabs, activeInlineTab)
             return {
+                tabs,
                 activeInlineTab,
                 closeAssetSidebar,
             }

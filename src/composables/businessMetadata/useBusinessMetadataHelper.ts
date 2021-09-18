@@ -3,6 +3,16 @@ import { computed } from 'vue'
 import { useBusinessMetadataStore } from '~/store/businessMetadata'
 import { formatDate } from '../../utils/date'
 
+const numberTypes = [
+    "int",
+    "double",
+    "float",
+    "byte",
+    "short",
+    "long"
+]
+
+
 export default function useBusinessMetadataHelper() {
     const businessMetadataStore = useBusinessMetadataStore()
 
@@ -24,39 +34,11 @@ export default function useBusinessMetadataHelper() {
     const isEmptyObject = (obj: Object) =>
         Object.keys(obj).length === 0 && obj.constructor === Object
 
-    const getDatatypeOfAttribute = (typeName: string | string[]) => {
+    const getDatatypeOfAttribute = (typeName: string) => {
         if (typeName && typeof typeName !== 'undefined') {
-            if (
-                typeName.includes('int') ||
-                typeName.includes('double') ||
-                typeName.includes('float') ||
-                typeName.includes('byte') ||
-                typeName.includes('short') ||
-                typeName.includes('long')
-            ) {
-                if (typeName.includes('array')) {
-                    return `array<number>`
-                }
-                return `number`
-            }
-            if (typeName.includes('date')) {
-                if (typeName.includes('array')) {
-                    return `array<date>`
-                }
-                return `date`
-            }
-            if (typeName.includes('boolean')) {
-                return `boolean`
-            }
-            if (typeName.includes('string')) {
-                if (typeName.includes('array')) {
-                    return `array<text>`
-                }
-                return `text`
-            }
+            if (numberTypes.includes(typeName)) return `number`
+            if (typeName.includes('string')) return `text`
         }
-
-        // return ['enum', typeName] || typeName
         return typeName || ''
     }
 

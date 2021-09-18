@@ -1,5 +1,10 @@
 <template>
-    <VirtualList :data="list" data-key="guid" :variable-height="false">
+    <VirtualList
+        :class="{ 'animate-pulse': isLoading }"
+        :data="list"
+        data-key="guid"
+        variable-height
+    >
         <template #default="{ item }">
             <ListItem
                 :item="item"

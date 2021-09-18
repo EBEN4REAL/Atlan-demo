@@ -61,9 +61,7 @@
                     >
                 </div> -->
                 <div
-                    v-if="
-                        list && list.length <= 0 && !isLoading && !isValidating
-                    "
+                    v-if="list && list.length <= 0 && !isLoading"
                     class="flex-grow"
                 >
                     <EmptyView @event="handleClearFiltersFromList"></EmptyView>
@@ -74,7 +72,7 @@
                     :list="list"
                     :score="searchScoreList"
                     :projection="projection"
-                    :is-loading="isLoading || isValidating"
+                    :is-loading="isLoading"
                     :is-load-more="isLoadMore"
                     :automaticSelectFirstAsset="true"
                     @preview="handlePreview"
@@ -114,7 +112,7 @@
     import ConnectorDropdown from '~/components/common/dropdown/connectorDropdown.vue'
     // import { DISCOVERY_FETCH_LIST } from "~/constant/cache";
     // import { Components } from "~/api/atlas/client";
-    import useAssetList from '~/composables/bots/useAssetList'
+    import { useAssetListing, useAssetAggregation } from './useAssetListing'
     import useDiscoveryPreferences from '~/composables/preference/useDiscoveryPreference'
     import { AssetTypeList } from '~/constant/assetType'
     import {
@@ -127,7 +125,6 @@
     import { useConnectionsStore } from '~/store/connections'
     import { SearchParameters } from '~/types/atlas/attributes'
     import { getEncodedStringFromOptions } from '~/utils/helper/routerQuery'
-    import { assetInterface } from '~/types/assets/asset.interface'
     import { useBusinessMetadataStore } from '~/store/businessMetadata'
     import {
         initialTabsForConnector,
@@ -223,9 +220,8 @@
             const router = useRouter()
             const tracking = useTracking()
             const events = tracking.getEventsName()
-            const filterMode = ref('custom')
-            const now = ref(false)
-            let initialBody: SearchParameters = reactive({})
+            const isAggregate = ref(true)
+
             const assetType = ref('Catalog')
             const queryText = ref(initialFilters.value.searchText)
             const connectorsPayload = ref(
@@ -339,18 +335,12 @@
                 list,
                 replaceBody,
                 isLoading,
-                isValidating,
                 searchScoreList,
-                isAggregate,
-                assetTypeMap,
                 mutateAssetInList,
-            } = useAssetList(
-                now,
-                assetTypeListString.value,
-                initialBody,
-                assetType.value,
-                true
-            )
+            } = useAssetListing(assetTypeListString.value, false)
+
+            const { assetTypeMap, isAggregateLoading, refreshAggregation } =
+                useAssetAggregation(assetTypeListString.value, false)
 
             const store = useBusinessMetadataStore()
             const BMListLoaded = computed(
@@ -412,7 +402,7 @@
             )
 
             const updateBody = () => {
-                initialBody = {
+                const initialBody = {
                     typeName: assetTypeListString.value,
                     termName: props.termName,
                     includeClassificationAttributes: true,
@@ -432,6 +422,7 @@
                     condition: 'AND',
                     criterion: [...filters.value],
                 }
+
                 if (assetType.value !== 'Catalog') {
                     initialBody.entityFilters.criterion.push({
                         attributeName: '__typeName',
@@ -439,6 +430,7 @@
                         operator: 'eq',
                     })
                 }
+
                 if (state.value) {
                     if (state.value === 'all') {
                         initialBody.excludeDeletedEntities = false
@@ -491,6 +483,7 @@
                     initialBody.query = queryText.value
                 }
                 replaceBody(initialBody)
+                if (isAggregate.value) refreshAggregation(initialBody)
                 // if (assetlist.value && !dontScroll) {
                 // assetlist?.value.scrollToItem(0);
                 // }
@@ -520,12 +513,13 @@
                 offset.value = 0
                 const routerOptions = getRouterOptions()
                 const routerQuery = getEncodedStringFromOptions(routerOptions)
+                isAggregate.value = true
                 updateBody()
                 pushQueryToRouter(routerQuery)
                 tracking.trackEvent(events.EVENT_ASSET_SEARCH, {
                     trigger: 'discover',
                 })
-            }, 200)
+            }, 150)
             const handleChangePreferences = (payload: any) => {
                 projection.value = payload
             }
@@ -585,9 +579,7 @@
                 emit('preview', item)
             }
             const loadMore = () => {
-                if (list.value.length + limit.value < totalCount.value) {
-                    offset.value = list.value.length + limit.value
-                }
+                offset.value += limit.value
                 isAggregate.value = false
                 updateBody()
             }
@@ -598,7 +590,6 @@
 
             watch(BMListLoaded, (val) => {
                 if (val) {
-                    now.value = true
                     isAggregate.value = true
                     updateBody()
                 }
@@ -606,7 +597,6 @@
 
             onMounted(() => {
                 if (BMListLoaded.value) {
-                    now.value = true
                     isAggregate.value = true
                     updateBody()
                 }
@@ -626,14 +616,12 @@
                 assetTypeList,
                 assetTypeMap,
                 isAggregate,
-                filterMode,
                 replaceBody,
                 handleSearchChange,
                 projection,
                 handleChangePreferences,
                 handleChangeSort,
                 isLoading,
-                isValidating,
                 handleChangeConnectors,
                 handleFilterChange,
                 handlePreview,

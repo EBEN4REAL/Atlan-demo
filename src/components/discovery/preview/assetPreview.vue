@@ -86,7 +86,7 @@
                 class="overflow-y-auto"
             >
                 <template #tab>
-                    <a-tooltip
+                    <!-- <a-tooltip
                         placement="left"
                         :title="tab.tooltip"
                         :mouse-enter-delay="0.5"
@@ -101,7 +101,12 @@
                                 class="h-6"
                             />
                         </div>
-                    </a-tooltip>
+                    </a-tooltip> -->
+                    <SidePanelTabHeaders
+                        :title="tab.tooltip"
+                        :icon="tab.icon"
+                        :isAtive="activeKey === index"
+                    />
                 </template>
 
                 <div :style="{ height: tabHeights[page] }">
@@ -138,6 +143,7 @@
     import useAssetInfo from '~/composables/asset/useAssetInfo'
     import { assetInterface } from '~/types/assets/asset.interface'
     import useAssetDetailsTabList from '../../discovery/preview/tabs/useTabList'
+    import SidePanelTabHeaders from '~/components/common/tabs/sidePanelTabHeaders.vue'
     import { images, dataTypeList } from '~/constant/datatype'
 
     export default defineComponent({
@@ -146,6 +152,7 @@
             Tooltip,
             AssetLogo,
             StatusBadge,
+            SidePanelTabHeaders,
             info: defineAsyncComponent(() => import('./tabs/info/infoTab.vue')),
             columns: defineAsyncComponent(
                 () => import('./tabs/columns/columnTab.vue')

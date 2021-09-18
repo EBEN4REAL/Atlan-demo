@@ -64,14 +64,20 @@
                 </a-button>
             </div>
         </div>
+        <!-- header ends here -->
         <a-tabs
             default-active-key="1"
             class="h-full border-0"
             tab-position="left"
+            v-model:activeKey="tabActiveKey"
         >
             <a-tab-pane key="info">
                 <template #tab>
-                    <AtlanIcon icon="Overview" class="mt-1" />
+                    <SidePanelTabHeaders
+                        title="Overview"
+                        icon="Overview"
+                        :isActive="tabActiveKey === 'info'"
+                    />
                 </template>
                 <div class="h-screen pb-64 overflow-auto">
                     <a-collapse
@@ -80,8 +86,11 @@
                         expand-icon-position="right"
                     >
                         <template #expandIcon="{ isActive }">
-                            <fa v-if="isActive" icon="fas chevron-up" />
-                            <fa v-else icon="fas chevron-down" />
+                            <AtlanIcon
+                                icon="ChevronDown"
+                                class="ml-1 transition-transform transform"
+                                :class="isActive ? '-rotate-180' : 'rotate-0'"
+                            />
                         </template>
                         <a-collapse-panel key="details" header="Details">
                             <div class="flex flex-col pl-6 pr-2">
@@ -145,7 +154,11 @@
                 key="linkedAssets"
             >
                 <template #tab>
-                    <AtlanIcon icon="Term" class="mt-1" />
+                    <SidePanelTabHeaders
+                        title="Linked terms"
+                        icon="Term"
+                        :isActive="tabActiveKey === 'linkedAssets'"
+                    />
                 </template>
                 <div class="h-screen overflow-auto pb-52">
                     <LinkedAssets
@@ -155,12 +168,17 @@
             </a-tab-pane>
             <a-tab-pane key="activity">
                 <template #tab>
-                    <AtlanIcon icon="Activity" />
+                    <SidePanelTabHeaders
+                        title="Activity"
+                        icon="Activity"
+                        :isActive="tabActiveKey === 'activity'"
+                    />
                 </template>
                 <div class="h-screen overflow-auto pb-52">
                     <Activity :selected-asset="entity" />
                 </div>
             </a-tab-pane>
+            <!-- TODO: introduce afer GA -->
             <!-- <a-tab-pane key="requests" tab="Requests"> Requests </a-tab-pane> -->
             <!-- <a-tab-pane key="chat" tab="chat"> Chat </a-tab-pane> -->
         </a-tabs>
@@ -179,6 +197,7 @@
     import Activity from '@/discovery/preview/tabs/activity/activityTab.vue'
     import RelatedTerms from '@/glossary/termProfile/relatedTerms.vue'
     import LinkedAssets from './linkedAssets.vue'
+    import SidePanelTabHeaders from '~/components/common/tabs/sidePanelTabHeaders.vue'
     import { Components } from '~/api/atlas/client'
 
     //  utils
@@ -202,6 +221,7 @@
             Classifications,
             RelatedTerms,
             LinkedAssets,
+            SidePanelTabHeaders,
         },
         props: {
             entity: {
@@ -219,7 +239,7 @@
         setup(props, context) {
             const router = useRouter()
             const activeKey = ref(['details'])
-
+            const tabActiveKey = ref('info')
             const updateTreeNode = inject<any>('updateTreeNode')
 
             // computed
@@ -264,6 +284,7 @@
                 statusObject,
                 redirectToProfile,
                 activeKey,
+                tabActiveKey,
                 updateEntityAndTree,
             }
         },
@@ -272,6 +293,11 @@
 <style lang="less" module>
     .gtcPreview {
         height: calc(100vh - 50px);
+        :global(.ant-tabs-nav-container-scrolling .ant-tabs-tab:first-child) {
+            @apply ml-0 !important;
+            @apply mt-4 !important;
+        }
+
         :global(.ant-collapse-header) {
             @apply pl-6 py-4 m-0  text-sm text-gray-700 bg-white !important;
         }
@@ -281,6 +307,9 @@
 
         :global(.ant-collapse) {
             @apply p-0 m-0 space-y-0 bg-white !important;
+        }
+        :global(.ant-tabs-tab:first-child) {
+            @apply mt-4 !important;
         }
 
         :global(.ant-collapse-content) {

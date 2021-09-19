@@ -4,7 +4,7 @@ import { SourceList } from '~/constant/source'
 import { AssetTypeList } from '~/constant/assetType'
 import { useTimeAgo } from '@vueuse/core'
 import { dataTypeList } from '~/constant/datatype'
-import { getCountString } from '~/composables/asset/useFormat'
+import { getCountString,getSizeString } from '~/composables/asset/useFormat'
 
 export default function useAssetInfo() {
     const attributes = (asset: assetInterface) => {
@@ -79,6 +79,13 @@ export default function useAssetInfo() {
         return raw
             ? attributes(asset)?.columnCount?.toLocaleString() || 'N/A'
             : getCountString(attributes(asset).columnCount)
+    }
+    const sizeBytes = (asset: assetInterface, raw: boolean = false) => {
+
+        console.log(attributes(asset)?.sizeBytes);
+        return raw
+            ? attributes(asset)?.sizeBytes?.toLocaleString() || 'N/A'
+            : getSizeString(attributes(asset).sizeBytes)
     }
     const schemaName = (asset: assetInterface) => {
         return attributes(asset)?.schemaName
@@ -435,6 +442,7 @@ export default function useAssetInfo() {
         assetTypeLabel,
         rowCount,
         columnCount,
+        sizeBytes,
         createdAt,
         updatedAt,
         lastCrawled,

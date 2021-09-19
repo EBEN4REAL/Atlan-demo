@@ -4,7 +4,7 @@
             v-if="isSelectedAssetHaveRowsAndColumns(selectedAsset)"
             class="flex items-center w-full gap-16 mb-3"
         >
-            <RowInfoHoverCard :row-count="rows">
+            <RowInfoHoverCard :row-count="rows" :size-bytes="size">
                 <div class="flex flex-col text-sm cursor-pointer">
                     <span class="mb-1 text-xs text-gray-500">Rows</span>
                     <span class="text-gray-700">{{ rows }}</span>
@@ -70,11 +70,17 @@
             const mutateSelectedAsset: (updatedAsset: assetInterface) => void =
                 inject('mutateSelectedAsset', () => {})
 
-            const { rowCount, columnCount } = useAssetInfo()
+            const { rowCount, columnCount, sizeBytes } = useAssetInfo()
 
             const rows = computed(() =>
                 selectedAsset.value ? rowCount(selectedAsset.value, true) : '~'
             )
+            const size = computed(() =>
+                selectedAsset.value
+                    ? sizeBytes(selectedAsset.value, false)
+                    : '~'
+            )
+
             const cols = computed(() =>
                 selectedAsset.value
                     ? columnCount(selectedAsset.value, true)
@@ -92,6 +98,7 @@
             return {
                 rows,
                 cols,
+                size,
                 selectedAsset,
                 isSelectedAssetHaveRowsAndColumns,
                 mutateSelectedAsset,

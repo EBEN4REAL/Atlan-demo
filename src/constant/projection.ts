@@ -142,6 +142,7 @@ export const BasicSearchAttributes = [
     'connectionQualifiedName',
     'rowCount',
     'columnCount',
+    'sizeBytes',
     'subType',
     'image',
     'meanings.description',

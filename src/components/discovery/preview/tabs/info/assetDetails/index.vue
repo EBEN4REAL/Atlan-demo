@@ -8,6 +8,9 @@
                 :row-count="rows"
                 :size-bytes="size"
                 :source-updated-at="sourceUpdated"
+                :source-updated-at-raw="sourceUpdatedRaw"
+                :source-created-at="sourceCreated"
+                :source-created-at-raw="sourceCreatedRaw"
             >
                 <div class="flex flex-col text-sm cursor-pointer">
                     <span class="mb-1 text-xs text-gray-500">Rows</span>
@@ -74,8 +77,13 @@
             const mutateSelectedAsset: (updatedAsset: assetInterface) => void =
                 inject('mutateSelectedAsset', () => {})
 
-            const { rowCount, columnCount, sizeBytes, sourceUpdatedAt } =
-                useAssetInfo()
+            const {
+                rowCount,
+                columnCount,
+                sizeBytes,
+                sourceUpdatedAt,
+                sourceCreatedAt,
+            } = useAssetInfo()
 
             const rows = computed(() =>
                 selectedAsset.value ? rowCount(selectedAsset.value, true) : '~'
@@ -95,6 +103,20 @@
             const sourceUpdated = computed(() =>
                 selectedAsset.value ? sourceUpdatedAt(selectedAsset.value) : ''
             )
+            const sourceUpdatedRaw = computed(() =>
+                selectedAsset.value
+                    ? sourceUpdatedAt(selectedAsset.value, true)
+                    : ''
+            )
+
+            const sourceCreated = computed(() =>
+                selectedAsset.value ? sourceCreatedAt(selectedAsset.value) : ''
+            )
+            const sourceCreatedRaw = computed(() =>
+                selectedAsset.value
+                    ? sourceCreatedAt(selectedAsset.value, true)
+                    : ''
+            )
 
             function isSelectedAssetHaveRowsAndColumns(
                 selectedAsset: assetInterface
@@ -108,6 +130,9 @@
                 rows,
                 cols,
                 sourceUpdated,
+                sourceUpdatedRaw,
+                sourceCreated,
+                sourceCreatedRaw,
                 size,
                 selectedAsset,
                 isSelectedAssetHaveRowsAndColumns,

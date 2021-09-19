@@ -20,10 +20,22 @@
                 </div>
             </div>
             <div v-if="sourceUpdatedAt" class="mt-2">
-                <div class="mb-1 text-sm text-gray-500">Last altered</div>
-                <div class="flex">
-                    <span class="mb-1 text-sm"> {{ sourceUpdatedAt }}</span>
+                <div class="mb-1 text-sm text-gray-500">Source updated</div>
+                <div class="leading-none">
+                    <span class="mb-1 text-sm font-bold">
+                        {{ sourceUpdatedAt }}</span
+                    >
                 </div>
+                <span class="text-xs">{{ sourceUpdatedAtRaw }}</span>
+            </div>
+            <div v-if="sourceCreatedAt" class="mt-2">
+                <div class="mb-1 text-sm text-gray-500">Source created</div>
+                <div class="leading-none">
+                    <span class="mb-1 text-sm font-bold">
+                        {{ sourceCreatedAt }}</span
+                    >
+                </div>
+                <span class="text-xs">{{ sourceCreatedAtRaw }}</span>
             </div>
         </template>
         <slot></slot>
@@ -50,12 +62,35 @@
             sourceUpdatedAt: {
                 required: false,
             },
+            sourceUpdatedAtRaw: {
+                required: false,
+            },
+            sourceCreatedAt: {
+                required: false,
+            },
+            sourceCreatedAtRaw: {
+                required: false,
+            },
         },
         setup(props) {
-            const { rowCount, sizeBytes, sourceUpdatedAt } = toRefs(props)
+            const {
+                rowCount,
+                sizeBytes,
+                sourceUpdatedAt,
+                sourceCreatedAt,
+                sourceUpdatedAtRaw,
+                sourceCreatedAtRaw,
+            } = toRefs(props)
             const displayCount = computed(() => getCountString(rowCount.value))
 
-            return { displayCount, sizeBytes, sourceUpdatedAt }
+            return {
+                displayCount,
+                sizeBytes,
+                sourceUpdatedAt,
+                sourceCreatedAt,
+                sourceUpdatedAtRaw,
+                sourceCreatedAtRaw,
+            }
         },
     })
 </script>

@@ -25,7 +25,7 @@ export interface assetInterface {
         userDescription: string
         rowCount: number
         schemaName: string
-        sourceUpdatedAt: number
+        sourceUpdatedAt:  string
         tenantId: string
         viewDefinition: string
         table?: {

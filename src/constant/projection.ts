@@ -148,6 +148,7 @@ export const BasicSearchAttributes = [
     'meanings.description',
     'sourceRefreshFrequency',
     'sourceCreatedBy',
+    'sourceCreatedAt',
     'sourceUpdatedAt',
     'sourceUpdatedBy',
     'databaseCount',

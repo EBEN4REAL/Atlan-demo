@@ -4,7 +4,10 @@ import { SourceList } from '~/constant/source'
 import { AssetTypeList } from '~/constant/assetType'
 import { useTimeAgo } from '@vueuse/core'
 import { dataTypeList } from '~/constant/datatype'
-import { getCountString,getSizeString } from '~/composables/asset/useFormat'
+
+import { formatDateTime } from '~/utils/date'
+
+import { getCountString, getSizeString } from '~/composables/asset/useFormat'
 
 export default function useAssetInfo() {
     const attributes = (asset: assetInterface) => {
@@ -82,15 +85,24 @@ export default function useAssetInfo() {
     }
     const sizeBytes = (asset: assetInterface, raw: boolean = false) => {
 
-        console.log(attributes(asset)?.sizeBytes);
         return raw
             ? attributes(asset)?.sizeBytes?.toLocaleString() || 'N/A'
             : getSizeString(attributes(asset).sizeBytes)
     }
 
-    const sourceUpdatedAt = (asset: assetInterface) => {
-        return useTimeAgo(attributes(asset)?.sourceUpdatedAt).value
+    const sourceUpdatedAt = (asset: assetInterface, raw: boolean = false) => {
+        return raw
+        ? formatDateTime(attributes(asset)?.sourceUpdatedAt) || 'N/A'
+        : useTimeAgo(attributes(asset)?.sourceUpdatedAt).value
     }
+
+    const sourceCreatedAt = (asset: assetInterface, raw: boolean = false) => {
+        return raw
+        ? formatDateTime(attributes(asset)?.sourceCreatedAt) || 'N/A'
+        : useTimeAgo(attributes(asset)?.sourceCreatedAt).value
+    }
+
+
     
 
     const schemaName = (asset: assetInterface) => {
@@ -452,6 +464,7 @@ export default function useAssetInfo() {
         createdAt,
         updatedAt,
         sourceUpdatedAt,
+        sourceCreatedAt,
         lastCrawled,
         tableInfo,
         ownerGroups,

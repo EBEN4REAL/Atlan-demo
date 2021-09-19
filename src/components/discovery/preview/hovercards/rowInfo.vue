@@ -19,10 +19,12 @@
                     </div>
                 </div>
             </div>
-
-            <span class="text-xs text-gray-500"
-                >Row count might be different from underlying store.</span
-            >
+            <div v-if="sourceUpdatedAt" class="mt-2">
+                <div class="mb-1 text-sm text-gray-500">Last altered</div>
+                <div class="flex">
+                    <span class="mb-1 text-sm"> {{ sourceUpdatedAt }}</span>
+                </div>
+            </div>
         </template>
         <slot></slot>
     </a-popover>
@@ -30,10 +32,7 @@
 
 <script lang="ts">
     import { computed, defineComponent, toRefs } from 'vue'
-    import {
-        getCountString,
-        getSizeString,
-    } from '~/composables/asset/useFormat'
+    import { getCountString } from '~/composables/asset/useFormat'
 
     export default defineComponent({
         name: 'RowInfoHoverCard',
@@ -48,12 +47,15 @@
                 required: true,
                 default: () => '',
             },
+            sourceUpdatedAt: {
+                required: false,
+            },
         },
         setup(props) {
-            const { rowCount, sizeBytes } = toRefs(props)
+            const { rowCount, sizeBytes, sourceUpdatedAt } = toRefs(props)
             const displayCount = computed(() => getCountString(rowCount.value))
 
-            return { displayCount, sizeBytes }
+            return { displayCount, sizeBytes, sourceUpdatedAt }
         },
     })
 </script>

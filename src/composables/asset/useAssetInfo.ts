@@ -87,6 +87,12 @@ export default function useAssetInfo() {
             ? attributes(asset)?.sizeBytes?.toLocaleString() || 'N/A'
             : getSizeString(attributes(asset).sizeBytes)
     }
+
+    const sourceUpdatedAt = (asset: assetInterface) => {
+        return useTimeAgo(attributes(asset)?.sourceUpdatedAt).value
+    }
+    
+
     const schemaName = (asset: assetInterface) => {
         return attributes(asset)?.schemaName
     }
@@ -445,6 +451,7 @@ export default function useAssetInfo() {
         sizeBytes,
         createdAt,
         updatedAt,
+        sourceUpdatedAt,
         lastCrawled,
         tableInfo,
         ownerGroups,

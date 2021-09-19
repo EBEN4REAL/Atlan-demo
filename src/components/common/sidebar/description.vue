@@ -1,7 +1,7 @@
 <template>
     <div class="mb-3 text-xs text-gray-500">
         <p class="mb-1 text-xs">Description</p>
-        <div v-if="showEditableDescription">
+        <div v-if="showEditableDescription && !isLoading">
             <a-textarea
                 id="description-sidebar"
                 v-model:value="descriptionInput"
@@ -17,7 +17,12 @@
             </a-textarea>
         </div>
         <span
-            v-if="description && description !== '' && !showEditableDescription"
+            v-if="
+                description &&
+                description !== '' &&
+                !showEditableDescription &&
+                !isLoading
+            "
             class="inline-block w-full p-2 text-sm rounded-sm cursor-pointer  text-gray hover:bg-gray-100"
             style="margin-left: -8px"
             @click="handleAddDescriptionClick"
@@ -26,13 +31,21 @@
         </span>
         <span
             v-if="
-                (!description || description === '') && !showEditableDescription
+                (!description || description === '') &&
+                !showEditableDescription &&
+                !isLoading
             "
             class="text-xs cursor-pointer text-primary hover:underline"
             @click="handleAddDescriptionClick"
         >
             Add description
         </span>
+        <div
+            v-if="isLoading"
+            class="flex items-center justify-center text-sm leading-none"
+        >
+            <a-spin size="small" class="leading-none"></a-spin>
+        </div>
     </div>
 </template>
 
@@ -58,7 +71,8 @@
         emits: ['update:selectedAsset'],
         setup(props, { emit }) {
             const { selectedAsset } = toRefs(props)
-            const { update, description } = updateDescription(selectedAsset)
+            const { update, description, isLoading } =
+                updateDescription(selectedAsset)
 
             const showEditableDescription = ref<boolean>(false)
 
@@ -94,6 +108,7 @@
                 showEditableDescription,
                 handleAddDescriptionClick,
                 descriptionInput,
+                isLoading,
             }
         },
     })

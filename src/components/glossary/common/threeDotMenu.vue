@@ -18,6 +18,21 @@
             </a-button>
             <template #overlay>
                 <a-menu>
+                    <a-menu-item key="add" @click="closeMenu">
+                        <AddGtcModal
+                            :parentName="entity?.displayText"
+                            :glossaryId="glossaryId"
+                            :categoryId="categoryId"
+                        >
+                            <template #footer>
+                                <div class="flex items-center">
+                                    <AtlanIcon icon="Link" class="m-0 mr-2" />
+                                    <p class="p-0 m-0">Add new term</p>
+                                </div>
+                            </template>
+                        </AddGtcModal>
+                    </a-menu-item>
+
                     <a-menu-item
                         v-if="showLinks"
                         key="profileLink"
@@ -178,11 +193,19 @@
     </div>
 </template>
 <script lang="ts">
-    import { defineComponent, ref, PropType, inject, onMounted } from 'vue'
+    import {
+        defineComponent,
+        ref,
+        PropType,
+        inject,
+        onMounted,
+        computed,
+    } from 'vue'
     // components
     import StatusBadge from '@common/badge/status/index.vue'
     import Owners from '@/glossary/common/owners.vue'
     import Status from '@/glossary/common/status.vue'
+    import AddGtcModal from '@/glossary/common/addGtcModal.vue'
     // utils
     import { copyToClipboard } from '~/utils/clipboard'
     import assetTypeLabel from '@/glossary/constants/assetTypeLabel'
@@ -196,7 +219,7 @@
     } from '~/types/glossary/glossary.interface'
 
     export default defineComponent({
-        components: { Status, Owners, StatusBadge },
+        components: { Status, Owners, StatusBadge, AddGtcModal },
         props: {
             entity: {
                 type: Object as PropType<Glossary | Category | Term>,
@@ -226,7 +249,18 @@
             const refetchGlossaryTree = inject<(guid: string | 'root') => void>(
                 'refetchGlossaryTree'
             )
+            const glossaryId = computed(() => {
+                if (props.entity?.typeName === 'AtlasGlossary')
+                    return props.entity?.guid ?? ''
+                return props.entity?.attributes?.anchor?.guid ?? ''
+            })
+            const categoryId = computed(() => {
+                if (props.entity?.typeName === 'AtlasGlossaryCategory')
+                    return props.entity?.guid
+                return ''
+            })
 
+            console.log(glossaryId.value)
             const {
                 deleteGlossary,
                 deleteCategory,
@@ -241,7 +275,9 @@
                 AtlasGlossaryCategory: deleteCategory,
                 AtlasGlossary: deleteGlossary,
             }
-
+            const closeMenu = () => {
+                isVisible.value = false
+            }
             const showModal = () => {
                 isModalVisible.value = true
                 isVisible.value = false
@@ -324,6 +360,9 @@
                 showModal,
                 createNewTerm,
                 createNewCategory,
+                closeMenu,
+                glossaryId,
+                categoryId,
             }
         },
     })

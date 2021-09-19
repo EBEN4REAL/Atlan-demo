@@ -273,6 +273,8 @@
                 noClassificationsAssigned: false,
                 checked:
                     props.initialFilters.facetsFilters.classifications.checked,
+                operator: props.initialFilters.facetsFilters.classifications.condition || 'OR',
+                addedBy: props.initialFilters.facetsFilters.classifications.addedBy || 'all',
             }
             dataMap.value.owners = {
                 userValue:

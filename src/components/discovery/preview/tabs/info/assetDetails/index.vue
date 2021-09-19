@@ -4,7 +4,14 @@
             v-if="isSelectedAssetHaveRowsAndColumns(selectedAsset)"
             class="flex items-center w-full gap-16 mb-3"
         >
-            <RowInfoHoverCard :row-count="rows">
+            <RowInfoHoverCard
+                :row-count="rows"
+                :size-bytes="size"
+                :source-updated-at="sourceUpdated"
+                :source-updated-at-raw="sourceUpdatedRaw"
+                :source-created-at="sourceCreated"
+                :source-created-at-raw="sourceCreatedRaw"
+            >
                 <div class="flex flex-col text-sm cursor-pointer">
                     <span class="mb-1 text-xs text-gray-500">Rows</span>
                     <span class="text-gray-700">{{ rows }}</span>
@@ -70,15 +77,45 @@
             const mutateSelectedAsset: (updatedAsset: assetInterface) => void =
                 inject('mutateSelectedAsset', () => {})
 
-            const { rowCount, columnCount } = useAssetInfo()
+            const {
+                rowCount,
+                columnCount,
+                sizeBytes,
+                sourceUpdatedAt,
+                sourceCreatedAt,
+            } = useAssetInfo()
 
             const rows = computed(() =>
                 selectedAsset.value ? rowCount(selectedAsset.value, true) : '~'
             )
+            const size = computed(() =>
+                selectedAsset.value
+                    ? sizeBytes(selectedAsset.value, false)
+                    : '~'
+            )
+
             const cols = computed(() =>
                 selectedAsset.value
                     ? columnCount(selectedAsset.value, true)
                     : '~'
+            )
+
+            const sourceUpdated = computed(() =>
+                selectedAsset.value ? sourceUpdatedAt(selectedAsset.value) : ''
+            )
+            const sourceUpdatedRaw = computed(() =>
+                selectedAsset.value
+                    ? sourceUpdatedAt(selectedAsset.value, true)
+                    : ''
+            )
+
+            const sourceCreated = computed(() =>
+                selectedAsset.value ? sourceCreatedAt(selectedAsset.value) : ''
+            )
+            const sourceCreatedRaw = computed(() =>
+                selectedAsset.value
+                    ? sourceCreatedAt(selectedAsset.value, true)
+                    : ''
             )
 
             function isSelectedAssetHaveRowsAndColumns(
@@ -92,6 +129,11 @@
             return {
                 rows,
                 cols,
+                sourceUpdated,
+                sourceUpdatedRaw,
+                sourceCreated,
+                sourceCreatedRaw,
+                size,
                 selectedAsset,
                 isSelectedAssetHaveRowsAndColumns,
                 mutateSelectedAsset,

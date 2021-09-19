@@ -21,14 +21,15 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, inject, Ref } from 'vue'
+    import { defineComponent, inject, Ref, defineAsyncComponent } from 'vue'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
-    import Monaco from './monaco/monaco.vue'
     import useRunQuery from '../common/composables/useRunQuery'
     import { useInlineTab } from '~/components/insights/common/composables/useInlineTab'
 
     export default defineComponent({
-        components: { Monaco },
+        components: {
+            Monaco: defineAsyncComponent(() => import('./monaco/monaco.vue')),
+        },
         props: {},
         setup() {
             const { queryRun } = useRunQuery()

@@ -7,7 +7,6 @@ export function useInlineTab() {
     const {
         syncInlineTabsInLocalStorage,
         getInlineTabsFromLocalStorage,
-        syncActiveInlineTabKeyInLocalStorage,
         getActiveInlineTabKeyFromLocalStorage,
     } = useLocalStorageSync()
 
@@ -44,14 +43,10 @@ export function useInlineTab() {
         return ''
     }
 
-    const tabsArray: Ref<activeInlineTabInterface[]> = ref(setInlineTabsArray())
-    const activeInlineTabKey = ref(setActiveInlineTabKey())
-    const activeInlineTab = computed(() =>
-        tabsArray.value.find((tab) => tab.key === activeInlineTabKey.value)
-    )
-    /* --------  These functions have dependencies of above ref values -----------*/
-
-    const inlineTabRemove = (inlineTabKey: string) => {
+    const inlineTabRemove = (
+        inlineTabKey: string,
+        tabsArray: Ref<activeInlineTabInterface[]>
+    ) => {
         let lastIndex = 0
         tabsArray.value.forEach((tab, i) => {
             if (tab.key === inlineTabKey) {
@@ -75,7 +70,10 @@ export function useInlineTab() {
         }
     }
 
-    const modifyActiveInlineTab = (activeTab: activeInlineTabInterface) => {
+    const modifyActiveInlineTab = (
+        activeTab: activeInlineTabInterface,
+        tabsArray: Ref<activeInlineTabInterface[]>
+    ) => {
         const index = tabsArray.value.findIndex(
             (tab) => tab.key === activeTab.key
         )
@@ -86,7 +84,8 @@ export function useInlineTab() {
         syncInlineTabsInLocalStorage(tabsArray.value)
     }
     const modifyActiveInlineTabEditor = (
-        activeTab: activeInlineTabInterface
+        activeTab: activeInlineTabInterface,
+        tabsArray: Ref<activeInlineTabInterface[]>
     ) => {
         const index = tabsArray.value.findIndex(
             (tab) => tab.key === activeTab.key
@@ -99,10 +98,19 @@ export function useInlineTab() {
         syncInlineTabsInLocalStorage(tabsArray.value)
     }
 
-    const inlineTabAdd = (inlineTab: activeInlineTabInterface) => {
+    const inlineTabAdd = (
+        inlineTab: activeInlineTabInterface,
+        tabsArray: Ref<activeInlineTabInterface[]>
+    ) => {
         tabsArray.value.push(inlineTab)
         activeInlineTabKey.value = inlineTab.key
     }
+
+    const tabsArray: Ref<activeInlineTabInterface[]> = ref(setInlineTabsArray())
+    const activeInlineTabKey = ref(setActiveInlineTabKey())
+    const activeInlineTab = computed(() =>
+        tabsArray.value.find((tab) => tab.key === activeInlineTabKey.value)
+    )
 
     return {
         tabsArray,

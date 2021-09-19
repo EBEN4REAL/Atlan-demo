@@ -85,9 +85,7 @@
     import { useInlineTab } from './common/composables/useInlineTab'
     // import { useHotKeys } from './common/composables/useHotKeys'
 
-    import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
     import { TabInterface } from '~/types/insights/tab.interface'
-    import { SavedQueryInterface } from '~/types/insights/savedQuery.interface'
     import { provideDataInterface } from './common/composables/useProvide'
 
     export default defineComponent({
@@ -112,16 +110,8 @@
                 syncActiveInlineTabKeyInLocalStorage,
             } = useLocalStorageSync()
 
-            const {
-                tabsArray,
-                activeInlineTabKey,
-                activeInlineTab,
-                isInlineTabAlreadyOpened,
-                inlineTabAdd,
-                inlineTabRemove,
-                modifyActiveInlineTab,
-                modifyActiveInlineTabEditor,
-            } = useInlineTab()
+            const { tabsArray, activeInlineTabKey, activeInlineTab } =
+                useInlineTab()
             const activeTabId = ref(tabsList[0].id)
 
             const activeTab = computed(() =>
@@ -132,73 +122,6 @@
                 activeTabId.value = tab.id
             }
 
-            const openSavedQueryInNewTab = (
-                savedQuery: SavedQueryInterface
-            ) => {
-                const newTab = {
-                    label: savedQuery.label,
-                    key: savedQuery.id,
-                    favico: 'https://atlan.com/favicon.ico',
-                    isSaved: true,
-                    queryId: savedQuery.id,
-                    explorer: {},
-                    playground: {
-                        editor: {
-                            text: savedQuery.editor,
-                            dataList: [],
-                            columnList: [],
-                        },
-                        resultsPane: {
-                            activeTab:
-                                activeInlineTab.value?.playground.resultsPane
-                                    .activeTab ?? 0,
-                            result: {
-                                title: savedQuery.result,
-                            },
-                            metadata: {},
-                            queries: {},
-                            joins: {},
-                            filters: {},
-                            impersonation: {},
-                            downstream: {},
-                            sqlHelp: {},
-                        },
-                    },
-                    assetSidebar: {
-                        // for taking the previous state from active tab
-                        isVisible:
-                            activeInlineTab.value?.assetSidebar.isVisible ??
-                            false,
-                        assetInfo: {},
-                        title: activeInlineTab.value?.assetSidebar.title ?? '',
-                        id: activeInlineTab.value?.assetSidebar.id ?? '',
-                    },
-                }
-                if (!isInlineTabAlreadyOpened(newTab)) {
-                    inlineTabAdd(newTab)
-                    activeInlineTabKey.value = newTab.key
-                    // syncying inline tabarray in localstorage
-                    syncInlineTabsInLocalStorage(tabsArray.value)
-                } else {
-                    // show user that this tab is already opened
-                }
-            }
-
-            const resultsPaneTabChange = (
-                resultPaneActiveKey: number,
-                activeTab: activeInlineTabInterface
-            ) => {
-                const index = tabsArray.value.findIndex(
-                    (tab) => tab.key === activeTab.key
-                )
-                if (index !== -1) {
-                    tabsArray.value[index].playground.resultsPane.activeTab =
-                        resultPaneActiveKey
-                }
-                // syncying inline tabarray in localstorage
-                syncInlineTabsInLocalStorage(tabsArray.value)
-            }
-
             /*---------- PROVIDERS FOR CHILDRENS -----------------
             ---Be careful to add a property/function otherwise it will pollute the whole flow for childrens--
             */
@@ -206,11 +129,6 @@
                 activeInlineTab: activeInlineTab,
                 activeInlineTabKey: activeInlineTabKey,
                 inlineTabs: tabsArray,
-                resultsPaneTabChange: resultsPaneTabChange,
-                inlineTabRemove: inlineTabRemove,
-                inlineTabAdd: inlineTabAdd,
-                modifyActiveInlineTab: modifyActiveInlineTab,
-                modifyActiveInlineTabEditor: modifyActiveInlineTabEditor,
             }
             useProvide(provideData)
             /*-------------------------------------*/
@@ -231,7 +149,6 @@
                 assetSidebarPaneSize,
                 paneResize,
                 changeTab,
-                openSavedQueryInNewTab,
             }
         },
     })

@@ -32,6 +32,7 @@
             const activeInlineTab = inject(
                 'activeInlineTab'
             ) as Ref<activeInlineTabInterface>
+            const tabs = inject('inlineTabs') as Ref<activeInlineTabInterface[]>
             const isQueryRunning = inject('isQueryRunning') as Ref<string>
             const queryRun = inject('queryRun') as Function
             /*       
@@ -47,7 +48,7 @@
                     Object.assign({}, activeInlineTab.value)
                 activeInlineTabCopy.playground.editor.dataList = dataList
                 activeInlineTabCopy.playground.editor.columnList = columnList
-                modifyActiveInlineTab(activeInlineTabCopy)
+                modifyActiveInlineTab(activeInlineTabCopy, tabs)
             }
             const run = () => {
                 queryRun(activeInlineTab.value, getData)

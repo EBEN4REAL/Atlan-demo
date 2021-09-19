@@ -1,6 +1,6 @@
 import { Ref } from 'vue'
 import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
-import { useLocalStorageSync } from './useLocalStorageSync'
+import { useLocalStorageSync } from '~/components/insights/common/composables/useLocalStorageSync'
 import { tableInterface } from '~/types/insights/table.interface'
 
 export function useAssetSidebar(

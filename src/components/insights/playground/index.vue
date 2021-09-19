@@ -13,7 +13,7 @@
                 <template #tabBarExtraContent>
                     <div class="inline-flex items-center mr-2">
                         <span
-                            class="inline-flex items-center justify-center p-2 rounded-full btn-add hover:bg-gray-300"
+                            class="inline-flex items-center justify-center p-2 rounded-full  btn-add hover:bg-gray-300"
                             @click="handleAdd"
                         >
                             <fa icon="fal plus" class="" />
@@ -108,7 +108,10 @@
                     explorer: {},
                     playground: {
                         editor: {
-                            text: activeInlineTab.value?.playground?.editor.text??'select * from "WEB_SALES" limit 100',
+                            text:
+                                activeInlineTab.value?.playground?.editor
+                                    .text ??
+                                'select * from "WEB_SALES" limit 100',
                             dataList: [],
                             columnList: [],
                         },
@@ -138,7 +141,7 @@
                         id: activeInlineTab.value?.assetSidebar.id ?? '',
                     },
                 }
-                inlineTabAdd(inlineTabData)
+                inlineTabAdd(inlineTabData, tabs)
             }
             const onTabClick = (activeKey) => {
                 emit('update:activeInlineTabKey', activeKey)
@@ -147,7 +150,7 @@
                 if (action === 'add') {
                     handleAdd()
                 } else {
-                    inlineTabRemove(targetKey as string)
+                    inlineTabRemove(targetKey as string, tabs)
                 }
             }
 
@@ -157,7 +160,7 @@
                 const activeInlineTabCopy: activeInlineTabInterface =
                     Object.assign({}, activeInlineTab.value)
                 activeInlineTabCopy.playground.editor.text = editorText
-                modifyActiveInlineTabEditor(activeInlineTabCopy)
+                modifyActiveInlineTabEditor(activeInlineTabCopy, tabs)
             }
 
             /*---------------------------------------------*/

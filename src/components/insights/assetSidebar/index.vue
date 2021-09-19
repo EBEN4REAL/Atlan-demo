@@ -24,7 +24,7 @@
 <script lang="ts">
     import { defineComponent, Ref, inject } from 'vue'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
-    import { useAssetSidebar } from '~/components/insights/common/composables/useAssetSidebar'
+    import { useAssetSidebar } from '~/components/insights/assetSidebar/composables/useAssetSidebar'
 
     export default defineComponent({
         components: {},

@@ -23,7 +23,7 @@
 
 <script lang="ts">
     import { defineComponent, Ref, inject } from 'vue'
-    import { useAssetSidebar } from '~/components/insights/common/composables/useAssetSidebar'
+    import { useAssetSidebar } from '~/components/insights/assetSidebar/composables/useAssetSidebar'
     import { tableInterface } from '~/types/insights/table.interface'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
     import { tablesData } from './tablesDemoData'

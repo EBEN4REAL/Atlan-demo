@@ -15,7 +15,6 @@
         inject,
         Ref,
         watch,
-        computed,
     } from 'vue'
 
     import savedQuery from '@/projects/monaco/savedQuery'
@@ -27,6 +26,7 @@
     import * as monaco from 'monaco-editor'
     import fetchColumnList from '~/composables/columns/fetchColumnList'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
+    import { useEditor } from '~/components/insights/playground/common/composables/useEditor'
 
     const turndownService = new TurndownService({})
 
@@ -45,12 +45,11 @@
             const activeInlineTab = inject(
                 'activeInlineTab'
             ) as Ref<activeInlineTabInterface>
+            const tabs = inject('inlineTabs') as Ref<activeInlineTabInterface[]>
             const monacoRoot = ref<HTMLElement>()
-            const disposable: Ref<monaco.IDisposable> = ref()
+            const disposable: Ref<monaco.IDisposable | undefined> = ref()
             let editor: monaco.editor.IStandaloneCodeEditor
-            const onEditorContentChange = inject(
-                'onEditorContentChange'
-            ) as Function
+            const { onEditorContentChange } = useEditor(tabs, activeInlineTab)
 
             const entityFilters = {
                 condition: 'OR',

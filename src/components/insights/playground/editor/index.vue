@@ -24,23 +24,21 @@
     import { defineComponent, inject, Ref } from 'vue'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
     import Monaco from './monaco/monaco.vue'
+    import useRunQuery from '../common/composables/useRunQuery'
+    import { useInlineTab } from '~/components/insights/common/composables/useInlineTab'
 
     export default defineComponent({
         components: { Monaco },
         props: {},
         setup() {
+            const { queryRun } = useRunQuery()
+
             const activeInlineTab = inject(
                 'activeInlineTab'
             ) as Ref<activeInlineTabInterface>
             const tabs = inject('inlineTabs') as Ref<activeInlineTabInterface[]>
             const isQueryRunning = inject('isQueryRunning') as Ref<string>
-            const queryRun = inject('queryRun') as Function
-            /*       
-                @params - activeInlineTab: activeInlineTabInterface
-             */
-            const modifyActiveInlineTab = inject(
-                'modifyActiveInlineTab'
-            ) as Function
+            const { modifyActiveInlineTab } = useInlineTab()
 
             const getData = (dataList, columnList) => {
                 console.log(dataList, columnList, 'called from callback')
@@ -51,7 +49,7 @@
                 modifyActiveInlineTab(activeInlineTabCopy, tabs)
             }
             const run = () => {
-                queryRun(activeInlineTab.value, getData)
+                queryRun(activeInlineTab.value, getData, isQueryRunning)
             }
 
             return {

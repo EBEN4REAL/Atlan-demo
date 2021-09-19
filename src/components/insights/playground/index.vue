@@ -54,21 +54,17 @@
 </template>
 
 <script lang="ts">
-    import {
-        defineComponent,
-        PropType,
-        provide,
-        toRefs,
-        Ref,
-        inject,
-        ref,
-    } from 'vue'
+    import { defineComponent, toRefs, Ref, inject, ref } from 'vue'
     import Editor from '~/components/insights/playground/editor/index.vue'
     import ResultsPane from '~/components/insights/playground/resultsPane/index.vue'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
     import NoActiveInlineTab from './noActiveInlineTab.vue'
     import useRunQuery from './common/composables/useRunQuery'
-    import { useMagicKeys, whenever } from '@vueuse/core'
+    import { useInlineTab } from '~/components/insights/common/composables/useInlineTab'
+    import { useProvide } from '~/components/insights/common/composables/useProvide'
+    import { provideDataInterface } from '~/components/insights/common/composables/useProvide'
+
+    // import { useHotKeys } from '~/components/insights/common/composables/useHotKeys'
 
     export default defineComponent({
         components: { Editor, ResultsPane, NoActiveInlineTab },
@@ -78,24 +74,17 @@
                 required: true,
             },
         },
-        emits: ['update:activeInlineTabKey', 'update:tabRef'],
+        emits: ['update:activeInlineTabKey'],
         setup(props, { emit }) {
             const { queryRun, isQueryRunning } = useRunQuery()
-            const { arrowup } = useMagicKeys()
+            const { inlineTabRemove, inlineTabAdd } = useInlineTab()
+            // const {resultsPaneSizeToggle} = useHotKeys()
             const paneSize = ref(55)
             const { activeInlineTabKey } = toRefs(props)
             const tabs = inject('inlineTabs') as Ref<activeInlineTabInterface[]>
             const activeInlineTab = inject(
                 'activeInlineTab'
             ) as Ref<activeInlineTabInterface>
-            /*       
-                @params - inlineTabKey: string
-             */
-            const inlineTabRemove = inject('inlineTabRemove') as Function
-            const inlineTabAdd = inject('inlineTabAdd') as Function
-            const modifyActiveInlineTabEditor = inject(
-                'modifyActiveInlineTabEditor'
-            ) as Function
 
             const handleAdd = () => {
                 const key = String(new Date().getTime())
@@ -154,34 +143,16 @@
                 }
             }
 
-            /* ----------Editor related functions -----------------*/
-            function onEditorContentChange(event, editorText) {
-                console.log(editorText)
-                const activeInlineTabCopy: activeInlineTabInterface =
-                    Object.assign({}, activeInlineTab.value)
-                activeInlineTabCopy.playground.editor.text = editorText
-                modifyActiveInlineTabEditor(activeInlineTabCopy, tabs)
-            }
-
             /*---------------------------------------------*/
             /*---------- PROVIDERS FOR CHILDRENS -----------------
             ---Be careful to add a property/function otherwise it will pollute the whole flow for childrens--
             */
-
-            // properties
-            provide('isQueryRunning', isQueryRunning)
-
-            // functions
-            provide('queryRun', queryRun)
-            provide('onEditorContentChange', onEditorContentChange)
+            const provideData: provideDataInterface = {
+                isQueryRunning: isQueryRunning,
+            }
+            useProvide(provideData)
 
             /*-------------------------------------*/
-
-            /* HOT KEYS */
-            // whenever(arrowup, () => {
-            //     if (paneSize.value == 0) paneSize.value = 45
-            //     else paneSize.value = 0
-            // })
 
             return {
                 isQueryRunning,

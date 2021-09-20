@@ -4,6 +4,7 @@ import sqlKeywords from '@/projects/monaco/sqlKeywords'
 import columnSuggestion from '@/projects/monaco/columnSuggestion'
 import fetchColumnList from '~/composables/columns/fetchColumnList'
 
+//https://gist.github.com/mwrouse/05d8c11cd3872c19c684bd1904a2202e
 const entityFilters = {
     condition: 'OR',
     criterion: [

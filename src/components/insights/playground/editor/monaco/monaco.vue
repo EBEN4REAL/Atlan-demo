@@ -41,6 +41,7 @@
     }
 
     export default defineComponent({
+        emits: ['setEditorInstance'],
         setup(props, { emit }) {
             const activeInlineTab = inject(
                 'activeInlineTab'
@@ -197,9 +198,11 @@
                     console.log(event)
                     onEditorContentChange(event, text)
                     const lastTypedCharacter = event?.changes[0]?.text
-                    //
                     triggerAutoCompletion(lastTypedCharacter)
+                    emit('setEditorInstance', editor)
                 })
+                // on mounting
+                emit('setEditorInstance', editor)
             })
 
             onUnmounted(() => {
@@ -225,6 +228,8 @@
                         lineNumber: range.endLineNumber,
                     }
                     editor?.setPosition(position)
+                    // on active inline tab change
+                    emit('setEditorInstance', editor)
                 }
             })
             return {

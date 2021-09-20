@@ -12,11 +12,48 @@
             <slot name="header" />
         </template>
         <template #footer>
-            <div class="flex items-center justify-end space-x-3">
-                <a-switch size="small" v-model:checked="isCreateMore" />
-                <p class="p-0 m-0">Create more</p>
-                <a-button @click="handleCancel">Cancel</a-button>
-                <a-button type="primary" @click="handleOk">Add term</a-button>
+            <div class="flex items-center justify-between w-full">
+                <div class="flex items-center space-x-3">
+                    <a-dropdown placement="bottomLeft">
+                        <template #overlay>
+                            <a-menu>
+                                <a-menu-item
+                                    v-for="item in List"
+                                    :key="item"
+                                    @click="handleMenuClick(item)"
+                                >
+                                    <div class="flex items-center space-x-2">
+                                        <component
+                                            :is="item.icon"
+                                            class="w-auto h-4 ml-1 mr-2 pushtop"
+                                        />
+
+                                        {{ item.label }}
+                                    </div>
+                                </a-menu-item>
+                            </a-menu>
+                        </template>
+                        <StatusBadge
+                            :status-id="currentStatus"
+                            :show-chip-style-status="false"
+                            :show-no-status="true"
+                            :show-label="true"
+                            class="p-0"
+                        ></StatusBadge>
+                        <AtlanIcon
+                            class="pt-1 ml-4 transform -rotate-90"
+                            icon="ChevronDown"
+                        />
+                    </a-dropdown>
+                </div>
+                <div class="flex items-center justify-end space-x-3">
+                    <a-switch size="small" v-model:checked="isCreateMore" />
+                    <p class="p-0 m-0">Create more</p>
+                    <a-button @click="handleCancel">Cancel</a-button>
+                    <a-button type="primary" @click="handleOk"
+                        >Add term</a-button
+                    >
+                </div>
             </div>
         </template>
         <div class="my-3">
@@ -44,9 +81,14 @@
         nextTick,
         Ref,
     } from 'vue'
+    import StatusBadge from '@common/badge/status/index.vue'
     import useCreateGlossary from '~/components/glossary/composables/useCreateGlossary'
+    import { List } from '~/constant/status'
 
     export default defineComponent({
+        components: {
+            StatusBadge,
+        },
         props: {
             parentName: {
                 type: String,
@@ -64,11 +106,11 @@
                 default: '',
             },
         },
-
         emits: ['onAddTerm'],
         setup(props, context) {
             const title = ref<String>('')
             const description = ref<String>('')
+            const currentStatus = ref<String>('draft')
             const visible = ref<boolean>(false)
             const isCreateMore = ref<boolean>(false)
             const titleBar: Ref<null | HTMLInputElement> = ref(null)
@@ -79,6 +121,7 @@
             const resetInput = () => {
                 title.value = ''
                 description.value = ''
+                currentStatus.value = 'draft'
             }
             const showModal = () => {
                 resetInput()
@@ -91,7 +134,8 @@
                         props.glossaryId,
                         '',
                         title.value,
-                        description.value
+                        description.value,
+                        currentStatus.value
                     )
                 } else console.log('glossary->', props.glossaryId)
                 console.log('category->', props.categoryId)
@@ -99,7 +143,9 @@
 
                 resetInput()
             }
-
+            const handleMenuClick = (status) => {
+                currentStatus.value = status.id
+            }
             const handleCancel = () => {
                 resetInput()
                 visible.value = false
@@ -120,6 +166,9 @@
                 parent,
                 isCreateMore,
                 titleBar,
+                List,
+                handleMenuClick,
+                currentStatus,
             }
         },
     })

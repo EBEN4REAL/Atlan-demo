@@ -133,21 +133,22 @@ const useCreateGlossary = () => {
         parentGlossaryGuid: string,
         parentCategoryGuid?: string,
         title?: string,
-        description?: string
+        description?: string,
+        status?: string
     ) => {
         body.value = {
             name: generateUUID(),
-            displayText: title !== '' ? title : 'Untitled Term',
-            shortDescription: description,
+            displayText: title ?? 'Untitled Term',
+            shortDescription: description ?? '',
             longDescription: '',
-            assetStatus: 'draft',
+            assetStatus: status ?? 'draft',
             ownerUsers: `${username.value}`,
             anchor: {
                 glossaryGuid: parentGlossaryGuid,
             },
         }
-        console.log(title)
-        console.log(description)
+        console.log(body.value)
+        console.log(status)
         message.loading({ content: 'Creating new term...', key: `${title}` })
         if (parentCategoryGuid) {
             console.log('cat')
@@ -175,7 +176,7 @@ const useCreateGlossary = () => {
         watch(data, (newData) => {
             if (newData?.guid) {
                 updateEntity('term', newData.guid, {
-                    name: title !== '' ? title : 'Untitled Term',
+                    name: title ?? 'Untitled Term',
                 })
             }
         })
@@ -186,7 +187,7 @@ const useCreateGlossary = () => {
                 duration: 2,
             })
             if (newData?.guid) {
-                if (title === '') {
+                if (!title) {
                     redirectToProfile('term', newData.guid)
                 }
                 if (refetchGlossaryTree) {

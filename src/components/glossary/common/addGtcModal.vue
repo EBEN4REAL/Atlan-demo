@@ -45,6 +45,12 @@
                             icon="ChevronDown"
                         />
                     </a-dropdown>
+                    <a-dropdown placement="bottomLeft" :visible="true">
+                        <template #overlay>
+                            <AddGtcModalOwners class="px-4 py-2" />
+                        </template>
+                        <a-button type="primary">Owners</a-button>
+                    </a-dropdown>
                 </div>
                 <div class="flex items-center justify-end space-x-3">
                     <a-switch size="small" v-model:checked="isCreateMore" />
@@ -82,12 +88,14 @@
         Ref,
     } from 'vue'
     import StatusBadge from '@common/badge/status/index.vue'
+    import AddGtcModalOwners from '@/glossary/common/addGtcModalOwners.vue'
     import useCreateGlossary from '~/components/glossary/composables/useCreateGlossary'
     import { List } from '~/constant/status'
 
     export default defineComponent({
         components: {
             StatusBadge,
+            AddGtcModalOwners,
         },
         props: {
             parentName: {

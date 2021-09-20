@@ -29,7 +29,7 @@
             <ColumnListItem :asset="asset" />
         </div>
         <div
-            v-if="!isReady"
+            v-if="isLoading"
             class="flex items-center justify-center mt-4 text-sm leading-none"
         >
             <a-spin size="small" class="mr-2 leading-none"></a-spin
@@ -41,7 +41,7 @@
 <script lang="ts">
     import DataTypes from '@common/facets/dataType.vue'
     import { toRefs } from '@vueuse/core'
-    import { computed, defineComponent, PropType, ref } from 'vue'
+    import { computed, defineComponent, PropType, ref, watch } from 'vue'
     import SearchAndFilter from '@/common/input/searchAndFilter.vue'
     import ColumnListItem from '~/components/discovery/preview/tabs/columns/columnListItem.vue'
     import useAssetInfo from '~/composables/asset/useAssetInfo'
@@ -68,26 +68,32 @@
             const isFilterVisible = ref(false)
             const { dataTypeImage } = useAssetInfo()
             const { selectedAsset } = toRefs(props)
-
-            const assetId = computed(() => selectedAsset.value.guid)
+            /* 
+            const assetId = computed(() => selectedAsset.value.guid) */
 
             const assetQualifiedName = computed(
                 () => selectedAsset.value.attributes?.qualifiedName
             )
 
-            const { data: response, error } = useColumns2({
-                entityParentQualifiedName: assetQualifiedName,
-            })
-            console.log('Columns', response)
-
             const {
                 filteredList,
-                isReady,
-
+                isLoading,
                 searchTerm,
                 filters,
                 clearAllFilters,
-            } = useColumns(assetId)
+                mutate,
+            } = useColumns2({
+                entityParentQualifiedName: assetQualifiedName,
+            })
+
+            /*  const {
+                filteredList,
+                isLoading,
+                columnList,
+                searchTerm,
+                filters,
+                clearAllFilters,
+            } = useColumns(assetId) */
 
             return {
                 isFilterVisible,
@@ -95,8 +101,7 @@
                 searchTerm,
                 dataTypeImage,
                 clearAllFilters,
-                isReady,
-
+                isLoading,
                 dataTypeList,
                 filters,
             }

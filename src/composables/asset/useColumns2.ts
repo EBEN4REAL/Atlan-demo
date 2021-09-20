@@ -1,7 +1,8 @@
-import { ref } from 'vue'
+import { Ref, ref, computed, watch } from 'vue'
 import { BasicSearchAttributes, ColumnAttributes } from '~/constant/projection'
 import { SearchBasic } from '~/api/atlas/searchbasic'
 import { useBusinessMetadataStore } from '~/store/businessMetadata'
+import { dataTypeList } from '~/constant/datatype'
 
 export default function useColumns2({
     entityParentQualifiedName,
@@ -59,14 +60,56 @@ export default function useColumns2({
         entityFilters,
     }
 
-    const { data, error, mutate, isValidating } = SearchBasic.BasicV2(
+
+    const searchTerm = ref('')
+    const filters: Ref<string[]> = ref([])
+
+    const { data, error, mutate, isValidating, isLoading } = SearchBasic.BasicV2(
         '',
         ref(options)
     )
+
+    const filteredList = computed(() => {
+        const allowedTypes = dataTypeList
+            .filter((typeList) => filters.value.includes(typeList.id))
+            .reduce((acc: string[], dt) => [...acc, ...dt.type], [])
+            .map((type) => type.toLowerCase())
+
+        const keyword = searchTerm.value.toLowerCase()
+
+        return (
+            data.value?.entities?.filter(
+                (item) =>
+                    (keyword
+                        ? item.displayText.toLowerCase().includes(keyword)
+                        : true) &&
+                    (filters.value.length
+                        ? allowedTypes.includes(
+                            item.attributes.dataType.toLowerCase()
+                        )
+                        : true)
+            ) || []
+        )
+    })
+
+    const clearAllFilters = () => {
+        filters.value = []
+    }
+
+    watch(entityParentQualifiedName, (newParent, oldParent) => {
+        if (newParent !== oldParent) mutate()
+    })
+
+
+
     return {
-        data,
+        columnList: data,
         error,
-        loading: isValidating,
+        isLoading,
         mutate,
+        searchTerm,
+        filteredList,
+        filters,
+        clearAllFilters,
     }
 }

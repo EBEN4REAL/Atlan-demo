@@ -2,6 +2,7 @@ import { watch, ref, Ref, inject } from 'vue'
 import { useRouter } from 'vue-router'
 import { generateUUID } from '~/utils/helper/generator'
 import { Components } from '~/api/atlas/client'
+import { message } from 'ant-design-vue'
 
 import { useAPI } from '~/api/useAPI'
 import {
@@ -130,12 +131,14 @@ const useCreateGlossary = () => {
 
     const createTerm = (
         parentGlossaryGuid: string,
-        parentCategoryGuid?: string
+        parentCategoryGuid?: string,
+        title?: string,
+        description?: string
     ) => {
         body.value = {
             name: generateUUID(),
-            displayText: 'Untitled Term',
-            shortDescription: '',
+            displayText: title !== '' ? title : 'Untitled Term',
+            shortDescription: description,
             longDescription: '',
             assetStatus: 'draft',
             ownerUsers: `${username.value}`,
@@ -143,7 +146,11 @@ const useCreateGlossary = () => {
                 glossaryGuid: parentGlossaryGuid,
             },
         }
+        console.log(title)
+        console.log(description)
+        message.loading({ content: 'Creating new term...', key: `${title}` })
         if (parentCategoryGuid) {
+            console.log('cat')
             body.value.categories = [
                 {
                     categoryGuid: parentCategoryGuid,
@@ -168,15 +175,26 @@ const useCreateGlossary = () => {
         watch(data, (newData) => {
             if (newData?.guid) {
                 updateEntity('term', newData.guid, {
-                    name: 'Untitled Term',
+                    name: title !== '' ? title : 'Untitled Term',
                 })
             }
         })
         watch(updateData, (newData) => {
+            message.success({
+                content: `${title} created!`,
+                key: `${title}`,
+                duration: 2,
+            })
             if (newData?.guid) {
-                redirectToProfile('term', newData.guid)
+                if (title === '') {
+                    redirectToProfile('term', newData.guid)
+                }
                 if (refetchGlossaryTree) {
-                    refetchGlossaryTree(parentCategoryGuid ?? 'root')
+                    refetchGlossaryTree(
+                        parentCategoryGuid || parentCategoryGuid === ''
+                            ? 'root'
+                            : parentCategoryGuid
+                    )
                 }
             }
         })

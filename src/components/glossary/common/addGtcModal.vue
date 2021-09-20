@@ -1,6 +1,6 @@
 <template>
     <div @click="showModal">
-        <slot name="footer" @click="showModal" />
+        <slot name="trigger" @click="showModal" />
     </div>
     <a-modal
         v-model:visible="visible"
@@ -9,14 +9,19 @@
         width="800px"
     >
         <template #title>
-            {{ parent }}
+            <slot name="header" />
         </template>
         <template #footer>
-            <a-button @click="handleOk">Cancel</a-button>
-            <a-button type="primary" @click="handleOk">Add term</a-button>
+            <div class="flex items-center justify-end space-x-3">
+                <a-switch size="small" v-model:checked="isCreateMore" />
+                <p class="p-0 m-0">Create more</p>
+                <a-button @click="handleCancel">Cancel</a-button>
+                <a-button type="primary" @click="handleOk">Add term</a-button>
+            </div>
         </template>
-        <div class="my-4">
+        <div class="my-3">
             <a-input
+                :ref="titleBar"
                 v-model:value="title"
                 placeholder="Title..."
                 class="text-lg border-0 shadow-none outline-none"
@@ -31,7 +36,15 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref, computed } from 'vue'
+    import {
+        defineComponent,
+        ref,
+        computed,
+        onMounted,
+        nextTick,
+        Ref,
+    } from 'vue'
+    import useCreateGlossary from '~/components/glossary/composables/useCreateGlossary'
 
     export default defineComponent({
         props: {
@@ -57,20 +70,57 @@
             const title = ref<String>('')
             const description = ref<String>('')
             const visible = ref<boolean>(false)
+            const isCreateMore = ref<boolean>(false)
+            const titleBar: Ref<null | HTMLInputElement> = ref(null)
+            const { createTerm, createCategory } = useCreateGlossary()
+
             const parent = computed(() => props.parentName)
+
+            const resetInput = () => {
+                title.value = ''
+                description.value = ''
+            }
             const showModal = () => {
-                console.log('modal ')
+                resetInput()
                 visible.value = true
             }
 
             const handleOk = () => {
-                if (props.categoryId === '') console.log(props.glossaryId)
-                else console.log('glossary->', props.glossaryId)
+                if (props.categoryId === '') {
+                    createTerm(
+                        props.glossaryId,
+                        '',
+                        title.value,
+                        description.value
+                    )
+                } else console.log('glossary->', props.glossaryId)
                 console.log('category->', props.categoryId)
+                if (!isCreateMore.value) visible.value = false
+
+                resetInput()
+            }
+
+            const handleCancel = () => {
+                resetInput()
                 visible.value = false
             }
 
-            return { handleOk, description, title, showModal, visible, parent }
+            onMounted(async () => {
+                await nextTick()
+                titleBar.value?.focus()
+            })
+
+            return {
+                handleOk,
+                handleCancel,
+                description,
+                title,
+                showModal,
+                visible,
+                parent,
+                isCreateMore,
+                titleBar,
+            }
         },
     })
 </script>

@@ -25,7 +25,7 @@ export interface assetInterface {
         userDescription: string
         rowCount: number
         schemaName: string
-        sourceUpdatedAt:  string
+        sourceUpdatedAt: string
         tenantId: string
         viewDefinition: string
         table?: {
@@ -53,4 +53,5 @@ export interface assetInterface {
     meanings: { displayText: string }[]
     status: string
     typeName: string
+    qualifiedName: string
 }

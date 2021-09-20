@@ -46,6 +46,8 @@
     import ColumnListItem from '~/components/discovery/preview/tabs/columns/columnListItem.vue'
     import useAssetInfo from '~/composables/asset/useAssetInfo'
     import { useColumns } from '~/composables/asset/useColumnRelations'
+    import useColumns2 from '~/composables/asset/useColumns2'
+
     import { dataTypeList } from '~/constant/datatype'
     import { assetInterface } from '~/types/assets/asset.interface'
 
@@ -68,10 +70,20 @@
             const { selectedAsset } = toRefs(props)
 
             const assetId = computed(() => selectedAsset.value.guid)
+
+            const assetQualifiedName = computed(
+                () => selectedAsset.value.attributes?.qualifiedName
+            )
+
+            const { data: response, error } = useColumns2({
+                entityParentQualifiedName: assetQualifiedName,
+            })
+            console.log('Columns', response)
+
             const {
                 filteredList,
                 isReady,
-                error,
+
                 searchTerm,
                 filters,
                 clearAllFilters,
@@ -84,7 +96,7 @@
                 dataTypeImage,
                 clearAllFilters,
                 isReady,
-                error,
+
                 dataTypeList,
                 filters,
             }

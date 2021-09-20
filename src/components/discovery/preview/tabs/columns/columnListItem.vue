@@ -15,7 +15,9 @@
                 align-middle
                 text-gray
                 overflow-ellipsis
+                cursor-pointer
             "
+            @click="() => (showColumnSidebar = true)"
         >
             {{ asset.displayText }}
         </span>
@@ -26,35 +28,77 @@
             <AtlanIcon icon="ForeignKey" />
         </div>
     </div>
-    <span class="text-xs leading-relaxed text-gray-500 whitespace-pre-wrap">
+    <span class="text-xs leading-relaxed text-gray-500 whitespaceßpre-wrap">
         {{ asset.attributes.description || 'No description' }}
     </span>
+    <teleport to="#overAssetPreviewSidebar">
+        <a-drawer
+            v-model:visible="showColumnSidebar"
+            placement="right"
+            :mask="false"
+            :get-container="false"
+            :wrap-style="{ position: 'absolute' }"
+            :keyboard="false"
+            :destroy-on-close="true"
+            :closable="false"
+        >
+            <AssetPreview
+                :selected-asset="asset"
+                page="nonBiOverview"
+                :show-cross-icon="true"
+                @closeSidebar="handleCloseColumnSidebar"
+                @asset-mutation="propagateToColumnList"
+            />
+        </a-drawer>
+    </teleport>
 </template>
 
 <script lang="ts">
-    import { defineComponent, PropType } from 'vue'
+    import { defineComponent, PropType, toRefs, ref } from 'vue'
     import useAssetInfo from '~/composables/asset/useAssetInfo'
     import { assetInterface } from '~/types/assets/asset.interface'
+    import AssetPreview from '@/discovery/preview/assetPreview.vue'
 
     export default defineComponent({
         name: 'ColumnListItem',
+        components: {
+            AssetPreview,
+        },
         props: {
             asset: {
                 type: Object as PropType<assetInterface>,
                 required: true,
             },
         },
-        setup() {
+        setup(props) {
             const { dataTypeImage } = useAssetInfo()
+
+            const { asset } = toRefs(props)
+
+            const showColumnSidebar = ref<boolean>(false)
+
+            const handleCloseColumnSidebar = () => {
+                showColumnSidebar.value = false
+            }
+            const propagateToColumnList = (updatedAsset: assetInterface) => {
+                asset.value = updatedAsset
+            }
 
             return {
                 dataTypeImage,
+                handleCloseColumnSidebar,
+                showColumnSidebar,
+                propagateToColumnList,
             }
         },
     })
 </script>
 
 <style scoped>
+    :global(.ant-drawer-content-wrapper) {
+        width: 420px !important;
+        background-color: white !important;
+    }
     .chip {
         @apply px-1 py-0.5 mr-1;
         @apply rounded;

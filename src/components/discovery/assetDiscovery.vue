@@ -2,7 +2,14 @@
     <div class="flex w-full">
         <div
             v-if="showFilters"
-            class="flex flex-col h-full overflow-y-auto bg-white border-r  facets"
+            class="
+                flex flex-col
+                h-full
+                overflow-y-auto
+                bg-white
+                border-r
+                facets
+            "
         >
             <AssetFilters
                 :ref="
@@ -328,7 +335,10 @@
                 })
             }
             const assetTypeListString = computed(() =>
-                assetTypeList.value.map((item) => item.id).join(',')
+                assetTypeList.value
+                    .map((item) => item.id)
+                    .slice(1)
+                    .join(',')
             )
 
             const {
@@ -409,7 +419,10 @@
                     includeSubClassifications: true,
                     limit: limit.value,
                     offset: offset.value,
-                    entityFilters: {},
+                    entityFilters: {
+                        condition: 'AND',
+                        criterion: [...filters.value],
+                    },
                     attributes: [
                         ...BaseAttributes,
                         ...BasicSearchAttributes,
@@ -417,10 +430,6 @@
                         ...BMAttributeProjection.value,
                     ],
                     aggregationAttributes: [],
-                }
-                initialBody.entityFilters = {
-                    condition: 'AND',
-                    criterion: [...filters.value],
                 }
 
                 if (assetType.value !== 'Catalog') {
@@ -560,21 +569,12 @@
                 filters.value = payload
                 offset.value = 0
                 isAggregate.value = true
-                const routerOptions = getRouterOptions()
-                const routerQuery = getEncodedStringFromOptions(routerOptions)
+                // const routerOptions = getRouterOptions()
+                // const routerQuery = getEncodedStringFromOptions(routerOptions)
                 updateBody()
-                pushQueryToRouter(routerQuery)
+                // pushQueryToRouter(routerQuery)
             }
-            const handleChangeConnectors = (payload: any) => {
-                connectorsPayload.value = payload
-                console.log('connector Change', payload)
-                const routerOptions = getRouterOptions()
-                const routerQuery = getEncodedStringFromOptions(routerOptions)
-                pushQueryToRouter(routerQuery)
-                isAggregate.value = true
-                offset.value = 0
-                updateBody()
-            }
+
             const handlePreview = (item) => {
                 emit('preview', item)
             }
@@ -622,7 +622,6 @@
                 handleChangePreferences,
                 handleChangeSort,
                 isLoading,
-                handleChangeConnectors,
                 handleFilterChange,
                 handlePreview,
                 queryText,
@@ -639,6 +638,7 @@
                 dynamicSearchPlaceholder,
                 setPlaceholder,
                 placeholderLabel,
+                filters,
             }
         },
         data() {

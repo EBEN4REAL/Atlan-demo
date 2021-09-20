@@ -46,9 +46,9 @@
             </template>
         </a-tree-select>
         <AssetDropdown
-            v-if="data.connectorsPayload.connection"
+            v-if="data.checked.connection"
             :connector="filteredConnector"
-            :data="data.connectorsPayload"
+            :data="data.checked"
             @change="handleChange"
             @label-change="setPlaceholder($event, 'asset')"
         ></AssetDropdown>
@@ -86,10 +86,10 @@
         components: {
             AssetDropdown,
         },
-        emits: ['change'],
+        emits: ['change', 'update:data'],
         setup(props, { emit }) {
             const { data } = toRefs(props)
-            const tabIds = ref([])
+            const tabIds: Ref<string[]> = ref([])
             const selectedValue = ref(
                 data.value.checked?.connection
                     ? data.value.checked?.connection
@@ -149,7 +149,7 @@
                 { immediate: true }
             )
             const store = useConnectionsStore()
-            const connectorsPayload = ref(data.value.connectorsPayload)
+
             const filteredList = computed(() => store.getSourceList)
             const getImage = (id: string) => store.getImage(id)
             const list = computed(() => List)
@@ -227,35 +227,37 @@
             const handleNodeSelect = (value, node) => {
                 // data.value.connector = node.dataRef.connector
                 // data.value.connection = node.dataRef.connection
-                data.value.connectorsPayload.connector = node.dataRef.connector
-                data.value.connectorsPayload.connection =
-                    node.dataRef.connection
-                data.value.checked.connector = node.dataRef.connector
-                data.value.checked.connection = node.dataRef.connection
-                console.log(value, node.dataRef, connectorsPayload, 'selected')
-            }
-            const handleSelectChange = (value, label) => {
-                const criterion: Components.Schemas.FilterCriteria[] = []
-                if (!value) {
-                    data.value.connectorsPayload.connector = undefined
-                    data.value.connectorsPayload.connection = undefined
+                const newData = {
+                    checked: {
+                        connector: node.dataRef.connector,
+                        connection: node.dataRef.connection,
+                    },
                 }
-                if (data.value.connectorsPayload?.connector) {
+                setVisibleTabIds(newData.checked.connector)
+                emit('update:data', newData)
+                // console.log(value, node.dataRef, connectorsPayload, 'selected')
+            }
+
+            watch(data, () => emitChangedFilters())
+
+            const emitChangedFilters = () => {
+                const criterion: Components.Schemas.FilterCriteria[] = []
+
+                if (data.value.checked?.connector) {
                     criterion?.push({
                         attributeName: 'integrationName',
-                        attributeValue: data.value.connectorsPayload?.connector,
+                        attributeValue: data.value.checked?.connector,
                         operator: 'eq',
                     })
                 }
-                if (data.value.connectorsPayload?.connection) {
+                if (data.value.checked?.connection) {
                     criterion?.push({
                         attributeName: 'connectionQualifiedName',
-                        attributeValue:
-                            data.value.connectorsPayload?.connection,
+                        attributeValue: data.value.checked?.connection,
                         operator: 'eq',
                     })
                 }
-                setVisibleTabIds(data.value.connectorsPayload?.connector)
+
                 console.log(tabIds.value, 'tabsIds')
 
                 emit(
@@ -270,19 +272,47 @@
                     tabIds.value
                 )
             }
-            const handleChange = (entityFilters: any) => {
-                // emit('change', {
-                //     id: props.item.id,
-                //     payload: {
-                //         condition: 'AND',
-                //         criterion:entityFilters.criterion,
-                //     } as Components.Schemas.FilterCriteria,
-                // })
-                console.log(entityFilters, 'criterion')
+
+            const handleSelectChange = (value, label) => {
+                if (!value) {
+                    setVisibleTabIds('')
+                    emit('update:data', {
+                        checked: {
+                            connector: undefined,
+                            connection: undefined,
+                        },
+                    })
+                }
             }
+
+            const handleChange = ({
+                attributeName,
+                attributeValue,
+            }: Record<string, string>) => {
+                if (attributeName && attributeValue)
+                    emit(
+                        'change',
+                        {
+                            id: props.item.id,
+                            payload: {
+                                condition: 'AND',
+                                criterion: [
+                                    {
+                                        attributeName,
+                                        attributeValue,
+                                        operator: 'eq',
+                                    },
+                                ],
+                            } as Components.Schemas.FilterCriteria,
+                        },
+                        tabIds.value
+                    )
+                else emitChangedFilters()
+            }
+
             const filteredConnector = computed(() =>
                 store.getSourceList?.find(
-                    (item) => data.value.connectorsPayload?.connector == item.id
+                    (item) => data.value.checked?.connector == item.id
                 )
             )
             function setPlaceholder(label: string, type: string) {
@@ -290,7 +320,7 @@
                 if (type === 'connector') placeholderLabel.value.asset = ''
             }
 
-            console.log(data.value.connectorsPayload, 'connectorsPayload')
+            console.log(data.value.checked, 'connectorsPayload')
 
             return {
                 handleChange,
@@ -299,7 +329,6 @@
                 setPlaceholder,
                 filteredConnector,
                 data,
-                connectorsPayload,
                 handleNodeSelect,
                 getImage,
                 filteredList,

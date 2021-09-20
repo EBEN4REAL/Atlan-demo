@@ -8,7 +8,7 @@
                     :type-name="item.typeName"
                     :filters="getFilter(index)"
                     :disabled="isDisabled(index)"
-                    @change="handleChange($event, item.level, filters)"
+                    @change="handleChange(item.level)"
                     :placeholder="`Select ${item.name}`"
                 ></AssetSelector>
             </div>
@@ -17,8 +17,8 @@
 </template>
 
 <script lang="ts">
-    import { computed, defineComponent, ref } from 'vue'
-    import AssetSelector from '@common/selector/asset/index.vue'
+    import { computed, defineComponent, ref, ComputedRef, Ref } from 'vue'
+    import AssetSelector from '~/components/common/dropdown/assetSelector.vue'
     import { useConnectionsStore } from '~/store/connections'
 
     export default defineComponent({
@@ -39,11 +39,9 @@
         },
         emits: ['labelChange', 'change'],
         setup(props, { emit }) {
-            const asset: { [key: string]: any } = ref({})
+            const asset: Ref<Record<string, any>> = ref({})
 
-            const assetDirty: { [key: string]: any } = ref({})
-
-            const list = computed(
+            const list: ComputedRef<any[]> = computed(
                 () =>
                     props.connector?.hierarchy.filter(
                         (item) => item.level < 3
@@ -116,37 +114,49 @@
                 return 'default'
             }
 
-            const dirtyTimestamp = ref('')
-            const selectorValue = ref(`All ${list.value[0]?.name}s`)
-            const handleChange = (value: any, level: number, filters: any) => {
+            // This function returns a string which can used in the main searchbar's placeholder
+            function setSelectorValue() {
+                // Iterate from the last to see the most granular filter value and display it
+                for (let i = list.value.length - 1; i >= 0; i--) {
+                    const lv = list.value[i]
+                    if (asset.value?.[lv.attribute])
+                        emit(
+                            'labelChange',
+                            asset.value?.[lv.attribute].split('/').pop()
+                        )
+                    return
+                }
+                emit('labelChange', '')
+            }
+
+            const handleChange = (level: number) => {
+                let isFilterAttributeFound = false
                 // Reset all values which are more than this level
                 list.value.forEach((lv) => {
                     if (lv.level > level) {
                         asset.value[lv.attribute] = undefined
                     }
                 })
-                setSelectorValue()
-                console.log(filters, 'filters')
-                // emit('change', filters)
-                // assetDirty[index] = Date.now().toString();
-                // dirtyTimestamp.value = Date.now().toString();
-            }
 
-            function setSelectorValue() {
-                // Iterate from the last to see the most granular filter value and display it
+                setSelectorValue()
+
+                // Check the most granular filter and emit it
                 for (let i = list.value.length - 1; i >= 0; i--) {
-                    const lv = list.value[i]
-                    if (asset.value?.[lv.attribute]) {
-                        selectorValue.value = asset.value?.[lv.attribute]
-                            .split('/')
-                            .pop()
-                        emit('labelChange', selectorValue.value)
-                        return
+                    const currentListItem = list.value[i]
+                    if (asset.value[currentListItem?.attribute]) {
+                        emit('change', {
+                            attributeName: currentListItem?.attribute,
+                            attributeValue:
+                                asset.value[currentListItem?.attribute],
+                        })
+                        isFilterAttributeFound = true
+                        break
                     }
                 }
 
-                selectorValue.value = `All ${list.value[0]?.name}s`
-                emit('labelChange', '')
+                // Emit with empty attributes when the selectors are cleared
+                if (!isFilterAttributeFound)
+                    emit('change', { attributeName: '', attributeValue: '' })
             }
 
             return {
@@ -154,12 +164,20 @@
                 asset,
                 getFilter,
                 handleChange,
-                dirtyTimestamp,
                 isDisabled,
                 getKey,
-                assetDirty,
-                selectorValue,
             }
         },
     })
 </script>
+
+<style scoped>
+    .connector-btn {
+        @apply flex items-center h-8 px-2 mb-0;
+        @apply text-xs tracking-wide text-gray;
+        @apply rounded cursor-pointer;
+    }
+    .connector-btn:hover {
+        @apply bg-gray-100;
+    }
+</style>

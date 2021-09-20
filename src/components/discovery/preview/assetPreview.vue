@@ -88,9 +88,15 @@
                 <template #tab>
                     <a-tooltip
                         placement="left"
-                        :title="tab.tooltip"
                         :mouse-enter-delay="0.5"
-                        ><div
+                        color="white"
+                    >
+                        <template #title>
+                            <span class="text-gray-500">
+                                {{ tab.tooltip }}
+                            </span>
+                        </template>
+                        <div
                             class="flex items-center justify-center w-full h-full "
                         >
                             <AtlanIcon

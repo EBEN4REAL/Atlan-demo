@@ -22,6 +22,9 @@ export default function useAssetInfo() {
     const assetType = (asset: assetInterface) => {
         return asset.typeName
     }
+    const assetState = (asset: assetInterface) => {
+        return asset.status.toLowerCase()
+    }
     const assetTypeLabel = (asset: assetInterface) => {
         const found = AssetTypeList.find((d) => d.id === assetType(asset))
         return found?.label
@@ -466,6 +469,7 @@ export default function useAssetInfo() {
         sourceUpdatedAt,
         sourceCreatedAt,
         lastCrawled,
+        assetState,
         tableInfo,
         ownerGroups,
         ownerUsers,

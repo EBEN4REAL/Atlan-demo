@@ -12,11 +12,16 @@
                 >
                     <template #pillPrefix="{ item }">
                         <avatar
+                            class="-ml-1"
                             v-if="item && item.type === 'user'"
-                            :image-url="`http://localhost:3333/api/auth/tenants/default/avatars/${item.username}`"
+                            :image-url="
+                                KeyMaps.auth.avatar.GET_AVATAR({
+                                    username: item.username,
+                                })
+                            "
                             :allow-upload="false"
                             :avatar-name="item.username"
-                            :avatar-size="20"
+                            :avatar-size="16"
                             :avatar-shape="'circle'"
                         />
                         <AtlanIcon
@@ -337,6 +342,7 @@
     import emptyScreen from '~/assets/images/empty_search.png'
     import whoami from '~/composables/user/whoami'
     import Avatar from '~/components/common/avatar.vue'
+    import { KeyMaps } from '~/api/keyMap'
 
     export default defineComponent({
         components: { OwnerInfoCard, SearchAndFilter, PillGroup, Avatar },
@@ -648,6 +654,7 @@
                 handleRemoveOwner,
                 handleCancelUpdateOwnerPopover,
                 ownerList,
+                KeyMaps,
             }
         },
     })

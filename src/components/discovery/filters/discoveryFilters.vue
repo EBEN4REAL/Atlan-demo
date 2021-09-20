@@ -23,6 +23,7 @@
     </div>
 
     <Connector
+        class="px-4 pt-3 pb-0"
         :data="dataMap.connector"
         :item="{
             id: 'connector',

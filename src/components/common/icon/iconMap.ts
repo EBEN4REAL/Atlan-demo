@@ -52,7 +52,6 @@ import Chats from '~/assets/images/icons/chats.svg'
 import OpenTermProfile from '~/assets/images/icons/openTermProfile.svg'
 import Metadata from '~/assets/images/icons/metadata.svg'
 import Group from '~/assets/images/icons/group.svg'
-import GroupHover from '~/assets/images/icons/group-hover.svg'
 
 export default {
     Metadata,
@@ -109,5 +108,4 @@ export default {
     Chats,
     OpenTermProfile,
     Group,
-    GroupHover
 }

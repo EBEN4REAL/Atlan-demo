@@ -12,19 +12,17 @@
                 >
                     <template #pillPrefix="{ item }">
                         <avatar
-                            v-if="item && item.type==='user'"
+                            v-if="item && item.type === 'user'"
                             :image-url="`http://localhost:3333/api/auth/tenants/default/avatars/${item.username}`"
                             :allow-upload="false"
-                            :avatar-name="
-                                item.username
-                            "
+                            :avatar-name="item.username"
                             :avatar-size="20"
                             :avatar-shape="'circle'"
-                            />
+                        />
                         <AtlanIcon
-                            v-else-if="item && item.type==='group'"
+                            v-else-if="item && item.type === 'group'"
                             icon="Group"
-                            class="h-4 text-primary group-hover:fill-current"
+                            class="h-4 text-primary group-hover:text-white"
                         />
                     </template>
                     <template #popover="{ item }"

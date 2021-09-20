@@ -1,5 +1,5 @@
 <template>
-    <div class="w-full px-4 pt-3 pb-0">
+    <div class="w-full">
         <a-tree-select
             v-model:value="selectedValue"
             style="width: 100%"

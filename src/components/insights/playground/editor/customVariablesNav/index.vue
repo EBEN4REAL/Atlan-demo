@@ -131,7 +131,7 @@
                     </p>
                 </div>
                 <div
-                    class="flex items-center justify-center h-full px-2 text-white rounded-tr rounded-br  bg-primary-400"
+                    class="flex items-center justify-center h-full px-2 text-white rounded-tr rounded-br  bg-primary"
                 >
                     <p
                         class="mb-0 truncate variable-value"
@@ -162,6 +162,7 @@
             const editorInstance = inject(
                 'editorInstance'
             ) as Ref<editor.IStandaloneCodeEditor>
+            const monacoInstance = inject('monacoInstance') as Ref<any>
             const currentSelectedVariable = ref(null)
             const sqlVariables = ref([
                 {
@@ -196,10 +197,33 @@
                     dropDownStatus: false,
                 }
                 sqlVariables.value.push(samlple_add_variable_obj)
-                editorInstance.value &&
-                    editorInstance.value.trigger('keyboard', 'type', {
-                        text: ` {{variable${currentVariablesLength}}}`,
-                    })
+                // const lineCount = editorInstance.value
+                //     .getModel()
+                //     ?.getLineCount()
+                const lastLineLength = editorInstance.value
+                    .getModel()
+                    ?.getLineMaxColumn(1)
+
+                // const range = new monacoInstance.value.Range(
+                //     lineCount,
+                //     lastLineLength,
+                //     lineCount,
+                //     lastLineLength
+                // )
+                // console.log(lineCount, editorInstance.value.trigger)
+
+                // editorInstance.value &&
+                //     editorInstance.value.executeEdits('', [
+                //         {
+                //             range: range,
+                //             text: ` {{variable${currentVariablesLength}}}`,
+                //         },
+                //     ])
+                // console.log(lastLineLength)
+                // editorInstance.value &&
+                //     editorInstance.value.trigger('keyboard', 'type', {
+                //         text: ` {{variable${currentVariablesLength}}}`,
+                //     })
             }
 
             const openDropdown = (variable: any) => {

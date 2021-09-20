@@ -199,10 +199,10 @@
                     onEditorContentChange(event, text)
                     const lastTypedCharacter = event?.changes[0]?.text
                     triggerAutoCompletion(lastTypedCharacter)
-                    emit('setEditorInstance', editor)
+                    emit('setEditorInstance', editor, monaco)
                 })
                 // on mounting
-                emit('setEditorInstance', editor)
+                emit('setEditorInstance', editor, monaco)
             })
 
             onUnmounted(() => {
@@ -229,7 +229,7 @@
                     }
                     editor?.setPosition(position)
                     // on active inline tab change
-                    emit('setEditorInstance', editor)
+                    emit('setEditorInstance', editor, monaco)
                 }
             })
             return {

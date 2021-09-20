@@ -1,5 +1,5 @@
 <template>
-    <div class="w-full h-full px-3 pb-3 rounded">
+    <div class="w-full h-full px-3 rounded">
         <div class="w-full h-full overflow-x-hidden rounded">
             <CustomVariablesNav v-if="editorInstance" />
             <div
@@ -51,6 +51,7 @@
                 'activeInlineTab'
             ) as Ref<activeInlineTabInterface>
             const editorInstance = ref()
+            const monacoInstance = ref()
             const tabs = inject('inlineTabs') as Ref<activeInlineTabInterface[]>
             const isQueryRunning = inject('isQueryRunning') as Ref<string>
             const { modifyActiveInlineTab } = useInlineTab()
@@ -67,16 +68,23 @@
                 queryRun(activeInlineTab.value, getData, isQueryRunning)
             }
             const setEditorInstance = (
-                instance: editor.IStandaloneCodeEditor
+                editorInstanceParam: editor.IStandaloneCodeEditor,
+                monacoInstanceParam: any
             ) => {
-                console.log(instance, 'instance value')
-                editorInstance.value = instance
+                console.log(
+                    editorInstanceParam,
+                    monacoInstanceParam,
+                    'instance value'
+                )
+                editorInstance.value = editorInstanceParam
+                monacoInstance.value = monacoInstanceParam
             }
             /*---------- PROVIDERS FOR CHILDRENS -----------------
             ---Be careful to add a property/function otherwise it will pollute the whole flow for childrens--
             */
             const provideData: provideDataInterface = {
                 editorInstance: editorInstance,
+                monacoInstance: monacoInstance,
             }
             useProvide(provideData)
             /*-------------------------------------*/

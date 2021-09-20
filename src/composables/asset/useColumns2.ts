@@ -32,6 +32,9 @@ export default function useColumns2({
         includeSubClassifications: true,
         includeSubTypes: true,
         attributes: [
+            'description',
+            'userDescription',
+            'customDescription',
             'owner',
             'expert',
             'files',

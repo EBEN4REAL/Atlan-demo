@@ -26,7 +26,10 @@
             :key="index"
             class="flex flex-col mb-4 overflow-y-auto"
         >
-            <ColumnListItem :asset="asset" />
+            <ColumnListItem
+                :asset="asset"
+                @asset-mutation="propagateToColumnList"
+            />
         </div>
         <div
             v-if="isLoading"
@@ -86,6 +89,10 @@
                 entityParentQualifiedName: assetQualifiedName,
             })
 
+            const propagateToColumnList = () => {
+                mutate()
+            }
+
             /*  const {
                 filteredList,
                 isLoading,
@@ -104,6 +111,7 @@
                 isLoading,
                 dataTypeList,
                 filters,
+                propagateToColumnList,
             }
         },
     })

@@ -28,8 +28,12 @@
             <AtlanIcon icon="ForeignKey" />
         </div>
     </div>
-    <span class="text-xs leading-relaxed text-gray-500 whitespaceßpre-wrap">
-        {{ asset.attributes.description || 'No description' }}
+    <span class="text-xs leading-relaxed text-gray-500 whitespace-pre-wrap">
+        {{
+            asset.attributes.description ||
+            asset.attributes.userDescription ||
+            'No description'
+        }}
     </span>
     <teleport to="#overAssetPreviewSidebar">
         <a-drawer
@@ -70,7 +74,9 @@
                 required: true,
             },
         },
-        setup(props) {
+        emits: ['assetMutation'],
+
+        setup(props, { emit }) {
             const { dataTypeImage } = useAssetInfo()
 
             const { asset } = toRefs(props)
@@ -79,9 +85,11 @@
 
             const handleCloseColumnSidebar = () => {
                 showColumnSidebar.value = false
+                console.log('Column', asset.value)
             }
             const propagateToColumnList = (updatedAsset: assetInterface) => {
                 asset.value = updatedAsset
+                emit('assetMutation', updatedAsset)
             }
 
             return {

@@ -1,7 +1,27 @@
 <template>
     <div class="flex flex-col items-center w-full h-full bg-white border-r">
-        <div class="w-full p-3 pb-0">
-            <div class="w-full h-40 mb-3 rounded placeholder"></div>
+        <div class="w-full p-3 mb-3">
+            <Connector
+                v-model:data="connectors"
+                :item="{
+                    id: 'connector',
+                    label: 'Connector',
+                    component: 'connector',
+                    overallCondition: 'OR',
+                    filters: [
+                        {
+                            attributeName: 'connector',
+                            condition: 'OR',
+                            isMultiple: false,
+                            operator: 'eq',
+                        },
+                    ],
+                    isDeleted: false,
+                    isDisabled: false,
+                    exclude: false,
+                }"
+                @change="handleChange"
+            ></Connector>
         </div>
         <div class="w-full p-3 pt-0 overflow-y-auto scrollable-container">
             <template v-for="table in tables" :key="table.id">
@@ -27,9 +47,10 @@
     import { tableInterface } from '~/types/insights/table.interface'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
     import { tablesData } from './tablesDemoData'
+    import Connector from '@common/facets/connector.vue'
 
     export default defineComponent({
-        components: {},
+        components: { Connector },
         props: {},
         setup(props, { emit }) {
             const tables: tableInterface[] = tablesData
@@ -49,9 +70,18 @@
                 }
                 return false
             }
+            const connectors = {
+                connectorsPayload: [],
+                checked: [],
+            }
+            const handleChange = (e) => {
+                console.log(e, 'connectorChange')
+            }
             return {
+                connectors,
                 isAssetSidebarOpened,
                 openAssetSidebar,
+                handleChange,
                 tables,
             }
         },

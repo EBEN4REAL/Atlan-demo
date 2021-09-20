@@ -22,8 +22,9 @@
         </div>
     </div>
     <div class="h-full overflow-y-auto">
+        <p class="px-4 mt-3 mb-0 tracking-wide text-gray">Connector</p>
         <Connector
-            class="px-4 pt-3 pb-0"
+            class="px-4 py-3"
             :data="dataMap.connector"
             :item="{
                 id: 'connector',
@@ -72,16 +73,14 @@
                             class="flex items-center justify-between align-middle "
                         >
                             <div class="flex flex-col flex-1">
-                                <div class="tracking-wide">
-                                    <span class="text-gray">
-                                        <img
-                                            v-if="item.image"
-                                            :src="item.image"
-                                            class="float-left w-auto h-5 mr-2"
-                                        />
-                                        {{ item.label }}</span
-                                    >
-                                </div>
+                                <span class="tracking-wide text-gray">
+                                    <img
+                                        v-if="item.image"
+                                        :src="item.image"
+                                        class="float-left w-auto h-5 mr-2"
+                                    />
+                                    {{ item.label }}</span
+                                >
                                 <div
                                     v-if="!activeKey.includes(item.id)"
                                     class="text-gray-500"

@@ -51,7 +51,8 @@ export default function useProject() {
 
     const queryRun = (
         activeInlineTab: activeInlineTabInterface,
-        getData: any
+        getData: any,
+        isQueryRunning: Ref<string>
     ) => {
         let queryText = activeInlineTab.playground.editor.text
         // by default limiting query to 100 if limit is not there

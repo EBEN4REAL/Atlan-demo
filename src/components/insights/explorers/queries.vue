@@ -21,15 +21,21 @@
     import { defineComponent, inject, Ref } from 'vue'
     import { SavedQueryInterface } from '~/types/insights/savedQuery.interface'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
+    import { useSavedQuery } from '~/components/insights/explorers/composables/useSavedQuery'
 
     export default defineComponent({
         components: {},
         props: {},
-        emits: ['openSavedQueryInNewTab'],
-        setup(props, { emit }) {
+        setup(props) {
             const inlineTabs = inject('inlineTabs') as Ref<
                 activeInlineTabInterface[]
             >
+            const activeInlineTab = inject(
+                'activeInlineTab'
+            ) as Ref<activeInlineTabInterface>
+            const activeInlineTabKey = inject(
+                'activeInlineTabKey'
+            ) as Ref<string>
             const savedQueries: SavedQueryInterface[] = [
                 {
                     id: '1x',
@@ -51,12 +57,11 @@
                     result: 'Saved Query 3',
                 },
             ]
-
-            const openSavedQueryInNewTab = (
-                savedQuery: SavedQueryInterface
-            ) => {
-                emit('openSavedQueryInNewTab', savedQuery)
-            }
+            const { openSavedQueryInNewTab } = useSavedQuery(
+                inlineTabs,
+                activeInlineTab,
+                activeInlineTabKey
+            )
             const isSavedQueryOpened = (savedQuery: SavedQueryInterface) => {
                 let bool = false
                 inlineTabs.value.forEach((tab) => {

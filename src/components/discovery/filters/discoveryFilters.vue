@@ -23,7 +23,8 @@
     </div>
 
     <Connector
-        v-model:data="dataMap['connector']"
+        class="px-4 pt-3 pb-0"
+        :data="dataMap.connector"
         :item="{
             id: 'connector',
             label: 'Connector',
@@ -42,6 +43,7 @@
             exclude: false,
         }"
         @change="handleChange"
+        @update:data="setConnector"
     ></Connector>
     <a-collapse
         v-model:activeKey="activeKey"
@@ -255,8 +257,6 @@
             // Mapping of Data to child components
             const dataMap: { [key: string]: any } = ref({})
             dataMap.value.connector = {
-                connectorsPayload:
-                    props.initialFilters.facetsFilters.connector.checked,
                 checked: props.initialFilters.facetsFilters.connector.checked,
             }
             dataMap.value.assetCategory = {
@@ -344,9 +344,13 @@
                 dirtyTimestamp.value = `dirty_${Date.now().toString()}`
                 console.log(dirtyTimestamp.value)
                 setAppliedFiltersCount()
-                refresh()
                 modifyTabs(tabsIds)
+                refresh()
                 // updateChangesInStore(value);
+            }
+
+            const setConnector = (payload: any) => {
+                dataMap.value.connector = payload
             }
 
             const isFilter = (id: string) => {
@@ -370,10 +374,6 @@
             const handleClear = (filterId: string) => {
                 switch (filterId) {
                     case 'connector': {
-                        dataMap.value[filterId].connectorsPayload = {
-                            connection: undefined,
-                            connector: undefined,
-                        }
                         dataMap.value[filterId].checked = {
                             connection: undefined,
                             connector: undefined,
@@ -424,8 +424,7 @@
             function getFiltersAppliedString(filterId: string) {
                 switch (filterId) {
                     case 'connector': {
-                        let facetFiltersData =
-                            dataMap.value[filterId].connectorsPayload
+                        let facetFiltersData = dataMap.value[filterId].checked
                         let str = ''
                         console.log(facetFiltersData, 'applied')
                         if (facetFiltersData?.connector) {
@@ -539,11 +538,6 @@
             }
 
             function resetAllFilters() {
-                dataMap.value.connector.connectorsPayload = []
-                dataMap.value.connector.connectorsPayload = {
-                    connection: undefined,
-                    connector: undefined,
-                }
                 dataMap.value.connector.checked = {
                     connection: undefined,
                     connector: undefined,
@@ -592,6 +586,7 @@
                 handleClear,
                 dynamicList,
                 bmFiltersList,
+                setConnector,
             }
         },
         data() {

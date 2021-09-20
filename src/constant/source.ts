@@ -71,7 +71,7 @@ export const SourceList = [
     },
     {
         id: 'powerBI',
-        label: 'Power BI',
+        label: 'PowerBI',
         image: tableau,
         hierarchy: [],
     }

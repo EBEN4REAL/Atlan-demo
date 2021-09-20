@@ -94,17 +94,26 @@ export default function useAssetInfo() {
     }
 
     const sourceUpdatedAt = (asset: assetInterface, raw: boolean = false) => {
-        return raw
-        ? formatDateTime(attributes(asset)?.sourceUpdatedAt) || 'N/A'
-        : useTimeAgo(attributes(asset)?.sourceUpdatedAt).value
+        if(attributes(asset)?.sourceUpdatedAt){
+            return raw
+            ? formatDateTime(attributes(asset)?.sourceUpdatedAt) || 'N/A'
+            : useTimeAgo(attributes(asset)?.sourceUpdatedAt).value
+        }
+        return ''
     }
-
     const sourceCreatedAt = (asset: assetInterface, raw: boolean = false) => {
-        return raw
-        ? formatDateTime(attributes(asset)?.sourceCreatedAt) || 'N/A'
-        : useTimeAgo(attributes(asset)?.sourceCreatedAt).value
+        if(attributes(asset)?.sourceCreatedAt){
+            return raw
+            ? formatDateTime(attributes(asset)?.sourceCreatedAt) || 'N/A'
+            : useTimeAgo(attributes(asset)?.sourceCreatedAt).value
+        }
+        return ''
     }
 
+    const sourceUpdatedBy = (asset: assetInterface) => attributes(asset)?.sourceUpdatedBy || ''
+    
+    const sourceCreatedBy = (asset: assetInterface) => attributes(asset)?.sourceCreatedBy || ''
+    
 
     
 
@@ -468,6 +477,8 @@ export default function useAssetInfo() {
         updatedAt,
         sourceUpdatedAt,
         sourceCreatedAt,
+        sourceCreatedBy,
+        sourceUpdatedBy,
         lastCrawled,
         assetState,
         tableInfo,

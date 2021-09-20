@@ -1,68 +1,62 @@
 <template>
     <div class="mb-3 text-xs text-gray-500">
         <p class="mb-1 text-xs">Description</p>
-        <a-popover
-            v-model:visible="isCompleted"
-            placement="left"
-            trigger="click"
-            @visibleChange="handleVisibleChange"
-            :destroyTooltipOnHide="true"
+        <div v-if="showEditableDescription && !isLoading">
+            <a-textarea
+                id="description-sidebar"
+                v-model:value="descriptionInput"
+                class="inline-block w-full text-sm cursor-pointer  text-gray focus:bg-gray-100"
+                autofocus
+                placeholder="Add an asset description"
+                show-count
+                :maxlength="140"
+                :rows="4"
+                @blur="handleDescriptionEdit"
+                @pressEnter="endEditDescription"
+            >
+            </a-textarea>
+        </div>
+        <span
+            v-if="
+                description &&
+                description !== '' &&
+                !showEditableDescription &&
+                !isLoading
+            "
+            class="inline-block w-full p-2 text-sm rounded-sm cursor-pointer  text-gray hover:bg-gray-100"
+            style="margin-left: -8px"
+            @click="handleAddDescriptionClick"
         >
-            <template #content>
-                <div class="">
-                    <a-textarea
-                        v-model:value="descriptionInput"
-                        autofocus
-                        placeholder="Add an asset description"
-                        show-count
-                        :maxlength="140"
-                        :rows="4"
-                        style="width: 280px"
-                        @change="handleTextAreaUpdate"
-                    >
-                    </a-textarea>
-                    <div class="flex justify-end w-full mt-4 space-x-4">
-                        <a-button class="px-4" @click="handleCancel"
-                            >Cancel</a-button
-                        >
-                        <a-button
-                            type="primary"
-                            class="px-4"
-                            :loading="isLoading"
-                            @click="handleUpdate"
-                            >Update</a-button
-                        >
-                    </div>
-                </div>
-            </template>
-            <div class="inline-block text-sm cursor-pointer text-gray">
-                <p v-if="description" class="mb-0">
-                    {{ description }}
-                </p>
-                <div v-else>
-                    <div
-                        class="flex items-center cursor-pointer  text-primary hover:text-primary hover:underline"
-                    >
-                        <!-- <span class="flex items-center text-xs">
-                            <fa icon="fal plus" />
-                        </span> -->
-                        <span class="text-xs">Update description</span>
-                    </div>
-                </div>
-            </div>
-        </a-popover>
+            {{ description }}
+        </span>
+        <span
+            v-if="
+                (!description || description === '') &&
+                !showEditableDescription &&
+                !isLoading
+            "
+            class="text-xs cursor-pointer text-primary hover:underline"
+            @click="handleAddDescriptionClick"
+        >
+            Add description
+        </span>
+        <div
+            v-if="isLoading"
+            class="flex items-center justify-center text-sm leading-none"
+        >
+            <a-spin size="small" class="leading-none"></a-spin>
+        </div>
     </div>
 </template>
 
 <script lang="ts">
-    import { useMagicKeys } from '@vueuse/core'
     import {
         defineComponent,
-        nextTick,
         PropType,
-        ref,
         toRefs,
+        ref,
         watch,
+        nextTick,
     } from 'vue'
     import updateDescription from '~/composables/asset/updateDescription'
     import { assetInterface } from '~/types/assets/asset.interface'
@@ -77,56 +71,43 @@
         emits: ['update:selectedAsset'],
         setup(props, { emit }) {
             const { selectedAsset } = toRefs(props)
-            const {
-                isLoading,
-                update,
-                handleCancel,
-                isReady,
-                state,
-                description,
-                isCompleted,
-            } = updateDescription(selectedAsset)
+            const { update, description, isLoading } =
+                updateDescription(selectedAsset)
 
-            const handleUpdate = () => {
-                update()
-            }
+            const showEditableDescription = ref<boolean>(false)
 
-            const descriptionInput = ref(description.value)
-            const handleVisibleChange = () => {
-                descriptionInput.value = description.value
-                if (descriptionInput?.value) {
-                    nextTick(() => {
-                        descriptionInput?.value?.$el?.focus()
-                    })
+            const descriptionInput = ref()
+            const handleDescriptionEdit = (e: any) => {
+                if (description.value !== e.target.value) {
+                    description.value = e.target.value
+                    update()
                 }
-            }
-            const handleTextAreaUpdate = (e: any) => {
-                description.value = e.target.value
+                showEditableDescription.value = false
             }
 
-            const keys = useMagicKeys()
-            const esc = keys.Escape
+            const endEditDescription = () => {
+                document.getElementById('description-sidebar').blur()
+            }
 
-            watch(esc, (v) => {
-                if (v) {
-                    handleCancel()
-                }
-            })
+            const handleAddDescriptionClick = () => {
+                showEditableDescription.value = true
+                nextTick(() => {
+                    descriptionInput.value = description.value
+                    document.getElementById('description-sidebar').focus()
+                })
+            }
 
             watch(description, () => {
                 emit('update:selectedAsset', selectedAsset.value)
             })
 
             return {
-                handleTextAreaUpdate,
-                handleUpdate,
-                handleCancel,
-                handleVisibleChange,
-                descriptionInput,
-                isReady,
-                state,
                 description,
-                isCompleted,
+                handleDescriptionEdit,
+                endEditDescription,
+                showEditableDescription,
+                handleAddDescriptionClick,
+                descriptionInput,
                 isLoading,
             }
         },

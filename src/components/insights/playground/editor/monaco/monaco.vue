@@ -15,7 +15,6 @@
         inject,
         Ref,
         watch,
-        computed,
     } from 'vue'
 
     import savedQuery from '@/projects/monaco/savedQuery'
@@ -27,6 +26,7 @@
     import * as monaco from 'monaco-editor'
     import fetchColumnList from '~/composables/columns/fetchColumnList'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
+    import { useEditor } from '~/components/insights/playground/common/composables/useEditor'
 
     const turndownService = new TurndownService({})
 
@@ -45,11 +45,11 @@
             const activeInlineTab = inject(
                 'activeInlineTab'
             ) as Ref<activeInlineTabInterface>
+            const tabs = inject('inlineTabs') as Ref<activeInlineTabInterface[]>
             const monacoRoot = ref<HTMLElement>()
+            const disposable: Ref<monaco.IDisposable | undefined> = ref()
             let editor: monaco.editor.IStandaloneCodeEditor
-            const onEditorContentChange = inject(
-                'onEditorContentChange'
-            ) as Function
+            const { onEditorContentChange } = useEditor(tabs, activeInlineTab)
 
             const entityFilters = {
                 condition: 'OR',
@@ -95,19 +95,55 @@
                 'atlansql',
                 languageTokens
             )
-
-            monaco.languages.registerCompletionItemProvider('atlansql', {
-                provideCompletionItems() {
-                    // For object properties https://microsoft.github.io/monaco-editor/api/interfaces/monaco.languages.completionitem.html
-                    return {
-                        suggestions: [
-                            ...savedQuery(),
-                            ...sqlKeywords(),
-                            ...columnSuggestion(unref(list.value)),
-                        ],
-                    }
-                },
-            })
+            function randStr(len = 7) {
+                let s = ''
+                while (s.length < len)
+                    s += Math.random()
+                        .toString(36)
+                        .substr(2, len - s.length)
+                return s
+            }
+            const generateKeywordSuggestions = (lastTypedCharacter) => {
+                const randomKeywords = []
+                Array(8)
+                    .fill('')
+                    .forEach(() => {
+                        const randomString = randStr()
+                        const keyword = {
+                            label: lastTypedCharacter + randomString,
+                            kind: monaco.languages.CompletionItemKind.Keyword,
+                            insertText: lastTypedCharacter + randomString,
+                        }
+                        randomKeywords.push(keyword)
+                    })
+                return randomKeywords
+            }
+            const triggerAutoCompletion = (lastTypedCharacter) => {
+                let randomKeywords = []
+                if (lastTypedCharacter !== '')
+                    randomKeywords =
+                        generateKeywordSuggestions(lastTypedCharacter)
+                // clearing previous popover register data
+                if (disposable) disposable.value?.dispose()
+                console.log(randomKeywords)
+                disposable.value =
+                    monaco.languages.registerCompletionItemProvider(
+                        'atlansql',
+                        {
+                            provideCompletionItems() {
+                                // For object properties https://microsoft.github.io/monaco-editor/api/interfaces/monaco.languages.completionitem.html
+                                return {
+                                    suggestions: [
+                                        ...randomKeywords,
+                                        ...savedQuery(),
+                                        ...sqlKeywords(),
+                                        ...columnSuggestion(unref(list.value)),
+                                    ],
+                                }
+                            },
+                        }
+                    )
+            }
 
             monaco.languages.registerHoverProvider('atlansql', {
                 provideHover(model, position, token) {
@@ -140,7 +176,6 @@
                     }
                 },
             })
-            const a = () => console.log('b')
             onMounted(() => {
                 editor = monaco.editor.create(monacoRoot.value as HTMLElement, {
                     language: 'atlansql',
@@ -159,7 +194,11 @@
                 })
                 editor.getModel().onDidChangeContent((event) => {
                     const text = editor.getValue()
+                    console.log(event)
                     onEditorContentChange(event, text)
+                    const lastTypedCharacter = event?.changes[0]?.text
+                    //
+                    triggerAutoCompletion(lastTypedCharacter)
                 })
             })
 

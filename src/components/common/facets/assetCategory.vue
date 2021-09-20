@@ -30,7 +30,7 @@
                     />
                     <template #title>
                         <span class="text-gray-500">
-                            {{ item.include.join(', ') }}
+                            {{ item.includeLabels.join(', ') }}
                         </span>
                     </template>
                 </a-tooltip>
@@ -97,6 +97,14 @@
                             'TableauWorksheet',
                             'TableauDashboard',
                             'TableauDatasource',
+                            'PowerBIWorkspace',
+                            'PowerBIDashboard',
+                            'PowerBIReport',
+                            'PowerBIDataset',
+                            'PowerBIDataflow',
+                            'PowerBITile',
+                            'PowerBIPage',
+                            'PowerBIDatasource'
                         ]
                         break
                     }

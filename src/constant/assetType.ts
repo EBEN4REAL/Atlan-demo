@@ -126,4 +126,56 @@ export const AssetTypeList = [
         label: 'Tableau Datasource Field',
         parents: ['TableauWorkbook'],
     },
+    {
+        id: 'PowerBIWorkspace',
+        label: 'Power BI Workspace',
+        isDiscoverable: true,
+        parents: [],
+        children:['PowerBIDashboard']
+    },
+    {
+        id: 'PowerBIDashboard',
+        label: 'Power BI Dashboard',
+        isDiscoverable: true,
+        parents: ['PowerBIWorkspace'],
+        children:['PowerBITile']
+    },
+    {
+        id: 'PowerBIReport',
+        label: 'Power BI Report',
+        isDiscoverable: true,
+        parents: ['PowerBIWorkspace'],
+        children:['PowerBIPage']
+    },
+    {
+        id: 'PowerBIDataset',
+        label: 'Power BI Dataset',
+        isDiscoverable: true,
+        parents: ['PowerBIWorkspace'],
+        children:['PowerBIDatasource']
+    },
+    {
+        id: 'PowerBIDataflow',
+        label: 'Power BI Dataflow',
+        isDiscoverable: true,
+        parents: ['PowerBIWorkspace'],
+    },
+    {
+        id: 'PowerBITile',
+        label: 'Power BI Tile',
+        isDiscoverable: true,
+        parents: ['PowerBIWorkspace','PowerBIDashboard'],
+    },
+    {
+        id: 'PowerBIPage',
+        label: 'Power BI Page',
+        isDiscoverable: true,
+        parents: ['PowerBIWorkspace','PowerBIReport'],
+    },
+    {
+        id: 'PowerBIDatasource',
+        label: 'Power BI Datasource',
+        isDiscoverable: true,
+        parents: ['PowerBIWorkspace','PowerBIDataset'],
+    }
 ]

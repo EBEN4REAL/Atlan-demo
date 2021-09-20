@@ -98,6 +98,7 @@ export const List: CollapseArray = [
         isDisabled: false,
         exclude: false,
     },
+
     {
         id: 'advanced',
         label: 'Properties',

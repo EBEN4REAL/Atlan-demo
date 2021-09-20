@@ -2,10 +2,10 @@
     <div class="flex-1 p-3 rounded">
         <div class="flex justify-center w-full h-full overflow-x-auto rounded">
             <a-table
-                class="w-full h-full overflow-x-auto"
+                class="w-full overflow-x-auto"
                 :class="$style.result_tab"
-                :data-source="queryDataList"
-                :columns="queryColumnList"
+                :data-source="activeInlineTab.playground.editor.dataList"
+                :columns="activeInlineTab.playground.editor.columnList"
                 :scroll="{ x: 500, y: 240 }"
             />
         </div>
@@ -32,11 +32,8 @@
             const activeInlineTab = inject(
                 'activeInlineTab'
             ) as Ref<activeInlineTabInterface>
-            const queryDataList = inject('queryDataList') as Ref<any>
-            const queryColumnList = inject('queryColumnList') as Ref<any>
+            console.log(activeInlineTab.value.playground.editor, 'editor')
             return {
-                queryDataList,
-                queryColumnList,
                 activeInlineTab,
             }
         },

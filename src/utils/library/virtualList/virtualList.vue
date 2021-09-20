@@ -17,7 +17,7 @@
             </div>
             <div
                 v-for="(item, idx) in pool"
-                :key="item[dataKey]"
+                :key="item?.[dataKey]"
                 class="flex-shrink-0 virtual-list-item"
             >
                 <slot :item="item" :index="idx + listIndices[0]"></slot>
@@ -34,7 +34,7 @@
         <div v-else-if="data.length">
             <div
                 v-for="(item, idx) in data"
-                :key="item[dataKey]"
+                :key="item?.[dataKey]"
                 class="flex-shrink-0 virtual-list-item"
             >
                 <slot :item="item" :index="idx"></slot>
@@ -134,7 +134,8 @@
 
             // Virtualize the container if there are more than 20 elements
             // for varible-height, always virtualize.
-            const isVirtualised = computed(() => data.value?.length > 20)
+            // const isVirtualised = computed(() => data.value?.length > 20)
+            const isVirtualised = ref(false)
 
             /** Slice of the data that is actually rendered on the screen */
             const pool = computed(() =>

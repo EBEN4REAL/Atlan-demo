@@ -6,7 +6,16 @@ export interface activeInlineTabInterface {
     explorer: Object
     favico: string | undefined
     playground: {
-        editorTitle: string
+        editor: {
+            text: string
+            dataList: Array<any>
+            columnList: Array<{
+                title: string
+                dataIndex: string
+                width: string
+                key: any
+            }>
+        }
         resultsPane: {
             activeTab: number
             result: {

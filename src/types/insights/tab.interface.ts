@@ -3,4 +3,5 @@ export interface TabInterface {
     name: string
     component: string
     icon: string | undefined
+    isVisible: boolean
 }

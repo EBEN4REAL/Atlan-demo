@@ -1,5 +1,5 @@
 <template>
-    <div ref="monacoRoot" class="w-full h-full monacoeditor"></div>
+    <div ref="monacoRoot" class="monacoeditor"></div>
 </template>
 
 <script lang="ts">
@@ -12,6 +12,9 @@
         unref,
         onMounted,
         onUnmounted,
+        inject,
+        Ref,
+        watch,
         computed,
     } from 'vue'
 
@@ -23,6 +26,7 @@
     import TurndownService from 'turndown'
     import * as monaco from 'monaco-editor'
     import fetchColumnList from '~/composables/columns/fetchColumnList'
+    import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
 
     const turndownService = new TurndownService({})
 
@@ -37,9 +41,15 @@
     }
 
     export default defineComponent({
-        setup() {
+        setup(props, { emit }) {
+            const activeInlineTab = inject(
+                'activeInlineTab'
+            ) as Ref<activeInlineTabInterface>
             const monacoRoot = ref<HTMLElement>()
             let editor: monaco.editor.IStandaloneCodeEditor
+            const onEditorContentChange = inject(
+                'onEditorContentChange'
+            ) as Function
 
             const entityFilters = {
                 condition: 'OR',
@@ -130,11 +140,11 @@
                     }
                 },
             })
-
+            const a = () => console.log('b')
             onMounted(() => {
                 editor = monaco.editor.create(monacoRoot.value as HTMLElement, {
                     language: 'atlansql',
-                    value: `SELECT * from superstore_sales_data_2016-present`,
+                    value: activeInlineTab.value.playground.editor.text,
                     renderLineHighlight: 'none',
                     theme: 'vs',
                     minimap: {
@@ -147,9 +157,36 @@
                         strings: false,
                     },
                 })
+                editor.getModel().onDidChangeContent((event) => {
+                    const text = editor.getValue()
+                    onEditorContentChange(event, text)
+                })
             })
+
             onUnmounted(() => {
                 editor.dispose()
+            })
+            /*Watcher for changing the content of the editor on activeInlineTab Change*/
+            watch(activeInlineTab, () => {
+                if (activeInlineTab.value) {
+                    editor?.setModel(null)
+                    const model = monaco.editor.createModel(
+                        String(activeInlineTab.value.playground.editor.text),
+                        'atlansql'
+                    )
+
+                    editor?.setModel(model)
+                    editor.getModel().onDidChangeContent((event) => {
+                        const text = editor.getValue()
+                        onEditorContentChange(event, text)
+                    })
+                    const range = editor?.getModel().getFullModelRange()
+                    const position = {
+                        column: range.endColumn,
+                        lineNumber: range.endLineNumber,
+                    }
+                    editor?.setPosition(position)
+                }
             })
             return {
                 monacoRoot,
@@ -160,7 +197,7 @@
 
 <style scoped>
     .monacoeditor {
-        height: 87%;
+        height: 90% !important;
     }
     .editor_wrapper {
         overflow: hidden;

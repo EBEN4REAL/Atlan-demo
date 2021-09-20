@@ -10,13 +10,13 @@
                     @add="toggleOwnerPopover"
                     @delete="handleRemoveOwner"
                 >
-                    <!-- <template #pillPrefix>
+                    <template #pillPrefix>
                         <img
-                            src="https://picsum.photos/id/237/50/50"
+                            src="https://picsum.photos/id/1005/50/50"
                             alt="view"
-                            class="w-4 h-4 rounded-full"
+                            class="w-5 h-5 -ml-1 rounded-full"
                         />
-                    </template> -->
+                    </template>
                     <template #popover="{ item }"
                         ><OwnerInfoCard :user="item"
                     /></template>

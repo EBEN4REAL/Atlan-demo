@@ -48,7 +48,7 @@
         },
         props: {},
         setup(props) {
-            const { allTabs: tabsList } = useInsightsTabList()
+            const { filteredTabs: tabsList } = useInsightsTabList()
             const activeInlineTab = inject(
                 'activeInlineTab'
             ) as Ref<activeInlineTabInterface>
@@ -99,6 +99,7 @@
 
         :global(.ant-tabs-bar) {
             margin-bottom: 0px;
+            @apply h-11 !important;
         }
         :global(.ant-tabs-content) {
             @apply px-0 !important;

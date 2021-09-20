@@ -81,9 +81,6 @@
                                 <StatusBadge
                                     :key="entity?.guid"
                                     :status-id="entity?.attributes?.assetStatus"
-                                    :status-message="
-                                        entity?.attributes?.assetStatusMessage
-                                    "
                                     :show-chip-style-status="false"
                                     :show-no-status="true"
                                     :show-label="true"

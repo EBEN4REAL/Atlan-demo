@@ -494,7 +494,7 @@
                 glossaries: searchGlossaries,
                 isLoading: searchLoading,
                 fetchAssetsPaginated: searchAssetsPaginated,
-            } = useGtcSearch(parentGlossaryQualifiedName)
+            } = useGtcSearch(parentGlossaryQualifiedName, searchQuery)
 
 
             // methods
@@ -513,7 +513,6 @@
 
             const onSearch = useDebounceFn(() => {
                 if(searchQuery.value?.length) {
-                    console.log('searching ', searchQuery.value)
                     searchAssetsPaginated({
                         query: `${searchQuery.value ? `${searchQuery.value}` : ''}`,
                         offset: 0,

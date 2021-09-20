@@ -19,7 +19,7 @@ type Filters = {
         }
     }[]
 }
-export default function useGtcSearch(qualifiedName: ComputedRef<string>) {
+export default function useGtcSearch(qualifiedName: ComputedRef<string>, dependantFetchingKey?: Ref<any>) {
     const requestQuery = ref<string>()
     const offsetLocal = ref(0)
     const defaultLimit = 50
@@ -137,8 +137,8 @@ export default function useGtcSearch(qualifiedName: ComputedRef<string>) {
     } = useAPI<any>(GTC_SEARCH, 'POST', {
         cache: false,
         body,
-        dependantFetchingKey: qualifiedName,
         options: {
+            immediate: dependantFetchingKey && dependantFetchingKey.value ? true : qualifiedName.value ? true : false,
             revalidateOnFocus: false,
         },
     })
@@ -147,16 +147,19 @@ export default function useGtcSearch(qualifiedName: ComputedRef<string>) {
 
 
     watch(qualifiedName, () => {
-        limitLocal.value = defaultLimit
-        offsetLocal.value = 0
+        if((dependantFetchingKey && dependantFetchingKey?.value) || !dependantFetchingKey) {
 
-        refreshBody()
-
-        entities.value = []
-        mutate()
-
-        offsetLocal.value += defaultLimit
-        refreshBody()
+            limitLocal.value = defaultLimit
+            offsetLocal.value = 0
+    
+            refreshBody()
+    
+            entities.value = []
+            mutate()
+    
+            offsetLocal.value += defaultLimit
+            refreshBody()
+        } 
     })
     watch(assets, (newAssets) => {
         entities.value = [

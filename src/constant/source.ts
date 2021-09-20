@@ -69,4 +69,10 @@ export const SourceList = [
         image: athena,
         hierarchy: [],
     },
+    {
+        id: 'powerBI',
+        label: 'Power BI',
+        image: tableau,
+        hierarchy: [],
+    }
 ]

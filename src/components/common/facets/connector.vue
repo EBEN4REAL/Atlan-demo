@@ -1,7 +1,7 @@
 <template>
     <div class="w-full px-4 pt-3 pb-0">
         <a-tree-select
-            v-model:value="selectedValue"
+            :value="selectedValue"
             style="width: 100%"
             :dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"
             :tree-data="treeData"
@@ -90,7 +90,7 @@
         setup(props, { emit }) {
             const { data } = toRefs(props)
             const tabIds: Ref<string[]> = ref([])
-            const selectedValue = ref(
+            const selectedValue = computed(() =>
                 data.value.checked?.connection
                     ? data.value.checked?.connection
                     : data.value.checked?.connector
@@ -139,15 +139,7 @@
                     ]
                 }
             }
-            watch(
-                data.value,
-                () => {
-                    if (!data.value.checked?.connector) {
-                        selectedValue.value = undefined
-                    }
-                },
-                { immediate: true }
-            )
+
             const store = useConnectionsStore()
 
             const filteredList = computed(() => store.getSourceList)
@@ -217,12 +209,6 @@
             }
 
             const treeData = transformConnectorToTree(filteredList.value)
-
-            const value = ref<string>()
-
-            watch(value, () => {
-                console.log(value.value)
-            })
 
             const handleNodeSelect = (value, node) => {
                 // data.value.connector = node.dataRef.connector
@@ -334,7 +320,6 @@
                 filteredList,
                 list,
                 checkedValues,
-                value,
                 treeData,
                 capitalizeFirstLetter,
             }

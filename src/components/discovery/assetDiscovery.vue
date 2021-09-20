@@ -2,14 +2,7 @@
     <div class="flex w-full">
         <div
             v-if="showFilters"
-            class="
-                flex flex-col
-                h-full
-                overflow-y-auto
-                bg-white
-                border-r
-                facets
-            "
+            class="flex flex-col h-full overflow-y-auto bg-white border-r  facets"
         >
             <AssetFilters
                 :ref="
@@ -569,10 +562,10 @@
                 filters.value = payload
                 offset.value = 0
                 isAggregate.value = true
-                // const routerOptions = getRouterOptions()
-                // const routerQuery = getEncodedStringFromOptions(routerOptions)
+                const routerOptions = getRouterOptions()
+                const routerQuery = getEncodedStringFromOptions(routerOptions)
                 updateBody()
-                // pushQueryToRouter(routerQuery)
+                pushQueryToRouter(routerQuery)
             }
 
             const handlePreview = (item) => {

@@ -10,11 +10,21 @@
                     @add="toggleOwnerPopover"
                     @delete="handleRemoveOwner"
                 >
-                    <template #pillPrefix>
-                        <img
-                            src="https://picsum.photos/id/1005/50/50"
-                            alt="view"
-                            class="w-5 h-5 -ml-1 rounded-full"
+                    <template #pillPrefix="{ item }">
+                        <avatar
+                            v-if="item && item.type==='user'"
+                            :image-url="`http://localhost:3333/api/auth/tenants/default/avatars/${item.username}`"
+                            :allow-upload="false"
+                            :avatar-name="
+                                item.username
+                            "
+                            :avatar-size="20"
+                            :avatar-shape="'circle'"
+                            />
+                        <AtlanIcon
+                            v-else-if="item && item.type==='group'"
+                            icon="Group"
+                            class="h-4 text-primary group-hover:fill-current"
                         />
                     </template>
                     <template #popover="{ item }"
@@ -130,11 +140,11 @@
                                     </template>
                                     <div class="h-48 overflow-y-auto">
                                         <div
-                                            class="flex flex-col w-full"
                                             v-if="
                                                 STATES.SUCCESS ===
                                                 userOwnerState
                                             "
+                                            class="flex flex-col w-full"
                                         >
                                             <a-checkbox-group
                                                 v-model:value="selectedUsers"
@@ -145,8 +155,8 @@
                                                     :key="item.username"
                                                 >
                                                     <a-checkbox
-                                                        :value="item.username"
                                                         v-if="item.username"
+                                                        :value="item.username"
                                                         class="w-full mb-3"
                                                     >
                                                         <div
@@ -315,11 +325,11 @@
         toRefs,
         watch,
     } from 'vue'
+    import SearchAndFilter from '@/common/input/searchAndFilter.vue'
     import OwnerInfoCard from '~/components/discovery/preview/hovercards/ownerInfo.vue'
     import updateOwners from '~/composables/asset/updateOwners'
     import fetchGroupList from '~/composables/group/fetchGroupList'
     import fetchUserList from '~/composables/user/fetchUserList'
-    import SearchAndFilter from '@/common/input/searchAndFilter.vue'
     import PillGroup from '~/components/UI/pill/pillGroup.vue'
 
     import { useUserPreview } from '~/composables/user/showUserPreview'
@@ -328,9 +338,10 @@
     import { userInterface } from '~/types/users/user.interface'
     import emptyScreen from '~/assets/images/empty_search.png'
     import whoami from '~/composables/user/whoami'
+    import Avatar from '~/components/common/avatar.vue'
 
     export default defineComponent({
-        components: { OwnerInfoCard, SearchAndFilter, PillGroup },
+        components: { OwnerInfoCard, SearchAndFilter, PillGroup, Avatar },
         props: {
             selectedAsset: {
                 type: Object as PropType<assetInterface>,

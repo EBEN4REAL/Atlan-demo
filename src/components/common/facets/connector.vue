@@ -80,7 +80,6 @@
         emits: ['change', 'update:data'],
         setup(props, { emit }) {
             const { data } = toRefs(props)
-            const selectedValue = computed(() => data.value?.attributeValue)
 
             const connector = computed(() => {
                 if (data.value?.attributeName === 'integrationName')
@@ -98,6 +97,11 @@
                     ? qfChunks.slice(0, 3).join('/')
                     : ''
             })
+
+            // undefined is necessary here to show the placeholder
+            const selectedValue = computed(
+                () => connector.value || connection.value || undefined
+            )
 
             const tabIds: ComputedRef<string[]> = computed(() => {
                 let connectorType = connector.value
@@ -260,7 +264,7 @@
                 )
             }
 
-            const handleSelectChange = (value: string, label) => {
+            const handleSelectChange = (value: string) => {
                 const payload: Components.Schemas.FilterCriteria = {
                     attributeName: undefined,
                     attributeValue: undefined,
@@ -282,7 +286,7 @@
                 attributeName,
                 attributeValue,
             }: Record<string, string>) => {
-                if (attributeName && attributeValue)
+                if (attributeName && attributeValue) {
                     emit(
                         'change',
                         {
@@ -300,7 +304,11 @@
                         },
                         tabIds.value
                     )
-                else emitChangedFilters()
+                    emit('update:data', { attributeName, attributeValue })
+                } else {
+                    handleSelectChange(data.value?.attributeValue)
+                    emitChangedFilters()
+                }
             }
 
             const filteredConnector = computed(() =>

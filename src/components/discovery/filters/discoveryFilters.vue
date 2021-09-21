@@ -175,12 +175,7 @@
             // console.log(props.initialFilters.facetsFilters, 'facetFilters')
             const activeKey: Ref<string[]> = ref([])
             const initialFilterMap = {
-                connector: {
-                    condition:
-                        props.initialFilters.facetsFilters.connector.condition,
-                    criterion:
-                        props.initialFilters.facetsFilters.connector.criterion,
-                },
+                connector: props.initialFilters.facetsFilters.connector,
                 assetCategory: {
                     condition:
                         props.initialFilters.facetsFilters.assetCategory

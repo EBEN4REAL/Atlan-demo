@@ -261,11 +261,7 @@ export function getDecodedOptionsFromString(router) {
     const facetsFiltersStrings = filters?.split(':::')
     const initialBodyCriterion: Array<any> = []
     const facetsFilters: filterMapType = {
-        connector: {
-            checked: [],
-            condition: 'AND',
-            criterion: [],
-        },
+        connector: {},
         assetCategory: {
             checked: [],
             condition: 'OR',

@@ -32,13 +32,13 @@
                 <AtlanIcon icon="ChevronDown" class="h-4 -mt-0.5 -ml-0.5" />
             </template>
         </a-tree-select>
-        <!-- <AssetDropdown
+        <AssetDropdown
             v-if="connection"
             :connector="filteredConnector"
-            :data="data.checked"
+            :filter="data"
             @change="handleChange"
             @label-change="setPlaceholder($event, 'asset')"
-        ></AssetDropdown> -->
+        ></AssetDropdown>
     </div>
 </template>
 
@@ -52,6 +52,7 @@
         Ref,
         toRefs,
         watch,
+        ComputedRef,
     } from 'vue'
     import { Components } from '~/api/atlas/client'
     import { List } from '~/constant/status'
@@ -79,7 +80,6 @@
         emits: ['change', 'update:data'],
         setup(props, { emit }) {
             const { data } = toRefs(props)
-            const tabIds: Ref<string[]> = ref([])
             const selectedValue = computed(() => data.value?.attributeValue)
 
             const connector = computed(() => {
@@ -99,11 +99,11 @@
                     : ''
             })
 
-            const setVisibleTabIds = () => {
+            const tabIds: ComputedRef<string[]> = computed(() => {
                 let connectorType = connector.value
                 if (connectorType) {
-                    if (connectorType === 'tableau') {
-                        tabIds.value = [
+                    if (connectorType === 'tableau')
+                        return [
                             'TableauSite',
                             'TableauProject',
                             'TableauWorkbook',
@@ -112,8 +112,8 @@
                             'TableauDatasource',
                             'TableauDatasourceField',
                         ]
-                    } else {
-                        tabIds.value = [
+                    else
+                        return [
                             'Connection',
                             'Database',
                             'Schema',
@@ -123,9 +123,8 @@
                             'MaterialisedView',
                             'Column',
                         ]
-                    }
                 } else {
-                    tabIds.value = [
+                    return [
                         'Connection',
                         'Database',
                         'Schema',
@@ -143,7 +142,7 @@
                         'TableauDatasourceField',
                     ]
                 }
-            }
+            })
 
             const store = useConnectionsStore()
 
@@ -262,7 +261,7 @@
             }
 
             const handleSelectChange = (value: string, label) => {
-                const payload: Record<string, string | undefined> = {
+                const payload: Components.Schemas.FilterCriteria = {
                     attributeName: undefined,
                     attributeValue: undefined,
                 }
@@ -277,8 +276,6 @@
                 }
 
                 emit('update:data', payload)
-
-                setVisibleTabIds()
             }
 
             const handleChange = ({
@@ -330,6 +327,7 @@
                 treeData,
                 capitalizeFirstLetter,
 
+                tabIds,
                 connector,
                 connection,
             }

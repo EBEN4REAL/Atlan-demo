@@ -17,39 +17,56 @@
 </template>
 
 <script lang="ts">
-    import { computed, defineComponent, ref, ComputedRef, Ref } from 'vue'
+    import {
+        computed,
+        defineComponent,
+        ref,
+        ComputedRef,
+        Ref,
+        toRefs,
+        PropType,
+    } from 'vue'
+    import { Components } from '~/api/atlas/client'
     import AssetSelector from '~/components/common/dropdown/assetSelector.vue'
-    import { useConnectionsStore } from '~/store/connections'
 
     export default defineComponent({
         name: 'AssetDropdown',
         components: { AssetSelector },
         props: {
             connector: {
-                type: Object,
+                type: Object as PropType<{
+                    id: string
+                    label: string
+                    image: string
+                    types: string[]
+                    hierarchy: Record<string, any>[]
+                    filterMaxLevel: number
+                }>,
                 required: false,
             },
-            data: {
-                type: Object,
+            filter: {
+                type: Object as PropType<Components.Schemas.FilterCriteria>,
                 required: false,
-                default() {
-                    return {}
-                },
+                default: () => '',
             },
         },
         emits: ['labelChange', 'change'],
         setup(props, { emit }) {
+            const { connector, filter } = toRefs(props)
             const asset: Ref<Record<string, any>> = ref({})
 
             const list: ComputedRef<any[]> = computed(
                 () =>
-                    props.connector?.hierarchy.filter(
+                    connector.value?.hierarchy.filter(
                         (item) => item.level < 3
                     ) || []
             )
 
             const isDisabled = (index) => {
-                if (index == 0 && props.data?.connection) {
+                if (
+                    index == 0 &&
+                    filter.value.attributeName === 'connectionQualifiedName'
+                ) {
                     return false
                 }
                 if (index > 0) {
@@ -62,26 +79,15 @@
             }
 
             const getFilter = (index) => {
-                const baseFilter = {
+                const baseFilter: Components.Schemas.FilterCriteria = {
                     condition: 'AND',
-                    criterion: [
-                        {
-                            attributeName: 'integrationName',
-                            attributeValue: props.data?.connector,
-                            operator: 'eq',
-                        },
-                        {
-                            attributeName: 'connectionQualifiedName',
-                            attributeValue: props.data?.connection,
-                            operator: 'eq',
-                        },
-                    ],
+                    criterion: [{ ...filter, operator: 'eq' }],
                 }
 
                 if (index > 0) {
                     const item = list.value[index - 1]
                     if (asset.value[item.attribute]) {
-                        baseFilter.criterion.push({
+                        baseFilter.criterion?.push({
                             attributeName: item.attribute,
                             attributeValue: asset.value[item.attribute],
                             operator: 'eq',
@@ -89,21 +95,6 @@
                     }
                 }
                 return baseFilter
-                // if (index > 0) {
-                //   const item = list.value[index - 1];
-                //   if (item) {
-                //     return {
-                //       condition: "AND",
-                //       criterion: [
-                //         {
-                //           attributeName: "connectionQualifiedName",
-                //           attributeValue: props.data?.connection,
-                //           operator: "eq",
-                //         },
-                //       ],
-                //     };
-                //   }
-                // }
             }
 
             const getKey = (index) => {

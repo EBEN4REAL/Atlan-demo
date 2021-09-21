@@ -84,11 +84,10 @@
 
             const handleCloseColumnSidebar = () => {
                 showColumnSidebar.value = false
-                console.log('Column', asset.value)
             }
             const propagateToColumnList = (updatedAsset: assetInterface) => {
-                asset.value = updatedAsset
-                /* emit('assetMutation', updatedAsset) */
+                /* asset.value = updatedAsset */
+                emit('assetMutation', updatedAsset)
             }
 
             return {

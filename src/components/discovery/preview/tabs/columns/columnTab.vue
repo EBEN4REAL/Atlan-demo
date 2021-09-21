@@ -2,8 +2,8 @@
     <div class="flex flex-col px-5 py-4">
         <div class="mb-5">
             <SearchAndFilter
-                v-model:value="searchTerm"
-                :dot="!!filters.length"
+                v-model:value="queryText"
+                @change="handleSearchChange"
                 :autofocus="true"
                 placeholder="Search columns"
             >
@@ -16,13 +16,16 @@
                             >Clear</span
                         >
                     </div>
-                    <DataTypes v-model:filters="filters" />
+                    <DataTypes
+                        v-model:filters="filters"
+                        @update:filters="handleFilterChange"
+                    />
                 </template>
             </SearchAndFilter>
         </div>
 
         <div
-            v-for="(asset, index) in filteredList"
+            v-for="(asset, index) in list"
             :key="index"
             class="flex flex-col mb-4 overflow-y-auto"
         >
@@ -83,16 +86,20 @@
 
 <script lang="ts">
     import DataTypes from '@common/facets/dataType.vue'
-    import { toRefs } from '@vueuse/core'
-    import { computed, defineComponent, PropType, ref, watch } from 'vue'
+    import { toRefs, useDebounceFn } from '@vueuse/core'
+    import { computed, defineComponent, PropType, ref, Ref, watch } from 'vue'
     import SearchAndFilter from '@/common/input/searchAndFilter.vue'
     import ColumnListItem from '~/components/discovery/preview/tabs/columns/columnListItem.vue'
     import useAssetInfo from '~/composables/asset/useAssetInfo'
-    import { useColumns } from '~/composables/asset/useColumnRelations'
     import useColumns2 from '~/composables/asset/useColumns2'
 
     import { dataTypeList } from '~/constant/datatype'
     import { assetInterface } from '~/types/assets/asset.interface'
+    import {
+        BasicSearchAttributes,
+        ColumnAttributes,
+    } from '~/constant/projection'
+    import { useBusinessMetadataStore } from '~/store/businessMetadata'
 
     export default defineComponent({
         name: 'ColumnTab',
@@ -109,45 +116,146 @@
         },
         setup(props) {
             const isFilterVisible = ref(false)
+            const queryText = ref('')
+            const limit = ref(20)
+            const offset = ref(0)
+            const filters: Ref<string[]> = ref([])
+            const dataTypeFilters = ref([])
+
             const { dataTypeImage } = useAssetInfo()
             const { selectedAsset } = toRefs(props)
-            /* 
+            /*
             const assetId = computed(() => selectedAsset.value.guid) */
 
             const assetQualifiedName = computed(
                 () => selectedAsset.value.attributes?.qualifiedName
             )
 
-            const {
-                filteredList,
-                isLoading,
-                searchTerm,
-                filters,
-                clearAllFilters,
-                mutate,
-                isLoadMore,
-                loadMore,
-            } = useColumns2({
-                entityParentQualifiedName: assetQualifiedName,
-            })
+            const { list, isLoading, replaceBody, refresh, isLoadMore } =
+                useColumns2({
+                    entityParentQualifiedName: assetQualifiedName,
+                })
 
-            const propagateToColumnList = () => {
-                mutate()
+            const updateBody = () => {
+                const initialBody = {
+                    typeName: 'Column',
+                    excludeDeletedEntities: true,
+                    includeClassificationAttributes: true,
+                    includeSubClassifications: true,
+                    includeSubTypes: true,
+                    entityFilters: {},
+                    limit: limit.value,
+                    offset: offset.value,
+                    attributes: [
+                        'description',
+                        'userDescription',
+                        'customDescription',
+                        'owner',
+                        'expert',
+                        'files',
+                        'table',
+                        'database',
+                        'atlanSchema',
+                        'profileSchedule',
+                        'isProfileScheduled',
+                        'order',
+                        'extra',
+                        'metadata',
+                        'commits',
+                        'siteName',
+                        'siteQualifiedName',
+                        'topLevelProjectName',
+                        'topLevelProjectQualifiedName',
+                        'isTopLevelProject',
+                        'projectHierarchy',
+                        'projectName',
+                        'workbookName',
+                        'datasourceName',
+                        ...BasicSearchAttributes,
+                        ...useBusinessMetadataStore()
+                            .getBusinessMetadataListProjections,
+                        ...ColumnAttributes,
+                    ],
+                }
+                initialBody.entityFilters = {
+                    condition: 'AND',
+                    criterion: [
+                        {
+                            condition: 'OR',
+                            criterion: [...dataTypeFilters.value],
+                        },
+                        {
+                            condition: 'OR',
+                            criterion: [
+                                {
+                                    attributeName: 'tableQualifiedName',
+                                    attributeValue: assetQualifiedName.value,
+                                    operator: 'eq',
+                                },
+                                {
+                                    attributeName: 'viewQualifiedName',
+                                    attributeValue: assetQualifiedName.value,
+                                    operator: 'eq',
+                                },
+                            ],
+                        },
+                    ],
+                }
+
+                if (queryText.value) {
+                    initialBody.query = queryText.value
+                }
+                replaceBody(initialBody)
             }
 
-            /*  const {
-                filteredList,
-                isLoading,
-                columnList,
-                searchTerm,
-                filters,
-                clearAllFilters,
-            } = useColumns(assetId) */
+            const loadMore = () => {
+                if (isLoadMore.value) {
+                    offset.value += limit.value
+                    updateBody()
+                }
+            }
+
+            const handleSearchChange = useDebounceFn(() => {
+                offset.value = 0
+                updateBody()
+            }, 150)
+
+            const propagateToColumnList = () => {
+                refresh()
+            }
+
+            const clearAllFilters = () => {
+                filters.value = []
+                dataTypeFilters.value = []
+                offset.value = 0
+                updateBody()
+            }
+            const handleFilterChange = () => {
+                offset.value = 0
+                dataTypeFilters.value = dataTypeList
+                    .filter((typeList) => filters.value.includes(typeList.id))
+                    .reduce((acc: string[], dt) => [...acc, ...dt.type], [])
+                    .map((filter) => ({
+                        attributeName: 'dataType',
+                        attributeValue: filter,
+                        operator: 'eq',
+                    }))
+                updateBody()
+            }
+
+            watch(assetQualifiedName, (newParent, oldParent) => {
+                if (newParent !== oldParent) {
+                    offset.value = 0
+                    filters.value = []
+                    dataTypeFilters.value = []
+                    updateBody()
+                }
+            })
 
             return {
                 isFilterVisible,
-                filteredList,
-                searchTerm,
+                list,
+                queryText,
                 dataTypeImage,
                 clearAllFilters,
                 isLoading,
@@ -156,6 +264,8 @@
                 propagateToColumnList,
                 isLoadMore,
                 loadMore,
+                handleSearchChange,
+                handleFilterChange,
             }
         },
     })

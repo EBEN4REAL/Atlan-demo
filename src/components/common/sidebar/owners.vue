@@ -10,11 +10,29 @@
                     @add="toggleOwnerPopover"
                     @delete="handleRemoveOwner"
                 >
-                    <template #pillPrefix>
-                        <img
-                            src="https://picsum.photos/id/1005/50/50"
-                            alt="view"
-                            class="w-5 h-5 -ml-1 rounded-full"
+                    <template #pillPrefix="{ item }">
+                        <avatar
+                            class="-ml-2.5"
+                            v-if="item && item.type === 'user'"
+                            :image-url="
+                                KeyMaps.auth.avatar.GET_AVATAR({
+                                    username: item.username,
+                                })
+                            "
+                            :allow-upload="false"
+                            :avatar-name="item.username"
+                            avatar-size="small"
+                            :avatar-shape="'circle'"
+                        />
+                        <AtlanIcon
+                            v-else-if="item && item.type === 'group'"
+                            icon="Group"
+                            class="
+                                h-4
+                                -ml-0.5
+                                text-primary
+                                group-hover:text-white
+                            "
                         />
                     </template>
                     <template #popover="{ item }"
@@ -130,11 +148,11 @@
                                     </template>
                                     <div class="h-48 overflow-y-auto">
                                         <div
-                                            class="flex flex-col w-full"
                                             v-if="
                                                 STATES.SUCCESS ===
                                                 userOwnerState
                                             "
+                                            class="flex flex-col w-full"
                                         >
                                             <a-checkbox-group
                                                 v-model:value="selectedUsers"
@@ -145,8 +163,8 @@
                                                     :key="item.username"
                                                 >
                                                     <a-checkbox
-                                                        :value="item.username"
                                                         v-if="item.username"
+                                                        :value="item.username"
                                                         class="w-full mb-3"
                                                     >
                                                         <div
@@ -315,11 +333,11 @@
         toRefs,
         watch,
     } from 'vue'
+    import SearchAndFilter from '@/common/input/searchAndFilter.vue'
     import OwnerInfoCard from '~/components/discovery/preview/hovercards/ownerInfo.vue'
     import updateOwners from '~/composables/asset/updateOwners'
     import fetchGroupList from '~/composables/group/fetchGroupList'
     import fetchUserList from '~/composables/user/fetchUserList'
-    import SearchAndFilter from '@/common/input/searchAndFilter.vue'
     import PillGroup from '~/components/UI/pill/pillGroup.vue'
 
     import { useUserPreview } from '~/composables/user/showUserPreview'
@@ -328,9 +346,11 @@
     import { userInterface } from '~/types/users/user.interface'
     import emptyScreen from '~/assets/images/empty_search.png'
     import whoami from '~/composables/user/whoami'
+    import Avatar from '~/components/common/avatar.vue'
+    import { KeyMaps } from '~/api/keyMap'
 
     export default defineComponent({
-        components: { OwnerInfoCard, SearchAndFilter, PillGroup },
+        components: { OwnerInfoCard, SearchAndFilter, PillGroup, Avatar },
         props: {
             selectedAsset: {
                 type: Object as PropType<assetInterface>,
@@ -639,6 +659,7 @@
                 handleRemoveOwner,
                 handleCancelUpdateOwnerPopover,
                 ownerList,
+                KeyMaps,
             }
         },
     })

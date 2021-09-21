@@ -96,13 +96,23 @@
                     favico: 'https://atlan.com/favicon.ico',
                     isSaved: false,
                     queryId: undefined,
-                    explorer: {},
+                    explorer: {
+                        schema: {
+                            connectors: {
+                                connection: 'default/snowflake/vqaqufvr-i',
+                                connector: 'snowflake',
+                                selectedDefaultSchema: 'ATLAN_TRIAL.PUBLIC',
+                                selectedDataSourceName:
+                                    'default/snowflake/vqaqufvr-i',
+                            },
+                        },
+                    },
                     playground: {
                         editor: {
                             text:
                                 activeInlineTab.value?.playground?.editor
                                     .text ??
-                                'select * from "WEB_SALES" limit 100',
+                                'select * from "INSTACART_ALCOHOL_ORDER_TIME" limit 10',
                             dataList: [],
                             columnList: [],
                         },

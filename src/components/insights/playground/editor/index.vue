@@ -7,7 +7,7 @@
             >
                 <div class="w-full">
                     <p class="mb-1 text-base">
-                        {{ selectedDefaultSchema ?? 'WEB SALES' }}
+                        {{ selectedDefaultSchema ?? 'ATLAN_TRIAL.PUBLIC' }}
                     </p>
                 </div>
                 <a-button

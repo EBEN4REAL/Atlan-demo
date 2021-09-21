@@ -198,7 +198,7 @@
                         key: item.id,
                         img: item.image,
                         connector: item.id,
-                        connection: undefined,
+                        connection: item.id,
                         slots: {
                             title: 'title',
                         },
@@ -222,8 +222,6 @@
                 emit('update:data', newData)
                 // console.log(value, node.dataRef, connectorsPayload, 'selected')
             }
-
-            watch(data, () => emitChangedFilters())
 
             const emitChangedFilters = () => {
                 const criterion: Components.Schemas.FilterCriteria[] = []
@@ -265,6 +263,8 @@
                         connector: undefined,
                         connection: undefined,
                     })
+                } else {
+                    emitChangedFilters()
                 }
             }
 

@@ -44,7 +44,7 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, Ref, inject, ref } from 'vue'
+    import { defineComponent, Ref, inject, ref, watch } from 'vue'
     import { useAssetSidebar } from '~/components/insights/assetSidebar/composables/useAssetSidebar'
     import { tableInterface } from '~/types/insights/table.interface'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
@@ -61,16 +61,18 @@
             const activeInlineTab = inject(
                 'activeInlineTab'
             ) as Ref<activeInlineTabInterface>
-            const selectedDefaultSchema = inject(
-                'selectedDefaultSchema'
+            const activeInlineTabKey = inject(
+                'activeInlineTabKey'
             ) as Ref<string>
-            const selectedDataSourceName = inject(
-                'selectedDataSourceName'
-            ) as Ref<string>
+
             const tabs = inject('inlineTabs') as Ref<activeInlineTabInterface[]>
             const { openAssetSidebar } = useAssetSidebar(tabs, activeInlineTab)
-            const { setSchemaAndSoruceName, getSchemaAndSourceName } =
-                useConnector()
+            const {
+                setConnectorsDataInInlineTab,
+                getConnectorsData,
+                getDatabaseQualifiedName,
+                getSchemaQualifiedName,
+            } = useConnector()
 
             const isAssetSidebarOpened = (table: tableInterface) => {
                 if (
@@ -82,30 +84,43 @@
                 }
                 return false
             }
+            const selectedDataSourceName =
+                activeInlineTab.value.explorer.schema.connectors
+                    .selectedDataSourceName
+            const selectedDefaultSchema =
+                activeInlineTab.value.explorer.schema.connectors
+                    .selectedDefaultSchema
+
             const connectorsData: Ref<connectorsWidgetInterface> = ref({
-                connection: 'default/snowflake/vqaqufvr-i',
-                connector: 'snowflake',
-                databaseQualifiedName:
-                    'default/snowflake/vqaqufvr-i/ATLAN_TRIAL',
-                schemaQualifiedName:
-                    'default/snowflake/vqaqufvr-i/ATLAN_TRIAL/PUBLIC',
+                connection:
+                    activeInlineTab.value.explorer.schema.connectors.connection,
+                connector:
+                    activeInlineTab.value.explorer.schema.connectors.connector,
+                databaseQualifiedName: getDatabaseQualifiedName(
+                    selectedDataSourceName,
+                    selectedDefaultSchema
+                ),
+                schemaQualifiedName: getSchemaQualifiedName(
+                    selectedDataSourceName,
+                    selectedDefaultSchema
+                ),
             })
             const handleChange = (data) => {
-                console.log(data, 'connectorChange')
                 const len = data.payload.criterion.length
                 if (
                     len > 0 &&
                     data.payload.criterion[len - 1]?.attributeValue
                 ) {
-                    const { schema, sourceName } = getSchemaAndSourceName(
-                        data.payload.criterion[len - 1]?.attributeValue
-                    )
-                    setSchemaAndSoruceName(
-                        selectedDefaultSchema,
-                        selectedDataSourceName,
+                    const { schema, sourceName, connector, connection } =
+                        getConnectorsData(
+                            data.payload.criterion[len - 1]?.attributeValue
+                        )
+                    setConnectorsDataInInlineTab(activeInlineTab, tabs, {
                         schema,
-                        sourceName
-                    )
+                        sourceName,
+                        connector,
+                        connection,
+                    })
                 }
             }
 
@@ -113,10 +128,36 @@
                 connection: string | undefined
                 connector: string | undefined
             }) => {
-                console.log(payload, 'payload')
                 connectorsData.value.connector = payload.connector
                 connectorsData.value.connection = payload.connection
             }
+
+            /* Watchers for updating the connectors when activeinlab change */
+            watch(activeInlineTabKey, () => {
+                const selectedDataSourceName =
+                    activeInlineTab.value.explorer.schema.connectors
+                        .selectedDataSourceName
+                const selectedDefaultSchema =
+                    activeInlineTab.value.explorer.schema.connectors
+                        .selectedDefaultSchema
+
+                connectorsData.value = {
+                    connection:
+                        activeInlineTab.value.explorer.schema.connectors
+                            .connection,
+                    connector:
+                        activeInlineTab.value.explorer.schema.connectors
+                            .connector,
+                    databaseQualifiedName: getDatabaseQualifiedName(
+                        selectedDataSourceName,
+                        selectedDefaultSchema
+                    ),
+                    schemaQualifiedName: getSchemaQualifiedName(
+                        selectedDataSourceName,
+                        selectedDefaultSchema
+                    ),
+                }
+            })
 
             return {
                 connectorsData,
@@ -128,6 +169,16 @@
             }
         },
     })
+    /*
+    {
+                connection: 'default/snowflake/bvscezvng',
+                connector: 'snowflake',
+                databaseQualifiedName:
+                    'default/snowflake/vqaqufvr-i/SNOWFLAKE_SAMPLE_DATA',
+                schemaQualifiedName:
+                    'default/snowflake/bvscezvng/SNOWFLAKE_SAMPLE_DATA/TPCDS_SF10TCL',
+            }
+    */
 </script>
 <style lang="less" scoped>
     .placeholder {

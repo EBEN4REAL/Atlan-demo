@@ -68,11 +68,11 @@ export default function useProject() {
             query,
             defaultSchema: selectedDefaultSchema.value
                 ? selectedDefaultSchema.value
-                : 'SNOWFLAKE_SAMPLE_DATA.TPCDS_SF10TCL',
+                : 'ATLAN_TRIAL.PUBLIC',
             dataSourceName: encodeURIComponent(
                 selectedDefaultSchema.value
                     ? selectedDataSourceName.value
-                    : 'default/snowflake/bvscezvng'
+                    : 'default/snowflake/vqaqufvr-i'
             ),
             length: 10,
         }

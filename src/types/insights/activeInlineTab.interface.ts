@@ -3,7 +3,16 @@ export interface activeInlineTabInterface {
     label: String
     isSaved: boolean
     queryId: string | undefined
-    explorer: Object
+    explorer: {
+        schema: {
+            connectors: {
+                connection: string | undefined
+                connector: string | undefined
+                selectedDefaultSchema: string | undefined
+                selectedDataSourceName: string | undefined
+            }
+        }
+    }
     favico: string | undefined
     playground: {
         editor: {

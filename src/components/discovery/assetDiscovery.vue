@@ -130,7 +130,7 @@
         initialTabsForConnector,
         initialTabsForAssetCategory,
     } from './useTabMapped'
-
+    
     export interface filterMapType {
         assetCategory: {
             checked?: Array<string>
@@ -228,6 +228,7 @@
                 initialFilters.value.connectorsPayload
             )
             const filters = ref(initialFilters.value.initialBodyCriterion)
+            const connectorStore = useConnectionsStore()
 
             console.log('initialFIters', filters.value)
             const filterMap = ref<filterMapType>({
@@ -299,7 +300,8 @@
                         AssetTypeList.forEach((asset) => {
                             if (
                                 asset.id === id &&
-                                asset.isDiscoverable == true
+                                asset.isDiscoverable == true &&
+                                connectorStore.getSourceList.find((source)=>source?.types?.includes(asset.id))
                             ) {
                                 assetTypes.push(asset)
                             }
@@ -307,7 +309,8 @@
                     })
                 } else {
                     assetTypes = AssetTypeList.filter(
-                        (item) => item.isDiscoverable == true
+                        (item) => item.isDiscoverable == true &&
+                                connectorStore.getSourceList.find((source)=>source?.types?.includes(item.id))
                     )
                 }
                 assetTypes.unshift({
@@ -320,7 +323,7 @@
                 modifyTabs(initialTabs.value)
             } else {
                 assetTypeList.value = AssetTypeList.filter(
-                    (item) => item.isDiscoverable == true
+                    (item) => item.isDiscoverable == true && connectorStore.getSourceList.find((source)=>source?.types?.includes(item.id))
                 )
                 assetTypeList.value.unshift({
                     id: 'Catalog',
@@ -367,7 +370,7 @@
                 }
                 return assetTypeMap.value[assetType.value]
             })
-            const connectorStore = useConnectionsStore()
+            
 
             const filteredConnector = computed(() =>
                 connectorStore.getSourceList?.find(

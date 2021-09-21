@@ -77,7 +77,6 @@
             </div>
         </template>
         <div class="my-3">
-            {{ entityType }}
             <a-input
                 :ref="titleBar"
                 v-model:value="title"

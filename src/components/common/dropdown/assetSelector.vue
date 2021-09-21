@@ -5,6 +5,7 @@
         :class="$style.connector"
         @change="handleChange"
         :placeholder="placeholder"
+        :disabled="disabled"
         show-search
         filter-option
         allow-clear
@@ -34,8 +35,8 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref, watch } from 'vue'
-    import useAssetList from '~/composables/bots/useAssetList'
+    import { defineComponent, watch, toRefs, computed } from 'vue'
+    import { useAssetListing } from '@/discovery/useAssetListing'
 
     export default defineComponent({
         name: 'AssetSelector',
@@ -49,7 +50,7 @@
             },
             typeName: {
                 type: String,
-                required: false,
+                required: true,
             },
             filters: {
                 type: Object,
@@ -59,35 +60,45 @@
                 type: String,
                 required: true,
             },
+            disabled: {
+                type: Boolean,
+                required: false,
+                default: () => false,
+            },
         },
         emits: ['update:modelValue', 'change'],
         setup(props, { emit }) {
-            const now = ref(true)
+            const { disabled, filters, typeName } = toRefs(props)
 
             const initialBody = {
-                typeName: props.typeName,
+                typeName: typeName.value,
                 limit: 100,
                 offset: 0,
-                entityFilters: props.filters,
+                entityFilters: filters.value,
                 attributes: ['name', 'displayName'],
                 sortBy: 'Asset.name.keyword',
                 aggregationAttributes: ['__typeName.keyword'],
                 sortOrder: 'ASCENDING',
             }
 
-            watch(
-                () => props.filters,
-                () => {
-                    initialBody.entityFilters = props.filters
-                    replaceBody(initialBody)
-                }
+            const { list, replaceBody, data } = useAssetListing(
+                initialBody.typeName,
+                false
             )
 
-            const { list, replaceBody, selfAssetTypeMap } = useAssetList(
-                now,
-                initialBody.typeName,
-                initialBody,
-                `selector_${initialBody.typeName}`
+            const selfAssetTypeMap = computed(
+                () => data.value?.aggregations?.['__typeName.keyword'] || 0
+            )
+
+            watch(
+                [disabled, filters],
+                () => {
+                    if (!disabled.value) {
+                        initialBody.entityFilters = filters.value
+                        replaceBody(initialBody)
+                    }
+                },
+                { immediate: true }
             )
 
             const handleChange = (checkedValues: string) => {
@@ -99,6 +110,7 @@
                 list,
                 handleChange,
                 selfAssetTypeMap,
+                data,
             }
         },
         data() {

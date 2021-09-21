@@ -102,7 +102,7 @@
                 class="overflow-y-auto"
             >
                 <template #tab>
-                    <a-tooltip
+                    <!-- <a-tooltip
                         placement="left"
                         :mouse-enter-delay="0.5"
                         color="white"
@@ -123,7 +123,12 @@
                                 class="h-5"
                             />
                         </div>
-                    </a-tooltip>
+                    </a-tooltip> -->
+                    <SidePanelTabHeaders
+                        :title="tab.tooltip"
+                        :icon="tab.icon"
+                        :isAtive="activeKey === index"
+                    />
                 </template>
 
                 <div
@@ -176,6 +181,7 @@
     import useAssetInfo from '~/composables/asset/useAssetInfo'
     import { assetInterface } from '~/types/assets/asset.interface'
     import useAssetDetailsTabList from '../../discovery/preview/tabs/useTabList'
+    import SidePanelTabHeaders from '~/components/common/tabs/sidePanelTabHeaders.vue'
     import { images, dataTypeList } from '~/constant/datatype'
     import { useMagicKeys } from '@vueuse/core'
 
@@ -185,6 +191,7 @@
             Tooltip,
             AssetLogo,
             StatusBadge,
+            SidePanelTabHeaders,
             AtlanButton,
             info: defineAsyncComponent(() => import('./tabs/info/infoTab.vue')),
             columns: defineAsyncComponent(

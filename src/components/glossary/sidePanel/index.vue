@@ -1,20 +1,31 @@
 <template>
     <div class="w-full h-full border-l sidePanel" :class="$style.sidePanel">
-        <a-tabs default-active-key="1" tab-position="left" class="h-full">
+        <a-tabs
+            v-model:activeKey="tabActiveKey"
+            tab-position="left"
+            class="h-full"
+        >
             <a-tab-pane key="info" class="p-0 m-0">
                 <template #tab>
-                    <AtlanIcon icon="Overview" class="mt-1" />
+                    <SidePanelTabHeaders
+                        title="Overview"
+                        icon="Overview"
+                        :isActive="tabActiveKey === 'info'"
+                    />
                 </template>
 
-                <div class="h-screen pb-24 overflow-auto">
+                <div class="h-screen pt-4 pb-24 overflow-auto">
                     <a-collapse
                         v-model:activeKey="activeKey"
                         :bordered="false"
                         expand-icon-position="right"
                     >
                         <template #expandIcon="{ isActive }">
-                            <fa v-if="isActive" icon="fas chevron-up" />
-                            <fa v-else icon="fas chevron-down" />
+                            <AtlanIcon
+                                icon="ChevronDown"
+                                class="ml-1 transition-transform transform"
+                                :class="isActive ? '-rotate-180' : 'rotate-0'"
+                            />
                         </template>
                         <a-collapse-panel key="1" header="Details">
                             <div class="flex flex-col pb-2 pl-4 pr-2">
@@ -51,11 +62,6 @@
                                     v-if="entity.guid"
                                     :selected-asset="entity"
                                 />
-                                <Experts
-                                    v-if="entity.guid"
-                                    :selected-asset="entity"
-                                    @update:selected-asset="refreshEntity"
-                                />
                                 <Status
                                     v-if="entity.guid"
                                     :selected-asset="entity"
@@ -81,7 +87,11 @@
             </a-tab-pane>
             <a-tab-pane key="activity">
                 <template #tab>
-                    <AtlanIcon icon="Activity" />
+                    <SidePanelTabHeaders
+                        title="Activity"
+                        icon="Activity"
+                        :isActive="tabActiveKey === 'activity'"
+                    />
                 </template>
                 <div class="h-screen overflow-auto">
                     <Activity :selectedAsset="entity" />
@@ -89,7 +99,11 @@
             </a-tab-pane>
             <a-tab-pane key="chat">
                 <template #tab>
-                    <AtlanIcon icon="Chats" />
+                    <SidePanelTabHeaders
+                        title="Chat"
+                        icon="Chats"
+                        :isActive="tabActiveKey === 'chat'"
+                    />
                 </template>
                 Chat
             </a-tab-pane>
@@ -114,6 +128,7 @@
     import Status from '@common/sidebar/status.vue'
     import GlossaryTopTerms from '@/glossary/common/glossaryTopTerms.vue'
     import Activity from '~/components/discovery/preview/tabs/activity/activityTab.vue'
+    import SidePanelTabHeaders from '~/components/common/tabs/sidePanelTabHeaders.vue'
 
     import {
         Glossary,
@@ -129,6 +144,7 @@
             Description,
             Status,
             Experts,
+            SidePanelTabHeaders,
             Activity,
         },
         props: {
@@ -147,6 +163,7 @@
         },
         setup(props) {
             const activeKey = ref(['1'])
+            const tabActiveKey = ref('info')
 
             const refreshEntity = inject<() => void>('refreshEntity')
             const updateTreeNode = inject<any>('updateTreeNode')
@@ -224,12 +241,22 @@
                 activeKey,
                 refreshEntity,
                 updateEntityAndTree,
+                tabActiveKey,
             }
         },
     })
 </script>
 <style lang="less" module>
     .sidePanel {
+        :global(.ant-tabs-nav-container-scrolling .ant-tabs-tab:first-child) {
+            @apply ml-0 !important;
+            @apply mt-4 !important;
+        }
+
+        :global(.ant-tabs-tab:first-child) {
+            @apply mt-4 !important;
+        }
+
         :global(.ant-collapse-header) {
             @apply m-0  text-sm text-gray-700 bg-white !important;
         }

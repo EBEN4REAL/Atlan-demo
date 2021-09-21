@@ -61,9 +61,6 @@
             const activeInlineTab = inject(
                 'activeInlineTab'
             ) as Ref<activeInlineTabInterface>
-            const activeInlineTabKey = inject(
-                'activeInlineTabKey'
-            ) as Ref<string>
 
             const tabs = inject('inlineTabs') as Ref<activeInlineTabInterface[]>
             const { openAssetSidebar } = useAssetSidebar(tabs, activeInlineTab)
@@ -133,7 +130,7 @@
             }
 
             /* Watchers for updating the connectors when activeinlab change */
-            watch(activeInlineTabKey, () => {
+            watch(activeInlineTab, () => {
                 const selectedDataSourceName =
                     activeInlineTab.value.explorer.schema.connectors
                         .selectedDataSourceName

@@ -8,9 +8,12 @@
                 <AtlanIcon icon="Cancel" />
             </a-button>
         </div>
-        <div v-if="page !== 'profile'" class="p-5 border-b">
-            <div class="flex items-center justify-between mb-1 text-sm">
-                <div v-if="page === 'nonBiOverview'" class="text-gray-500">
+        <div v-if="page !== 'profile'" class="px-5 py-3 border-b">
+            <div class="flex items-center justify-between mb-0 text-sm">
+                <div
+                    v-if="page === 'nonBiOverview'"
+                    class="text-gray-500 uppercase"
+                >
                     {{ getDataType(selectedAsset?.attributes?.dataType) }}
                 </div>
                 <AssetLogo
@@ -20,7 +23,19 @@
                 />
 
                 <div class="flex space-x-2">
-                    <AtlanButton color="secondary" size="sm" class="px-2">
+                    <a-button-group>
+                        <a-button size="small"
+                            ><AtlanIcon icon="Share"
+                        /></a-button>
+                        <a-button size="small">
+                            <AtlanIcon icon="External" />
+                        </a-button>
+                        <a-button size="small">
+                            <AtlanIcon icon="Bookmark" />
+                        </a-button>
+                    </a-button-group>
+
+                    <!-- <AtlanButton color="secondary" size="sm" class="px-2">
                         <template #label>
                             <AtlanIcon icon="Share" />
                         </template>
@@ -34,7 +49,7 @@
                         <template #label>
                             <AtlanIcon icon="Bookmark" />
                         </template>
-                    </AtlanButton>
+                    </AtlanButton> -->
                 </div>
             </div>
 
@@ -50,7 +65,7 @@
                 <Tooltip
                     v-if="page === 'discovery'"
                     :tooltip-text="selectedAsset?.attributes?.name"
-                    classes="my-1 text-gray-700 font-semibold text-xl leading-6 cursor-pointer"
+                    classes="text-gray-700 font-semibold text-md leading-1 cursor-pointer text-primary hover:underline"
                     placement="left"
                     :route-to="
                         isColumnAsset(selectedAsset)
@@ -61,7 +76,7 @@
                 <Tooltip
                     v-else
                     :tooltip-text="selectedAsset?.attributes?.name"
-                    classes="my-1 text-gray-700 font-semibold text-xl leading-6"
+                    classes="text-gray-700 font-semibold text-md leading-1"
                     placement="left"
                 />
 
@@ -105,14 +120,29 @@
                                 :class="
                                     activeKey === index ? 'text-primary' : ''
                                 "
-                                class="h-6"
+                                class="h-5"
                             />
                         </div>
                     </a-tooltip>
                 </template>
 
-                <div :style="{ height: tabHeights[page] }">
+                <div
+                    class="flex flex-col"
+                    :style="{ height: tabHeights[page] }"
+                >
+                    <div
+                        class="z-10 flex items-center justify-between px-3 py-1 mb-3 text-sm bg-gray-100 border-b border-gray-200 "
+                        style="
+                            position: absolute !important;
+                            right: 0px;
+                            left: 48px;
+                        "
+                    >
+                        {{ tab.tooltip }}
+                    </div>
+
                     <component
+                        class="mt-6"
                         :is="tab.component"
                         :component-data="dataMap[tab.id]"
                         :info-tab-data="selectedAsset"
@@ -290,16 +320,13 @@
             margin-bottom: 0px !important;
         }
         :global(.ant-tabs-nav-container) {
-            width: 60px !important;
+            width: 48px !important;
             @apply ml-0 !important;
         }
         :global(.ant-tabs-tab) {
             height: 48px !important;
-            width: 60px !important;
+            width: 48px !important;
             @apply p-0 !important;
-        }
-        :global(.ant-tabs-tab:first-child) {
-            @apply mt-4 !important;
         }
 
         :global(.ant-tabs-content) {

@@ -34,10 +34,7 @@
                 @asset-mutation="propagateToColumnList"
             />
         </div>
-        <div
-            v-if="isLoadMore || isLoading"
-            class="flex items-center justify-center"
-        >
+        <div v-if="isLoadMore" class="flex items-center justify-center">
             <button
                 :disabled="isLoading"
                 class="flex items-center justify-between py-2 transition-all duration-300 bg-white rounded-full  text-primary"
@@ -75,7 +72,7 @@
             </button>
         </div>
         <div
-            v-if="isLoading"
+            v-if="isLoading && !isLoadMore"
             class="flex items-center justify-center mt-4 text-sm leading-none"
         >
             <a-spin size="small" class="mr-2 leading-none"></a-spin

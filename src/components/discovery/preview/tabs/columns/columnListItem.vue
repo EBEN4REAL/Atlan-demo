@@ -57,7 +57,7 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, PropType, toRefs, ref } from 'vue'
+    import { defineComponent, PropType, ref } from 'vue'
     import useAssetInfo from '~/composables/asset/useAssetInfo'
     import { assetInterface } from '~/types/assets/asset.interface'
     import AssetPreview from '@/discovery/preview/assetPreview.vue'
@@ -75,10 +75,8 @@
         },
         emits: ['assetMutation'],
 
-        setup(props, { emit }) {
+        setup({ emit }) {
             const { dataTypeImage } = useAssetInfo()
-
-            const { asset } = toRefs(props)
 
             const showColumnSidebar = ref<boolean>(false)
 
@@ -86,7 +84,6 @@
                 showColumnSidebar.value = false
             }
             const propagateToColumnList = (updatedAsset: assetInterface) => {
-                /* asset.value = updatedAsset */
                 emit('assetMutation', updatedAsset)
             }
 

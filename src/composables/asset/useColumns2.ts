@@ -1,8 +1,7 @@
 import axios from 'axios'
-import { Ref, ref, computed, watch, ComputedRef } from 'vue'
+import { computed, ComputedRef } from 'vue'
 import { BasicSearchAttributes, ColumnAttributes } from '~/constant/projection'
 import { useBusinessMetadataStore } from '~/store/businessMetadata'
-import { dataTypeList } from '~/constant/datatype'
 import useAssetSearchList from '~/components/discovery/useSearchList'
 
 
@@ -80,7 +79,6 @@ export default function useColumns2({
     const isLoading = computed(() => !isReady.value && !error.value)
 
 
-
     const listCount: ComputedRef<any> = computed(() => list.value?.length);
     const totalCount: ComputedRef<any> = computed(() => data?.value?.approximateCount);
 
@@ -90,16 +88,6 @@ export default function useColumns2({
         }
         return false;
     });
-    /* 
-        const loadMore = () => {
-            if (isLoadMore.value) {
-                options.value.offset += options.value.limit;
-            }
-            mutate();
-        }; */
-    watch(entityParentQualifiedName, (newParent, oldParent) => {
-        if (newParent !== oldParent) refresh()
-    })
 
     return {
         list,

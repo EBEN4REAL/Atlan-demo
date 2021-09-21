@@ -288,7 +288,7 @@
                 groupValue:
                     props.initialFilters.facetsFilters?.owners?.groupValue ||
                     [],
-                noOwnerAssigned: false,
+                noOwnerAssigned: props.initialFilters.facetsFilters?.owners?.noOwner,
             }
             dataMap.value.advanced = {
                 applied: props.initialFilters.facetsFilters.advanced.applied,
@@ -404,6 +404,8 @@
                         dataMap.value[filterId].checked = []
                         dataMap.value[filterId].noClassificationsAssigned =
                             false
+                        dataMap.value[filterId].operator = 'OR'
+                        dataMap.value[filterId].addedBy = 'all' 
                         filterMap[filterId].criterion = []
                         break
                     }

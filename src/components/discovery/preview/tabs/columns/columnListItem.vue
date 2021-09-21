@@ -41,7 +41,6 @@
             placement="right"
             :mask="false"
             :get-container="false"
-            :wrap-style="{ position: 'absolute' }"
             :keyboard="false"
             :destroy-on-close="true"
             :closable="false"
@@ -89,7 +88,7 @@
             }
             const propagateToColumnList = (updatedAsset: assetInterface) => {
                 asset.value = updatedAsset
-                emit('assetMutation', updatedAsset)
+                /* emit('assetMutation', updatedAsset) */
             }
 
             return {

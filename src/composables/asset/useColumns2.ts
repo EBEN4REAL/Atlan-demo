@@ -1,8 +1,9 @@
-import { Ref, ref, computed, watch } from 'vue'
+import { Ref, ref, computed, watch, ComputedRef } from 'vue'
 import { BasicSearchAttributes, ColumnAttributes } from '~/constant/projection'
 import { SearchBasic } from '~/api/atlas/searchbasic'
 import { useBusinessMetadataStore } from '~/store/businessMetadata'
 import { dataTypeList } from '~/constant/datatype'
+import { SearchParameters } from "~/types/atlas/attributes";
 
 export default function useColumns2({
     entityParentQualifiedName,
@@ -25,12 +26,14 @@ export default function useColumns2({
         ],
     }
 
-    const options = {
+    const options: Ref<SearchParameters> = ref({
         typeName: 'Column',
         excludeDeletedEntities: true,
         includeClassificationAttributes: true,
         includeSubClassifications: true,
         includeSubTypes: true,
+        limit: 20,
+        offset: 0,
         attributes: [
             'description',
             'userDescription',
@@ -61,7 +64,7 @@ export default function useColumns2({
             ...ColumnAttributes,
         ],
         entityFilters,
-    }
+    })
 
 
     const searchTerm = ref('')
@@ -69,8 +72,22 @@ export default function useColumns2({
 
     const { data, error, mutate, isValidating, isLoading } = SearchBasic.BasicV2(
         '',
-        ref(options)
+        options
     )
+
+    const list: Ref<any[]> = ref([]);
+    watch(data, () => {
+        if (options?.value?.offset > 0) {
+            list.value = list.value.concat(data?.value?.entities);
+
+        } else if (data.value?.entities) {
+            list.value = data.value?.entities;
+
+        } else {
+            list.value = [];
+        }
+    });
+
 
     const filteredList = computed(() => {
         const allowedTypes = dataTypeList
@@ -81,14 +98,14 @@ export default function useColumns2({
         const keyword = searchTerm.value.toLowerCase()
 
         return (
-            data.value?.entities?.filter(
+            data.value?.entities.filter(
                 (item) =>
                     (keyword
-                        ? item.displayText.toLowerCase().includes(keyword)
+                        ? item.displayText?.toLowerCase().includes(keyword)
                         : true) &&
                     (filters.value.length
                         ? allowedTypes.includes(
-                            item.attributes.dataType.toLowerCase()
+                            item.attributes?.dataType?.toLowerCase()
                         )
                         : true)
             ) || []
@@ -104,6 +121,25 @@ export default function useColumns2({
     })
 
 
+    const listCount: ComputedRef<any> = computed(() => filteredList.value?.length);
+    const limit: ComputedRef<any> = computed(() => options.value?.limit);
+    const offset: ComputedRef<any> = computed(() => options.value.offset);
+    const totalCount: ComputedRef<any> = computed(() => data?.value?.approximateCount);
+
+    const isLoadMore = computed(() => {
+        if (listCount.value < totalCount.value) {
+            return true;
+        }
+        return false;
+    });
+
+    const loadMore = () => {
+        if (isLoadMore.value) {
+            options.value.offset += options.value.limit;
+        }
+        mutate();
+    };
+
 
     return {
         columnList: data,
@@ -114,5 +150,9 @@ export default function useColumns2({
         filteredList,
         filters,
         clearAllFilters,
+        limit,
+        offset,
+        isLoadMore,
+        loadMore
     }
 }

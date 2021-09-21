@@ -12,7 +12,7 @@
                 >
                     <template #pillPrefix="{ item }">
                         <avatar
-                            class="-ml-1"
+                            class="-ml-2.5"
                             v-if="item && item.type === 'user'"
                             :image-url="
                                 KeyMaps.auth.avatar.GET_AVATAR({
@@ -21,13 +21,18 @@
                             "
                             :allow-upload="false"
                             :avatar-name="item.username"
-                            :avatar-size="16"
+                            avatar-size="small"
                             :avatar-shape="'circle'"
                         />
                         <AtlanIcon
                             v-else-if="item && item.type === 'group'"
                             icon="Group"
-                            class="h-4 text-primary group-hover:text-white"
+                            class="
+                                h-4
+                                -ml-0.5
+                                text-primary
+                                group-hover:text-white
+                            "
                         />
                     </template>
                     <template #popover="{ item }"

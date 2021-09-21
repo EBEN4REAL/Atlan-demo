@@ -9,12 +9,7 @@
             >
                 <div
                     v-if="!isReady && uploadStarted"
-                    class="
-                        hidden
-                        text-center
-                        bg-primary-light
-                        sm:block
-                    "
+                    class="hidden text-center bg-primary-light sm:block"
                     :style="{
                         width: avatarSize + 'px',
                         height: avatarSize + 'px',
@@ -31,13 +26,7 @@
                     :key="uploadKey"
                     :shape="avatarShape"
                     :size="avatarSize"
-                    class="
-                        hidden
-                        ant-tag-blue
-                        text-primary
-                        bg-primary-light
-                        sm:block
-                    "
+                    class="hidden  ant-tag-blue text-primary bg-primary-light sm:block"
                     :src="updatedImageUrl"
                     >{{
                         getNameInitials(getNameInTitleCase(avatarName))
@@ -50,13 +39,7 @@
                 :key="uploadKey"
                 :shape="avatarShape"
                 :size="avatarSize"
-                class="
-                    hidden
-                    ant-tag-blue
-                    text-primary
-                    bg-primary-light
-                    sm:block 
-                "
+                class="hidden  ant-tag-blue text-primary bg-primary-light sm:block"
                 :src="updatedImageUrl"
                 >{{ getNameInitials(getNameInTitleCase(avatarName)) }}</a-avatar
             >
@@ -65,76 +48,76 @@
 </template>
 
 <script lang="ts">
-import { ref, watch } from 'vue'
-import {
-    getNameInitials,
-    getNameInTitleCase,
-} from '~/composables//utils/string-operations'
-import uploadAvatar from '~/composables/avatar/uploadAvatar'
+    import { ref, watch, PropType } from 'vue'
+    import {
+        getNameInitials,
+        getNameInTitleCase,
+    } from '~/composables//utils/string-operations'
+    import uploadAvatar from '~/composables/avatar/uploadAvatar'
 
-export default {
-    name: 'Avatar',
-    props: {
-        avatarName: {
-            type: String,
-            default: '',
+    export default {
+        name: 'Avatar',
+        props: {
+            avatarName: {
+                type: String,
+                default: '',
+            },
+            allowUpload: {
+                type: Boolean,
+                default: false,
+            },
+            imageUrl: {
+                type: String,
+                default: '',
+            },
+            avatarShape: {
+                type: String,
+                default: 'square',
+            },
+            avatarSize: {
+                type: String as PropType<Number | String>,
+                default: 56,
+            },
         },
-        allowUpload: {
-            type: Boolean,
-            default: false,
-        },
-        imageUrl: {
-            type: String,
-            default: '',
-        },
-        avatarShape: {
-            type: String,
-            default: 'square',
-        },
-        avatarSize: {
-            type: Number,
-            default: 56,
-        },
-    },
-    setup(props, context) {
-        const uploadStarted = ref(false)
-        const updatedImageUrl = ref(props.imageUrl)
+        setup(props, context) {
+            const uploadStarted = ref(false)
+            const updatedImageUrl = ref(props.imageUrl)
 
-        watch(
-            () => props.imageUrl,
-            () => {
-                updatedImageUrl.value = props.imageUrl
+            watch(
+                () => props.imageUrl,
+                () => {
+                    updatedImageUrl.value = props.imageUrl
+                }
+            )
+            const { upload, isReady, uploadKey, refreshImage } = uploadAvatar()
+            const handleUploadAvatar = async (uploaded) => {
+                console.log('handle Upload', uploaded)
+                upload(uploaded.file)
+                uploadStarted.value = true
+                updatedImageUrl.value = `${updatedImageUrl.value}?${uploadKey.value}`
+
+                return true
             }
-        )
-        const { upload, isReady, uploadKey, refreshImage } = uploadAvatar()
-        const handleUploadAvatar = async (uploaded) => {
-            console.log('handle Upload', uploaded)
-            upload(uploaded.file)
-            uploadStarted.value = true
-            updatedImageUrl.value = `${updatedImageUrl.value}?${uploadKey.value}`
-
-            return true
-        }
-        watch(uploadKey, () => {
-            context.emit('imageUpdated', updatedImageUrl)
-        })
-        return {
-            handleUploadAvatar,
-            isReady,
-            uploadStarted,
-            uploadKey,
-            updatedImageUrl,
-            getNameInitials,
-            getNameInTitleCase,
-            refreshImage,
-        }
-    },
-}
+            watch(uploadKey, () => {
+                context.emit('imageUpdated', updatedImageUrl)
+            })
+            return {
+                handleUploadAvatar,
+                isReady,
+                uploadStarted,
+                uploadKey,
+                updatedImageUrl,
+                getNameInitials,
+                getNameInTitleCase,
+                refreshImage,
+            }
+        },
+    }
 </script>
 
 <style>
-.test {
-    height: 100%;
-    width: 100%;
-}
+    .test {
+        height: 100%;
+        width: 100%;
+    }
 </style>

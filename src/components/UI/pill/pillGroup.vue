@@ -17,7 +17,7 @@
                     :has-action="!readOnly"
                 >
                     <template #prefix>
-                        <slot name="pillPrefix"></slot>
+                        <slot name="pillPrefix" :item="item"></slot>
                     </template>
                 </Pill>
             </a-popover>
@@ -27,7 +27,7 @@
                 @action="handleDelete(index)"
                 @click="handleClick(item, index)"
                 :has-action="!readOnly"
-                ><template #prefix> <slot name="pillPrefix"></slot> </template
+                ><template #prefix> <slot name="pillPrefix" :item="item"></slot> </template
             ></Pill>
         </template>
         <slot name="suffix"></slot>

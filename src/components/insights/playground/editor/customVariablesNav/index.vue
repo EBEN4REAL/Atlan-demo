@@ -25,7 +25,7 @@
                         :trigger="['click']"
                     >
                         <span
-                            class="flex items-center justify-center mr-2 cursor-pointer hover:text-primary-600"
+                            class="flex items-center justify-center mr-2 cursor-pointer  hover:text-primary-600"
                             @click="() => openDropdown(variable)"
                         >
                             <fa icon="fal cog" class="" />
@@ -34,7 +34,7 @@
                             <a-menu>
                                 <div class="px-4 py-2">
                                     <span
-                                        class="absolute right-0 flex items-center justify-center mr-2 cursor-pointer hover:text-primary-600"
+                                        class="absolute right-0 flex items-center justify-center mr-2 cursor-pointer  hover:text-primary-600"
                                         @click="() => deleteVariable(variable)"
                                     >
                                         <fa icon="fal trash-alt" class="" />
@@ -131,7 +131,7 @@
                     </p>
                 </div>
                 <div
-                    class="flex items-center justify-center h-full px-2 text-white rounded-tr rounded-br bg-primary"
+                    class="flex items-center justify-center h-full px-2 text-white rounded-tr rounded-br  bg-primary"
                 >
                     <p
                         class="mb-0 truncate variable-value"
@@ -150,6 +150,7 @@
 <script lang="ts">
     import { defineComponent, Ref, inject, ref, toRaw } from 'vue'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
+    import { useEditor } from '~/components/insights/playground/common/composables/useEditor'
     import { editor } from 'monaco-editor'
 
     export default defineComponent({
@@ -159,10 +160,16 @@
             const activeInlineTab = inject(
                 'activeInlineTab'
             ) as Ref<activeInlineTabInterface>
-            const editorInstance = inject(
+            const tabs = inject('inlineTabs') as Ref<activeInlineTabInterface[]>
+            const editorInstanceRef = inject(
                 'editorInstance'
-            ) as editor.IStandaloneCodeEditor
-            const monacoInstance = inject('monacoInstance') as Ref<any>
+            ) as Ref<editor.IStandaloneCodeEditor>
+            const monacoInstanceRef = inject('monacoInstance') as Ref<any>
+            const editorInstance = toRaw(editorInstanceRef.value)
+            const monacoInstance = toRaw(monacoInstanceRef.value)
+
+            const { onEditorContentChange } = useEditor(tabs, activeInlineTab)
+
             const currentSelectedVariable = ref(null)
             const sqlVariables = ref([
                 {
@@ -197,11 +204,11 @@
                     dropDownStatus: false,
                 }
                 sqlVariables.value.push(samlple_add_variable_obj)
-                // const lineCount = editorInstance.getModel()?.getLineCount()
-                // console.log(lineCount)
-                // const lastLineLength = editorInstance.value
-                //     .getModel()
-                //     ?.getLineMaxColumn(1)
+                const lineCount = editorInstance?.getModel()?.getLineCount()
+                const lastLineLength = editorInstance
+                    ?.getModel()
+                    ?.getLineMaxColumn(lineCount)
+                console.log(lineCount, lastLineLength, 'inside add')
 
                 // const range = new monacoInstance.value.Range(
                 //     lineCount,
@@ -209,20 +216,26 @@
                 //     lineCount,
                 //     lastLineLength
                 // )
-                // console.log(lineCount, editorInstance.value.trigger)
+                // console.log(lineCount, editorInstance.trigger)
 
-                // editorInstance.value &&
-                //     editorInstance.value.executeEdits('', [
+                // editorInstance &&
+                //     editorInstance.executeEdits('', [
                 //         {
                 //             range: range,
                 //             text: ` {{variable${currentVariablesLength}}}`,
                 //         },
                 //     ])
                 // console.log(lastLineLength)
-                // editorInstance &&
-                //     editorInstance.trigger('keyboard', 'type', {
-                //         text: ` {{variable${currentVariablesLength}}}`,
-                //     })
+                const text = editorInstance?.getValue()
+                const model = monacoInstance?.editor?.createModel(
+                    `${text} {{variable${currentVariablesLength}}}`,
+                    'atlansql'
+                )
+                editorInstance?.setModel(null)
+                editorInstance?.setModel(model)
+                // editorInstance.trigger('keyboard', 'type', {
+                //     text: ` {{variable${currentVariablesLength}}}`,
+                // })
             }
 
             const openDropdown = (variable: any) => {
@@ -240,7 +253,7 @@
             const deleteVariableFromEditor = (str, regex, updatedName) => {
                 let updatedString = str.replace(regex, `${updatedName}`)
                 console.log(updatedString, updatedName, regex)
-                editorInstance.value.getModel().setValue(updatedString)
+                editorInstance.getModel().setValue(updatedString)
             }
 
             const deleteVariable = (variable) => {
@@ -249,7 +262,7 @@
                         variablex.formState.key === variable.formState.key
                 )
                 variable.dropDownStatus = false
-                const editorQuery = editorInstance.value.getValue()
+                const editorQuery = editorInstance.getValue()
                 console.log(variable)
                 const oldVariableName = variable.formState.name
                 let reg = new RegExp(`{{${oldVariableName}}}`, 'g')
@@ -272,7 +285,7 @@
             const replaceStringUsingRegex = (str, regex, updatedName) => {
                 let updatedString = str.replace(regex, `{{${updatedName}}}`)
                 console.log(updatedString, updatedName, regex)
-                editorInstance.value.getModel().setValue(updatedString)
+                editorInstance.getModel().setValue(updatedString)
             }
 
             const onSaveVariable = () => {
@@ -284,7 +297,7 @@
                 const oldVariableName = currentSelectedVariable.value.name
                 console.log(oldVariableName, 'oldname')
                 let reg = new RegExp(`{{${oldVariableName}}}`, 'g')
-                const editorQuery = editorInstance.value.getValue()
+                const editorQuery = editorInstance.getValue()
                 let updatedName =
                     sqlVariables.value[currentSelectedVaribleIndex].formState
                         .name

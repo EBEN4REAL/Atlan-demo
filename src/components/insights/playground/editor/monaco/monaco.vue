@@ -18,13 +18,14 @@
         watch,
         PropType,
         toRefs,
+        toRaw,
     } from 'vue'
 
-    import savedQuery from '@/projects/monaco/savedQuery'
-    import sqlKeywords from '@/projects/monaco/sqlKeywords'
-    import columnSuggestion from '@/projects/monaco/columnSuggestion'
+    import savedQuery from './savedQuery'
+    import sqlKeywords from './sqlKeywords'
+    import columnSuggestion from './columnSuggestion'
 
-    import { languageTokens } from '@/projects/monaco/sqlTokens'
+    import { languageTokens } from './sqlTokens'
     import TurndownService from 'turndown'
     import * as monaco from 'monaco-editor'
     import fetchColumnList from '~/composables/columns/fetchColumnList'
@@ -44,23 +45,17 @@
     }
 
     export default defineComponent({
-        emits: ['setEditorInstance', 'editorInstance'],
-        props: {
-            editorInstance: {
-                type: Object as PropType<Ref<any>>,
-                required: true,
-            },
-        },
+        emits: ['editorInstance'],
+        props: {},
 
         setup(props, { emit }) {
-            const { editorInstance } = toRefs(props)
             const activeInlineTab = inject(
                 'activeInlineTab'
             ) as Ref<activeInlineTabInterface>
             const tabs = inject('inlineTabs') as Ref<activeInlineTabInterface[]>
             const monacoRoot = ref<HTMLElement>()
             const disposable: Ref<monaco.IDisposable | undefined> = ref()
-            let editor: monaco.editor.IStandaloneCodeEditor
+            let editor: monaco.editor.IStandaloneCodeEditor | undefined
             const { onEditorContentChange } = useEditor(tabs, activeInlineTab)
 
             const entityFilters = {
@@ -204,13 +199,13 @@
                         strings: false,
                     },
                 })
-                console.log(typeof editor)
+                emit('editorInstance', editor, monaco)
 
-                const lastLineLength = editor.getModel()?.getLineMaxColumn(1)
+                const lastLineLength = editor?.getModel()?.getLineMaxColumn(1)
                 console.log(lastLineLength)
                 // emit('editorInstance', editor)
                 editor?.getModel().onDidChangeContent((event) => {
-                    const text = editor.getValue()
+                    const text = editor?.getValue()
                     console.log(event)
                     onEditorContentChange(event, text)
                     const lastTypedCharacter = event?.changes[0]?.text
@@ -241,8 +236,8 @@
                         lineNumber: range.endLineNumber,
                     }
                     editor?.setPosition(position)
-                    // on active inline tab change
-                    // emit('editorInstance', editor)
+                    //on active inline tab change
+                    emit('editorInstance', editor)
                 }
             })
             return {

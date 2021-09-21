@@ -31,27 +31,14 @@
             <template #suffixIcon>
                 <AtlanIcon icon="ChevronDown" class="h-4 -mt-0.5 -ml-0.5" />
             </template>
-
-            <template #dropdownRender="{ menuNode: menu }">
-                <v-nodes :vnodes="menu" />
-                <a-divider style="margin: 4px 0" />
-                <div
-                    style="padding: 4px 8px; cursor: pointer"
-                    @mousedown="(e) => e.preventDefault()"
-                    @click="addItem"
-                >
-                    <plus-outlined />
-                    Add item
-                </div>
-            </template>
         </a-tree-select>
-        <AssetDropdown
-            v-if="data.checked.connection"
+        <!-- <AssetDropdown
+            v-if="connection"
             :connector="filteredConnector"
             :data="data.checked"
             @change="handleChange"
             @label-change="setPlaceholder($event, 'asset')"
-        ></AssetDropdown>
+        ></AssetDropdown> -->
     </div>
 </template>
 
@@ -79,7 +66,10 @@
                 required: true,
             },
             data: {
-                type: Object,
+                type: Object as PropType<{
+                    attributeName: string
+                    attributeValue: string
+                }>,
                 required: true,
             },
         },
@@ -90,12 +80,27 @@
         setup(props, { emit }) {
             const { data } = toRefs(props)
             const tabIds: Ref<string[]> = ref([])
-            const selectedValue = computed(() =>
-                data.value.checked?.connection
-                    ? data.value.checked?.connection
-                    : data.value.checked?.connector
-            )
-            const setVisibleTabIds = (connectorType: string) => {
+            const selectedValue = computed(() => data.value?.attributeValue)
+
+            const connector = computed(() => {
+                if (data.value?.attributeName === 'integrationName')
+                    return data.value?.attributeValue
+                else {
+                    let qfChunks = data.value?.attributeValue?.split('/')
+                    return qfChunks?.length > 1 ? qfChunks[1] : ''
+                }
+            })
+
+            // QualifiedName format -> tenant/connector/connection/.../.../...
+            const connection = computed(() => {
+                let qfChunks = data.value?.attributeValue?.split('/')
+                return qfChunks?.length > 2
+                    ? qfChunks.slice(0, 3).join('/')
+                    : ''
+            })
+
+            const setVisibleTabIds = () => {
+                let connectorType = connector.value
                 if (connectorType) {
                     if (connectorType === 'tableau') {
                         tabIds.value = [
@@ -189,10 +194,10 @@
                     })
             }
 
-            const transformConnectorToTree = (data) => {
-                const tree = []
-                data.forEach((item) => {
-                    let dummyObj = {
+            const transformConnectorToTree = (data: any) => {
+                const tree: Record<string, any>[] = []
+                data.forEach((item: any) => {
+                    let treeNodeObj = {
                         value: item.id,
                         key: item.id,
                         img: item.image,
@@ -203,7 +208,7 @@
                         },
                         children: transformConnectionsToTree(item.id),
                     }
-                    tree.push(dummyObj)
+                    tree.push(treeNodeObj)
                 })
                 return tree
             }
@@ -211,17 +216,17 @@
             const treeData = transformConnectorToTree(filteredList.value)
 
             const handleNodeSelect = (value, node) => {
-                // data.value.connector = node.dataRef.connector
-                // data.value.connection = node.dataRef.connection
-                const newData = {
-                    checked: {
-                        connector: node.dataRef.connector,
-                        connection: node.dataRef.connection,
-                    },
-                }
-                setVisibleTabIds(newData.checked.connector)
-                emit('update:data', newData)
-                // console.log(value, node.dataRef, connectorsPayload, 'selected')
+                // // data.value.connector = node.dataRef.connector
+                // // data.value.connection = node.dataRef.connection
+                // const newData = {
+                //     checked: {
+                //         connector: node.dataRef.connector,
+                //         connection: node.dataRef.connection,
+                //     },
+                // }
+                // setVisibleTabIds(newData.checked.connector)
+                // emit('update:data', newData)
+                // // console.log(value, node.dataRef, connectorsPayload, 'selected')
             }
 
             watch(data, () => emitChangedFilters())
@@ -229,22 +234,19 @@
             const emitChangedFilters = () => {
                 const criterion: Components.Schemas.FilterCriteria[] = []
 
-                if (data.value.checked?.connector) {
-                    criterion?.push({
-                        attributeName: 'integrationName',
-                        attributeValue: data.value.checked?.connector,
-                        operator: 'eq',
-                    })
-                }
-                if (data.value.checked?.connection) {
+                if (connection.value) {
                     criterion?.push({
                         attributeName: 'connectionQualifiedName',
-                        attributeValue: data.value.checked?.connection,
+                        attributeValue: connection.value,
+                        operator: 'eq',
+                    })
+                } else if (connector.value) {
+                    criterion?.push({
+                        attributeName: 'integrationName',
+                        attributeValue: connector.value,
                         operator: 'eq',
                     })
                 }
-
-                console.log(tabIds.value, 'tabsIds')
 
                 emit(
                     'change',
@@ -253,22 +255,30 @@
                         payload: {
                             condition: 'AND',
                             criterion,
-                        } as Components.Schemas.FilterCriteria,
+                        },
                     },
                     tabIds.value
                 )
             }
 
-            const handleSelectChange = (value, label) => {
-                if (!value) {
-                    setVisibleTabIds('')
-                    emit('update:data', {
-                        checked: {
-                            connector: undefined,
-                            connection: undefined,
-                        },
-                    })
+            const handleSelectChange = (value: string, label) => {
+                const payload: Record<string, string | undefined> = {
+                    attributeName: undefined,
+                    attributeValue: undefined,
                 }
+                const chunks = value?.split('/')
+
+                if (chunks?.length == 1 && chunks[0]) {
+                    payload.attributeName = 'integrationName'
+                    payload.attributeValue = value
+                } else if (chunks?.length > 2) {
+                    payload.attributeName = 'connectionQualifiedName'
+                    payload.attributeValue = value
+                }
+
+                emit('update:data', payload)
+
+                setVisibleTabIds()
             }
 
             const handleChange = ({
@@ -297,16 +307,13 @@
             }
 
             const filteredConnector = computed(() =>
-                store.getSourceList?.find(
-                    (item) => data.value.checked?.connector == item.id
-                )
+                store.getSourceList?.find((item) => item.id === connector.value)
             )
+
             function setPlaceholder(label: string, type: string) {
                 placeholderLabel.value[type] = label
                 if (type === 'connector') placeholderLabel.value.asset = ''
             }
-
-            console.log(data.value.checked, 'connectorsPayload')
 
             return {
                 handleChange,
@@ -322,6 +329,9 @@
                 checkedValues,
                 treeData,
                 capitalizeFirstLetter,
+
+                connector,
+                connection,
             }
         },
     })

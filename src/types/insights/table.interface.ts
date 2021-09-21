@@ -4,7 +4,7 @@ export interface tableInterface {
     label: string
 }
 
-type Attributes =  {
+export type Attributes =  {
     assetStatus?: string
     assetStatusMessage?: string
     assetStatusUpdatedBy?: string
@@ -47,5 +47,5 @@ export type Column = Omit<Components.Schemas.AtlasEntityHeader, 'attributes' | '
 }
 
 export type BasicSearchResponse<T> = Omit<Components.Schemas.AtlasSearchResult, 'entities'> & {
-    entities: T[]
+    entities?: T[],
 }

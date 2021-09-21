@@ -1,11 +1,17 @@
 import { watch, ref, Ref, computed, ComputedRef, onMounted } from 'vue'
 import { TreeDataItem } from 'ant-design-vue/lib/tree/Tree'
 
+import { Attributes,  Database, Schema, Table, Column } from '~/types/insights/table.interface'
+
 import store from '~/utils/storage'
 
 // composables
 import useLoadTreeData from './useLoadTreeData';
 
+type CustomTreeDataItem = Omit<TreeDataItem, 'children'> & Attributes &{
+    children?: CustomTreeDataItem[];
+    typeName: string
+};
 
 interface useSchemaExplorerTreeProps {
     emit: any;
@@ -21,7 +27,7 @@ const useTree = ({ emit, connectionQualifiedName, databaseQualifiedName, schemaQ
     // A map of node guids to the guid of their parent. Used for traversing the tree while doing local update
     const nodeToParentKeyMap: Record<string, 'root' | string> = {}
 
-    const treeData = ref<TreeDataItem[]>([])
+    const treeData = ref<CustomTreeDataItem[]>([])
 
     const isInitingTree = ref(false)
     const loadedKeys = ref<string[]>([])
@@ -71,40 +77,29 @@ const useTree = ({ emit, connectionQualifiedName, databaseQualifiedName, schemaQ
      * @param guid - Guid of the parent Glossary
      */
     const initTreeData = async (connectionQualifiedName?: string, databaseQualifiedName?: string, schemaQualifiedName?: string) => {
+        // TODO: optimisation - if new selcted name is already expanded, use the same child instead of reinitializing
         treeData.value = [];
 
         if(schemaQualifiedName) {
             // get tables for schema - composable_useGetTablesForSchema
             // add to treeData
             const tableResponse = await getTablesForSchema(schemaQualifiedName);
-            tableResponse.entities.forEach((table) => {
-                treeData.value.push({
-                    ...table.attributes,
-                    key: table.guid,
-                    title: table.attributes.name
-                })
+            tableResponse.entities?.forEach((table) => {
+                treeData.value.push(returnTreeDataItemAttributes(table))
             })
         } else if (databaseQualifiedName) {
             // get schema for database - composable_useGetSchemaForDatabase
             // add to treeData
             const schemaResponse = await getSchemaForDatabase(databaseQualifiedName);
-            schemaResponse.entities.forEach((schema) => {
-                treeData.value.push({
-                    ...schema.attributes,
-                    key: schema.guid,
-                    title: schema.attributes.name
-                })
+            schemaResponse.entities?.forEach((schema) => {
+                treeData.value.push(returnTreeDataItemAttributes(schema))
             })
         } else if (connectionQualifiedName) {
             // get database for connection - composable_useGetDatabaseForConnection
             // add to treeData
             const databasesResponse = await getDatabaseForConnection(connectionQualifiedName, 0)
-            databasesResponse.entities.forEach((database) => {
-                treeData.value.push({
-                    ...database.attributes,
-                    key: database.guid,
-                    title: database.attributes.name
-                })
+            databasesResponse.entities?.forEach((database) => {
+                treeData.value.push(returnTreeDataItemAttributes(database))
             })
         } else {
             // nothing
@@ -115,18 +110,41 @@ const useTree = ({ emit, connectionQualifiedName, databaseQualifiedName, schemaQ
     /**
      * Asynchronously fetches children of a node and appends them
      */
-    const onLoadData = async (treeNode: any) => {
-        if (treeNode.type === 'Database') {
-            // get schema for database - composable_useGetSchemaForDatabase
-        } else if (treeNode.type === 'Schema') {
-            // get tables for schema - composable_useGetTablesForSchema
-        } else if ( treeNode.type === 'Table') {
-            // get columns for table - composable_useGetColumnsForTable
+    const onLoadData = async (treeNode: {
+        [key: string]: any;
+        dataRef: CustomTreeDataItem,
+    }) => {
+        console.log(treeNode)
+        if(!treeNode.dataRef.children) {
+            treeNode.dataRef.children = []
         }
+
+        if (treeNode.dataRef.typeName === 'Database') {
+            // get schema for database - composable_useGetSchemaForDatabase
+            const schemaResponse = await getSchemaForDatabase(treeNode.dataRef.qualifiedName);
+            schemaResponse.entities?.forEach((schema) => {
+                treeNode.dataRef.children?.push(returnTreeDataItemAttributes(schema))
+            })
+            if(!schemaResponse.entities?.length) treeNode.dataRef.isLeaf = true;
+        } else if (treeNode.dataRef.typeName === 'Schema') {
+            // get tables for schema - composable_useGetTablesForSchema
+            const tableResponse = await getTablesForSchema(treeNode.dataRef.qualifiedName);
+            tableResponse.entities?.forEach((table) => {
+                treeNode.dataRef.children?.push(returnTreeDataItemAttributes(table))
+            })
+            if(!tableResponse.entities?.length) treeNode.dataRef.isLeaf = true;
+        } else if ( treeNode.dataRef.typeName === 'Table') {
+            const columnResponse = await getColumnsForTable(treeNode.dataRef.qualifiedName);
+            columnResponse.entities?.forEach((column) => {
+                treeNode.dataRef.children?.push(returnTreeDataItemAttributes(column))
+            })
+        }
+        loadedKeys.value.push(treeNode.dataRef.key)
     }
 
     const expandNode = (expanded: string[], event: any) => {
         // triggered by select
+        console.log('expanded', expanded)
         if (!event.node.isLeaf) {
             const key: string = event.node.eventKey
             const isExpanded = expandedKeys.value?.includes(key)
@@ -160,6 +178,16 @@ const useTree = ({ emit, connectionQualifiedName, databaseQualifiedName, schemaQ
     }
 
 
+
+    const returnTreeDataItemAttributes = (item:  Database | Schema | Table | Column) => {
+        return {
+            key: item.guid,
+            title: item.attributes.name,
+            typeName: item.typeName,
+            ...item.attributes,
+            isLeaf: item.typeName === 'Column' ? true : false
+        }
+    }
 
     onMounted(() => {
         isInitingTree.value = true;

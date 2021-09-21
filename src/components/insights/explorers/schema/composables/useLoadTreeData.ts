@@ -17,7 +17,8 @@ const useLoadTreeData = () => {
         offset: 0,
         attributes: [
             "name",
-            "displayName"
+            "displayName",
+            "typeName"
         ],
         entityFilters: {
             condition: "AND",

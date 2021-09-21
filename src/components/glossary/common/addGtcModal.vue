@@ -45,12 +45,24 @@
                             icon="ChevronDown"
                         />
                     </a-dropdown>
-                    <a-dropdown placement="bottomLeft" :visible="true">
+                    <a-dropdown
+                        placement="topLeft"
+                        :trigger="['click']"
+                        @click.stop="() => {}"
+                        v-model:visible="isVisible"
+                    >
                         <template #overlay>
-                            <AddGtcModalOwners class="px-4 py-2" />
+                            <AddGtcModalOwners
+                                @closeDropdown="handleCloseOwnersModal"
+                                @ownersUpdated="handleOwnersUpdated"
+                                class="px-4 py-2"
+                            />
                         </template>
                         <a-button type="primary">Owners</a-button>
                     </a-dropdown>
+                    {{ isVisible }}
+                    {{ ownerUsers }}
+                    {{ ownerGroups }}
                 </div>
                 <div class="flex items-center justify-end space-x-3">
                     <a-switch size="small" v-model:checked="isCreateMore" />
@@ -119,7 +131,10 @@
             const title = ref<String>('')
             const description = ref<String>('')
             const currentStatus = ref<String>('draft')
+            const ownerUsers = ref([])
+            const ownerGroups = ref([])
             const visible = ref<boolean>(false)
+            const isVisible = ref<boolean>(false)
             const isCreateMore = ref<boolean>(false)
             const titleBar: Ref<null | HTMLInputElement> = ref(null)
             const { createTerm, createCategory } = useCreateGlossary()
@@ -141,9 +156,11 @@
                     createTerm(
                         props.glossaryId,
                         '',
-                        title.value,
+                        `${title.value === '' ? 'Untitled term' : title.value}`,
                         description.value,
-                        currentStatus.value
+                        currentStatus.value,
+                        ownerUsers?.value?.value?.join(),
+                        ownerGroups?.value?.value?.join()
                     )
                 } else console.log('glossary->', props.glossaryId)
                 console.log('category->', props.categoryId)
@@ -158,7 +175,13 @@
                 resetInput()
                 visible.value = false
             }
-
+            const handleCloseOwnersModal = () => {
+                isVisible.value = false
+            }
+            const handleOwnersUpdated = (updatedOwners) => {
+                ownerUsers.value = updatedOwners.ownerUsers
+                ownerGroups.value = updatedOwners.ownerGroups
+            }
             onMounted(async () => {
                 await nextTick()
                 titleBar.value?.focus()
@@ -177,6 +200,11 @@
                 List,
                 handleMenuClick,
                 currentStatus,
+                handleCloseOwnersModal,
+                isVisible,
+                handleOwnersUpdated,
+                ownerGroups,
+                ownerUsers,
             }
         },
     })

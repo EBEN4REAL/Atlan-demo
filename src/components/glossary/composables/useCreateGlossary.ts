@@ -1,8 +1,8 @@
 import { watch, ref, Ref, inject } from 'vue'
 import { useRouter } from 'vue-router'
+import { message } from 'ant-design-vue'
 import { generateUUID } from '~/utils/helper/generator'
 import { Components } from '~/api/atlas/client'
-import { message } from 'ant-design-vue'
 
 import { useAPI } from '~/api/useAPI'
 import {
@@ -134,7 +134,9 @@ const useCreateGlossary = () => {
         parentCategoryGuid?: string,
         title?: string,
         description?: string,
-        status?: string
+        status?: string,
+        ownerUsers?: string,
+        ownerGroups?: string
     ) => {
         body.value = {
             name: generateUUID(),
@@ -142,7 +144,8 @@ const useCreateGlossary = () => {
             shortDescription: description ?? '',
             longDescription: '',
             assetStatus: status ?? 'draft',
-            ownerUsers: `${username.value}`,
+            ownerUsers: ownerUsers ?? `${username.value}`,
+            ownerGroups: ownerGroups ?? ``,
             anchor: {
                 glossaryGuid: parentGlossaryGuid,
             },
@@ -175,17 +178,18 @@ const useCreateGlossary = () => {
 
         watch(data, (newData) => {
             if (newData?.guid) {
+                message.success({
+                    content: `${title} created!`,
+                    key: `${title}`,
+                    duration: 2,
+                })
+
                 updateEntity('term', newData.guid, {
                     name: title ?? 'Untitled Term',
                 })
             }
         })
         watch(updateData, (newData) => {
-            message.success({
-                content: `${title} created!`,
-                key: `${title}`,
-                duration: 2,
-            })
             if (newData?.guid) {
                 if (!title) {
                     redirectToProfile('term', newData.guid)

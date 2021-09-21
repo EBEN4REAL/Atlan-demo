@@ -49,7 +49,7 @@
                 "
                 :min-size="activeInlineTab?.assetSidebar?.isVisible ? 60 : 80"
             >
-                <Playground v-model:activeInlineTabKey="activeInlineTabKey" />
+                <Playground :activeInlineTabKey="activeInlineTabKey" />
             </pane>
             <pane
                 :max-size="20"
@@ -83,6 +83,7 @@
     import { useSpiltPanes } from './common/composables/useSpiltPanes'
     import { useProvide } from './common/composables/useProvide'
     import { useInlineTab } from './common/composables/useInlineTab'
+    import { useConnector } from './common/composables/useConnector'
     // import { useHotKeys } from './common/composables/useHotKeys'
 
     import { TabInterface } from '~/types/insights/tab.interface'
@@ -110,6 +111,9 @@
                 syncActiveInlineTabKeyInLocalStorage,
             } = useLocalStorageSync()
 
+            const { selectedDefaultSchema, selectedDataSourceName } =
+                useConnector()
+
             const { tabsArray, activeInlineTabKey, activeInlineTab } =
                 useInlineTab()
             const activeTabId = ref(tabsList[0].id)
@@ -129,6 +133,8 @@
                 activeInlineTab: activeInlineTab,
                 activeInlineTabKey: activeInlineTabKey,
                 inlineTabs: tabsArray,
+                selectedDefaultSchema: selectedDefaultSchema,
+                selectedDataSourceName: selectedDataSourceName,
             }
             useProvide(provideData)
             /*-------------------------------------*/

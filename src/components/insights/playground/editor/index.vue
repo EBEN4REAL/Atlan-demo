@@ -1,12 +1,14 @@
 <template>
     <div class="w-full h-full px-3 rounded">
         <div class="w-full h-full overflow-x-hidden rounded">
-            <CustomVariablesNav v-if="editorInstance" />
+            <CustomVariablesNav />
             <div
                 class="flex items-center justify-between w-full mb-3  run-btn-wrapper"
             >
                 <div class="w-full">
-                    <p class="mb-1 text-base">WEB SALES</p>
+                    <p class="mb-1 text-base">
+                        {{ selectedDefaultSchema ?? 'WEB SALES' }}
+                    </p>
                 </div>
                 <a-button
                     type="primary"
@@ -16,7 +18,7 @@
                     >Run Query</a-button
                 >
             </div>
-            <Monaco @setEditorInstance="setEditorInstance" />
+            <Monaco @editorInstance="setEditorInstance" />
         </div>
     </div>
 </template>
@@ -28,6 +30,8 @@
         Ref,
         defineAsyncComponent,
         ref,
+        reactive,
+        provide,
         watch,
     } from 'vue'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
@@ -50,35 +54,38 @@
             const activeInlineTab = inject(
                 'activeInlineTab'
             ) as Ref<activeInlineTabInterface>
-            const editorInstance = ref()
+            const selectedDefaultSchema = inject(
+                'selectedDefaultSchema'
+            ) as Ref<string>
+            const selectedDataSourceName = inject(
+                'selectedDataSourceName'
+            ) as Ref<string>
+            let editorInstance: any = reactive({})
             const monacoInstance = ref()
-            const tabs = inject('inlineTabs') as Ref<activeInlineTabInterface[]>
             const isQueryRunning = inject('isQueryRunning') as Ref<string>
-            const { modifyActiveInlineTab } = useInlineTab()
 
             const getData = (dataList, columnList) => {
-                console.log(dataList, columnList, 'called from callback')
-                const activeInlineTabCopy: activeInlineTabInterface =
-                    Object.assign({}, activeInlineTab.value)
-                activeInlineTabCopy.playground.editor.dataList = dataList
-                activeInlineTabCopy.playground.editor.columnList = columnList
-                modifyActiveInlineTab(activeInlineTabCopy, tabs)
+                // setting the data here because we don't want to save the response in local storage
+                activeInlineTab.value.playground.editor.dataList = dataList
+                activeInlineTab.value.playground.editor.columnList = columnList
             }
             const run = () => {
-                queryRun(activeInlineTab.value, getData, isQueryRunning)
-            }
-            const setEditorInstance = (
-                editorInstanceParam: editor.IStandaloneCodeEditor,
-                monacoInstanceParam: any
-            ) => {
-                console.log(
-                    editorInstanceParam,
-                    monacoInstanceParam,
-                    'instance value'
+                queryRun(
+                    activeInlineTab.value,
+                    getData,
+                    isQueryRunning,
+                    selectedDefaultSchema,
+                    selectedDataSourceName
                 )
-                editorInstance.value = editorInstanceParam
-                monacoInstance.value = monacoInstanceParam
             }
+
+            const setEditorInstance = (
+                editorInstanceParam: editor.IStandaloneCodeEditor
+            ) => {
+                editorInstance = editorInstanceParam
+                console.log(editorInstanceParam, 'fxn')
+            }
+
             /*---------- PROVIDERS FOR CHILDRENS -----------------
             ---Be careful to add a property/function otherwise it will pollute the whole flow for childrens--
             */
@@ -89,6 +96,7 @@
             useProvide(provideData)
             /*-------------------------------------*/
             return {
+                selectedDefaultSchema,
                 editorInstance,
                 activeInlineTab,
                 isQueryRunning,

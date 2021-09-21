@@ -2,7 +2,8 @@
     <div class="flex flex-col items-center w-full h-full bg-white border-r">
         <div class="w-full p-3 mb-3">
             <Connector
-                v-model:data="connectors"
+                class=""
+                :data="connector"
                 :item="{
                     id: 'connector',
                     label: 'Connector',
@@ -21,6 +22,7 @@
                     exclude: false,
                 }"
                 @change="handleChange"
+                @update:data="setConnector"
             ></Connector>
         </div>
         <div class="w-full p-3 pt-0 overflow-y-auto scrollable-container">
@@ -42,12 +44,13 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, Ref, inject } from 'vue'
+    import { defineComponent, Ref, inject, ref } from 'vue'
     import { useAssetSidebar } from '~/components/insights/assetSidebar/composables/useAssetSidebar'
     import { tableInterface } from '~/types/insights/table.interface'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
     import { tablesData } from './tablesDemoData'
     import Connector from '@common/facets/connector.vue'
+    import { useConnector } from '~/components/insights/common/composables/useConnector'
 
     export default defineComponent({
         components: { Connector },
@@ -57,8 +60,16 @@
             const activeInlineTab = inject(
                 'activeInlineTab'
             ) as Ref<activeInlineTabInterface>
+            const selectedDefaultSchema = inject(
+                'selectedDefaultSchema'
+            ) as Ref<string>
+            const selectedDataSourceName = inject(
+                'selectedDataSourceName'
+            ) as Ref<string>
             const tabs = inject('inlineTabs') as Ref<activeInlineTabInterface[]>
             const { openAssetSidebar } = useAssetSidebar(tabs, activeInlineTab)
+            const { setSchemaAndSoruceName, getSchemaAndSourceName } =
+                useConnector()
 
             const isAssetSidebarOpened = (table: tableInterface) => {
                 if (
@@ -70,15 +81,35 @@
                 }
                 return false
             }
-            const connectors = {
-                connectorsPayload: [],
+            const connector = ref({
                 checked: [],
+            })
+            const handleChange = (data) => {
+                console.log(data, 'connectorChange')
+                const len = data.payload.criterion.length
+                if (
+                    len > 0 &&
+                    data.payload.criterion[len - 1]?.attributeValue
+                ) {
+                    const { schema, sourceName } = getSchemaAndSourceName(
+                        data.payload.criterion[len - 1]?.attributeValue
+                    )
+                    setSchemaAndSoruceName(
+                        selectedDefaultSchema,
+                        selectedDataSourceName,
+                        schema,
+                        sourceName
+                    )
+                }
             }
-            const handleChange = (e) => {
-                console.log(e, 'connectorChange')
+
+            const setConnector = (payload: any) => {
+                connector.value = payload
             }
+
             return {
-                connectors,
+                connector,
+                setConnector,
                 isAssetSidebarOpened,
                 openAssetSidebar,
                 handleChange,

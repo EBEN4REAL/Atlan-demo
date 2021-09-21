@@ -45,7 +45,8 @@ export function useInlineTab() {
 
     const inlineTabRemove = (
         inlineTabKey: string,
-        tabsArray: Ref<activeInlineTabInterface[]>
+        tabsArray: Ref<activeInlineTabInterface[]>,
+        activeInlineTabKey: Ref<string>
     ) => {
         let lastIndex = 0
         tabsArray.value.forEach((tab, i) => {
@@ -68,6 +69,8 @@ export function useInlineTab() {
         } else {
             activeInlineTabKey.value = undefined
         }
+        // syncying inline tabarray in localstorage
+        syncInlineTabsInLocalStorage(tabsArray.value)
     }
 
     const modifyActiveInlineTab = (
@@ -78,6 +81,7 @@ export function useInlineTab() {
             (tab) => tab.key === activeTab.key
         )
         if (index !== -1) {
+            console.log(index, activeTab, 'modifyTab')
             tabsArray.value[index] = activeTab
         }
         // syncying inline tabarray in localstorage
@@ -97,10 +101,17 @@ export function useInlineTab() {
         // syncying inline tabarray in localstorage
         syncInlineTabsInLocalStorage(tabsArray.value)
     }
+    const setActiveTabKey = (
+        selectedKey: string,
+        activeInlineTabKey: Ref<string>
+    ) => {
+        activeInlineTabKey.value = selectedKey
+    }
 
     const inlineTabAdd = (
         inlineTab: activeInlineTabInterface,
-        tabsArray: Ref<activeInlineTabInterface[]>
+        tabsArray: Ref<activeInlineTabInterface[]>,
+        activeInlineTabKey: Ref<string>
     ) => {
         tabsArray.value.push(inlineTab)
         activeInlineTabKey.value = inlineTab.key
@@ -121,5 +132,6 @@ export function useInlineTab() {
         inlineTabAdd,
         modifyActiveInlineTab,
         modifyActiveInlineTabEditor,
+        setActiveTabKey,
     }
 }

@@ -209,4 +209,7 @@ export const KeyMaps = {
             )
         },
     },
+    schemaExplorer: {
+        BASIC_SEARCH: () => getAPIPath('auth/atlas', '/search/basic'),
+    }
 }

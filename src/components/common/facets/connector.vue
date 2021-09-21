@@ -59,6 +59,7 @@
     import { Collapse } from '~/types'
     import { useConnectionsStore } from '~/store/connections'
     import AssetDropdown from '~/components/common/dropdown/assetDropdown.vue'
+    import { getTabsForConnector } from '~/components/discovery/useTabMapped'
 
     export default defineComponent({
         props: {
@@ -103,50 +104,9 @@
                 () => connection.value || connector.value || undefined
             )
 
-            const tabIds: ComputedRef<string[]> = computed(() => {
-                let connectorType = connector.value
-                if (connectorType) {
-                    if (connectorType === 'tableau')
-                        return [
-                            'TableauSite',
-                            'TableauProject',
-                            'TableauWorkbook',
-                            'TableauWorksheet',
-                            'TableauDashboard',
-                            'TableauDatasource',
-                            'TableauDatasourceField',
-                        ]
-                    else
-                        return [
-                            'Connection',
-                            'Database',
-                            'Schema',
-                            'View',
-                            'Table',
-                            'TablePartition',
-                            'MaterialisedView',
-                            'Column',
-                        ]
-                } else {
-                    return [
-                        'Connection',
-                        'Database',
-                        'Schema',
-                        'View',
-                        'Table',
-                        'TablePartition',
-                        'MaterialisedView',
-                        'Column',
-                        'TableauSite',
-                        'TableauProject',
-                        'TableauWorkbook',
-                        'TableauWorksheet',
-                        'TableauDashboard',
-                        'TableauDatasource',
-                        'TableauDatasourceField',
-                    ]
-                }
-            })
+            const tabIds: ComputedRef<string[]> = computed(() =>
+                getTabsForConnector(data.value)
+            )
 
             const store = useConnectionsStore()
 
@@ -273,10 +233,10 @@
 
                 if (chunks?.length == 1 && chunks[0]) {
                     payload.attributeName = 'integrationName'
-                    payload.attributeValue = value
+                    payload.attributeValue = chunks[0]
                 } else if (chunks?.length > 2) {
                     payload.attributeName = 'connectionQualifiedName'
-                    payload.attributeValue = value
+                    payload.attributeValue = chunks.slice(0, 3).join('/')
                 }
 
                 emit('update:data', payload)

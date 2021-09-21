@@ -2,7 +2,14 @@
     <div class="flex w-full">
         <div
             v-if="showFilters"
-            class="flex flex-col h-full overflow-y-auto bg-white border-r  facets"
+            class="
+                flex flex-col
+                h-full
+                overflow-y-auto
+                bg-white
+                border-r
+                facets
+            "
         >
             <AssetFilters
                 :ref="
@@ -127,7 +134,7 @@
     import { getEncodedStringFromOptions } from '~/utils/helper/routerQuery'
     import { useBusinessMetadataStore } from '~/store/businessMetadata'
     import {
-        initialTabsForConnector,
+        getTabsForConnector,
         initialTabsForAssetCategory,
     } from './useTabMapped'
 
@@ -277,11 +284,12 @@
 
             // Get All Disoverable Asset Types
             const assetTypeList = ref([])
-            const initialTabs = ref([])
-
-            initialTabs.value = initialTabsForConnector(
-                initialFilters.value.facetsFilters.connector
+            const initialTabs: Ref<string[]> = ref(
+                getTabsForConnector(
+                    initialFilters.value.facetsFilters.connector
+                )
             )
+
             const assetCategoryTabs = initialTabsForAssetCategory(
                 initialFilters.value.facetsFilters.assetCategory.selectedIds
             )

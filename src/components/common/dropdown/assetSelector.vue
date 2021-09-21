@@ -6,6 +6,8 @@
         @change="handleChange"
         :placeholder="placeholder"
         :disabled="disabled"
+        :options="dropdownOption"
+        :loading="isLoading"
         show-search
         filter-option
         allow-clear
@@ -20,16 +22,6 @@
         </template>
         <template #suffixIcon>
             <AtlanIcon icon="ChevronDown" class="h-4 -mt-0.5 -ml-0.5" />
-        </template>
-        <template v-for="options in list" :key="options.guid">
-            <a-select-option :value="options.attributes.qualifiedName">
-                <div class="flex flex-col">
-                    {{
-                        options.attributes?.displayName ||
-                        options.attributes?.name
-                    }}
-                </div>
-            </a-select-option>
         </template>
     </a-select>
 </template>
@@ -81,7 +73,7 @@
                 sortOrder: 'ASCENDING',
             }
 
-            const { list, replaceBody, data } = useAssetListing(
+            const { list, replaceBody, data, isLoading } = useAssetListing(
                 initialBody.typeName,
                 false
             )
@@ -106,17 +98,22 @@
                 emit('change', checkedValues)
             }
 
+            const dropdownOption = computed(() =>
+                list.value.map((ls) => ({
+                    label: ls.attributes?.displayName || ls.attributes?.name,
+                    value: ls.attributes.qualifiedName,
+                }))
+            )
+
             return {
                 list,
                 handleChange,
                 selfAssetTypeMap,
                 data,
+                isLoading,
+                dropdownOption,
             }
         },
-        data() {
-            return {}
-        },
-        computed: {},
     })
 </script>
 <style lang="less" module>

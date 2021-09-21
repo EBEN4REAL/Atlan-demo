@@ -177,7 +177,11 @@
             const initialFilterMap = {
                 connector: {
                     condition: 'AND',
-                    criterion: [props.initialFilters.facetsFilters.connector],
+                    criterion: Object.keys(
+                        props.initialFilters?.facetsFilters?.connector
+                    ).length
+                        ? [props.initialFilters.facetsFilters.connector]
+                        : [],
                 },
                 assetCategory: {
                     condition:
@@ -426,15 +430,6 @@
             }
             function getFiltersAppliedString(filterId: string) {
                 switch (filterId) {
-                    case 'connector': {
-                        // let facetFiltersData = dataMap.value[filterId].checked
-                        let str = ''
-                        // console.log(facetFiltersData, 'applied')
-                        // if (facetFiltersData?.connector) {
-                        //     str += facetFiltersData?.connector
-                        // }
-                        return str
-                    }
                     case 'assetCategory': {
                         let facetFiltersData = dataMap.value[filterId].checked
                         facetFiltersData = facetFiltersData.map(

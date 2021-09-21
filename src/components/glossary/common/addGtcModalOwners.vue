@@ -196,6 +196,7 @@
         ref,
         Ref,
         toRefs,
+        onMounted,
         watch,
     } from 'vue'
     import updateOwners from '~/composables/asset/updateOwners'
@@ -212,7 +213,13 @@
 
     export default defineComponent({
         components: { SearchAndFilter },
-        props: {},
+        props: {
+            defaultOwner: {
+                type: String,
+                required: true,
+                default: '',
+            },
+        },
         emits: ['closeDropdown', 'ownersUpdated'],
         setup(props, { emit }) {
             const { username: myUsername, name: myName } = whoami()
@@ -483,6 +490,10 @@
                 }
                 update(selectedUsers.value, selectedGroups.value)
             }
+
+            onMounted(() => {
+                selectedUsers.value?.push(props.defaultOwner)
+            })
             // closing the popover on making the req successfully
             // watch(isOwnersLoading, () => {
             //     if (!isOwnersLoading.value) showOwnersDropdown.value = false

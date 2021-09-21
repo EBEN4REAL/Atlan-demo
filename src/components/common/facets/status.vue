@@ -48,11 +48,31 @@
             const handleChange = () => {
                 const criterion: Components.Schemas.FilterCriteria[] = []
                 data.value.checked.forEach((val) => {
+                    if(val !== 'is_null')
                     criterion.push({
                         attributeName: 'assetStatus',
                         attributeValue: val,
                         operator: 'eq',
                     })
+                    else
+                    {
+                        const subCriterion: Components.Schemas.FilterCriteria[] = [
+                            {
+                                condition:'OR',
+                                criterion:[{
+                                    attributeName: 'assetStatus',
+                                    attributeValue: 'is_null',
+                                    operator: 'eq',
+                                },
+                                {
+                                    attributeName: 'assetStatus',
+                                    attributeValue: '',
+                                    operator: 'isNull',
+                                }] as Components.Schemas.FilterCriteria[]
+                            }
+                        ]
+                        criterion.push(...subCriterion)
+                    }
                 })
 
                 emit('change', {

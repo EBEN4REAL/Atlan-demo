@@ -9,6 +9,8 @@ export interface criterion {
     attributeName: string
     attributeValue?: string | undefined
     operator?: string | undefined
+    condition?: string | undefined
+    criterion?: criterion
 }
 
 export function getEncodedStringFromOptions(options: any) {
@@ -138,7 +140,13 @@ export function getEncodedStringFromOptions(options: any) {
                 case 'status': {
                     filterKeyValue = options.filters[filterKey].criterion
                     filterKeyValue = filterKeyValue
-                        .map((e: criterion) => e.attributeValue)
+                        .map((e: criterion) => {
+                            // no status filter case
+                            if(e.condition && e.condition==='OR'){
+                                return 'is_null' // id for no status
+                            }
+                             return e.attributeValue;
+                        })
                         .join(',')
                     break
                 }
@@ -360,11 +368,31 @@ export function getDecodedOptionsFromString(router) {
             case 'status': {
                 const facetFilterValues = facetFilterValuesString.split(',')
                 facetFilterValues.forEach((facetFilterValue) => {
+                    if(facetFilterValue !=='is_null')
                     criterion.push({
                         attributeName: 'assetStatus',
                         attributeValue: facetFilterValue,
                         operator: 'eq',
                     })
+                    else
+                    {
+                        const subCriterion: Components.Schemas.FilterCriteria[] = [
+                            {
+                                condition:'OR',
+                                criterion:[{
+                                    attributeName: 'assetStatus',
+                                    attributeValue: 'is_null',
+                                    operator: 'eq',
+                                },
+                                {
+                                    attributeName: 'assetStatus',
+                                    attributeValue: '',
+                                    operator: 'isNull',
+                                }] as Components.Schemas.FilterCriteria[]
+                            }
+                        ]
+                        criterion.push(...subCriterion)
+                    }
                 })
                 facetsFilters.status.criterion = criterion
                 facetsFilters.status.checked = facetFilterValues

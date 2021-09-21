@@ -9,21 +9,7 @@
             "
             :autofocus="true"
             @change="handleOwnerSearch"
-            :dot="ownersFilterOptionsData !== ownerSortOptions[0].id"
         >
-            <template #filter>
-                <div class="p-0">
-                    <div class="flex justify-between mb-2">
-                        <p class="mb-0 text-sm text-gray-500">Sort by</p>
-                    </div>
-                    <CustomRadioButton
-                        class="pb-2"
-                        :list="ownerSortOptions"
-                        v-model:data="ownersFilterOptionsData"
-                        @change="handleSortChange"
-                    />
-                </div>
-            </template>
         </SearchAndFilter>
         <div class="relative w-full">
             <a-tabs
@@ -35,12 +21,19 @@
                     <template #tab>
                         <span
                             class="text-sm"
-                            :class="activeOwnerTabKey == '1' ? 'font-bold' : ''"
+                            :class="
+                                activeOwnerTabKey == '1'
+                                    ? 'font-bold text-primary'
+                                    : ''
+                            "
                             >Users</span
                         >
-                        <span class="ml-2 chip" v-if="totalUsersCount > 0">{{
-                            totalUsersCount
-                        }}</span>
+                        <span
+                            class="ml-2 chip"
+                            :class="{ active: activeOwnerTabKey == '1' }"
+                            v-if="totalUsersCount > 0"
+                            >{{ totalUsersCount }}</span
+                        >
                     </template>
                     <div class="w-full overflow-y-auto h-44">
                         <div
@@ -132,10 +125,18 @@
                     <template #tab>
                         <span
                             class="text-sm"
-                            :class="activeOwnerTabKey == '2' ? 'font-bold' : ''"
+                            :class="
+                                activeOwnerTabKey == '2'
+                                    ? 'font-bold text-primary'
+                                    : ''
+                            "
                             >Groups</span
                         >
-                        <span class="chip" v-if="totalGroupCount > 0">
+                        <span
+                            class="chip"
+                            :class="{ active: activeOwnerTabKey == '2' }"
+                            v-if="totalGroupCount > 0"
+                        >
                             {{ totalGroupCount }}
                         </span>
                     </template>
@@ -220,18 +221,9 @@
 </template>
 
 <script lang="ts">
-    import {
-        defineComponent,
-        PropType,
-        ref,
-        Ref,
-        toRefs,
-        watch,
-        computed,
-    } from 'vue'
+    import { defineComponent, PropType, ref, Ref, toRefs, watch } from 'vue'
     import Groups from '@common/selector/groups/index.vue'
     import Users from '@common/selector/users/index.vue'
-    import CustomRadioButton from '@common/radio/customRadioButton.vue'
     import { Collapse } from '~/types'
     import { Components } from '~/api/atlas/client'
     import fetchUserList from '~/composables/user/fetchUserList'
@@ -239,7 +231,6 @@
     import { userInterface } from '~/types/users/user.interface'
     import { groupInterface } from '~/types/groups/group.interface'
     import SearchAndFilter from '@/common/input/searchAndFilter.vue'
-    import CustomRadioButton from '@common/radio/customRadioButton.vue'
     import whoami from '~/composables/user/whoami'
     import emptyScreen from '~/assets/images/empty_search.png'
 
@@ -248,7 +239,6 @@
         components: {
             Groups,
             Users,
-            CustomRadioButton,
             SearchAndFilter,
         },
         props: {
@@ -391,24 +381,12 @@
                 return owners.includes(username)
             }
 
-            const ownersFilterOptionsData = ref('asc')
-            const ownerSortOptions = [
-                {
-                    id: 'asc',
-                    label: 'A-Z',
-                },
-                {
-                    id: 'dsc',
-                    label: 'Z-A',
-                },
-            ]
             const userList: Ref<userInterface[]> = ref([])
             const groupList: Ref<groupInterface[]> = ref([])
             watch(
                 [listUsers, listGroups],
                 () => {
                     userList.value = sortClassificationsByOrder(
-                        ownersFilterOptionsData.value,
                         listUsers,
                         'username'
                     )
@@ -426,7 +404,6 @@
                         userList.value = [...userList.value]
                     }
                     groupList.value = sortClassificationsByOrder(
-                        ownersFilterOptionsData.value,
                         listGroups,
                         'name'
                     )
@@ -436,85 +413,38 @@
                 }
             )
 
-            function handleSortChange(sortingOrder: string) {
-                userList.value = sortClassificationsByOrder(
-                    sortingOrder,
-                    listUsers,
-                    'username'
-                )
-                // removing own username from list
-                let ownUserObj: userInterface = {}
-                userList.value = userList.value.filter((user) => {
-                    if (user.username === myUsername.value) {
-                        ownUserObj = user
-                    }
-                    return user.username !== myUsername.value
-                })
-                if (Object.keys(ownUserObj).length > 0) {
-                    userList.value = [ownUserObj, ...userList.value]
-                } else {
-                    userList.value = [...userList.value]
-                }
-                groupList.value = sortClassificationsByOrder(
-                    ownersFilterOptionsData.value,
-                    listGroups,
-                    'name'
-                )
-            }
-
             function sortClassificationsByOrder(
-                sortingOrder: string,
                 data: Ref<userInterface[] | groupInterface[]>,
                 key: string
             ) {
-                switch (sortingOrder) {
-                    case 'asc': {
-                        let modifiedData: userInterface[] = []
-                        if (data?.value) {
-                            modifiedData = data.value.sort((dataA, dataB) => {
-                                const a = dataA[key].toLowerCase()
-                                const b = dataB[key].toLowerCase()
-                                if (a < b) {
-                                    return -1
-                                }
-                                if (a > b) {
-                                    return 1
-                                }
-                                return 0
-                            })
+                let modifiedData: userInterface[] = []
+                if (data?.value) {
+                    modifiedData = data.value.sort((dataA, dataB) => {
+                        const a = dataA[key].toLowerCase()
+                        const b = dataB[key].toLowerCase()
+                        if (a < b) {
+                            return -1
                         }
-                        return modifiedData
-                    }
-                    case 'dsc': {
-                        let modifiedData: groupInterface[] = []
-                        if (data?.value) {
-                            modifiedData = data.value.sort((dataA, dataB) => {
-                                const a = dataA[key].toLowerCase()
-                                const b = dataB[key].toLowerCase()
-                                if (a < b) {
-                                    return 1
-                                }
-                                if (a > b) {
-                                    return -1
-                                }
-                                return 0
-                            })
+                        if (a > b) {
+                            return 1
                         }
-
-                        return modifiedData
-                    }
+                        return 0
+                    })
                 }
+                return modifiedData
             }
             function toggleShowMore() {
                 showMoreUsers.value = !showMoreUsers.value
                 setLimit(totalUsersCount.value)
                 mutateUsers()
             }
+
             function toggleShowMoreGroups() {
                 showMoreGroups.value = !showMoreGroups.value
                 setGroupLimit(totalGroupCount.value)
                 mutateGroups()
             }
+
             function onTabChange() {
                 if (queryText.value !== '') handleOwnerSearch()
             }
@@ -530,8 +460,6 @@
                 groupOwnerState,
                 STATES,
                 GROUPSTATES,
-                ownersFilterOptionsData,
-                ownerSortOptions,
                 myUsername,
                 showMoreGroups,
                 onSelectGroup,
@@ -546,7 +474,6 @@
                 handleChange,
                 handleUsersChange,
                 handleGroupsChange,
-                handleSortChange,
                 onTabChange,
                 showMoreUsers,
             }
@@ -595,11 +522,15 @@
 
 <style scoped>
     .chip {
-        @apply px-1 pt-1 pb-0.5 mx-1;
+        @apply px-1 pt-0.5 pb-0.5 mx-1;
         @apply rounded;
         @apply tracking-wide;
         @apply text-xs;
         @apply font-bold;
+        @apply text-gray-500;
+        @apply bg-gray-100;
+    }
+    .chip.active {
         @apply text-primary;
         @apply bg-primary-light;
     }

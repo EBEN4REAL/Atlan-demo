@@ -9,7 +9,7 @@
             >
                 <div
                     v-if="!isReady && uploadStarted"
-                    class="hidden text-center border-2 border-white rounded-md  bg-primary-light sm:block"
+                    class="hidden text-center bg-primary-light sm:block"
                     :style="{
                         width: avatarSize + 'px',
                         height: avatarSize + 'px',
@@ -26,7 +26,7 @@
                     :key="uploadKey"
                     :shape="avatarShape"
                     :size="avatarSize"
-                    class="hidden border-2 border-white rounded-md  ant-tag-blue text-primary bg-primary-light sm:block"
+                    class="hidden  ant-tag-blue text-primary bg-primary-light sm:block"
                     :src="updatedImageUrl"
                     >{{
                         getNameInitials(getNameInTitleCase(avatarName))
@@ -39,7 +39,7 @@
                 :key="uploadKey"
                 :shape="avatarShape"
                 :size="avatarSize"
-                class="hidden border-2 border-white rounded-md  ant-tag-blue text-primary bg-primary-light sm:block"
+                class="hidden  ant-tag-blue text-primary bg-primary-light sm:block"
                 :src="updatedImageUrl"
                 >{{ getNameInitials(getNameInTitleCase(avatarName)) }}</a-avatar
             >
@@ -48,7 +48,7 @@
 </template>
 
 <script lang="ts">
-    import { ref, watch } from 'vue'
+    import { ref, watch, PropType } from 'vue'
     import {
         getNameInitials,
         getNameInTitleCase,
@@ -75,7 +75,7 @@
                 default: 'square',
             },
             avatarSize: {
-                type: Number,
+                type: String as PropType<Number | String>,
                 default: 56,
             },
         },

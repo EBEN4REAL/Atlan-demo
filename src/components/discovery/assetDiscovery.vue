@@ -328,7 +328,10 @@
                 })
             }
             const assetTypeListString = computed(() =>
-                assetTypeList.value.map((item) => item.id).join(',')
+                assetTypeList.value
+                    .map((item) => item.id)
+                    .slice(1)
+                    .join(',')
             )
 
             const {
@@ -409,7 +412,10 @@
                     includeSubClassifications: true,
                     limit: limit.value,
                     offset: offset.value,
-                    entityFilters: {},
+                    entityFilters: {
+                        condition: 'AND',
+                        criterion: [...filters.value],
+                    },
                     attributes: [
                         ...BaseAttributes,
                         ...BasicSearchAttributes,
@@ -417,10 +423,6 @@
                         ...BMAttributeProjection.value,
                     ],
                     aggregationAttributes: [],
-                }
-                initialBody.entityFilters = {
-                    condition: 'AND',
-                    criterion: [...filters.value],
                 }
 
                 if (assetType.value !== 'Catalog') {
@@ -565,16 +567,7 @@
                 updateBody()
                 pushQueryToRouter(routerQuery)
             }
-            const handleChangeConnectors = (payload: any) => {
-                connectorsPayload.value = payload
-                console.log('connector Change', payload)
-                const routerOptions = getRouterOptions()
-                const routerQuery = getEncodedStringFromOptions(routerOptions)
-                pushQueryToRouter(routerQuery)
-                isAggregate.value = true
-                offset.value = 0
-                updateBody()
-            }
+
             const handlePreview = (item) => {
                 emit('preview', item)
             }
@@ -622,7 +615,6 @@
                 handleChangePreferences,
                 handleChangeSort,
                 isLoading,
-                handleChangeConnectors,
                 handleFilterChange,
                 handlePreview,
                 queryText,
@@ -639,6 +631,7 @@
                 dynamicSearchPlaceholder,
                 setPlaceholder,
                 placeholderLabel,
+                filters,
             }
         },
         data() {

@@ -9,6 +9,7 @@ export interface assetInterface {
         ownerGroups: string
         assetStatusUpdatedAt: number
         columnCount: number
+        sizeBytes: number
         connectionLastSyncedAt: number
         connectionName: string
         connectionQualifiedName: string
@@ -24,7 +25,7 @@ export interface assetInterface {
         userDescription: string
         rowCount: number
         schemaName: string
-        sourceUpdatedAt: number
+        sourceUpdatedAt:  string
         tenantId: string
         viewDefinition: string
         table?: {

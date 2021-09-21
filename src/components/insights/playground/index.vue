@@ -13,7 +13,7 @@
                 <template #tabBarExtraContent>
                     <div class="inline-flex items-center mr-2">
                         <span
-                            class="inline-flex items-center justify-center p-2 rounded-full btn-add hover:bg-gray-300"
+                            class="inline-flex items-center justify-center p-2 rounded-full  btn-add hover:bg-gray-300"
                             @click="handleAdd"
                         >
                             <fa icon="fal plus" class="" />
@@ -54,21 +54,17 @@
 </template>
 
 <script lang="ts">
-    import {
-        defineComponent,
-        PropType,
-        provide,
-        toRefs,
-        Ref,
-        inject,
-        ref,
-    } from 'vue'
+    import { defineComponent, toRefs, Ref, inject, ref } from 'vue'
     import Editor from '~/components/insights/playground/editor/index.vue'
     import ResultsPane from '~/components/insights/playground/resultsPane/index.vue'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
     import NoActiveInlineTab from './noActiveInlineTab.vue'
     import useRunQuery from './common/composables/useRunQuery'
-    import { useMagicKeys, whenever } from '@vueuse/core'
+    import { useInlineTab } from '~/components/insights/common/composables/useInlineTab'
+    import { useProvide } from '~/components/insights/common/composables/useProvide'
+    import { provideDataInterface } from '~/components/insights/common/composables/useProvide'
+
+    // import { useHotKeys } from '~/components/insights/common/composables/useHotKeys'
 
     export default defineComponent({
         components: { Editor, ResultsPane, NoActiveInlineTab },
@@ -78,24 +74,19 @@
                 required: true,
             },
         },
-        emits: ['update:activeInlineTabKey', 'update:tabRef'],
         setup(props, { emit }) {
             const { queryRun, isQueryRunning } = useRunQuery()
-            const { arrowup } = useMagicKeys()
+            const { inlineTabRemove, inlineTabAdd, setActiveTabKey } =
+                useInlineTab()
+            // const {resultsPaneSizeToggle} = useHotKeys()
             const paneSize = ref(55)
-            const { activeInlineTabKey } = toRefs(props)
             const tabs = inject('inlineTabs') as Ref<activeInlineTabInterface[]>
             const activeInlineTab = inject(
                 'activeInlineTab'
             ) as Ref<activeInlineTabInterface>
-            /*       
-                @params - inlineTabKey: string
-             */
-            const inlineTabRemove = inject('inlineTabRemove') as Function
-            const inlineTabAdd = inject('inlineTabAdd') as Function
-            const modifyActiveInlineTabEditor = inject(
-                'modifyActiveInlineTabEditor'
-            ) as Function
+            const activeInlineTabKey = inject(
+                'activeInlineTabKey'
+            ) as Ref<string>
 
             const handleAdd = () => {
                 const key = String(new Date().getTime())
@@ -108,7 +99,10 @@
                     explorer: {},
                     playground: {
                         editor: {
-                            text: activeInlineTab.value?.playground?.editor.text??'select * from "WEB_SALES" limit 100',
+                            text:
+                                activeInlineTab.value?.playground?.editor
+                                    .text ??
+                                'select * from "WEB_SALES" limit 100',
                             dataList: [],
                             columnList: [],
                         },
@@ -138,47 +132,33 @@
                         id: activeInlineTab.value?.assetSidebar.id ?? '',
                     },
                 }
-                inlineTabAdd(inlineTabData)
+                inlineTabAdd(inlineTabData, tabs, activeInlineTabKey)
             }
             const onTabClick = (activeKey) => {
-                emit('update:activeInlineTabKey', activeKey)
+                setActiveTabKey(activeKey, activeInlineTabKey)
             }
             const onEdit = (targetKey: string | MouseEvent, action: string) => {
                 if (action === 'add') {
                     handleAdd()
                 } else {
-                    inlineTabRemove(targetKey as string)
+                    inlineTabRemove(
+                        targetKey as string,
+                        tabs,
+                        activeInlineTabKey
+                    )
                 }
-            }
-
-            /* ----------Editor related functions -----------------*/
-            function onEditorContentChange(event, editorText) {
-                console.log(editorText)
-                const activeInlineTabCopy: activeInlineTabInterface =
-                    Object.assign({}, activeInlineTab.value)
-                activeInlineTabCopy.playground.editor.text = editorText
-                modifyActiveInlineTabEditor(activeInlineTabCopy)
             }
 
             /*---------------------------------------------*/
             /*---------- PROVIDERS FOR CHILDRENS -----------------
             ---Be careful to add a property/function otherwise it will pollute the whole flow for childrens--
             */
-
-            // properties
-            provide('isQueryRunning', isQueryRunning)
-
-            // functions
-            provide('queryRun', queryRun)
-            provide('onEditorContentChange', onEditorContentChange)
+            const provideData: provideDataInterface = {
+                isQueryRunning: isQueryRunning,
+            }
+            useProvide(provideData)
 
             /*-------------------------------------*/
-
-            /* HOT KEYS */
-            // whenever(arrowup, () => {
-            //     if (paneSize.value == 0) paneSize.value = 45
-            //     else paneSize.value = 0
-            // })
 
             return {
                 isQueryRunning,

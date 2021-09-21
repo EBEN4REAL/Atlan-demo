@@ -51,7 +51,10 @@ export default function useProject() {
 
     const queryRun = (
         activeInlineTab: activeInlineTabInterface,
-        getData: any
+        getData: any,
+        isQueryRunning: Ref<string>,
+        selectedDefaultSchema: Ref<string>,
+        selectedDataSourceName: Ref<string>
     ) => {
         let queryText = activeInlineTab.playground.editor.text
         // by default limiting query to 100 if limit is not there
@@ -63,8 +66,14 @@ export default function useProject() {
         const query = encodeURIComponent(btoa(queryText))
         const pathVariables = {
             query,
-            defaultSchema: 'SNOWFLAKE_SAMPLE_DATA.TPCDS_SF10TCL',
-            dataSourceName: encodeURIComponent('default/snowflake/bvscezvng'),
+            defaultSchema: selectedDefaultSchema.value
+                ? selectedDefaultSchema.value
+                : 'SNOWFLAKE_SAMPLE_DATA.TPCDS_SF10TCL',
+            dataSourceName: encodeURIComponent(
+                selectedDefaultSchema.value
+                    ? selectedDataSourceName.value
+                    : 'default/snowflake/bvscezvng'
+            ),
             length: 10,
         }
 
@@ -93,8 +102,9 @@ export default function useProject() {
                         setColumns(columnList, message.columns)
                     if (message?.rows)
                         setRows(dataList, columnList, message.rows)
-                    if (message?.status === 'completed')
-                        getData(dataList.value, columnList.value)
+                    if (message?.status === 'completed') {
+                    }
+                    getData(dataList.value, columnList.value)
                 })
                 isQueryRunning.value = 'success'
             } else {

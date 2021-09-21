@@ -11,24 +11,28 @@ export default function useInsightsTabList(): {
             name: 'Schema',
             component: 'schema',
             icon: undefined,
+            isVisible: true,
         },
         {
             id: 'queries',
             name: 'Queries',
             component: 'queries',
             icon: undefined,
+            isVisible: true,
         },
         {
             id: 'history',
             name: 'History',
             component: 'history',
             icon: undefined,
+            isVisible: true,
         },
         {
             id: 'schedule',
             name: 'Schedule',
             component: 'schedule',
             icon: undefined,
+            isVisible: true,
         },
     ]
 

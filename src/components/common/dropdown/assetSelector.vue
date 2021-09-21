@@ -5,7 +5,6 @@
         :class="$style.connector"
         @change="handleChange"
         :placeholder="placeholder"
-        @search="handleSearch"
         show-search
         filter-option
         allow-clear
@@ -28,10 +27,6 @@
                         options.attributes?.displayName ||
                         options.attributes?.name
                     }}
-                    <!-- <div>
-            {{ options.name }}
-            <span v-if="options.user_count">({{ options.user_count }})</span>
-          </div> -->
                 </div>
             </a-select-option>
         </template>
@@ -40,10 +35,10 @@
 
 <script lang="ts">
     import { defineComponent, ref, watch } from 'vue'
-    import { useDebounceFn } from '@vueuse/core'
     import useAssetList from '~/composables/bots/useAssetList'
 
     export default defineComponent({
+        name: 'AssetSelector',
         components: {
             VNodes: (_, { attrs }) => attrs.vnodes,
         },
@@ -73,21 +68,20 @@
                 typeName: props.typeName,
                 limit: 100,
                 offset: 0,
-                entityFilters: {},
+                entityFilters: props.filters,
                 attributes: ['name', 'displayName'],
                 sortBy: 'Asset.name.keyword',
                 aggregationAttributes: ['__typeName.keyword'],
                 sortOrder: 'ASCENDING',
             }
-            initialBody.entityFilters = props.filters
 
-            // watch(
-            //   () => props.filters,
-            //   () => {
-            //     initialBody.entityFilters = props.filters;
-            //     replaceBody(initialBody);
-            //   }
-            // );
+            watch(
+                () => props.filters,
+                () => {
+                    initialBody.entityFilters = props.filters
+                    replaceBody(initialBody)
+                }
+            )
 
             const { list, replaceBody, selfAssetTypeMap } = useAssetList(
                 now,
@@ -95,21 +89,15 @@
                 initialBody,
                 `selector_${initialBody.typeName}`
             )
-            const handleChange = (checkedValues: string) => {
-                // emit('update:modelValue', checkedValues)
-                // console.log(props.filters, 'root')
-                // emit('change', checkedValues, props.filters)
-            }
 
-            const handleSearch = useDebounceFn((val) => {
-                // initialBody.query = val
-                // replaceBody(initialBody)
-            }, 100)
+            const handleChange = (checkedValues: string) => {
+                emit('update:modelValue', checkedValues)
+                emit('change', checkedValues)
+            }
 
             return {
                 list,
                 handleChange,
-                handleSearch,
                 selfAssetTypeMap,
             }
         },

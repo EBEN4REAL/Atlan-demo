@@ -3,6 +3,7 @@
 //     OperatorList,
 // } from '~/constant/advancedAttributes'
 import { List as AssetCategoryList } from '~/constant/assetCategory'
+import { Components } from '~/api/atlas/client'
 
 export interface criterion {
     attributeName: string
@@ -31,7 +32,7 @@ export function getEncodedStringFromOptions(options: any) {
             switch (filterKey) {
                 case 'connector': {
                     let connectorPyloadStirng = ''
-                    let criterion = options.filters[filterKey].criterion
+                    const { criterion } = options.filters[filterKey]
                     if (criterion.length == 1) {
                         connectorPyloadStirng += `connector:${criterion[0].attributeValue}`
                     }
@@ -52,14 +53,86 @@ export function getEncodedStringFromOptions(options: any) {
                     break
                 }
                 case 'classifications': {
-                    filterKeyValue = options.filters[filterKey].criterion
-                    const tempNames: Array<string | undefined> = []
-                    filterKeyValue.forEach((e: criterion) => {
-                        if (e.attributeName === '__classificationNames') {
-                            tempNames.push(e.attributeValue)
+                    let classificationNamesString = ''
+                    // determine operator (and/or)
+                    const operator = options?.filters[filterKey]?.condition
+                    // determine added by
+                    let addedBy = ''
+                    if (
+                        options?.filters?.[filterKey]?.criterion?.[0]
+                            ?.condition === 'OR'
+                    )
+                        addedBy = 'all'
+                    else if (
+                        options?.filters?.[filterKey]?.criterion?.[0]
+                            ?.attributeName ===
+                        '__propagatedClassificationNames'
+                    )
+                        addedBy = 'propagation'
+                    else if (
+                        options?.filters?.[filterKey]?.criterion?.[0]
+                            ?.attributeName === '__classificationNames'
+                    )
+                        addedBy = 'user'
+
+                    switch (addedBy) {
+                        case 'all': {
+                            const classificationNames: Array<
+                                string | undefined
+                            > = []
+                            const classificationObjects: Components.Schemas.FilterCriteria[] =
+                                options.filters?.[filterKey]?.criterion ?? []
+                            classificationObjects.forEach(
+                                (classificationOb) => {
+                                    classificationNames.push(
+                                        classificationOb?.criterion?.[0]
+                                            ?.attributeValue ?? ''
+                                    )
+                                }
+                            )
+                            classificationNamesString = `${classificationNames.join(
+                                ','
+                            )}:operator=${operator}:added_by=${addedBy}`
+                            break
                         }
-                    })
-                    filterKeyValue = tempNames.join(',')
+                        case 'propagation': {
+                            filterKeyValue =
+                                options.filters?.[filterKey].criterion
+                            const tempNames: Array<string | undefined> = []
+                            filterKeyValue.forEach((e: criterion) => {
+                                if (
+                                    e.attributeName ===
+                                    '__propagatedClassificationNames'
+                                ) {
+                                    tempNames.push(e.attributeValue)
+                                }
+                            })
+                            classificationNamesString = `${tempNames.join(
+                                ','
+                            )}:operator=${operator}:added_by=${addedBy}` // addedBy will be 'propagation'
+
+                            break
+                        }
+                        case 'user': {
+                            filterKeyValue =
+                                options.filters?.[filterKey].criterion
+                            const tempNames: Array<string | undefined> = []
+                            filterKeyValue.forEach((e: criterion) => {
+                                if (
+                                    e.attributeName === '__classificationNames'
+                                ) {
+                                    tempNames.push(e.attributeValue)
+                                }
+                            })
+                            classificationNamesString = `${tempNames.join(
+                                ','
+                            )}:operator=${operator}:added_by=${addedBy}` // addedBy will be 'user'
+
+                            break
+                        }
+                        default:
+                    }
+                    filterKeyValue = classificationNamesString || ''
                     break
                 }
                 case 'status': {
@@ -207,6 +280,7 @@ export function getDecodedOptionsFromString(router) {
             checked: [],
             condition: 'OR',
             criterion: [],
+            addedBy: '',
         },
         owners: {
             userValue: [],
@@ -297,20 +371,66 @@ export function getDecodedOptionsFromString(router) {
                 break
             }
             case 'classifications': {
-                const facetFilterValues = facetFilterValuesString.split(',')
-                console.log(facetFilterValues, 'classifications')
-                facetFilterValues.forEach((facetFilterValue) => {
-                    criterion.push({
-                        attributeName: '__classificationNames',
-                        attributeValue: facetFilterValue,
-                        operator: 'eq',
-                    })
-                    criterion.push({
-                        attributeName: '__propagatedClassificationNames',
-                        attributeValue: facetFilterValue,
-                        operator: 'eq',
-                    })
-                })
+                const classificationFilterInfo =
+                    facetFilterValuesString?.split(':')
+                const classificationValues = classificationFilterInfo[0]
+                const facetFilterValues = classificationValues?.split(',')
+                // get operator and assign
+                const operator = classificationFilterInfo?.[1]?.split('=')?.[1]
+                facetsFilters.classifications.condition = operator || 'OR'
+                // get added_by and construct the payload
+                const addedBy = classificationFilterInfo?.[2]?.split('=')?.[1]
+                facetsFilters.classifications.addedBy = addedBy || 'all'
+                switch (addedBy) {
+                    case 'all': {
+                        // Case `all` will always be a OR bw __classificationNames and __propagatedClassificationNames
+                        facetFilterValues.forEach((val) => {
+                            const subFilter: Components.Schemas.FilterCriteria =
+                                {
+                                    condition: 'OR',
+                                    criterion:
+                                        [] as Components.Schemas.FilterCriteria[],
+                                }
+                            const subFilterCriterion: Components.Schemas.FilterCriteria[] =
+                                []
+                            subFilterCriterion.push({
+                                attributeName: '__classificationNames',
+                                attributeValue: val,
+                                operator: 'eq',
+                            })
+                            subFilterCriterion.push({
+                                attributeName:
+                                    '__propagatedClassificationNames',
+                                attributeValue: val,
+                                operator: 'eq',
+                            })
+                            subFilter.criterion = subFilterCriterion
+                            criterion.push(subFilter)
+                        })
+                        break
+                    }
+                    case 'user': {
+                        facetFilterValues.forEach((val) => {
+                            criterion.push({
+                                attributeName: '__classificationNames',
+                                attributeValue: val,
+                                operator: 'eq',
+                            })
+                        })
+                        break
+                    }
+                    case 'propagation':
+                        facetFilterValues.forEach((val) => {
+                            criterion.push({
+                                attributeName:
+                                    '__propagatedClassificationNames',
+                                attributeValue: val,
+                                operator: 'eq',
+                            })
+                        })
+                        break
+                    default:
+                }
                 facetsFilters.classifications.criterion = criterion
                 facetsFilters.classifications.checked = facetFilterValues
                 break
@@ -432,6 +552,13 @@ export function getDecodedOptionsFromString(router) {
             case 'connector': {
                 initialBodyCriterion.push({
                     condition: 'AND',
+                    criterion,
+                })
+                break
+            }
+            case 'classifications': {
+                initialBodyCriterion.push({
+                    condition: facetsFilters.classifications.condition,
                     criterion,
                 })
                 break

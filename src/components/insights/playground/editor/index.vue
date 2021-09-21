@@ -1,11 +1,14 @@
 <template>
-    <div class="w-full h-full px-3 pb-3 rounded">
+    <div class="w-full h-full px-3 rounded">
         <div class="w-full h-full overflow-x-hidden rounded">
+            <CustomVariablesNav />
             <div
                 class="flex items-center justify-between w-full mb-3  run-btn-wrapper"
             >
                 <div class="w-full">
-                    <p class="mb-1 text-base">WEB SALES</p>
+                    <p class="mb-1 text-base">
+                        {{ selectedDefaultSchema ?? 'WEB SALES' }}
+                    </p>
                 </div>
                 <a-button
                     type="primary"
@@ -15,47 +18,89 @@
                     >Run Query</a-button
                 >
             </div>
-            <Monaco />
+            <Monaco @editorInstance="setEditorInstance" />
         </div>
     </div>
 </template>
 
 <script lang="ts">
-    import { defineComponent, inject, Ref } from 'vue'
+    import {
+        defineComponent,
+        inject,
+        Ref,
+        defineAsyncComponent,
+        ref,
+        reactive,
+        provide,
+        watch,
+    } from 'vue'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
-    import Monaco from './monaco/monaco.vue'
+    import useRunQuery from '../common/composables/useRunQuery'
+    import { useInlineTab } from '~/components/insights/common/composables/useInlineTab'
+    import { useProvide } from '~/components/insights/common/composables/useProvide'
+    import { provideDataInterface } from '~/components/insights/common/composables/useProvide'
+    import CustomVariablesNav from '~/components/insights/playground/editor/customVariablesNav/index.vue'
+    import { editor } from 'monaco-editor'
 
     export default defineComponent({
-        components: { Monaco },
+        components: {
+            Monaco: defineAsyncComponent(() => import('./monaco/monaco.vue')),
+            CustomVariablesNav,
+        },
         props: {},
         setup() {
+            const { queryRun } = useRunQuery()
+
             const activeInlineTab = inject(
                 'activeInlineTab'
             ) as Ref<activeInlineTabInterface>
+            const selectedDefaultSchema = inject(
+                'selectedDefaultSchema'
+            ) as Ref<string>
+            const selectedDataSourceName = inject(
+                'selectedDataSourceName'
+            ) as Ref<string>
+            let editorInstance: any = reactive({})
+            const monacoInstance = ref()
             const isQueryRunning = inject('isQueryRunning') as Ref<string>
-            const queryRun = inject('queryRun') as Function
-            /*       
-                @params - activeInlineTab: activeInlineTabInterface
-             */
-            const modifyActiveInlineTab = inject(
-                'modifyActiveInlineTab'
-            ) as Function
 
             const getData = (dataList, columnList) => {
-                console.log(dataList, columnList, 'called from callback')
-                const activeInlineTabCopy: activeInlineTabInterface =
-                    Object.assign({}, activeInlineTab.value)
-                activeInlineTabCopy.playground.editor.dataList = dataList
-                activeInlineTabCopy.playground.editor.columnList = columnList
-                modifyActiveInlineTab(activeInlineTabCopy)
+                // setting the data here because we don't want to save the response in local storage
+                activeInlineTab.value.playground.editor.dataList = dataList
+                activeInlineTab.value.playground.editor.columnList = columnList
             }
             const run = () => {
-                queryRun(activeInlineTab.value, getData)
+                queryRun(
+                    activeInlineTab.value,
+                    getData,
+                    isQueryRunning,
+                    selectedDefaultSchema,
+                    selectedDataSourceName
+                )
             }
 
+            const setEditorInstance = (
+                editorInstanceParam: editor.IStandaloneCodeEditor
+            ) => {
+                editorInstance = editorInstanceParam
+                console.log(editorInstanceParam, 'fxn')
+            }
+
+            /*---------- PROVIDERS FOR CHILDRENS -----------------
+            ---Be careful to add a property/function otherwise it will pollute the whole flow for childrens--
+            */
+            const provideData: provideDataInterface = {
+                editorInstance: editorInstance,
+                monacoInstance: monacoInstance,
+            }
+            useProvide(provideData)
+            /*-------------------------------------*/
             return {
+                selectedDefaultSchema,
+                editorInstance,
                 activeInlineTab,
                 isQueryRunning,
+                setEditorInstance,
                 run,
             }
         },

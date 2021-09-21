@@ -59,7 +59,7 @@
                 </a-button>
                 <a-button
                     class="flex items-center p-0 border-0 shadow-none outline-none "
-                    ><atlan-icon icon="ShareNew" class="w-auto mr-1" />
+                    ><atlan-icon icon="Share" class="w-auto mr-1" />
                     <span class="text-sm">Share</span>
                 </a-button>
             </div>

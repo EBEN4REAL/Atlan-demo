@@ -32,6 +32,7 @@
     } from 'vue'
     import useInsightsTabList from './useTabList'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
+    import { useResultPane } from '~/components/insights/playground/resultsPane/common/composables/useResultPane'
 
     export default defineComponent({
         components: {
@@ -48,22 +49,17 @@
         },
         props: {},
         setup(props) {
+            const inlineTabs = inject('inlineTabs') as Ref<
+                activeInlineTabInterface[]
+            >
             const { filteredTabs: tabsList } = useInsightsTabList()
+            const { resultsPaneTabChange } = useResultPane(inlineTabs)
             const activeInlineTab = inject(
                 'activeInlineTab'
             ) as Ref<activeInlineTabInterface>
 
-            /*
-                @params - activeKey: string
-                @params - activeInlineTab: activeInlineTabInterface
-             */
-            const resultsPaneTabChange = inject(
-                'resultsPaneTabChange'
-            ) as Function
-
             const activeResultsPaneTabIndex = computed(
-                () =>
-                    activeInlineTab.value.playground.resultsPane.activeTab ?? 0
+                () => activeInlineTab.value?.playground?.resultsPane?.activeTab
             )
             const activeResultsPaneTab = computed(() =>
                 tabsList.find(

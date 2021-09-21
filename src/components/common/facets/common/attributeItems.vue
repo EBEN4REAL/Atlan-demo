@@ -37,7 +37,7 @@
                 :class="
                     isVisible
                         ? 'border rounded  border-primary bg-primary-light  text-primary'
-                        : ''
+                        : 'border rounded  border-transparent'
                 "
             >
                 <div

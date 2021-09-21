@@ -75,20 +75,31 @@ const useCreateGlossary = () => {
 
     const createCategory = (
         parentGlossaryGuid: string,
-        parentCategoryGuid?: string
+        parentCategoryGuid?: string,
+        title?: string,
+        description?: string,
+        status?: string,
+        ownerUsers?: string,
+        ownerGroups?: string
     ) => {
         body.value = {
             name: generateUUID(),
-            displayText: 'Untitled Category',
-            shortDescription: '',
+            displayText: title ?? 'Untitled Category',
+            shortDescription: description ?? '',
             longDescription: '',
-            assetStatus: 'draft',
-            ownerUsers: `${username.value}`,
+            assetStatus: status ?? 'draft',
+            ownerUsers: ownerUsers ?? `${username.value}`,
+            ownerGroups: ownerGroups ?? ``,
             anchor: {
                 glossaryGuid: parentGlossaryGuid,
             },
         }
-        if (parentCategoryGuid) {
+
+        message.loading({
+            content: 'Creating new category...',
+            key: `${title}`,
+        })
+        if (parentCategoryGuid && parentCategoryGuid !== '') {
             body.value.parentCategory = {
                 categoryGuid: parentCategoryGuid,
             }
@@ -110,15 +121,30 @@ const useCreateGlossary = () => {
 
         watch(data, (newData) => {
             if (newData?.guid) {
+                message.success({
+                    content: `${title} created!`,
+                    key: `${title}`,
+                    duration: 2,
+                })
+
                 updateEntity('category', newData.guid, {
-                    name: 'Untitled Category',
+                    name: title ?? 'Untitled Category',
                 })
             }
         })
         watch(updateData, (newData) => {
             if (newData?.guid) {
-                redirectToProfile('category', newData.guid)
+                if (!title) {
+                    redirectToProfile('category', newData.guid)
+                }
+
                 if (refetchGlossaryTree) {
+                    refetchGlossaryTree(
+                        parentCategoryGuid || parentCategoryGuid !== ''
+                            ? parentCategoryGuid
+                            : 'root'
+                    )
+
                     refetchGlossaryTree(parentCategoryGuid ?? 'root')
                 }
             }
@@ -150,11 +176,8 @@ const useCreateGlossary = () => {
                 glossaryGuid: parentGlossaryGuid,
             },
         }
-        console.log(body.value)
-        console.log(status)
         message.loading({ content: 'Creating new term...', key: `${title}` })
-        if (parentCategoryGuid) {
-            console.log('cat')
+        if (parentCategoryGuid && parentCategoryGuid !== '') {
             body.value.categories = [
                 {
                     categoryGuid: parentCategoryGuid,
@@ -196,9 +219,9 @@ const useCreateGlossary = () => {
                 }
                 if (refetchGlossaryTree) {
                     refetchGlossaryTree(
-                        parentCategoryGuid || parentCategoryGuid === ''
-                            ? 'root'
-                            : parentCategoryGuid
+                        parentCategoryGuid || parentCategoryGuid !== ''
+                            ? parentCategoryGuid
+                            : 'root'
                     )
                 }
             }

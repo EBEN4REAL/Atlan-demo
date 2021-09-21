@@ -77,6 +77,7 @@
             </div>
         </template>
         <div class="my-3">
+            {{ entityType }}
             <a-input
                 :ref="titleBar"
                 v-model:value="title"
@@ -113,7 +114,7 @@
             AddGtcModalOwners,
         },
         props: {
-            parentName: {
+            entityType: {
                 type: String,
                 required: true,
                 default: '',
@@ -143,7 +144,6 @@
             const titleBar: Ref<null | HTMLInputElement> = ref(null)
             const { createTerm, createCategory } = useCreateGlossary()
 
-            const parent = computed(() => props.parentName)
             const ownerBtnText = computed(() => {
                 let str = ''
                 if (ownerUsers?.value?.value?.length > 0)
@@ -182,18 +182,27 @@
             }
 
             const handleOk = () => {
-                if (props.categoryId === '') {
+                if (props.entityType === 'term')
                     createTerm(
                         props.glossaryId,
-                        '',
+                        props.categoryId,
                         `${title.value === '' ? 'Untitled term' : title.value}`,
                         description.value,
                         currentStatus.value,
                         ownerUsers?.value?.value?.join(),
                         ownerGroups?.value?.value?.join()
                     )
-                } else console.log('glossary->', props.glossaryId)
-                console.log('category->', props.categoryId)
+                else if (props.entityType === 'category')
+                    createCategory(
+                        props.glossaryId,
+                        props.categoryId,
+                        `${title.value === '' ? 'Untitled term' : title.value}`,
+                        description.value,
+                        currentStatus.value,
+                        ownerUsers?.value?.value?.join(),
+                        ownerGroups?.value?.value?.join()
+                    )
+
                 if (!isCreateMore.value) visible.value = false
 
                 resetInput()
@@ -224,7 +233,6 @@
                 title,
                 showModal,
                 visible,
-                parent,
                 isCreateMore,
                 titleBar,
                 List,

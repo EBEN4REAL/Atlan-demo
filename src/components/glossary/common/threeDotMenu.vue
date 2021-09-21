@@ -18,9 +18,44 @@
             </a-button>
             <template #overlay>
                 <a-menu>
-                    <a-menu-item key="add" @click="closeMenu">
+                    <a-menu-item
+                        v-if="showLinks"
+                        key="profileLink"
+                        @click="redirectToProfile"
+                    >
+                        <div class="flex items-center">
+                            <AtlanIcon icon="Link" class="m-0 mr-2" />
+                            <p class="p-0 m-0">
+                                Go to
+                                {{ assetTypeLabel[entity?.typeName] }}
+                                profile
+                            </p>
+                        </div>
+                    </a-menu-item>
+                    <a-menu-item
+                        v-if="showLinks"
+                        key="copyLink"
+                        class="flex items-center"
+                        @click="handleCopyProfileLink"
+                    >
+                        <div class="flex items-center">
+                            <AtlanIcon icon="CopyOutlined" class="m-0 mr-2" />
+                            <p class="p-0 m-0">
+                                Copy
+                                {{ assetTypeLabel[entity?.typeName] }}
+                                profile link
+                            </p>
+                        </div>
+                    </a-menu-item>
+
+                    <a-menu-divider v-if="showLinks" />
+                    <a-menu-item
+                        key="add"
+                        @click="closeMenu"
+                        v-if="entity?.typeName !== 'AtlasGlossaryTerm'"
+                    >
                         <AddGtcModal
-                            :parentName="entity?.displayText"
+                            entityType="term"
                             :glossaryId="glossaryId"
                             :categoryId="categoryId"
                         >
@@ -74,38 +109,7 @@
                         </AddGtcModal>
                     </a-menu-item>
 
-                    <a-menu-item
-                        v-if="showLinks"
-                        key="profileLink"
-                        @click="redirectToProfile"
-                    >
-                        <div class="flex items-center">
-                            <AtlanIcon icon="Link" class="m-0 mr-2" />
-                            <p class="p-0 m-0">
-                                Go to
-                                {{ assetTypeLabel[entity?.typeName] }}
-                                profile
-                            </p>
-                        </div>
-                    </a-menu-item>
-                    <a-menu-item
-                        v-if="showLinks"
-                        key="copyLink"
-                        class="flex items-center"
-                        @click="handleCopyProfileLink"
-                    >
-                        <div class="flex items-center">
-                            <AtlanIcon icon="CopyOutlined" class="m-0 mr-2" />
-                            <p class="p-0 m-0">
-                                Copy
-                                {{ assetTypeLabel[entity?.typeName] }}
-                                profile link
-                            </p>
-                        </div>
-                    </a-menu-item>
-
-                    <a-menu-divider v-if="showLinks" />
-                    <a-menu-item
+                    <!-- <a-menu-item
                         v-if="entity?.typeName !== 'AtlasGlossaryTerm'"
                         key="add"
                         @click="createNewTerm"
@@ -115,8 +119,8 @@
                             <AtlanIcon icon="Link" class="m-0 mr-2" />
                             <p class="p-0 m-0">Add term</p>
                         </div>
-                    </a-menu-item>
-                    <a-menu-item
+                    </a-menu-item> -->
+                    <!-- <a-menu-item
                         v-if="entity?.typeName !== 'AtlasGlossaryTerm'"
                         key="addCat"
                         class="flex items-center"
@@ -126,6 +130,65 @@
                             <AtlanIcon icon="Link" class="m-0 mr-2" />
                             <p class="p-0 m-0">Add category</p>
                         </div>
+                    </a-menu-item> -->
+                    <a-menu-item
+                        key="addCat"
+                        @click="closeMenu"
+                        v-if="entity?.typeName !== 'AtlasGlossaryTerm'"
+                    >
+                        <AddGtcModal
+                            entityType="category"
+                            :glossaryId="glossaryId"
+                            :categoryId="categoryId"
+                        >
+                            <template #header>
+                                <div class="flex items-center mr-5">
+                                    <AtlanIcon
+                                        icon="Glossary"
+                                        class="h-5 m-0 mr-2"
+                                    />
+                                    <span
+                                        v-show="
+                                            entity?.typeName !== 'AtlasGlossary'
+                                        "
+                                        class="mr-1 text-sm"
+                                    >
+                                        {{
+                                            entity?.attributes?.anchor
+                                                ?.uniqueAttributes
+                                                ?.qualifiedName
+                                        }}
+                                        /</span
+                                    >
+                                    <AtlanIcon
+                                        v-if="
+                                            entity.typeName ===
+                                            'AtlasGlossaryTerm'
+                                        "
+                                        icon="Term"
+                                        class="h-5 m-0 mr-2"
+                                    />
+                                    <AtlanIcon
+                                        v-if="
+                                            entity.typeName ===
+                                            'AtlasGlossaryCategory'
+                                        "
+                                        icon="Category"
+                                        class="h-5 m-0 mb-1 mr-2"
+                                    />
+
+                                    <span class="mr-3 text-sm">{{
+                                        entity?.displayText
+                                    }}</span>
+                                </div>
+                            </template>
+                            <template #trigger>
+                                <div class="flex items-center">
+                                    <AtlanIcon icon="Link" class="m-0 mr-2" />
+                                    <p class="p-0 m-0">Add new category</p>
+                                </div>
+                            </template>
+                        </AddGtcModal>
                     </a-menu-item>
 
                     <a-menu-divider

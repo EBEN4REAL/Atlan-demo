@@ -1,6 +1,6 @@
 <template>
     <div class="w-full mb-3 mr-2 text-sm text-gray-500">
-        <p class="mb-1 text-xs">Owners</p>
+        <p class="mb-1 text-sm">Owners</p>
         <div>
             <div v-if="ownerUsers.length > 0" class="flex flex-wrap text-sm">
                 <PillGroup

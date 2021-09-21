@@ -1,76 +1,78 @@
 <template>
-    <!-- preloader -->
-    <!-- TODO: isLoading from useAPI doesnt work fine  -->
-    <!-- <div
+    <div class="px-3 pt-4">
+        <!-- preloader -->
+        <!-- TODO: isLoading from useAPI doesnt work fine  -->
+        <!-- <div
         v-if="loading"
         class="flex items-center justify-center px-5 mt-4 text-base"
     >
         <a-spin size="small" class="mr-2 leading-none"></a-spin
         ><span>Getting relations</span>
     </div> -->
-    <!-- preloader ends here -->
-    <div class="px-5 mt-4 mb-1">
-        <!-- searchbar -->
-        <SearchAndFilter v-model:value="queryText">
-            <!-- filters -->
-            <template #filter>
-                <a-checkbox-group
-                    v-model:value="checkedList"
-                    :options="plainOptions"
-                    class="flex flex-col"
-                />
-            </template>
-        </SearchAndFilter>
-    </div>
-    <!-- accordions for different asset type -->
-    <a-collapse
-        :bordered="false"
-        expand-icon-position="right"
-        :accordion="true"
-        class="m-0 bg-transparent"
-        :class="$style.filter"
-    >
-        <template #expandIcon="{ isActive }">
-            <div class="">
-                <fa
-                    icon="fas chevron-down"
-                    class="ml-1 transition-transform transform"
-                    :class="isActive ? '-rotate-180' : 'rotate-0'"
-                />
-            </div>
-        </template>
-
-        <!-- each panel is a asset type -->
-        <a-collapse-panel
-            v-for="(item, index) in filteredRelationshipAssets"
-            :key="index"
-            v-model:activeKey="activeKeys"
-            class="bg-transparent"
+        <!-- preloader ends here -->
+        <div class="mb-1">
+            <!-- searchbar -->
+            <SearchAndFilter v-model:value="queryText">
+                <!-- filters -->
+                <template #filter>
+                    <a-checkbox-group
+                        v-model:value="checkedList"
+                        :options="plainOptions"
+                        class="flex flex-col"
+                    />
+                </template>
+            </SearchAndFilter>
+        </div>
+        <!-- accordions for different asset type -->
+        <a-collapse
+            :bordered="false"
+            expand-icon-position="right"
+            :accordion="true"
+            class="m-0 bg-transparent"
+            :class="$style.filter"
         >
-            <template #header>
-                <div class="flex items-center px-5 py-4">
-                    <!-- first letter to be uppercase -->
-                    <p class="my-0">
-                        {{ item.displayText.charAt(0).toUpperCase()
-                        }}{{ item.displayText.slice(1) }}
-                    </p>
-                    <div
-                        v-if="item.length"
-                        class="px-2 mx-2 bg-primary-light text-primary"
-                    >
-                        {{ item.length }}
-                    </div>
+            <template #expandIcon="{ isActive }">
+                <div class="">
+                    <fa
+                        icon="fas chevron-down"
+                        class="ml-1 transition-transform transform"
+                        :class="isActive ? '-rotate-180' : 'rotate-0'"
+                    />
                 </div>
             </template>
-            <!-- accordion on expand  -->
-            <AssetTypeItems
-                :projections="checkedList"
-                :asset-type="item.displayText"
-                :asset-id="assetId"
-                :css-classes="cssClasses"
-            />
-        </a-collapse-panel>
-    </a-collapse>
+
+            <!-- each panel is a asset type -->
+            <a-collapse-panel
+                v-for="(item, index) in filteredRelationshipAssets"
+                :key="index"
+                v-model:activeKey="activeKeys"
+                class="bg-transparent"
+            >
+                <template #header>
+                    <div class="flex items-center px-5 py-4">
+                        <!-- first letter to be uppercase -->
+                        <p class="my-0">
+                            {{ item.displayText.charAt(0).toUpperCase()
+                            }}{{ item.displayText.slice(1) }}
+                        </p>
+                        <div
+                            v-if="item.length"
+                            class="px-2 mx-2 bg-primary-light text-primary"
+                        >
+                            {{ item.length }}
+                        </div>
+                    </div>
+                </template>
+                <!-- accordion on expand  -->
+                <AssetTypeItems
+                    :projections="checkedList"
+                    :asset-type="item.displayText"
+                    :asset-id="assetId"
+                    :css-classes="cssClasses"
+                />
+            </a-collapse-panel>
+        </a-collapse>
+    </div>
 </template>
 
 <script lang="ts">

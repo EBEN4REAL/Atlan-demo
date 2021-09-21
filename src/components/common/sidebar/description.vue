@@ -1,6 +1,6 @@
 <template>
     <div class="mb-3 text-xs text-gray-500">
-        <p class="mb-1 text-xs">Description</p>
+        <p class="mb-0 text-sm">Description</p>
         <div v-if="showEditableDescription && !isLoading">
             <a-textarea
                 id="description-sidebar"

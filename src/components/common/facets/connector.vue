@@ -100,7 +100,7 @@
 
             // undefined is necessary here to show the placeholder
             const selectedValue = computed(
-                () => connector.value || connection.value || undefined
+                () => connection.value || connector.value || undefined
             )
 
             const tabIds: ComputedRef<string[]> = computed(() => {
@@ -232,7 +232,7 @@
                 // // console.log(value, node.dataRef, connectorsPayload, 'selected')
             }
 
-            watch(data, () => emitChangedFilters())
+            watch([connector, connection], () => emitChangedFilters())
 
             const emitChangedFilters = () => {
                 const criterion: Components.Schemas.FilterCriteria[] = []
@@ -287,6 +287,7 @@
                 attributeValue,
             }: Record<string, string>) => {
                 if (attributeName && attributeValue) {
+                    emit('update:data', { attributeName, attributeValue })
                     emit(
                         'change',
                         {
@@ -304,7 +305,6 @@
                         },
                         tabIds.value
                     )
-                    emit('update:data', { attributeName, attributeValue })
                 } else {
                     handleSelectChange(data.value?.attributeValue)
                     emitChangedFilters()

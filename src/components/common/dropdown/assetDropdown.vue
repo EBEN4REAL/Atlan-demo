@@ -62,20 +62,17 @@
                     ) || []
             )
 
-            const isDisabled = (index) => {
-                if (
-                    index == 0 &&
-                    filter.value.attributeName === 'connectionQualifiedName'
-                ) {
+            const hasConnection = computed(
+                () => (filter.value.attributeValue?.split('/')?.length || 0) > 2
+            )
+
+            const isDisabled = (index: number) => {
+                if (index == 0 && hasConnection.value) {
                     return false
-                }
-                if (index > 0) {
+                } else if (index > 0) {
                     const item = list.value[index - 1]
-                    if (asset.value[item.attribute]) {
-                        return false
-                    }
+                    return !asset.value?.[item.attribute]
                 }
-                return true
             }
 
             const getFilter = (index) => {

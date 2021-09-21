@@ -31,17 +31,16 @@ export function getEncodedStringFromOptions(options: any) {
             let filterKeyValue = options.filters[filterKey]
             switch (filterKey) {
                 case 'connector': {
-                    let connectorPyloadStirng = ''
+                    const connectorLoadString: string[] = []
                     const { criterion } = options.filters[filterKey]
-                    if (criterion.length == 1) {
-                        connectorPyloadStirng += `connector:${criterion[0].attributeValue}`
+                    if (criterion.length) {
+                        criterion.forEach((cri) => {
+                            connectorLoadString.push(
+                                `${cri.attributeName}:${cri.attributeValue}`
+                            )
+                        })
                     }
-                    if (criterion.length == 2) {
-                        connectorPyloadStirng += `connector:${criterion[0].attributeValue}`
-                        connectorPyloadStirng += `,connection:${criterion[1].attributeValue}`
-                    }
-
-                    filterKeyValue = connectorPyloadStirng
+                    filterKeyValue = connectorLoadString.join(',')
                     break
                 }
                 case 'assetCategory': {
@@ -207,26 +206,6 @@ export function getEncodedStringFromOptions(options: any) {
             routerQuery.filters = filtersString.join(':::')
         }
     }
-    // if (options.connectorsPayload) {
-    //     const payload = options.connectorsPayload
-    //     let connectorPyloadStirng = ''
-    //     if (payload.connector) {
-    //         connectorPyloadStirng += `connector:${payload.connector}`
-    //     }
-    //     if (payload.connection) {
-    //         connectorPyloadStirng += `,connection:${payload.connection}`
-    //     }
-    //     routerQuery.connectorsPayload = connectorPyloadStirng
-    // }
-
-    // if (options.sortBy) {
-    //   routerQuery.sortBy = options.sortBy;
-    // }
-
-    // if (options.sortOrder) {
-    //   routerQuery.sortOrder = options.sortOrder;
-    // }
-
     if (options.limit) {
         routerQuery.limit = options.limit
     }
@@ -255,8 +234,6 @@ export function getDecodedOptionsFromString(router) {
     console.log(url.searchParams.get('filters'))
     const filters = url.searchParams.get('filters')
     const searchText = url.searchParams.get('searchText')
-    const connectorsPayloadString = url.searchParams.get('connectorsPayload')
-    let connectorsPayload = {}
     const limit = url.searchParams.get('limit')
     const facetsFiltersStrings = filters?.split(':::')
     const initialBodyCriterion: Array<any> = []
@@ -301,35 +278,16 @@ export function getDecodedOptionsFromString(router) {
             case 'connector': {
                 const facetFilterValues = facetFilterValuesString.split(',')
                 console.log(facetFilterValues, 'facetFilterValues', facetFilter)
-                const connectorsPayloadCriterion: criterion = []
-                const conenctorData = {}
-                facetFilterValues.forEach((connectorValue) => {
-                    const subConnectorValues = connectorValue.split(':')
-                    console.log(subConnectorValues, 'subconector')
-                    if (subConnectorValues[0] === 'connector') {
-                        conenctorData.connector = subConnectorValues[1]
-                    } else {
-                        conenctorData.connection = subConnectorValues[1]
-                    }
-                })
-                connectorsPayload = conenctorData
-
-                connectorsPayloadCriterion.push({
-                    attributeName: 'integrationName',
-                    attributeValue: connectorsPayload.connector,
-                    operator: '=',
-                })
-                if (facetFilterValues.length > 1) {
-                    connectorsPayloadCriterion.push({
-                        attributeName: 'connectionQualifiedName',
-                        attributeValue: connectorsPayload.connection,
-                        operator: '=',
-                    })
+                // FIXME: Add support for arrays
+                const connectorAttribute = facetFilterValues[0].split(':')
+                facetsFilters.connector = {
+                    attributeName: connectorAttribute[0],
+                    attributeValue: connectorAttribute[1],
                 }
-
-                facetsFilters.connector.criterion = connectorsPayloadCriterion
-                facetsFilters.connector.checked = conenctorData
-                criterion = [...connectorsPayloadCriterion, ...criterion]
+                criterion.push({
+                    ...facetsFilters.connector,
+                    operator: 'eq',
+                })
                 break
             }
             case 'assetCategory': {
@@ -517,33 +475,6 @@ export function getDecodedOptionsFromString(router) {
             }
         }
 
-        // if (connectorsPayload) {
-        //     // const connectorsPayloadCriterion: criterion = [];
-        //     const connectorValues = connectorsPayloadString.split(',')
-        //     const conenctorData = {}
-        //     connectorValues.forEach((connectorValue) => {
-        //         const subConnectorValues = connectorValue.split(':')
-        //         console.log(subConnectorValues, 'subconector')
-        //         if (subConnectorValues[0] === 'connector') {
-        //             conenctorData.connector = subConnectorValues[1]
-        //         } else {
-        //             conenctorData.connection = subConnectorValues[1]
-        //         }
-        //     })
-        //     connectorsPayload = conenctorData
-
-        //     // connectorsPayloadCriterion.push({
-        //     //   attributeName: "integrationName",
-        //     //   attributeValue: connectorsPayload.connections,
-        //     //   operator: "=",
-        //     // });
-        //     // connectorsPayloadCriterion.push({
-        //     //   attributeName: "connectionQualifiedName",
-        //     //   attributeValue: connectorsPayload.connections,
-        //     //   operator: "=",
-        //     // });
-        //     // criterion = [...criterion, connectorsPayloadCriterion];
-        // }
         switch (facetFilterName) {
             case 'connector': {
                 initialBodyCriterion.push({
@@ -569,7 +500,6 @@ export function getDecodedOptionsFromString(router) {
     })
     console.log(initialBodyCriterion, facetsFilters, 'facetsFilters')
     return {
-        connectorsPayload,
         initialBodyCriterion,
         facetsFilters,
         searchText,

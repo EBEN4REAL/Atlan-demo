@@ -99,11 +99,18 @@
                     explorer: {
                         schema: {
                             connectors: {
-                                connection: 'default/snowflake/vqaqufvr-i',
-                                connector: 'snowflake',
-                                selectedDefaultSchema: 'ATLAN_TRIAL.PUBLIC',
+                                connection:
+                                    activeInlineTab.value.explorer.schema
+                                        .connectors.connection,
+                                connector:
+                                    activeInlineTab.value.explorer.schema
+                                        .connectors.connector,
+                                selectedDefaultSchema:
+                                    activeInlineTab.value.explorer.schema
+                                        .connectors.selectedDefaultSchema,
                                 selectedDataSourceName:
-                                    'default/snowflake/vqaqufvr-i',
+                                    activeInlineTab.value.explorer.schema
+                                        .connectors.selectedDataSourceName,
                             },
                         },
                     },

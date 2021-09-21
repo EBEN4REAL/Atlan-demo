@@ -1,15 +1,15 @@
 <template>
     <span class="grid grid-cols-2">
         <div
-            v-for="f in dummy2"
-            :key="f.id"
-            :class="
-                f.type === 'group' || f.type === 'toggle' ? 'col-span-full' : ''
-            "
+            v-for="(f, x) in flattenedSchema"
+            :key="x"
+            :class="f.isVisible ? '' : 'hidden'"
         >
             <template v-if="f.type === 'group'">
                 <div class="grid grid-cols-2 p-2 m-2 bg-blue-100 col-span-full">
-                    <div class="m-3 font-bold col-span-full">{{ f.title }}</div>
+                    <div class="m-3 font-bold col-span-full">
+                        {{ f.title }}
+                    </div>
                     <div
                         v-for="c in f.children"
                         :key="c.id"
@@ -17,7 +17,7 @@
                     >
                         {{ c.label }}
                         <DynamicInput
-                            v-model="configObject[f.id]"
+                            v-model="flattenedSchema[x].value"
                             :data-type="f.type"
                             :placeholder="f.placeholder"
                             :default-value="f.default"
@@ -27,39 +27,19 @@
                     </div>
                 </div>
             </template>
-            <div v-else-if="f.type === 'button'" class="m-2">
-                <a-button @click="generateSring">{{ f.label }}</a-button>
-            </div>
             <div v-else-if="f.type === 'toggle'" class="m-2">
                 <div class="my-2">{{ f.label }}</div>
-                <RadioButton
-                    v-model="demoCred.authDemo"
+                <CustomRadioButton
+                    v-model:data="flattenedSchema[x].value"
+                    class="pb-4 border-b"
                     :list="f.options"
-                ></RadioButton>
+                >
+                </CustomRadioButton>
             </div>
-            <div
-                v-else-if="f.conditional"
-                class="p-2 m-2 rounded"
-                :class="
-                    getIdValue(f.conditional.refID) === f.conditional.refValue
-                        ? ''
-                        : 'bg-red-100 hidden'
-                "
-            >
+            <div v-else-if="f.type !== 'template'" class="p-2 m-2 rounded">
                 {{ f.label }}
                 <DynamicInput
-                    v-model="configObject[f.id]"
-                    :data-type="f.type"
-                    :placeholder="f.placeholder"
-                    :default-value="f.default"
-                    :prefix="f.prefix"
-                    :suffix="f.suffix"
-                ></DynamicInput>
-            </div>
-            <div v-else class="p-2 m-2 rounded">
-                {{ f.label }}
-                <DynamicInput
-                    v-model="configObject[f.id]"
+                    v-model="flattenedSchema[x].value"
                     :data-type="f.type"
                     :placeholder="f.placeholder"
                     :default-value="f.default"
@@ -74,12 +54,13 @@
 <script>
     import RadioButton from '@common/radio/button.vue'
     import DynamicInput from '@common/input/dynamic.vue'
-    import { defineComponent, reactive, ref, watch } from 'vue'
+    import { defineComponent, reactive, ref, watch, computed } from 'vue'
+    import CustomRadioButton from '@common/radio/customRadioButton.vue'
     import { dummy, dummy2, dummy3 } from './dummy'
 
     export default {
         name: 'FormBuilder',
-        components: { RadioButton, DynamicInput },
+        components: { RadioButton, DynamicInput, CustomRadioButton },
 
         setup() {
             const configObject = ref({})
@@ -115,16 +96,29 @@
             const flattenedSchema = ref([])
             const otherTypes = ['object', 'array', 'group']
 
+            const getValueFromSchemaData = (id) =>
+                flattenedSchema.value.find((s) => s.id === id).value
+
             const getChildren = (schema) => {
                 let children = []
                 schema.children.forEach((s) => {
                     if (otherTypes.includes(s.type)) {
                         children = [
                             ...children,
-                            ...s.children.map((a) => ({ ...a, parent: s.id })),
+                            ...s.children.map((a) => ({
+                                ...a,
+                                parent: s.id,
+                                parentType: s.type,
+                                ...(a.default ? { value: a.default } : {}),
+                            })),
                         ]
                     } else {
-                        children.push(s.map({ ...s }))
+                        children.push(
+                            s.map({
+                                ...s,
+                                ...(s.default ? { value: s.default } : {}),
+                            })
+                        )
                     }
                 })
                 return children
@@ -132,7 +126,10 @@
 
             dummy2.forEach((f) => {
                 if (!otherTypes.includes(f.type)) {
-                    flattenedSchema.value.push(f)
+                    flattenedSchema.value.push({
+                        ...f,
+                        ...(f.default ? { value: f.default } : {}),
+                    })
                 } else {
                     const res = getChildren(f)
                     console.log({ res })
@@ -140,9 +137,8 @@
                 }
             })
 
-            const generateSring = () => {
-                const s =
-                    'xx-jdbc:redshift://{{port}}:asdasd{{port}}/{{database}}-xx'
+            const generateSring = (s) => {
+                if (!flattenedSchema.value.length) return s
                 const templatePartsf = s.split('{{')
                 let finalString = ''
                 // ? ->
@@ -151,15 +147,57 @@
                         finalString += p
                     } else {
                         const pp = p.split('}}')
-                        console.log(pp)
-                        finalString += configObject.value[pp[0]] + pp[1]
+                        finalString += getValueFromSchemaData(pp[0]) + pp[1]
                     }
                 })
                 console.log({ finalString })
+                return finalString
             }
 
+            const finalConfigObject = computed(() => {
+                const temp = {}
+                flattenedSchema.value.forEach((s) => {
+                    if (s.parent) {
+                        if (s.parentType === 'object') {
+                            temp[s.parent] = { ...(temp[s.parent] || {}) }
+                            if (s.type === 'template') {
+                                temp[s.parent][s.id] = generateSring(s.template)
+                            } else {
+                                temp[s.parent][s.id] = s.value
+                            }
+                        }
+                    }
+                    if (s.type === 'template') {
+                        temp[s.id] = generateSring(s.template)
+                    } else temp[s.id] = s.value
+                })
+                return temp
+            })
+
+            const handleConditional = () => {
+                flattenedSchema.value.forEach((f, x) => {
+                    if (f.conditional) {
+                        const curVal = getValueFromSchemaData(
+                            f.conditional.refID
+                        )
+                        const reqVal = f.conditional.refValue
+                        flattenedSchema.value[x].isVisible = curVal === reqVal
+                    }
+                })
+            }
+
+            watch(
+                flattenedSchema.value,
+                () => {
+                    console.log('handleConditional')
+                    handleConditional()
+                },
+                { immediate: true }
+            )
+            const temp = ref()
             const getIdValue = (p) => demoCred.value[p]
             return {
+                temp,
                 dummy,
                 dummy2,
                 dummy3,
@@ -168,6 +206,7 @@
                 configObject,
                 generateSring,
                 flattenedSchema,
+                finalConfigObject,
             }
         },
     }

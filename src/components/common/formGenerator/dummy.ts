@@ -205,26 +205,21 @@ export const dummy = [
             },
         ],
     },
-    {
-        id: 'submit',
-        label: 'CTA Button',
-        type: 'button',
-        isVisible: true,
-        rule: [],
-    },
+    // {
+    //     id: 'submit',
+    //     label: 'CTA Button',
+    //     type: 'button',
+    //     isVisible: true,
+    //     rule: [],
+    // },
 ]
 
 export const dummy2 = [
     {
-        id: 'button',
-        type: 'button',
-        label: "label"
-    },
-    {
         id: 'url',
         type: 'template',
         isVisible: false,
-        template: 'xx-jdbc:redshift://{{port}}:asdasd{{port}}/{{database}}-xx'
+        template: 'xx-jdbc:redshift://{{host}}:asdasd{{port}}/{{database}}-xx'
     },
     {
         id: "host",
@@ -281,6 +276,7 @@ export const dummy2 = [
         label: "Authentication Mode",
         type: "toggle",
         default: "basic",
+        isVisible: true,
         rules: [],
         options: [
             {
@@ -299,7 +295,7 @@ export const dummy2 = [
         type: "text",
         isVisible: true,
         default: "",
-        condition: {
+        conditional: {
             refID: "auth",
             refValue: "basic"
         },
@@ -313,11 +309,11 @@ export const dummy2 = [
     },
     {
         id: "password",
-        label: "Password",
+        label: "Password basic",
         type: "password",
         isVisible: true,
         default: "",
-        condition: {
+        conditional: {
             refID: "auth",
             refValue: "basic"
         },
@@ -331,7 +327,7 @@ export const dummy2 = [
     },
     {
         id: "login",
-        label: "Username",
+        label: "Username basic",
         type: "text",
         isVisible: true,
         default: "",
@@ -503,7 +499,7 @@ export const dummy3 = [
         type: "text",
         isVisible: true,
         default: "",
-        condition: {
+        conditional: {
             refID: "auth",
             refValue: "basic"
         },
@@ -521,7 +517,7 @@ export const dummy3 = [
         type: "password",
         isVisible: true,
         default: "",
-        condition: {
+        conditional: {
             refID: "auth",
             refValue: "basic"
         },

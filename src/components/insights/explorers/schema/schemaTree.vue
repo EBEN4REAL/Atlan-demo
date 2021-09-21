@@ -17,7 +17,7 @@
                     @expand="expandNode"
                 >
                     <template
-                        #title="{ title, type, key }"
+                        #title="{ title, typeName, key }"
                     >
                         <a-dropdown :trigger="['contextmenu']">
                             <div
@@ -25,15 +25,22 @@
                             >
                                 <div class="flex justify-between mr-2 group">
                                     <div class="flex m-0">
-                                        <span
+                                        <div
                                             class="
                                                 my-auto
+                                                flex
+                                                content-center
                                                 text-sm
                                                 leading-5
                                                 text-gray-700
                                             "
-                                            >{{ title }}</span
-                                        >
+                                            >
+                                            <AtlanIcon
+                                                :icon="typeName"
+                                                class="w-5 h-5 my-auto mr-1"
+                                            ></AtlanIcon>
+                                             <span>{{ title }}</span>
+                                            </div>
                                     </div>
                                 </div>
                             </div>

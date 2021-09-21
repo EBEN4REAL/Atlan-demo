@@ -17,6 +17,7 @@ import Search from '~/assets/images/icons/search.svg'
 import ArrowDown from '~/assets/images/icons/arrow-down.svg'
 import Database from '~/assets/images/icons/database.svg'
 import Schema from '~/assets/images/icons/schema.svg'
+import Table from '~/assets/images/icons/table.svg'
 import Connection from '~/assets/images/icons/connection.svg'
 import ChevronRight from '~/assets/images/icons/chevron-right.svg'
 import AddUser from '~/assets/images/icons/add-user.svg'
@@ -75,6 +76,7 @@ export default {
     Search,
     Database,
     Schema,
+    Table,
     Notification,
     NotificationDot,
     ArrowDown,

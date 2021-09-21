@@ -222,54 +222,59 @@ export const dummy2 = [
         template: 'xx-jdbc:redshift://{{host}}:asdasd{{port}}/{{database}}-xx'
     },
     {
-        id: "host",
-        label: "Host",
-        type: "text",
-        helpText: "Redshift Cluster Host",
-        prefix: "",
-        placeholder: "",
+        type: 'group',
+        groupTitle: "Test Group",
         isVisible: true,
-        default: "",
-        rules: [
-            {
-                type: "required",
-                enabled: true,
-                errorMessage: "Host name is mandatory"
-            }
-        ]
-    },
-    {
-        id: "port",
-        label: "Port",
-        type: "number",
-        helpText: "Port",
-        placeholder: "Port",
-        isVisible: true,
-        prefill: true,
-        default: "5439",
-        rules: [
-            {
-                type: "required",
-                enabled: true,
-                errorMessage: ""
-            }
-        ]
-    },
-    {
-        id: "database",
-        label: "Database",
-        type: "text",
-        helpText: "Database to crawl",
-        placeholder: "dev",
-        isVisible: true,
-        default: "dev",
-        rules: [
-            {
-                type: "required",
-                enabled: true,
-                errorMessage: "Database is mandatory"
-            }
-        ]
+        children: [{
+            id: "host",
+            label: "Host",
+            type: "text",
+            helpText: "Redshift Cluster Host",
+            prefix: "https://",
+            placeholder: "",
+            isVisible: true,
+            default: "",
+            rules: [
+                {
+                    type: "required",
+                    enabled: true,
+                    errorMessage: "Host name is mandatory"
+                }
+            ]
+        },
+        {
+            id: "port",
+            label: "Port",
+            type: "number",
+            helpText: "Port",
+            placeholder: "Port",
+            isVisible: true,
+            prefill: true,
+            default: "5439",
+            rules: [
+                {
+                    type: "required",
+                    enabled: true,
+                    errorMessage: ""
+                }
+            ]
+        },
+        {
+            id: "database",
+            label: "Database",
+            type: "text",
+            helpText: "Database to crawl",
+            placeholder: "dev",
+            isVisible: true,
+            default: "dev",
+            rules: [
+                {
+                    type: "required",
+                    enabled: true,
+                    errorMessage: "Database is mandatory"
+                }
+            ]
+        }]
     },
     {
         id: "auth",
@@ -379,12 +384,12 @@ export const dummy2 = [
         ]
     },
     {
-        type: "group",
-        groupTitle: "Advanced",
+        type: "object",
+        id: "extra",
         children: [
             {
-                type: "object",
-                id: "extra",
+                type: "group",
+                groupTitle: "Advanced",
                 children: [
 
                     {

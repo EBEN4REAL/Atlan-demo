@@ -68,7 +68,7 @@
                 class="flex flex-col text-xs text-gray-500 cursor-pointer"
             >
                 <div class="mb-3">
-                    <p class="mb-1 text-xs">Status</p>
+                    <p class="mb-1 text-xs">Certification</p>
                     <StatusBadge
                         :key="selectedAsset.guid"
                         :status-id="selectedAsset?.attributes?.assetStatus"

@@ -19,12 +19,6 @@ export const List: CheckboxArray = [
         icon: wip,
     },
     {
-        id: 'issue',
-        label: 'Issue',
-        description: 'Issue',
-        icon: issues,
-    },
-    {
         id: 'deprecated',
         label: 'Deprecated',
         description: 'Deprecated',

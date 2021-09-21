@@ -21,57 +21,59 @@
             > -->
         </div>
     </div>
-
-    <Connector
-        class="px-4 pt-3 pb-0"
-        :data="dataMap.connector"
-        :item="{
-            id: 'connector',
-            label: 'Connector',
-            component: 'connector',
-            overallCondition: 'OR',
-            filters: [
-                {
-                    attributeName: 'connector',
-                    condition: 'OR',
-                    isMultiple: false,
-                    operator: 'eq',
-                },
-            ],
-            isDeleted: false,
-            isDisabled: false,
-            exclude: false,
-        }"
-        @change="handleChange"
-        @update:data="setConnector"
-    ></Connector>
-    <a-collapse
-        v-model:activeKey="activeKey"
-        expand-icon-position="right"
-        :bordered="false"
-        class="relative bg-transparent"
-        :class="$style.filter"
-    >
-        <template #expandIcon="{ isActive }">
-            <div class="">
-                <AtlanIcon
-                    icon="ChevronDown"
-                    class="ml-1 text-gray-500 transition-transform transform"
-                    :class="isActive ? '-rotate-180' : 'rotate-0'"
-                />
-            </div>
-        </template>
-        <a-collapse-panel
-            v-for="item in dynamicList"
-            :key="item.id"
-            class="relative group"
+    <div class="h-full overflow-y-auto">
+        <p class="px-4 mt-3 mb-0 tracking-wide text-gray">Connector</p>
+        <Connector
+            class="px-4 py-3"
+            :data="dataMap.connector"
+            :item="{
+                id: 'connector',
+                label: 'Connector',
+                component: 'connector',
+                overallCondition: 'OR',
+                filters: [
+                    {
+                        attributeName: 'connector',
+                        condition: 'OR',
+                        isMultiple: false,
+                        operator: 'eq',
+                    },
+                ],
+                isDeleted: false,
+                isDisabled: false,
+                exclude: false,
+            }"
+            @change="handleChange"
+            @update:data="setConnector"
+        ></Connector>
+        <a-collapse
+            v-model:activeKey="activeKey"
+            expand-icon-position="right"
+            :bordered="false"
+            class="relative bg-transparent"
+            :class="$style.filter"
         >
-            <template #header>
-                <div :key="dirtyTimestamp" class="mr-8 select-none">
-                    <div class="flex items-center justify-between align-middle">
-                        <div class="flex flex-col flex-1">
-                            <div class="tracking-wide">
-                                <span class="text-gray">
+            <template #expandIcon="{ isActive }">
+                <div class="">
+                    <AtlanIcon
+                        icon="ChevronDown"
+                        class="ml-1 text-gray-500 transition-transform transform "
+                        :class="isActive ? '-rotate-180' : 'rotate-0'"
+                    />
+                </div>
+            </template>
+            <a-collapse-panel
+                v-for="item in dynamicList"
+                :key="item.id"
+                class="relative group"
+            >
+                <template #header>
+                    <div :key="dirtyTimestamp" class="mr-8 select-none">
+                        <div
+                            class="flex items-center justify-between align-middle "
+                        >
+                            <div class="flex flex-col flex-1">
+                                <span class="tracking-wide text-gray">
                                     <img
                                         v-if="item.image"
                                         :src="item.image"
@@ -79,40 +81,40 @@
                                     />
                                     {{ item.label }}</span
                                 >
+                                <div
+                                    v-if="!activeKey.includes(item.id)"
+                                    class="text-gray-500"
+                                >
+                                    {{ getFiltersAppliedString(item.id) }}
+                                </div>
                             </div>
-                            <div
-                                v-if="!activeKey.includes(item.id)"
-                                class="text-gray-500"
-                            >
-                                {{ getFiltersAppliedString(item.id) }}
-                            </div>
-                        </div>
 
-                        <div
-                            v-if="isFilter(item.id)"
-                            class="
-                                text-xs text-gray-500
-                                opacity-0
-                                hover:text-primary
-                                group-hover:opacity-100
-                                pt-0.5
-                            "
-                            @click.stop.prevent="handleClear(item.id)"
-                        >
-                            Clear
+                            <div
+                                v-if="isFilter(item.id)"
+                                class="
+                                    text-xs text-gray-500
+                                    opacity-0
+                                    hover:text-primary
+                                    group-hover:opacity-100
+                                    pt-0.5
+                                "
+                                @click.stop.prevent="handleClear(item.id)"
+                            >
+                                Clear
+                            </div>
                         </div>
                     </div>
-                </div>
-            </template>
+                </template>
 
-            <component
-                :is="item.component"
-                v-model:data="dataMap[item.id]"
-                :item="item"
-                @change="handleChange"
-            ></component>
-        </a-collapse-panel>
-    </a-collapse>
+                <component
+                    :is="item.component"
+                    v-model:data="dataMap[item.id]"
+                    :item="item"
+                    @change="handleChange"
+                ></component>
+            </a-collapse-panel>
+        </a-collapse>
+    </div>
 </template>
 
 <script lang="ts">
@@ -273,8 +275,12 @@
                 noClassificationsAssigned: false,
                 checked:
                     props.initialFilters.facetsFilters.classifications.checked,
-                operator: props.initialFilters.facetsFilters.classifications.condition || 'OR',
-                addedBy: props.initialFilters.facetsFilters.classifications.addedBy || 'all',
+                operator:
+                    props.initialFilters.facetsFilters.classifications
+                        .condition || 'OR',
+                addedBy:
+                    props.initialFilters.facetsFilters.classifications
+                        .addedBy || 'all',
             }
             dataMap.value.owners = {
                 userValue:

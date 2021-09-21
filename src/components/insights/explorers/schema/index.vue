@@ -3,7 +3,7 @@
         <div class="w-full p-3 mb-3">
             <Connector
                 class=""
-                :data="connector"
+                :data="connectorsData"
                 :item="{
                     id: 'connector',
                     label: 'Connector',
@@ -49,7 +49,8 @@
     import { tableInterface } from '~/types/insights/table.interface'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
     import { tablesData } from './tablesDemoData'
-    import Connector from '@common/facets/connector.vue'
+    import Connector from '~/components/insights/common/connector/connector.vue'
+    import { connectorsWidgetInterface } from '~/types/insights/connectorWidget.interface'
     import { useConnector } from '~/components/insights/common/composables/useConnector'
 
     export default defineComponent({
@@ -81,8 +82,13 @@
                 }
                 return false
             }
-            const connector = ref({
-                checked: [],
+            const connectorsData: Ref<connectorsWidgetInterface> = ref({
+                connection: 'default/snowflake/vqaqufvr-i',
+                connector: 'snowflake',
+                databaseQualifiedName:
+                    'default/snowflake/vqaqufvr-i/ATLAN_TRIAL',
+                schemaQualifiedName:
+                    'default/snowflake/vqaqufvr-i/ATLAN_TRIAL/PUBLIC',
             })
             const handleChange = (data) => {
                 console.log(data, 'connectorChange')
@@ -103,12 +109,17 @@
                 }
             }
 
-            const setConnector = (payload: any) => {
-                connector.value = payload
+            const setConnector = (payload: {
+                connection: string | undefined
+                connector: string | undefined
+            }) => {
+                console.log(payload, 'payload')
+                connectorsData.value.connector = payload.connector
+                connectorsData.value.connection = payload.connection
             }
 
             return {
-                connector,
+                connectorsData,
                 setConnector,
                 isAssetSidebarOpened,
                 openAssetSidebar,

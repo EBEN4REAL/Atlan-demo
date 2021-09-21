@@ -32,7 +32,7 @@ export default function useAssetDetailsTabList(
             component: 'businessMetadataTab',
             visibleOn: ['discovery', 'profile', 'biOverview', 'nonBiOverview'],
             icon: 'Metadata',
-            tooltip: 'Metadata',
+            tooltip: 'Custom metadata',
         },
         {
             name: 'Columns',

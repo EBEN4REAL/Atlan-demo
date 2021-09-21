@@ -130,7 +130,7 @@
         initialTabsForConnector,
         initialTabsForAssetCategory,
     } from './useTabMapped'
-
+    
     export interface filterMapType {
         assetCategory: {
             checked?: Array<string>
@@ -228,6 +228,7 @@
                 initialFilters.value.connectorsPayload
             )
             const filters = ref(initialFilters.value.initialBodyCriterion)
+            const connectorStore = useConnectionsStore()
 
             console.log('initialFIters', filters.value)
             const filterMap = ref<filterMapType>({
@@ -299,7 +300,8 @@
                         AssetTypeList.forEach((asset) => {
                             if (
                                 asset.id === id &&
-                                asset.isDiscoverable == true
+                                asset.isDiscoverable == true &&
+                                connectorStore.getSourceList.find((source)=>source?.types?.includes(asset.id))
                             ) {
                                 assetTypes.push(asset)
                             }
@@ -307,7 +309,8 @@
                     })
                 } else {
                     assetTypes = AssetTypeList.filter(
-                        (item) => item.isDiscoverable == true
+                        (item) => item.isDiscoverable == true &&
+                                connectorStore.getSourceList.find((source)=>source?.types?.includes(item.id))
                     )
                 }
                 assetTypes.unshift({
@@ -320,7 +323,7 @@
                 modifyTabs(initialTabs.value)
             } else {
                 assetTypeList.value = AssetTypeList.filter(
-                    (item) => item.isDiscoverable == true
+                    (item) => item.isDiscoverable == true && connectorStore.getSourceList.find((source)=>source?.types?.includes(item.id))
                 )
                 assetTypeList.value.unshift({
                     id: 'Catalog',
@@ -328,7 +331,10 @@
                 })
             }
             const assetTypeListString = computed(() =>
-                assetTypeList.value.map((item) => item.id).join(',')
+                assetTypeList.value
+                    .map((item) => item.id)
+                    .slice(1)
+                    .join(',')
             )
 
             const {
@@ -364,7 +370,7 @@
                 }
                 return assetTypeMap.value[assetType.value]
             })
-            const connectorStore = useConnectionsStore()
+            
 
             const filteredConnector = computed(() =>
                 connectorStore.getSourceList?.find(
@@ -409,7 +415,10 @@
                     includeSubClassifications: true,
                     limit: limit.value,
                     offset: offset.value,
-                    entityFilters: {},
+                    entityFilters: {
+                        condition: 'AND',
+                        criterion: [...filters.value],
+                    },
                     attributes: [
                         ...BaseAttributes,
                         ...BasicSearchAttributes,
@@ -417,10 +426,6 @@
                         ...BMAttributeProjection.value,
                     ],
                     aggregationAttributes: [],
-                }
-                initialBody.entityFilters = {
-                    condition: 'AND',
-                    criterion: [...filters.value],
                 }
 
                 if (assetType.value !== 'Catalog') {
@@ -565,16 +570,7 @@
                 updateBody()
                 pushQueryToRouter(routerQuery)
             }
-            const handleChangeConnectors = (payload: any) => {
-                connectorsPayload.value = payload
-                console.log('connector Change', payload)
-                const routerOptions = getRouterOptions()
-                const routerQuery = getEncodedStringFromOptions(routerOptions)
-                pushQueryToRouter(routerQuery)
-                isAggregate.value = true
-                offset.value = 0
-                updateBody()
-            }
+
             const handlePreview = (item) => {
                 emit('preview', item)
             }
@@ -622,7 +618,6 @@
                 handleChangePreferences,
                 handleChangeSort,
                 isLoading,
-                handleChangeConnectors,
                 handleFilterChange,
                 handlePreview,
                 queryText,
@@ -639,6 +634,7 @@
                 dynamicSearchPlaceholder,
                 setPlaceholder,
                 placeholderLabel,
+                filters,
             }
         },
         data() {

@@ -105,6 +105,7 @@ export function useAssetAggregation(
         replaceBody({
             ...baseQuery,
             query: newBody.query,
+            typeName: newBody.typeName,
             entityFilters: {
                 condition: newBody.entityFilters?.condition,
                 criterion: newCriterion,

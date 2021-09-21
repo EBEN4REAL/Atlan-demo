@@ -46,7 +46,6 @@
         },
         setup() {
             const { dataTypeImage } = useAssetInfo()
-
             return {
                 dataTypeImage,
             }

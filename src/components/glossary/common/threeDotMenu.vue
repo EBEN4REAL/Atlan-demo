@@ -50,6 +50,66 @@
 
                     <a-menu-divider v-if="showLinks" />
                     <a-menu-item
+                        key="add"
+                        @click="closeMenu"
+                        v-if="entity?.typeName !== 'AtlasGlossaryTerm'"
+                    >
+                        <AddGtcModal
+                            entityType="term"
+                            :glossaryId="glossaryId"
+                            :categoryId="categoryId"
+                        >
+                            <template #header>
+                                <div class="flex items-center mr-5">
+                                    <AtlanIcon
+                                        icon="Glossary"
+                                        class="h-5 m-0 mr-2"
+                                    />
+                                    <span
+                                        v-show="
+                                            entity?.typeName !== 'AtlasGlossary'
+                                        "
+                                        class="mr-1 text-sm"
+                                    >
+                                        {{
+                                            entity?.attributes?.anchor
+                                                ?.uniqueAttributes
+                                                ?.qualifiedName
+                                        }}
+                                        /</span
+                                    >
+                                    <AtlanIcon
+                                        v-if="
+                                            entity.typeName ===
+                                            'AtlasGlossaryTerm'
+                                        "
+                                        icon="Term"
+                                        class="h-5 m-0 mr-2"
+                                    />
+                                    <AtlanIcon
+                                        v-if="
+                                            entity.typeName ===
+                                            'AtlasGlossaryCategory'
+                                        "
+                                        icon="Category"
+                                        class="h-5 m-0 mb-1 mr-2"
+                                    />
+
+                                    <span class="mr-3 text-sm">{{
+                                        entity?.displayText
+                                    }}</span>
+                                </div>
+                            </template>
+                            <template #trigger>
+                                <div class="flex items-center">
+                                    <AtlanIcon icon="Link" class="m-0 mr-2" />
+                                    <p class="p-0 m-0">Add new term</p>
+                                </div>
+                            </template>
+                        </AddGtcModal>
+                    </a-menu-item>
+
+                    <!-- <a-menu-item
                         v-if="entity?.typeName !== 'AtlasGlossaryTerm'"
                         key="add"
                         @click="createNewTerm"
@@ -59,8 +119,8 @@
                             <AtlanIcon icon="Link" class="m-0 mr-2" />
                             <p class="p-0 m-0">Add term</p>
                         </div>
-                    </a-menu-item>
-                    <a-menu-item
+                    </a-menu-item> -->
+                    <!-- <a-menu-item
                         v-if="entity?.typeName !== 'AtlasGlossaryTerm'"
                         key="addCat"
                         class="flex items-center"
@@ -70,6 +130,65 @@
                             <AtlanIcon icon="Link" class="m-0 mr-2" />
                             <p class="p-0 m-0">Add category</p>
                         </div>
+                    </a-menu-item> -->
+                    <a-menu-item
+                        key="addCat"
+                        @click="closeMenu"
+                        v-if="entity?.typeName !== 'AtlasGlossaryTerm'"
+                    >
+                        <AddGtcModal
+                            entityType="category"
+                            :glossaryId="glossaryId"
+                            :categoryId="categoryId"
+                        >
+                            <template #header>
+                                <div class="flex items-center mr-5">
+                                    <AtlanIcon
+                                        icon="Glossary"
+                                        class="h-5 m-0 mr-2"
+                                    />
+                                    <span
+                                        v-show="
+                                            entity?.typeName !== 'AtlasGlossary'
+                                        "
+                                        class="mr-1 text-sm"
+                                    >
+                                        {{
+                                            entity?.attributes?.anchor
+                                                ?.uniqueAttributes
+                                                ?.qualifiedName
+                                        }}
+                                        /</span
+                                    >
+                                    <AtlanIcon
+                                        v-if="
+                                            entity.typeName ===
+                                            'AtlasGlossaryTerm'
+                                        "
+                                        icon="Term"
+                                        class="h-5 m-0 mr-2"
+                                    />
+                                    <AtlanIcon
+                                        v-if="
+                                            entity.typeName ===
+                                            'AtlasGlossaryCategory'
+                                        "
+                                        icon="Category"
+                                        class="h-5 m-0 mb-1 mr-2"
+                                    />
+
+                                    <span class="mr-3 text-sm">{{
+                                        entity?.displayText
+                                    }}</span>
+                                </div>
+                            </template>
+                            <template #trigger>
+                                <div class="flex items-center">
+                                    <AtlanIcon icon="Link" class="m-0 mr-2" />
+                                    <p class="p-0 m-0">Add new category</p>
+                                </div>
+                            </template>
+                        </AddGtcModal>
                     </a-menu-item>
 
                     <a-menu-divider
@@ -81,9 +200,6 @@
                                 <StatusBadge
                                     :key="entity?.guid"
                                     :status-id="entity?.attributes?.assetStatus"
-                                    :status-message="
-                                        entity?.attributes?.assetStatusMessage
-                                    "
                                     :show-chip-style-status="false"
                                     :show-no-status="true"
                                     :show-label="true"
@@ -181,11 +297,19 @@
     </div>
 </template>
 <script lang="ts">
-    import { defineComponent, ref, PropType, inject, onMounted } from 'vue'
+    import {
+        defineComponent,
+        ref,
+        PropType,
+        inject,
+        onMounted,
+        computed,
+    } from 'vue'
     // components
     import StatusBadge from '@common/badge/status/index.vue'
     import Owners from '@/glossary/common/owners.vue'
     import Status from '@/glossary/common/status.vue'
+    import AddGtcModal from '@/glossary/common/addGtcModal.vue'
     // utils
     import { copyToClipboard } from '~/utils/clipboard'
     import assetTypeLabel from '@/glossary/constants/assetTypeLabel'
@@ -199,7 +323,7 @@
     } from '~/types/glossary/glossary.interface'
 
     export default defineComponent({
-        components: { Status, Owners, StatusBadge },
+        components: { Status, Owners, StatusBadge, AddGtcModal },
         props: {
             entity: {
                 type: Object as PropType<Glossary | Category | Term>,
@@ -229,7 +353,18 @@
             const refetchGlossaryTree = inject<(guid: string | 'root') => void>(
                 'refetchGlossaryTree'
             )
+            const glossaryId = computed(() => {
+                if (props.entity?.typeName === 'AtlasGlossary')
+                    return props.entity?.guid ?? ''
+                return props.entity?.attributes?.anchor?.guid ?? ''
+            })
+            const categoryId = computed(() => {
+                if (props.entity?.typeName === 'AtlasGlossaryCategory')
+                    return props.entity?.guid
+                return ''
+            })
 
+            console.log(glossaryId.value)
             const {
                 deleteGlossary,
                 deleteCategory,
@@ -244,7 +379,9 @@
                 AtlasGlossaryCategory: deleteCategory,
                 AtlasGlossary: deleteGlossary,
             }
-
+            const closeMenu = () => {
+                isVisible.value = false
+            }
             const showModal = () => {
                 isModalVisible.value = true
                 isVisible.value = false
@@ -327,6 +464,9 @@
                 showModal,
                 createNewTerm,
                 createNewCategory,
+                closeMenu,
+                glossaryId,
+                categoryId,
             }
         },
     })

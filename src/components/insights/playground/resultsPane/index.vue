@@ -59,8 +59,7 @@
             ) as Ref<activeInlineTabInterface>
 
             const activeResultsPaneTabIndex = computed(
-                () =>
-                    activeInlineTab.value.playground.resultsPane.activeTab ?? 0
+                () => activeInlineTab.value?.playground?.resultsPane?.activeTab
             )
             const activeResultsPaneTab = computed(() =>
                 tabsList.find(

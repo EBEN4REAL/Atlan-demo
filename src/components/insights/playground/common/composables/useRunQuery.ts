@@ -52,10 +52,12 @@ export default function useProject() {
     const queryRun = (
         activeInlineTab: activeInlineTabInterface,
         getData: any,
-        isQueryRunning: Ref<string>,
-        selectedDefaultSchema: Ref<string>,
-        selectedDataSourceName: Ref<string>
+        isQueryRunning: Ref<string>
     ) => {
+        const selectedDataSourceName =
+            activeInlineTab.explorer.schema.connectors.selectedDataSourceName
+        const selectedDefaultSchema =
+            activeInlineTab.explorer.schema.connectors.selectedDefaultSchema
         let queryText = activeInlineTab.playground.editor.text
         // by default limiting query to 100 if limit is not there
         queryText = queryText.includes('limit')
@@ -66,12 +68,12 @@ export default function useProject() {
         const query = encodeURIComponent(btoa(queryText))
         const pathVariables = {
             query,
-            defaultSchema: selectedDefaultSchema.value
-                ? selectedDefaultSchema.value
+            defaultSchema: selectedDefaultSchema
+                ? selectedDefaultSchema
                 : 'ATLAN_TRIAL.PUBLIC',
             dataSourceName: encodeURIComponent(
-                selectedDefaultSchema.value
-                    ? selectedDataSourceName.value
+                selectedDataSourceName
+                    ? selectedDataSourceName
                     : 'default/snowflake/vqaqufvr-i'
             ),
             length: 10,

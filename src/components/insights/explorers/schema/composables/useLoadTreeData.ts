@@ -14,7 +14,7 @@ const useLoadTreeData = () => {
         includeClassificationAttributes: true,
         includeSubClassifications: true,
         includeSubTypes: true,
-        limit: 5,
+        limit: 10,
         offset: 0,
         attributes: [
             "name",

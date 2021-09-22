@@ -1,7 +1,7 @@
 import { watch, ref, Ref, computed, ComputedRef, onMounted } from 'vue'
 import { TreeDataItem } from 'ant-design-vue/lib/tree/Tree'
 
-import { Attributes,  Database, Schema, Table, Column } from '~/types/insights/table.interface'
+import { Attributes,  Database, Schema, Table, Column, BasicSearchResponse } from '~/types/insights/table.interface'
 import { Components } from '~/api/atlas/client'
 
 import store from '~/utils/storage'
@@ -14,6 +14,14 @@ type CustomTreeDataItem = Omit<TreeDataItem, 'children'> & Attributes &{
     typeName: string;
     guid: string | undefined;
     classifications?: Components.Schemas.AtlasClassification[];
+} | {
+    key: string;
+    title: string;
+    isLeaf: Boolean;
+    click: any;
+    children?: CustomTreeDataItem[];
+    qualifiedName: string;
+    typeName: string;
 };
 
 interface useSchemaExplorerTreeProps {
@@ -91,40 +99,29 @@ const useTree = ({ emit, connectionQualifiedName, databaseQualifiedName, schemaQ
         treeData.value = [];
 
         if(schemaQualifiedName) {
-            // get tables for schema - composable_useGetTablesForSchema
-            // add to treeData
             const tableResponse = await getTablesForSchema(schemaQualifiedName);
             tableResponse.entities?.forEach((table) => {
-                treeData.value.push(returnTreeDataItemAttributes(table))
+                treeData.value.push(returnTreeDataItemAttributes(table));
+                nodeToParentKeyMap[table.attributes.qualifiedName] = 'root'
             })
+
+            checkAndAddLoadMoreNode(tableResponse, 'Schema', schemaQualifiedName, 'root')
         } else if (databaseQualifiedName) {
-            // get schema for database - composable_useGetSchemaForDatabase
-            // add to treeData
             const schemaResponse = await getSchemaForDatabase(databaseQualifiedName);
             schemaResponse.entities?.forEach((schema) => {
-                treeData.value.push(returnTreeDataItemAttributes(schema))
+                treeData.value.push(returnTreeDataItemAttributes(schema));
+                nodeToParentKeyMap[schema.attributes.qualifiedName] = 'root'
             })
+
+            checkAndAddLoadMoreNode(schemaResponse, 'Database', databaseQualifiedName, 'root')
         } else if (connectionQualifiedName) {
-            // get database for connection - composable_useGetDatabaseForConnection
-            // add to treeData
             const databasesResponse = await getDatabaseForConnection(connectionQualifiedName, 0)
             databasesResponse.entities?.forEach((database) => {
-                treeData.value.push(returnTreeDataItemAttributes(database))
+                treeData.value.push(returnTreeDataItemAttributes(database));
+                nodeToParentKeyMap[database.attributes.qualifiedName] = 'root'
             })
-            if(databasesResponse.approximateCount && databasesResponse.entities && databasesResponse.approximateCount > databasesResponse.entities?.length) {
-                treeData.value.push({
-                    key: 'root',
-                    title: 'Load more',
-                    isLeaf: true,
-                    click: () => loadMore(
-                        databasesResponse.searchParameters?.limit ?? 0 + databasesResponse.searchParameters?.offset ?? 0,
-                        5,
-                        'Connection',
-                        'root',
-                        connectionQualifiedName
-                    )
-                })
-            }
+
+            checkAndAddLoadMoreNode(databasesResponse, 'Connection', connectionQualifiedName, 'root')
         } else {
             // nothing
         }
@@ -134,26 +131,23 @@ const useTree = ({ emit, connectionQualifiedName, databaseQualifiedName, schemaQ
     const loadMore = async (offset: number, limit: number, service: 'Connection' | 'Database' | 'Schema' | 'Table', parentNodeId: string, parentQualifiedName: string) => {
         const getAssets = serviceMap[service];
 
-        const response = await getAssets(parentQualifiedName);
+        // treeData.value = treeData.value.map((node) => {
+        //     if( node.title === 'Load more') {
+        //         return {
+        //             ...node,
+        //             loading: true
+        //         }
+        //     }
+        //     return node
+        // })
+        const response = await getAssets(parentQualifiedName, offset);
         if(parentNodeId === 'root'){
             treeData.value = treeData.value.filter((node) => node.title !== 'Load more');
             response.entities?.forEach((entity) => {
-                treeData.value.push(returnTreeDataItemAttributes(entity))
+                treeData.value.push(returnTreeDataItemAttributes(entity));
+                nodeToParentKeyMap[entity.attributes.qualifiedName] = parentQualifiedName
             });
-            if(response.approximateCount && response.entities && response.approximateCount > response.entities?.length) {
-                treeData.value.push({
-                    key: 'root',
-                    title: 'Load more',
-                    isLeaf: true,
-                    click: () => loadMore(
-                        response.searchParameters?.limit ?? 0 + response.searchParameters?.offset ?? 0,
-                        5,
-                        service,
-                        'root',
-                        connectionQualifiedName
-                    )
-                })
-            }
+            checkAndAddLoadMoreNode(response, service, parentQualifiedName, parentNodeId)
         }
     }
 
@@ -170,23 +164,32 @@ const useTree = ({ emit, connectionQualifiedName, databaseQualifiedName, schemaQ
         }
 
         if (treeNode.dataRef.typeName === 'Database') {
-            // get schema for database - composable_useGetSchemaForDatabase
             const schemaResponse = await getSchemaForDatabase(treeNode.dataRef.qualifiedName);
+            
             schemaResponse.entities?.forEach((schema) => {
                 treeNode.dataRef.children?.push(returnTreeDataItemAttributes(schema))
+                nodeToParentKeyMap[schema.attributes.qualifiedName] = treeNode.dataRef.qualifiedName
             })
+            
             if(!schemaResponse.entities?.length) treeNode.dataRef.isLeaf = true;
+
         } else if (treeNode.dataRef.typeName === 'Schema') {
-            // get tables for schema - composable_useGetTablesForSchema
             const tableResponse = await getTablesForSchema(treeNode.dataRef.qualifiedName);
+
             tableResponse.entities?.forEach((table) => {
-                treeNode.dataRef.children?.push(returnTreeDataItemAttributes(table))
+                treeNode.dataRef.children?.push(returnTreeDataItemAttributes(table));
+                nodeToParentKeyMap[table.attributes.qualifiedName] = treeNode.dataRef.qualifiedName
             })
+
             if(!tableResponse.entities?.length) treeNode.dataRef.isLeaf = true;
+
         } else if ( treeNode.dataRef.typeName === 'Table') {
+
             const columnResponse = await getColumnsForTable(treeNode.dataRef.qualifiedName);
+
             columnResponse.entities?.forEach((column) => {
-                treeNode.dataRef.children?.push(returnTreeDataItemAttributes(column))
+                treeNode.dataRef.children?.push(returnTreeDataItemAttributes(column));
+                nodeToParentKeyMap[column.attributes.qualifiedName] = treeNode.dataRef.qualifiedName
             })
         }
         loadedKeys.value.push(treeNode.dataRef.key)
@@ -231,13 +234,33 @@ const useTree = ({ emit, connectionQualifiedName, databaseQualifiedName, schemaQ
 
     const returnTreeDataItemAttributes = (item:  Database | Schema | Table | Column) => {
         return {
-            key: item.guid,
+            key: item.attributes.qualifiedName,
             guid: item.guid,
             title: item.attributes.name,
             typeName: item.typeName,
             classifications: item.classifications,
             ...item.attributes,
             isLeaf: item.typeName === 'Column' ? true : false
+        }
+    }
+
+    const checkAndAddLoadMoreNode = (response: BasicSearchResponse<Database> | BasicSearchResponse<Schema> | BasicSearchResponse<Table> | BasicSearchResponse<Column>, serviceName:'Connection' | 'Database' | 'Schema' | 'Table' ,parentQualifiedName: string, key?: string) => {
+        if(response.approximateCount && response.entities && response.approximateCount > (response.searchParameters?.limit ?? 0) + (response?.searchParameters?.offset ?? 0)) {
+
+            treeData.value.push({
+                key:( key ?? parentQualifiedName) + '_Load_More',
+                title: 'Load more',
+                isLeaf: true,
+                click: () => loadMore(
+                    (response.searchParameters?.limit ?? 0) + (response?.searchParameters?.offset ?? 0),
+                    5,
+                    serviceName,
+                    key ?? parentQualifiedName,
+                    parentQualifiedName
+                ),
+                typeName: 'LoadMore',
+                qualifiedName: 'LoadMore'
+            })
         }
     }
 

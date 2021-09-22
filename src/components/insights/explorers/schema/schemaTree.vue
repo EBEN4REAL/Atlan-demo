@@ -19,7 +19,7 @@
                     <template
                         #title="item"
                     >
-                        <a-popover placement="right">
+                        <a-popover v-if="item.title !== 'Load more'" placement="right">
                             <div
                                 class="min-w-full"
                             >
@@ -39,10 +39,7 @@
                                                 :icon="item.typeName"
                                                 class="w-5 h-5 my-auto mr-1"
                                             ></AtlanIcon>
-                                            <span v-if="item.key === 'root'" @click="item.click()">
-                                                {{ item.title }}
-                                            </span>
-                                             <span v-else>{{ item.title }}</span>
+                                             {{ item.title }}
                                             </div>
                                     </div>
                                 </div>
@@ -95,6 +92,11 @@
                                     </div> -->
                             </template>
                         </a-popover>
+                        <div v-else class="w-full" @click="item.click()">
+                            <span>
+                                {{ item.title }}
+                            </span>
+                        </div>
                     </template>
                 </a-tree>
             </div>

@@ -24,8 +24,7 @@
                 !isLoading
             "
             class="inline-block w-full px-2 py-1 text-sm rounded-sm cursor-pointer  text-gray hover:bg-gray-100"
-            style="margin-bottom: -4px; margin-top: -4px"
-            :style="usingInInfo ? 'margin-left: -8px' : ''"
+            style="margin-bottom: -4px; margin-top: -4px; margin-left: -8px"
             @click="handleAddDescriptionClick"
         >
             {{ description }}
@@ -61,6 +60,7 @@
     } from 'vue'
     import updateDescription from '~/composables/asset/updateDescription'
     import { assetInterface } from '~/types/assets/asset.interface'
+    import { message } from 'ant-design-vue'
 
     export default defineComponent({
         props: {
@@ -76,7 +76,7 @@
         emits: ['update:selectedAsset'],
         setup(props, { emit }) {
             const { selectedAsset } = toRefs(props)
-            const { update, description, isLoading } =
+            const { update, description, isLoading, error } =
                 updateDescription(selectedAsset)
 
             const showEditableDescription = ref<boolean>(false)
@@ -86,6 +86,14 @@
                 if (description.value !== e.target.value) {
                     description.value = e.target.value
                     update()
+                    watch(error, () => {
+                        if (error && error.value) {
+                            isLoading.value = false
+                            message.error(
+                                'Unable to update description. Please try again later.'
+                            )
+                        }
+                    })
                 }
                 showEditableDescription.value = false
             }

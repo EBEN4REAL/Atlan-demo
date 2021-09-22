@@ -31,9 +31,6 @@
 
                         linesBetweenQueries: 1, // Defaults to 1
                     }),
-                    {
-                        html: true,
-                    }
                 )
 
                 return format(sql.value, {
@@ -58,5 +55,22 @@
 
     .sql-hl-keyword {
         @apply font-bold;
+        color: #f000f0;
+    }
+
+    .sql-hl-function {
+    color: #ff0000;
+    }
+    .sql-hl-number {
+    color: #282c34;
+    }
+    .sql-hl-string {
+    color: #282c34;
+    }
+    .sql-hl-special {
+    color: #56b6c2;
+    }
+    .sql-hl-bracket {
+    color: #56b6c2;
     }
 </style>

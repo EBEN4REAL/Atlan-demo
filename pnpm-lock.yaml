@@ -88,6 +88,8 @@ specifiers:
   prosemirror-state: 1.3.4
   rollup-plugin-visualizer: ^5.5.2
   splitpanes: ^3.0.6
+  sql-formatter: ^4.0.2
+  sql-highlight: ^4.0.1
   store: ^2.0.12
   stylelint: ^13.13.1
   stylelint-config-recommended: ^5.0.0
@@ -170,6 +172,8 @@ dependencies:
   prosemirror-model: 1.14.1
   prosemirror-state: 1.3.4
   splitpanes: 3.0.6
+  sql-formatter: 4.0.2
+  sql-highlight: 4.0.1
   store: 2.0.12
   swrv: 1.0.0-beta.8_vue@3.2.11
   tippy.js: 6.3.1
@@ -9068,6 +9072,17 @@ packages:
   /sprintf-js/1.0.3:
     resolution: {integrity: sha1-BOaSb2YolTVPPdAVIDYzuFcpfiw=}
     dev: true
+
+  /sql-formatter/4.0.2:
+    resolution: {integrity: sha512-R6u9GJRiXZLr/lDo8p56L+OyyN2QFJPCDnsyEOsbdIpsnDKL8gubYFo7lNR7Zx7hfdWT80SfkoVS0CMaF/DE2w==}
+    hasBin: true
+    dependencies:
+      argparse: 2.0.1
+    dev: false
+
+  /sql-highlight/4.0.1:
+    resolution: {integrity: sha512-r22/+8YpyILKeQrmOFyR6MWFS8u4Us7+wSUeK4EaSYyDJER2GvQn8X9AwClIpge1WWkIareAiLUcB87TSQdTEQ==}
+    dev: false
 
   /stable/0.1.8:
     resolution: {integrity: sha512-ji9qxRnOVfcuLDySj9qzhGSEFVobyt1kIOSkj1qZzYLzq7Tos/oUUWvotUPQLlrsidqsK6tBH89Bc9kL5zHA6w==}

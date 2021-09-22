@@ -56,7 +56,7 @@
                 </template>
                 <a-button
                     class="flex items-center border-0 shadow-none outline-none"
-                    ><atlan-icon icon="ShareNew" class="w-auto h-4 mr-1" />
+                    ><atlan-icon icon="Share" class="w-auto h-4 mr-1" />
                     <span class="text-sm">Share</span>
                 </a-button>
             </a-dropdown>

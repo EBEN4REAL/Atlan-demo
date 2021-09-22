@@ -29,14 +29,28 @@
             </div>
             <div class="flex flex-row items-center">
                 <a-button
-                    class="flex items-center justify-center p-2 mr-4 text-sm"
+                    class="flex items-center justify-center p-2 mr-2 text-sm"
                     @click="redirectToProfile(entity?.typeName, entity?.guid)"
                 >
                     <atlan-icon icon="OpenTermProfile" class="w-auto" />
                 </a-button>
-                <a-button class="flex items-center p-2"
-                    ><atlan-icon icon="Share" class="w-auto" />
-                </a-button>
+                <a-dropdown>
+                    <template #overlay>
+                        <a-menu @click="handleMenuClick">
+                            <a-menu-item key="1" @click="handleCopyProfileLink">
+                                Copy link
+                            </a-menu-item>
+                            <!-- <a-menu-item key="2">
+                            Share via other integration
+                        </a-menu-item>
+                        <a-menu-item key="3"> Share via slack </a-menu-item> -->
+                        </a-menu>
+                    </template>
+
+                    <a-button class="flex items-center p-2"
+                        ><atlan-icon icon="Share" class="w-auto" />
+                    </a-button>
+                </a-dropdown>
             </div>
         </div>
 
@@ -203,6 +217,8 @@
     import { Components } from '~/api/atlas/client'
 
     //  utils
+    import assetTypeLabel from '@/glossary/constants/assetTypeLabel'
+    import { copyToClipboard } from '~/utils/clipboard'
 
     import {
         Category,
@@ -276,6 +292,20 @@
                     })
                 context.emit('updateAsset', selectedAsset)
             }
+            const handleCopyProfileLink = () => {
+                const baseUrl = window.location.origin
+                if (props.entity?.typeName !== 'AtlasGlossary') {
+                    const text = `${baseUrl}/glossary/${
+                        assetTypeLabel[props.entity?.typeName]
+                    }/${props?.entity?.guid}`
+                    copyToClipboard(text)
+                } else {
+                    const text = `${baseUrl}/${
+                        assetTypeLabel[props.entity?.typeName]
+                    }/${props?.entity?.guid}`
+                    copyToClipboard(text)
+                }
+            }
 
             return {
                 shortDescription,
@@ -286,6 +316,7 @@
                 activeKey,
                 tabActiveKey,
                 updateEntityAndTree,
+                handleCopyProfileLink,
             }
         },
     })

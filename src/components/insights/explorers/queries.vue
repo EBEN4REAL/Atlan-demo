@@ -40,20 +40,20 @@
                 {
                     id: '1x',
                     label: ' Saved Query 1',
-                    editor: 'select * from "WEB_SALES" limit 100',
+                    editor: 'select * from "INSTACART_ALCOHOL_ORDER_TIME" limit 10',
                     result: 'Saved Query 1',
                 },
 
                 {
                     id: '2x',
                     label: 'Saved Query 2',
-                    editor: 'select * from "WEB_SALES" limit 100',
+                    editor: 'select * from "INSTACART_ALCOHOL_ORDER_TIME" limit 10',
                     result: 'Saved Query 2',
                 },
                 {
                     id: '3x',
                     label: 'Saved Query 3',
-                    editor: 'select * from "WEB_SALES" limit 100',
+                    editor: 'select * from "INSTACART_ALCOHOL_ORDER_TIME" limit 10',
                     result: 'Saved Query 3',
                 },
             ]

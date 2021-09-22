@@ -8,9 +8,16 @@ export function useLocalStorageSync() {
     function syncInlineTabsInLocalStorage(
         tabsArray: activeInlineTabInterface[]
     ) {
+        // for not saving the querying data into the local storage
+        const alteredTabsArray = tabsArray.map((tab) => {
+            const t = { ...tab }
+            t.playground.editor.dataList = []
+            t.playground.editor.columnList = []
+            return t
+        })
         localStorage.setItem(
             InsightsLocalStorageKeys.inlinetabs,
-            JSON.stringify(tabsArray)
+            JSON.stringify(alteredTabsArray)
         )
     }
     function syncActiveInlineTabKeyInLocalStorage(activeInlineTabKey: string) {

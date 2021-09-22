@@ -43,7 +43,6 @@
 <script lang="ts">
     import { defineComponent, Ref, inject, ref, watch } from 'vue'
     import { useAssetSidebar } from '~/components/insights/assetSidebar/composables/useAssetSidebar'
-    import Connector from '@common/facets/connector.vue'
     import SchemaTree from './schemaTree.vue'
     
     import useSchemaExplorerTree from './composables/useSchemaExplorerTree'
@@ -52,6 +51,7 @@
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
     import { tablesData } from './tablesDemoData'
     import { connectorsWidgetInterface } from '~/types/insights/connectorWidget.interface'
+    import Connector from '~/components/insights/common/connector/connector.vue'
     import { useConnector } from '~/components/insights/common/composables/useConnector'
 
     export default defineComponent({
@@ -129,6 +129,11 @@
                 connectorsData.value.connector = payload.connector
                 connectorsData.value.connection = payload.connection
             }
+
+            const connectionQualifiedName = ref(connectorsData.value.connection)
+            const databaseQualifiedName = ref(connectorsData.value.databaseQualifiedName)
+            const schemaQualifiedName = ref(connectorsData.value.schemaQualifiedName)
+
             const {
                 treeData,
                 loadedKeys,
@@ -140,9 +145,12 @@
                 selectNode,
             } = useSchemaExplorerTree({
                 emit,
-                connectionQualifiedName: ref('default/snowflake/vqaqufvr-i'),
+                // connectionQualifiedName: ref('default/snowflake/vqaqufvr-i'),
                 // databaseQualifiedName: ref('default/snowflake/vqaqufvr-i/ATLAN_SAMPLE_DATA'),
                 // schemaQualifiedName: ref('default/snowflake/vqaqufvr-i/ATLAN_SAMPLE_DATA/DBT_DEV')
+                connectionQualifiedName,
+                databaseQualifiedName,
+                schemaQualifiedName,
             });
 
             /* Watchers for updating the connectors when activeinlab change */
@@ -172,6 +180,11 @@
                 }
             })
 
+            watch(connectorsData, (newConnectorsData) => {
+                connectionQualifiedName.value = !newConnectorsData.connection?.endsWith('undefined') ? newConnectorsData.connection : undefined
+                databaseQualifiedName.value = !newConnectorsData.databaseQualifiedName?.endsWith('undefined') ? newConnectorsData.databaseQualifiedName : undefined
+                schemaQualifiedName.value = !newConnectorsData.schemaQualifiedName?.endsWith('undefined') ? newConnectorsData.schemaQualifiedName : undefined
+            })
             return {
                 connectorsData,
                 setConnector,

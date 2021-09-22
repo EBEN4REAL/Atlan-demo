@@ -96,35 +96,63 @@ const useTree = ({ emit, connectionQualifiedName, databaseQualifiedName, schemaQ
      */
     const initTreeData = async (connectionQualifiedName?: string, databaseQualifiedName?: string, schemaQualifiedName?: string) => {
         // TODO: optimisation - if new selcted name is already expanded, use the same child instead of reinitializing
-        treeData.value = [];
-
+        // treeData.value = [];
         if(schemaQualifiedName) {
-            const tableResponse = await getTablesForSchema(schemaQualifiedName);
-            tableResponse.entities?.forEach((table) => {
-                treeData.value.push(returnTreeDataItemAttributes(table));
-                nodeToParentKeyMap[table.attributes.qualifiedName] = 'root'
-            })
+            const found = loadedKeys.value.find((qualifiedName) => qualifiedName === schemaQualifiedName);
+            const node = treeData.value.find((node) => node.qualifiedName === schemaQualifiedName);
+            
+            if(found && node) {
+                if(node && node.children) treeData.value = node.children;
+            } else {
+                 treeData.value = [];
+                 loadedKeys.value = []
 
-            checkAndAddLoadMoreNode(tableResponse, 'Schema', schemaQualifiedName, 'root')
+                const tableResponse = await getTablesForSchema(schemaQualifiedName);
+                tableResponse.entities?.forEach((table) => {
+                    treeData.value.push(returnTreeDataItemAttributes(table));
+                    nodeToParentKeyMap[table.attributes.qualifiedName] = 'root'
+                })
+    
+                checkAndAddLoadMoreNode(tableResponse, 'Schema', schemaQualifiedName, 'root')
+            }
         } else if (databaseQualifiedName) {
-            const schemaResponse = await getSchemaForDatabase(databaseQualifiedName);
-            schemaResponse.entities?.forEach((schema) => {
-                treeData.value.push(returnTreeDataItemAttributes(schema));
-                nodeToParentKeyMap[schema.attributes.qualifiedName] = 'root'
-            })
+            const found = loadedKeys.value.find((qualifiedName) => qualifiedName === databaseQualifiedName);
+            const node = treeData.value.find((node) => node.qualifiedName === databaseQualifiedName);
+            
+            if(found && node) {
+                if(node && node.children) treeData.value = node.children;
+            } else {
+                treeData.value = [];
+                loadedKeys.value = []
 
-            checkAndAddLoadMoreNode(schemaResponse, 'Database', databaseQualifiedName, 'root')
+                const schemaResponse = await getSchemaForDatabase(databaseQualifiedName);
+                schemaResponse.entities?.forEach((schema) => {
+                    treeData.value.push(returnTreeDataItemAttributes(schema));
+                    nodeToParentKeyMap[schema.attributes.qualifiedName] = 'root'
+                })
+
+                checkAndAddLoadMoreNode(schemaResponse, 'Database', databaseQualifiedName, 'root')
+            }
         } else if (connectionQualifiedName) {
-            const databasesResponse = await getDatabaseForConnection(connectionQualifiedName, 0)
-            databasesResponse.entities?.forEach((database) => {
-                treeData.value.push(returnTreeDataItemAttributes(database));
-                nodeToParentKeyMap[database.attributes.qualifiedName] = 'root'
-            })
+            const found = loadedKeys.value.find((qualifiedName) => qualifiedName === connectionQualifiedName);
+            const node = treeData.value.find((node) => node.qualifiedName === connectionQualifiedName);
+            
+            if(found && node) {
+                if(node && node.children) treeData.value = node.children;
+            } else {
+                treeData.value = []
+                loadedKeys.value = [];
 
-            checkAndAddLoadMoreNode(databasesResponse, 'Connection', connectionQualifiedName, 'root')
-        } else {
-            // nothing
-        }
+                const databasesResponse = await getDatabaseForConnection(connectionQualifiedName, 0)
+                databasesResponse.entities?.forEach((database) => {
+                    treeData.value.push(returnTreeDataItemAttributes(database));
+                    nodeToParentKeyMap[database.attributes.qualifiedName] = 'root'
+                })
+
+                checkAndAddLoadMoreNode(databasesResponse, 'Connection', connectionQualifiedName, 'root')
+            }
+        } 
+
         isInitingTree.value = false;
     }
 
@@ -359,8 +387,9 @@ const useTree = ({ emit, connectionQualifiedName, databaseQualifiedName, schemaQ
     })
 
     watch([connectionQualifiedName, databaseQualifiedName, schemaQualifiedName], ([c, d, s]) => {
+        console.log('changed bruh', c, d, s)
         isInitingTree.value = true;
-        initTreeData(c?.value, d?.value, s?.value)
+        initTreeData(c, d, s)
     })
 
     return {

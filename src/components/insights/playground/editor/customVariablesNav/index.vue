@@ -196,8 +196,6 @@
                                     .variables
                             )
                         )
-
-                        console.log(sqlVariables.value, 'watch')
                     }
                 },
                 {
@@ -230,11 +228,8 @@
                 const text = `${currText} {{variable${len}}}`
                 const activeInlineTabCopy: activeInlineTabInterface =
                     JSON.parse(JSON.stringify(toRaw(activeInlineTab.value)))
-                activeInlineTabCopy.playground.editor.variables = JSON.parse(
-                    JSON.stringify(
-                        toRaw(activeInlineTab.value).playground.editor.variables
-                    )
-                )
+                activeInlineTabCopy.playground.editor.variables =
+                    activeInlineTab.value.playground.editor.variables
                 activeInlineTabCopy.playground.editor.text = text
                 modifyActiveInlineTabEditor(activeInlineTabCopy, tabs)
                 modifyEditorContent(editorInstance, monacoInstance, text)
@@ -275,24 +270,9 @@
                 closeDropdown()
             }
 
-            const replaceStringUsingRegex = (str, regex, updatedName) => {
-                let updatedString = str.replace(regex, `{{${updatedName}}}`)
-                modifyEditorContent(
-                    editorInstance,
-                    monacoInstance,
-                    updatedString
-                )
-            }
-
             const onSaveVariable = (variable: CustomVaribaleInterface) => {
                 const index = sqlVariables.value.findIndex(
                     (v) => v.key === variable.key
-                )
-                console.log(
-                    index,
-                    currVariable,
-                    variable?.name,
-                    activeInlineTab.value.playground.editor.variables
                 )
                 const oldVariableName = currVariable.value.name
                 let reg = new RegExp(`{{${oldVariableName}}}`, 'g')
@@ -302,8 +282,16 @@
                 activeInlineTabCopy.playground.editor.variables = toRaw(
                     sqlVariables.value
                 )
-
-                replaceStringUsingRegex(editorQuery, reg, variable.name)
+                let updatedString = editorQuery.replace(
+                    reg,
+                    `{{${variable.name}}}`
+                )
+                activeInlineTabCopy.playground.editor.text = updatedString
+                modifyEditorContent(
+                    editorInstance,
+                    monacoInstance,
+                    updatedString
+                )
                 modifyActiveInlineTabEditor(activeInlineTabCopy, tabs)
                 closeDropdown()
             }

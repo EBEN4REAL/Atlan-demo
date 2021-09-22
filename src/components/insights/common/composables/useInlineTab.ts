@@ -32,7 +32,6 @@ export function useInlineTab() {
         // checking if localstorage already have active tab key
         const localStorageActiveInlineKey =
             getActiveInlineTabKeyFromLocalStorage()
-        console.log(localStorageActiveInlineKey, 'localStorageKey')
         if (localStorageActiveInlineKey !== undefined) {
             const activeTab = tabsArray.value.find(
                 (tab) => tab.key === localStorageActiveInlineKey

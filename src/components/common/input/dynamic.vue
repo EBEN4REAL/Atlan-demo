@@ -17,7 +17,7 @@
             :options="asyncData"
             :loading="loading"
             :placeholder="placeholder"
-            :mode="multiple ? 'multiple' : ''"
+            v-bind="{ ...(multiple ? { mode: 'multiple' } : {}) }"
             @change="handleChange"
         />
         <a-input-number

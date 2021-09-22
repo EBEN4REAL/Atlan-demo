@@ -1,5 +1,5 @@
 <template>
-    <a-form ref="formRef">
+    <a-form :model="testModal" ref="formRef" :rules="getRules(formModel)">
         <a-button @click="validate">Validate</a-button>
 
         <span class="grid grid-cols-2 gap-x-8">
@@ -29,7 +29,7 @@
                             >
                             <a-form-item :name="c.id">
                                 <DynamicInput
-                                    v-model="c.value"
+                                    v-model="testModal[c.id]"
                                     :data-type="c.type"
                                     :placeholder="c.placeholder"
                                     :default-value="c.default"
@@ -47,7 +47,7 @@
                 <div v-else-if="f.type === 'toggle'" class="mb-5">
                     <div class="my-2">{{ f.label }}</div>
                     <CustomRadioButton
-                        v-model:data="f.value"
+                        v-model:data="testModal[f.id]"
                         class="pb-4 border-b"
                         :list="f.options"
                     >
@@ -60,7 +60,7 @@
                     >
                     <a-form-item :name="f.id">
                         <DynamicInput
-                            v-model="f.value"
+                            v-model="testModal[f.id]"
                             :data-type="f.type"
                             :placeholder="f.placeholder"
                             :default-value="f.default"
@@ -92,22 +92,18 @@
         setup() {
             const formRef = ref()
 
-            const formSchema = ref({})
             const {
                 processedSchema: formModel,
                 getGridClass,
                 finalConfigObject,
                 getRules,
                 validate,
+                testModal,
                 isRequiredField,
             } = useFormGenerator(dummy2, formRef)
 
-            formSchema.value = JSON.parse(
-                JSON.stringify(finalConfigObject.value)
-            )
-
             return {
-                formSchema,
+                testModal,
                 getRules,
                 formRef,
                 formModel,

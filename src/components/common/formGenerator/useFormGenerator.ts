@@ -1,15 +1,47 @@
+/* eslint-disable no-prototype-builtins */
 import { ref, Ref, watch, computed } from 'vue'
 
 
 
 export default function useFormGenerator(formConfig, formRef) {
     const processedSchema = ref([])
-    const otherTypes = ['object', 'array']
+    const privateTypes = ['object', 'array', 'group']
 
-    //* expands fields of type group <> flattens it
-    const expandGroups = (config) => {
+    const preProcessSchema = (s: object) => {
+        const schema = { ...s }
+        const falseDefault = ['exclude', 'allowCustom', 'isMultivalued', 'stringified'];
+        if (schema.hasOwnProperty('default'))
+            schema.value = schema.default
+        else schema.default = null
+        if (!schema.hasOwnProperty('type'))
+            schema.exclude = 'text'
+        if (!schema.hasOwnProperty('isVisible'))
+            schema.isVisible = true
+        if (!schema.hasOwnProperty('rules'))
+            schema.rules = []
+
+        falseDefault.forEach(d => {
+            if (!s.hasOwnProperty(d))
+                schema[d] = false
+        })
+
+        if (schema.rules.length) {
+            schema.rules.map(r => {
+                const rCopy = r;
+                if (!rCopy.hasOwnProperty('enaled')) {
+                    rCopy.enabled = true;
+                    rCopy.typeName = getPrivateTypeName(schema.type);
+                }
+                return rCopy;
+            })
+        }
+
+        return schema;
+    }
+
+    const expandGroups = (fModal) => {
         let fields = []
-        config.forEach((f) => {
+        fModal.forEach((f) => {
             if (f.type === 'group') {
                 fields = [...fields, ...f.children]
             } else {
@@ -19,14 +51,27 @@ export default function useFormGenerator(formConfig, formRef) {
         return fields
     }
 
+
+    const getPrivateTypeName = (t) => {
+        const typeMap = {
+            number: 'integer',
+            text: 'string',
+            textArea: 'string',
+            pattern: 'regexp',
+            password: 'string',
+            dateTime: 'date',
+        }
+        return typeMap[t] || t
+    }
+
     const getValueFromSchemaData = (id) =>
         expandGroups(processedSchema.value).find(
             (s) => s.id === id
         ).value
 
     // improve this to go deeper than 1 level
-    //* expands fields of type object, array <> flattens it
-    const expandOthers = (schema) => {
+    //* expands fields of type object schema, array <> flattens it
+    const expandOther = (schema) => {
         let children = []
         const parent = schema.id
         const parentType = schema.type
@@ -38,50 +83,61 @@ export default function useFormGenerator(formConfig, formRef) {
                     ...children,
                     {
                         ...s,
-                        isVisible: true,
                         children: [
                             ...s.children.map((a) => ({
                                 ...a,
                                 parent,
                                 parentType,
-                                ...(a.default != null
-                                    ? { value: a.default }
-                                    : {}),
                             })),
                         ],
                     },
                 ]
             } else {
                 children.push(
-                    s.map({
-                        ...s,
-                        ...(s.default != null
-                            ? { value: s.default }
-                            : {}),
-                    })
+                    {
+                        ...s, parent, parentType,
+                    }
                 )
             }
         })
         return children
     }
-    // ? things to do here, set default values, set default rules values,
-    // TODO form the model instead? for rules
-    // TODO or Custom rules handling
 
-    const testModal = {};
+
+    const testModal = ref({});
 
     formConfig.forEach((f) => {
 
-
-        if (!otherTypes.includes(f.type)) {
-            processedSchema.value.push({
-                ...f,
-                ...(f.default != null ? { value: f.default } : {}),
+        if (!privateTypes.includes(f.type)) {
+            const o = preProcessSchema(f)
+            processedSchema.value.push(o)
+            testModal.value[o.id] = o.value
+        } else if (f.type === 'group') {
+            const pf = { ...f, children: f.children.map(f => preProcessSchema(f)) }
+            processedSchema.value.push(pf)
+            f.children.forEach(c => {
+                const t = preProcessSchema(c)
+                testModal.value[t.id] = t.value
             })
         } else {
-            processedSchema.value.push(...expandOthers(f))
+            expandOther(f).forEach(o => {
+                if (o.type === 'group') {
+                    const po = { ...o, children: o.children.map(c => preProcessSchema(c)) }
+                    processedSchema.value.push(po)
+                    po.children.forEach(c => {
+                        testModal.value[c.id] = c.value
+                    })
+                } else {
+                    const x = preProcessSchema(o)
+                    processedSchema.value.push(x)
+                    testModal.value[x.id] = x.value
+                }
+            })
         }
     })
+
+
+
 
     const generateSring = (s) => {
         if (!processedSchema.value.length) return s
@@ -99,7 +155,7 @@ export default function useFormGenerator(formConfig, formRef) {
         return finalString
     }
 
-    // const fc = ref();
+    // FIXME turn this into fn, use testModal, check exclude, add path, 
     const finalConfigObject = computed(() => {
         const temp = {}
         expandGroups(processedSchema.value).forEach((s) => {
@@ -132,9 +188,10 @@ export default function useFormGenerator(formConfig, formRef) {
     // rules
     //* get rule object based on antDesign rules guide
     const getRule = (raw) => {
+        console.log({ raw })
         const r = {};
         // eslint-disable-next-line no-prototype-builtins
-        if (raw.hasOwnProperty('enabled') && !raw.enabled) return false;
+        if (!raw.enabled) return false;
         r.message = raw.errorMessage || '';
         r.trigger = 'change';
         if (raw.type === 'required') {
@@ -142,24 +199,21 @@ export default function useFormGenerator(formConfig, formRef) {
         } else if (raw.type === 'range') {
             r.min = raw.min
             r.max = raw.max
-        } else if (type === 'pattern') {
+        } else if (type === 'regexp') {
             r.pattern = raw.regex
         }
+        r.type = raw.typeName
         return r;
     }
 
     const getRules = (formModel) => {
         const rulesObj = {};
         expandGroups(formModel).forEach(f => {
-            if (f?.rules?.length) {
+            if (f.rules.length) {
                 rulesObj[f.id] = []
                 f.rules.forEach(r => {
                     const rule = getRule(r)
-
-
                     if (rule) {
-                        if (f.type === 'number')
-                            rule.type = 'integer'
                         rulesObj[f.id].push(rule)
                     }
                 })
@@ -173,9 +227,12 @@ export default function useFormGenerator(formConfig, formRef) {
     const handleConditional = () => {
         processedSchema.value.forEach((f, x) => {
             if (f.conditional) {
-                const curVal = getValueFromSchemaData(
-                    f.conditional.refID
-                )
+                // const curVal = getValueFromSchemaData(
+                //     f.conditional.refID
+                // )
+
+                const curVal = testModal.value[f.conditional.refID]
+
                 const reqVal = f.conditional.refValue
                 processedSchema.value[x].isVisible =
                     curVal === reqVal
@@ -203,7 +260,7 @@ export default function useFormGenerator(formConfig, formRef) {
     const isRequiredField = (f) => f?.rules?.find(r => r.type === 'required')?.enabled ?? false
 
     watch(
-        processedSchema.value,
+        testModal.value,
         () => {
             handleConditional()
         },
@@ -214,6 +271,7 @@ export default function useFormGenerator(formConfig, formRef) {
     return {
         validate,
         getRules,
+        testModal,
         getGridClass,
         handleConditional,
         processedSchema,

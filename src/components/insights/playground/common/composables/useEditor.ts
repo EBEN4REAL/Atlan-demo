@@ -1,6 +1,7 @@
 import { Ref } from 'vue'
 import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
 import { useInlineTab } from '~/components/insights/common/composables/useInlineTab'
+import { CustomVaribaleInterface } from '~/types/insights/customVariable.interface'
 
 export function useEditor(
     tabs?: Ref<activeInlineTabInterface[]>,
@@ -17,6 +18,16 @@ export function useEditor(
             modifyActiveInlineTabEditor(activeInlineTabCopy, tabs)
         }
     }
+
+    function modifyEditorContent(
+        editorInstance: any,
+        monacoInstance: any,
+        content: string
+    ) {
+        const model = monacoInstance?.editor?.createModel(content, 'atlansql')
+        editorInstance?.setModel(null)
+        editorInstance?.setModel(model)
+    }
     function moustacheInterpolator(query, variables) {
         query.match(/{{\s*[\w\.]+\s*}}/g).map((x) => {
             query = query.replace(x, (a) => {
@@ -30,8 +41,24 @@ export function useEditor(
         return query
     }
 
+    function getParsedQuery(
+        variables: CustomVaribaleInterface[],
+        query: string
+    ) {
+        if (variables.length > 0) {
+            const parseVariables: { [key: string]: string } = {}
+            variables.forEach((v) => {
+                parseVariables[v.name] = v.value
+            })
+            return moustacheInterpolator(query, parseVariables)
+        }
+
+        return query
+    }
+
     return {
+        modifyEditorContent,
         onEditorContentChange,
-        moustacheInterpolator,
+        getParsedQuery,
     }
 }

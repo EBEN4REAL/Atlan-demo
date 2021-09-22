@@ -9,19 +9,22 @@
                     <span class="flex items-center justify-center">
                         <fa icon="fal plus" class="" />
                     </span>
-                    <p class="m-0 ml-2" v-if="sqlVariables.length < 1">
+                    <p
+                        class="m-0 ml-2"
+                        v-if="sqlVariables && sqlVariables?.length == 0"
+                    >
                         Add Variable
                     </p>
                 </a-button>
             </div>
             <div
                 v-for="variable in sqlVariables"
-                :key="variable.formState.key"
+                :key="variable.key"
                 class="flex mx-1 bg-white border rounded variable-wrapper"
             >
                 <div class="flex items-center px-2">
                     <a-dropdown
-                        v-model:visible="variable.dropDownStatus"
+                        :visible="customVariableOpenKey === variable.key"
                         :trigger="['click']"
                     >
                         <span
@@ -41,22 +44,18 @@
                                     </span>
                                     <a-form
                                         layout="vertical"
-                                        :model="variable.formState"
+                                        :model="variable"
                                         ref="formRef"
                                     >
                                         <a-form-item label="Name" name="name">
                                             <a-input
-                                                v-model:value="
-                                                    variable.formState.name
-                                                "
+                                                v-model:value="variable.name"
                                                 placeholder="new_variable"
                                             />
                                         </a-form-item>
                                         <a-form-item label="Type" name="type">
                                             <a-select
-                                                v-model:value="
-                                                    variable.formState.type
-                                                "
+                                                v-model:value="variable.type"
                                             >
                                                 <a-select-option value="string"
                                                     >STRING</a-select-option
@@ -100,9 +99,7 @@
                                             name="value"
                                         >
                                             <a-input
-                                                v-model:value="
-                                                    variable.formState.value
-                                                "
+                                                v-model:value="variable.value"
                                                 placeholder=""
                                             />
                                         </a-form-item>
@@ -110,14 +107,16 @@
                                     <div class="flex justify-between">
                                         <a-button
                                             class="flex items-center justify-between mr-2 "
-                                            @click="closeDropdown"
+                                            @click="() => cancelEdit(variable)"
                                         >
                                             Cancel
                                         </a-button>
                                         <a-button
                                             type="primary"
                                             class="flex items-center justify-between ml-2 "
-                                            @click="onSaveVariable"
+                                            @click="
+                                                () => onSaveVariable(variable)
+                                            "
                                         >
                                             Save
                                         </a-button>
@@ -127,7 +126,7 @@
                         </template>
                     </a-dropdown>
                     <p class="mb-0 text-gray-500">
-                        {{ variable.formState.name }}
+                        {{ variable.name }}
                     </p>
                 </div>
                 <div
@@ -135,11 +134,9 @@
                 >
                     <p
                         class="mb-0 truncate variable-value"
-                        :class="
-                            variable.formState.value === '' ? 'mr-4' : 'mr-0'
-                        "
+                        :class="variable.value === '' ? 'mr-4' : 'mr-0'"
                     >
-                        {{ variable.formState.value }}
+                        {{ variable.value }}
                     </p>
                 </div>
             </div>
@@ -148,10 +145,21 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, Ref, inject, ref, toRaw } from 'vue'
+    import {
+        defineComponent,
+        Ref,
+        inject,
+        ref,
+        toRaw,
+        ComputedRef,
+        watch,
+        computed,
+    } from 'vue'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
     import { useEditor } from '~/components/insights/playground/common/composables/useEditor'
     import { editor } from 'monaco-editor'
+    import { CustomVaribaleInterface } from '~/types/insights/customVariable.interface'
+    import { useInlineTab } from '~/components/insights/common/composables/useInlineTab'
 
     export default defineComponent({
         components: {},
@@ -159,7 +167,10 @@
         setup(props) {
             const activeInlineTab = inject(
                 'activeInlineTab'
-            ) as Ref<activeInlineTabInterface>
+            ) as ComputedRef<activeInlineTabInterface>
+            const activeInlineTabKey = inject(
+                'activeInlineTabKey'
+            ) as Ref<string>
             const tabs = inject('inlineTabs') as Ref<activeInlineTabInterface[]>
             const editorInstanceRef = inject(
                 'editorInstance'
@@ -168,166 +179,138 @@
             const editorInstance = toRaw(editorInstanceRef.value)
             const monacoInstance = toRaw(monacoInstanceRef.value)
 
-            const { onEditorContentChange } = useEditor(tabs, activeInlineTab)
+            const { modifyEditorContent } = useEditor(tabs, activeInlineTab)
+            const { modifyActiveInlineTabEditor } = useInlineTab()
 
-            const currentSelectedVariable = ref(null)
-            const sqlVariables = ref([
-                // {
-                //     formState: {
-                //         name: 'sales',
-                //         key: 'sales',
-                //         type: 'string',
-                //         value: 'WEB_SALES',
-                //     },
-                //     dropDownStatus: false,
-                // },
-                // {
-                //   formState: {
-                //     name: "quantity",
-                //     key: "quantity",
-                //     type: "number",
-                //     value: "100",
-                //   },
-                //   dropDownStatus: false,
-                // },
-            ])
+            const currVariable: Ref<CustomVaribaleInterface | undefined> = ref()
+            const customVariableOpenKey: Ref<string | undefined> =
+                ref(undefined)
+            const sqlVariables: Ref<CustomVaribaleInterface[]> = ref()
+            watch(
+                [activeInlineTabKey],
+                () => {
+                    if (activeInlineTabKey.value) {
+                        sqlVariables.value = JSON.parse(
+                            JSON.stringify(
+                                toRaw(activeInlineTab.value).playground.editor
+                                    .variables
+                            )
+                        )
 
-            const addVariable = () => {
-                const currentVariablesLength = sqlVariables.value.length
-                const samlple_add_variable_obj = {
-                    formState: {
-                        name: `variable${currentVariablesLength}`,
-                        key: `variable${currentVariablesLength}`,
-                        type: 'string',
-                        value: '',
-                    },
-                    dropDownStatus: false,
+                        console.log(sqlVariables.value, 'watch')
+                    }
+                },
+                {
+                    immediate: true,
                 }
-                sqlVariables.value.push(samlple_add_variable_obj)
-                const lineCount = editorInstance?.getModel()?.getLineCount()
-                const lastLineLength = editorInstance
-                    ?.getModel()
-                    ?.getLineMaxColumn(lineCount)
-                console.log(lineCount, lastLineLength, 'inside add')
-
-                // const range = new monacoInstance.value.Range(
-                //     lineCount,
-                //     lastLineLength,
-                //     lineCount,
-                //     lastLineLength
-                // )
-                // console.log(lineCount, editorInstance.trigger)
-
-                // editorInstance &&
-                //     editorInstance.executeEdits('', [
-                //         {
-                //             range: range,
-                //             text: ` {{variable${currentVariablesLength}}}`,
-                //         },
-                //     ])
-                // console.log(lastLineLength)
-                const text = editorInstance?.getValue()
-                const model = monacoInstance?.editor?.createModel(
-                    `${text} {{variable${currentVariablesLength}}}`,
-                    'atlansql'
-                )
-                editorInstance?.setModel(null)
-                editorInstance?.setModel(model)
-                // editorInstance.trigger('keyboard', 'type', {
-                //     text: ` {{variable${currentVariablesLength}}}`,
-                // })
-            }
-
-            const openDropdown = (variable: any) => {
-                const { name, key, type, value } = toRaw(variable.formState)
-                currentSelectedVariable.value = { name, key, type, value }
-                let currentSelectedVaribleIndex = sqlVariables.value.findIndex(
-                    (variable) =>
-                        variable.formState.key ===
-                        currentSelectedVariable.value.key
-                )
-                sqlVariables.value[currentSelectedVaribleIndex].dropDownStatus =
-                    true
-                console.log(sqlVariables.value[currentSelectedVaribleIndex])
-            }
-            const deleteVariableFromEditor = (str, regex, updatedName) => {
-                let updatedString = str.replace(regex, `${updatedName}`)
-                console.log(updatedString, updatedName, regex)
-                editorInstance.getModel().setValue(updatedString)
-            }
-
-            const deleteVariable = (variable) => {
-                let currentSelectedVaribleIndex = sqlVariables.value.findIndex(
-                    (variablex) =>
-                        variablex.formState.key === variable.formState.key
-                )
-                variable.dropDownStatus = false
-                const editorQuery = editorInstance.getValue()
-                console.log(variable)
-                const oldVariableName = variable.formState.name
-                let reg = new RegExp(`{{${oldVariableName}}}`, 'g')
-                deleteVariableFromEditor(editorQuery, reg, '')
-                sqlVariables.value.splice(currentSelectedVaribleIndex, 1)
-            }
-
+            )
             const closeDropdown = () => {
-                let currentSelectedVaribleIndex = sqlVariables.value.findIndex(
-                    (variable) =>
-                        variable.formState.key ===
-                        currentSelectedVariable.value.key
+                customVariableOpenKey.value = undefined
+                currVariable.value = undefined
+            }
+            const cancelEdit = (variable: CustomVaribaleInterface) => {
+                customVariableOpenKey.value = undefined
+                currVariable.value = undefined
+            }
+            const addVariable = () => {
+                const len = sqlVariables.value.length
+                const key = String(new Date().getTime())
+                const new_variable: CustomVaribaleInterface = {
+                    name: `variable${len}`,
+                    key,
+                    type: 'string',
+                    value: '',
+                }
+                sqlVariables.value.push(new_variable)
+                const currText = editorInstance?.getValue()
+                const text = `${currText} {{variable${len}}}`
+                const activeInlineTabCopy: activeInlineTabInterface =
+                    JSON.parse(JSON.stringify(toRaw(activeInlineTab.value)))
+                activeInlineTabCopy.playground.editor.variables = JSON.parse(
+                    JSON.stringify(
+                        toRaw(activeInlineTab.value).playground.editor.variables
+                    )
                 )
-                sqlVariables.value[currentSelectedVaribleIndex].formState.name =
-                    currentSelectedVariable.value.name
-                sqlVariables.value[currentSelectedVaribleIndex].dropDownStatus =
-                    false
+                activeInlineTabCopy.playground.editor.text = text
+                console.log(activeInlineTabCopy, 'copy')
+                modifyActiveInlineTabEditor(activeInlineTabCopy, tabs)
+                modifyEditorContent(editorInstance, monacoInstance, text)
+                closeDropdown()
+            }
+
+            const openDropdown = (variable: CustomVaribaleInterface) => {
+                customVariableOpenKey.value = variable.key
+                currVariable.value = { ...variable }
+            }
+
+            const deleteVariableFromEditor = (str, regex, updatedName, key) => {
+                let updatedString = str.replace(regex, `${updatedName}`)
+                const activeInlineTabCopy: activeInlineTabInterface =
+                    JSON.parse(JSON.stringify(toRaw(activeInlineTab.value)))
+                activeInlineTabCopy.playground.editor.text = updatedString
+                const variables =
+                    activeInlineTabCopy.playground.editor.variables.filter(
+                        (x) => x.key !== key
+                    )
+                sqlVariables.value = variables
+                activeInlineTabCopy.playground.editor.variables = variables
+                activeInlineTabCopy.playground.editor.text = updatedString
+                modifyEditorContent(
+                    editorInstance,
+                    monacoInstance,
+                    updatedString
+                )
+                modifyActiveInlineTabEditor(activeInlineTabCopy, tabs)
+            }
+
+            const deleteVariable = (variable: CustomVaribaleInterface) => {
+                const editorQuery = editorInstance.getValue()
+                const oldVariableName = variable.name
+                const key: string = variable.key
+                let reg = new RegExp(`{{${oldVariableName}}}`, 'g')
+                deleteVariableFromEditor(editorQuery, reg, '', key)
+                closeDropdown()
             }
 
             const replaceStringUsingRegex = (str, regex, updatedName) => {
                 let updatedString = str.replace(regex, `{{${updatedName}}}`)
-                console.log(updatedString, updatedName, regex)
-                editorInstance.getModel().setValue(updatedString)
+                modifyEditorContent(
+                    editorInstance,
+                    monacoInstance,
+                    updatedString
+                )
             }
 
-            const onSaveVariable = () => {
-                let currentSelectedVaribleIndex = sqlVariables.value.findIndex(
-                    (variable) =>
-                        variable.formState.key ===
-                        currentSelectedVariable.value.key
+            const onSaveVariable = (variable: CustomVaribaleInterface) => {
+                const index = sqlVariables.value.findIndex(
+                    (v) => v.key === variable.key
                 )
-                const oldVariableName = currentSelectedVariable.value.name
-                console.log(oldVariableName, 'oldname')
+                console.log(
+                    index,
+                    currVariable,
+                    variable?.name,
+                    activeInlineTab.value.playground.editor.variables
+                )
+                const oldVariableName = currVariable.value.name
                 let reg = new RegExp(`{{${oldVariableName}}}`, 'g')
                 const editorQuery = editorInstance.getValue()
-                let updatedName =
-                    sqlVariables.value[currentSelectedVaribleIndex].formState
-                        .name
-                replaceStringUsingRegex(editorQuery, reg, updatedName)
-                console.log(
-                    sqlVariables.value[currentSelectedVaribleIndex].formState
-                        .type,
-                    'type'
+                const activeInlineTabCopy: activeInlineTabInterface =
+                    JSON.parse(JSON.stringify(toRaw(activeInlineTab.value)))
+                activeInlineTabCopy.playground.editor.variables = toRaw(
+                    sqlVariables.value
                 )
-                if (
-                    sqlVariables.value[currentSelectedVaribleIndex].formState
-                        .type === 'number'
-                ) {
-                    sqlVariables.value[
-                        currentSelectedVaribleIndex
-                    ].formState.value = Number(
-                        sqlVariables.value[currentSelectedVaribleIndex]
-                            .formState.value
-                    )
-                }
-                console.log(
-                    sqlVariables.value[currentSelectedVaribleIndex].formState
-                )
-                sqlVariables.value[currentSelectedVaribleIndex].dropDownStatus =
-                    false
+
+                replaceStringUsingRegex(editorQuery, reg, variable.name)
+                modifyActiveInlineTabEditor(activeInlineTabCopy, tabs)
+                closeDropdown()
             }
 
             return {
+                cancelEdit,
+                customVariableOpenKey,
                 onSaveVariable,
                 sqlVariables,
+                currVariable,
                 activeInlineTab,
                 openDropdown,
                 addVariable,

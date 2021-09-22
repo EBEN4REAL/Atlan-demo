@@ -3,8 +3,10 @@ import { useSSE } from '~/modules/useSSE'
 import { KeyMaps } from '~/api/keyMap'
 import { message } from 'ant-design-vue'
 import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
+import { useEditor } from '~/components/insights/playground/common/composables/useEditor'
 
 export default function useProject() {
+    const { getParsedQuery } = useEditor()
     const columnList: Ref<
         [
             {
@@ -58,13 +60,19 @@ export default function useProject() {
             activeInlineTab.explorer.schema.connectors.selectedDataSourceName
         const selectedDefaultSchema =
             activeInlineTab.explorer.schema.connectors.selectedDefaultSchema
-        let queryText = activeInlineTab.playground.editor.text
+        let queryText = getParsedQuery(
+            activeInlineTab.playground.editor.variables,
+            activeInlineTab.playground.editor.text
+        )
+
         // by default limiting query to 100 if limit is not there
         queryText = queryText.includes('limit')
             ? queryText
             : `${queryText} limit 100`
+
         isQueryRunning.value = 'loading'
         dataList.value = []
+        console.log(queryText)
         const query = encodeURIComponent(btoa(queryText))
         const pathVariables = {
             query,

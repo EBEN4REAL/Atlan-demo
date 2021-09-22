@@ -34,6 +34,7 @@ export function useSavedQuery(
                     text: savedQuery.editor,
                     dataList: [],
                     columnList: [],
+                    variables: [],
                 },
                 resultsPane: {
                     activeTab:

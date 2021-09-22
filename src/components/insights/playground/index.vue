@@ -122,6 +122,7 @@
                                 'select * from "INSTACART_ALCOHOL_ORDER_TIME" limit 10',
                             dataList: [],
                             columnList: [],
+                            variables: [],
                         },
                         resultsPane: {
                             activeTab:
@@ -219,6 +220,9 @@
     .inline_tabs {
         :global(.ant-tabs-tab > div) {
             @apply flex items-center !important;
+        }
+        :global(.ant-tabs-bar) {
+            @apply m-0 !important;
         }
     }
 </style>

@@ -144,14 +144,7 @@
                 () => selectedAsset.value.attributes?.qualifiedName
             )
 
-            const {
-                list,
-                isLoading,
-                replaceBody,
-                refresh,
-                isLoadMore,
-                mutate,
-            } = useColumns2({
+            const { list, isLoading, replaceBody, isLoadMore } = useColumns2({
                 entityParentQualifiedName: assetQualifiedName,
             })
 
@@ -239,9 +232,7 @@
                 updateBody()
             }, 150)
 
-            const propagateToColumnList = () => {
-                mutate()
-            }
+            const propagateToColumnList = () => {}
 
             const clearAllFilters = () => {
                 filters.value = []

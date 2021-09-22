@@ -21,17 +21,17 @@
         >
             {{ asset.displayText }}
         </span>
-        <div v-if="asset.attributes.isPrimary" class="chip">
+        <div v-if="asset.attributes?.isPrimary" class="chip">
             <AtlanIcon icon="PrimaryKey" />
         </div>
-        <div v-if="asset.attributes.isPrimary" class="chip">
+        <!--  <div v-if="asset.attributes.isPrimary" class="chip">
             <AtlanIcon icon="ForeignKey" />
-        </div>
+        </div> -->
     </div>
     <span class="text-xs leading-relaxed text-gray-500 whitespace-pre-wrap">
         {{
-            asset.attributes.description ||
             asset.attributes.userDescription ||
+            asset.attributes.description ||
             'No description'
         }}
     </span>
@@ -57,7 +57,7 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, PropType, ref } from 'vue'
+    import { defineComponent, PropType, ref, toRefs } from 'vue'
     import useAssetInfo from '~/composables/asset/useAssetInfo'
     import { assetInterface } from '~/types/assets/asset.interface'
     import AssetPreview from '@/discovery/preview/assetPreview.vue'
@@ -75,15 +75,16 @@
         },
         emits: ['assetMutation'],
 
-        setup({ emit }) {
+        setup(props, { emit }) {
             const { dataTypeImage } = useAssetInfo()
-
+            const { asset } = toRefs(props)
             const showColumnSidebar = ref<boolean>(false)
 
             const handleCloseColumnSidebar = () => {
                 showColumnSidebar.value = false
             }
             const propagateToColumnList = (updatedAsset: assetInterface) => {
+                /* asset.value = updatedAsset */
                 emit('assetMutation', updatedAsset)
             }
 

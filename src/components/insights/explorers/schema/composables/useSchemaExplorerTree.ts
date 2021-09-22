@@ -156,20 +156,58 @@ const useTree = ({ emit, connectionQualifiedName, databaseQualifiedName, schemaQ
         isInitingTree.value = false;
     }
 
+    const triggerLoadingState = (parentNodeId: string) => {
+        if(parentNodeId === 'root') {
+            treeData.value = treeData.value.map((node) => {
+                if( node.title === 'Load more') {
+                    return {
+                        ...node,
+                        isLoading: true
+                    }
+                }
+                return node
+            })
+        } else {
+            const path = recursivelyFindPath(parentNodeId);
+            
+            const trigger = (node: CustomTreeDataItem) => {
+                const currentPath = path.pop();
+
+                if(node.qualifiedName === parentNodeId && !currentPath) {
+                    return {
+                        ...node,
+                        children: node.children?.map((child) => {
+                            if(child.title === 'Load more') return {...child, isLoading: true}
+                            return child
+                        }),
+                    }
+                }
+                return {
+                    ...node,
+                    children: node.children?.map((child) => {
+                        if(child.qualifiedName === currentPath) return trigger(child);
+                        return child;
+                    })
+                }
+            }
+
+            const parent = path.pop();
+            treeData.value = treeData.value.map((node) => {
+                if(node.qualifiedName === parent) return trigger(node);
+                return node;
+            })
+        }
+    }
+
     const loadMore = async (offset: number, limit: number, service: 'Connection' | 'Database' | 'Schema' | 'Table', parentNodeId: string, parentQualifiedName: string) => {
         const getAssets = serviceMap[service];
 
-        // treeData.value = treeData.value.map((node) => {
-        //     if( node.title === 'Load more') {
-        //         return {
-        //             ...node,
-        //             loading: true
-        //         }
-        //     }
-        //     return node
-        // })
-        const response = await getAssets(parentQualifiedName, offset);
+
         if(parentNodeId === 'root'){
+            triggerLoadingState(parentNodeId);
+
+            const response = await getAssets(parentQualifiedName, offset);
+
             treeData.value = treeData.value.filter((node) => node.title !== 'Load more');
             response.entities?.forEach((entity) => {
                 treeData.value.push(returnTreeDataItemAttributes(entity));
@@ -177,6 +215,9 @@ const useTree = ({ emit, connectionQualifiedName, databaseQualifiedName, schemaQ
             });
             checkAndAddLoadMoreNode(response, service, parentQualifiedName, parentNodeId)
         } else {
+            triggerLoadingState(parentNodeId);
+            const response = await getAssets(parentQualifiedName, offset);
+
             const path = recursivelyFindPath(parentQualifiedName);
 
             const appendNewNodes = (node: CustomTreeDataItem) => {
@@ -186,7 +227,7 @@ const useTree = ({ emit, connectionQualifiedName, databaseQualifiedName, schemaQ
                     const newChildren = node.children?.filter((child) => child.title !== 'Load more');
                     response.entities?.forEach((entity) => {
                         newChildren?.push(returnTreeDataItemAttributes(entity));
-                    nodeToParentKeyMap[entity.attributes.qualifiedName] = parentQualifiedName
+                        nodeToParentKeyMap[entity.attributes.qualifiedName] = parentQualifiedName
                     })
 
                     // Load More Node
@@ -220,6 +261,7 @@ const useTree = ({ emit, connectionQualifiedName, databaseQualifiedName, schemaQ
                     })
                 }
             }
+
 
             const parent = path.pop();
             treeData.value = treeData.value.map((node) => {
@@ -332,13 +374,16 @@ const useTree = ({ emit, connectionQualifiedName, databaseQualifiedName, schemaQ
                     key:( key ?? parentQualifiedName) + '_Load_More',
                     title: 'Load more',
                     isLeaf: true,
-                    click: () => loadMore(
-                        (response.searchParameters?.limit ?? 0) + (response?.searchParameters?.offset ?? 0),
-                        5,
-                        serviceName,
-                        key ?? parentQualifiedName,
-                        parentQualifiedName
-                    ),
+                    isLoading: false,
+                    click: () =>  {
+                        loadMore(
+                            (response.searchParameters?.limit ?? 0) + (response?.searchParameters?.offset ?? 0),
+                            5,
+                            serviceName,
+                            key ?? parentQualifiedName,
+                            parentQualifiedName
+                        )
+                    },
                     typeName: 'LoadMore',
                     qualifiedName: 'LoadMore'
                 })
@@ -351,6 +396,7 @@ const useTree = ({ emit, connectionQualifiedName, databaseQualifiedName, schemaQ
                             key:( key ?? parentQualifiedName) + '_Load_More',
                             title: 'Load more',
                             isLeaf: true,
+                            isLoading: false,
                             click: () => loadMore(
                                 (response.searchParameters?.limit ?? 0) + (response?.searchParameters?.offset ?? 0),
                                 5,

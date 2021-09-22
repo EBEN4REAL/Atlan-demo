@@ -27,6 +27,8 @@ const useLoadTreeData = () => {
             "ownerUsers",
             "ownerGroups",
             "classifications",
+            "tableCount",
+            "columnCount",
             ...BaseAttributes,
             ...BasicSearchAttributes
         ],

@@ -129,10 +129,15 @@
                                 leading-5
                                 text-primary
                                 font-bold
+                                flex
+                                flex-row
                             "
                             @click="item.click()"
                         >
-                            {{ item.title }}
+                            <span v-if="item.isLoading">
+                                <LoadingView size="small" class="h-1 w-1 mr-4" />
+                            </span>
+                             <span v-else>{{ item.title }}</span>
                         </div>
                     </template>
                 </a-tree>

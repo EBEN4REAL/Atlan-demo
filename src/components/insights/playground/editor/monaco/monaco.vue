@@ -215,7 +215,10 @@
                     onEditorContentChange(event, text)
                     const lastTypedCharacter = event?.changes[0]?.text
                     triggerAutoCompletion(lastTypedCharacter)
+                    emit('setEditorInstance', editor)
                 })
+                // on mounting
+                emit('setEditorInstance', editor)
             })
 
             onUnmounted(() => {

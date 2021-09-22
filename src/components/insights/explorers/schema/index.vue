@@ -26,19 +26,16 @@
             ></Connector>
         </div>
         <div class="w-full p-3 pt-0 overflow-y-auto scrollable-container">
-            <template v-for="table in tables" :key="table.id">
-                <div
-                    class="flex items-center justify-center w-full px-2 py-2 mb-3 rounded cursor-pointer  placeholder"
-                    @click="() => openAssetSidebar(table)"
-                    :class="
-                        isAssetSidebarOpened(table)
-                            ? 'active-placeholder'
-                            : 'placeholder'
-                    "
-                >
-                    {{ table.label }}
-                </div>
-            </template>
+            <schema-tree
+                :tree-data="treeData"
+                :on-load-data="onLoadData"
+                :select-node="selectNode"
+                :expand-node="expandNode"
+                :is-loading="isInitingTree"
+                :loaded-keys="loadedKeys"
+                :selected-keys="selectedKeys"
+                :expanded-keys="expandedKeys"
+            />
         </div>
     </div>
 </template>
@@ -46,15 +43,19 @@
 <script lang="ts">
     import { defineComponent, Ref, inject, ref, watch } from 'vue'
     import { useAssetSidebar } from '~/components/insights/assetSidebar/composables/useAssetSidebar'
+    import SchemaTree from './schemaTree.vue'
+    
+    import useSchemaExplorerTree from './composables/useSchemaExplorerTree'
+    
     import { tableInterface } from '~/types/insights/table.interface'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
     import { tablesData } from './tablesDemoData'
-    import Connector from '~/components/insights/common/connector/connector.vue'
     import { connectorsWidgetInterface } from '~/types/insights/connectorWidget.interface'
+    import Connector from '~/components/insights/common/connector/connector.vue'
     import { useConnector } from '~/components/insights/common/composables/useConnector'
 
     export default defineComponent({
-        components: { Connector },
+        components: { Connector, SchemaTree },
         props: {},
         setup(props, { emit }) {
             const tables: tableInterface[] = tablesData
@@ -129,6 +130,29 @@
                 connectorsData.value.connection = payload.connection
             }
 
+            const connectionQualifiedName = ref(connectorsData.value.connection)
+            const databaseQualifiedName = ref(connectorsData.value.databaseQualifiedName)
+            const schemaQualifiedName = ref(connectorsData.value.schemaQualifiedName)
+
+            const {
+                treeData,
+                loadedKeys,
+                isInitingTree,
+                selectedKeys,
+                expandedKeys,
+                onLoadData,
+                expandNode,
+                selectNode,
+            } = useSchemaExplorerTree({
+                emit,
+                // connectionQualifiedName: ref('default/snowflake/vqaqufvr-i'),
+                // databaseQualifiedName: ref('default/snowflake/vqaqufvr-i/ATLAN_SAMPLE_DATA'),
+                // schemaQualifiedName: ref('default/snowflake/vqaqufvr-i/ATLAN_SAMPLE_DATA/DBT_DEV')
+                connectionQualifiedName,
+                databaseQualifiedName,
+                schemaQualifiedName,
+            });
+
             /* Watchers for updating the connectors when activeinlab change */
             watch(activeInlineTab, () => {
                 const selectedDataSourceName =
@@ -156,6 +180,11 @@
                 }
             })
 
+            watch(connectorsData, (newConnectorsData) => {
+                connectionQualifiedName.value = !newConnectorsData.connection?.endsWith('undefined') ? newConnectorsData.connection : undefined
+                databaseQualifiedName.value = !newConnectorsData.databaseQualifiedName?.endsWith('undefined') ? newConnectorsData.databaseQualifiedName : undefined
+                schemaQualifiedName.value = !newConnectorsData.schemaQualifiedName?.endsWith('undefined') ? newConnectorsData.schemaQualifiedName : undefined
+            })
             return {
                 connectorsData,
                 setConnector,
@@ -163,6 +192,15 @@
                 openAssetSidebar,
                 handleChange,
                 tables,
+
+                treeData,
+                loadedKeys,
+                isInitingTree,
+                selectedKeys,
+                expandedKeys,
+                onLoadData,
+                expandNode,
+                selectNode,
             }
         },
     })

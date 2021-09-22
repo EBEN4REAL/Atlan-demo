@@ -21,7 +21,12 @@
                             :class="c.isVisible ? '' : 'hidden'"
                             class="p-1 px-4 my-2 rounded"
                         >
-                            {{ c.label + c.id }}
+                            {{ c.label
+                            }}<sup
+                                v-if="isRequiredField(c)"
+                                class="text-red-600"
+                                >*</sup
+                            >
                             <a-form-item :name="c.id">
                                 <DynamicInput
                                     v-model="c.value"
@@ -31,8 +36,9 @@
                                     :prefix="c.prefix"
                                     :suffix="c.suffix"
                                     :enum-list="c?.options"
-                                    :requestConfig="f?.requestConfig"
-                                    :responseConfig="f?.responseConfig"
+                                    :multiple="c?.isMultivalued"
+                                    :request-config="f?.requestConfig"
+                                    :response-config="f?.responseConfig"
                                 ></DynamicInput>
                             </a-form-item>
                         </div>
@@ -48,7 +54,10 @@
                     </CustomRadioButton>
                 </div>
                 <div v-else class="mb-5 rounded">
-                    {{ f.label + f.id }}
+                    {{ f.label
+                    }}<sup v-if="isRequiredField(f)" class="text-red-600"
+                        >*</sup
+                    >
                     <a-form-item :name="f.id">
                         <DynamicInput
                             v-model="f.value"
@@ -58,8 +67,9 @@
                             :prefix="f.prefix"
                             :suffix="f.suffix"
                             :enum-list="f?.options"
-                            :requestConfig="f?.requestConfig"
-                            :responseConfig="f?.responseConfig"
+                            :multiple="f?.isMultivalued"
+                            :request-config="f?.requestConfig"
+                            :response-config="f?.responseConfig"
                         ></DynamicInput>
                     </a-form-item>
                 </div>
@@ -84,11 +94,12 @@
 
             const formSchema = ref({})
             const {
-                preProcessedSchema: formModel,
+                processedSchema: formModel,
                 getGridClass,
                 finalConfigObject,
                 getRules,
                 validate,
+                isRequiredField,
             } = useFormGenerator(dummy2, formRef)
 
             formSchema.value = JSON.parse(
@@ -102,6 +113,7 @@
                 formModel,
                 validate,
                 getGridClass,
+                isRequiredField,
                 finalConfigObject,
             }
         },

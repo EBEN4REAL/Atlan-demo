@@ -1,13 +1,13 @@
-import { ref, watch, computed } from 'vue'
+import { ref, Ref, watch, computed } from 'vue'
 
 
 
-export default function useFormGenerator(dummy2, formRef) {
-    const preProcessedSchema = ref([])
+export default function useFormGenerator(formConfig, formRef) {
+    const processedSchema = ref([])
     const otherTypes = ['object', 'array']
 
     //* expands fields of type group <> flattens it
-    const expandAllGroups = (config) => {
+    const expandGroups = (config) => {
         let fields = []
         config.forEach((f) => {
             if (f.type === 'group') {
@@ -20,13 +20,13 @@ export default function useFormGenerator(dummy2, formRef) {
     }
 
     const getValueFromSchemaData = (id) =>
-        expandAllGroups(preProcessedSchema.value).find(
+        expandGroups(processedSchema.value).find(
             (s) => s.id === id
         ).value
 
     // improve this to go deeper than 1 level
     //* expands fields of type object, array <> flattens it
-    const getChildren = (schema) => {
+    const expandOthers = (schema) => {
         let children = []
         const parent = schema.id
         const parentType = schema.type
@@ -64,20 +64,27 @@ export default function useFormGenerator(dummy2, formRef) {
         })
         return children
     }
+    // ? things to do here, set default values, set default rules values,
+    // TODO form the model instead? for rules
+    // TODO or Custom rules handling
 
-    dummy2.forEach((f) => {
+    const testModal = {};
+
+    formConfig.forEach((f) => {
+
+
         if (!otherTypes.includes(f.type)) {
-            preProcessedSchema.value.push({
+            processedSchema.value.push({
                 ...f,
                 ...(f.default != null ? { value: f.default } : {}),
             })
         } else {
-            preProcessedSchema.value.push(...getChildren(f))
+            processedSchema.value.push(...expandOthers(f))
         }
     })
 
     const generateSring = (s) => {
-        if (!preProcessedSchema.value.length) return s
+        if (!processedSchema.value.length) return s
         const templatePartsf = s.split('{{')
         let finalString = ''
         // ? ->
@@ -95,7 +102,7 @@ export default function useFormGenerator(dummy2, formRef) {
     // const fc = ref();
     const finalConfigObject = computed(() => {
         const temp = {}
-        expandAllGroups(preProcessedSchema.value).forEach((s) => {
+        expandGroups(processedSchema.value).forEach((s) => {
             // ? handle for: if a group is present at root level
             if (s.type === 'group') {
                 s.children.forEach((gc) => {
@@ -143,11 +150,13 @@ export default function useFormGenerator(dummy2, formRef) {
 
     const getRules = (formModel) => {
         const rulesObj = {};
-        expandAllGroups(formModel).forEach(f => {
+        expandGroups(formModel).forEach(f => {
             if (f?.rules?.length) {
                 rulesObj[f.id] = []
                 f.rules.forEach(r => {
                     const rule = getRule(r)
+
+
                     if (rule) {
                         if (f.type === 'number')
                             rule.type = 'integer'
@@ -162,13 +171,13 @@ export default function useFormGenerator(dummy2, formRef) {
 
     // fix for groups
     const handleConditional = () => {
-        preProcessedSchema.value.forEach((f, x) => {
+        processedSchema.value.forEach((f, x) => {
             if (f.conditional) {
                 const curVal = getValueFromSchemaData(
                     f.conditional.refID
                 )
                 const reqVal = f.conditional.refValue
-                preProcessedSchema.value[x].isVisible =
+                processedSchema.value[x].isVisible =
                     curVal === reqVal
             }
         })
@@ -191,8 +200,10 @@ export default function useFormGenerator(dummy2, formRef) {
             })
     }
 
+    const isRequiredField = (f) => f?.rules?.find(r => r.type === 'required')?.enabled ?? false
+
     watch(
-        preProcessedSchema.value,
+        processedSchema.value,
         () => {
             handleConditional()
         },
@@ -205,7 +216,8 @@ export default function useFormGenerator(dummy2, formRef) {
         getRules,
         getGridClass,
         handleConditional,
-        preProcessedSchema,
+        processedSchema,
+        isRequiredField,
         finalConfigObject,
     }
 }

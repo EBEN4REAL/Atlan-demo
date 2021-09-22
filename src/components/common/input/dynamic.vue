@@ -17,6 +17,7 @@
             :options="asyncData"
             :loading="loading"
             :placeholder="placeholder"
+            :mode="multiple ? 'multiple' : ''"
             @change="handleChange"
         />
         <a-input-number
@@ -89,6 +90,11 @@
         props: {
             modelValue: {
                 required: false,
+            },
+            multiple: {
+                type: Boolean,
+                required: false,
+                default: () => false,
             },
             dataType: {
                 type: String,

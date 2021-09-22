@@ -18,7 +18,6 @@ export default function useAsyncSelector(reqConfig, resConfig) {
             root = root[p]
         });
 
-        console.log({ root })
 
         const data = root.map(o => {
             let label = o;
@@ -44,7 +43,6 @@ export default function useAsyncSelector(reqConfig, resConfig) {
     }
     const loadData = async () => {
         const { url, method, params, body } = reqConfig
-        console.log('load Dat')
         loadingData.value = true
         const response = await useAPIPromise(url, method, { params, body })
         setData(response);

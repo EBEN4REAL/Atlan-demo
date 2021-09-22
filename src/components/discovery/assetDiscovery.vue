@@ -2,7 +2,14 @@
     <div class="flex w-full">
         <div
             v-if="showFilters"
-            class="flex flex-col h-full overflow-y-auto bg-white border-r  facets"
+            class="
+                flex flex-col
+                h-full
+                overflow-y-auto
+                bg-white
+                border-r
+                facets
+            "
         >
             <AssetFilters
                 :ref="
@@ -127,10 +134,10 @@
     import { getEncodedStringFromOptions } from '~/utils/helper/routerQuery'
     import { useBusinessMetadataStore } from '~/store/businessMetadata'
     import {
-        initialTabsForConnector,
+        getTabsForConnector,
         initialTabsForAssetCategory,
     } from './useTabMapped'
-    
+
     export interface filterMapType {
         assetCategory: {
             checked?: Array<string>
@@ -232,12 +239,7 @@
 
             console.log('initialFIters', filters.value)
             const filterMap = ref<filterMapType>({
-                connector: {
-                    condition:
-                        initialFilters.value.facetsFilters.connector.condition,
-                    criterion:
-                        initialFilters.value.facetsFilters.connector.criterion,
-                },
+                connector: initialFilters.value.facetsFilters.connector,
                 assetCategory: {
                     condition:
                         initialFilters.value.facetsFilters.assetCategory
@@ -282,11 +284,12 @@
 
             // Get All Disoverable Asset Types
             const assetTypeList = ref([])
-            const initialTabs = ref([])
-
-            initialTabs.value = initialTabsForConnector(
-                initialFilters.value.facetsFilters.connector.criterion
+            const initialTabs: Ref<string[]> = ref(
+                getTabsForConnector(
+                    initialFilters.value.facetsFilters.connector
+                )
             )
+
             const assetCategoryTabs = initialTabsForAssetCategory(
                 initialFilters.value.facetsFilters.assetCategory.selectedIds
             )
@@ -301,7 +304,9 @@
                             if (
                                 asset.id === id &&
                                 asset.isDiscoverable == true &&
-                                connectorStore.getSourceList.find((source)=>source?.types?.includes(asset.id))
+                                connectorStore.getSourceList.find((source) =>
+                                    source?.types?.includes(asset.id)
+                                )
                             ) {
                                 assetTypes.push(asset)
                             }
@@ -309,8 +314,11 @@
                     })
                 } else {
                     assetTypes = AssetTypeList.filter(
-                        (item) => item.isDiscoverable == true &&
-                                connectorStore.getSourceList.find((source)=>source?.types?.includes(item.id))
+                        (item) =>
+                            item.isDiscoverable == true &&
+                            connectorStore.getSourceList.find((source) =>
+                                source?.types?.includes(item.id)
+                            )
                     )
                 }
                 assetTypes.unshift({
@@ -323,7 +331,11 @@
                 modifyTabs(initialTabs.value)
             } else {
                 assetTypeList.value = AssetTypeList.filter(
-                    (item) => item.isDiscoverable == true && connectorStore.getSourceList.find((source)=>source?.types?.includes(item.id))
+                    (item) =>
+                        item.isDiscoverable == true &&
+                        connectorStore.getSourceList.find((source) =>
+                            source?.types?.includes(item.id)
+                        )
                 )
                 assetTypeList.value.unshift({
                     id: 'Catalog',
@@ -370,13 +382,6 @@
                 }
                 return assetTypeMap.value[assetType.value]
             })
-            
-
-            const filteredConnector = computed(() =>
-                connectorStore.getSourceList?.find(
-                    (item) => connectorsPayload.value?.connector == item.id
-                )
-            )
 
             const dynamicSearchPlaceholder = computed(() => {
                 let placeholder = 'Search for assets'
@@ -450,30 +455,7 @@
                         initialBody.excludeDeletedEntities = true
                     }
                 }
-                // const connectorCritera = {
-                //     condition: 'AND',
-                //     criterion: [],
-                // }
-                // const connectionCriteria = {
-                //     condition: 'OR',
-                //     criterion: [],
-                // }
-                // if (connectorsPayload.value?.connector) {
-                //     connectorCritera.criterion?.push({
-                //         attributeName: 'integrationName',
-                //         attributeValue: connectorsPayload.value?.connector,
-                //         operator: 'eq',
-                //     })
-                // }
-                // if (connectorsPayload.value?.connection) {
-                //     connectorCritera.criterion?.push({
-                //         attributeName: 'connectionQualifiedName',
-                //         attributeValue: connectorsPayload.value?.connection,
-                //         operator: 'eq',
-                //     })
-                // }
-                // initialBody.entityFilters.criterion.push(connectorCritera)
-                // initialBody.entityFilters.criterion.push(connectionCriteria)
+
                 if (sortOrder.value !== 'default') {
                     const split = sortOrder.value.split('|')
                     if (split.length > 1) {
@@ -628,7 +610,6 @@
                 totalSum,
                 handleState,
                 connectorsPayload,
-                filteredConnector,
                 mutateAssetInList,
                 handleTabChange,
                 dynamicSearchPlaceholder,

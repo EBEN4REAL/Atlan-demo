@@ -5,6 +5,9 @@
         :class="$style.connector"
         @change="handleChange"
         :placeholder="placeholder"
+        :disabled="disabled"
+        :options="dropdownOption"
+        :loading="isLoading"
         show-search
         filter-option
         allow-clear
@@ -20,22 +23,12 @@
         <template #suffixIcon>
             <AtlanIcon icon="ChevronDown" class="h-4 -mt-0.5 -ml-0.5" />
         </template>
-        <template v-for="options in list" :key="options.guid">
-            <a-select-option :value="options.attributes.qualifiedName">
-                <div class="flex flex-col">
-                    {{
-                        options.attributes?.displayName ||
-                        options.attributes?.name
-                    }}
-                </div>
-            </a-select-option>
-        </template>
     </a-select>
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref, watch } from 'vue'
-    import useAssetList from '~/composables/bots/useAssetList'
+    import { defineComponent, watch, toRefs, computed } from 'vue'
+    import { useAssetListing } from '@/discovery/useAssetListing'
 
     export default defineComponent({
         name: 'AssetSelector',
@@ -49,7 +42,7 @@
             },
             typeName: {
                 type: String,
-                required: false,
+                required: true,
             },
             filters: {
                 type: Object,
@@ -59,35 +52,45 @@
                 type: String,
                 required: true,
             },
+            disabled: {
+                type: Boolean,
+                required: false,
+                default: () => false,
+            },
         },
         emits: ['update:modelValue', 'change'],
         setup(props, { emit }) {
-            const now = ref(true)
+            const { disabled, filters, typeName } = toRefs(props)
 
             const initialBody = {
-                typeName: props.typeName,
+                typeName: typeName.value,
                 limit: 100,
                 offset: 0,
-                entityFilters: props.filters,
+                entityFilters: filters.value,
                 attributes: ['name', 'displayName'],
                 sortBy: 'Asset.name.keyword',
                 aggregationAttributes: ['__typeName.keyword'],
                 sortOrder: 'ASCENDING',
             }
 
-            watch(
-                () => props.filters,
-                () => {
-                    initialBody.entityFilters = props.filters
-                    replaceBody(initialBody)
-                }
+            const { list, replaceBody, data, isLoading } = useAssetListing(
+                initialBody.typeName,
+                false
             )
 
-            const { list, replaceBody, selfAssetTypeMap } = useAssetList(
-                now,
-                initialBody.typeName,
-                initialBody,
-                `selector_${initialBody.typeName}`
+            const selfAssetTypeMap = computed(
+                () => data.value?.aggregations?.['__typeName.keyword'] || 0
+            )
+
+            watch(
+                [disabled, filters],
+                () => {
+                    if (!disabled.value) {
+                        initialBody.entityFilters = filters.value
+                        replaceBody(initialBody)
+                    }
+                },
+                { immediate: true }
             )
 
             const handleChange = (checkedValues: string) => {
@@ -95,16 +98,22 @@
                 emit('change', checkedValues)
             }
 
+            const dropdownOption = computed(() =>
+                list.value.map((ls) => ({
+                    label: ls.attributes?.displayName || ls.attributes?.name,
+                    value: ls.attributes.qualifiedName,
+                }))
+            )
+
             return {
                 list,
                 handleChange,
                 selfAssetTypeMap,
+                data,
+                isLoading,
+                dropdownOption,
             }
         },
-        data() {
-            return {}
-        },
-        computed: {},
     })
 </script>
 <style lang="less" module>

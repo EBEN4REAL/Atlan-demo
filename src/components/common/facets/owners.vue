@@ -29,9 +29,9 @@
                             >Users</span
                         >
                         <span
+                            v-if="totalUsersCount > 0"
                             class="ml-2 chip"
                             :class="{ active: activeOwnerTabKey == '1' }"
-                            v-if="totalUsersCount > 0"
                             >{{ totalUsersCount }}</span
                         >
                     </template>
@@ -55,8 +55,8 @@
                             </div>
                         </div>
                         <div
-                            class="flex flex-col w-full"
                             v-if="STATES.SUCCESS === userOwnerState"
+                            class="flex flex-col w-full"
                         >
                             <a-checkbox-group
                                 v-model:value="data.userValue"
@@ -68,8 +68,8 @@
                                     :key="item.username"
                                 >
                                     <a-checkbox
-                                        :value="item.username"
                                         v-if="item.username"
+                                        :value="item.username"
                                         class="w-full mb-3"
                                     >
                                         <div
@@ -133,9 +133,9 @@
                             >Groups</span
                         >
                         <span
+                            v-if="totalGroupCount > 0"
                             class="chip"
                             :class="{ active: activeOwnerTabKey == '2' }"
-                            v-if="totalGroupCount > 0"
                         >
                             {{ totalGroupCount }}
                         </span>
@@ -210,8 +210,8 @@
             <div>
                 <a-checkbox
                     v-model:checked="data.noOwnerAssigned"
-                    @change="noOwnersToggle"
                     class="w-full py-3 border-t"
+                    @change="noOwnersToggle"
                 >
                     No Owners assigned
                 </a-checkbox>
@@ -224,13 +224,13 @@
     import { defineComponent, PropType, ref, Ref, toRefs, watch } from 'vue'
     import Groups from '@common/selector/groups/index.vue'
     import Users from '@common/selector/users/index.vue'
+    import SearchAndFilter from '@/common/input/searchAndFilter.vue'
     import { Collapse } from '~/types'
     import { Components } from '~/api/atlas/client'
     import fetchUserList from '~/composables/user/fetchUserList'
     import fetchGroupList from '~/composables/group/fetchGroupList'
     import { userInterface } from '~/types/users/user.interface'
     import { groupInterface } from '~/types/groups/group.interface'
-    import SearchAndFilter from '@/common/input/searchAndFilter.vue'
     import whoami from '~/composables/user/whoami'
     import emptyScreen from '~/assets/images/empty_search.png'
 
@@ -308,10 +308,20 @@
                     data.value.groupValue = []
                     criterion.value = []
                     criterion.value.push({
-                        attributeName: 'ownerUsers',
-                        attributeValue: '-',
-                        operator: 'is_null',
-                    })
+                        condition: 'AND',
+                        criterion: [
+                            {   
+                                attributeName: 'ownerUsers',
+                                attributeValue: '-',
+                                operator: 'is_null',
+                            },
+                            {
+                                attributeName: 'ownerGroups',
+                                attributeValue: '-',
+                                operator: 'is_null',
+                            },
+                        ],
+                })
                 } else {
                     data.value.userValue = []
                     data.value.groupValue = []
@@ -342,7 +352,7 @@
                 state: userOwnerState,
                 STATES,
                 mutate: mutateUsers,
-                setLimit: setLimit,
+                setLimit,
                 handleSearch: handleUserSearch,
             } = fetchUserList()
 

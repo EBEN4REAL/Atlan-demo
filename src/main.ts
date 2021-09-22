@@ -7,7 +7,10 @@ import { createHead } from '@vueuse/head';
 import { inputFocusDirective } from '~/utils/directives/input-focus';
 import App from './App.vue';
 
+
+import '~/styles/antd.less';
 import '~/styles/index.less';
+
 
 import { useTenantStore } from './store/tenants';
 

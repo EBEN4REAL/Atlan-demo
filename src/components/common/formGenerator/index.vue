@@ -31,6 +31,8 @@
                                     :prefix="c.prefix"
                                     :suffix="c.suffix"
                                     :enum-list="c?.options"
+                                    :requestConfig="f?.requestConfig"
+                                    :responseConfig="f?.responseConfig"
                                 ></DynamicInput>
                             </a-form-item>
                         </div>
@@ -56,6 +58,8 @@
                             :prefix="f.prefix"
                             :suffix="f.suffix"
                             :enum-list="f?.options"
+                            :requestConfig="f?.requestConfig"
+                            :responseConfig="f?.responseConfig"
                         ></DynamicInput>
                     </a-form-item>
                 </div>

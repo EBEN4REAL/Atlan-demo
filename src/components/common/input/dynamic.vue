@@ -9,6 +9,16 @@
             @change="handleChange"
         >
         </a-input>
+        <a-tree-select
+            v-if="dataType === 'asyncSelect'"
+            tree-data-simple-mode
+            style="width: 100%"
+            :dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"
+            :tree-data="asyncData"
+            placeholder="Please select"
+            :load-data="loadData"
+        />
+
         <a-input-number
             v-if="dataType === 'number'"
             :value="modelValue"
@@ -123,11 +133,22 @@
                     return false
                 },
             },
+            requestConfig: {
+                type: Object,
+                require: false,
+                default: () => null,
+            },
+            responseConfig: {
+                type: Object,
+                require: false,
+                default: () => null,
+            },
         },
         emits: ['update:modelValue', 'change', 'blur'],
         data() {
             return {
                 isCustom: false,
+                asyncData: null,
             }
         },
         mounted() {
@@ -158,6 +179,7 @@
             handleToggleCustom() {
                 this.isCustom = !this.isCustom
             },
+            async loadData() {},
         },
     })
 </script>

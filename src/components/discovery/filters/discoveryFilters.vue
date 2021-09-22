@@ -21,55 +21,59 @@
             > -->
         </div>
     </div>
-
-    <Connector
-        v-model:data="dataMap['connector']"
-        :item="{
-            id: 'connector',
-            label: 'Connector',
-            component: 'connector',
-            overallCondition: 'OR',
-            filters: [
-                {
-                    attributeName: 'connector',
-                    condition: 'OR',
-                    isMultiple: false,
-                    operator: 'eq',
-                },
-            ],
-            isDeleted: false,
-            isDisabled: false,
-            exclude: false,
-        }"
-        @change="handleChange"
-    ></Connector>
-    <a-collapse
-        v-model:activeKey="activeKey"
-        expand-icon-position="right"
-        :bordered="false"
-        class="relative bg-transparent"
-        :class="$style.filter"
-    >
-        <template #expandIcon="{ isActive }">
-            <div class="">
-                <AtlanIcon
-                    icon="ChevronDown"
-                    class="ml-1 text-gray-500 transition-transform transform"
-                    :class="isActive ? '-rotate-180' : 'rotate-0'"
-                />
-            </div>
-        </template>
-        <a-collapse-panel
-            v-for="item in dynamicList"
-            :key="item.id"
-            class="relative group"
+    <div class="h-full overflow-y-auto">
+        <p class="px-4 mt-3 mb-0 tracking-wide text-gray">Connector</p>
+        <Connector
+            class="px-4 py-3"
+            :data="dataMap.connector"
+            :item="{
+                id: 'connector',
+                label: 'Connector',
+                component: 'connector',
+                overallCondition: 'OR',
+                filters: [
+                    {
+                        attributeName: 'connector',
+                        condition: 'OR',
+                        isMultiple: false,
+                        operator: 'eq',
+                    },
+                ],
+                isDeleted: false,
+                isDisabled: false,
+                exclude: false,
+            }"
+            @change="handleChange"
+            @update:data="setConnector"
+        ></Connector>
+        <a-collapse
+            v-model:activeKey="activeKey"
+            expand-icon-position="right"
+            :bordered="false"
+            class="relative bg-transparent"
+            :class="$style.filter"
         >
-            <template #header>
-                <div :key="dirtyTimestamp" class="mr-8 select-none">
-                    <div class="flex items-center justify-between align-middle">
-                        <div class="flex flex-col flex-1">
-                            <div class="tracking-wide">
-                                <span class="text-gray">
+            <template #expandIcon="{ isActive }">
+                <div class="">
+                    <AtlanIcon
+                        icon="ChevronDown"
+                        class="ml-1 text-gray-500 transition-transform transform "
+                        :class="isActive ? '-rotate-180' : 'rotate-0'"
+                    />
+                </div>
+            </template>
+            <a-collapse-panel
+                v-for="item in dynamicList"
+                :key="item.id"
+                class="relative group"
+            >
+                <template #header>
+                    <div :key="dirtyTimestamp" class="mr-8 select-none">
+                        <div
+                            class="flex items-center justify-between align-middle "
+                        >
+                            <div class="flex flex-col flex-1">
+                                <span class="tracking-wide text-gray">
                                     <img
                                         v-if="item.image"
                                         :src="item.image"
@@ -77,40 +81,40 @@
                                     />
                                     {{ item.label }}</span
                                 >
+                                <div
+                                    v-if="!activeKey.includes(item.id)"
+                                    class="text-gray-500"
+                                >
+                                    {{ getFiltersAppliedString(item.id) }}
+                                </div>
                             </div>
-                            <div
-                                v-if="!activeKey.includes(item.id)"
-                                class="text-gray-500"
-                            >
-                                {{ getFiltersAppliedString(item.id) }}
-                            </div>
-                        </div>
 
-                        <div
-                            v-if="isFilter(item.id)"
-                            class="
-                                text-xs text-gray-500
-                                opacity-0
-                                hover:text-primary
-                                group-hover:opacity-100
-                                pt-0.5
-                            "
-                            @click.stop.prevent="handleClear(item.id)"
-                        >
-                            Clear
+                            <div
+                                v-if="isFilter(item.id)"
+                                class="
+                                    text-xs text-gray-500
+                                    opacity-0
+                                    hover:text-primary
+                                    group-hover:opacity-100
+                                    pt-0.5
+                                "
+                                @click.stop.prevent="handleClear(item.id)"
+                            >
+                                Clear
+                            </div>
                         </div>
                     </div>
-                </div>
-            </template>
+                </template>
 
-            <component
-                :is="item.component"
-                v-model:data="dataMap[item.id]"
-                :item="item"
-                @change="handleChange"
-            ></component>
-        </a-collapse-panel>
-    </a-collapse>
+                <component
+                    :is="item.component"
+                    v-model:data="dataMap[item.id]"
+                    :item="item"
+                    @change="handleChange"
+                ></component>
+            </a-collapse-panel>
+        </a-collapse>
+    </div>
 </template>
 
 <script lang="ts">
@@ -172,10 +176,12 @@
             const activeKey: Ref<string[]> = ref([])
             const initialFilterMap = {
                 connector: {
-                    condition:
-                        props.initialFilters.facetsFilters.connector.condition,
-                    criterion:
-                        props.initialFilters.facetsFilters.connector.criterion,
+                    condition: 'AND',
+                    criterion: Object.keys(
+                        props.initialFilters?.facetsFilters?.connector
+                    ).length
+                        ? [props.initialFilters.facetsFilters.connector]
+                        : [],
                 },
                 assetCategory: {
                     condition:
@@ -254,11 +260,8 @@
 
             // Mapping of Data to child components
             const dataMap: { [key: string]: any } = ref({})
-            dataMap.value.connector = {
-                connectorsPayload:
-                    props.initialFilters.facetsFilters.connector.checked,
-                checked: props.initialFilters.facetsFilters.connector.checked,
-            }
+            dataMap.value.connector =
+                props.initialFilters.facetsFilters.connector
             dataMap.value.assetCategory = {
                 checked:
                     props.initialFilters.facetsFilters.assetCategory.checked,
@@ -273,8 +276,12 @@
                 noClassificationsAssigned: false,
                 checked:
                     props.initialFilters.facetsFilters.classifications.checked,
-                operator: props.initialFilters.facetsFilters.classifications.condition || 'OR',
-                addedBy: props.initialFilters.facetsFilters.classifications.addedBy || 'all',
+                operator:
+                    props.initialFilters.facetsFilters.classifications
+                        .condition || 'OR',
+                addedBy:
+                    props.initialFilters.facetsFilters.classifications
+                        .addedBy || 'all',
             }
             dataMap.value.owners = {
                 userValue:
@@ -282,7 +289,7 @@
                 groupValue:
                     props.initialFilters.facetsFilters?.owners?.groupValue ||
                     [],
-                noOwnerAssigned: false,
+                noOwnerAssigned: props.initialFilters.facetsFilters?.owners?.noOwner,
             }
             dataMap.value.advanced = {
                 applied: props.initialFilters.facetsFilters.advanced.applied,
@@ -344,9 +351,13 @@
                 dirtyTimestamp.value = `dirty_${Date.now().toString()}`
                 console.log(dirtyTimestamp.value)
                 setAppliedFiltersCount()
-                refresh()
                 modifyTabs(tabsIds)
+                refresh()
                 // updateChangesInStore(value);
+            }
+
+            const setConnector = (payload: any) => {
+                dataMap.value.connector = payload
             }
 
             const isFilter = (id: string) => {
@@ -370,13 +381,9 @@
             const handleClear = (filterId: string) => {
                 switch (filterId) {
                     case 'connector': {
-                        dataMap.value[filterId].connectorsPayload = {
-                            connection: undefined,
-                            connector: undefined,
-                        }
-                        dataMap.value[filterId].checked = {
-                            connection: undefined,
-                            connector: undefined,
+                        dataMap.value[filterId] = {
+                            attributeName: undefined,
+                            attributeValue: undefined,
                         }
                         filterMap[filterId].criterion = []
                         emit('modifyTabs', resetTabs())
@@ -398,6 +405,8 @@
                         dataMap.value[filterId].checked = []
                         dataMap.value[filterId].noClassificationsAssigned =
                             false
+                        dataMap.value[filterId].operator = 'OR'
+                        dataMap.value[filterId].addedBy = 'all' 
                         filterMap[filterId].criterion = []
                         break
                     }
@@ -423,16 +432,6 @@
             }
             function getFiltersAppliedString(filterId: string) {
                 switch (filterId) {
-                    case 'connector': {
-                        let facetFiltersData =
-                            dataMap.value[filterId].connectorsPayload
-                        let str = ''
-                        console.log(facetFiltersData, 'applied')
-                        if (facetFiltersData?.connector) {
-                            str += facetFiltersData?.connector
-                        }
-                        return str
-                    }
                     case 'assetCategory': {
                         let facetFiltersData = dataMap.value[filterId].checked
                         facetFiltersData = facetFiltersData.map(
@@ -539,14 +538,9 @@
             }
 
             function resetAllFilters() {
-                dataMap.value.connector.connectorsPayload = []
-                dataMap.value.connector.connectorsPayload = {
-                    connection: undefined,
-                    connector: undefined,
-                }
-                dataMap.value.connector.checked = {
-                    connection: undefined,
-                    connector: undefined,
+                dataMap.value.connector = {
+                    attributeName: undefined,
+                    attributeValue: undefined,
                 }
                 dataMap.value.assetCategory.checked = []
                 dataMap.value.status.checked = []
@@ -592,6 +586,7 @@
                 handleClear,
                 dynamicList,
                 bmFiltersList,
+                setConnector,
             }
         },
         data() {

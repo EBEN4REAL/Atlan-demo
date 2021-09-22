@@ -20,6 +20,7 @@ export interface assetInterface {
         integrationName: string
         meanings: { displayText: string }[]
         name: string
+        displayName: string
         popularityScore: number
         qualifiedName: string
         userDescription: string

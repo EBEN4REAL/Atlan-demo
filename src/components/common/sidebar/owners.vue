@@ -1,20 +1,39 @@
 <template>
     <div class="w-full mb-3 mr-2 text-sm text-gray-500">
-        <p class="mb-1 text-xs">Owners</p>
+        <p class="mb-1 text-sm">Owners</p>
         <div>
-            <div v-if="ownerUsers.length > 0" class="flex flex-wrap text-sm">
+            <div v-if="ownerUsers.length > 0 || ownerGroups.length" class="flex flex-wrap text-sm">
                 <PillGroup
                     :data="ownerList"
                     label-key="username"
                     popover-trigger="hover"
                     @add="toggleOwnerPopover"
                     @delete="handleRemoveOwner"
+                    @select="(item,index)=>handleClickUser(item)"
                 >
-                    <template #pillPrefix>
-                        <img
-                            src="https://picsum.photos/id/1005/50/50"
-                            alt="view"
-                            class="w-5 h-5 -ml-1 rounded-full"
+                    <template #pillPrefix="{ item }">
+                        <avatar
+                            class="-ml-2.5"
+                            v-if="item && item.type === 'user'"
+                            :image-url="
+                                KeyMaps.auth.avatar.GET_AVATAR({
+                                    username: item.username,
+                                })
+                            "
+                            :allow-upload="false"
+                            :avatar-name="item.username"
+                            avatar-size="small"
+                            :avatar-shape="'circle'"
+                        />
+                        <AtlanIcon
+                            v-else-if="item && item.type === 'group'"
+                            icon="Group"
+                            class="
+                                h-4
+                                -ml-0.5
+                                text-primary
+                                group-hover:text-white
+                            "
                         />
                     </template>
                     <template #popover="{ item }"
@@ -50,7 +69,7 @@
                 overlay-class-name="inlinepopover"
                 trigger="click"
             >
-                <div v-if="ownerUsers.length < 1" class="inline-flex mr-2">
+                <div v-if="ownerUsers.length < 1 && ownerGroups.length < 1" class="inline-flex mr-2">
                     <div @click.stop="toggleOwnerPopover">
                         <div
                             class="flex items-center cursor-pointer  text-primary hover:text-primary hover:underline"
@@ -130,24 +149,22 @@
                                     </template>
                                     <div class="h-48 overflow-y-auto">
                                         <div
-                                            class="flex flex-col w-full"
                                             v-if="
                                                 STATES.SUCCESS ===
                                                 userOwnerState
                                             "
+                                            class="flex flex-col w-full"
                                         >
-                                            <a-checkbox-group
-                                                v-model:value="selectedUsers"
-                                                class="w-full"
-                                            >
                                                 <template
                                                     v-for="item in userList"
                                                     :key="item.username"
                                                 >
                                                     <a-checkbox
-                                                        :value="item.username"
                                                         v-if="item.username"
+                                                        :value="item.username"
                                                         class="w-full mb-3"
+                                                        @change="onSelectUser"
+                                                        :checked="selectedUsers.includes(item.username)"
                                                     >
                                                         <div
                                                             v-if="
@@ -174,7 +191,6 @@
                                                         </span>
                                                     </a-checkbox>
                                                 </template>
-                                            </a-checkbox-group>
                                         </div>
                                         <div
                                             v-else
@@ -228,12 +244,12 @@
                                                 >
                                             </div>
                                         </div>
-                                        <a-checkbox-group
+                                        <div
                                             v-if="
                                                 STATES.SUCCESS ===
                                                 groupOwnerState
                                             "
-                                            v-model:value="selectedGroups"
+                                            
                                         >
                                             <div class="flex flex-col w-full">
                                                 <a-checkbox
@@ -241,11 +257,13 @@
                                                     :key="item.name"
                                                     :value="item.name"
                                                     class="mb-3 capitalize"
+                                                    @change="onSelectGroup"
+                                                     :checked="selectedGroups.includes(item.name)"
                                                 >
                                                     {{ item.name }}
                                                 </a-checkbox>
                                             </div>
-                                        </a-checkbox-group>
+                                        </div>
                                         <div
                                             v-else
                                             class="flex items-center justify-center "
@@ -263,10 +281,11 @@
                         <div class="w-full mt-2">
                             <div class="flex justify-end text-xs">
                                 <span v-if="selectedUsers.length > 0">{{
-                                    `${selectedUsers.length} users`
+                                    `${selectedUsers.length} user(s)` 
                                 }}</span>
+                                <span v-if="selectedUsers.length && selectedGroups.length">{{`&nbsp;&`}}</span>
                                 <span v-if="selectedGroups.length > 0">{{
-                                    `&nbsp;& &nbsp;${selectedGroups.length} groups`
+                                    ` &nbsp;${selectedGroups.length} group(s)`
                                 }}</span>
                                 <span
                                     v-if="
@@ -315,22 +334,25 @@
         toRefs,
         watch,
     } from 'vue'
+    import SearchAndFilter from '@/common/input/searchAndFilter.vue'
     import OwnerInfoCard from '~/components/discovery/preview/hovercards/ownerInfo.vue'
     import updateOwners from '~/composables/asset/updateOwners'
     import fetchGroupList from '~/composables/group/fetchGroupList'
     import fetchUserList from '~/composables/user/fetchUserList'
-    import SearchAndFilter from '@/common/input/searchAndFilter.vue'
     import PillGroup from '~/components/UI/pill/pillGroup.vue'
 
     import { useUserPreview } from '~/composables/user/showUserPreview'
+    import { useGroupPreview } from "~/composables/drawer/showGroupPreview";
     import { assetInterface } from '~/types/assets/asset.interface'
     import { groupInterface } from '~/types/groups/group.interface'
     import { userInterface } from '~/types/users/user.interface'
     import emptyScreen from '~/assets/images/empty_search.png'
     import whoami from '~/composables/user/whoami'
+    import Avatar from '~/components/common/avatar.vue'
+    import { KeyMaps } from '~/api/keyMap'
 
     export default defineComponent({
-        components: { OwnerInfoCard, SearchAndFilter, PillGroup },
+        components: { OwnerInfoCard, SearchAndFilter, PillGroup, Avatar },
         props: {
             selectedAsset: {
                 type: Object as PropType<assetInterface>,
@@ -442,34 +464,45 @@
                 }
             )
 
-            const onSelectUser = (user: userInterface) => {
-                // unselect if already selected
-                if (selectedUsers.value.includes(user.username)) {
-                    const index = selectedUsers.value.indexOf(user.username)
+            const onSelectUser = (event) => {
+                if (
+                    event.target.checked &&
+                    !selectedUsers.value.includes(event.target.value)
+                ) {
+                    selectedUsers.value.push(event.target.value);
+                } else if (!event.target.checked) {
+                    const index = selectedUsers.value.indexOf(event.target.value);
                     if (index > -1) {
-                        selectedUsers.value.splice(index, 1)
+                    selectedUsers.value.splice(index, 1);
                     }
-                } else {
-                    selectedUsers.value.push(user.username)
                 }
-            }
-            const onSelectGroup = (group: groupInterface) => {
-                // unselect if already selected
-                if (selectedGroups.value.includes(group.name)) {
-                    const index = selectedGroups.value.indexOf(group.name)
+            };
+             const onSelectGroup = (event) => {
+                if (    
+                    event.target.checked &&
+                    !selectedGroups.value.includes(event.target.value)
+                ) {
+                    selectedGroups.value.push(event.target.value);
+                } else if (!event.target.checked) {
+                    const index = selectedGroups.value.indexOf(event.target.value);
                     if (index > -1) {
-                        selectedGroups.value.splice(index, 1)
+                    selectedGroups.value.splice(index, 1);
                     }
-                } else {
-                    selectedGroups.value.push(group.name)
                 }
-            }
+            };
 
             // user preview drawer
             const { showUserPreview, setUserUniqueAttribute } = useUserPreview()
-            const handleClickUser = (username: string) => {
-                setUserUniqueAttribute(username, 'username')
-                showUserPreview({ allowed: ['about'] })
+            const { showGroupPreview, setGroupUniqueAttribute } = useGroupPreview()
+            const handleClickUser = (item) => {
+                if(item.type==='user'){
+                    setUserUniqueAttribute(item.username, 'username')
+                    showUserPreview({ allowed: ['about'] })
+                }
+                if(item.type==='group'){
+                    setGroupUniqueAttribute(item.name, 'groupAlias')
+                    showGroupPreview({ allowed: ['about'] })
+                }
             }
 
             const {
@@ -639,6 +672,7 @@
                 handleRemoveOwner,
                 handleCancelUpdateOwnerPopover,
                 ownerList,
+                KeyMaps,
             }
         },
     })

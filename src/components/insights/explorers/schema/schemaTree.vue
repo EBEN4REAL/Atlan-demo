@@ -44,11 +44,13 @@
                                     </div>
                                 </div>
                             </div>
-                            <template v-if="item.key !== 'root'" #content >
-                                    <p>{{ item.title }}</p>
-                                    <p>{{ item.description }}</p>
-                                    <p>{{item.ownerUsers}}</p>
-                                    <p>{{item.ownerGroups}}</p>
+                            <template v-if="item.key !== 'root'" class="p-4" #content>
+                                <div class="flex flex-col max-w-80">
+                                    <span class="m-0 mb-2 text-base leading-6 text-gray-700 font-bold">{{ item.title }}</span>
+                                    <span class="m-0 text-sm leading-5 tracking-wide text-gray-500">{{ item.description }}</span>
+                                    <span>{{item.ownerUsers}}</span>
+                                    <span>{{item.ownerGroups}}</span>
+                                </div>
                                 <!-- <Classifications :selected-asset="item" /> -->
                                 <!-- <div
                                     v-if="item.classifications?.length > 0"

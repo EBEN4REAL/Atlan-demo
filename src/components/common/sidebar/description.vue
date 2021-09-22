@@ -1,7 +1,11 @@
 <template>
     <div class="text-xs text-gray-500" :class="usingInInfo ? 'mb-3' : ''">
-        <p v-if="usingInInfo" class="mb-1 text-xs">Description</p>
-        <div v-if="showEditableDescription && !isLoading">
+        <p v-if="usingInInfo" class="mb-1 text-xs">
+            Description<span v-if="isLoading" class="ml-2">
+                <a-spin size="small" class="leading-none"></a-spin>
+            </span>
+        </p>
+        <div v-if="showEditableDescription" class="flex">
             <a-textarea
                 id="description-sidebar"
                 v-model:value="descriptionInput"
@@ -11,10 +15,14 @@
                 show-count
                 :maxlength="140"
                 :rows="4"
+                :disabled="isLoading"
                 @blur="handleDescriptionEdit"
                 @pressEnter="endEditDescription"
             >
             </a-textarea>
+            <span v-if="isLoading && !usingInInfo" class="ml-2">
+                <a-spin size="small" class="leading-none"></a-spin>
+            </span>
         </div>
         <span
             v-if="
@@ -40,12 +48,6 @@
         >
             Add description
         </span>
-        <div
-            v-if="isLoading"
-            class="flex items-center justify-center text-sm leading-none"
-        >
-            <a-spin size="small" class="leading-none"></a-spin>
-        </div>
     </div>
 </template>
 
@@ -80,6 +82,7 @@
                 updateDescription(selectedAsset)
 
             const showEditableDescription = ref<boolean>(false)
+            const isError = ref<boolean>(false)
 
             const descriptionInput = ref()
             const handleDescriptionEdit = (e: any) => {
@@ -88,14 +91,24 @@
                     update()
                     watch(error, () => {
                         if (error && error.value) {
+                            isError.value = true
+                        }
+                    })
+                    watch(isLoading, () => {
+                        if (isLoading.value === false) {
+                            showEditableDescription.value = false
+                        }
+                    })
+                    watch(isError, () => {
+                        if (isError.value) {
                             isLoading.value = false
                             message.error(
                                 'Unable to update description. Please try again later.'
                             )
+                            isError.value = false
                         }
                     })
                 }
-                showEditableDescription.value = false
             }
 
             const endEditDescription = () => {

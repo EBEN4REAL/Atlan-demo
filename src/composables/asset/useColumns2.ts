@@ -68,7 +68,7 @@ export default function useColumns2({
 
     const cancelTokenSource = axios.CancelToken.source()
 
-    const { query, replaceBody, body, list, searchScoreList, isReady, error, data, refresh } =
+    const { query, replaceBody, body, list, searchScoreList, isReady, error, data, refresh, mutate } =
         useAssetSearchList(
             options,
             '',
@@ -100,5 +100,6 @@ export default function useColumns2({
         error,
         isLoadMore,
         searchScoreList,
+        mutate,
     }
 }

@@ -28,13 +28,14 @@
             <AtlanIcon icon="ForeignKey" />
         </div> -->
     </div>
-    <span class="text-xs leading-relaxed text-gray-500 whitespace-pre-wrap">
+    <!-- <span class="text-xs leading-relaxed text-gray-500 whitespace-pre-wrap">
         {{
             asset.attributes.userDescription ||
             asset.attributes.description ||
             'No description'
         }}
-    </span>
+    </span> -->
+    <Description :selected-asset="asset" :using-in-info="false" />
     <teleport to="#overAssetPreviewSidebar">
         <a-drawer
             v-model:visible="showColumnSidebar"
@@ -61,11 +62,13 @@
     import useAssetInfo from '~/composables/asset/useAssetInfo'
     import { assetInterface } from '~/types/assets/asset.interface'
     import AssetPreview from '@/discovery/preview/assetPreview.vue'
+    import Description from '@common/sidebar/description.vue'
 
     export default defineComponent({
         name: 'ColumnListItem',
         components: {
             AssetPreview,
+            Description,
         },
         props: {
             asset: {
@@ -77,14 +80,13 @@
 
         setup(props, { emit }) {
             const { dataTypeImage } = useAssetInfo()
-            const { asset } = toRefs(props)
+
             const showColumnSidebar = ref<boolean>(false)
 
             const handleCloseColumnSidebar = () => {
                 showColumnSidebar.value = false
             }
             const propagateToColumnList = (updatedAsset: assetInterface) => {
-                /* asset.value = updatedAsset */
                 emit('assetMutation', updatedAsset)
             }
 

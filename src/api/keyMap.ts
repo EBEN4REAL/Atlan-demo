@@ -11,6 +11,8 @@ export const KeyMaps = {
         PREVIEW_TABLE: () => getAPIPath('query', '/preview'),
         GET_ENTITY: ({ guid }: PathParams) =>
             getAPIPath('auth/atlas', `/entity/guid/${guid}`),
+        GET_PREVIEW: ({ imageId }: PathParams) =>
+            `/api/${getAPIPath('/auth', imageId)}`,
     },
     classification: {
         GET_CLASSIFICATION_LIST: () =>
@@ -47,7 +49,7 @@ export const KeyMaps = {
         avatar: {
             UPLOAD_AVATAR: () => getAPIPath('auth', '/avatars'),
             GET_AVATAR: ({ username }: PathParams) =>
-                getAPIPath('auth', `/avatars/${username}`),
+                `/api/${getAPIPath('auth', `/avatars/${username}`)}`,
         },
         connection: {
             TEST_NETWORK: () => getAPIPath('auth', '/connections/test'),
@@ -196,19 +198,17 @@ export const KeyMaps = {
             defaultSchema,
             dataSourceName,
             length,
-        }: PathParams) => {
-            return getAPIPath(
+        }: PathParams) =>
+            getAPIPath(
                 'api/query',
                 `/sql/stream?sql=${query}&defaultSchema=${defaultSchema}&dataSourceName=${dataSourceName}&length=${length}`
-            )
-        },
+            ),
     },
     bots: {
-        WORKFLOW_LOG_STREAM: ({}: PathParams) => {
-            return getAPIPath(
+        WORKFLOW_LOG_STREAM: ({}: PathParams) =>
+            getAPIPath(
                 'api/auth/argo',
                 `/workflows/default/atlan-init-tgx7h/log?logOptions.container=main&grep=&logOptions.follow=true`
-            )
-        },
+            ),
     },
 }

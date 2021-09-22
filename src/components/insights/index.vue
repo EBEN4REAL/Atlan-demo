@@ -83,7 +83,7 @@
     import { useSpiltPanes } from './common/composables/useSpiltPanes'
     import { useProvide } from './common/composables/useProvide'
     import { useInlineTab } from './common/composables/useInlineTab'
-    import { useConnector } from './common/composables/useConnector'
+    // import { useConnector } from './common/composables/useConnector'
     // import { useHotKeys } from './common/composables/useHotKeys'
 
     import { TabInterface } from '~/types/insights/tab.interface'
@@ -111,11 +111,9 @@
                 syncActiveInlineTabKeyInLocalStorage,
             } = useLocalStorageSync()
 
-            const { selectedDefaultSchema, selectedDataSourceName } =
-                useConnector()
-
             const { tabsArray, activeInlineTabKey, activeInlineTab } =
                 useInlineTab()
+
             const activeTabId = ref(tabsList[0].id)
 
             const activeTab = computed(() =>
@@ -133,8 +131,6 @@
                 activeInlineTab: activeInlineTab,
                 activeInlineTabKey: activeInlineTabKey,
                 inlineTabs: tabsArray,
-                selectedDefaultSchema: selectedDefaultSchema,
-                selectedDataSourceName: selectedDataSourceName,
             }
             useProvide(provideData)
             /*-------------------------------------*/

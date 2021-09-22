@@ -96,13 +96,30 @@
                     favico: 'https://atlan.com/favicon.ico',
                     isSaved: false,
                     queryId: undefined,
-                    explorer: {},
+                    explorer: {
+                        schema: {
+                            connectors: {
+                                connection:
+                                    activeInlineTab.value.explorer.schema
+                                        .connectors.connection,
+                                connector:
+                                    activeInlineTab.value.explorer.schema
+                                        .connectors.connector,
+                                selectedDefaultSchema:
+                                    activeInlineTab.value.explorer.schema
+                                        .connectors.selectedDefaultSchema,
+                                selectedDataSourceName:
+                                    activeInlineTab.value.explorer.schema
+                                        .connectors.selectedDataSourceName,
+                            },
+                        },
+                    },
                     playground: {
                         editor: {
                             text:
                                 activeInlineTab.value?.playground?.editor
                                     .text ??
-                                'select * from "WEB_SALES" limit 100',
+                                'select * from "INSTACART_ALCOHOL_ORDER_TIME" limit 10',
                             dataList: [],
                             columnList: [],
                         },

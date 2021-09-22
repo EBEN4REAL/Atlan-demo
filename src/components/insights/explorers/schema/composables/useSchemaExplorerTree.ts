@@ -148,6 +148,56 @@ const useTree = ({ emit, connectionQualifiedName, databaseQualifiedName, schemaQ
                 nodeToParentKeyMap[entity.attributes.qualifiedName] = parentQualifiedName
             });
             checkAndAddLoadMoreNode(response, service, parentQualifiedName, parentNodeId)
+        } else {
+            const path = recursivelyFindPath(parentQualifiedName);
+
+            const appendNewNodes = (node: CustomTreeDataItem) => {
+                const currentPath = path.pop();
+
+                if(node.qualifiedName === parentQualifiedName && !currentPath){
+                    const newChildren = node.children?.filter((child) => child.title !== 'Load more');
+                    response.entities?.forEach((entity) => {
+                        newChildren?.push(returnTreeDataItemAttributes(entity));
+                    nodeToParentKeyMap[entity.attributes.qualifiedName] = parentQualifiedName
+                    })
+
+                    // Load More Node
+                    if(response.approximateCount && response.entities && response.approximateCount > (response.searchParameters?.limit ?? 0) + (response?.searchParameters?.offset ?? 0)) {
+                        newChildren?.push({
+                            key:parentQualifiedName + '_Load_More',
+                            title: 'Load more',
+                            isLeaf: true,
+                            click: () => loadMore(
+                                (response.searchParameters?.limit ?? 0) + (response?.searchParameters?.offset ?? 0),
+                                5,
+                                service,
+                                parentQualifiedName,
+                                parentQualifiedName
+                            ),
+                            typeName: 'LoadMore',
+                            qualifiedName: 'LoadMore'
+                        })
+                    }
+
+                    return {
+                        ...node,
+                        children: newChildren
+                    }
+                } 
+                return {
+                    ...node,
+                    children: node.children?.map((child) => {
+                        if(child.qualifiedName === currentPath) return appendNewNodes(child);
+                        return child;
+                    })
+                }
+            }
+
+            const parent = path.pop();
+            treeData.value = treeData.value.map((node) => {
+                if(node.qualifiedName === parent) return appendNewNodes(node);
+                return node;
+            })
         }
     }
 
@@ -172,6 +222,7 @@ const useTree = ({ emit, connectionQualifiedName, databaseQualifiedName, schemaQ
             })
             
             if(!schemaResponse.entities?.length) treeNode.dataRef.isLeaf = true;
+            checkAndAddLoadMoreNode(schemaResponse, 'Database', treeNode.dataRef.qualifiedName)
 
         } else if (treeNode.dataRef.typeName === 'Schema') {
             const tableResponse = await getTablesForSchema(treeNode.dataRef.qualifiedName);
@@ -182,6 +233,7 @@ const useTree = ({ emit, connectionQualifiedName, databaseQualifiedName, schemaQ
             })
 
             if(!tableResponse.entities?.length) treeNode.dataRef.isLeaf = true;
+            checkAndAddLoadMoreNode(tableResponse, 'Schema', treeNode.dataRef.qualifiedName)
 
         } else if ( treeNode.dataRef.typeName === 'Table') {
 
@@ -191,6 +243,7 @@ const useTree = ({ emit, connectionQualifiedName, databaseQualifiedName, schemaQ
                 treeNode.dataRef.children?.push(returnTreeDataItemAttributes(column));
                 nodeToParentKeyMap[column.attributes.qualifiedName] = treeNode.dataRef.qualifiedName
             })
+            checkAndAddLoadMoreNode(columnResponse, 'Table', treeNode.dataRef.qualifiedName)
         }
         loadedKeys.value.push(treeNode.dataRef.key)
     }
@@ -246,21 +299,57 @@ const useTree = ({ emit, connectionQualifiedName, databaseQualifiedName, schemaQ
 
     const checkAndAddLoadMoreNode = (response: BasicSearchResponse<Database> | BasicSearchResponse<Schema> | BasicSearchResponse<Table> | BasicSearchResponse<Column>, serviceName:'Connection' | 'Database' | 'Schema' | 'Table' ,parentQualifiedName: string, key?: string) => {
         if(response.approximateCount && response.entities && response.approximateCount > (response.searchParameters?.limit ?? 0) + (response?.searchParameters?.offset ?? 0)) {
+            if(key === 'root') {
+                treeData.value.push({
+                    key:( key ?? parentQualifiedName) + '_Load_More',
+                    title: 'Load more',
+                    isLeaf: true,
+                    click: () => loadMore(
+                        (response.searchParameters?.limit ?? 0) + (response?.searchParameters?.offset ?? 0),
+                        5,
+                        serviceName,
+                        key ?? parentQualifiedName,
+                        parentQualifiedName
+                    ),
+                    typeName: 'LoadMore',
+                    qualifiedName: 'LoadMore'
+                })
+            } else {
+                const path = recursivelyFindPath(parentQualifiedName);
+                const addLoadMoreInNestedNode = (node: CustomTreeDataItem) => {
+                    const currentPath = path.pop()
+                    if(node.qualifiedName === parentQualifiedName && !currentPath) {
+                        node.children?.push({
+                            key:( key ?? parentQualifiedName) + '_Load_More',
+                            title: 'Load more',
+                            isLeaf: true,
+                            click: () => loadMore(
+                                (response.searchParameters?.limit ?? 0) + (response?.searchParameters?.offset ?? 0),
+                                5,
+                                serviceName,
+                                key ?? parentQualifiedName,
+                                parentQualifiedName
+                            ),
+                            typeName: 'LoadMore',
+                            qualifiedName: 'LoadMore'
+                        })
+                        return node;
+                    } 
+                    return {
+                        ...node,
+                        children: node.children?.map((child) => {
+                            if(child.qualifiedName === currentPath) return addLoadMoreInNestedNode(child)
+                            return child
+                        })
+                    }
+                }
+                const parent = path.pop()
 
-            treeData.value.push({
-                key:( key ?? parentQualifiedName) + '_Load_More',
-                title: 'Load more',
-                isLeaf: true,
-                click: () => loadMore(
-                    (response.searchParameters?.limit ?? 0) + (response?.searchParameters?.offset ?? 0),
-                    5,
-                    serviceName,
-                    key ?? parentQualifiedName,
-                    parentQualifiedName
-                ),
-                typeName: 'LoadMore',
-                qualifiedName: 'LoadMore'
-            })
+                treeData.value = treeData.value.map((node) => {
+                    if(node.qualifiedName === parent) return addLoadMoreInNestedNode(node);
+                    return node;
+                })
+            }
         }
     }
 

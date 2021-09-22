@@ -80,14 +80,12 @@
                     placement="left"
                 />
 
-                <div class="flex items-center">
-                    <StatusBadge
-                        :key="selectedAsset.guid"
-                        :show-no-status="false"
-                        :status-id="selectedAsset?.attributes?.assetStatus"
-                        class="ml-1.5"
-                    ></StatusBadge>
-                </div>
+                <StatusBadge
+                    :key="selectedAsset.guid"
+                    :show-no-status="false"
+                    :status-id="selectedAsset?.attributes?.assetStatus"
+                    class="ml-1.5"
+                ></StatusBadge>
             </div>
         </div>
         <a-tabs

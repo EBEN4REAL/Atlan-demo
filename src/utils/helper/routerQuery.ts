@@ -35,7 +35,7 @@ export function getEncodedStringFromOptions(options: any) {
                 case 'connector': {
                     const connectorLoadString: string[] = []
                     const { criterion } = options.filters[filterKey]
-                    if (criterion.length) {
+                    if (criterion?.length) {
                         criterion.forEach((cri) => {
                             connectorLoadString.push(
                                 `${cri.attributeName}:${cri.attributeValue}`
@@ -141,10 +141,10 @@ export function getEncodedStringFromOptions(options: any) {
                     filterKeyValue = filterKeyValue
                         .map((e: criterion) => {
                             // no status filter case
-                            if(e.condition && e.condition==='OR'){
+                            if (e.condition && e.condition === 'OR') {
                                 return 'is_null' // id for no status
                             }
-                             return e.attributeValue;
+                            return e.attributeValue
                         })
                         .join(',')
                     break
@@ -154,27 +154,35 @@ export function getEncodedStringFromOptions(options: any) {
                     let ownerString = ''
                     // handle case for no owners
                     // criterion will have an AND condition for filtering out assets with no owners and no groups
-                    if(filterKeyValue?.[0]?.condition && filterKeyValue[0].condition === 'AND'){
-                        ownerString=`no_owner`;
+                    if (
+                        filterKeyValue?.[0]?.condition &&
+                        filterKeyValue[0].condition === 'AND'
+                    ) {
+                        ownerString = `no_owner`
+                        filterKeyValue = ownerString
+                    } else {
+                        const uniqueOwnerAttributes = new Set(
+                            filterKeyValue.map(
+                                (e: criterion) => e.attributeName
+                            )
+                        )
+                        ;[...uniqueOwnerAttributes].map(
+                            (uniqueOwnerAttribute) => {
+                                ownerString += `${uniqueOwnerAttribute}:`
+                                filterKeyValue.forEach((e: criterion) => {
+                                    if (
+                                        e.attributeName === uniqueOwnerAttribute
+                                    ) {
+                                        ownerString += `${e.attributeValue},`
+                                    }
+                                })
+                                ownerString = ownerString.slice(0, -1)
+                                ownerString += '&'
+                            }
+                        )
+                        ownerString = ownerString.slice(0, -1)
                         filterKeyValue = ownerString
                     }
-                    else{
-                    const uniqueOwnerAttributes = new Set(
-                        filterKeyValue.map((e: criterion) => e.attributeName)
-                    )
-                    ;[...uniqueOwnerAttributes].map((uniqueOwnerAttribute) => {
-                        ownerString += `${uniqueOwnerAttribute}:`
-                        filterKeyValue.forEach((e: criterion) => {
-                            if (e.attributeName === uniqueOwnerAttribute) {
-                                ownerString += `${e.attributeValue},`
-                            }
-                        })
-                        ownerString = ownerString.slice(0, -1)
-                        ownerString += '&'
-                    })
-                    ownerString = ownerString.slice(0, -1)
-                    filterKeyValue = ownerString
-                }
                     break
                 }
                 case 'advanced': {
@@ -211,7 +219,7 @@ export function getEncodedStringFromOptions(options: any) {
                 }
             }
             // TODO include business met data and other filters
-            if (options.filters[filterKey].criterion.length > 0) {
+            if (options.filters[filterKey]?.criterion?.length > 0) {
                 const temp = `${filterKey}::${filterKeyValue}`
                 if (temp) {
                     filtersString.push(temp)
@@ -331,29 +339,31 @@ export function getDecodedOptionsFromString(router) {
             case 'status': {
                 const facetFilterValues = facetFilterValuesString.split(',')
                 facetFilterValues.forEach((facetFilterValue) => {
-                    if(facetFilterValue !=='is_null')
-                    criterion.push({
-                        attributeName: 'assetStatus',
-                        attributeValue: facetFilterValue,
-                        operator: 'eq',
-                    })
-                    else
-                    {
-                        const subCriterion: Components.Schemas.FilterCriteria[] = [
-                            {
-                                condition:'OR',
-                                criterion:[{
-                                    attributeName: 'assetStatus',
-                                    attributeValue: 'is_null',
-                                    operator: 'eq',
-                                },
+                    if (facetFilterValue !== 'is_null')
+                        criterion.push({
+                            attributeName: 'assetStatus',
+                            attributeValue: facetFilterValue,
+                            operator: 'eq',
+                        })
+                    else {
+                        const subCriterion: Components.Schemas.FilterCriteria[] =
+                            [
                                 {
-                                    attributeName: 'assetStatus',
-                                    attributeValue: '',
-                                    operator: 'isNull',
-                                }] as Components.Schemas.FilterCriteria[]
-                            }
-                        ]
+                                    condition: 'OR',
+                                    criterion: [
+                                        {
+                                            attributeName: 'assetStatus',
+                                            attributeValue: 'is_null',
+                                            operator: 'eq',
+                                        },
+                                        {
+                                            attributeName: 'assetStatus',
+                                            attributeValue: '',
+                                            operator: 'isNull',
+                                        },
+                                    ] as Components.Schemas.FilterCriteria[],
+                                },
+                            ]
                         criterion.push(...subCriterion)
                     }
                 })
@@ -429,11 +439,11 @@ export function getDecodedOptionsFromString(router) {
             case 'owners': {
                 const usersAndGroupsString: string[] =
                     facetFilterValuesString.split('&') // ownerUsers:ab,cd&ownerGroups:ab,cd OR no_owner
-                if(usersAndGroupsString[0]==='no_owner'){
+                if (usersAndGroupsString[0] === 'no_owner') {
                     criterion.push({
                         condition: 'AND',
                         criterion: [
-                            {   
+                            {
                                 attributeName: 'ownerUsers',
                                 attributeValue: '-',
                                 operator: 'is_null',
@@ -445,37 +455,36 @@ export function getDecodedOptionsFromString(router) {
                             },
                         ],
                     })
-                    facetsFilters.owners.noOwner = true;
-                }
-                else{
+                    facetsFilters.owners.noOwner = true
+                } else {
                     usersAndGroupsString.forEach((item) => {
-                    const subFacetFilterValues = item.split(':')
-                    if (subFacetFilterValues[0] === 'ownerUsers') {
-                        const usersArray: string[] =
-                            subFacetFilterValues[1].split(',')
-                        usersArray.forEach((user) => {
-                            criterion.push({
-                                attributeName: 'ownerUsers',
-                                attributeValue: user,
-                                operator: 'contains',
+                        const subFacetFilterValues = item.split(':')
+                        if (subFacetFilterValues[0] === 'ownerUsers') {
+                            const usersArray: string[] =
+                                subFacetFilterValues[1].split(',')
+                            usersArray.forEach((user) => {
+                                criterion.push({
+                                    attributeName: 'ownerUsers',
+                                    attributeValue: user,
+                                    operator: 'contains',
+                                })
                             })
-                        })
 
-                        facetsFilters.owners.userValue = usersArray
-                    } else {
-                        const groupsArray: string[] =
-                            subFacetFilterValues[1].split(',')
-                        groupsArray.forEach((group) => {
-                            criterion.push({
-                                attributeName: 'ownerGroups',
-                                attributeValue: group,
-                                operator: 'contains',
+                            facetsFilters.owners.userValue = usersArray
+                        } else {
+                            const groupsArray: string[] =
+                                subFacetFilterValues[1].split(',')
+                            groupsArray.forEach((group) => {
+                                criterion.push({
+                                    attributeName: 'ownerGroups',
+                                    attributeValue: group,
+                                    operator: 'contains',
+                                })
                             })
-                        })
-                        facetsFilters.owners.groupValue = groupsArray
-                    }
-                })
-            }
+                            facetsFilters.owners.groupValue = groupsArray
+                        }
+                    })
+                }
                 facetsFilters.owners.criterion = criterion
                 break
             }

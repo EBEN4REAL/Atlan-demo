@@ -2,14 +2,7 @@
     <div class="flex w-full">
         <div
             v-if="showFilters"
-            class="
-                flex flex-col
-                h-full
-                overflow-y-auto
-                bg-white
-                border-r
-                facets
-            "
+            class="flex flex-col h-full overflow-y-auto bg-white border-r  facets"
         >
             <AssetFilters
                 :ref="
@@ -81,7 +74,8 @@
                     :projection="projection"
                     :is-loading="isLoading"
                     :is-load-more="isLoadMore"
-                    :automaticSelectFirstAsset="true"
+                    :typename="assetTypeListString"
+                    automaticSelectFirstAsset
                     @preview="handlePreview"
                     @loadMore="loadMore"
                 ></AssetList>
@@ -616,6 +610,7 @@
                 setPlaceholder,
                 placeholderLabel,
                 filters,
+                assetTypeListString,
             }
         },
         data() {

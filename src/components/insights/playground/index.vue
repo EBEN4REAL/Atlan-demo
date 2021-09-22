@@ -74,17 +74,19 @@
                 required: true,
             },
         },
-        emits: ['update:activeInlineTabKey'],
         setup(props, { emit }) {
             const { queryRun, isQueryRunning } = useRunQuery()
-            const { inlineTabRemove, inlineTabAdd } = useInlineTab()
+            const { inlineTabRemove, inlineTabAdd, setActiveTabKey } =
+                useInlineTab()
             // const {resultsPaneSizeToggle} = useHotKeys()
             const paneSize = ref(55)
-            const { activeInlineTabKey } = toRefs(props)
             const tabs = inject('inlineTabs') as Ref<activeInlineTabInterface[]>
             const activeInlineTab = inject(
                 'activeInlineTab'
             ) as Ref<activeInlineTabInterface>
+            const activeInlineTabKey = inject(
+                'activeInlineTabKey'
+            ) as Ref<string>
 
             const handleAdd = () => {
                 const key = String(new Date().getTime())
@@ -94,13 +96,30 @@
                     favico: 'https://atlan.com/favicon.ico',
                     isSaved: false,
                     queryId: undefined,
-                    explorer: {},
+                    explorer: {
+                        schema: {
+                            connectors: {
+                                connection:
+                                    activeInlineTab.value.explorer.schema
+                                        .connectors.connection,
+                                connector:
+                                    activeInlineTab.value.explorer.schema
+                                        .connectors.connector,
+                                selectedDefaultSchema:
+                                    activeInlineTab.value.explorer.schema
+                                        .connectors.selectedDefaultSchema,
+                                selectedDataSourceName:
+                                    activeInlineTab.value.explorer.schema
+                                        .connectors.selectedDataSourceName,
+                            },
+                        },
+                    },
                     playground: {
                         editor: {
                             text:
                                 activeInlineTab.value?.playground?.editor
                                     .text ??
-                                'select * from "WEB_SALES" limit 100',
+                                'select * from "INSTACART_ALCOHOL_ORDER_TIME" limit 10',
                             dataList: [],
                             columnList: [],
                         },
@@ -130,16 +149,20 @@
                         id: activeInlineTab.value?.assetSidebar.id ?? '',
                     },
                 }
-                inlineTabAdd(inlineTabData, tabs)
+                inlineTabAdd(inlineTabData, tabs, activeInlineTabKey)
             }
             const onTabClick = (activeKey) => {
-                emit('update:activeInlineTabKey', activeKey)
+                setActiveTabKey(activeKey, activeInlineTabKey)
             }
             const onEdit = (targetKey: string | MouseEvent, action: string) => {
                 if (action === 'add') {
                     handleAdd()
                 } else {
-                    inlineTabRemove(targetKey as string, tabs)
+                    inlineTabRemove(
+                        targetKey as string,
+                        tabs,
+                        activeInlineTabKey
+                    )
                 }
             }
 

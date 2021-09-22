@@ -32,7 +32,6 @@
             const activeInlineTab = inject(
                 'activeInlineTab'
             ) as Ref<activeInlineTabInterface>
-            console.log(activeInlineTab.value.playground.editor, 'editor')
             return {
                 activeInlineTab,
             }

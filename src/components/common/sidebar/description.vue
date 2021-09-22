@@ -1,6 +1,6 @@
 <template>
-    <div class="mb-3 text-xs text-gray-500">
-        <p class="mb-1 text-xs">Description</p>
+    <div class="text-xs text-gray-500" :class="usingInInfo ? 'mb-3' : ''">
+        <p v-if="usingInInfo" class="mb-1 text-xs">Description</p>
         <div v-if="showEditableDescription && !isLoading">
             <a-textarea
                 id="description-sidebar"
@@ -23,8 +23,9 @@
                 !showEditableDescription &&
                 !isLoading
             "
-            class="inline-block w-full p-2 text-sm rounded-sm cursor-pointer  text-gray hover:bg-gray-100"
-            style="margin-left: -8px"
+            class="inline-block w-full px-2 py-1 text-sm rounded-sm cursor-pointer  text-gray hover:bg-gray-100"
+            style="margin-bottom: -4px; margin-top: -4px"
+            :style="usingInInfo ? 'margin-left: -8px' : ''"
             @click="handleAddDescriptionClick"
         >
             {{ description }}
@@ -66,6 +67,10 @@
             selectedAsset: {
                 type: Object as PropType<assetInterface>,
                 required: true,
+            },
+            usingInInfo: {
+                type: Boolean,
+                default: () => true,
             },
         },
         emits: ['update:selectedAsset'],

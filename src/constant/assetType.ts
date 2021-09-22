@@ -1,4 +1,14 @@
-export const AssetTypeList = [
+export const AssetTypeList: {
+    id: string
+    label: string
+    nameAttribute?: string
+    qualifiedNameAttribute?: string
+    parents?: string[]
+    children?: string[]
+    isDiscoverable?: boolean
+    orderWeight?: number
+    count?: number
+}[] = [
     {
         id: 'Connection',
         label: 'Connection',
@@ -75,7 +85,7 @@ export const AssetTypeList = [
     {
         id: 'Column',
         label: 'Column',
-        nameAttributeattribute: '',
+        nameAttribute: '',
         qualifiedNameAttribute: 'databaseQualifiedName',
         parents: ['Connection', 'Database', 'Schema', 'Table', 'View'],
         children: [],
@@ -125,5 +135,57 @@ export const AssetTypeList = [
         id: 'TableauDatasourceField',
         label: 'Tableau Datasource Field',
         parents: ['TableauWorkbook'],
+    },
+    {
+        id: 'PowerBIWorkspace',
+        label: 'Power BI Workspace',
+        isDiscoverable: true,
+        parents: [],
+        children: ['PowerBIDashboard'],
+    },
+    {
+        id: 'PowerBIDashboard',
+        label: 'Power BI Dashboard',
+        isDiscoverable: true,
+        parents: ['PowerBIWorkspace'],
+        children: ['PowerBITile'],
+    },
+    {
+        id: 'PowerBIReport',
+        label: 'Power BI Report',
+        isDiscoverable: true,
+        parents: ['PowerBIWorkspace'],
+        children: ['PowerBIPage'],
+    },
+    {
+        id: 'PowerBIDataset',
+        label: 'Power BI Dataset',
+        isDiscoverable: true,
+        parents: ['PowerBIWorkspace'],
+        children: ['PowerBIDatasource'],
+    },
+    {
+        id: 'PowerBIDataflow',
+        label: 'Power BI Dataflow',
+        isDiscoverable: true,
+        parents: ['PowerBIWorkspace'],
+    },
+    {
+        id: 'PowerBITile',
+        label: 'Power BI Tile',
+        isDiscoverable: true,
+        parents: ['PowerBIWorkspace', 'PowerBIDashboard'],
+    },
+    {
+        id: 'PowerBIPage',
+        label: 'Power BI Page',
+        isDiscoverable: true,
+        parents: ['PowerBIWorkspace', 'PowerBIReport'],
+    },
+    {
+        id: 'PowerBIDatasource',
+        label: 'Power BI Datasource',
+        isDiscoverable: true,
+        parents: ['PowerBIWorkspace', 'PowerBIDataset'],
     },
 ]

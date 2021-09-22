@@ -3,12 +3,25 @@
         <p class="mb-0 text-gray-500 uppercase">{{ user.type }}</p>
         <div class="my-2 text-gray-500">
             <div
-                class="flex items-center mb-1 overflow-hidden font-bold text-gray-700 "
+                class="flex items-center mb-1 overflow-hidden font-bold text-gray-700"
             >
-                <img
-                    src="https://picsum.photos/id/237/50/50"
-                    alt="profile_pic"
-                    class="mr-2 rounded-full w-7 h-7"
+                <avatar
+                    v-if="user && user.type === 'user'"
+                    class="mr-2"
+                    :image-url="
+                        KeyMaps.auth.avatar.GET_AVATAR({
+                            username: user.username,
+                        })
+                    "
+                    :allow-upload="false"
+                    :avatar-name="user.username"
+                    avatar-size="small"
+                    :avatar-shape="'circle'"
+                />
+                <AtlanIcon
+                    v-else-if="user && user.type === 'group'"
+                    icon="Group"
+                    class="h-4 text-primary group-hover:text-white mr-2"
                 />
                 <span
                     v-if="user?.first_name && user?.last_name"
@@ -29,7 +42,8 @@
                 rounded-full
                 bg-gray-light
                 text-gray-700
-                hover:bg-primary hover:text-white
+                hover:bg-primary
+                hover:text-white
             "
         >
             Admin
@@ -38,15 +52,23 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent } from 'vue'
+import { defineComponent } from 'vue'
+import Avatar from '~/components/common/avatar.vue'
+import { KeyMaps } from '~/api/keyMap'
 
-    export default defineComponent({
-        name: 'UserInfoHoverCard',
-        props: {
-            user: {
-                type: Object,
-                required: true,
-            },
+export default defineComponent({
+    name: 'UserInfoHoverCard',
+    components: { Avatar },
+    props: {
+        user: {
+            type: Object,
+            required: true,
         },
-    })
+    },
+    setup() {
+        return {
+            KeyMaps,
+        }
+    },
+})
 </script>

@@ -19,7 +19,16 @@ export function useSavedQuery(
             favico: 'https://atlan.com/favicon.ico',
             isSaved: true,
             queryId: savedQuery.id,
-            explorer: {},
+            explorer: {
+                schema: {
+                    connectors: {
+                        connection: 'default/snowflake/vqaqufvr-i',
+                        connector: 'snowflake',
+                        selectedDefaultSchema: 'ATLAN_TRIAL.PUBLIC',
+                        selectedDataSourceName: 'default/snowflake/vqaqufvr-i',
+                    },
+                },
+            },
             playground: {
                 editor: {
                     text: savedQuery.editor,

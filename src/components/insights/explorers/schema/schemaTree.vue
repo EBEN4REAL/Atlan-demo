@@ -39,7 +39,7 @@
                                                 :icon="item.typeName"
                                                 class="w-5 h-5 my-auto mr-1"
                                             ></AtlanIcon>
-                                             {{ item.title }}
+                                             <span class="text-sm leading-5 tracking-wide">{{ item.title }}</span>
                                             </div>
                                     </div>
                                 </div>
@@ -92,10 +92,8 @@
                                     </div> -->
                             </template>
                         </a-popover>
-                        <div v-else class="w-full" @click="item.click()">
-                            <span>
-                                {{ item.title }}
-                            </span>
+                        <div v-else class="w-full text-sm leading-5 text-primary font-bold " @click="item.click()">
+                            {{ item.title }}
                         </div>
                     </template>
                 </a-tree>

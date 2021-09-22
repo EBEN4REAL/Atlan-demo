@@ -9,16 +9,16 @@
             @change="handleChange"
         >
         </a-input>
-        <a-tree-select
+        <a-select
             v-if="dataType === 'asyncSelect'"
-            tree-data-simple-mode
             style="width: 100%"
+            :value="modelValue"
             :dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"
-            :tree-data="asyncData"
-            placeholder="Please select"
-            :load-data="loadData"
+            :options="asyncData"
+            :loading="loading"
+            :placeholder="placeholder"
+            @change="handleChange"
         />
-
         <a-input-number
             v-if="dataType === 'number'"
             :value="modelValue"
@@ -59,8 +59,8 @@
                 style="width: 80%"
                 show-search
                 :value="modelValue"
-                :placeholder="placeholder"
                 :options="enumList"
+                :placeholder="placeholder"
                 @change="handleChange"
             >
             </a-select>
@@ -77,8 +77,10 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, PropType } from 'vue'
+    import { defineComponent, PropType, ref } from 'vue'
     import UserSelector from '@common/selector/users/index.vue'
+    import useAsyncSelector from './useAsyncSelector'
+    import { useAPIPromise } from '~/api/useAPI'
 
     export default defineComponent({
         components: {
@@ -145,10 +147,24 @@
             },
         },
         emits: ['update:modelValue', 'change', 'blur'],
+        setup(props) {
+            const {
+                loadData,
+                asyncData,
+                loadingData: loading,
+            } = useAsyncSelector(
+                props.requestConfig,
+                props.responseConfig,
+                props.dataType
+            )
+
+            if (props.dataType === 'asyncSelect') loadData()
+
+            return { loadData, asyncData, loading }
+        },
         data() {
             return {
                 isCustom: false,
-                asyncData: null,
             }
         },
         mounted() {
@@ -162,13 +178,10 @@
         },
         methods: {
             handleChange(e) {
-                // console.log('changed')
-                // console.log(this.modelValue)
                 let val = e
                 if (e?.target) {
                     val = e.target.value
                 }
-                // console.log(val)
                 if (this.dataType === 'number') {
                     this.$emit('update:modelValue', parseInt(val))
                 } else {
@@ -179,7 +192,6 @@
             handleToggleCustom() {
                 this.isCustom = !this.isCustom
             },
-            async loadData() {},
         },
     })
 </script>

@@ -39,8 +39,8 @@ export const dummy2 = [
         label: 'Async Select',
         isVisible: true,
         requestConfig: {
-            url: 'http://localhost:3333/api/auth/atlas/tenants/default/search/basic',
-            type: 'POST',
+            url: 'https://alpha.atlan.com/api/auth/atlas/tenants/default/search/basic',
+            method: 'POST',
             params: {},
             body: {
                 "typeName": "Connection",

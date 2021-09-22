@@ -1,5 +1,5 @@
 <template>
-    <a-form ref="formRef" :rules="getRules(formModel)">
+    <a-form ref="formRef">
         <a-button @click="validate">Validate</a-button>
 
         <span class="grid grid-cols-2 gap-x-8">
@@ -86,6 +86,10 @@
                 getRules,
                 validate,
             } = useFormGenerator(dummy2, formRef)
+
+            formSchema.value = JSON.parse(
+                JSON.stringify(finalConfigObject.value)
+            )
 
             return {
                 formSchema,

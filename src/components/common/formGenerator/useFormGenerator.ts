@@ -148,8 +148,11 @@ export default function useFormGenerator(dummy2, formRef) {
                 rulesObj[f.id] = []
                 f.rules.forEach(r => {
                     const rule = getRule(r)
-                    if (rule)
+                    if (rule) {
+                        if (f.type === 'number')
+                            rule.type = 'integer'
                         rulesObj[f.id].push(rule)
+                    }
                 })
             }
         })

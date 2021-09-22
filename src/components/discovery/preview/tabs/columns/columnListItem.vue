@@ -28,13 +28,7 @@
             <AtlanIcon icon="ForeignKey" />
         </div> -->
     </div>
-    <!-- <span class="text-xs leading-relaxed text-gray-500 whitespace-pre-wrap">
-        {{
-            asset.attributes.userDescription ||
-            asset.attributes.description ||
-            'No description'
-        }}
-    </span> -->
+
     <Description :selected-asset="asset" :using-in-info="false" />
     <teleport to="#overAssetPreviewSidebar">
         <a-drawer

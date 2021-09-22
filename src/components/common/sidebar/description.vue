@@ -23,7 +23,8 @@
                 !showEditableDescription &&
                 !isLoading
             "
-            class="inline-block w-full p-2 text-sm rounded-sm cursor-pointer  text-gray hover:bg-gray-100"
+            class="inline-block w-full px-2 py-1 text-sm rounded-sm cursor-pointer  text-gray hover:bg-gray-100"
+            style="margin-bottom: -4px; margin-top: -4px"
             :style="usingInInfo ? 'margin-left: -8px' : ''"
             @click="handleAddDescriptionClick"
         >

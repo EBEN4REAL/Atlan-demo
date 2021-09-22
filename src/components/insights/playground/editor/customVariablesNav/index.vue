@@ -209,6 +209,10 @@
                 currVariable.value = undefined
             }
             const cancelEdit = (variable: CustomVaribaleInterface) => {
+                const index = sqlVariables.value.findIndex(
+                    (v) => v.key === variable.key
+                )
+                sqlVariables.value[index] = currVariable.value
                 customVariableOpenKey.value = undefined
                 currVariable.value = undefined
             }
@@ -232,7 +236,6 @@
                     )
                 )
                 activeInlineTabCopy.playground.editor.text = text
-                console.log(activeInlineTabCopy, 'copy')
                 modifyActiveInlineTabEditor(activeInlineTabCopy, tabs)
                 modifyEditorContent(editorInstance, monacoInstance, text)
                 closeDropdown()

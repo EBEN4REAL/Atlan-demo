@@ -46,6 +46,8 @@ export const KeyMaps = {
         },
         avatar: {
             UPLOAD_AVATAR: () => getAPIPath('auth', '/avatars'),
+            GET_AVATAR: ({ username }: PathParams) =>
+                getAPIPath('auth', `/avatars/${username}`),
         },
         connection: {
             TEST_NETWORK: () => getAPIPath('auth', '/connections/test'),

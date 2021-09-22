@@ -25,7 +25,7 @@
                         :trigger="['click']"
                     >
                         <span
-                            class="flex items-center justify-center mr-2 cursor-pointer  hover:text-primary-600"
+                            class="flex items-center justify-center mr-2 cursor-pointer hover:text-primary-600"
                             @click="() => openDropdown(variable)"
                         >
                             <fa icon="fal cog" class="" />
@@ -34,7 +34,7 @@
                             <a-menu>
                                 <div class="px-4 py-2">
                                     <span
-                                        class="absolute right-0 flex items-center justify-center mr-2 cursor-pointer  hover:text-primary-600"
+                                        class="absolute right-0 flex items-center justify-center mr-2 cursor-pointer hover:text-primary-600"
                                         @click="() => deleteVariable(variable)"
                                     >
                                         <fa icon="fal trash-alt" class="" />
@@ -131,7 +131,7 @@
                     </p>
                 </div>
                 <div
-                    class="flex items-center justify-center h-full px-2 text-white rounded-tr rounded-br  bg-primary-400"
+                    class="flex items-center justify-center h-full px-2 text-white rounded-tr rounded-br bg-primary"
                 >
                     <p
                         class="mb-0 truncate variable-value"
@@ -161,7 +161,8 @@
             ) as Ref<activeInlineTabInterface>
             const editorInstance = inject(
                 'editorInstance'
-            ) as Ref<editor.IStandaloneCodeEditor>
+            ) as editor.IStandaloneCodeEditor
+            const monacoInstance = inject('monacoInstance') as Ref<any>
             const currentSelectedVariable = ref(null)
             const sqlVariables = ref([
                 {
@@ -196,10 +197,32 @@
                     dropDownStatus: false,
                 }
                 sqlVariables.value.push(samlple_add_variable_obj)
-                editorInstance.value &&
-                    editorInstance.value.trigger('keyboard', 'type', {
-                        text: ` {{variable${currentVariablesLength}}}`,
-                    })
+                // const lineCount = editorInstance.getModel()?.getLineCount()
+                // console.log(lineCount)
+                // const lastLineLength = editorInstance.value
+                //     .getModel()
+                //     ?.getLineMaxColumn(1)
+
+                // const range = new monacoInstance.value.Range(
+                //     lineCount,
+                //     lastLineLength,
+                //     lineCount,
+                //     lastLineLength
+                // )
+                // console.log(lineCount, editorInstance.value.trigger)
+
+                // editorInstance.value &&
+                //     editorInstance.value.executeEdits('', [
+                //         {
+                //             range: range,
+                //             text: ` {{variable${currentVariablesLength}}}`,
+                //         },
+                //     ])
+                // console.log(lastLineLength)
+                // editorInstance &&
+                //     editorInstance.trigger('keyboard', 'type', {
+                //         text: ` {{variable${currentVariablesLength}}}`,
+                //     })
             }
 
             const openDropdown = (variable: any) => {

@@ -2,7 +2,8 @@
     <div class="flex flex-col items-center w-full h-full bg-white border-r">
         <div class="w-full p-3 mb-3">
             <Connector
-                v-model:data="connectors"
+                class=""
+                :data="connector"
                 :item="{
                     id: 'connector',
                     label: 'Connector',
@@ -21,32 +22,20 @@
                     exclude: false,
                 }"
                 @change="handleChange"
+                @update:data="setConnector"
             ></Connector>
         </div>
         <div class="w-full p-3 pt-0 overflow-y-auto scrollable-container">
-            <!-- <template v-for="table in tables" :key="table.id">
-                <div
-                    class="flex items-center justify-center w-full px-2 py-2 mb-3 rounded cursor-pointer  placeholder"
-                    @click="() => openAssetSidebar(table)"
-                    :class="
-                        isAssetSidebarOpened(table)
-                            ? 'active-placeholder'
-                            : 'placeholder'
-                    "
-                >
-                    {{ table.label }}
-                </div>
-            </template> -->
-                <schema-tree
-                    :tree-data="treeData"
-                    :on-load-data="onLoadData"
-                    :select-node="selectNode"
-                    :expand-node="expandNode"
-                    :is-loading="isInitingTree"
-                    :loaded-keys="loadedKeys"
-                    :selected-keys="selectedKeys"
-                    :expanded-keys="expandedKeys"
-                />
+            <schema-tree
+                :tree-data="treeData"
+                :on-load-data="onLoadData"
+                :select-node="selectNode"
+                :expand-node="expandNode"
+                :is-loading="isInitingTree"
+                :loaded-keys="loadedKeys"
+                :selected-keys="selectedKeys"
+                :expanded-keys="expandedKeys"
+            />
         </div>
     </div>
 </template>
@@ -63,6 +52,7 @@
     import { tableInterface } from '~/types/insights/table.interface'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
     import { tablesData } from './tablesDemoData'
+    import { useConnector } from '~/components/insights/common/composables/useConnector'
 
     export default defineComponent({
         components: { Connector, SchemaTree },
@@ -72,8 +62,16 @@
             const activeInlineTab = inject(
                 'activeInlineTab'
             ) as Ref<activeInlineTabInterface>
+            const selectedDefaultSchema = inject(
+                'selectedDefaultSchema'
+            ) as Ref<string>
+            const selectedDataSourceName = inject(
+                'selectedDataSourceName'
+            ) as Ref<string>
             const tabs = inject('inlineTabs') as Ref<activeInlineTabInterface[]>
             const { openAssetSidebar } = useAssetSidebar(tabs, activeInlineTab)
+            const { setSchemaAndSoruceName, getSchemaAndSourceName } =
+                useConnector()
 
             const isAssetSidebarOpened = (table: tableInterface) => {
                 if (
@@ -85,14 +83,31 @@
                 }
                 return false
             }
-            const connectors = {
-                connectorsPayload: [],
+            const connector = ref({
                 checked: [],
-            }
-            const handleChange = (e) => {
-                console.log(e, 'connectorChange')
+            })
+            const handleChange = (data) => {
+                console.log(data, 'connectorChange')
+                const len = data.payload.criterion.length
+                if (
+                    len > 0 &&
+                    data.payload.criterion[len - 1]?.attributeValue
+                ) {
+                    const { schema, sourceName } = getSchemaAndSourceName(
+                        data.payload.criterion[len - 1]?.attributeValue
+                    )
+                    setSchemaAndSoruceName(
+                        selectedDefaultSchema,
+                        selectedDataSourceName,
+                        schema,
+                        sourceName
+                    )
+                }
             }
 
+            const setConnector = (payload: any) => {
+                connector.value = payload
+            }
             const {
                 treeData,
                 loadedKeys,
@@ -110,7 +125,8 @@
             });
 
             return {
-                connectors,
+                connector,
+                setConnector,
                 isAssetSidebarOpened,
                 openAssetSidebar,
                 handleChange,

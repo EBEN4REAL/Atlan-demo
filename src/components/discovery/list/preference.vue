@@ -1,7 +1,5 @@
 <template>
-    <div
-        class="flex flex-col py-1 divide-y rounded gap-y-4 preference-container"
-    >
+    <div class="flex flex-col py-1 rounded gap-y-3 preference-container">
         <div class="flex items-center justify-between text-gray">
             <span class="mr-6 text-sm text-gray">Order By</span>
             <a-select

@@ -62,6 +62,7 @@ module.exports = {
             borderColor: ['hover', 'focus'],
             display: ['group-hover'],
             textColor: ['group-focus'],
+            fill: ['group-hover'],
         },
     },
     plugins: [

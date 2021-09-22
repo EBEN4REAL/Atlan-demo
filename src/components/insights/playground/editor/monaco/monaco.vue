@@ -14,7 +14,10 @@
         onUnmounted,
         inject,
         Ref,
+        reactive,
         watch,
+        PropType,
+        toRefs,
     } from 'vue'
 
     import savedQuery from '@/projects/monaco/savedQuery'
@@ -41,8 +44,16 @@
     }
 
     export default defineComponent({
-        emits: ['setEditorInstance'],
+        emits: ['setEditorInstance', 'editorInstance'],
+        props: {
+            editorInstance: {
+                type: Object as PropType<Ref<any>>,
+                required: true,
+            },
+        },
+
         setup(props, { emit }) {
+            const { editorInstance } = toRefs(props)
             const activeInlineTab = inject(
                 'activeInlineTab'
             ) as Ref<activeInlineTabInterface>
@@ -193,7 +204,12 @@
                         strings: false,
                     },
                 })
-                editor.getModel().onDidChangeContent((event) => {
+                console.log(typeof editor)
+
+                const lastLineLength = editor.getModel()?.getLineMaxColumn(1)
+                console.log(lastLineLength)
+                // emit('editorInstance', editor)
+                editor?.getModel().onDidChangeContent((event) => {
                     const text = editor.getValue()
                     console.log(event)
                     onEditorContentChange(event, text)
@@ -206,7 +222,7 @@
             })
 
             onUnmounted(() => {
-                editor.dispose()
+                editor?.dispose()
             })
             /*Watcher for changing the content of the editor on activeInlineTab Change*/
             watch(activeInlineTab, () => {
@@ -229,7 +245,7 @@
                     }
                     editor?.setPosition(position)
                     // on active inline tab change
-                    emit('setEditorInstance', editor)
+                    // emit('editorInstance', editor)
                 }
             })
             return {

@@ -1,5 +1,6 @@
 import { watch, ref, Ref, inject } from 'vue'
 import { useRouter } from 'vue-router'
+import { message } from 'ant-design-vue'
 import { generateUUID } from '~/utils/helper/generator'
 import { Components } from '~/api/atlas/client'
 
@@ -74,20 +75,31 @@ const useCreateGlossary = () => {
 
     const createCategory = (
         parentGlossaryGuid: string,
-        parentCategoryGuid?: string
+        parentCategoryGuid?: string,
+        title?: string,
+        description?: string,
+        status?: string,
+        ownerUsers?: string,
+        ownerGroups?: string
     ) => {
         body.value = {
             name: generateUUID(),
-            displayText: 'Untitled Category',
-            shortDescription: '',
+            displayText: title ?? 'Untitled Category',
+            shortDescription: description ?? '',
             longDescription: '',
-            assetStatus: 'draft',
-            ownerUsers: `${username.value}`,
+            assetStatus: status ?? 'draft',
+            ownerUsers: ownerUsers ?? `${username.value}`,
+            ownerGroups: ownerGroups ?? ``,
             anchor: {
                 glossaryGuid: parentGlossaryGuid,
             },
         }
-        if (parentCategoryGuid) {
+
+        message.loading({
+            content: 'Creating new category...',
+            key: `${title}`,
+        })
+        if (parentCategoryGuid && parentCategoryGuid !== '') {
             body.value.parentCategory = {
                 categoryGuid: parentCategoryGuid,
             }
@@ -109,15 +121,30 @@ const useCreateGlossary = () => {
 
         watch(data, (newData) => {
             if (newData?.guid) {
+                message.success({
+                    content: `${title} created!`,
+                    key: `${title}`,
+                    duration: 2,
+                })
+
                 updateEntity('category', newData.guid, {
-                    name: 'Untitled Category',
+                    name: title ?? 'Untitled Category',
                 })
             }
         })
         watch(updateData, (newData) => {
             if (newData?.guid) {
-                redirectToProfile('category', newData.guid)
+                if (!title) {
+                    redirectToProfile('category', newData.guid)
+                }
+
                 if (refetchGlossaryTree) {
+                    refetchGlossaryTree(
+                        parentCategoryGuid || parentCategoryGuid !== ''
+                            ? parentCategoryGuid
+                            : 'root'
+                    )
+
                     refetchGlossaryTree(parentCategoryGuid ?? 'root')
                 }
             }
@@ -130,20 +157,27 @@ const useCreateGlossary = () => {
 
     const createTerm = (
         parentGlossaryGuid: string,
-        parentCategoryGuid?: string
+        parentCategoryGuid?: string,
+        title?: string,
+        description?: string,
+        status?: string,
+        ownerUsers?: string,
+        ownerGroups?: string
     ) => {
         body.value = {
             name: generateUUID(),
-            displayText: 'Untitled Term',
-            shortDescription: '',
+            displayText: title ?? 'Untitled Term',
+            shortDescription: description ?? '',
             longDescription: '',
-            assetStatus: 'draft',
-            ownerUsers: `${username.value}`,
+            assetStatus: status ?? 'draft',
+            ownerUsers: ownerUsers ?? `${username.value}`,
+            ownerGroups: ownerGroups ?? ``,
             anchor: {
                 glossaryGuid: parentGlossaryGuid,
             },
         }
-        if (parentCategoryGuid) {
+        message.loading({ content: 'Creating new term...', key: `${title}` })
+        if (parentCategoryGuid && parentCategoryGuid !== '') {
             body.value.categories = [
                 {
                     categoryGuid: parentCategoryGuid,
@@ -167,16 +201,28 @@ const useCreateGlossary = () => {
 
         watch(data, (newData) => {
             if (newData?.guid) {
+                message.success({
+                    content: `${title} created!`,
+                    key: `${title}`,
+                    duration: 2,
+                })
+
                 updateEntity('term', newData.guid, {
-                    name: 'Untitled Term',
+                    name: title ?? 'Untitled Term',
                 })
             }
         })
         watch(updateData, (newData) => {
             if (newData?.guid) {
-                redirectToProfile('term', newData.guid)
+                if (!title) {
+                    redirectToProfile('term', newData.guid)
+                }
                 if (refetchGlossaryTree) {
-                    refetchGlossaryTree(parentCategoryGuid ?? 'root')
+                    refetchGlossaryTree(
+                        parentCategoryGuid || parentCategoryGuid !== ''
+                            ? parentCategoryGuid
+                            : 'root'
+                    )
                 }
             }
         })

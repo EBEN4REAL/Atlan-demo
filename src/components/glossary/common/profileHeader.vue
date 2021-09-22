@@ -13,8 +13,8 @@
             </a-button>
             <AtlanIcon icon="Glossary" class="h-5 m-0 mr-2" />
             <span
-                class="mr-1 text-sm"
                 v-show="entity?.typeName !== 'AtlasGlossary'"
+                class="mr-1 text-sm"
             >
                 {{
                     entity?.attributes?.anchor?.uniqueAttributes?.qualifiedName
@@ -36,18 +36,30 @@
         </div>
 
         <div class="flex flex-row">
-            <a-button
+            <!--  hidden for GA -->
+            <!-- <a-button
                 class="flex items-center px-2 border-0 shadow-none outline-none"
                 ><atlan-icon icon="BookmarkOutlined" class="w-auto h-4" />
                 <span class="ml-2 text-sm">Bookmark</span>
-            </a-button>
-
-            <a-button
-                class="flex items-center border-0 shadow-none outline-none"
-                ><atlan-icon icon="ShareNew" class="w-auto h-4 mr-1" />
-                <span class="text-sm">Share</span>
-            </a-button>
-
+            </a-button> -->
+            <a-dropdown>
+                <template #overlay>
+                    <a-menu @click="handleMenuClick">
+                        <a-menu-item key="1" @click="handleCopyProfileLink">
+                            Copy link
+                        </a-menu-item>
+                        <!-- <a-menu-item key="2">
+                            Share via other integration
+                        </a-menu-item>
+                        <a-menu-item key="3"> Share via slack </a-menu-item> -->
+                    </a-menu>
+                </template>
+                <a-button
+                    class="flex items-center border-0 shadow-none outline-none"
+                    ><atlan-icon icon="ShareNew" class="w-auto h-4 mr-1" />
+                    <span class="text-sm">Share</span>
+                </a-button>
+            </a-dropdown>
             <ThreeDotMenu :entity="entity" :showLinks="false" />
         </div>
     </div>
@@ -93,12 +105,16 @@
                     <span class="mr-4 text-sm leading-5 text-gray-500">{{
                         assetTypeLabel[entity.typeName].toUpperCase()
                     }}</span>
-
-                    <span
-                        class="text-sm leading-5 text-gray-500 truncate  overflow-ellipsis"
-                        v-if="shortDescription !== ''"
-                        >{{ shortDescription }}</span
-                    >
+                    <a-popover trigger="hover" placement="bottom">
+                        <template #content>
+                            <p class="w-60">{{ shortDescription }}</p>
+                        </template>
+                        <span
+                            v-if="shortDescription !== ''"
+                            class="text-sm leading-5 text-gray-500 truncate  overflow-ellipsis"
+                            >{{ shortDescription }}</span
+                        >
+                    </a-popover>
                 </div>
             </div>
         </div>
@@ -113,6 +129,9 @@
     import ThreeDotMenu from '@/glossary/common/threeDotMenu.vue'
     // assets
     import assetTypeLabel from '@/glossary/constants/assetTypeLabel'
+
+    // utils
+    import { copyToClipboard } from '~/utils/clipboard'
 
     export default defineComponent({
         components: {
@@ -152,13 +171,9 @@
             },
         },
         setup(props) {
-            // const assetTypeLabel = {
-            //     AtlasGlossaryTerm: 'term',
-            //     AtlasGlossaryCategory: 'category',
-            //     AtlasGlossary: 'glossary',
-            // }
             const router = useRouter()
 
+            // computed
             const parentGlossaryName = computed(
                 () =>
                     props.entity.value?.attributes?.qualifiedName?.split(
@@ -171,7 +186,7 @@
                     props.entity.value?.attributes?.assignedEntities?.length ??
                     0
             )
-
+            // methods
             const redirectToProfile = () => {
                 if (props.entity?.typeName === 'AtlasGlossary')
                     router.push('/glossary')
@@ -180,11 +195,26 @@
                         `/glossary/${props.entity?.attributes?.anchor?.guid}`
                     )
             }
+            const handleCopyProfileLink = () => {
+                const baseUrl = window.location.origin
+                if (props.entity?.typeName !== 'AtlasGlossary') {
+                    const text = `${baseUrl}/glossary/${
+                        assetTypeLabel[props.entity?.typeName]
+                    }/${props?.entity?.guid}`
+                    copyToClipboard(text)
+                } else {
+                    const text = `${baseUrl}/${
+                        assetTypeLabel[props.entity?.typeName]
+                    }/${props?.entity?.guid}`
+                    copyToClipboard(text)
+                }
+            }
             return {
                 redirectToProfile,
                 linkedAssetsCount,
                 parentGlossaryName,
                 assetTypeLabel,
+                handleCopyProfileLink,
             }
         },
     })

@@ -6,9 +6,11 @@ import { List as AssetCategoryList } from '~/constant/assetCategory'
 import { Components } from '~/api/atlas/client'
 
 export interface criterion {
-    attributeName: string
+    attributeName?: string
     attributeValue?: string | undefined
     operator?: string | undefined
+    condition?: string | undefined
+    criterion?: criterion
 }
 
 export function getEncodedStringFromOptions(options: any) {
@@ -138,13 +140,26 @@ export function getEncodedStringFromOptions(options: any) {
                 case 'status': {
                     filterKeyValue = options.filters[filterKey].criterion
                     filterKeyValue = filterKeyValue
-                        .map((e: criterion) => e.attributeValue)
+                        .map((e: criterion) => {
+                            // no status filter case
+                            if(e.condition && e.condition==='OR'){
+                                return 'is_null' // id for no status
+                            }
+                             return e.attributeValue;
+                        })
                         .join(',')
                     break
                 }
                 case 'owners': {
                     filterKeyValue = options.filters[filterKey].criterion
                     let ownerString = ''
+                    // handle case for no owners
+                    // criterion will have an AND condition for filtering out assets with no owners and no groups
+                    if(filterKeyValue?.[0]?.condition && filterKeyValue[0].condition === 'AND'){
+                        ownerString=`no_owner`;
+                        filterKeyValue = ownerString
+                    }
+                    else{
                     const uniqueOwnerAttributes = new Set(
                         filterKeyValue.map((e: criterion) => e.attributeName)
                     )
@@ -160,6 +175,7 @@ export function getEncodedStringFromOptions(options: any) {
                     })
                     ownerString = ownerString.slice(0, -1)
                     filterKeyValue = ownerString
+                }
                     break
                 }
                 case 'advanced': {
@@ -285,6 +301,7 @@ export function getDecodedOptionsFromString(router) {
         owners: {
             userValue: [],
             groupValue: [],
+            noOwner: false,
             condition: 'OR',
             criterion: [],
         },
@@ -360,11 +377,31 @@ export function getDecodedOptionsFromString(router) {
             case 'status': {
                 const facetFilterValues = facetFilterValuesString.split(',')
                 facetFilterValues.forEach((facetFilterValue) => {
+                    if(facetFilterValue !=='is_null')
                     criterion.push({
                         attributeName: 'assetStatus',
                         attributeValue: facetFilterValue,
                         operator: 'eq',
                     })
+                    else
+                    {
+                        const subCriterion: Components.Schemas.FilterCriteria[] = [
+                            {
+                                condition:'OR',
+                                criterion:[{
+                                    attributeName: 'assetStatus',
+                                    attributeValue: 'is_null',
+                                    operator: 'eq',
+                                },
+                                {
+                                    attributeName: 'assetStatus',
+                                    attributeValue: '',
+                                    operator: 'isNull',
+                                }] as Components.Schemas.FilterCriteria[]
+                            }
+                        ]
+                        criterion.push(...subCriterion)
+                    }
                 })
                 facetsFilters.status.criterion = criterion
                 facetsFilters.status.checked = facetFilterValues
@@ -437,8 +474,27 @@ export function getDecodedOptionsFromString(router) {
             }
             case 'owners': {
                 const usersAndGroupsString: string[] =
-                    facetFilterValuesString.split('&') // ownerUsers:ab,cd&ownerGroups:ab,cd
-                usersAndGroupsString.forEach((item) => {
+                    facetFilterValuesString.split('&') // ownerUsers:ab,cd&ownerGroups:ab,cd OR no_owner
+                if(usersAndGroupsString[0]==='no_owner'){
+                    criterion.push({
+                        condition: 'AND',
+                        criterion: [
+                            {   
+                                attributeName: 'ownerUsers',
+                                attributeValue: '-',
+                                operator: 'is_null',
+                            },
+                            {
+                                attributeName: 'ownerGroups',
+                                attributeValue: '-',
+                                operator: 'is_null',
+                            },
+                        ],
+                    })
+                    facetsFilters.owners.noOwner = true;
+                }
+                else{
+                    usersAndGroupsString.forEach((item) => {
                     const subFacetFilterValues = item.split(':')
                     if (subFacetFilterValues[0] === 'ownerUsers') {
                         const usersArray: string[] =
@@ -465,6 +521,7 @@ export function getDecodedOptionsFromString(router) {
                         facetsFilters.owners.groupValue = groupsArray
                     }
                 })
+            }
                 facetsFilters.owners.criterion = criterion
                 break
             }

@@ -249,6 +249,30 @@ export const InfoTabInAssetInDiscovery: { [key: string]: AssetTab } = {
             },
         ],
     },
+    PowerBIWorkspace:{
+        panels: [assetDetails, linkedAsset, properties]
+    },
+    PowerBIDashboard:{
+        panels: [assetDetails, linkedAsset, properties]
+    },
+    PowerBIReport:{
+        panels: [assetDetails, linkedAsset, properties]
+    },
+    PowerBIDataset:{
+        panels: [assetDetails, linkedAsset, properties]
+    },
+    PowerBIDataflow:{
+        panels: [assetDetails, linkedAsset, properties]
+    },
+    PowerBITile:{
+        panels: [assetDetails, linkedAsset, properties]
+    },
+    PowerBIPage:{
+        panels: [assetDetails, linkedAsset, properties]
+    },
+    PowerBIDatasource:{
+        panels: [assetDetails, linkedAsset, properties]
+    },
 }
 
 export const InfoTabInAssetProfile: { [key: string]: AssetTab } = {

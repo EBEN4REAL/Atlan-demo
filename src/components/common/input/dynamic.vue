@@ -141,13 +141,13 @@
         },
         methods: {
             handleChange(e) {
-                console.log('changed')
-                console.log(this.modelValue)
+                // console.log('changed')
+                // console.log(this.modelValue)
                 let val = e
-                if (e.target) {
+                if (e?.target) {
                     val = e.target.value
                 }
-                console.log(val)
+                // console.log(val)
                 if (this.dataType === 'number') {
                     this.$emit('update:modelValue', parseInt(val))
                 } else {

@@ -34,16 +34,17 @@
                 @asset-mutation="propagateToColumnList"
             />
         </div>
+
         <div v-if="isLoadMore" class="flex items-center justify-center">
             <button
                 :disabled="isLoading"
-                class="flex items-center justify-between py-2 transition-all duration-300 bg-white rounded-full  text-primary"
+                class="flex items-center justify-between py-2 transition-all duration-300 bg-white rounded-full text-primary"
                 :class="isLoading ? 'px-2 w-9' : 'px-5 w-32'"
                 @click="loadMore"
             >
                 <template v-if="!isLoading">
                     <p
-                        class="m-0 mr-1 overflow-hidden text-sm transition-all duration-300  overflow-ellipsis whitespace-nowrap"
+                        class="m-0 mr-1 overflow-hidden text-sm transition-all duration-300 overflow-ellipsis whitespace-nowrap"
                     >
                         Load more
                     </p>
@@ -78,6 +79,20 @@
             <a-spin size="small" class="mr-2 leading-none"></a-spin
             ><span>Getting column info</span>
         </div>
+        <div
+            v-if="list.length <= 0 && !isLoading"
+            class="flex flex-col items-center"
+        >
+            <img
+                :src="emptyScreen"
+                alt="No columns"
+                class="w-2/5 m-auto mb-4"
+            />
+            <span class="text-gray-500">No columns found</span>
+            <a-button class="mt-3" @click="clearFiltersAndSearch"
+                >Clear all filters</a-button
+            >
+        </div>
     </div>
 </template>
 
@@ -89,6 +104,7 @@
     import ColumnListItem from '~/components/discovery/preview/tabs/columns/columnListItem.vue'
     import useAssetInfo from '~/composables/asset/useAssetInfo'
     import useColumns2 from '~/composables/asset/useColumns2'
+    import emptyScreen from '~/assets/images/empty_search.png'
 
     import { dataTypeList } from '~/constant/datatype'
     import { assetInterface } from '~/types/assets/asset.interface'
@@ -233,6 +249,14 @@
                 offset.value = 0
                 updateBody()
             }
+
+            const clearFiltersAndSearch = () => {
+                filters.value = []
+                dataTypeFilters.value = []
+                queryText.value = ''
+                offset.value = 0
+                updateBody()
+            }
             const handleFilterChange = () => {
                 offset.value = 0
                 dataTypeFilters.value = dataTypeList
@@ -269,6 +293,8 @@
                 loadMore,
                 handleSearchChange,
                 handleFilterChange,
+                emptyScreen,
+                clearFiltersAndSearch,
             }
         },
     })

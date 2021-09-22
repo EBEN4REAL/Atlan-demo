@@ -3,7 +3,7 @@
         <div class="w-full p-3 mb-3">
             <Connector
                 class=""
-                :data="connector"
+                :data="connectorsData"
                 :item="{
                     id: 'connector',
                     label: 'Connector',
@@ -41,8 +41,7 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, Ref, inject, ref } from 'vue'
-    
+    import { defineComponent, Ref, inject, ref, watch } from 'vue'
     import { useAssetSidebar } from '~/components/insights/assetSidebar/composables/useAssetSidebar'
     import Connector from '@common/facets/connector.vue'
     import SchemaTree from './schemaTree.vue'
@@ -52,6 +51,7 @@
     import { tableInterface } from '~/types/insights/table.interface'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
     import { tablesData } from './tablesDemoData'
+    import { connectorsWidgetInterface } from '~/types/insights/connectorWidget.interface'
     import { useConnector } from '~/components/insights/common/composables/useConnector'
 
     export default defineComponent({
@@ -62,16 +62,15 @@
             const activeInlineTab = inject(
                 'activeInlineTab'
             ) as Ref<activeInlineTabInterface>
-            const selectedDefaultSchema = inject(
-                'selectedDefaultSchema'
-            ) as Ref<string>
-            const selectedDataSourceName = inject(
-                'selectedDataSourceName'
-            ) as Ref<string>
+
             const tabs = inject('inlineTabs') as Ref<activeInlineTabInterface[]>
             const { openAssetSidebar } = useAssetSidebar(tabs, activeInlineTab)
-            const { setSchemaAndSoruceName, getSchemaAndSourceName } =
-                useConnector()
+            const {
+                setConnectorsDataInInlineTab,
+                getConnectorsData,
+                getDatabaseQualifiedName,
+                getSchemaQualifiedName,
+            } = useConnector()
 
             const isAssetSidebarOpened = (table: tableInterface) => {
                 if (
@@ -83,30 +82,52 @@
                 }
                 return false
             }
-            const connector = ref({
-                checked: [],
+            const selectedDataSourceName =
+                activeInlineTab.value.explorer.schema.connectors
+                    .selectedDataSourceName
+            const selectedDefaultSchema =
+                activeInlineTab.value.explorer.schema.connectors
+                    .selectedDefaultSchema
+
+            const connectorsData: Ref<connectorsWidgetInterface> = ref({
+                connection:
+                    activeInlineTab.value.explorer.schema.connectors.connection,
+                connector:
+                    activeInlineTab.value.explorer.schema.connectors.connector,
+                databaseQualifiedName: getDatabaseQualifiedName(
+                    selectedDataSourceName,
+                    selectedDefaultSchema
+                ),
+                schemaQualifiedName: getSchemaQualifiedName(
+                    selectedDataSourceName,
+                    selectedDefaultSchema
+                ),
             })
             const handleChange = (data) => {
-                console.log(data, 'connectorChange')
                 const len = data.payload.criterion.length
                 if (
                     len > 0 &&
                     data.payload.criterion[len - 1]?.attributeValue
                 ) {
-                    const { schema, sourceName } = getSchemaAndSourceName(
-                        data.payload.criterion[len - 1]?.attributeValue
-                    )
-                    setSchemaAndSoruceName(
-                        selectedDefaultSchema,
-                        selectedDataSourceName,
+                    const { schema, sourceName, connector, connection } =
+                        getConnectorsData(
+                            data.payload.criterion[len - 1]?.attributeValue
+                        )
+                    setConnectorsDataInInlineTab(activeInlineTab, tabs, {
                         schema,
-                        sourceName
-                    )
+                        sourceName,
+                        connector,
+                        connection,
+                    })
                 }
             }
 
-            const setConnector = (payload: any) => {
-                connector.value = payload
+            const setConnector = (payload: {
+                connection: string | undefined
+                connector: string | undefined
+            }) => {
+                connectorsData.value.connector = payload.connector
+                connectorsData.value.connection = payload.connection
             }
             const {
                 treeData,
@@ -124,8 +145,35 @@
                 // schemaQualifiedName: ref('default/snowflake/vqaqufvr-i/ATLAN_SAMPLE_DATA/DBT_DEV')
             });
 
+            /* Watchers for updating the connectors when activeinlab change */
+            watch(activeInlineTab, () => {
+                const selectedDataSourceName =
+                    activeInlineTab.value.explorer.schema.connectors
+                        .selectedDataSourceName
+                const selectedDefaultSchema =
+                    activeInlineTab.value.explorer.schema.connectors
+                        .selectedDefaultSchema
+
+                connectorsData.value = {
+                    connection:
+                        activeInlineTab.value.explorer.schema.connectors
+                            .connection,
+                    connector:
+                        activeInlineTab.value.explorer.schema.connectors
+                            .connector,
+                    databaseQualifiedName: getDatabaseQualifiedName(
+                        selectedDataSourceName,
+                        selectedDefaultSchema
+                    ),
+                    schemaQualifiedName: getSchemaQualifiedName(
+                        selectedDataSourceName,
+                        selectedDefaultSchema
+                    ),
+                }
+            })
+
             return {
-                connector,
+                connectorsData,
                 setConnector,
                 isAssetSidebarOpened,
                 openAssetSidebar,
@@ -143,6 +191,16 @@
             }
         },
     })
+    /*
+    {
+                connection: 'default/snowflake/bvscezvng',
+                connector: 'snowflake',
+                databaseQualifiedName:
+                    'default/snowflake/vqaqufvr-i/SNOWFLAKE_SAMPLE_DATA',
+                schemaQualifiedName:
+                    'default/snowflake/bvscezvng/SNOWFLAKE_SAMPLE_DATA/TPCDS_SF10TCL',
+            }
+    */
 </script>
 <style lang="less" scoped>
     .placeholder {

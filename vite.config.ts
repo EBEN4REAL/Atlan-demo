@@ -10,6 +10,7 @@ import postcss from './postcss.config.js'
 import VueI18n from "@intlify/vite-plugin-vue-i18n";
 import styleImport from "vite-plugin-style-import";
 import svgLoader from "vite-svg-loader";
+// import Components from 'unplugin-vue-components/vite'
 
 import { visualizer } from "rollup-plugin-visualizer";
 
@@ -43,6 +44,12 @@ export default defineConfig(({ mode }) => {
         //transformMixedEsModules: true,
         //defaultIsModuleExports: true
       },
+      rollupOptions: {
+        output: {
+          // manualChunks(id)  {
+          // },
+        },
+      }
     },
     plugins: [
       //commonjs({enforce: 'pre'}),
@@ -67,6 +74,7 @@ export default defineConfig(({ mode }) => {
         libs: [],
       }),
       svgLoader(),
+      // Components(),
     ],
     optimizeDeps: {
       //include: ["vue", "vue-router", "@vueuse/core"],

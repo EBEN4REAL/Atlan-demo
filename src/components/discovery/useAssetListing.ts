@@ -12,23 +12,31 @@ export function useAssetListing(
 ) {
     const cancelTokenSource = axios.CancelToken.source()
 
-    const { query, replaceBody, body, list, searchScoreList, isReady, error } =
-        useAssetSearchList(
-            {
-                typeName: typeName || 'Catalog',
-                excludeDeletedEntities: true,
-                includeClassificationAttributes: false,
-                includeSubClassifications: false,
-                includeSubTypes: true,
-                limit: 100,
-                offset: 0,
-                attributes: [...BaseAttributes, ...tableauAttributes],
-                entityFilters: {},
-            },
-            '',
-            immediate,
-            cancelTokenSource
-        )
+    const {
+        query,
+        replaceBody,
+        body,
+        list,
+        searchScoreList,
+        isReady,
+        error,
+        data,
+    } = useAssetSearchList(
+        {
+            typeName: typeName || 'Catalog',
+            excludeDeletedEntities: true,
+            includeClassificationAttributes: false,
+            includeSubClassifications: false,
+            includeSubTypes: true,
+            limit: 100,
+            offset: 0,
+            attributes: [...BaseAttributes, ...tableauAttributes],
+            entityFilters: {},
+        },
+        '',
+        immediate,
+        cancelTokenSource
+    )
 
     const isLoading = computed(() => !isReady.value && !error.value)
 
@@ -40,6 +48,7 @@ export function useAssetListing(
     }
 
     return {
+        data,
         list,
         isLoading,
         query,
@@ -92,7 +101,8 @@ export function useAssetAggregation(
     const assetTypeSum = computed(() => {
         const initialValue = 0
         const sum = assetTypeList.value.reduce(
-            (accumulator, currentValue) => accumulator + currentValue.count,
+            (accumulator, currentValue) =>
+                accumulator + (currentValue?.count || 0),
             initialValue
         )
         return sum

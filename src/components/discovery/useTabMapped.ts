@@ -1,44 +1,21 @@
-import { ref } from 'vue'
 import { List as assetCategoryList } from '~/constant/assetCategory'
 
-export function initialTabsForConnector(criterion: any) {
-    let tabIds = []
-    console.log('connector', criterion?.length, criterion[0]?.attributeValue)
-    if (criterion?.length > 0) {
-        const connectorType = criterion[0]?.attributeValue
-        if (connectorType) {
-            if (connectorType === 'tableau') {
-                tabIds = [
-                    'TableauSite',
-                    'TableauProject',
-                    'TableauWorkbook',
-                    'TableauWorksheet',
-                    'TableauDashboard',
-                    'TableauDatasource',
-                    'TableauDatasourceField',
-                ]
-            } else {
-                tabIds = [
-                    'Connection',
-                    'Database',
-                    'Schema',
-                    'View',
-                    'Table',
-                    'TablePartition',
-                    'MaterialisedView',
-                    'Column',
-                ]
-            }
-        } else {
-            tabIds = [
-                'Connection',
-                'Database',
-                'Schema',
-                'View',
-                'Table',
-                'TablePartition',
-                'MaterialisedView',
-                'Column',
+export const getTabsForConnector = ({
+    attributeName,
+    attributeValue,
+}: Record<string, string>) => {
+    const connector = () => {
+        if (attributeName === 'integrationName') return attributeValue
+        else {
+            let qfChunks = attributeValue?.split('/')
+            return qfChunks?.length > 1 ? qfChunks[1] : ''
+        }
+    }
+    let connectorType = connector()
+
+    if (connectorType) {
+        if (connectorType === 'tableau')
+            return [
                 'TableauSite',
                 'TableauProject',
                 'TableauWorkbook',
@@ -47,10 +24,38 @@ export function initialTabsForConnector(criterion: any) {
                 'TableauDatasource',
                 'TableauDatasourceField',
             ]
-        }
+        else
+            return [
+                'Connection',
+                'Database',
+                'Schema',
+                'View',
+                'Table',
+                'TablePartition',
+                'MaterialisedView',
+                'Column',
+            ]
+    } else {
+        return [
+            'Connection',
+            'Database',
+            'Schema',
+            'View',
+            'Table',
+            'TablePartition',
+            'MaterialisedView',
+            'Column',
+            'TableauSite',
+            'TableauProject',
+            'TableauWorkbook',
+            'TableauWorksheet',
+            'TableauDashboard',
+            'TableauDatasource',
+            'TableauDatasourceField',
+        ]
     }
-    return tabIds
 }
+
 export function initialTabsForAssetCategory(selectedIds: string[]) {
     console.log(selectedIds, 'selectedIds')
     let tabs = []

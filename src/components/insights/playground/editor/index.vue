@@ -7,7 +7,7 @@
             >
                 <div class="w-full">
                     <p class="mb-1 text-base">
-                        {{ selectedDefaultSchema ?? 'WEB SALES' }}
+                        {{ selectedDefaultSchema ?? 'ATLAN_TRIAL.PUBLIC' }}
                     </p>
                 </div>
                 <a-button
@@ -31,6 +31,7 @@
         defineAsyncComponent,
         ref,
         reactive,
+        computed,
         provide,
         watch,
     } from 'vue'
@@ -54,12 +55,12 @@
             const activeInlineTab = inject(
                 'activeInlineTab'
             ) as Ref<activeInlineTabInterface>
-            const selectedDefaultSchema = inject(
-                'selectedDefaultSchema'
-            ) as Ref<string>
-            const selectedDataSourceName = inject(
-                'selectedDataSourceName'
-            ) as Ref<string>
+            const selectedDefaultSchema = computed(
+                () =>
+                    activeInlineTab.value.explorer.schema.connectors
+                        .selectedDefaultSchema
+            )
+
             let editorInstance: any = reactive({})
             const monacoInstance = ref()
             const isQueryRunning = inject('isQueryRunning') as Ref<string>
@@ -70,13 +71,7 @@
                 activeInlineTab.value.playground.editor.columnList = columnList
             }
             const run = () => {
-                queryRun(
-                    activeInlineTab.value,
-                    getData,
-                    isQueryRunning,
-                    selectedDefaultSchema,
-                    selectedDataSourceName
-                )
+                queryRun(activeInlineTab.value, getData, isQueryRunning)
             }
 
             const setEditorInstance = (
@@ -97,7 +92,6 @@
             /*-------------------------------------*/
             return {
                 selectedDefaultSchema,
-                editorInstance,
                 activeInlineTab,
                 isQueryRunning,
                 setEditorInstance,

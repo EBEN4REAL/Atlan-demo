@@ -32,7 +32,7 @@
                 class="h-5 m-0 mb-1 mr-2"
             />
 
-            <span class="mr-3 text-sm">{{ title }}</span>
+            <span class="mr-3 text-sm truncate">{{ title }}</span>
         </div>
 
         <div class="flex flex-row">
@@ -70,7 +70,7 @@
                 <div class="flex">
                     <span
                         v-if="!isNewEntity"
-                        class="mr-3 text-xl font-bold leading-6"
+                        class="mr-3 text-xl font-bold leading-6 truncate"
                         >{{ title }}</span
                     >
 

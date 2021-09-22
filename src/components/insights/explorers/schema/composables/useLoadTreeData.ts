@@ -4,22 +4,31 @@ import { Database, Schema, Table, Column, BasicSearchResponse } from '~/types/in
 
 import { useAPIPromise } from '~/api/useAPI'
 import { KeyMaps } from '~/api/keyMap'
+import { BaseAttributes, BasicSearchAttributes } from '~/constant/projection'
 
 
 const useLoadTreeData = () => {
     const body = ref({
         typeName: "Schema",
         excludeDeletedEntities: true,
-        includeClassificationAttributes: false,
-        includeSubClassifications: false,
+        includeClassificationAttributes: true,
+        includeSubClassifications: true,
         includeSubTypes: true,
-        limit: 100,
+        limit: 5,
         offset: 0,
         attributes: [
             "name",
             "displayName",
             "typeName",
-            "dataType"
+            "dataType",
+            "description",
+            "userDescription",
+            "assetStatus",
+            "ownerUsers",
+            "ownerGroups",
+            "classifications",
+            ...BaseAttributes,
+            ...BasicSearchAttributes
         ],
         entityFilters: {
             condition: "AND",

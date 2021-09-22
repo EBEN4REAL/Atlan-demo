@@ -17,9 +17,9 @@
                     @expand="expandNode"
                 >
                     <template
-                        #title="{ title, typeName, key }"
+                        #title="item"
                     >
-                        <a-dropdown :trigger="['contextmenu']">
+                        <a-popover placement="right">
                             <div
                                 class="min-w-full"
                             >
@@ -36,15 +36,65 @@
                                             "
                                             >
                                             <AtlanIcon
-                                                :icon="typeName"
+                                                :icon="item.typeName"
                                                 class="w-5 h-5 my-auto mr-1"
                                             ></AtlanIcon>
-                                             <span>{{ title }}</span>
+                                            <span v-if="item.key === 'root'" @click="item.click()">
+                                                {{ item.title }}
+                                            </span>
+                                             <span v-else>{{ item.title }}</span>
                                             </div>
                                     </div>
                                 </div>
                             </div>
-                        </a-dropdown>
+                            <template v-if="item.key !== 'root'" #content >
+                                    <p>{{ item.title }}</p>
+                                    <p>{{ item.description }}</p>
+                                    <p>{{item.ownerUsers}}</p>
+                                    <p>{{item.ownerGroups}}</p>
+                                <!-- <Classifications :selected-asset="item" /> -->
+                                <!-- <div
+                                    v-if="item.classifications?.length > 0"
+                                    class="flex flex-wrap items-center w-56"
+                                >
+                                        <PillGroup
+                                            :data="item.classifications"
+                                            label-key="typeName"
+                                            popover-trigger="hover"
+                                        >
+                                            <template #pillPrefix>
+                                                <AtlanIcon
+                                                    icon="Shield"
+                                                    class="text-pink-400 group-hover:text-white"
+                                                />
+                                            </template>
+                                            <template #popover="{ item }">
+                                                <ClassificationInfoCard :classification="item" />
+                                            </template>
+                                            <template #suffix>
+                                                <span
+                                                    v-if="splittedOwners.b.length > 0"
+                                                    class="
+                                                        px-1
+                                                        py-0.5
+                                                        text-sm
+                                                        rounded
+                                                        text-primary
+                                                        mr-3
+                                                        cursor-pointer
+                                                    "
+                                                >
+                                                    {{
+                                                        showAll
+                                                            ? 'Show less'
+                                                            : `and ${splittedOwners.b.length} more`
+                                                    }}
+                                                </span>
+                                            </template>
+                                        </PillGroup>
+                                    </div> -->
+                            </template>
+                        </a-popover>
                     </template>
                 </a-tree>
             </div>
@@ -76,16 +126,16 @@ import {
     toRef,
     watch,
 } from 'vue'
-import { useRouter } from 'vue-router'
 import { TreeDataItem } from 'ant-design-vue/lib/tree/Tree'
-import { useDebounceFn } from '@vueuse/core'
 
 // components
 import LoadingView from '@common/loaders/section.vue'
 import Tooltip from '@/common/ellipsis/index.vue'
-
-// import { Glossary } from '~/api/atlas/glossary'
-import { Glossary } from '~/types/glossary/glossary.interface'
+import PillGroup from '~/components/UI/pill/pillGroup.vue'
+import OwnerInfoCard from '~/components/discovery/preview/hovercards/ownerInfo.vue'
+import Avatar from '~/components/common/avatar.vue'
+import Classifications from '@common/sidebar/classifications.vue'
+import ClassificationInfoCard from '~/components/discovery/preview/hovercards/classificationInfo.vue'
 
 // composables
 
@@ -93,11 +143,12 @@ import { Glossary } from '~/types/glossary/glossary.interface'
 import { List as StatusList } from '~/constant/status'
 import AtlanIcon from '~/components/common/icon/atlanIcon.vue'
 import AtlanBtn from '~/components/UI/button.vue'
+import { KeyMaps } from '~/api/keyMap'
 
 // import { Glossary } from '~/api/atlas/glossary'
 
 export default defineComponent({
-    components: { LoadingView, AtlanIcon, AtlanBtn, Tooltip },
+    components: { LoadingView, AtlanIcon, AtlanBtn, Tooltip, PillGroup, OwnerInfoCard, Avatar,Classifications, ClassificationInfoCard },
     props: {
         treeData: {
             type: Object as PropType<TreeDataItem[]>,

@@ -2,6 +2,7 @@ import { watch, ref, Ref, computed, ComputedRef, onMounted } from 'vue'
 import { TreeDataItem } from 'ant-design-vue/lib/tree/Tree'
 
 import { Attributes,  Database, Schema, Table, Column } from '~/types/insights/table.interface'
+import { Components } from '~/api/atlas/client'
 
 import store from '~/utils/storage'
 
@@ -10,7 +11,9 @@ import useLoadTreeData from './useLoadTreeData';
 
 type CustomTreeDataItem = Omit<TreeDataItem, 'children'> & Attributes &{
     children?: CustomTreeDataItem[];
-    typeName: string
+    typeName: string;
+    guid: string | undefined;
+    classifications?: Components.Schemas.AtlasClassification[];
 };
 
 interface useSchemaExplorerTreeProps {
@@ -45,6 +48,13 @@ const useTree = ({ emit, connectionQualifiedName, databaseQualifiedName, schemaQ
         getTablesForSchema,
         getColumnsForTable,
     } = useLoadTreeData()
+
+    const serviceMap = {
+        'Connection': getDatabaseForConnection,
+        'Database': getSchemaForDatabase,
+        'Schema': getTablesForSchema,
+        'Table': getColumnsForTable,
+    }
 
     /** * 
      * @param targetGuid - guid / key of the node whose path needs to be found
@@ -101,10 +111,50 @@ const useTree = ({ emit, connectionQualifiedName, databaseQualifiedName, schemaQ
             databasesResponse.entities?.forEach((database) => {
                 treeData.value.push(returnTreeDataItemAttributes(database))
             })
+            if(databasesResponse.approximateCount && databasesResponse.entities && databasesResponse.approximateCount > databasesResponse.entities?.length) {
+                treeData.value.push({
+                    key: 'root',
+                    title: 'Load more',
+                    isLeaf: true,
+                    click: () => loadMore(
+                        databasesResponse.searchParameters?.limit ?? 0 + databasesResponse.searchParameters?.offset ?? 0,
+                        5,
+                        'Connection',
+                        'root',
+                        connectionQualifiedName
+                    )
+                })
+            }
         } else {
             // nothing
         }
         isInitingTree.value = false;
+    }
+
+    const loadMore = async (offset: number, limit: number, service: 'Connection' | 'Database' | 'Schema' | 'Table', parentNodeId: string, parentQualifiedName: string) => {
+        const getAssets = serviceMap[service];
+
+        const response = await getAssets(parentQualifiedName);
+        if(parentNodeId === 'root'){
+            treeData.value = treeData.value.filter((node) => node.title !== 'Load more');
+            response.entities?.forEach((entity) => {
+                treeData.value.push(returnTreeDataItemAttributes(entity))
+            });
+            if(response.approximateCount && response.entities && response.approximateCount > response.entities?.length) {
+                treeData.value.push({
+                    key: 'root',
+                    title: 'Load more',
+                    isLeaf: true,
+                    click: () => loadMore(
+                        response.searchParameters?.limit ?? 0 + response.searchParameters?.offset ?? 0,
+                        5,
+                        service,
+                        'root',
+                        connectionQualifiedName
+                    )
+                })
+            }
+        }
     }
 
     /**
@@ -182,8 +232,10 @@ const useTree = ({ emit, connectionQualifiedName, databaseQualifiedName, schemaQ
     const returnTreeDataItemAttributes = (item:  Database | Schema | Table | Column) => {
         return {
             key: item.guid,
+            guid: item.guid,
             title: item.attributes.name,
             typeName: item.typeName,
+            classifications: item.classifications,
             ...item.attributes,
             isLeaf: item.typeName === 'Column' ? true : false
         }

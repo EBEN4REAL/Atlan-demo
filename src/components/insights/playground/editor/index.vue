@@ -30,10 +30,12 @@
         Ref,
         defineAsyncComponent,
         ref,
+        ComputedRef,
         reactive,
         computed,
         provide,
         watch,
+        toRaw,
     } from 'vue'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
     import useRunQuery from '../common/composables/useRunQuery'
@@ -41,6 +43,7 @@
     import { provideDataInterface } from '~/components/insights/common/composables/useProvide'
     import CustomVariablesNav from '~/components/insights/playground/editor/customVariablesNav/index.vue'
     import { editor } from 'monaco-editor'
+    import { useInlineTab } from '~/components/insights/common/composables/useInlineTab'
 
     export default defineComponent({
         components: {
@@ -50,10 +53,14 @@
         props: {},
         setup() {
             const { queryRun } = useRunQuery()
+            const { modifyActiveInlineTabEditor } = useInlineTab()
 
             const activeInlineTab = inject(
                 'activeInlineTab'
-            ) as Ref<activeInlineTabInterface>
+            ) as ComputedRef<activeInlineTabInterface>
+            const inlineTabs = inject('inlineTabs') as Ref<
+                activeInlineTabInterface[]
+            >
             const selectedDefaultSchema = computed(
                 () =>
                     activeInlineTab.value.explorer.schema.connectors
@@ -67,9 +74,20 @@
             const isQueryRunning = inject('isQueryRunning') as Ref<string>
 
             const getData = (dataList, columnList) => {
-                // setting the data here because we don't want to save the response in local storage
-                activeInlineTab.value.playground.editor.dataList = dataList
-                activeInlineTab.value.playground.editor.columnList = columnList
+                if (activeInlineTab && inlineTabs?.value) {
+                    const activeInlineTabCopy: activeInlineTabInterface =
+                        JSON.parse(JSON.stringify(toRaw(activeInlineTab.value)))
+                    activeInlineTabCopy.playground.editor.dataList = dataList
+
+                    activeInlineTabCopy.playground.editor.columnList =
+                        columnList
+                    const saveQueryDataInLocalStorage = false
+                    modifyActiveInlineTabEditor(
+                        activeInlineTabCopy,
+                        inlineTabs,
+                        saveQueryDataInLocalStorage
+                    )
+                }
             }
             const run = () => {
                 queryRun(activeInlineTab.value, getData, isQueryRunning)

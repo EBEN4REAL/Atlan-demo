@@ -172,15 +172,15 @@
 
             const currentSelectedVariable = ref(null)
             const sqlVariables = ref([
-                {
-                    formState: {
-                        name: 'sales',
-                        key: 'sales',
-                        type: 'string',
-                        value: 'WEB_SALES',
-                    },
-                    dropDownStatus: false,
-                },
+                // {
+                //     formState: {
+                //         name: 'sales',
+                //         key: 'sales',
+                //         type: 'string',
+                //         value: 'WEB_SALES',
+                //     },
+                //     dropDownStatus: false,
+                // },
                 // {
                 //   formState: {
                 //     name: "quantity",

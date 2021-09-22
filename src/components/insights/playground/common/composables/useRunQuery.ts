@@ -105,8 +105,8 @@ export default function useProject() {
                     if (message?.rows)
                         setRows(dataList, columnList, message.rows)
                     if (message?.status === 'completed') {
+                        getData(toRaw(dataList.value), toRaw(columnList.value))
                     }
-                    getData(dataList.value, columnList.value)
                 })
                 isQueryRunning.value = 'success'
             } else {

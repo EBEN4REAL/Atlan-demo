@@ -100,17 +100,17 @@
                         schema: {
                             connectors: {
                                 connection:
-                                    activeInlineTab.value.explorer.schema
-                                        .connectors.connection,
+                                    activeInlineTab.value?.explorer?.schema
+                                        ?.connectors?.connection,
                                 connector:
-                                    activeInlineTab.value.explorer.schema
-                                        .connectors.connector,
+                                    activeInlineTab.value?.explorer?.schema
+                                        ?.connectors?.connector,
                                 selectedDefaultSchema:
-                                    activeInlineTab.value.explorer.schema
-                                        .connectors.selectedDefaultSchema,
+                                    activeInlineTab.value?.explorer?.schema
+                                        ?.connectors?.selectedDefaultSchema,
                                 selectedDataSourceName:
-                                    activeInlineTab.value.explorer.schema
-                                        .connectors.selectedDataSourceName,
+                                    activeInlineTab.value?.explorer?.schema
+                                        ?.connectors?.selectedDataSourceName,
                             },
                         },
                     },
@@ -197,8 +197,8 @@
         padding: 10px 16px;
         border-radius: 2px;
         border: 1px solid #fff;
-        box-shadow: 0 3px 1px -2px rgba(0, 0, 0, 0.2),
-            0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12);
+        box-shadow: 0 3px 1px -2px #00000033, 0 2px 2px 0 rgba(0, 0, 0, 0.14),
+            0 1px 5px 0 rgba(0, 0, 0, 0.12);
         background-color: #fff;
         user-select: none;
         cursor: pointer;
@@ -210,6 +210,9 @@
 
     .btns {
         padding: 50px 30px;
+    }
+    .children_spiltpanes {
+        height: calc(100vh - 19rem);
     }
 </style>
 <style lang="less" module>

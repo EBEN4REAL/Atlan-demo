@@ -27,7 +27,7 @@
         <div
             v-for="(asset, index) in list"
             :key="index"
-            class="flex flex-col mb-4 overflow-y-auto"
+            class="flex flex-col mb-4"
         >
             <ColumnListItem
                 :asset="asset"

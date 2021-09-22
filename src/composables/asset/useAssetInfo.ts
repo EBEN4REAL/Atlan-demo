@@ -115,6 +115,7 @@ export default function useAssetInfo() {
     const sourceCreatedBy = (asset: assetInterface) => attributes(asset)?.sourceCreatedBy || ''
     
 
+    const viewDefinition = (asset: assetInterface) => attributes(asset)?.viewDefinition || ''
     
 
     const schemaName = (asset: assetInterface) => {
@@ -489,5 +490,6 @@ export default function useAssetInfo() {
         getTableauProperties,
         getTableauHierarchy,
         previewURL,
+        viewDefinition
     }
 }

@@ -56,7 +56,6 @@
     import glossaryTree from '@/glossary/tree/glossaryTree.vue'
 
     // composables
-    import useGlossaryList from '~/components/glossary/composables/useGlossaryList'
     import useTree from '~/components/glossary/composables/useTree'
 
     // types
@@ -183,9 +182,6 @@
             }
         },
     })
-    // fetch current guid element
-    // if glossary, fetch cat and term (call loadData once)
-    // if not glossary, fetch parent glossary and call loadData
 </script>
 
 <route lang="yaml">

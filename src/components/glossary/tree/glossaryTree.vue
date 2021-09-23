@@ -1,4 +1,6 @@
 <template>
+<div class="glossaryTree" :class="$style.glossaryTree">
+
     <div v-if="isHome" class="px-2 py-4 h-screen">
         <div class="flex flex-col px-2 pb-2">
             <AtlanBtn
@@ -107,20 +109,21 @@
             </div>
         </div>
     </div>
-    <div v-else class="h-screen">
+    <div v-else class="h-screen flex flex-col">
         <div
-            class="flex py-2 pl-4 mb-4 text-sm leading-5 text-gray-500 bg-gray-100 cursor-pointer "
-            type="link"
-            @click="backToHome"
+            class="flex py-3 px-4 text-sm leading-5 text-gray-500 bg-gray-100 cursor-pointer "
         >
-            <fa icon="fas chevron-left" class="mr-2" />
-            <span>Back to Glossary Home</span>
-            {{ glossaryList }}
+            <a-select
+                v-model:value="currentGlossaryGuid"
+            >
+                <a-select-option v-for="glossary in glossaryList" :key="glossary.guid" :value="glossary.guid">{{glossary.attributes.name}}</a-select-option>
+            </a-select>
         </div>
-
-        <div class="px-4 pb-4">
+        <hr />
+        <div class="p-4 pr-3 pb-0 flex searchArea">
             <a-input-search
                 v-model:value="searchQuery"
+                class="mr-2"
                 :placeholder="
                     currentGuid &&
                     currentGuid === parentGlossary?.guid &&
@@ -130,32 +133,34 @@
                 "
                 @change="onSearch"
             ></a-input-search>
+            <a-button class="w-8 h-8 flex items-center p-2 rounded">
+                <AtlanIcon
+                    icon="Filter"
+                />            
+            </a-button>
         </div>
 
         <div v-if="isLoading" class="mt-4">
             <LoadingView />
         </div>
-        <div v-else-if="!isLoading && !searchQuery?.length" class="h-full">
+        <div v-else-if="!isLoading && !searchQuery?.length" class="h-full mt-2">
             <div class="flex justify-between px-4">
                 <div class="flex items-center ml-3">
                     <AtlanIcon icon="Glossary" class="h-5 m-0 mr-2" />
                     <div
-                        class="flex justify-start w-full text-base leading-5 cursor-pointer "
+                        class="flex justify-start w-full cursor-pointer "
                         @click="
                             redirectToProfile('glossary', parentGlossary.guid)
                         "
                     >
                         <span
-                            class="flex my-auto"
+                            class="flex my-auto text-xs leading-4 font-bold"
                             :class="{
                                 'text-primary':
                                     currentGuid === parentGlossary?.guid,
                             }"
                         >
-                            {{
-                                parentGlossary?.displayText ??
-                                parentGlossary?.attributes?.qualifiedName
-                            }}
+                            GLOSSARY
                         </span>
                     </div>
                 </div>
@@ -194,7 +199,7 @@
             </div>
             <div
                 v-if="treeData.length"
-                class="py-2 pl-6 pr-2 h-full pb-48 overflow-y-auto"
+                class="py-2 pl-4 pr-2 h-full pb-48 overflow-y-auto"
                 :class="$style.treeStyles"
             >
                 <a-tree
@@ -235,7 +240,7 @@
                                                 class="h-5"
                                             />
                                         </span>
-                                        <span v-else class="p-0 my-auto mr-2">
+                                        <span v-else class="p-0 my-auto mr-1.5">
                                             <AtlanIcon
                                                 :icon="
                                                     getEntityStatusIcon(
@@ -379,6 +384,7 @@
             <LoadingView />
         </div>
     </div>
+</div>
 </template>
 <script lang="ts">
     // library
@@ -480,8 +486,8 @@
             // data
             const searchQuery = ref<string>()
             const home = toRef(props, 'isHome')
-            // const { selectedKeys, expandedKeys, expandNode, selectNode } =
-            //     handleTreeExpand(emit)
+            const currentGlossaryGuid = ref<string>(props.parentGlossary?.guid ?? '')
+
             const { createTerm, createCategory, createGlossary } =
                 useCreateGlossary()
 
@@ -545,6 +551,10 @@
             watch(home, () => {
                 searchQuery.value = '';
             })
+            watch(currentGlossaryGuid, (newGuid) => {
+                redirectToProfile('glossary', newGuid)
+            });
+            
             return {
                 redirectToProfile,
                 backToHome,
@@ -567,6 +577,7 @@
                 searchLoading,
                 searchAssetsPaginated,
                 onSearch,
+                currentGlossaryGuid
             }
         },
     })
@@ -577,9 +588,39 @@
             @apply m-0 p-1 text-sm leading-5 rounded;
         }
     }
-    .treeStyles {
-        :global(.ant-tree-switcher) {
-            @apply pt-1;
+
+    .glossaryTree {
+        background-color: #FAFAFA;
+
+        :global(.ant-select) {
+            min-width: 236px;
+            width: 100%;
+            @apply m-0 p-0;
+        }
+
+        :global(.ant-input-search) {
+            min-width: 196px;
+            height: 32px;
+        }
+
+        .treeStyles {
+            :global(.ant-tree-switcher) {
+                @apply pt-1;
+            }
+    
+            :global(.ant-tree-title) {
+                @apply pl-1 !important;
+                padding-top: 4px !important;
+                padding-bottom: 4px !important;
+            }
+            :global(.ant-tree-node-content-wrapper) {
+                @apply mb-2 border-0;
+            }
+            :global(.ant-tree-switcher) {
+                @apply p-0 h-2 w-2 !important;
+                margin-right: 6px;
+                margin-top: -2px;
+            }
         }
     }
 </style>

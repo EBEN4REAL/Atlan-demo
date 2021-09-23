@@ -497,7 +497,6 @@
             }
 
             onMounted(() => {
-                console.log(props.defaultOwner)
                 selectedUsers.value = props.defaultOwner
                     ?.split(',')
                     .filter((s) => s !== '')

@@ -59,8 +59,8 @@
                     >
                         <template #overlay>
                             <AddGtcModalOwners
-                                :defaultOwner="ownerUsers.join()"
-                                :defaultGroups="ownerGroups.join()"
+                                :defaultOwner="ownerUsers?.join() ?? ''"
+                                :defaultGroups="ownerGroups?.join() ?? ''"
                                 @closeDropdown="handleCloseOwnersModal"
                                 @ownersUpdated="handleOwnersUpdated"
                                 class="px-4 py-2"
@@ -87,16 +87,19 @@
                             </span>
                         </a-button>
                     </a-dropdown>
-                    <div class="flex items-center space-x-2">
+                    <div
+                        v-if="mode !== 'edit'"
+                        class="flex items-center space-x-2"
+                    >
                         <a-switch size="small" v-model:checked="isCreateMore" />
                         <p class="p-0 m-0">Create more</p>
                     </div>
                 </div>
                 <div class="flex items-center justify-end space-x-3">
                     <a-button @click="handleCancel">Cancel</a-button>
-                    <a-button type="primary" @click="handleOk"
-                        >Add term</a-button
-                    >
+                    <a-button type="primary" @click="handleOk">{{
+                        mode !== 'edit' ? 'Create' : 'Edit'
+                    }}</a-button>
                 </div>
             </div>
         </template>
@@ -113,8 +116,6 @@
             class="text-gray-500 border-0 shadow-none outline-none"
             :rows="2"
         />
-        {{ ownerUsers }}
-        {{ ownerGroups }}
     </a-modal>
 </template>
 
@@ -126,12 +127,14 @@
         onMounted,
         nextTick,
         Ref,
+        inject,
     } from 'vue'
     import StatusBadge from '@common/badge/status/index.vue'
     import AddGtcModalOwners from '@/glossary/common/addGtcModalOwners.vue'
     import useCreateGlossary from '~/components/glossary/composables/useCreateGlossary'
     import whoami from '~/composables/user/whoami'
     import { List } from '~/constant/status'
+    import useUpdateGtcEntity from '@/glossary/composables/useUpdateGtcEntity'
 
     export default defineComponent({
         components: {
@@ -177,6 +180,7 @@
             const isVisible = ref<boolean>(false)
             const isCreateMore = ref<boolean>(false)
             const titleBar: Ref<null | HTMLInputElement> = ref(null)
+            const refreshEntity = inject<() => void>('refreshEntity')
             const { createTerm, createCategory } = useCreateGlossary()
 
             const ownerBtnText = computed(() => {
@@ -211,7 +215,6 @@
                 visible.value = true
                 await nextTick()
                 titleBar.value?.focus()
-                console.log(props.entity)
                 if (props.mode === 'edit') {
                     title.value = props?.entity?.displayText
                     description.value =
@@ -229,30 +232,54 @@
             }
 
             const handleOk = () => {
-                if (props.entityType === 'term')
-                    createTerm(
-                        props.glossaryId,
-                        props.categoryId,
-                        `${title.value === '' ? 'Untitled term' : title.value}`,
-                        description.value,
-                        currentStatus.value,
-                        ownerUsers?.value?.value?.join(),
-                        ownerGroups?.value?.value?.join()
+                if (props.mode === 'edit') {
+                    const { data: updateData, updateEntity } =
+                        useUpdateGtcEntity()
+                    updateEntity(
+                        props?.entityType,
+                        props.entity?.guid,
+                        {
+                            name: title.value ?? 'Untitled Term',
+                            assetStatus: currentStatus.value ?? 'draft',
+                            shortDescription: description.value ?? '',
+                        },
+                        true
                     )
-                else if (props.entityType === 'category')
-                    createCategory(
-                        props.glossaryId,
-                        props.categoryId,
-                        `${title.value === '' ? 'Untitled term' : title.value}`,
-                        description.value,
-                        currentStatus.value,
-                        ownerUsers?.value?.value?.join(),
-                        ownerGroups?.value?.value?.join()
-                    )
+                    if (refreshEntity) refreshEntity()
+                    console.log(refreshEntity)
+                } else {
+                    if (props.entityType === 'term')
+                        createTerm(
+                            props.glossaryId,
+                            props.categoryId,
+                            `${
+                                title.value === ''
+                                    ? 'Untitled term'
+                                    : title.value
+                            }`,
+                            description.value,
+                            currentStatus.value,
+                            ownerUsers?.value?.value?.join(),
+                            ownerGroups?.value?.value?.join()
+                        )
+                    else if (props.entityType === 'category')
+                        createCategory(
+                            props.glossaryId,
+                            props.categoryId,
+                            `${
+                                title.value === ''
+                                    ? 'Untitled term'
+                                    : title.value
+                            }`,
+                            description.value,
+                            currentStatus.value,
+                            ownerUsers?.value?.value?.join(),
+                            ownerGroups?.value?.value?.join()
+                        )
 
+                    resetInput()
+                }
                 if (!isCreateMore.value) visible.value = false
-
-                resetInput()
             }
             const handleMenuClick = (status) => {
                 currentStatus.value = status.id

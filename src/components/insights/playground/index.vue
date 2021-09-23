@@ -122,7 +122,9 @@
                                 'select * from "INSTACART_ALCOHOL_ORDER_TIME" limit 10',
                             dataList: [],
                             columnList: [],
-                            variables: [],
+                            variables:
+                                activeInlineTab.value?.playground?.editor
+                                    .variables ?? [],
                         },
                         resultsPane: {
                             activeTab:

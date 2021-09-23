@@ -1,4 +1,4 @@
-import { ref, toRaw, Ref, watch } from 'vue'
+import { ref, toRaw, Ref, watch, callWithAsyncErrorHandling } from 'vue'
 import { useSSE } from '~/modules/useSSE'
 import { KeyMaps } from '~/api/keyMap'
 import { message } from 'ant-design-vue'
@@ -97,30 +97,41 @@ export default function useProject() {
             pathVariables,
         })
 
-        watch(isLoading, () => {
-            if (isLoading.value && error.value == undefined) {
-                const { onError, subscribe, close } = sse.value
-                onError((e: any) => {
-                    if (e.error) {
-                        console.error('lost connection; giving up!', e)
+        watch([isLoading, error], () => {
+            try {
+                isQueryRunning.value = !isLoading.value ? 'success' : 'loading'
+                if (!isLoading.value && error.value === undefined) {
+                    const { subscribe, close } = sse.value
+                    subscribe('', (message: any) => {
+                        if (message?.columns)
+                            setColumns(columnList, message.columns)
+                        if (message?.rows)
+                            setRows(dataList, columnList, message.rows)
+                        if (message?.status === 'completed') {
+                            getData(
+                                toRaw(dataList.value),
+                                toRaw(columnList.value)
+                            )
+                            close()
+                        }
+                    })
+                } else if (!isLoading.value && error.value !== undefined) {
+                    console.error('Failed to connect to server', error.value)
+                    if (error.value?.status && error.value?.statusText) {
+                        message.error({
+                            content: `${error.value.status} ${error.value.statusText}!`,
+                        })
+                    } else {
+                        message.error({
+                            content: `Something went wrong!`,
+                        })
                     }
-                    isQueryRunning.value = ''
-                    close()
-                })
-                subscribe('', (message: any) => {
-                    if (message?.columns)
-                        setColumns(columnList, message.columns)
-                    if (message?.rows)
-                        setRows(dataList, columnList, message.rows)
-                    if (message?.status === 'completed') {
-                        getData(toRaw(dataList.value), toRaw(columnList.value))
-                    }
-                })
-                isQueryRunning.value = 'success'
-            } else {
-                console.error('Failed to connect to server', error.value)
-                isQueryRunning.value = 'error'
-            }
+                    setColumns(columnList, [])
+                    setRows(dataList, columnList, [])
+                    getData([], [])
+                    isQueryRunning.value = 'error'
+                }
+            } catch (e) {}
         })
     }
 

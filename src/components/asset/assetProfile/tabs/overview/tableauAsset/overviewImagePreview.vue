@@ -1,7 +1,7 @@
 <template>
     <div>
         <!-- Asset Image Preview -->
-        <div class="inline-block border rounded-sm border-gray-light">
+        <div class="inline-block">
             <a-image
                 :src="imagePreview"
                 :preview="false"
@@ -12,17 +12,34 @@
 </template>
 
 <script lang="ts">
-    // Vue
-    import { defineComponent } from 'vue'
+// Vue
+import { defineComponent, toRefs, ref, PropType, watch } from 'vue'
+import useAssetInfo from '~/composables/asset/useAssetInfo'
+import { assetInterface } from '~/types/assets/asset.interface'
+import { KeyMaps } from '~/api/keyMap'
 
-    export default defineComponent({
-        props: {
-            imagePreview: {
-                type: String,
-                required: true,
-            },
+export default defineComponent({
+    props: {
+        selectedAsset: {
+            type: Object as PropType<assetInterface>,
+            required: true,
         },
-    })
+    },
+    setup(props) {
+        const { selectedAsset } = toRefs(props)
+        const imagePreview = ref<string>('')
+        const imageId = ref()
+        const { previewURL } = useAssetInfo()
+        const fetch = () => {
+            imageId.value = previewURL(selectedAsset.value)
+            imagePreview.value = KeyMaps.asset.GET_PREVIEW({
+                imageId: imageId.value,
+            })
+        }
+        watch(selectedAsset, fetch, { immediate: true })
+        return { imagePreview }
+    },
+})
 </script>
 
 <style lang="less" scoped></style>

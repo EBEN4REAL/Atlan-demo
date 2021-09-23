@@ -1,6 +1,6 @@
 <template>
     <div class="flex w-full h-full">
-        <div class="flex-1 item-stretch">
+        <div class="flex-1 item-stretch" style="max-width: calc(100vw - 420px)">
             <div class="flex h-full">
                 <router-view
                     v-if="isItem"
@@ -18,7 +18,7 @@
         </div>
 
         <div
-            class="z-20 flex flex-col h-full bg-white border-l asset-preview-container"
+            class="z-20 flex flex-col h-full bg-white border-l  asset-preview-container"
         >
             <AssetPreview
                 v-if="selected"
@@ -27,6 +27,7 @@
                 :page="page"
             ></AssetPreview>
         </div>
+
         <div id="overAssetPreviewSidebar" class="relative"></div>
     </div>
 </template>
@@ -128,6 +129,8 @@
         width: 420px !important;
         min-width: 420px !important;
         max-width: 420px !important;
+        position: absolute;
+        right: 0;
     }
 </style>
 <route lang="yaml">

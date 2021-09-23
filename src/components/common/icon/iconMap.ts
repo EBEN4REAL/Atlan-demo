@@ -17,6 +17,7 @@ import Search from '~/assets/images/icons/search.svg'
 import ArrowDown from '~/assets/images/icons/arrow-down.svg'
 import Database from '~/assets/images/icons/database.svg'
 import Schema from '~/assets/images/icons/schema.svg'
+import Table from '~/assets/images/icons/table.svg'
 import Connection from '~/assets/images/icons/connection.svg'
 import ChevronRight from '~/assets/images/icons/chevron-right.svg'
 import AddUser from '~/assets/images/icons/add-user.svg'
@@ -46,11 +47,13 @@ import Lineage from '~/assets/images/icons/lineage.svg'
 import Activity from '~/assets/images/icons/activity.svg'
 import Columns from '~/assets/images/icons/columns.svg'
 import Relation from '~/assets/images/icons/relation.svg'
-import ShareNew from '~/assets/images/icons/shareNew.svg'
 import User from '~/assets/images/icons/user.svg'
 import Chats from '~/assets/images/icons/chats.svg'
 import OpenTermProfile from '~/assets/images/icons/openTermProfile.svg'
 import Metadata from '~/assets/images/icons/metadata.svg'
+import Group from '~/assets/images/icons/group.svg'
+import GroupStatic from '~/assets/images/icons/group-static.svg'
+import External from '~/assets/images/icons/external.svg'
 
 export default {
     Metadata,
@@ -75,6 +78,7 @@ export default {
     Search,
     Database,
     Schema,
+    Table,
     Notification,
     NotificationDot,
     ArrowDown,
@@ -102,8 +106,10 @@ export default {
     EmptyGlossary,
     Glossary,
     KebabMenu,
-    ShareNew,
     User,
     Chats,
     OpenTermProfile,
+    Group,
+    GroupStatic,
+    External,
 }

@@ -3,11 +3,14 @@
 //     OperatorList,
 // } from '~/constant/advancedAttributes'
 import { List as AssetCategoryList } from '~/constant/assetCategory'
+import { Components } from '~/api/atlas/client'
 
 export interface criterion {
-    attributeName: string
+    attributeName?: string
     attributeValue?: string | undefined
     operator?: string | undefined
+    condition?: string | undefined
+    criterion?: criterion
 }
 
 export function getEncodedStringFromOptions(options: any) {
@@ -30,17 +33,16 @@ export function getEncodedStringFromOptions(options: any) {
             let filterKeyValue = options.filters[filterKey]
             switch (filterKey) {
                 case 'connector': {
-                    let connectorPyloadStirng = ''
-                    let criterion = options.filters[filterKey].criterion
-                    if (criterion.length == 1) {
-                        connectorPyloadStirng += `connector:${criterion[0].attributeValue}`
+                    const connectorLoadString: string[] = []
+                    const { criterion } = options.filters[filterKey]
+                    if (criterion?.length) {
+                        criterion.forEach((cri) => {
+                            connectorLoadString.push(
+                                `${cri.attributeName}:${cri.attributeValue}`
+                            )
+                        })
                     }
-                    if (criterion.length == 2) {
-                        connectorPyloadStirng += `connector:${criterion[0].attributeValue}`
-                        connectorPyloadStirng += `,connection:${criterion[1].attributeValue}`
-                    }
-
-                    filterKeyValue = connectorPyloadStirng
+                    filterKeyValue = connectorLoadString.join(',')
                     break
                 }
                 case 'assetCategory': {
@@ -52,41 +54,135 @@ export function getEncodedStringFromOptions(options: any) {
                     break
                 }
                 case 'classifications': {
-                    filterKeyValue = options.filters[filterKey].criterion
-                    const tempNames: Array<string | undefined> = []
-                    filterKeyValue.forEach((e: criterion) => {
-                        if (e.attributeName === '__classificationNames') {
-                            tempNames.push(e.attributeValue)
+                    let classificationNamesString = ''
+                    // determine operator (and/or)
+                    const operator = options?.filters[filterKey]?.condition
+                    // determine added by
+                    let addedBy = ''
+                    if (
+                        options?.filters?.[filterKey]?.criterion?.[0]
+                            ?.condition === 'OR'
+                    )
+                        addedBy = 'all'
+                    else if (
+                        options?.filters?.[filterKey]?.criterion?.[0]
+                            ?.attributeName ===
+                        '__propagatedClassificationNames'
+                    )
+                        addedBy = 'propagation'
+                    else if (
+                        options?.filters?.[filterKey]?.criterion?.[0]
+                            ?.attributeName === '__classificationNames'
+                    )
+                        addedBy = 'user'
+
+                    switch (addedBy) {
+                        case 'all': {
+                            const classificationNames: Array<
+                                string | undefined
+                            > = []
+                            const classificationObjects: Components.Schemas.FilterCriteria[] =
+                                options.filters?.[filterKey]?.criterion ?? []
+                            classificationObjects.forEach(
+                                (classificationOb) => {
+                                    classificationNames.push(
+                                        classificationOb?.criterion?.[0]
+                                            ?.attributeValue ?? ''
+                                    )
+                                }
+                            )
+                            classificationNamesString = `${classificationNames.join(
+                                ','
+                            )}:operator=${operator}:added_by=${addedBy}`
+                            break
                         }
-                    })
-                    filterKeyValue = tempNames.join(',')
+                        case 'propagation': {
+                            filterKeyValue =
+                                options.filters?.[filterKey].criterion
+                            const tempNames: Array<string | undefined> = []
+                            filterKeyValue.forEach((e: criterion) => {
+                                if (
+                                    e.attributeName ===
+                                    '__propagatedClassificationNames'
+                                ) {
+                                    tempNames.push(e.attributeValue)
+                                }
+                            })
+                            classificationNamesString = `${tempNames.join(
+                                ','
+                            )}:operator=${operator}:added_by=${addedBy}` // addedBy will be 'propagation'
+
+                            break
+                        }
+                        case 'user': {
+                            filterKeyValue =
+                                options.filters?.[filterKey].criterion
+                            const tempNames: Array<string | undefined> = []
+                            filterKeyValue.forEach((e: criterion) => {
+                                if (
+                                    e.attributeName === '__classificationNames'
+                                ) {
+                                    tempNames.push(e.attributeValue)
+                                }
+                            })
+                            classificationNamesString = `${tempNames.join(
+                                ','
+                            )}:operator=${operator}:added_by=${addedBy}` // addedBy will be 'user'
+
+                            break
+                        }
+                        default:
+                    }
+                    filterKeyValue = classificationNamesString || ''
                     break
                 }
                 case 'status': {
                     filterKeyValue = options.filters[filterKey].criterion
                     filterKeyValue = filterKeyValue
-                        .map((e: criterion) => e.attributeValue)
+                        .map((e: criterion) => {
+                            // no status filter case
+                            if (e.condition && e.condition === 'OR') {
+                                return 'is_null' // id for no status
+                            }
+                            return e.attributeValue
+                        })
                         .join(',')
                     break
                 }
                 case 'owners': {
                     filterKeyValue = options.filters[filterKey].criterion
                     let ownerString = ''
-                    const uniqueOwnerAttributes = new Set(
-                        filterKeyValue.map((e: criterion) => e.attributeName)
-                    )
-                    ;[...uniqueOwnerAttributes].map((uniqueOwnerAttribute) => {
-                        ownerString += `${uniqueOwnerAttribute}:`
-                        filterKeyValue.forEach((e: criterion) => {
-                            if (e.attributeName === uniqueOwnerAttribute) {
-                                ownerString += `${e.attributeValue},`
+                    // handle case for no owners
+                    // criterion will have an AND condition for filtering out assets with no owners and no groups
+                    if (
+                        filterKeyValue?.[0]?.condition &&
+                        filterKeyValue[0].condition === 'AND'
+                    ) {
+                        ownerString = `no_owner`
+                        filterKeyValue = ownerString
+                    } else {
+                        const uniqueOwnerAttributes = new Set(
+                            filterKeyValue.map(
+                                (e: criterion) => e.attributeName
+                            )
+                        )
+                        ;[...uniqueOwnerAttributes].map(
+                            (uniqueOwnerAttribute) => {
+                                ownerString += `${uniqueOwnerAttribute}:`
+                                filterKeyValue.forEach((e: criterion) => {
+                                    if (
+                                        e.attributeName === uniqueOwnerAttribute
+                                    ) {
+                                        ownerString += `${e.attributeValue},`
+                                    }
+                                })
+                                ownerString = ownerString.slice(0, -1)
+                                ownerString += '&'
                             }
-                        })
+                        )
                         ownerString = ownerString.slice(0, -1)
-                        ownerString += '&'
-                    })
-                    ownerString = ownerString.slice(0, -1)
-                    filterKeyValue = ownerString
+                        filterKeyValue = ownerString
+                    }
                     break
                 }
                 case 'advanced': {
@@ -123,7 +219,7 @@ export function getEncodedStringFromOptions(options: any) {
                 }
             }
             // TODO include business met data and other filters
-            if (options.filters[filterKey].criterion.length > 0) {
+            if (options.filters[filterKey]?.criterion?.length > 0) {
                 const temp = `${filterKey}::${filterKeyValue}`
                 if (temp) {
                     filtersString.push(temp)
@@ -134,26 +230,6 @@ export function getEncodedStringFromOptions(options: any) {
             routerQuery.filters = filtersString.join(':::')
         }
     }
-    // if (options.connectorsPayload) {
-    //     const payload = options.connectorsPayload
-    //     let connectorPyloadStirng = ''
-    //     if (payload.connector) {
-    //         connectorPyloadStirng += `connector:${payload.connector}`
-    //     }
-    //     if (payload.connection) {
-    //         connectorPyloadStirng += `,connection:${payload.connection}`
-    //     }
-    //     routerQuery.connectorsPayload = connectorPyloadStirng
-    // }
-
-    // if (options.sortBy) {
-    //   routerQuery.sortBy = options.sortBy;
-    // }
-
-    // if (options.sortOrder) {
-    //   routerQuery.sortOrder = options.sortOrder;
-    // }
-
     if (options.limit) {
         routerQuery.limit = options.limit
     }
@@ -182,17 +258,11 @@ export function getDecodedOptionsFromString(router) {
     console.log(url.searchParams.get('filters'))
     const filters = url.searchParams.get('filters')
     const searchText = url.searchParams.get('searchText')
-    const connectorsPayloadString = url.searchParams.get('connectorsPayload')
-    let connectorsPayload = {}
     const limit = url.searchParams.get('limit')
     const facetsFiltersStrings = filters?.split(':::')
     const initialBodyCriterion: Array<any> = []
     const facetsFilters: filterMapType = {
-        connector: {
-            checked: [],
-            condition: 'AND',
-            criterion: [],
-        },
+        connector: {},
         assetCategory: {
             checked: [],
             condition: 'OR',
@@ -207,10 +277,12 @@ export function getDecodedOptionsFromString(router) {
             checked: [],
             condition: 'OR',
             criterion: [],
+            addedBy: '',
         },
         owners: {
             userValue: [],
             groupValue: [],
+            noOwner: false,
             condition: 'OR',
             criterion: [],
         },
@@ -231,35 +303,16 @@ export function getDecodedOptionsFromString(router) {
             case 'connector': {
                 const facetFilterValues = facetFilterValuesString.split(',')
                 console.log(facetFilterValues, 'facetFilterValues', facetFilter)
-                const connectorsPayloadCriterion: criterion = []
-                const conenctorData = {}
-                facetFilterValues.forEach((connectorValue) => {
-                    const subConnectorValues = connectorValue.split(':')
-                    console.log(subConnectorValues, 'subconector')
-                    if (subConnectorValues[0] === 'connector') {
-                        conenctorData.connector = subConnectorValues[1]
-                    } else {
-                        conenctorData.connection = subConnectorValues[1]
-                    }
-                })
-                connectorsPayload = conenctorData
-
-                connectorsPayloadCriterion.push({
-                    attributeName: 'integrationName',
-                    attributeValue: connectorsPayload.connector,
-                    operator: '=',
-                })
-                if (facetFilterValues.length > 1) {
-                    connectorsPayloadCriterion.push({
-                        attributeName: 'connectionQualifiedName',
-                        attributeValue: connectorsPayload.connection,
-                        operator: '=',
-                    })
+                // FIXME: Add support for arrays
+                const connectorAttribute = facetFilterValues[0].split(':')
+                facetsFilters.connector = {
+                    attributeName: connectorAttribute[0],
+                    attributeValue: connectorAttribute[1],
                 }
-
-                facetsFilters.connector.criterion = connectorsPayloadCriterion
-                facetsFilters.connector.checked = conenctorData
-                criterion = [...connectorsPayloadCriterion, ...criterion]
+                criterion.push({
+                    ...facetsFilters.connector,
+                    operator: 'eq',
+                })
                 break
             }
             case 'assetCategory': {
@@ -286,65 +339,152 @@ export function getDecodedOptionsFromString(router) {
             case 'status': {
                 const facetFilterValues = facetFilterValuesString.split(',')
                 facetFilterValues.forEach((facetFilterValue) => {
-                    criterion.push({
-                        attributeName: 'assetStatus',
-                        attributeValue: facetFilterValue,
-                        operator: 'eq',
-                    })
+                    if (facetFilterValue !== 'is_null')
+                        criterion.push({
+                            attributeName: 'assetStatus',
+                            attributeValue: facetFilterValue,
+                            operator: 'eq',
+                        })
+                    else {
+                        const subCriterion: Components.Schemas.FilterCriteria[] =
+                            [
+                                {
+                                    condition: 'OR',
+                                    criterion: [
+                                        {
+                                            attributeName: 'assetStatus',
+                                            attributeValue: 'is_null',
+                                            operator: 'eq',
+                                        },
+                                        {
+                                            attributeName: 'assetStatus',
+                                            attributeValue: '',
+                                            operator: 'isNull',
+                                        },
+                                    ] as Components.Schemas.FilterCriteria[],
+                                },
+                            ]
+                        criterion.push(...subCriterion)
+                    }
                 })
                 facetsFilters.status.criterion = criterion
                 facetsFilters.status.checked = facetFilterValues
                 break
             }
             case 'classifications': {
-                const facetFilterValues = facetFilterValuesString.split(',')
-                console.log(facetFilterValues, 'classifications')
-                facetFilterValues.forEach((facetFilterValue) => {
-                    criterion.push({
-                        attributeName: '__classificationNames',
-                        attributeValue: facetFilterValue,
-                        operator: 'eq',
-                    })
-                    criterion.push({
-                        attributeName: '__propagatedClassificationNames',
-                        attributeValue: facetFilterValue,
-                        operator: 'eq',
-                    })
-                })
+                const classificationFilterInfo =
+                    facetFilterValuesString?.split(':')
+                const classificationValues = classificationFilterInfo[0]
+                const facetFilterValues = classificationValues?.split(',')
+                // get operator and assign
+                const operator = classificationFilterInfo?.[1]?.split('=')?.[1]
+                facetsFilters.classifications.condition = operator || 'OR'
+                // get added_by and construct the payload
+                const addedBy = classificationFilterInfo?.[2]?.split('=')?.[1]
+                facetsFilters.classifications.addedBy = addedBy || 'all'
+                switch (addedBy) {
+                    case 'all': {
+                        // Case `all` will always be a OR bw __classificationNames and __propagatedClassificationNames
+                        facetFilterValues.forEach((val) => {
+                            const subFilter: Components.Schemas.FilterCriteria =
+                                {
+                                    condition: 'OR',
+                                    criterion:
+                                        [] as Components.Schemas.FilterCriteria[],
+                                }
+                            const subFilterCriterion: Components.Schemas.FilterCriteria[] =
+                                []
+                            subFilterCriterion.push({
+                                attributeName: '__classificationNames',
+                                attributeValue: val,
+                                operator: 'eq',
+                            })
+                            subFilterCriterion.push({
+                                attributeName:
+                                    '__propagatedClassificationNames',
+                                attributeValue: val,
+                                operator: 'eq',
+                            })
+                            subFilter.criterion = subFilterCriterion
+                            criterion.push(subFilter)
+                        })
+                        break
+                    }
+                    case 'user': {
+                        facetFilterValues.forEach((val) => {
+                            criterion.push({
+                                attributeName: '__classificationNames',
+                                attributeValue: val,
+                                operator: 'eq',
+                            })
+                        })
+                        break
+                    }
+                    case 'propagation':
+                        facetFilterValues.forEach((val) => {
+                            criterion.push({
+                                attributeName:
+                                    '__propagatedClassificationNames',
+                                attributeValue: val,
+                                operator: 'eq',
+                            })
+                        })
+                        break
+                    default:
+                }
                 facetsFilters.classifications.criterion = criterion
                 facetsFilters.classifications.checked = facetFilterValues
                 break
             }
             case 'owners': {
                 const usersAndGroupsString: string[] =
-                    facetFilterValuesString.split('&') // ownerUsers:ab,cd&ownerGroups:ab,cd
-                usersAndGroupsString.forEach((item) => {
-                    const subFacetFilterValues = item.split(':')
-                    if (subFacetFilterValues[0] === 'ownerUsers') {
-                        const usersArray: string[] =
-                            subFacetFilterValues[1].split(',')
-                        usersArray.forEach((user) => {
-                            criterion.push({
+                    facetFilterValuesString.split('&') // ownerUsers:ab,cd&ownerGroups:ab,cd OR no_owner
+                if (usersAndGroupsString[0] === 'no_owner') {
+                    criterion.push({
+                        condition: 'AND',
+                        criterion: [
+                            {
                                 attributeName: 'ownerUsers',
-                                attributeValue: user,
-                                operator: 'contains',
-                            })
-                        })
-
-                        facetsFilters.owners.userValue = usersArray
-                    } else {
-                        const groupsArray: string[] =
-                            subFacetFilterValues[1].split(',')
-                        groupsArray.forEach((group) => {
-                            criterion.push({
+                                attributeValue: '-',
+                                operator: 'is_null',
+                            },
+                            {
                                 attributeName: 'ownerGroups',
-                                attributeValue: group,
-                                operator: 'contains',
+                                attributeValue: '-',
+                                operator: 'is_null',
+                            },
+                        ],
+                    })
+                    facetsFilters.owners.noOwner = true
+                } else {
+                    usersAndGroupsString.forEach((item) => {
+                        const subFacetFilterValues = item.split(':')
+                        if (subFacetFilterValues[0] === 'ownerUsers') {
+                            const usersArray: string[] =
+                                subFacetFilterValues[1].split(',')
+                            usersArray.forEach((user) => {
+                                criterion.push({
+                                    attributeName: 'ownerUsers',
+                                    attributeValue: user,
+                                    operator: 'contains',
+                                })
                             })
-                        })
-                        facetsFilters.owners.groupValue = groupsArray
-                    }
-                })
+
+                            facetsFilters.owners.userValue = usersArray
+                        } else {
+                            const groupsArray: string[] =
+                                subFacetFilterValues[1].split(',')
+                            groupsArray.forEach((group) => {
+                                criterion.push({
+                                    attributeName: 'ownerGroups',
+                                    attributeValue: group,
+                                    operator: 'contains',
+                                })
+                            })
+                            facetsFilters.owners.groupValue = groupsArray
+                        }
+                    })
+                }
                 facetsFilters.owners.criterion = criterion
                 break
             }
@@ -401,37 +541,17 @@ export function getDecodedOptionsFromString(router) {
             }
         }
 
-        // if (connectorsPayload) {
-        //     // const connectorsPayloadCriterion: criterion = [];
-        //     const connectorValues = connectorsPayloadString.split(',')
-        //     const conenctorData = {}
-        //     connectorValues.forEach((connectorValue) => {
-        //         const subConnectorValues = connectorValue.split(':')
-        //         console.log(subConnectorValues, 'subconector')
-        //         if (subConnectorValues[0] === 'connector') {
-        //             conenctorData.connector = subConnectorValues[1]
-        //         } else {
-        //             conenctorData.connection = subConnectorValues[1]
-        //         }
-        //     })
-        //     connectorsPayload = conenctorData
-
-        //     // connectorsPayloadCriterion.push({
-        //     //   attributeName: "integrationName",
-        //     //   attributeValue: connectorsPayload.connections,
-        //     //   operator: "=",
-        //     // });
-        //     // connectorsPayloadCriterion.push({
-        //     //   attributeName: "connectionQualifiedName",
-        //     //   attributeValue: connectorsPayload.connections,
-        //     //   operator: "=",
-        //     // });
-        //     // criterion = [...criterion, connectorsPayloadCriterion];
-        // }
         switch (facetFilterName) {
             case 'connector': {
                 initialBodyCriterion.push({
                     condition: 'AND',
+                    criterion,
+                })
+                break
+            }
+            case 'classifications': {
+                initialBodyCriterion.push({
+                    condition: facetsFilters.classifications.condition,
                     criterion,
                 })
                 break
@@ -446,7 +566,6 @@ export function getDecodedOptionsFromString(router) {
     })
     console.log(initialBodyCriterion, facetsFilters, 'facetsFilters')
     return {
-        connectorsPayload,
         initialBodyCriterion,
         facetsFilters,
         searchText,

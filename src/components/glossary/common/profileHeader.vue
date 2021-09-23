@@ -32,7 +32,7 @@
                 class="h-5 m-0 mb-1 mr-2"
             />
 
-            <span class="mr-3 text-sm">{{ title }}</span>
+            <span class="mr-3 text-sm truncate">{{ title }}</span>
         </div>
 
         <div class="flex flex-row">
@@ -56,7 +56,7 @@
                 </template>
                 <a-button
                     class="flex items-center border-0 shadow-none outline-none"
-                    ><atlan-icon icon="ShareNew" class="w-auto h-4 mr-1" />
+                    ><atlan-icon icon="Share" class="w-auto h-4 mr-1" />
                     <span class="text-sm">Share</span>
                 </a-button>
             </a-dropdown>
@@ -70,7 +70,7 @@
                 <div class="flex">
                     <span
                         v-if="!isNewEntity"
-                        class="mr-3 text-xl font-bold leading-6"
+                        class="mr-3 text-xl font-bold leading-6 truncate"
                         >{{ title }}</span
                     >
 

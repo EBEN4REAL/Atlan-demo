@@ -3,29 +3,9 @@
         class="flex flex-col w-full overflow-y-hidden border-l"
         :class="$style.gtcPreview"
     >
-        <div v-if="preview" class="flex items-center justify-between pt-6 mr-3">
-            <div class="flex items-center">
-                <span
-                    class="items-baseline pl-5 mr-2 text-xl font-bold leading-7 text-gray-700 "
-                    >{{ entity.displayText }}</span
-                >
-                <component
-                    :is="statusObject?.icon"
-                    v-if="statusObject"
-                    class="inline-flex self-center w-auto h-5 mb-1"
-                />
-            </div>
-            <a-button
-                class="px-1 border-0 outline-none"
-                @click="handlClosePreviewPanel"
-            >
-                <AtlanIcon icon="Cancel" class="h-5 m-0" />
-            </a-button>
-        </div>
-
         <div
             v-if="preview"
-            class="flex flex-row justify-between px-5 pt-4 pb-5 align-middle border-b "
+            class="flex flex-row items-center justify-between px-5 py-4 align-middle "
         >
             <div class="flex flex-row space-x-2 align-middle">
                 <div class="flex flex-col justify-center">
@@ -49,21 +29,57 @@
             </div>
             <div class="flex flex-row items-center">
                 <a-button
-                    class="flex items-center justify-center p-0 mr-4 text-sm border-0 shadow-none outline-none "
+                    class="flex items-center justify-center p-2 mr-2 text-sm"
                     @click="redirectToProfile(entity?.typeName, entity?.guid)"
                 >
-                    <atlan-icon icon="OpenTermProfile" class="w-auto mr-2" />
-                    Open
-                    {{ type === 'AtlasGlossaryTerm' ? 'Term' : 'Category' }}
-                    Details
+                    <atlan-icon icon="OpenTermProfile" class="w-auto" />
                 </a-button>
-                <a-button
-                    class="flex items-center p-0 border-0 shadow-none outline-none "
-                    ><atlan-icon icon="ShareNew" class="w-auto mr-1" />
-                    <span class="text-sm">Share</span>
-                </a-button>
+                <a-dropdown>
+                    <template #overlay>
+                        <a-menu @click="handleMenuClick">
+                            <a-menu-item key="1" @click="handleCopyProfileLink">
+                                Copy link
+                            </a-menu-item>
+                            <!-- <a-menu-item key="2">
+                            Share via other integration
+                        </a-menu-item>
+                        <a-menu-item key="3"> Share via slack </a-menu-item> -->
+                        </a-menu>
+                    </template>
+
+                    <a-button class="flex items-center p-2"
+                        ><atlan-icon icon="Share" class="w-auto" />
+                    </a-button>
+                </a-dropdown>
             </div>
         </div>
+
+        <div
+            v-if="preview"
+            class="flex items-center justify-between pb-6 border-b"
+        >
+            <div class="flex w-3/4 tems-center">
+                <span
+                    class="items-baseline pl-5 mr-2 text-xl font-bold leading-7 truncate  text-primary"
+                    >{{ entity.displayText }}</span
+                >
+                <component
+                    :is="statusObject?.icon"
+                    v-if="statusObject"
+                    class="inline-flex self-center w-auto h-4 mb-0.5"
+                />
+            </div>
+            <a-button
+                class="fixed z-10 px-0 border-r-0 rounded-none rounded-l  -left-5"
+                @click="handlClosePreviewPanel"
+            >
+                <AtlanIcon
+                    icon="ChevronDown"
+                    class="h-4 ml-1 transition-transform transform -rotate-90"
+                />
+            </a-button>
+        </div>
+
         <!-- header ends here -->
         <a-tabs
             default-active-key="1"
@@ -201,7 +217,8 @@
     import { Components } from '~/api/atlas/client'
 
     //  utils
-    import redirectToProfile from '@/glossary/utils/redirectToProfile'
+    import assetTypeLabel from '@/glossary/constants/assetTypeLabel'
+    import { copyToClipboard } from '~/utils/clipboard'
 
     import {
         Category,
@@ -256,12 +273,12 @@
             )
 
             // methods
-            // const redirectToProfile = () => {
-            //     if (props.entity.typeName === 'AtlasGlossaryCategory')
-            //         router.push(`/glossary/category/${props.entity.guid}`)
-            //     else if (props.entity.typeName === 'AtlasGlossaryTerm')
-            //         router.push(`/glossary/term/${props.entity.guid}`)
-            // }
+            const redirectToProfile = () => {
+                if (props.entity.typeName === 'AtlasGlossaryCategory')
+                    router.push(`/glossary/category/${props.entity.guid}`)
+                else if (props.entity.typeName === 'AtlasGlossaryTerm')
+                    router.push(`/glossary/term/${props.entity.guid}`)
+            }
             const handlClosePreviewPanel = () => {
                 context.emit('closePreviewPanel')
             }
@@ -275,8 +292,21 @@
                     })
                 context.emit('updateAsset', selectedAsset)
             }
+            const handleCopyProfileLink = () => {
+                const baseUrl = window.location.origin
+                if (props.entity?.typeName !== 'AtlasGlossary') {
+                    const text = `${baseUrl}/glossary/${
+                        assetTypeLabel[props.entity?.typeName]
+                    }/${props?.entity?.guid}`
+                    copyToClipboard(text)
+                } else {
+                    const text = `${baseUrl}/${
+                        assetTypeLabel[props.entity?.typeName]
+                    }/${props?.entity?.guid}`
+                    copyToClipboard(text)
+                }
+            }
 
-            console.log(useRouter)
             return {
                 shortDescription,
                 type,
@@ -286,6 +316,7 @@
                 activeKey,
                 tabActiveKey,
                 updateEntityAndTree,
+                handleCopyProfileLink,
             }
         },
     })
@@ -299,7 +330,7 @@
         }
 
         :global(.ant-collapse-header) {
-            @apply pl-6 py-4 m-0  text-sm text-gray-700 bg-white !important;
+            @apply px-6 py-4 m-0  text-sm text-gray-700 bg-white !important;
         }
         :global(.ant-collapse-borderless > .ant-collapse-item) {
             @apply py-0 mt-0 border-0 !important;

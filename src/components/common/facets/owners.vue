@@ -1,212 +1,170 @@
 <template>
     <div class="px-4 mt-1">
-        <SearchAndFilter
-            v-model:value="queryText"
-            :placeholder="
-                activeOwnerTabKey === '1'
-                    ? `Search ${userList?.length} users`
-                    : `Search ${groupList?.length} groups`
-            "
-            :autofocus="true"
-            @change="handleOwnerSearch"
-        >
-        </SearchAndFilter>
-        <div class="relative w-full">
-            <a-tabs
-                v-model:activeKey="activeOwnerTabKey"
-                :class="$style.previewtab"
-                @change="onTabChange"
+        <div class="flex items-center justify-between mb-3">
+            <SearchAndFilter
+                v-model:value="queryText"
+                placeholder="Search"
+                :autofocus="true"
+                @change="handleOwnerSearch"
             >
-                <a-tab-pane key="1" class="">
-                    <template #tab>
-                        <span
-                            class="text-sm"
-                            :class="
-                                activeOwnerTabKey == '1'
-                                    ? 'font-bold text-primary'
-                                    : ''
-                            "
-                            >Users</span
-                        >
-                        <span
-                            v-if="totalUsersCount > 0"
-                            class="ml-2 chip"
-                            :class="{ active: activeOwnerTabKey == '1' }"
-                            >{{ totalUsersCount }}</span
-                        >
-                    </template>
-                    <div class="w-full overflow-y-auto h-44">
-                        <div
-                            v-if="
-                                STATES.SUCCESS === userOwnerState &&
-                                userList.length < 1
-                            "
-                            class="flex flex-col items-center justify-center h-full "
-                        >
-                            <div class="flex flex-col items-center">
-                                <img
-                                    :src="emptyScreen"
-                                    alt="No logs"
-                                    class="w-2/5 m-auto mb-4"
-                                />
-                                <span class="text-gray-500"
-                                    >No Users Found</span
-                                >
-                            </div>
-                        </div>
-                        <div
-                            v-if="STATES.SUCCESS === userOwnerState"
-                            class="flex flex-col w-full"
-                        >
-                            <a-checkbox-group
-                                v-model:value="data.userValue"
-                                class="w-full"
-                                @change="handleUsersChange"
-                            >
-                                <template
-                                    v-for="item in userList"
-                                    :key="item.username"
-                                >
-                                    <a-checkbox
-                                        v-if="item.username"
-                                        :value="item.username"
-                                        class="w-full mb-3"
-                                    >
-                                        <div
-                                            v-if="item.username === myUsername"
-                                            class="inline-flex capitalize"
-                                        >
-                                            {{ item.username }}
-
-                                            <span class="font-bold">
-                                                {{ '&nbsp;(me)' }}
-                                            </span>
-                                        </div>
-                                        <span v-else class="capitalize">
-                                            {{ item.username }}
-                                        </span>
-                                    </a-checkbox>
-                                </template>
-                            </a-checkbox-group>
-                        </div>
-                        <div
-                            v-else
-                            class="flex items-center justify-center mt-3"
-                        >
-                            <a-spin
-                                size="small"
-                                class="mr-2 leading-none"
-                            ></a-spin
-                            ><span>Fetching users</span>
+            </SearchAndFilter>
+            <a-button-group>
+                <a-button
+                    @click="setActiveTab('users')"
+                    :class="activeOwnerTabKey === 'users' ? 'text-primary' : ''"
+                >
+                    <template #icon
+                        ><AtlanIcon icon="User" class="mx-auto"
+                    /></template>
+                </a-button>
+                <a-button
+                    @click="setActiveTab('groups')"
+                    :class="
+                        activeOwnerTabKey === 'groups' ? 'text-primary' : ''
+                    "
+                    ><template #icon
+                        ><AtlanIcon
+                            icon="GroupStatic"
+                            class="mx-auto" /></template
+                ></a-button>
+            </a-button-group>
+        </div>
+        <div class="relative w-full">
+            <template v-if="activeOwnerTabKey === 'users'">
+                <div class="w-full overflow-y-auto h-44">
+                    <div
+                        v-if="
+                            STATES.SUCCESS === userOwnerState &&
+                            userList.length < 1
+                        "
+                        class="flex flex-col items-center justify-center h-full"
+                    >
+                        <div class="flex flex-col items-center">
+                            <img
+                                :src="emptyScreen"
+                                alt="No logs"
+                                class="w-2/5 m-auto mb-4"
+                            />
+                            <span class="text-gray-500">No Users Found</span>
                         </div>
                     </div>
                     <div
-                        v-if="
-                            totalUsersCount - userList.length > 0 &&
-                            queryText.length < 1
-                        "
-                        class="mt-2"
+                        v-if="STATES.SUCCESS === userOwnerState"
+                        class="flex flex-col w-full"
                     >
-                        <div
-                            v-if="
-                                STATES.SUCCESS === userOwnerState &&
-                                showMoreUsers
-                            "
-                            class="flex items-center w-auto mb-0 font-bold text-center cursor-pointer select-none  outlined text-primary"
-                            @click="toggleShowMore"
-                        >
-                            {{
-                                `Show ${totalUsersCount - userList.length} more`
-                            }}
-                        </div>
-                    </div>
-                </a-tab-pane>
-                <a-tab-pane key="2">
-                    <template #tab>
-                        <span
-                            class="text-sm"
-                            :class="
-                                activeOwnerTabKey == '2'
-                                    ? 'font-bold text-primary'
-                                    : ''
-                            "
-                            >Groups</span
-                        >
-                        <span
-                            v-if="totalGroupCount > 0"
-                            class="chip"
-                            :class="{ active: activeOwnerTabKey == '2' }"
-                        >
-                            {{ totalGroupCount }}
-                        </span>
-                    </template>
-                    <div class="overflow-y-auto h-44">
-                        <div
-                            v-if="
-                                STATES.SUCCESS === groupOwnerState &&
-                                groupList.length < 1
-                            "
-                            class="flex flex-col items-center justify-center h-full "
-                        >
-                            <div class="flex flex-col items-center">
-                                <img
-                                    :src="emptyScreen"
-                                    alt="No logs"
-                                    class="w-2/5 m-auto mb-4"
-                                />
-                                <span class="text-gray-500"
-                                    >No Groups Found</span
-                                >
-                            </div>
-                        </div>
                         <a-checkbox-group
-                            v-if="STATES.SUCCESS === groupOwnerState"
-                            v-model:value="data.groupValue"
-                            @change="handleGroupsChange"
+                            v-model:value="data.userValue"
+                            class="w-full"
+                            @change="handleUsersChange"
                         >
-                            <div class="flex flex-col w-full">
+                            <template
+                                v-for="item in userList"
+                                :key="item.username"
+                            >
                                 <a-checkbox
-                                    v-for="item in groupList"
-                                    :key="item.name"
-                                    :value="item.name"
-                                    class="mb-3 capitalize"
+                                    v-if="item.username"
+                                    :value="item.username"
+                                    class="w-full mb-3"
                                 >
-                                    {{ item.name }}
+                                    <div
+                                        v-if="item.username === myUsername"
+                                        class="inline-flex capitalize"
+                                    >
+                                        {{ item.username }}
+
+                                        <span class="font-bold">
+                                            {{ '&nbsp;(me)' }}
+                                        </span>
+                                    </div>
+                                    <span v-else class="capitalize">
+                                        {{ item.username }}
+                                    </span>
                                 </a-checkbox>
-                            </div>
+                            </template>
                         </a-checkbox-group>
-                        <div v-else class="flex items-center justify-center">
-                            <a-spin
-                                size="small"
-                                class="mr-2 leading-none"
-                            ></a-spin
-                            ><span>Fetching groups</span>
-                        </div>
                     </div>
+                    <div v-else class="flex items-center justify-center mt-3">
+                        <a-spin size="small" class="mr-2 leading-none"></a-spin
+                        ><span>Fetching users</span>
+                    </div>
+                </div>
+                <div
+                    v-if="
+                        totalUsersCount - userList.length > 0 &&
+                        queryText.length < 1
+                    "
+                    class="mt-2"
+                >
                     <div
                         v-if="
-                            totalGroupCount - groupList.length > 0 &&
-                            queryText.length < 1
+                            STATES.SUCCESS === userOwnerState && showMoreUsers
                         "
-                        class="mt-3"
+                        class="flex items-center w-auto mb-0 font-bold text-center cursor-pointer select-none  outlined text-primary"
+                        @click="toggleShowMore"
                     >
-                        <div
-                            v-if="
-                                GROUPSTATES.SUCCESS === groupOwnerState &&
-                                showMoreGroups
-                            "
-                            class="flex items-center w-auto mb-3 font-bold text-center cursor-pointer select-none  outlined text-primary"
-                            @click="toggleShowMoreGroups"
-                        >
-                            {{
-                                `Show ${
-                                    totalGroupCount - groupList.length
-                                } more`
-                            }}
+                        {{ `Show ${totalUsersCount - userList.length} more` }}
+                    </div>
+                </div>
+            </template>
+            <template v-else>
+                <div class="overflow-y-auto h-44">
+                    <div
+                        v-if="
+                            STATES.SUCCESS === groupOwnerState &&
+                            groupList.length < 1
+                        "
+                        class="flex flex-col items-center justify-center h-full"
+                    >
+                        <div class="flex flex-col items-center">
+                            <img
+                                :src="emptyScreen"
+                                alt="No logs"
+                                class="w-2/5 m-auto mb-4"
+                            />
+                            <span class="text-gray-500">No Groups Found</span>
                         </div>
                     </div>
-                </a-tab-pane>
-            </a-tabs>
+                    <a-checkbox-group
+                        v-if="STATES.SUCCESS === groupOwnerState"
+                        v-model:value="data.groupValue"
+                        @change="handleGroupsChange"
+                    >
+                        <div class="flex flex-col w-full">
+                            <a-checkbox
+                                v-for="item in groupList"
+                                :key="item.name"
+                                :value="item.name"
+                                class="mb-3 capitalize"
+                            >
+                                {{ item.name }}
+                            </a-checkbox>
+                        </div>
+                    </a-checkbox-group>
+                    <div v-else class="flex items-center justify-center">
+                        <a-spin size="small" class="mr-2 leading-none"></a-spin
+                        ><span>Fetching groups</span>
+                    </div>
+                </div>
+                <div
+                    v-if="
+                        totalGroupCount - groupList.length > 0 &&
+                        queryText.length < 1
+                    "
+                    class="mt-3"
+                >
+                    <div
+                        v-if="
+                            GROUPSTATES.SUCCESS === groupOwnerState &&
+                            showMoreGroups
+                        "
+                        class="flex items-center w-auto mb-3 font-bold text-center cursor-pointer select-none  outlined text-primary"
+                        @click="toggleShowMoreGroups"
+                    >
+                        {{ `Show ${totalGroupCount - groupList.length} more` }}
+                    </div>
+                </div>
+            </template>
+
             <div>
                 <a-checkbox
                     v-model:checked="data.noOwnerAssigned"
@@ -254,12 +212,13 @@
         emits: ['change'],
         setup(props, { emit }) {
             const { data } = toRefs(props)
-            const activeOwnerTabKey = ref('1')
+            const activeOwnerTabKey: Ref<'users' | 'groups'> = ref('users')
             const showMoreUsers = ref(true)
             const showMoreGroups = ref(true)
             const queryText = ref('')
+
             // own info
-            const { username: myUsername, name: myName } = whoami()
+            const { username: myUsername } = whoami()
 
             const criterion: Ref<Components.Schemas.FilterCriteria[]> = ref([])
             console.log(
@@ -310,7 +269,7 @@
                     criterion.value.push({
                         condition: 'AND',
                         criterion: [
-                            {   
+                            {
                                 attributeName: 'ownerUsers',
                                 attributeValue: '-',
                                 operator: 'is_null',
@@ -321,7 +280,7 @@
                                 operator: 'is_null',
                             },
                         ],
-                })
+                    })
                 } else {
                     data.value.userValue = []
                     data.value.groupValue = []
@@ -338,17 +297,22 @@
             }
 
             const handleOwnerSearch = () => {
-                if (activeOwnerTabKey.value === '1') {
+                if (activeOwnerTabKey.value === 'users') {
                     handleUserSearch(queryText.value)
-                } else if (activeOwnerTabKey.value === '2') {
+                } else if (activeOwnerTabKey.value === 'groups') {
                     // for groups
                     handleGroupSearch(queryText.value)
                 }
             }
+
+            function setActiveTab(tabName: 'users' | 'groups') {
+                activeOwnerTabKey.value = tabName
+                if (queryText.value !== '') handleOwnerSearch()
+            }
+
             const {
                 list: listUsers,
                 total: totalUsersCount,
-                filtered,
                 state: userOwnerState,
                 STATES,
                 mutate: mutateUsers,
@@ -455,10 +419,6 @@
                 mutateGroups()
             }
 
-            function onTabChange() {
-                if (queryText.value !== '') handleOwnerSearch()
-            }
-
             return {
                 data,
                 emptyScreen,
@@ -484,67 +444,10 @@
                 handleChange,
                 handleUsersChange,
                 handleGroupsChange,
-                onTabChange,
                 showMoreUsers,
+                setActiveTab,
             }
         },
         mounted() {},
     })
 </script>
-
-<style lang="less" scoped>
-    ._bg-primary-light {
-        background: rgba(34, 81, 204, 0.05);
-    }
-    .hover_bg-primary-light:hover {
-        background: rgba(34, 81, 204, 0.05);
-    }
-    .owner-child {
-        margin-top: 0.3rem;
-        margin-bottom: 0.3rem;
-    }
-    // .owner-child:nth-child(2) {
-    //     margin-top: 0.3rem;
-    //     margin-bottom: 0.3rem;
-    // }
-</style>
-<style lang="less" module>
-    .previewtab {
-        :global(.ant-tabs-tab) {
-            @apply pb-3 px-2;
-            @apply mr-4;
-            @apply text-gray-500;
-            @apply text-xs;
-        }
-        :global(.ant-checkbox-group) {
-            @apply w-full !important;
-        }
-    }
-    .badge {
-        :global(.ant-badge-dot) {
-            @apply bg-primary !important;
-        }
-        :global(.ant-badge-count) {
-            @apply top-3 right-2 !important;
-        }
-    }
-</style>
-
-<style scoped>
-    .chip {
-        @apply px-1 pt-0.5 pb-0.5 mx-1;
-        @apply rounded;
-        @apply tracking-wide;
-        @apply text-xs;
-        @apply font-bold;
-        @apply text-gray-500;
-        @apply bg-gray-100;
-    }
-    .chip.active {
-        @apply text-primary;
-        @apply bg-primary-light;
-    }
-    .owner-checkbox:last-child {
-        @apply pb-0 mb-0 !important;
-    }
-</style>

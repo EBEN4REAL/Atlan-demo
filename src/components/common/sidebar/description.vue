@@ -1,6 +1,6 @@
 <template>
     <div class="text-xs text-gray-500" :class="usingInInfo ? 'mb-3' : ''">
-        <p v-if="usingInInfo" class="mb-1 text-xs">Description</p>
+        <p v-if="usingInInfo" class="mb-1 text-sm">Description</p>
         <div v-if="showEditableDescription && !isLoading">
             <a-textarea
                 id="description-sidebar"

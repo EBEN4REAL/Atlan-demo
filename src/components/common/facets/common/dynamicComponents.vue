@@ -37,7 +37,7 @@
         />
         <UserSelector
             v-else-if="type === 'users'"
-            :modelValue="value"
+            :modelValue="value || undefined"
             @change="handleSelectUser"
         />
 

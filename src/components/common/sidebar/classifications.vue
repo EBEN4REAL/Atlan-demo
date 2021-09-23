@@ -63,15 +63,14 @@
                 </div>
             </div>
             <template #content>
-                <div class="flex flex-col overflow-y-auto" style="width: 400px">
-                    <div v-if="!showCreateClassificationPopover">
+                <div class="flex flex-col overflow-y-auto">
+                    <template v-if="!showCreateClassificationPopover">
                         <p class="mb-2 text-sm text-gray-700">
                             Link Classification
                         </p>
                         <a-select
                             v-model:value="selectedClassificationForLink"
                             mode="multiple"
-                            style="width: 100%"
                             :allow-clear="true"
                             :autofocus="true"
                             :show-search="true"
@@ -116,8 +115,8 @@
                             }}</span> -->
                             are deleted
                         </a-checkbox>
-                    </div>
-                    <div v-else>
+                    </template>
+                    <template v-else>
                         <p class="mb-2 text-sm text-gray-700">
                             Create Classification
                         </p>
@@ -158,7 +157,7 @@
                         >
                             {{ createErrorText }}
                         </p>
-                    </div>
+                    </template>
                     <div class="flex items-center justify-between w-full mt-4">
                         <div
                             v-if="!showCreateClassificationPopover"

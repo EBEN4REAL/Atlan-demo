@@ -1,7 +1,7 @@
 <template>
     <div class="w-full h-full px-3 rounded">
         <div class="w-full h-full overflow-x-hidden rounded">
-            <CustomVariablesNav />
+            <CustomVariablesNav v-if="editorInstance" />
             <div
                 class="flex items-center justify-between w-full mb-3  run-btn-wrapper"
             >
@@ -30,18 +30,20 @@
         Ref,
         defineAsyncComponent,
         ref,
+        ComputedRef,
         reactive,
         computed,
         provide,
         watch,
+        toRaw,
     } from 'vue'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
     import useRunQuery from '../common/composables/useRunQuery'
-    import { useInlineTab } from '~/components/insights/common/composables/useInlineTab'
     import { useProvide } from '~/components/insights/common/composables/useProvide'
     import { provideDataInterface } from '~/components/insights/common/composables/useProvide'
     import CustomVariablesNav from '~/components/insights/playground/editor/customVariablesNav/index.vue'
     import { editor } from 'monaco-editor'
+    import { useInlineTab } from '~/components/insights/common/composables/useInlineTab'
 
     export default defineComponent({
         components: {
@@ -51,34 +53,54 @@
         props: {},
         setup() {
             const { queryRun } = useRunQuery()
+            const { modifyActiveInlineTabEditor } = useInlineTab()
 
             const activeInlineTab = inject(
                 'activeInlineTab'
-            ) as Ref<activeInlineTabInterface>
+            ) as ComputedRef<activeInlineTabInterface>
+            const inlineTabs = inject('inlineTabs') as Ref<
+                activeInlineTabInterface[]
+            >
             const selectedDefaultSchema = computed(
                 () =>
                     activeInlineTab.value.explorer.schema.connectors
                         .selectedDefaultSchema
             )
 
-            let editorInstance: any = reactive({})
-            const monacoInstance = ref()
+            let editorInstance: Ref<editor.IStandaloneCodeEditor | undefined> =
+                ref()
+            let monacoInstance: Ref<editor.IStandaloneCodeEditor | undefined> =
+                ref()
             const isQueryRunning = inject('isQueryRunning') as Ref<string>
 
             const getData = (dataList, columnList) => {
-                // setting the data here because we don't want to save the response in local storage
-                activeInlineTab.value.playground.editor.dataList = dataList
-                activeInlineTab.value.playground.editor.columnList = columnList
+                if (activeInlineTab && inlineTabs?.value) {
+                    const activeInlineTabCopy: activeInlineTabInterface =
+                        JSON.parse(JSON.stringify(toRaw(activeInlineTab.value)))
+                    activeInlineTabCopy.playground.editor.dataList = dataList
+
+                    activeInlineTabCopy.playground.editor.columnList =
+                        columnList
+                    const saveQueryDataInLocalStorage = false
+                    modifyActiveInlineTabEditor(
+                        activeInlineTabCopy,
+                        inlineTabs,
+                        saveQueryDataInLocalStorage
+                    )
+                }
             }
             const run = () => {
                 queryRun(activeInlineTab.value, getData, isQueryRunning)
             }
 
             const setEditorInstance = (
-                editorInstanceParam: editor.IStandaloneCodeEditor
+                editorInstanceParam: editor.IStandaloneCodeEditor,
+                monacoInstanceParam?: any
             ) => {
-                editorInstance = editorInstanceParam
-                console.log(editorInstanceParam, 'fxn')
+                editorInstance.value = editorInstanceParam
+                if (monacoInstanceParam)
+                    monacoInstance.value = monacoInstanceParam
+                console.log(editorInstanceParam, editorInstance, 'fxn')
             }
 
             /*---------- PROVIDERS FOR CHILDRENS -----------------
@@ -91,6 +113,7 @@
             useProvide(provideData)
             /*-------------------------------------*/
             return {
+                editorInstance,
                 selectedDefaultSchema,
                 activeInlineTab,
                 isQueryRunning,

@@ -8,12 +8,12 @@
         :class="$style.input"
         width="800px"
     >
-        <template #title>
+        <template #title class="bg-red-500 border-0">
             <slot name="header" />
         </template>
         <template #footer>
             <div class="flex items-center justify-between w-full">
-                <div class="flex items-center space-x-4">
+                <div class="flex items-center space-x-3">
                     <a-dropdown
                         placement="bottomLeft"
                         :trigger="['click']"
@@ -63,12 +63,33 @@
                                 class="px-4 py-2"
                             />
                         </template>
-                        <a-button> {{ ownerBtnText }} </a-button>
+                        <a-button class="flex items-center">
+                            <AtlanIcon
+                                v-if="ownerUsers?.length <= 1"
+                                icon="User"
+                                class="m-0 mr-1"
+                            />
+                            <AtlanIcon
+                                v-else
+                                icon="Group"
+                                class="h-4 mr-2  text-primary group-hover:text-white"
+                            />
+                            <span
+                                class="capitalize"
+                                :class="{
+                                    'text-primary': ownerUsers?.length > 1,
+                                }"
+                            >
+                                {{ ownerBtnText }}
+                            </span>
+                        </a-button>
                     </a-dropdown>
+                    <div class="flex items-center space-x-2">
+                        <a-switch size="small" v-model:checked="isCreateMore" />
+                        <p class="p-0 m-0">Create more</p>
+                    </div>
                 </div>
                 <div class="flex items-center justify-end space-x-3">
-                    <a-switch size="small" v-model:checked="isCreateMore" />
-                    <p class="p-0 m-0">Create more</p>
                     <a-button @click="handleCancel">Cancel</a-button>
                     <a-button type="primary" @click="handleOk"
                         >Add term</a-button
@@ -76,18 +97,17 @@
                 </div>
             </div>
         </template>
-        <div class="my-3">
-            <a-input
-                :ref="titleBar"
-                v-model:value="title"
-                placeholder="Title..."
-                class="text-lg border-0 shadow-none outline-none"
-            />
-        </div>
         <a-input
+            :ref="titleBar"
+            v-model:value="title"
+            :placeholder="`Untitled ${entityType}`"
+            class="text-lg font-bold text-gray-700 border-0 shadow-none outline-none "
+            :class="$style.titleInput"
+        />
+        <a-textarea
             v-model:value="description"
-            placeholder="Description..."
-            class="border-0 shadow-none outline-none"
+            placeholder="Add description..."
+            class="text-gray-500 border-0 shadow-none outline-none"
         />
     </a-modal>
 </template>
@@ -145,29 +165,24 @@
 
             const ownerBtnText = computed(() => {
                 let str = ''
-                if (ownerUsers?.value?.value?.length > 0)
-                    str += `${ownerUsers?.value?.value?.length} ${
-                        ownerUsers?.value?.value?.length > 1 ? 'users' : 'user'
-                    }`
+                if (ownerUsers?.value?.length === 1) str += ownerUsers.value
+                if (ownerUsers?.value?.length > 1)
+                    str += `${ownerUsers?.value?.length} users`
                 if (
-                    ownerUsers?.value?.value?.length > 0 &&
-                    ownerGroups?.value?.value?.length > 0
+                    ownerUsers?.value?.length > 0 &&
+                    ownerGroups?.value?.length > 0
                 )
                     str += ' & '
 
-                if (ownerGroups?.value?.value?.length > 0)
-                    str += `${ownerGroups?.value?.value?.length} ${
-                        ownerGroups?.value?.value?.length > 1
-                            ? 'groups'
-                            : 'group'
+                if (ownerGroups?.value?.length > 0)
+                    str += `${ownerGroups?.value?.length} ${
+                        ownerGroups?.value?.length > 1 ? 'groups' : 'group'
                     }`
-
                 if (
-                    ownerUsers?.value?.value?.length > 0 ||
-                    ownerGroups?.value?.value?.length > 0
+                    ownerUsers.value.length === 0 &&
+                    ownerGroups.value.length == 0
                 )
-                    str += ' selected'
-                else str += 'Owners'
+                    str += 'Owners'
                 return str
             })
             const resetInput = () => {
@@ -217,8 +232,8 @@
                 isVisible.value = false
             }
             const handleOwnersUpdated = (updatedOwners) => {
-                ownerUsers.value = updatedOwners.ownerUsers
-                ownerGroups.value = updatedOwners.ownerGroups
+                ownerUsers.value = updatedOwners.ownerUsers.value
+                ownerGroups.value = updatedOwners.ownerGroups.value
             }
             onMounted(async () => {
                 await nextTick()
@@ -258,7 +273,22 @@
             @apply shadow-none outline-none border-0 border-transparent border-r-0 bg-blue-600 !important;
         }
         :global(.ant-input) {
-            @apply shadow-none outline-none border-0 !important;
+            @apply shadow-none outline-none px-0 border-0 !important;
+        }
+        :global(.ant-modal-header) {
+            @apply border-0 border-t-0 border-b-0 px-4  !important;
+        }
+
+        :global(.ant-modal-footer) {
+            @apply border-0 border-t-0 px-4 border-b-0  !important;
+        }
+        :global(.ant-modal-body) {
+            @apply px-4 !important;
+        }
+    }
+    .titleInput {
+        :global(.ant-input::-webkit-input-placeholder) {
+            @apply font-bold text-gray-500 !important;
         }
     }
 </style>

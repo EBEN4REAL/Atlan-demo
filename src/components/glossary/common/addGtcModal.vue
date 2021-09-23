@@ -8,47 +8,49 @@
         :class="$style.input"
         width="800px"
     >
-        <template #title class="bg-red-500 border-0">
-            <slot name="header" />
+        <template #title>
+            <div class="flex items-center justify-between w-full">
+                <slot name="header" />
+                <a-dropdown
+                    placement="bottomLeft"
+                    :trigger="['click']"
+                    @click.stop="() => {}"
+                >
+                    <template #overlay>
+                        <a-menu>
+                            <a-menu-item
+                                v-for="item in List"
+                                :key="item"
+                                @click="handleMenuClick(item)"
+                            >
+                                <div class="flex items-center space-x-2">
+                                    <component
+                                        :is="item.icon"
+                                        class="w-auto h-4 ml-1 mr-2 pushtop"
+                                    />
+
+                                    {{ item.label }}
+                                </div>
+                            </a-menu-item>
+                        </a-menu>
+                    </template>
+                    <StatusBadge
+                        :status-id="currentStatus"
+                        :show-chip-style-status="false"
+                        :show-no-status="true"
+                        :show-label="true"
+                        class="items-center p-0 cursor-pointer"
+                    ></StatusBadge>
+                    <AtlanIcon
+                        class="pt-1 ml-4 transform -rotate-90"
+                        icon="ChevronDown"
+                    />
+                </a-dropdown>
+            </div>
         </template>
         <template #footer>
             <div class="flex items-center justify-between w-full">
                 <div class="flex items-center space-x-3">
-                    <a-dropdown
-                        placement="bottomLeft"
-                        :trigger="['click']"
-                        @click.stop="() => {}"
-                    >
-                        <template #overlay>
-                            <a-menu>
-                                <a-menu-item
-                                    v-for="item in List"
-                                    :key="item"
-                                    @click="handleMenuClick(item)"
-                                >
-                                    <div class="flex items-center space-x-2">
-                                        <component
-                                            :is="item.icon"
-                                            class="w-auto h-4 ml-1 mr-2 pushtop"
-                                        />
-
-                                        {{ item.label }}
-                                    </div>
-                                </a-menu-item>
-                            </a-menu>
-                        </template>
-                        <StatusBadge
-                            :status-id="currentStatus"
-                            :show-chip-style-status="false"
-                            :show-no-status="true"
-                            :show-label="true"
-                            class="p-0 cursor-pointer"
-                        ></StatusBadge>
-                        <AtlanIcon
-                            class="pt-1 ml-4 transform -rotate-90"
-                            icon="ChevronDown"
-                        />
-                    </a-dropdown>
                     <a-dropdown
                         placement="topLeft"
                         :trigger="['click']"

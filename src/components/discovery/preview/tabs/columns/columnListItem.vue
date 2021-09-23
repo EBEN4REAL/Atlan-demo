@@ -32,6 +32,7 @@
     <Description :selected-asset="asset" :using-in-info="false" />
     <teleport to="#overAssetPreviewSidebar">
         <a-drawer
+            :key="asset.guid"
             v-model:visible="showColumnSidebar"
             placement="right"
             :mask="false"
@@ -52,7 +53,7 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, PropType, ref, toRefs } from 'vue'
+    import { defineComponent, PropType, ref } from 'vue'
     import useAssetInfo from '~/composables/asset/useAssetInfo'
     import { assetInterface } from '~/types/assets/asset.interface'
     import AssetPreview from '@/discovery/preview/assetPreview.vue'

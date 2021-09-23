@@ -99,8 +99,11 @@
                 getRules,
                 validate,
                 testModal,
+
                 isRequiredField,
             } = useFormGenerator(dummy2, formRef)
+
+            // const test = computed(() => finalConfigObject(formModel.value))
 
             return {
                 testModal,
@@ -110,7 +113,6 @@
                 validate,
                 getGridClass,
                 isRequiredField,
-                finalConfigObject,
             }
         },
     })

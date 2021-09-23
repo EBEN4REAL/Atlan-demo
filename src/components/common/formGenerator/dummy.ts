@@ -1,5 +1,17 @@
 export const dummy2 = [
     {
+        type: 'array',
+        id: 'hello',
+        stringify: true,
+        children: [{
+            id: 'url1',
+            exclude: false,
+            type: 'template',
+            isVisible: false,
+            template: 'xx-jdbc:redshift://{{host}}:asdasd{{port}}/{{database}}-xx'
+        }]
+    },
+    {
         id: 'url',
         type: 'template',
         isVisible: false,
@@ -356,7 +368,7 @@ export const dummy3 = [
         placeholder: "Port",
         isVisible: true,
         prefill: true,
-        default: "5439",
+        default: 5439,
         rules: [
             {
                 type: "required",

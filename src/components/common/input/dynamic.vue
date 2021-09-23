@@ -81,7 +81,6 @@
     import { defineComponent, PropType, ref } from 'vue'
     import UserSelector from '@common/selector/users/index.vue'
     import useAsyncSelector from './useAsyncSelector'
-    import { useAPIPromise } from '~/api/useAPI'
 
     export default defineComponent({
         components: {

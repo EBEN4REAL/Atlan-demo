@@ -14,7 +14,7 @@ export default function useFormGenerator(formConfig, formRef) {
             schema.value = schema.default
         else schema.default = null
         if (!schema.hasOwnProperty('type'))
-            schema.exclude = 'text'
+            schema.type = 'text'
         if (!schema.hasOwnProperty('isVisible'))
             schema.isVisible = true
         if (!schema.hasOwnProperty('rules'))
@@ -64,11 +64,6 @@ export default function useFormGenerator(formConfig, formRef) {
         return typeMap[t] || t
     }
 
-    const getValueFromSchemaData = (id) =>
-        expandGroups(processedSchema.value).find(
-            (s) => s.id === id
-        ).value
-
     // improve this to go deeper than 1 level
     //* expands fields of type object schema, array <> flattens it
     const expandOther = (schema) => {
@@ -105,6 +100,7 @@ export default function useFormGenerator(formConfig, formRef) {
 
 
     const testModal = ref({});
+    const getValueFromSchemaData = (id) => testModal.value[id]
 
     formConfig.forEach((f) => {
 
@@ -152,37 +148,62 @@ export default function useFormGenerator(formConfig, formRef) {
                 finalString += getValueFromSchemaData(pp[0]) + pp[1]
             }
         })
+        console.log('generateSring', s, finalString)
         return finalString
     }
 
-    // FIXME turn this into fn, use testModal, check exclude, add path, 
-    const finalConfigObject = computed(() => {
+    // FIXME enhance,DRY
+    const finalConfigObject = (modal) => {
+        // ? modal won't have any type object or array, but groups
         const temp = {}
-        expandGroups(processedSchema.value).forEach((s) => {
-            // ? handle for: if a group is present at root level
-            if (s.type === 'group') {
-                s.children.forEach((gc) => {
-                    if (gc.type === 'template') {
-                        temp[gc.id] = generateSring(gc.template)
-                    } else temp[gc.id] = gc.value
-                })
-                // ? handle for: if parent key exist (i.e value needs to go inside parent)
-            } else if (s.parent) {
-                if (s.parentType === 'object') {
-                    temp[s.parent] = { ...(temp[s.parent] || {}) }
-                    if (s.type === 'template') {
-                        temp[s.parent][s.id] = generateSring(s.template)
-                    } else {
-                        temp[s.parent][s.id] = s.value
+
+        modal.forEach(f => {
+            if (f.exclude) return;
+            if (f.type !== 'group') {
+                // ? if conditional field is hidden dont add
+                if (f.conditional && f.conditional.refValue !== getValueFromSchemaData(f.conditional.refID)) return;
+
+                const val = f.type === 'template' ? generateSring(f.template) : getValueFromSchemaData(f.id)
+                // ? no groups
+                if (f.parent) {
+                    if (f.parentType === 'object') {
+                        temp[f.parent] = { ...(temp[f.parent] || {}) }
+                        temp[f.parent][f.id] = val
+                    } else if (f.parentType === 'array') {
+                        // handdle array
+                        temp[f.parent] = [...(temp[f.parent] || [])]
+                        temp[f.parent].push({ key: f.id, value: val })
                     }
+                } else {
+                    temp[f.id] = val
                 }
-                // * handle for array
-            } else if (s.type === 'template') {
-                temp[s.id] = generateSring(s.template)
-            } else temp[s.id] = s.value
+            } else {
+                // ? groups
+                f.children.forEach(f => {
+                    if (f.conditional && f.conditional.refValue !== getValueFromSchemaData(f.conditional.refID)) return;
+
+                    const val = f.type === 'template' ? generateSring(f.template) : getValueFromSchemaData(f.id)
+                    // ? no groups
+                    if (f.parent) {
+                        if (f.parentType === 'object') {
+                            temp[f.parent] = { ...(temp[f.parent] || {}) }
+                            temp[f.parent][f.id] = val
+                        } else if (f.parentType === 'array') {
+                            // handdle array
+                            temp[f.parent] = [...(temp[f.parent] || [])]
+                            temp[f.parent].push({ key: f.id, value: val })
+                        }
+                    } else {
+                        temp[f.id] = val
+                    }
+                })
+
+
+            }
         })
+        console.log({ temp })
         return temp
-    })
+    }
 
 
     // rules
@@ -227,11 +248,9 @@ export default function useFormGenerator(formConfig, formRef) {
     const handleConditional = () => {
         processedSchema.value.forEach((f, x) => {
             if (f.conditional) {
-                // const curVal = getValueFromSchemaData(
-                //     f.conditional.refID
-                // )
-
-                const curVal = testModal.value[f.conditional.refID]
+                const curVal = getValueFromSchemaData(
+                    f.conditional.refID
+                )
 
                 const reqVal = f.conditional.refValue
                 processedSchema.value[x].isVisible =
@@ -262,7 +281,9 @@ export default function useFormGenerator(formConfig, formRef) {
     watch(
         testModal.value,
         () => {
+            // improve this -- handle @change
             handleConditional()
+            finalConfigObject(processedSchema.value)
         },
         { immediate: true, deep: true }
     )

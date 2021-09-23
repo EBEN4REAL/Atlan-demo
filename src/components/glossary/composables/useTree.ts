@@ -525,13 +525,26 @@ const useTree = (
                 children: newChildren,
             }
         }
-        parentStack = recursivelyFindPath(fromGuid)
-        const parent = parentStack.pop()
 
-        treeData.value = treeData.value.map((node: TreeDataItem) => {
-            if (node.key === parent) return removeNode(node)
-            return node
-        })
+        // remove
+        if(fromGuid === 'root') {
+            treeData.value = treeData.value.filter((node) => {
+                if(node.key === nodeKey) {
+                    nodeToReorder = node;
+                    return false
+                }
+                return true
+            })
+        } else {
+            parentStack = recursivelyFindPath(fromGuid)
+            const parent = parentStack.pop()
+    
+            treeData.value = treeData.value.map((node: TreeDataItem) => {
+                if (node.key === parent) return removeNode(node)
+                return node
+            })
+        }
+
 
         parentStack = recursivelyFindPath(toGuid)
         const toParent = parentStack.pop()
@@ -615,20 +628,51 @@ const useTree = (
                             categoryGuid: node.dataRef.guid,
                         },
                     ]
-                    const { data } = GlossaryApi.UpdateGlossaryTerm(
-                        dragNode.dataRef.guid,
-                        {
-                            ...dragNode.dataRef,
-                            categories: newCategories,
-                        }
-                    )
 
-                    watch(data, async (newData) => {
-                        if (newData?.guid) {
-                            await refetchNode('root')
-                            refetchNode(node.dataRef.guid)
-                        }
-                    })
+                    if (optimisticUpdate) {
+                        const toGuid = node.dataRef.guid
+                        
+                        reOrderNodes(
+                            dragNode.dataRef.guid,
+                            'root',
+                            toGuid,
+                            newCategories
+                        )
+
+                        const { data, error: dropError } =
+                        GlossaryApi.UpdateGlossaryTerm(
+                            dragNode.dataRef.guid,
+                            {
+                                ...dragNode.dataRef,
+                                categories: newCategories,
+                            }
+                        )
+                        watch(dropError, (err) => {
+                            setTimeout(() => {
+                                reOrderNodes(
+                                    dragNode.dataRef.guid,
+                                    toGuid,
+                                    'root',
+                                    []
+                                )
+                            }, 1500)
+                        })
+                    } else {
+                        const { data } = GlossaryApi.UpdateGlossaryTerm(
+                            dragNode.dataRef.guid,
+                            {
+                                ...dragNode.dataRef,
+                                categories: newCategories,
+                            }
+                        )
+    
+                        watch(data, async (newData) => {
+                            if (newData?.guid) {
+                                await refetchNode('root')
+                                refetchNode(node.dataRef.guid)
+                            }
+                        })
+                    }
                     // updateEntity('term', dragNode.dataRef.guid, {
                     //     categories: newCategories,
                     // })

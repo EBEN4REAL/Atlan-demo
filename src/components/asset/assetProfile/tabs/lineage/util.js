@@ -29,6 +29,26 @@ export const getNodeTypeText = {
 }
 
 /**
+ * Gets the Font Awesome Icon class for the Node type
+ * @returns {String}
+ */
+export const getNodeTypeIcon = {
+    AtlanTable: 'far fa-table text-table',
+    AtlanColumn: 'far fa-columns text-column',
+    AtlanView: 'far fa-th-list text-view',
+    AtlanDatabase: 'far fa-database',
+    AtlanSchema: 'far fa-box',
+    AtlanBIDashboard: 'far fa-user-chart', //
+    AtlanBICollection: 'far fa-folder', //
+    AtlanBIWidget: 'far fa-chart-pie-alt', //
+    AtlanBIModel: 'far fa-compass', //
+    AtlanBIExplore: 'far fa-eye', //
+    AtlanProcess: 'far fa-code', //
+    AtlanIntegration: 'far fa-link text-database', //
+    Query: 'far fa-code', //
+}
+
+/**
  * Gets the image for the source of the node
  */
 export const getNodeSourceImage = {
@@ -67,19 +87,19 @@ export const updateEdgesStroke = (
         let computedStroke
 
         if (reset) {
-            const edges = m.id.split('@')
+            const edgesSplit = m.id.split('@')
             const baseCell = graph.value.getCellById(baseEntityGuid)
-            const cell = graph.value.getCellById(edges[0])
+            const cell = graph.value.getCellById(edgesSplit[0])
             const isPredecessor = graph.value.isPredecessor(baseCell, cell)
             computedStroke = isPredecessor ? '#9cb781' : '#f1a183'
-            if (edges[1] === baseEntityGuid) computedStroke = '#9cb781'
+            if (edgesSplit[1] === baseEntityGuid) computedStroke = '#9cb781'
         }
 
         edgeData.attrs.line.stroke = reset ? computedStroke : '#d9d9d9'
         edgeData.attrs.line.targetMarker.stroke = reset
             ? computedStroke
             : '#d9d9d9'
-        edgeData.highlight = false
+        edgeData.zIndex = 1
         newEdgesData.push(edgeData)
     })
 
@@ -88,7 +108,7 @@ export const updateEdgesStroke = (
             const edgeData = getEdgeData(x)
             edgeData.attrs.line.stroke = '#2351cc'
             edgeData.attrs.line.targetMarker.stroke = '#2351cc'
-            edgeData.highlight = true
+            edgeData.zIndex = 30
             newEdgesData.push(edgeData)
         })
     }
@@ -99,17 +119,9 @@ export const updateEdgesStroke = (
         })
     })
 
+    console.log('lineage -> update graph start')
     graph.value.fromJSON(model.value)
-
-    if (!reset) {
-        newEdgesData.forEach((y) => {
-            const cell = graph.value.getCellById(y.id)
-            if (cell) {
-                if (y.highlight) cell.toFront()
-                else cell.toBack()
-            }
-        })
-    }
+    console.log('lineage -> update graph end')
 }
 
 export const updateNodesToHighlight = (

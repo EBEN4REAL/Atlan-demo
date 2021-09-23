@@ -3,12 +3,16 @@ import { Graph } from '@antv/x6'
 import { DagreLayout } from '@antv/layout'
 import { SimpleNodeView } from './view.js'
 
-export default function useCreateGraph(graph, container, minimapContainer) {
+export default function useCreateGraph(
+    graph,
+    graphContainer,
+    minimapContainer
+) {
     const graphLayout = ref({})
 
     /* Build Graph Canvas */
     graph.value = new Graph({
-        container: container.value,
+        container: graphContainer.value,
         grid: true,
         background: { color: '#f8f8fd' },
         scroller: {

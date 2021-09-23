@@ -506,12 +506,7 @@ const useTree = (
         const addNode = (node: TreeDataItem): TreeDataItem => {
             const currentPath = parentStack.pop()
             const newChildren: TreeDataItem[] = []
-            if (node.key === toGuid && (!currentPath && nodeToReorder)) {
-                nodeToReorder.parentCategoryId = toGuid
-                nodeToReorder.parentCategory = toGuid
-                nodeToReorder.categories = updatedCategories
-                newChildren.push(nodeToReorder)
-            }
+
             node.children?.forEach((childNode: TreeDataItem) => {
                 if (childNode.key === currentPath) {
                     newChildren.push(addNode(childNode) ?? childNode)
@@ -519,6 +514,12 @@ const useTree = (
                     newChildren.push(childNode)
                 }
             })
+            if (node.key === toGuid && (!currentPath && nodeToReorder)) {
+                nodeToReorder.parentCategoryId = toGuid
+                nodeToReorder.parentCategory = toGuid
+                nodeToReorder.categories = updatedCategories
+                newChildren.push(nodeToReorder)
+            }
             return {
                 ...node,
                 children: newChildren,

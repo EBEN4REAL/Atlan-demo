@@ -20,6 +20,7 @@ export const inlineTabsDemoData: activeInlineTabInterface[] = [
                 text: 'select * from "INSTACART_ALCOHOL_ORDER_TIME" limit 10',
                 dataList: [],
                 columnList: [],
+                variables: [],
             },
             resultsPane: {
                 activeTab: 0,
@@ -63,6 +64,7 @@ export const inlineTabsDemoData: activeInlineTabInterface[] = [
                 text: 'select * from "INSTACART_ALCOHOL_ORDER_TIME" limit 10',
                 dataList: [],
                 columnList: [],
+                variables: [],
             },
             resultsPane: {
                 activeTab: 0,
@@ -106,6 +108,7 @@ export const inlineTabsDemoData: activeInlineTabInterface[] = [
                 text: 'select * from "INSTACART_ALCOHOL_ORDER_TIME" limit 10',
                 dataList: [],
                 columnList: [],
+                variables: [],
             },
             resultsPane: {
                 activeTab: 0,

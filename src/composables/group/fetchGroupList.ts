@@ -2,20 +2,16 @@ import useSWRV from 'swrv'
 import { computed, ref } from 'vue'
 import LocalStorageCache from 'swrv/dist/cache/adapters/localStorage'
 import swrvState from '../utils/swrvState'
-import { Components } from '~/api/auth/client'
 
 import { Group, URL } from '~/api/auth/group'
 
 export default function fetchGroupList(immediate: boolean = true) {
-    const params = ref({})
+    const params = ref(new URLSearchParams())
     // this is needed as there are multiple keys with the same param name
-    const urlparam = new URLSearchParams()
-    urlparam.append('limit', '20')
-    urlparam.append('sort', 'name')
-    urlparam.append('columns', 'name')
-    urlparam.append('columns', 'user_count')
-
-    params.value = urlparam
+    params.value.append('limit', '20')
+    params.value.append('sort', 'name')
+    params.value.append('columns', 'name')
+    params.value.append('columns', 'user_count')
 
     const { data, error, mutate, isValidating } = useSWRV(
         [URL.GroupList, params?.value, {}],

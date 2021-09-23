@@ -72,17 +72,27 @@ export function useConnector() {
         selectedDataSourceName,
         selectedDefaultSchema
     ) => {
-        const schemaValues: string[] = selectedDefaultSchema?.split('.')
-        let databaseQualifiedName = `${selectedDataSourceName}/${schemaValues[0]}`
+        let schemaValues: string[]
+        let databaseQualifiedName: string | undefined
+        if (selectedDefaultSchema) {
+            schemaValues = selectedDefaultSchema?.split('.')
+            databaseQualifiedName = `${selectedDataSourceName}/${schemaValues[0]}`
+        }
         return databaseQualifiedName
     }
     const getSchemaQualifiedName = (
         selectedDataSourceName,
         selectedDefaultSchema
     ) => {
-        const schemaValues: string[] = selectedDefaultSchema.split('.')
-        let databaseQualifiedName = `${selectedDataSourceName}/${schemaValues[0]}/${schemaValues[1]}`
-        return databaseQualifiedName
+        let schemaValues: string[]
+        let schemaQualifiedName: string | undefined
+
+        if (selectedDefaultSchema) {
+            schemaValues = selectedDefaultSchema.split('.')
+            schemaQualifiedName = `${selectedDataSourceName}/${schemaValues[0]}/${schemaValues[1]}`
+        }
+
+        return schemaQualifiedName
     }
 
     return {

@@ -1,3 +1,5 @@
+import { CustomVaribaleInterface } from './customVariable.interface'
+
 export interface activeInlineTabInterface {
     key: string
     label: String
@@ -24,6 +26,7 @@ export interface activeInlineTabInterface {
                 width: string
                 key: any
             }>
+            variables: CustomVaribaleInterface[]
         }
         resultsPane: {
             activeTab: number

@@ -1,319 +1,271 @@
 <template>
-    <div class="w-full mb-3 mr-2 text-sm text-gray-500">
+    <div class="mb-3 text-xs text-gray-500">
         <p class="mb-1 text-sm">Owners</p>
-        <div>
-            <div v-if="ownerUsers.length > 0 || ownerGroups.length" class="flex flex-wrap text-sm">
-                <PillGroup
-                    :data="ownerList"
-                    label-key="username"
-                    popover-trigger="hover"
-                    @add="toggleOwnerPopover"
-                    @delete="handleRemoveOwner"
-                    @select="(item,index)=>handleClickUser(item)"
-                >
-                    <template #pillPrefix="{ item }">
-                        <avatar
-                            class="-ml-2.5"
-                            v-if="item && item.type === 'user'"
-                            :image-url="
-                                KeyMaps.auth.avatar.GET_AVATAR({
-                                    username: item.username,
-                                })
-                            "
-                            :allow-upload="false"
-                            :avatar-name="item.username"
-                            avatar-size="small"
-                            :avatar-shape="'circle'"
-                        />
-                        <AtlanIcon
-                            v-else-if="item && item.type === 'group'"
-                            icon="Group"
-                            class="
-                                h-4
-                                -ml-0.5
-                                text-primary
-                                group-hover:text-white
-                            "
-                        />
-                    </template>
-                    <template #popover="{ item }"
-                        ><OwnerInfoCard :user="item"
-                    /></template>
-                    <template #suffix>
-                        <span
-                            v-if="splittedOwners.b.length > 0"
-                            class="
-                                px-1
-                                py-0.5
-                                text-sm
-                                rounded
-                                text-primary
-                                mr-3
-                                cursor-pointer
-                            "
-                            @click="() => toggleAllOwners()"
-                        >
-                            {{
-                                showAll
-                                    ? 'Show less'
-                                    : `and ${splittedOwners.b.length} more`
-                            }}
-                        </span>
-                    </template>
-                </PillGroup>
-            </div>
 
-            <a-popover
-                v-model:visible="showOwnersDropdown"
-                placement="left"
-                overlay-class-name="inlinepopover"
-                trigger="click"
+        <div
+            v-if="ownerUsers.length > 0 || ownerGroups.length"
+            class="flex flex-wrap text-sm"
+        >
+            <PillGroup
+                :data="ownerList"
+                label-key="username"
+                popover-trigger="hover"
+                @add="toggleOwnerPopover"
+                @delete="handleRemoveOwner"
+                @select="(item, index) => handleClickUser(item)"
             >
-                <div v-if="ownerUsers.length < 1 && ownerGroups.length < 1" class="inline-flex mr-2">
-                    <div @click.stop="toggleOwnerPopover">
-                        <div
-                            class="flex items-center cursor-pointer  text-primary hover:text-primary hover:underline"
-                        >
-                            <!-- <span class="flex items-center text-xs">
-                            <fa icon="fal plus" />
-                        </span> -->
-                            <span class="text-xs">Add owners</span>
-                        </div>
-                    </div>
-                    <!-- <button
-                        class="flex items-center px-3 py-1 mr-3 text-gray-700 border rounded-full cursor-pointer hover:bg-primary hover:text-white"
-                    >
-                        <span class="flex items-center text-xs">
-                            <fa icon="fal plus" class="" />
-                        </span>
-                        <span class="ml-2 text-xs">Add Owners</span>
-                    </button> -->
-                </div>
-                <template #content>
-                    <div
-                        class="
-                            p-2.5
-                            bg-white
-                            flex
-                            items-center
-                            flex-col
-                            w-56
-                            rounded
+                <template #pillPrefix="{ item }">
+                    <avatar
+                        class="-ml-2.5"
+                        v-if="item && item.type === 'user'"
+                        :image-url="
+                            KeyMaps.auth.avatar.GET_AVATAR({
+                                username: item.username,
+                            })
                         "
+                        :allow-upload="false"
+                        :avatar-name="item.username"
+                        avatar-size="small"
+                        :avatar-shape="'circle'"
+                    />
+                    <AtlanIcon
+                        v-else-if="item && item.type === 'group'"
+                        icon="Group"
+                        class="h-4 -ml-0.5 text-primary group-hover:text-white"
+                    />
+                </template>
+                <template #popover="{ item }"
+                    ><OwnerInfoCard :user="item"
+                /></template>
+                <template #suffix>
+                    <span
+                        v-if="splittedOwners.b.length > 0"
+                        class="
+                            px-1
+                            py-0.5
+                            text-sm
+                            rounded
+                            text-primary
+                            mr-3
+                            cursor-pointer
+                        "
+                        @click="() => toggleAllOwners()"
                     >
+                        {{
+                            showAll
+                                ? 'Show less'
+                                : `and ${splittedOwners.b.length} more`
+                        }}
+                    </span>
+                </template>
+            </PillGroup>
+        </div>
+
+        <a-popover
+            v-model:visible="showOwnersDropdown"
+            placement="left"
+            overlay-class-name="inlinepopover"
+            trigger="click"
+        >
+            <span
+                v-if="ownerUsers.length < 1 && ownerGroups.length < 1"
+                @click.stop="toggleOwnerPopover"
+                class="text-xs cursor-pointer text-primary hover:underline"
+                >Add owners</span
+            >
+            <template #content>
+                <div
+                    class="
+                        p-2.5
+                        bg-white
+                        flex
+                        items-center
+                        flex-col
+                        w-56
+                        rounded
+                    "
+                >
+                    <div class="flex items-center justify-between mb-3">
                         <SearchAndFilter
                             v-model:value="searchText"
                             :autofocus="true"
-                            :placeholder="
-                                activeOwnerTabKey === '1'
-                                    ? `Search ${userList?.length} users`
-                                    : `Search ${groupList?.length} groups`
-                            "
+                            placeholder="Search "
                             @change="handleOwnerSearch"
                         >
                         </SearchAndFilter>
-                        <div class="relative w-full">
-                            <!-- <p
-                                class="
-                                    absolute
-                                    cursor-pointer
-                                    right-0
-                                    top-2.5
-                                    text-primary
-                                    z-10
+                        <a-button-group>
+                            <a-button
+                                @click="setActiveTab('users')"
+                                :class="
+                                    activeOwnerTabKey === 'users'
+                                        ? 'text-primary'
+                                        : ''
                                 "
-                                @click="clearSelectedOwners"
                             >
-                                clear
-                            </p> -->
-                            <a-tabs
-                                v-model:activeKey="activeOwnerTabKey"
-                                :class="$style.previewtab"
-                            >
-                                <a-tab-pane key="1">
-                                    <template #tab>
-                                        <span
-                                            class="text-sm"
-                                            :class="
-                                                activeOwnerTabKey == '1'
-                                                    ? ''
-                                                    : ''
-                                            "
-                                            >Users</span
-                                        >
-                                        <span
-                                            v-if="userList?.length > 0"
-                                            class="ml-2 chip"
-                                            >{{ userList?.length }}</span
-                                        >
-                                    </template>
-                                    <div class="h-48 overflow-y-auto">
-                                        <div
-                                            v-if="
-                                                STATES.SUCCESS ===
-                                                userOwnerState
-                                            "
-                                            class="flex flex-col w-full"
-                                        >
-                                                <template
-                                                    v-for="item in userList"
-                                                    :key="item.username"
-                                                >
-                                                    <a-checkbox
-                                                        v-if="item.username"
-                                                        :value="item.username"
-                                                        class="w-full mb-3"
-                                                        @change="onSelectUser"
-                                                        :checked="selectedUsers.includes(item.username)"
-                                                    >
-                                                        <div
-                                                            v-if="
-                                                                item.username ===
-                                                                myUsername
-                                                            "
-                                                            class="inline-flex capitalize "
-                                                        >
-                                                            {{ item.username }}
+                                <template #icon
+                                    ><AtlanIcon icon="User" class="mx-auto"
+                                /></template>
+                            </a-button>
+                            <a-button
+                                @click="setActiveTab('groups')"
+                                :class="
+                                    activeOwnerTabKey === 'groups'
+                                        ? 'text-primary'
+                                        : ''
+                                "
+                                ><template #icon
+                                    ><AtlanIcon
+                                        icon="GroupStatic"
+                                        class="mx-auto" /></template
+                            ></a-button>
+                        </a-button-group>
+                    </div>
 
-                                                            <span
-                                                                class="font-bold "
-                                                            >
-                                                                {{
-                                                                    '&nbsp;(me)'
-                                                                }}
-                                                            </span>
-                                                        </div>
-                                                        <span
-                                                            v-else
-                                                            class="capitalize"
-                                                        >
-                                                            {{ item.username }}
-                                                        </span>
-                                                    </a-checkbox>
-                                                </template>
-                                        </div>
-                                        <div
-                                            v-else
-                                            class="flex items-center justify-center mt-3 "
-                                        >
-                                            <a-spin
-                                                size="small"
-                                                class="mr-2 leading-none"
-                                            ></a-spin
-                                            ><span>Fetching users</span>
-                                        </div>
-                                    </div>
-                                </a-tab-pane>
-                                <a-tab-pane key="2">
-                                    <template #tab>
-                                        <span
-                                            class="text-sm"
-                                            :class="
-                                                activeOwnerTabKey == '1'
-                                                    ? ''
-                                                    : ''
+                    <div class="relative w-full">
+                        <template v-if="activeOwnerTabKey === 'users'">
+                            <div class="h-48 overflow-y-auto">
+                                <div
+                                    v-if="STATES.SUCCESS === userOwnerState"
+                                    class="flex flex-col w-full"
+                                >
+                                    <template
+                                        v-for="item in userList"
+                                        :key="item.username"
+                                    >
+                                        <a-checkbox
+                                            v-if="item.username"
+                                            :value="item.username"
+                                            class="w-full mb-3"
+                                            @change="onSelectUser"
+                                            :checked="
+                                                selectedUsers.includes(
+                                                    item.username
+                                                )
                                             "
-                                            >Groups</span
-                                        >
-                                        <span
-                                            v-if="groupList?.length > 0"
-                                            class="ml-2 chip"
-                                            >{{ groupList?.length }}</span
-                                        >
-                                    </template>
-
-                                    <div class="overflow-y-auto h-44">
-                                        <div
-                                            v-if="
-                                                STATES.SUCCESS ===
-                                                    groupOwnerState &&
-                                                groupList.length < 1
-                                            "
-                                            class="flex flex-col items-center justify-center h-full "
                                         >
                                             <div
-                                                class="flex flex-col items-center "
+                                                v-if="
+                                                    item.username === myUsername
+                                                "
+                                                class="inline-flex capitalize"
                                             >
-                                                <img
-                                                    :src="emptyScreen"
-                                                    alt="No logs"
-                                                    class="w-2/5 m-auto mb-4"
-                                                />
-                                                <span class="text-gray-500"
-                                                    >No Groups Found</span
-                                                >
+                                                {{ item.username }}
+
+                                                <span class="font-bold">
+                                                    {{ '&nbsp;(me)' }}
+                                                </span>
                                             </div>
-                                        </div>
-                                        <div
-                                            v-if="
-                                                STATES.SUCCESS ===
-                                                groupOwnerState
-                                            "
-                                            
-                                        >
-                                            <div class="flex flex-col w-full">
-                                                <a-checkbox
-                                                    v-for="item in groupList"
-                                                    :key="item.name"
-                                                    :value="item.name"
-                                                    class="mb-3 capitalize"
-                                                    @change="onSelectGroup"
-                                                     :checked="selectedGroups.includes(item.name)"
-                                                >
-                                                    {{ item.name }}
-                                                </a-checkbox>
-                                            </div>
-                                        </div>
-                                        <div
-                                            v-else
-                                            class="flex items-center justify-center "
-                                        >
-                                            <a-spin
-                                                size="small"
-                                                class="mr-2 leading-none"
-                                            ></a-spin
-                                            ><span>Fetching groups</span>
-                                        </div>
-                                    </div>
-                                </a-tab-pane>
-                            </a-tabs>
-                        </div>
-                        <div class="w-full mt-2">
-                            <div class="flex justify-end text-xs">
-                                <span v-if="selectedUsers.length > 0">{{
-                                    `${selectedUsers.length} user(s)` 
-                                }}</span>
-                                <span v-if="selectedUsers.length && selectedGroups.length">{{`&nbsp;&`}}</span>
-                                <span v-if="selectedGroups.length > 0">{{
-                                    ` &nbsp;${selectedGroups.length} group(s)`
-                                }}</span>
-                                <span
+                                            <span v-else class="capitalize">
+                                                {{ item.username }}
+                                            </span>
+                                        </a-checkbox>
+                                    </template>
+                                </div>
+                                <div
+                                    v-else
+                                    class="flex items-center justify-center mt-3 "
+                                >
+                                    <a-spin
+                                        size="small"
+                                        class="mr-2 leading-none"
+                                    ></a-spin
+                                    ><span>Fetching users</span>
+                                </div>
+                            </div>
+                        </template>
+                        <template v-if="activeOwnerTabKey === 'groups'">
+                            <div class="h-48 overflow-y-auto">
+                                <div
                                     v-if="
-                                        selectedGroups.length > 0 ||
-                                        selectedUsers.length > 0
+                                        STATES.SUCCESS === groupOwnerState &&
+                                        groupList.length < 1
                                     "
-                                    >{{ `&nbsp;selected` }}</span
+                                    class="flex flex-col items-center justify-center h-full "
                                 >
+                                    <div class="flex flex-col items-center">
+                                        <img
+                                            :src="emptyScreen"
+                                            alt="No logs"
+                                            class="w-2/5 m-auto mb-4"
+                                        />
+                                        <span class="text-gray-500"
+                                            >No Groups Found</span
+                                        >
+                                    </div>
+                                </div>
+                                <div v-if="STATES.SUCCESS === groupOwnerState">
+                                    <div class="flex flex-col w-full">
+                                        <a-checkbox
+                                            v-for="item in groupList"
+                                            :key="item.name"
+                                            :value="item.name"
+                                            class="mb-3 capitalize"
+                                            @change="onSelectGroup"
+                                            :checked="
+                                                selectedGroups.includes(
+                                                    item.name
+                                                )
+                                            "
+                                        >
+                                            {{ item.name }}
+                                        </a-checkbox>
+                                    </div>
+                                </div>
+                                <div
+                                    v-else
+                                    class="flex items-center justify-center"
+                                >
+                                    <a-spin
+                                        size="small"
+                                        class="mr-2 leading-none"
+                                    ></a-spin
+                                    ><span>Fetching groups</span>
+                                </div>
                             </div>
-                            <div class="flex justify-end w-full mt-2">
-                                <a-button
-                                    class="mr-3 border rounded"
-                                    @click="handleCancelUpdateOwnerPopover"
-                                    >Cancel</a-button
-                                >
-                                <a-button
-                                    type="primary"
-                                    class="rounded"
-                                    :loading="isOwnersLoading"
-                                    @click="handleUpdateOwners"
-                                    >Update</a-button
-                                >
-                            </div>
+                        </template>
+                    </div>
+                    <div class="w-full mt-2">
+                        <div class="flex justify-end text-xs">
+                            <span v-if="selectedUsers.length > 0">{{
+                                `${selectedUsers.length} user(s)`
+                            }}</span>
+                            <span
+                                v-if="
+                                    selectedUsers.length &&
+                                    selectedGroups.length
+                                "
+                                >{{ `&nbsp;&` }}</span
+                            >
+                            <span v-if="selectedGroups.length > 0">{{
+                                ` &nbsp;${selectedGroups.length} group(s)`
+                            }}</span>
+                            <span
+                                v-if="
+                                    selectedGroups.length > 0 ||
+                                    selectedUsers.length > 0
+                                "
+                                >{{ `&nbsp;selected` }}</span
+                            >
+                        </div>
+                        <div class="flex justify-end w-full mt-2">
+                            <a-button
+                                class="mr-3 border rounded"
+                                @click="handleCancelUpdateOwnerPopover"
+                                >Cancel</a-button
+                            >
+                            <a-button
+                                type="primary"
+                                class="rounded"
+                                :loading="isOwnersLoading"
+                                @click="handleUpdateOwners"
+                                >Update</a-button
+                            >
                         </div>
                     </div>
-                </template>
-            </a-popover>
-        </div>
+                </div>
+            </template>
+        </a-popover>
+
         <!-- <div
             v-else
             class="flex items-center justify-center mt-4 text-sm leading-none"
@@ -342,7 +294,7 @@
     import PillGroup from '~/components/UI/pill/pillGroup.vue'
 
     import { useUserPreview } from '~/composables/user/showUserPreview'
-    import { useGroupPreview } from "~/composables/drawer/showGroupPreview";
+    import { useGroupPreview } from '~/composables/drawer/showGroupPreview'
     import { assetInterface } from '~/types/assets/asset.interface'
     import { groupInterface } from '~/types/groups/group.interface'
     import { userInterface } from '~/types/users/user.interface'
@@ -364,7 +316,7 @@
             const { selectedAsset } = toRefs(props)
             const { username: myUsername, name: myName } = whoami()
             const showOwnersDropdown: Ref<boolean> = ref(false)
-            const activeOwnerTabKey = ref('1')
+            const activeOwnerTabKey: Ref<'users' | 'groups'> = ref('users')
             const selectedUsers: Ref<string[]> = ref([])
             const selectedGroups: Ref<string[]> = ref([])
             const searchText: Ref<string> = ref('')
@@ -469,37 +421,42 @@
                     event.target.checked &&
                     !selectedUsers.value.includes(event.target.value)
                 ) {
-                    selectedUsers.value.push(event.target.value);
+                    selectedUsers.value.push(event.target.value)
                 } else if (!event.target.checked) {
-                    const index = selectedUsers.value.indexOf(event.target.value);
+                    const index = selectedUsers.value.indexOf(
+                        event.target.value
+                    )
                     if (index > -1) {
-                    selectedUsers.value.splice(index, 1);
+                        selectedUsers.value.splice(index, 1)
                     }
                 }
-            };
-             const onSelectGroup = (event) => {
-                if (    
+            }
+            const onSelectGroup = (event) => {
+                if (
                     event.target.checked &&
                     !selectedGroups.value.includes(event.target.value)
                 ) {
-                    selectedGroups.value.push(event.target.value);
+                    selectedGroups.value.push(event.target.value)
                 } else if (!event.target.checked) {
-                    const index = selectedGroups.value.indexOf(event.target.value);
+                    const index = selectedGroups.value.indexOf(
+                        event.target.value
+                    )
                     if (index > -1) {
-                    selectedGroups.value.splice(index, 1);
+                        selectedGroups.value.splice(index, 1)
                     }
                 }
-            };
+            }
 
             // user preview drawer
             const { showUserPreview, setUserUniqueAttribute } = useUserPreview()
-            const { showGroupPreview, setGroupUniqueAttribute } = useGroupPreview()
+            const { showGroupPreview, setGroupUniqueAttribute } =
+                useGroupPreview()
             const handleClickUser = (item) => {
-                if(item.type==='user'){
+                if (item.type === 'user') {
                     setUserUniqueAttribute(item.username, 'username')
                     showUserPreview({ allowed: ['about'] })
                 }
-                if(item.type==='group'){
+                if (item.type === 'group') {
                     setGroupUniqueAttribute(item.name, 'groupAlias')
                     showGroupPreview({ allowed: ['about'] })
                 }
@@ -568,9 +525,9 @@
             }
 
             const clearSelectedOwners = () => {
-                if (activeOwnerTabKey.value === '1') {
+                if (activeOwnerTabKey.value === 'users') {
                     selectedUsers.value = []
-                } else if (activeOwnerTabKey.value === '2') {
+                } else if (activeOwnerTabKey.value === 'groups') {
                     // for groups
                     selectedGroups.value = []
                 }
@@ -596,9 +553,9 @@
             )
 
             const handleOwnerSearch = (e: Event) => {
-                if (activeOwnerTabKey.value === '1') {
+                if (activeOwnerTabKey.value === 'users') {
                     handleUserSearch(searchText.value)
-                } else if (activeOwnerTabKey.value === '2') {
+                } else if (activeOwnerTabKey.value === 'groups') {
                     handleGroupSearch(searchText.value)
                 }
             }
@@ -639,6 +596,10 @@
                 if (!isOwnersLoading.value) showOwnersDropdown.value = false
             })
 
+            function setActiveTab(tabName: 'users' | 'groups') {
+                activeOwnerTabKey.value = tabName
+            }
+
             return {
                 myUsername,
                 showAll,
@@ -673,6 +634,7 @@
                 handleCancelUpdateOwnerPopover,
                 ownerList,
                 KeyMaps,
+                setActiveTab,
             }
         },
     })

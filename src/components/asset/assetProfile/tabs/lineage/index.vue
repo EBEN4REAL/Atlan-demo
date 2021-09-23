@@ -1,17 +1,19 @@
 <template>
     <div>
-        <LineageGraph />
+        <component :is="'lineageGraph'" class="bg-transparent"></component>
     </div>
 </template>
 
 <script lang="ts">
-    import { defineComponent } from 'vue'
-    import LineageGraph from './lineageGraph.vue'
+    import { defineComponent, defineAsyncComponent } from 'vue'
 
     export default defineComponent({
         name: 'Lineage',
         components: {
-            LineageGraph,
+            lineageGraph: defineAsyncComponent(
+                () =>
+                    import('@/asset/assetProfile/tabs/lineage/lineageGraph.vue')
+            ),
         },
     })
 </script>

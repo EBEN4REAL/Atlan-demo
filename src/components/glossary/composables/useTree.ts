@@ -6,6 +6,7 @@ import { Glossary, Category, Term } from '~/types/glossary/glossary.interface'
 import { Components } from '~/api/atlas/client'
 
 import useUpdateGtcEntity from '~/components/glossary/composables/useUpdateGtcEntity'
+import useGlossaryList from '~/components/glossary/composables/useGlossaryList'
 
 import { Glossary as GlossaryApi } from '~/api/atlas/glossary'
 import store from '~/utils/storage'
@@ -16,6 +17,7 @@ import useGTCEntity from '~/components/glossary/composables/useGtcEntity'
 const useTree = (
     emit: any,
     optimisticUpdate?: boolean,
+    isHome?: ComputedRef<boolean>,
     cacheKey?: string,
     isAccordion?: boolean
 ) => {
@@ -64,6 +66,8 @@ const useTree = (
         true,
         false
     )
+
+    const { glossaryList, refetch: refetchGlossaryList } = useGlossaryList()
 
     const returnTreeDataItemAttributes = (item:  Components.Schemas.AtlasGlossaryCategory | Components.Schemas.AtlasGlossaryTerm, type: 'term' | 'category', parentGlossaryGuid: string, isRoot?: Boolean, parentCategoryId?: string) => {
         return {
@@ -150,12 +154,10 @@ const useTree = (
                 const response = await GlossaryApi.ListCategoryForGlossary(
                     treeNode.dataRef.key,
                     {},
-                    { cache: true }
                 )
                 const termsList = await GlossaryApi.ListTermsForGlossary(
                     treeNode.dataRef.key,
                     {},
-                    { cache: true }
                 )
                 categoryMap[treeNode.dataRef.key] = response
                 response.forEach((element) => {
@@ -197,7 +199,6 @@ const useTree = (
                 const termsList = await GlossaryApi.ListTermsForCategory(
                     treeNode.dataRef.key,
                     {},
-                    { cache: true }
                 )
                 termsList.forEach((element) => {
                     if (!treeNode.dataRef.children) {
@@ -336,13 +337,9 @@ const useTree = (
         if (guid === 'root' && parentGlossary.value?.guid) {
             const categoryList = await GlossaryApi.ListCategoryForGlossary(
                 parentGlossary.value?.guid,
-                {},
-                {}
             )
             const termsList = await GlossaryApi.ListTermsForGlossary(
                 parentGlossary.value?.guid,
-                {},
-                {}
             )
             categoryMap[parentGlossary.value?.guid] = categoryList
 
@@ -387,13 +384,9 @@ const useTree = (
                     const categoryList =
                         await GlossaryApi.ListCategoryForGlossary(
                             parentGlossary.value?.guid ?? '',
-                            {},
-                            {}
                         )
                     const termsList = await GlossaryApi.ListTermsForCategory(
                         guid,
-                        {},
-                        {}
                     )
                     categoryMap[parentGlossary.value?.guid ?? ''] = categoryList
                     const updatedChildren: TreeDataItem[] = []
@@ -520,10 +513,13 @@ const useTree = (
                 nodeToReorder.categories = updatedCategories
                 newChildren.push(nodeToReorder)
             }
-            return {
-                ...node,
-                children: newChildren,
-            }
+            if(loadedKeys.value.find((key) => node.key === key)) {
+                return {
+                    ...node,
+                    children: newChildren,
+                }
+            } 
+            return node
         }
 
         // remove
@@ -545,18 +541,27 @@ const useTree = (
             })
         }
 
+        // add
+        if(toGuid === 'root') {
+            nodeToReorder.parentCategoryId = undefined
+            nodeToReorder.parentCategory = undefined
+            nodeToReorder.isRoot = true
+            nodeToReorder.categories = updatedCategories
 
-        parentStack = recursivelyFindPath(toGuid)
-        const toParent = parentStack.pop()
-        treeData.value = treeData.value.map((node: TreeDataItem) => {
-            if (node.key === toParent) return addNode(node)
-            return node
-        })
+            treeData.value.push(nodeToReorder)
+        } else {
+            parentStack = recursivelyFindPath(toGuid)
+            const toParent = parentStack.pop()
+            treeData.value = treeData.value.map((node: TreeDataItem) => {
+                if (node.key === toParent) return addNode(node)
+                return node
+            })
+        }
 
         nodeToParentKeyMap[nodeKey] = toGuid
     }
 
-    const dragAndDropNode = async ({ dragNode, node }) => {
+    const dragAndDropNode = async ({ dragNode, node, event }) => {
         // const { data: updatedEntity, updateEntity } = useUpdateGtcEntity()
         if (node.dataRef.type === 'category') {
             if (dragNode.dataRef.type === 'term') {
@@ -767,6 +772,7 @@ const useTree = (
         expandedKeys,
         selectedCache,
         expandedCache,
+        glossaryList,
         reInitTree,
         onLoadData,
         expandNode,
@@ -774,6 +780,7 @@ const useTree = (
         dragAndDropNode,
         updateNode,
         refetchNode,
+        refetchGlossaryList
     }
 }
 

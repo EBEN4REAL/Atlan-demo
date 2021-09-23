@@ -115,6 +115,7 @@
         >
             <fa icon="fas chevron-left" class="mr-2" />
             <span>Back to Glossary Home</span>
+            {{ glossaryList }}
         </div>
 
         <div class="px-4 pb-4">
@@ -208,6 +209,7 @@
                     @select="selectNode"
                     @expand="expandNode"
                     @drop="dragAndDrop"
+                    class="h-full"
                 >
                     <template
                         #title="{ title, type, key, assetStatus, glossaryID }"

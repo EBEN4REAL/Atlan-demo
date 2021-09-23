@@ -97,13 +97,11 @@
                     ] === 'glossary'
             )
 
-            const { glossaryList, refetch: refetchGlossaryList } =
-                useGlossaryList(isHome)
-
             const {
                 treeData,
                 loadedKeys,
                 currentGuid,
+                glossaryList,
                 onLoadData,
                 parentGlossary,
                 isInitingTree,
@@ -115,7 +113,8 @@
                 updateNode,
                 refetchNode,
                 reInitTree,
-            } = useTree(emit, true)
+                refetchGlossaryList,
+            } = useTree(emit, true, isHome)
 
             // methods
             const handleOpenModal = (context: Record<string, string>) => {

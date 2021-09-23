@@ -62,29 +62,19 @@
                             <template #header>
                                 <div class="flex items-center mr-5">
                                     <AtlanIcon
-                                        icon="Glossary"
-                                        class="h-5 m-0 mr-2"
-                                    />
-                                    <span
-                                        v-show="
-                                            entity?.typeName !== 'AtlasGlossary'
+                                        v-if="
+                                            entity.typeName === 'AtlasGlossary'
                                         "
-                                        class="mr-1 text-sm"
-                                    >
-                                        {{
-                                            entity?.attributes?.anchor
-                                                ?.uniqueAttributes
-                                                ?.qualifiedName
-                                        }}
-                                        /</span
-                                    >
+                                        icon="Glossary"
+                                        class="h-4 m-0 mr-2"
+                                    />
                                     <AtlanIcon
                                         v-if="
                                             entity.typeName ===
                                             'AtlasGlossaryTerm'
                                         "
                                         icon="Term"
-                                        class="h-5 m-0 mr-2"
+                                        class="h-4 m-0 mr-2"
                                     />
                                     <AtlanIcon
                                         v-if="
@@ -92,12 +82,21 @@
                                             'AtlasGlossaryCategory'
                                         "
                                         icon="Category"
-                                        class="h-5 m-0 mb-1 mr-2"
+                                        class="h-4 m-0 mb-1 mr-2"
                                     />
 
-                                    <span class="mr-3 text-sm">{{
+                                    <span class="text-xs">{{
                                         entity?.displayText
                                     }}</span>
+
+                                    <AtlanIcon
+                                        icon="ChevronDown"
+                                        class="h-4 mx-1 transition-transform transform -rotate-90 "
+                                    />
+                                    <span
+                                        class="text-xs font-bold text-gray-700"
+                                        >New term</span
+                                    >
                                 </div>
                             </template>
                             <template #trigger>
@@ -144,29 +143,19 @@
                             <template #header>
                                 <div class="flex items-center mr-5">
                                     <AtlanIcon
-                                        icon="Glossary"
-                                        class="h-5 m-0 mr-2"
-                                    />
-                                    <span
-                                        v-show="
-                                            entity?.typeName !== 'AtlasGlossary'
+                                        v-if="
+                                            entity.typeName === 'AtlasGlossary'
                                         "
-                                        class="mr-1 text-sm"
-                                    >
-                                        {{
-                                            entity?.attributes?.anchor
-                                                ?.uniqueAttributes
-                                                ?.qualifiedName
-                                        }}
-                                        /</span
-                                    >
+                                        icon="Glossary"
+                                        class="h-4 m-0 mr-2"
+                                    />
                                     <AtlanIcon
                                         v-if="
                                             entity.typeName ===
                                             'AtlasGlossaryTerm'
                                         "
                                         icon="Term"
-                                        class="h-5 m-0 mr-2"
+                                        class="h-4 m-0 mr-2"
                                     />
                                     <AtlanIcon
                                         v-if="
@@ -174,12 +163,21 @@
                                             'AtlasGlossaryCategory'
                                         "
                                         icon="Category"
-                                        class="h-5 m-0 mb-1 mr-2"
+                                        class="h-4 m-0 mb-1 mr-2"
                                     />
 
-                                    <span class="mr-3 text-sm">{{
+                                    <span class="text-xs">{{
                                         entity?.displayText
                                     }}</span>
+
+                                    <AtlanIcon
+                                        icon="ChevronDown"
+                                        class="h-4 mx-1 transition-transform transform -rotate-90 "
+                                    />
+                                    <span
+                                        class="text-xs font-bold text-gray-700"
+                                        >New category</span
+                                    >
                                 </div>
                             </template>
                             <template #trigger>

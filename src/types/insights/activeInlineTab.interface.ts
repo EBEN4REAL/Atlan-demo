@@ -1,9 +1,20 @@
+import { CustomVaribaleInterface } from './customVariable.interface'
+
 export interface activeInlineTabInterface {
     key: string
     label: String
     isSaved: boolean
     queryId: string | undefined
-    explorer: Object
+    explorer: {
+        schema: {
+            connectors: {
+                connection: string | undefined
+                connector: string | undefined
+                selectedDefaultSchema: string | undefined
+                selectedDataSourceName: string | undefined
+            }
+        }
+    }
     favico: string | undefined
     playground: {
         editor: {
@@ -15,6 +26,7 @@ export interface activeInlineTabInterface {
                 width: string
                 key: any
             }>
+            variables: CustomVaribaleInterface[]
         }
         resultsPane: {
             activeTab: number

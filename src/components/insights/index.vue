@@ -30,7 +30,11 @@
             </template>
         </div>
         <!--Sidebar navigation pane end -->
-        <splitpanes :class="$style.splitpane__styles" @resize="paneResize">
+        <splitpanes
+            :class="$style.splitpane__styles"
+            @resize="paneResize"
+            class="parent_splitpanes"
+        >
             <pane :max-size="20" :size="explorerPaneSize" :min-size="0">
                 <!--explorer pane start -->
                 <component
@@ -49,7 +53,7 @@
                 "
                 :min-size="activeInlineTab?.assetSidebar?.isVisible ? 60 : 80"
             >
-                <Playground v-model:activeInlineTabKey="activeInlineTabKey" />
+                <Playground :activeInlineTabKey="activeInlineTabKey" />
             </pane>
             <pane
                 :max-size="20"
@@ -73,7 +77,7 @@
     import { defineComponent, ref, computed, watch } from 'vue'
     import Playground from '~/components/insights/playground/index.vue'
     import AssetSidebar from '~/components/insights/assetSidebar/index.vue'
-    import Schema from './explorers/schema.vue'
+    import Schema from './explorers/schema/index.vue'
     import Queries from './explorers/queries.vue'
     import History from './explorers/history.vue'
     import Schedule from './explorers/schedule.vue'
@@ -83,6 +87,7 @@
     import { useSpiltPanes } from './common/composables/useSpiltPanes'
     import { useProvide } from './common/composables/useProvide'
     import { useInlineTab } from './common/composables/useInlineTab'
+    // import { useConnector } from './common/composables/useConnector'
     // import { useHotKeys } from './common/composables/useHotKeys'
 
     import { TabInterface } from '~/types/insights/tab.interface'
@@ -112,6 +117,7 @@
 
             const { tabsArray, activeInlineTabKey, activeInlineTab } =
                 useInlineTab()
+
             const activeTabId = ref(tabsList[0].id)
 
             const activeTab = computed(() =>
@@ -266,6 +272,9 @@
     }
     .tabHeight {
         height: calc(100vh - 3rem);
+    }
+    .parent_splitpanes {
+        width: calc(100vw - 5rem);
     }
 </style>
 

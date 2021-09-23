@@ -13,7 +13,12 @@ import store from '~/utils/storage'
 // composables
 import useGTCEntity from '~/components/glossary/composables/useGtcEntity'
 
-const useTree = (emit: any, optimisticUpdate?: boolean, cacheKey?: string, isAccordion?: boolean) => {
+const useTree = (
+    emit: any,
+    optimisticUpdate?: boolean,
+    cacheKey?: string,
+    isAccordion?: boolean
+) => {
     const route = useRoute()
     const router = useRouter()
 
@@ -60,15 +65,18 @@ const useTree = (emit: any, optimisticUpdate?: boolean, cacheKey?: string, isAcc
         false
     )
 
-    /** * 
+    /** *
      * @param targetGuid - guid / key of the node whose path needs to be found
-     * 
-     * Given the guid of a child node, finds and return the path to that node.  
-     * The last element of the returned array is the top parent of the node  
-     * 
-     * [ targetNode, ....., child2, child1, topParent ]  
+     *
+     * Given the guid of a child node, finds and return the path to that node.
+     * The last element of the returned array is the top parent of the node
+     *
+     * [ targetNode, ....., child2, child1, topParent ]
      */
-    const recursivelyFindPath = (targetGuid: string, initialStack?: string[]) => {
+    const recursivelyFindPath = (
+        targetGuid: string,
+        initialStack?: string[]
+    ) => {
         const parentStack = initialStack?.length ? initialStack : [targetGuid]
 
         const findPath = (currGuid: string) => {
@@ -81,11 +89,11 @@ const useTree = (emit: any, optimisticUpdate?: boolean, cacheKey?: string, isAcc
             }
         }
 
-        findPath(targetGuid);
+        findPath(targetGuid)
 
-        return parentStack;
+        return parentStack
     }
-    
+
     /**
      * Reinitializes the entire tree while and **loses the expanded state of the tree**
      * @param guid - Guid of the parent Glossary
@@ -96,7 +104,7 @@ const useTree = (emit: any, optimisticUpdate?: boolean, cacheKey?: string, isAcc
 
         categoryMap[guid] = categoryList
         treeData.value = []
-        
+
         categoryList.forEach((element) => {
             // if category is root level, i.e `categoryGuid` does not exist
             if (!element.parentCategory?.categoryGuid) {
@@ -137,10 +145,9 @@ const useTree = (emit: any, optimisticUpdate?: boolean, cacheKey?: string, isAcc
      */
     const onLoadData = async (treeNode: any) => {
         treeNode.dataRef.isOpen = true
-        
+
         if (treeNode.dataRef.children) {
-        } 
-        else if (treeNode.dataRef.type === 'glossary') {
+        } else if (treeNode.dataRef.type === 'glossary') {
             try {
                 const response = await GlossaryApi.ListCategoryForGlossary(
                     treeNode.dataRef.key,
@@ -277,10 +284,10 @@ const useTree = (emit: any, optimisticUpdate?: boolean, cacheKey?: string, isAcc
     }
 
     /**
-     * Locally updates the attributes of a node inside the tree 
-     * 
+     * Locally updates the attributes of a node inside the tree
+     *
      * @param guid - guid/key of the node that needs to be updated
-     * @param entity - The entire updated entity 
+     * @param entity - The entire updated entity
      * @param name - new name
      * @param assetStatus - new status
      */
@@ -312,7 +319,7 @@ const useTree = (emit: any, optimisticUpdate?: boolean, cacheKey?: string, isAcc
                 return treeNode
             })
         } else {
-            let parentStack: string[];
+            let parentStack: string[]
 
             const updateNodeNested = (node: TreeDataItem): TreeDataItem => {
                 const currentPath = parentStack.pop()
@@ -353,8 +360,8 @@ const useTree = (emit: any, optimisticUpdate?: boolean, cacheKey?: string, isAcc
     }
 
     /**
-     * Refreshes a node via API ( All attributes and new children ) while maintaining the state 
-     * 
+     * Refreshes a node via API ( All attributes and new children ) while maintaining the state
+     *
      * @param guid - guid/key of the node that needs to be refetched
      */
     const refetchNode = async (guid: string | 'root') => {
@@ -377,7 +384,7 @@ const useTree = (emit: any, optimisticUpdate?: boolean, cacheKey?: string, isAcc
             categoryList.forEach((category) => {
                 const existingCategory = treeData.value.find(
                     (entity) => entity.guid === category.guid
-                );
+                )
                 // if the category already exists,ignore it so as to maintain the expanded state
                 if (existingCategory) {
                     updatedTreeData.push(existingCategory)
@@ -417,7 +424,7 @@ const useTree = (emit: any, optimisticUpdate?: boolean, cacheKey?: string, isAcc
 
             treeData.value = updatedTreeData
         } else {
-            let parentStack: string[];
+            let parentStack: string[]
 
             const updateNodeNested = async (node: TreeDataItem) => {
                 const currentPath = parentStack.pop()
@@ -527,18 +534,27 @@ const useTree = (emit: any, optimisticUpdate?: boolean, cacheKey?: string, isAcc
         }
     }
 
-    const reOrderNodes = (nodeKey: string, fromGuid: string, toGuid: string, updatedCategories: any) => {
-        let parentStack: string[];
-        let nodeToReorder: TreeDataItem;
+    const reOrderNodes = (
+        nodeKey: string,
+        fromGuid: string,
+        toGuid: string,
+        updatedCategories: any
+    ) => {
+        let parentStack: string[]
+        let nodeToReorder: TreeDataItem
 
         const removeNode = (node: TreeDataItem): TreeDataItem => {
             const currentPath = parentStack.pop()
             if (node.key === fromGuid && !currentPath) {
-                nodeToReorder = node.children?.find((childNode) => childNode.key === nodeKey);
+                nodeToReorder = node.children?.find(
+                    (childNode) => childNode.key === nodeKey
+                )
                 return {
                     ...node,
-                    children: node.children?.filter((childNode) => childNode.key !== nodeKey)
-                };
+                    children: node.children?.filter(
+                        (childNode) => childNode.key !== nodeKey
+                    ),
+                }
             }
             return {
                 ...node,
@@ -553,10 +569,10 @@ const useTree = (emit: any, optimisticUpdate?: boolean, cacheKey?: string, isAcc
         const addNode = (node: TreeDataItem): TreeDataItem => {
             const currentPath = parentStack.pop()
             const newChildren = []
-            if (node.key === nodeKey || !currentPath && nodeToReorder) {
-                nodeToReorder.parentCategoryId = toGuid;
-                nodeToReorder.parentCategory = toGuid;
-                nodeToReorder.categories = updatedCategories;
+            if (node.key === nodeKey || (!currentPath && nodeToReorder)) {
+                nodeToReorder.parentCategoryId = toGuid
+                nodeToReorder.parentCategory = toGuid
+                nodeToReorder.categories = updatedCategories
                 newChildren.push(nodeToReorder)
             }
             node.children?.forEach((childNode: TreeDataItem) => {
@@ -564,7 +580,7 @@ const useTree = (emit: any, optimisticUpdate?: boolean, cacheKey?: string, isAcc
                     newChildren.push(addNode(childNode) ?? childNode)
                 }
                 newChildren.push(childNode)
-            });
+            })
             return {
                 ...node,
                 children: newChildren,
@@ -576,7 +592,7 @@ const useTree = (emit: any, optimisticUpdate?: boolean, cacheKey?: string, isAcc
         treeData.value = treeData.value.map((node: TreeDataItem) => {
             if (node.key === parent) return removeNode(node)
             return node
-        });
+        })
 
         parentStack = recursivelyFindPath(toGuid)
         const toParent = parentStack.pop()
@@ -584,9 +600,9 @@ const useTree = (emit: any, optimisticUpdate?: boolean, cacheKey?: string, isAcc
         treeData.value = treeData.value.map((node: TreeDataItem) => {
             if (node.key === toParent) return addNode(node)
             return node
-        });
+        })
 
-        nodeToParentKeyMap[nodeKey] = toGuid;
+        nodeToParentKeyMap[nodeKey] = toGuid
     }
 
     const dragAndDropNode = async ({ dragNode, node }) => {
@@ -594,9 +610,9 @@ const useTree = (emit: any, optimisticUpdate?: boolean, cacheKey?: string, isAcc
         if (node.dataRef.type === 'category') {
             if (dragNode.dataRef.type === 'term') {
                 if (dragNode.dataRef.categories?.length) {
-                    const orignalCategories = dragNode.dataRef.categories;
-                    const fromGuid = dragNode.dataRef.parentCategoryId;
-                    const toGuid = node.dataRef.guid;
+                    const orignalCategories = dragNode.dataRef.categories
+                    const fromGuid = dragNode.dataRef.parentCategoryId
+                    const toGuid = node.dataRef.guid
 
                     const newCategories = dragNode.dataRef.categories?.filter(
                         (category: any) =>
@@ -606,36 +622,52 @@ const useTree = (emit: any, optimisticUpdate?: boolean, cacheKey?: string, isAcc
                     newCategories.push({
                         categoryGuid: node.dataRef.guid,
                     })
-                    if(optimisticUpdate) {
-
-                        reOrderNodes(dragNode.dataRef.guid, fromGuid, toGuid, newCategories)
-    
-                        const { data, error: dropError } = GlossaryApi.UpdateGlossaryTerm(
+                    if (optimisticUpdate) {
+                        reOrderNodes(
                             dragNode.dataRef.guid,
-                            {
-                                ...dragNode.dataRef,
-                                categories: newCategories,
-                            }
+                            fromGuid,
+                            toGuid,
+                            newCategories
                         )
+
+                        const { data, error: dropError } =
+                            GlossaryApi.UpdateGlossaryTerm(
+                                dragNode.dataRef.guid,
+                                {
+                                    ...dragNode.dataRef,
+                                    categories: newCategories,
+                                }
+                            )
                         watch(dropError, (err) => {
                             setTimeout(() => {
-                                reOrderNodes(dragNode.dataRef.guid, toGuid, fromGuid, orignalCategories)
+                                reOrderNodes(
+                                    dragNode.dataRef.guid,
+                                    toGuid,
+                                    fromGuid,
+                                    orignalCategories
+                                )
                             }, 1500)
                         })
                     } else {
-                        const { data, error: dropError } = GlossaryApi.UpdateGlossaryTerm(
-                            dragNode.dataRef.guid,
-                            {
-                                ...dragNode.dataRef,
-                                categories: newCategories,
-                            }
-                        )
+                        const { data, error: dropError } =
+                            GlossaryApi.UpdateGlossaryTerm(
+                                dragNode.dataRef.guid,
+                                {
+                                    ...dragNode.dataRef,
+                                    categories: newCategories,
+                                }
+                            )
 
                         watch(data, async (newData) => {
                             if (newData.guid) {
                                 // await refetchNode(node.dataRef.guid)
                                 // refetchNode(dragNode.dataRef.parentCategoryId)
-                                reOrderNodes(dragNode.dataRef.guid, dragNode.dataRef.parentCategoryId, node.dataRef.guid, newCategories)
+                                reOrderNodes(
+                                    dragNode.dataRef.guid,
+                                    dragNode.dataRef.parentCategoryId,
+                                    node.dataRef.guid,
+                                    newCategories
+                                )
                             }
                         })
                     }
@@ -696,10 +728,14 @@ const useTree = (emit: any, optimisticUpdate?: boolean, cacheKey?: string, isAcc
             newEntity?.typeName === 'AtlasGlossaryTerm'
         ) {
             if (!treeData.value?.length) {
-                if(referredEntities.value[newEntity?.attributes?.anchor?.guid]?.guid) {
-                    parentGlossary.value = referredEntities.value[newEntity.attributes.anchor.guid];
+                if (
+                    referredEntities.value[newEntity?.attributes?.anchor?.guid]
+                        ?.guid
+                ) {
+                    parentGlossary.value =
+                        referredEntities.value[newEntity.attributes.anchor.guid]
 
-                    if(parentGlossary.value?.guid)
+                    if (parentGlossary.value?.guid)
                         initTreeData(parentGlossary.value.guid)
                 } else {
                     fetchType.value = 'glossary'

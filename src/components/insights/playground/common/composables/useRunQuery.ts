@@ -1,10 +1,12 @@
-import { ref, toRaw, Ref, watch } from 'vue'
+import { ref, toRaw, Ref, watch, callWithAsyncErrorHandling } from 'vue'
 import { useSSE } from '~/modules/useSSE'
 import { KeyMaps } from '~/api/keyMap'
 import { message } from 'ant-design-vue'
 import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
+import { useEditor } from '~/components/insights/playground/common/composables/useEditor'
 
 export default function useProject() {
+    const { getParsedQuery } = useEditor()
     const columnList: Ref<
         [
             {
@@ -54,18 +56,34 @@ export default function useProject() {
         getData: any,
         isQueryRunning: Ref<string>
     ) => {
-        let queryText = activeInlineTab.playground.editor.text
+        const selectedDataSourceName =
+            activeInlineTab.explorer.schema.connectors.selectedDataSourceName
+        const selectedDefaultSchema =
+            activeInlineTab.explorer.schema.connectors.selectedDefaultSchema
+        let queryText = getParsedQuery(
+            activeInlineTab.playground.editor.variables,
+            activeInlineTab.playground.editor.text
+        )
+
         // by default limiting query to 100 if limit is not there
         queryText = queryText.includes('limit')
             ? queryText
             : `${queryText} limit 100`
+
         isQueryRunning.value = 'loading'
         dataList.value = []
+        console.log(queryText)
         const query = encodeURIComponent(btoa(queryText))
         const pathVariables = {
             query,
-            defaultSchema: 'SNOWFLAKE_SAMPLE_DATA.TPCDS_SF10TCL',
-            dataSourceName: encodeURIComponent('default/snowflake/bvscezvng'),
+            defaultSchema: selectedDefaultSchema
+                ? selectedDefaultSchema
+                : 'ATLAN_TRIAL.PUBLIC',
+            dataSourceName: encodeURIComponent(
+                selectedDataSourceName
+                    ? selectedDataSourceName
+                    : 'default/snowflake/vqaqufvr-i'
+            ),
             length: 10,
         }
 
@@ -79,29 +97,41 @@ export default function useProject() {
             pathVariables,
         })
 
-        watch(isLoading, () => {
-            if (isLoading.value && error.value == undefined) {
-                const { onError, subscribe, close } = sse.value
-                onError((e: any) => {
-                    if (e.error) {
-                        console.error('lost connection; giving up!', e)
+        watch([isLoading, error], () => {
+            try {
+                isQueryRunning.value = !isLoading.value ? 'success' : 'loading'
+                if (!isLoading.value && error.value === undefined) {
+                    const { subscribe, close } = sse.value
+                    subscribe('', (message: any) => {
+                        if (message?.columns)
+                            setColumns(columnList, message.columns)
+                        if (message?.rows)
+                            setRows(dataList, columnList, message.rows)
+                        if (message?.status === 'completed') {
+                            getData(
+                                toRaw(dataList.value),
+                                toRaw(columnList.value)
+                            )
+                            close()
+                        }
+                    })
+                } else if (!isLoading.value && error.value !== undefined) {
+                    console.error('Failed to connect to server', error.value)
+                    if (error.value?.status && error.value?.statusText) {
+                        message.error({
+                            content: `${error.value.status} ${error.value.statusText}!`,
+                        })
+                    } else {
+                        message.error({
+                            content: `Something went wrong!`,
+                        })
                     }
-                    isQueryRunning.value = ''
-                    close()
-                })
-                subscribe('', (message: any) => {
-                    if (message?.columns)
-                        setColumns(columnList, message.columns)
-                    if (message?.rows)
-                        setRows(dataList, columnList, message.rows)
-                    if (message?.status === 'completed')
-                        getData(dataList.value, columnList.value)
-                })
-                isQueryRunning.value = 'success'
-            } else {
-                console.error('Failed to connect to server', error.value)
-                isQueryRunning.value = 'error'
-            }
+                    setColumns(columnList, [])
+                    setRows(dataList, columnList, [])
+                    getData([], [])
+                    isQueryRunning.value = 'error'
+                }
+            } catch (e) {}
         })
     }
 

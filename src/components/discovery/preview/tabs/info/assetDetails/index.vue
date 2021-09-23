@@ -4,7 +4,23 @@
             v-if="isSelectedAssetHaveRowsAndColumns(selectedAsset)"
             class="flex items-center w-full gap-16 mb-3"
         >
+            <Definition
+                :sql="displaySQL"
+                v-if="
+                    selectedAsset.typeName == 'View' ||
+                    selectedAsset.typeName == 'MaterialisedView'
+                "
+            >
+                <div class="flex flex-col text-sm cursor-pointer">
+                    <span class="mb-1 text-sm text-gray-500">Definition</span>
+                    <span class="text-primary">SQL</span>
+                </div>
+            </Definition>
             <RowInfoHoverCard
+                v-if="
+                    selectedAsset.typeName == 'Table' ||
+                    selectedAsset.typeName == 'TablePartition'
+                "
                 :row-count="rows"
                 :size-bytes="size"
                 :source-updated-at="sourceUpdated"
@@ -13,12 +29,12 @@
                 :source-created-at-raw="sourceCreatedRaw"
             >
                 <div class="flex flex-col text-sm cursor-pointer">
-                    <span class="mb-1 text-xs text-gray-500">Rows</span>
+                    <span class="mb-1 text-sm text-gray-500">Rows</span>
                     <span class="text-gray-700">{{ rows }}</span>
                 </div>
             </RowInfoHoverCard>
             <div class="flex flex-col text-sm">
-                <span class="mb-1 text-xs text-gray-500">Columns</span>
+                <span class="mb-1 text-sm text-gray-500">Columns</span>
                 <span class="text-gray-700">{{ cols }}</span>
             </div>
         </div>
@@ -43,6 +59,7 @@
 </template>
 
 <script lang="ts">
+    import Definition from '@/discovery/preview/hovercards/definition.vue'
     import RowInfoHoverCard from '@/discovery/preview/hovercards/rowInfo.vue'
     import { computed, defineComponent, PropType, toRefs, inject } from 'vue'
     import useAssetInfo from '~/composables/asset/useAssetInfo'
@@ -51,6 +68,7 @@
     import Owners from '@common/sidebar/owners.vue'
     import Experts from '@common/sidebar/experts.vue'
     import Status from '@common/sidebar/status.vue'
+    import { format } from 'sql-formatter'
 
     export default defineComponent({
         name: 'AssetDetails',
@@ -60,6 +78,7 @@
             Status,
             Owners,
             RowInfoHoverCard,
+            Definition,
         },
         props: {
             selectedAsset: {
@@ -83,7 +102,12 @@
                 sizeBytes,
                 sourceUpdatedAt,
                 sourceCreatedAt,
+                viewDefinition,
             } = useAssetInfo()
+
+            const displaySQL = computed(() =>
+                selectedAsset.value ? viewDefinition(selectedAsset.value) : '~'
+            )
 
             const rows = computed(() =>
                 selectedAsset.value ? rowCount(selectedAsset.value, true) : '~'
@@ -121,8 +145,15 @@
             function isSelectedAssetHaveRowsAndColumns(
                 selectedAsset: assetInterface
             ) {
-                if (selectedAsset.typeName === 'View') return true
-                if (selectedAsset.typeName === 'Table') return true
+                if (
+                    selectedAsset.typeName === 'View' ||
+                    selectedAsset.typeName === 'Table' ||
+                    selectedAsset.typeName === 'TablePartition' ||
+                    selectedAsset.typeName === 'MaterialisedView'
+                ) {
+                    return true
+                }
+
                 return false
             }
 
@@ -134,7 +165,9 @@
                 sourceCreated,
                 sourceCreatedRaw,
                 size,
+                format,
                 selectedAsset,
+                displaySQL,
                 isSelectedAssetHaveRowsAndColumns,
                 mutateSelectedAsset,
             }

@@ -4,11 +4,11 @@
             <div>
                 <AssetSelector
                     :key="getKey(index)"
-                    v-model:value="asset[item.attribute]"
+                    :value="asset[item.attribute]"
                     :type-name="item.typeName"
                     :filters="getFilter(index)"
                     :disabled="isDisabled(index)"
-                    @change="handleChange(item.level)"
+                    @change="handleChange(item.attribute, $event, item.level)"
                     :placeholder="`Select ${item.name}`"
                 ></AssetSelector>
             </div>
@@ -17,93 +17,116 @@
 </template>
 
 <script lang="ts">
-    import { computed, defineComponent, ref, ComputedRef, Ref } from 'vue'
+    import {
+        computed,
+        defineComponent,
+        ref,
+        ComputedRef,
+        Ref,
+        toRefs,
+        PropType,
+    } from 'vue'
+    import { Components } from '~/api/atlas/client'
     import AssetSelector from '~/components/common/dropdown/assetSelector.vue'
-    import { useConnectionsStore } from '~/store/connections'
 
     export default defineComponent({
         name: 'AssetDropdown',
         components: { AssetSelector },
         props: {
             connector: {
-                type: Object,
+                type: Object as PropType<{
+                    id: string
+                    label: string
+                    image: string
+                    types: string[]
+                    hierarchy: Record<string, any>[]
+                    filterMaxLevel: number
+                }>,
                 required: false,
             },
-            data: {
-                type: Object,
+            filter: {
+                type: Object as PropType<Components.Schemas.FilterCriteria>,
                 required: false,
-                default() {
-                    return {}
-                },
+                default: () => '',
             },
         },
         emits: ['labelChange', 'change'],
         setup(props, { emit }) {
-            const asset: Ref<Record<string, any>> = ref({})
+            const { connector, filter } = toRefs(props)
 
             const list: ComputedRef<any[]> = computed(
                 () =>
-                    props.connector?.hierarchy.filter(
+                    connector.value?.hierarchy.filter(
                         (item) => item.level < 3
                     ) || []
             )
 
-            const isDisabled = (index) => {
-                if (index == 0 && props.data?.connection) {
-                    return false
-                }
-                if (index > 0) {
-                    const item = list.value[index - 1]
-                    if (asset.value[item.attribute]) {
-                        return false
+            const asset: ComputedRef<Record<string, any>> = computed(() => {
+                const chunks = filter.value.attributeValue?.split('/') || []
+                const blankAsset = {}
+                if (chunks?.length > 3) {
+                    // Splicing first 3 as they contain tenant/integration/connection
+                    for (
+                        let idx = 0;
+                        idx < list.value.length && idx < chunks?.length - 3;
+                        idx++
+                    ) {
+                        let attrName = list.value[idx].attribute
+                        blankAsset[attrName] = chunks
+                            .slice(0, idx + 4)
+                            .join('/')
                     }
                 }
-                return true
+                return blankAsset
+            })
+
+            const hasConnection = computed(
+                () => (filter.value.attributeValue?.split('/')?.length || 0) > 2
+            )
+
+            const isDisabled = (index: number) => {
+                if (index == 0 && hasConnection.value) {
+                    return false
+                } else if (index > 0) {
+                    const item = list.value[index - 1]
+                    return !asset.value?.[item.attribute]
+                }
             }
 
             const getFilter = (index) => {
-                const baseFilter = {
-                    condition: 'AND',
-                    criterion: [
-                        {
-                            attributeName: 'integrationName',
-                            attributeValue: props.data?.connector,
-                            operator: 'eq',
-                        },
-                        {
-                            attributeName: 'connectionQualifiedName',
-                            attributeValue: props.data?.connection,
-                            operator: 'eq',
-                        },
-                    ],
-                }
-
                 if (index > 0) {
                     const item = list.value[index - 1]
                     if (asset.value[item.attribute]) {
-                        baseFilter.criterion.push({
-                            attributeName: item.attribute,
-                            attributeValue: asset.value[item.attribute],
-                            operator: 'eq',
-                        })
+                        return {
+                            condition: 'AND',
+                            criterion: [
+                                {
+                                    attributeName: item.attribute,
+                                    attributeValue: asset.value[item.attribute],
+                                    operator: 'eq',
+                                },
+                            ],
+                        }
                     }
                 }
-                return baseFilter
-                // if (index > 0) {
-                //   const item = list.value[index - 1];
-                //   if (item) {
-                //     return {
-                //       condition: "AND",
-                //       criterion: [
-                //         {
-                //           attributeName: "connectionQualifiedName",
-                //           attributeValue: props.data?.connection,
-                //           operator: "eq",
-                //         },
-                //       ],
-                //     };
-                //   }
-                // }
+                // For the first filter we need the connection name
+                else {
+                    let connectionName = filter.value?.attributeValue
+                        ?.split('/')
+                        .slice(0, 3)
+                        ?.join('/')
+                    return {
+                        condition: 'AND',
+                        criterion: [
+                            {
+                                ...filter.value,
+                                operator: 'eq',
+                                attributeName: 'connectionQualifiedName',
+                                attributeValue: connectionName,
+                            },
+                        ],
+                    }
+                }
             }
 
             const getKey = (index) => {
@@ -129,25 +152,28 @@
                 emit('labelChange', '')
             }
 
-            const handleChange = (level: number) => {
+            const handleChange = (
+                key: string,
+                value: string | undefined,
+                level: number
+            ) => {
                 let isFilterAttributeFound = false
+                const tempAsset = { ...asset.value }
+                tempAsset[key] = value
                 // Reset all values which are more than this level
                 list.value.forEach((lv) => {
                     if (lv.level > level) {
-                        asset.value[lv.attribute] = undefined
+                        tempAsset[lv.attribute] = undefined
                     }
                 })
-
-                setSelectorValue()
-
                 // Check the most granular filter and emit it
                 for (let i = list.value.length - 1; i >= 0; i--) {
                     const currentListItem = list.value[i]
-                    if (asset.value[currentListItem?.attribute]) {
+                    if (tempAsset[currentListItem?.attribute]) {
                         emit('change', {
                             attributeName: currentListItem?.attribute,
                             attributeValue:
-                                asset.value[currentListItem?.attribute],
+                                tempAsset[currentListItem?.attribute],
                         })
                         isFilterAttributeFound = true
                         break
@@ -157,6 +183,8 @@
                 // Emit with empty attributes when the selectors are cleared
                 if (!isFilterAttributeFound)
                     emit('change', { attributeName: '', attributeValue: '' })
+
+                setSelectorValue()
             }
 
             return {

@@ -1,40 +1,28 @@
 // TODO: this component can be removed by making
 /discovery/preview/tabs/info/assetDetails/status.vue more generic
 <template>
-    <div class="">
-        <div class="flex flex-col" style="width: 300px p-4">
-            <div class="">
-                <a-radio-group v-model:value="statusId" class="w-full mb-3">
-                    <div class="flex flex-col">
-                        <a-radio
-                            v-for="item in List"
-                            :key="item.id"
-                            :value="item.id"
-                            class="mb-1"
-                        >
-                            <span class="align-middle">
-                                <span class="text-gray-700 svg-icon">
-                                    <component
-                                        :is="item.icon"
-                                        class="w-auto h-4 ml-1 mr-2 pushtop"
-                                    />
-                                    {{ item.label }}
-                                </span>
+    <div class="flex flex-col" style="width: 300px p-4">
+        <div class="">
+            <a-radio-group v-model:value="statusId" class="w-full mb-2">
+                <div class="flex flex-col">
+                    <a-radio
+                        v-for="item in List"
+                        :key="item.id"
+                        :value="item.id"
+                        class="mb-1"
+                    >
+                        <span class="align-middle">
+                            <span class="text-gray-700 svg-icon">
+                                <component
+                                    :is="item.icon"
+                                    class="w-auto h-4 ml-1 mr-2 pushtop"
+                                />
+                                {{ item.label }}
                             </span>
-                        </a-radio>
-                    </div>
-                </a-radio-group>
-            </div>
-        </div>
-        <div
-            v-if="selectedAsset?.attributes?.assetStatusMessage"
-            class="px-2 mt-1"
-        >
-            <p
-                v-linkified
-                class="mb-0 text-xs font-semibold text-gray-500"
-                v-html="statusMessage"
-            ></p>
+                        </span>
+                    </a-radio>
+                </div>
+            </a-radio-group>
         </div>
     </div>
 </template>
@@ -98,8 +86,8 @@
                 if (isReady.value) {
                     emit('update:selectedAsset', selectedAsset.value)
                 }
-            });
-            
+            })
+
             return {
                 handleUpdate,
                 handleCancel,

@@ -27,6 +27,7 @@
                 :page="page"
             ></AssetPreview>
         </div>
+
         <div id="overAssetPreviewSidebar" class="relative"></div>
     </div>
 </template>

@@ -13,7 +13,7 @@
 
         <div v-if="imageId" class="mb-10">
             <h2 class="mb-6 text-xl text-gray">Preview</h2>
-            <overview-image-preview :image-preview="imagePreview" />
+            <overview-image-preview :selected-asset="assetData" />
         </div>
 
         <!-- Overview Relations -->

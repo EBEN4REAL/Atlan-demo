@@ -20,12 +20,13 @@ export interface assetInterface {
         integrationName: string
         meanings: { displayText: string }[]
         name: string
+        displayName: string
         popularityScore: number
         qualifiedName: string
         userDescription: string
         rowCount: number
         schemaName: string
-        sourceUpdatedAt:  string
+        sourceUpdatedAt: string
         tenantId: string
         viewDefinition: string
         table?: {
@@ -53,4 +54,5 @@ export interface assetInterface {
     meanings: { displayText: string }[]
     status: string
     typeName: string
+    qualifiedName: string
 }

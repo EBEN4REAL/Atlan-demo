@@ -1,58 +1,63 @@
 <template>
-    <div class="flex justify-end px-8 py-4">
-        <fa
-            icon="fa sync"
-            class="text-lg cursor-pointer text-primary"
-            @click="refreshAudits"
-        ></fa>
-    </div>
-    <div
-        v-if="isLoading"
-        class="flex items-center justify-center mt-4 text-sm leading-none"
-    >
-        <a-spin size="small" class="mr-2 leading-none"></a-spin
-        ><span>Getting activity logs</span>
-    </div>
-    <div v-else-if="audits.length && !isLoading">
-        <a-timeline class="mx-4">
-            <a-timeline-item v-for="(log, index) in audits" :key="index">
-                <template #dot>
-                    <div
-                        class="border  ant-timeline-item-dot bg-primary-light border-primary"
-                    ></div>
-                </template>
-                <div>
-                    <div v-if="getDetailsForEntityAuditEvent(log)">
-                        <activity-type
-                            :data="getDetailsForEntityAuditEvent(log)"
-                        />
-                    </div>
-                    <div v-else>
-                        {{ getEventByAction(log).label || 'Event' }}
-                    </div>
-                </div>
-                <div class="flex items-center leading-5 text-gray-500">
-                    <div class="capitalize">{{ getActionUser(log.user) }}</div>
-                    <div class="mx-3 name-time-separator"></div>
-                    <div>{{ timeAgo(log.timestamp) }}</div>
-                </div>
-            </a-timeline-item>
-        </a-timeline>
-        <div
-            v-if="!checkAuditsCount && !isAllLogsFetched"
-            class="flex justify-center mb-8 text-center"
-        >
-            <a-button
-                class="flex items-center px-5 py-4 text-sm font-bold border-none rounded-full  bg-primary-light text-primary"
-                style="box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.08)"
-                @click="fetchMore"
-                >Load more <fa icon="fas long-arrow-alt-down" class="ml-1"></fa
-            ></a-button>
+    <div>
+        <div class="flex justify-end px-8 py-4">
+            <fa
+                icon="fa sync"
+                class="text-lg cursor-pointer text-primary"
+                @click="refreshAudits"
+            ></fa>
         </div>
-    </div>
-    <div v-else class="flex flex-col items-center">
-        <img :src="emptyScreen" alt="No logs" class="w-2/5 m-auto mb-4" />
-        <span class="text-gray-500">No logs found</span>
+        <div
+            v-if="isLoading"
+            class="flex items-center justify-center mt-4 text-sm leading-none"
+        >
+            <a-spin size="small" class="mr-2 leading-none"></a-spin
+            ><span>Getting activity logs</span>
+        </div>
+        <div v-else-if="audits.length && !isLoading">
+            <a-timeline class="mx-4">
+                <a-timeline-item v-for="(log, index) in audits" :key="index">
+                    <template #dot>
+                        <div
+                            class="border  ant-timeline-item-dot bg-primary-light border-primary"
+                        ></div>
+                    </template>
+                    <div>
+                        <div v-if="getDetailsForEntityAuditEvent(log)">
+                            <activity-type
+                                :data="getDetailsForEntityAuditEvent(log)"
+                            />
+                        </div>
+                        <div v-else>
+                            {{ getEventByAction(log).label || 'Event' }}
+                        </div>
+                    </div>
+                    <div class="flex items-center leading-5 text-gray-500">
+                        <div class="capitalize">
+                            {{ getActionUser(log.user) }}
+                        </div>
+                        <div class="mx-3 name-time-separator"></div>
+                        <div>{{ timeAgo(log.timestamp) }}</div>
+                    </div>
+                </a-timeline-item>
+            </a-timeline>
+            <div
+                v-if="!checkAuditsCount && !isAllLogsFetched"
+                class="flex justify-center mb-8 text-center"
+            >
+                <a-button
+                    class="flex items-center px-5 py-4 text-sm font-bold border-none rounded-full  bg-primary-light text-primary"
+                    style="box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.08)"
+                    @click="fetchMore"
+                    >Load more
+                    <fa icon="fas long-arrow-alt-down" class="ml-1"></fa
+                ></a-button>
+            </div>
+        </div>
+        <div v-else class="flex flex-col items-center">
+            <img :src="emptyScreen" alt="No logs" class="w-2/5 m-auto mb-4" />
+            <span class="text-gray-500">No logs found</span>
+        </div>
     </div>
 </template>
 

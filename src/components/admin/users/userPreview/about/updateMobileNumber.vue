@@ -51,7 +51,7 @@
           </div>
         </div>
       </div>
-      <div v-else class="text-gray">{{ selectedUser.attributes.mobile_number[0] || "-" }}</div>
+      <div v-else-if="selectedUser && selectedUser.attributes && selectedUser.attributes.mobile_number &&selectedUser.attributes.mobile_number[0]" class="text-gray">{{ selectedUser.attributes.mobile_number[0] || "-" }}</div>
     </div>
   </div>
 </template>

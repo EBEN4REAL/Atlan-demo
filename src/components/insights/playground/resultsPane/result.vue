@@ -3,6 +3,7 @@
         <div class="flex justify-center w-full h-full overflow-x-auto rounded">
             <a-table
                 class="w-full overflow-x-auto"
+                :loading="isQueryRunning === 'loading' ? true : false"
                 :class="$style.result_tab"
                 :data-source="activeInlineTab.playground.editor.dataList"
                 :columns="activeInlineTab.playground.editor.columnList"
@@ -32,8 +33,9 @@
             const activeInlineTab = inject(
                 'activeInlineTab'
             ) as Ref<activeInlineTabInterface>
-            console.log(activeInlineTab.value.playground.editor, 'editor')
+            const isQueryRunning = inject('isQueryRunning') as Ref<string>
             return {
+                isQueryRunning,
                 activeInlineTab,
             }
         },

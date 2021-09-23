@@ -65,6 +65,19 @@ const useTree = (
         false
     )
 
+    const returnTreeDataItemAttributes = (item:  Components.Schemas.AtlasGlossaryCategory | Components.Schemas.AtlasGlossaryTerm, type: 'term' | 'category', parentGlossaryGuid: string, isRoot?: Boolean, parentCategoryId?: string) => {
+        return {
+                ...item,
+                title: item.name,
+                key: item.guid,
+                glossaryID: parentGlossaryGuid,
+                parentCategoryId: parentCategoryId,
+                type,
+                isRoot,
+                isLeaf: type === 'term' ? true : false
+            }
+    }
+
     /** *
      * @param targetGuid - guid / key of the node whose path needs to be found
      *
@@ -109,14 +122,14 @@ const useTree = (
             // if category is root level, i.e `categoryGuid` does not exist
             if (!element.parentCategory?.categoryGuid) {
                 if (element.guid) nodeToParentKeyMap[element.guid] = 'root'
-
-                treeData.value.push({
-                    ...element,
-                    title: element.name,
-                    key: element.guid,
-                    glossaryID: guid,
-                    type: 'category',
-                })
+                treeData.value.push(returnTreeDataItemAttributes(element, 'category', guid))
+                // treeData.value.push({
+                //     ...element,
+                //     title: element.name,
+                //     key: element.guid,
+                //     glossaryID: guid,
+                //     type: 'category',
+                // })
             }
         })
         termsList.forEach((element) => {

@@ -13,8 +13,6 @@
     "dependencies": {
         "@antv/layout": "^0.1.19-beta.1",
         "@antv/x6": "^1.26.2",
-        "@antv/x6-vue3-shape": "^1.0.0",
-        "@dagrejs/graphlib": "^2.1.4",
         "@fortawesome/fontawesome-svg-core": "^1.2.36",
         "@fortawesome/pro-light-svg-icons": "^5.15.3",
         "@fortawesome/pro-solid-svg-icons": "^5.15.3",

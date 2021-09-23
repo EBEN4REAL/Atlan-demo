@@ -28,7 +28,6 @@ export default defineConfig(({ mode }) => {
                 )}/`,
                 'antd/lib': 'antd/es',
                 '@antv/x6': '@antv/x6/dist/x6.js',
-                // vue: 'vue/dist/vue.esm-bundler.js',
             },
         },
         define: {

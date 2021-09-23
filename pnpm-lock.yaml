@@ -16,6 +16,7 @@ specifiers:
   '@fortawesome/pro-solid-svg-icons': ^5.15.3
   '@fortawesome/vue-fontawesome': ^2.0.2
   '@intlify/vite-plugin-vue-i18n': ^2.4.0
+  '@rollup/plugin-json': ^4.1.0
   '@rollup/plugin-replace': ^3.0.0
   '@tailwindcss/line-clamp': ^0.2.1
   '@tailwindcss/typography': ^0.4.1
@@ -193,6 +194,7 @@ devDependencies:
   '@babel/core': 7.15.5
   '@babel/eslint-parser': 7.15.4_@babel+core@7.15.5+eslint@7.32.0
   '@intlify/vite-plugin-vue-i18n': 2.4.0_7c49bb01591d729d48eb6f89d79af141
+  '@rollup/plugin-json': 4.1.0
   '@rollup/plugin-replace': 3.0.0
   '@tailwindcss/line-clamp': 0.2.1_tailwindcss@2.2.15
   '@typescript-eslint/eslint-plugin': 4.31.1_e2d3c88d378335c4183365c112128ce9
@@ -2272,6 +2274,14 @@ packages:
       '@babel/helper-module-imports': 7.14.5
       '@rollup/pluginutils': 3.1.0_rollup@2.56.3
       rollup: 2.56.3
+    dev: true
+
+  /@rollup/plugin-json/4.1.0:
+    resolution: {integrity: sha512-yfLbTdNS6amI/2OpmbiBoW12vngr5NW2jCJVZSBEz+H5KfUJZ2M7sDjk0U6GOOdCWFVScShte29o9NezJ53TPw==}
+    peerDependencies:
+      rollup: ^1.20.0 || ^2.0.0
+    dependencies:
+      '@rollup/pluginutils': 3.1.0
     dev: true
 
   /@rollup/plugin-node-resolve/11.2.1_rollup@2.56.3:

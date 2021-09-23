@@ -506,7 +506,7 @@ const useTree = (
         const addNode = (node: TreeDataItem): TreeDataItem => {
             const currentPath = parentStack.pop()
             const newChildren: TreeDataItem[] = []
-            if (node.key === nodeKey || (!currentPath && nodeToReorder)) {
+            if (node.key === toGuid && (!currentPath && nodeToReorder)) {
                 nodeToReorder.parentCategoryId = toGuid
                 nodeToReorder.parentCategory = toGuid
                 nodeToReorder.categories = updatedCategories
@@ -515,8 +515,9 @@ const useTree = (
             node.children?.forEach((childNode: TreeDataItem) => {
                 if (childNode.key === currentPath) {
                     newChildren.push(addNode(childNode) ?? childNode)
+                } else {
+                    newChildren.push(childNode)
                 }
-                newChildren.push(childNode)
             })
             return {
                 ...node,
@@ -533,7 +534,6 @@ const useTree = (
 
         parentStack = recursivelyFindPath(toGuid)
         const toParent = parentStack.pop()
-
         treeData.value = treeData.value.map((node: TreeDataItem) => {
             if (node.key === toParent) return addNode(node)
             return node
@@ -543,7 +543,7 @@ const useTree = (
     }
 
     const dragAndDropNode = async ({ dragNode, node }) => {
-        const { data: updatedEntity, updateEntity } = useUpdateGtcEntity()
+        // const { data: updatedEntity, updateEntity } = useUpdateGtcEntity()
         if (node.dataRef.type === 'category') {
             if (dragNode.dataRef.type === 'term') {
                 if (dragNode.dataRef.categories?.length) {

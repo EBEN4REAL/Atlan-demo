@@ -39,7 +39,7 @@
                         :show-chip-style-status="false"
                         :show-no-status="true"
                         :show-label="true"
-                        class="items-center p-0 cursor-pointer"
+                        class="items-center p-0 text-xs cursor-pointer"
                     ></StatusBadge>
                     <AtlanIcon
                         class="pt-1 ml-4 transform -rotate-90"
@@ -59,9 +59,10 @@
                     >
                         <template #overlay>
                             <AddGtcModalOwners
+                                :defaultOwner="ownerUsers.join()"
+                                :defaultGroups="ownerGroups.join()"
                                 @closeDropdown="handleCloseOwnersModal"
                                 @ownersUpdated="handleOwnersUpdated"
-                                :defaultOwner="myUsername"
                                 class="px-4 py-2"
                             />
                         </template>
@@ -100,7 +101,7 @@
             </div>
         </template>
         <a-input
-            :ref="titleBar"
+            ref="titleBar"
             v-model:value="title"
             :placeholder="`Untitled ${entityType}`"
             class="text-lg font-bold text-gray-700 border-0 shadow-none outline-none "
@@ -110,7 +111,10 @@
             v-model:value="description"
             placeholder="Add description..."
             class="text-gray-500 border-0 shadow-none outline-none"
+            :rows="2"
         />
+        {{ ownerUsers }}
+        {{ ownerGroups }}
     </a-modal>
 </template>
 
@@ -149,6 +153,16 @@
                 type: String,
                 required: false,
                 default: '',
+            },
+            mode: {
+                type: String,
+                required: false,
+                default: 'create',
+            },
+            entity: {
+                type: Object as PropType<Glossary | Category | Term>,
+                required: false,
+                default: () => {},
             },
         },
         emits: ['onAddTerm'],
@@ -192,9 +206,26 @@
                 description.value = ''
                 currentStatus.value = 'draft'
             }
-            const showModal = () => {
+            const showModal = async () => {
                 resetInput()
                 visible.value = true
+                await nextTick()
+                titleBar.value?.focus()
+                console.log(props.entity)
+                if (props.mode === 'edit') {
+                    title.value = props?.entity?.displayText
+                    description.value =
+                        props?.entity?.attributes?.description ??
+                        props?.entity?.attributes?.shortDescription
+                    currentStatus.value = props?.entity?.attributes?.assetStatus
+                    ownerUsers.value = props?.entity?.attributes?.ownerUsers
+                        ?.split(',')
+                        .filter((s) => s !== '')
+
+                    ownerGroups.value = props?.entity?.attributes?.ownerGroups
+                        ?.split(',')
+                        .filter((s) => s !== '')
+                }
             }
 
             const handleOk = () => {
@@ -285,7 +316,7 @@
             @apply border-0 border-t-0 px-4 border-b-0  !important;
         }
         :global(.ant-modal-body) {
-            @apply px-4 !important;
+            @apply px-4 pt-0 pb-4 !important;
         }
     }
     .titleInput {

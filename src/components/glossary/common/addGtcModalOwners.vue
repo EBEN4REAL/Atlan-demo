@@ -219,6 +219,11 @@
                 required: true,
                 default: '',
             },
+            defaultGroups: {
+                type: String,
+                required: true,
+                default: '',
+            },
         },
         emits: ['closeDropdown', 'ownersUpdated'],
         setup(props, { emit }) {
@@ -492,7 +497,13 @@
             }
 
             onMounted(() => {
-                selectedUsers.value?.push(props.defaultOwner)
+                console.log(props.defaultOwner)
+                selectedUsers.value = props.defaultOwner
+                    ?.split(',')
+                    .filter((s) => s !== '')
+                selectedGroups.value = props.defaultGroups
+                    ?.split(',')
+                    ?.filter((s) => s !== '')
             })
             // closing the popover on making the req successfully
             // watch(isOwnersLoading, () => {

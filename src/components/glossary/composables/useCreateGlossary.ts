@@ -165,8 +165,7 @@ const useCreateGlossary = () => {
         ownerGroups?: string
     ) => {
         body.value = {
-            name: generateUUID(),
-            displayText: title ?? 'Untitled Term',
+            name: title ?? generateUUID(),
             shortDescription: description ?? '',
             longDescription: '',
             assetStatus: status ?? 'draft',
@@ -200,6 +199,7 @@ const useCreateGlossary = () => {
         const { data: updateData, updateEntity } = useUpdateGtcEntity()
 
         watch(data, (newData) => {
+            console.log(data)
             if (newData?.guid) {
                 message.success({
                     content: `${title} created!`,
@@ -228,6 +228,13 @@ const useCreateGlossary = () => {
         })
         watch([createError, isValidating], ([newError, newValidating]) => {
             error.value = newError?.value
+            console.log(newError)
+            message.error({
+                content: `Oops! Something went wrong`,
+                key: `${title}`,
+                duration: 2,
+            })
+
             isLoading.value = newValidating?.value
         })
     }

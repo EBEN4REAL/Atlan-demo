@@ -3,7 +3,13 @@
         <LoadingView />
     </div>
     <div v-else class="flex flex-row h-full" :class="$style.tabClasses">
-        <div class="w-2/3 h-full">
+        <div
+            class="w-2/3 h-full"
+            @scroll="handleScroll"
+            ref="scrollDiv"
+            :class="{ 'overflow-y-auto': headerReachedTop }"
+        >
+            {{ headerReachedTop }}
             <!-- top section -->
             <ProfileHeader
                 :title="title"
@@ -12,6 +18,7 @@
                 :statusMessage="statusMessage"
                 :statusObject="statusObject"
                 :shortDescription="shortDescription"
+                :headerReachedTop="!headerReachedTop"
             />
 
             <!-- tabs start here  -->
@@ -53,7 +60,9 @@
                             :guid="glossary?.guid"
                             :type="glossary?.typeName"
                             :show-preview-panel="currentTab === '2'"
+                            :headerReachedTop="!headerReachedTop"
                             @entityPreview="handleCategoryOrTermPreview"
+                            @firstCardReachedTop="handleFirstCardReachedTop"
                         />
                     </a-tab-pane>
                     <a-tab-pane key="4" tab="Requests"> Bots </a-tab-pane>
@@ -80,6 +89,7 @@
         provide,
         computed,
         inject,
+        nextTick,
     } from 'vue'
     import { useRouter } from 'vue-router'
 
@@ -125,6 +135,8 @@
             const previewEntity = ref<Category | Term | undefined>()
             const showPreviewPanel = ref(false)
             const newName = ref('')
+            const scrollDiv = ref(null)
+            const headerReachedTop = ref(true)
 
             const router = useRouter()
             const {
@@ -205,6 +217,19 @@
                     }, 2000)
                 }
             }
+
+            const handleScroll = () => {
+                if (scrollDiv.value?.scrollTop < 70 && scrollDiv.value !== 0) {
+                    headerReachedTop.value = false
+                } else {
+                    headerReachedTop.value = true
+                }
+            }
+            const handleFirstCardReachedTop = () => {
+                console.log(scrollDiv.value.scrollTop)
+                headerReachedTop.value = true
+                // scrollDiv.value.scrollTop = 0
+            }
             // lifecycle methods and watchers
             onMounted(() => {
                 fetchGlossaryTermsPaginated({ guid: guid.value, offset: 0 })
@@ -252,6 +277,8 @@
                 statusObject,
                 isNewGlossary,
                 newName,
+                scrollDiv,
+                headerReachedTop,
                 refreshCategoryTermList,
                 fetchNextCategoryOrTermList,
                 refetch,
@@ -259,6 +286,8 @@
                 handlClosePreviewPanel,
                 redirectToProfile,
                 updateTitle,
+                handleScroll,
+                handleFirstCardReachedTop,
             }
         },
     })

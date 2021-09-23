@@ -33,11 +33,14 @@
             <LoadingView />
         </div>
         <div v-else-if="all.length" class="flex flex-row w-full">
-            <div class="w-full">
-                <div
-                    class="overflow-auto"
-                    style="max-height: calc(100vh - 300px)"
-                >
+            <div
+                class="w-full"
+                @scroll="handleScroll"
+                ref="scrollDiv"
+                :class="{ 'overflow-y-auto h-96': headerReachedTop }"
+            >
+                <div ref="topSectionRef"></div>
+                <div>
                     <AssetList
                         :list="all"
                         :projection="projection"
@@ -140,8 +143,13 @@
                 required: true,
                 default: false,
             },
+            headerReachedTop: {
+                type: Boolean,
+                required: false,
+                default: false,
+            },
         },
-        emits: ['entityPreview'],
+        emits: ['entityPreview', 'firstCardReachedTop'],
         setup(props, { emit }) {
             // data
             const glossaryQualifiedName = computed(() => props.qualifiedName)
@@ -149,6 +157,9 @@
             const searchQuery = ref<string>()
             const activeKey = ref(0)
             const selectedEntity = ref<Category | Term>()
+
+            const topSectionRef = ref(null)
+            const scrollDiv = ref(null)
             const projection = ref([
                 'status',
                 'description',
@@ -273,6 +284,13 @@
             const handleFetchList = (entity: Category | Term) => {
                 deleteEntityFromList(entity?.guid)
             }
+
+            const handleScroll = (e) => {
+                if (scrollDiv.value?.scrollTop < 2) {
+                    emit('firstCardReachedTop')
+                }
+            }
+
             // lifecycle methods and watchers and  providers
             watch(selectedEntity, (newSelectedEntity) => {
                 emit('entityPreview', newSelectedEntity)
@@ -299,6 +317,9 @@
                 projection,
                 activeKey,
                 referredEntities,
+                handleScroll,
+                topSectionRef,
+                scrollDiv,
             }
         },
     })

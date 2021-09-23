@@ -18,7 +18,6 @@ export default defineConfig(({ mode }) => {
     const env = loadEnv(mode, root)
 
     return {
-        logLevel: 'silent',
         resolve: {
             alias: {
                 '~/': `${path.resolve(__dirname, 'src')}/`,
@@ -29,7 +28,7 @@ export default defineConfig(({ mode }) => {
                 )}/`,
                 'antd/lib': 'antd/es',
                 '@antv/x6': '@antv/x6/dist/x6.js',
-                vue: 'vue/dist/vue.esm-bundler.js',
+                // vue: 'vue/dist/vue.esm-bundler.js',
             },
         },
         define: {

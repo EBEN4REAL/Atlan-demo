@@ -11,7 +11,7 @@
         >
             <a-button
                 class="px-2 three-dot-menu"
-                :class="{ ' border-0 shadow-none outline-none': !showLinks || treeMode, 'treeMode': treeMode }"
+                :class="{ ' border-0 shadow-none outline-none': !showLinks || treeMode, 'treeMode h-4 w-4 mr-2': treeMode }"
                 @click.prevent
             >
                 <!-- <fa icon="fal ellipsis-v" class="h-4" /> -->

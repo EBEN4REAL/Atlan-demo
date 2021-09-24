@@ -1,16 +1,17 @@
 <template>
     <div
         class="group-hover:opacity-100"
-        :class="isVisible ? 'opacity-100' : ''"
+        :class="{'opacity-100': isVisible, 'opacity-0 treeMode': treeMode}"
     >
         <a-dropdown
             v-model:visible="isVisible"
-            :trigger="['click']"
+            :trigger="['click', 'hover']"
+            :class="treeMode ? $style.treeMode: ''"
             @click.stop="() => {}"
         >
             <a-button
-                class="px-2"
-                :class="{ ' border-0 shadow-none outline-none': !showLinks }"
+                class="px-2 three-dot-menu"
+                :class="{ ' border-0 shadow-none outline-none': !showLinks || treeMode, 'treeMode': treeMode }"
                 @click.prevent
             >
                 <!-- <fa icon="fal ellipsis-v" class="h-4" /> -->
@@ -305,6 +306,8 @@
         onMounted,
         computed,
     } from 'vue'
+    import { useRouter } from 'vue-router'
+
     // components
     import StatusBadge from '@common/badge/status/index.vue'
     import Owners from '@/glossary/common/owners.vue'
@@ -330,21 +333,22 @@
                 required: true,
                 default: () => {},
             },
-            redirectToProfile: {
-                type: Function,
-                required: false,
-                default: undefined,
-            },
             showLinks: {
                 type: Boolean,
                 required: false,
                 default: () => true,
             },
+            treeMode: {
+                type: Boolean,
+                required: false,
+                default: () => false
+            }
         },
         setup(props, context) {
             // data
             const isVisible = ref(false)
             const isModalVisible = ref<boolean>(false)
+            const router = useRouter()
 
             const handleFetchListInj: Function | undefined =
                 inject('handleFetchList')
@@ -443,6 +447,14 @@
                         props.entity.guid
                     )
             }
+            const redirectToProfile = () => {
+                if (props.entity.typeName === 'AtlasGlossary')
+                    router.push(`/glossary/${props.entity.guid}`)
+                else if (props.entity.typeName === 'AtlasGlossaryCategory')
+                    router.push(`/glossary/category/${props.entity.guid}`)
+                else if (props.entity.typeName === 'AtlasGlossaryTerm')
+                    router.push(`/glossary/term/${props.entity.guid}`)
+            }
 
             // update tree on archive or create new entity
             const updateTree = (selectedAsset: Glossary | Category | Term) => {
@@ -465,9 +477,15 @@
                 createNewTerm,
                 createNewCategory,
                 closeMenu,
+                redirectToProfile,
                 glossaryId,
                 categoryId,
             }
         },
     })
 </script>
+<style lang="less" module>
+  .treeMode {
+    @apply bg-black bg-opacity-0 !important;
+  }
+</style>

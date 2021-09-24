@@ -217,17 +217,17 @@
                     class="h-full"
                 >
                     <template
-                        #title="{ title, type, key, assetStatus, glossaryID }"
+                        #title="entity"
                     >
                         <a-dropdown :trigger="['contextmenu']">
                             <div
                                 class="min-w-full"
-                                @click="() => redirectToProfile(type, key)"
+                                @click="() => redirectToProfile(entity.type, entity.key)"
                             >
                                 <div class="flex justify-between mr-2 group">
                                     <div class="flex m-0">
                                         <span
-                                            v-if="type === 'glossary'"
+                                            v-if="entity.type === 'glossary'"
                                             class="p-0 my-auto mr-2"
                                         >
                                             <!-- <img
@@ -244,83 +244,44 @@
                                             <AtlanIcon
                                                 :icon="
                                                     getEntityStatusIcon(
-                                                        type,
-                                                        assetStatus
+                                                        entity.type,
+                                                        entity.assetStatus
                                                     )
                                                 "
                                             />
                                         </span>
                                         <span
                                             class="my-auto text-sm leading-5 text-gray-700 "
-                                            >{{ title }}</span
+                                            >{{ entity.title }}</span
                                         >
                                     </div>
 
-                                    <a-dropdown
-                                        v-if="type === 'category'"
-                                        :trigger="['hover']"
-                                    >
-                                        <span
-                                            class="flex content-center justify-center w-5 h-5 p-0 m-0 rounded opacity-0  group-hover:opacity-100"
-                                            @click.prevent
-                                        >
-                                            <AtlanIcon
-                                                icon="KebabMenu"
-                                                class="h-3 mt-1"
-                                            />
-                                        </span>
-                                        <template #overlay>
-                                            <a-menu>
-                                                <div
-                                                    class="px-2 py-1"
-                                                    :class="
-                                                        $style.createDropdownStyles
-                                                    "
-                                                >
-                                                    <a-menu-item
-                                                        key="0"
-                                                        @click="
-                                                            () =>
-                                                                createTerm(
-                                                                    glossaryID,
-                                                                    key
-                                                                )
-                                                        "
-                                                    >
-                                                        <div
-                                                            class="flex items-center "
-                                                        >
-                                                            <AtlanIcon
-                                                                icon="Link"
-                                                                class="m-0 mr-2"
-                                                            />
-                                                            New Term
-                                                        </div>
-                                                    </a-menu-item>
-                                                    <a-menu-item
-                                                        key="1"
-                                                        @click="
-                                                            () =>
-                                                                createCategory(
-                                                                    glossaryID,
-                                                                    key
-                                                                )
-                                                        "
-                                                    >
-                                                        <div
-                                                            class="flex items-center "
-                                                        >
-                                                            <AtlanIcon
-                                                                icon="Link"
-                                                                class="m-0 mr-2"
-                                                            />
-                                                            New Category
-                                                        </div>
-                                                    </a-menu-item>
-                                                </div>
-                                            </a-menu>
-                                        </template>
-                                    </a-dropdown>
+                                    <ThreeDotMenu 
+                                        :treeMode="true"
+                                        :entity="{
+                                            guid: entity.guid,
+                                            displayText: entity.name,
+                                            typeName: entity.type === 'term' ? 'AtlasGlossaryTerm' : 'AtlasGlossaryCategory',
+                                            attributes: {
+                                                ...entity,
+                                                anchor: {
+                                                    guid: entity.anchor.glossaryGuid,
+                                                    uniqueAttributes: {
+                                                        qualifiedName: parentGlossary?.qualifiedName
+                                                    }
+                                                },
+                                                name: entity.name,
+                                                assetStatus: entity.assetStatus,
+                                                qualifiedName: entity.qualifiedName,
+                                                parentCategory: {
+                                                    guid: entity.parentCategory?.categoryGuid
+                                                },
+                                                categories: entity.categories?.map((category) => ({
+                                                    guid: category?.categoryGuid
+                                                })),
+                                            }
+                                        }"
+                                    />
                                 </div>
                             </div>
                         </a-dropdown>
@@ -414,7 +375,7 @@
     // import { Glossary } from '~/api/atlas/glossary'
 
     export default defineComponent({
-        components: { LoadingView, ThreeDotMenu, AtlanIcon, AtlanBtn, Tooltip },
+        components: { LoadingView, ThreeDotMenu, AtlanIcon, AtlanBtn, Tooltip, ThreeDotMenu },
         props: {
             glossaryList: {
                 type: Object as PropType<Glossary[]>,
@@ -486,7 +447,8 @@
             // data
             const searchQuery = ref<string>()
             const home = toRef(props, 'isHome')
-            const currentGlossaryGuid = ref<string>(props.parentGlossary?.guid ?? '')
+            const parentGlossary = toRef(props, 'parentGlossary')
+            const currentGlossaryGuid = ref<string>(parentGlossary.value?.guid ?? '')
 
             const { createTerm, createCategory, createGlossary } =
                 useCreateGlossary()
@@ -547,13 +509,18 @@
                     1
                 )}`
             }
-
+            
             watch(home, () => {
                 searchQuery.value = '';
             })
             watch(currentGlossaryGuid, (newGuid) => {
                 redirectToProfile('glossary', newGuid)
             });
+
+            watch(parentGlossary, (newParentGlossary) => {
+                console.log('what parent glossary')
+                currentGlossaryGuid.value = newParentGlossary.guid
+            })
             
             return {
                 redirectToProfile,
@@ -603,7 +570,9 @@
             height: 32px;
         }
 
+
         .treeStyles {
+
             :global(.ant-tree-switcher) {
                 @apply pt-1;
             }
@@ -612,6 +581,10 @@
                 @apply pl-1 !important;
                 padding-top: 4px !important;
                 padding-bottom: 4px !important;
+
+                &:hover {
+                    @apply bg-black bg-opacity-5 !important;
+                }
             }
             :global(.ant-tree-node-content-wrapper) {
                 @apply mb-2 border-0;

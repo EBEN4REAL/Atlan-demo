@@ -290,8 +290,11 @@
                         </template>
                         <template #expandIcon><div></div> </template>
                         <a-menu-item class="m-0 bg-white">
-                            <Owners :selectedAsset="entity"
-                        /></a-menu-item>
+                            <Owners 
+                                :selectedAsset="entity"
+                                @update:selectedAsset="updateTree"
+                            />
+                        </a-menu-item>
                     </a-sub-menu>
                     <a-menu-divider />
                     <a-menu-item key="archive" class="text-red-700">

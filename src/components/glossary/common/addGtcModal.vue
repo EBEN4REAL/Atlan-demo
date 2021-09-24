@@ -126,15 +126,21 @@
         computed,
         onMounted,
         nextTick,
+        watch,
         Ref,
         inject,
+        PropType
     } from 'vue'
+
     import StatusBadge from '@common/badge/status/index.vue'
     import AddGtcModalOwners from '@/glossary/common/addGtcModalOwners.vue'
+    
     import useCreateGlossary from '~/components/glossary/composables/useCreateGlossary'
     import whoami from '~/composables/user/whoami'
-    import { List } from '~/constant/status'
     import useUpdateGtcEntity from '@/glossary/composables/useUpdateGtcEntity'
+    
+    import { List } from '~/constant/status'
+    import { Glossary, Category, Term } from '~/types/glossary/glossary.interface'
 
     export default defineComponent({
         components: {
@@ -143,7 +149,7 @@
         },
         props: {
             entityType: {
-                type: String,
+                type: String as PropType<'glossary' | 'category' | 'term'>,
                 required: true,
                 default: '',
             },
@@ -171,16 +177,23 @@
         emits: ['onAddTerm'],
         setup(props, context) {
             const { username: myUsername, name: myName } = whoami()
-            const title = ref<String>('')
-            const description = ref<String>('')
-            const currentStatus = ref<String>('draft')
-            const ownerUsers = ref([myUsername.value])
-            const ownerGroups = ref([])
+
+            const title = ref<string | undefined>('')
+            const description = ref<string | undefined>('')
+            const currentStatus = ref<string | undefined>('draft')
+            const ownerUsers = ref<Array<any>>([myUsername.value])
+            const ownerGroups = ref<Array<any>>([])
+            
             const visible = ref<boolean>(false)
             const isVisible = ref<boolean>(false)
             const isCreateMore = ref<boolean>(false)
+            
             const titleBar: Ref<null | HTMLInputElement> = ref(null)
+            
             const refreshEntity = inject<() => void>('refreshEntity')
+            const updateTreeNode: Function | undefined =
+                inject<any>('updateTreeNode')
+            
             const { createTerm, createCategory } = useCreateGlossary()
 
             const ownerBtnText = computed(() => {
@@ -205,11 +218,13 @@
                     str += 'Owners'
                 return str
             })
+
             const resetInput = () => {
                 title.value = ''
                 description.value = ''
                 currentStatus.value = 'draft'
             }
+            
             const showModal = async () => {
                 resetInput()
                 visible.value = true
@@ -218,35 +233,48 @@
                 if (props.mode === 'edit') {
                     title.value = props?.entity?.displayText
                     description.value =
-                        props?.entity?.attributes?.description ??
-                        props?.entity?.attributes?.shortDescription
+                        props?.entity?.attributes?.shortDescription ??
+                        props?.entity?.attributes?.description
                     currentStatus.value = props?.entity?.attributes?.assetStatus
                     ownerUsers.value = props?.entity?.attributes?.ownerUsers
                         ?.split(',')
-                        .filter((s) => s !== '')
+                        ?.filter((s) => s !== '') ?? []
 
                     ownerGroups.value = props?.entity?.attributes?.ownerGroups
                         ?.split(',')
-                        .filter((s) => s !== '')
+                        ?.filter((s) => s !== '') ?? []
                 }
             }
 
             const handleOk = () => {
                 if (props.mode === 'edit') {
-                    const { data: updateData, updateEntity } =
-                        useUpdateGtcEntity()
+                    const { data: updateData, updateEntity } = useUpdateGtcEntity()
+                    
                     updateEntity(
                         props?.entityType,
-                        props.entity?.guid,
+                        props.entity?.guid ?? '',
                         {
                             name: title.value ?? 'Untitled Term',
                             assetStatus: currentStatus.value ?? 'draft',
                             shortDescription: description.value ?? '',
+                            ownerUsers: ownerUsers?.value?.join(),
+                            ownerGroups: ownerGroups?.value?.join()
                         },
                         true
                     )
-                    if (refreshEntity) refreshEntity()
-                    console.log(refreshEntity)
+                    watch(updateData, () => {
+                        if (refreshEntity) refreshEntity()
+                        if (updateTreeNode) {
+                            updateTreeNode({
+                                guid: props.entity?.guid,
+                                name:  title.value ?? 'Untitled Term',
+                                assetStatus: currentStatus.value ?? 'draft',
+                                ownerUsers: ownerUsers?.value?.join(),
+                                ownerGroups: ownerGroups?.value?.join(),
+                                shortDescription: description.value ?? '',
+                            })
+                        }
+                    })
                 } else {
                     if (props.entityType === 'term')
                         createTerm(
@@ -259,8 +287,8 @@
                             }`,
                             description.value,
                             currentStatus.value,
-                            ownerUsers?.value?.value?.join(),
-                            ownerGroups?.value?.value?.join()
+                            ownerUsers?.value?.join(),
+                            ownerGroups?.value?.join()
                         )
                     else if (props.entityType === 'category')
                         createCategory(
@@ -273,8 +301,8 @@
                             }`,
                             description.value,
                             currentStatus.value,
-                            ownerUsers?.value?.value?.join(),
-                            ownerGroups?.value?.value?.join()
+                            ownerUsers?.value?.join(),
+                            ownerGroups?.value?.join()
                         )
 
                     resetInput()

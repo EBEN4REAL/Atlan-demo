@@ -264,11 +264,17 @@ const useTree = (
         entity,
         name,
         assetStatus,
+        ownerGroups,
+        ownerUsers,
+        shortDescription
     }: {
         guid: string
         entity?: Glossary | Category | Term
         name?: string
         assetStatus?: string
+        ownerGroups: string
+        ownerUsers?: string
+        shortDescription?: string
     }) => {
         if (nodeToParentKeyMap[guid] === 'root') {
             // if the node is at the root level, just loop through the treeData linearly
@@ -283,6 +289,9 @@ const useTree = (
                         name: entity?.attributes?.name ?? name ?? treeNode.name,
                         title:
                             entity?.attributes?.name ?? name ?? treeNode.title,
+                        ownerUsers: entity?.attributes?.ownerUsers ?? ownerUsers ?? treeNode.ownerUsers,
+                        ownerGroups: entity?.attributes?.ownerGroups ?? ownerGroups ?? treeNode.ownerGroups,
+                        shortDescription: entity?.attributes?.shortDescription ?? shortDescription ?? treeNode.shortDescription
                     }
                 return treeNode
             })

@@ -32,8 +32,10 @@
 <script lang="ts">
     import { defineComponent, PropType, ref } from 'vue'
     import { activityInterface } from '~/types/activitylogs/activitylog.interface'
+    import Pill from '~/components/UI/pill/pill.vue'
 
     export default defineComponent({
+        components: { Pill },
         props: {
             data: {
                 type: Object as PropType<activityInterface>,

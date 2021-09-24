@@ -44,7 +44,7 @@
                             <GlossaryProfileOverview :entity="category" />
                         </div>
                     </a-tab-pane>
-                    <a-tab-pane key="2" tab="Terms & Sub-Categories">
+                    <a-tab-pane key="2" tab="Terms & Categories">
                         <GlossaryTermsAndCategoriesTab
                             :qualified-name="parentGlossaryQualifiedName"
                             :display-text="title"
@@ -54,10 +54,10 @@
                             @entityPreview="handleCategoryOrTermPreview"
                         />
                     </a-tab-pane>
-                    <a-tab-pane key="4" tab="Requests"> Requests </a-tab-pane>
+                    <!-- <a-tab-pane key="4" tab="Requests"> Requests </a-tab-pane>
                     <a-tab-pane key="5" tab="Access Control">
                         Access Control
-                    </a-tab-pane>
+                    </a-tab-pane> -->
                 </a-tabs>
             </div>
         </div>

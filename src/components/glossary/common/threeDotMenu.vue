@@ -102,8 +102,8 @@
                             </template>
                             <template #trigger>
                                 <div class="flex items-center">
-                                    <AtlanIcon icon="Link" class="m-0 mr-2" />
-                                    <p class="p-0 m-0">Add new term</p>
+                                    <AtlanIcon icon="Term" class="m-0 mr-2" />
+                                    <p class="p-0 m-0">Add New Term</p>
                                 </div>
                             </template>
                         </AddGtcModal>
@@ -184,8 +184,8 @@
                             </template>
                             <template #trigger>
                                 <div class="flex items-center">
-                                    <AtlanIcon icon="Link" class="m-0 mr-2" />
-                                    <p class="p-0 m-0">Add new category</p>
+                                    <AtlanIcon icon="Category" class="m-0 mr-2" />
+                                    <p class="p-0 m-0">Add New Category</p>
                                 </div>
                             </template>
                         </AddGtcModal>

@@ -70,7 +70,7 @@
                             </div>
                         </a-collapse-panel>
 
-                        <a-collapse-panel
+                        <!-- <a-collapse-panel
                             v-if="termCount"
                             key="2"
                             header="Top Terms"
@@ -81,7 +81,7 @@
                                     :terms="glossaryTerms"
                                 />
                             </div>
-                        </a-collapse-panel>
+                        </a-collapse-panel> -->
                     </a-collapse>
                 </div>
             </a-tab-pane>

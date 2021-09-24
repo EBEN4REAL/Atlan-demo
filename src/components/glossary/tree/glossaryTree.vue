@@ -572,18 +572,31 @@
 
 
         .treeStyles {
-
             :global(.ant-tree-switcher) {
                 @apply pt-1;
             }
-    
+
+            :global(.ant-tree-node-selected ) {
+                @apply bg-black bg-opacity-5 text-primary font-bold !important;
+                color: blue !important;
+            }
+
             :global(.ant-tree-title) {
                 @apply pl-1 !important;
                 padding-top: 4px !important;
                 padding-bottom: 4px !important;
+                max-height: 28px !important;
 
                 &:hover {
                     @apply bg-black bg-opacity-5 !important;
+                }
+            }
+            :global(.ant-tree-treenode-switcher-close) {
+                max-height: 28px !important;
+            }
+            :global(.ant-tree-treenode-switcher-open) {
+                li {
+                    max-height: 28px !important;
                 }
             }
             :global(.ant-tree-node-content-wrapper) {

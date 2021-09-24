@@ -433,7 +433,6 @@ const useTree = ({ emit, connectionQualifiedName, databaseQualifiedName, schemaQ
     })
 
     watch([connectionQualifiedName, databaseQualifiedName, schemaQualifiedName], ([c, d, s]) => {
-        console.log('changed bruh', c, d, s)
         isInitingTree.value = true;
         initTreeData(c, d, s)
     })

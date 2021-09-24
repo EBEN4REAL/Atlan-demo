@@ -61,7 +61,7 @@
                         <div style="width: 391px"></div>
                     </div>
                     <AssetDropdown
-                        v-if="connectorsPayload.connection"
+                        v-if="connectorsPayload?.connection"
                         :connector="filteredConnector"
                         :data="connectorsPayload"
                         @label-change="setPlaceholder($event, 'asset')"

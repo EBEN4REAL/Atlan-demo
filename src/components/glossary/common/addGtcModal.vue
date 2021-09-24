@@ -249,12 +249,12 @@
             const handleOk = () => {
                 if (props.mode === 'edit') {
                     const { data: updateData, updateEntity } = useUpdateGtcEntity()
-                    
+
                     updateEntity(
                         props?.entityType,
                         props.entity?.guid ?? '',
                         {
-                            name: title.value ?? 'Untitled Term',
+                            name: title.value ?? props.entityType === 'term' ? 'Untitled Term' : 'Untitled category',
                             assetStatus: currentStatus.value ?? 'draft',
                             shortDescription: description.value ?? '',
                             ownerUsers: ownerUsers?.value?.join(),
@@ -267,7 +267,7 @@
                         if (updateTreeNode) {
                             updateTreeNode({
                                 guid: props.entity?.guid,
-                                name:  title.value ?? 'Untitled Term',
+                                name:  title.value ?? props.entityType === 'term' ? 'Untitled Term' : 'Untitled category',
                                 assetStatus: currentStatus.value ?? 'draft',
                                 ownerUsers: ownerUsers?.value?.join(),
                                 ownerGroups: ownerGroups?.value?.join(),
@@ -296,7 +296,7 @@
                             props.categoryId,
                             `${
                                 title.value === ''
-                                    ? 'Untitled term'
+                                    ? 'Untitled category'
                                     : title.value
                             }`,
                             description.value,

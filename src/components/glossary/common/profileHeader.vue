@@ -1,7 +1,8 @@
 <template>
-    <div class="flex items-center justify-between mx-4 mt-3 bg-white">
+    <div class="flex items-center justify-between mx-4 mt-4 bg-white">
         <div class="flex items-center mr-5">
-            <div v-if="headerReachedTop" class="flex items-center">
+            <!-- breadcrumb -->
+            <div v-if="headerReachedTop" class="flex items-center mb-5">
                 <AtlanIcon icon="Glossary" class="h-5 m-0 mr-2" />
                 <span
                     v-show="entity?.typeName !== 'AtlasGlossary'"
@@ -23,7 +24,12 @@
                     icon="Category"
                     class="h-5 m-0 mb-1 mr-2"
                 />
-                <span class="mr-3 text-sm">{{ title }}</span>
+                <span class="mr-2 text-sm">{{ title }}</span>
+                <component
+                    :is="statusObject?.icon"
+                    v-if="statusObject"
+                    class="inline-flex self-center w-auto h-4 mb-0.5"
+                />
             </div>
 
             <div v-if="!headerReachedTop" class="flex items-center">
@@ -46,6 +52,25 @@
                 <span class="mr-3 text-sm">{{
                     assetTypeLabel[entity.typeName].toUpperCase()
                 }}</span>
+                <div
+                    v-if="
+                        entity.typeName === 'AtlasGlossaryCategory' ||
+                        entity.typeName === 'AtlasGlossaryCategory'
+                    "
+                    class="flex items-center"
+                >
+                    <div class="w-1 h-1 bg-gray-500 rounded-full"></div>
+                    <AtlanIcon icon="Glossary" class="h-4 m-0 mx-3 mb-0.5" />
+                    <span
+                        v-show="entity?.typeName !== 'AtlasGlossary'"
+                        class="mr-1 text-sm text-gray-500"
+                    >
+                        {{
+                            entity?.attributes?.anchor?.uniqueAttributes
+                                ?.qualifiedName
+                        }}
+                    </span>
+                </div>
             </div>
         </div>
 

@@ -10,17 +10,15 @@
             :class="{ 'overflow-y-auto': !headerReachedTop }"
         >
             <!-- top section -->
-            <div ref="headerRef">
-                <ProfileHeader
-                    :title="title"
-                    :entity="glossary"
-                    :isNewEntity="isNewGlossary"
-                    :statusMessage="statusMessage"
-                    :statusObject="statusObject"
-                    :shortDescription="shortDescription"
-                    :headerReachedTop="headerReachedTop"
-                />
-            </div>
+            <ProfileHeader
+                :title="title"
+                :entity="glossary"
+                :isNewEntity="isNewGlossary"
+                :statusMessage="statusMessage"
+                :statusObject="statusObject"
+                :shortDescription="shortDescription"
+                :headerReachedTop="headerReachedTop"
+            />
             <!-- tabs start here  -->
             <div class="m-0">
                 <a-tabs
@@ -136,7 +134,6 @@
             const showPreviewPanel = ref(false)
             const newName = ref('')
             const scrollDiv = ref(null)
-            const headerRef = ref()
             const headerReachedTop = ref(false)
             const temp = ref(false)
 
@@ -282,7 +279,6 @@
                 newName,
                 scrollDiv,
                 headerReachedTop,
-                headerRef,
                 refreshCategoryTermList,
                 fetchNextCategoryOrTermList,
                 refetch,

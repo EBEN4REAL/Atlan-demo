@@ -211,7 +211,7 @@ export const KeyMaps = {
                 `/workflows/default/atlan-init-tgx7h/log?logOptions.container=main&grep=&logOptions.follow=true`
             ),
     },
-    schemaExplorer: {
+    insights: {
         BASIC_SEARCH: () => getAPIPath('auth/atlas', '/search/basic'),
-    }
+    },
 }

@@ -2,12 +2,7 @@
     <div @click="showModal">
         <slot name="trigger" @click="showModal" />
     </div>
-    <a-modal
-        v-model:visible="visible"
-        :closable="false"
-        :class="$style.input"
-        width="800px"
-    >
+    <a-modal v-model:visible="visible" :class="$style.input" width="800px">
         <template #title>
             <slot name="header" />
         </template>

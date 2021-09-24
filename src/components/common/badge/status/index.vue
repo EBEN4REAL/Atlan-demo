@@ -2,10 +2,10 @@
     <div :key="statusId">
         <div class="flex items-center align-middle" v-if="!showChipStyleStatus">
             <span class="svg-icon">
-                <component class="w-auto h-4" :is="icon" />
+                <component class="w-auto h-4 -mt-0.5" :is="icon" />
             </span>
 
-            <p v-if="showLabel" class="mb-0 ml-2">
+            <p v-if="showLabel" class="mb-0 ml-1">
                 {{ label }}
             </p>
         </div>

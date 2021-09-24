@@ -4,7 +4,7 @@ export interface tableInterface {
     label: string
 }
 
-export type Attributes =  {
+export type Attributes = {
     assetStatus?: string
     assetStatusMessage?: string
     assetStatusUpdatedBy?: string
@@ -28,24 +28,38 @@ export type Attributes =  {
     __state: string
 }
 
+export type Database = Omit<
+    Components.Schemas.AtlasEntityHeader,
+    'attributes' | 'typeName'
+> & {
+    typeName: 'Database'
+    attributes: Attributes
+}
+export type Schema = Omit<
+    Components.Schemas.AtlasEntityHeader,
+    'attributes' | 'typeName'
+> & {
+    typeName: 'Schema'
+    attributes: Attributes
+}
+export type Table = Omit<
+    Components.Schemas.AtlasEntityHeader,
+    'attributes' | 'typeName'
+> & {
+    typeName: 'Table'
+    attributes: Attributes
+}
+export type Column = Omit<
+    Components.Schemas.AtlasEntityHeader,
+    'attributes' | 'typeName'
+> & {
+    typeName: 'Column'
+    attributes: Attributes
+}
 
-export type Database = Omit<Components.Schemas.AtlasEntityHeader, 'attributes' | 'typeName'> & {
-    typeName: 'Database';
-    attributes: Attributes
-}
-export type Schema = Omit<Components.Schemas.AtlasEntityHeader, 'attributes' | 'typeName'> & {
-    typeName: 'Schema';
-    attributes: Attributes
-}
-export type Table =  Omit<Components.Schemas.AtlasEntityHeader, 'attributes' | 'typeName'> & {
-    typeName: 'Table';
-    attributes: Attributes
-}
-export type Column = Omit<Components.Schemas.AtlasEntityHeader, 'attributes' | 'typeName'> & {
-    typeName: 'Column';
-    attributes: Attributes
-}
-
-export type BasicSearchResponse<T> = Omit<Components.Schemas.AtlasSearchResult, 'entities'> & {
-    entities?: T[],
+export type BasicSearchResponse<T> = Omit<
+    Components.Schemas.AtlasSearchResult,
+    'entities'
+> & {
+    entities?: T[]
 }

@@ -35,12 +35,16 @@
             @resize="paneResize"
             class="parent_splitpanes"
         >
-            <pane :max-size="20" :size="explorerPaneSize" :min-size="0">
+            <pane
+                :max-size="18"
+                :size="explorerPaneSize"
+                :min-size="0"
+                class="explorer_splitpane"
+            >
                 <!--explorer pane start -->
                 <component
                     v-if="activeTab && activeTab.component"
                     :is="activeTab.component"
-                    @openSavedQueryInNewTab="openSavedQueryInNewTab"
                 ></component>
                 <!--explorer pane end -->
             </pane>
@@ -51,7 +55,7 @@
                         ? 100 - (explorerPaneSize + assetSidebarPaneSize)
                         : 100 - explorerPaneSize
                 "
-                :min-size="activeInlineTab?.assetSidebar?.isVisible ? 60 : 80"
+                :min-size="activeInlineTab?.assetSidebar?.isVisible ? 62 : 82"
             >
                 <Playground :activeInlineTabKey="activeInlineTabKey" />
             </pane>
@@ -78,7 +82,7 @@
     import Playground from '~/components/insights/playground/index.vue'
     import AssetSidebar from '~/components/insights/assetSidebar/index.vue'
     import Schema from './explorers/schema/index.vue'
-    import Queries from './explorers/queries.vue'
+    import Queries from './explorers/queries/index.vue'
     import History from './explorers/history.vue'
     import Schedule from './explorers/schedule.vue'
 
@@ -275,6 +279,9 @@
     }
     .parent_splitpanes {
         width: calc(100vw - 5rem);
+    }
+    .explorer_splitpane {
+        width: 20.56rem;
     }
 </style>
 

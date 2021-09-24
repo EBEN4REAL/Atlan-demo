@@ -54,6 +54,10 @@ import Metadata from '~/assets/images/icons/metadata.svg'
 import Group from '~/assets/images/icons/group.svg'
 import GroupStatic from '~/assets/images/icons/group-static.svg'
 import External from '~/assets/images/icons/external.svg'
+import NewFolder from '~/assets/images/icons/new-folder.svg'
+import NewQuery from '~/assets/images/icons/new-query.svg'
+import PublicFolder from '~/assets/images/icons/public-folder.svg'
+import PrivateFolder from '~/assets/images/icons/private-folder.svg'
 
 export default {
     Metadata,
@@ -112,4 +116,8 @@ export default {
     Group,
     GroupStatic,
     External,
+    NewFolder,
+    NewQuery,
+    PublicFolder,
+    PrivateFolder,
 }

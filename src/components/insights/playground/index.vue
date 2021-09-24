@@ -78,6 +78,7 @@
             const { queryRun, isQueryRunning } = useRunQuery()
             const { inlineTabRemove, inlineTabAdd, setActiveTabKey } =
                 useInlineTab()
+
             // const {resultsPaneSizeToggle} = useHotKeys()
             const paneSize = ref(55)
             const tabs = inject('inlineTabs') as Ref<activeInlineTabInterface[]>
@@ -171,8 +172,8 @@
 
             /*---------------------------------------------*/
             /*---------- PROVIDERS FOR CHILDRENS -----------------
-            ---Be careful to add a property/function otherwise it will pollute the whole flow for childrens--
-            */
+                ---Be careful to add a property/function otherwise it will pollute the whole flow for childrens--
+                */
             const provideData: provideDataInterface = {
                 isQueryRunning: isQueryRunning,
             }

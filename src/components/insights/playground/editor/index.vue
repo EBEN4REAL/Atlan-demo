@@ -10,14 +10,24 @@
                         {{ selectedDefaultSchema ?? 'ATLAN_TRIAL.PUBLIC' }}
                     </p>
                 </div>
-                <a-button
-                    type="primary"
-                    class=""
-                    :loading="isQueryRunning === 'loading' ? true : false"
-                    @click="run"
-                    >Run Query</a-button
-                >
+                <div class="flex">
+                    <a-button
+                        type="primary"
+                        class=""
+                        :loading="isQueryRunning === 'loading' ? true : false"
+                        @click="run"
+                        >Run</a-button
+                    >
+                    <a-button
+                        class="flex items-center justify-between ml-4"
+                        @click="openSaveQueryModal"
+                    >
+                        Save
+                    </a-button>
+                </div>
             </div>
+
+            <SaveQueryModal v-model:showSaveQueryModal="showSaveQueryModal" />
             <Monaco @editorInstance="setEditorInstance" />
         </div>
     </div>
@@ -44,11 +54,12 @@
     import CustomVariablesNav from '~/components/insights/playground/editor/customVariablesNav/index.vue'
     import { editor } from 'monaco-editor'
     import { useInlineTab } from '~/components/insights/common/composables/useInlineTab'
-
+    import SaveQueryModal from '~/components/insights/playground/editor/saveQuery/index.vue'
     export default defineComponent({
         components: {
             Monaco: defineAsyncComponent(() => import('./monaco/monaco.vue')),
             CustomVariablesNav,
+            SaveQueryModal,
         },
         props: {},
         setup() {
@@ -72,7 +83,10 @@
             let monacoInstance: Ref<editor.IStandaloneCodeEditor | undefined> =
                 ref()
             const isQueryRunning = inject('isQueryRunning') as Ref<string>
-
+            const showSaveQueryModal: Ref<boolean> = ref(false)
+            const openSaveQueryModal = () => {
+                showSaveQueryModal.value = true
+            }
             const getData = (dataList, columnList) => {
                 if (activeInlineTab && inlineTabs?.value) {
                     const activeInlineTabCopy: activeInlineTabInterface =
@@ -113,10 +127,12 @@
             useProvide(provideData)
             /*-------------------------------------*/
             return {
+                showSaveQueryModal,
                 editorInstance,
                 selectedDefaultSchema,
                 activeInlineTab,
                 isQueryRunning,
+                openSaveQueryModal,
                 setEditorInstance,
                 run,
             }

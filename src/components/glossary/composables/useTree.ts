@@ -734,6 +734,10 @@ const useTree = (
         }
     })
 
+    const collapseAll = () => {
+        expandedKeys.value = []
+    }
+
     watch(
         () => route.params.id,
         (newId) => {
@@ -780,7 +784,8 @@ const useTree = (
         dragAndDropNode,
         updateNode,
         refetchNode,
-        refetchGlossaryList
+        refetchGlossaryList,
+        collapseAll
     }
 }
 

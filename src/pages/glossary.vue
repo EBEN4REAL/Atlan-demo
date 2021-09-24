@@ -34,6 +34,7 @@
                     :loaded-keys="loadedKeys"
                     :selected-keys="selectedKeys"
                     :expanded-keys="expandedKeys"
+                    :collapse-all="collapseAll"
                 />
             </div>
         </pane>
@@ -113,6 +114,7 @@
                 refetchNode,
                 reInitTree,
                 refetchGlossaryList,
+                collapseAll,
             } = useTree(emit, true, isHome)
 
             // methods
@@ -165,6 +167,7 @@
                 expandNode,
                 selectNode,
                 dragAndDropNode,
+                collapseAll,
                 createGlossaryModalVisble,
                 updateGlossaryModalVisble,
                 eventContext,

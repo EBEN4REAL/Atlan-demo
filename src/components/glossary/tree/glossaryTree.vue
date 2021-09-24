@@ -1,19 +1,20 @@
 <template>
 <div class="glossaryTree" :class="$style.glossaryTree">
 
+    <div
+        class="flex py-3 px-4 text-sm leading-5 text-gray-500 bg-gray-100 cursor-pointer "
+        >
+        <a-select
+            v-model:value="currentGlossaryGuid"
+        >
+            <a-select-option v-for="glossary in glossaryList" :key="glossary.guid" :value="glossary.guid">{{glossary.attributes.name}}</a-select-option>
+        </a-select>
+    </div>
+
+    <hr />
+
     <div v-if="isHome" class="px-2 py-4 h-screen">
         <div class="flex flex-col px-2 pb-2">
-            <AtlanBtn
-                @click="createGlossary"
-                class="mb-2"
-                color="secondary"
-                size="sm"
-            >
-                <template #prefix>
-                    <AtlanIcon icon="Add" />
-                    Create New Glossary
-                </template>
-            </AtlanBtn>
 
             <a-input-search
                 v-model:value="searchQuery"
@@ -109,17 +110,8 @@
             </div>
         </div>
     </div>
+        
     <div v-else class="h-screen flex flex-col">
-        <div
-            class="flex py-3 px-4 text-sm leading-5 text-gray-500 bg-gray-100 cursor-pointer "
-        >
-            <a-select
-                v-model:value="currentGlossaryGuid"
-            >
-                <a-select-option v-for="glossary in glossaryList" :key="glossary.guid" :value="glossary.guid">{{glossary.attributes.name}}</a-select-option>
-            </a-select>
-        </div>
-        <hr />
         <div class="p-4 pr-3 pb-0 flex searchArea">
             <a-input-search
                 v-model:value="searchQuery"
@@ -165,37 +157,41 @@
                     </div>
                 </div>
 
-                <a-dropdown :trigger="['click']">
-                    <a class="ant-dropdown-link" @click.prevent>
-                        <a-button
-                            class="flex flex-col justify-center w-7 h-7 p-2 border-gray-300 bg-white"
-                        >
-                            <fa icon="fal plus" />
-                        </a-button>
-                    </a>
-                    <template #overlay>
-                        <a-menu>
-                            <div
-                                class="px-2 py-1"
-                                :class="$style.createDropdownStyles"
+                <div class="space-x-2 flex tree-glossary-actions">
+                    <a-dropdown :trigger="['click']">
+                        <a class="ant-dropdown-link" @click.prevent>
+                            <a-button
+                                class="flex flex-col justify-center w-7 h-7 p-2 border-gray-300 bg-white"
                             >
-                                <a-menu-item key="0" @click="createNewTerm">
-                                    New Term
-                                </a-menu-item>
-                                <a-menu-item key="1" @click="createNewCategory">
-                                    New Category
-                                </a-menu-item>
-                                <hr class="my-1" />
-                                <a-menu-item key="2">
-                                    Bulk Upload Terms
-                                </a-menu-item>
-                                <a-menu-item key="3">
-                                    Bulk Upload Categories
-                                </a-menu-item>
-                            </div>
-                        </a-menu>
-                    </template>
-                </a-dropdown>
+                                <fa icon="fal plus" />
+                            </a-button>
+                        </a>
+                        <template #overlay>
+                            <a-menu>
+                                <div
+                                    class="px-2 py-1"
+                                    :class="$style.createDropdownStyles"
+                                >
+                                    <a-menu-item key="0" @click="createNewTerm">
+                                        New Term
+                                    </a-menu-item>
+                                    <a-menu-item key="1" @click="createNewCategory">
+                                        New Category
+                                    </a-menu-item>
+                                    <hr class="my-1" />
+                                    <a-menu-item key="2">
+                                        Bulk Upload Terms
+                                    </a-menu-item>
+                                    <a-menu-item key="3">
+                                        Bulk Upload Categories
+                                    </a-menu-item>
+                                </div>
+                            </a-menu>
+                        </template>
+                    </a-dropdown>
+                    <div v-if="expandedKeys.length" class="w-7 h-7 py-auto bg-opacity-0 cursor-pointer flex"  @click="collapseAll" ><AtlanIcon class="m-auto" icon="TreeCollapseAll" /> </div>
+                    <ThreeDotMenu :entity="parentGlossary" :showLinks="false"  :treeMode="true" />
+                </div>
             </div>
             <div
                 v-if="treeData.length"
@@ -407,6 +403,11 @@
                 required: false,
                 default: () => {},
             },
+            collapseAll: {
+                type: Function,
+                required: false,
+                default: () => {}
+            },
             selectNode: {
                 type: Function,
                 required: false,
@@ -509,6 +510,7 @@
                     1
                 )}`
             }
+
             
             watch(home, () => {
                 searchQuery.value = '';
@@ -570,7 +572,11 @@
             height: 32px;
         }
 
-
+        .tree-glossary-actions {
+            .treeMode {
+                @apply bg-opacity-100 !important;
+            }
+        }
         .treeStyles {
             :global(.ant-tree-switcher) {
                 @apply pt-1;
@@ -585,20 +591,20 @@
                 @apply pl-1 !important;
                 padding-top: 4px !important;
                 padding-bottom: 4px !important;
-                max-height: 28px !important;
+                // max-height: 28px !important;
 
                 &:hover {
                     @apply bg-black bg-opacity-5 !important;
                 }
             }
-            :global(.ant-tree-treenode-switcher-close) {
-                max-height: 28px !important;
-            }
-            :global(.ant-tree-treenode-switcher-open) {
-                li {
-                    max-height: 28px !important;
-                }
-            }
+            // :global(.ant-tree-treenode-switcher-close) {
+            //     max-height: 28px !important;
+            // }
+            // :global(.ant-tree-treenode-switcher-open) {
+            //     li {
+            //         max-height: 28px !important;
+            //     }
+            // }
             :global(.ant-tree-node-content-wrapper) {
                 @apply mb-2 border-0;
             }

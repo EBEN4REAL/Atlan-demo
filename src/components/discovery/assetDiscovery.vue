@@ -119,7 +119,10 @@
     } from '~/constant/projection'
     import useTracking from '~/modules/tracking'
     import { initialFiltersType } from '~/pages/assets.vue'
+
     import { getEncodedStringFromOptions } from '~/utils/helper/routerQuery'
+    import { serializeQuery } from '~/utils/helper/routerHelper'
+
     import { useBusinessMetadataStore } from '~/store/businessMetadata'
     import { useFilteredTabs } from './useTabMapped'
     import { Components } from '~/api/atlas/client'
@@ -189,7 +192,7 @@
             // This is the actual filter body
             // FIXME: Can we make it a computed property?
             const filters = ref(AllFilters.value.initialBodyCriterion)
-            const limit = ref(parseInt(AllFilters.value.limit) || 20)
+            const limit = ref(20)
             const offset = ref(0)
             const sortOrder = ref('default')
             const state = ref('active')
@@ -198,9 +201,9 @@
 
             const initialTabs: Ref<string[]> = computed(() =>
                 useFilteredTabs({
-                    connector: AllFilters.value.facetsFilters.connector,
+                    connector: AllFilters.value?.facetsFilters?.connector,
                     category:
-                        AllFilters.value.facetsFilters.assetCategory.checked,
+                        AllFilters.value?.facetsFilters?.assetCategory?.checked,
                 })
             )
 
@@ -384,16 +387,18 @@
                 updateBody()
             }
 
-            const getRouterOptions = () => ({
-                // TODO: Sync the filters here
-                // filters: filterMap.value || {},
-                searchText: queryText.value || '',
-                limit: limit.value || 20,
-            })
+            const getRouterOptions = () => {
+                return {
+                    filters: AllFilters.value.facetsFilters.value || {},
+                    searchText: queryText.value || '',
+                    limit: limit.value || 20,
+                    sortOrder: sortOrder.value,
+                    state: state.value,
+                }
+            }
 
-            // TODO: Uncomment it
-            const pushQueryToRouter = (pushString) => {
-                // router.push(`/assets?${pushString}`)
+            const pushQueryToRouter = (queryStr: string) => {
+                router.push(`/assets?${queryStr}`)
             }
 
             const handleFilterChange = (
@@ -401,13 +406,14 @@
                 filterMapData: Record<string, Components.Schemas.FilterCriteria>
             ) => {
                 AllFilters.value.facetsFilters = filterMapData
-                // filterMap.value = filterMapData
                 filters.value = payload
                 offset.value = 0
                 isAggregate.value = true
-                const routerOptions = getRouterOptions()
-                const routerQuery = getEncodedStringFromOptions(routerOptions)
                 updateBody()
+                const routerOptions = getRouterOptions()
+                debugger
+                const routerQuery = serializeQuery(routerOptions)
+                debugger
                 pushQueryToRouter(routerQuery)
             }
 

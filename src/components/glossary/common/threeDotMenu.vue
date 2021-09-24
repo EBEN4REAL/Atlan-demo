@@ -305,6 +305,8 @@
         onMounted,
         computed,
     } from 'vue'
+    import { useRouter } from 'vue-router'
+
     // components
     import StatusBadge from '@common/badge/status/index.vue'
     import Owners from '@/glossary/common/owners.vue'
@@ -330,11 +332,6 @@
                 required: true,
                 default: () => {},
             },
-            redirectToProfile: {
-                type: Function,
-                required: false,
-                default: undefined,
-            },
             showLinks: {
                 type: Boolean,
                 required: false,
@@ -345,6 +342,7 @@
             // data
             const isVisible = ref(false)
             const isModalVisible = ref<boolean>(false)
+            const router = useRouter()
 
             const handleFetchListInj: Function | undefined =
                 inject('handleFetchList')
@@ -443,6 +441,14 @@
                         props.entity.guid
                     )
             }
+            const redirectToProfile = () => {
+                if (props.entity.typeName === 'AtlasGlossary')
+                    router.push(`/glossary/${props.entity.guid}`)
+                else if (props.entity.typeName === 'AtlasGlossaryCategory')
+                    router.push(`/glossary/category/${props.entity.guid}`)
+                else if (props.entity.typeName === 'AtlasGlossaryTerm')
+                    router.push(`/glossary/term/${props.entity.guid}`)
+            }
 
             // update tree on archive or create new entity
             const updateTree = (selectedAsset: Glossary | Category | Term) => {
@@ -465,6 +471,7 @@
                 createNewTerm,
                 createNewCategory,
                 closeMenu,
+                redirectToProfile,
                 glossaryId,
                 categoryId,
             }

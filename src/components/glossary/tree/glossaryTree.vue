@@ -217,17 +217,17 @@
                     class="h-full"
                 >
                     <template
-                        #title="{ title, type, key, assetStatus, glossaryID }"
+                        #title="entity"
                     >
                         <a-dropdown :trigger="['contextmenu']">
                             <div
                                 class="min-w-full"
-                                @click="() => redirectToProfile(type, key)"
+                                @click="() => redirectToProfile(entity.type, entity.key)"
                             >
                                 <div class="flex justify-between mr-2 group">
                                     <div class="flex m-0">
                                         <span
-                                            v-if="type === 'glossary'"
+                                            v-if="entity.type === 'glossary'"
                                             class="p-0 my-auto mr-2"
                                         >
                                             <!-- <img
@@ -244,20 +244,20 @@
                                             <AtlanIcon
                                                 :icon="
                                                     getEntityStatusIcon(
-                                                        type,
-                                                        assetStatus
+                                                        entity.type,
+                                                        entity.assetStatus
                                                     )
                                                 "
                                             />
                                         </span>
                                         <span
                                             class="my-auto text-sm leading-5 text-gray-700 "
-                                            >{{ title }}</span
+                                            >{{ entity.title }}</span
                                         >
                                     </div>
 
                                     <a-dropdown
-                                        v-if="type === 'category'"
+                                        v-if="entity.type === 'category'"
                                         :trigger="['hover']"
                                     >
                                         <span
@@ -282,8 +282,8 @@
                                                         @click="
                                                             () =>
                                                                 createTerm(
-                                                                    glossaryID,
-                                                                    key
+                                                                    entity.glossaryID,
+                                                                    entity.key
                                                                 )
                                                         "
                                                     >
@@ -302,8 +302,8 @@
                                                         @click="
                                                             () =>
                                                                 createCategory(
-                                                                    glossaryID,
-                                                                    key
+                                                                    entity.glossaryID,
+                                                                    entity.key
                                                                 )
                                                         "
                                                     >
@@ -321,6 +321,32 @@
                                             </a-menu>
                                         </template>
                                     </a-dropdown>
+                                    <ThreeDotMenu 
+                                        :redirectToProfile="redirectToProfile"
+                                        :entity="{
+                                            guid: entity.guid,
+                                            displayText: entity.name,
+                                            typeName: entity.type === 'term' ? 'AtlasGlossaryTerm' : 'AtlasGlossaryCategory',
+                                            attributes: {
+                                                ...entity,
+                                                anchor: {
+                                                    guid: entity.anchor.glossaryGuid,
+                                                    uniqueAttributes: {
+                                                        qualifiedName: parentGlossary?.qualifiedName
+                                                    }
+                                                },
+                                                name: entity.name,
+                                                assetStatus: entity.assetStatus,
+                                                qualifiedName: entity.qualifiedName,
+                                                parentCategory: {
+                                                    guid: entity.parentCategory?.categoryGuid
+                                                },
+                                                categories: entity.categories?.map((category) => ({
+                                                    guid: category?.categoryGuid
+                                                })),
+                                            }
+                                        }"
+                                    />
                                 </div>
                             </div>
                         </a-dropdown>
@@ -414,7 +440,7 @@
     // import { Glossary } from '~/api/atlas/glossary'
 
     export default defineComponent({
-        components: { LoadingView, ThreeDotMenu, AtlanIcon, AtlanBtn, Tooltip },
+        components: { LoadingView, ThreeDotMenu, AtlanIcon, AtlanBtn, Tooltip, ThreeDotMenu },
         props: {
             glossaryList: {
                 type: Object as PropType<Glossary[]>,
@@ -486,7 +512,8 @@
             // data
             const searchQuery = ref<string>()
             const home = toRef(props, 'isHome')
-            const currentGlossaryGuid = ref<string>(props.parentGlossary?.guid ?? '')
+            const parentGlossary = toRef(props, 'parentGlossary')
+            const currentGlossaryGuid = ref<string>(parentGlossary.value?.guid ?? '')
 
             const { createTerm, createCategory, createGlossary } =
                 useCreateGlossary()
@@ -547,13 +574,18 @@
                     1
                 )}`
             }
-
+            
             watch(home, () => {
                 searchQuery.value = '';
             })
             watch(currentGlossaryGuid, (newGuid) => {
                 redirectToProfile('glossary', newGuid)
             });
+
+            watch(parentGlossary, (newParentGlossary) => {
+                console.log('what parent glossary')
+                currentGlossaryGuid.value = newParentGlossary.guid
+            })
             
             return {
                 redirectToProfile,

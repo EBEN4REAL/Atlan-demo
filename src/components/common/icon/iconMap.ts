@@ -52,6 +52,7 @@ import Chats from '~/assets/images/icons/chats.svg'
 import OpenTermProfile from '~/assets/images/icons/openTermProfile.svg'
 import Metadata from '~/assets/images/icons/metadata.svg'
 import Group from '~/assets/images/icons/group.svg'
+import GroupStatic from '~/assets/images/icons/group-static.svg'
 import External from '~/assets/images/icons/external.svg'
 
 export default {
@@ -109,5 +110,6 @@ export default {
     Chats,
     OpenTermProfile,
     Group,
+    GroupStatic,
     External,
 }

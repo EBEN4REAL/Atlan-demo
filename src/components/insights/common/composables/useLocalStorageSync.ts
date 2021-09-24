@@ -6,19 +6,27 @@ const InsightsLocalStorageKeys = {
 }
 export function useLocalStorageSync() {
     function syncInlineTabsInLocalStorage(
-        tabsArray: activeInlineTabInterface[]
+        tabsArray: activeInlineTabInterface[],
+        queryDataStore?: boolean
     ) {
-        // for not saving the querying data into the local storage
-        const alteredTabsArray = tabsArray.map((tab) => {
-            const t = { ...tab }
-            t.playground.editor.dataList = []
-            t.playground.editor.columnList = []
-            return t
-        })
-        localStorage.setItem(
-            InsightsLocalStorageKeys.inlinetabs,
-            JSON.stringify(alteredTabsArray)
-        )
+        if (!queryDataStore) {
+            // for not saving the querying data into the local storage
+            const alteredTabsArray = [...tabsArray].map((tab) => {
+                const t = JSON.parse(JSON.stringify(tab))
+                t.playground.editor.dataList = []
+                t.playground.editor.columnList = []
+                return t
+            })
+            localStorage.setItem(
+                InsightsLocalStorageKeys.inlinetabs,
+                JSON.stringify(alteredTabsArray)
+            )
+        } else {
+            localStorage.setItem(
+                InsightsLocalStorageKeys.inlinetabs,
+                JSON.stringify(tabsArray)
+            )
+        }
     }
     function syncActiveInlineTabKeyInLocalStorage(activeInlineTabKey: string) {
         localStorage.setItem(

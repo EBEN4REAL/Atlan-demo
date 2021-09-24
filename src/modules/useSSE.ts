@@ -1,4 +1,4 @@
-import { isRef, Ref } from 'vue'
+import { isRef, Ref, ref, computed } from 'vue'
 import { EventSourcePolyfill } from 'event-source-polyfill'
 import { useAsyncState } from '@vueuse/core'
 import { UserModule } from '~/types'
@@ -191,12 +191,19 @@ export function useSSE({
             })
         }
     })
-
-    const { state, isReady, error } = useAsyncState(promise, intialState)
+    // Variable to check if the promise has been executed atleast once
+    let isExecuted = ref(false)
+    const { state, isReady, error } = useAsyncState(() => {
+        isExecuted.value = true
+        return promise
+    }, intialState)
+    const isLoading = computed(
+        () => isExecuted.value && !isReady.value && !error.value
+    )
 
     return {
         data: state,
-        isLoading: isReady,
+        isLoading: isLoading,
         error,
     }
 }

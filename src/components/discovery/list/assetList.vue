@@ -122,10 +122,13 @@
                     return false
                 },
             },
+            typename: {
+                type: String,
+            },
         },
         emits: ['preview', 'loadMore'],
         setup(props, ctx: SetupContext) {
-            const { list, automaticSelectFirstAsset } = toRefs(props)
+            const { list, automaticSelectFirstAsset, typename } = toRefs(props)
             const selectedAssetId = ref('')
             function handlePreview(item: any) {
                 selectedAssetId.value = item.guid
@@ -135,15 +138,15 @@
             // select first asset automatically conditionally acc to  automaticSelectFirstAsset prop
 
             if (automaticSelectFirstAsset.value) {
+                watch(typename, () => {
+                    if (list.value.length > 0) handlePreview(list.value[0])
+                })
+
                 watch(
-                    list,
-                    () => {
-                        if (list.value.length > 0) {
-                            // for selecting in the list - blue bg
-                            selectedAssetId.value = list.value[0].guid
-                            // for previewing the first asset
+                    () => list.value?.length || 0,
+                    (len, lastLen) => {
+                        if (len > 0 && (lastLen === 0 || lastLen > len))
                             handlePreview(list.value[0])
-                        }
                     },
                     { immediate: true }
                 )

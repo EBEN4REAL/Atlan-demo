@@ -1,5 +1,6 @@
 import commonjs from '@rollup/plugin-commonjs';
 import resolve from 'rollup-plugin-node-resolve';
+import json from '@rollup/plugin-json';
 
 export default {
   // input: 'node_modules/xml2js/lib/xml2js.js',
@@ -11,6 +12,7 @@ export default {
   // },
   plugins: [
     resolve(),
+    json(),
     commonjs({
         exclude: [/./],
         transformMixedEsModules: true,

@@ -168,7 +168,7 @@
                 <a-dropdown :trigger="['click']">
                     <a class="ant-dropdown-link" @click.prevent>
                         <a-button
-                            class="flex flex-col justify-center p-2 border-none  bg-primary-light text-primary"
+                            class="flex flex-col justify-center w-7 h-7 p-2 border-gray-300 bg-white"
                         >
                             <fa icon="fal plus" />
                         </a-button>
@@ -592,7 +592,7 @@
             :global(.ant-tree-switcher) {
                 @apply p-0 h-2 w-2 !important;
                 margin-right: 6px;
-                margin-top: -2px;
+                // margin-top: -2px;
             }
         }
     }

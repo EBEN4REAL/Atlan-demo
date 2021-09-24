@@ -1,7 +1,7 @@
 <template>
     <div
         class="group-hover:opacity-100"
-        :class="{'opacity-100': isVisible, 'opacity-0 treeMode': treeMode}"
+        :class="{'opacity-100': isVisible, 'opacity-0 treeMode': treeMode, 'opacity-100': visible }"
     >
         <a-dropdown
             v-model:visible="isVisible"
@@ -391,6 +391,11 @@
                 type: Boolean,
                 required: false,
                 default: () => false
+            },
+            visible: {
+                type: Boolean,
+                required: false,
+                default: true
             }
         },
         setup(props, context) {

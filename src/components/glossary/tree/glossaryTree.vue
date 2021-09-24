@@ -158,7 +158,7 @@
                 </div>
 
                 <div class="space-x-2 flex tree-glossary-actions">
-                    <a-dropdown :trigger="['click']">
+                    <!-- <a-dropdown :trigger="['click']">
                         <a class="ant-dropdown-link" @click.prevent>
                             <a-button
                                 class="flex flex-col justify-center w-7 h-7 p-2 border-gray-300 bg-white"
@@ -188,9 +188,9 @@
                                 </div>
                             </a-menu>
                         </template>
-                    </a-dropdown>
+                    </a-dropdown> -->
                     <div v-if="expandedKeys.length" class="w-7 h-7 py-auto bg-opacity-0 cursor-pointer flex"  @click="collapseAll" ><AtlanIcon class="m-auto" icon="TreeCollapseAll" /> </div>
-                    <ThreeDotMenu :entity="parentGlossary" :showLinks="false"  :treeMode="true" />
+                    <ThreeDotMenu class="w-7 h-7" :entity="parentGlossary" :showLinks="false"  :treeMode="true" />
                 </div>
             </div>
             <div
@@ -254,6 +254,7 @@
 
                                     <ThreeDotMenu 
                                         :treeMode="true"
+                                        :visible="false"
                                         :entity="{
                                             guid: entity.guid,
                                             displayText: entity.name,

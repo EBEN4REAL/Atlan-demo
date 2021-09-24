@@ -59,7 +59,10 @@
     import { Collapse } from '~/types'
     import { useConnectionsStore } from '~/store/connections'
     import AssetDropdown from '~/components/common/dropdown/assetDropdown.vue'
-    import { getTabsForConnector } from '~/components/discovery/useTabMapped'
+    import {
+        tabsByConnector,
+        allTypeNames,
+    } from '~/components/discovery/useTabMapped'
 
     export default defineComponent({
         props: {
@@ -105,7 +108,7 @@
             )
 
             const tabIds: ComputedRef<string[]> = computed(() =>
-                getTabsForConnector(data.value)
+                tabsByConnector(data.value, allTypeNames)
             )
 
             const store = useConnectionsStore()

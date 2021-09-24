@@ -130,6 +130,7 @@
         setup(props, ctx: SetupContext) {
             const { list, automaticSelectFirstAsset, typename } = toRefs(props)
             const selectedAssetId = ref('')
+            let shouldReSelect = false
             function handlePreview(item: any) {
                 selectedAssetId.value = item.guid
                 ctx.emit('preview', item)
@@ -139,14 +140,19 @@
 
             if (automaticSelectFirstAsset.value) {
                 watch(typename, () => {
-                    if (list.value.length > 0) handlePreview(list.value[0])
+                    shouldReSelect = true
                 })
 
                 watch(
                     () => list.value?.length || 0,
                     (len, lastLen) => {
                         if (len > 0 && (lastLen === 0 || lastLen > len))
+                            shouldReSelect = true
+
+                        if (shouldReSelect) {
                             handlePreview(list.value[0])
+                            shouldReSelect = false
+                        }
                     },
                     { immediate: true }
                 )

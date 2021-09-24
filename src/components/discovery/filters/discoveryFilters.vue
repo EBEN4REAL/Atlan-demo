@@ -168,6 +168,7 @@
                 },
             },
         },
+        // FIXME: Remove modifyTabs logic
         emits: ['refresh', 'modifyTabs'],
         setup(props, { emit }) {
             const classificationsStore = useClassificationStore()
@@ -289,7 +290,8 @@
                 groupValue:
                     props.initialFilters.facetsFilters?.owners?.groupValue ||
                     [],
-                noOwnerAssigned: props.initialFilters.facetsFilters?.owners?.noOwner,
+                noOwnerAssigned:
+                    props.initialFilters.facetsFilters?.owners?.noOwner,
             }
             dataMap.value.advanced = {
                 applied: props.initialFilters.facetsFilters.advanced.applied,
@@ -335,7 +337,7 @@
                 Object.keys(filterMap).forEach((key) => {
                     filters.push(filterMap[key])
                 })
-                emit('refresh', filters, filterMap)
+                emit('refresh', filters, dataMap)
             }
             const modifyTabs = (tabsIds) => {
                 emit('modifyTabs', tabsIds)
@@ -406,7 +408,7 @@
                         dataMap.value[filterId].noClassificationsAssigned =
                             false
                         dataMap.value[filterId].operator = 'OR'
-                        dataMap.value[filterId].addedBy = 'all' 
+                        dataMap.value[filterId].addedBy = 'all'
                         filterMap[filterId].criterion = []
                         break
                     }

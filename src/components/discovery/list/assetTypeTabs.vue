@@ -6,7 +6,7 @@
             :class="$style.assetbar"
             @change="handleChange"
         >
-           <a-tab-pane
+            <a-tab-pane
                 v-for="item in sortedAssetTypeList"
                 :key="item.id"
                 :disabled="item.id !== 'Catalog' && !assetTypeMap[item.id]"
@@ -14,13 +14,11 @@
                 <template #tab>
                     <div :class="{ active: item.id === assetType }">
                         <span>{{ item.label }}</span>
+                        <span v-if="item.id === 'Catalog'" class="chip">{{
+                            getCountString(total)
+                        }}</span>
                         <span
-                            v-if="item.id === 'Catalog'"
-                            class="chip"
-                            >{{ getCountString(total) }}</span
-                        >
-                        <span
-                            v-if="
+                            v-else-if="
                                 assetTypeMap[item.id] &&
                                 assetTypeMap[item.id] > 0
                             "
@@ -35,7 +33,14 @@
 </template>
 
 <script lang="ts">
-    import { computed, defineComponent, nextTick, ref, toRefs, watch } from 'vue'
+    import {
+        computed,
+        defineComponent,
+        nextTick,
+        ref,
+        toRefs,
+        watch,
+    } from 'vue'
     import { getCountString } from '~/composables/asset/useFormat'
 
     export default defineComponent({
@@ -102,95 +107,41 @@
                 }
             )
             const sortedAssetTypeList = computed(() => {
-            // remove catalog object so that the rest of list can be used for filtering  
-            const assetTypeListWithoutCatalog = props.assetTypeList.filter(
-                (type) => type.id !== 'Catalog'
-            )
-            // get catalog object - to reconstruct the sorted list- this would always be the first tab
-            const catalogObject = props.assetTypeList.filter(
-                (type) => type.id === 'Catalog'
-            )
-            // filter out types with 0 results
-            const typesWithNoResults = assetTypeListWithoutCatalog.filter(
-                (type) => !props.assetTypeMap[type.id]
-            )
-            // filter out types with results
-            const typesWithResults = assetTypeListWithoutCatalog.filter(
-                (type) => props.assetTypeMap[type.id] && props.assetTypeMap[type.id] > 0
-            )
-            return [...catalogObject,...typesWithResults, ...typesWithNoResults]
-        })
+                // remove catalog object so that the rest of list can be used for filtering
+                const assetTypeListWithoutCatalog = props.assetTypeList.filter(
+                    (type) => type.id !== 'Catalog'
+                )
+                // get catalog object - to reconstruct the sorted list- this would always be the first tab
+                const catalogObject = props.assetTypeList.filter(
+                    (type) => type.id === 'Catalog'
+                )
+                // filter out types with 0 results
+                const typesWithNoResults = assetTypeListWithoutCatalog.filter(
+                    (type) => !props.assetTypeMap[type.id]
+                )
+                // filter out types with results
+                const typesWithResults = assetTypeListWithoutCatalog.filter(
+                    (type) =>
+                        props.assetTypeMap[type.id] &&
+                        props.assetTypeMap[type.id] > 0
+                )
+                return [
+                    ...catalogObject,
+                    ...typesWithResults,
+                    ...typesWithNoResults,
+                ]
+            })
             watch(assetTypeMap, () => {
                 const prev = assetType.value
                 assetType.value = ''
                 nextTick(() => (assetType.value = prev))
             })
 
-            // const filteredList = computed(() => {
-            //   let foundConnections: ConnectionType[] = [];
-
-            //   // get one example of connection for each connector
-            //   props.connectors?.forEach((element) => {
-            //     let found = cachedConnectionList.value.find((item) => {
-            //       return item.attributes?.integrationName === element;
-            //     });
-            //     if (found) {
-            //       foundConnections.push(found);
-            //     }
-            //   });
-
-            //   //filter on discoverable and mappings and order asset types
-            //   let filteredTypeList = AssetTypeList.filter((item) => {
-            //     if (item.isDiscoverable) {
-            //       let isAvailable = false;
-            //       foundConnections.forEach((conn) => {
-            //         //TODO - Change to dynamic mapping
-            //         let found = testMapping.find((map) => {
-            //           return map.id === item.id;
-            //         });
-            //         console.log(found);
-            //         if (found) {
-            //           isAvailable = true;
-            //         }
-            //       });
-            //       return isAvailable;
-            //     }
-            //     return false;
-            //   }).sort((x, y) => {
-            //     return y.orderWeight - x.orderWeight;
-            //   });
-
-            //   console.log(props.assetTypeList);
-            //   //Update Count from Aggregations
-            //   filteredTypeList.forEach((f) => {
-            //     if (props.assetTypeList[f.id]) {
-            //       f.count = props.assetTypeList[f.id];
-            //     } else if (props.assetTypeList[f.id.toLowerCase()]) {
-            //       f.count = props.assetTypeList[f.id.toLowerCase()];
-            //     }
-            //   });
-
-            //   return filteredTypeList;
-            // });
-
-            // let foundConnections = [];
-            // props.connectors?.forEach((element) => {
-            //   let found = cachedConnectionList.value.find((item) => {
-            //     return item.attributes?.integrationName === element;
-            //   });
-            //   if (found) {
-            //     foundConnections.push(found);
-            //   }
-            // });
-
-            // if (props.defaultAssetType) {
-            //   assetType.value = props.defaultAssetType;
-            // }
             return {
                 assetType,
                 handleChange,
                 getCountString,
-                sortedAssetTypeList
+                sortedAssetTypeList,
             }
         },
     })

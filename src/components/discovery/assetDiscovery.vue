@@ -12,7 +12,6 @@
                 "
                 :initial-filters="initialFilters"
                 @refresh="handleFilterChange"
-                @modifyTabs="modifyTabs"
             ></AssetFilters>
         </div>
 
@@ -39,7 +38,7 @@
                 </SearchAndFilter>
 
                 <AssetTabs
-                    v-model="assetType"
+                    v-model="selectedTab"
                     class="mt-1 mb-3"
                     @update:model-value="handleTabChange"
                     :asset-type-list="assetTypeList"
@@ -127,59 +126,9 @@
     import { SearchParameters } from '~/types/atlas/attributes'
     import { getEncodedStringFromOptions } from '~/utils/helper/routerQuery'
     import { useBusinessMetadataStore } from '~/store/businessMetadata'
-    import {
-        getTabsForConnector,
-        initialTabsForAssetCategory,
-    } from './useTabMapped'
+    import { useFilteredTabs } from './useTabMapped'
+    import { Components } from '~/api/atlas/client'
 
-    export interface filterMapType {
-        assetCategory: {
-            checked?: Array<string>
-            condition: string
-            criterion: Array<{
-                attributeName: 'typeName'
-                attributeValue: string
-                operator: string
-            }>
-        }
-        status: {
-            checked?: Array<string>
-            condition: string
-            criterion: Array<{
-                attributeName: 'assetStatus'
-                attributeValue: string
-                operator: string
-            }>
-        }
-        classifications: {
-            checked?: Array<string>
-            condition: string
-            criterion: Array<{
-                attributeName: 'classifications'
-                attributeValue: string
-                operator: string
-            }>
-        }
-        owners: {
-            userValue?: string
-            groupValue?: string
-            condition: string
-            criterion: Array<{
-                attributeName: string
-                attributeValue?: string | undefined
-                operator?: string | undefined
-            }>
-        }
-        advanced: {
-            list?: Array<string>
-            condition: string
-            criterion: Array<{
-                attributeName: string
-                attributeValue?: string | undefined
-                operator?: string | undefined
-            }>
-        }
-    }
     export default defineComponent({
         name: 'AssetDiscovery',
         components: {
@@ -216,131 +165,131 @@
         setup(props, { emit }) {
             // initializing the discovery store
             const { initialFilters } = toRefs(props)
-            const assetFilterRef = ref()
-            const isFilterVisible = ref(false)
             const router = useRouter()
+
+            // Asset filter component ref
+            const assetFilterRef = ref()
+
             const tracking = useTracking()
             const events = tracking.getEventsName()
+
             const isAggregate = ref(true)
 
-            const assetType = ref('Catalog')
-            const queryText = ref(initialFilters.value.searchText)
-            const connectorsPayload = ref(
-                initialFilters.value.connectorsPayload
-            )
-            const filters = ref(initialFilters.value.initialBodyCriterion)
-            const connectorStore = useConnectionsStore()
+            // Clean Stuff
+            const AllFilters: Ref = ref(initialFilters.value)
 
-            console.log('initialFIters', filters.value)
-            const filterMap = ref<filterMapType>({
-                connector: initialFilters.value.facetsFilters.connector,
-                assetCategory: {
-                    condition:
-                        initialFilters.value.facetsFilters.assetCategory
-                            .condition,
-                    criterion:
-                        initialFilters.value.facetsFilters.assetCategory
-                            .criterion,
-                    selectedIds:
-                        initialFilters.value.facetsFilters.assetCategory
-                            .selectedIds,
-                },
-                status: {
-                    condition:
-                        initialFilters.value.facetsFilters.status.condition,
-                    criterion:
-                        initialFilters.value.facetsFilters.status.criterion,
-                },
-                classifications: {
-                    condition:
-                        initialFilters.value.facetsFilters.classifications
-                            .condition,
-                    criterion:
-                        initialFilters.value.facetsFilters.classifications
-                            .criterion,
-                },
-                owners: {
-                    condition:
-                        initialFilters.value.facetsFilters.owners.condition,
-                    criterion:
-                        initialFilters.value.facetsFilters.owners.criterion,
-                },
-                advanced: {
-                    condition:
-                        initialFilters.value.facetsFilters.advanced.condition,
-                    criterion:
-                        initialFilters.value.facetsFilters.advanced.criterion,
+            const selectedTab = computed({
+                get: () => AllFilters.value.type || 'Catalog',
+                set: (val) => {
+                    AllFilters.value.type = val
                 },
             })
-            const limit = ref(parseInt(initialFilters.value.limit) || 20)
+            const queryText = computed({
+                get: () => AllFilters.value.searchText,
+                set: (val) => {
+                    AllFilters.value.searchText = val
+                },
+            })
+
+            // This is the actual filter body
+            // FIXME: Can we make it a computed property?
+            const filters = ref(AllFilters.value.initialBodyCriterion)
+            const limit = ref(parseInt(AllFilters.value.limit) || 20)
             const offset = ref(0)
             const sortOrder = ref('default')
+            const state = ref('active')
 
             // Get All Disoverable Asset Types
-            const assetTypeList = ref([])
-            const initialTabs: Ref<string[]> = ref(
-                getTabsForConnector(
-                    initialFilters.value.facetsFilters.connector
-                )
-            )
 
-            const assetCategoryTabs = initialTabsForAssetCategory(
-                initialFilters.value.facetsFilters.assetCategory.selectedIds
-            )
-            if (assetCategoryTabs.length > 0)
-                initialTabs.value = assetCategoryTabs
-
-            const modifyTabs = (visibleTabs) => {
-                let assetTypes = []
-                if (visibleTabs?.length > 0) {
-                    visibleTabs.forEach((id) => {
-                        AssetTypeList.forEach((asset) => {
-                            if (
-                                asset.id === id &&
-                                asset.isDiscoverable == true &&
-                                connectorStore.getSourceList.find((source) =>
-                                    source?.types?.includes(asset.id)
-                                )
-                            ) {
-                                assetTypes.push(asset)
-                            }
-                        })
-                    })
-                } else {
-                    assetTypes = AssetTypeList.filter(
-                        (item) =>
-                            item.isDiscoverable == true &&
-                            connectorStore.getSourceList.find((source) =>
-                                source?.types?.includes(item.id)
-                            )
-                    )
-                }
-                assetTypes.unshift({
-                    id: 'Catalog',
-                    label: 'All',
+            const initialTabs: Ref<string[]> = computed(() =>
+                useFilteredTabs({
+                    connector: AllFilters.value.facetsFilters.connector,
+                    category:
+                        AllFilters.value.facetsFilters.assetCategory.checked,
                 })
-                assetTypeList.value = assetTypes
-            }
-            if (initialTabs.value.length > 0) {
-                modifyTabs(initialTabs.value)
-            } else {
-                assetTypeList.value = AssetTypeList.filter(
+            )
+
+            const assetTypeList = computed(() => {
+                const filteredTabs = AssetTypeList.filter(
                     (item) =>
                         item.isDiscoverable == true &&
-                        connectorStore.getSourceList.find((source) =>
-                            source?.types?.includes(item.id)
-                        )
+                        initialTabs.value.includes(item.id)
                 )
-                assetTypeList.value.unshift({
-                    id: 'Catalog',
-                    label: 'All',
-                })
-            }
+
+                return [
+                    {
+                        id: 'Catalog',
+                        label: 'All',
+                    },
+                    ...filteredTabs,
+                ]
+            })
+
+            // FIXME: REMOVE THIS TOO
+            // const filterMap: Ref<
+            //     Record<string, Components.Schemas.FilterCriteria>
+            // > = ref({
+            //     connector: initialFilters.value.facetsFilters.connector,
+            //     assetCategory: initialFilters.value.facetsFilters.assetCategory,
+            //     status: initialFilters.value.facetsFilters.status,
+            //     classifications:
+            //         initialFilters.value.facetsFilters.classifications,
+            //     owners: initialFilters.value.facetsFilters.owners,
+            //     advanced: initialFilters.value.facetsFilters.advanced,
+            // })
+
+            // FIXME:REMOVE IT
+            // const modifyTabs = (visibleTabs) => {
+            //     let assetTypes = []
+            //     if (visibleTabs?.length > 0) {
+            //         visibleTabs.forEach((id) => {
+            //             AssetTypeList.forEach((asset) => {
+            //                 if (
+            //                     asset.id === id &&
+            //                     asset.isDiscoverable == true &&
+            //                     connectorStore.getSourceList.find((source) =>
+            //                         source?.types?.includes(asset.id)
+            //                     )
+            //                 ) {
+            //                     assetTypes.push(asset)
+            //                 }
+            //             })
+            //         })
+            //     } else {
+            //         assetTypes = AssetTypeList.filter(
+            //             (item) =>
+            //                 item.isDiscoverable == true &&
+            //                 connectorStore.getSourceList.find((source) =>
+            //                     source?.types?.includes(item.id)
+            //                 )
+            //         )
+            //     }
+            //     assetTypes.unshift({
+            //         id: 'Catalog',
+            //         label: 'All',
+            //     })
+            //     assetTypeList.value = assetTypes
+            // }
+
+            // FIXME: Remove this too
+            // if (initialTabs.value.length > 0) {
+            //     modifyTabs(initialTabs.value)
+            // } else {
+            //     assetTypeList.value = AssetTypeList.filter(
+            //         (item) =>
+            //             item.isDiscoverable == true &&
+            //             connectorStore.getSourceList.find((source) =>
+            //                 source?.types?.includes(item.id)
+            //             )
+            //     )
+            //     assetTypeList.value.unshift({
+            //         id: 'Catalog',
+            //         label: 'All',
+            //     })
+            // }
+
             const assetTypeListString = computed(() =>
-                assetTypeList.value
-                    .map((item) => item.id)
-                    .slice(1)
-                    .join(',')
+                initialTabs.value.join(',')
             )
 
             const {
@@ -351,8 +300,10 @@
                 mutateAssetInList,
             } = useAssetListing(assetTypeListString.value, false)
 
-            const { assetTypeMap, isAggregateLoading, refreshAggregation } =
-                useAssetAggregation(assetTypeListString.value, false)
+            const { assetTypeMap, refreshAggregation } = useAssetAggregation(
+                assetTypeListString.value,
+                false
+            )
 
             const store = useBusinessMetadataStore()
             const BMListLoaded = computed(
@@ -362,21 +313,31 @@
                 () => store.getBusinessMetadataListProjections
             )
 
-            const state = ref('active')
             const assetTypeLabel = computed(() => {
                 const found = AssetTypeList.find(
-                    (item) => item.id == assetType.value
+                    (item) => item.id == selectedTab.value
                 )
                 return found?.label
             })
-            const placeholderLabel: Ref<Record<string, string>> = ref({})
-            const totalCount = computed(() => {
-                if (assetType.value == 'Catalog') {
-                    return totalSum.value
-                }
-                return assetTypeMap.value[assetType.value]
+
+            const totalSum = computed(() => {
+                let sum = 0
+                assetTypeList.value.forEach((element) => {
+                    if (assetTypeMap.value[element.id]) {
+                        sum += assetTypeMap.value[element.id]
+                    }
+                })
+                return sum
             })
 
+            const totalCount = computed(() => {
+                if (selectedTab.value == 'Catalog') {
+                    return totalSum.value
+                }
+                return assetTypeMap.value[selectedTab.value]
+            })
+
+            const placeholderLabel: Ref<Record<string, string>> = ref({})
             const dynamicSearchPlaceholder = computed(() => {
                 let placeholder = 'Search for assets'
                 if (placeholderLabel.value.asset) {
@@ -391,15 +352,7 @@
                 placeholderLabel.value[type] = label
                 if (type === 'connector') placeholderLabel.value.asset = ''
             }
-            const totalSum = computed(() => {
-                let sum = 0
-                assetTypeList.value.forEach((element) => {
-                    if (assetTypeMap.value[element.id]) {
-                        sum += assetTypeMap.value[element.id]
-                    }
-                })
-                return sum
-            })
+
             // Push all asset type
             const assetlist = ref(null)
             const isLoadMore = computed(
@@ -427,10 +380,10 @@
                     aggregationAttributes: [],
                 }
 
-                if (assetType.value !== 'Catalog') {
+                if (selectedTab.value !== 'Catalog') {
                     initialBody.entityFilters.criterion.push({
                         attributeName: '__typeName',
-                        attributeValue: assetType.value,
+                        attributeValue: selectedTab.value,
                         operator: 'eq',
                     })
                 }
@@ -475,20 +428,7 @@
                 offset.value = 0
                 updateBody()
             }
-            // watch(
-            //     assetType,
-            //     () => {
-            //         // ? Should these run only when all attributes are loaded? like BMAttributeProjection
-            //         updateBody()
-            //         if (!now.value) {
-            //             isAggregate.value = true
-            //             now.value = true
-            //         }
-            //     },
-            //     {
-            //         immediate: true,
-            //     }
-            // )
+
             const { projection } = useDiscoveryPreferences()
             const handleSearchChange = useDebounceFn(() => {
                 offset.value = 0
@@ -516,28 +456,23 @@
             }
 
             const getRouterOptions = () => ({
-                filters: filterMap.value || {},
+                // TODO: Sync the filters here
+                // filters: filterMap.value || {},
                 searchText: queryText.value || '',
-                connectorsPayload: connectorsPayload.value || {},
-                // ...(sortOrder.value !== "default"
-                //   ? queryText.value
-                //     ? { sortBy: "", sortOrder: "" }
-                //     : {
-                //         sortBy: sortOrder.value.split("|")[0],
-                //         sortOrder: sortOrder.value.split("|")[1],
-                //       }
-                //   : { sortBy: "", sortOrder: "" }),
                 limit: limit.value || 20,
             })
+
+            // TODO: Uncomment it
             const pushQueryToRouter = (pushString) => {
-                router.push(`/assets?${pushString}`)
+                // router.push(`/assets?${pushString}`)
             }
 
             const handleFilterChange = (
                 payload: any,
-                filterMapData: filterMapType
+                filterMapData: Record<string, Components.Schemas.FilterCriteria>
             ) => {
-                filterMap.value = filterMapData
+                AllFilters.value.facetsFilters = filterMapData
+                // filterMap.value = filterMapData
                 filters.value = payload
                 offset.value = 0
                 isAggregate.value = true
@@ -576,14 +511,14 @@
             console.log(list)
 
             return {
-                modifyTabs,
                 handleClearFiltersFromList,
                 assetFilterRef,
-                isFilterVisible,
                 initialFilters,
+                AllFilters,
+                initialTabs,
                 searchScoreList,
                 list,
-                assetType,
+                selectedTab,
                 assetTypeLabel,
                 assetTypeList,
                 assetTypeMap,
@@ -603,7 +538,6 @@
                 loadMore,
                 totalSum,
                 handleState,
-                connectorsPayload,
                 mutateAssetInList,
                 handleTabChange,
                 dynamicSearchPlaceholder,

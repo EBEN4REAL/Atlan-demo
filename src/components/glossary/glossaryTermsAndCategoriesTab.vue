@@ -34,10 +34,13 @@
         </div>
         <div v-else-if="all.length" class="flex flex-row w-full">
             <div
-                class="w-full"
-                @scroll="handleScroll"
                 ref="scrollDiv"
-                :class="{ 'overflow-y-auto h-96': headerReachedTop }"
+                class="w-full"
+                :style="
+                    headerReachedTop ? 'max-height: calc(100vh - 220px)' : ''
+                "
+                @scroll="handleScroll"
+                :class="{ 'overflow-y-auto ': headerReachedTop }"
             >
                 <div ref="topSectionRef"></div>
                 <div>
@@ -335,6 +338,11 @@
     }
 </style>
 
+<style lang="less" scoped>
+    .list {
+        max-height: calc(100vh - 300px);
+    }
+</style>
 <route lang="yaml">
 meta:
     layout: default

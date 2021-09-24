@@ -7,20 +7,20 @@
             class="w-2/3 h-full"
             @scroll="handleScroll"
             ref="scrollDiv"
-            :class="{ 'overflow-y-auto': headerReachedTop }"
+            :class="{ 'overflow-y-auto': !headerReachedTop }"
         >
-            {{ headerReachedTop }}
             <!-- top section -->
-            <ProfileHeader
-                :title="title"
-                :entity="glossary"
-                :isNewEntity="isNewGlossary"
-                :statusMessage="statusMessage"
-                :statusObject="statusObject"
-                :shortDescription="shortDescription"
-                :headerReachedTop="!headerReachedTop"
-            />
-
+            <div ref="headerRef">
+                <ProfileHeader
+                    :title="title"
+                    :entity="glossary"
+                    :isNewEntity="isNewGlossary"
+                    :statusMessage="statusMessage"
+                    :statusObject="statusObject"
+                    :shortDescription="shortDescription"
+                    :headerReachedTop="headerReachedTop"
+                />
+            </div>
             <!-- tabs start here  -->
             <div class="m-0">
                 <a-tabs
@@ -60,7 +60,7 @@
                             :guid="glossary?.guid"
                             :type="glossary?.typeName"
                             :show-preview-panel="currentTab === '2'"
-                            :headerReachedTop="!headerReachedTop"
+                            :headerReachedTop="headerReachedTop"
                             @entityPreview="handleCategoryOrTermPreview"
                             @firstCardReachedTop="handleFirstCardReachedTop"
                         />
@@ -136,7 +136,9 @@
             const showPreviewPanel = ref(false)
             const newName = ref('')
             const scrollDiv = ref(null)
-            const headerReachedTop = ref(true)
+            const headerRef = ref()
+            const headerReachedTop = ref(false)
+            const temp = ref(false)
 
             const router = useRouter()
             const {
@@ -219,16 +221,17 @@
             }
 
             const handleScroll = () => {
-                if (scrollDiv.value?.scrollTop < 70 && scrollDiv.value !== 0) {
-                    headerReachedTop.value = false
-                } else {
+                if (scrollDiv.value?.scrollTop > 70 && !temp.value) {
                     headerReachedTop.value = true
+                } else if (scrollDiv.value?.scrollTop > 70 && temp.value) {
+                    scrollDiv.value.scrollTop = 0
+                    temp.value = !temp.value
                 }
             }
             const handleFirstCardReachedTop = () => {
-                console.log(scrollDiv.value.scrollTop)
-                headerReachedTop.value = true
-                // scrollDiv.value.scrollTop = 0
+                scrollDiv.value.scrollTop = 0
+                headerReachedTop.value = false
+                temp.value = true
             }
             // lifecycle methods and watchers
             onMounted(() => {
@@ -279,6 +282,7 @@
                 newName,
                 scrollDiv,
                 headerReachedTop,
+                headerRef,
                 refreshCategoryTermList,
                 fetchNextCategoryOrTermList,
                 refetch,

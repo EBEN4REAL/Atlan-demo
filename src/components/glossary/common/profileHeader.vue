@@ -87,12 +87,12 @@
                 <div class="flex">
                     <span
                         v-if="!isNewEntity"
-                        class="mr-3 text-xl leading-6 truncate"
+                        class="mr-2 text-xl leading-6 truncate"
                         >{{ title }}</span
                     >
                     <span
                         v-if="isNewEntity"
-                        class="mr-3 text-xl italic leading-6 text-gray-500"
+                        class="mr-2 text-xl italic leading-6 text-gray-500"
                         >Untitled {{ assetTypeLabel[entity.typeName] }}
                     </span>
                     <a-popover
@@ -106,14 +106,14 @@
                         <component
                             :is="statusObject?.icon"
                             v-if="statusObject"
-                            class="inline-flex self-center w-auto h-4 mb-1"
+                            class="inline-flex self-center w-auto h-4 mb-0.5"
                         />
                     </a-popover>
                     <div v-else>
                         <component
                             :is="statusObject?.icon"
                             v-if="statusObject"
-                            class="inline-flex self-center w-auto h-4 mb-1"
+                            class="inline-flex self-center w-auto h-4 mb-0.5"
                         />
                     </div>
                 </div>

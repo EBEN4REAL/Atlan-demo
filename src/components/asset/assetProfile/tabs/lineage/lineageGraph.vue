@@ -77,7 +77,7 @@
     /** PACKAGES */
     import { defineComponent, ref, onMounted, watch, provide } from 'vue'
     /** DATA */
-    import * as lineage from '~/assets/data/lineage.json'
+    import lineage from './lineageData.js'
     /** COMPONENTS */
     import LineageHeader from './lineageHeader.vue'
     /** COMPOSABLES */

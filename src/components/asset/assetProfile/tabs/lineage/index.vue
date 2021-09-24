@@ -1,6 +1,7 @@
 <template>
     <div>
-        <component :is="'lineageGraph'" class="bg-transparent"></component>
+        Lineage 
+        <!-- <component :is="'lineageGraph'" class="bg-transparent"></component> -->
     </div>
 </template>
 
@@ -10,10 +11,10 @@
     export default defineComponent({
         name: 'Lineage',
         components: {
-            lineageGraph: defineAsyncComponent(
-                () =>
-                    import('@/asset/assetProfile/tabs/lineage/lineageGraph.vue')
-            ),
+            // lineageGraph: defineAsyncComponent(
+            //     () =>
+            //         import('@/asset/assetProfile/tabs/lineage/lineageGraph.vue')
+            // ),
         },
     })
 </script>

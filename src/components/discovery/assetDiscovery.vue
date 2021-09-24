@@ -86,7 +86,6 @@
 <script lang="ts">
     import EmptyView from '@common/empty/discover.vue'
     import AssetPagination from '@common/pagination/index.vue'
-    import HeirarchySelect from '@common/tree/heirarchy/index.vue'
     import SearchAndFilter from '@/common/input/searchAndFilter.vue'
 
     // import { useDebounceFn } from "@vueuse/core";
@@ -96,7 +95,6 @@
         computed,
         defineComponent,
         onMounted,
-        reactive,
         ref,
         watch,
         toRefs,
@@ -110,8 +108,7 @@
     import AssetFilters from '~/components/discovery/filters/discoveryFilters.vue'
     import AssetDropdown from '~/components/common/dropdown/assetDropdown.vue'
     import ConnectorDropdown from '~/components/common/dropdown/connectorDropdown.vue'
-    // import { DISCOVERY_FETCH_LIST } from "~/constant/cache";
-    // import { Components } from "~/api/atlas/client";
+
     import { useAssetListing, useAssetAggregation } from './useAssetListing'
     import useDiscoveryPreferences from '~/composables/preference/useDiscoveryPreference'
     import { AssetTypeList } from '~/constant/assetType'
@@ -122,8 +119,6 @@
     } from '~/constant/projection'
     import useTracking from '~/modules/tracking'
     import { initialFiltersType } from '~/pages/assets.vue'
-    import { useConnectionsStore } from '~/store/connections'
-    import { SearchParameters } from '~/types/atlas/attributes'
     import { getEncodedStringFromOptions } from '~/utils/helper/routerQuery'
     import { useBusinessMetadataStore } from '~/store/businessMetadata'
     import { useFilteredTabs } from './useTabMapped'
@@ -224,69 +219,6 @@
                     ...filteredTabs,
                 ]
             })
-
-            // FIXME: REMOVE THIS TOO
-            // const filterMap: Ref<
-            //     Record<string, Components.Schemas.FilterCriteria>
-            // > = ref({
-            //     connector: initialFilters.value.facetsFilters.connector,
-            //     assetCategory: initialFilters.value.facetsFilters.assetCategory,
-            //     status: initialFilters.value.facetsFilters.status,
-            //     classifications:
-            //         initialFilters.value.facetsFilters.classifications,
-            //     owners: initialFilters.value.facetsFilters.owners,
-            //     advanced: initialFilters.value.facetsFilters.advanced,
-            // })
-
-            // FIXME:REMOVE IT
-            // const modifyTabs = (visibleTabs) => {
-            //     let assetTypes = []
-            //     if (visibleTabs?.length > 0) {
-            //         visibleTabs.forEach((id) => {
-            //             AssetTypeList.forEach((asset) => {
-            //                 if (
-            //                     asset.id === id &&
-            //                     asset.isDiscoverable == true &&
-            //                     connectorStore.getSourceList.find((source) =>
-            //                         source?.types?.includes(asset.id)
-            //                     )
-            //                 ) {
-            //                     assetTypes.push(asset)
-            //                 }
-            //             })
-            //         })
-            //     } else {
-            //         assetTypes = AssetTypeList.filter(
-            //             (item) =>
-            //                 item.isDiscoverable == true &&
-            //                 connectorStore.getSourceList.find((source) =>
-            //                     source?.types?.includes(item.id)
-            //                 )
-            //         )
-            //     }
-            //     assetTypes.unshift({
-            //         id: 'Catalog',
-            //         label: 'All',
-            //     })
-            //     assetTypeList.value = assetTypes
-            // }
-
-            // FIXME: Remove this too
-            // if (initialTabs.value.length > 0) {
-            //     modifyTabs(initialTabs.value)
-            // } else {
-            //     assetTypeList.value = AssetTypeList.filter(
-            //         (item) =>
-            //             item.isDiscoverable == true &&
-            //             connectorStore.getSourceList.find((source) =>
-            //                 source?.types?.includes(item.id)
-            //             )
-            //     )
-            //     assetTypeList.value.unshift({
-            //         id: 'Catalog',
-            //         label: 'All',
-            //     })
-            // }
 
             const assetTypeListString = computed(() =>
                 initialTabs.value.join(',')
@@ -418,9 +350,6 @@
                 }
                 replaceBody(initialBody)
                 if (isAggregate.value) refreshAggregation(initialBody)
-                // if (assetlist.value && !dontScroll) {
-                // assetlist?.value.scrollToItem(0);
-                // }
             }
 
             function handleTabChange() {

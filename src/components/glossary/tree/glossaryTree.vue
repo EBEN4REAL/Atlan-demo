@@ -256,73 +256,8 @@
                                         >
                                     </div>
 
-                                    <a-dropdown
-                                        v-if="entity.type === 'category'"
-                                        :trigger="['hover']"
-                                    >
-                                        <span
-                                            class="flex content-center justify-center w-5 h-5 p-0 m-0 rounded opacity-0  group-hover:opacity-100"
-                                            @click.prevent
-                                        >
-                                            <AtlanIcon
-                                                icon="KebabMenu"
-                                                class="h-3 mt-1"
-                                            />
-                                        </span>
-                                        <template #overlay>
-                                            <a-menu>
-                                                <div
-                                                    class="px-2 py-1"
-                                                    :class="
-                                                        $style.createDropdownStyles
-                                                    "
-                                                >
-                                                    <a-menu-item
-                                                        key="0"
-                                                        @click="
-                                                            () =>
-                                                                createTerm(
-                                                                    entity.glossaryID,
-                                                                    entity.key
-                                                                )
-                                                        "
-                                                    >
-                                                        <div
-                                                            class="flex items-center "
-                                                        >
-                                                            <AtlanIcon
-                                                                icon="Link"
-                                                                class="m-0 mr-2"
-                                                            />
-                                                            New Term
-                                                        </div>
-                                                    </a-menu-item>
-                                                    <a-menu-item
-                                                        key="1"
-                                                        @click="
-                                                            () =>
-                                                                createCategory(
-                                                                    entity.glossaryID,
-                                                                    entity.key
-                                                                )
-                                                        "
-                                                    >
-                                                        <div
-                                                            class="flex items-center "
-                                                        >
-                                                            <AtlanIcon
-                                                                icon="Link"
-                                                                class="m-0 mr-2"
-                                                            />
-                                                            New Category
-                                                        </div>
-                                                    </a-menu-item>
-                                                </div>
-                                            </a-menu>
-                                        </template>
-                                    </a-dropdown>
                                     <ThreeDotMenu 
-                                        :redirectToProfile="redirectToProfile"
+                                        :treeMode="true"
                                         :entity="{
                                             guid: entity.guid,
                                             displayText: entity.name,
@@ -635,7 +570,9 @@
             height: 32px;
         }
 
+
         .treeStyles {
+
             :global(.ant-tree-switcher) {
                 @apply pt-1;
             }
@@ -644,6 +581,10 @@
                 @apply pl-1 !important;
                 padding-top: 4px !important;
                 padding-bottom: 4px !important;
+
+                &:hover {
+                    @apply bg-black bg-opacity-5 !important;
+                }
             }
             :global(.ant-tree-node-content-wrapper) {
                 @apply mb-2 border-0;

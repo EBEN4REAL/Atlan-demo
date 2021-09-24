@@ -1,16 +1,17 @@
 <template>
     <div
         class="group-hover:opacity-100"
-        :class="isVisible ? 'opacity-100' : ''"
+        :class="{'opacity-100': isVisible, 'opacity-0 treeMode': treeMode}"
     >
         <a-dropdown
             v-model:visible="isVisible"
-            :trigger="['click']"
+            :trigger="['click', 'hover']"
+            :class="treeMode ? $style.treeMode: ''"
             @click.stop="() => {}"
         >
             <a-button
-                class="px-2"
-                :class="{ ' border-0 shadow-none outline-none': !showLinks }"
+                class="px-2 three-dot-menu"
+                :class="{ ' border-0 shadow-none outline-none': !showLinks || treeMode, 'treeMode': treeMode }"
                 @click.prevent
             >
                 <!-- <fa icon="fal ellipsis-v" class="h-4" /> -->
@@ -337,6 +338,11 @@
                 required: false,
                 default: () => true,
             },
+            treeMode: {
+                type: Boolean,
+                required: false,
+                default: () => false
+            }
         },
         setup(props, context) {
             // data
@@ -478,3 +484,8 @@
         },
     })
 </script>
+<style lang="less" module>
+  .treeMode {
+    @apply bg-black bg-opacity-0 !important;
+  }
+</style>

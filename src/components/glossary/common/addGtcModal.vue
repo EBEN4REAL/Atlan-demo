@@ -155,7 +155,7 @@
             },
             glossaryId: {
                 type: String,
-                required: true,
+                required: false,
                 default: '',
             },
             categoryId: {
@@ -174,8 +174,8 @@
                 default: () => {},
             },
         },
-        emits: ['onAddTerm'],
-        setup(props, context) {
+        emits: ['onAddGlossary'],
+        setup(props, { emit }) {
             const { username: myUsername, name: myName } = whoami()
 
             const title = ref<string | undefined>('')
@@ -194,7 +194,7 @@
             const updateTreeNode: Function | undefined =
                 inject<any>('updateTreeNode')
             
-            const { createTerm, createCategory } = useCreateGlossary()
+            const { createTerm, createCategory, createGlossary } = useCreateGlossary()
 
             const ownerBtnText = computed(() => {
                 let str = ''
@@ -254,7 +254,7 @@
                         props?.entityType,
                         props.entity?.guid ?? '',
                         {
-                            name: title.value ?? props.entityType === 'term' ? 'Untitled Term' : 'Untitled category',
+                            name: title.value ?? (props.entityType === 'term' ? 'Untitled Term' : 'Untitled category'),
                             assetStatus: currentStatus.value ?? 'draft',
                             shortDescription: description.value ?? '',
                             ownerUsers: ownerUsers?.value?.join(),
@@ -267,7 +267,7 @@
                         if (updateTreeNode) {
                             updateTreeNode({
                                 guid: props.entity?.guid,
-                                name:  title.value ?? props.entityType === 'term' ? 'Untitled Term' : 'Untitled category',
+                                name:  title.value ?? ( props.entityType === 'term' ? 'Untitled Term' : 'Untitled category'),
                                 assetStatus: currentStatus.value ?? 'draft',
                                 ownerUsers: ownerUsers?.value?.join(),
                                 ownerGroups: ownerGroups?.value?.join(),
@@ -281,7 +281,7 @@
                             props.glossaryId,
                             props.categoryId,
                             `${
-                                title.value === ''
+                                !title.value
                                     ? 'Untitled term'
                                     : title.value
                             }`,
@@ -295,7 +295,7 @@
                             props.glossaryId,
                             props.categoryId,
                             `${
-                                title.value === ''
+                                !title.value
                                     ? 'Untitled category'
                                     : title.value
                             }`,
@@ -304,7 +304,25 @@
                             ownerUsers?.value?.join(),
                             ownerGroups?.value?.join()
                         )
-
+                    else if (props.entityType === 'glossary') {
+                        const { data } = createGlossary(
+                            `${
+                                !title.value
+                                    ? 'Untitled category'
+                                    : title.value
+                            }`,
+                            description.value,
+                            currentStatus.value,
+                            ownerUsers?.value?.join(),
+                            ownerGroups?.value?.join()
+                        )
+                        watch(data, (newData) => {
+                            if(newData) {
+                                console.log('new Glossary created')
+                            emit('onAddGlossary')
+                            }
+                        })
+                    }
                     resetInput()
                 }
                 if (!isCreateMore.value) visible.value = false

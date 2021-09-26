@@ -44,14 +44,26 @@ const useCreateGlossary = () => {
         name: '',
     })
 
-    const createGlossary = () => {
+    const createGlossary = (
+        title?: string,
+        description?: string,
+        status?: string,
+        ownerUsers?: string,
+        ownerGroups?: string
+    ) => {
         body.value = {
             qualifiedName: generateUUID(),
-            name: 'Untitled Glossary',
-            shortDescription: '',
+            name: title ?? 'Untitled Glossary',
+            shortDescription: description ?? '',
             longDescription: '',
-            assetStatus: 'draft',
+            assetStatus: status ?? 'draft',
+            ownerUsers: ownerUsers ?? `${username.value}`,
+            ownerGroups: ownerGroups ?? ``,
         }
+        message.loading({
+            content: 'Creating new glossary...',
+            key: `${title}`,
+        })
 
         const {
             data,
@@ -64,6 +76,12 @@ const useCreateGlossary = () => {
 
         watch(data, (newData) => {
             if (newData?.guid) {
+                message.success({
+                    content: `${title} created!`,
+                    key: `${title}`,
+                    duration: 2,
+                })
+
                 redirectToProfile('glossary', newData.guid)
             }
         })
@@ -71,6 +89,7 @@ const useCreateGlossary = () => {
             error.value = newError?.value
             isLoading.value = newValidating?.value
         })
+        return { data }
     }
 
     const createCategory = (

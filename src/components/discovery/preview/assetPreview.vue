@@ -65,7 +65,7 @@
                 <Tooltip
                     v-if="page === 'discovery'"
                     :tooltip-text="selectedAsset?.attributes?.name"
-                    classes="text-gray-700 font-semibold text-md leading-1 cursor-pointer text-primary hover:underline"
+                    classes="font-bold text-lg cursor-pointer text-primary hover:underline"
                     placement="left"
                     :route-to="
                         isColumnAsset(selectedAsset)
@@ -133,18 +133,12 @@
                     :style="{ height: tabHeights[page] }"
                 >
                     <div
-                        class="z-10 flex items-center justify-between px-3 py-2 text-sm font-bold bg-gray-100 "
-                        style="
-                            position: absolute !important;
-                            right: 0px;
-                            left: 48px;
-                        "
+                        class="flex items-center justify-between px-4 pt-2 font-semibold text-gray-700  text-md"
                     >
                         {{ tab.tooltip }}
                     </div>
 
                     <component
-                        style="margin-top: 36px"
                         :is="tab.component"
                         :component-data="dataMap[tab.id]"
                         :info-tab-data="selectedAsset"

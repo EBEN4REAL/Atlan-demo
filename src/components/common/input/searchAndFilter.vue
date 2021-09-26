@@ -1,5 +1,5 @@
 <template>
-    <div class="flex items-center justify-between bg-white">
+    <div class="flex items-center justify-between">
         <a-input
             ref="searchBar"
             :value="value"
@@ -13,19 +13,26 @@
             <template #prefix>
                 <AtlanIcon icon="Search" />
             </template>
-        </a-input>
-        <a-popover v-if="$slots.filter" trigger="click" placement="bottomRight">
-            <template #content>
-                <slot name="filter" />
+            <template #suffix>
+                <a-popover
+                    v-if="$slots.filter"
+                    trigger="click"
+                    placement="bottomRight"
+                >
+                    <template #content>
+                        <slot name="filter" />
+                    </template>
+
+                    <div class="px-3 py-1 border rounded">
+                        <AtlanIcon
+                            :icon="dot ? 'FilterDot' : 'Filter'"
+                            class="w-4 h-4"
+                        />
+                        <slot name="buttonAggregation" />
+                    </div>
+                </a-popover>
             </template>
-            <a-button class="flex items-center p-2 ml-1 rounded">
-                <AtlanIcon
-                    :icon="dot ? 'FilterDot' : 'Filter'"
-                    class="w-4 h-4"
-                />
-                <slot name="buttonAggregation" />
-            </a-button>
-        </a-popover>
+        </a-input>
     </div>
 </template>
 
@@ -60,10 +67,14 @@
 
 <style lang="less" module>
     .searchbar {
-        @apply border-t-0 border-l-0 border-r-0  border-b border-gray-300 rounded-sm !important;
+        @apply bg-transparent border-t-0 border-l-0 border-r-0  border-b border-gray-300 rounded-sm !important;
 
         @apply outline-none;
         transition: border 500ms ease-out;
+
+        :global(.ant-input) {
+            @apply bg-transparent !important;
+        }
 
         &:global(.ant-input-affix-wrapper-focused) {
             @apply border-primary border-b border-t-0 border-l-0 border-r-0 !important;

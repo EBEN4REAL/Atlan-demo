@@ -65,7 +65,7 @@
                 <Tooltip
                     v-if="page === 'discovery'"
                     :tooltip-text="selectedAsset?.attributes?.name"
-                    classes="font-bold text-lg cursor-pointer text-primary hover:underline"
+                    classes="font-bold text-base cursor-pointer text-primary hover:underline"
                     placement="left"
                     :route-to="
                         isColumnAsset(selectedAsset)
@@ -76,7 +76,7 @@
                 <Tooltip
                     v-else
                     :tooltip-text="selectedAsset?.attributes?.name"
-                    classes="text-gray-700 font-semibold text-md leading-1"
+                    classes="text-gray-700 font-semibold text-base leading-1"
                     placement="left"
                 />
 

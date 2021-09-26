@@ -63,7 +63,7 @@
                                 ? getColumnUrl(item)
                                 : `/assets/${item.guid}/overview`
                         "
-                        class="flex-shrink mb-0 overflow-hidden text-lg font-bold truncate cursor-pointer  text-primary hover:underline overflow-ellipsis whitespace-nowrap"
+                        class="flex-shrink mb-0 overflow-hidden text-base font-bold truncate cursor-pointer  text-primary hover:underline overflow-ellipsis whitespace-nowrap"
                     >
                         {{ title(item) }}
                     </router-link>

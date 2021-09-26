@@ -92,7 +92,6 @@
             v-model:activeKey="activeKey"
             :class="$style.previewtab"
             tab-position="left"
-            class="h-full"
         >
             <a-tab-pane
                 v-for="(tab, index) in filteredTabs"

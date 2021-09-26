@@ -1,8 +1,12 @@
 <!-- TODO: remove hardcoded prop classes and make component generic -->
 <template>
     <div
-        class="flex mx-6 my-0.5 rounded border-gray-200 border"
-        :class="isSelected ? 'border-primary bg-white' : 'bg-white '"
+        class="flex mx-3"
+        :class="
+            isSelected
+                ? 'border-primary bg-white border rounded bg-primary-light'
+                : 'bg-white border-b border-gray-200'
+        "
     >
         <!-- Selected asset pill 
         <div
@@ -24,6 +28,20 @@
             <div
                 class="box-border flex flex-col flex-1 overflow-hidden lg:pr-16"
             >
+                <div class="flex items-center">
+                    <AssetLogo
+                        v-if="showAssetTypeIcon"
+                        :asset="item"
+                        :selected="isSelected"
+                    />
+
+                    <HierarchyBar
+                        v-if="projection?.includes('hierarchy')"
+                        class="ml-3"
+                        :selected-asset="item"
+                    />
+                </div>
+
                 <!-- Title bar -->
                 <div class="flex items-center mb-0 overflow-hidden">
                     <!-- <component
@@ -45,7 +63,7 @@
                                 ? getColumnUrl(item)
                                 : `/assets/${item.guid}/overview`
                         "
-                        class="flex-shrink mb-0 overflow-hidden font-semibold leading-6 truncate cursor-pointer  text-primary hover:underline overflow-ellipsis whitespace-nowrap"
+                        class="flex-shrink mb-0 overflow-hidden text-lg font-bold truncate cursor-pointer  text-primary hover:underline overflow-ellipsis whitespace-nowrap"
                     >
                         {{ title(item) }}
                     </router-link>
@@ -53,16 +71,11 @@
                         :key="item.guid"
                         :show-no-status="false"
                         :status-id="status(item)"
-                        class="flex-none ml-2"
+                        class="flex-none ml-1"
                     ></StatusBadge>
                 </div>
 
                 <div class="flex items-center space-x-2">
-                    <AssetLogo
-                        v-if="showAssetTypeIcon"
-                        :asset="item"
-                        :selected="isSelected"
-                    />
                     <!-- Column data type -->
                     <div
                         v-if="item.typeName.toLowerCase() === 'column'"
@@ -86,25 +99,27 @@
                     >
                         <span
                             v-if="item?.typeName.toLowerCase() === 'table'"
-                            class="mr-2"
-                            ><span class="font-semibold tracking-tighter">{{
+                            class="mr-2 text-gray-500"
+                            ><span class="tracking-tighter text-gray-700">{{
                                 rowCount(item, false)
                             }}</span>
                             rows</span
                         >
-                        <span
-                            ><span class="font-semibold tracking-tighter">{{
+                        <span class="text-gray-500">
+                            <span class="tracking-tighter text-gray-700">{{
                                 columnCount(item, false)
                             }}</span>
                             columns</span
                         >
                     </div>
-                    <div class="flex items-baseline">
+                    <div
+                        class="flex items-baseline"
+                        v-if="getCombinedUsersAndGroups(item).length"
+                    >
+                        <span class="text-gray-500">owned by </span>
                         <span
-                            v-if="getCombinedUsersAndGroups(item).length"
-                            class="mr-1 text-gray-500"
+                            class="ml-1 text-gray-700"
                             v-html="
-                                'owned by ' +
                                 getTruncatedUsers(
                                     getCombinedUsersAndGroups(item),
                                     20
@@ -158,7 +173,7 @@
                 <!-- Description -->
                 <div
                     v-if="projection?.includes('description')"
-                    class="max-w-lg mt-1 text-xs truncate-overflow"
+                    class="max-w-lg mt-1 text-sm text-gray-500  truncate-overflow"
                 >
                     <span v-if="description(item)?.length">{{
                         description(item)
@@ -166,11 +181,6 @@
                 </div>
 
                 <!-- Hierarchy bar -->
-                <HierarchyBar
-                    v-if="projection?.includes('heirarchy')"
-                    class="py-1 mt-1"
-                    :selected-asset="item"
-                />
             </div>
 
             <!-- <img :src="logo(item)" class="flex-none w-auto h-6" /> -->
@@ -285,17 +295,17 @@
                         truncated.length === 1 &&
                         truncated[0].length <
                             `${truncated.length} other(s)`.length
-                            ? `<b>${truncated[0]}</b>`
-                            : `<b>${truncated.length}</b> other(s)`
+                            ? `${truncated[0]}`
+                            : `${truncated.length} other(s)`
 
-                    return `<b>${displayArray.join(', ')}</b> and ${lastElm}`
+                    return `${displayArray.join(', ')} and ${lastElm}`
                 }
                 // Check if everything can be directly displayed
                 // If so then take the last element from array, append it with 'and'
                 const lastElm = displayArray.pop()
                 return displayArray.length
-                    ? `<b>${displayArray.join(', ')}</b> and <b>${lastElm}</b>`
-                    : `<b>${lastElm}</b>`
+                    ? `${displayArray.join(', ')} and ${lastElm}`
+                    : `${lastElm}`
             }
 
             function getCombinedUsersAndGroups(item: assetInterface) {

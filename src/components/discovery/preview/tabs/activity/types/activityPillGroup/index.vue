@@ -2,7 +2,14 @@
     <slot name="header"> </slot>
     <div class="flex flex-wrap text-sm">
         <div
-            class="flex flex-wrap items-center flex-grow w-10 gap-x-1 gap-y-1.5"
+            class="
+                flex flex-wrap
+                items-center
+                flex-grow
+                w-10
+                my-3
+                gap-x-1 gap-y-1.5
+            "
         >
             <template v-for="item in itemList" :key="item">
                 <slot name="pill-content" :item="item"> {{ item }}</slot>

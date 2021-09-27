@@ -19,7 +19,7 @@
                 <a-timeline-item v-for="(log, index) in audits" :key="index">
                     <template #dot>
                         <div
-                            class="border  ant-timeline-item-dot bg-primary-light border-primary"
+                            class="border ant-timeline-item-dot border-primary"
                         ></div>
                     </template>
                     <div>

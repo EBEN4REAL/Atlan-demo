@@ -1,8 +1,8 @@
 <template>
-    <chips :data="data">
+    <PillGroup :data="data">
         <template #header
             ><p>
-                Say<span class="mx-1">👋</span>Hello, to the new
+                Say <span class="mr-2">👋</span>Hello, to the new
                 <b>{{ data.value.length > 1 ? 'Owners' : 'Owner' }}</b>
             </p></template
         >
@@ -25,21 +25,21 @@
                         :avatar-shape="'circle'"
                     /> </template></Pill
         ></template>
-    </chips>
+    </PillGroup>
 </template>
 
 <script lang="ts">
     import { defineComponent, PropType } from 'vue'
     import { activityInterface } from '~/types/activitylogs/activitylog.interface'
     import { useUserPreview } from '~/composables/user/showUserPreview'
-    import Chips from '../chips/index.vue'
+    import PillGroup from '../activityPillGroup/index.vue'
     import Pill from '~/components/UI/pill/pill.vue'
     import { KeyMaps } from '~/api/keyMap'
 
     import Avatar from '~/components/common/avatar.vue'
 
     export default defineComponent({
-        components: { Chips, Pill, Avatar },
+        components: { PillGroup, Pill, Avatar },
         props: {
             data: {
                 type: Object as PropType<activityInterface>,

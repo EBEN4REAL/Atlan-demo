@@ -93,6 +93,7 @@ export function useSSE({
         unsubscribe: null,
         close: null,
     }
+    let eventSource: eventSrcObj
 
     // supports only standard headers like Authorization etc.
     let reqHeaders: { [index: string]: string } = {
@@ -113,7 +114,6 @@ export function useSSE({
     }
 
     const URL: any = resolveUrl(path, pathVariables)
-    let eventSource: eventSrcObj
 
     const promise = new Promise<useSSEReturnObj>((resolve, reject) => {
         eventSource = new EventSourcePolyfill(URL, {
@@ -202,6 +202,7 @@ export function useSSE({
     )
 
     return {
+        eventSource,
         data: state,
         isLoading: isLoading,
         error,

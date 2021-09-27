@@ -88,6 +88,7 @@ export default function useProject() {
         }
 
         const {
+            eventSource,
             data: sse,
             error,
             isLoading,
@@ -121,17 +122,30 @@ export default function useProject() {
                         message.error({
                             content: `${error.value.status} ${error.value.statusText}!`,
                         })
+                        if (eventSource?.close) {
+                            // for closing the connection in case of error
+                            eventSource.close()
+                        }
                     } else {
                         message.error({
                             content: `Something went wrong!`,
                         })
+                        if (eventSource?.close) {
+                            // for closing the connection in case of error
+                            eventSource.close()
+                        }
                     }
                     setColumns(columnList, [])
                     setRows(dataList, columnList, [])
                     getData([], [])
                     isQueryRunning.value = 'error'
                 }
-            } catch (e) {}
+            } catch (e) {
+                if (eventSource?.close) {
+                    // for closing the connection in case of error
+                    eventSource.close()
+                }
+            }
         })
     }
 

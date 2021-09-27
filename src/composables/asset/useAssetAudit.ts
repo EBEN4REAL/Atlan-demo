@@ -269,9 +269,8 @@ const useAssetAudit = (params: any, guid: string) => {
                     case 'BUSINESS_ATTRIBUTE_UPDATE':
                         try {
                             parsedDetails = JSON.parse(eventDetail[1].trim())
-                            data.value =
-                                parsedDetails?.typeName ?? ''
-
+                            data.value = parsedDetails
+                            console.log(data.value)
                             data.displayValue = 'bmUpdated'
 
                             return data

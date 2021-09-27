@@ -1,17 +1,24 @@
 <template>
     <div><b>Business Metadata </b>updated</div>
     <div class="my-3">
-        <Pill :label="data.value" />
+        <div class="mb-1 font-bold">{{ data.value?.typeName }}</div>
+        <div
+            v-for="(value, name, index) in data.value?.attributes"
+            :key="index"
+        >
+            <div>
+                <b>{{ name }}</b> set to
+                <b>{{ value }}</b>
+            </div>
+        </div>
     </div>
 </template>
 
 <script lang="ts">
     import { defineComponent, PropType } from 'vue'
     import { activityInterface } from '~/types/activitylogs/activitylog.interface'
-    import Pill from '~/components/UI/pill/pill.vue'
 
     export default defineComponent({
-        components: { Pill },
         props: {
             data: {
                 type: Object as PropType<activityInterface>,

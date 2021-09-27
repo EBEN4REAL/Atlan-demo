@@ -3,7 +3,12 @@
         <LoadingView />
     </div>
     <div v-else class="flex flex-row h-full" :class="$style.tabClasses">
-        <div class="w-2/3 h-full">
+        <div
+            class="w-2/3 h-full"
+            @scroll="handleScroll"
+            ref="scrollDiv"
+            :class="{ 'overflow-y-auto': !headerReachedTop }"
+        >
             <ProfileHeader
                 :title="title"
                 :entity="category"
@@ -11,6 +16,7 @@
                 :statusMessage="statusMessage"
                 :statusObject="statusObject"
                 :shortDescription="shortDescription"
+                :headerReachedTop="headerReachedTop"
             />
 
             <div class="m-0">
@@ -20,7 +26,7 @@
                     class="border-0"
                 >
                     <a-tab-pane key="1" tab="Overview">
-                        <div class="px-8 mt-4">
+                        <div class="px-5 mt-4">
                             <div v-if="isNewCategory" class="mb-4">
                                 <p
                                     class="p-0 mb-1 text-sm leading-5 text-gray-700 "
@@ -49,9 +55,11 @@
                             :qualified-name="parentGlossaryQualifiedName"
                             :display-text="title"
                             :guid="guid"
+                            :headerReachedTop="headerReachedTop"
                             :show-preview-panel="currentTab === '2'"
                             type="AtlasGlossaryCategory"
                             @entityPreview="handleCategoryOrTermPreview"
+                            @firstCardReachedTop="handleFirstCardReachedTop"
                         />
                     </a-tab-pane>
                     <!-- <a-tab-pane key="4" tab="Requests"> Requests </a-tab-pane>
@@ -117,6 +125,10 @@
             const previewEntity = ref<Category | Term | undefined>()
             const showPreviewPanel = ref(false)
             const newName = ref('')
+            const scrollDiv = ref(null)
+            const headerReachedTop = ref(false)
+            const temp = ref(false)
+
             const router = useRouter()
 
             const {
@@ -172,6 +184,19 @@
                     `/glossary/${category.value?.attributes?.anchor?.guid}`
                 )
             }
+            const handleScroll = () => {
+                if (scrollDiv.value?.scrollTop > 70 && !temp.value) {
+                    headerReachedTop.value = true
+                } else if (scrollDiv.value?.scrollTop > 70 && temp.value) {
+                    scrollDiv.value.scrollTop = 0
+                    temp.value = !temp.value
+                }
+            }
+            const handleFirstCardReachedTop = () => {
+                scrollDiv.value.scrollTop = 0
+                headerReachedTop.value = false
+                temp.value = true
+            }
 
             // lifecycle methods and watchers
             onMounted(() => {
@@ -213,10 +238,14 @@
                 statusObject,
                 isNewCategory,
                 newName,
+                scrollDiv,
+                headerReachedTop,
                 handleCategoryOrTermPreview,
                 handlClosePreviewPanel,
                 updateTitle,
                 redirectToProfile,
+                handleScroll,
+                handleFirstCardReachedTop,
             }
         },
     })

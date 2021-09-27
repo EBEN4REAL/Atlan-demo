@@ -1,41 +1,38 @@
 <template>
     <slot name="header"> </slot>
-    <div class="flex flex-wrap mt-3 text-sm border border-transparent rounded">
-        <template v-for="item in splittedItems.a" :key="item">
-            <slot name="chip-content" :item="item"> {{ item }}</slot> </template
-        ><template v-if="showAll"
-            ><template v-for="item in splittedItems.b" :key="item">
-                <slot name="chip-content" :item="item"> {{ item }}</slot>
-            </template></template
-        >
+    <div class="flex flex-wrap text-sm">
         <div
-            v-if="splittedItems.b.length > 0 && !showAll"
-            class="flex items-center mb-3 mr-3 cursor-pointer"
-            @click="() => toggleAllItems(true)"
+            class="flex flex-wrap items-center flex-grow w-10 gap-x-1 gap-y-1.5"
         >
-            <span class="px-1 py-0.5 text-sm font-bold rounded text-primary">
-                and {{ splittedItems.b.length }} more
-            </span>
-        </div>
-        <div
-            v-if="splittedItems.b.length > 0 && showAll"
-            class="flex items-center justify-center mb-3 mr-3 cursor-pointer"
-            @click="() => toggleAllItems(false)"
-        >
-            <span class="px-1 py-0.5 text-sm font-bold rounded text-primary">
-                show less
+            <template v-for="item in itemList" :key="item">
+                <slot name="pill-content" :item="item"> {{ item }}</slot>
+            </template>
+            <span
+                v-if="splittedItems.b.length > 0 && !showAll"
+                class="
+                    px-1
+                    py-0.5
+                    text-sm
+                    rounded
+                    text-primary
+                    mr-3
+                    cursor-pointer
+                "
+                @click="() => toggleAllItems()"
+            >
+                {{
+                    showAll ? 'Show less' : `and ${splittedItems.b.length} more`
+                }}
             </span>
         </div>
     </div>
 </template>
 
 <script lang="ts">
-    import { defineComponent, PropType, ref } from 'vue'
+    import { defineComponent, PropType, ref, computed } from 'vue'
     import { activityInterface } from '~/types/activitylogs/activitylog.interface'
-    import Pill from '~/components/UI/pill/pill.vue'
 
     export default defineComponent({
-        components: { Pill },
         props: {
             data: {
                 type: Object as PropType<activityInterface>,
@@ -47,8 +44,8 @@
         setup(props) {
             const showAll = ref<boolean>(false)
 
-            const toggleAllItems = (state: boolean) => {
-                showAll.value = state
+            const toggleAllItems = () => {
+                showAll.value = !showAll.value
             }
 
             const splitArray = (sizeofSplit: number, arr: any[]) => {
@@ -66,8 +63,13 @@
                 }
             }
             const splittedItems = ref(splitArray(5, props.data.value))
+            const itemList = computed(() =>
+                showAll.value
+                    ? [...splittedItems.value.a, ...splittedItems.value.b]
+                    : splittedItems.value.a
+            )
 
-            return { splittedItems, showAll, toggleAllItems }
+            return { splittedItems, showAll, toggleAllItems, itemList }
         },
     })
 </script>

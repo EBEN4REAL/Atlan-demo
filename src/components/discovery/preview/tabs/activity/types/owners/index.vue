@@ -1,12 +1,12 @@
 <template>
     <chips :data="data">
         <template #header
-            ><span
-                >Say 👋 Hello, to the new
-                <b>{{ data.value.length > 1 ? 'Owners' : 'Owner' }}</b></span
-            ></template
+            ><p>
+                Say<span class="mx-1">👋</span>Hello, to the new
+                <b>{{ data.value.length > 1 ? 'Owners' : 'Owner' }}</b>
+            </p></template
         >
-        <template #chip-content="user">
+        <template #pill-content="user">
             <Pill
                 :label="user.item"
                 @click.stop="() => handleClickUser(user.item)"
@@ -59,9 +59,3 @@
         },
     })
 </script>
-
-<style lang="less" scoped>
-    .max-owner-name-width {
-        max-width: 10rem;
-    }
-</style>

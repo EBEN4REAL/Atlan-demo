@@ -9,8 +9,8 @@
             >
                 <AttributeItem
                     :a="a"
-                    :applied="data.applied[a.value] || {}"
-                    :operators="operatorsMap[a.typeName]"
+                    :applied="data.applied?.[a.value] || {}"
+                    :operators="operatorsMap?.[a.typeName]"
                     @handleAttributeInput="setAdvancefilter"
                 />
             </div>

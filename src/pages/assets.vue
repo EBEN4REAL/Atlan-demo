@@ -45,6 +45,7 @@
     import { assetInterface } from '~/types/assets/asset.interface'
     import { typedefsInterface } from '~/types/typedefs/typedefs.interface'
     import { getDecodedOptionsFromString } from '~/utils/helper/routerQuery'
+    import { decodeQuery } from '~/utils/helper/routerHelper'
 
     export interface initialFiltersType {
         facetsFilters: any
@@ -66,8 +67,21 @@
             const updateProfile = ref<boolean>(false)
 
             const assetDiscovery: Ref<Element | null> = ref(null)
-            const initialFilters: initialFiltersType =
-                getDecodedOptionsFromString(router)
+            // const initialFilters: initialFiltersType =
+            //     getDecodedOptionsFromString(router)
+
+            const initialFilters: Record<string, any> = {
+                facetsFilters: {},
+                searchText: '',
+                selectedTab: 'Catalog',
+                sortOrder: 'default',
+                state: 'active',
+                ...decodeQuery(
+                    Object.keys(router.currentRoute.value?.query)[0]
+                ),
+            }
+
+            router.currentRoute.value?.query
             const selected: Ref<assetInterface | undefined> = ref(undefined)
             const handlePreview = (selectedItem: assetInterface) => {
                 selected.value = selectedItem

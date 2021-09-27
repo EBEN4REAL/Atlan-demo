@@ -129,7 +129,6 @@
         watch,
     } from 'vue'
     import { Components } from '~/api/atlas/client'
-    import { useClassificationStore } from '~/components/admin/classifications/_store'
     import useBusinessMetadataHelper from '~/composables/businessMetadata/useBusinessMetadataHelper'
     import { List as StatusList } from '~/constant/status'
     import { List as AssetCategoryList } from '~/constant/assetCategory'
@@ -173,52 +172,51 @@
         // FIXME: Remove modifyTabs logic
         emits: ['refresh', 'modifyTabs'],
         setup(props, { emit }) {
-            const classificationsStore = useClassificationStore()
             const { bmFiltersList, bmDataList } = useBusinessMetadataHelper()
             // console.log(props.initialFilters.facetsFilters, 'facetFilters')
             const activeKey: Ref<string[]> = ref([])
+            const totalAppliedFiltersCount = ref(0)
             const initialFilterMap = {
                 connector: {
                     condition: 'AND',
-                    criterion: Object.keys(
-                        props.initialFilters?.facetsFilters?.connector
-                    ).length
-                        ? [props.initialFilters.facetsFilters.connector]
-                        : [],
+                    criterion:
+                        props.initialFilters?.facetsFilters?.connector || [],
                 },
                 assetCategory: {
                     condition:
-                        props.initialFilters.facetsFilters.assetCategory
-                            .condition,
+                        props.initialFilters?.facetsFilters?.assetCategory
+                            ?.condition,
                     criterion:
-                        props.initialFilters.facetsFilters.assetCategory
-                            .criterion,
+                        props.initialFilters?.facetsFilters?.assetCategory
+                            ?.criterion,
                 },
                 status: {
                     condition:
-                        props.initialFilters.facetsFilters.status.condition,
+                        props.initialFilters?.facetsFilters?.status?.condition,
                     criterion:
-                        props.initialFilters.facetsFilters.status.criterion,
+                        props.initialFilters?.facetsFilters?.status?.criterion,
                 },
                 classifications: {
                     condition:
-                        props.initialFilters.facetsFilters.classifications
-                            .condition,
+                        props.initialFilters?.facetsFilters?.classifications
+                            ?.condition,
                     criterion:
-                        props.initialFilters.facetsFilters.classifications
-                            .criterion,
+                        props.initialFilters?.facetsFilters?.classifications
+                            ?.criterion,
                 },
                 owners: {
                     condition:
-                        props.initialFilters.facetsFilters.owners.condition,
+                        props.initialFilters?.facetsFilters?.owners?.condition,
                     criterion:
-                        props.initialFilters.facetsFilters.owners.criterion,
+                        props.initialFilters?.facetsFilters?.owners?.criterion,
                 },
                 advanced: {
                     condition:
-                        props.initialFilters.facetsFilters.advanced.condition,
+                        props.initialFilters?.facetsFilters?.advanced
+                            ?.condition,
                     criterion:
-                        props.initialFilters.facetsFilters.advanced.criterion,
+                        props.initialFilters?.facetsFilters?.advanced
+                            ?.criterion,
                 },
             }
 
@@ -233,12 +231,12 @@
                 () => bmFiltersList.value,
                 () => {
                     bmFiltersList.value.forEach((bm) => {
-                        if (props.initialFilters.facetsFilters[bm.id]) {
+                        if (props.initialFilters?.facetsFilters?.[bm.id]) {
                             filterMap[bm.id] = {
                                 condition: 'OR',
                                 criterion:
                                     props.initialFilters.facetsFilters[bm.id]
-                                        .criterion,
+                                        ?.criterion,
                             }
                         }
                     })
@@ -262,47 +260,46 @@
             ])
 
             // Mapping of Data to child components
-            const dataMap: Ref<{ [key: string]: any }> = ref({})
-            dataMap.value.connector =
-                props.initialFilters.facetsFilters.connector
-            dataMap.value.assetCategory = {
-                checked:
-                    props.initialFilters.facetsFilters.assetCategory.checked,
-            }
-            dataMap.value.status = {
-                checked: props.initialFilters.facetsFilters.status.checked,
-            }
-            dataMap.value.classifications = {
-                classifications: computed(
-                    () => classificationsStore.classifications
-                ),
-                noClassificationsAssigned: false,
-                checked:
-                    props.initialFilters.facetsFilters.classifications.checked,
-                operator:
-                    props.initialFilters.facetsFilters.classifications
-                        .condition || 'OR',
-                addedBy:
-                    props.initialFilters.facetsFilters.classifications
-                        .addedBy || 'all',
-            }
-            dataMap.value.owners = {
-                userValue:
-                    props.initialFilters.facetsFilters?.owners?.userValue || [],
-                groupValue:
-                    props.initialFilters.facetsFilters?.owners?.groupValue ||
-                    [],
-                noOwnerAssigned:
-                    props.initialFilters.facetsFilters?.owners?.noOwner,
-            }
-            dataMap.value.advanced = {
-                applied: props.initialFilters.facetsFilters.advanced.applied,
-            }
+            const dataMap: Ref<{ [key: string]: any }> = ref({
+                connector: props.initialFilters?.facetsFilters?.connector || {},
+                assetCategory: props.initialFilters?.facetsFilters
+                    ?.assetCategory || { checked: undefined },
+                status: props.initialFilters?.facetsFilters?.status || {
+                    checked: undefined,
+                },
+                classifications: {
+                    noClassificationsAssigned: false,
+                    checked:
+                        props.initialFilters?.facetsFilters?.classifications
+                            ?.checked,
+                    operator:
+                        props.initialFilters?.facetsFilters?.classifications
+                            ?.condition || 'OR',
+                    addedBy:
+                        props.initialFilters?.facetsFilters?.classifications
+                            ?.addedBy || 'all',
+                },
+                owners: {
+                    userValue:
+                        props.initialFilters?.facetsFilters?.owners
+                            ?.userValue || [],
+                    groupValue:
+                        props.initialFilters?.facetsFilters?.owners
+                            ?.groupValue || [],
+                    noOwnerAssigned:
+                        props.initialFilters?.facetsFilters?.owners
+                            ?.noOwnerAssigned || false,
+                },
+                advanced: {
+                    applied:
+                        props.initialFilters?.facetsFilters?.advanced?.applied,
+                },
+            })
 
             function setAppliedFiltersCount() {
                 let count = 0
                 const filterMapKeys = Object.keys(filterMap)
-                filterMapKeys.forEach((id) => {
+                filterMapKeys?.forEach((id) => {
                     if (filterMap[id]?.criterion?.length > 0) {
                         return (count += 1)
                     }
@@ -314,13 +311,12 @@
             watch(
                 bmDataList,
                 () => {
-                    // debugger
                     // ? add initial applied filters to dataMap
                     Object.keys(bmDataList.value).forEach((b) => {
                         dataMap.value[b] = {
                             applied: {
                                 ...dataMap.value[b]?.applied,
-                                ...props.initialFilters.facetsFilters[b]
+                                ...props.initialFilters?.facetsFilters?.[b]
                                     ?.applied,
                             },
                         }
@@ -368,8 +364,6 @@
                 }
                 return false
             }
-
-            const totalAppliedFiltersCount = ref(0)
 
             const resetTabs = () => {
                 const tabsIds = AssetTypeList.filter(
@@ -435,8 +429,9 @@
             function getFiltersAppliedString(filterId: string) {
                 switch (filterId) {
                     case 'assetCategory': {
-                        let facetFiltersData = dataMap.value[filterId].checked
-                        facetFiltersData = facetFiltersData.map(
+                        let facetFiltersData =
+                            dataMap.value[filterId]?.checked || []
+                        facetFiltersData = facetFiltersData?.map(
                             (assetCategoryId: string) =>
                                 AssetCategoryList?.find(
                                     (assetCategory: any) =>
@@ -454,7 +449,8 @@
                         return facetFiltersData.slice(0, 2).join(', ')
                     }
                     case 'status': {
-                        let facetFiltersData = dataMap.value[filterId].checked
+                        let facetFiltersData =
+                            dataMap.value[filterId]?.checked || []
                         facetFiltersData = facetFiltersData.map(
                             (statusId: string) =>
                                 StatusList?.find(
@@ -472,7 +468,8 @@
                         return facetFiltersData.slice(0, 3).join(', ')
                     }
                     case 'classifications': {
-                        const facetFiltersData = dataMap.value[filterId].checked
+                        const facetFiltersData =
+                            dataMap.value[filterId]?.checked || []
                         if (facetFiltersData.length > 3) {
                             return `${facetFiltersData
                                 .slice(0, 3)
@@ -491,10 +488,10 @@
                         )
                     }
                     case 'owners': {
-                        const users = dataMap.value[filterId].userValue
-                        const groups = dataMap.value[filterId].groupValue
+                        const users = dataMap.value[filterId]?.userValue || []
+                        const groups = dataMap.value[filterId]?.groupValue || []
                         const noOwnerAssigned =
-                            dataMap.value[filterId].noOwnerAssigned
+                            dataMap.value[filterId]?.noOwnerAssigned || false
                         let appliedOwnersString = ''
                         if (users && users?.length > 0) {
                             if (users?.length === 1)
@@ -519,7 +516,7 @@
                     case 'advanced': {
                         // ? default fall back to bm filter
                         const totalCount = Object.values(
-                            dataMap.value[filterId]?.applied
+                            dataMap.value[filterId]?.applied || {}
                         ).length
 
                         return totalCount
@@ -529,7 +526,7 @@
                     default: {
                         // ? default fall back to bm filter
                         const totalCount = Object.values(
-                            dataMap.value[filterId]?.applied
+                            dataMap.value[filterId]?.applied || {}
                         ).length
 
                         return totalCount
@@ -590,15 +587,6 @@
                 bmFiltersList,
                 bmDataList,
                 setConnector,
-            }
-        },
-        data() {
-            return {
-                searchParam: {
-                    entityFilters: {},
-                } as Components.Schemas.SearchParameters,
-                filterMap: {} as { [key: string]: any },
-                filters: {} as Components.Schemas.FilterCriteria,
             }
         },
     })

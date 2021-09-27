@@ -10,7 +10,7 @@
                         assetFilterRef = el
                     }
                 "
-                :initial-filters="initialFilters"
+                :initial-filters="AllFilters"
                 @refresh="handleFilterChange"
             ></AssetFilters>
         </div>
@@ -124,7 +124,7 @@
     import { initialFiltersType } from '~/pages/assets.vue'
 
     import { getEncodedStringFromOptions } from '~/utils/helper/routerQuery'
-    // import { serializeQuery } from '~/utils/helper/routerHelper'
+    import { serializeQuery } from '~/utils/helper/routerHelper'
 
     import { useBusinessMetadataStore } from '~/store/businessMetadata'
     import { useFilteredTabs } from './useTabMapped'
@@ -180,9 +180,9 @@
             const AllFilters: Ref = ref({ ...initialFilters.value })
 
             const selectedTab = computed({
-                get: () => AllFilters.value.type || 'Catalog',
+                get: () => AllFilters.value.selectedTab || 'Catalog',
                 set: (val) => {
-                    AllFilters.value.type = val
+                    AllFilters.value.selectedTab = val
                 },
             })
             const queryText = computed({
@@ -307,7 +307,7 @@
                     offset: offset.value,
                     entityFilters: {
                         condition: 'AND',
-                        criterion: [...filters.value],
+                        criterion: filters?.value || [],
                     },
                     attributes: [
                         ...BaseAttributes,
@@ -358,20 +358,31 @@
                 if (isAggregate.value) refreshAggregation(initialBody)
             }
 
+            const setRouterOptions = () => {
+                const routerOptions = {
+                    facetsFilters: AllFilters.value.facetsFilters || {},
+                    searchText: queryText.value || '',
+                    selectedTab: selectedTab.value,
+                    sortOrder: sortOrder.value,
+                    state: state.value,
+                }
+                const routerQuery = serializeQuery(routerOptions)
+                router.push(`/assets?${routerQuery}`)
+            }
+
             function handleTabChange() {
                 isAggregate.value = false
                 offset.value = 0
                 updateBody()
+                setRouterOptions()
             }
 
             const { projection } = useDiscoveryPreferences()
             const handleSearchChange = useDebounceFn(() => {
                 offset.value = 0
-                const routerOptions = getRouterOptions()
-                const routerQuery = getEncodedStringFromOptions(routerOptions)
                 isAggregate.value = true
                 updateBody()
-                pushQueryToRouter(routerQuery)
+                setRouterOptions()
                 // tracking.trackEvent(events.EVENT_ASSET_SEARCH, {
                 //     trigger: 'discover',
                 // })
@@ -390,20 +401,6 @@
                 updateBody()
             }
 
-            const getRouterOptions = () => {
-                return {
-                    filters: AllFilters.value.facetsFilters.value || {},
-                    searchText: queryText.value || '',
-                    limit: limit.value || 20,
-                    sortOrder: sortOrder.value,
-                    state: state.value,
-                }
-            }
-
-            const pushQueryToRouter = (queryStr: string) => {
-                router.push(`/assets?${queryStr}`)
-            }
-
             const handleFilterChange = (
                 payload: any,
                 filterMapData: Record<string, Components.Schemas.FilterCriteria>
@@ -413,9 +410,7 @@
                 offset.value = 0
                 isAggregate.value = true
                 updateBody()
-                const routerOptions = getRouterOptions()
-                const routerQuery = getEncodedStringFromOptions(routerOptions)
-                pushQueryToRouter(routerQuery)
+                setRouterOptions()
             }
 
             const handlePreview = (item) => {
@@ -431,19 +426,21 @@
                 assetFilterRef.value?.resetAllFilters()
             }
 
-            watch(BMListLoaded, (val) => {
-                if (val) {
-                    isAggregate.value = true
-                    updateBody()
-                }
-            })
+            watch(
+                BMListLoaded,
+                (val) => {
+                    if (val) {
+                        isAggregate.value = true
+                        try {
+                            updateBody()
+                        } catch (error) {
+                            console.error(error)
+                        }
+                    }
+                },
+                { immediate: true }
+            )
 
-            onMounted(() => {
-                if (BMListLoaded.value) {
-                    isAggregate.value = true
-                    updateBody()
-                }
-            })
             console.log(list)
 
             return {

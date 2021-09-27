@@ -58,7 +58,7 @@ const categoryTypeMapping = {
 }
 
 export function tabsByConnector(
-    { attributeName, attributeValue }: Record<string, string>,
+    { attributeName, attributeValue }: Record<string, string> = {},
     initialTabs: string[] = []
 ) {
     const connector = () => {

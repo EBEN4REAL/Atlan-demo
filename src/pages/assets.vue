@@ -1,6 +1,9 @@
 <template>
-    <div class="flex w-full h-full">
-        <div class="flex-1 item-stretch" style="max-width: calc(100vw - 420px)">
+    <div class="flex w-full h-full bg-white">
+        <div
+            class="flex-1 border-r border-gray-300 item-stretch"
+            style="max-width: calc(100vw - 420px)"
+        >
             <div class="flex h-full">
                 <router-view
                     v-if="isItem"
@@ -17,9 +20,7 @@
             </div>
         </div>
 
-        <div
-            class="z-20 flex flex-col h-full bg-white border-l  asset-preview-container"
-        >
+        <div class="z-20 flex flex-col bg-white asset-preview-container">
             <AssetPreview
                 v-if="selected"
                 :selectedAsset="selected"
@@ -28,7 +29,7 @@
             ></AssetPreview>
         </div>
 
-        <div id="overAssetPreviewSidebar" class="relative"></div>
+        <div id="overAssetPreviewSidebar"></div>
     </div>
 </template>
 

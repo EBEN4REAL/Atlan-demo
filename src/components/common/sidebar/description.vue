@@ -1,6 +1,6 @@
 <template>
     <div class="text-xs text-gray-500" :class="usingInInfo ? 'mb-3' : ''">
-        <p v-if="usingInInfo" class="mb-1 text-xs">
+        <p v-if="usingInInfo" class="mb-1 text-sm">
             Description<span v-if="isLoading" class="ml-2">
                 <a-spin size="small" class="leading-none"></a-spin>
             </span>
@@ -78,7 +78,7 @@
         emits: ['update:selectedAsset'],
         setup(props, { emit }) {
             const { selectedAsset } = toRefs(props)
-            const { update, description, isLoading, error } =
+            const { update, description, isLoading, error, handleCancel } =
                 updateDescription(selectedAsset)
 
             const showEditableDescription = ref<boolean>(false)
@@ -86,7 +86,12 @@
 
             const descriptionInput = ref()
             const handleDescriptionEdit = (e: any) => {
-                if (description.value !== e.target.value) {
+                if (
+                    description.value === e.target.value ||
+                    (description.value === undefined && e.target.value === '')
+                ) {
+                    showEditableDescription.value = false
+                } else {
                     description.value = e.target.value
                     update()
                     watch(error, () => {
@@ -99,9 +104,10 @@
                             showEditableDescription.value = false
                         }
                     })
+
                     watch(isError, () => {
                         if (isError.value) {
-                            isLoading.value = false
+                            handleCancel()
                             message.error(
                                 'Unable to update description. Please try again later.'
                             )

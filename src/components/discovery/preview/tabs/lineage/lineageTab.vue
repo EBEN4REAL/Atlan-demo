@@ -1,19 +1,10 @@
 <template>
     <div
         v-if="loading"
-        class="
-            flex
-            items-center
-            justify-center
-            px-5
-            py-4
-            mt-4
-            text-sm
-            leading-none
-        "
+        class="flex items-center justify-center px-5 py-4 mt-4 text-sm leading-none "
     >
-        <a-spin size="small" class="mr-2 leading-none"></a-spin
-        ><span>Getting lineage data</span>
+        <!-- <a-spin size="small" class="mr-2 leading-none"></a-spin
+        ><span>Getting lineage data</span> -->
     </div>
     <div v-else>
         <div class="flex items-center justify-between px-5 my-3 gap-x-2">
@@ -57,14 +48,7 @@
             >
                 <template #header>
                     <div
-                        class="
-                            flex
-                            items-center
-                            text-sm
-                            font-bold
-                            select-none
-                            header
-                        "
+                        class="flex items-center text-sm font-bold select-none  header"
                     >
                         {{ stream.name }}
 
@@ -117,10 +101,6 @@
     import AssetList from './assetList.vue'
     import Preferences from './preferences.vue'
 
-    // Composables
-    import useLineage from '~/composables/lineage/useLineage'
-    import * as useLineageCompute from '~/composables/lineage/useLineageCompute'
-    import useLineageFilters from '~/composables/lineage/useLineageFilters'
     // Types
     import { assetInterface } from '~/types/assets/asset.interface'
     // Assets
@@ -166,14 +146,14 @@
 
             /** METHODS */
             const filter = () => {
-                const { data, l } = useLineageFilters(
-                    lineageList,
-                    filters,
-                    query
-                )
-                filteredLineageList.value = data
-                assetTypesLengthMap.value = l
-                loading.value = false
+                // const { data, l } = useLineageFilters(
+                //     lineageList,
+                //     filters,
+                //     query
+                // )
+                // filteredLineageList.value = data
+                // assetTypesLengthMap.value = l
+                // loading.value = false
             }
             const searchQuery = (e) => {
                 query.value = e.target.value
@@ -185,22 +165,21 @@
                 filters.value = val
             }
             const fetch = () => {
-                loading.value = true
-                const currGuid = id.value || guid.value
-                const { data } = useLineage(currGuid, depth.value, 'BOTH')
-                watch(data, () => {
-                    lineage.value = data.value as object
-                    lineageList.value = useLineageCompute.computeGraphRelations(
-                        lineage,
-                        'widget'
-                    )
-                    streams.forEach((i) => {
-                        if (lineageList.value[i.key])
-                            activeKeys.value.push(i.key)
-                    })
-
-                    filter()
-                })
+                // loading.value = true
+                // const currGuid = id.value || guid.value
+                // const { data } = useLineage(currGuid, depth.value, 'BOTH')
+                // watch(data, () => {
+                //     lineage.value = data.value as object
+                //     lineageList.value = useLineageCompute.computeGraphRelations(
+                //         lineage,
+                //         'widget'
+                //     )
+                //     streams.forEach((i) => {
+                //         if (lineageList.value[i.key])
+                //             activeKeys.value.push(i.key)
+                //     })
+                //     filter()
+                // })
             }
 
             /** PROVIDERS */

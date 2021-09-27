@@ -1,7 +1,7 @@
 <template>
     <a-popover placement="left">
         <template #content>
-            <pre v-html="displaySQL"></pre>
+            <pre>{{ displaySQL }}</pre>
         </template>
         <slot></slot>
     </a-popover>
@@ -24,21 +24,14 @@
             const { sql } = toRefs(props)
 
             const displaySQL = computed(() => {
-                return highlight(
-                    format(sql.value, {
-                        language: 'sql', // Defaults to "sql" (see the above list of supported dialects)
-                        indent: '    ', // Defaults to two spaces
+                return format(sql.value, {})
 
-                        linesBetweenQueries: 1, // Defaults to 1
-                    }),
-                )
+                // return format(sql.value, {
+                //     language: 'sql', // Defaults to "sql" (see the above list of supported dialects)
+                //     indent: '    ', // Defaults to two spaces
 
-                return format(sql.value, {
-                    language: 'sql', // Defaults to "sql" (see the above list of supported dialects)
-                    indent: '    ', // Defaults to two spaces
-
-                    linesBetweenQueries: 1, // Defaults to 1
-                })
+                //     linesBetweenQueries: 1, // Defaults to 1
+                // })
             })
 
             return {
@@ -59,18 +52,18 @@
     }
 
     .sql-hl-function {
-    color: #ff0000;
+        color: #ff0000;
     }
     .sql-hl-number {
-    color: #282c34;
+        color: #282c34;
     }
     .sql-hl-string {
-    color: #282c34;
+        color: #282c34;
     }
     .sql-hl-special {
-    color: #56b6c2;
+        color: #56b6c2;
     }
     .sql-hl-bracket {
-    color: #56b6c2;
+        color: #56b6c2;
     }
 </style>

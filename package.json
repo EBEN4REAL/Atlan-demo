@@ -13,8 +13,6 @@
     "dependencies": {
         "@antv/layout": "^0.1.19-beta.1",
         "@antv/x6": "^1.26.2",
-        "@antv/x6-vue3-shape": "^1.0.0",
-        "@dagrejs/graphlib": "^2.1.4",
         "@fortawesome/fontawesome-svg-core": "^1.2.36",
         "@fortawesome/pro-light-svg-icons": "^5.15.3",
         "@fortawesome/pro-solid-svg-icons": "^5.15.3",
@@ -84,6 +82,7 @@
         "@babel/core": "^7.15.5",
         "@babel/eslint-parser": "^7.15.4",
         "@intlify/vite-plugin-vue-i18n": "^2.4.0",
+        "@rollup/plugin-json": "^4.1.0",
         "@rollup/plugin-replace": "^3.0.0",
         "@tailwindcss/line-clamp": "^0.2.1",
         "@typescript-eslint/eslint-plugin": "^4.31.1",

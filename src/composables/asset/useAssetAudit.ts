@@ -196,9 +196,7 @@ const useAssetAudit = (params: any, guid: string) => {
                             // This handles the case when classification is linked using Atlan Bot user
                             // In this case, classification object comes in details
                             parsedDetails = JSON.parse(eventDetail[1].trim())
-                            console.log('Classifications')
 
-                            console.log(eventDetail)
 
                             if (parsedDetails.typeName) {
                                 data.value =
@@ -263,6 +261,18 @@ const useAssetAudit = (params: any, guid: string) => {
                             data.value =
                                 filterTermTypeNameDisplayName(parsedDetails)
                             data.displayValue = 'termRemoved'
+
+                            return data
+                        } catch (error) {
+                            return null
+                        }
+                    case 'BUSINESS_ATTRIBUTE_UPDATE':
+                        try {
+                            parsedDetails = JSON.parse(eventDetail[1].trim())
+                            data.value =
+                                parsedDetails?.typeName ?? ''
+
+                            data.displayValue = 'bmUpdated'
 
                             return data
                         } catch (error) {

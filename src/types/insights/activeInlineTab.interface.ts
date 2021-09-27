@@ -10,6 +10,7 @@ export interface activeInlineTabInterface {
             connectors: {
                 connection: string | undefined
                 connector: string | undefined
+                connectionGuid: string | undefined
                 selectedDefaultSchema: string | undefined
                 selectedDataSourceName: string | undefined
             }

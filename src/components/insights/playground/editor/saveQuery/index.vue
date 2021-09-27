@@ -10,15 +10,26 @@
             <div class="flex w-full text-xs">
                 <div class="flex items-center flex-1 mr-5">
                     <div class="flex items-center mr-1">
-                        <AtlanIcon
-                            icon="PublicFolder"
-                            class="h-4 m-0 mr-2 -ml-0.5 -mt-0.5"
-                        />
-                        <span>Folder</span>
+                        <div class="relative w-4 h-4 mr-2 overflow-hidden">
+                            <div class="absolute absolute-center">
+                                <AtlanIcon
+                                    icon="PublicFolder"
+                                    class="h-4 m-0 -ml-0.5 -mt-0.5"
+                                />
+                            </div>
+                            <!-- <div class="absolute absolute-center">
+                                <AtlanIcon
+                                    icon="PrivateFolder"
+                                    class="h-4 m-0 -ml-0.5 -mt-0.5 absolute"
+                                />
+                            </div> -->
+                        </div>
+
+                        <span>QueryFolder</span>
                     </div>
                     <AtlanIcon icon="ChevronRight" class="h-5 m-0 -mb-0.5" />
                     <div class="flex items-center ml-1">
-                        <span>New query</span>
+                        <span>{{ title }}</span>
                     </div>
                 </div>
                 <div>
@@ -72,23 +83,56 @@
                 />
             </div>
             <div class="flex items-center w-full">
-                <div class="flex items-center border rounded px-2 py-0.5 mr-3">
+                <div
+                    class="
+                        flex
+                        items-center
+                        border
+                        rounded
+                        px-2
+                        py-0.5
+                        mr-3
+                        text-xs
+                    "
+                >
                     <AtlanIcon
                         icon="Term"
                         class="h-4 m-0 mr-1.5 -mt-0.5 text-purple-500"
                     />
                     <span>Terms</span>
                 </div>
+                <div
+                    class="
+                        flex
+                        items-center
+                        border
+                        rounded
+                        px-2
+                        py-0.5
+                        mr-3
+                        text-xs
+                    "
+                >
+                    <AtlanIcon
+                        icon="Shield"
+                        class="h-4 m-0 mr-1.5 -mt-0.5 text-pink-400"
+                    />
+                    <span>Classifications</span>
+                </div>
                 <div>
-                    <a-checkbox v-model:checked="isSQLSnippet"
+                    <a-checkbox
+                        v-model:checked="isSQLSnippet"
+                        class="text-xs text-gray-500"
                         >Make SQL snippet</a-checkbox
                     >
                 </div>
                 <div class="flex justify-end flex-1">
                     <a-button class="" @click="closeModal">Cancel</a-button>
                     <a-button
+                        @click="createSaveQuery"
                         type="primary"
                         class="flex items-center justify-between ml-4"
+                        :loading="saveQueryLoading"
                     >
                         Create
                     </a-button>
@@ -118,10 +162,14 @@
                 type: Object as PropType<boolean>,
                 required: true,
             },
+            saveQueryLoading: {
+                type: Object as PropType<boolean>,
+                required: true,
+            },
         },
-        emits: ['update:showSaveQueryModal'],
+        emits: ['update:showSaveQueryModal', 'onSaveQuery'],
         setup(props, { emit }) {
-            const { showSaveQueryModal } = toRefs(props)
+            const { showSaveQueryModal, saveQueryLoading } = toRefs(props)
             const currentStatus: Ref<string> = ref('draft')
             const title: Ref<string> = ref('Untitled Query')
             const description: Ref<string> = ref('')
@@ -129,9 +177,19 @@
             const titleBarRef: Ref<null | HTMLInputElement> = ref(null)
             const handleMenuClick = (status) => {
                 currentStatus.value = status.id
+                console.log(currentStatus.value)
             }
             const closeModal = () => {
                 emit('update:showSaveQueryModal', false)
+            }
+            const createSaveQuery = () => {
+                const saveQueryData = {
+                    title: title.value,
+                    description: description.value,
+                    isSQLSnippet: isSQLSnippet.value,
+                    assetStatus: currentStatus.value,
+                }
+                emit('onSaveQuery', saveQueryData)
             }
             onMounted(async () => {
                 await nextTick()
@@ -145,7 +203,9 @@
                 showSaveQueryModal,
                 currentStatus,
                 List,
+                saveQueryLoading,
                 closeModal,
+                createSaveQuery,
                 handleMenuClick,
             }
         },
@@ -154,6 +214,11 @@
 <style lang="less" scoped>
     .placeholder {
         background-color: #f4f4f4;
+    }
+    .absolute-center {
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
     }
 </style>
 <style lang="less" module>

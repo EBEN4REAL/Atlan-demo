@@ -213,5 +213,6 @@ export const KeyMaps = {
     },
     insights: {
         BASIC_SEARCH: () => getAPIPath('auth/atlas', '/search/basic'),
+        CREATE_SAVED_QUERY: () => getAPIPath('auth/atlas', '/entity'),
     },
 }

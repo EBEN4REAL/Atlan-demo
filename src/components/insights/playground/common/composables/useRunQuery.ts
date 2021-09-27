@@ -3,7 +3,7 @@ import { useSSE } from '~/modules/useSSE'
 import { KeyMaps } from '~/api/keyMap'
 import { message } from 'ant-design-vue'
 import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
-import { useEditor } from '~/components/insights/playground/common/composables/useEditor'
+import { useEditor } from '~/components/insights/common/composables/useEditor'
 
 export default function useProject() {
     const { getParsedQuery } = useEditor()

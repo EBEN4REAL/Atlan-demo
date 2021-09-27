@@ -156,7 +156,7 @@
         computed,
     } from 'vue'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
-    import { useEditor } from '~/components/insights/playground/common/composables/useEditor'
+    import { useEditor } from '~/components/insights/common/composables/useEditor'
     import { editor } from 'monaco-editor'
     import { CustomVaribaleInterface } from '~/types/insights/customVariable.interface'
     import { useInlineTab } from '~/components/insights/common/composables/useInlineTab'

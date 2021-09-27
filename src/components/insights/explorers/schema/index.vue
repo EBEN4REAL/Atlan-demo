@@ -44,9 +44,9 @@
     import { defineComponent, Ref, inject, ref, watch } from 'vue'
     import { useAssetSidebar } from '~/components/insights/assetSidebar/composables/useAssetSidebar'
     import SchemaTree from './schemaTree.vue'
-    
+
     import useSchemaExplorerTree from './composables/useSchemaExplorerTree'
-    
+
     import { tableInterface } from '~/types/insights/table.interface'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
     import { tablesData } from './tablesDemoData'
@@ -94,6 +94,10 @@
                     activeInlineTab.value.explorer.schema.connectors.connection,
                 connector:
                     activeInlineTab.value.explorer.schema.connectors.connector,
+                connectionGuid:
+                    activeInlineTab.value.explorer.schema.connectors
+                        .connectionGuid ??
+                    '8492dfcf-8dc4-40e2-bf80-11744a3d70dc',
                 databaseQualifiedName: getDatabaseQualifiedName(
                     selectedDataSourceName,
                     selectedDefaultSchema
@@ -125,14 +129,20 @@
             const setConnector = (payload: {
                 connection: string | undefined
                 connector: string | undefined
+                guid: string | undefined
             }) => {
                 connectorsData.value.connector = payload.connector
                 connectorsData.value.connection = payload.connection
+                connectorsData.value.connectionGuid = payload.guid
             }
 
             const connectionQualifiedName = ref(connectorsData.value.connection)
-            const databaseQualifiedName = ref(connectorsData.value.databaseQualifiedName)
-            const schemaQualifiedName = ref(connectorsData.value.schemaQualifiedName)
+            const databaseQualifiedName = ref(
+                connectorsData.value.databaseQualifiedName
+            )
+            const schemaQualifiedName = ref(
+                connectorsData.value.schemaQualifiedName
+            )
 
             const {
                 treeData,
@@ -151,7 +161,7 @@
                 connectionQualifiedName,
                 databaseQualifiedName,
                 schemaQualifiedName,
-            });
+            })
 
             /* Watchers for updating the connectors when activeinlab change */
             watch(activeInlineTab, () => {
@@ -183,9 +193,22 @@
             })
 
             watch(connectorsData, (newConnectorsData) => {
-                connectionQualifiedName.value = !newConnectorsData.connection?.endsWith('undefined') ? newConnectorsData.connection : undefined
-                databaseQualifiedName.value = !newConnectorsData.databaseQualifiedName?.endsWith('undefined') ? newConnectorsData.databaseQualifiedName : undefined
-                schemaQualifiedName.value = !newConnectorsData.schemaQualifiedName?.endsWith('undefined') ? newConnectorsData.schemaQualifiedName : undefined
+                connectionQualifiedName.value =
+                    !newConnectorsData.connection?.endsWith('undefined')
+                        ? newConnectorsData.connection
+                        : undefined
+                databaseQualifiedName.value =
+                    !newConnectorsData.databaseQualifiedName?.endsWith(
+                        'undefined'
+                    )
+                        ? newConnectorsData.databaseQualifiedName
+                        : undefined
+                schemaQualifiedName.value =
+                    !newConnectorsData.schemaQualifiedName?.endsWith(
+                        'undefined'
+                    )
+                        ? newConnectorsData.schemaQualifiedName
+                        : undefined
             })
             return {
                 connectorsData,

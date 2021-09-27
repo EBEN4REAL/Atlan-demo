@@ -176,6 +176,7 @@
                                 name:
                                     connection.attributes.displayName ||
                                     connection.attributes.qualifiedName,
+                                guid: connection.guid,
                                 value: connection.attributes.qualifiedName,
                                 connector:
                                     connection.attributes.integrationName,
@@ -217,6 +218,7 @@
                 const newData = {
                     connector: node.dataRef.connector,
                     connection: node.dataRef.connection,
+                    guid: node.dataRef?.guid,
                 }
                 setVisibleTabIds(newData.connector)
                 emit('update:data', newData)

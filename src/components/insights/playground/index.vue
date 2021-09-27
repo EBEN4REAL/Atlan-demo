@@ -112,6 +112,10 @@
                                 selectedDataSourceName:
                                     activeInlineTab.value?.explorer?.schema
                                         ?.connectors?.selectedDataSourceName,
+                                connectionGuid:
+                                    activeInlineTab.value?.explorer?.schema
+                                        ?.connectors?.connectionGuid ??
+                                    '8492dfcf-8dc4-40e2-bf80-11744a3d70dc',
                             },
                         },
                     },

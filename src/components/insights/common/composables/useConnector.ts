@@ -94,8 +94,22 @@ export function useConnector() {
 
         return schemaQualifiedName
     }
+    /* connection: 'default/snowflake/vqaqufvr-i' */
+    const getConnectonName = (connection: string) => {
+        let connectionValues: string[]
+        let connectionName: string | undefined
+
+        if (connection) {
+            connectionValues = connection.split('/')
+            if (connectionValues.length > 1)
+                connectionName = connectionValues[2]
+        }
+
+        return connectionName
+    }
 
     return {
+        getConnectonName,
         getSchemaQualifiedName,
         getDatabaseQualifiedName,
         setConnectorsDataInInlineTab,

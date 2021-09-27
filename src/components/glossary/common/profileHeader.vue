@@ -1,8 +1,11 @@
 <template>
-    <div class="flex items-center justify-between mx-4 mt-4 bg-white">
+    <div
+        class="flex items-center justify-between mx-4 mt-4 bg-white"
+        :class="{ 'mb-5': headerReachedTop }"
+    >
         <div class="flex items-center mr-5">
             <!-- breadcrumb -->
-            <div v-if="headerReachedTop" class="flex items-center mb-5">
+            <div v-if="headerReachedTop" class="flex items-center">
                 <AtlanIcon icon="Glossary" class="h-5 m-0 mr-2" />
                 <span
                     v-show="entity?.typeName !== 'AtlasGlossary'"
@@ -142,7 +145,7 @@
                         />
                     </div>
                 </div>
-                <div class="flex items-center mt-2">
+                <div class="flex items-center mt-1">
                     <a-popover trigger="hover" placement="bottom">
                         <template #content>
                             <p class="w-60">{{ shortDescription }}</p>

@@ -63,10 +63,11 @@
                             @firstCardReachedTop="handleFirstCardReachedTop"
                         />
                     </a-tab-pane>
-                    <a-tab-pane key="4" tab="Requests"> Bots </a-tab-pane>
+                    <!-- Hide for GA -->
+                    <!-- <a-tab-pane key="4" tab="Requests"> Bots </a-tab-pane>
                     <a-tab-pane key="5" tab="Access Control">
                         Permissions
-                    </a-tab-pane>
+                    </a-tab-pane> -->
                 </a-tabs>
             </div>
         </div>
@@ -309,8 +310,10 @@
             @apply mb-0 !important;
         }
         :global(.ant-tabs-tab) {
-            @apply px-0;
+            margin: 0px 32px 0px 0px;
+            padding: 0px 0px 18px 0px;
         }
+
         :global(.ant-tabs-bar) {
             @apply ml-5;
         }

@@ -29,7 +29,7 @@
             ></AssetPreview>
         </div>
 
-        <div id="overAssetPreviewSidebar" class="relative"></div>
+        <div id="overAssetPreviewSidebar"></div>
     </div>
 </template>
 

@@ -119,9 +119,7 @@ export const updateEdgesStroke = (
         })
     })
 
-    console.log('lineage -> update graph start')
     graph.value.fromJSON(model.value)
-    console.log('lineage -> update graph end')
 }
 
 export const updateNodesToHighlight = (

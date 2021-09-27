@@ -1,6 +1,6 @@
 <template>
     <div
-        class="flex items-center justify-between px-4 py-2 text-sm bg-gray-100 border-b border-gray-200 "
+        class="flex items-center justify-between px-4 py-2 text-sm bg-gray-100 border-b border-gray-300 "
     >
         <div class="font-medium text-gray-500">
             {{ totalAppliedFiltersCount || 'No' }}
@@ -21,8 +21,7 @@
             > -->
         </div>
     </div>
-    <div class="h-full overflow-y-auto">
-        <p class="px-4 mt-3 mb-0 tracking-wide text-gray">Connector</p>
+    <div class="h-full overflow-y-auto bg-gray-100">
         <Connector
             class="px-4 py-3"
             :data="dataMap.connector"
@@ -73,7 +72,7 @@
                             class="flex items-center justify-between align-middle "
                         >
                             <div class="flex flex-col flex-1">
-                                <span class="tracking-wide text-gray">
+                                <span class="text-xs uppercase text-gray">
                                     <img
                                         v-if="item.image"
                                         :src="item.image"
@@ -91,13 +90,7 @@
 
                             <div
                                 v-if="isFilter(item.id)"
-                                class="
-                                    text-xs text-gray-500
-                                    opacity-0
-                                    hover:text-primary
-                                    group-hover:opacity-100
-                                    pt-0.5
-                                "
+                                class="text-xs text-gray-500 opacity-0  hover:text-primary group-hover:opacity-100"
                                 @click.stop.prevent="handleClear(item.id)"
                             >
                                 Clear

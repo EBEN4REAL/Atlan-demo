@@ -2,7 +2,7 @@
     <div class="flex w-full">
         <div
             v-if="showFilters"
-            class="flex flex-col h-full overflow-y-auto bg-white border-r  facets"
+            class="flex flex-col h-full overflow-y-auto bg-white border-r border-gray-300  facets"
         >
             <AssetFilters
                 :ref="
@@ -17,35 +17,36 @@
 
         <div class="flex flex-col items-stretch flex-1 mb-1 w-80">
             <div class="flex flex-col h-full">
-                <SearchAndFilter
-                    v-model:value="queryText"
-                    class="mx-6 mt-4"
-                    :placeholder="dynamicSearchPlaceholder"
-                    :autofocus="true"
-                    @change="handleSearchChange"
-                >
-                    <template #filter>
-                        <Preferences
-                            :default-projection="projection"
-                            @change="handleChangePreferences"
-                            @sort="handleChangeSort"
-                            @state="handleState"
-                        />
-                    </template>
-                    <!-- <template #buttonAggregation>
+                <div class="bg-white">
+                    <SearchAndFilter
+                        v-model:value="queryText"
+                        class="mx-3 mt-2"
+                        :placeholder="dynamicSearchPlaceholder"
+                        :autofocus="true"
+                        @change="handleSearchChange"
+                    >
+                        <template #filter>
+                            <Preferences
+                                :default-projection="projection"
+                                @change="handleChangePreferences"
+                                @sort="handleChangeSort"
+                                @state="handleState"
+                            />
+                        </template>
+                        <!-- <template #buttonAggregation>
                         <span>({{ projection.length }})</span>
                     </template> -->
-                </SearchAndFilter>
+                    </SearchAndFilter>
 
-                <AssetTabs
-                    v-model="selectedTab"
-                    class="mt-1 mb-3"
-                    @update:model-value="handleTabChange"
-                    :asset-type-list="assetTypeList"
-                    :asset-type-map="assetTypeMap"
-                    :total="totalSum"
-                ></AssetTabs>
-
+                    <AssetTabs
+                        v-model="selectedTab"
+                        class="mt-1 mb-3"
+                        @update:model-value="handleTabChange"
+                        :asset-type-list="assetTypeList"
+                        :asset-type-map="assetTypeMap"
+                        :total="totalSum"
+                    ></AssetTabs>
+                </div>
                 <!-- <div
                     class="flex items-center justify-between w-full px-3 py-2 border-b border-gray-300 "
                 >
@@ -68,6 +69,7 @@
                 <AssetList
                     v-else
                     ref="assetlist"
+                    class="pt-2 bg-white"
                     :list="list"
                     :score="searchScoreList"
                     :projection="projection"

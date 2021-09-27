@@ -8,10 +8,9 @@
             />
         </div>
 
-        <span
-            class="pl-1 font-semibold tracking-wide text-gray-500 uppercase"
-            >{{ text }}</span
-        >
+        <span class="pl-1 tracking-wider text-gray-500 uppercase">{{
+            text
+        }}</span>
     </div>
 </template>
 

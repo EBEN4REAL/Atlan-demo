@@ -2,7 +2,6 @@ import { reactive, watch, ref } from 'vue'
 import { toRefs } from '@vueuse/core'
 import { useAPI } from '~/api/useAPI'
 import { Components } from '~/api/atlas/client'
-import { List as statusList } from '~/constant/status'
 import { GET_ASSET_AUDIT } from '~/api/keyMaps/asset/index'
 
 const useAssetAudit = (params: any, guid: string) => {
@@ -128,12 +127,11 @@ const useAssetAudit = (params: any, guid: string) => {
             displayValue: 'Asset was updated',
             value: [],
         }
-        console.log(logs)
         if ('attributes' in logs) {
             const { attributes } = logs
             const owners = 'ownerUsers' in attributes
             const experts = 'expertUsers' in attributes
-            const status = 'assetStatus' in attributes
+            const status = 'assetStatusUpdatedAt' in attributes
             const userDescription = 'userDescription' in attributes
             if (owners) {
                 const users = attributes.ownerUsers.split(',')
@@ -157,12 +155,9 @@ const useAssetAudit = (params: any, guid: string) => {
             }
 
             if (status) {
-                const value = attributes.assetStatus
-                const statusMessage = attributes.assetStatusMessage
-                const newStatus = statusList.find((stat) => stat.id === value)
-                newStatus.description = statusMessage
+                data.value = attributes
                 data.displayValue = 'status'
-                data.value = newStatus
+
                 return data
             }
 

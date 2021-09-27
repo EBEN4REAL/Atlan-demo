@@ -176,69 +176,6 @@
             // console.log(props.initialFilters.facetsFilters, 'facetFilters')
             const activeKey: Ref<string[]> = ref([])
             const totalAppliedFiltersCount = ref(0)
-            const filterMap = {
-                connector: {
-                    condition: 'AND',
-                    criterion:
-                        props.initialFilters?.facetsFilters?.connector || [],
-                },
-                assetCategory: {
-                    condition:
-                        props.initialFilters?.facetsFilters?.assetCategory
-                            ?.condition,
-                    criterion:
-                        props.initialFilters?.facetsFilters?.assetCategory
-                            ?.criterion,
-                },
-                status: {
-                    condition: 'OR',
-                    criterion:
-                        props.initialFilters?.facetsFilters?.status?.criterion,
-                },
-                classifications: {
-                    condition:
-                        props.initialFilters?.facetsFilters?.classifications
-                            ?.condition,
-                    criterion:
-                        props.initialFilters?.facetsFilters?.classifications
-                            ?.criterion,
-                },
-                owners: {
-                    condition:
-                        props.initialFilters?.facetsFilters?.owners?.condition,
-                    criterion:
-                        props.initialFilters?.facetsFilters?.owners?.criterion,
-                },
-                advanced: {
-                    condition:
-                        props.initialFilters?.facetsFilters?.advanced
-                            ?.condition,
-                    criterion:
-                        props.initialFilters?.facetsFilters?.advanced
-                            ?.criterion,
-                },
-            }
-
-            // ? add business metadata filters to filter map on load
-            watch(
-                () => bmFiltersList.value,
-                () => {
-                    bmFiltersList.value.forEach((bm) => {
-                        if (props.initialFilters?.facetsFilters?.[bm.id]) {
-                            filterMap[bm.id] = {
-                                condition: 'OR',
-                                criterion:
-                                    props.initialFilters.facetsFilters[bm.id]
-                                        ?.criterion,
-                            }
-                        }
-                    })
-                },
-                {
-                    deep: true,
-                    immediate: true,
-                }
-            )
 
             let filters: Components.Schemas.FilterCriteria[] = []
 
@@ -289,7 +226,7 @@
                 },
             })
 
-            const { payload: newFilterMap } = useFilterPayload(dataMap)
+            const { payload: filterMap } = useFilterPayload(dataMap)
 
             function setAppliedFiltersCount() {
                 let count = 0
@@ -324,24 +261,9 @@
             )
 
             const refresh = () => {
-                filters = []
-                Object.keys(filterMap).forEach((key) => {
-                    const fltr = filterMap[key]
-                    if (
-                        fltr.condition &&
-                        (fltr.criterion?.length ?? fltr.criterion)
-                    )
-                        filters.push(fltr)
-                })
-                emit('refresh', filters, dataMap.value)
+                emit('refresh', filterMap.value, dataMap.value)
             }
             const handleChange = (value: any, tabsIds: string[]) => {
-                filterMap[value.id] = value.payload
-                if (value?.selectedIds)
-                    filterMap[value.id] = {
-                        ...filterMap[value.id],
-                        selectedIds: value?.selectedIds,
-                    }
                 dirtyTimestamp.value = `dirty_${Date.now().toString()}`
                 console.log(dirtyTimestamp.value)
                 setAppliedFiltersCount()
@@ -367,18 +289,14 @@
                             attributeName: undefined,
                             attributeValue: undefined,
                         }
-                        filterMap[filterId].criterion = []
                         break
                     }
                     case 'assetCategory': {
                         dataMap.value[filterId].checked = []
-                        filterMap[filterId].criterion = []
-                        filterMap[filterId].selectedIds = []
                         break
                     }
                     case 'status': {
                         dataMap.value[filterId].checked = []
-                        filterMap[filterId].criterion = []
                         break
                     }
                     case 'classifications': {
@@ -387,24 +305,20 @@
                             false
                         dataMap.value[filterId].operator = 'OR'
                         dataMap.value[filterId].addedBy = 'all'
-                        filterMap[filterId].criterion = []
                         break
                     }
                     case 'owners': {
                         dataMap.value[filterId].userValue = []
                         dataMap.value[filterId].groupValue = []
                         dataMap.value[filterId].noOwnerAssigned = false
-                        filterMap[filterId].criterion = []
                         break
                     }
                     case 'advanced': {
                         dataMap.value[filterId].applied = {}
-                        filterMap[filterId].criterion = []
                         break
                     }
                     default: {
                         dataMap.value[filterId].applied = {}
-                        filterMap[filterId].criterion = []
                     }
                 }
                 setAppliedFiltersCount()
@@ -541,29 +455,12 @@
                         dataMap.value[n].applied = {}
                     })
 
-                const filterMapKeys = Object.keys(filterMap)
-                filterMapKeys.forEach((id) => {
-                    filterMap[id].criterion = []
-                    if (filterMap[id]?.selectedIds)
-                        filterMap[id].selectedIds = []
-                })
                 setAppliedFiltersCount()
                 refresh()
             }
             setAppliedFiltersCount()
 
-            emit(
-                'initialize',
-                Object.keys(filterMap).reduce((acc, key) => {
-                    const fltr = filterMap[key]
-                    if (
-                        fltr.condition &&
-                        (fltr.criterion?.length ?? fltr.criterion)
-                    )
-                        acc.push(fltr)
-                    return acc
-                }, [] as Components.Schemas.FilterCriteria[])
-            )
+            emit('initialize', filterMap.value)
 
             console.log(dynamicList, 'list')
             return {
@@ -581,7 +478,6 @@
                 bmFiltersList,
                 bmDataList,
                 setConnector,
-                newFilterMap,
             }
         },
     })

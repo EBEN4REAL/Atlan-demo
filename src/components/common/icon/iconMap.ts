@@ -54,6 +54,7 @@ import Metadata from '~/assets/images/icons/metadata.svg'
 import Group from '~/assets/images/icons/group.svg'
 import GroupStatic from '~/assets/images/icons/group-static.svg'
 import External from '~/assets/images/icons/external.svg'
+import TreeCollapseAll from '~/assets/images/icons/tree-collapse-all.svg'
 
 export default {
     Metadata,
@@ -112,4 +113,5 @@ export default {
     Group,
     GroupStatic,
     External,
+    TreeCollapseAll,
 }

@@ -6,12 +6,12 @@
                 @click="redirectToProfile"
             >
                 <AtlanIcon
-                    class="w-auto h-5 mr-3"
+                    class="w-auto h-5 mr-2"
                     icon="ArrowRight"
                     style="transform: scaleX(-1)"
                 />
             </a-button>
-            <AtlanIcon icon="Glossary" class="h-5 m-0 mr-2" />
+            <AtlanIcon icon="Glossary" class="h-5 m-0 mr-1" />
             <span
                 v-show="entity?.typeName !== 'AtlasGlossary'"
                 class="mr-1 text-sm"
@@ -19,17 +19,17 @@
                 {{
                     entity?.attributes?.anchor?.uniqueAttributes?.qualifiedName
                 }}
-                /</span
+                <span class="mr-1 ml-1">/</span></span
             >
             <AtlanIcon
                 v-if="entity.typeName === 'AtlasGlossaryTerm'"
                 icon="Term"
-                class="h-5 m-0 mr-2"
+                class="h-5 m-0 mr-1"
             />
             <AtlanIcon
                 v-if="entity.typeName === 'AtlasGlossaryCategory'"
                 icon="Category"
-                class="h-5 m-0 mb-1 mr-2"
+                class="h-5 m-0 mb-1 mr-1"
             />
 
             <span class="mr-3 text-sm truncate">{{ title }}</span>

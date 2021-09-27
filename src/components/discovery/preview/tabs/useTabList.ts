@@ -21,11 +21,11 @@ export default function useAssetDetailsTabList(
 ) {
     const tabList: TabList[] = [
         {
-            name: 'Info',
+            name: 'Overview',
             component: 'info',
             visibleOn: ['discovery', 'profile', 'biOverview', 'nonBiOverview'],
             icon: 'Overview',
-            tooltip: 'Info',
+            tooltip: 'Overview',
         },
         {
             name: 'Custom Metadata',

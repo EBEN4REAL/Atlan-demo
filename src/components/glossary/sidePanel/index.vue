@@ -27,7 +27,7 @@
                                 :class="isActive ? '-rotate-180' : 'rotate-0'"
                             />
                         </template>
-                        <a-collapse-panel key="1" header="Details">
+                        <a-collapse-panel key="1" header="Details" >
                             <div class="flex flex-col pb-2 pl-4 pr-2">
                                 <div class="flex mt-2 mb-4 space-x-16">
                                     <div class="flex flex-col">
@@ -70,7 +70,7 @@
                             </div>
                         </a-collapse-panel>
 
-                        <a-collapse-panel
+                        <!-- <a-collapse-panel
                             v-if="termCount"
                             key="2"
                             header="Top Terms"
@@ -81,7 +81,7 @@
                                     :terms="glossaryTerms"
                                 />
                             </div>
-                        </a-collapse-panel>
+                        </a-collapse-panel> -->
                     </a-collapse>
                 </div>
             </a-tab-pane>
@@ -254,11 +254,12 @@
         }
 
         :global(.ant-tabs-tab:first-child) {
-            @apply mt-4 !important;
+            // @apply mt-4 !important;
+            margin-top: 14px !important;
         }
 
         :global(.ant-collapse-header) {
-            @apply m-0  text-sm text-gray-700 bg-white !important;
+            @apply m-0 pt-0 text-sm text-gray-700 bg-white !important;
         }
         :global(.ant-collapse-borderless > .ant-collapse-item) {
             @apply border-0   mt-0 !important;

@@ -1,18 +1,13 @@
 <template>
-    <div class="flex overflow-hidden text-xs tracking-wider flex-nowrap">
+    <div class="flex overflow-hidden text-gray-500 flex-nowrap">
         <template v-for="data in hierarchyInfo" :key="data.id">
-            <atlan-icon
-                v-if="data.id === 'Connection'"
-                icon="Connection"
-                class="w-auto h-4 mr-2"
-            />
-            <component v-else :is="data.id" class="w-auto h-4 mr-2" />
-            <span
-                class="mr-3 overflow-hidden overflow-ellipsis whitespace-nowrap"
-                >{{ data.text }}</span
-            >
+            <!-- <component v-else :is="data.id" class="w-auto h-4 mr-2" /> -->
+            <span class="overflow-hidden overflow-ellipsis whitespace-nowrap">{{
+                data.text
+            }}</span>
+            <span class="px-1 text-gray-300">/</span>
         </template>
-        <template v-for="data in tableauHierarchy" :key="data.id">
+        <!-- <template v-for="data in tableauHierarchy" :key="data.id">
             <atlan-icon
                 v-if="data.icon === 'connectionName'"
                 icon="Connection"
@@ -28,7 +23,7 @@
                 class="mr-3 overflow-hidden overflow-ellipsis whitespace-nowrap"
                 >{{ data.text }}</span
             >
-        </template>
+        </template> -->
     </div>
 </template>
 

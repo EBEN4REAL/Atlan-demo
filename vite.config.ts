@@ -27,8 +27,6 @@ export default defineConfig(({ mode }) => {
                     __dirname,
                     'src/components/common'
                 )}/`,
-                // '@antv/x6': '@antv/x6/es/index.js',
-                // '@antv/layout': '@antv/layout/es/index.js',
             },
         },
         define: {

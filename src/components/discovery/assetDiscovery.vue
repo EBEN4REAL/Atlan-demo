@@ -2,7 +2,14 @@
     <div class="flex w-full">
         <div
             v-if="showFilters"
-            class="flex flex-col h-full overflow-y-auto bg-white border-r border-gray-300  facets"
+            class="
+                flex flex-col
+                h-full
+                overflow-y-auto
+                bg-white
+                border-r border-gray-300
+                facets
+            "
         >
             <AssetFilters
                 :ref="
@@ -12,6 +19,7 @@
                 "
                 :initial-filters="AllFilters"
                 @refresh="handleFilterChange"
+                @initialize="handleFilterInit"
             ></AssetFilters>
         </div>
 
@@ -129,6 +137,7 @@
     import { useBusinessMetadataStore } from '~/store/businessMetadata'
     import { useFilteredTabs } from './useTabMapped'
     import { Components } from '~/api/atlas/client'
+    import { isArray } from '@antv/x6/lib/util/lang/lang'
 
     export default defineComponent({
         name: 'AssetDiscovery',
@@ -194,7 +203,7 @@
 
             // This is the actual filter body
             // FIXME: Can we make it a computed property?
-            const filters = ref(AllFilters.value.initialBodyCriterion)
+            const filters = ref([])
             const limit = ref(20)
             const offset = ref(0)
             const sortOrder = ref('default')
@@ -307,7 +316,9 @@
                     offset: offset.value,
                     entityFilters: {
                         condition: 'AND',
-                        criterion: filters?.value || [],
+                        criterion: isArray(filters?.value)
+                            ? [...filters.value]
+                            : [],
                     },
                     attributes: [
                         ...BaseAttributes,
@@ -413,6 +424,10 @@
                 setRouterOptions()
             }
 
+            const handleFilterInit = (payload: any) => {
+                filters.value = payload
+            }
+
             const handlePreview = (item) => {
                 emit('preview', item)
             }
@@ -478,6 +493,7 @@
                 placeholderLabel,
                 filters,
                 assetTypeListString,
+                handleFilterInit,
             }
         },
         data() {

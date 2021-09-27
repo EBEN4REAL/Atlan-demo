@@ -134,6 +134,7 @@
     import { List as AssetCategoryList } from '~/constant/assetCategory'
     import { List } from './filters'
     import { AssetTypeList } from '~/constant/assetType'
+    import useFilterPayload from './useFilterPayload'
 
     export default defineComponent({
         name: 'DiscoveryFacets',
@@ -169,14 +170,13 @@
                 },
             },
         },
-        // FIXME: Remove modifyTabs logic
-        emits: ['refresh', 'modifyTabs'],
+        emits: ['refresh', 'initialize'],
         setup(props, { emit }) {
             const { bmFiltersList, bmDataList } = useBusinessMetadataHelper()
             // console.log(props.initialFilters.facetsFilters, 'facetFilters')
             const activeKey: Ref<string[]> = ref([])
             const totalAppliedFiltersCount = ref(0)
-            const initialFilterMap = {
+            const filterMap = {
                 connector: {
                     condition: 'AND',
                     criterion:
@@ -191,8 +191,7 @@
                             ?.criterion,
                 },
                 status: {
-                    condition:
-                        props.initialFilters?.facetsFilters?.status?.condition,
+                    condition: 'OR',
                     criterion:
                         props.initialFilters?.facetsFilters?.status?.criterion,
                 },
@@ -218,12 +217,6 @@
                         props.initialFilters?.facetsFilters?.advanced
                             ?.criterion,
                 },
-            }
-
-            const filterMap: {
-                [key: string]: Components.Schemas.FilterCriteria
-            } = {
-                ...initialFilterMap,
             }
 
             // ? add business metadata filters to filter map on load
@@ -296,6 +289,8 @@
                 },
             })
 
+            const { payload: newFilterMap } = useFilterPayload(dataMap)
+
             function setAppliedFiltersCount() {
                 let count = 0
                 const filterMapKeys = Object.keys(filterMap)
@@ -331,14 +326,15 @@
             const refresh = () => {
                 filters = []
                 Object.keys(filterMap).forEach((key) => {
-                    filters.push(filterMap[key])
+                    const fltr = filterMap[key]
+                    if (
+                        fltr.condition &&
+                        (fltr.criterion?.length ?? fltr.criterion)
+                    )
+                        filters.push(fltr)
                 })
                 emit('refresh', filters, dataMap.value)
             }
-            const modifyTabs = (tabsIds) => {
-                emit('modifyTabs', tabsIds)
-            }
-
             const handleChange = (value: any, tabsIds: string[]) => {
                 filterMap[value.id] = value.payload
                 if (value?.selectedIds)
@@ -349,7 +345,6 @@
                 dirtyTimestamp.value = `dirty_${Date.now().toString()}`
                 console.log(dirtyTimestamp.value)
                 setAppliedFiltersCount()
-                modifyTabs(tabsIds)
                 refresh()
                 // updateChangesInStore(value);
             }
@@ -365,15 +360,6 @@
                 return false
             }
 
-            const resetTabs = () => {
-                const tabsIds = AssetTypeList.filter(
-                    (item) => item.isDiscoverable == true
-                ).map((item) => {
-                    return item.id
-                })
-                return tabsIds
-            }
-
             const handleClear = (filterId: string) => {
                 switch (filterId) {
                     case 'connector': {
@@ -382,14 +368,12 @@
                             attributeValue: undefined,
                         }
                         filterMap[filterId].criterion = []
-                        emit('modifyTabs', resetTabs())
                         break
                     }
                     case 'assetCategory': {
                         dataMap.value[filterId].checked = []
                         filterMap[filterId].criterion = []
                         filterMap[filterId].selectedIds = []
-                        emit('modifyTabs', resetTabs())
                         break
                     }
                     case 'status': {
@@ -563,13 +547,23 @@
                     if (filterMap[id]?.selectedIds)
                         filterMap[id].selectedIds = []
                 })
-                // reset tabs
-                emit('modifyTabs', resetTabs())
                 setAppliedFiltersCount()
-
                 refresh()
             }
             setAppliedFiltersCount()
+
+            emit(
+                'initialize',
+                Object.keys(filterMap).reduce((acc, key) => {
+                    const fltr = filterMap[key]
+                    if (
+                        fltr.condition &&
+                        (fltr.criterion?.length ?? fltr.criterion)
+                    )
+                        acc.push(fltr)
+                    return acc
+                }, [] as Components.Schemas.FilterCriteria[])
+            )
 
             console.log(dynamicList, 'list')
             return {
@@ -587,6 +581,7 @@
                 bmFiltersList,
                 bmDataList,
                 setConnector,
+                newFilterMap,
             }
         },
     })

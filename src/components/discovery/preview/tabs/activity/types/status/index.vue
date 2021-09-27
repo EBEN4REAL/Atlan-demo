@@ -7,7 +7,7 @@
         /><b>{{ ' ' }}{{ newStatus.label }}</b>
     </div>
     <div v-if="data.value?.assetStatusMessage" class="flex mb-3">
-        <div class="w-1.5 ml-2 mr-4 bg-gray-500 rounded-full min-h-6"></div>
+        <div class="w-1 mr-3 bg-gray-500 rounded-full min-h-6"></div>
         <div class="my-0.5 text-sm">
             <div class="text-xs text-gray-500">Status Message</div>
             <div>

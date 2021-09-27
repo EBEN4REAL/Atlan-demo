@@ -63,7 +63,6 @@
                 ></component>
 
                 <Tooltip
-                    v-if="page === 'discovery'"
                     :tooltip-text="selectedAsset?.attributes?.name"
                     classes="text-gray-700 font-semibold text-md leading-1 cursor-pointer text-primary hover:underline"
                     placement="left"
@@ -72,12 +71,6 @@
                             ? getColumnUrl(selectedAsset)
                             : `/assets/${selectedAsset.guid}/overview`
                     "
-                />
-                <Tooltip
-                    v-else
-                    :tooltip-text="selectedAsset?.attributes?.name"
-                    classes="text-gray-700 font-semibold text-md leading-1"
-                    placement="left"
                 />
 
                 <StatusBadge
@@ -134,6 +127,7 @@
                     :style="{ height: tabHeights[page] }"
                 >
                     <div
+                        v-if="tab.tooltip !== 'Activity'"
                         class="z-10 flex items-center justify-between px-3 py-2 text-sm font-bold bg-gray-100 "
                         style="
                             position: absolute !important;
@@ -145,7 +139,9 @@
                     </div>
 
                     <component
-                        style="margin-top: 36px"
+                        :style="
+                            tab.tooltip !== 'Activity' && 'margin-top: 36px'
+                        "
                         :is="tab.component"
                         :component-data="dataMap[tab.id]"
                         :info-tab-data="selectedAsset"

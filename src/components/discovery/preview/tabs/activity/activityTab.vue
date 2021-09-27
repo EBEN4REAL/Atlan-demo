@@ -1,6 +1,17 @@
 <template>
     <div>
-        <div class="flex justify-end px-8 py-4">
+        <div
+            class="
+                flex
+                justify-between
+                px-5
+                py-2.5
+                border-b
+                mb-6
+                border-gray-light
+            "
+        >
+            <span class="text-lg font-bold text-gray-700">Activity</span>
             <fa
                 icon="fa sync"
                 class="text-lg cursor-pointer text-primary"
@@ -9,7 +20,7 @@
         </div>
         <div
             v-if="isLoading"
-            class="flex items-center justify-center mt-4 text-sm leading-none"
+            class="flex items-center justify-center text-sm leading-none"
         >
             <a-spin size="small" class="mr-2 leading-none"></a-spin
             ><span>Getting activity logs</span>

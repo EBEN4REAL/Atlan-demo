@@ -100,6 +100,15 @@
                 </template>
 
                 <component
+                    v-if="item.component === 'businessMetadata'"
+                    is="businessMetadata"
+                    v-model:data="dataMap[item.id]"
+                    :item="item"
+                    :list="bmDataList[item.id]"
+                    @change="handleChange"
+                ></component>
+                <component
+                    v-else
                     :is="item.component"
                     v-model:data="dataMap[item.id]"
                     :item="item"
@@ -165,7 +174,7 @@
         emits: ['refresh', 'modifyTabs'],
         setup(props, { emit }) {
             const classificationsStore = useClassificationStore()
-            const { bmFiltersList, bmDataMap } = useBusinessMetadataHelper()
+            const { bmFiltersList, bmDataList } = useBusinessMetadataHelper()
             // console.log(props.initialFilters.facetsFilters, 'facetFilters')
             const activeKey: Ref<string[]> = ref([])
             const initialFilterMap = {
@@ -253,7 +262,7 @@
             ])
 
             // Mapping of Data to child components
-            const dataMap: { [key: string]: any } = ref({})
+            const dataMap: Ref<{ [key: string]: any }> = ref({})
             dataMap.value.connector =
                 props.initialFilters.facetsFilters.connector
             dataMap.value.assetCategory = {
@@ -301,22 +310,20 @@
                 totalAppliedFiltersCount.value = count
             }
 
-            // ? watching for bmDataMap to be computed
+            // ? watching for bmDataList to be computed
             watch(
-                () => bmDataMap.value,
+                bmDataList,
                 () => {
-                    dataMap.value = {
-                        ...dataMap.value,
-                        ...bmDataMap.value,
-                    }
+                    // debugger
                     // ? add initial applied filters to dataMap
-                    Object.keys(bmDataMap.value).forEach((b) => {
-                        if (props.initialFilters.facetsFilters[b]?.applied)
-                            dataMap.value[b].applied = {
-                                ...dataMap.value[b].applied,
+                    Object.keys(bmDataList.value).forEach((b) => {
+                        dataMap.value[b] = {
+                            applied: {
+                                ...dataMap.value[b]?.applied,
                                 ...props.initialFilters.facetsFilters[b]
-                                    .applied,
-                            }
+                                    ?.applied,
+                            },
+                        }
                     })
                 },
                 {
@@ -330,7 +337,7 @@
                 Object.keys(filterMap).forEach((key) => {
                     filters.push(filterMap[key])
                 })
-                emit('refresh', filters, dataMap)
+                emit('refresh', filters, dataMap.value)
             }
             const modifyTabs = (tabsIds) => {
                 emit('modifyTabs', tabsIds)
@@ -581,6 +588,7 @@
                 handleClear,
                 dynamicList,
                 bmFiltersList,
+                bmDataList,
                 setConnector,
             }
         },

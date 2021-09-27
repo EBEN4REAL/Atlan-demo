@@ -119,11 +119,12 @@
         BasicSearchAttributes,
         tableauAttributes,
     } from '~/constant/projection'
-    import useTracking from '~/modules/tracking'
+    // TODO: Uncomment all tracing related code
+    // import useTracking from '~/modules/tracking'
     import { initialFiltersType } from '~/pages/assets.vue'
 
     import { getEncodedStringFromOptions } from '~/utils/helper/routerQuery'
-    import { serializeQuery } from '~/utils/helper/routerHelper'
+    // import { serializeQuery } from '~/utils/helper/routerHelper'
 
     import { useBusinessMetadataStore } from '~/store/businessMetadata'
     import { useFilteredTabs } from './useTabMapped'
@@ -170,13 +171,13 @@
             // Asset filter component ref
             const assetFilterRef = ref()
 
-            const tracking = useTracking()
-            const events = tracking.getEventsName()
+            // const tracking = useTracking()
+            // const events = tracking.getEventsName()
 
             const isAggregate = ref(true)
 
             // Clean Stuff
-            const AllFilters: Ref = ref(initialFilters.value)
+            const AllFilters: Ref = ref({ ...initialFilters.value })
 
             const selectedTab = computed({
                 get: () => AllFilters.value.type || 'Catalog',
@@ -371,9 +372,9 @@
                 isAggregate.value = true
                 updateBody()
                 pushQueryToRouter(routerQuery)
-                tracking.trackEvent(events.EVENT_ASSET_SEARCH, {
-                    trigger: 'discover',
-                })
+                // tracking.trackEvent(events.EVENT_ASSET_SEARCH, {
+                //     trigger: 'discover',
+                // })
             }, 150)
             const handleChangePreferences = (payload: any) => {
                 projection.value = payload
@@ -413,9 +414,7 @@
                 isAggregate.value = true
                 updateBody()
                 const routerOptions = getRouterOptions()
-                debugger
-                const routerQuery = serializeQuery(routerOptions)
-                debugger
+                const routerQuery = getEncodedStringFromOptions(routerOptions)
                 pushQueryToRouter(routerQuery)
             }
 

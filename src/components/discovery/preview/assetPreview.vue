@@ -72,14 +72,6 @@
                             : `/assets/${selectedAsset.guid}/overview`
                     "
                 />
-                <<<<<<< HEAD =======
-                <Tooltip
-                    v-else
-                    :tooltip-text="selectedAsset?.attributes?.name"
-                    classes="text-gray-700 font-semibold text-base leading-1"
-                    placement="left"
-                />
-                >>>>>>> development
 
                 <StatusBadge
                     :key="selectedAsset.guid"

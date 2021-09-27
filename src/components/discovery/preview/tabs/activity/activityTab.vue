@@ -1,22 +1,15 @@
 <template>
     <div>
         <div
-            class="
-                flex
-                justify-between
-                px-5
-                py-2.5
-                border-b
-                mb-6
-                border-gray-light
-            "
+            class="flex justify-between px-4 py-2 mb-6 border-b  border-gray-light"
         >
-            <span class="text-lg font-bold text-gray-700">Activity</span>
-            <fa
-                icon="fa sync"
-                class="text-lg cursor-pointer text-primary"
+            <span class="font-semibold text-gray-700 text-md">Activity</span>
+
+            <AtlanIcon
+                icon="Reload"
+                class="mt-1 cursor-pointer text-primary"
                 @click="refreshAudits"
-            ></fa>
+            />
         </div>
         <div
             v-if="isLoading"

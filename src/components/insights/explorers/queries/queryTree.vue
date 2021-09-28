@@ -173,7 +173,7 @@ export default defineComponent({
         const { openSavedQueryInNewTab } = useSavedQuery(
             inlineTabs,
             activeInlineTab,
-            activeInlineTabKey
+            activeInlineTabKey,
         )
         const isSavedQueryOpened = (savedQuery: SavedQueryInterface) => {
             let bool = false

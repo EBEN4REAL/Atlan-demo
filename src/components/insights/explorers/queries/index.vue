@@ -30,7 +30,7 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, inject, Ref } from 'vue'
+    import { defineComponent, inject, Ref, watch } from 'vue'
     import { SavedQueryInterface } from '~/types/insights/savedQuery.interface'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
     import { useSavedQuery } from '~/components/insights/explorers/composables/useSavedQuery'
@@ -98,6 +98,11 @@
                 emit,
                 openSavedQueryInNewTab
             });
+
+            watch(activeInlineTabKey, (newActiveInlineTab) => {
+                console.log(newActiveInlineTab)
+                selectedKeys.value = [newActiveInlineTab]
+            })
 
             return {
                 isSavedQueryOpened,

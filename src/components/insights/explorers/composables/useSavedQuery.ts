@@ -8,18 +8,19 @@ import { SavedQuery } from '~/types/insights/savedQuery.interface'
 export function useSavedQuery(
     tabsArray: Ref<activeInlineTabInterface[]>,
     activeInlineTab: Ref<activeInlineTabInterface>,
-    activeInlineTabKey: Ref<string>
+    activeInlineTabKey: Ref<string>,
+    treeSelectedKeys?: Ref<string[]>
 ) {
     const { syncInlineTabsInLocalStorage } = useLocalStorageSync()
-    const { isInlineTabAlreadyOpened, inlineTabAdd } = useInlineTab()
+    const { isInlineTabAlreadyOpened, inlineTabAdd } = useInlineTab(treeSelectedKeys)
 
     const openSavedQueryInNewTab = (savedQuery: SavedQuery) => {
         const newTab = {
             label: savedQuery.attributes.name,
-            key: savedQuery.guid,
+            key: savedQuery.attributes.qualifiedName,
             favico: 'https://atlan.com/favicon.ico',
             isSaved: true,
-            queryId: savedQuery.guid,
+            queryId: savedQuery.attributes.qualifiedName,
             explorer: {
                 schema: {
                     connectors: {

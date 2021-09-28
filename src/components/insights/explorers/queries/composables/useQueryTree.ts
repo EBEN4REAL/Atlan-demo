@@ -170,7 +170,8 @@ const useTree = ({ emit, openSavedQueryInNewTab, cacheKey, isAccordion}: useSave
         const item = event.node.dataRef.item as Folder | SavedQuery;
         
         if(item.typeName === 'Query') {
-            openSavedQueryInNewTab(item)
+            openSavedQueryInNewTab(item);
+            selectedKeys.value.push(item.attributes.qualifiedName)
         }
 
         if (!event.node.isLeaf) {

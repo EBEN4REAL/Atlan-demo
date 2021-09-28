@@ -47,8 +47,8 @@ const useTree = ({ emit, openSavedQueryInNewTab, cacheKey, isAccordion}: useSave
     const selectedKeys = ref<string[]>([])
     const expandedKeys = ref<string[]>([])
     
-    const selectedCacheKey = `${cacheKey}_selected`
-    const expandedCacheKey = `${cacheKey}_expanded`
+    const selectedCacheKey = `${cacheKey ?? 'queryTree'}_selected`
+    const expandedCacheKey = `${cacheKey ?? 'queryTree'}_expanded`
     const selectedCache = store.get(selectedCacheKey)
     const expandedCache = store.get(expandedCacheKey)
 

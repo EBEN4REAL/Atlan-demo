@@ -1,20 +1,19 @@
 <template>
-    <div class="flex flex-col items-center w-full h-full p-3 bg-white">
-        <div class="w-full h-32 mb-3 rounded placeholder"></div>
-        <!-- <template v-for="query in savedQueries" :key="query.id">
-            <div
-                class="flex items-center justify-center w-full px-2 py-2 mb-3 rounded cursor-pointer "
-                @click="() => openSavedQueryInNewTab(query)"
-                :class="
-                    isSavedQueryOpened(query)
-                        ? 'active-placeholder'
-                        : 'placeholder'
-                "
-            >
-                {{ query.label }}
-            </div>
-        </template> -->
-        <div class="w-full h-full p-3 pt-0 overflow-y-auto scrollable-container">
+    <div class="flex flex-col items-center w-full h-full bg-white">
+        <div class="w-full p-4 border-b-1">
+            <Connector :connector="connector" @update:data="updateConnector" />
+           <div class="flex flex-row space-x-2">
+                <a-input-search class="rounded mt-2" placeholder="Search" />
+                <a-button class="w-8 h-8 flex mt-2 items-center p-2 rounded">
+                    <AtlanIcon
+                        icon="Filter"
+                    />            
+                </a-button>
+           </div>
+
+        </div>
+        <hr class="w-full" />
+        <div class="w-full h-full p-4 overflow-y-auto scrollable-container">
             <query-tree
                 :tree-data="treeData"
                 :on-load-data="onLoadData"
@@ -30,16 +29,19 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, inject, Ref, watch } from 'vue'
+    import { defineComponent, inject, Ref, ref, watch } from 'vue'
     import { SavedQueryInterface } from '~/types/insights/savedQuery.interface'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
     import { useSavedQuery } from '~/components/insights/explorers/composables/useSavedQuery'
+    import { useConnector } from '~/components/insights/common/composables/useConnector'
 
     import QueryTree from './queryTree.vue'
     import useQueryTree from './composables/useQueryTree'
 
+    import Connector from '~/components/insights/common/connector/connectorOnly.vue'
+
     export default defineComponent({
-        components: {QueryTree},
+        components: {QueryTree,Connector},
         props: {},
         setup(props, { emit}) {
             const inlineTabs = inject('inlineTabs') as Ref<
@@ -51,6 +53,14 @@
             const activeInlineTabKey = inject(
                 'activeInlineTabKey'
             ) as Ref<string>
+
+            const connector = ref(activeInlineTab.value.explorer.schema.connectors.connector);
+
+            const {
+                setConnectorsDataInInlineTab,
+            } = useConnector()
+
+
             const savedQueries: SavedQueryInterface[] = [
                 {
                     id: '1x',
@@ -85,6 +95,15 @@
                 return bool
             }
 
+            const updateConnector = (value: string) => {
+                setConnectorsDataInInlineTab(activeInlineTab, inlineTabs, {
+                        connector: value,
+                        sourceName: undefined,
+                        connection: undefined,
+                        schema: undefined,
+                    }, 'queries')
+            }
+
             const {
                 treeData,
                 loadedKeys,
@@ -100,14 +119,22 @@
             });
 
             watch(activeInlineTabKey, (newActiveInlineTab) => {
-                console.log(newActiveInlineTab)
                 selectedKeys.value = [newActiveInlineTab]
+            })
+            
+            watch(activeInlineTab, (newActiveInlineTab) => {
+                if (newActiveInlineTab) {
+                    connector.value = newActiveInlineTab.explorer.queries.connectors
+                                .connector
+                }
             })
 
             return {
                 isSavedQueryOpened,
                 openSavedQueryInNewTab,
                 savedQueries,
+                connector,
+                updateConnector,
 
                 treeData,
                 loadedKeys,

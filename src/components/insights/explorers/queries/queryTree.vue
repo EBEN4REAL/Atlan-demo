@@ -48,7 +48,7 @@
                                             <StatusBadge
                                                 :key="item.guid"        
                                                 :show-no-status="false"
-                                                :status-id="item.assetStatus"
+                                                :status-id="item.entity?.attributes?.assetStatus"
                                                 class="flex-none ml-1"
                                             ></StatusBadge>
                                         </div>

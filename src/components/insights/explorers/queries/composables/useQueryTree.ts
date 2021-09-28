@@ -166,8 +166,7 @@ const useTree = ({ emit, openSavedQueryInNewTab, cacheKey, isAccordion}: useSave
     }
 
     const selectNode = (selected: any, event: any) => {
-        console.log(event.node.dataRef)
-        const item = event.node.dataRef.item as Folder | SavedQuery;
+        const item = event.node.dataRef.entity as Folder | SavedQuery;
         
         if(item.typeName === 'Query') {
             openSavedQueryInNewTab(item);
@@ -195,9 +194,9 @@ const useTree = ({ emit, openSavedQueryInNewTab, cacheKey, isAccordion}: useSave
             title: item.attributes.name,
             typeName: item.typeName,
             classifications: item.classifications,
-            ...item.attributes,
+            // ...item.attributes,
             isLeaf: item.typeName === 'Query' ? true : false,
-            item
+            entity: item
         }
     }
 

@@ -13,7 +13,7 @@
 
         </div>
         <hr class="w-full" />
-        <div class="w-full h-full p-4 overflow-y-auto scrollable-container">
+        <div class="w-full h-full mt-4 px-4 overflow-y-auto scrollable-container">
             <query-tree
                 :tree-data="treeData"
                 :on-load-data="onLoadData"

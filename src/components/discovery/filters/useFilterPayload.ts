@@ -51,56 +51,79 @@ export default function useFilterPayload(filters: Ref<Record<string, any>>) {
                         break
                     }
                     case 'classifications': {
-                        const addedBy = fltrObj?.addedBy || 'all'
-                        switch (addedBy) {
-                            case 'all': {
-                                // Case `all` will always be a OR bw __classificationNames and __propagatedClassificationNames
-                                fltrObj?.checked?.forEach((val) => {
-                                    const subFilter: Components.Schemas.FilterCriteria =
-                                        {
-                                            condition: 'OR',
-                                            criterion:
-                                                [] as Components.Schemas.FilterCriteria[],
-                                        }
-                                    const subFilterCriterion: Components.Schemas.FilterCriteria[] =
-                                        []
-                                    subFilterCriterion.push({
-                                        attributeName: '__classificationNames',
-                                        attributeValue: val,
-                                        operator: 'eq',
-                                    })
-                                    subFilterCriterion.push({
-                                        attributeName:
-                                            '__propagatedClassificationNames',
-                                        attributeValue: val,
-                                        operator: 'eq',
-                                    })
-                                    subFilter.criterion = subFilterCriterion
-                                    pl.push(subFilter)
-                                })
-                                break
-                            }
-                            case 'user': {
-                                fltrObj?.checked?.forEach((val) => {
-                                    pl.push({
-                                        attributeName: '__classificationNames',
-                                        attributeValue: val,
-                                        operator: 'eq',
-                                    })
-                                })
-                                break
-                            }
-                            case 'propagation':
-                                fltrObj?.checked?.forEach((val) => {
-                                    pl.push({
-                                        attributeName:
-                                            '__propagatedClassificationNames',
-                                        attributeValue: val,
-                                        operator: 'eq',
-                                    })
-                                })
-                                break
+                        const clsfPld: Components.Schemas.FilterCriteria = {
+                            condition: fltrObj?.operator || 'OR',
+                            criterion: [],
                         }
+                        if (fltrObj?.noClassificationsAssigned) {
+                            clsfPld.condition = 'OR'
+                            clsfPld.criterion?.push({
+                                attributeName: '__classificationNames',
+                                attributeValue: '-',
+                                operator: 'is_null',
+                            })
+                            clsfPld.criterion?.push({
+                                attributeName:
+                                    '__propagatedClassificationNames',
+                                attributeValue: '-',
+                                operator: 'is_null',
+                            })
+                        } else {
+                            const addedBy = fltrObj?.addedBy || 'all'
+                            switch (addedBy) {
+                                case 'all': {
+                                    // Case `all` will always be a OR bw __classificationNames and __propagatedClassificationNames
+                                    fltrObj?.checked?.forEach((val) => {
+                                        const subFilter: Components.Schemas.FilterCriteria =
+                                            {
+                                                condition: 'OR',
+                                                criterion:
+                                                    [] as Components.Schemas.FilterCriteria[],
+                                            }
+                                        const subFilterCriterion: Components.Schemas.FilterCriteria[] =
+                                            []
+                                        subFilterCriterion.push({
+                                            attributeName:
+                                                '__classificationNames',
+                                            attributeValue: val,
+                                            operator: 'eq',
+                                        })
+                                        subFilterCriterion.push({
+                                            attributeName:
+                                                '__propagatedClassificationNames',
+                                            attributeValue: val,
+                                            operator: 'eq',
+                                        })
+                                        subFilter.criterion = subFilterCriterion
+                                        clsfPld.criterion?.push(subFilter)
+                                    })
+                                    break
+                                }
+                                case 'users': {
+                                    fltrObj?.checked?.forEach((val) => {
+                                        clsfPld.criterion?.push({
+                                            attributeName:
+                                                '__classificationNames',
+                                            attributeValue: val,
+                                            operator: 'eq',
+                                        })
+                                    })
+                                    break
+                                }
+                                case 'propagation':
+                                    fltrObj?.checked?.forEach((val) => {
+                                        clsfPld.criterion?.push({
+                                            attributeName:
+                                                '__propagatedClassificationNames',
+                                            attributeValue: val,
+                                            operator: 'eq',
+                                        })
+                                    })
+                                    break
+                            }
+                        }
+
+                        if (clsfPld.criterion?.length) pl.push(clsfPld)
                         break
                     }
                     case 'owners': {

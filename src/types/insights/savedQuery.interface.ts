@@ -13,14 +13,17 @@ export type Attributes =  {
     ownerUsers?: string
     ownerGroups?: string
     assetStatusUpdatedAt?: number
-    columnCount?: number
     dataType?: string
     description?: string
     meanings: { displayText: string }[]
     name: string
     qualifiedName: string
     userDescription?: string
-    rowCount?: number
+
+    parentFolder?: Components.Schemas.AtlasObjectId;
+    columns?:Components.Schemas.AtlasObjectId[];
+
+    owner?: string;
     __createdBy: string
     __customAttributes: string
     __guid: string
@@ -31,12 +34,14 @@ export type Attributes =  {
 }
 
 
-export type Folder = Omit<Components.Schemas.AtlasEntityHeader, 'attributes' | 'typeName'> & {
-    typeName: 'Folder';
-    attributes: Attributes
+export type Folder = Omit<Components.Schemas.AtlasEntityHeader, 'attributes' | 'typeName' | 'guid'> & {
+    typeName: 'QueryFolder';
+    attributes: Attributes;
+    guid: string
 }
 
-export type SavedQuery = Omit<Components.Schemas.AtlasEntityHeader, 'attributes' | 'typeName'> & {
+export type SavedQuery = Omit<Components.Schemas.AtlasEntityHeader, 'attributes' | 'typeName' | 'guid'> & {
     typeName: 'Query';
-    attributes: Attributes
+    attributes: Omit<Attributes, 'columns'>;
+    guid: string;
 }

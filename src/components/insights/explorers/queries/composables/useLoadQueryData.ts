@@ -1,6 +1,6 @@
 import { Ref, ref } from 'vue'
 
-import { Query, Folder } from '~/types/insights/savedQuery.interface'
+import { SavedQuery, Folder } from '~/types/insights/savedQuery.interface'
 import { BasicSearchResponse, RelationshipSearchResponse } from '~/types/common/atlasSearch.interface'
 
 import { useAPIPromise } from '~/api/useAPI'
@@ -20,8 +20,8 @@ const useLoadQueryData = () => {
         "ownerUsers",
         "ownerGroups",
         "classifications",
-        "tableCount",
-        "columnCount",
+        "parentFolder",
+        "columns", //TODO: queries
         ...BaseAttributes,
         ...BasicSearchAttributes
     ];
@@ -31,7 +31,7 @@ const useLoadQueryData = () => {
         includeClassificationAttributes: true,
         includeSubClassifications: true,
         includeSubTypes: true,
-        limit: 5,
+        limit: 50,
         offset: 0,
         attributes,
         entityFilters: {
@@ -71,7 +71,7 @@ const useLoadQueryData = () => {
 
         return useAPIPromise(KeyMaps.savedQueries.BASIC_SEARCH(), 'POST', {
             body,
-        }) as Promise<BasicSearchResponse<Query>>
+        }) as Promise<BasicSearchResponse<SavedQuery>>
     }
 
     const getSubFolders = (folderGuid: string, offset?: number, limit?: number) => {
@@ -82,7 +82,7 @@ const useLoadQueryData = () => {
         })
 
         const paramsObj: any = {
-            limit: limit ?? 5,
+            limit: limit ?? 50,
             offset: 0,
             relation: 'childFolders',
             includeClassificationAttributes: true,
@@ -106,7 +106,7 @@ const useLoadQueryData = () => {
         })
 
         const paramsObj: any = {
-            limit: limit ?? 5,
+            limit: limit ?? 50,
             offset: 0,
             relation: 'columns', //TODO: replace with queries on atlas reset
             includeClassificationAttributes: true,
@@ -119,7 +119,7 @@ const useLoadQueryData = () => {
 
         return useAPIPromise(KeyMaps.savedQueries.RELATIONSHIP(), 'GET', {
             params
-        }) as Promise<RelationshipSearchResponse<Folder>>
+        }) as Promise<RelationshipSearchResponse<SavedQuery>>
     }
 
    

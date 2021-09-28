@@ -3,7 +3,7 @@ import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.inter
 import { useLocalStorageSync } from './useLocalStorageSync'
 import { inlineTabsDemoData } from '../dummyData/demoInlineTabData'
 
-export function useInlineTab() {
+export function useInlineTab(treeSelectedKeys?: Ref<string[]>) {
     const {
         syncInlineTabsInLocalStorage,
         getInlineTabsFromLocalStorage,
@@ -56,6 +56,8 @@ export function useInlineTab() {
         tabsArray.value = tabsArray.value.filter(
             (tab) => tab.key !== inlineTabKey
         )
+        if(treeSelectedKeys)
+            treeSelectedKeys.value = treeSelectedKeys?.value.filter((key) => key !== inlineTabKey)
         if (
             tabsArray.value.length &&
             activeInlineTabKey.value === inlineTabKey

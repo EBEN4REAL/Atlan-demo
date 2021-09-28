@@ -63,7 +63,7 @@ export function useSavedQuery(
             },
         }
         if (!isInlineTabAlreadyOpened(newTab)) {
-            inlineTabAdd(newTab, tabsArray)
+            inlineTabAdd(newTab, tabsArray, activeInlineTabKey)
             activeInlineTabKey.value = newTab.key
             // syncying inline tabarray in localstorage
             syncInlineTabsInLocalStorage(tabsArray.value)

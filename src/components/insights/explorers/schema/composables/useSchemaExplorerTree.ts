@@ -118,7 +118,6 @@ const useTree = ({
         databaseQualifiedName?: string,
         schemaQualifiedName?: string
     ) => {
-        // TODO: optimisation - if new selcted name is already expanded, use the same child instead of reinitializing
         // treeData.value = [];
         if (schemaQualifiedName) {
             const found = loadedKeys.value.find(
@@ -575,7 +574,6 @@ const useTree = ({
     watch(
         [connectionQualifiedName, databaseQualifiedName, schemaQualifiedName],
         ([c, d, s]) => {
-            console.log('changed bruh', c, d, s)
             isInitingTree.value = true
             initTreeData(c, d, s)
         }

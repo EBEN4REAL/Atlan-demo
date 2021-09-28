@@ -1,7 +1,11 @@
 <template>
     <div class="text-xs text-gray-500" :class="usingInInfo ? 'mb-3' : ''">
-        <p v-if="usingInInfo" class="mb-1 text-sm">Description</p>
-        <div v-if="showEditableDescription && !isLoading">
+        <p v-if="usingInInfo" class="mb-1 text-sm">
+            Description<span v-if="isLoading" class="ml-2">
+                <a-spin size="small" class="leading-none"></a-spin>
+            </span>
+        </p>
+        <div v-if="showEditableDescription" class="flex">
             <a-textarea
                 id="description-sidebar"
                 v-model:value="descriptionInput"
@@ -11,10 +15,14 @@
                 show-count
                 :maxlength="140"
                 :rows="4"
+                :disabled="isLoading"
                 @blur="handleDescriptionEdit"
                 @pressEnter="endEditDescription"
             >
             </a-textarea>
+            <span v-if="isLoading && !usingInInfo" class="ml-2">
+                <a-spin size="small" class="leading-none"></a-spin>
+            </span>
         </div>
         <span
             v-if="
@@ -24,8 +32,7 @@
                 !isLoading
             "
             class="inline-block w-full px-2 py-1 text-sm rounded-sm cursor-pointer  text-gray hover:bg-gray-100"
-            style="margin-bottom: -4px; margin-top: -4px"
-            :style="usingInInfo ? 'margin-left: -8px' : ''"
+            style="margin-bottom: -4px; margin-top: -4px; margin-left: -8px"
             @click="handleAddDescriptionClick"
         >
             {{ description }}
@@ -41,12 +48,6 @@
         >
             Add description
         </span>
-        <div
-            v-if="isLoading"
-            class="flex items-center justify-center text-sm leading-none"
-        >
-            <a-spin size="small" class="leading-none"></a-spin>
-        </div>
     </div>
 </template>
 
@@ -61,6 +62,7 @@
     } from 'vue'
     import updateDescription from '~/composables/asset/updateDescription'
     import { assetInterface } from '~/types/assets/asset.interface'
+    import { message } from 'ant-design-vue'
 
     export default defineComponent({
         props: {
@@ -76,18 +78,43 @@
         emits: ['update:selectedAsset'],
         setup(props, { emit }) {
             const { selectedAsset } = toRefs(props)
-            const { update, description, isLoading } =
+            const { update, description, isLoading, error, handleCancel } =
                 updateDescription(selectedAsset)
 
             const showEditableDescription = ref<boolean>(false)
+            const isError = ref<boolean>(false)
 
             const descriptionInput = ref()
             const handleDescriptionEdit = (e: any) => {
-                if (description.value !== e.target.value) {
+                if (
+                    description.value === e.target.value ||
+                    (description.value === undefined && e.target.value === '')
+                ) {
+                    showEditableDescription.value = false
+                } else {
                     description.value = e.target.value
                     update()
+                    watch(error, () => {
+                        if (error && error.value) {
+                            isError.value = true
+                        }
+                    })
+                    watch(isLoading, () => {
+                        if (isLoading.value === false) {
+                            showEditableDescription.value = false
+                        }
+                    })
+
+                    watch(isError, () => {
+                        if (isError.value) {
+                            handleCancel()
+                            message.error(
+                                'Unable to update description. Please try again later.'
+                            )
+                            isError.value = false
+                        }
+                    })
                 }
-                showEditableDescription.value = false
             }
 
             const endEditDescription = () => {

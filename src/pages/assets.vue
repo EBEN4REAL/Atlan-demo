@@ -1,15 +1,20 @@
 <template>
-    <div class="flex w-full h-full">
-        <div class="flex-1 item-stretch" style="max-width: calc(100vw - 420px)">
+    <div class="flex w-full h-full bg-white">
+        <div
+            class="flex-1 border-r border-gray-300 item-stretch"
+            style="max-width: calc(100vw - 420px)"
+        >
             <div class="flex h-full">
                 <router-view
-                    v-if="isItem"
+                    v-show="isItem"
                     :updateProfile="updateProfile"
+                    :selectedItem="selected"
                     @updateAssetPreview="handlePreview"
                     @preview="handlePreview"
                 ></router-view>
+
                 <AssetDiscovery
-                    v-else
+                    :class="{ hidden: isItem }"
                     :initial-filters="initialFilters"
                     @preview="handlePreview"
                     ref="assetDiscovery"
@@ -17,9 +22,7 @@
             </div>
         </div>
 
-        <div
-            class="z-20 flex flex-col h-full bg-white border-l  asset-preview-container"
-        >
+        <div class="z-20 flex flex-col bg-white asset-preview-container">
             <AssetPreview
                 v-if="selected"
                 :selectedAsset="selected"
@@ -28,7 +31,7 @@
             ></AssetPreview>
         </div>
 
-        <div id="overAssetPreviewSidebar" class="relative"></div>
+        <div id="overAssetPreviewSidebar"></div>
     </div>
 </template>
 
@@ -39,11 +42,9 @@
     import { useHead } from '@vueuse/head'
     import { computed, defineComponent, ref, Ref, watch } from 'vue'
     import { useRoute, useRouter } from 'vue-router'
-    import { Classification } from '~/api/atlas/classification'
-    import { useClassificationStore } from '~/components/admin/classifications/_store'
     import { assetInterface } from '~/types/assets/asset.interface'
-    import { typedefsInterface } from '~/types/typedefs/typedefs.interface'
     import { getDecodedOptionsFromString } from '~/utils/helper/routerQuery'
+    import { useClassifications } from '~/components/admin/classifications/composables/useClassifications'
 
     export interface initialFiltersType {
         facetsFilters: any
@@ -83,27 +84,13 @@
             /* Making the network request here to fetch the latest changes of classifications. 
             So that everytime user visit the discover page it will be in sync to latest data not with store
             */
-            const classificationsStore = useClassificationStore()
-            classificationsStore.setClassificationsStatus('loading')
-            const { data: classificationData, error: classificationError } =
-                Classification.getClassificationList<typedefsInterface>({
-                    cache: false,
-                })
-
-            watch([classificationData, classificationError], () => {
-                if (classificationData.value) {
-                    const classifications =
-                        classificationData.value.classificationDefs || []
-
-                    classificationsStore.setClassifications(
-                        classifications ?? []
-                    )
-                    classificationsStore.initializeFilterTree()
-                    classificationsStore.setClassificationsStatus('success')
-                } else {
-                    classificationsStore.setClassificationsStatus('error')
-                }
-            })
+            const {
+                isClassificationInitializedInStore,
+                initializeClassificationsInStore,
+            } = useClassifications()
+            if (!isClassificationInitializedInStore()) {
+                initializeClassificationsInStore()
+            }
 
             function propagateToAssetList(updatedAsset: assetInterface) {
                 if (assetDiscovery.value)

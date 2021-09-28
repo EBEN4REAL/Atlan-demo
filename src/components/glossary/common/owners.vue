@@ -205,7 +205,8 @@
                 required: true,
             },
         },
-        setup(props) {
+        emits: ['update:selectedAsset'],
+        setup(props, { emit }) {
             const now = ref(true)
             const ownerType = ref('user')
             const { selectedAsset } = toRefs(props)
@@ -386,6 +387,11 @@
             // closing the popover on making the req successfully
             watch(isOwnersLoading, () => {
                 if (!isOwnersLoading.value) showOwnersDropdown.value = false
+            })
+            watch(isReady, () => {
+                if (isReady.value) {
+                    emit('update:selectedAsset', selectedAsset.value)
+                }
             })
 
             return {

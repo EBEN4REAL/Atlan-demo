@@ -1,9 +1,8 @@
 import { ref } from 'vue'
-import {
-    getNodeSourceImage,
-    getNodeTypeText,
-    updateEdgesStroke,
-} from './util.js'
+import { getNodeSourceImage, getNodeTypeText } from './util.js'
+import useUpdateGraph from './useUpdateGraph'
+
+const { updateEdgesStroke } = useUpdateGraph()
 
 const getType = (entity) => getNodeTypeText[entity.typeName]
 const getSource = (entity) => entity.attributes.qualifiedName.split('/')[0]

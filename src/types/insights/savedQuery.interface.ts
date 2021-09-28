@@ -6,32 +6,6 @@ export interface SavedQueryInterface {
     result: string
 }
 
-export type Attributes = {
-    assetStatusUpdatedBy: string | null
-    popularityScore: number
-    assetStatusMessage: string | null
-    integrationName: string
-    connectionLastSyncedJob: string
-    qualifiedName: string
-    name: string
-    connectionName: string
-    assetStatus: string | null
-    ownerUsers: string | null
-    connectionQualifiedName: string | null
-    displayName: string | null
-    description: string | null
-    ownerGroups: string | null
-    isDiscoverable: boolean
-    alias: string | null
-    owner: string
-    assetStatusUpdatedAt: number
-    rawQuery: string
-    compiledQuery: string
-    connectionId: string
-    isPrivate: boolean
-    isSnippet: boolean
-}
-
 export type Query = Omit<
     Components.Schemas.AtlasEntityHeader,
     'attributes' | 'typeName'
@@ -47,9 +21,56 @@ export type SavedQueryResponse = Omit<
     entity?: Query
 }
 
-export type BasicSearchResponse<T> = Omit<
-    Components.Schemas.AtlasSearchResult,
-    'entities'
+export type Attributes = {
+    assetStatus?: string
+    assetStatusMessage?: string
+    assetStatusUpdatedBy?: string
+    ownerUsers?: string
+    ownerGroups?: string
+    assetStatusUpdatedAt?: number
+    dataType?: string
+    description?: string
+    meanings: { displayText: string }[]
+    name: string
+    qualifiedName: string
+    userDescription?: string
+
+    connectionQualifiedName: string
+    owner?: string
+    __createdBy: string
+    __customAttributes: string
+    __guid: string
+    __modificationTimestamp: number
+    __timestamp: number
+    __modifiedBy: string
+    __state: string
+}
+
+export type QueryFolderAttributes = Attributes & {
+    parentFolder?: Components.Schemas.AtlasObjectId
+    columns?: Components.Schemas.AtlasObjectId[]
+}
+
+export type SavedQueryAttributes = Attributes & {
+    folder?: Components.Schemas.AtlasObjectId
+    compiledQuery: string
+    rawQuery: string
+}
+
+export type Folder = Omit<
+    Components.Schemas.AtlasEntityHeader,
+    'attributes' | 'typeName' | 'guid'
 > & {
-    entities?: T[]
+    typeName: 'QueryFolder'
+    attributes: QueryFolderAttributes
+    guid: string
+}
+
+export type SavedQuery = Omit<
+    Components.Schemas.AtlasEntityHeader,
+    'attributes' | 'typeName' | 'guid'
+> & {
+    typeName: 'Query'
+    attributes: SavedQueryAttributes
+    guid: string
 }

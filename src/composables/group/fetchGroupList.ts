@@ -1,9 +1,8 @@
 import useSWRV from 'swrv'
 import { computed, ref } from 'vue'
 import LocalStorageCache from 'swrv/dist/cache/adapters/localStorage'
+import { Group, URL } from '@services/keycloak/groups/groups_api'
 import swrvState from '../utils/swrvState'
-
-import { Group, URL } from '~/api/auth/group'
 
 export default function fetchGroupList(immediate: boolean = true) {
     const params = ref(new URLSearchParams())
@@ -17,7 +16,7 @@ export default function fetchGroupList(immediate: boolean = true) {
         [URL.GroupList, params?.value, {}],
         () => {
             if (immediate) return Group.ListV2(params?.value)
-            else immediate = true
+            immediate = true
 
             return {}
         },

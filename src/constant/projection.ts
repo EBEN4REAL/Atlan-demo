@@ -203,4 +203,6 @@ export const BasicSearchAttributes = [
     'ownerUsers',
     'ownerGroups',
     'databaseQualifiedName',
+    'isPrimary',
+    'isPartition'
 ]

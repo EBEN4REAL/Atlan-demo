@@ -34,6 +34,7 @@
                     :loaded-keys="loadedKeys"
                     :selected-keys="selectedKeys"
                     :expanded-keys="expandedKeys"
+                    :collapse-all="collapseAll"
                 />
             </div>
         </pane>
@@ -56,7 +57,6 @@
     import glossaryTree from '@/glossary/tree/glossaryTree.vue'
 
     // composables
-    import useGlossaryList from '~/components/glossary/composables/useGlossaryList'
     import useTree from '~/components/glossary/composables/useTree'
 
     // types
@@ -97,13 +97,11 @@
                     ] === 'glossary'
             )
 
-            const { glossaryList, refetch: refetchGlossaryList } =
-                useGlossaryList(isHome)
-
             const {
                 treeData,
                 loadedKeys,
                 currentGuid,
+                glossaryList,
                 onLoadData,
                 parentGlossary,
                 isInitingTree,
@@ -115,7 +113,9 @@
                 updateNode,
                 refetchNode,
                 reInitTree,
-            } = useTree(emit, true)
+                refetchGlossaryList,
+                collapseAll,
+            } = useTree(emit, true, isHome)
 
             // methods
             const handleOpenModal = (context: Record<string, string>) => {
@@ -155,6 +155,7 @@
             provide('updateTreeNode', updateNode)
             provide('refetchGlossaryTree', refetchNode)
             provide('reInitTree', reInitTree)
+            provide('refetchGlossaryList', refetchGlossaryList)
 
             return {
                 handleOpenModal,
@@ -167,6 +168,7 @@
                 expandNode,
                 selectNode,
                 dragAndDropNode,
+                collapseAll,
                 createGlossaryModalVisble,
                 updateGlossaryModalVisble,
                 eventContext,
@@ -184,9 +186,6 @@
             }
         },
     })
-    // fetch current guid element
-    // if glossary, fetch cat and term (call loadData once)
-    // if not glossary, fetch parent glossary and call loadData
 </script>
 
 <route lang="yaml">

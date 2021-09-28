@@ -44,14 +44,26 @@ const useCreateGlossary = () => {
         name: '',
     })
 
-    const createGlossary = () => {
+    const createGlossary = (
+        title?: string,
+        description?: string,
+        status?: string,
+        ownerUsers?: string,
+        ownerGroups?: string
+    ) => {
         body.value = {
             qualifiedName: generateUUID(),
-            name: 'Untitled Glossary',
-            shortDescription: '',
+            name: title ?? 'Untitled Glossary',
+            shortDescription: description ?? '',
             longDescription: '',
-            assetStatus: 'draft',
+            assetStatus: status ?? 'draft',
+            ownerUsers: ownerUsers ?? `${username.value}`,
+            ownerGroups: ownerGroups ?? ``,
         }
+        message.loading({
+            content: 'Creating new glossary...',
+            key: `${title}`,
+        })
 
         const {
             data,
@@ -64,6 +76,12 @@ const useCreateGlossary = () => {
 
         watch(data, (newData) => {
             if (newData?.guid) {
+                message.success({
+                    content: `${title} created!`,
+                    key: `${title}`,
+                    duration: 2,
+                })
+
                 redirectToProfile('glossary', newData.guid)
             }
         })
@@ -71,6 +89,7 @@ const useCreateGlossary = () => {
             error.value = newError?.value
             isLoading.value = newValidating?.value
         })
+        return { data }
     }
 
     const createCategory = (
@@ -83,8 +102,7 @@ const useCreateGlossary = () => {
         ownerGroups?: string
     ) => {
         body.value = {
-            name: generateUUID(),
-            displayText: title ?? 'Untitled Category',
+            name: title ?? generateUUID(),
             shortDescription: description ?? '',
             longDescription: '',
             assetStatus: status ?? 'draft',
@@ -117,7 +135,6 @@ const useCreateGlossary = () => {
                 body: body.value,
             }
         )
-        const { data: updateData, updateEntity } = useUpdateGtcEntity()
 
         watch(data, (newData) => {
             if (newData?.guid) {
@@ -126,31 +143,28 @@ const useCreateGlossary = () => {
                     key: `${title}`,
                     duration: 2,
                 })
-
-                updateEntity('category', newData.guid, {
-                    name: title ?? 'Untitled Category',
-                })
-            }
-        })
-        watch(updateData, (newData) => {
-            if (newData?.guid) {
-                if (!title) {
-                    redirectToProfile('category', newData.guid)
-                }
-
                 if (refetchGlossaryTree) {
                     refetchGlossaryTree(
                         parentCategoryGuid || parentCategoryGuid !== ''
                             ? parentCategoryGuid
                             : 'root'
                     )
-
-                    refetchGlossaryTree(parentCategoryGuid ?? 'root')
                 }
             }
         })
+
         watch([createError, isValidating], ([newError, newValidating]) => {
             error.value = newError?.value
+
+            const errMsg = createError.value?.response?.data?.errorMessage
+            message.error({
+                content: `${errMsg.slice(0, 1).toUpperCase()}${errMsg.slice(
+                    1
+                )}`,
+                key: `${title}`,
+                duration: 2,
+            })
+
             isLoading.value = newValidating?.value
         })
     }
@@ -165,8 +179,7 @@ const useCreateGlossary = () => {
         ownerGroups?: string
     ) => {
         body.value = {
-            name: generateUUID(),
-            displayText: title ?? 'Untitled Term',
+            name: title ?? generateUUID(),
             shortDescription: description ?? '',
             longDescription: '',
             assetStatus: status ?? 'draft',
@@ -197,26 +210,15 @@ const useCreateGlossary = () => {
                 body: body.value,
             }
         )
-        const { data: updateData, updateEntity } = useUpdateGtcEntity()
 
         watch(data, (newData) => {
+            console.log(data)
             if (newData?.guid) {
                 message.success({
                     content: `${title} created!`,
                     key: `${title}`,
                     duration: 2,
                 })
-
-                updateEntity('term', newData.guid, {
-                    name: title ?? 'Untitled Term',
-                })
-            }
-        })
-        watch(updateData, (newData) => {
-            if (newData?.guid) {
-                if (!title) {
-                    redirectToProfile('term', newData.guid)
-                }
                 if (refetchGlossaryTree) {
                     refetchGlossaryTree(
                         parentCategoryGuid || parentCategoryGuid !== ''
@@ -228,6 +230,15 @@ const useCreateGlossary = () => {
         })
         watch([createError, isValidating], ([newError, newValidating]) => {
             error.value = newError?.value
+            const errMsg = createError.value?.response?.data?.errorMessage
+            message.error({
+                content: `${errMsg.slice(0, 1).toUpperCase()}${errMsg.slice(
+                    1
+                )}`,
+                key: `${title}`,
+                duration: 2,
+            })
+
             isLoading.value = newValidating?.value
         })
     }

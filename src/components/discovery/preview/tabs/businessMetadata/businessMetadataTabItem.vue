@@ -38,6 +38,7 @@
                     <a-input
                         v-if="getDatatypeOfAttribute(a.typeName) === 'number'"
                         v-model:value="a.value"
+                        :allow-clear="true"
                         class="flex-grow border shadow-none"
                         type="number"
                         placeholder="Type..."
@@ -47,6 +48,7 @@
                         v-else-if="
                             getDatatypeOfAttribute(a.typeName) === 'boolean'
                         "
+                        :allow-clear="true"
                         :value="a.value"
                         class="flex-grow"
                         @change="(e) => handleChange(x, e.target.value)"
@@ -60,7 +62,7 @@
                         "
                     >
                         <a-date-picker
-                            :allow-clear="false"
+                            :allow-clear="true"
                             :value="(a.value || '').toString()"
                             class="flex-grow w-100"
                             value-format="x"
@@ -75,6 +77,7 @@
                             getDatatypeOfAttribute(a.typeName) === 'text'
                         "
                         v-model:value="a.value"
+                        :allow-clear="true"
                         :auto-size="true"
                         :show-count="true"
                         :maxlength="parseInt(a.options.maxStrLength)"
@@ -86,6 +89,7 @@
                     <div v-else class="flex-grow shadow-none border-1">
                         <a-select
                             v-model:value="a.value"
+                            :allow-clear="true"
                             placeholder="Unassigned"
                             style="width: 100%"
                             :show-arrow="true"
@@ -112,19 +116,6 @@
                                 class="text-green-600"
                             />
                         </template>
-                        <div
-                            v-if="a.value?.toString() && loading === ''"
-                            class="col-span-1 text-gray-500 opacity-0 cursor-pointer  group-hover:opacity-100 hover:font-bold"
-                            @click.stop.prevent="
-                                () => {
-                                    a.value = ''
-                                    updateAttribute(x)
-                                }
-                            "
-                        >
-                            <!-- Clear -->
-                            <AtlanIcon icon="Cancel" />
-                        </div>
                     </div>
                 </div>
             </div>

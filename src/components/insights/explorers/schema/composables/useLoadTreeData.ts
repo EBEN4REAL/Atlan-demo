@@ -5,8 +5,8 @@ import {
     Schema,
     Table,
     Column,
-    BasicSearchResponse,
 } from '~/types/insights/table.interface'
+import { BasicSearchResponse } from '~/types/common/atlasSearch.interface'
 
 import { useAPIPromise } from '~/api/useAPI'
 import { KeyMaps } from '~/api/keyMap'

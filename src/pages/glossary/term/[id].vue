@@ -58,10 +58,10 @@
                             />
                         </div>
                     </a-tab-pane>
-                    <a-tab-pane key="4" tab="Requests"> Bots </a-tab-pane>
+                    <!-- <a-tab-pane key="4" tab="Requests"> Bots </a-tab-pane>
                     <a-tab-pane key="5" tab="Access Control">
                         Permissions
-                    </a-tab-pane>
+                    </a-tab-pane> -->
                 </a-tabs>
             </div>
         </div>
@@ -154,6 +154,8 @@
             const redirectToProfile = () => {
                 router.push(`/glossary/${term.value?.attributes?.anchor?.guid}`)
             }
+
+
             watch(updatedEntity, () => {
                 refetch()
                 newName.value = ''

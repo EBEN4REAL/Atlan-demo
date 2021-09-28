@@ -1,16 +1,17 @@
 <template>
     <div
         class="group-hover:opacity-100"
-        :class="isVisible ? 'opacity-100' : ''"
+        :class="{'opacity-100': isVisible, 'opacity-0 treeMode': treeMode, 'opacity-100': visible }"
     >
         <a-dropdown
             v-model:visible="isVisible"
-            :trigger="['click']"
+            :trigger="treeMode ? ['hover'] : ['click']"
+            :class="treeMode ? $style.treeMode: ''"
             @click.stop="() => {}"
         >
             <a-button
-                class="px-2"
-                :class="{ ' border-0 shadow-none outline-none': !showLinks }"
+                class="px-2 three-dot-menu"
+                :class="{ ' border-0 shadow-none outline-none': !showLinks || treeMode, 'treeMode h-4 w-4 ml-0.5': treeMode }"
                 @click.prevent
             >
                 <!-- <fa icon="fal ellipsis-v" class="h-4" /> -->
@@ -49,6 +50,57 @@
                     </a-menu-item>
 
                     <a-menu-divider v-if="showLinks" />
+                    <a-menu-item key="edit" @click="closeMenu">
+                        <AddGtcModal
+                            :entityType="assetTypeLabel[entity?.typeName]"
+                            :glossaryId="glossaryId"
+                            :categoryId="categoryId"
+                            mode="edit"
+                            :entity="entity"
+                        >
+                            <template #header>
+                                <div class="flex items-center mr-5">
+                                    <AtlanIcon
+                                        v-if="
+                                            entity.typeName === 'AtlasGlossary'
+                                        "
+                                        icon="Glossary"
+                                        class="h-4 m-0 mr-2"
+                                    />
+                                    <AtlanIcon
+                                        v-if="
+                                            entity.typeName ===
+                                            'AtlasGlossaryTerm'
+                                        "
+                                        icon="Term"
+                                        class="h-4 m-0 mr-2"
+                                    />
+                                    <AtlanIcon
+                                        v-if="
+                                            entity.typeName ===
+                                            'AtlasGlossaryCategory'
+                                        "
+                                        icon="Category"
+                                        class="h-4 m-0 mb-1 mr-2"
+                                    />
+
+                                    <span class="text-xs">{{
+                                        entity?.displayText
+                                    }}</span>
+                                </div>
+                            </template>
+                            <template #trigger>
+                                <div class="flex items-center">
+                                    <AtlanIcon icon="Link" class="m-0 mr-2" />
+                                    <p class="p-0 m-0">
+                                        Edit
+                                        {{ assetTypeLabel[entity?.typeName] }}
+                                    </p>
+                                </div>
+                            </template>
+                        </AddGtcModal>
+                    </a-menu-item>
+
                     <a-menu-item
                         key="add"
                         @click="closeMenu"
@@ -62,29 +114,19 @@
                             <template #header>
                                 <div class="flex items-center mr-5">
                                     <AtlanIcon
-                                        icon="Glossary"
-                                        class="h-5 m-0 mr-2"
-                                    />
-                                    <span
-                                        v-show="
-                                            entity?.typeName !== 'AtlasGlossary'
+                                        v-if="
+                                            entity.typeName === 'AtlasGlossary'
                                         "
-                                        class="mr-1 text-sm"
-                                    >
-                                        {{
-                                            entity?.attributes?.anchor
-                                                ?.uniqueAttributes
-                                                ?.qualifiedName
-                                        }}
-                                        /</span
-                                    >
+                                        icon="Glossary"
+                                        class="h-4 m-0 mr-2"
+                                    />
                                     <AtlanIcon
                                         v-if="
                                             entity.typeName ===
                                             'AtlasGlossaryTerm'
                                         "
                                         icon="Term"
-                                        class="h-5 m-0 mr-2"
+                                        class="h-4 m-0 mr-2"
                                     />
                                     <AtlanIcon
                                         v-if="
@@ -92,18 +134,27 @@
                                             'AtlasGlossaryCategory'
                                         "
                                         icon="Category"
-                                        class="h-5 m-0 mb-1 mr-2"
+                                        class="h-4 m-0 mb-1 mr-2"
                                     />
 
-                                    <span class="mr-3 text-sm">{{
+                                    <span class="text-xs">{{
                                         entity?.displayText
                                     }}</span>
+
+                                    <AtlanIcon
+                                        icon="ChevronDown"
+                                        class="h-4 mx-1 transition-transform transform -rotate-90 "
+                                    />
+                                    <span
+                                        class="text-xs font-bold text-gray-700"
+                                        >New term</span
+                                    >
                                 </div>
                             </template>
                             <template #trigger>
                                 <div class="flex items-center">
-                                    <AtlanIcon icon="Link" class="m-0 mr-2" />
-                                    <p class="p-0 m-0">Add new term</p>
+                                    <AtlanIcon icon="Term" class="m-0 mr-2" />
+                                    <p class="p-0 m-0">Add New Term</p>
                                 </div>
                             </template>
                         </AddGtcModal>
@@ -144,29 +195,19 @@
                             <template #header>
                                 <div class="flex items-center mr-5">
                                     <AtlanIcon
-                                        icon="Glossary"
-                                        class="h-5 m-0 mr-2"
-                                    />
-                                    <span
-                                        v-show="
-                                            entity?.typeName !== 'AtlasGlossary'
+                                        v-if="
+                                            entity.typeName === 'AtlasGlossary'
                                         "
-                                        class="mr-1 text-sm"
-                                    >
-                                        {{
-                                            entity?.attributes?.anchor
-                                                ?.uniqueAttributes
-                                                ?.qualifiedName
-                                        }}
-                                        /</span
-                                    >
+                                        icon="Glossary"
+                                        class="h-4 m-0 mr-2"
+                                    />
                                     <AtlanIcon
                                         v-if="
                                             entity.typeName ===
                                             'AtlasGlossaryTerm'
                                         "
                                         icon="Term"
-                                        class="h-5 m-0 mr-2"
+                                        class="h-4 m-0 mr-2"
                                     />
                                     <AtlanIcon
                                         v-if="
@@ -174,18 +215,27 @@
                                             'AtlasGlossaryCategory'
                                         "
                                         icon="Category"
-                                        class="h-5 m-0 mb-1 mr-2"
+                                        class="h-4 m-0 mb-1 mr-2"
                                     />
 
-                                    <span class="mr-3 text-sm">{{
+                                    <span class="text-xs">{{
                                         entity?.displayText
                                     }}</span>
+
+                                    <AtlanIcon
+                                        icon="ChevronDown"
+                                        class="h-4 mx-1 transition-transform transform -rotate-90 "
+                                    />
+                                    <span
+                                        class="text-xs font-bold text-gray-700"
+                                        >New category</span
+                                    >
                                 </div>
                             </template>
                             <template #trigger>
                                 <div class="flex items-center">
-                                    <AtlanIcon icon="Link" class="m-0 mr-2" />
-                                    <p class="p-0 m-0">Add new category</p>
+                                    <AtlanIcon icon="Category" class="m-0 mr-2" />
+                                    <p class="p-0 m-0">Add New Category</p>
                                 </div>
                             </template>
                         </AddGtcModal>
@@ -240,8 +290,11 @@
                         </template>
                         <template #expandIcon><div></div> </template>
                         <a-menu-item class="m-0 bg-white">
-                            <Owners :selectedAsset="entity"
-                        /></a-menu-item>
+                            <Owners 
+                                :selectedAsset="entity"
+                                @update:selectedAsset="updateTree"
+                            />
+                        </a-menu-item>
                     </a-sub-menu>
                     <a-menu-divider />
                     <a-menu-item key="archive" class="text-red-700">
@@ -305,6 +358,8 @@
         onMounted,
         computed,
     } from 'vue'
+    import { useRouter } from 'vue-router'
+
     // components
     import StatusBadge from '@common/badge/status/index.vue'
     import Owners from '@/glossary/common/owners.vue'
@@ -330,21 +385,27 @@
                 required: true,
                 default: () => {},
             },
-            redirectToProfile: {
-                type: Function,
-                required: false,
-                default: undefined,
-            },
             showLinks: {
                 type: Boolean,
                 required: false,
                 default: () => true,
             },
+            treeMode: {
+                type: Boolean,
+                required: false,
+                default: () => false
+            },
+            visible: {
+                type: Boolean,
+                required: false,
+                default: true
+            }
         },
         setup(props, context) {
             // data
             const isVisible = ref(false)
             const isModalVisible = ref<boolean>(false)
+            const router = useRouter()
 
             const handleFetchListInj: Function | undefined =
                 inject('handleFetchList')
@@ -364,7 +425,6 @@
                 return ''
             })
 
-            console.log(glossaryId.value)
             const {
                 deleteGlossary,
                 deleteCategory,
@@ -443,6 +503,14 @@
                         props.entity.guid
                     )
             }
+            const redirectToProfile = () => {
+                if (props.entity.typeName === 'AtlasGlossary')
+                    router.push(`/glossary/${props.entity.guid}`)
+                else if (props.entity.typeName === 'AtlasGlossaryCategory')
+                    router.push(`/glossary/category/${props.entity.guid}`)
+                else if (props.entity.typeName === 'AtlasGlossaryTerm')
+                    router.push(`/glossary/term/${props.entity.guid}`)
+            }
 
             // update tree on archive or create new entity
             const updateTree = (selectedAsset: Glossary | Category | Term) => {
@@ -465,9 +533,15 @@
                 createNewTerm,
                 createNewCategory,
                 closeMenu,
+                redirectToProfile,
                 glossaryId,
                 categoryId,
             }
         },
     })
 </script>
+<style lang="less" module>
+  .treeMode {
+    @apply bg-black bg-opacity-0 !important;
+  }
+</style>

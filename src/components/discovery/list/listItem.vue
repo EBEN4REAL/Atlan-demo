@@ -100,14 +100,18 @@
 
                     <div
                         v-if="
-                            ['table', 'view'].includes(
+                            ['table', 'view', 'tablepartition'].includes(
                                 item.typeName.toLowerCase()
                             )
                         "
                         class="flex text-sm text-gray-500"
                     >
                         <span
-                            v-if="item?.typeName.toLowerCase() === 'table'"
+                            v-if="
+                                ['table', 'tablepartition'].includes(
+                                    item.typeName.toLowerCase()
+                                )
+                            "
                             class="mr-2 text-gray-500"
                             ><span class="tracking-tighter text-gray-700">{{
                                 rowCount(item, false)

@@ -6,13 +6,15 @@
         >
             <div class="flex h-full">
                 <router-view
-                    v-if="isItem"
+                    v-show="isItem"
                     :updateProfile="updateProfile"
+                    :selectedItem="selected"
                     @updateAssetPreview="handlePreview"
                     @preview="handlePreview"
                 ></router-view>
+
                 <AssetDiscovery
-                    v-else
+                    :class="{ hidden: isItem }"
                     :initial-filters="initialFilters"
                     @preview="handlePreview"
                     ref="assetDiscovery"

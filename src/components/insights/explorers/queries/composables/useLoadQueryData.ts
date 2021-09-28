@@ -20,9 +20,13 @@ const useLoadQueryData = () => {
         "ownerUsers",
         "ownerGroups",
         "classifications",
+
+        "connectionQualifiedName",
         "parentFolder",
         "columns", //TODO: queries
         "folder",
+        "compiledQuery",
+        "rawQuery",
         ...BaseAttributes,
         ...BasicSearchAttributes
     ];

@@ -20,9 +20,7 @@ export type Attributes =  {
     qualifiedName: string
     userDescription?: string
 
-    parentFolder?: Components.Schemas.AtlasObjectId;
-    columns?:Components.Schemas.AtlasObjectId[];
-
+    connectionQualifiedName: string;
     owner?: string;
     __createdBy: string
     __customAttributes: string
@@ -33,17 +31,27 @@ export type Attributes =  {
     __state: string
 }
 
+export type QueryFolderAttributes = Attributes & {
+    parentFolder?: Components.Schemas.AtlasObjectId;
+    columns?:Components.Schemas.AtlasObjectId[];
+};
+
+export type SavedQueryAttributes = Attributes & {
+    folder?: Components.Schemas.AtlasObjectId;
+    compiledQuery: string;
+    rawQuery: string;
+
+};
+
 
 export type Folder = Omit<Components.Schemas.AtlasEntityHeader, 'attributes' | 'typeName' | 'guid'> & {
     typeName: 'QueryFolder';
-    attributes: Attributes;
+    attributes: QueryFolderAttributes;
     guid: string
 }
 
 export type SavedQuery = Omit<Components.Schemas.AtlasEntityHeader, 'attributes' | 'typeName' | 'guid'> & {
     typeName: 'Query';
-    attributes: Omit<Attributes, 'columns' | 'parentFolder'> & {
-        folder?: Components.Schemas.AtlasObjectId;
-    };
+    attributes: SavedQueryAttributes;
     guid: string;
 }

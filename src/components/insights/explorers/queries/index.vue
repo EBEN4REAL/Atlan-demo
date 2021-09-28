@@ -96,6 +96,7 @@
                 selectNode,
             } = useQueryTree({
                 emit,
+                openSavedQueryInNewTab
             });
 
             return {

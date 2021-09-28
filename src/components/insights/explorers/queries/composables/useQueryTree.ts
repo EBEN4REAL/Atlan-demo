@@ -29,11 +29,12 @@ type CustomTreeDataItem = Omit<TreeDataItem, 'children'> & Attributes &{
 
 interface useSavedQueriesTreeProps {
     emit: any;
+    openSavedQueryInNewTab: Function;
     cacheKey?: string; 
     isAccordion?: boolean;
 }
 
-const useTree = ({ emit, cacheKey, isAccordion}: useSavedQueriesTreeProps) => {
+const useTree = ({ emit, openSavedQueryInNewTab, cacheKey, isAccordion}: useSavedQueriesTreeProps) => {
 
     // A map of node guids to the guid of their parent. Used for traversing the tree while doing local update
     const nodeToParentKeyMap: Record<string, 'root' | string> = {}
@@ -165,6 +166,13 @@ const useTree = ({ emit, cacheKey, isAccordion}: useSavedQueriesTreeProps) => {
     }
 
     const selectNode = (selected: any, event: any) => {
+        console.log(event.node.dataRef)
+        const item = event.node.dataRef.item as Folder | SavedQuery;
+        
+        if(item.typeName === 'Query') {
+            openSavedQueryInNewTab(item)
+        }
+
         if (!event.node.isLeaf) {
             expandNode([], event)
             // selectedKeys.value = []
@@ -187,7 +195,8 @@ const useTree = ({ emit, cacheKey, isAccordion}: useSavedQueriesTreeProps) => {
             typeName: item.typeName,
             classifications: item.classifications,
             ...item.attributes,
-            isLeaf: item.typeName === 'Query' ? true : false
+            isLeaf: item.typeName === 'Query' ? true : false,
+            item
         }
     }
 

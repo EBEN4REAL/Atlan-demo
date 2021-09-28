@@ -3,6 +3,7 @@ import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.inter
 import { useLocalStorageSync } from '~/components/insights/common/composables/useLocalStorageSync'
 import { SavedQueryInterface } from '~/types/insights/savedQuery.interface'
 import { useInlineTab } from '~/components/insights/common/composables/useInlineTab'
+import { SavedQuery } from '~/types/insights/savedQuery.interface'
 
 export function useSavedQuery(
     tabsArray: Ref<activeInlineTabInterface[]>,
@@ -12,17 +13,17 @@ export function useSavedQuery(
     const { syncInlineTabsInLocalStorage } = useLocalStorageSync()
     const { isInlineTabAlreadyOpened, inlineTabAdd } = useInlineTab()
 
-    const openSavedQueryInNewTab = (savedQuery: SavedQueryInterface) => {
+    const openSavedQueryInNewTab = (savedQuery: SavedQuery) => {
         const newTab = {
-            label: savedQuery.label,
-            key: savedQuery.id,
+            label: savedQuery.attributes.name,
+            key: savedQuery.guid,
             favico: 'https://atlan.com/favicon.ico',
             isSaved: true,
-            queryId: savedQuery.id,
+            queryId: savedQuery.guid,
             explorer: {
                 schema: {
                     connectors: {
-                        connection: 'default/snowflake/vqaqufvr-i',
+                        connection: savedQuery.attributes.connectionQualifiedName,
                         connector: 'snowflake',
                         selectedDefaultSchema: 'ATLAN_TRIAL.PUBLIC',
                         selectedDataSourceName: 'default/snowflake/vqaqufvr-i',
@@ -31,7 +32,7 @@ export function useSavedQuery(
             },
             playground: {
                 editor: {
-                    text: savedQuery.editor,
+                    text: savedQuery.attributes.rawQuery,
                     dataList: [],
                     columnList: [],
                     variables: [],
@@ -41,7 +42,7 @@ export function useSavedQuery(
                         activeInlineTab.value?.playground.resultsPane
                             .activeTab ?? 0,
                     result: {
-                        title: savedQuery.result,
+                        title: savedQuery.attributes.name ?? '',
                     },
                     metadata: {},
                     queries: {},

@@ -92,13 +92,16 @@
 </template>
 <script lang="ts">
 // library
-import { defineComponent, PropType } from 'vue'
+import { defineComponent, PropType, inject, Ref } from 'vue'
 import { TreeDataItem } from 'ant-design-vue/lib/tree/Tree'
 
 // components
 import LoadingView from '@common/loaders/section.vue'
 
 // composables
+import { SavedQueryInterface } from '~/types/insights/savedQuery.interface'
+import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
+import { useSavedQuery } from '~/components/insights/explorers/composables/useSavedQuery'
 
 // constant
 import { List as StatusList } from '~/constant/status'
@@ -157,9 +160,34 @@ export default defineComponent({
     },
     setup(props, { emit }) {
         // data
+        const inlineTabs = inject('inlineTabs') as Ref<
+            activeInlineTabInterface[]
+        >
+        const activeInlineTab = inject(
+            'activeInlineTab'
+        ) as Ref<activeInlineTabInterface>
+        const activeInlineTabKey = inject(
+            'activeInlineTabKey'
+        ) as Ref<string>
+
+        const { openSavedQueryInNewTab } = useSavedQuery(
+            inlineTabs,
+            activeInlineTab,
+            activeInlineTabKey
+        )
+        const isSavedQueryOpened = (savedQuery: SavedQueryInterface) => {
+            let bool = false
+            inlineTabs.value.forEach((tab) => {
+                if (tab.key === savedQuery.id) bool = true
+            })
+            return bool
+        }
 
         return {
             StatusList,
+            isSavedQueryOpened,
+            openSavedQueryInNewTab,
+
             // selectedKeys,
             // expandedKeys,
             // expandNode,

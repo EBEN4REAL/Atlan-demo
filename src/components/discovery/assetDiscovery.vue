@@ -2,14 +2,7 @@
     <div class="flex w-full">
         <div
             v-if="showFilters"
-            class="
-                flex flex-col
-                h-full
-                overflow-y-auto
-                bg-white
-                border-r border-gray-300
-                facets
-            "
+            class="flex flex-col h-full overflow-y-auto bg-white border-r border-gray-300  facets"
         >
             <AssetFilters
                 :ref="
@@ -438,6 +431,7 @@
             }
 
             const handleClearFiltersFromList = () => {
+                queryText.value = ''
                 assetFilterRef.value?.resetAllFilters()
             }
 

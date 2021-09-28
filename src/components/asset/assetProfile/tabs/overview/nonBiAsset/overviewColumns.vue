@@ -1,40 +1,37 @@
 <template>
     <div>
         <!-- Search and Filter -->
-        <div class="flex items-center justify-between mb-4">
-            <div class="flex items-center w-1/2">
-                <SearchAndFilter
-                    v-model:value="queryText"
-                    @change="handleSearchChange"
-                    :autofocus="true"
-                    placeholder="Search columns..."
-                >
-                    <template #filter>
-                        <div
-                            class="flex items-center justify-between mb-2 text-sm "
+        <div class="mb-4">
+            <SearchAndFilter
+                v-model:value="queryText"
+                :autofocus="true"
+                placeholder="Search columns..."
+                @change="handleSearchChange"
+            >
+                <template #filter>
+                    <div class="flex items-center justify-between mb-2 text-sm">
+                        <span>Data type</span>
+                        <span
+                            class="text-gray-500 cursor-pointer hover:text-gray"
+                            @click="clearAllFilters"
+                            >Clear</span
                         >
-                            <span>Data type</span>
-                            <span
-                                class="text-gray-500 cursor-pointer  hover:text-gray"
-                                @click="clearAllFilters"
-                                >Clear</span
-                            >
-                        </div>
-                        <DataTypes
-                            v-model:filters="filters"
-                            @update:filters="handleFilterChange"
-                        />
-                    </template>
-                </SearchAndFilter>
-            </div>
+                    </div>
+                    <DataTypes
+                        v-model:filters="filters"
+                        @update:filters="handleFilterChange"
+                    />
+                </template>
+            </SearchAndFilter>
         </div>
         <!-- Table -->
         <div class="relative">
             <a-table
                 :columns="columns"
                 :data-source="columnsData.filteredList"
-                :scroll="{ y: 240, scrollToFirstRowOnChange: true }"
-                :loading="!columnsData.filteredList"
+                :scroll="{ y: 240 }"
+                :pagination="false"
+                :loading="isLoading"
                 :custom-row="customRow"
                 :row-class-name="rowClassName"
             >
@@ -53,7 +50,7 @@
                 <template #column_name="{ text, record }">
                     <div class="flex items-center">
                         <component
-                            :is="record.data_type"
+                            :is="images[record.data_type]"
                             class="w-4 h-4 mr-3"
                         ></component>
                         <Tooltip :tooltip-text="text" />
@@ -68,41 +65,29 @@
                     <a-progress :percent="text" :show-info="false" />
                 </template>
             </a-table>
-            <div v-if="isLoadMore" class="flex items-center justify-center">
+            <div
+                v-if="list.length <= 0 && !isLoading"
+                class="flex items-center justify-center mt-3"
+            >
+                <a-button @click="clearFiltersAndSearch"
+                    >Clear all filters</a-button
+                >
+            </div>
+            <div
+                v-if="isLoadMore"
+                class="flex items-center justify-center mt-3"
+            >
                 <button
-                    :disabled="isLoading"
+                    v-if="!isLoading"
                     class="flex items-center justify-between py-2 transition-all duration-300 bg-white rounded-full  text-primary"
-                    :class="isLoading ? 'px-2 w-9' : 'px-5 w-32'"
                     @click="loadMore"
                 >
-                    <template v-if="!isLoading">
-                        <p
-                            class="m-0 mr-1 overflow-hidden text-sm transition-all duration-300  overflow-ellipsis whitespace-nowrap"
-                        >
-                            Load more
-                        </p>
-                        <AtlanIcon icon="ArrowDown" />
-                    </template>
-                    <svg
-                        v-else
-                        class="w-5 h-5 text-primary animate-spin"
-                        fill="none"
-                        viewBox="0 0 24 24"
+                    <p
+                        class="m-0 mr-1 overflow-hidden text-sm transition-all duration-300  overflow-ellipsis whitespace-nowrap"
                     >
-                        <circle
-                            class="opacity-25"
-                            cx="12"
-                            cy="12"
-                            r="10"
-                            stroke="currentColor"
-                            stroke-width="4"
-                        ></circle>
-                        <path
-                            class="opacity-75"
-                            fill="currentColor"
-                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                        ></path>
-                    </svg>
+                        Load more
+                    </p>
+                    <AtlanIcon icon="ArrowDown" />
                 </button>
             </div>
         </div>
@@ -137,6 +122,7 @@
         watch,
         computed,
         ref,
+        Ref,
         provide,
         nextTick,
     } from 'vue'
@@ -144,19 +130,16 @@
     import { useRoute } from 'vue-router'
 
     // Components
-    import SearchAndFilter from '@/common/input/searchAndFilter.vue'
     import DataTypes from '@common/facets/dataType.vue'
+    import SearchAndFilter from '@/common/input/searchAndFilter.vue'
 
     import preferences from './preferences.vue'
     import Tooltip from '@/common/ellipsis/index.vue'
     import AssetPreview from '@/discovery/preview/assetPreview.vue'
 
     // Composables
-    import useColumns from '~/composables/asset/useColumns'
-    import useColumnsFilter from '~/composables/asset/useColumnsFilter'
     import { images, dataTypeList } from '~/constant/datatype'
     import useColumns2 from '~/composables/asset/useColumns2'
-    import useAssetInfo from '~/composables/asset/useAssetInfo'
 
     // Interfaces
     import { assetInterface } from '~/types/assets/asset.interface'
@@ -187,8 +170,6 @@
             const offset = ref(0)
             const filters: Ref<string[]> = ref([])
             const dataTypeFilters = ref([])
-
-            const { dataTypeImage } = useAssetInfo()
 
             /** INJECTIONS */
             const assetDataInjection = inject('assetData')
@@ -319,36 +300,6 @@
                 updateBody()
             }
 
-            /** METHODS */
-            // getColumnTypes
-            /* const getColumnTypes = (filteredList: any[]) => {
-                const filtersIdSet = new Set()
-                dataTypeList.forEach((i) => {
-                    filteredList.forEach(
-                        (j: { attributes: { dataType: string } }) => {
-                            if (i.type.includes(j.attributes.dataType))
-                                filtersIdSet.add(i.id)
-                        }
-                    )
-                })
-                filters.value = Array.from(filtersIdSet)
-                typeFilters.value = Array.from(filtersIdSet)
-            } */
-
-            //  filterByQuery
-            /*   const filterByQuery = (e: { target: { value: string } }) => {
-                query.value = e.target.value
-                handleFilter()
-            }
-
-            // handleFilter
-            const handleFilter = (val) => {
-                if (val) typeFilters.value = val
-
-                const { columnList } = columnsData.value
-                filterColumnsList(columnList)
-            } */
-
             const scrollToElement = (selectedRow) => {
                 let paginationOfSelectedColumn
                 if (selectedRow % 10 === 0) {
@@ -375,25 +326,17 @@
                 }, 500)
             }
 
+            const getDataType = (type: string) => {
+                let label = ''
+                dataTypeList.forEach((i) => {
+                    if (i.type.includes(type)) label = i.label
+                })
+                return label
+            }
+
             // filterColumnsList
-            const filterColumnsList = (columnList: any) => {
-                const { filteredList } = useColumnsFilter(
-                    columnList,
-                    query,
-                    typeFilters
-                )
-
-                if (filters.value.length === 0)
-                    getColumnTypes(filteredList.value)
-
-                const getDataType = (type: string) => {
-                    let label = ''
-                    dataTypeList.forEach((i) => {
-                        if (i.type.includes(type)) label = i.label
-                    })
-                    return label
-                }
-                const filteredListData = filteredList.value.map(
+            const filterColumnsList = () => {
+                const filteredListData = list.value.map(
                     (i: {
                         attributes: {
                             order: any
@@ -407,38 +350,32 @@
                         key: i.attributes.order,
                         hash_index: i.attributes.order,
                         column_name: i.attributes.name,
-                        data_type: dataTypeImage(i),
+                        data_type: getDataType(i.attributes.dataType),
                         description:
                             i.attributes.userDescription ||
                             i.attributes.description ||
                             '---',
-                        popularity: i.attributes.popularityScore || 0,
+                        popularity: i.attributes.popularityScore || 8,
                     })
                 )
-                columnPreviewData.value = { filteredList }
+                columnPreviewData.value = { list }
 
                 columnsData.value = {
                     filteredList: filteredListData,
-                    columnList,
                 }
 
                 // If redirected from asset column discovery
                 if (column.value !== '') {
-                    columnPreviewData.value.filteredList?.forEach(
-                        (singleRow: {}) => {
-                            if (singleRow.guid === column.value) {
-                                openColumnSidebar(singleRow.attributes.order)
-                            }
+                    list.value?.forEach((singleRow: {}) => {
+                        if (singleRow.guid === column.value) {
+                            openColumnSidebar(singleRow.attributes.order)
                         }
-                    )
+                    })
                     nextTick(() => {
                         scrollToElement(selectedRow.value)
                     })
                 }
             }
-
-            // useColumns
-            const { columnList } = useColumns(assetData.value.guid)
 
             const handleCloseColumnSidebar = () => {
                 showColumnPreview.value = false
@@ -447,13 +384,11 @@
             }
             const openColumnSidebar = (columnOrder) => {
                 selectedRow.value = columnOrder
-                columnPreviewData.value.filteredList.forEach(
-                    (singleRow: {}) => {
-                        if (singleRow.attributes.order === columnOrder) {
-                            selectedRowData.value = singleRow
-                        }
+                list.value.forEach((singleRow: {}) => {
+                    if (singleRow.attributes.order === columnOrder) {
+                        selectedRowData.value = singleRow
                     }
-                )
+                })
 
                 showColumnPreview.value = true
             }
@@ -471,7 +406,7 @@
 
             const propagateToColumnList = (updatedAsset: assetInterface) => {
                 selectedRowData.value = updatedAsset
-                handleFilter()
+                filterColumnsList()
             }
 
             // rowClassName Antd
@@ -480,13 +415,9 @@
                     ? 'bg-primary-light'
                     : 'bg-transparent'
 
-            /** PROVIDERS */
-            provide('handleFilter', handleFilter)
-            provide('typeFilters', typeFilters)
-
             /** WATCHERS */
-            watch(columnList, () => {
-                filterColumnsList(columnList.value)
+            watch(list, () => {
+                filterColumnsList()
             })
 
             return {
@@ -494,12 +425,15 @@
                 customRow,
                 handleSearchChange,
                 clearAllFilters,
+                clearFiltersAndSearch,
                 filters,
                 isLoadMore,
                 isLoading,
+                loadMore,
                 handleFilterChange,
                 handleCloseColumnSidebar,
                 propagateToColumnList,
+                list,
                 selectedRow,
                 columnsData,
                 queryText,

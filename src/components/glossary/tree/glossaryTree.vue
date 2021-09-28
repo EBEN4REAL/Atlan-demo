@@ -272,7 +272,7 @@
                             "
                         >
                             <span
-                                class="flex my-auto text-xs leading-4 font-bold"
+                                class="flex my-auto text-xs leading-3 font-bold"
                                 :class="{
                                     'text-primary':
                                         currentGuid === parentGlossary?.guid,
@@ -284,37 +284,6 @@
                     </div>
 
                     <div class="space-x-2 flex tree-glossary-actions">
-                        <!-- <a-dropdown :trigger="['click']">
-                        <a class="ant-dropdown-link" @click.prevent>
-                            <a-button
-                                class="flex flex-col justify-center w-7 h-7 p-2 border-gray-300 bg-white"
-                            >
-                                <fa icon="fal plus" />
-                            </a-button>
-                        </a>
-                        <template #overlay>
-                            <a-menu>
-                                <div
-                                    class="px-2 py-1"
-                                    :class="$style.createDropdownStyles"
-                                >
-                                    <a-menu-item key="0" @click="createNewTerm">
-                                        New Term
-                                    </a-menu-item>
-                                    <a-menu-item key="1" @click="createNewCategory">
-                                        New Category
-                                    </a-menu-item>
-                                    <hr class="my-1" />
-                                    <a-menu-item key="2">
-                                        Bulk Upload Terms
-                                    </a-menu-item>
-                                    <a-menu-item key="3">
-                                        Bulk Upload Categories
-                                    </a-menu-item>
-                                </div>
-                            </a-menu>
-                        </template>
-                    </a-dropdown> -->
                         <div
                             v-if="expandedKeys.length"
                             class="
@@ -329,6 +298,12 @@
                         >
                             <AtlanIcon class="m-auto" icon="TreeCollapseAll" />
                         </div>
+                        <div
+                            class="flex flex-col justify-center w-7 h-7 p-2 bg-opacity-0"
+                        >
+                            <fa icon="fal plus" />
+                        </div>
+
                         <ThreeDotMenu
                             class="w-7 h-7"
                             :entity="parentGlossary"

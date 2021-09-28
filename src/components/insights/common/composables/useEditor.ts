@@ -2,10 +2,6 @@ import { Ref } from 'vue'
 import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
 import { useInlineTab } from '~/components/insights/common/composables/useInlineTab'
 import { CustomVaribaleInterface } from '~/types/insights/customVariable.interface'
-import { KeyMaps } from '~/api/keyMap'
-import { useAPIPromise } from '~/api/useAPI'
-
-import { Query, BasicSearchResponse } from '~/types/insights/table.interface'
 
 export function useEditor(
     tabs?: Ref<activeInlineTabInterface[]>,
@@ -66,14 +62,8 @@ export function useEditor(
 
         return query
     }
-    function saveQueryInDatabase(body) {
-        return useAPIPromise(KeyMaps.insights.CREATE_SAVED_QUERY(), 'POST', {
-            body,
-        }) as Promise<BasicSearchResponse<any>>
-    }
 
     return {
-        saveQueryInDatabase,
         modifyEditorContent,
         onEditorContentChange,
         getParsedQuery,

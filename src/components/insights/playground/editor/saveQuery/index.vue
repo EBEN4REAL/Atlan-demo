@@ -171,7 +171,7 @@
         setup(props, { emit }) {
             const { showSaveQueryModal, saveQueryLoading } = toRefs(props)
             const currentStatus: Ref<string> = ref('draft')
-            const title: Ref<string> = ref('Untitled Query')
+            const title: Ref<string> = ref('')
             const description: Ref<string> = ref('')
             const isSQLSnippet: Ref<boolean> = ref(false)
             const titleBarRef: Ref<null | HTMLInputElement> = ref(null)
@@ -181,6 +181,12 @@
             }
             const closeModal = () => {
                 emit('update:showSaveQueryModal', false)
+            }
+            const clearData = () => {
+                title.value = ''
+                description.value = ''
+                isSQLSnippet.value = false
+                currentStatus.value = 'draft'
             }
             const createSaveQuery = () => {
                 const saveQueryData = {
@@ -204,6 +210,7 @@
                 currentStatus,
                 List,
                 saveQueryLoading,
+                clearData,
                 closeModal,
                 createSaveQuery,
                 handleMenuClick,

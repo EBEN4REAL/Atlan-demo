@@ -30,6 +30,11 @@
             <SaveQueryModal
                 v-model:showSaveQueryModal="showSaveQueryModal"
                 :saveQueryLoading="saveQueryLoading"
+                :ref="
+                    (el) => {
+                        saveModalRef = el
+                    }
+                "
                 @onSaveQuery="saveQuery"
             />
             <Monaco @editorInstance="setEditorInstance" />
@@ -54,7 +59,6 @@
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
     import useRunQuery from '../common/composables/useRunQuery'
     import { useProvide } from '~/components/insights/common/composables/useProvide'
-    import { useEditor } from '~/components/insights/common/composables/useEditor'
     import { useConnector } from '~/components/insights/common/composables/useConnector'
     import { provideDataInterface } from '~/components/insights/common/composables/useProvide'
     import CustomVariablesNav from '~/components/insights/playground/editor/customVariablesNav/index.vue'
@@ -63,6 +67,8 @@
     import SaveQueryModal from '~/components/insights/playground/editor/saveQuery/index.vue'
     import { generateUUID } from '~/utils/helper/generator'
     import whoami from '~/composables/user/whoami'
+    import { Insights } from '~/services/atlas/api/insights'
+    import { message } from 'ant-design-vue'
 
     export default defineComponent({
         components: {
@@ -74,17 +80,17 @@
         setup() {
             const { queryRun } = useRunQuery()
             const { modifyActiveInlineTabEditor } = useInlineTab()
-            const { saveQueryInDatabase } = useEditor()
             const { getConnectonName } = useConnector()
             const { username } = whoami()
+            const saveModalRef = ref()
 
-            const saveQueryLoading: Ref<boolean> = ref(false)
             const activeInlineTab = inject(
                 'activeInlineTab'
             ) as ComputedRef<activeInlineTabInterface>
             const inlineTabs = inject('inlineTabs') as Ref<
                 activeInlineTabInterface[]
             >
+            const saveQueryLoading = ref(false)
             const selectedDefaultSchema = computed(
                 () =>
                     activeInlineTab.value.explorer.schema.connectors
@@ -113,9 +119,7 @@
                         .connectionGuid
                 const connectionName = getConnectonName(connectionQualifiedName)
                 const name =
-                    saveQueryData.title === ''
-                        ? `Untitle Query ${String(new Date().getTime())}`
-                        : saveQueryData.title
+                    saveQueryData.title === '' ? uuidv4 : saveQueryData.title
                 const description = saveQueryData.description
                 const assetStatus = saveQueryData.assetStatus
                 const isSQLSnippet = saveQueryData.isSQLSnippet
@@ -158,13 +162,27 @@
                 console.log(body.value)
                 // chaing loading to true
                 saveQueryLoading.value = true
-                try {
-                    await saveQueryInDatabase(body)
-                    showSaveQueryModal.value = false
-                } catch (e) {
-                    saveQueryLoading.value = false
-                }
-                saveQueryLoading.value = false
+                const { data, error, isLoading } = Insights.CreateSavedQuery(
+                    body.value
+                )
+
+                watch([data, error, isLoading], () => {
+                    if (isLoading.value == false) {
+                        saveQueryLoading.value = false
+                        if (error.value === undefined) {
+                            showSaveQueryModal.value = false
+                            message.success({
+                                content: `${name} query saved!`,
+                            })
+                            saveModalRef.value?.clearData()
+                        } else {
+                            console.log(error.value.toString())
+                            message.error({
+                                content: `Error in saving query!`,
+                            })
+                        }
+                    }
+                })
             }
             const getData = (dataList, columnList) => {
                 if (activeInlineTab && inlineTabs?.value) {
@@ -206,6 +224,7 @@
             useProvide(provideData)
             /*-------------------------------------*/
             return {
+                saveModalRef,
                 saveQueryLoading,
                 showSaveQueryModal,
                 editorInstance,

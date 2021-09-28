@@ -6,33 +6,33 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-import * as monaco from 'monaco-editor';
+import * as monaco from 'monaco-editor'
 
 export const conf: monaco.languages.LanguageConfiguration = {
     comments: {
         lineComment: '--',
-        blockComment: ['/*', '*/']
+        blockComment: ['/*', '*/'],
     },
     brackets: [
         ['{', '}'],
         ['[', ']'],
-        ['(', ')']
+        ['(', ')'],
     ],
     autoClosingPairs: [
         { open: '{', close: '}' },
         { open: '[', close: ']' },
         { open: '(', close: ')' },
         { open: '"', close: '"' },
-        { open: "'", close: "'" }
+        { open: "'", close: "'" },
     ],
     surroundingPairs: [
         { open: '{', close: '}' },
         { open: '[', close: ']' },
         { open: '(', close: ')' },
         { open: '"', close: '"' },
-        { open: "'", close: "'" }
-    ]
-};
+        { open: "'", close: "'" },
+    ],
+}
 
 export const languageTokens = <monaco.languages.IMonarchLanguage>{
     defaultToken: '',
@@ -41,7 +41,7 @@ export const languageTokens = <monaco.languages.IMonarchLanguage>{
 
     brackets: [
         { open: '[', close: ']', token: 'delimiter.square' },
-        { open: '(', close: ')', token: 'delimiter.parenthesis' }
+        { open: '(', close: ')', token: 'delimiter.parenthesis' },
     ],
 
     keywords: [
@@ -953,7 +953,7 @@ export const languageTokens = <monaco.languages.IMonarchLanguage>{
         'XSINIL',
         'YEAR',
         'YMAX',
-        'YMIN'
+        'YMIN',
     ],
     operators: [
         // Logical
@@ -989,7 +989,7 @@ export const languageTokens = <monaco.languages.IMonarchLanguage>{
         'PIVOT',
         'UNPIVOT',
         // Merging
-        'MATCHED'
+        'MATCHED',
     ],
     builtinFunctions: [
         // Aggregate
@@ -1269,7 +1269,7 @@ export const languageTokens = <monaco.languages.IMonarchLanguage>{
         'GETPATHLOCATOR',
         'PATHNAME',
         // ServiceBroker
-        'GET_TRANSMISSION_STATUS'
+        'GET_TRANSMISSION_STATUS',
     ],
     builtinVariables: [
         // Configuration
@@ -1311,7 +1311,7 @@ export const languageTokens = <monaco.languages.IMonarchLanguage>{
         '@@TIMETICKS',
         '@@TOTAL_ERRORS',
         '@@TOTAL_READ',
-        '@@TOTAL_WRITE'
+        '@@TOTAL_WRITE',
     ],
     pseudoColumns: ['$ACTION', '$IDENTITY', '$ROWGUID', '$PARTITION'],
     tokenizer: {
@@ -1326,6 +1326,10 @@ export const languageTokens = <monaco.languages.IMonarchLanguage>{
             [/[;,.]/, 'delimiter'],
             [/[()]/, '@brackets'],
             [
+                /({{)([\w\-]+)/,
+                ['mustache', { token: 'tag', next: '@mustache' }],
+            ],
+            [
                 /[\w@#$]+/,
                 {
                     cases: {
@@ -1333,16 +1337,16 @@ export const languageTokens = <monaco.languages.IMonarchLanguage>{
                         '@operators': 'operator',
                         '@builtinVariables': 'predefined',
                         '@builtinFunctions': 'predefined',
-                        '@default': 'identifier'
-                    }
-                }
+                        '@default': 'identifier',
+                    },
+                },
             ],
-            [/[<>=!%&+\-*/|~^]/, 'operator']
+            [/[<>=!%&+\-*/|~^]/, 'operator'],
         ],
         whitespace: [[/\s+/, 'white']],
         comments: [
             [/--+.*/, 'comment'],
-            [/\/\*/, { token: 'comment.quote', next: '@comment' }]
+            [/\/\*/, { token: 'comment.quote', next: '@comment' }],
         ],
         comment: [
             [/[^*/]+/, 'comment'],
@@ -1350,7 +1354,7 @@ export const languageTokens = <monaco.languages.IMonarchLanguage>{
             // i.e. http://stackoverflow.com/questions/728172/are-there-multiline-comment-delimiters-in-sql-that-are-vendor-agnostic
             // [/\/\*/, { token: 'comment.quote', next: '@push' }],    // nested comment not allowed :-(
             [/\*\//, { token: 'comment.quote', next: '@pop' }],
-            [/./, 'comment']
+            [/./, 'comment'],
         ],
         pseudoColumns: [
             [
@@ -1358,38 +1362,38 @@ export const languageTokens = <monaco.languages.IMonarchLanguage>{
                 {
                     cases: {
                         '@pseudoColumns': 'predefined',
-                        '@default': 'identifier'
-                    }
-                }
-            ]
+                        '@default': 'identifier',
+                    },
+                },
+            ],
         ],
         numbers: [
             [/0[xX][0-9a-fA-F]*/, 'number'],
             [/[$][+-]*\d*(\.\d*)?/, 'number'],
-            [/((\d+(\.\d*)?)|(\.\d+))([eE][\-+]?\d+)?/, 'number']
+            [/((\d+(\.\d*)?)|(\.\d+))([eE][\-+]?\d+)?/, 'number'],
         ],
         strings: [
             [/N'/, { token: 'string', next: '@string' }],
-            [/'/, { token: 'string', next: '@string' }]
+            [/'/, { token: 'string', next: '@string' }],
         ],
         string: [
             [/[^']+/, 'string'],
             [/''/, 'string'],
-            [/'/, { token: 'string', next: '@pop' }]
+            [/'/, { token: 'string', next: '@pop' }],
         ],
         complexIdentifiers: [
             [/\[/, { token: 'identifier.quote', next: '@bracketedIdentifier' }],
-            [/"/, { token: 'identifier.quote', next: '@quotedIdentifier' }]
+            [/"/, { token: 'identifier.quote', next: '@quotedIdentifier' }],
         ],
         bracketedIdentifier: [
             [/[^\]]+/, 'identifier'],
             [/]]/, 'identifier'],
-            [/]/, { token: 'identifier.quote', next: '@pop' }]
+            [/]/, { token: 'identifier.quote', next: '@pop' }],
         ],
         quotedIdentifier: [
             [/[^"]+/, 'identifier'],
             [/""/, 'identifier'],
-            [/"/, { token: 'identifier.quote', next: '@pop' }]
+            [/"/, { token: 'identifier.quote', next: '@pop' }],
         ],
         scopes: [
             [/BEGIN\s+(DISTRIBUTED\s+)?TRAN(SACTION)?\b/i, 'keyword'],
@@ -1400,11 +1404,14 @@ export const languageTokens = <monaco.languages.IMonarchLanguage>{
             [/(BEGIN|CASE)\b/i, { token: 'keyword.block' }],
             [/END\b/i, { token: 'keyword.block' }],
             [/WHEN\b/i, { token: 'keyword.choice' }],
-            [/THEN\b/i, { token: 'keyword.choice' }]
-        ]
-    }
-};
-
-
-
-
+            [/THEN\b/i, { token: 'keyword.choice' }],
+        ],
+        mustache: [
+            [/"([^"]*)"/, 'attribute.value'],
+            [/[\w\-]+/, 'attribute.name'],
+            [/:/, 'delimiter'],
+            [/,/, 'delimiter'],
+            [/}}/, 'mustache', '@pop'],
+        ],
+    },
+}

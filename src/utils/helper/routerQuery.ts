@@ -491,7 +491,6 @@ export function getDecodedOptionsFromString(router) {
             case 'advanced': {
                 const allFilters = facetFilterValuesString.split(',')
                 const applied = {}
-                const criterion = []
                 allFilters.forEach((att) => {
                     const [a, v, o] = att.split(':')
                     applied[a] = {
@@ -517,7 +516,6 @@ export function getDecodedOptionsFromString(router) {
             default: {
                 const allFilters = facetFilterValuesString.split(',')
                 const applied = {}
-                const criterion = []
                 allFilters.forEach((att) => {
                     const [a, v, o] = att.split(':')
                     applied[a] = {
@@ -540,7 +538,6 @@ export function getDecodedOptionsFromString(router) {
                 }
             }
         }
-
         switch (facetFilterName) {
             case 'connector': {
                 initialBodyCriterion.push({

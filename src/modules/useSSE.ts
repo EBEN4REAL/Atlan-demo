@@ -1,4 +1,4 @@
-import { isRef, Ref } from 'vue'
+import { isRef, Ref, ref, computed } from 'vue'
 import { EventSourcePolyfill } from 'event-source-polyfill'
 import { useAsyncState } from '@vueuse/core'
 import { UserModule } from '~/types'
@@ -93,6 +93,7 @@ export function useSSE({
         unsubscribe: null,
         close: null,
     }
+    let eventSource: eventSrcObj
 
     // supports only standard headers like Authorization etc.
     let reqHeaders: { [index: string]: string } = {
@@ -113,7 +114,6 @@ export function useSSE({
     }
 
     const URL: any = resolveUrl(path, pathVariables)
-    let eventSource: eventSrcObj
 
     const promise = new Promise<useSSEReturnObj>((resolve, reject) => {
         eventSource = new EventSourcePolyfill(URL, {
@@ -191,12 +191,20 @@ export function useSSE({
             })
         }
     })
-
-    const { state, isReady, error } = useAsyncState(promise, intialState)
+    // Variable to check if the promise has been executed atleast once
+    let isExecuted = ref(false)
+    const { state, isReady, error } = useAsyncState(() => {
+        isExecuted.value = true
+        return promise
+    }, intialState)
+    const isLoading = computed(
+        () => isExecuted.value && !isReady.value && !error.value
+    )
 
     return {
+        eventSource,
         data: state,
-        isLoading: isReady,
+        isLoading: isLoading,
         error,
     }
 }

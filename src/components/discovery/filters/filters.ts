@@ -37,7 +37,7 @@ export const List: CollapseArray = [
     },
     {
         id: 'status',
-        label: 'Certification',
+        label: 'Certificate',
         component: 'status',
         overallCondition: 'OR',
         filters: [

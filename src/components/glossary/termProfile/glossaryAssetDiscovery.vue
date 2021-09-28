@@ -4,28 +4,12 @@
             <div class="flex flex-col h-full">
                 <div v-if="checkedAssetList.length" class="flex">
                     <div
-                        class="
-                            fixed
-                            left-0
-                            z-10
-                            flex
-                            justify-between
-                            w-full
-                            bottom-8
-                        "
+                        class="fixed left-0 z-10 flex justify-between w-full  bottom-8"
                     >
                         <div style="width: 264px"></div>
                         <div
                             v-if="showCheckBox"
-                            class="
-                                flex
-                                items-center
-                                justify-between
-                                px-5
-                                py-3
-                                bg-gray-100
-                                shadow-lg
-                            "
+                            class="flex items-center justify-between px-5 py-3 bg-gray-100 shadow-lg "
                             style="width: 545px"
                         >
                             <p class="p-0 m-0">
@@ -36,23 +20,12 @@
                             </p>
                             <div class="flex items-center">
                                 <a-button
-                                    class="
-                                        px-3
-                                        mx-2
-                                        text-gray-700
-                                        bg-transparent
-                                        outline-none
-                                    "
+                                    class="px-3 mx-2 text-gray-700 bg-transparent outline-none "
                                     @click="handleCancelLinkAssets"
                                     >Cancel</a-button
                                 >
                                 <a-button
-                                    class="
-                                        px-6
-                                        text-white
-                                        outline-none
-                                        bg-primary
-                                    "
+                                    class="px-6 text-white outline-none  bg-primary"
                                     @click="handleConfirmLinkAssets"
                                     >Link</a-button
                                 >
@@ -61,7 +34,7 @@
                         <div style="width: 391px"></div>
                     </div>
                     <AssetDropdown
-                        v-if="connectorsPayload.connection"
+                        v-if="connectorsPayload?.connection"
                         :connector="filteredConnector"
                         :data="connectorsPayload"
                         @label-change="setPlaceholder($event, 'asset')"
@@ -72,15 +45,7 @@
                     class="flex items-center px-5 py-3 bg-gray-100"
                 >
                     <a-button
-                        class="
-                            p-0
-                            mr-3
-                            text-gray-700
-                            bg-transparent
-                            border-0
-                            shadow-none
-                            outline-none
-                        "
+                        class="p-0 mr-3 text-gray-700 bg-transparent border-0 shadow-none outline-none "
                         @click="handleCancelLinkAssets"
                     >
                         <AtlanIcon
@@ -92,15 +57,7 @@
                     Link Assets
                 </div>
                 <div
-                    class="
-                        flex
-                        items-center
-                        justify-between
-                        w-full
-                        px-3
-                        mt-4
-                        mb-2
-                    "
+                    class="flex items-center justify-between w-full px-3 mt-4 mb-2 "
                 >
                     <SearchAndFilter
                         v-model:value="queryText"
@@ -131,6 +88,7 @@
                     :asset-type-map="assetTypeMap"
                     :total="totalSum"
                     @update:model-value="handleTabChange"
+                    class="mt-2"
                 ></AssetTabs>
                 <div
                     v-if="
@@ -142,7 +100,7 @@
                 </div>
                 <div
                     v-else
-                    class="overflow-auto"
+                    class="pt-4 overflow-auto"
                     style="max-height: calc(100vh - 250px)"
                 >
                     <AssetList
@@ -322,10 +280,10 @@
             )
             const checkedAssetList = ref<
                 Components.Schemas.AtlasEntityHeader[]
-            >([]);
+            >([])
             const uncheckedAssetList = ref<
                 Components.Schemas.AtlasEntityHeader[]
-            >([]);
+            >([])
 
             const filters = ref(initialFilters.value.initialBodyCriterion)
             const filterMap = ref<filterMapType>({
@@ -384,20 +342,20 @@
                 return undefined
             })
             let initialBody: SearchParameters = reactive({
-                    typeName: assetTypeListString,
-                    termName: termQualifiedName.value,
-                    includeClassificationAttributes: true,
-                    includeSubClassifications: true,
-                    limit: limit.value,
-                    offset: offset.value,
-                    entityFilters: {},
-                    attributes: [
-                        ...BaseAttributes,
-                        ...BasicSearchAttributes,
-                        ...tableauAttributes,
-                    ],
-                    aggregationAttributes: [],
-                })
+                typeName: assetTypeListString,
+                termName: termQualifiedName.value,
+                includeClassificationAttributes: true,
+                includeSubClassifications: true,
+                limit: limit.value,
+                offset: offset.value,
+                entityFilters: {},
+                attributes: [
+                    ...BaseAttributes,
+                    ...BasicSearchAttributes,
+                    ...tableauAttributes,
+                ],
+                aggregationAttributes: [],
+            })
             const {
                 list,
                 replaceBody,
@@ -558,7 +516,6 @@
                     initialBody.query = queryText.value
                 }
                 replaceBody(initialBody)
-
             }
 
             function handleTabChange() {
@@ -673,7 +630,7 @@
             }
             const handleConfirmLinkAssets = () => {
                 const { assignLinkedAssets, unLinkAssets } = useLinkAssets()
-                
+
                 const { response: unlinkResponse } = unLinkAssets(
                     termGuid.value,
                     uncheckedAssetList.value

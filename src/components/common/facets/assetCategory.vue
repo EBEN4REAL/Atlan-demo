@@ -30,7 +30,7 @@
                     />
                     <template #title>
                         <span class="text-gray-500">
-                            {{ item.includeLabels.join(', ') }}
+                            {{ item.popoverText }}
                         </span>
                     </template>
                 </a-tooltip>

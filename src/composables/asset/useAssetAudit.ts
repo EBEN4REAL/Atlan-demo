@@ -2,7 +2,6 @@ import { reactive, watch, ref } from 'vue'
 import { toRefs } from '@vueuse/core'
 import { useAPI } from '~/api/useAPI'
 import { Components } from '~/api/atlas/client'
-import { List as statusList } from '~/constant/status'
 import { GET_ASSET_AUDIT } from '~/api/keyMaps/asset/index'
 
 const useAssetAudit = (params: any, guid: string) => {
@@ -30,6 +29,7 @@ const useAssetAudit = (params: any, guid: string) => {
     }
 
     const fetchMoreAudits = (fetchmoreParams: any) => {
+
         const { data, isLoading, error } = useAPI<
             Components.Schemas.EntityAuditEventV2[]
         >(GET_ASSET_AUDIT, 'GET', {
@@ -38,12 +38,14 @@ const useAssetAudit = (params: any, guid: string) => {
             cache: false,
         })
 
+        response.isFetchingMore = isLoading
+
+
         watch(data, () => {
             if (data.value?.length && !error.value) {
                 response.audits = ref([...response.audits, ...data.value])
                 response.isAllLogsFetched =
                     data?.value?.length < fetchmoreParams.count
-                response.isFetchingMore = isLoading
             }
         })
     }
@@ -128,12 +130,11 @@ const useAssetAudit = (params: any, guid: string) => {
             displayValue: 'Asset was updated',
             value: [],
         }
-        console.log(logs)
         if ('attributes' in logs) {
             const { attributes } = logs
             const owners = 'ownerUsers' in attributes
             const experts = 'expertUsers' in attributes
-            const status = 'assetStatus' in attributes
+            const status = 'assetStatusUpdatedAt' in attributes
             const userDescription = 'userDescription' in attributes
             if (owners) {
                 const users = attributes.ownerUsers.split(',')
@@ -157,12 +158,9 @@ const useAssetAudit = (params: any, guid: string) => {
             }
 
             if (status) {
-                const value = attributes.assetStatus
-                const statusMessage = attributes.assetStatusMessage
-                const newStatus = statusList.find((stat) => stat.id === value)
-                newStatus.description = statusMessage
+                data.value = attributes
                 data.displayValue = 'status'
-                data.value = newStatus
+
                 return data
             }
 
@@ -198,9 +196,7 @@ const useAssetAudit = (params: any, guid: string) => {
                             // This handles the case when classification is linked using Atlan Bot user
                             // In this case, classification object comes in details
                             parsedDetails = JSON.parse(eventDetail[1].trim())
-                            console.log('Classifications')
 
-                            console.log(eventDetail)
 
                             if (parsedDetails.typeName) {
                                 data.value =
@@ -265,6 +261,17 @@ const useAssetAudit = (params: any, guid: string) => {
                             data.value =
                                 filterTermTypeNameDisplayName(parsedDetails)
                             data.displayValue = 'termRemoved'
+
+                            return data
+                        } catch (error) {
+                            return null
+                        }
+                    case 'BUSINESS_ATTRIBUTE_UPDATE':
+                        try {
+                            parsedDetails = JSON.parse(eventDetail[1].trim())
+                            data.value = parsedDetails
+                            console.log(data.value)
+                            data.displayValue = 'bmUpdated'
 
                             return data
                         } catch (error) {

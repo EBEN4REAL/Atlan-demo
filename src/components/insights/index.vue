@@ -30,7 +30,11 @@
             </template>
         </div>
         <!--Sidebar navigation pane end -->
-        <splitpanes :class="$style.splitpane__styles" @resize="paneResize">
+        <splitpanes
+            :class="$style.splitpane__styles"
+            @resize="paneResize"
+            class="parent_splitpanes"
+        >
             <pane :max-size="20" :size="explorerPaneSize" :min-size="0">
                 <!--explorer pane start -->
                 <component
@@ -268,6 +272,9 @@
     }
     .tabHeight {
         height: calc(100vh - 3rem);
+    }
+    .parent_splitpanes {
+        width: calc(100vw - 5rem);
     }
 </style>
 

@@ -140,7 +140,7 @@
                             </div>
                         </a-collapse-panel>
 
-                        <a-collapse-panel
+                        <!-- <a-collapse-panel
                             v-if="entity.typeName === 'AtlasGlossaryTerm'"
                             key="related terms"
                             header="Related Terms"
@@ -148,7 +148,7 @@
                             <div class="px-6 py-0">
                                 <RelatedTerms :entity="entity" />
                             </div>
-                        </a-collapse-panel>
+                        </a-collapse-panel> -->
 
                         <a-collapse-panel
                             v-if="entity?.typeName === 'AtlasGlossaryTerm'"
@@ -219,6 +219,8 @@
     //  utils
     import assetTypeLabel from '@/glossary/constants/assetTypeLabel'
     import { copyToClipboard } from '~/utils/clipboard'
+
+    import { useClassifications } from '~/components/admin/classifications/composables/useClassifications'
 
     import {
         Category,
@@ -305,6 +307,13 @@
                     }/${props?.entity?.guid}`
                     copyToClipboard(text)
                 }
+            }
+            const {
+                isClassificationInitializedInStore,
+                initializeClassificationsInStore,
+            } = useClassifications()
+            if (!isClassificationInitializedInStore()) {
+                initializeClassificationsInStore()
             }
 
             return {

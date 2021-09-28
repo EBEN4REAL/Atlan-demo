@@ -209,6 +209,7 @@
             },
 
             handleVerified(credential) {
+                console.log('handleVerified', credential)
                 if (credential && this.loadingNext) {
                     this.loadingNext = false
                     this.selectedCredential = credential

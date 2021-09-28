@@ -17,7 +17,7 @@ export default function useCredentialTest(initialBody?: any, asyncOpts?: object)
 
     const { data, mutate, error: isError, isReady } = Credential.TestCredential(body, options, asyncOpts);
 
-    const isSuccess = ref(false);
+    const isSuccess = ref(null);
     const isLoading = ref(null);
     if (asyncOpts.hasOwnProperty('immediate'))
         isLoading.value = asyncOpts.immediate

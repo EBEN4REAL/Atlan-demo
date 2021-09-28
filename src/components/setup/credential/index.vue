@@ -464,7 +464,13 @@
              * ??
              */
             watch(
-                [isNetworkTestLoading, isCredTestLoading, isCredIdTestLoading],
+                [
+                    isNetworkTestLoading,
+                    isCredTestLoading,
+                    isCredIdTestLoading,
+                    isNetworkTestSuccess,
+                    isCredTestSuccess,
+                ],
                 () => {
                     if (
                         props.isEdit &&

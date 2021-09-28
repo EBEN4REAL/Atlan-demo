@@ -23,7 +23,7 @@ const useTree = (
 ) => {
     const route = useRoute()
     const router = useRouter()
-    const defaultLimit = 2;
+    const defaultLimit = 5;
 
     // A map of node guids to the guid of their parent. Used for traversing the tree while doing local update
     const nodeToParentKeyMap: Record<string, 'root' | string> = {}

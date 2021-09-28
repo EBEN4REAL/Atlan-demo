@@ -791,8 +791,10 @@ export default defineComponent({
             searchQuery.value = ''
         })
         watch(currentGlossaryGuid, (newGuid) => {
-            if (newGuid === 'all') router.push(`/glossary`)
-            else redirectToProfile('glossary', newGuid)
+            if(newGuid && newGuid !== parentGlossary.value?.guid) {
+                if (newGuid === 'all') router.push(`/glossary`)
+                else redirectToProfile('glossary', newGuid)
+            }
         })
 
         watch(parentGlossary, (newParentGlossary) => {

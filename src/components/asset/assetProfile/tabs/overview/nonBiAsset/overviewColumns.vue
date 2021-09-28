@@ -280,6 +280,7 @@
                         }
                     }
                 )
+
                 showColumnPreview.value = true
             }
             // customRow Antd

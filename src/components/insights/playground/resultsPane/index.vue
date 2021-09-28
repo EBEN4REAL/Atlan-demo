@@ -1,26 +1,25 @@
 <template>
-    <a-tabs
-        :activeKey="activeResultsPaneTab"
-        :class="$style.result_pane"
-        @change="
-            (activeKey) => resultsPaneTabChange(activeKey, activeInlineTab)
-        "
-        class="h-full"
-    >
-        <a-tab-pane
-            v-for="(tab, index) in tabsList"
-            :key="index"
-            class="px-4 overflow-y-auto"
+    <div class="flex flex-col w-full h-full">
+        <a-tabs
+            :activeKey="activeResultsPaneTabIndex"
+            :class="$style.result_pane"
+            @change="
+                (activeKey) => resultsPaneTabChange(activeKey, activeInlineTab)
+            "
         >
-            <template #tab>
-                {{ tab.name }}
-            </template>
+            <a-tab-pane
+                v-for="(tab, index) in tabsList"
+                :key="index"
+                class="px-4 overflow-y-auto"
+            >
+                <template #tab>
+                    {{ tab.name }}
+                </template>
+            </a-tab-pane>
+        </a-tabs>
 
-            <div class="tab__height">
-                <component :is="tab.component"></component>
-            </div>
-        </a-tab-pane>
-    </a-tabs>
+        <component :is="activeResultsPaneTab?.component"></component>
+    </div>
 </template>
 
 <script lang="ts">
@@ -33,6 +32,7 @@
     } from 'vue'
     import useInsightsTabList from './useTabList'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
+    import { useResultPane } from '~/components/insights/playground/resultsPane/common/composables/useResultPane'
 
     export default defineComponent({
         components: {
@@ -49,25 +49,27 @@
         },
         props: {},
         setup(props) {
-            const { allTabs: tabsList } = useInsightsTabList()
+            const inlineTabs = inject('inlineTabs') as Ref<
+                activeInlineTabInterface[]
+            >
+            const { filteredTabs: tabsList } = useInsightsTabList()
+            const { resultsPaneTabChange } = useResultPane(inlineTabs)
             const activeInlineTab = inject(
                 'activeInlineTab'
             ) as Ref<activeInlineTabInterface>
 
-            /*
-                @params - activeKey: string
-                @params - activeInlineTab: activeInlineTabInterface
-             */
-            const resultsPaneTabChange = inject(
-                'resultsPaneTabChange'
-            ) as Function
-
-            const activeResultsPaneTab = computed(
-                () => activeInlineTab.value.playground.resultsPane.activeTab
+            const activeResultsPaneTabIndex = computed(
+                () => activeInlineTab.value?.playground?.resultsPane?.activeTab
+            )
+            const activeResultsPaneTab = computed(() =>
+                tabsList.find(
+                    (tab, index) => index === activeResultsPaneTabIndex.value
+                )
             )
             return {
                 resultsPaneTabChange,
                 activeResultsPaneTab,
+                activeResultsPaneTabIndex,
                 activeInlineTab,
                 tabsList,
             }
@@ -82,7 +84,7 @@
         height: 90.5%;
     }
     .tab__height {
-        height: calc(100vh - 31.2rem);
+        height: calc(100vh - 33.2rem);
     }
 </style>
 <style lang="less" module>
@@ -93,6 +95,7 @@
 
         :global(.ant-tabs-bar) {
             margin-bottom: 0px;
+            @apply h-11 !important;
         }
         :global(.ant-tabs-content) {
             @apply px-0 !important;

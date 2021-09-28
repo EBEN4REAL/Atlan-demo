@@ -1,10 +1,13 @@
 <template>
-    <div class="flex flex-col justify-between">
-        <div class="flex items-start justify-end w-full mt-1">
+    <div
+        class="absolute flex flex-col justify-between"
+        style="top: 60px; left: 15px"
+    >
+        <div class="flex items-start justify-end w-full">
             <slot name="left-header-item"></slot>
             <div class="flex items-center justify-end my-1 mr-4 graph-controls">
                 <!-- Reload Lineage -->
-                <button class="lineage-btn" @click="reloadLineage()">
+                <button class="lineage-btn">
                     <fa icon="fas sync"></fa>
                 </button>
                 <a-divider type="vertical" />
@@ -26,12 +29,7 @@
                         <a-menu slot="overlay">
                             <a-menu-item-group title="Direction">
                                 <a-menu-item>
-                                    <a-radio-group
-                                        :value="direction"
-                                        @change="
-                                            changeDirection($event.target.value)
-                                        "
-                                    >
+                                    <a-radio-group value="'BOTH'">
                                         <a-radio
                                             v-for="item in lineageDirections"
                                             :key="item.id"
@@ -45,13 +43,11 @@
                             </a-menu-item-group>
                             <a-menu-divider />
                             <a-menu-item-group title="">
-                                <a-menu-item key="showProcessNodes">
+                                <a-menu-item key="showProcess">
                                     <a-checkbox
-                                        :checked="showProcessNodes"
+                                        :checked="showProcess"
                                         @change="
-                                            toggleProcessNodes(
-                                                $event.target.checked
-                                            )
+                                            showProcess = $event.target.checked
                                         "
                                     >
                                         Show Process
@@ -63,13 +59,7 @@
                 </a-dropdown>
                 <a-divider type="vertical" />
                 <!-- Lineage Depth -->
-                <a-select
-                    :default-value="depth"
-                    style="width: 110px"
-                    @change="changeDepth($event)"
-                >
-                    <!-- <a-select-opt-group> -->
-                    <!-- <span slot="label">Lineage depth</span> -->
+                <a-select :default-value="3" style="width: 110px">
                     <a-select-option
                         v-for="item in lineageDepths"
                         :key="item.id"
@@ -77,7 +67,6 @@
                     >
                         {{ item.label }}
                     </a-select-option>
-                    <!-- </a-select-opt-group> -->
                 </a-select>
             </div>
         </div>
@@ -86,33 +75,25 @@
 
 <script lang="ts">
     // Vue
-    import { defineComponent, inject } from 'vue'
+    import { defineComponent, ref, watch } from 'vue'
     // Components
-    import LineageSearch from '@/asset/assetProfile/tabs/lineage/lineageSearch.vue'
+    import LineageSearch from './lineageSearch.vue'
 
     export default defineComponent({
         name: 'LineageV2Header',
         components: {
             LineageSearch,
         },
-        setup() {
-            /** INJECTIONS */
-            const reloadLineage = inject('reloadLineage')
-            const depth = inject('depth')
-            const direction = inject('direction')
-            const changeDepth = inject('changeDepth')
-            const changeDirection = inject('changeDirection')
-            const showProcessNodes = inject('showProcessNodes')
-            const toggleProcessNodes = inject('toggleProcessNodes')
+        emits: ['showProcess'],
+        setup(_, { emit }) {
+            const showProcess = ref(false)
+
+            watch(showProcess, (val) => {
+                emit('showProcess', val)
+            })
 
             return {
-                reloadLineage,
-                depth,
-                direction,
-                changeDepth,
-                changeDirection,
-                toggleProcessNodes,
-                showProcessNodes,
+                showProcess,
                 lineageDirections: [
                     { id: 'BOTH', label: 'Both Direction' },
                     { id: 'INPUT', label: 'Upstream' },

@@ -1,38 +1,21 @@
 <template>
     <div class="px-4 mt-1">
-        <div class="flex">
-            <a-input-search
-                ref="searchText"
+        <div class="">
+            <SearchAndFilter
                 v-model:value="classificationSearchText"
-                type="text"
-                class=""
-                size="small"
-                :allowClear="true"
                 :placeholder="`Search ${classificationsList.length} classifications`"
+                :autofocus="true"
                 @change="handleClassificationsSearch"
             >
-                <!-- <template #prefix>
-                    <fa icon="fal search" class="ml-2 mr-1 text-gray-500" />
-                </template> -->
-                <!-- <template #suffix>
-                    <fa
-                        v-if="classificationSearchText"
-                        icon="fal times-circle"
-                        class="ml-2 mr-1 text-red-600"
-                        @click="clearSearchText"
-                    />
-                </template> -->
-            </a-input-search>
-            <a-popover trigger="click" placement="rightTop">
-                <template #content class="rounded">
+                <template #filter>
                     <div class="p-0">
                         <div class="flex justify-between mb-2">
                             <p class="mb-0 text-sm text-gray-500">Sort by</p>
                         </div>
                         <CustomRadioButton
+                            v-model:data="classificationFilterOptionsData"
                             class="pb-4 border-b"
                             :list="classificationFilterCheckboxes"
-                            v-model:data="classificationFilterOptionsData"
                         />
                     </div>
                     <div class="mt-4">
@@ -40,10 +23,10 @@
                             <p class="mb-0 text-sm text-gray-500">Operator</p>
                         </div>
                         <CustomRadioButton
+                            v-model:data="data.operator"
                             class="pb-4 border-b"
                             :list="operationFilterCheckboxes"
-                            @change="handleChange"
-                            v-model:data="operationFilterOptionsData"
+                            @change="handleOperatorChange"
                         />
                     </div>
                     <div class="pb-2 mt-4">
@@ -51,9 +34,9 @@
                             <p class="mb-0 text-sm text-gray-500">Added by</p>
                         </div>
                         <a-radio-group
-                            v-model:value="addedByFilterOptionsData"
-                            @change="handleChange"
+                            v-model:value="data.addedBy"
                             class="rounded"
+                            @change="handleAddedByChange"
                         >
                             <a-radio-button value="all">All</a-radio-button>
                             <a-radio-button value="user">User</a-radio-button>
@@ -63,35 +46,7 @@
                         </a-radio-group>
                     </div>
                 </template>
-                <div
-                    v-if="classificationFilterOptionsData !== null"
-                    class="mr-1"
-                >
-                    <a-badge
-                        :dot="classificationFilterOptionsData !== null"
-                        :class="$style.badge"
-                    >
-                        <a-button class="px-2 py-1 ml-2 rounded">
-                            <span class="flex items-center justify-center">
-                                <fa
-                                    icon="fas sort-amount-up"
-                                    class="hover:text-primary-500"
-                                />
-                            </span>
-                        </a-button>
-                    </a-badge>
-                </div>
-                <div v-else class="mr-1">
-                    <a-button class="px-2 py-1 ml-2 rounded">
-                        <span class="flex items-center justify-center">
-                            <fa
-                                icon="fas sort-amount-up"
-                                class="hover:text-primary-500"
-                            />
-                        </span>
-                    </a-button>
-                </div>
-            </a-popover>
+            </SearchAndFilter>
         </div>
 
         <div class="mt-4">
@@ -148,8 +103,8 @@
             <div>
                 <a-checkbox
                     v-model:checked="data.noClassificationsAssigned"
-                    @change="noClassificationsToggle"
                     class="w-full py-3 border-t"
+                    @change="noClassificationsToggle"
                 >
                     No Classifications assigned
                 </a-checkbox>
@@ -159,304 +114,313 @@
 </template>
 
 <script lang="ts">
-    import {
-        defineComponent,
-        PropType,
-        ref,
-        toRefs,
-        toRaw,
-        watchEffect,
-    } from 'vue'
-    import { Collapse } from '~/types'
-    import { Components } from '~/api/atlas/client'
-    import { classificationInterface } from '~/types/classifications/classification.interface'
-    import CustomRadioButton from '@common/radio/customRadioButton.vue'
+import { defineComponent, PropType, ref, toRefs, toRaw, watchEffect } from 'vue'
+import CustomRadioButton from '@common/radio/customRadioButton.vue'
+import SearchAndFilter from '@/common/input/searchAndFilter.vue'
+import { Collapse } from '~/types'
+import { Components } from '~/api/atlas/client'
+import { classificationInterface } from '~/types/classifications/classification.interface'
 
-    export default defineComponent({
-        name: 'Classifications',
-        components: { CustomRadioButton },
-        props: {
-            item: {
-                type: Object as PropType<Collapse>,
-                required: true,
-            },
-            data: {
-                type: Object,
-                required: true,
-            },
+export default defineComponent({
+    name: 'Classifications',
+    components: { CustomRadioButton, SearchAndFilter },
+    props: {
+        item: {
+            type: Object as PropType<Collapse>,
+            required: true,
         },
-        emits: ['change'],
-        setup(props, { emit }) {
-            const classificationsList = ref([])
-            const filteredClassificationList = ref([])
-            const { data } = toRefs(props)
-            const hideClassifications = ref(true)
-            const noClassificationsAssigned = ref(false)
-            const classificationFilterOptionsData = ref('asc')
-            const classificationFilterCheckboxes = [
-                {
-                    id: 'asc',
-                    label: 'A-Z',
-                },
-                {
-                    id: 'dsc',
-                    label: 'Z-A',
-                },
-            ]
-            const addedByFilterOptionsData = ref('all')
-            const addedByFilterCheckboxes = [
-                {
-                    id: 'users',
-                    label: 'Users',
-                },
-                {
-                    id: 'propagation',
-                    label: 'Propagation',
-                },
-            ]
-            const operationFilterOptionsData = ref('OR')
-            const operationFilterCheckboxes = [
-                {
-                    id: 'OR',
-                    label: 'OR',
-                },
-                {
-                    id: 'AND',
-                    label: 'AND',
-                },
-            ]
-
-            const handleChange = () => {
-                const criterion: Components.Schemas.FilterCriteria[] = []
-                // make no classifications unchecked
-                data.value.noClassificationsAssigned = false
-                switch (addedByFilterOptionsData.value) {
-                    case 'all': {
-                        data.value.checked.forEach((val) => {
-                            criterion.push({
-                                attributeName: '__classificationNames',
-                                attributeValue: val,
-                                operator: 'eq',
-                            })
-                            criterion.push({
-                                attributeName:
-                                    '__propagatedClassificationNames',
-                                attributeValue: val,
-                                operator: 'eq',
-                            })
+        data: {
+            type: Object,
+            required: true,
+        },
+    },
+    emits: ['change'],
+    setup(props, { emit }) {
+        const classificationsList = ref([])
+        const filteredClassificationList = ref([])
+        const { data } = toRefs(props)
+        const hideClassifications = ref(true)
+        const noClassificationsAssigned = ref(false)
+        const classificationFilterOptionsData = ref('asc')
+        const classificationFilterCheckboxes = [
+            {
+                id: 'asc',
+                label: 'A-Z',
+            },
+            {
+                id: 'dsc',
+                label: 'Z-A',
+            },
+        ]
+        const addedByFilterOptionsData = ref('all')
+        const addedByFilterCheckboxes = [
+            {
+                id: 'users',
+                label: 'Users',
+            },
+            {
+                id: 'propagation',
+                label: 'Propagation',
+            },
+        ]
+        const operationFilterOptionsData = ref('OR')
+        const operationFilterCheckboxes = [
+            {
+                id: 'OR',
+                label: 'OR',
+            },
+            {
+                id: 'AND',
+                label: 'AND',
+            },
+        ]
+        const handleChange = () => {
+            const criterion: Components.Schemas.FilterCriteria[] = []
+            // make no classifications unchecked
+            data.value.noClassificationsAssigned = false
+            // eslint-disable-next-line default-case
+            switch (data.value.addedBy) {
+                case 'all': {
+                    // Case `all` will always be a OR bw __classificationNames and __propagatedClassificationNames
+                    data.value.checked.forEach((val) => {
+                        const subFilter: Components.Schemas.FilterCriteria = {
+                            condition: 'OR',
+                            criterion:
+                                [] as Components.Schemas.FilterCriteria[],
+                        }
+                        const subFilterCriterion: Components.Schemas.FilterCriteria[] =
+                            []
+                        subFilterCriterion.push({
+                            attributeName: '__classificationNames',
+                            attributeValue: val,
+                            operator: 'eq',
                         })
-                        break
-                    }
-                    case 'user': {
-                        data.value.checked.forEach((val) => {
-                            criterion.push({
-                                attributeName: '__classificationNames',
-                                attributeValue: val,
-                                operator: 'eq',
-                            })
+                        subFilterCriterion.push({
+                            attributeName: '__propagatedClassificationNames',
+                            attributeValue: val,
+                            operator: 'eq',
                         })
-                        break
-                    }
-                    case 'propagation': {
-                        data.value.checked.forEach((val) => {
-                            criterion.push({
-                                attributeName:
-                                    '__propagatedClassificationNames',
-                                attributeValue: val,
-                                operator: 'eq',
-                            })
-                        })
-                        break
-                    }
-                }
-                emit('change', {
-                    id: props.item.id,
-                    payload: {
-                        condition: operationFilterOptionsData.value,
-                        criterion,
-                    } as Components.Schemas.FilterCriteria,
-                })
-            }
-
-            const noClassificationsToggle = () => {
-                let criterion: Components.Schemas.FilterCriteria[] = []
-
-                if (data.value.noClassificationsAssigned) {
-                    data.value.checked = []
-                    criterion.push({
-                        attributeName: '__classificationNames',
-                        attributeValue: '-',
-                        operator: 'is_null',
+                        subFilter.criterion = subFilterCriterion
+                        criterion.push(subFilter)
                     })
-                    criterion.push({
-                        attributeName: '__propagatedClassificationNames',
-                        attributeValue: '-',
-                        operator: 'is_null',
+                    break
+                }
+                case 'user': {
+                    data.value.checked.forEach((val) => {
+                        criterion.push({
+                            attributeName: '__classificationNames',
+                            attributeValue: val,
+                            operator: 'eq',
+                        })
                     })
-                } else {
-                    data.value.checked = []
-                    criterion = []
+                    break
                 }
-                console.log(props.item.id, 'idd')
-                emit('change', {
-                    id: props.item.id,
-                    payload: {
-                        condition: operationFilterOptionsData.value,
-                        criterion,
-                    } as Components.Schemas.FilterCriteria,
-                })
+                case 'propagation': {
+                    data.value.checked.forEach((val) => {
+                        criterion.push({
+                            attributeName: '__propagatedClassificationNames',
+                            attributeValue: val,
+                            operator: 'eq',
+                        })
+                    })
+                    break
+                }
             }
-            const sortClassificationsByOrder = (
-                sortingOrder: string | null,
-                data: any
-            ) => {
-                console.log(toRaw(data), 'hello')
-                let classifications = []
-                switch (sortingOrder) {
-                    case 'asc': {
-                        classifications = toRaw(data).sort(
-                            (
-                                classificationA: classificationInterface,
-                                classificationB: classificationInterface
-                            ) => {
-                                const a = classificationA.displayName
-                                const b = classificationB.displayName
-                                if (a < b) {
-                                    return -1
-                                }
-                                if (a > b) {
-                                    return 1
-                                }
-                                return 0
-                            }
-                        )
-                        break
-                    }
-                    case 'dsc': {
-                        classifications = toRaw(data).sort(
-                            (
-                                classificationA: classificationInterface,
-                                classificationB: classificationInterface
-                            ) => {
-                                const a = classificationA.displayName
-                                const b = classificationB.displayName
-                                if (a < b) {
-                                    return 1
-                                }
-                                if (a > b) {
-                                    return -1
-                                }
-                                return 0
-                            }
-                        )
-                        break
-                    }
-                    default: {
-                        break
-                    }
-                }
-                console.log('classifications', classifications)
-                return classifications
-            }
-
-            watchEffect(() => {
-                classificationsList.value = sortClassificationsByOrder(
-                    classificationFilterOptionsData.value,
-                    props.data.classifications
-                )
-                if (filteredClassificationList.value.length > 0) {
-                    filteredClassificationList.value =
-                        sortClassificationsByOrder(
-                            classificationFilterOptionsData.value,
-                            filteredClassificationList.value
-                        )
-                }
+            emit('change', {
+                id: props.item.id,
+                payload: {
+                    condition: data.value.operator,
+                    criterion,
+                } as Components.Schemas.FilterCriteria,
             })
+        }
+        const handleAddedByChange = () => {
+            // if there are no classifications selected, do not trigger the API call
+            if (!data?.value?.checked?.length) return
+            handleChange()
+        }
+        const handleOperatorChange = () => {
+            // if there are no classifications selected, do not trigger the API call
+            if (!data?.value?.checked?.length) return
+            handleChange()
+        }
+        const noClassificationsToggle = () => {
+            let criterion: Components.Schemas.FilterCriteria[] = []
 
-            // will be called from parent to clear the filter
-            const clear = () => {
+            if (data.value.noClassificationsAssigned) {
                 data.value.checked = []
-                handleChange()
+                criterion.push({
+                    attributeName: '__classificationNames',
+                    attributeValue: '-',
+                    operator: 'is_null',
+                })
+                criterion.push({
+                    attributeName: '__propagatedClassificationNames',
+                    attributeValue: '-',
+                    operator: 'is_null',
+                })
+            } else {
+                data.value.checked = []
+                criterion = []
             }
-
-            // classification Search
-            const classificationSearchText = ref('')
-            const handleClassificationsSearch = (e: any) => {
-                const searchText = e.target.value
-                filteredClassificationList.value =
-                    classificationsList.value.filter(
-                        (classification: classificationInterface) =>
-                            classification.displayName
-                                .toLowerCase()
-                                .includes(searchText)
+            console.log(props.item.id, 'idd')
+            emit('change', {
+                id: props.item.id,
+                payload: {
+                    condition: data.value.operator,
+                    criterion,
+                } as Components.Schemas.FilterCriteria,
+            })
+        }
+        const sortClassificationsByOrder = (
+            sortingOrder: string | null,
+            data: any
+        ) => {
+            console.log(toRaw(data), 'hello')
+            let classifications = []
+            switch (sortingOrder) {
+                case 'asc': {
+                    classifications = toRaw(data).sort(
+                        (
+                            classificationA: classificationInterface,
+                            classificationB: classificationInterface
+                        ) => {
+                            const a = classificationA.displayName.toLowerCase()
+                            const b = classificationB.displayName.toLowerCase()
+                            if (a < b) {
+                                return -1
+                            }
+                            if (a > b) {
+                                return 1
+                            }
+                            return 0
+                        }
                     )
-            }
-
-            const clearSearchText = () => {
-                classificationSearchText.value = ''
-            }
-
-            const showScrollBar = (el) => {
-                el.value.scrollTop = 1
-                el.value.scrollTop = 0
-            }
-
-            const toggleClassifications = () => {
-                hideClassifications.value = !hideClassifications.value
-                if (hideClassifications.value) {
-                    showScrollBar(classificationsScrollContainer)
-                } else {
-                    showScrollBar(classificationsScrollContainer)
+                    break
+                }
+                case 'dsc': {
+                    classifications = toRaw(data).sort(
+                        (
+                            classificationA: classificationInterface,
+                            classificationB: classificationInterface
+                        ) => {
+                            const a = classificationA.displayName.toLowerCase()
+                            const b = classificationB.displayName.toLowerCase()
+                            if (a < b) {
+                                return 1
+                            }
+                            if (a > b) {
+                                return -1
+                            }
+                            return 0
+                        }
+                    )
+                    break
+                }
+                default: {
+                    break
                 }
             }
+            console.log('classifications', classifications)
+            return classifications
+        }
 
-            const classificationsScrollContainer = ref(null)
-
-            const handleClassificationFilterChange = (e: Event) => {
-                const filterValue = e.target.value
+        watchEffect(() => {
+            classificationsList.value = sortClassificationsByOrder(
+                classificationFilterOptionsData.value,
+                props.data.classifications
+            )
+            if (filteredClassificationList.value.length > 0) {
+                filteredClassificationList.value = sortClassificationsByOrder(
+                    classificationFilterOptionsData.value,
+                    filteredClassificationList.value
+                )
             }
-            const handleAddedByChange = () => {}
+        })
 
-            return {
-                data,
-                clear,
-                filteredClassificationList,
-                classificationsList,
-                classificationSearchText,
-                clearSearchText,
-                handleChange,
-                noClassificationsAssigned,
-                noClassificationsToggle,
-                handleClassificationsSearch,
-                hideClassifications,
-                classificationFilterCheckboxes,
-                classificationFilterOptionsData,
-                toggleClassifications,
-                classificationsScrollContainer,
-                handleClassificationFilterChange,
-                operationFilterOptionsData,
-                operationFilterCheckboxes,
-                addedByFilterOptionsData,
-                addedByFilterCheckboxes,
-                handleAddedByChange,
+        // will be called from parent to clear the filter
+        const clear = () => {
+            data.value.checked = []
+            handleChange()
+        }
+
+        // classification Search
+        const classificationSearchText = ref('')
+        const handleClassificationsSearch = (e: any) => {
+            const searchText = e.target.value
+            filteredClassificationList.value = classificationsList.value.filter(
+                (classification: classificationInterface) =>
+                    classification.displayName
+                        .toLowerCase()
+                        .includes(searchText)
+            )
+        }
+
+        const clearSearchText = () => {
+            classificationSearchText.value = ''
+        }
+
+        const showScrollBar = (el) => {
+            el.value.scrollTop = 1
+            el.value.scrollTop = 0
+        }
+
+        const toggleClassifications = () => {
+            hideClassifications.value = !hideClassifications.value
+            if (hideClassifications.value) {
+                showScrollBar(classificationsScrollContainer)
+            } else {
+                showScrollBar(classificationsScrollContainer)
             }
-        },
-        mounted() {},
-    })
+        }
+
+        const classificationsScrollContainer = ref(null)
+
+        const handleClassificationFilterChange = (e: Event) => {
+            const filterValue = e.target.value
+        }
+
+        return {
+            data,
+            clear,
+            filteredClassificationList,
+            classificationsList,
+            classificationSearchText,
+            clearSearchText,
+            handleOperatorChange,
+            handleChange,
+            noClassificationsAssigned,
+            noClassificationsToggle,
+            handleClassificationsSearch,
+            hideClassifications,
+            classificationFilterCheckboxes,
+            classificationFilterOptionsData,
+            toggleClassifications,
+            classificationsScrollContainer,
+            handleClassificationFilterChange,
+            operationFilterOptionsData,
+            operationFilterCheckboxes,
+            addedByFilterOptionsData,
+            addedByFilterCheckboxes,
+            handleAddedByChange,
+        }
+    },
+    mounted() {},
+})
 </script>
 
 <style lang="less" module>
-    .badge {
-        :global(.ant-badge-dot) {
-            @apply bg-primary !important;
-        }
-        :global(.ant-badge-count) {
-            @apply top-3 right-2 !important;
-        }
+.badge {
+    :global(.ant-badge-dot) {
+        @apply bg-primary !important;
     }
+    :global(.ant-badge-count) {
+        @apply top-3 right-2 !important;
+    }
+}
 </style>
 <style lang="less" scoped>
-    .radio-btn:last-child {
-        @apply ml-2 !important;
-    }
+.radio-btn:last-child {
+    @apply ml-2 !important;
+}
 </style>

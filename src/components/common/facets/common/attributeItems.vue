@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="">
         <a-popover
             v-model:visible="isVisible"
             title=""
@@ -37,14 +37,15 @@
                 :class="
                     isVisible
                         ? 'border rounded  border-primary bg-primary-light  text-primary'
-                        : ''
+                        : 'border rounded  border-transparent'
                 "
             >
                 <div
                     v-if="Object.keys(applied).length && !isVisible"
-                    class="absolute w-2 h-2 mr-2 rounded-full  -left-2 bg-primary"
+                    class="absolute w-2 h-2 rounded-full -left-1 bg-primary"
+                    style="margin-bottom: 3px !important"
                 ></div>
-                <div class="flex items-center justify-between w-96">
+                <div class="flex items-center justify-between w-full">
                     <Tooltip
                         :tooltip-text="a?.options?.displayName || a.label"
                         classes="w-40"
@@ -85,7 +86,8 @@
         },
         emits: ['handleAttributeInput'],
         setup(props, { emit }) {
-            const { getDatatypeOfAttribute } = useBusinessMetadataHelper()
+            const { getDatatypeOfAttribute, isEmptyObject } =
+                useBusinessMetadataHelper()
             const isVisible = ref(false)
             const appliedValues = ref({})
 
@@ -151,8 +153,9 @@
                 () => props.applied,
                 (n, _o) => {
                     // check all checkbox if not checked <> sync
-                    //! trigger only when component is not triggering, i.e clear filter, or load default is triggering
-                    checkOperator(Object.keys(n))
+                    //* trigger only when component is not triggering, i.e clear filter, or load default is triggering
+                    if (isEmptyObject(n) && !isEmptyObject(_o))
+                        checkOperator(Object.keys(n))
                 },
                 {
                     deep: true,

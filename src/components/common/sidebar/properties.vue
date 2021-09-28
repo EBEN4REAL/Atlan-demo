@@ -1,6 +1,6 @@
 <template>
     <div class="flex flex-col space-y-3">
-        <div class="px-2">
+        <div>
             <div class="flex items-center">
                 <p class="mb-1 text-sm tracking-wide text-gray-500">
                     Unique ID (GUID)
@@ -22,20 +22,32 @@
             </div>
             <p class="mb-0 text-gray-700">{{ selectedAsset?.guid }}</p>
         </div>
-        <div class="px-2">
+        <div>
             <p class="mb-1 text-sm tracking-wide text-gray-500">Last updated</p>
             <p class="mb-0 text-gray-700">
-                {{ updatedAt(selectedAsset) }}
-                ago,
+                {{ updatedAt(selectedAsset) }},       
                 {{ modifiedBy(selectedAsset) }}
             </p>
         </div>
-        <div class="px-2">
+        <div>
             <p class="mb-1 text-sm tracking-wide text-gray-500">Created</p>
             <p class="mb-0 text-gray-700">
-                {{ createdAt(selectedAsset) }}
-                ago,
+                {{ createdAt(selectedAsset) }},
                 {{ createdBy(selectedAsset) }}
+            </p>
+        </div>
+        <div v-if="sourceCreatedAt(selectedAsset)" class="px-2">
+            <p class="mb-1 text-sm tracking-wide text-gray-500">Source created</p>
+            <p class="mb-0 text-gray-700">
+                {{ sourceCreatedAt(selectedAsset) }}
+                <span v-if="sourceCreatedBy(selectedAsset)">,&nbsp;{{ sourceCreatedBy(selectedAsset) }}</span>
+            </p>
+        </div>
+         <div v-if="sourceUpdatedAt(selectedAsset)" class="px-2">
+            <p class="mb-1 text-sm tracking-wide text-gray-500">Source updated</p>
+            <p class="mb-0 text-gray-700">
+                {{ sourceUpdatedAt(selectedAsset) }}
+                <span v-if="sourceUpdatedBy(selectedAsset)">,&nbsp;{{ sourceUpdatedBy(selectedAsset) }}</span>
             </p>
         </div>
         <div class="px-2">
@@ -44,6 +56,12 @@
             </p>
             <p class="mb-0 text-gray-700">
                 {{ popularityScore(selectedAsset) }}
+            </p>
+        </div>
+        <div v-if="assetState(selectedAsset)">
+            <p class="mb-1 text-sm tracking-wide text-gray-500">State</p>
+            <p class="mb-0 text-gray-700 capitalize">
+                {{ assetState(selectedAsset) }}
             </p>
         </div>
     </div>
@@ -72,6 +90,11 @@
                 createdBy,
                 modifiedBy,
                 popularityScore,
+                assetState,
+                sourceUpdatedAt,
+                sourceCreatedAt,
+                sourceCreatedBy,
+                sourceUpdatedBy
             } = useAssetInfo()
             const copyAPI = (text: string) => {
                 copyToClipboard(text)
@@ -86,6 +109,11 @@
                 createdBy,
                 modifiedBy,
                 popularityScore,
+                assetState,
+                sourceUpdatedAt,
+                sourceCreatedAt,
+                sourceCreatedBy,
+                sourceUpdatedBy
             }
         },
     })

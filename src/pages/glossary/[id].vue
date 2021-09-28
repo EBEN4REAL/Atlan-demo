@@ -3,7 +3,12 @@
         <LoadingView />
     </div>
     <div v-else class="flex flex-row h-full" :class="$style.tabClasses">
-        <div class="w-2/3 h-full">
+        <div
+            class="w-2/3 h-full"
+            @scroll="handleScroll"
+            ref="scrollDiv"
+            :class="{ 'overflow-y-auto': !headerReachedTop }"
+        >
             <!-- top section -->
             <ProfileHeader
                 :title="title"
@@ -12,8 +17,8 @@
                 :statusMessage="statusMessage"
                 :statusObject="statusObject"
                 :shortDescription="shortDescription"
+                :headerReachedTop="headerReachedTop"
             />
-
             <!-- tabs start here  -->
             <div class="m-0">
                 <a-tabs
@@ -53,13 +58,16 @@
                             :guid="glossary?.guid"
                             :type="glossary?.typeName"
                             :show-preview-panel="currentTab === '2'"
+                            :headerReachedTop="headerReachedTop"
                             @entityPreview="handleCategoryOrTermPreview"
+                            @firstCardReachedTop="handleFirstCardReachedTop"
                         />
                     </a-tab-pane>
-                    <a-tab-pane key="4" tab="Requests"> Bots </a-tab-pane>
+                    <!-- Hide for GA -->
+                    <!-- <a-tab-pane key="4" tab="Requests"> Bots </a-tab-pane>
                     <a-tab-pane key="5" tab="Access Control">
                         Permissions
-                    </a-tab-pane>
+                    </a-tab-pane> -->
                 </a-tabs>
             </div>
         </div>
@@ -80,6 +88,7 @@
         provide,
         computed,
         inject,
+        nextTick,
     } from 'vue'
     import { useRouter } from 'vue-router'
 
@@ -125,6 +134,9 @@
             const previewEntity = ref<Category | Term | undefined>()
             const showPreviewPanel = ref(false)
             const newName = ref('')
+            const scrollDiv = ref(null)
+            const headerReachedTop = ref(false)
+            const temp = ref(false)
 
             const router = useRouter()
             const {
@@ -205,6 +217,20 @@
                     }, 2000)
                 }
             }
+
+            const handleScroll = () => {
+                if (scrollDiv.value?.scrollTop > 70 && !temp.value) {
+                    headerReachedTop.value = true
+                } else if (scrollDiv.value?.scrollTop > 70 && temp.value) {
+                    scrollDiv.value.scrollTop = 0
+                    temp.value = !temp.value
+                }
+            }
+            const handleFirstCardReachedTop = () => {
+                scrollDiv.value.scrollTop = 0
+                headerReachedTop.value = false
+                temp.value = true
+            }
             // lifecycle methods and watchers
             onMounted(() => {
                 fetchGlossaryTermsPaginated({ guid: guid.value, offset: 0 })
@@ -252,6 +278,8 @@
                 statusObject,
                 isNewGlossary,
                 newName,
+                scrollDiv,
+                headerReachedTop,
                 refreshCategoryTermList,
                 fetchNextCategoryOrTermList,
                 refetch,
@@ -259,6 +287,8 @@
                 handlClosePreviewPanel,
                 redirectToProfile,
                 updateTitle,
+                handleScroll,
+                handleFirstCardReachedTop,
             }
         },
     })
@@ -273,21 +303,19 @@
         }
     }
     .tabClasses {
-        :global(.ant-tabs-tab) {
-            margin: 0px 32px 0px 0px !important;
-            padding: 0px 0px 20px 0px !important;
-        }
-        :global(.ant-tabs-nav) {
-            margin: 0px !important;
-        }
         :global(.ant-tabs-tab-active) {
             @apply text-gray-700 font-bold !important;
         }
         :global(.ant-tabs-bar) {
-            @apply px-5;
-        }
-        :global(.ant-tabs-bar) {
             @apply mb-0 !important;
+        }
+        :global(.ant-tabs-tab) {
+            margin: 0px 32px 0px 0px;
+            padding: 0px 0px 18px 0px;
+        }
+
+        :global(.ant-tabs-bar) {
+            @apply ml-5;
         }
     }
 </style>

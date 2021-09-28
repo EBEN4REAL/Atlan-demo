@@ -1,19 +1,34 @@
 <template>
-    <div class="w-full pt-4 border-l sidePanel" :class="$style.sidePanel">
-        <a-tabs default-active-key="1">
-            <a-tab-pane key="info" class="p-0 m-0" tab="Info">
-                <div class="h-screen pb-24 overflow-auto">
+    <div class="w-full h-full border-l sidePanel" :class="$style.sidePanel">
+        <a-tabs
+            v-model:activeKey="tabActiveKey"
+            tab-position="left"
+            class="h-full"
+        >
+            <a-tab-pane key="info" class="p-0 m-0">
+                <template #tab>
+                    <SidePanelTabHeaders
+                        title="Overview"
+                        icon="Overview"
+                        :isActive="tabActiveKey === 'info'"
+                    />
+                </template>
+
+                <div class="h-screen pt-4 pb-24 overflow-auto">
                     <a-collapse
                         v-model:activeKey="activeKey"
                         :bordered="false"
                         expand-icon-position="right"
                     >
                         <template #expandIcon="{ isActive }">
-                            <fa v-if="isActive" icon="fas chevron-up" />
-                            <fa v-else icon="fas chevron-down" />
+                            <AtlanIcon
+                                icon="ChevronDown"
+                                class="ml-1 transition-transform transform"
+                                :class="isActive ? '-rotate-180' : 'rotate-0'"
+                            />
                         </template>
-                        <a-collapse-panel key="1" header="Details">
-                            <div class="flex flex-col pb-2 pl-6 pr-2">
+                        <a-collapse-panel key="1" header="Details" >
+                            <div class="flex flex-col pb-2 pl-4 pr-2">
                                 <div class="flex mt-2 mb-4 space-x-16">
                                     <div class="flex flex-col">
                                         <span
@@ -47,11 +62,6 @@
                                     v-if="entity.guid"
                                     :selected-asset="entity"
                                 />
-                                <Experts
-                                    v-if="entity.guid"
-                                    :selected-asset="entity"
-                                    @update:selected-asset="refreshEntity"
-                                />
                                 <Status
                                     v-if="entity.guid"
                                     :selected-asset="entity"
@@ -60,7 +70,7 @@
                             </div>
                         </a-collapse-panel>
 
-                        <a-collapse-panel
+                        <!-- <a-collapse-panel
                             v-if="termCount"
                             key="2"
                             header="Top Terms"
@@ -71,16 +81,32 @@
                                     :terms="glossaryTerms"
                                 />
                             </div>
-                        </a-collapse-panel>
+                        </a-collapse-panel> -->
                     </a-collapse>
                 </div>
             </a-tab-pane>
-            <a-tab-pane key="activity" tab="Activity">
+            <a-tab-pane key="activity">
+                <template #tab>
+                    <SidePanelTabHeaders
+                        title="Activity"
+                        icon="Activity"
+                        :isActive="tabActiveKey === 'activity'"
+                    />
+                </template>
                 <div class="h-screen overflow-auto">
                     <Activity :selectedAsset="entity" />
                 </div>
             </a-tab-pane>
-            <a-tab-pane key="chat" tab="Chat"> Chat </a-tab-pane>
+            <a-tab-pane key="chat">
+                <template #tab>
+                    <SidePanelTabHeaders
+                        title="Chat"
+                        icon="Chats"
+                        :isActive="tabActiveKey === 'chat'"
+                    />
+                </template>
+                Chat
+            </a-tab-pane>
         </a-tabs>
     </div>
 </template>
@@ -96,12 +122,13 @@
         defineAsyncComponent,
     } from 'vue'
 
-    import GlossaryTopTerms from '@/glossary/common/glossaryTopTerms.vue'
     import Owners from '@common/sidebar/owners.vue'
     import Experts from '@common/sidebar/experts.vue'
     import Description from '@common/sidebar/description.vue'
     import Status from '@common/sidebar/status.vue'
+    import GlossaryTopTerms from '@/glossary/common/glossaryTopTerms.vue'
     import Activity from '~/components/discovery/preview/tabs/activity/activityTab.vue'
+    import SidePanelTabHeaders from '~/components/common/tabs/sidePanelTabHeaders.vue'
 
     import {
         Glossary,
@@ -117,6 +144,7 @@
             Description,
             Status,
             Experts,
+            SidePanelTabHeaders,
             Activity,
         },
         props: {
@@ -135,6 +163,7 @@
         },
         setup(props) {
             const activeKey = ref(['1'])
+            const tabActiveKey = ref('info')
 
             const refreshEntity = inject<() => void>('refreshEntity')
             const updateTreeNode = inject<any>('updateTreeNode')
@@ -212,17 +241,28 @@
                 activeKey,
                 refreshEntity,
                 updateEntityAndTree,
+                tabActiveKey,
             }
         },
     })
 </script>
 <style lang="less" module>
     .sidePanel {
+        :global(.ant-tabs-nav-container-scrolling .ant-tabs-tab:first-child) {
+            @apply ml-0 !important;
+            @apply mt-4 !important;
+        }
+
+        :global(.ant-tabs-tab:first-child) {
+            // @apply mt-4 !important;
+            margin-top: 14px !important;
+        }
+
         :global(.ant-collapse-header) {
-            @apply pl-6 m-0  text-sm text-gray-700 bg-white !important;
+            @apply m-0 pt-0 text-sm text-gray-700 bg-white !important;
         }
         :global(.ant-collapse-borderless > .ant-collapse-item) {
-            @apply border-b border-gray-300 py-3  mt-0 !important;
+            @apply border-0   mt-0 !important;
         }
 
         :global(.ant-collapse) {
@@ -239,7 +279,16 @@
             @apply m-0 p-0  !important;
         }
         :global(.ant-tabs-bar) {
-            @apply mb-0 mx-0 px-6 !important;
+            @apply mb-0 mx-0 p-0 m-0 !important;
+        }
+        :global(.ant-tabs-tab) {
+            @apply py-2 mb-4 px-4 !important;
+        }
+        :global(.ant-tabs) {
+            @apply px-0 !important;
+        }
+        :global(.ant-tabs-content) {
+            @apply p-0 !important;
         }
     }
 </style>

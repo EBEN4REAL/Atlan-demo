@@ -30,8 +30,12 @@
             </template>
         </div>
         <!--Sidebar navigation pane end -->
-        <splitpanes :class="$style.splitpane__styles" @resize="paneResize">
-            <pane :max-size="20" :size="explorerPaneSize">
+        <splitpanes
+            :class="$style.splitpane__styles"
+            @resize="paneResize"
+            class="parent_splitpanes"
+        >
+            <pane :max-size="20" :size="explorerPaneSize" :min-size="0">
                 <!--explorer pane start -->
                 <component
                     v-if="activeTab && activeTab.component"
@@ -41,18 +45,24 @@
                 <!--explorer pane end -->
             </pane>
             <pane
-                :size="activeInlineTab?.assetSidebar?.isVisible ? 60 : 80"
+                :max-size="100"
+                :size="
+                    activeInlineTab?.assetSidebar?.isVisible
+                        ? 100 - (explorerPaneSize + assetSidebarPaneSize)
+                        : 100 - explorerPaneSize
+                "
                 :min-size="activeInlineTab?.assetSidebar?.isVisible ? 60 : 80"
             >
-                <Playground
-                    v-model:activeInlineTabKey="activeInlineTabKey"
-                    v-model:tabRef="inlineTabRef"
-                />
+                <Playground :activeInlineTabKey="activeInlineTabKey" />
             </pane>
             <pane
                 :max-size="20"
-                :size="activeInlineTab?.assetSidebar?.isVisible ? 20 : 0"
                 :min-size="0"
+                :size="
+                    activeInlineTab?.assetSidebar?.isVisible
+                        ? assetSidebarPaneSize
+                        : 0
+                "
                 v-if="
                     activeInlineTab && activeInlineTab?.assetSidebar?.isVisible
                 "
@@ -64,22 +74,24 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref, Ref, computed, watch, provide } from 'vue'
+    import { defineComponent, ref, computed, watch } from 'vue'
     import Playground from '~/components/insights/playground/index.vue'
     import AssetSidebar from '~/components/insights/assetSidebar/index.vue'
-    import Schema from './explorers/schema.vue'
+    import Schema from './explorers/schema/index.vue'
     import Queries from './explorers/queries.vue'
     import History from './explorers/history.vue'
     import Schedule from './explorers/schedule.vue'
 
-    import { inlineTabsDemoData } from './common/dummyData/demoInlineTabData'
     import useInsightsTabList from './common/composables/useTabList'
     import { useLocalStorageSync } from './common/composables/useLocalStorageSync'
+    import { useSpiltPanes } from './common/composables/useSpiltPanes'
+    import { useProvide } from './common/composables/useProvide'
+    import { useInlineTab } from './common/composables/useInlineTab'
+    // import { useConnector } from './common/composables/useConnector'
+    // import { useHotKeys } from './common/composables/useHotKeys'
 
-    import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
     import { TabInterface } from '~/types/insights/tab.interface'
-    import { SavedQueryInterface } from '~/types/insights/savedQuery.interface'
-    import { tableInterface } from '~/types/insights/table.interface'
+    import { provideDataInterface } from './common/composables/useProvide'
 
     export default defineComponent({
         components: {
@@ -92,180 +104,39 @@
         },
         props: {},
         setup(props) {
-            /* ---- Panes  ----- */
-            /* TODO: Collapse panes if it reach  threshold */
-            const explorerThreshold = 10
-            const explorerPaneCollapsed = ref(false)
-            const assetSidebarThreshold = 10
-            const explorerPaneSize = ref(20)
-            const paneResize = (event: any) => {
-                if (event.length > 0) {
-                    // explorerPaneSize.value = event[0].size
-                }
-            }
-            /* ---- Panes  ----- */
+            const { explorerPaneSize, assetSidebarPaneSize, paneResize } =
+                useSpiltPanes()
+            // TODO: will be used for HOTKEYs
+            // const {explorerPaneToggle,assetSidebarToggle} =useHotKeys();
+
             const { allTabs: tabsList } = useInsightsTabList()
             const {
                 syncInlineTabsInLocalStorage,
-                getInlineTabsFromLocalStorage,
                 syncActiveInlineTabKeyInLocalStorage,
-                getActiveInlineTabKeyFromLocalStorage,
             } = useLocalStorageSync()
-            const inlineTabRef = ref()
+
+            const { tabsArray, activeInlineTabKey, activeInlineTab } =
+                useInlineTab()
+
             const activeTabId = ref(tabsList[0].id)
-            const tabsArray: Ref<activeInlineTabInterface[]> = ref(
-                setInlineTabsArray()
-            )
-            const activeInlineTabKey = ref(setActiveInlineTabKey())
-            // console.log(setActiveInlineTabKey(), 'activeKey')
 
             const activeTab = computed(() =>
                 tabsList.find((tab) => tab.id === activeTabId.value)
             )
-            const activeInlineTab = computed(() =>
-                tabsArray.value.find(
-                    (tab) => tab.key === activeInlineTabKey.value
-                )
-            )
+
             const changeTab = (tab: TabInterface) => {
                 activeTabId.value = tab.id
-            }
-            const isInlineTabAlreadyOpened = (
-                inlineTab: activeInlineTabInterface
-            ) => {
-                let bool = false
-                inlineTabRef.value.tabs.forEach((tab) => {
-                    if (tab.key === inlineTab.key) bool = true
-                })
-                return bool
-            }
-            const openSavedQueryInNewTab = (
-                savedQuery: SavedQueryInterface
-            ) => {
-                const newTab = {
-                    label: savedQuery.label,
-                    key: savedQuery.id,
-                    favico: 'https://atlan.com/favicon.ico',
-                    isSaved: true,
-                    queryId: savedQuery.id,
-                    explorer: {},
-                    playground: {
-                        editorTitle: savedQuery.editor,
-                        resultsPane: {
-                            activeTab:
-                                activeInlineTab.value?.playground.resultsPane
-                                    .activeTab ?? 0,
-                            result: {
-                                title: savedQuery.result,
-                            },
-                            metadata: {},
-                            queries: {},
-                            joins: {},
-                            filters: {},
-                            impersonation: {},
-                            downstream: {},
-                            sqlHelp: {},
-                        },
-                    },
-                    assetSidebar: {
-                        // for taking the previous state from active tab
-                        isVisible:
-                            activeInlineTab.value?.assetSidebar.isVisible,
-                        assetInfo: {},
-                        title: activeInlineTab.value?.assetSidebar.title,
-                        id: activeInlineTab.value?.assetSidebar.id,
-                    },
-                }
-                if (!isInlineTabAlreadyOpened(newTab)) {
-                    inlineTabRef.value.addTab(newTab)
-                    activeInlineTabKey.value = newTab.key
-                    // syncying inline tabarray in localstorage
-                    syncInlineTabsInLocalStorage(tabsArray.value)
-                } else {
-                    // show user that this tab is already opened
-                }
-            }
-            const closeAssetSidebar = (activeTab: activeInlineTabInterface) => {
-                const index = tabsArray.value.findIndex(
-                    (tab) => tab.key === activeTab.key
-                )
-                if (index !== -1) {
-                    tabsArray.value[index].assetSidebar.isVisible = false
-                    tabsArray.value[index].assetSidebar.title = ''
-                    tabsArray.value[index].assetSidebar.id = ''
-                }
-                console.log(tabsArray, 'tabsArray')
-                // syncying inline tabarray in localstorage
-                syncInlineTabsInLocalStorage(tabsArray.value)
-            }
-
-            const openAssetSidebar = (table: tableInterface) => {
-                if (activeInlineTab.value) {
-                    const index = tabsArray.value.findIndex(
-                        (tab) => tab.key === activeInlineTab.value?.key
-                    )
-                    if (index !== -1) {
-                        tabsArray.value[index].assetSidebar.isVisible = true
-                        tabsArray.value[index].assetSidebar.title = table.label
-                        tabsArray.value[index].assetSidebar.id = table.id
-                        // syncying inline tabarray in localstorage
-                        syncInlineTabsInLocalStorage(tabsArray.value)
-                    }
-                }
-            }
-            const resultsPaneTabChange = (
-                resultPaneActiveKey: number,
-                activeTab: activeInlineTabInterface
-            ) => {
-                const index = tabsArray.value.findIndex(
-                    (tab) => tab.key === activeTab.key
-                )
-                if (index !== -1) {
-                    tabsArray.value[index].playground.resultsPane.activeTab =
-                        resultPaneActiveKey
-                }
-                // syncying inline tabarray in localstorage
-                syncInlineTabsInLocalStorage(tabsArray.value)
-            }
-
-            function setActiveInlineTabKey() {
-                // checking if localstorage already have active tab key
-                const localStorageActiveInlineKey =
-                    getActiveInlineTabKeyFromLocalStorage()
-                console.log(localStorageActiveInlineKey, 'localStorageKey')
-                if (localStorageActiveInlineKey !== undefined) {
-                    const activeTab = tabsArray.value.find(
-                        (tab) => tab.key === localStorageActiveInlineKey
-                    )
-                    if (activeTab) return activeTab.key
-                }
-                if (tabsArray.value.length > 0) return tabsArray.value[0].key
-                return ''
-            }
-            function setInlineTabsArray() {
-                // checking if localstorage already have active tabs
-                const localStorageInlineTabs = getInlineTabsFromLocalStorage()
-                if (localStorageInlineTabs.length > 0) {
-                    console.log(localStorageInlineTabs, 'local')
-                    return localStorageInlineTabs
-                }
-                return inlineTabsDemoData
             }
 
             /*---------- PROVIDERS FOR CHILDRENS -----------------
             ---Be careful to add a property/function otherwise it will pollute the whole flow for childrens--
             */
-
-            // properties
-            provide('activeInlineTab', activeInlineTab)
-            provide('activeInlineTabKey', activeInlineTabKey)
-            provide('inlineTabs', tabsArray)
-
-            // functions
-            provide('closeAssetSidebar', closeAssetSidebar)
-            provide('openAssetSidebar', openAssetSidebar)
-            provide('resultsPaneTabChange', resultsPaneTabChange)
-
+            const provideData: provideDataInterface = {
+                activeInlineTab: activeInlineTab,
+                activeInlineTabKey: activeInlineTabKey,
+                inlineTabs: tabsArray,
+            }
+            useProvide(provideData)
             /*-------------------------------------*/
 
             /* Watchers for syncing in localstorage*/
@@ -279,14 +150,11 @@
                 tabsList,
                 activeInlineTabKey,
                 activeInlineTab,
-                inlineTabRef,
                 tabsArray,
                 explorerPaneSize,
+                assetSidebarPaneSize,
                 paneResize,
                 changeTab,
-                openSavedQueryInNewTab,
-                closeAssetSidebar,
-                openAssetSidebar,
             }
         },
     })
@@ -404,6 +272,9 @@
     }
     .tabHeight {
         height: calc(100vh - 3rem);
+    }
+    .parent_splitpanes {
+        width: calc(100vw - 5rem);
     }
 </style>
 

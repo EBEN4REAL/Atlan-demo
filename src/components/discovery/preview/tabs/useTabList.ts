@@ -12,6 +12,7 @@ interface TabList {
     icon: string
     visibleOn: Page[]
     exclude?: string[]
+    tooltip: string
 }
 
 export default function useAssetDetailsTabList(
@@ -20,16 +21,18 @@ export default function useAssetDetailsTabList(
 ) {
     const tabList: TabList[] = [
         {
-            name: 'Info',
+            name: 'Overview',
             component: 'info',
             visibleOn: ['discovery', 'profile', 'biOverview', 'nonBiOverview'],
             icon: 'Overview',
+            tooltip: 'Overview',
         },
         {
             name: 'Custom Metadata',
             component: 'businessMetadataTab',
             visibleOn: ['discovery', 'profile', 'biOverview', 'nonBiOverview'],
             icon: 'Metadata',
+            tooltip: 'Custom metadata',
         },
         {
             name: 'Columns',
@@ -42,15 +45,25 @@ export default function useAssetDetailsTabList(
                 'TableauProject',
                 'TableauDashboard',
                 'TableauDatasource',
+                'PowerBIWorkspace',
+                'PowerBIDashboard',
+                'PowerBITile',
+                'PowerBIReport',
+                'PowerBIPage',
+                'PowerBIDataset',
+                'PowerBIDatasource',
+                'PowerBIDataflow',
             ],
             visibleOn: ['discovery', 'profile'],
             icon: 'Columns',
+            tooltip: 'Columns',
         },
         {
             name: 'Activity',
             component: 'activity',
             visibleOn: ['discovery', 'profile', 'biOverview', 'nonBiOverview'],
             icon: 'Activity',
+            tooltip: 'Activity',
         },
         {
             name: 'Relations',
@@ -67,6 +80,7 @@ export default function useAssetDetailsTabList(
             ],
             visibleOn: ['discovery'],
             icon: 'Relation',
+            tooltip: 'Related Assets',
         },
         // {
         //     name: 'Chat',
@@ -84,6 +98,7 @@ export default function useAssetDetailsTabList(
             component: 'lineage',
             visibleOn: ['discovery'],
             icon: 'Lineage',
+            tooltip: 'Lineage',
         },
     ]
 

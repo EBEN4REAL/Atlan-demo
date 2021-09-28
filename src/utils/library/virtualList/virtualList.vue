@@ -17,7 +17,7 @@
             </div>
             <div
                 v-for="(item, idx) in pool"
-                :key="item[dataKey]"
+                :key="item?.[dataKey]"
                 class="flex-shrink-0 virtual-list-item"
             >
                 <slot :item="item" :index="idx + listIndices[0]"></slot>
@@ -31,13 +31,13 @@
                 <a-spin tip="Loading..." />
             </div>
         </div>
-        <div v-else>
+        <div v-else-if="data.length">
             <div
                 v-for="(item, idx) in data"
-                :key="idx + listIndices[0]"
+                :key="item?.[dataKey]"
                 class="flex-shrink-0 virtual-list-item"
             >
-                <slot :item="item" :index="idx + listIndices[0]"></slot>
+                <slot :item="item" :index="idx"></slot>
             </div>
         </div>
         <div class="footer" v-if="$slots?.footer">
@@ -134,7 +134,8 @@
 
             // Virtualize the container if there are more than 20 elements
             // for varible-height, always virtualize.
-            const isVirtualised = computed(() => data.value?.length > 20)
+            // const isVirtualised = computed(() => data.value?.length > 20)
+            const isVirtualised = ref(false)
 
             /** Slice of the data that is actually rendered on the screen */
             const pool = computed(() =>
@@ -193,7 +194,7 @@
             onMounted(init)
 
             watch(data, init)
-            watch([isVirtualised, data.value.length], (cVal) => {
+            watch([isVirtualised, data], (cVal) => {
                 // Reset the list when the mode is set to virtualised
                 // or when the length of list smaller than the last one
                 if (cVal || lastListLength > data.value.length) {

@@ -16,3 +16,7 @@ export const formatDate = (date: string | number | Date) => {
 
     return [year, month, day].join('-');
 }
+
+export const formatDateTime = (date: Date, locale='en-US') => {
+   return new Intl.DateTimeFormat(locale, { dateStyle: 'medium', timeStyle: 'medium' }).format(date)
+}

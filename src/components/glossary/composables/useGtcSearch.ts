@@ -1,4 +1,4 @@
-import { ref, Ref, computed, watch } from 'vue'
+import { ref, Ref, ComputedRef, computed, watch } from 'vue'
 import { useAPI } from '~/api/useAPI'
 
 import { GTC_SEARCH } from '~/api/keyMaps/glossary'
@@ -19,7 +19,7 @@ type Filters = {
         }
     }[]
 }
-export default function useGtcSearch(qualifiedName: Ref<string>) {
+export default function useGtcSearch(qualifiedName: ComputedRef<string>, dependantFetchingKey?: Ref<any>) {
     const requestQuery = ref<string>()
     const offsetLocal = ref(0)
     const defaultLimit = 50
@@ -46,7 +46,7 @@ export default function useGtcSearch(qualifiedName: Ref<string>) {
 
     const refreshBody = () => {
         body.value = {
-            typeName: 'AtlasGlossaryTerm,AtlasGlossaryCategory',
+            // typeName: 'AtlasGlossaryTerm,AtlasGlossaryCategory',
             excludeDeletedEntities: true,
             includeClassificationAttributes: true,
             includeSubClassifications: true,
@@ -69,7 +69,32 @@ export default function useGtcSearch(qualifiedName: Ref<string>) {
                 ...BaseAttributes,
                 ...BasicSearchAttributes,
             ],
-            entityFilters: {
+            // entityFilters: {
+            //     condition: 'AND',
+            //     criterion: [
+            //         {
+            //             condition: 'OR',
+            //             criterion: [
+            //                 {
+            //                     attributeName: 'qualifiedName',
+            //                     attributeValue: `@${qualifiedName.value ?? ''}`,
+            //                     operator: 'endsWith',
+            //                 },
+            //             ],
+            //         },
+            //         ...(localFilters.value?.criterion ?? []),
+            //     ],
+            // },
+            // sortBy: "Catalog.popularityScore",
+            // sortOrder: "ASCENDING",
+            query: requestQuery.value,
+            offset: offsetLocal.value,
+            limit: limitLocal.value,
+        }
+
+        if(qualifiedName && qualifiedName.value) {
+            body.value.typeName = 'AtlasGlossaryTerm,AtlasGlossaryCategory';
+            body.value.entityFilters = {
                 condition: 'AND',
                 criterion: [
                     {
@@ -84,52 +109,65 @@ export default function useGtcSearch(qualifiedName: Ref<string>) {
                     },
                     ...(localFilters.value?.criterion ?? []),
                 ],
-            },
-            // sortBy: "Catalog.popularityScore",
-            // sortOrder: "ASCENDING",
-            query: requestQuery.value,
-            offset: offsetLocal.value,
-            limit: limitLocal.value,
+            }
+        } else {
+            body.value.typeName = 'AtlasGlossaryTerm,AtlasGlossaryCategory,AtlasGlossary';
+            body.value.entityFilters = {
+                condition: 'AND',
+                criterion: [
+                    ...(localFilters.value?.criterion ?? []),
+                ],
+            }
         }
     }
 
     refreshBody()
 
     const entities: Ref<(Category | Term)[]> = ref<(Category | Term)[]>([])
+    const terms = computed(() =>entities.value.filter((entity) => entity.typeName === 'AtlasGlossaryTerm'))
+    const categories = computed(() =>entities.value.filter((entity) => entity.typeName === 'AtlasGlossaryCategory'))
+    const glossaries = computed(() =>entities.value.filter((entity) => entity.typeName === 'AtlasGlossary'))
+    const referredEntities = ref<Record<string, Components.Schemas.AtlasEntityHeader>>()
 
     const {
         data: assets,
         error,
-        isValidating: isLoading,
+      isLoading,
         mutate,
     } = useAPI<any>(GTC_SEARCH, 'POST', {
-        cache: true,
+        cache: false,
         body,
-        dependantFetchingKey: qualifiedName,
         options: {
+            immediate: dependantFetchingKey && dependantFetchingKey.value ? true : qualifiedName.value ? true : false,
             revalidateOnFocus: false,
         },
     })
     offsetLocal.value += defaultLimit
     refreshBody()
 
+
     watch(qualifiedName, () => {
-        limitLocal.value = defaultLimit
-        offsetLocal.value = 0
+        if((dependantFetchingKey && dependantFetchingKey?.value) || !dependantFetchingKey) {
 
-        refreshBody()
-
-        entities.value = []
-        mutate()
-
-        offsetLocal.value += defaultLimit
-        refreshBody()
+            limitLocal.value = defaultLimit
+            offsetLocal.value = 0
+    
+            refreshBody()
+    
+            entities.value = []
+            mutate()
+    
+            offsetLocal.value += defaultLimit
+            refreshBody()
+        } 
     })
     watch(assets, (newAssets) => {
         entities.value = [
             ...entities.value,
             ...(newAssets.entities ?? ([] as (Category | Term)[])),
         ]
+        referredEntities.value = newAssets.referredEntities
+        
     })
 
     const fetchAssets = (query?: string) => {
@@ -188,8 +226,12 @@ export default function useGtcSearch(qualifiedName: Ref<string>) {
     return {
         assets,
         entities,
+        terms,
+        categories,
+        glossaries,
         error,
         isLoading,
+        referredEntities,
         fetchAssets,
         fetchAssetsPaginated,
         deleteEntityFromList,

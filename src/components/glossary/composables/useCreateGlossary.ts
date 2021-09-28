@@ -1,5 +1,6 @@
 import { watch, ref, Ref, inject } from 'vue'
 import { useRouter } from 'vue-router'
+import { message } from 'ant-design-vue'
 import { generateUUID } from '~/utils/helper/generator'
 import { Components } from '~/api/atlas/client'
 
@@ -74,20 +75,30 @@ const useCreateGlossary = () => {
 
     const createCategory = (
         parentGlossaryGuid: string,
-        parentCategoryGuid?: string
+        parentCategoryGuid?: string,
+        title?: string,
+        description?: string,
+        status?: string,
+        ownerUsers?: string,
+        ownerGroups?: string
     ) => {
         body.value = {
-            name: generateUUID(),
-            displayText: 'Untitled Category',
-            shortDescription: '',
+            name: title ?? generateUUID(),
+            shortDescription: description ?? '',
             longDescription: '',
-            assetStatus: 'draft',
-            ownerUsers: `${username.value}`,
+            assetStatus: status ?? 'draft',
+            ownerUsers: ownerUsers ?? `${username.value}`,
+            ownerGroups: ownerGroups ?? ``,
             anchor: {
                 glossaryGuid: parentGlossaryGuid,
             },
         }
-        if (parentCategoryGuid) {
+
+        message.loading({
+            content: 'Creating new category...',
+            key: `${title}`,
+        })
+        if (parentCategoryGuid && parentCategoryGuid !== '') {
             body.value.parentCategory = {
                 categoryGuid: parentCategoryGuid,
             }
@@ -105,45 +116,62 @@ const useCreateGlossary = () => {
                 body: body.value,
             }
         )
-        const { data: updateData, updateEntity } = useUpdateGtcEntity()
 
         watch(data, (newData) => {
             if (newData?.guid) {
-                updateEntity('category', newData.guid, {
-                    name: 'Untitled Category',
+                message.success({
+                    content: `${title} created!`,
+                    key: `${title}`,
+                    duration: 2,
                 })
-            }
-        })
-        watch(updateData, (newData) => {
-            if (newData?.guid) {
-                redirectToProfile('category', newData.guid)
                 if (refetchGlossaryTree) {
-                    refetchGlossaryTree(parentCategoryGuid ?? 'root')
+                    refetchGlossaryTree(
+                        parentCategoryGuid || parentCategoryGuid !== ''
+                            ? parentCategoryGuid
+                            : 'root'
+                    )
                 }
             }
         })
+
         watch([createError, isValidating], ([newError, newValidating]) => {
             error.value = newError?.value
+
+            const errMsg = createError.value?.response?.data?.errorMessage
+            message.error({
+                content: `${errMsg.slice(0, 1).toUpperCase()}${errMsg.slice(
+                    1
+                )}`,
+                key: `${title}`,
+                duration: 2,
+            })
+
             isLoading.value = newValidating?.value
         })
     }
 
     const createTerm = (
         parentGlossaryGuid: string,
-        parentCategoryGuid?: string
+        parentCategoryGuid?: string,
+        title?: string,
+        description?: string,
+        status?: string,
+        ownerUsers?: string,
+        ownerGroups?: string
     ) => {
         body.value = {
-            name: generateUUID(),
-            displayText: 'Untitled Term',
-            shortDescription: '',
+            name: title ?? generateUUID(),
+            shortDescription: description ?? '',
             longDescription: '',
-            assetStatus: 'draft',
-            ownerUsers: `${username.value}`,
+            assetStatus: status ?? 'draft',
+            ownerUsers: ownerUsers ?? `${username.value}`,
+            ownerGroups: ownerGroups ?? ``,
             anchor: {
                 glossaryGuid: parentGlossaryGuid,
             },
         }
-        if (parentCategoryGuid) {
+        message.loading({ content: 'Creating new term...', key: `${title}` })
+        if (parentCategoryGuid && parentCategoryGuid !== '') {
             body.value.categories = [
                 {
                     categoryGuid: parentCategoryGuid,
@@ -163,25 +191,35 @@ const useCreateGlossary = () => {
                 body: body.value,
             }
         )
-        const { data: updateData, updateEntity } = useUpdateGtcEntity()
 
         watch(data, (newData) => {
+            console.log(data)
             if (newData?.guid) {
-                updateEntity('term', newData.guid, {
-                    name: 'Untitled Term',
+                message.success({
+                    content: `${title} created!`,
+                    key: `${title}`,
+                    duration: 2,
                 })
-            }
-        })
-        watch(updateData, (newData) => {
-            if (newData?.guid) {
-                redirectToProfile('term', newData.guid)
                 if (refetchGlossaryTree) {
-                    refetchGlossaryTree(parentCategoryGuid ?? 'root')
+                    refetchGlossaryTree(
+                        parentCategoryGuid || parentCategoryGuid !== ''
+                            ? parentCategoryGuid
+                            : 'root'
+                    )
                 }
             }
         })
         watch([createError, isValidating], ([newError, newValidating]) => {
             error.value = newError?.value
+            const errMsg = createError.value?.response?.data?.errorMessage
+            message.error({
+                content: `${errMsg.slice(0, 1).toUpperCase()}${errMsg.slice(
+                    1
+                )}`,
+                key: `${title}`,
+                duration: 2,
+            })
+
             isLoading.value = newValidating?.value
         })
     }

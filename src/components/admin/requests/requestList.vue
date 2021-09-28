@@ -6,6 +6,7 @@
             <RequestFilters v-model:filters="filters" />
         </template>
     </SearchAndFilter>
+    <RequestTypeTabs v-model:tab="filters.request_type" />
     <div v-if="listLoading">Loading</div>
     <template v-else-if="requestList.length && !listLoading">
         <RequestModal
@@ -31,14 +32,15 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, computed, ref, watch } from 'vue'
+    import { defineComponent, computed, ref, watch, Ref } from 'vue'
     import { useMagicKeys, whenever } from '@vueuse/core'
     import { useRequestList } from '~/composables/requests/useRequests'
 
     import SearchAndFilter from '~/components/common/input/searchAndFilter.vue'
     import VirtualList from '~/utils/library/virtualList/virtualList.vue'
+    import RequestTypeTabs from './requestTypeTabs.vue'
     import RequestListItem from './requestListItem.vue'
-    import RequestFilters from './requestFilters.vue'
+    import RequestFilters from './filters/requestFilters.vue'
     import RequestModal from './modal/requestDetailsBase.vue'
 
     import { RequestAttributes, RequestStatus } from '~/types/atlas/requests'
@@ -52,6 +54,7 @@
             SearchAndFilter,
             RequestFilters,
             RequestModal,
+            RequestTypeTabs,
         },
         setup() {
             // keyboard navigation stuff
@@ -61,14 +64,23 @@
             const selectedIndex = ref(0)
             const isDetailsVisible = ref(false)
             const searchTerm = ref('')
-            const filters = ref({ status: ['active'] as RequestStatus[] })
+            const filters = ref({
+                status: 'active' as RequestStatus,
+                request_type: [],
+            })
 
             const {
                 response,
                 isLoading: listLoading,
                 error: listError,
             } = useRequestList(searchTerm, filters)
-            const requestList = computed(() => response.value?.records || [])
+
+            const requestList = computed(
+                () =>
+                    response.value?.records?.filter(
+                        (req) => req.status === filters.value.status
+                    ) || []
+            )
 
             function isSelected(guid: string): boolean {
                 // TODO: change this when adding bulk support
@@ -150,6 +162,15 @@
                 if (listError.value)
                     message.error('Failed to load request data.')
             })
+
+            watch(
+                filters,
+                () => {
+                    selectedIndex.value = 0
+                },
+                { deep: true }
+            )
+
             return {
                 requestList,
                 isSelected,

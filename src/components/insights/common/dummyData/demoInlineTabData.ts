@@ -5,9 +5,23 @@ export const inlineTabsDemoData: activeInlineTabInterface[] = [
         label: 'ABCDE',
         isSaved: true,
         queryId: 'abcd-01-01',
-        explorer: {},
+        explorer: {
+            schema: {
+                connectors: {
+                    connection: 'default/snowflake/vqaqufvr-i',
+                    connector: 'snowflake',
+                    selectedDefaultSchema: 'ATLAN_TRIAL.PUBLIC',
+                    selectedDataSourceName: 'default/snowflake/vqaqufvr-i',
+                },
+            },
+        },
         playground: {
-            editorTitle: 'ABCDE EDITOR',
+            editor: {
+                text: 'select * from "INSTACART_ALCOHOL_ORDER_TIME" limit 10',
+                dataList: [],
+                columnList: [],
+                variables: [],
+            },
             resultsPane: {
                 activeTab: 0,
                 result: {
@@ -35,9 +49,23 @@ export const inlineTabsDemoData: activeInlineTabInterface[] = [
         label: 'ADBE',
         isSaved: false,
         queryId: undefined,
-        explorer: {},
+        explorer: {
+            schema: {
+                connectors: {
+                    connection: 'default/snowflake/vqaqufvr-i',
+                    connector: 'snowflake',
+                    selectedDefaultSchema: 'ATLAN_TRIAL.PUBLIC',
+                    selectedDataSourceName: 'default/snowflake/vqaqufvr-i',
+                },
+            },
+        },
         playground: {
-            editorTitle: 'ADBE EDITOR',
+            editor: {
+                text: 'select * from "INSTACART_ALCOHOL_ORDER_TIME" limit 10',
+                dataList: [],
+                columnList: [],
+                variables: [],
+            },
             resultsPane: {
                 activeTab: 0,
                 result: {
@@ -65,9 +93,23 @@ export const inlineTabsDemoData: activeInlineTabInterface[] = [
         label: 'BCDE',
         isSaved: false,
         queryId: undefined,
-        explorer: {},
+        explorer: {
+            schema: {
+                connectors: {
+                    connection: 'default/snowflake/vqaqufvr-i',
+                    connector: 'snowflake',
+                    selectedDefaultSchema: 'ATLAN_TRIAL.PUBLIC',
+                    selectedDataSourceName: 'default/snowflake/vqaqufvr-i',
+                },
+            },
+        },
         playground: {
-            editorTitle: 'BCDE EDITOR',
+            editor: {
+                text: 'select * from "INSTACART_ALCOHOL_ORDER_TIME" limit 10',
+                dataList: [],
+                columnList: [],
+                variables: [],
+            },
             resultsPane: {
                 activeTab: 0,
                 result: {

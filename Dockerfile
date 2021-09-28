@@ -1,4 +1,4 @@
-FROM node:16-alpine as builder
+FROM node:16.9-alpine3.11 as builder
 WORKDIR /app
 COPY ./ .npmrc /app/
 RUN echo "Node Version " && node --version && echo "NPM Version " && npm --version

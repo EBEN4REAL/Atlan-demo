@@ -1,28 +1,28 @@
-import { iconName } from '~/components/common/icon/iconMap'
+import iconMap from '~/components/common/icon/iconMap'
 import { RequestAttributes, RequestType } from '~/types/atlas/requests'
 
 export const primaryText: Record<
     RequestType,
     (arg: RequestAttributes) => string
 > = {
-    attribute: () => 'Attribute update request',
-    create_typedef: () => 'Typedef creation request',
-    create_glossary: () => 'Glossary creation request',
-    create_category: () => 'Category creation request',
-    create_term: () => 'Term creation request',
+    attribute: () => 'Update asset attribute',
+    create_typedef: () => 'Create new category',
+    create_glossary: () => 'Create new glossary',
+    create_category: () => 'Create new category',
+    create_term: () => 'Create new term',
     bm_attribute: () => 'Custom metadata request',
-    term_link: () => 'Term linkage request',
+    term_link: () => 'Link term to asset',
     attach_classification: () => 'Classification attachment request',
 }
 
 // Check iconMap.ts for available icons
-export const requestTypeIcon: Record<RequestType, iconName> = {
+export const requestTypeIcon: Record<RequestType, keyof typeof iconMap> = {
     attribute: 'Edit',
-    create_typedef: 'Link',
-    create_glossary: 'Link',
-    create_category: 'Link',
-    create_term: 'Link',
-    bm_attribute: 'Link',
+    create_typedef: 'Category',
+    create_glossary: 'Glossary',
+    create_category: 'Category',
+    create_term: 'Term',
+    bm_attribute: 'Edit',
     term_link: 'Link',
     attach_classification: 'Link',
 }
@@ -42,3 +42,22 @@ export const typeCopyMapping: Record<string, string> = {
     term_link: 'Link Term',
     attach_classification: 'Attach Classification',
 }
+
+export const requestTypeTabList: { id: string; value: RequestType[] }[] = [
+    { id: 'All', value: [] },
+    { id: 'Metadata', value: ['attribute'] },
+    { id: 'BM', value: ['bm_attribute'] },
+    {
+        id: 'Glossary',
+        value: [
+            'create_glossary',
+            'create_category',
+            'create_term',
+            'term_link',
+        ],
+    },
+    {
+        id: 'Classification',
+        value: ['create_typedef', 'attach_classification'],
+    },
+]

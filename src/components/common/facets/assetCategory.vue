@@ -4,33 +4,37 @@
         class="w-full px-4 py-1 pb-3"
         @change="handleChange"
     >
-        <div class="flex flex-col w-full">
-            <template v-for="(item, index) in list" :key="item.id">
-                <!-- <div class="pb-2.5 mb-3 border-b" v-if="index == 0">
+        <div class="flex flex-col w-full gap-y-3">
+            <!-- <div class="pb-2.5 mb-3 border-b" v-if="index == 0">
                     <a-checkbox :value="item.id" class="w-full">
                         <span class="mb-0 ml-1 text-gray">
                             {{ item.label }}
                         </span>
                     </a-checkbox>
                 </div> -->
-                <div class="mb-3 status">
-                    <a-checkbox
-                        :value="item.id"
-                        class="flex items-center w-full"
-                    >
-                        <div class="flex items-center">
-                            <a-tooltip placement="right">
-                                <span class="mb-0 ml-1 text-gray">
-                                    {{ item.label }}
-                                </span>
-                                <template #title>
-                                    {{ item.include.join(', ') }}</template
-                                >
-                            </a-tooltip>
-                        </div>
-                    </a-checkbox>
-                </div>
-            </template>
+            <div
+                v-for="item in list"
+                :key="item.id"
+                class="flex items-center justify-between"
+            >
+                <a-checkbox :value="item.id"
+                    ><span class="mb-0 ml-1 text-gray">
+                        {{ item.label }}
+                    </span>
+                </a-checkbox>
+
+                <a-tooltip placement="right" color="white">
+                    <AtlanIcon
+                        icon="Overview"
+                        class="opacity-50 hover:opacity-100"
+                    />
+                    <template #title>
+                        <span class="text-gray-500">
+                            {{ item.popoverText }}
+                        </span>
+                    </template>
+                </a-tooltip>
+            </div>
         </div>
     </a-checkbox-group>
 </template>
@@ -93,6 +97,14 @@
                             'TableauWorksheet',
                             'TableauDashboard',
                             'TableauDatasource',
+                            'PowerBIWorkspace',
+                            'PowerBIDashboard',
+                            'PowerBIReport',
+                            'PowerBIDataset',
+                            'PowerBIDataflow',
+                            'PowerBITile',
+                            'PowerBIPage',
+                            'PowerBIDatasource'
                         ]
                         break
                     }
@@ -149,8 +161,9 @@
         },
     })
 </script>
-<style lang="less" scoped>
-    .status:last-child {
-        margin-bottom: 0 !important;
+
+<style scoped>
+    :global(.ant-tooltip-arrow) {
+        display: none;
     }
 </style>

@@ -105,7 +105,7 @@ export const InfoTabInAssetInDiscovery: { [key: string]: AssetTab } = {
             tableauProperties,
             assetDetails,
             linkedAsset,
-            tableauHierarchy,
+            // tableauHierarchy,
             properties,
         ],
         properties: [
@@ -131,7 +131,7 @@ export const InfoTabInAssetInDiscovery: { [key: string]: AssetTab } = {
             tableauProperties,
             assetDetails,
             linkedAsset,
-            tableauHierarchy,
+            // tableauHierarchy,
             properties,
         ],
         properties: [
@@ -152,7 +152,7 @@ export const InfoTabInAssetInDiscovery: { [key: string]: AssetTab } = {
             tableauProperties,
             assetDetails,
             linkedAsset,
-            tableauHierarchy,
+            // tableauHierarchy,
             properties,
         ],
         properties: [
@@ -174,7 +174,7 @@ export const InfoTabInAssetInDiscovery: { [key: string]: AssetTab } = {
             tableauProperties,
             assetDetails,
             linkedAsset,
-            tableauHierarchy,
+            // tableauHierarchy,
             properties,
         ],
         properties: [
@@ -201,7 +201,7 @@ export const InfoTabInAssetInDiscovery: { [key: string]: AssetTab } = {
             tableauProperties,
             assetDetails,
             linkedAsset,
-            tableauHierarchy,
+            // tableauHierarchy,
             properties,
         ],
         properties: [
@@ -228,7 +228,7 @@ export const InfoTabInAssetInDiscovery: { [key: string]: AssetTab } = {
             tableauProperties,
             assetDetails,
             linkedAsset,
-            tableauHierarchy,
+            // tableauHierarchy,
             properties,
         ],
         properties: [
@@ -248,6 +248,30 @@ export const InfoTabInAssetInDiscovery: { [key: string]: AssetTab } = {
                 property: '__modificationTimestamp',
             },
         ],
+    },
+    PowerBIWorkspace:{
+        panels: [assetDetails, linkedAsset, properties]
+    },
+    PowerBIDashboard:{
+        panels: [assetDetails, linkedAsset, properties]
+    },
+    PowerBIReport:{
+        panels: [assetDetails, linkedAsset, properties]
+    },
+    PowerBIDataset:{
+        panels: [assetDetails, linkedAsset, properties]
+    },
+    PowerBIDataflow:{
+        panels: [assetDetails, linkedAsset, properties]
+    },
+    PowerBITile:{
+        panels: [assetDetails, linkedAsset, properties]
+    },
+    PowerBIPage:{
+        panels: [assetDetails, linkedAsset, properties]
+    },
+    PowerBIDatasource:{
+        panels: [assetDetails, linkedAsset, properties]
     },
 }
 
@@ -281,7 +305,7 @@ export const InfoTabInAssetProfile: { [key: string]: AssetTab } = {
             tableauProperties,
             assetDetails,
             linkedAsset,
-            tableauHierarchy,
+            // tableauHierarchy,
             properties,
         ],
         properties: [
@@ -307,7 +331,7 @@ export const InfoTabInAssetProfile: { [key: string]: AssetTab } = {
             tableauProperties,
             assetDetails,
             linkedAsset,
-            tableauHierarchy,
+            // tableauHierarchy,
             properties,
         ],
         properties: [
@@ -328,7 +352,7 @@ export const InfoTabInAssetProfile: { [key: string]: AssetTab } = {
             tableauProperties,
             assetDetails,
             linkedAsset,
-            tableauHierarchy,
+            // tableauHierarchy,
             properties,
         ],
         properties: [
@@ -350,7 +374,7 @@ export const InfoTabInAssetProfile: { [key: string]: AssetTab } = {
             tableauProperties,
             assetDetails,
             linkedAsset,
-            tableauHierarchy,
+            // tableauHierarchy,
             properties,
         ],
         properties: [
@@ -377,7 +401,7 @@ export const InfoTabInAssetProfile: { [key: string]: AssetTab } = {
             tableauProperties,
             assetDetails,
             linkedAsset,
-            tableauHierarchy,
+            // tableauHierarchy,
             properties,
         ],
         properties: [
@@ -404,7 +428,7 @@ export const InfoTabInAssetProfile: { [key: string]: AssetTab } = {
             tableauProperties,
             assetDetails,
             linkedAsset,
-            tableauHierarchy,
+            // tableauHierarchy,
             properties,
         ],
         properties: [
@@ -429,7 +453,7 @@ export const InfoTabInAssetProfile: { [key: string]: AssetTab } = {
 
 export const InfoTabInNonBiOverview: { [key: string]: AssetTab } = {
     Column: {
-        panels: [assetDetails, linkedAsset, usage, columnProfile],
+        panels: [assetDetails, linkedAsset, usage, columnProfile, properties],
     },
 }
 
@@ -439,7 +463,7 @@ export const InfoTabInBiOverview: { [key: string]: AssetTab } = {
             tableauProperties,
             assetDetails,
             linkedAsset,
-            tableauHierarchy,
+            // tableauHierarchy,
             properties,
         ],
         properties: [
@@ -465,7 +489,7 @@ export const InfoTabInBiOverview: { [key: string]: AssetTab } = {
             tableauProperties,
             assetDetails,
             linkedAsset,
-            tableauHierarchy,
+        //  tableauHierarchy,
             properties,
         ],
         properties: [
@@ -486,7 +510,7 @@ export const InfoTabInBiOverview: { [key: string]: AssetTab } = {
             tableauProperties,
             assetDetails,
             linkedAsset,
-            tableauHierarchy,
+            // tableauHierarchy,
             properties,
         ],
         properties: [
@@ -508,7 +532,7 @@ export const InfoTabInBiOverview: { [key: string]: AssetTab } = {
             tableauProperties,
             assetDetails,
             linkedAsset,
-            tableauHierarchy,
+            // tableauHierarchy,
             properties,
         ],
         properties: [
@@ -535,7 +559,7 @@ export const InfoTabInBiOverview: { [key: string]: AssetTab } = {
             tableauProperties,
             assetDetails,
             linkedAsset,
-            tableauHierarchy,
+            // tableauHierarchy,
             properties,
         ],
         properties: [
@@ -562,7 +586,7 @@ export const InfoTabInBiOverview: { [key: string]: AssetTab } = {
             tableauProperties,
             assetDetails,
             linkedAsset,
-            tableauHierarchy,
+            // tableauHierarchy,
             properties,
         ],
         properties: [

@@ -229,8 +229,8 @@
                 switch (sortingOrder) {
                     case 'ascending': {
                         list = data.value.sort((listA: any, listB: any) => {
-                            const a = listA.attributes.name
-                            const b = listB.attributes.name
+                            const a = listA.attributes.name.toLowerCase()
+                            const b = listB.attributes.name.toLowerCase()
                             if (a < b) {
                                 return -1
                             }
@@ -243,8 +243,8 @@
                     }
                     case 'descending': {
                         list = data.value.sort((listA: any, listB: any) => {
-                            const a = listA.attributes.name
-                            const b = listB.attributes.name
+                            const a = listA.attributes.name.toLowerCase()
+                            const b = listB.attributes.name.toLowerCase()
                             if (a < b) {
                                 return 1
                             }

@@ -5,74 +5,96 @@
     >
         <div
             v-if="preview"
-            class="flex flex-row justify-between px-5 py-8 align-middle"
+            class="flex flex-row items-center justify-between px-5 py-4 align-middle "
         >
             <div class="flex flex-row space-x-2 align-middle">
                 <div class="flex flex-col justify-center">
                     <span>
-                        <!-- <img
-                            v-if="entity.typeName === 'AtlasGlossaryCategory'"
-                            :src="CategorySvg"
-                            :width="25"
-                        /> -->
                         <AtlanIcon
                             icon="Category"
-                            class="h-5 m-0 mb-1"
+                            class="h-4 m-0 mb-1"
                             v-if="entity.typeName === 'AtlasGlossaryCategory'"
                         />
 
                         <AtlanIcon
                             icon="Term"
-                            class="h-5 m-0"
+                            class="h-4 m-0"
                             v-else-if="entity.typeName === 'AtlasGlossaryTerm'"
                         />
-                        <!-- <img
-                            v-else-if="entity.typeName === 'AtlasGlossaryTerm'"
-                            :src="TermSvg"
-                        /> -->
                     </span>
                 </div>
-                <span
-                    v-if="type"
-                    class="flex flex-col justify-center text-sm font-bold text-gray-500 "
+                <span v-if="type" class="flex flex-col justify-center text-sm"
                     >{{ type === 'AtlasGlossaryTerm' ? 'Term' : 'Category' }}
                 </span>
             </div>
-            <div class="flex flex-row space-x-2">
-                <a-button class="px-2"
-                    ><atlan-icon icon="BookmarkOutlined" class="w-auto h-4"
-                /></a-button>
-
+            <div class="flex flex-row items-center">
                 <a-button
-                    class="flex flex-col justify-center pt-1 text-xs border-0  text-primary bg-primary-light"
+                    class="flex items-center justify-center p-2 mr-2 text-sm"
                     @click="redirectToProfile(entity?.typeName, entity?.guid)"
                 >
-                    Open
-                    {{ type === 'AtlasGlossaryTerm' ? 'Term' : 'Category' }}
-                    Details
+                    <atlan-icon icon="OpenTermProfile" class="w-auto" />
                 </a-button>
-                <a-button
-                    class="px-1 border-0 outline-none"
-                    @click="handlClosePreviewPanel"
-                >
-                    <AtlanIcon icon="Cancel" class="m-0 mr-2" />
-                </a-button>
+                <a-dropdown>
+                    <template #overlay>
+                        <a-menu @click="handleMenuClick">
+                            <a-menu-item key="1" @click="handleCopyProfileLink">
+                                Copy link
+                            </a-menu-item>
+                            <!-- <a-menu-item key="2">
+                            Share via other integration
+                        </a-menu-item>
+                        <a-menu-item key="3"> Share via slack </a-menu-item> -->
+                        </a-menu>
+                    </template>
+
+                    <a-button class="flex items-center p-2"
+                        ><atlan-icon icon="Share" class="w-auto" />
+                    </a-button>
+                </a-dropdown>
             </div>
         </div>
-        <div v-if="preview" class="flex items-center mb-5">
-            <span
-                class="items-baseline pl-5 mr-2 text-xl font-bold leading-7 text-gray-700 "
-                >{{ entity.displayText }}</span
+
+        <div
+            v-if="preview"
+            class="flex items-center justify-between pb-6 border-b"
+        >
+            <div class="flex w-3/4 tems-center">
+                <span
+                    class="items-baseline pl-5 mr-2 text-xl font-bold leading-7 truncate  text-primary"
+                    >{{ entity.displayText }}</span
+                >
+                <component
+                    :is="statusObject?.icon"
+                    v-if="statusObject"
+                    class="inline-flex self-center w-auto h-4 mb-0.5"
+                />
+            </div>
+            <a-button
+                class="fixed z-10 px-0 border-r-0 rounded-none rounded-l  -left-5"
+                @click="handlClosePreviewPanel"
             >
-            <component
-                :is="statusObject?.icon"
-                v-if="statusObject"
-                class="inline-flex self-center w-auto h-5"
-            />
+                <AtlanIcon
+                    icon="ChevronDown"
+                    class="h-4 ml-1 transition-transform transform -rotate-90"
+                />
+            </a-button>
         </div>
 
-        <a-tabs default-active-key="1" class="border-0">
-            <a-tab-pane key="info" tab="Info">
+        <!-- header ends here -->
+        <a-tabs
+            default-active-key="1"
+            class="h-full border-0"
+            tab-position="left"
+            v-model:activeKey="tabActiveKey"
+        >
+            <a-tab-pane key="info">
+                <template #tab>
+                    <SidePanelTabHeaders
+                        title="Overview"
+                        icon="Overview"
+                        :isActive="tabActiveKey === 'info'"
+                    />
+                </template>
                 <div class="h-screen pb-64 overflow-auto">
                     <a-collapse
                         v-model:activeKey="activeKey"
@@ -80,8 +102,11 @@
                         expand-icon-position="right"
                     >
                         <template #expandIcon="{ isActive }">
-                            <fa v-if="isActive" icon="fas chevron-up" />
-                            <fa v-else icon="fas chevron-down" />
+                            <AtlanIcon
+                                icon="ChevronDown"
+                                class="ml-1 transition-transform transform"
+                                :class="isActive ? '-rotate-180' : 'rotate-0'"
+                            />
                         </template>
                         <a-collapse-panel key="details" header="Details">
                             <div class="flex flex-col pl-6 pr-2">
@@ -96,14 +121,6 @@
                                 <Owners
                                     v-if="entity.guid"
                                     :selected-asset="entity"
-                                />
-                                <Experts
-                                    v-if="entity.guid"
-                                    :selected-asset="entity"
-                                    @update:selected-asset="
-                                        (updated) =>
-                                            $emit('updateAsset', updated)
-                                    "
                                 />
                                 <Status
                                     v-if="entity.guid"
@@ -123,7 +140,7 @@
                             </div>
                         </a-collapse-panel>
 
-                        <a-collapse-panel
+                        <!-- <a-collapse-panel
                             v-if="entity.typeName === 'AtlasGlossaryTerm'"
                             key="related terms"
                             header="Related Terms"
@@ -131,7 +148,7 @@
                             <div class="px-6 py-0">
                                 <RelatedTerms :entity="entity" />
                             </div>
-                        </a-collapse-panel>
+                        </a-collapse-panel> -->
 
                         <a-collapse-panel
                             v-if="entity?.typeName === 'AtlasGlossaryTerm'"
@@ -151,19 +168,33 @@
             <a-tab-pane
                 v-if="entity.typeName === 'AtlasGlossaryTerm' && preview"
                 key="linkedAssets"
-                tab="Linked Assets"
             >
+                <template #tab>
+                    <SidePanelTabHeaders
+                        title="Linked terms"
+                        icon="Term"
+                        :isActive="tabActiveKey === 'linkedAssets'"
+                    />
+                </template>
                 <div class="h-screen overflow-auto pb-52">
                     <LinkedAssets
                         :term-qualified-name="entity.attributes.qualifiedName"
                     />
                 </div>
             </a-tab-pane>
-            <a-tab-pane key="activity" tab="Activity">
+            <a-tab-pane key="activity">
+                <template #tab>
+                    <SidePanelTabHeaders
+                        title="Activity"
+                        icon="Activity"
+                        :isActive="tabActiveKey === 'activity'"
+                    />
+                </template>
                 <div class="h-screen overflow-auto pb-52">
                     <Activity :selected-asset="entity" />
                 </div>
             </a-tab-pane>
+            <!-- TODO: introduce afer GA -->
             <!-- <a-tab-pane key="requests" tab="Requests"> Requests </a-tab-pane> -->
             <!-- <a-tab-pane key="chat" tab="chat"> Chat </a-tab-pane> -->
         </a-tabs>
@@ -182,10 +213,14 @@
     import Activity from '@/discovery/preview/tabs/activity/activityTab.vue'
     import RelatedTerms from '@/glossary/termProfile/relatedTerms.vue'
     import LinkedAssets from './linkedAssets.vue'
+    import SidePanelTabHeaders from '~/components/common/tabs/sidePanelTabHeaders.vue'
     import { Components } from '~/api/atlas/client'
 
     //  utils
-    import redirectToProfile from '@/glossary/utils/redirectToProfile'
+    import assetTypeLabel from '@/glossary/constants/assetTypeLabel'
+    import { copyToClipboard } from '~/utils/clipboard'
+
+    import { useClassifications } from '~/components/admin/classifications/composables/useClassifications'
 
     import {
         Category,
@@ -205,6 +240,7 @@
             Classifications,
             RelatedTerms,
             LinkedAssets,
+            SidePanelTabHeaders,
         },
         props: {
             entity: {
@@ -222,7 +258,7 @@
         setup(props, context) {
             const router = useRouter()
             const activeKey = ref(['details'])
-
+            const tabActiveKey = ref('info')
             const updateTreeNode = inject<any>('updateTreeNode')
 
             // computed
@@ -239,12 +275,12 @@
             )
 
             // methods
-            // const redirectToProfile = () => {
-            //     if (props.entity.typeName === 'AtlasGlossaryCategory')
-            //         router.push(`/glossary/category/${props.entity.guid}`)
-            //     else if (props.entity.typeName === 'AtlasGlossaryTerm')
-            //         router.push(`/glossary/term/${props.entity.guid}`)
-            // }
+            const redirectToProfile = () => {
+                if (props.entity.typeName === 'AtlasGlossaryCategory')
+                    router.push(`/glossary/category/${props.entity.guid}`)
+                else if (props.entity.typeName === 'AtlasGlossaryTerm')
+                    router.push(`/glossary/term/${props.entity.guid}`)
+            }
             const handlClosePreviewPanel = () => {
                 context.emit('closePreviewPanel')
             }
@@ -258,8 +294,28 @@
                     })
                 context.emit('updateAsset', selectedAsset)
             }
+            const handleCopyProfileLink = () => {
+                const baseUrl = window.location.origin
+                if (props.entity?.typeName !== 'AtlasGlossary') {
+                    const text = `${baseUrl}/glossary/${
+                        assetTypeLabel[props.entity?.typeName]
+                    }/${props?.entity?.guid}`
+                    copyToClipboard(text)
+                } else {
+                    const text = `${baseUrl}/${
+                        assetTypeLabel[props.entity?.typeName]
+                    }/${props?.entity?.guid}`
+                    copyToClipboard(text)
+                }
+            }
+            const {
+                isClassificationInitializedInStore,
+                initializeClassificationsInStore,
+            } = useClassifications()
+            if (!isClassificationInitializedInStore()) {
+                initializeClassificationsInStore()
+            }
 
-            console.log(useRouter)
             return {
                 shortDescription,
                 type,
@@ -267,7 +323,9 @@
                 statusObject,
                 redirectToProfile,
                 activeKey,
+                tabActiveKey,
                 updateEntityAndTree,
+                handleCopyProfileLink,
             }
         },
     })
@@ -275,19 +333,27 @@
 <style lang="less" module>
     .gtcPreview {
         height: calc(100vh - 50px);
+        :global(.ant-tabs-nav-container-scrolling .ant-tabs-tab:first-child) {
+            @apply ml-0 !important;
+            @apply mt-4 !important;
+        }
+
         :global(.ant-collapse-header) {
-            @apply pl-6 py-4 m-0  text-sm text-gray-700 bg-white !important;
+            @apply px-6 py-4 m-0  text-sm text-gray-700 bg-white !important;
         }
         :global(.ant-collapse-borderless > .ant-collapse-item) {
-            @apply border-b border-gray-300 py-0 mt-0 !important;
+            @apply py-0 mt-0 border-0 !important;
         }
 
         :global(.ant-collapse) {
             @apply p-0 m-0 space-y-0 bg-white !important;
         }
+        :global(.ant-tabs-tab:first-child) {
+            @apply mt-4 !important;
+        }
 
         :global(.ant-collapse-content) {
-            @apply mt-0 pb-4 bg-white !important;
+            @apply mt-0  bg-white !important;
         }
         :global(.ant-collapse-content-box) {
             @apply m-0 p-0  bg-transparent !important;
@@ -296,7 +362,16 @@
             @apply m-0 p-0  !important;
         }
         :global(.ant-tabs-bar) {
-            @apply mb-0 mx-auto !important;
+            @apply mb-0 mx-0 p-0 m-0 !important;
+        }
+        :global(.ant-tabs-tab) {
+            @apply py-2 mb-4 px-4 !important;
+        }
+        :global(.ant-tabs) {
+            @apply px-0 !important;
+        }
+        :global(.ant-tabs-content) {
+            @apply p-0 !important;
         }
     }
 </style>

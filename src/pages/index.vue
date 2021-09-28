@@ -1,14 +1,23 @@
 <template>
-
-    <div class="bg-primary-light p-5 grid justify-items-center">
-        <div class="flex items-center mb-5 w-3/4">
-                <div class="flex flex-col w-full pt-5">
-                    <a-input-search class="p2" placeholder="Search assets across Atlan..." size="large"> 
-                    </a-input-search>
+    <div class="flex w-full h-full">
+        <div style="min-width: 264px" class="p-3 bg-white">
+            <Sidebar></Sidebar>
+        </div>
+        <div class="items-stretch">
+            <div class="grid p-5 bg-primary-light justify-items-center">
+                <div class="flex items-center w-3/4 mb-5">
+                    <div class="flex flex-col w-full pt-5">
+                        <a-input-search
+                            class="p2"
+                            placeholder="Search assets across Atlan..."
+                            size="large"
+                        >
+                        </a-input-search>
+                    </div>
                 </div>
+            </div>
+        </div>
     </div>
-    </div>
-
 
     <div class="w-full min-h-screen px-10 py-5 overflow-y-auto">
         <div class="flex justify-between">
@@ -75,76 +84,73 @@
         </div>
     </div>
 
-
     <div class="grid justify-items-center">
-        <div class="flex items-center mb-5 w-3/4">
+        <div class="flex items-center w-3/4 mb-5">
+            <div class="grid h-full grid-cols-12 p-6 gap-x-12">
+                <div class="col-span-12 mt-10 sm:col-span-8">
+                    <div class="relative text-white">
+                        <h3 class="text-xl font-bold text-gray">
+                            Your Saved Searches
+                        </h3>
 
+                        <div class="grid grid-cols-12">
+                            <div class="col-span-4 p-5 mr-5 border rounded-md">
+                                <p class="font-bold text-gray">
+                                    Sample Saved Search
+                                </p>
+                                <p class="text-gray-500">
+                                    set of all Tableau sales dashboards, reports
+                                    and data sources from 2020
+                                </p>
+                            </div>
 
-
-
-
-    <div class="grid h-full grid-cols-12 p-6 gap-x-12">
-        <div class="col-span-12 sm:col-span-8 mt-10">
-            <div class="text-white relative">
-                <h3 class="text-xl font-bold text-gray">Your Saved Searches</h3>
-
-                <div class="grid grid-cols-12">
-                    <div class="p-5 mr-5 border rounded-md col-span-4">
-                        <p class="text-gray font-bold">Sample Saved Search</p>
-                        <p class="text-gray-500">
-                            set of all Tableau sales dashboards, reports and
-                            data sources from 2020
-                        </p>
-                    </div>
-
-                    <div class="p-5 mr-5 border rounded-md col-span-4">
-                        <p class="text-gray font-bold">Sample Saved Search</p>
-                        <p class="text-gray-500">
-                            set of all Tableau sales dashboards, reports and
-                            data sources from 2020
-                        </p>
+                            <div class="col-span-4 p-5 mr-5 border rounded-md">
+                                <p class="font-bold text-gray">
+                                    Sample Saved Search
+                                </p>
+                                <p class="text-gray-500">
+                                    set of all Tableau sales dashboards, reports
+                                    and data sources from 2020
+                                </p>
+                            </div>
+                        </div>
                     </div>
                 </div>
-            </div>
-        </div>
 
-        <div class="col-span-12 sm:col-span-8 mt-10">
-            <div class="text-white relative">
-                <h3 class="text-xl font-bold text-gray">NASA's Saved Searches</h3>
+                <div class="col-span-12 mt-10 sm:col-span-8">
+                    <div class="relative text-white">
+                        <h3 class="text-xl font-bold text-gray">
+                            NASA's Saved Searches
+                        </h3>
 
-                <div class="grid grid-cols-12">
-                    <div class="p-5 mr-5 border rounded-md col-span-4">
-                        <p class="text-gray font-bold">Sample Saved Search</p>
-                        <p class="text-gray-500">
-                            set of all Tableau sales dashboards, reports and
-                            data sources from 2020
-                        </p>
-                    </div>
+                        <div class="grid grid-cols-12">
+                            <div class="col-span-4 p-5 mr-5 border rounded-md">
+                                <p class="font-bold text-gray">
+                                    Sample Saved Search
+                                </p>
+                                <p class="text-gray-500">
+                                    set of all Tableau sales dashboards, reports
+                                    and data sources from 2020
+                                </p>
+                            </div>
 
-                    <div class="p-5 mr-5 border rounded-md col-span-4">
-                        <p class="text-gray font-bold">Sample Saved Search</p>
-                        <p class="text-gray-500">
-                            set of all Tableau sales dashboards, reports and
-                            data sources from 2020
-                        </p>
+                            <div class="col-span-4 p-5 mr-5 border rounded-md">
+                                <p class="font-bold text-gray">
+                                    Sample Saved Search
+                                </p>
+                                <p class="text-gray-500">
+                                    set of all Tableau sales dashboards, reports
+                                    and data sources from 2020
+                                </p>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
-    </div>
-        <!--div
-            class="
-                hidden
-                h-full
-                p-3
-                mt-3
-                bg-white
-                border
-                rounded-md
-                sm:col-span-4 sm:block
-            "
+    <!--div
+            class="hidden h-full p-3 mt-3 bg-white border rounded-md sm:col-span-4 sm:block"
         >
             <div class="flex items-center justify-between p-5 align-middle">
                 <div class="flex items-center">
@@ -155,15 +161,7 @@
                     />
                     <div class="flex flex-col ml-2">
                         <p
-                            class="
-                                mb-0
-                                text-lg
-                                leading-none
-                                tracking-tight
-                                text-gray-800
-                                truncate
-                                text-semibold
-                            "
+                            class="mb-0 text-lg leading-none tracking-tight text-gray-800 truncate text-semibold"
                         >
                             {{ fullName }}
                         </p>
@@ -171,13 +169,7 @@
                             @{{ username }}
                         </p>
                         <p
-                            class="
-                                mt-0
-                                mb-0
-                                text-sm
-                                tracking-tight
-                                text-gray-800
-                            "
+                            class="mt-0 mb-0 text-sm tracking-tight text-gray-800 "
                         >
                             <fa
                                 icon="fal user-tag"
@@ -228,7 +220,6 @@
           </a-menu-item-group>
       </a-menu>
         </div-->
-
 </template>
 
 <script lang="ts">
@@ -242,6 +233,8 @@
 
     import Avatar from '~/components/common/avatar.vue'
 
+    import Sidebar from '~/components/home/sidebar/index.vue'
+
     import UpdateSkills from '~/components/admin/users/userPreview/about/updateSkills.vue'
     import UpdateDesignation from '~/components/admin/users/userPreview/about/updateDesignation.vue'
     import { useTenantStore } from '~/store/tenants'
@@ -250,6 +243,7 @@
         name: 'HelloWorld',
         components: {
             SavedList,
+            Sidebar,
             Avatar,
             UpdateSkills,
             UpdateDesignation,
@@ -356,7 +350,7 @@
                 userObj,
                 handleUpdateUser,
                 views,
-                dummyProjects
+                dummyProjects,
             }
         },
     })

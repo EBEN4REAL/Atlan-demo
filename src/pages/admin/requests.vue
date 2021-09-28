@@ -7,6 +7,7 @@
     import { useHead } from '@vueuse/head'
     import RequestList from '@/admin/requests/requestList.vue'
     import { useClassificationStore } from '~/components/admin/classifications/_store'
+    import { useClassifications } from '~/components/admin/classifications/composables/useClassifications'
     import { typedefsInterface } from '~/types/typedefs/typedefs.interface'
     import { Classification } from '~/api/atlas/classification'
 
@@ -16,28 +17,13 @@
             useHead({
                 title: 'Requests',
             })
-
-            const classificationsStore = useClassificationStore()
-            classificationsStore.setClassificationsStatus('loading')
-            const { data: classificationData, error: classificationError } =
-                Classification.getClassificationList<typedefsInterface>({
-                    cache: false,
-                })
-
-            watch([classificationData, classificationError], () => {
-                if (classificationData.value) {
-                    const classifications =
-                        classificationData.value.classificationDefs || []
-
-                    classificationsStore.setClassifications(
-                        classifications ?? []
-                    )
-                    classificationsStore.initializeFilterTree()
-                    classificationsStore.setClassificationsStatus('success')
-                } else {
-                    classificationsStore.setClassificationsStatus('error')
-                }
-            })
+            const {
+                isClassificationInitializedInStore,
+                initializeClassificationsInStore,
+            } = useClassifications()
+            if (!isClassificationInitializedInStore()) {
+                initializeClassificationsInStore()
+            }
         },
     })
 </script>

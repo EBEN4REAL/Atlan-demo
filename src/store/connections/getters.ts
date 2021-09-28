@@ -12,6 +12,9 @@ export type Getters = {
         id: string
         label: string
         image: string
+        types: string[]
+        hierarchy: Record<string, any>[]
+        filterMaxLevel: number
     }[]
     getImage(): (id: string) => any
     getSourceTree(): (searchText: string) => TreeDataItem[]
@@ -55,13 +58,11 @@ export const getters: Getters = {
                             )
                         }
                         return item.attributes.integrationName === src.id
-
                     })
                     .map((item) => ({
                         key: item.guid,
                         title:
-                            item.attributes.displayName ||
-                            item.attributes.name,
+                            item.attributes.displayName || item.attributes.name,
                         type: 'connection',
                         isLeaf: true,
                     }))

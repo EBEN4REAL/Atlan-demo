@@ -4,13 +4,16 @@ export const List: any = [
     {
         id: 'datasets',
         include: ['View', 'Table', 'TablePartition', 'MaterialisedView'],
+        includeLabels:['View', 'Table', 'Table Partition', 'Materialised View'],
         label: 'Datasets',
         description: 'Datasets',
+        popoverText:'Tabular assets (Tables, Views, etc.)'
     },
     {
         id: 'fields',
         label: 'Fields',
         include: ['Column'],
+        popoverText: 'Column assets (Columns)',
         description: 'Fields',
     },
     {
@@ -23,7 +26,16 @@ export const List: any = [
             'TableauWorksheet',
             'TableauDashboard',
             'TableauDatasource',
+            'PowerBIWorkspace',
+            'PowerBIDashboard',
+            'PowerBIReport',
+            'PowerBIDataset',
+            'PowerBIDataflow',
+            'PowerBITile',
+            'PowerBIPage',
+            'PowerBIDatasource'
         ],
+        popoverText: 'All assets from BI integrations',
         description: 'Visualizations',
     },
 ]

@@ -23,6 +23,7 @@
                 value-format="x"
                 class="w-100"
                 style="width: 100%"
+                format="YYYY-MM-DD"
                 @change="handleChange"
             />
         </span>
@@ -36,7 +37,7 @@
         />
         <UserSelector
             v-else-if="type === 'users'"
-            :modelValue="value"
+            :modelValue="value || undefined"
             @change="handleSelectUser"
         />
 

@@ -2,7 +2,7 @@
     <div class="flex w-full">
         <div
             v-if="showFilters"
-            class="flex flex-col h-full overflow-y-auto bg-white border-r  facets"
+            class="flex flex-col h-full overflow-y-auto bg-white border-r border-gray-300  facets"
         >
             <AssetFilters
                 :ref="
@@ -18,35 +18,36 @@
 
         <div class="flex flex-col items-stretch flex-1 mb-1 w-80">
             <div class="flex flex-col h-full">
-                <SearchAndFilter
-                    v-model:value="queryText"
-                    class="mx-6 mt-4"
-                    :placeholder="dynamicSearchPlaceholder"
-                    :autofocus="true"
-                    @change="handleSearchChange"
-                >
-                    <template #filter>
-                        <Preferences
-                            :default-projection="projection"
-                            @change="handleChangePreferences"
-                            @sort="handleChangeSort"
-                            @state="handleState"
-                        />
-                    </template>
-                    <!-- <template #buttonAggregation>
+                <div class="bg-white">
+                    <SearchAndFilter
+                        v-model:value="queryText"
+                        class="mx-3 mt-2"
+                        :placeholder="dynamicSearchPlaceholder"
+                        :autofocus="true"
+                        @change="handleSearchChange"
+                    >
+                        <template #filter>
+                            <Preferences
+                                :default-projection="projection"
+                                @change="handleChangePreferences"
+                                @sort="handleChangeSort"
+                                @state="handleState"
+                            />
+                        </template>
+                        <!-- <template #buttonAggregation>
                         <span>({{ projection.length }})</span>
                     </template> -->
-                </SearchAndFilter>
+                    </SearchAndFilter>
 
-                <AssetTabs
-                    v-model="assetType"
-                    class="mt-1 mb-3"
-                    @update:model-value="handleTabChange"
-                    :asset-type-list="assetTypeList"
-                    :asset-type-map="assetTypeMap"
-                    :total="totalSum"
-                ></AssetTabs>
-
+                    <AssetTabs
+                        v-model="assetType"
+                        class="my-2"
+                        @update:model-value="handleTabChange"
+                        :asset-type-list="assetTypeList"
+                        :asset-type-map="assetTypeMap"
+                        :total="totalSum"
+                    ></AssetTabs>
+                </div>
                 <!-- <div
                     class="flex items-center justify-between w-full px-3 py-2 border-b border-gray-300 "
                 >
@@ -61,9 +62,7 @@
                     >
                 </div> -->
                 <div
-                    v-if="
-                        list && list.length <= 0 && !isLoading && !isValidating
-                    "
+                    v-if="list && list.length <= 0 && !isLoading"
                     class="flex-grow"
                 >
                     <EmptyView @event="handleClearFiltersFromList"></EmptyView>
@@ -71,12 +70,14 @@
                 <AssetList
                     v-else
                     ref="assetlist"
+                    class="pt-2 bg-white"
                     :list="list"
                     :score="searchScoreList"
                     :projection="projection"
-                    :is-loading="isLoading || isValidating"
+                    :is-loading="isLoading"
                     :is-load-more="isLoadMore"
-                    :automaticSelectFirstAsset="true"
+                    :typename="assetTypeListString"
+                    automaticSelectFirstAsset
                     @preview="handlePreview"
                     @loadMore="loadMore"
                 ></AssetList>
@@ -114,7 +115,7 @@
     import ConnectorDropdown from '~/components/common/dropdown/connectorDropdown.vue'
     // import { DISCOVERY_FETCH_LIST } from "~/constant/cache";
     // import { Components } from "~/api/atlas/client";
-    import useAssetList from '~/composables/bots/useAssetList'
+    import { useAssetListing, useAssetAggregation } from './useAssetListing'
     import useDiscoveryPreferences from '~/composables/preference/useDiscoveryPreference'
     import { AssetTypeList } from '~/constant/assetType'
     import {
@@ -127,10 +128,9 @@
     import { useConnectionsStore } from '~/store/connections'
     import { SearchParameters } from '~/types/atlas/attributes'
     import { getEncodedStringFromOptions } from '~/utils/helper/routerQuery'
-    import { assetInterface } from '~/types/assets/asset.interface'
     import { useBusinessMetadataStore } from '~/store/businessMetadata'
     import {
-        initialTabsForConnector,
+        getTabsForConnector,
         initialTabsForAssetCategory,
     } from './useTabMapped'
 
@@ -223,24 +223,19 @@
             const router = useRouter()
             const tracking = useTracking()
             const events = tracking.getEventsName()
-            const filterMode = ref('custom')
-            const now = ref(false)
-            let initialBody: SearchParameters = reactive({})
+            const isAggregate = ref(true)
+
             const assetType = ref('Catalog')
             const queryText = ref(initialFilters.value.searchText)
             const connectorsPayload = ref(
                 initialFilters.value.connectorsPayload
             )
             const filters = ref(initialFilters.value.initialBodyCriterion)
+            const connectorStore = useConnectionsStore()
 
             console.log('initialFIters', filters.value)
             const filterMap = ref<filterMapType>({
-                connector: {
-                    condition:
-                        initialFilters.value.facetsFilters.connector.condition,
-                    criterion:
-                        initialFilters.value.facetsFilters.connector.criterion,
-                },
+                connector: initialFilters.value.facetsFilters.connector,
                 assetCategory: {
                     condition:
                         initialFilters.value.facetsFilters.assetCategory
@@ -285,11 +280,12 @@
 
             // Get All Disoverable Asset Types
             const assetTypeList = ref([])
-            const initialTabs = ref([])
-
-            initialTabs.value = initialTabsForConnector(
-                initialFilters.value.facetsFilters.connector.criterion
+            const initialTabs: Ref<string[]> = ref(
+                getTabsForConnector(
+                    initialFilters.value.facetsFilters.connector
+                )
             )
+
             const assetCategoryTabs = initialTabsForAssetCategory(
                 initialFilters.value.facetsFilters.assetCategory.selectedIds
             )
@@ -298,12 +294,15 @@
 
             const modifyTabs = (visibleTabs) => {
                 let assetTypes = []
-                if (visibleTabs.length > 0) {
+                if (visibleTabs?.length > 0) {
                     visibleTabs.forEach((id) => {
                         AssetTypeList.forEach((asset) => {
                             if (
                                 asset.id === id &&
-                                asset.isDiscoverable == true
+                                asset.isDiscoverable == true &&
+                                connectorStore.getSourceList.find((source) =>
+                                    source?.types?.includes(asset.id)
+                                )
                             ) {
                                 assetTypes.push(asset)
                             }
@@ -311,7 +310,11 @@
                     })
                 } else {
                     assetTypes = AssetTypeList.filter(
-                        (item) => item.isDiscoverable == true
+                        (item) =>
+                            item.isDiscoverable == true &&
+                            connectorStore.getSourceList.find((source) =>
+                                source?.types?.includes(item.id)
+                            )
                     )
                 }
                 assetTypes.unshift({
@@ -324,7 +327,11 @@
                 modifyTabs(initialTabs.value)
             } else {
                 assetTypeList.value = AssetTypeList.filter(
-                    (item) => item.isDiscoverable == true
+                    (item) =>
+                        item.isDiscoverable == true &&
+                        connectorStore.getSourceList.find((source) =>
+                            source?.types?.includes(item.id)
+                        )
                 )
                 assetTypeList.value.unshift({
                     id: 'Catalog',
@@ -332,25 +339,22 @@
                 })
             }
             const assetTypeListString = computed(() =>
-                assetTypeList.value.map((item) => item.id).join(',')
+                assetTypeList.value
+                    .map((item) => item.id)
+                    .slice(1)
+                    .join(',')
             )
 
             const {
                 list,
                 replaceBody,
                 isLoading,
-                isValidating,
                 searchScoreList,
-                isAggregate,
-                assetTypeMap,
                 mutateAssetInList,
-            } = useAssetList(
-                now,
-                assetTypeListString.value,
-                initialBody,
-                assetType.value,
-                true
-            )
+            } = useAssetListing(assetTypeListString.value, false)
+
+            const { assetTypeMap, isAggregateLoading, refreshAggregation } =
+                useAssetAggregation(assetTypeListString.value, false)
 
             const store = useBusinessMetadataStore()
             const BMListLoaded = computed(
@@ -374,13 +378,6 @@
                 }
                 return assetTypeMap.value[assetType.value]
             })
-            const connectorStore = useConnectionsStore()
-
-            const filteredConnector = computed(() =>
-                connectorStore.getSourceList?.find(
-                    (item) => connectorsPayload.value?.connector == item.id
-                )
-            )
 
             const dynamicSearchPlaceholder = computed(() => {
                 let placeholder = 'Search for assets'
@@ -412,14 +409,17 @@
             )
 
             const updateBody = () => {
-                initialBody = {
+                const initialBody = {
                     typeName: assetTypeListString.value,
                     termName: props.termName,
                     includeClassificationAttributes: true,
                     includeSubClassifications: true,
                     limit: limit.value,
                     offset: offset.value,
-                    entityFilters: {},
+                    entityFilters: {
+                        condition: 'AND',
+                        criterion: [...filters.value],
+                    },
                     attributes: [
                         ...BaseAttributes,
                         ...BasicSearchAttributes,
@@ -428,10 +428,7 @@
                     ],
                     aggregationAttributes: [],
                 }
-                initialBody.entityFilters = {
-                    condition: 'AND',
-                    criterion: [...filters.value],
-                }
+
                 if (assetType.value !== 'Catalog') {
                     initialBody.entityFilters.criterion.push({
                         attributeName: '__typeName',
@@ -439,10 +436,11 @@
                         operator: 'eq',
                     })
                 }
+
                 if (state.value) {
                     if (state.value === 'all') {
                         initialBody.excludeDeletedEntities = false
-                    } else if (state.value === 'deleted') {
+                    } else if (state.value === 'archived') {
                         initialBody.excludeDeletedEntities = false
                         initialBody.entityFilters.criterion.push({
                             attributeName: '__state',
@@ -453,30 +451,7 @@
                         initialBody.excludeDeletedEntities = true
                     }
                 }
-                // const connectorCritera = {
-                //     condition: 'AND',
-                //     criterion: [],
-                // }
-                // const connectionCriteria = {
-                //     condition: 'OR',
-                //     criterion: [],
-                // }
-                // if (connectorsPayload.value?.connector) {
-                //     connectorCritera.criterion?.push({
-                //         attributeName: 'integrationName',
-                //         attributeValue: connectorsPayload.value?.connector,
-                //         operator: 'eq',
-                //     })
-                // }
-                // if (connectorsPayload.value?.connection) {
-                //     connectorCritera.criterion?.push({
-                //         attributeName: 'connectionQualifiedName',
-                //         attributeValue: connectorsPayload.value?.connection,
-                //         operator: 'eq',
-                //     })
-                // }
-                // initialBody.entityFilters.criterion.push(connectorCritera)
-                // initialBody.entityFilters.criterion.push(connectionCriteria)
+
                 if (sortOrder.value !== 'default') {
                     const split = sortOrder.value.split('|')
                     if (split.length > 1) {
@@ -491,6 +466,7 @@
                     initialBody.query = queryText.value
                 }
                 replaceBody(initialBody)
+                if (isAggregate.value) refreshAggregation(initialBody)
                 // if (assetlist.value && !dontScroll) {
                 // assetlist?.value.scrollToItem(0);
                 // }
@@ -520,12 +496,13 @@
                 offset.value = 0
                 const routerOptions = getRouterOptions()
                 const routerQuery = getEncodedStringFromOptions(routerOptions)
+                isAggregate.value = true
                 updateBody()
                 pushQueryToRouter(routerQuery)
                 tracking.trackEvent(events.EVENT_ASSET_SEARCH, {
                     trigger: 'discover',
                 })
-            }, 200)
+            }, 150)
             const handleChangePreferences = (payload: any) => {
                 projection.value = payload
             }
@@ -571,23 +548,12 @@
                 updateBody()
                 pushQueryToRouter(routerQuery)
             }
-            const handleChangeConnectors = (payload: any) => {
-                connectorsPayload.value = payload
-                console.log('connector Change', payload)
-                const routerOptions = getRouterOptions()
-                const routerQuery = getEncodedStringFromOptions(routerOptions)
-                pushQueryToRouter(routerQuery)
-                isAggregate.value = true
-                offset.value = 0
-                updateBody()
-            }
+
             const handlePreview = (item) => {
                 emit('preview', item)
             }
             const loadMore = () => {
-                if (list.value.length + limit.value < totalCount.value) {
-                    offset.value = list.value.length + limit.value
-                }
+                offset.value += limit.value
                 isAggregate.value = false
                 updateBody()
             }
@@ -598,7 +564,6 @@
 
             watch(BMListLoaded, (val) => {
                 if (val) {
-                    now.value = true
                     isAggregate.value = true
                     updateBody()
                 }
@@ -606,7 +571,6 @@
 
             onMounted(() => {
                 if (BMListLoaded.value) {
-                    now.value = true
                     isAggregate.value = true
                     updateBody()
                 }
@@ -626,15 +590,12 @@
                 assetTypeList,
                 assetTypeMap,
                 isAggregate,
-                filterMode,
                 replaceBody,
                 handleSearchChange,
                 projection,
                 handleChangePreferences,
                 handleChangeSort,
                 isLoading,
-                isValidating,
-                handleChangeConnectors,
                 handleFilterChange,
                 handlePreview,
                 queryText,
@@ -645,12 +606,13 @@
                 totalSum,
                 handleState,
                 connectorsPayload,
-                filteredConnector,
                 mutateAssetInList,
                 handleTabChange,
                 dynamicSearchPlaceholder,
                 setPlaceholder,
                 placeholderLabel,
+                filters,
+                assetTypeListString,
             }
         },
         data() {

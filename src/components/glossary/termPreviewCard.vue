@@ -1,25 +1,20 @@
 <template>
-    <div class="flex flex-row py-4 pl-6">
-        <div class="flex flex-col min-w-max">
-            <AtlanIcon icon="Term" class="h-6 mt-1" />
-        </div>
-
-        <div class="flex flex-col ml-4">
-            <h3 class="mb-0.5 p-0 text-sm font-bold leading-5 text-gray-500">
+    <div class="flex items-center py-4 pl-4 pr-3">
+        <AtlanIcon icon="Term" class="h-6" />
+        <div class="flex items-center">
+            <h3
+                class="p-0 my-0 ml-3 text-sm font-bold text-gray-500 cursor-pointer  hover:underline"
+                @click="redirectToProfile"
+            >
                 {{ term.name ?? term.displayText }}
             </h3>
-            <div class="text-xs leading-4 text-gray">
-                {{ term.shortDescription }}
-            </div>
-            <div class="text-sm leading-5 text-gray-700">
-                {{ term.createdBy }}
-            </div>
         </div>
     </div>
 </template>
 <script lang="ts">
     import { defineComponent, computed } from 'vue'
 
+    import { useRouter } from 'vue-router'
     import { Components } from '~/api/atlas/client'
 
     interface PropsType {
@@ -31,8 +26,13 @@
         props: ['term'],
         setup(props: PropsType) {
             const term = computed(() => props.term)
+            const router = useRouter()
+            const redirectToProfile = () => {
+                router.push(`/glossary/term/${props.term.guid}`)
+            }
             return {
                 term,
+                redirectToProfile,
             }
         },
     })

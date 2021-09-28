@@ -88,7 +88,7 @@
                         />
                     </div>
                 </div>
-                <div
+                <!-- <div
                     v-if="
                         entity.typeName === 'AtlasGlossaryCategory' &&
                         projection.includes('heirarchy') &&
@@ -103,9 +103,9 @@
                     >
                         {{ category }}
                     </div>
-                </div>
+                </div> -->
                 <div
-                    v-else-if="
+                    v-if="
                         entity.typeName === 'AtlasGlossaryTerm' &&
                         projection.includes('heirarchy') &&
                         parentCategories
@@ -117,7 +117,7 @@
                         :key="category"
                         class="px-3 py-1 mr-2 bg-white border rounded-3xl"
                     >
-                        {{ category }}
+                        {{ referredEntities[category].displayText }}
                     </div>
                 </div>
             </div>
@@ -131,7 +131,14 @@
     </div>
 </template>
 <script lang="ts">
-    import { defineComponent, computed, PropType, watch, onMounted } from 'vue'
+    import {
+        defineComponent,
+        computed,
+        PropType,
+        watch,
+        onMounted,
+        inject,
+    } from 'vue'
     import { useRouter } from 'vue-router'
     // components
     import Status from '@common/sidebar/status.vue'
@@ -170,6 +177,7 @@
         setup(props) {
             const router = useRouter()
             const { ownerGroups, ownerUsers } = useAssetInfo()
+            const referredEntities = inject('referredEntities')
 
             // computed
             const statusObject = computed(() =>
@@ -201,17 +209,18 @@
                 }
                 return ''
             })
+
             const parentCategories = computed(() => {
                 if (props.entity?.typeName === 'AtlasGlossaryTerm') {
                     const catQualifiedName =
                         props.entity?.attributes?.categories?.map(
-                            (category) =>
-                                category?.uniqueAttributes?.qualifiedName
+                            (category) => category?.guid
                         )
-                    return catQualifiedName[0]?.split(/[@.]/)
+                    return catQualifiedName
                 }
                 return []
             })
+
             // methods
 
             // TODO: extract this function as a util function to be used at multiple places
@@ -281,6 +290,7 @@
                 assetCount,
                 parentCategory,
                 parentCategories,
+                referredEntities,
             }
         },
     })

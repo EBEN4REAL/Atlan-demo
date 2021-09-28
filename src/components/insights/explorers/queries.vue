@@ -21,41 +21,47 @@
     import { defineComponent, inject, Ref } from 'vue'
     import { SavedQueryInterface } from '~/types/insights/savedQuery.interface'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
+    import { useSavedQuery } from '~/components/insights/explorers/composables/useSavedQuery'
 
     export default defineComponent({
         components: {},
         props: {},
-        emits: ['openSavedQueryInNewTab'],
-        setup(props, { emit }) {
+        setup(props) {
             const inlineTabs = inject('inlineTabs') as Ref<
                 activeInlineTabInterface[]
             >
+            const activeInlineTab = inject(
+                'activeInlineTab'
+            ) as Ref<activeInlineTabInterface>
+            const activeInlineTabKey = inject(
+                'activeInlineTabKey'
+            ) as Ref<string>
             const savedQueries: SavedQueryInterface[] = [
                 {
                     id: '1x',
                     label: ' Saved Query 1',
-                    editor: 'Saved Query 1',
+                    editor: 'select * from "INSTACART_ALCOHOL_ORDER_TIME" limit 10',
                     result: 'Saved Query 1',
                 },
+
                 {
                     id: '2x',
                     label: 'Saved Query 2',
-                    editor: 'Saved Query 2',
+                    editor: 'select * from "INSTACART_ALCOHOL_ORDER_TIME" limit 10',
                     result: 'Saved Query 2',
                 },
                 {
                     id: '3x',
                     label: 'Saved Query 3',
-                    editor: 'Saved Query 3',
+                    editor: 'select * from "INSTACART_ALCOHOL_ORDER_TIME" limit 10',
                     result: 'Saved Query 3',
                 },
             ]
-
-            const openSavedQueryInNewTab = (
-                savedQuery: SavedQueryInterface
-            ) => {
-                emit('openSavedQueryInNewTab', savedQuery)
-            }
+            const { openSavedQueryInNewTab } = useSavedQuery(
+                inlineTabs,
+                activeInlineTab,
+                activeInlineTabKey
+            )
             const isSavedQueryOpened = (savedQuery: SavedQueryInterface) => {
                 let bool = false
                 inlineTabs.value.forEach((tab) => {

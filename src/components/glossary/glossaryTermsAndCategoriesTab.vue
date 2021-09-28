@@ -33,11 +33,17 @@
             <LoadingView />
         </div>
         <div v-else-if="all.length" class="flex flex-row w-full">
-            <div class="w-full">
-                <div
-                    class="overflow-auto"
-                    style="max-height: calc(100vh - 300px)"
-                >
+            <div
+                ref="scrollDiv"
+                class="w-full"
+                :style="
+                    headerReachedTop ? 'max-height: calc(100vh - 220px)' : ''
+                "
+                @scroll="handleScroll"
+                :class="{ 'overflow-y-auto ': headerReachedTop }"
+            >
+                <div ref="topSectionRef"></div>
+                <div>
                     <AssetList
                         :list="all"
                         :projection="projection"
@@ -140,15 +146,23 @@
                 required: true,
                 default: false,
             },
+            headerReachedTop: {
+                type: Boolean,
+                required: false,
+                default: false,
+            },
         },
-        emits: ['entityPreview'],
+        emits: ['entityPreview', 'firstCardReachedTop'],
         setup(props, { emit }) {
             // data
-            const glossaryQualifiedName = toRef(props, 'qualifiedName')
+            const glossaryQualifiedName = computed(() => props.qualifiedName)
 
             const searchQuery = ref<string>()
             const activeKey = ref(0)
             const selectedEntity = ref<Category | Term>()
+
+            const topSectionRef = ref(null)
+            const scrollDiv = ref(null)
             const projection = ref([
                 'status',
                 'description',
@@ -158,6 +172,7 @@
             ])
             const {
                 entities,
+                referredEntities,
                 error,
                 isLoading,
                 fetchAssetsPaginated,
@@ -169,14 +184,14 @@
                 { value: 'description', label: 'Description' },
                 { value: 'owners', label: 'Owners' },
                 { value: 'status', label: 'Status' },
-                // { value: 'heirarchy', label: 'Heirarchy' },
+                { value: 'heirarchy', label: 'Heirarchy' },
                 { value: 'linkedAssets', label: 'Linked Assets' },
                 // { value: 'heirarchy', label: 'Heirarchy' },
                 // { value: 'rows', label: 'Rows' },
                 // { value: 'popularity', label: 'Popularity' },
                 // { value: 'classifications', label: 'Classifications' },
             ]
-
+            console.log()
             // computed
             const terms = computed(() => {
                 if (props.type === 'AtlasGlossary') {
@@ -272,12 +287,20 @@
             const handleFetchList = (entity: Category | Term) => {
                 deleteEntityFromList(entity?.guid)
             }
+
+            const handleScroll = (e) => {
+                if (scrollDiv.value?.scrollTop < 2) {
+                    emit('firstCardReachedTop')
+                }
+            }
+
             // lifecycle methods and watchers and  providers
             watch(selectedEntity, (newSelectedEntity) => {
                 emit('entityPreview', newSelectedEntity)
             })
 
             provide('handleFetchList', handleFetchList)
+            provide('referredEntities', referredEntities)
 
             return {
                 glossaryQualifiedName,
@@ -296,6 +319,10 @@
                 projectionOptions,
                 projection,
                 activeKey,
+                referredEntities,
+                handleScroll,
+                topSectionRef,
+                scrollDiv,
             }
         },
     })
@@ -311,6 +338,11 @@
     }
 </style>
 
+<style lang="less" scoped>
+    .list {
+        max-height: calc(100vh - 300px);
+    }
+</style>
 <route lang="yaml">
 meta:
     layout: default

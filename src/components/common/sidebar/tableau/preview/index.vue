@@ -1,26 +1,24 @@
 <template>
     <div class="px-5">
-        <div class="w-full h-48 rounded bg-gray-light"></div>
+        <overview-image-preview :selected-asset="selectedAsset" />
     </div>
 </template>
 
 <script lang="ts">
-    import { defineComponent, PropType } from 'vue'
-    import { assetInterface } from '~/types/assets/asset.interface'
+import { defineComponent, PropType } from 'vue'
+import { assetInterface } from '~/types/assets/asset.interface'
+import overviewImagePreview from '~/components/asset/assetProfile/tabs/overview/tableauAsset/overviewImagePreview.vue'
 
-    export default defineComponent({
-        name: 'TableauPreview',
-        components: {},
-        props: {
-            selectedAsset: {
-                type: Object as PropType<assetInterface>,
-                required: true,
-            },
+export default defineComponent({
+    name: 'TableauPreview',
+    components: { overviewImagePreview },
+    props: {
+        selectedAsset: {
+            type: Object as PropType<assetInterface>,
+            required: true,
         },
-        setup() {
-            return {}
-        },
-    })
+    },
+})
 </script>
 
 <style lang="less" module></style>

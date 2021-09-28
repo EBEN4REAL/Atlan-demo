@@ -1,6 +1,6 @@
 <template>
     <div class="text-sm text-gray-500">
-        <p class="mb-1 text-xs">Classifications</p>
+        <p class="mb-1 text-sm">Classifications</p>
         <div
             v-if="asset.classifications?.length > 0"
             class="flex flex-wrap items-center"
@@ -11,7 +11,14 @@
                 popover-trigger="hover"
                 @add="toggleLinkClassificationPopover"
                 @delete="unLinkClassification"
+                @select="handleSelect"
             >
+                <template #pillPrefix>
+                    <AtlanIcon
+                        icon="Shield"
+                        class="text-pink-400 group-hover:text-white"
+                    />
+                </template>
                 <template #popover="{ item }">
                     <ClassificationInfoCard :classification="item"
                 /></template>
@@ -56,15 +63,14 @@
                 </div>
             </div>
             <template #content>
-                <div class="flex flex-col overflow-y-auto" style="width: 400px">
-                    <div v-if="!showCreateClassificationPopover">
+                <div class="flex flex-col overflow-y-auto">
+                    <template v-if="!showCreateClassificationPopover">
                         <p class="mb-2 text-sm text-gray-700">
                             Link Classification
                         </p>
                         <a-select
                             v-model:value="selectedClassificationForLink"
                             mode="multiple"
-                            style="width: 100%"
                             :allow-clear="true"
                             :autofocus="true"
                             :show-search="true"
@@ -109,8 +115,8 @@
                             }}</span> -->
                             are deleted
                         </a-checkbox>
-                    </div>
-                    <div v-else>
+                    </template>
+                    <template v-else>
                         <p class="mb-2 text-sm text-gray-700">
                             Create Classification
                         </p>
@@ -151,7 +157,7 @@
                         >
                             {{ createErrorText }}
                         </p>
-                    </div>
+                    </template>
                     <div class="flex items-center justify-between w-full mt-4">
                         <div
                             v-if="!showCreateClassificationPopover"
@@ -216,6 +222,19 @@
             </template>
         </a-popover>
     </div>
+
+    <teleport to="#overAssetPreviewSidebar">
+        <a-drawer
+            v-model:visible="isDrawerVisible"
+            placement="right"
+            :mask="true"
+            :keyboard="false"
+            :destroy-on-close="false"
+            :closable="true"
+        >
+            {{ JSON.stringify(previewClassification) }}
+        </a-drawer>
+    </teleport>
 </template>
 
 <script lang="ts">
@@ -265,6 +284,8 @@
 
             const createClassificationRef = ref(null)
             const showAddClassificationBtn = ref(false)
+
+            const isDrawerVisible = ref(false)
 
             /* classifications fxns */
             function getAvailableClassificationsForLink(
@@ -648,6 +669,13 @@
                 }
             }
 
+            const previewClassification: Ref<any> = ref({})
+
+            function handleSelect(elm: any, idx: number) {
+                // TODO: Uncomment this line when implementing the classification drawer
+                // isDrawerVisible.value = true
+                previewClassification.value = elm
+            }
             return {
                 asset,
                 selectedAsset,
@@ -680,6 +708,9 @@
                 classificationsList,
                 toggleLinkClassificationPopover,
                 showAll,
+                isDrawerVisible,
+                handleSelect,
+                previewClassification,
             }
         },
     })

@@ -48,7 +48,7 @@
                             <GlossaryProfileOverview :entity="term" />
                         </div>
                     </a-tab-pane>
-                    <a-tab-pane key="2" tab="Linked Assets">
+                    <a-tab-pane key="2" tab="Assets">
                         <div :class="$style.tabClasses">
                             <LinkedAssetsTab
                                 :term-qualified-name="qualifiedName"
@@ -58,16 +58,15 @@
                             />
                         </div>
                     </a-tab-pane>
-                    <a-tab-pane key="4" tab="Requests"> Bots </a-tab-pane>
+                    <!-- <a-tab-pane key="4" tab="Requests"> Bots </a-tab-pane>
                     <a-tab-pane key="5" tab="Access Control">
                         Permissions
-                    </a-tab-pane>
+                    </a-tab-pane> -->
                 </a-tabs>
             </div>
         </div>
         <div id="sidePanel" class="relative w-1/3 h-full">
             <CategoryTermPreview
-                class="pt-6"
                 :entity="term"
                 :preview="false"
                 @updateAsset="refetch"
@@ -155,6 +154,8 @@
             const redirectToProfile = () => {
                 router.push(`/glossary/${term.value?.attributes?.anchor?.guid}`)
             }
+
+
             watch(updatedEntity, () => {
                 refetch()
                 newName.value = ''

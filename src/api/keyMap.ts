@@ -12,6 +12,8 @@ export const KeyMaps = {
         PREVIEW_TABLE: () => getAPIPath('query', '/preview'),
         GET_ENTITY: ({ guid }: PathParams) =>
             getAPIPath('auth/atlas', `/entity/guid/${guid}`),
+        GET_PREVIEW: ({ imageId }: PathParams) =>
+            `/api/${getAPIPath('/auth', imageId)}`,
     },
     classification: {
         GET_CLASSIFICATION_LIST: () =>
@@ -42,11 +44,13 @@ export const KeyMaps = {
     auth: {
         apiKeys: {
             GET_API_KEYS: () => getAPIPath('auth', '/accesstokens'),
-            DELETE_API_KEY: ({ id }: Record<string, string>) =>
+            DELETE_API_KEY: ({ id }: PathParams) =>
                 getAPIPath('auth', `/accesstokens/${id}/delete`),
         },
         avatar: {
             UPLOAD_AVATAR: () => getAPIPath('auth', '/avatars'),
+            GET_AVATAR: ({ username }: PathParams) =>
+                `/api/${getAPIPath('auth', `/avatars/${username}`)}`,
         },
         connection: {
             TEST_NETWORK: () => getAPIPath('auth', '/connections/test'),
@@ -55,19 +59,19 @@ export const KeyMaps = {
         group: {
             LIST_GROUPS: () => getAPIPath('auth', '/groups'),
             GET_GROUP: () => getAPIPath('auth', `/groups`),
-            UPDATE_GROUP: ({ id }: Record<string, string>) =>
+            UPDATE_GROUP: ({ id }: PathParams) =>
                 getAPIPath('auth', `/groups/${id}`),
-            DELETE_GROUP: ({ id }: Record<string, string>) =>
+            DELETE_GROUP: ({ id }: PathParams) =>
                 getAPIPath('auth', `/groups/${id}/delete`),
             CREATE_GROUP: () => getAPIPath('auth', `/groups`),
-            REMOVE_MEMBERS_FROM_GROUP: ({ id }: Record<string, string>) =>
+            REMOVE_MEMBERS_FROM_GROUP: ({ id }: PathParams) =>
                 getAPIPath('auth', `/groups/${id}/members/remove`),
-            ADD_MEMBERS_TO_GROUP: ({ id }: Record<string, string>) =>
+            ADD_MEMBERS_TO_GROUP: ({ id }: PathParams) =>
                 getAPIPath('auth', `/groups/${id}/members`),
         },
         image: {
             UPLOAD_IMAGE: () => getAPIPath('auth', '/images'),
-            GET_IMAGE: ({ id }: Record<string, string>) =>
+            GET_IMAGE: ({ id }: PathParams) =>
                 getAPIPath('auth', `/images/${id}`),
         },
         policies: {
@@ -84,27 +88,31 @@ export const KeyMaps = {
         user: {
             LIST_USERS: () => getAPIPath('auth', '/users'),
             GET_USER: () => getAPIPath('auth', '/users'),
-            UPDATE_USER: ({ id }: Record<string, string>) =>
+            UPDATE_USER: ({ id }: PathParams) =>
                 getAPIPath('auth', `/users/${id}`),
-            GET_USER_SESSIONS: ({ id }: Record<string, string>) =>
+            GET_USER_SESSIONS: ({ id }: PathParams) =>
                 getAPIPath('auth', `/users/${id}/sessions`),
-            SIGN_OUT_ALL_SESSIONS: ({ id }: Record<string, string>) =>
+            SIGN_OUT_ALL_SESSIONS: ({ id }: PathParams) =>
                 getAPIPath('auth', `/users/${id}/sessions/delete`),
-            SIGN_OUT_SESSION_BY_ID: ({ id }: Record<string, string>) =>
+            SIGN_OUT_SESSION_BY_ID: ({ id }: PathParams) =>
                 getAPIPath('auth', `/users/sessions/${id}/delete`),
-            GET_USER_ACCESS_LOGS: ({ id }: Record<string, string>) =>
+            GET_USER_ACCESS_LOGS: ({ id }: PathParams) =>
                 getAPIPath('auth', `/users/${id}/events`),
-            UPDATE_USER_ROLE: ({ id }: Record<string, string>) =>
+            UPDATE_USER_ROLE: ({ id }: PathParams) =>
                 getAPIPath('auth', `/users/${id}/roles/update`),
-            ADD_USER_TO_GROUPS: ({ id }: Record<string, string>) =>
+            ADD_USER_TO_GROUPS: ({ id }: PathParams) =>
                 getAPIPath('auth', `/users/${id}/groups`),
-            RESEND_INVITATION_EMAIL: ({ id }: Record<string, string>) =>
+            RESEND_INVITATION_EMAIL: ({ id }: PathParams) =>
                 getAPIPath('auth', `/users/${id}/resendinvite`),
-            REVOKE_INVITATION: ({ id }: Record<string, string>) =>
+            REVOKE_INVITATION: ({ id }: PathParams) =>
                 getAPIPath('auth', `/users/${id}/delete`),
             /** FIXME: Not implemented properly */
-            INVITE_USERS: ({ id }: Record<string, string>) =>
-                getAPIPath('auth', `/users`),
+            INVITE_USERS: ({ id }: PathParams) => getAPIPath('auth', `/users`),
+        },
+        requests: {
+            LIST_REQUESTS: () => getAPIPath('auth', '/requests'),
+            ACT_ON_REQUEST: ({ id }: PathParams) =>
+                getAPIPath('auth', `/requests/${id}/action`),
         },
     },
     BM: {
@@ -192,5 +200,27 @@ export const KeyMaps = {
         CONNECTION_SETUP: () => getAPIPath('auth/atlas', `/connections/setup`),
         CONNECTION_TEST_NETWORK: () => getAPIPath('auth', `/connections/test`),
         CONNECTION_ARCHIVE: ({ id }) => getAPIPath('auth', `/connections/${id}/archive`),
+    },
+    query: {
+        RUN_QUERY: ({
+            query,
+            defaultSchema,
+            dataSourceName,
+            length,
+        }: PathParams) =>
+            getAPIPath(
+                'api/query',
+                `/sql/stream?sql=${query}&defaultSchema=${defaultSchema}&dataSourceName=${dataSourceName}&length=${length}`
+            ),
+    },
+    bots: {
+        WORKFLOW_LOG_STREAM: ({ }: PathParams) =>
+            getAPIPath(
+                'api/auth/argo',
+                `/workflows/default/atlan-init-tgx7h/log?logOptions.container=main&grep=&logOptions.follow=true`
+            ),
+    },
+    schemaExplorer: {
+        BASIC_SEARCH: () => getAPIPath('auth/atlas', '/search/basic'),
     }
 }

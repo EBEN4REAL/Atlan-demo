@@ -1,52 +1,39 @@
 <template>
-    <div class="flex flex-col py-1 rounded preference-container">
-        <div class="">
-            <div class="flex items-center justify-between text-gray">
-                <span class="mr-6 text-gray-500">Order By</span>
-                <a-select
-                    v-model:value="sorting"
-                    @change="handeChangeSorting"
-                    style="width: 135px"
+    <div class="flex flex-col py-1 rounded gap-y-3 preference-container">
+        <div class="flex items-center justify-between text-gray">
+            <span class="mr-6 text-sm text-gray">Order By</span>
+            <a-select
+                class="text-gray-500"
+                v-model:value="sorting"
+                @change="handeChangeSorting"
+                style="width: 135px"
+            >
+                <a-select-option value="default">Relevance</a-select-option>
+                <a-select-option value="Catalog.popularityScore|descending"
+                    >Most popular</a-select-option
                 >
-                    <a-select-option value="default">Relevance</a-select-option>
-                    <a-select-option value="Catalog.popularityScore|descending"
-                        >Most popular</a-select-option
-                    >
-                    <a-select-option value="Catalog.popularityScore|ascending"
-                        >Least popular</a-select-option
-                    >
-                    <a-select-option value="Asset.name.keyword|ascending"
-                        >A-Z</a-select-option
-                    >
-                    <a-select-option value="Asset.name.keyword|descending"
-                        >Z-A</a-select-option
-                    >
-                </a-select>
-            </div>
-            <!-- <div class="py-3 border-b">
-                <a-radio-group
-                    v-model:value="state"
-                    @change="handleChangeState"
+                <a-select-option value="Catalog.popularityScore|ascending"
+                    >Least popular</a-select-option
                 >
-                    <div class="flex flex-col space-y-1">
-                        <a-radio value="all">All Assets</a-radio>
-                        <a-radio value="active">Active Assets</a-radio>
-                        <a-radio value="deleted">Deleted Assets</a-radio>
-                    </div>
-                </a-radio-group>
-            </div> -->
+                <a-select-option value="Asset.name.keyword|ascending"
+                    >A-Z</a-select-option
+                >
+                <a-select-option value="Asset.name.keyword|descending"
+                    >Z-A</a-select-option
+                >
+            </a-select>
         </div>
-        <div class="pt-3">
-            <p class="mb-1 text-gray-500">Display Properties</p>
+        <div class="pt-4">
+            <p class="mb-3 text-sm text-gray">Display Properties</p>
             <div class="flex flex-wrap">
                 <template v-for="item in properties" :key="item.id">
                     <div
-                        class="px-2 py-1 mb-1 mr-1 rounded cursor-pointer  text-gray"
+                        class="px-2 py-1 mb-1 mr-1 border rounded cursor-pointer "
                         @click="() => togglePropertySelect(item)"
                         :class="
                             isProjectionSelected(item)
-                                ? 'bg-primary-light border border-white hover:bg-primary-light'
-                                : 'border'
+                                ? 'bg-primary-light border-white hover:bg-primary-light text-gray'
+                                : ' text-gray-500'
                         "
                     >
                         {{ item.label }}
@@ -54,8 +41,8 @@
                 </template>
             </div>
         </div>
-        <div class="pt-3">
-            <p class="mb-1 text-gray-500">State</p>
+        <div class="pt-4">
+            <p class="mb-3 text-sm text-gray">State</p>
             <div class="">
                 <CustomRadioButton
                     class=""

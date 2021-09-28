@@ -1,18 +1,20 @@
 <template>
     <a-tooltip
         :title="truncated ? tooltipText : undefined"
-        placement="topRight"
+        :placement="placement"
         :destroy-tooltip-on-hide="true"
         :overlay-style="{ maxWidth: width }"
         ><div :class="classes" :style="{ maxWidth: '95%' }">
-            <a-typography-paragraph
-                :class="classes"
-                :ellipsis="{
-                    rows: rows,
-                    onEllipsis: () => (truncated = !truncated),
-                }"
-                :content="tooltipText"
-            />
+            <router-link :to="routeTo">
+                <a-typography-paragraph
+                    :class="classes"
+                    :ellipsis="{
+                        rows: rows,
+                        onEllipsis: () => (truncated = !truncated),
+                    }"
+                    :content="tooltipText"
+                />
+            </router-link>
         </div>
     </a-tooltip>
 </template>
@@ -37,6 +39,14 @@
             classes: {
                 type: String,
                 default: 'intial',
+            },
+            placement: {
+                type: String,
+                default: 'topRight',
+            },
+            routeTo: {
+                type: String,
+                default: '',
             },
         },
         setup() {

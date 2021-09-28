@@ -10,41 +10,42 @@
     >
         <div class="flex items-center col-span-4 overflow-hidden">
             <!-- <a-checkbox :checked="selected" class="mr-4" /> -->
+            <AtlanIcon
+                class="mr-4 text-gray-500"
+                :icon="requestTypeIcon[request.request_type]"
+            />
             <AssetPiece
-                v-if="request.destination_qf_name"
-                :asset-qf-name="request.destination_qf_name"
+                v-if="request.destination_qualified_name"
+                :asset-qf-name="request.destination_qualified_name"
             />
             <span v-else class="text-sm overflow-ellipsis">
-                {{ primaryText[request.re](request) }}
+                {{ primaryText[request.request_type](request) }}
             </span>
         </div>
         <!-- RHS -->
         <div class="flex items-center col-span-3">
-            <AtlanIcon
-                class="mr-4 text-gray-500"
-                :icon="requestTypeIcon[request.re]"
-            />
-
             <ClassificationPiece
                 v-if="
-                    request?.re === 'create_typedef' &&
+                    request?.request_type === 'create_typedef' &&
                     request?.payload?.classificationDefs
                 "
                 :data="request.payload.classificationDefs"
             />
 
             <ClassificationPiece
-                v-else-if="request?.re === 'attach_classification'"
+                v-else-if="request?.request_type === 'attach_classification'"
                 :typeName="request.payload.typeName"
             />
 
             <TermPiece
-                v-else-if="request.re === 'create_term' && request.payload"
+                v-else-if="
+                    request.request_type === 'create_term' && request.payload
+                "
                 :data="request.payload"
             />
 
             <TermPiece
-                v-else-if="request.re === 'term_link'"
+                v-else-if="request.request_type === 'term_link'"
                 :data="request.sourceEntity.attributes"
             />
 
@@ -55,8 +56,8 @@
             />
 
             <AssetPiece
-                v-else-if="request.source_qf_name"
-                :asset-qf-name="request.source_qf_name"
+                v-else-if="request.source_qualified_name"
+                :asset-qf-name="request.source_qualified_name"
             />
         </div>
 
@@ -84,10 +85,11 @@
                     </div>
                 </div>
                 <div
-                    class="flex items-center justify-around group-hover:hidden"
+                    class="flex items-center justify-end flex-grow  gap-x-2 group-hover:hidden"
                 >
+                    <UserPiece :user="request.createdByUser" :is-pill="false" />
+                    •
                     <DatePiece label="Created At" :date="request.created_at" />
-                    <UserPiece :user="request.createdByUser" />
                 </div>
             </template>
         </div>

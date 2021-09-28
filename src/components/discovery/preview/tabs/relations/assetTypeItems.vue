@@ -116,15 +116,16 @@
                 }
             }
 
-            const propagateToAssetList = (updatedAsset: assetInterface) => {
-                selectedAssetData.value = updatedAsset
-            }
-
             // gets the list of related assets for the ListItem component
             const { list, isReady, error } = useBiRelations(
                 props.assetId,
                 props.assetType
             )
+            const propagateToAssetList = (updatedAsset: assetInterface) => {
+                selectedAssetData.value = updatedAsset
+                selectedAssetId.value = ''
+                selectedAssetId.value = updatedAsset.guid
+            }
 
             watch(
                 list,

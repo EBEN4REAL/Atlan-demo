@@ -8,7 +8,7 @@
             />
         </div>
 
-        <span class="pl-1 tracking-wider text-gray-500 uppercase">{{
+        <span class="pl-1 tracking-wider text-gray-700 uppercase">{{
             text
         }}</span>
     </div>

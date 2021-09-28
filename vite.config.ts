@@ -23,12 +23,11 @@ export default defineConfig(({ mode }) => {
             alias: {
                 '~/': `${path.resolve(__dirname, 'src')}/`,
                 '@/': `${path.resolve(__dirname, 'src/components')}/`,
+                '@services/': `${path.resolve(__dirname, 'src/services')}/`,
                 '@common/': `${path.resolve(
                     __dirname,
                     'src/components/common'
                 )}/`,
-                // '@antv/x6': '@antv/x6/es/index.js',
-                // '@antv/layout': '@antv/layout/es/index.js',
             },
         },
         define: {

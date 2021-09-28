@@ -79,26 +79,39 @@
                     <!-- Column data type -->
                     <div
                         v-if="item.typeName.toLowerCase() === 'column'"
-                        class="flex items-center"
+                        class="flex items-center space-x-2"
                     >
-                        <component
-                            :is="dataTypeImage(item)"
-                            class="w-auto h-4"
-                        ></component>
-                        <span class="pt-0.5 ml-1 text-sm leading-none">{{
-                            dataType(item)
-                        }}</span>
+                        <div class="flex">
+                            <component
+                                :is="dataTypeImage(item)"
+                                class="w-auto h-4"
+                            ></component>
+                            <span class="ml-1 text-sm text-gray-700">{{
+                                dataType(item)
+                            }}</span>
+                        </div>
+                        <div v-if="item.attributes?.isPrimary" class="flex">
+                            <AtlanIcon icon="PrimaryKey" />
+                            <span class="ml-1 text-sm text-gray-700">
+                                Primary Key
+                            </span>
+                        </div>
                     </div>
+
                     <div
                         v-if="
-                            ['table', 'view'].includes(
+                            ['table', 'view', 'tablepartition'].includes(
                                 item.typeName.toLowerCase()
                             )
                         "
                         class="flex text-sm text-gray-500"
                     >
                         <span
-                            v-if="item?.typeName.toLowerCase() === 'table'"
+                            v-if="
+                                ['table', 'tablepartition'].includes(
+                                    item.typeName.toLowerCase()
+                                )
+                            "
                             class="mr-2 text-gray-500"
                             ><span class="tracking-tighter text-gray-700">{{
                                 rowCount(item, false)

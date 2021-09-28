@@ -45,6 +45,7 @@
     import { assetInterface } from '~/types/assets/asset.interface'
     import { getDecodedOptionsFromString } from '~/utils/helper/routerQuery'
     import { decodeQuery } from '~/utils/helper/routerHelper'
+    import { useClassifications } from '~/components/admin/classifications/composables/useClassifications'
 
     export interface initialFiltersType {
         facetsFilters: any

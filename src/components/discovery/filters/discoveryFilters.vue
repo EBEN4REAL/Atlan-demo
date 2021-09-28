@@ -89,7 +89,7 @@
                             </div>
 
                             <div
-                                v-if="isFilter(item.id)"
+                                v-if="isFilterApplied(item.id)"
                                 class="text-xs text-gray-500 opacity-0  hover:text-primary group-hover:opacity-100"
                                 @click.stop.prevent="handleClear(item.id)"
                             >
@@ -135,6 +135,7 @@
     import { List } from './filters'
     import { AssetTypeList } from '~/constant/assetType'
     import useFilterPayload from './useFilterPayload'
+    import useFilterUtils from './useFilterUtils'
 
     export default defineComponent({
         name: 'DiscoveryFacets',
@@ -175,10 +176,6 @@
             const { bmFiltersList, bmDataList } = useBusinessMetadataHelper()
             // console.log(props.initialFilters.facetsFilters, 'facetFilters')
             const activeKey: Ref<string[]> = ref([])
-            const totalAppliedFiltersCount = ref(0)
-
-            let filters: Components.Schemas.FilterCriteria[] = []
-
             const dirtyTimestamp = ref('dirty_')
 
             /**
@@ -227,17 +224,19 @@
             })
 
             const { payload: filterMap } = useFilterPayload(dataMap)
+            const { isFilterApplied, totalAppliedFiltersCount } =
+                useFilterUtils(dataMap)
 
-            function setAppliedFiltersCount() {
-                let count = 0
-                const filterMapKeys = Object.keys(filterMap)
-                filterMapKeys?.forEach((id) => {
-                    if (filterMap[id]?.criterion?.length > 0) {
-                        return (count += 1)
-                    }
-                })
-                totalAppliedFiltersCount.value = count
-            }
+            // function setAppliedFiltersCount() {
+            //     let count = 0
+            //     const filterMapKeys = Object.keys(filterMap.value)
+            //     filterMapKeys?.forEach((id) => {
+            //         if (filterMap[id]?.criterion?.length > 0) {
+            //             return (count += 1)
+            //         }
+            //     })
+            //     totalAppliedFiltersCount.value = count
+            // }
 
             // ? watching for bmDataList to be computed
             watch(
@@ -266,20 +265,12 @@
             const handleChange = (value: any, tabsIds: string[]) => {
                 dirtyTimestamp.value = `dirty_${Date.now().toString()}`
                 console.log(dirtyTimestamp.value)
-                setAppliedFiltersCount()
                 refresh()
                 // updateChangesInStore(value);
             }
 
             const setConnector = (payload: any) => {
                 dataMap.value.connector = payload
-            }
-
-            const isFilter = (id: string) => {
-                if (filterMap[id] && filterMap[id]?.criterion?.length > 0) {
-                    return true
-                }
-                return false
             }
 
             const handleClear = (filterId: string) => {
@@ -321,7 +312,6 @@
                         dataMap.value[filterId].applied = {}
                     }
                 }
-                setAppliedFiltersCount()
                 refresh()
             }
             function getFiltersAppliedString(filterId: string) {
@@ -454,11 +444,8 @@
                     .forEach((n) => {
                         dataMap.value[n].applied = {}
                     })
-
-                setAppliedFiltersCount()
                 refresh()
             }
-            setAppliedFiltersCount()
 
             emit('initialize', filterMap.value)
 
@@ -470,7 +457,7 @@
                 activeKey,
                 dataMap,
                 handleChange,
-                isFilter,
+                isFilterApplied,
                 dirtyTimestamp,
                 filterMap,
                 handleClear,

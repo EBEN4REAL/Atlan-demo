@@ -22,13 +22,12 @@
                 :class="{ selected: searchItem === item.guid }"
                 @click="setSearchItem(item.guid)"
             >
-                <!-- <span> -->
-                <fa
-                    :icon="getNodeTypeIcon[item.type]"
-                    :class="getNodeTypeIcon[item.type]"
-                ></fa>
-                <!-- </span> -->
-                <span>{{ item.text }}</span>
+                <!-- <fa
+                    :icon="getNodeTypeIcon[item.typeName]"
+                    :class="getNodeTypeIcon[item.typeName]"
+                ></fa> -->
+                <span class="w-6 h-4 bg-gray-300"></span>
+                <span>{{ item.displayText }}</span>
             </div>
         </div>
     </div>
@@ -39,7 +38,7 @@
     import { defineComponent, ref, inject, computed, watch } from 'vue'
 
     // Util
-    import { getNodeTypeIcon } from '@/asset/assetProfile/tabs/lineage/util.js'
+    import { getNodeTypeIcon } from './util.js'
 
     export default defineComponent({
         setup() {
@@ -55,8 +54,11 @@
             /** COMPUTED */
             const filteredItems = computed(() => {
                 if (!query.value) return []
+                // console.log('searchItems:', searchItems.value)
                 return searchItems.value.filter((i) =>
-                    i.text.toLowerCase().includes(query.value.toLowerCase())
+                    i.displayText
+                        .toLowerCase()
+                        .includes(query.value.toLowerCase())
                 )
             })
 

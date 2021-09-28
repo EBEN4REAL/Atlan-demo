@@ -7,12 +7,13 @@ export const List: any = [
         includeLabels:['View', 'Table', 'Table Partition', 'Materialised View'],
         label: 'Datasets',
         description: 'Datasets',
+        popoverText:'Tabular assets (Tables, Views, etc.)'
     },
     {
         id: 'fields',
         label: 'Fields',
         include: ['Column'],
-        includeLabels:['Column'],
+        popoverText: 'Column assets (Columns)',
         description: 'Fields',
     },
     {
@@ -34,22 +35,7 @@ export const List: any = [
             'PowerBIPage',
             'PowerBIDatasource'
         ],
-        includeLabels: [
-            'Tableau Site',
-            'Tableau Project',
-            'Tableau Workbook',
-            'Tableau Worksheet',
-            'Tableau Dashboard',
-            'Tableau Datasource',
-            'Power BI Workspace',
-            'Power BI Dashboard',
-            'Power BI Report',
-            'Power BI Dataset',
-            'Power BI Dataflow',
-            'Power BI Tile',
-            'Power BI Page',
-            'Power BI Datasource'
-        ],
+        popoverText: 'All assets from BI integrations',
         description: 'Visualizations',
     },
 ]

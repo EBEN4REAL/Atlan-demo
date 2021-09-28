@@ -1,6 +1,6 @@
 import useSWRV from 'swrv';
 import swrvState from '../utils/swrvState';
-import { Workflows, URL } from '~/api/argo/workflow';
+import { Workflows, URL } from '@services/argo/api/workflow';
 
 export default function fetchWorkflowList(cachekey: string, dependent: any, paramsdefault: any, isArchive: boolean) {
     const { data, error, mutate, isValidating } = useSWRV([cachekey, paramsdefault?.value, {}], () => {

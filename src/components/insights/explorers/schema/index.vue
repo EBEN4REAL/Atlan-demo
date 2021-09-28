@@ -155,28 +155,30 @@
 
             /* Watchers for updating the connectors when activeinlab change */
             watch(activeInlineTab, () => {
-                const selectedDataSourceName =
-                    activeInlineTab.value.explorer.schema.connectors
-                        .selectedDataSourceName
-                const selectedDefaultSchema =
-                    activeInlineTab.value.explorer.schema.connectors
-                        .selectedDefaultSchema
+                if (activeInlineTab.value) {
+                    const selectedDataSourceName =
+                        activeInlineTab.value.explorer.schema.connectors
+                            .selectedDataSourceName
+                    const selectedDefaultSchema =
+                        activeInlineTab.value.explorer.schema.connectors
+                            .selectedDefaultSchema
 
-                connectorsData.value = {
-                    connection:
-                        activeInlineTab.value.explorer.schema.connectors
-                            .connection,
-                    connector:
-                        activeInlineTab.value.explorer.schema.connectors
-                            .connector,
-                    databaseQualifiedName: getDatabaseQualifiedName(
-                        selectedDataSourceName,
-                        selectedDefaultSchema
-                    ),
-                    schemaQualifiedName: getSchemaQualifiedName(
-                        selectedDataSourceName,
-                        selectedDefaultSchema
-                    ),
+                    connectorsData.value = {
+                        connection:
+                            activeInlineTab.value.explorer.schema.connectors
+                                .connection,
+                        connector:
+                            activeInlineTab.value.explorer.schema.connectors
+                                .connector,
+                        databaseQualifiedName: getDatabaseQualifiedName(
+                            selectedDataSourceName,
+                            selectedDefaultSchema
+                        ),
+                        schemaQualifiedName: getSchemaQualifiedName(
+                            selectedDataSourceName,
+                            selectedDefaultSchema
+                        ),
+                    }
                 }
             })
 

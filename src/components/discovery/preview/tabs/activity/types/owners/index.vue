@@ -1,53 +1,45 @@
 <template>
-    <chips :data="data">
+    <PillGroup :data="data">
         <template #header
-            ><span
-                >Say 👋 Hello, to the newly added
-                <b>{{ data.value.length > 1 ? 'Owners' : 'Owner' }}</b></span
-            ></template
+            ><p>
+                Say <span class="mr-2">👋</span>Hello, to the new
+                <b>{{ data.value.length > 1 ? 'Owners' : 'Owner' }}</b>
+            </p></template
         >
-        <template #chip-content="user">
-            <div
-                class="
-                    flex
-                    items-center
-                    px-3
-                    py-1.5
-                    mb-3
-                    mr-3
-                    font-bold
-                    rounded-full
-                    bg-gray-light
-                    text-gray-700
-                    group
-                    hover:bg-primary hover:text-white
-                    cursor-pointer
-                "
+        <template #pill-content="user">
+            <Pill
+                :label="user.item"
                 @click.stop="() => handleClickUser(user.item)"
-            >
-                <img
-                    src="https://picsum.photos/id/237/50/50"
-                    alt="view"
-                    class="w-4 h-4 mr-2 rounded-full"
-                />
-                <div
-                    class="mb-0 text-sm font-bold capitalize truncate  max-owner-name-width"
-                >
-                    {{ user.item }}
-                </div>
-            </div></template
-        >
-    </chips>
+                ><template #prefix>
+                    <avatar
+                        v-if="user.item"
+                        class="-ml-2.5"
+                        :image-url="
+                            KeyMaps.auth.avatar.GET_AVATAR({
+                                username: user.item,
+                            })
+                        "
+                        :allow-upload="false"
+                        :avatar-name="user.item"
+                        avatar-size="small"
+                        :avatar-shape="'circle'"
+                    /> </template></Pill
+        ></template>
+    </PillGroup>
 </template>
 
 <script lang="ts">
     import { defineComponent, PropType } from 'vue'
     import { activityInterface } from '~/types/activitylogs/activitylog.interface'
     import { useUserPreview } from '~/composables/user/showUserPreview'
-    import Chips from '../chips/index.vue'
+    import PillGroup from '../activityPillGroup/index.vue'
+    import Pill from '~/components/UI/pill/pill.vue'
+    import { KeyMaps } from '~/api/keyMap'
+
+    import Avatar from '~/components/common/avatar.vue'
 
     export default defineComponent({
-        components: { Chips },
+        components: { PillGroup, Pill, Avatar },
         props: {
             data: {
                 type: Object as PropType<activityInterface>,
@@ -63,13 +55,7 @@
                 showUserPreview({ allowed: ['about'] })
             }
 
-            return { handleClickUser }
+            return { handleClickUser, KeyMaps }
         },
     })
 </script>
-
-<style lang="less" scoped>
-    .max-owner-name-width {
-        max-width: 10rem;
-    }
-</style>

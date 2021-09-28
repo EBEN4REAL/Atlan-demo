@@ -2,20 +2,18 @@ import useSWRV from 'swrv'
 import { computed, ref, ComputedRef } from 'vue'
 import LocalStorageCache from 'swrv/dist/cache/adapters/localStorage'
 import swrvState from '../utils/swrvState'
-import { Components } from '~/api/auth/client'
 import { userInterface } from '~/types/users/user.interface'
 import { User, URL } from '~/api/auth/user'
 
 export default function fetchUserList(immediate: boolean = true) {
-    const params = ref({})
+    const params = ref(new URLSearchParams())
     // this is needed as there are multiple keys with the same param name
-    const urlparam = new URLSearchParams()
-    urlparam.append('limit', '20')
-    urlparam.append('sort', 'first_name')
-    urlparam.append('columns', 'first_name')
-    urlparam.append('columns', 'last_name')
-    urlparam.append('columns', 'username')
-    params.value = urlparam
+    params.value.append('limit', '20')
+    params.value.append('sort', 'first_name')
+    params.value.append('columns', 'first_name')
+    params.value.append('columns', 'last_name')
+    params.value.append('columns', 'username')
+    params.value.append('filter', '{"$and":[{"email_verified":true}]}')
 
     const { data, error, mutate, isValidating } = useSWRV(
         [URL.UserList, params?.value, {}],
@@ -58,10 +56,15 @@ export default function fetchUserList(immediate: boolean = true) {
             params.value.set(
                 'filter',
                 JSON.stringify({
-                    $or: [
-                        { first_name: { $ilike: `%${value}%` } },
-                        { last_name: { $ilike: `%${value}%` } },
-                        { username: { $ilike: `%${value}%` } },
+                    $and: [
+                        { email_verified: true },
+                        {
+                            $or: [
+                                { first_name: { $ilike: `%${value}%` } },
+                                { last_name: { $ilike: `%${value}%` } },
+                                { username: { $ilike: `%${value}%` } },
+                            ],
+                        },
                     ],
                 })
             )

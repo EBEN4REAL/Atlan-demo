@@ -6,7 +6,7 @@
             :class="$style.assetbar"
             @change="handleChange"
         >
-           <a-tab-pane
+            <a-tab-pane
                 v-for="item in sortedAssetTypeList"
                 :key="item.id"
                 :disabled="item.id !== 'Catalog' && !assetTypeMap[item.id]"
@@ -14,11 +14,9 @@
                 <template #tab>
                     <div :class="{ active: item.id === assetType }">
                         <span>{{ item.label }}</span>
-                        <span
-                            v-if="item.id === 'Catalog'"
-                            class="chip"
-                            >{{ getCountString(total) }}</span
-                        >
+                        <span v-if="item.id === 'Catalog'" class="chip">{{
+                            getCountString(total)
+                        }}</span>
                         <span
                             v-if="
                                 assetTypeMap[item.id] &&
@@ -35,7 +33,14 @@
 </template>
 
 <script lang="ts">
-    import { computed, defineComponent, nextTick, ref, toRefs, watch } from 'vue'
+    import {
+        computed,
+        defineComponent,
+        nextTick,
+        ref,
+        toRefs,
+        watch,
+    } from 'vue'
     import { getCountString } from '~/composables/asset/useFormat'
 
     export default defineComponent({
@@ -102,24 +107,30 @@
                 }
             )
             const sortedAssetTypeList = computed(() => {
-            // remove catalog object so that the rest of list can be used for filtering  
-            const assetTypeListWithoutCatalog = props.assetTypeList.filter(
-                (type) => type.id !== 'Catalog'
-            )
-            // get catalog object - to reconstruct the sorted list- this would always be the first tab
-            const catalogObject = props.assetTypeList.filter(
-                (type) => type.id === 'Catalog'
-            )
-            // filter out types with 0 results
-            const typesWithNoResults = assetTypeListWithoutCatalog.filter(
-                (type) => !props.assetTypeMap[type.id]
-            )
-            // filter out types with results
-            const typesWithResults = assetTypeListWithoutCatalog.filter(
-                (type) => props.assetTypeMap[type.id] && props.assetTypeMap[type.id] > 0
-            )
-            return [...catalogObject,...typesWithResults, ...typesWithNoResults]
-        })
+                // remove catalog object so that the rest of list can be used for filtering
+                const assetTypeListWithoutCatalog = props.assetTypeList.filter(
+                    (type) => type.id !== 'Catalog'
+                )
+                // get catalog object - to reconstruct the sorted list- this would always be the first tab
+                const catalogObject = props.assetTypeList.filter(
+                    (type) => type.id === 'Catalog'
+                )
+                // filter out types with 0 results
+                const typesWithNoResults = assetTypeListWithoutCatalog.filter(
+                    (type) => !props.assetTypeMap[type.id]
+                )
+                // filter out types with results
+                const typesWithResults = assetTypeListWithoutCatalog.filter(
+                    (type) =>
+                        props.assetTypeMap[type.id] &&
+                        props.assetTypeMap[type.id] > 0
+                )
+                return [
+                    ...catalogObject,
+                    ...typesWithResults,
+                    ...typesWithNoResults,
+                ]
+            })
             watch(assetTypeMap, () => {
                 const prev = assetType.value
                 assetType.value = ''
@@ -190,7 +201,7 @@
                 assetType,
                 handleChange,
                 getCountString,
-                sortedAssetTypeList
+                sortedAssetTypeList,
             }
         },
     })
@@ -198,36 +209,36 @@
 
 <style lang="less" module>
     .assetbar {
+        :global(.ant-tabs-bar) {
+            @apply mb-0 border-0 !important;
+        }
         :global(.ant-tabs-tab) {
-            padding-left: 2px !important;
-            padding-right: 2px !important;
-            padding-top: 8px !important;
-            padding-bottom: 8px !important;
-            @apply mr-4 !important;
-            @apply text-gray-500;
-            @apply text-sm !important;
-            @apply tracking-wide;
+            @apply bg-white text-sm mr-1 !important;
+            border: 1px solid #e6e6eb;
+            border-radius: 24px !important;
+            border: 1px solid #e6e6eb !important;
+
+            padding: 3px 8px !important;
+            box-shadow: 0px 1px 0px rgba(0, 0, 0, 0.05) !important;
+
+            transition: all 0.8s ease-out;
         }
         :global(.ant-tabs-tab:first-child) {
-            @apply ml-5 !important;
-        }
-        :global(.ant-tabs-nav-container-scrolling .ant-tabs-tab:first-child) {
-            @apply ml-0;
+            @apply ml-3 !important;
         }
         :global(.ant-tabs-tab-active) {
-            @apply text-gray !important;
-            @apply font-bold !important;
-            @apply tracking-normal;
+            @apply bg-primary-light !important;
+            @apply text-primary !important;
+            @apply border-primary !important;
         }
-        :global(.ant-tabs-bar) {
-            margin-bottom: 0px;
-        }
-        :global(.ant-tabs-content) {
-            padding-right: 0px;
-        }
+
         :global(.ant-tabs-ink-bar) {
-            @apply rounded-t-sm;
-            margin-bottom: 1px;
+            @apply hidden !important;
+        }
+
+        :global(.ant-tabs-nav-wrap) {
+            margin-top: 4px !important;
+            min-height: 30px !important;
         }
     }
 </style>
@@ -239,8 +250,7 @@
         @apply tracking-wide;
         @apply text-xs;
         @apply font-bold;
-        @apply text-gray-500;
-        @apply bg-gray-100;
+        @apply text-gray-400;
     }
     .active {
         @apply text-primary;

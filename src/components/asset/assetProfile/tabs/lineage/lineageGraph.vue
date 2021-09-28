@@ -1,513 +1,401 @@
-/* eslint-disable no-underscore-dangle */
 <template>
-    <div
-        v-if="layoutColumns.length > 0"
-        class="w-full h-full component"
-        :class="{ 'absolute top-0': !isCyclic }"
-    >
-        <!-- Lineage Graph -->
+    <div ref="lineageContainer" class="lineage">
+        <!-- Graph Loader -->
         <div
-            v-if="!isCyclic"
-            ref="lineageGraphRef"
-            class="w-full h-full lineage-graph"
-            :class="{
-                'cursor-grab': !panStarted,
-                'cursor-grabbing': panStarted,
-            }"
-            @dblclick="get_path(null)"
+            v-if="graphLoading"
+            style="position: absolute; left: 45%; top: 45%"
         >
-            <div
-                ref="lineageGraphContainerRef"
-                class="flex items-center w-full"
-            >
-                <div
-                    v-for="(layoutColumn, indexA) in layoutColumns"
-                    :key="'layoutColumn' + String(indexA)"
-                >
-                    <!-- group starts here -->
-                    <div
-                        v-for="(group, indexB) in layoutColumn"
-                        :key="'group' + String(indexB)"
-                        class="z-10 mb-16 mr-24 text-xs"
-                        :class="{
-                            'w-12': group.type === 'Process',
-                            'w-80 bg-white': group.type !== 'Process',
-                        }"
-                    >
-                        <!-- group accordion starts here  -->
-                        <a-collapse
-                            v-if="group.type !== 'Process'"
-                            expand-icon-position="right"
-                            :bordered="false"
-                            :accordion="true"
-                            :active-key="group.groupId"
-                        >
-                            <a-collapse-panel
-                                :key="group.groupId"
-                                :forceRender="true"
-                            >
-                                <!-- group header starts here -->
-                                <template #header>
-                                    <div
-                                        :id="group.groupId"
-                                        :ref="
-                                            (el) => {
-                                                el
-                                                    ? (refs[group.groupId] = el)
-                                                    : refs
-                                            }
-                                        "
-                                        class="flex items-center w-full h-full p-3 text-sm font-bold bg-white border border-b-0 border-gray-300 rounded-t "
-                                        :class="{
-                                            'border-success': group.base,
-                                        }"
-                                    >
-                                        <img
-                                            :src="getIcon(group.source)"
-                                            class="w-5 h-5 mr-2"
-                                        />
+            <a-spin size="large" />
+        </div>
 
-                                        <!-- header label -->
-                                        <div class="font-bold">
-                                            {{
-                                                group.source
-                                                    .charAt(0)
-                                                    .toUpperCase()
-                                            }}{{ group.source.slice(1) }}
-                                            {{ group.type }}
-                                            ({{ group.fields.length }})
-                                        </div>
-                                    </div>
-                                </template>
+        <!-- Highlight Loader -->
+        <div
+            v-if="highlightLoadingCords.x"
+            :style="`position: absolute; left: ${
+                highlightLoadingCords.x - 13
+            }px; top: ${highlightLoadingCords.y - 130}px; z-index: 999`"
+        >
+            <a-spin size="large" />
+        </div>
 
-                                <!-- group content starts here  -->
-                                <div
-                                    v-if="group.type !== 'Process'"
-                                    class="relative p-0 overflow-hidden bg-transparent "
-                                    :style="`height: ${
-                                        contentHeights[group.groupId] ||
-                                        38 * group.fields.length
-                                    }px`"
-                                >
-                                    <div
-                                        v-for="(node, indexC) in group.fields"
-                                        :id="'group-content-' + node.guid"
-                                        :key="'node' + String(indexC)"
-                                        :ref="
-                                            (el) => {
-                                                el
-                                                    ? (refs[
-                                                          'group-content-' +
-                                                              node.guid
-                                                      ] = el)
-                                                    : refs
-                                            }
-                                        "
-                                        class="absolute w-full cursor-pointer"
-                                        :style="getTopPosition(node.guid)"
-                                        @click.stop="get_path(node.guid)"
-                                    >
-                                        <!-- node accordion starts here -->
-                                        <a-collapse
-                                            expand-icon-position="left"
-                                            :bordered="false"
-                                            :accordion="true"
-                                            @change="toggleColumns(node, group)"
-                                        >
-                                            <a-collapse-panel
-                                                :key="node.guid"
-                                                :force-render="false"
-                                            >
-                                                <!-- node header starts here -->
-                                                <template #header>
-                                                    <div
-                                                        v-if="
-                                                            group.type !==
-                                                            'Process'
-                                                        "
-                                                        :id="node.guid"
-                                                        :ref="
-                                                            (el) => {
-                                                                el
-                                                                    ? (refs[
-                                                                          node.guid
-                                                                      ] = el)
-                                                                    : refs
-                                                            }
-                                                        "
-                                                        class="relative flex items-center h-full py-2 pl-10 pr-5 text-sm lowercase bg-white border border-gray-300 cursor-pointer  hover:border-primary justify-space-between"
-                                                        :class="{
-                                                            'bg-success-muted border-success':
-                                                                group.base,
-                                                            'bg-primary-muted border-primary':
-                                                                is_highlighted_node(
-                                                                    node.guid
-                                                                ),
-                                                        }"
-                                                    >
-                                                        <!-- Node display text -->
-                                                        <span
-                                                            class="w-full overflow-hidden  overflow-ellipsis whitespace-nowrap"
-                                                        >
-                                                            {{
-                                                                node.displayText
-                                                            }}
-                                                        </span>
-                                                    </div>
-                                                </template>
-                                                <!-- node content starts here -->
-                                                <div
-                                                    :id="
-                                                        'node-content-' +
-                                                        node.guid
-                                                    "
-                                                    :ref="
-                                                        (el) => {
-                                                            el
-                                                                ? (refs[
-                                                                      'node-content-' +
-                                                                          node.guid
-                                                                  ] = el)
-                                                                : refs
-                                                        }
-                                                    "
-                                                >
-                                                    <!-- Columns List -->
-                                                    <LineageColumnList
-                                                        :refs="refs"
-                                                        :data="columnsData"
-                                                        :show-columns="
-                                                            showColumns[
-                                                                group.groupId
-                                                            ]
-                                                        "
-                                                        @update-content-height="
-                                                            updateContentHeight(
-                                                                $event
-                                                            )
-                                                        "
-                                                    />
-                                                </div>
-                                            </a-collapse-panel>
-                                        </a-collapse>
-                                    </div>
-                                </div>
-                            </a-collapse-panel>
-                        </a-collapse>
-                        <!-- accordion is not needed if process node -->
-                        <div
-                            v-if="group.type === 'Process'"
-                            class="flex items-center justify-center w-12 p-0 overflow-hidden bg-transparent "
-                            :style="`{
-                                    height: 5px;
-                                }`"
-                        >
-                            <div
-                                v-for="(node, indexD) in group.fields"
-                                :key="'nodeP' + String(indexD)"
-                                class="w-full h-full cursor-pointer"
-                                :class="{
-                                    'border border-primary':
-                                        is_highlighted_node(node.guid),
-                                }"
-                                :style="{ top: `${0}px` }"
-                                @click.stop="get_path(node.guid)"
-                            >
-                                <div
-                                    v-if="group.type === 'Process'"
-                                    :id="node.guid"
-                                    :ref="
-                                        (el) => {
-                                            el ? (refs[node.guid] = el) : refs
-                                        }
-                                    "
-                                    class="relative flex items-center justify-center w-full h-full bg-transparent cursor-pointer "
-                                >
-                                    <fa icon="fal cog" class="w-8 h-8"></fa>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+        <!-- Graph Container -->
+        <div
+            ref="graphContainer"
+            style="width: calc(100vw - 1px); height: calc(100vh + 80px)"
+        ></div>
+
+        <!-- Lineage Header -->
+        <LineageHeader @show-process="onShowProcess($event)" />
+
+        <!-- Minimap Container -->
+        <div ref="minimapContainer" class="lineage-minimap"></div>
+
+        <!-- Lineage Legend -->
+        <div class="lineage-legend">
+            <div class="lineage-legend__item">
+                <span id="upstream"></span>
+                <span>Upstream</span>
+            </div>
+            <div class="lineage-legend__item">
+                <span id="downstream"></span>
+                <span>Downstream</span>
+            </div>
+            <div class="lineage-legend__item">
+                <span id="selected"></span>
+                <span>Selected Path</span>
             </div>
         </div>
-        <!-- Cyclic Lineage Graph Info -->
-        <div v-if="isCyclic" class="relative block w-full h-full no-transform">
-            <div class="flex items-center justify-center h-full flex-column">
-                <!-- <img :src="LineageEmptyIllus" style="width: 32rem" /> -->
-                <p class="mb-0">
-                    Sorry, we don't support cyclic lineages yet."
-                    <br />
-                </p>
+
+        <!-- Lineage Controls -->
+        <div class="lineage-control">
+            <!-- Zoom In -->
+            <div class="lineage-control__item">
+                <button @click="zoom(0.1)">
+                    <fa icon="fal search-plus"></fa>
+                </button>
+            </div>
+
+            <!-- Full screen -->
+            <div class="lineage-control__item">
+                <button @click="onFullscreen()">
+                    <fa v-if="false" icon="fal compress-alt"></fa>
+                    <fa v-else icon="fal expand-arrows"></fa>
+                </button>
+            </div>
+
+            <!-- Zoom Out -->
+            <div class="lineage-control__item">
+                <button @click="zoom(-0.1)">
+                    <fa icon="fal search-minus"></fa>
+                </button>
             </div>
         </div>
     </div>
 </template>
 
 <script lang="ts">
-    // Vue
-    import {
-        defineComponent,
-        inject,
-        onMounted,
-        onBeforeUnmount,
-        ref,
-        nextTick,
-        computed,
-    } from 'vue'
-    // Components
-    import LineageColumnList from '@/asset/assetProfile/tabs/lineage/lineageColumnList.vue'
-    // Util
-    import { getIcon } from '@/asset/assetProfile/tabs/lineage/util.js'
-    // Composables
-    import * as useLineageCompute from '~/composables/lineage/useLineageCompute'
-    import * as useLineageDOM from '~/composables/lineage/useLineageDOM'
-    import * as useLineageLines from '~/composables/lineage/useLineageLines'
-    import * as useLineagePanZoom from '~/composables/lineage/useLineagePanZoom'
+    /** PACKAGES */
+    import { defineComponent, ref, onMounted, watch, provide } from 'vue'
+    /** DATA */
+    import lineage from './lineageData.js'
+    /** COMPONENTS */
+    import LineageHeader from './lineageHeader.vue'
+    /** COMPOSABLES */
+    import useCreateGraph from './useCreateGraph'
+    import useComputeGraph from './useComputeGraph'
+    import useTransformGraph from './useTransformGraph'
+    import useHighlight from './useHighlight'
 
     export default defineComponent({
-        name: 'LineageGraphComponent',
-        components: { LineageColumnList },
+        name: 'LineageGraph',
+        components: { LineageHeader },
         setup() {
-            /** INJECTIONS */
-            const lineage = inject('lineage')
-            const asset = inject('asset')
-            const linesWrapper = inject('linesWrapper')
-            const setSearchItems = inject('setSearchItems')
-            const showProcessNodes = inject('showProcessNodes')
-            const direction = inject('direction')
-
             /** DATA */
-            const lineageGraphRef = ref(null)
-            const lineageGraphContainerRef = ref(null)
-            const refs = ref({})
-            const glGraph = ref({})
-            const layoutColumns = ref([])
+            const lineageData = ref(lineage)
+            const graphContainer = ref(null)
+            const minimapContainer = ref(null)
+            const lineageContainer = ref(null)
+            const graph = ref(null)
+            const highlightLoadingCords = ref({})
+            const graphLoading = ref(false)
+            const showProcess = ref(false)
+            const useCyclic = ref(false)
+            const isFullscreen = ref(false)
             const searchItems = ref([])
-            const cycles = ref([])
-            const selectedPathGuids = ref([])
-            const lines = ref([])
-            const pathGuid = ref(null)
-            const panStarted = ref(false)
-            const panZoomInstance = ref({})
-            const showColumns = ref({})
-            const columnsData = ref({})
-            const contentHeights = ref({})
-            const hasLineage = computed(
-                () => lineage.value?.relations.length !== 0
-            )
 
             /** METHODS */
-
-            // restartComputation
-            const restart_computation = () => {
-                useLineageCompute.restartComputation(
-                    compute_graph_relations,
-                    lines,
-                    layoutColumns,
-                    glGraph
-                )
+            // selectSearchItem
+            const selectSearchItem = (guid) => {
+                //
             }
 
-            // get_path
-            const get_path = (guid) => {
-                useLineageLines.getPath(guid, pathGuid, selectedPathGuids)
-                if (pathGuid.value && hasLineage.value) {
-                    const { selectedPathGuids: f } =
-                        useLineageLines.highlightLines(
-                            glGraph,
-                            pathGuid,
-                            lines,
-                            showProcessNodes,
-                            direction
-                        )
-                    selectedPathGuids.value = f
-                }
+            // transform
+            const { zoom, fullscreen } = useTransformGraph(graph)
+            const onFullscreen = () => {
+                isFullscreen.value = !isFullscreen.value
+                fullscreen(lineageContainer)
             }
 
-            // update_lines
-            const update_lines = () => {
-                useLineageLines.updateLines(lines)
-            }
+            // initialize
+            const initialize = (reload = false) => {
+                graphLoading.value = true
+                if (reload) graph.value.dispose()
 
-            // is_highlighted_node
-            const is_highlighted_node = (guid) =>
-                useLineageLines.isHighlightedNode(guid, selectedPathGuids)
-
-            // center_node
-            const center_node = () => {
-                useLineageDOM.centerNode(
-                    lineage.value.baseEntityGuid,
-                    layoutColumns,
-                    panZoomInstance
-                )
-            }
-
-            // handle_zoom
-            const handle_zoom = (val) => {
-                useLineagePanZoom.handleZoom(val, panZoomInstance)
-            }
-
-            // handle_fullscreen
-            const handle_fullscreen = (lineage_graph_wrapper_ref) =>
-                useLineagePanZoom.handleFullscreen(
-                    update_lines,
-                    lineage_graph_wrapper_ref
+                // useGraph
+                const { graphLayout } = useCreateGraph(
+                    graph,
+                    graphContainer,
+                    minimapContainer
                 )
 
-            // set_pan_zoom_event
-            const set_pan_zoom_event = async () => {
-                const { panStarted: g, panZoomInstance: h } =
-                    await useLineagePanZoom.setPanZoomEvent(
-                        lineageGraphContainerRef,
-                        update_lines
-                    )
-                panStarted.value = g.value
-                panZoomInstance.value = h.value
-            }
-
-            // pause_pan_zoom_event
-            const pause_pan_zoom_event = (val) => {
-                useLineagePanZoom.pausePanZoomEvent(val, panZoomInstance)
-            }
-
-            // compute_graph_relations
-            const compute_graph_relations = async () => {
-                const {
-                    glGraph: a,
-                    layoutColumns: b,
-                    searchItems: c,
-                    cycles: d,
-                } = useLineageCompute.computeGraphRelations(
-                    lineage,
-                    'graph',
-                    asset,
-                    showProcessNodes,
-                    direction
+                // useComputeGraph
+                const { model, edges, nodes, baseEntityGuid } = useComputeGraph(
+                    graph,
+                    graphLayout,
+                    lineageData,
+                    showProcess,
+                    searchItems,
+                    reload
                 )
 
-                glGraph.value = a
-                layoutColumns.value = b
-                searchItems.value = c
-                cycles.value = d
-
-                // setSearchItems
-                setSearchItems(searchItems)
-
-                // drawLines
-                if (hasLineage.value) {
-                    const { lines: f } = useLineageLines.drawLines(
-                        refs,
-                        linesWrapper
-                    )
-                    lines.value = f
-                }
-
-                // setPanZoomEvent
-                await set_pan_zoom_event()
-
-                // centerNode
-                center_node()
-            }
-
-            // toggleColumns
-            const toggleColumns = ({ guid }, { groupId, fields }) => {
-                showColumns.value[groupId] = !showColumns.value[groupId]
-                columnsData.value = {
-                    guid,
-                    groupId,
-                    groupHeadersLength: fields.length,
-                }
-            }
-
-            // updateContentHeight
-            const updateContentHeight = ({ groupId, val }) => {
-                contentHeights.value[groupId] = val
-                update_lines()
-            }
-
-            // getTopPosition
-            const getTopPosition = (guid) => {
-                // TODO: get absolute top position for each node using previousSibling, clientTop and clientHeight
-                nextTick(() => {
-                    const currEle = refs.value[`group-content-${guid}`]
-                    return { top: `${0}px` }
+                // save cords
+                graph.value.on('cell:mousedown', ({ e }) => {
+                    highlightLoadingCords.value = { x: e.clientX, y: e.clientY }
                 })
+
+                // useHighlight
+                useHighlight(
+                    graph,
+                    model,
+                    edges,
+                    nodes,
+                    baseEntityGuid,
+                    showProcess,
+                    highlightLoadingCords
+                )
+
+                graphLoading.value = false
             }
 
-            /** LIFECYCLE */
-            // onMounted
-            onMounted(() => {
-                compute_graph_relations()
+            // onShowProcess
+            const onShowProcess = (val) => {
+                showProcess.value = val
+                initialize(true)
+            }
+
+            /** PROVIDERS */
+            provide('searchItems', searchItems)
+            provide('selectSearchItem', selectSearchItem)
+
+            /** WATCHERS */
+            watch(useCyclic, (val) => {
+                if (val) lineageData.value = lineageCyclic
+                else lineageData.value = lineage
+
+                initialize(true)
             })
 
-            // onBeforeUnmount
-            onBeforeUnmount(() => {
-                nextTick(() => {
-                    lines.value.forEach((l) => l.remove())
-                    if (panZoomInstance.value) panZoomInstance.value.dispose()
-                })
+            /** LIFECYCLE */
+            onMounted(() => {
+                initialize()
             })
 
             return {
-                lines,
-                lineageGraphRef,
-                lineageGraphContainerRef,
-                refs,
-                panStarted,
-                glGraph,
-                layoutColumns,
-                searchItems,
-                cycles,
-                pathGuid,
-                getIcon,
-                contentHeights,
-                showColumns,
-                columnsData,
-                isCyclic: false, // TODO:
-                toggleColumns,
-                handle_zoom,
-                handle_fullscreen,
-                get_path,
-                restart_computation,
-                is_highlighted_node,
-                getTopPosition,
-                updateContentHeight,
+                showProcess,
+                useCyclic,
+                lineageContainer,
+                graphContainer,
+                minimapContainer,
+                highlightLoadingCords,
+                graphLoading,
+                isFullscreen,
+                zoom,
+                onFullscreen,
+                onShowProcess,
             }
         },
     })
 </script>
 
-<style lang="less" scoped>
-    .cursor-grab {
-        cursor: grab;
-    }
+<style lang="less">
+    .lineage {
+        // Legend
+        &-legend {
+            position: absolute;
+            left: 1.5rem;
+            z-index: 9;
+            background: #f8f8fd;
+            bottom: 0;
 
-    .cursor-grabbing {
-        cursor: grabbing;
-    }
+            &__item {
+                display: flex;
+                align-items: center;
+                margin-bottom: 0.8rem;
 
-    .no-transform {
-        transform-origin: unset !important;
-        transform: unset !important;
-    }
+                & > span {
+                    font-size: 0.8rem;
 
-    .component {
-        position: unset;
-    }
+                    &:first-child {
+                        margin-right: 1rem;
+                        width: 2rem;
+                        height: 3px;
 
-    .lineage-graph {
-        position: absolute;
-        overflow: hidden;
-        -ms-overflow-style: none; /* Hide scrollbar for  IE and Edge */
-        scrollbar-width: none; /* Hide scrollbar for  Firefox */
+                        &#upstream {
+                            background: #bed9a3;
+                        }
 
-        &::-webkit-scrollbar {
-            display: none; /* Hide scrollbar for Chrome, Safari and Opera */
+                        &#downstream {
+                            background: #f1a183;
+                        }
+
+                        &#selected {
+                            background: #2351cc;
+                        }
+                    }
+                }
+            }
         }
-    }
 
-    :global(.anticon) {
-        @apply z-10 !important;
+        // Control
+        &-control {
+            position: absolute;
+            right: 1.5rem;
+            bottom: 1rem;
+            z-index: 9;
+            background: white;
+            border: 1px solid #e6e6e7;
+            border-radius: 5px;
+            background: #ffffff;
+
+            &__item {
+                padding: 10px;
+                border-bottom: 1px solid #e4e4e4;
+
+                &:last-child {
+                    border-bottom: unset;
+                }
+
+                & > button {
+                    background: #ffffff;
+                    outline: none;
+                    border: unset;
+                    padding: unset;
+                    margin: unset;
+                    display: flex;
+                    align-items: center;
+
+                    & > i {
+                        color: #495057;
+                        font-size: 0.9rem;
+                    }
+                }
+            }
+        }
+
+        // Minimap
+        &-minimap {
+            @apply absolute;
+            top: 65px;
+            right: 15px;
+
+            & .x6-widget-minimap .x6-graph {
+                box-shadow: unset !important;
+            }
+            & .x6-widget-minimap-viewport {
+                border: 1px solid #9296eb !important;
+            }
+            & .x6-widget-minimap-viewport-zoom {
+                border: 1px solid #9296eb !important;
+            }
+        }
+
+        // Process Nodes
+        &-process {
+            border: 2px solid #919aab;
+            border-radius: 100%;
+            height: 32px;
+            width: 32px;
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            background-color: white;
+        }
+
+        // Non-Process Nodes
+        &-node {
+            padding: 3px 0 3px 6px;
+            border: 2px solid #919aab;
+            display: flex;
+            align-items: center;
+            background-color: white;
+            font-size: 13px;
+            height: 32px;
+
+            &.isBase {
+                background-color: #c2cdf1 !important;
+                border: 2px solid #2351cc !important;
+            }
+
+            &.isBase .node-type__item {
+                border: 2px solid #2351cc !important;
+            }
+
+            &.isHighlightedNode .node-type__item,
+            &.isHighlightedNodePath .node-type__item {
+                border: 2px solid #2351cc;
+            }
+        }
+
+        .node-text {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            text-transform: lowercase;
+        }
+
+        .node-source {
+            width: 0.8rem;
+            height: 0.8rem;
+            margin-right: 0.5rem;
+        }
+
+        .node-loadstate {
+            position: relative;
+        }
+        .node-loadstate__item {
+            border: 2px solid #919aab;
+            top: -21px;
+            left: 80%;
+            font-size: 10px;
+            position: fixed;
+            z-index: 999;
+            padding: 2px 5px;
+            text-transform: uppercase;
+            background-color: #f8f8fd;
+            overflow: hidden;
+        }
+
+        .node-type {
+            @apply relative;
+        }
+        .node-type__item {
+            border: 2px solid #919aab;
+            top: -21px;
+            left: 0px;
+            font-size: 10px;
+            position: fixed;
+            z-index: 999;
+            padding: 2px 5px;
+            text-transform: uppercase;
+            background-color: #f8f8fd;
+            overflow: hidden;
+        }
+
+        .node-isbase {
+            @apply relative;
+        }
+        .node-isbase__item {
+            border: 2px solid #2351cc;
+            background-color: #2351cc;
+            font-weight: 700;
+            color: white;
+            top: -21px;
+            left: 45%;
+            font-size: 10px;
+            position: fixed;
+            z-index: 999;
+            padding: 2px 5px;
+            text-transform: uppercase;
+            overflow: hidden;
+        }
+
+        .isHighlightedNode {
+            border: 2px solid #2351cc;
+            background-color: #c2cdf1;
+        }
+
+        .isHighlightedNodePath {
+            border: 2px solid #2351cc;
+        }
     }
 </style>

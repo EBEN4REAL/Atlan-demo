@@ -17,6 +17,9 @@
     <span v-if="data?.displayValue === 'description'">
         <description :data="data" />
     </span>
+    <span v-if="data?.displayValue === 'bmUpdated'">
+        <business-metadata :data="data" />
+    </span>
     <!--  <span v-else>
         {{ data?.displayValue }}
     </span> -->
@@ -30,6 +33,8 @@
     import Terms from './types/terms/index.vue'
     import Experts from './types/experts/index.vue'
     import Owners from './types/owners/index.vue'
+    import BusinessMetadata from './types/businessMetadata/index.vue'
+
     import { activityInterface } from '~/types/activitylogs/activitylog.interface'
 
     export default defineComponent({
@@ -40,6 +45,7 @@
             Terms,
             Experts,
             Owners,
+            BusinessMetadata,
         },
         props: {
             data: {

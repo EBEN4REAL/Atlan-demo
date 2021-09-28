@@ -1,4 +1,4 @@
-import { Ref, ref, computed } from 'vue'
+import { Ref, ref, computed, toRaw } from 'vue'
 import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
 import { useLocalStorageSync } from './useLocalStorageSync'
 import { inlineTabsDemoData } from '../dummyData/demoInlineTabData'
@@ -32,7 +32,6 @@ export function useInlineTab() {
         // checking if localstorage already have active tab key
         const localStorageActiveInlineKey =
             getActiveInlineTabKeyFromLocalStorage()
-        console.log(localStorageActiveInlineKey, 'localStorageKey')
         if (localStorageActiveInlineKey !== undefined) {
             const activeTab = tabsArray.value.find(
                 (tab) => tab.key === localStorageActiveInlineKey
@@ -89,17 +88,19 @@ export function useInlineTab() {
     }
     const modifyActiveInlineTabEditor = (
         activeTab: activeInlineTabInterface,
-        tabsArray: Ref<activeInlineTabInterface[]>
+        tabsArray: Ref<activeInlineTabInterface[]>,
+        queryDataStore?: boolean
     ) => {
         const index = tabsArray.value.findIndex(
             (tab) => tab.key === activeTab.key
         )
         if (index !== -1) {
+            console.log(index, activeTab, 'modifyTab')
             tabsArray.value[index].playground.editor =
                 activeTab.playground.editor
         }
         // syncying inline tabarray in localstorage
-        syncInlineTabsInLocalStorage(tabsArray.value)
+        syncInlineTabsInLocalStorage(toRaw(tabsArray.value), queryDataStore)
     }
     const setActiveTabKey = (
         selectedKey: string,

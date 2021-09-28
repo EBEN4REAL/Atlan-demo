@@ -1,15 +1,19 @@
 <template>
     <div>
-        <div class="flex justify-end px-8 py-4">
-            <fa
-                icon="fa sync"
-                class="text-lg cursor-pointer text-primary"
+        <div
+            class="flex justify-between px-4 py-2 mb-6 border-b  border-gray-light"
+        >
+            <span class="font-semibold text-gray-700 text-md">Activity</span>
+
+            <AtlanIcon
+                icon="Reload"
+                class="mt-1 cursor-pointer text-primary"
                 @click="refreshAudits"
-            ></fa>
+            />
         </div>
         <div
             v-if="isLoading"
-            class="flex items-center justify-center mt-4 text-sm leading-none"
+            class="flex items-center justify-center text-sm leading-none"
         >
             <a-spin size="small" class="mr-2 leading-none"></a-spin
             ><span>Getting activity logs</span>
@@ -19,7 +23,7 @@
                 <a-timeline-item v-for="(log, index) in audits" :key="index">
                     <template #dot>
                         <div
-                            class="border  ant-timeline-item-dot bg-primary-light border-primary"
+                            class="border ant-timeline-item-dot border-primary"
                         ></div>
                     </template>
                     <div>
@@ -46,12 +50,40 @@
                 class="flex justify-center mb-8 text-center"
             >
                 <a-button
-                    class="flex items-center px-5 py-4 text-sm font-bold border-none rounded-full  bg-primary-light text-primary"
-                    style="box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.08)"
+                    :disabled="isFetchingMore"
+                    class="flex items-center justify-between py-2 transition-all duration-300 border-none rounded-full  bg-primary-light text-primary"
                     @click="fetchMore"
-                    >Load more
-                    <fa icon="fas long-arrow-alt-down" class="ml-1"></fa
-                ></a-button>
+                    :class="isFetchingMore ? 'px-2 w-9' : 'px-5 w-32'"
+                >
+                    <template v-if="!isFetchingMore"
+                        ><p
+                            class="m-0 mr-1 overflow-hidden text-sm transition-all duration-300  overflow-ellipsis whitespace-nowrap"
+                        >
+                            Load more
+                        </p>
+                        <AtlanIcon icon="ArrowDown"
+                    /></template>
+                    <svg
+                        v-else
+                        class="w-5 h-5 text-primary animate-spin"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                    >
+                        <circle
+                            class="opacity-25"
+                            cx="12"
+                            cy="12"
+                            r="10"
+                            stroke="currentColor"
+                            stroke-width="4"
+                        ></circle>
+                        <path
+                            class="opacity-75"
+                            fill="currentColor"
+                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                        ></path>
+                    </svg>
+                </a-button>
             </div>
         </div>
         <div v-else class="flex flex-col items-center">

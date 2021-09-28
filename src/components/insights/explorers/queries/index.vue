@@ -61,7 +61,7 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, inject, Ref, ref } from 'vue'
+    import { defineComponent, inject, Ref, ref, ComputedRef } from 'vue'
     import { SavedQueryInterface } from '~/types/insights/savedQuery.interface'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
     import { useSavedQuery } from '~/components/insights/explorers/composables/useSavedQuery'
@@ -75,7 +75,7 @@
             >
             const activeInlineTab = inject(
                 'activeInlineTab'
-            ) as Ref<activeInlineTabInterface>
+            ) as ComputedRef<activeInlineTabInterface>
             const activeInlineTabKey = inject(
                 'activeInlineTabKey'
             ) as Ref<string>

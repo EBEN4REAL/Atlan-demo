@@ -17,7 +17,6 @@ export type Attributes = {
     connectionName: string
     assetStatus: string | null
     ownerUsers: string | null
-    previewConfig: string | null
     connectionQualifiedName: string | null
     displayName: string | null
     description: string | null
@@ -25,11 +24,7 @@ export type Attributes = {
     isDiscoverable: boolean
     alias: string | null
     owner: string
-    banner: string | null
-    tenantId: string | null
-    bannerUpdatedBy: string | null
     assetStatusUpdatedAt: number
-    certificationUpdatedAt: number
     rawQuery: string
     compiledQuery: string
     connectionId: string
@@ -43,6 +38,13 @@ export type Query = Omit<
 > & {
     typeName: 'Query'
     attributes: Attributes
+}
+
+export type SavedQueryResponse = Omit<
+    Components.Schemas.AtlasEntityWithExtInfo,
+    'entity'
+> & {
+    entity?: Query
 }
 
 export type BasicSearchResponse<T> = Omit<

@@ -78,7 +78,7 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref, computed, watch } from 'vue'
+    import { defineComponent, ref, computed, watch, inject, Ref } from 'vue'
     import Playground from '~/components/insights/playground/index.vue'
     import AssetSidebar from '~/components/insights/assetSidebar/index.vue'
     import Schema from './explorers/schema/index.vue'
@@ -91,11 +91,13 @@
     import { useSpiltPanes } from './common/composables/useSpiltPanes'
     import { useProvide } from './common/composables/useProvide'
     import { useInlineTab } from './common/composables/useInlineTab'
+    import { useSavedQuery } from '~/components/insights/explorers/composables/useSavedQuery'
     // import { useConnector } from './common/composables/useConnector'
     // import { useHotKeys } from './common/composables/useHotKeys'
 
     import { TabInterface } from '~/types/insights/tab.interface'
     import { provideDataInterface } from './common/composables/useProvide'
+    import { Query } from '~/types/insights/savedQuery.interface'
 
     export default defineComponent({
         components: {
@@ -108,6 +110,9 @@
         },
         props: {},
         setup(props) {
+            const savedQueryInfo = inject('savedQueryInfo') as Ref<
+                Query | undefined
+            >
             const { explorerPaneSize, assetSidebarPaneSize, paneResize } =
                 useSpiltPanes()
             // TODO: will be used for HOTKEYs
@@ -122,6 +127,10 @@
             const { tabsArray, activeInlineTabKey, activeInlineTab } =
                 useInlineTab()
 
+            const {
+                openSavedQueryInNewTab,
+                transformSavedQueryResponseInfoToInlineTab,
+            } = useSavedQuery(tabsArray, activeInlineTab, activeInlineTabKey)
             const activeTabId = ref(tabsList[0].id)
 
             const activeTab = computed(() =>
@@ -147,6 +156,15 @@
             watch(activeInlineTabKey, () => {
                 syncActiveInlineTabKeyInLocalStorage(activeInlineTabKey.value)
                 syncInlineTabsInLocalStorage(tabsArray.value)
+            })
+            watch(savedQueryInfo, () => {
+                if (savedQueryInfo.value !== undefined) {
+                    const savedQueryInlineTab: any =
+                        transformSavedQueryResponseInfoToInlineTab(
+                            savedQueryInfo as Ref<Query>
+                        )
+                    // openSavedQueryInNewTab(savedQueryInlineTab)
+                }
             })
             return {
                 activeTab,

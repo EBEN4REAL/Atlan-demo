@@ -1,12 +1,13 @@
-import { Ref } from 'vue'
+import { Ref, ComputedRef } from 'vue'
 import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
 import { useLocalStorageSync } from '~/components/insights/common/composables/useLocalStorageSync'
 import { SavedQueryInterface } from '~/types/insights/savedQuery.interface'
 import { useInlineTab } from '~/components/insights/common/composables/useInlineTab'
+import { Query } from '~/types/insights/savedQuery.interface'
 
 export function useSavedQuery(
     tabsArray: Ref<activeInlineTabInterface[]>,
-    activeInlineTab: Ref<activeInlineTabInterface>,
+    activeInlineTab: ComputedRef<activeInlineTabInterface | undefined>,
     activeInlineTabKey: Ref<string>
 ) {
     const { syncInlineTabsInLocalStorage } = useLocalStorageSync()
@@ -62,15 +63,21 @@ export function useSavedQuery(
             },
         }
         if (!isInlineTabAlreadyOpened(newTab)) {
-            inlineTabAdd(newTab, tabsArray)
             activeInlineTabKey.value = newTab.key
+            inlineTabAdd(newTab, tabsArray, activeInlineTabKey)
             // syncying inline tabarray in localstorage
             syncInlineTabsInLocalStorage(tabsArray.value)
         } else {
             // show user that this tab is already opened
         }
     }
+    const transformSavedQueryResponseInfoToInlineTab = (
+        savedQueryInfo: Ref<Query>
+    ) => {
+        console.log(savedQueryInfo, 'get from URL')
+    }
     return {
+        transformSavedQueryResponseInfoToInlineTab,
         openSavedQueryInNewTab,
     }
 }

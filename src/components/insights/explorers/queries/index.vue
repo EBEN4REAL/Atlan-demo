@@ -124,8 +124,8 @@
             
             watch(activeInlineTab, (newActiveInlineTab) => {
                 if (newActiveInlineTab) {
-                    connector.value = newActiveInlineTab.explorer.queries.connectors
-                                .connector
+                    connector.value = newActiveInlineTab?.explorer?.queries?.connectors
+                                ?.connector
                 }
             })
 

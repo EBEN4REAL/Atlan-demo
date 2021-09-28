@@ -154,6 +154,8 @@
             const redirectToProfile = () => {
                 router.push(`/glossary/${term.value?.attributes?.anchor?.guid}`)
             }
+
+
             watch(updatedEntity, () => {
                 refetch()
                 newName.value = ''

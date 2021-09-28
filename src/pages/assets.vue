@@ -42,11 +42,9 @@
     import { useHead } from '@vueuse/head'
     import { computed, defineComponent, ref, Ref, watch } from 'vue'
     import { useRoute, useRouter } from 'vue-router'
-    import { Classification } from '~/api/atlas/classification'
-    import { useClassificationStore } from '~/components/admin/classifications/_store'
     import { assetInterface } from '~/types/assets/asset.interface'
-    import { typedefsInterface } from '~/types/typedefs/typedefs.interface'
     import { getDecodedOptionsFromString } from '~/utils/helper/routerQuery'
+    import { useClassifications } from '~/components/admin/classifications/composables/useClassifications'
 
     export interface initialFiltersType {
         facetsFilters: any
@@ -86,27 +84,13 @@
             /* Making the network request here to fetch the latest changes of classifications. 
             So that everytime user visit the discover page it will be in sync to latest data not with store
             */
-            const classificationsStore = useClassificationStore()
-            classificationsStore.setClassificationsStatus('loading')
-            const { data: classificationData, error: classificationError } =
-                Classification.getClassificationList<typedefsInterface>({
-                    cache: false,
-                })
-
-            watch([classificationData, classificationError], () => {
-                if (classificationData.value) {
-                    const classifications =
-                        classificationData.value.classificationDefs || []
-
-                    classificationsStore.setClassifications(
-                        classifications ?? []
-                    )
-                    classificationsStore.initializeFilterTree()
-                    classificationsStore.setClassificationsStatus('success')
-                } else {
-                    classificationsStore.setClassificationsStatus('error')
-                }
-            })
+            const {
+                isClassificationInitializedInStore,
+                initializeClassificationsInStore,
+            } = useClassifications()
+            if (!isClassificationInitializedInStore()) {
+                initializeClassificationsInStore()
+            }
 
             function propagateToAssetList(updatedAsset: assetInterface) {
                 if (assetDiscovery.value)

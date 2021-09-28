@@ -1,7 +1,7 @@
 <template>
     <a-form :model="testModal" ref="formRef" :rules="getRules(formModel)">
         <a-button @click="validate">Validate</a-button>
-
+        <!-- <pre>{{ formModel }}</pre> -->
         <span class="grid grid-cols-2 gap-x-8">
             <div
                 v-for="(f, x) in formModel"
@@ -21,16 +21,27 @@
                             :class="c.isVisible ? '' : 'hidden'"
                             class="p-1 px-4 my-2 rounded"
                         >
-                            {{ c.label
-                            }}<sup
-                                v-if="isRequiredField(c)"
-                                class="text-red-600"
+                            {{ c.label }}
+                            <sup v-if="isRequiredField(c)" class="text-red-600"
                                 >*</sup
                             >
+
+                            <a-popover title="Help" v-if="c.helpText">
+                                <template #content>
+                                    <p class="text-gray-500">
+                                        {{ c.helpText }}
+                                    </p>
+                                </template>
+                                <fa
+                                    icon="fal info-circle"
+                                    class="ml-2 text-xs"
+                                ></fa>
+                            </a-popover>
                             <a-form-item :name="c.id">
                                 <DynamicInput
                                     v-model="testModal[c.id]"
                                     :data-type="c.type"
+                                    :date-time-type="c.dateTimeType"
                                     :placeholder="c.placeholder"
                                     :default-value="c.default"
                                     :prefix="c.prefix"
@@ -50,18 +61,24 @@
                         v-model:data="testModal[f.id]"
                         class="pb-4 border-b"
                         :list="f.options"
-                    >
-                    </CustomRadioButton>
+                    ></CustomRadioButton>
                 </div>
                 <div v-else class="mb-5 rounded">
-                    {{ f.label
-                    }}<sup v-if="isRequiredField(f)" class="text-red-600"
-                        >*</sup
-                    >
+                    {{ f.label }}
+                    <sup v-if="isRequiredField(f)" class="text-red-600">*</sup>
+                    <a-popover title="Help" v-if="f.helpText">
+                        <template #content>
+                            <p class="text-gray-500">
+                                {{ f.helpText }}
+                            </p>
+                        </template>
+                        <fa icon="fal info-circle" class="ml-2 text-xs"></fa>
+                    </a-popover>
                     <a-form-item :name="f.id">
                         <DynamicInput
                             v-model="testModal[f.id]"
                             :data-type="f.type"
+                            :date-time-type="f.dateTimeType"
                             :placeholder="f.placeholder"
                             :default-value="f.default"
                             :prefix="f.prefix"
@@ -83,7 +100,7 @@
     import { defineComponent, reactive, ref, watch, computed } from 'vue'
     import CustomRadioButton from '@common/radio/customRadioButton.vue'
     import useFormGenerator from './useFormGenerator'
-    import { dummy2 } from './dummy'
+    import config from './config.json'
 
     export default defineComponent({
         name: 'FormBuilder',
@@ -101,7 +118,7 @@
                 testModal,
 
                 isRequiredField,
-            } = useFormGenerator(dummy2, formRef)
+            } = useFormGenerator(config, formRef)
 
             // const test = computed(() => finalConfigObject(formModel.value))
 

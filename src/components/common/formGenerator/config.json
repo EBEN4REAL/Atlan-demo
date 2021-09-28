@@ -1,0 +1,437 @@
+[
+    {
+        "label": "Array",
+        "type": "array",
+        "id": "hello",
+        "stringify": true,
+        "isVisible": true,
+        "children": [
+            {
+                "id": "url1",
+                "exclude": false,
+                "type": "template",
+                "isVisible": false,
+                "template": "xx-jdbc:redshift://{{host}}:asdasd{{port}}/{{database}}-xx"
+            }
+        ]
+    },
+    {
+        "id": "url",
+        "type": "template",
+        "isVisible": true,
+        "template": "xx-jdbc:redshift://{{host}}:asdasd{{port}}/{{database}}-xx"
+    },
+    {
+        "type": "boolean",
+        "id": "boolean",
+        "label": "boolean",
+        "isVisible": true,
+        "default": true,
+        "exclude": true
+    },
+    {
+        "id": "test 1",
+        "type": "text",
+        "label": "test 1",
+        "placeholder": "Text placeholder",
+        "isVisible": true,
+        "conditional": {
+            "refID": "boolean",
+            "refValue": true
+        }
+    },
+    {
+        "id": "test 2",
+        "type": "text",
+        "label": "test 2",
+        "isVisible": true,
+        "conditional": {
+            "refID": "boolean",
+            "refValue": false
+        }
+    },
+    {
+        "id": "credentialGuid",
+        "type": "asyncSelect",
+        "label": "Async Select",
+        "isVisible": true,
+        "placeholder": "Async Select",
+        "requestConfig": {
+            "url": "https://alpha.atlan.com/api/auth/atlas/tenants/default/search/basic",
+            "method": "POST",
+            "params": {},
+            "body": {
+                "typeName": "Connection",
+                "excludeDeletedEntities": true,
+                "includeClassificationAttributes": false,
+                "includeSubClassifications": false,
+                "includeSubTypes": true,
+                "limit": 100,
+                "offset": 0,
+                "attributes": [
+                    "__timestamp",
+                    "__modificationTimestamp",
+                    "__modifiedBy",
+                    "__createdBy",
+                    "__state",
+                    "__guid",
+                    "__historicalGuids",
+                    "__classificationsText",
+                    "__classificationNames",
+                    "__propagatedClassificationNames",
+                    "__customAttributes",
+                    "__labels",
+                    "allowPreview",
+                    "allowQuery",
+                    "botQualifiedName",
+                    "botVersion",
+                    "category",
+                    "description",
+                    "host",
+                    "extra",
+                    "port",
+                    "ownerUsers",
+                    "ownerGroups",
+                    "displayName",
+                    "integrationName",
+                    "integrationCredentialQualifiedName",
+                    "siteName",
+                    "siteQualifiedName",
+                    "projectName",
+                    "projectQualifiedName",
+                    "topLevelProjectName",
+                    "topLevelProjectQualifiedName",
+                    "projectHierarchy",
+                    "workbookName",
+                    "workbookQualifiedName",
+                    "isTopLevelProject",
+                    "tags",
+                    "inputFields",
+                    "outputFields",
+                    "outputSteps",
+                    "datasourceName",
+                    "datasourceQualifiedName",
+                    "isDatasourcePublished",
+                    "tableauFullyQualifiedName",
+                    "upstreamTables",
+                    "upstreamColumns",
+                    "upstreamFields",
+                    "upstreamDatasources",
+                    "isPublished",
+                    "hasExtracts",
+                    "isCertified",
+                    "certifier",
+                    "certificationNote",
+                    "certifierDisplayName",
+                    "dataCategory",
+                    "role",
+                    "dataType",
+                    "formula"
+                ],
+                "entityFilters": {},
+                "aggregationAttributes": []
+            }
+        },
+        "responseConfig": {
+            "rootPath": ".entities",
+            "labelPath": ".attributes.displayName",
+            "valuePath": ".guid"
+        }
+    },
+    {
+        "id": "testarea2",
+        "type": "textArea",
+        "label": "test Area",
+        "isVisible": true,
+        "placeholder": "TextArea placeholder"
+    },
+    {
+        "id": "dateTime1",
+        "type": "date",
+        "placeholder": "Run Date",
+        "dateTimeType": "day",
+        "plusTime": false,
+        "label": "Date Time",
+        "isVisible": true
+    },
+    {
+        "id": "time1",
+        "type": "time",
+        "label": "Start Time",
+        "placeholder": "Run Time",
+        "isVisible": true
+    },
+    {
+        "id": "checkbox1",
+        "type": "checkbox",
+        "default": true,
+        "label": "Check me",
+        "stringify": true,
+        "isVisible": true,
+        "isMultivalued": true,
+        "options": [
+            {
+                "id": "basic",
+                "label": "Basic"
+            },
+            {
+                "id": "keypair",
+                "label": "Keypair Authentication"
+            }
+        ]
+    },
+    {
+        "id": "button1",
+        "type": "button",
+        "label": "Press me",
+        "isVisible": true,
+        "action": "testConnection",
+        "number": 1
+    },
+    {
+        "id": "radio1",
+        "type": "radioButton",
+        "label": "Radio me",
+        "isVisible": true,
+        "options": [
+            {
+                "id": "basic",
+                "label": "Basic"
+            },
+            {
+                "id": "keypair",
+                "label": "Keypair"
+            },
+            {
+                "id": "common",
+                "label": "Common"
+            }
+        ]
+    },
+    {
+        "id": "selectrole",
+        "label": "Default Role",
+        "type": "select",
+        "helpText": "ACCOUNTADMIN or similar privileged role is required to fetch query history from snowflake to drive adoption and lineage. For more details check docs.atlan.com.",
+        "allowCustom": true,
+        "options": [
+            {
+                "id": "ACCOUNTADMIN",
+                "label": "ACCOUNTADMIN"
+            },
+            {
+                "id": "MEMEBER",
+                "label": "MEMEBER"
+            }
+        ],
+        "isVisible": true,
+        "default": "ACCOUNTADMIN"
+    },
+    {
+        "type": "group",
+        "groupTitle": "Test Group",
+        "isVisible": true,
+        "children": [
+            {
+                "id": "host",
+                "label": "Host",
+                "type": "text",
+                "helpText": "Redshift Cluster Host",
+                "prefix": "https://",
+                "placeholder": "",
+                "isVisible": true,
+                "default": "",
+                "rules": [
+                    {
+                        "type": "required",
+                        "enabled": true,
+                        "errorMessage": "Host name is mandatory"
+                    }
+                ]
+            },
+            {
+                "id": "port",
+                "label": "Port",
+                "type": "number",
+                "helpText": "Port",
+                "placeholder": "Port",
+                "isVisible": true,
+                "prefill": true,
+                "default": "5439",
+                "rules": [
+                    {
+                        "type": "required",
+                        "enabled": true,
+                        "errorMessage": "Port is requried"
+                    }
+                ]
+            },
+            {
+                "id": "database",
+                "label": "Database",
+                "type": "text",
+                "helpText": "Database to crawl",
+                "placeholder": "dev",
+                "isVisible": true,
+                "default": "dev",
+                "rules": [
+                    {
+                        "type": "required",
+                        "enabled": true,
+                        "errorMessage": "Database is mandatory"
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "id": "auth",
+        "label": "Authentication Mode",
+        "type": "toggle",
+        "default": "basic",
+        "isVisible": true,
+        "rules": [],
+        "options": [
+            {
+                "id": "basic",
+                "label": "Basic"
+            },
+            {
+                "id": "keypair",
+                "label": "Keypair Authentication"
+            }
+        ]
+    },
+    {
+        "id": "login",
+        "label": "Username basic",
+        "type": "text",
+        "isVisible": true,
+        "default": "",
+        "conditional": {
+            "refID": "auth",
+            "refValue": "basic"
+        },
+        "rule": [
+            {
+                "type": "required",
+                "enabled": true,
+                "errorMessage": ""
+            }
+        ]
+    },
+    {
+        "id": "password",
+        "label": "Password basic",
+        "type": "password",
+        "isVisible": true,
+        "default": "",
+        "conditional": {
+            "refID": "auth",
+            "refValue": "basic"
+        },
+        "rule": [
+            {
+                "type": "required",
+                "enabled": true,
+                "errorMessage": ""
+            }
+        ]
+    },
+    {
+        "id": "login",
+        "label": "Username keypair",
+        "type": "text",
+        "isVisible": true,
+        "default": "",
+        "isMandatory": true,
+        "conditional": {
+            "refID": "auth",
+            "refValue": "keypair"
+        },
+        "rule": [
+            {
+                "type": "required",
+                "enabled": true,
+                "errorMessage": ""
+            }
+        ]
+    },
+    {
+        "id": "password",
+        "label": "Private key",
+        "type": "password",
+        "isVisible": true,
+        "conditional": {
+            "refID": "auth",
+            "refValue": "keypair"
+        },
+        "rule": [
+            {
+                "type": "required",
+                "enabled": true,
+                "errorMessage": ""
+            }
+        ]
+    },
+    {
+        "id": "keyfile_password",
+        "label": "Private key password(If set)",
+        "type": "password",
+        "isVisible": true,
+        "conditional": {
+            "refID": "auth",
+            "refValue": "keypair"
+        },
+        "rule": [
+            {
+                "type": "required",
+                "enabled": true,
+                "errorMessage": ""
+            }
+        ]
+    },
+    {
+        "type": "object",
+        "id": "extra",
+        "visible": true,
+        "children": [
+            {
+                "type": "group",
+                "groupTitle": "Advanced",
+                "children": [
+                    {
+                        "id": "ssl",
+                        "label": "SSL",
+                        "type": "boolean",
+                        "isVisible": true,
+                        "default": true,
+                        "rule": [
+                            {
+                                "type": "required",
+                                "enabled": true,
+                                "errorMessage": ""
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "id": "connType",
+        "label": "Connection Type",
+        "type": "text",
+        "helpText": "Connection Type",
+        "placeholder": "redshift",
+        "isVisible": false,
+        "default": "redshift",
+        "rules": [
+            {
+                "type": "required",
+                "enabled": true,
+                "errorMessage": ""
+            }
+        ]
+    }
+]

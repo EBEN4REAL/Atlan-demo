@@ -19,6 +19,8 @@ export default function useFormGenerator(formConfig, formRef) {
             schema.isVisible = true
         if (!schema.hasOwnProperty('rules'))
             schema.rules = []
+        if (schema.type === 'datetime')
+            schema.dateTimeType = schema.dateTimeType
 
         falseDefault.forEach(d => {
             if (!s.hasOwnProperty(d))
@@ -28,7 +30,7 @@ export default function useFormGenerator(formConfig, formRef) {
         if (schema.rules.length) {
             schema.rules.map(r => {
                 const rCopy = r;
-                if (!rCopy.hasOwnProperty('enaled')) {
+                if (!rCopy.hasOwnProperty('enabled')) {
                     rCopy.enabled = true;
                     rCopy.typeName = getPrivateTypeName(schema.type);
                 }
@@ -148,7 +150,7 @@ export default function useFormGenerator(formConfig, formRef) {
                 finalString += getValueFromSchemaData(pp[0]) + pp[1]
             }
         })
-        console.log('generateSring', s, finalString)
+        // console.log('generateSring', s, finalString)
         return finalString
     }
 

@@ -7,8 +7,52 @@
             :prefix="prefix"
             :suffix="suffix"
             @change="handleChange"
+        ></a-input>
+        <!-- Continued types -->
+        <a-textarea
+            v-if="dataType === 'textArea'"
+            :value="modelValue"
+            :placeholder="placeholder"
+            @change="handleChange"
+        ></a-textarea>
+        <component
+            :is="dateTimeTypeComponent || 'a-date-picker'"
+            v-if="dataType === 'date'"
+            :default-value="modelValue"
+            :placeholder="placeholder"
+            @change="handleChange"
+        ></component>
+        <a-time-picker
+            v-if="dataType === 'time'"
+            :default-value="modelValue"
+            :placeholder="placeholder"
+            @change="handleChange"
+        ></a-time-picker>
+        <a-checkbox-group
+            v-if="dataType === 'checkbox'"
+            :checked="modelValue"
+            @change="handleChange"
+            :options="idToVal"
+        ></a-checkbox-group>
+        <a-radio-group
+            v-if="dataType === 'radioButton'"
+            :value="modelValue"
+            @change="handleChange"
+            :options="idToVal"
+        ></a-radio-group>
+        <a-select
+            v-if="dataType === 'select'"
+            :default-value="modelValue"
+            @change="handleChange"
         >
-        </a-input>
+            <a-select-option
+                v-for="(o, index) in idToVal"
+                :key="index"
+                :value="o.value"
+                >{{ o.label }}</a-select-option
+            >
+        </a-select>
+        <!-- End of Coninuted types -->
         <a-select
             v-if="dataType === 'asyncSelect'"
             style="width: 100%"
@@ -27,8 +71,7 @@
             :prefix="prefix"
             :suffix="suffix"
             @change="handleChange"
-        >
-        </a-input-number>
+        ></a-input-number>
         <a-input-password
             v-if="dataType === 'password'"
             :value="modelValue"
@@ -36,8 +79,7 @@
             :prefix="prefix"
             :suffix="suffix"
             @change="handleChange"
-        >
-        </a-input-password>
+        ></a-input-password>
         <a-switch
             v-if="dataType === 'boolean'"
             :checked="modelValue"
@@ -53,8 +95,7 @@
                 :prefix="prefix"
                 :suffix="suffix"
                 @change="handleChange"
-            >
-            </a-input>
+            ></a-input>
             <a-select
                 v-if="dataType === 'enum' && !isCustom"
                 style="width: 80%"
@@ -63,15 +104,15 @@
                 :options="enumList"
                 :placeholder="placeholder"
                 @change="handleChange"
-            >
-            </a-select>
+            ></a-select>
             <a-button
                 v-if="enumAllowCustom"
                 style="width: 10%"
                 class="px-1"
                 @click="handleToggleCustom"
-                ><fa icon="fal user-edit"></fa
-            ></a-button>
+            >
+                <fa icon="fal user-edit"></fa>
+            </a-button>
         </a-input-group>
         <UserSelector v-if="dataType === 'users'"></UserSelector>
     </div>
@@ -150,6 +191,13 @@
                 require: false,
                 default: () => null,
             },
+            dateTimeType: {
+                type: String,
+                required: false,
+                default(): string {
+                    return ''
+                },
+            },
         },
         emits: ['update:modelValue', 'change', 'blur'],
         setup(props) {
@@ -172,6 +220,28 @@
                 isCustom: false,
             }
         },
+        computed: {
+            dateTimeTypeComponent() {
+                switch (this.dateTimeType) {
+                    case 'date':
+                        return 'a-date-picker'
+                    case 'month':
+                        return 'a-month-picker'
+                    case 'range':
+                        return 'a-range-picker'
+                    case 'week':
+                        return 'a-week-picker'
+                    default:
+                        return 'a-date-picker'
+                }
+            },
+            idToVal() {
+                return this.enumList.map((x) => ({
+                    value: x.id,
+                    label: x.label,
+                }))
+            },
+        },
         mounted() {
             // if (this.defaultValue) {
             //   if (this.dataType === "number") {
@@ -182,13 +252,23 @@
             // }
         },
         methods: {
-            handleChange(e) {
+            handleChange(e, timeStamp) {
+                // console.log(e)
+
                 let val = e
                 if (e?.target) {
                     val = e.target.value
                 }
                 if (this.dataType === 'number') {
                     this.$emit('update:modelValue', parseInt(val))
+                } else if (this.dataType === 'checkbox') {
+                    console.log(e)
+                    this.$emit('update:modelValue', Array.from(e))
+                } else if (
+                    this.dataType === 'date' ||
+                    this.dataType === 'time'
+                ) {
+                    this.$emit('update:modelValue', timeStamp)
                 } else {
                     this.$emit('update:modelValue', val)
                 }

@@ -40,6 +40,7 @@ import {
   Timeline,
   Pagination,
   DatePicker,
+  TimePicker,
   Popconfirm,
   Empty,
   Typography,
@@ -84,6 +85,7 @@ export const install: UserModule = ({ app }) => {
   app.use(Tag);
   app.use(Pagination);
   app.use(DatePicker);
+  app.use(TimePicker);
   app.use(Image);
   app.use(Popconfirm);
   app.use(Typography);

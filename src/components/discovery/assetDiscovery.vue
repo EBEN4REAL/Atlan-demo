@@ -124,13 +124,12 @@
     // import useTracking from '~/modules/tracking'
     import { initialFiltersType } from '~/pages/assets.vue'
 
-    import { getEncodedStringFromOptions } from '~/utils/helper/routerQuery'
     import { serializeQuery } from '~/utils/helper/routerHelper'
 
     import { useBusinessMetadataStore } from '~/store/businessMetadata'
     import { useFilteredTabs } from './useTabMapped'
     import { Components } from '~/api/atlas/client'
-    import { isArray } from '@antv/x6/lib/util/lang/lang'
+    import useFilterUtils from './filters/useFilterUtils'
 
     export default defineComponent({
         name: 'AssetDiscovery',
@@ -169,7 +168,6 @@
             // initializing the discovery store
             const { initialFilters } = toRefs(props)
             const router = useRouter()
-
             // Asset filter component ref
             const assetFilterRef = ref()
 
@@ -201,9 +199,11 @@
             const offset = ref(0)
             const sortOrder = ref('default')
             const state = ref('active')
+            const facets = computed(() => AllFilters.value?.facetsFilters)
+
+            const { generateFacetConfigForRouter } = useFilterUtils(facets)
 
             // Get All Disoverable Asset Types
-
             const initialTabs: Ref<string[]> = computed(() =>
                 useFilteredTabs({
                     connector: AllFilters.value?.facetsFilters?.connector,
@@ -309,7 +309,7 @@
                     offset: offset.value,
                     entityFilters: {
                         condition: 'AND',
-                        criterion: isArray(filters?.value)
+                        criterion: Array.isArray(filters?.value)
                             ? [...filters.value]
                             : [],
                     },
@@ -363,13 +363,16 @@
             }
 
             const setRouterOptions = () => {
-                const routerOptions = {
-                    facetsFilters: AllFilters.value.facetsFilters || {},
-                    searchText: queryText.value || '',
-                    selectedTab: selectedTab.value,
-                    sortOrder: sortOrder.value,
-                    state: state.value,
+                const routerOptions: Record<string, any> = {
+                    facetsFilters: generateFacetConfigForRouter(),
                 }
+                if (queryText.value) routerOptions.searchText = queryText.value
+                if (selectedTab.value !== 'Catalog')
+                    routerOptions.selectedTab = selectedTab.value
+                if (sortOrder.value !== 'default')
+                    routerOptions.sortOrder = sortOrder.value
+                if (state.value !== 'active') routerOptions.state = state.value
+
                 const routerQuery = serializeQuery(routerOptions)
                 router.push(`/assets?${routerQuery}`)
             }

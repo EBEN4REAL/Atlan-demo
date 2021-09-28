@@ -27,5 +27,17 @@ export default function useFilterUtils(filters: Ref<Record<string, any>>) {
             return isFilterApplied(key) ? acc + 1 : acc
         }, 0)
     )
-    return { isFilterApplied, totalAppliedFiltersCount }
+
+    function generateFacetConfigForRouter() {
+        return Object.keys(filters.value).reduce((acc, key) => {
+            if (isFilterApplied(key)) acc[key] = filters.value[key]
+            return acc
+        }, {})
+    }
+
+    return {
+        isFilterApplied,
+        totalAppliedFiltersCount,
+        generateFacetConfigForRouter,
+    }
 }

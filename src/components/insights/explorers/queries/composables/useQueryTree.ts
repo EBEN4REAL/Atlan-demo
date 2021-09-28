@@ -101,7 +101,7 @@ const useTree = ({ emit, cacheKey, isAccordion}: useSavedQueriesTreeProps) => {
         } );
 
         queries.entities?.forEach((query) => {
-            if(!query.attributes.parentFolder) {
+            if(!query.attributes.folder) {
                 treeData.value.push(returnTreeDataItemAttributes(query));
                 nodeToParentKeyMap[query.attributes.qualifiedName] = 'root'
             }
@@ -126,8 +126,10 @@ const useTree = ({ emit, cacheKey, isAccordion}: useSavedQueriesTreeProps) => {
             const subQueriesResponse = await getFolderQueries(treeNode.dataRef.guid);
 
             subFoldersResponse.entities?.forEach((folder) => {
-                treeNode.dataRef.children?.push(returnTreeDataItemAttributes(folder))
-                nodeToParentKeyMap[folder.attributes.qualifiedName] = treeNode.dataRef.qualifiedName
+                if(!loadedKeys.value.find((key) => folder.attributes.qualifiedName === key)) {
+                    treeNode.dataRef.children?.push(returnTreeDataItemAttributes(folder))
+                    nodeToParentKeyMap[folder.attributes.qualifiedName] = treeNode.dataRef.qualifiedName
+                }
             })
             subQueriesResponse.entities?.forEach((query) => {
                 treeNode.dataRef.children?.push(returnTreeDataItemAttributes(query))
@@ -145,7 +147,6 @@ const useTree = ({ emit, cacheKey, isAccordion}: useSavedQueriesTreeProps) => {
 
     const expandNode = (expanded: string[], event: any) => {
         // triggered by select
-        console.log('expanded', expanded)
         if (!event.node.isLeaf) {
             const key: string = event.node.eventKey
             const isExpanded = expandedKeys.value?.includes(key)
@@ -189,8 +190,6 @@ const useTree = ({ emit, cacheKey, isAccordion}: useSavedQueriesTreeProps) => {
             isLeaf: item.typeName === 'Query' ? true : false
         }
     }
-
-
 
     onMounted(() => {
         isInitingTree.value = true;

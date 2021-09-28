@@ -22,6 +22,7 @@ const useLoadQueryData = () => {
         "classifications",
         "parentFolder",
         "columns", //TODO: queries
+        "folder",
         ...BaseAttributes,
         ...BasicSearchAttributes
     ];

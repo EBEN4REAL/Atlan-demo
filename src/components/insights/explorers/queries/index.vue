@@ -1,7 +1,7 @@
 <template>
     <div class="flex flex-col items-center w-full h-full p-3 bg-white">
         <div class="w-full h-32 mb-3 rounded placeholder"></div>
-        <template v-for="query in savedQueries" :key="query.id">
+        <!-- <template v-for="query in savedQueries" :key="query.id">
             <div
                 class="flex items-center justify-center w-full px-2 py-2 mb-3 rounded cursor-pointer "
                 @click="() => openSavedQueryInNewTab(query)"
@@ -13,7 +13,19 @@
             >
                 {{ query.label }}
             </div>
-        </template>
+        </template> -->
+        <div class="w-full h-full p-3 pt-0 overflow-y-auto scrollable-container">
+            <query-tree
+                :tree-data="treeData"
+                :on-load-data="onLoadData"
+                :select-node="selectNode"
+                :expand-node="expandNode"
+                :is-loading="isInitingTree"
+                :loaded-keys="loadedKeys"
+                :selected-keys="selectedKeys"
+                :expanded-keys="expandedKeys"
+            />
+        </div>
     </div>
 </template>
 
@@ -23,10 +35,13 @@
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
     import { useSavedQuery } from '~/components/insights/explorers/composables/useSavedQuery'
 
+    import QueryTree from './queryTree.vue'
+    import useQueryTree from './composables/useQueryTree'
+
     export default defineComponent({
-        components: {},
+        components: {QueryTree},
         props: {},
-        setup(props) {
+        setup(props, { emit}) {
             const inlineTabs = inject('inlineTabs') as Ref<
                 activeInlineTabInterface[]
             >
@@ -69,10 +84,33 @@
                 })
                 return bool
             }
+
+            const {
+                treeData,
+                loadedKeys,
+                isInitingTree,
+                selectedKeys,
+                expandedKeys,
+                onLoadData,
+                expandNode,
+                selectNode,
+            } = useQueryTree({
+                emit,
+            });
+
             return {
                 isSavedQueryOpened,
                 openSavedQueryInNewTab,
                 savedQueries,
+
+                treeData,
+                loadedKeys,
+                isInitingTree,
+                selectedKeys,
+                expandedKeys,
+                onLoadData,
+                expandNode,
+                selectNode,
             }
         },
     })

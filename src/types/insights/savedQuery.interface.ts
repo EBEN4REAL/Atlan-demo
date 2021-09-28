@@ -42,6 +42,8 @@ export type Folder = Omit<Components.Schemas.AtlasEntityHeader, 'attributes' | '
 
 export type SavedQuery = Omit<Components.Schemas.AtlasEntityHeader, 'attributes' | 'typeName' | 'guid'> & {
     typeName: 'Query';
-    attributes: Omit<Attributes, 'columns'>;
+    attributes: Omit<Attributes, 'columns' | 'parentFolder'> & {
+        folder?: Components.Schemas.AtlasObjectId;
+    };
     guid: string;
 }

@@ -4,9 +4,12 @@ import { Ref, computed, ComputedRef } from 'vue'
 export default function useFilterUtils(filters: Ref<Record<string, any>>) {
     function isFilterApplied(id: string) {
         if (id === 'connector') {
-            return filters[id]?.attributeValue && filters[id]?.attributeName
+            return (
+                filters.value[id]?.attributeValue &&
+                filters.value[id]?.attributeName
+            )
         } else if (id === 'owners') {
-            const onrFltr = filters[id]
+            const onrFltr = filters.value[id]
             return (
                 onrFltr?.noOwnerAssigned ||
                 onrFltr?.groupValue?.length ||

@@ -40,17 +40,7 @@
                     attributeSearchText === '' &&
                     list.attributeDefs.length > 10
                 "
-                class="
-                    flex
-                    items-center
-                    w-auto
-                    font-bold
-                    text-center
-                    cursor-pointer
-                    select-none
-                    outlined
-                    text-primary
-                "
+                class="flex items-center w-auto font-bold text-center cursor-pointer select-none  outlined text-primary"
                 @click="
                     () => {
                         showAll = true
@@ -62,17 +52,7 @@
             </div>
             <div
                 v-else-if="showAll && attributeSearchText === ''"
-                class="
-                    flex
-                    items-center
-                    w-auto
-                    font-bold
-                    text-center
-                    cursor-pointer
-                    select-none
-                    outlined
-                    text-primary
-                "
+                class="flex items-center w-auto font-bold text-center cursor-pointer select-none  outlined text-primary"
                 @click="showAll = false"
             >
                 {{ `Show less` }}
@@ -149,43 +129,7 @@
                 if (isEmptyObject(appliedValueMap))
                     delete newDataMap.applied[a.name]
                 emit('update:data', { applied: newDataMap.applied })
-                const attributeName = `${props.list.name}.${a.name}`
-
-                const criterion: Components.Schemas.FilterCriteria[] = []
-
-                // ? populate criterion object with filters previously applied
-                Object.entries(newDataMap.applied).forEach((attribute) => {
-                    Object.entries(attribute[1]).forEach((o) => {
-                        criterion.push({
-                            attributeName: `${newDataMap.list.name}.${attribute[0]}`,
-                            operator: o[0],
-                            attributeValue: o[1],
-                        })
-                    })
-                })
-                // ? add new filter to criterion
-                Object.keys(appliedValueMap).forEach((key: string) => {
-                    const alreadyAppliedIndex = criterion.findIndex(
-                        (c) =>
-                            c.attributeName === attributeName &&
-                            c.operator === key
-                    )
-                    const filter = {
-                        attributeName,
-                        operator: key,
-                        attributeValue: appliedValueMap[key],
-                    }
-                    if (alreadyAppliedIndex > -1)
-                        criterion[alreadyAppliedIndex] = filter
-                    else criterion.push(filter)
-                })
-                emit('change', {
-                    id: props.item.id,
-                    payload: {
-                        condition: 'OR',
-                        criterion,
-                    } as Components.Schemas.FilterCriteria,
-                })
+                emit('change')
             }
 
             const filterList = (list: any[]) =>

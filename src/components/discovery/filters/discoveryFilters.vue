@@ -128,12 +128,10 @@
         Ref,
         watch,
     } from 'vue'
-    import { Components } from '~/api/atlas/client'
     import useBusinessMetadataHelper from '~/composables/businessMetadata/useBusinessMetadataHelper'
     import { List as StatusList } from '~/constant/status'
     import { List as AssetCategoryList } from '~/constant/assetCategory'
     import { List } from './filters'
-    import { AssetTypeList } from '~/constant/assetType'
     import useFilterPayload from './useFilterPayload'
     import useFilterUtils from './useFilterUtils'
 
@@ -262,7 +260,7 @@
             const refresh = () => {
                 emit('refresh', filterMap.value, dataMap.value)
             }
-            const handleChange = (value: any, tabsIds: string[]) => {
+            const handleChange = () => {
                 dirtyTimestamp.value = `dirty_${Date.now().toString()}`
                 console.log(dirtyTimestamp.value)
                 refresh()

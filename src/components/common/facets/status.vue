@@ -2,7 +2,7 @@
     <a-checkbox-group
         v-model:value="data.checked"
         class="w-full px-4 py-1 pb-3"
-        @change="handleChange"
+        @change="$emit('change', $event)"
     >
         <div class="flex flex-col w-full">
             <template v-for="item in list" :key="item.id">
@@ -40,53 +40,13 @@
             },
         },
         emits: ['change'],
-        setup(props, { emit }) {
+        setup(props) {
             const list = computed(() => List)
             const checkedValues = ref([])
             const { data } = toRefs(props)
-            console.log(checkedValues.value, 'model')
-            const handleChange = () => {
-                const criterion: Components.Schemas.FilterCriteria[] = []
-                data.value.checked.forEach((val) => {
-                    if(val !== 'is_null')
-                    criterion.push({
-                        attributeName: 'assetStatus',
-                        attributeValue: val,
-                        operator: 'eq',
-                    })
-                    else
-                    {
-                        const subCriterion: Components.Schemas.FilterCriteria[] = [
-                            {
-                                condition:'OR',
-                                criterion:[{
-                                    attributeName: 'assetStatus',
-                                    attributeValue: 'is_null',
-                                    operator: 'eq',
-                                },
-                                {
-                                    attributeName: 'assetStatus',
-                                    attributeValue: '',
-                                    operator: 'isNull',
-                                }] as Components.Schemas.FilterCriteria[]
-                            }
-                        ]
-                        criterion.push(...subCriterion)
-                    }
-                })
-
-                emit('change', {
-                    id: props.item.id,
-                    payload: {
-                        condition: 'OR',
-                        criterion,
-                    } as Components.Schemas.FilterCriteria,
-                })
-            }
 
             return {
                 data,
-                handleChange,
                 list,
                 checkedValues,
             }

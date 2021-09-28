@@ -283,7 +283,7 @@
                         </div>
                     </div>
 
-                    <div class="space-x-2 flex tree-glossary-actions">
+                    <div class="flex tree-glossary-actions">
                         <div
                             v-if="expandedKeys.length"
                             class="
@@ -305,7 +305,7 @@
                         </div>
 
                         <ThreeDotMenu
-                            class="w-7 h-7"
+                            class="w-7 h-7 ml-0.5"
                             :entity="parentGlossary"
                             :showLinks="false"
                             :treeMode="true"

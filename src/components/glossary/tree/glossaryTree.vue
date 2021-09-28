@@ -357,96 +357,115 @@
                         class="h-full"
                     >
                         <template #title="entity">
-                            <a-dropdown :trigger="['contextmenu']">
+                        <div
+                            v-if="entity.title === 'Load more'" 
+                            class="
+                                w-full
+                                text-sm
+                                leading-5
+                                text-primary
+                                font-bold
+                                flex
+                                flex-row
+                            "
+                            @click="entity.click()"
+                        >
+                            <span v-if="entity.isLoading">
+                                <LoadingView size="small" class="h-1 w-1 mr-4" />
+                            </span>
+                             <span v-else>{{ entity.title }}</span>
+                        </div>
+                        <a-dropdown v-else :trigger="['contextmenu']">
+                            <div
+                                class="min-w-full"
+                                @click="
+                                    () =>
+                                        redirectToProfile(
+                                            entity.type,
+                                            entity.key
+                                        )
+                                "
+                            >
                                 <div
-                                    class="min-w-full"
-                                    @click="
-                                        () =>
-                                            redirectToProfile(
-                                                entity.type,
-                                                entity.key
-                                            )
-                                    "
+                                    class="flex justify-between mr-2 group"
                                 >
-                                    <div
-                                        class="flex justify-between mr-2 group"
-                                    >
-                                        <div class="flex m-0">
-                                            <span
-                                                v-if="entity.type === 'glossary'"
-                                                class="p-0 my-auto mr-2"
-                                            >
-                                                <AtlanIcon
-                                                    icon="Glossary"
-                                                    class="h-5"
-                                                />
-                                            </span>
-                                            <span
-                                                v-else
-                                                class="p-0 my-auto mr-1.5"
-                                            >
-                                                <AtlanIcon
-                                                    :icon="
-                                                        getEntityStatusIcon(
-                                                            entity.type,
-                                                            entity.assetStatus
-                                                        )
-                                                    "
-                                                />
-                                            </span>
-                                            <span
-                                                class="
-                                                    my-auto
-                                                    text-sm
-                                                    leading-5
-                                                    text-gray-700
+                                    <div class="flex m-0">
+                                        <span
+                                            v-if="entity.type === 'glossary'"
+                                            class="p-0 my-auto mr-2"
+                                        >
+                                            <AtlanIcon
+                                                icon="Glossary"
+                                                class="h-5"
+                                            />
+                                        </span>
+                                        <span
+                                            v-else
+                                            class="p-0 my-auto mr-1.5"
+                                        >
+                                            <AtlanIcon
+                                                :icon="
+                                                    getEntityStatusIcon(
+                                                        entity.type,
+                                                        entity.assetStatus
+                                                    )
                                                 "
-                                                >{{ entity.title }}</span
-                                            >
-                                        </div>
-
-                                        <ThreeDotMenu
-                                            :treeMode="true"
-                                            :visible="false"
-                                            :entity="{
-                                                guid: entity.guid,
-                                                displayText: entity.name,
-                                                typeName:
-                                                    entity.type === 'term'
-                                                        ? 'AtlasGlossaryTerm'
-                                                        : 'AtlasGlossaryCategory',
-                                                attributes: {
-                                                    ...entity,
-                                                    anchor: {
-                                                        guid: entity.anchor
-                                                            .glossaryGuid,
-                                                        uniqueAttributes: {
-                                                            qualifiedName:
-                                                                parentGlossary?.qualifiedName,
-                                                        },
-                                                    },
-                                                    name: entity.name,
-                                                    assetStatus:
-                                                        entity.assetStatus,
-                                                    qualifiedName:
-                                                        entity.qualifiedName,
-                                                    parentCategory: {
-                                                        guid: entity
-                                                            .parentCategory
-                                                            ?.categoryGuid,
-                                                    },
-                                                    categories:
-                                                        entity.categories?.map(
-                                                            (category) => ({
-                                                                guid: category?.categoryGuid,
-                                                            })
-                                                        ),
-                                                },
-                                            }"
-                                        />
+                                            />
+                                        </span>
+                                        <span
+                                            class="
+                                                my-auto
+                                                text-sm
+                                                leading-5
+                                                text-gray-700
+                                            "
+                                            >{{ entity.title }}</span
+                                        >
                                     </div>
+
+                                    <ThreeDotMenu
+                                        :treeMode="true"
+                                        :visible="false"
+                                        :entity="{
+                                            guid: entity.guid,
+                                            displayText: entity.name,
+                                            typeName:
+                                                entity.type === 'term'
+                                                    ? 'AtlasGlossaryTerm'
+                                                    : 'AtlasGlossaryCategory',
+                                            attributes: {
+                                                ...entity,
+                                                anchor: {
+                                                    guid: entity.anchor
+                                                        .glossaryGuid,
+                                                    uniqueAttributes: {
+                                                        qualifiedName:
+                                                            parentGlossary?.qualifiedName,
+                                                    },
+                                                },
+                                                name: entity.name,
+                                                assetStatus:
+                                                    entity.assetStatus,
+                                                qualifiedName:
+                                                    entity.qualifiedName,
+                                                parentCategory: {
+                                                    guid: entity
+                                                        .parentCategory
+                                                        ?.categoryGuid,
+                                                },
+                                                categories:
+                                                    entity.categories?.map(
+                                                        (category) => ({
+                                                            guid: category?.categoryGuid,
+                                                        })
+                                                    ),
+                                            },
+                                        }"
+                                    />
                                 </div>
-                            </a-dropdown>
+                            </div>
+                        </a-dropdown>
+
                         </template>
                     </a-tree>
                 </div>

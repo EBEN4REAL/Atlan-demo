@@ -1,38 +1,80 @@
 <template>
-    <div class="flex items-center justify-between mx-4 mt-3">
+    <div
+        class="flex items-center justify-between mx-4 mt-4 bg-white"
+        :class="{ 'mb-5': headerReachedTop }"
+    >
         <div class="flex items-center mr-5">
-            <a-button
-                class="flex items-center p-0 m-0 border-0 shadow-none outline-none "
-                @click="redirectToProfile"
-            >
+            <!-- breadcrumb -->
+            <div v-if="headerReachedTop" class="flex items-center">
+                <AtlanIcon icon="Glossary" class="h-5 m-0 mr-2" />
+                <span
+                    v-show="entity?.typeName !== 'AtlasGlossary'"
+                    class="mr-1 text-sm"
+                >
+                    {{
+                        entity?.attributes?.anchor?.uniqueAttributes
+                            ?.qualifiedName
+                    }}
+                    /</span
+                >
                 <AtlanIcon
-                    class="w-auto h-5 mr-2"
-                    icon="ArrowRight"
-                    style="transform: scaleX(-1)"
+                    v-if="entity.typeName === 'AtlasGlossaryTerm'"
+                    icon="Term"
+                    class="h-5 m-0 mr-2"
                 />
-            </a-button>
-            <AtlanIcon icon="Glossary" class="h-5 m-0 mr-1" />
-            <span
-                v-show="entity?.typeName !== 'AtlasGlossary'"
-                class="mr-1 text-sm"
-            >
-                {{
-                    entity?.attributes?.anchor?.uniqueAttributes?.qualifiedName
-                }}
-                <span class="mr-1 ml-1">/</span></span
-            >
-            <AtlanIcon
-                v-if="entity.typeName === 'AtlasGlossaryTerm'"
-                icon="Term"
-                class="h-5 m-0 mr-1"
-            />
-            <AtlanIcon
-                v-if="entity.typeName === 'AtlasGlossaryCategory'"
-                icon="Category"
-                class="h-5 m-0 mb-1 mr-1"
-            />
+                <AtlanIcon
+                    v-if="entity.typeName === 'AtlasGlossaryCategory'"
+                    icon="Category"
+                    class="h-5 m-0 mb-1 mr-2"
+                />
+                <span class="mr-2 text-sm">{{ title }}</span>
+                <component
+                    :is="statusObject?.icon"
+                    v-if="statusObject"
+                    class="inline-flex self-center w-auto h-4 mb-0.5"
+                />
+            </div>
 
-            <span class="mr-3 text-sm truncate">{{ title }}</span>
+            <div v-if="!headerReachedTop" class="flex items-center">
+                <AtlanIcon
+                    v-if="entity.typeName === 'AtlasGlossary'"
+                    icon="Glossary"
+                    class="h-5 m-0 mr-2"
+                />
+                <AtlanIcon
+                    v-if="entity.typeName === 'AtlasGlossaryTerm'"
+                    icon="Term"
+                    class="h-5 m-0 mr-2"
+                />
+                <AtlanIcon
+                    v-if="entity.typeName === 'AtlasGlossaryCategory'"
+                    icon="Category"
+                    class="h-5 m-0 mb-1 mr-2"
+                />
+
+                <span class="mr-3 text-sm">{{
+                    assetTypeLabel[entity.typeName].toUpperCase()
+                }}</span>
+                <div
+                    v-if="
+                        entity.typeName === 'AtlasGlossaryCategory' ||
+                        entity.typeName === 'AtlasGlossaryCategory'
+                    "
+                    class="flex items-center"
+                >
+                    <div class="w-1 h-1 bg-gray-500 rounded-full"></div>
+                    <AtlanIcon icon="Glossary" class="h-4 m-0 mx-3 mb-0.5" />
+                    <span
+                        v-show="entity?.typeName !== 'AtlasGlossary'"
+                        class="mr-1 text-sm text-gray-500"
+                    >
+                        {{
+                            entity?.attributes?.anchor?.uniqueAttributes
+                                ?.qualifiedName
+                        }}
+                    </span>
+                </div>
+            </div>
         </div>
 
         <div class="flex flex-row">
@@ -64,19 +106,21 @@
         </div>
     </div>
 
-    <div class="flex flex-row justify-between pl-5 pr-5 mt-5 mb-5">
+    <div
+        v-if="!headerReachedTop"
+        class="flex flex-row justify-between pl-5 pr-5 mt-3 mb-4"
+    >
         <div class="flex flex-row w-full">
             <div class="flex flex-col justify-center w-full">
                 <div class="flex">
                     <span
                         v-if="!isNewEntity"
-                        class="mr-3 text-xl font-bold leading-6 truncate"
+                        class="mr-2 text-xl leading-6 truncate"
                         >{{ title }}</span
                     >
-
                     <span
                         v-if="isNewEntity"
-                        class="mr-3 text-xl italic leading-6 text-gray-500"
+                        class="mr-2 text-xl italic leading-6 text-gray-500"
                         >Untitled {{ assetTypeLabel[entity.typeName] }}
                     </span>
                     <a-popover
@@ -90,21 +134,18 @@
                         <component
                             :is="statusObject?.icon"
                             v-if="statusObject"
-                            class="inline-flex self-center w-auto h-4 mb-1"
+                            class="inline-flex self-center w-auto h-4 mb-0.5"
                         />
                     </a-popover>
                     <div v-else>
                         <component
                             :is="statusObject?.icon"
                             v-if="statusObject"
-                            class="inline-flex self-center w-auto h-4 mb-1"
+                            class="inline-flex self-center w-auto h-4 mb-0.5"
                         />
                     </div>
                 </div>
                 <div class="flex items-center mt-1">
-                    <span class="mr-4 text-sm leading-5 text-gray-500">{{
-                        assetTypeLabel[entity.typeName].toUpperCase()
-                    }}</span>
                     <a-popover trigger="hover" placement="bottom">
                         <template #content>
                             <p class="w-60">{{ shortDescription }}</p>
@@ -122,7 +163,7 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, computed } from 'vue'
+    import { defineComponent, computed, ref, nextTick, watch } from 'vue'
     import { useRouter } from 'vue-router'
 
     // components
@@ -169,10 +210,14 @@
                 required: true,
                 default: () => {},
             },
+            headerReachedTop: {
+                type: Boolean,
+                required: false,
+                default: false,
+            },
         },
         setup(props) {
             const router = useRouter()
-
             // computed
             const parentGlossaryName = computed(
                 () =>

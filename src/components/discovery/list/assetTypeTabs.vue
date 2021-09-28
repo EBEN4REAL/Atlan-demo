@@ -223,6 +223,9 @@
 
             transition: all 0.8s ease-out;
         }
+        :global(.ant-tabs-tab:first-child) {
+            @apply ml-3 !important;
+        }
         :global(.ant-tabs-tab-active) {
             @apply bg-primary-light !important;
             @apply text-primary !important;

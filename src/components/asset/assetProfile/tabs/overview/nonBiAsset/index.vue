@@ -47,16 +47,17 @@
 
             /** COMPUTED */
             const assetData = computed(() => assetDataInjection?.asset)
+
+            /** METHODS */
+            // useAssetInfo
+            const { assetType } = useAssetInfo()
+
             const showTablePreview = computed(
                 () =>
                     !['TablePartition', 'MaterialisedView'].includes(
                         assetType(assetData.value)
                     )
             )
-
-            /** METHODS */
-            // useAssetInfo
-            const { assetType } = useAssetInfo()
 
             return { assetData, showTablePreview, assetType }
         },

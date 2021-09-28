@@ -19,7 +19,7 @@
           
 <script lang="ts">
 import { defineComponent } from "vue";
-import { Workflows } from "~/api/argo/workflow";
+import { Workflows } from "@services/argo/api/workflow";
 import ItemView from "./item.vue";
 import { sse } from "~/utils/sse";
 

@@ -89,7 +89,6 @@
     // composables
     import useGTCEntity from '~/components/glossary/composables/useGtcEntity'
     import useUpdateGtcEntity from '~/components/glossary/composables/useUpdateGtcEntity'
-    import { useClassifications } from '~/components/admin/classifications/composables/useClassifications'
 
     // assets
     import { Term } from '~/types/glossary/glossary.interface'
@@ -156,13 +155,6 @@
                 router.push(`/glossary/${term.value?.attributes?.anchor?.guid}`)
             }
 
-            const {
-                isClassificationInitializedInStore,
-                initializeClassificationsInStore,
-            } = useClassifications()
-            if (!isClassificationInitializedInStore()) {
-                initializeClassificationsInStore()
-            }
 
             watch(updatedEntity, () => {
                 refetch()

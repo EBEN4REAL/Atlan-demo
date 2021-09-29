@@ -19,6 +19,7 @@
                     </div>
                     <DataTypes
                         v-model:filters="filters"
+                        :data-type-map="dataTypeMap"
                         @update:filters="handleFilterChange"
                     />
                 </template>
@@ -140,7 +141,10 @@
 
     // Composables
     import { images, dataTypeList } from '~/constant/datatype'
-    import useColumns2 from '~/composables/asset/useColumns2'
+    import {
+        useColumns2,
+        useColumnAggregation,
+    } from '~/composables/asset/useColumns2'
 
     // Interfaces
     import { assetInterface } from '~/types/assets/asset.interface'
@@ -189,6 +193,10 @@
             const { list, isLoading, replaceBody, isLoadMore } = useColumns2({
                 entityParentQualifiedName: assetQualifiedName,
             })
+            const { dataTypeMap, dataTypeSum, isAggregateLoading } =
+                useColumnAggregation({
+                    entityParentQualifiedName: assetQualifiedName,
+                })
 
             const updateBody = () => {
                 const initialBody = {
@@ -418,6 +426,7 @@
                 clearFiltersAndSearch,
                 filters,
                 isLoadMore,
+                dataTypeMap,
                 isLoading,
                 loadMore,
                 handleFilterChange,

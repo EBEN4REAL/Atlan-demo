@@ -1,6 +1,6 @@
 <template>
     <div class="flex flex-col items-center w-full h-full bg-white">
-        <div class="w-full h-12 p-4 pb-0 rounded">
+        <div class="w-full p-4 pb-0 rounded">
             <Connector :connector="connector" @update:data="updateConnector" />
             <div class="flex flex-row space-x-2">
                 <a-input-search class="mt-2 rounded" placeholder="Search" />

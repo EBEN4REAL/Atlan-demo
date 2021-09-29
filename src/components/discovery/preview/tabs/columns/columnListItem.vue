@@ -32,14 +32,16 @@
     <Description :selected-asset="asset" :using-in-info="false" />
     <teleport to="#overAssetPreviewSidebar">
         <a-drawer
-            :key="asset.guid"
+            v-if="showColumnSidebar"
             v-model:visible="showColumnSidebar"
             placement="right"
             :mask="false"
             :get-container="false"
+            :wrap-style="{ position: 'absolute', width: '100%' }"
             :keyboard="false"
             :destroy-on-close="true"
             :closable="false"
+            width="100%"
         >
             <AssetPreview
                 :selected-asset="asset"
@@ -96,10 +98,6 @@
 </script>
 
 <style scoped>
-    :global(.ant-drawer-content-wrapper) {
-        width: 420px !important;
-        background-color: white !important;
-    }
     .chip {
         @apply px-1 py-0.5 mr-1;
         @apply rounded;

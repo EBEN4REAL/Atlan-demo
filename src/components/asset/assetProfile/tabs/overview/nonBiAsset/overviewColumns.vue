@@ -93,14 +93,16 @@
         </div>
         <teleport to="#overAssetPreviewSidebar">
             <a-drawer
+                v-if="showColumnPreview"
                 v-model:visible="showColumnPreview"
                 placement="right"
                 :mask="false"
                 :get-container="false"
-                :wrap-style="{ position: 'absolute' }"
+                :wrap-style="{ position: 'absolute', width: '100%' }"
                 :keyboard="false"
                 :destroy-on-close="true"
                 :closable="false"
+                width="100%"
             >
                 <AssetPreview
                     :selected-asset="selectedRowData"
@@ -123,7 +125,6 @@
         computed,
         ref,
         Ref,
-        provide,
         nextTick,
     } from 'vue'
     import { useDebounceFn } from '@vueuse/core'
@@ -336,28 +337,17 @@
 
             // filterColumnsList
             const filterColumnsList = () => {
-                const filteredListData = list.value.map(
-                    (i: {
-                        attributes: {
-                            order: any
-                            name: any
-                            dataType: any
-                            userDescription: any
-                            description: any
-                            popularityScore: any
-                        }
-                    }) => ({
-                        key: i.attributes.order,
-                        hash_index: i.attributes.order,
-                        column_name: i.attributes.name,
-                        data_type: getDataType(i.attributes.dataType),
-                        description:
-                            i.attributes.userDescription ||
-                            i.attributes.description ||
-                            '---',
-                        popularity: i.attributes.popularityScore || 8,
-                    })
-                )
+                const filteredListData = list.value.map((i) => ({
+                    key: i.attributes.order,
+                    hash_index: i.attributes.order,
+                    column_name: i.attributes.name,
+                    data_type: getDataType(i.attributes.dataType),
+                    description:
+                        i.attributes.userDescription ||
+                        i.attributes.description ||
+                        '---',
+                    popularity: i.attributes.popularityScore || 8,
+                }))
                 columnPreviewData.value = { list }
 
                 columnsData.value = {
@@ -492,10 +482,6 @@
 </script>
 
 <style lang="less" scoped>
-    :global(.ant-drawer-content-wrapper) {
-        width: 420px !important;
-        background-color: white !important;
-    }
     :global(.ant-table) {
         @apply border border-gray-light !important;
     }

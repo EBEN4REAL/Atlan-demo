@@ -8,6 +8,7 @@ export interface assetInterface {
         ownerUsers: string
         ownerGroups: string
         assetStatusUpdatedAt: number
+        order: number
         columnCount: number
         sizeBytes: number
         connectionLastSyncedAt: number

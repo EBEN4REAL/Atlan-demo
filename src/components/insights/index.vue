@@ -78,7 +78,7 @@
     import Playground from '~/components/insights/playground/index.vue'
     import AssetSidebar from '~/components/insights/assetSidebar/index.vue'
     import Schema from './explorers/schema/index.vue'
-    import Queries from './explorers/queries.vue'
+    import Queries from './explorers/queries/index.vue'
     import History from './explorers/history.vue'
     import Schedule from './explorers/schedule.vue'
 

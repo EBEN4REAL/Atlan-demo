@@ -155,6 +155,7 @@
             provide('updateTreeNode', updateNode)
             provide('refetchGlossaryTree', refetchNode)
             provide('reInitTree', reInitTree)
+            provide('refetchGlossaryList', refetchGlossaryList)
 
             return {
                 handleOpenModal,

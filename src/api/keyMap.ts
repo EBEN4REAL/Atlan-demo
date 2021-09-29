@@ -222,5 +222,9 @@ export const KeyMaps = {
     },
     schemaExplorer: {
         BASIC_SEARCH: () => getAPIPath('auth/atlas', '/search/basic'),
+    },
+    savedQueries: {
+        RELATIONSHIP: () => getAPIPath('auth/atlas', '/search/relationship'),
+        BASIC_SEARCH: () => getAPIPath('auth/atlas', '/search/basic'),
     }
 }

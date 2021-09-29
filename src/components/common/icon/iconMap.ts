@@ -56,6 +56,8 @@ import Group from '~/assets/images/icons/group.svg'
 import GroupStatic from '~/assets/images/icons/group-static.svg'
 import External from '~/assets/images/icons/external.svg'
 import TreeCollapseAll from '~/assets/images/icons/tree-collapse-all.svg'
+import FolderOpen from '~/assets/images/icons/folder-open.svg'
+import FolderClosed from '~/assets/images/icons/folder-closed.svg'
 
 export default {
     Metadata,
@@ -116,4 +118,6 @@ export default {
     GroupStatic,
     External,
     TreeCollapseAll,
+    FolderOpen,
+    FolderClosed
 }

@@ -33,30 +33,7 @@ interface useSchemaExplorerTreeProps {
     isAccordion?: boolean;
 }
 
-[
-    {
-        name: 'folder 1',
-        children: [
-            {
-                name: 'query 1'
-            },
-            {
-                name: 'query 1'
-            }
-        ]
-    },
-    {
-        name: 'folder 1',
-        children: [
-            {
-                name: 'query 1'
-            },
-            {
-                name: 'query 1'
-            }
-        ]
-    }
-]
+
 const useTree = ({ emit, connectionQualifiedName, databaseQualifiedName, schemaQualifiedName, cacheKey, isAccordion}: useSchemaExplorerTreeProps) => {
 
     // A map of node guids to the guid of their parent. Used for traversing the tree while doing local update
@@ -119,7 +96,6 @@ const useTree = ({ emit, connectionQualifiedName, databaseQualifiedName, schemaQ
      * @param guid - Guid of the parent Glossary
      */
     const initTreeData = async (connectionQualifiedName?: string, databaseQualifiedName?: string, schemaQualifiedName?: string) => {
-        // TODO: optimisation - if new selcted name is already expanded, use the same child instead of reinitializing
         // treeData.value = [];
         if(schemaQualifiedName) {
             const found = loadedKeys.value.find((qualifiedName) => qualifiedName === schemaQualifiedName);

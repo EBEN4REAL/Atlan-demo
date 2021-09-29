@@ -49,8 +49,11 @@
                 </template>
                 <!-- column_name col -->
                 <template #column_name="{ text, record }">
-                    <div class="flex items-center w-full">
-                        <div class="flex items-center flex-grow">
+                    <div :class="record.is_primary && 'flex items-center'">
+                        <div
+                            class="flex items-center"
+                            :class="record.is_primary && 'flex-grow'"
+                        >
                             <component
                                 :is="images[record.data_type]"
                                 class="w-4 h-4 mr-3"

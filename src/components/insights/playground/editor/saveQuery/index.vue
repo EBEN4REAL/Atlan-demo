@@ -134,7 +134,7 @@
                         class="flex items-center justify-between ml-4"
                         :loading="saveQueryLoading"
                     >
-                        {{ modalAction === 'CREATE' ? 'Create' : 'Update' }}
+                        Create
                     </a-button>
                 </div>
             </div>
@@ -149,15 +149,11 @@
         ref,
         onMounted,
         nextTick,
-        inject,
         PropType,
-        ComputedRef,
-        watch,
         toRefs,
     } from 'vue'
     import { List } from '~/constant/status'
     import StatusBadge from '@common/badge/status/index.vue'
-    import { SavedQuery } from '~/types/insights/savedQuery.interface'
 
     export default defineComponent({
         components: { StatusBadge },
@@ -170,19 +166,10 @@
                 type: Object as PropType<boolean>,
                 required: true,
             },
-            modalAction: {
-                // UPDATE, CREATE
-                type: Object as PropType<string>,
-                required: true,
-            },
         },
         emits: ['update:showSaveQueryModal', 'onSaveQuery'],
         setup(props, { emit }) {
-            const { showSaveQueryModal, saveQueryLoading, modalAction } =
-                toRefs(props)
-            const savedQueryInfo = inject(
-                'savedQueryInfo'
-            ) as ComputedRef<SavedQuery>
+            const { showSaveQueryModal, saveQueryLoading } = toRefs(props)
             const currentStatus: Ref<string | undefined> = ref('draft')
             const title: Ref<string> = ref('')
             const description: Ref<string | undefined> = ref('')
@@ -210,46 +197,20 @@
                 }
                 emit('onSaveQuery', saveQueryData)
             }
-            const initFields = () => {
-                switch (modalAction.value) {
-                    case 'UPDATE': {
-                        title.value =
-                            savedQueryInfo.value?.attributes?.name ?? ''
-                        description.value =
-                            savedQueryInfo.value?.attributes?.description ?? ''
-                        isSQLSnippet.value =
-                            savedQueryInfo.value?.attributes?.isSnippet ?? false
-                        currentStatus.value =
-                            savedQueryInfo.value?.attributes?.assetStatus ??
-                            'draft'
-                        break
-                    }
 
-                    case 'CREATE': {
-                        title.value = ''
-                        description.value = ''
-                        isSQLSnippet.value = false
-                        currentStatus.value = 'draft'
-                        break
-                    }
-                }
-            }
             onMounted(async () => {
                 await nextTick()
-                initFields()
                 titleBarRef.value?.focus()
             })
-            watch(savedQueryInfo, initFields)
 
             return {
-                modalAction,
                 title,
                 description,
                 isSQLSnippet,
                 titleBarRef,
-                showSaveQueryModal,
                 currentStatus,
                 List,
+                showSaveQueryModal,
                 saveQueryLoading,
                 clearData,
                 closeModal,

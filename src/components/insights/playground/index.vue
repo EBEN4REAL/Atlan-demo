@@ -13,15 +13,7 @@
                 <template #tabBarExtraContent>
                     <div class="inline-flex items-center mr-2">
                         <span
-                            class="
-                                inline-flex
-                                items-center
-                                justify-center
-                                p-2
-                                rounded-full
-                                btn-add
-                                hover:bg-gray-300
-                            "
+                            class="inline-flex items-center justify-center p-2 rounded-full  btn-add hover:bg-gray-300"
                             @click="handleAdd"
                         >
                             <fa icon="fal plus" class="" />
@@ -30,15 +22,17 @@
                 </template>
                 <a-tab-pane v-for="tab in tabs" :key="tab.key" :closable="true">
                     <template #tab>
-                        <div class="flex items-center justify-between">
+                        <div
+                            class="flex items-center justify-between  tab_min_width"
+                        >
                             <div class="flex items-center">
                                 <span class="mr-2 text-sm">{{
                                     tab.label
                                 }}</span>
                             </div>
                             <div
+                                v-if="!tab.isSaved"
                                 class="flex items-center mr-2 unsaved-dot"
-                                v-if="tab.isSaved"
                             >
                                 <div
                                     class="
@@ -57,7 +51,7 @@
                 </a-tab-pane>
             </a-tabs>
         </div>
-        <div class="w-full h-full" v-if="activeInlineTabKey">
+        <div v-if="activeInlineTabKey" class="w-full h-full">
             <splitpanes horizontal :push-other-panes="false">
                 <pane
                     :max-size="100"
@@ -77,216 +71,236 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, toRefs, Ref, inject, ref } from 'vue'
-import Editor from '~/components/insights/playground/editor/index.vue'
-import ResultsPane from '~/components/insights/playground/resultsPane/index.vue'
-import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
-import NoActiveInlineTab from './noActiveInlineTab.vue'
-import useRunQuery from './common/composables/useRunQuery'
-import { useInlineTab } from '~/components/insights/common/composables/useInlineTab'
-import { useProvide } from '~/components/insights/common/composables/useProvide'
-import { provideDataInterface } from '~/components/insights/common/composables/useProvide'
+    import { defineComponent, toRefs, Ref, inject, ref } from 'vue'
+    import Editor from '~/components/insights/playground/editor/index.vue'
+    import ResultsPane from '~/components/insights/playground/resultsPane/index.vue'
+    import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
+    import NoActiveInlineTab from './noActiveInlineTab.vue'
+    import useRunQuery from './common/composables/useRunQuery'
+    import { useInlineTab } from '~/components/insights/common/composables/useInlineTab'
+    import {
+        useProvide,
+        provideDataInterface,
+    } from '~/components/insights/common/composables/useProvide'
+    import { useRouter } from 'vue-router'
 
-// import { useHotKeys } from '~/components/insights/common/composables/useHotKeys'
+    // import { useHotKeys } from '~/components/insights/common/composables/useHotKeys'
 
-export default defineComponent({
-    components: { Editor, ResultsPane, NoActiveInlineTab },
-    props: {
-        activeInlineTabKey: {
-            type: String,
-            required: true,
+    export default defineComponent({
+        components: { Editor, ResultsPane, NoActiveInlineTab },
+        props: {
+            activeInlineTabKey: {
+                type: String,
+                required: true,
+            },
         },
-    },
-    setup(props, { emit }) {
-        const { queryRun, isQueryRunning } = useRunQuery()
-        const { inlineTabRemove, inlineTabAdd, setActiveTabKey } =
-            useInlineTab()
+        setup(props, { emit }) {
+            const router = useRouter()
+            const { queryRun, isQueryRunning } = useRunQuery()
+            const { inlineTabRemove, inlineTabAdd, setActiveTabKey } =
+                useInlineTab()
 
-        // const {resultsPaneSizeToggle} = useHotKeys()
-        const paneSize = ref(55)
-        const tabs = inject('inlineTabs') as Ref<activeInlineTabInterface[]>
-        const activeInlineTab = inject(
-            'activeInlineTab'
-        ) as Ref<activeInlineTabInterface>
-        const activeInlineTabKey = inject('activeInlineTabKey') as Ref<string>
+            // const {resultsPaneSizeToggle} = useHotKeys()
+            const paneSize = ref(55)
+            const tabs = inject('inlineTabs') as Ref<activeInlineTabInterface[]>
+            const activeInlineTab = inject(
+                'activeInlineTab'
+            ) as Ref<activeInlineTabInterface>
+            const activeInlineTabKey = inject(
+                'activeInlineTabKey'
+            ) as Ref<string>
 
-        const handleAdd = () => {
-            const key = String(new Date().getTime())
-            const inlineTabData: activeInlineTabInterface = {
-                label: 'New Tab',
-                key,
-                favico: 'https://atlan.com/favicon.ico',
-                isSaved: false,
-                queryId: undefined,
-                explorer: {
-                    schema: {
-                        connectors: {
-                            connection:
-                                activeInlineTab.value?.explorer?.schema
-                                    ?.connectors?.connection,
-                            connector:
-                                activeInlineTab.value?.explorer?.schema
-                                    ?.connectors?.connector,
-                            selectedDefaultSchema:
-                                activeInlineTab.value?.explorer?.schema
-                                    ?.connectors?.selectedDefaultSchema,
-                            selectedDataSourceName:
-                                activeInlineTab.value?.explorer?.schema
-                                    ?.connectors?.selectedDataSourceName,
-                            connectionGuid:
-                                activeInlineTab.value?.explorer?.schema
-                                    ?.connectors?.connectionGuid ??
-                                '8492dfcf-8dc4-40e2-bf80-11744a3d70dc',
+            const handleAdd = () => {
+                const key = String(new Date().getTime())
+                const inlineTabData: activeInlineTabInterface = {
+                    label: 'Untitled',
+                    key,
+                    favico: 'https://atlan.com/favicon.ico',
+                    isSaved: false,
+                    queryId: undefined,
+                    explorer: {
+                        schema: {
+                            connectors: {
+                                connection:
+                                    activeInlineTab.value?.explorer?.schema
+                                        ?.connectors?.connection,
+                                connector:
+                                    activeInlineTab.value?.explorer?.schema
+                                        ?.connectors?.connector,
+                                selectedDefaultSchema:
+                                    activeInlineTab.value?.explorer?.schema
+                                        ?.connectors?.selectedDefaultSchema,
+                                selectedDataSourceName:
+                                    activeInlineTab.value?.explorer?.schema
+                                        ?.connectors?.selectedDataSourceName,
+                                connectionGuid:
+                                    activeInlineTab.value?.explorer?.schema
+                                        ?.connectors?.connectionGuid ??
+                                    '8492dfcf-8dc4-40e2-bf80-11744a3d70dc',
+                            },
                         },
                     },
-                },
-                playground: {
-                    editor: {
-                        text:
-                            activeInlineTab.value?.playground?.editor.text ??
-                            'select * from "INSTACART_ALCOHOL_ORDER_TIME" limit 10',
-                        dataList: [],
-                        columnList: [],
-                        variables:
-                            activeInlineTab.value?.playground?.editor
-                                .variables ?? [],
-                    },
-                    resultsPane: {
-                        activeTab:
-                            activeInlineTab.value?.playground?.resultsPane
-                                ?.activeTab ?? 0,
-                        result: {
-                            title: `${key} Result`,
+                    playground: {
+                        editor: {
+                            text:
+                                activeInlineTab.value?.playground?.editor
+                                    .text ??
+                                'select * from "INSTACART_ALCOHOL_ORDER_TIME" limit 10',
+                            dataList: [],
+                            columnList: [],
+                            variables:
+                                activeInlineTab.value?.playground?.editor
+                                    .variables ?? [],
                         },
-                        metadata: {},
-                        queries: {},
-                        joins: {},
-                        filters: {},
-                        impersonation: {},
-                        downstream: {},
-                        sqlHelp: {},
+                        resultsPane: {
+                            activeTab:
+                                activeInlineTab.value?.playground?.resultsPane
+                                    ?.activeTab ?? 0,
+                            result: {
+                                title: `${key} Result`,
+                            },
+                            metadata: {},
+                            queries: {},
+                            joins: {},
+                            filters: {},
+                            impersonation: {},
+                            downstream: {},
+                            sqlHelp: {},
+                        },
                     },
-                },
-                assetSidebar: {
-                    // for taking the previous state from active tab
-                    isVisible:
-                        activeInlineTab.value?.assetSidebar?.isVisible ?? false,
-                    assetInfo: {},
-                    title: activeInlineTab.value?.assetSidebar.title ?? '',
-                    id: activeInlineTab.value?.assetSidebar.id ?? '',
-                },
+                    assetSidebar: {
+                        // for taking the previous state from active tab
+                        isVisible:
+                            activeInlineTab.value?.assetSidebar?.isVisible ??
+                            false,
+                        assetInfo: {},
+                        title: activeInlineTab.value?.assetSidebar.title ?? '',
+                        id: activeInlineTab.value?.assetSidebar.id ?? '',
+                    },
+                }
+                inlineTabAdd(inlineTabData, tabs, activeInlineTabKey)
             }
-            inlineTabAdd(inlineTabData, tabs, activeInlineTabKey)
-        }
-        const onTabClick = (activeKey) => {
-            setActiveTabKey(activeKey, activeInlineTabKey)
-        }
-        const onEdit = (targetKey: string | MouseEvent, action: string) => {
-            if (action === 'add') {
-                handleAdd()
-            } else {
-                inlineTabRemove(targetKey as string, tabs, activeInlineTabKey)
+            const pushGuidToURL = (guid: string | undefined) => {
+                if (guid) router.push(`/insights?id=${guid}`)
+                else router.push(`/insights`)
             }
-        }
+            const onTabClick = (activeKey) => {
+                setActiveTabKey(activeKey, activeInlineTabKey)
+                pushGuidToURL(activeInlineTab.value?.queryId)
+            }
+            const onEdit = (targetKey: string | MouseEvent, action: string) => {
+                if (action === 'add') {
+                    handleAdd()
+                } else {
+                    inlineTabRemove(
+                        targetKey as string,
+                        tabs,
+                        activeInlineTabKey
+                    )
+                }
+            }
 
-        /*---------------------------------------------*/
-        /*---------- PROVIDERS FOR CHILDRENS -----------------
+            /*---------------------------------------------*/
+            /*---------- PROVIDERS FOR CHILDRENS -----------------
                 ---Be careful to add a property/function otherwise it will pollute the whole flow for childrens--
                 */
-        const provideData: provideDataInterface = {
-            isQueryRunning: isQueryRunning,
-        }
-        useProvide(provideData)
+            const provideData: provideDataInterface = {
+                isQueryRunning: isQueryRunning,
+            }
+            useProvide(provideData)
 
-        /*-------------------------------------*/
+            /*-------------------------------------*/
 
-        return {
-            isQueryRunning,
-            activeInlineTab,
-            tabs,
-            activeInlineTabKey,
-            paneSize,
-            handleAdd,
-            onEdit,
-            onTabClick,
-            queryRun,
-        }
-    },
-})
+            return {
+                isQueryRunning,
+                activeInlineTab,
+                tabs,
+                activeInlineTabKey,
+                paneSize,
+                handleAdd,
+                onEdit,
+                onTabClick,
+                queryRun,
+            }
+        },
+    })
 </script>
 <style lang="less">
-.insights-tabs {
-    .ant-tabs-nav-container {
-        height: 30px !important;
-    }
-    .ant-tabs-extra-content {
-        line-height: 30px !important;
-    }
-    .ant-tabs-tab {
-        height: 100%;
-        border-radius: 0px !important;
-        margin-right: 0px !important;
-        border-left: 0px !important;
-        border-right: 0px !important;
-        border-top: 0px !important;
-        padding: 0 12px !important;
-        height: 30px !important;
-
-        > div {
+    .insights-tabs {
+        .ant-tabs-nav-container {
+            height: 30px !important;
+        }
+        .ant-tabs-extra-content {
+            line-height: 30px !important;
+        }
+        .ant-tabs-tab {
             height: 100%;
-        }
+            border-radius: 0px !important;
+            margin-right: 0px !important;
+            border-left: 0px !important;
+            border-right: 0px !important;
+            border-top: 0px !important;
+            padding: 0 12px !important;
+            height: 30px !important;
 
-        &.ant-tabs-tab-active {
-            border-bottom: 1px solid !important;
-        }
-        .ant-tabs-close-x {
-            visibility: hidden;
-            transition: none !important;
-        }
-        &:hover {
-            .unsaved-dot {
-                visibility: hidden;
+            > div {
+                height: 100%;
+            }
+
+            &.ant-tabs-tab-active {
+                border-bottom: 1px solid !important;
             }
             .ant-tabs-close-x {
-                visibility: visible !important;
+                visibility: hidden;
+                transition: none !important;
+            }
+            &:hover {
+                .unsaved-dot {
+                    visibility: hidden;
+                }
+                .ant-tabs-close-x {
+                    visibility: visible !important;
+                }
             }
         }
     }
-}
 </style>
 <style lang="less" scoped>
-.btn {
-    border: 1px solid #f06;
-    padding: 10px 16px;
-    border-radius: 2px;
-    border: 1px solid #fff;
-    box-shadow: 0 3px 1px -2px #00000033, 0 2px 2px 0 rgba(0, 0, 0, 0.14),
-        0 1px 5px 0 rgba(0, 0, 0, 0.12);
-    background-color: #fff;
-    user-select: none;
-    cursor: pointer;
-}
+    .btn {
+        border: 1px solid #f06;
+        padding: 10px 16px;
+        border-radius: 2px;
+        border: 1px solid #fff;
+        box-shadow: 0 3px 1px -2px #00000033, 0 2px 2px 0 rgba(0, 0, 0, 0.14),
+            0 1px 5px 0 rgba(0, 0, 0, 0.12);
+        background-color: #fff;
+        user-select: none;
+        cursor: pointer;
+    }
 
-.btn + .btn {
-    margin-left: 30px;
-}
+    .btn + .btn {
+        margin-left: 30px;
+    }
 
-.btns {
-    padding: 50px 30px;
-}
-.children_spiltpanes {
-    height: calc(100vh - 19rem);
-}
+    .btns {
+        padding: 50px 30px;
+    }
+    .children_spiltpanes {
+        height: calc(100vh - 19rem);
+    }
+    .tab_min_width {
+        // min-width: 3rem;
+    }
 </style>
 <style lang="less" module>
-.inline_tabs {
-    :global(.ant-tabs-tab > div) {
-        @apply flex items-center !important;
+    .inline_tabs {
+        :global(.ant-tabs-tab > div) {
+            @apply flex items-center !important;
+        }
+        :global(.ant-tabs-bar) {
+            @apply m-0 !important;
+        }
     }
-    :global(.ant-tabs-bar) {
-        @apply m-0 !important;
-    }
-}
 </style>
 <route lang="yaml">
 meta:

@@ -22,7 +22,7 @@ export function useSavedQuery(
             key: savedQuery.attributes.qualifiedName,
             favico: 'https://atlan.com/favicon.ico',
             isSaved: true,
-            queryId: savedQuery.attributes.qualifiedName,
+            queryId: savedQuery.guid,
             explorer: {
                 schema: {
                     connectors: {
@@ -35,9 +35,9 @@ export function useSavedQuery(
                 },
                 queries: {
                     connectors: {
-                        connector: savedQuery.attributes.integrationName
-                    }
-                }
+                        connector: savedQuery.attributes.integrationName,
+                    },
+                },
             },
             playground: {
                 editor: {
@@ -79,9 +79,7 @@ export function useSavedQuery(
             syncInlineTabsInLocalStorage(tabsArray.value)
         } else {
             // show user that this tab is already opened
-            message.error({
-                content: `${newTab.label} is already opened!`,
-            })
+            activeInlineTabKey.value = newTab.key
         }
     }
 

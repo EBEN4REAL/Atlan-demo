@@ -69,7 +69,7 @@
 
 <script lang="ts">
     import { defineComponent, inject, Ref, ComputedRef, watch, ref } from 'vue'
-
+    import { useRouter } from 'vue-router'
     import { SavedQueryInterface } from '~/types/insights/savedQuery.interface'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
     import { useSavedQuery } from '~/components/insights/explorers/composables/useSavedQuery'
@@ -84,6 +84,7 @@
         components: { QueryTree, Connector },
         props: {},
         setup(props, { emit }) {
+            const router = useRouter()
             const inlineTabs = inject('inlineTabs') as Ref<
                 activeInlineTabInterface[]
             >
@@ -155,6 +156,9 @@
                     'queries'
                 )
             }
+            const pushGuidToURL = (guid: string) => {
+                router.push(`/insights?id=${guid}`)
+            }
 
             const {
                 treeData,
@@ -168,6 +172,7 @@
             } = useQueryTree({
                 emit,
                 openSavedQueryInNewTab,
+                pushGuidToURL,
             })
 
             watch(activeInlineTabKey, (newActiveInlineTab) => {

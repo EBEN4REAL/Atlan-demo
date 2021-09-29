@@ -1,16 +1,16 @@
 <template>
     <div class="my-2">
-        <div class="flex py-2 mb-2 overflow-x-auto">
+        <div class="flex overflow-x-auto">
             <div class="add-variable-btn">
                 <a-button
-                    class="flex items-center justify-between mr-2"
+                    class="flex items-center justify-between mr-2 py-0.5 px-2"
                     @click="addVariable"
                 >
                     <span class="flex items-center justify-center">
                         <fa icon="fal plus" class="" />
                     </span>
                     <p
-                        class="m-0 ml-2"
+                        class="m-0 ml-1"
                         v-if="sqlVariables && sqlVariables?.length == 0"
                     >
                         Add Variable

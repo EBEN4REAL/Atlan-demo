@@ -4,7 +4,7 @@ export const inlineTabsDemoData: activeInlineTabInterface[] = [
         key: '1',
         label: 'ABCDE',
         isSaved: false,
-        queryId: 'abcd-01-01',
+        queryId: undefined,
         explorer: {
             schema: {
                 connectors: {

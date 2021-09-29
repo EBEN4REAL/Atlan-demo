@@ -2,29 +2,63 @@
     <div class="w-full h-full px-3 rounded">
         <div class="w-full h-full overflow-x-hidden rounded">
             <CustomVariablesNav v-if="editorInstance" />
-            <div
-                class="flex items-center justify-between w-full mb-3  run-btn-wrapper"
-            >
-                <div class="w-full">
+            <div class="flex items-center justify-end w-full run-btn-wrapper">
+                <!-- <div class="w-full">
                     <p class="mb-1 text-base">
-                        {{ selectedDefaultSchema ?? 'ATLAN_TRIAL.PUBLIC' }}
+                        {{ activeInlineTab.label ?? 'ATLAN_TRIAL.PUBLIC' }}
                     </p>
-                </div>
-                <div class="flex">
+                </div> -->
+                <div class="flex mr-4 text-sm">
                     <a-button
                         type="primary"
-                        class=""
+                        class="flex items-center py-0.5 px-2 shadow"
                         :loading="isQueryRunning === 'loading' ? true : false"
                         @click="run"
-                        >Run</a-button
                     >
-
+                        <AtlanIcon class="mr-1" icon="Play" />
+                        Run</a-button
+                    >
                     <a-button
-                        class="flex items-center justify-between ml-4"
+                        v-if="modalAction === 'CREATE'"
+                        class="
+                            flex
+                            items-center
+                            justify-between
+                            ml-2
+                            py-0.5
+                            px-2
+                            shadow
+                        "
                         @click="openSaveQueryModal"
                     >
+                        <AtlanIcon class="mr-1" icon="Save" />
                         Save
                     </a-button>
+                    <a-button
+                        v-else
+                        class="
+                            flex
+                            items-center
+                            justify-between
+                            ml-2
+                            py-0.5
+                            px-2
+                            shadow
+                        "
+                        @click="updateSavedQuery"
+                    >
+                        <AtlanIcon class="mr-1" icon="Save" />
+                        Update
+                    </a-button>
+                    <a-button
+                        class="flex items-center ml-2 py-0.5 px-2 shadow"
+                        v-if="activeInlineTab?.isSaved"
+                        @click="copyURL"
+                    >
+                        <AtlanIcon class="mr-1" icon="Share" /><span
+                            >Share</span
+                        ></a-button
+                    >
                 </div>
             </div>
 
@@ -60,9 +94,11 @@
     } from 'vue'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
     import useRunQuery from '../common/composables/useRunQuery'
-    import { useProvide } from '~/components/insights/common/composables/useProvide'
+    import {
+        useProvide,
+        provideDataInterface,
+    } from '~/components/insights/common/composables/useProvide'
     import { useConnector } from '~/components/insights/common/composables/useConnector'
-    import { provideDataInterface } from '~/components/insights/common/composables/useProvide'
     import CustomVariablesNav from '~/components/insights/playground/editor/customVariablesNav/index.vue'
     import { editor } from 'monaco-editor'
     import { useInlineTab } from '~/components/insights/common/composables/useInlineTab'
@@ -70,6 +106,8 @@
     import { generateUUID } from '~/utils/helper/generator'
     import whoami from '~/composables/user/whoami'
     import { Insights } from '~/services/atlas/api/insights'
+    import AtlanBtn from '~/components/UI/button.vue'
+    import { copyToClipboard } from '~/utils/clipboard'
     import { message } from 'ant-design-vue'
 
     export default defineComponent({
@@ -77,11 +115,13 @@
             Monaco: defineAsyncComponent(() => import('./monaco/monaco.vue')),
             CustomVariablesNav,
             SaveQueryModal,
+            AtlanBtn,
         },
         props: {},
         setup() {
             const { queryRun } = useRunQuery()
-            const { modifyActiveInlineTabEditor } = useInlineTab()
+            const { modifyActiveInlineTabEditor, modifyActiveInlineTab } =
+                useInlineTab()
             const { getConnectonName } = useConnector()
             const { username } = whoami()
             const saveModalRef = ref()
@@ -102,16 +142,22 @@
                 activeInlineTab.value.isSaved ? 'UPDATE' : 'CREATE'
             )
 
-            let editorInstance: Ref<editor.IStandaloneCodeEditor | undefined> =
-                ref()
-            let monacoInstance: Ref<editor.IStandaloneCodeEditor | undefined> =
-                ref()
+            const editorInstance: Ref<
+                editor.IStandaloneCodeEditor | undefined
+            > = ref()
+            const monacoInstance: Ref<
+                editor.IStandaloneCodeEditor | undefined
+            > = ref()
             const isQueryRunning = inject('isQueryRunning') as Ref<string>
             const showSaveQueryModal: Ref<boolean> = ref(false)
             const openSaveQueryModal = () => {
                 showSaveQueryModal.value = true
             }
             const saveQuery = async (saveQueryData: any) => {
+                const activeInlineTabCopy: activeInlineTabInterface =
+                    Object.assign({}, activeInlineTab.value)
+                activeInlineTabCopy.isSaved = true
+                activeInlineTabCopy.label = saveQueryData.title
                 const uuidv4 = generateUUID()
                 const integrationName =
                     activeInlineTab.value.explorer.schema.connectors
@@ -123,8 +169,7 @@
                     activeInlineTab.value.explorer.schema.connectors
                         .connectionGuid
                 const connectionName = getConnectonName(connectionQualifiedName)
-                const name =
-                    saveQueryData.title === '' ? uuidv4 : saveQueryData.title
+                const name = saveQueryData.title
                 const description = saveQueryData.description
                 const assetStatus = saveQueryData.assetStatus
                 const isSQLSnippet = saveQueryData.isSQLSnippet
@@ -132,6 +177,7 @@
                 const rawQuery = editorInstanceRaw?.getValue()
                 const compiledQuery = editorInstanceRaw?.getValue()
                 const qualifiedName = `${connectionQualifiedName}/query/user/nitya/${uuidv4}`
+                const defaultSchemaQualifiedName = `default/snowflake/vqaqufvr-i/ATLAN_TRIAL/PUBLIC`
 
                 const body = ref({
                     entity: {
@@ -141,6 +187,7 @@
                             name,
                             connectionName,
                             qualifiedName,
+                            defaultSchemaQualifiedName,
                             assetStatus,
                             isSnippet: isSQLSnippet,
                             connectionQualifiedName,
@@ -180,6 +227,10 @@
                                 content: `${name} query saved!`,
                             })
                             saveModalRef.value?.clearData()
+                            modifyActiveInlineTab(
+                                activeInlineTabCopy,
+                                inlineTabs
+                            )
                         } else {
                             console.log(error.value.toString())
                             message.error({
@@ -218,6 +269,15 @@
                     monacoInstance.value = monacoInstanceParam
                 console.log(editorInstanceParam, editorInstance, 'fxn')
             }
+            const updateSavedQuery = () => {}
+
+            const copyURL = () => {
+                const URL = window.location.href
+                copyToClipboard(URL)
+                message.success({
+                    content: 'Link Copied!',
+                })
+            }
 
             /*---------- PROVIDERS FOR CHILDRENS -----------------
             ---Be careful to add a property/function otherwise it will pollute the whole flow for childrens--
@@ -237,6 +297,8 @@
                 selectedDefaultSchema,
                 activeInlineTab,
                 isQueryRunning,
+                copyURL,
+                updateSavedQuery,
                 openSaveQueryModal,
                 saveQuery,
                 setEditorInstance,

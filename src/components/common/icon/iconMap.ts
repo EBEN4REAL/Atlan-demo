@@ -62,6 +62,11 @@ import PrivateFolder from '~/assets/images/icons/private-folder.svg'
 import TreeCollapseAll from '~/assets/images/icons/tree-collapse-all.svg'
 import FolderOpen from '~/assets/images/icons/folder-open.svg'
 import FolderClosed from '~/assets/images/icons/folder-closed.svg'
+import Schema2 from '~/assets/images/icons/schema2.svg'
+import History from '~/assets/images/icons/history.svg'
+import Queries from '~/assets/images/icons/queries.svg'
+import Play from '~/assets/images/icons/play.svg'
+import Save from '~/assets/images/icons/save.svg'
 
 export default {
     Metadata,
@@ -128,4 +133,9 @@ export default {
     TreeCollapseAll,
     FolderOpen,
     FolderClosed,
+    Schema2,
+    History,
+    Queries,
+    Play,
+    Save,
 }

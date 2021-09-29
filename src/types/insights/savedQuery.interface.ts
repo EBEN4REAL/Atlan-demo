@@ -6,21 +6,6 @@ export interface SavedQueryInterface {
     result: string
 }
 
-export type Query = Omit<
-    Components.Schemas.AtlasEntityHeader,
-    'attributes' | 'typeName'
-> & {
-    typeName: 'Query'
-    attributes: Attributes
-}
-
-export type SavedQueryResponse = Omit<
-    Components.Schemas.AtlasEntityWithExtInfo,
-    'entity'
-> & {
-    entity?: Query
-}
-
 export type Attributes = {
     assetStatus?: string
     assetStatusMessage?: string
@@ -34,6 +19,7 @@ export type Attributes = {
     name: string
     qualifiedName: string
     userDescription?: string
+    isSnippet?: boolean
 
     connectionQualifiedName: string
     owner?: string
@@ -73,4 +59,11 @@ export type SavedQuery = Omit<
     typeName: 'Query'
     attributes: SavedQueryAttributes
     guid: string
+}
+
+export type SavedQueryResponse = Omit<
+    Components.Schemas.AtlasEntityWithExtInfo,
+    'entity'
+> & {
+    entity?: SavedQuery
 }

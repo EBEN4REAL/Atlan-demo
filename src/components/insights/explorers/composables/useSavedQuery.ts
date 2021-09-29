@@ -1,9 +1,10 @@
-import { Ref, ComputedRef } from 'vue'
+import { Ref, ComputedRef, ref, toRaw } from 'vue'
 import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
 import { useLocalStorageSync } from '~/components/insights/common/composables/useLocalStorageSync'
 import { useInlineTab } from '~/components/insights/common/composables/useInlineTab'
-import { Query } from '~/types/insights/savedQuery.interface'
 import { SavedQuery } from '~/types/insights/savedQuery.interface'
+import { generateUUID } from '~/utils/helper/generator'
+import { message } from 'ant-design-vue'
 
 export function useSavedQuery(
     tabsArray: Ref<activeInlineTabInterface[]>,
@@ -16,7 +17,7 @@ export function useSavedQuery(
         useInlineTab(treeSelectedKeys)
 
     const openSavedQueryInNewTab = (savedQuery: SavedQuery) => {
-        const newTab = {
+        const newTab: activeInlineTabInterface = {
             label: savedQuery.attributes.name,
             key: savedQuery.attributes.qualifiedName,
             favico: 'https://atlan.com/favicon.ico',
@@ -45,7 +46,7 @@ export function useSavedQuery(
                         activeInlineTab.value?.playground.resultsPane
                             .activeTab ?? 0,
                     result: {
-                        title: savedQuery.attributes.name ?? '',
+                        title: savedQuery.attributes.name,
                     },
                     metadata: {},
                     queries: {},
@@ -65,22 +66,41 @@ export function useSavedQuery(
                 id: activeInlineTab.value?.assetSidebar.id ?? '',
             },
         }
-        if (!isInlineTabAlreadyOpened(newTab)) {
+        if (!isInlineTabAlreadyOpened(newTab, tabsArray)) {
+            console.log('not opened')
             activeInlineTabKey.value = newTab.key
             inlineTabAdd(newTab, tabsArray, activeInlineTabKey)
             // syncying inline tabarray in localstorage
             syncInlineTabsInLocalStorage(tabsArray.value)
         } else {
             // show user that this tab is already opened
+            message.error({
+                content: `${newTab.label} is already opened!`,
+            })
         }
     }
+
+    /* DEPRECATED FXN 
+
     const transformSavedQueryResponseInfoToInlineTab = (
-        savedQueryInfo: Ref<Query>
-    ) => {
+        savedQueryInfo: Ref<SavedQuery>
+    ): activeInlineTabInterface => {
+        const uuidv4 = generateUUID()
+        newTab.value.label = savedQueryInfo.value.attributes.name
+        newTab.value.key = uuidv4
+        newTab.value.queryId = savedQueryInfo.value.attributes.qualifiedName
+        newTab.value.explorer.schema.connectors.connection =
+            savedQueryInfo.value.attributes.connectionQualifiedName
+        newTab.value.playground.editor.text =
+            savedQueryInfo.value.attributes.rawQuery
+        newTab.value.playground.resultsPane.result.title =
+            savedQueryInfo.value.attributes.name
         console.log(savedQueryInfo, 'get from URL')
+        return newTab.value
     }
+
+    */
     return {
-        transformSavedQueryResponseInfoToInlineTab,
         openSavedQueryInNewTab,
     }
 }

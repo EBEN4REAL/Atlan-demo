@@ -3,7 +3,7 @@ export const inlineTabsDemoData: activeInlineTabInterface[] = [
     {
         key: '1',
         label: 'ABCDE',
-        isSaved: true,
+        isSaved: false,
         queryId: 'abcd-01-01',
         explorer: {
             schema: {

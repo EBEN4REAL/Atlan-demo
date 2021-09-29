@@ -18,6 +18,7 @@
                         @click="run"
                         >Run</a-button
                     >
+
                     <a-button
                         class="flex items-center justify-between ml-4"
                         @click="openSaveQueryModal"
@@ -30,6 +31,7 @@
             <SaveQueryModal
                 v-model:showSaveQueryModal="showSaveQueryModal"
                 :saveQueryLoading="saveQueryLoading"
+                :modalAction="modalAction"
                 :ref="
                     (el) => {
                         saveModalRef = el
@@ -95,6 +97,9 @@
                 () =>
                     activeInlineTab.value.explorer.schema.connectors
                         .selectedDefaultSchema
+            )
+            const modalAction: ComputedRef<string> = computed(() =>
+                activeInlineTab.value.isSaved ? 'UPDATE' : 'CREATE'
             )
 
             let editorInstance: Ref<editor.IStandaloneCodeEditor | undefined> =
@@ -224,6 +229,7 @@
             useProvide(provideData)
             /*-------------------------------------*/
             return {
+                modalAction,
                 saveModalRef,
                 saveQueryLoading,
                 showSaveQueryModal,

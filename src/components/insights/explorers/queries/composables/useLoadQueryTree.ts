@@ -1,7 +1,7 @@
 import { Ref, ref } from 'vue'
 
 import {
-    Query,
+    SavedQuery,
     BasicSearchResponse,
 } from '~/types/insights/savedQuery.interface'
 
@@ -37,7 +37,7 @@ const useLoadQueryTree = () => {
         body.value.offset = offset ?? 0
         return useAPIPromise(KeyMaps.insights.BASIC_SEARCH(), 'POST', {
             body,
-        }) as Promise<BasicSearchResponse<Query>>
+        }) as Promise<BasicSearchResponse<SavedQuery>>
     }
 
     return {

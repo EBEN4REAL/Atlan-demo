@@ -23,12 +23,28 @@
                 <a-tab-pane v-for="tab in tabs" :key="tab.key" :closable="true">
                     <template #tab>
                         <div class="flex items-center justify-between">
-                            <img
-                                :src="tab.favico"
-                                class="w-4 h-4 mr-2 rounded"
-                                v-if="tab?.favico"
-                            />
-                            <span class="mr-2">{{ tab.label }}</span>
+                            <div class="flex items-center">
+                                <img
+                                    :src="tab.favico"
+                                    class="w-4 h-4 mr-2 rounded -mt-0.5"
+                                    v-if="tab?.favico"
+                                />
+                                <div class="mr-2">{{ tab.label }}</div>
+                            </div>
+                            <div
+                                class="flex items-center mr-2"
+                                v-if="tab.isSaved"
+                            >
+                                <div
+                                    class="
+                                        w-3
+                                        h-3
+                                        rounded-full
+                                        bg-primary
+                                        -mt-0.5
+                                    "
+                                ></div>
+                            </div>
                         </div>
                     </template>
                 </a-tab-pane>

@@ -97,7 +97,7 @@
 
     import { TabInterface } from '~/types/insights/tab.interface'
     import { provideDataInterface } from './common/composables/useProvide'
-    import { Query } from '~/types/insights/savedQuery.interface'
+    import { SavedQuery } from '~/types/insights/savedQuery.interface'
 
     export default defineComponent({
         components: {
@@ -111,7 +111,7 @@
         props: {},
         setup(props) {
             const savedQueryInfo = inject('savedQueryInfo') as Ref<
-                Query | undefined
+                SavedQuery | undefined
             >
             const { explorerPaneSize, assetSidebarPaneSize, paneResize } =
                 useSpiltPanes()
@@ -127,10 +127,11 @@
             const { tabsArray, activeInlineTabKey, activeInlineTab } =
                 useInlineTab()
 
-            const {
-                openSavedQueryInNewTab,
-                transformSavedQueryResponseInfoToInlineTab,
-            } = useSavedQuery(tabsArray, activeInlineTab, activeInlineTabKey)
+            const { openSavedQueryInNewTab } = useSavedQuery(
+                tabsArray,
+                activeInlineTab,
+                activeInlineTabKey
+            )
             const activeTabId = ref(tabsList[0].id)
 
             const activeTab = computed(() =>
@@ -159,11 +160,11 @@
             })
             watch(savedQueryInfo, () => {
                 if (savedQueryInfo.value !== undefined) {
-                    const savedQueryInlineTab: any =
-                        transformSavedQueryResponseInfoToInlineTab(
-                            savedQueryInfo as Ref<Query>
-                        )
-                    // openSavedQueryInNewTab(savedQueryInlineTab)
+                    // const savedQueryInlineTab =
+                    //     transformSavedQueryResponseInfoToInlineTab(
+                    //         savedQueryInfo as Ref<SavedQuery>
+                    //     )
+                    openSavedQueryInNewTab(savedQueryInfo.value)
                 }
             })
             return {

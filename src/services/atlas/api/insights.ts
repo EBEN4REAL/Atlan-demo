@@ -33,7 +33,6 @@ const GetSavedQuery = (guid: string) => {
             pathVariables: { guid },
             params: {
                 ignoreRelationships: true,
-                minExtInfo: true,
             },
         }
     )

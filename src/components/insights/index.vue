@@ -203,7 +203,8 @@ export default defineComponent({
     border-right: 0px !important;
     @apply border-r !important;
     &:hover {
-        @apply border-primary-focus;
+        @apply border-primary;
+        border-width: 2px !important;
     }
 }
 :global(.splitpanes--horizontal > .splitpanes__splitter) {
@@ -216,7 +217,8 @@ export default defineComponent({
     border-top: 0px !important;
     @apply border-t !important;
     &:hover {
-        @apply border-primary-focus;
+        @apply border-primary;
+        border-width: 2px !important;
     }
 }
 :global(.splitpanes--vertical > .splitpanes__splitter):before {

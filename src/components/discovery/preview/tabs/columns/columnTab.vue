@@ -19,6 +19,7 @@
                     <DataTypes
                         v-model:filters="filters"
                         @update:filters="handleFilterChange"
+                        :data-type-map="dataTypeMap"
                     />
                 </template>
             </SearchAndFilter>
@@ -38,13 +39,32 @@
         <div v-if="isLoadMore" class="flex items-center justify-center">
             <button
                 :disabled="isLoading"
-                class="flex items-center justify-between py-2 transition-all duration-300 bg-white rounded-full  text-primary"
+                class="
+                    flex
+                    items-center
+                    justify-between
+                    py-2
+                    transition-all
+                    duration-300
+                    bg-white
+                    rounded-full
+                    text-primary
+                "
                 :class="isLoading ? 'px-2 w-9' : 'px-5 w-32'"
                 @click="loadMore"
             >
                 <template v-if="!isLoading">
                     <p
-                        class="m-0 mr-1 overflow-hidden text-sm transition-all duration-300  overflow-ellipsis whitespace-nowrap"
+                        class="
+                            m-0
+                            mr-1
+                            overflow-hidden
+                            text-sm
+                            transition-all
+                            duration-300
+                            overflow-ellipsis
+                            whitespace-nowrap
+                        "
                     >
                         Load more
                     </p>
@@ -103,7 +123,10 @@
     import SearchAndFilter from '@/common/input/searchAndFilter.vue'
     import ColumnListItem from '~/components/discovery/preview/tabs/columns/columnListItem.vue'
     import useAssetInfo from '~/composables/asset/useAssetInfo'
-    import useColumns2 from '~/composables/asset/useColumns2'
+    import {
+        useColumns2,
+        useColumnAggregation,
+    } from '~/composables/asset/useColumns2'
     import emptyScreen from '~/assets/images/empty_search.png'
 
     import { dataTypeList } from '~/constant/datatype'
@@ -147,6 +170,11 @@
             const { list, isLoading, replaceBody, isLoadMore } = useColumns2({
                 entityParentQualifiedName: assetQualifiedName,
             })
+
+            const { dataTypeMap, dataTypeSum, isAggregateLoading } =
+                useColumnAggregation({
+                    entityParentQualifiedName: assetQualifiedName,
+                })
 
             const updateBody = () => {
                 const initialBody = {
@@ -274,6 +302,7 @@
                 isFilterVisible,
                 list,
                 queryText,
+                dataTypeMap,
                 dataTypeImage,
                 clearAllFilters,
                 isLoading,

@@ -318,7 +318,6 @@
                         )
                         watch(data, (newData) => {
                             if(newData) {
-                                console.log('new Glossary created')
                             emit('onAddGlossary')
                             }
                         })

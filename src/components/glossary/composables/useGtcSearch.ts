@@ -19,7 +19,7 @@ type Filters = {
         }
     }[]
 }
-export default function useGtcSearch(qualifiedName: ComputedRef<string>, dependantFetchingKey?: Ref<any>) {
+export default function useGtcSearch(qualifiedName: ComputedRef<string>, dependantFetchingKey?: Ref<any>, type?: 'AtlasGlossaryCategory' | 'AtlasGlossaryTerm') {
     const requestQuery = ref<string>()
     const offsetLocal = ref(0)
     const defaultLimit = 50
@@ -60,6 +60,7 @@ export default function useGtcSearch(qualifiedName: ComputedRef<string>, dependa
                 'shortDescription',
                 'parentCategory',
                 'categories',
+                'childrenCategories',
                 'pageviewCount',
                 'anchor',
                 'ownerUsers',
@@ -93,7 +94,12 @@ export default function useGtcSearch(qualifiedName: ComputedRef<string>, dependa
         }
 
         if(qualifiedName && qualifiedName.value) {
-            body.value.typeName = 'AtlasGlossaryTerm,AtlasGlossaryCategory';
+            if(type === 'AtlasGlossaryCategory')
+                body.value.typeName = 'AtlasGlossaryCategory';
+            else if(type === 'AtlasGlossaryTerm')
+                body.value.typeName = 'AtlasGlossaryTerm';
+            else
+                body.value.typeName = 'AtlasGlossaryTerm,AtlasGlossaryCategory';
             body.value.entityFilters = {
                 condition: 'AND',
                 criterion: [
@@ -125,7 +131,7 @@ export default function useGtcSearch(qualifiedName: ComputedRef<string>, dependa
 
     const entities: Ref<(Category | Term)[]> = ref<(Category | Term)[]>([])
     const terms = computed(() =>entities.value.filter((entity) => entity.typeName === 'AtlasGlossaryTerm'))
-    const categories = computed(() =>entities.value.filter((entity) => entity.typeName === 'AtlasGlossaryCategory'))
+    const categories = computed(() =>entities.value.filter((entity) => entity.typeName === 'AtlasGlossaryCategory')) as ComputedRef<Category[]>
     const glossaries = computed(() =>entities.value.filter((entity) => entity.typeName === 'AtlasGlossary'))
     const referredEntities = ref<Record<string, Components.Schemas.AtlasEntityHeader>>()
 

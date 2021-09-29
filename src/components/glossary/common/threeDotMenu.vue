@@ -356,6 +356,7 @@
         PropType,
         inject,
         onMounted,
+        watch,
         computed,
     } from 'vue'
     import { useRouter } from 'vue-router'
@@ -411,7 +412,7 @@
                 inject('handleFetchList')
             const updateTreeNode: Function | undefined =
                 inject<any>('updateTreeNode')
-            const refetchGlossaryTree = inject<(guid: string | 'root') => void>(
+            const refetchGlossaryTree = inject<(guid: string | 'root', refreshEntityType?: 'term' | 'category') => void>(
                 'refetchGlossaryTree'
             )
             const glossaryId = computed(() => {
@@ -447,31 +448,34 @@
                 isVisible.value = false
             }
             const handleOk = () => {
-                serviceMap[props.entity?.typeName](
+               const { data } =  serviceMap[props.entity?.typeName](
                     props.entity?.guid,
                     !props.showLinks,
                     props.entity?.attributes?.anchor?.guid
                 )
                 if (handleFetchListInj) handleFetchListInj(props.entity)
-
-                if (refetchGlossaryTree) {
-                    if (props.entity?.typeName === 'AtlasGlossaryCategory') {
-                        refetchGlossaryTree(
-                            props.entity?.attributes?.parentCategory?.guid ??
-                                'root'
-                        )
-                    } else if (props.entity?.typeName === 'AtlasGlossaryTerm') {
-                        if (props.entity?.attributes?.categories?.length) {
-                            props.entity?.attributes?.categories?.forEach(
-                                (category) => {
-                                    refetchGlossaryTree(category.guid)
-                                }
+                watch(data, () => {
+                    if (refetchGlossaryTree) {
+                        if (props.entity?.typeName === 'AtlasGlossaryCategory') {
+                            refetchGlossaryTree(
+                                props.entity?.attributes?.parentCategory?.guid ??
+                                    'root',
+                                'category'
                             )
-                        } else {
-                            refetchGlossaryTree('root')
+                        } else if (props.entity?.typeName === 'AtlasGlossaryTerm') {
+                            if (props.entity?.attributes?.categories?.length) {
+                                props.entity?.attributes?.categories?.forEach(
+                                    (category) => {
+                                        refetchGlossaryTree(category.guid, 'term')
+                                    }
+                                )
+                            } else {
+                                refetchGlossaryTree('root', 'term')
+                            }
                         }
-                    }
-                }
+                    }                
+                })
+
                 isModalVisible.value = false
             }
 

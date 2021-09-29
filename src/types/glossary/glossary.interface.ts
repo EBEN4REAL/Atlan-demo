@@ -8,7 +8,7 @@ interface BaseAttributes {
     __state: string
     __timestamp: Number
 }
-interface RelatedEntity {
+export interface RelatedEntity {
     guid: string,
     typeName: string,
     uniqueAttributes: {

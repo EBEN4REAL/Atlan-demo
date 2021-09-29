@@ -133,7 +133,6 @@
         setup(props) {
             const isFilterVisible = ref(false)
             const queryText = ref('')
-            const offset = ref(0)
             const filters: Ref<string[]> = ref([])
 
             const { dataTypeImage, columnCount } = useAssetInfo()
@@ -148,7 +147,6 @@
             const { list, isLoading, isLoadMore, reFetch, loadMore } =
                 useColumnsList(assetQualifiedName, {
                     query: queryText,
-                    offset: offset,
                     dataTypes: filters,
                 })
 
@@ -156,7 +154,6 @@
                 useColumnAggregation(assetQualifiedName)
 
             const handleSearchChange = useDebounceFn(() => {
-                offset.value = 0
                 reFetch()
             }, 150)
 
@@ -164,24 +161,20 @@
 
             const clearAllFilters = () => {
                 filters.value = []
-                offset.value = 0
                 reFetch()
             }
 
             const clearFiltersAndSearch = () => {
                 filters.value = []
                 queryText.value = ''
-                offset.value = 0
                 reFetch()
             }
             const handleFilterChange = () => {
-                offset.value = 0
                 reFetch()
             }
 
             watch(assetQualifiedName, (newParent, oldParent) => {
                 if (newParent !== oldParent) {
-                    offset.value = 0
                     filters.value = []
                     list.value = []
                     reFetch()

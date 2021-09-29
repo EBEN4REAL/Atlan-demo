@@ -6,6 +6,7 @@ import useAssetSearchList from '~/components/discovery/useSearchList'
 import { dataTypeList } from '~/constant/datatype'
 
 const listLimit = 20
+
 // TODO: Cleanup this list, remove unused attributes
 const staticColumnAttributes = [
     'description',
@@ -88,12 +89,13 @@ export function useColumnsList(
     parentQfName: Ref<string>,
     {
         query = ref(''),
-        offset = ref(0),
         dataTypes = ref([] as string[]),
         specialColumns = undefined,
     },
     immediate = true
 ) {
+    const offset = ref(0)
+
     const payload = computed(() => ({
         typeName: 'Column',
         excludeDeletedEntities: true,
@@ -135,13 +137,14 @@ export function useColumnsList(
     const isLoadMore = computed(() => listCount.value < totalCount.value)
 
     function reFetch() {
+        offset.value = 0
         replaceBody({ ...payload.value })
     }
 
     function loadMore() {
         if (isLoadMore.value) {
             offset.value += listLimit
-            reFetch()
+            replaceBody({ ...payload.value })
         }
     }
 

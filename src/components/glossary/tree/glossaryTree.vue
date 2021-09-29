@@ -415,7 +415,7 @@
                                                         .glossaryGuid,
                                                     uniqueAttributes: {
                                                         qualifiedName:
-                                                            parentGlossary?.qualifiedName,
+                                                            parentGlossary?.attributes?.qualifiedName,
                                                     },
                                                 },
                                                 name: entity.name,

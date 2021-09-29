@@ -87,6 +87,15 @@
                             </span>
                         </a-button>
                     </a-dropdown>
+                    <Categories 
+                        v-if="entityType === 'term'"
+                        :glossaryQualifiedName="glossaryQualifiedName"
+                        :categories="mode === 'create' ? categoryId ? [{guid: categoryId}] : [] : entity.attributes.categories"
+                        :termGuid="mode === 'create' ? '' : entity.guid"
+                        :term="mode === 'create' ? {} : entity.guid"
+                        mode="create"
+                        @updateCategories="updateSelectedCategories"
+                    />
                     <div
                         v-if="mode !== 'edit'"
                         class="flex items-center space-x-2"
@@ -134,11 +143,13 @@
 
     import StatusBadge from '@common/badge/status/index.vue'
     import AddGtcModalOwners from '@/glossary/common/addGtcModalOwners.vue'
+    import Categories from '@/glossary/common/categories.vue'
     
     import useCreateGlossary from '~/components/glossary/composables/useCreateGlossary'
     import whoami from '~/composables/user/whoami'
     import useUpdateGtcEntity from '@/glossary/composables/useUpdateGtcEntity'
-    
+    import { Glossary as GlossaryApi } from '~/api/atlas/glossary'
+
     import { List } from '~/constant/status'
     import { Glossary, Category, Term } from '~/types/glossary/glossary.interface'
 
@@ -146,6 +157,7 @@
         components: {
             StatusBadge,
             AddGtcModalOwners,
+            Categories,
         },
         props: {
             entityType: {
@@ -154,6 +166,11 @@
                 default: '',
             },
             glossaryId: {
+                type: String,
+                required: false,
+                default: '',
+            },
+            glossaryQualifiedName: {
                 type: String,
                 required: false,
                 default: '',
@@ -183,7 +200,8 @@
             const currentStatus = ref<string | undefined>('draft')
             const ownerUsers = ref<Array<any>>([myUsername.value])
             const ownerGroups = ref<Array<any>>([])
-            
+            const selectedCategories = ref<{categoryGuid: string}[]>([]);
+
             const visible = ref<boolean>(false)
             const isVisible = ref<boolean>(false)
             const isCreateMore = ref<boolean>(false)
@@ -258,7 +276,7 @@
                             assetStatus: currentStatus.value ?? 'draft',
                             shortDescription: description.value ?? '',
                             ownerUsers: ownerUsers?.value?.join(),
-                            ownerGroups: ownerGroups?.value?.join()
+                            ownerGroups: ownerGroups?.value?.join(),
                         },
                         true
                     )
@@ -288,7 +306,8 @@
                             description.value,
                             currentStatus.value,
                             ownerUsers?.value?.join(),
-                            ownerGroups?.value?.join()
+                            ownerGroups?.value?.join(),
+                            selectedCategories.value
                         )
                     else if (props.entityType === 'category')
                         createCategory(
@@ -340,6 +359,9 @@
                 ownerUsers.value = updatedOwners.ownerUsers.value
                 ownerGroups.value = updatedOwners.ownerGroups.value
             }
+            const updateSelectedCategories = (newCategories: {categoryGuid: string}[]) => {
+                selectedCategories.value = newCategories;
+            }
             onMounted(async () => {
                 await nextTick()
                 titleBar.value?.focus()
@@ -364,6 +386,7 @@
                 ownerUsers,
                 myUsername,
                 ownerBtnText,
+                updateSelectedCategories,
             }
         },
     })

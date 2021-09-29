@@ -1,29 +1,28 @@
 <template>
     <div :class="$style.categories">
-        <p class="mb-1 text-sm text-gray-500">Categories</p>
+        <p v-if="mode === 'edit'" class="mb-1 text-sm text-gray-500">Categories</p>
         <div class="flex flex-wrap items-center" >
 
             <a-popover
                 v-model:visible="showAddCategoriesTree"
-                placement="left"
+                :placement="mode === 'create' ? 'bottom' : 'left'"
                 trigger=""
-                @blur="a"
             >
-            
-                <div v-if="existingCategories.length < 1">
+                <div v-if="mode === 'edit' && existingCategories.length < 1">
                     <div @click.stop="toggleCategoriesTree">
                         <div
+                            v-if="mode === 'edit'"
                             class="flex items-center cursor-pointer  text-primary hover:text-primary hover:underline"
                         >
                             <!-- <span class="flex items-center text-xs">
                                 <fa icon="fal plus" />
                             </span> -->
-                            <span class="text-xs">Add to categories</span>
+                            <span  class="text-xs">Add to categories</span>
                         </div>
                     </div>
                 </div>
                 <PillGroup
-                    v-else
+                    v-else-if="mode === 'edit'"
                     :data="existingCategories"
                     label-key="guid"
                     @add="toggleCategoriesTree"
@@ -31,10 +30,16 @@
                 <template #pillPrefix>
                     <AtlanIcon
                         icon="Category"
-                        class="text-pink-400 group-hover:text-white"
+                        class="group-hover:text-white"
                     />
                 </template>
                 </PillGroup>
+                <a-button v-else-if="mode ==='create'" :class="{'text-primary': existingCategories.length }" @click.stop="toggleCategoriesTree">
+                    <span class="flex">
+                        <AtlanIcon icon="Category" class="mr-2 my-auto"/>
+                        {{ existingCategories.length > 0 ? existingCategories.length : '' }} {{ existingCategories.length === 1 ? 'Category' : 'Categories'}}
+                    </span>
+                </a-button>
                 <template #content :class="$style.popover">
                     <div class="flex flex-col overflow-y-auto max-h-56 w-56">
                         <a-tree-select
@@ -92,12 +97,12 @@ export default defineComponent({
         },
         termGuid: {
             type: String,
-            required: true,
+            required: false,
             default: ''
         },
         term: { 
             type: Object as PropType<Term>,
-            required: true,
+            required: false,
             default: () => {}  
         },
         categories: {
@@ -113,9 +118,10 @@ export default defineComponent({
     },
     setup(props, { emit }) {
 
-        const existingCategories = toRef(props, 'categories');
+        const existingCategories = ref(props.categories);
         const selectedCategories = ref<{value: string; label?: string}[]>(existingCategories.value.map((category) => ({
-            value: category.guid
+            value: category.guid,
+            label: category.guid
         })))
 
         const showAddCategoriesTree = ref(false);
@@ -141,13 +147,14 @@ export default defineComponent({
 
         const cancelCategoriesUpdate = () => {
             selectedCategories.value = existingCategories.value.map((category) => ({
-                value: category.guid
+                value: category.guid,
+                label: category.guid
             }));
             showAddCategoriesTree.value = false
         }
         const handleUpdate = () => {
             const newCategories = selectedCategories.value.map((category) => ({ categoryGuid: category.value }));
-            if(props.mode === 'edit') {
+            if(props.mode === 'edit' && props.term) {
                 const { data: updateData, updateEntity } = useUpdateGtcEntity()
                 isUpdateButtonLoading.value = true
 
@@ -180,14 +187,27 @@ export default defineComponent({
                     }
                 })
             } else if ( props.mode === 'create') {
-                // emit selected categories
+                emit('updateCategories', newCategories)
+                showAddCategoriesTree.value = false;
+                existingCategories.value = selectedCategories.value.map((category) => ({
+                    guid: category.value,
+                    typeName: 'AtlasGlossaryCategory',
+                    uniqueAttributes: {
+                        qualifiedName: category.value
+                    }
+                }))
+                console.log('why', selectedCategories.value.map((category) => ({
+                    guid: category.value,
+                    typeName: 'AtlasGlossaryCategory',
+                    uniqueAttributes: {
+                        qualifiedName: category.value
+                    }
+                })), existingCategories.value)
             }
         }
 
         const convertCategoriesToTree = (categories: Category[]) => {
             categories.forEach((category) => {
-                // if(!category.attributes.parentCategory) 
-                console.log(category.attributes?.childrenCategories?.length, category.attributes, 'wewww')
                 treeData.value.push({
                     ...category,
                     id: category.guid ?? '',

@@ -54,6 +54,7 @@
                         <AddGtcModal
                             :entityType="assetTypeLabel[entity?.typeName]"
                             :glossaryId="glossaryId"
+                            :glossaryQualifiedName="entity?.typeName === 'AtlasGlossary' ? entity?.attributes?.qualifiedName : entity?.attributes?.anchor?.uniqueAttributes?.qualifiedName"
                             :categoryId="categoryId"
                             mode="edit"
                             :entity="entity"
@@ -109,6 +110,7 @@
                         <AddGtcModal
                             entityType="term"
                             :glossaryId="glossaryId"
+                            :glossaryQualifiedName="entity?.typeName === 'AtlasGlossary' ? entity?.attributes?.qualifiedName : entity?.attributes?.anchor?.uniqueAttributes?.qualifiedName"
                             :categoryId="categoryId"
                         >
                             <template #header>
@@ -190,6 +192,7 @@
                         <AddGtcModal
                             entityType="category"
                             :glossaryId="glossaryId"
+                            :glossaryQualifiedName="entity?.attributes?.anchor?.uniqueAttributes?.qualifiedName"
                             :categoryId="categoryId"
                         >
                             <template #header>

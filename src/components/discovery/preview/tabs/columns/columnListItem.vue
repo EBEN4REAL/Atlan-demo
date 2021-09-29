@@ -3,7 +3,7 @@
         <div class="flex items-center mb-1">
             <component
                 :is="dataTypeImage(asset)"
-                class="flex-none w-auto h-4 mr-2 text-gray"
+                class="flex-none w-auto h-4 mr-2 text-gray-500"
             ></component>
             <span
                 class="
@@ -14,7 +14,7 @@
                     text-sm
                     font-bold
                     align-middle
-                    text-gray
+                    text-primary
                     overflow-ellipsis
                     cursor-pointer
                 "

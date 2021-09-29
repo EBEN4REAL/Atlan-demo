@@ -14,6 +14,11 @@ export interface activeInlineTabInterface {
                 selectedDefaultSchema: string | undefined
                 selectedDataSourceName: string | undefined
             }
+        },
+        queries: {
+            connectors: {
+                connector: string | undefined
+            }
         }
     }
     favico: string | undefined

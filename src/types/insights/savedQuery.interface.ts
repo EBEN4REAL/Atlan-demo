@@ -20,7 +20,7 @@ export type Attributes = {
     qualifiedName: string
     userDescription?: string
     isSnippet?: boolean
-
+    integrationName?: string
     connectionQualifiedName: string
     owner?: string
     __createdBy: string

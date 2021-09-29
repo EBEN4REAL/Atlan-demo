@@ -45,6 +45,12 @@
                                                 "
                                                 >{{ item.title }}</span
                                             >
+                                            <StatusBadge
+                                                :key="item.guid"        
+                                                :show-no-status="false"
+                                                :status-id="item.entity?.attributes?.assetStatus"
+                                                class="flex-none ml-1"
+                                            ></StatusBadge>
                                         </div>
                                     </div>
                                 </div>
@@ -97,6 +103,7 @@ import { TreeDataItem } from 'ant-design-vue/lib/tree/Tree'
 
 // components
 import LoadingView from '@common/loaders/section.vue'
+import StatusBadge from '@common/badge/status/index.vue'
 
 // composables
 import { SavedQueryInterface } from '~/types/insights/savedQuery.interface'
@@ -115,6 +122,7 @@ export default defineComponent({
         LoadingView,
         AtlanIcon,
         AtlanBtn,
+        StatusBadge,
     },
     props: {
         treeData: {

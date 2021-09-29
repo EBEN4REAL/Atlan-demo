@@ -33,6 +33,11 @@ export function useSavedQuery(
                         selectedDataSourceName: 'default/snowflake/vqaqufvr-i',
                     },
                 },
+                queries: {
+                    connectors: {
+                        connector: savedQuery.attributes.integrationName
+                    }
+                }
             },
             playground: {
                 editor: {

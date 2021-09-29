@@ -29,7 +29,7 @@ export const getters: Getters = {
         return state.data.entities
     },
     getSourceMap() {
-        return this.getList?.map((i) => i.attributes.integrationName)
+        return [...new Set(this.getList?.map((i) => i.attributes.integrationName))]
     },
     getSourceList() {
         return SourceList.filter((s) =>

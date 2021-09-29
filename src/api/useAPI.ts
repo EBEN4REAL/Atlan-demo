@@ -12,8 +12,8 @@ interface useGetAPIParams {
     body?: Ref<Record<string, any>> | Record<string, any>
     pathVariables?: Ref<Record<string, any>> | Record<string, any>
     options?:
-        | Ref<IConfig & AxiosRequestConfig & AsyncStateOptions>
-        | (IConfig & AxiosRequestConfig & AsyncStateOptions)
+    | Ref<IConfig & AxiosRequestConfig & AsyncStateOptions>
+    | (IConfig & AxiosRequestConfig & AsyncStateOptions)
     dependantFetchingKey?: Ref
     // swrOptions?: IConfig,
     // axiosOptions?: AxiosRequestConfig
@@ -67,6 +67,7 @@ function useAPIPromiseOld(
  * @param body - The payload to send while making a `POST` request
  * @param options - SWRV or Axios specefic configuration objects
  */
+// eslint-disable-next-line import/prefer-default-export
 export const useAPI = <T>(
     key: string,
     method: 'GET' | 'POST' | 'DELETE' | 'PUT',
@@ -101,32 +102,32 @@ export const useAPI = <T>(
 
         const isLoading = computed(() => !data.value && !error.value)
         return { data, error, isLoading, mutate, isValidating }
-    } else {
-        // else return useAsyncState wrapped request
-        const { state, execute, isReady, error } = useAsyncState<T>(
-            () =>
-                useAPIPromiseOld(key, method, {
-                    params: isRef(params) ? params.value : params,
-                    body,
-                    pathVariables,
-                    options,
-                }),
-            <T>{},
-            {
-                immediate: (isRef(options) ? options.value : options)
-                    ?.immediate,
-            }
-        )
-        const isLoading = computed(() => !isReady.value)
-
-        return {
-            data: state,
-            mutate: execute,
-            error,
-            isReady,
-            isLoading,
-        }
     }
+    // else return useAsyncState wrapped request
+    const { state, execute, isReady, error } = useAsyncState<T>(
+        () =>
+            useAPIPromiseOld(key, method, {
+                params: isRef(params) ? params.value : params,
+                body,
+                pathVariables,
+                options,
+            }),
+        <T>{},
+        {
+            immediate: (isRef(options) ? options.value : options)
+                ?.immediate,
+        }
+    )
+    const isLoading = computed(() => !isReady.value)
+
+    return {
+        data: state,
+        mutate: execute,
+        error,
+        isReady,
+        isLoading,
+    }
+
 }
 
 function isRef(arg: any): arg is Ref {

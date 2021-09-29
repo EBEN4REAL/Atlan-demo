@@ -1,7 +1,13 @@
 <template>
     <div class="flex flex-col items-center w-full h-full bg-white">
         <div class="w-full h-12 p-4 pb-0 rounded">
-            <div class="w-full h-full placeholder"></div>
+            <Connector :connector="connector" @update:data="updateConnector" />
+            <div class="flex flex-row space-x-2">
+                <a-input-search class="mt-2 rounded" placeholder="Search" />
+                <a-button class="flex items-center w-8 h-8 p-2 mt-2 rounded">
+                    <AtlanIcon icon="Filter" />
+                </a-button>
+            </div>
         </div>
         <div class="w-full my-4 border-b"></div>
         <div class="w-full p-4 pt-0">
@@ -63,15 +69,19 @@
 
 <script lang="ts">
     import { defineComponent, inject, Ref, ComputedRef, watch, ref } from 'vue'
+
     import { SavedQueryInterface } from '~/types/insights/savedQuery.interface'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
     import { useSavedQuery } from '~/components/insights/explorers/composables/useSavedQuery'
+    import { useConnector } from '~/components/insights/common/composables/useConnector'
 
     import QueryTree from './queryTree.vue'
     import useQueryTree from './composables/useQueryTree'
 
+    import Connector from '~/components/insights/common/connector/connectorOnly.vue'
+
     export default defineComponent({
-        components: { QueryTree },
+        components: { QueryTree, Connector },
         props: {},
         setup(props, { emit }) {
             const inlineTabs = inject('inlineTabs') as Ref<
@@ -84,6 +94,13 @@
             const activeInlineTabKey = inject(
                 'activeInlineTabKey'
             ) as Ref<string>
+
+            const connector = ref(
+                activeInlineTab.value.explorer.schema.connectors.connector
+            )
+
+            const { setConnectorsDataInInlineTab } = useConnector()
+
             const savedQueries: SavedQueryInterface[] = [
                 {
                     id: '1x',
@@ -125,6 +142,20 @@
                 return bool
             }
 
+            const updateConnector = (value: string) => {
+                setConnectorsDataInInlineTab(
+                    activeInlineTab,
+                    inlineTabs,
+                    {
+                        connector: value,
+                        sourceName: undefined,
+                        connection: undefined,
+                        schema: undefined,
+                    },
+                    'queries'
+                )
+            }
+
             const {
                 treeData,
                 loadedKeys,
@@ -140,8 +171,14 @@
             })
 
             watch(activeInlineTabKey, (newActiveInlineTab) => {
-                console.log(newActiveInlineTab)
                 selectedKeys.value = [newActiveInlineTab]
+            })
+
+            watch(activeInlineTab, (newActiveInlineTab) => {
+                if (newActiveInlineTab) {
+                    connector.value =
+                        newActiveInlineTab?.explorer?.queries?.connectors?.connector
+                }
             })
 
             return {
@@ -149,7 +186,8 @@
                 isSelectedType,
                 isSavedQueryOpened,
                 openSavedQueryInNewTab,
-
+                connector,
+                updateConnector,
                 savedQueryType,
                 savedQueries,
                 treeData,

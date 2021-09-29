@@ -1,12 +1,13 @@
 <template>
     <div>
         <div class="relative p-4 bg-gray-100 shadow">
-            <div class="flex space-x-2">
+            <div class="flex">
+                <a-button class="flex items-center w-8 h-8 p-2 rounded-l-sm">
+                    <AtlanIcon icon="FilterFunnel" />
+                </a-button>
                 <a-input-search
                     v-model:value="searchQuery"
-                    :placeholder="`Search ${
-                        displayText || qualifiedName.split('@'[1])
-                    }....`"
+                    :placeholder="`Search terms and categories`"
                     @change="onSearch"
                 ></a-input-search>
                 <a-popover trigger="click">
@@ -20,8 +21,8 @@
                             />
                         </div>
                     </template>
-                    <a-button class="p-1 ml-2 rounded">
-                        <AtlanIcon icon="FilterDot" class="h-6" />
+                    <a-button class="ml-2 rounded">
+                        <AtlanIcon icon="FilterDot" />
                     </a-button>
                 </a-popover>
             </div>
@@ -58,6 +59,28 @@
         <div v-else-if="!all.length" class="mt-24">
             <EmptyView :showClearFiltersCTA="false" />
         </div>
+        <teleport to="#filterPane">
+            <a-drawer
+                v-if="selectedEntity?.guid !== undefined && showPreviewPanel"
+                :visible="
+                    selectedEntity?.guid !== undefined && showPreviewPanel
+                "
+                placement="left"
+                :mask="false"
+                :get-container="false"
+                :wrap-style="{
+                    position: 'absolute',
+                    minWidth: '264px',
+                }"
+                :keyboard="false"
+                :destroy-on-close="true"
+                :closable="false"
+                width="100%"
+            >
+                <div>filter contents</div>
+            </a-drawer>
+        </teleport>
+
         <teleport to="#sidePanel">
             <a-drawer
                 v-if="selectedEntity?.guid !== undefined && showPreviewPanel"
@@ -189,7 +212,7 @@
                 // { value: 'heirarchy', label: 'Heirarchy' },
                 // { value: 'rows', label: 'Rows' },
                 // { value: 'popularity', label: 'Popularity' },
-                // { value: 'classifications', label: 'Classifications' },
+                { value: 'classifications', label: 'Classifications' },
             ]
             console.log()
             // computed

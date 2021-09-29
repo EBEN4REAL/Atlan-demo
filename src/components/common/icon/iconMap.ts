@@ -55,6 +55,7 @@ import Group from '~/assets/images/icons/group.svg'
 import GroupStatic from '~/assets/images/icons/group-static.svg'
 import External from '~/assets/images/icons/external.svg'
 import TreeCollapseAll from '~/assets/images/icons/tree-collapse-all.svg'
+import FilterFunnel from '~/assets/images/icons/filterFunnel.svg'
 
 export default {
     Metadata,
@@ -114,4 +115,5 @@ export default {
     GroupStatic,
     External,
     TreeCollapseAll,
+    FilterFunnel,
 }

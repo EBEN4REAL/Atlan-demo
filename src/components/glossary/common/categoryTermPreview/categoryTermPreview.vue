@@ -109,7 +109,7 @@
                             />
                         </template>
                         <a-collapse-panel key="details" header="Details">
-                            <div class="flex flex-col pl-6 pr-2">
+                            <div class="flex flex-col pl-5 pr-2">
                                 <Description
                                     v-if="entity.guid"
                                     :selected-asset="entity"
@@ -135,7 +135,7 @@
                             key="governance"
                             header="Governance"
                         >
-                            <div class="px-6 py-0">
+                            <div class="px-5 py-0">
                                 <Classifications :selected-asset="entity" />
                             </div>
                         </a-collapse-panel>
@@ -155,11 +155,12 @@
                             key="properties"
                             header="Properties"
                         >
-                            <div class="px-6 py-0 text-gray-500">
-                                <p class="p-0 m-0 mb-2">Formula</p>
-                                <p class="p-0 m-0 mb-6 text-sm">X + Y + Z</p>
-                                <p class="p-0 m-0 mb-2">Abbreviation</p>
-                                <p class="p-0 m-0 text-sm">S2021</p>
+                            <div class="w-full px-5">
+                                <Properties
+                                    v-if="entity.guid"
+                                    :selected-asset="entity"
+                                    @update:selected-asset="updateEntityAndTree"
+                                />
                             </div>
                         </a-collapse-panel>
                     </a-collapse>
@@ -202,7 +203,14 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, PropType, computed, ref, inject } from 'vue'
+    import {
+        defineComponent,
+        PropType,
+        computed,
+        ref,
+        inject,
+        defineAsyncComponent,
+    } from 'vue'
     import { useRouter } from 'vue-router'
     // components
     import Owners from '@common/sidebar/owners.vue'
@@ -239,6 +247,9 @@
             RelatedTerms,
             LinkedAssets,
             SidePanelTabHeaders,
+            Properties: defineAsyncComponent(
+                () => import('@common/sidebar/properties.vue')
+            ),
         },
         props: {
             entity: {
@@ -330,7 +341,7 @@
         }
 
         :global(.ant-collapse-header) {
-            @apply px-6 py-4 m-0  text-sm text-gray-700 bg-white !important;
+            @apply px-5 py-4 m-0  text-sm text-gray-700 bg-white !important;
         }
         :global(.ant-collapse-borderless > .ant-collapse-item) {
             @apply py-0 mt-0 border-0 !important;

@@ -1,32 +1,33 @@
 
 import { computed, reactive, Ref, ref, watch } from 'vue';
 import axios, { AxiosRequestConfig, CancelTokenSource } from 'axios';
-import { IConfig } from 'swrv';
-import { Credential } from '~/api2/credential';
-import useSWRVState from '~/api2/useSWRVState';
+import { Credential } from '~/api/auth/credential';
 
 
-export default function useCredentialTestbyID(dependentKey?: Ref<any>, id?: any, cacheSuffx?: string | "") {
+export default function useCredentialTestbyID(id?: string, asyncOpts?: object,) {
 
-    const asyncOptions: Ref<IConfig & AxiosRequestConfig> = ref({
-        dedupingInterval: 0,
-        shouldRetryOnError: false,
-        revalidateOnFocus: false,
-        revalidateDebounce: 0,
-    });
+    const cancelTokenSource: Ref<CancelTokenSource> = ref(axios.CancelToken.source());
 
     const paramId = ref(id);
 
-    const cancelTokenSource: Ref<CancelTokenSource> = ref(axios.CancelToken.source());
-    const { data, state, STATES,
-        mutate, error, isValidating } = Credential.TestCredentialByID(paramId.value, asyncOptions, `${cacheSuffx}`, dependentKey);
+    const options = ref({
+        // cancelToken: cancelTokenSource,
+    })
+    const { data, mutate, error: isError, isReady } = Credential.TestCredentialByID(paramId.value, options, asyncOpts);
 
-    const isLoading = computed(() => (([STATES.PENDING].includes(state.value) || [STATES.VALIDATING].includes(state.value)) && dependentKey?.value)
-            || isValidating.value && dependentKey?.value);
+    const isSuccess = ref(false);
+    const isLoading = ref(null);
+    if (asyncOpts.hasOwnProperty('immediate'))
+        isLoading.value = asyncOpts.immediate
+    else isLoading.value = true;
 
-    const isSuccess = computed(() => ([STATES.SUCCESS].includes(state.value)));
-
-    const isError = computed(() => [STATES.ERROR].includes(state.value) || [STATES.STALE_IF_ERROR].includes(state.value));
+    watch([isError, data], (v) => {
+        isLoading.value = false;
+        if (v[1]?.message === "successful")
+            isSuccess.value = true;
+        else
+            isSuccess.value = false;
+    })
 
     const alertType = computed(() => {
         if (isSuccess.value) {
@@ -48,28 +49,25 @@ export default function useCredentialTestbyID(dependentKey?: Ref<any>, id?: any,
     });
 
 
-    const errorMessage = computed(() => error.value?.response?.data?.message);
-
-
-    const replaceId = (id: any) => {
-        paramId.value = id;
-        refresh();
-    };
-
+    const errorMessage = computed(() => isError.value?.response?.data?.message);
 
     const refresh = () => {
-        if ([STATES.PENDING].includes(state.value) || [STATES.VALIDATING].includes(state.value)) {
+        if (isLoading.value) {
             cancelTokenSource.value.cancel();
             cancelTokenSource.value = axios.CancelToken.source();
-            asyncOptions.value.cancelToken = cancelTokenSource.value.token;
+            options.value.cancelToken = cancelTokenSource.value.token;
         }
+        isLoading.value = true;
         mutate();
+    };
+
+    const replaceId = (guid: string) => {
+        paramId.value = guid;
+        refresh();
     };
 
     return {
         data,
-        state,
-        STATES,
         isLoading,
         isError,
         isSuccess,
@@ -78,6 +76,5 @@ export default function useCredentialTestbyID(dependentKey?: Ref<any>, id?: any,
         errorMessage,
         refresh,
         replaceId,
-        error
     }
 };

@@ -1,3 +1,5 @@
+import { getAPIPath } from "~/api";
+
 import user from '@services/keycloak/users/users_keymap'
 import asset from '~/api/keyMaps/asset'
 

@@ -146,7 +146,7 @@
         </div>
 
         <div
-            class="grid grid-cols-12 gap-2 px-3 pt-3 border border-gray-200 rounded  flex-nowrap bg-gray-100"
+            class="grid grid-cols-12 gap-2 px-3 pt-3 bg-gray-100 border border-gray-200 rounded  flex-nowrap"
         >
             <div class="col-span-12">
                 <p class="mb-2 text-sm font-normal text-gray">Advanced</p>
@@ -164,12 +164,12 @@
                                 v-if="attr.info"
                                 :title="attr.info"
                                 placement="right"
-                                ><span class="ml-1"
-                                    ><fa
-                                        icon="fal info-circle"
-                                        class="pushtop"
-                                    ></fa></span
-                            ></a-tooltip>
+                            >
+                                <span class="ml-1">
+                                    <fa icon="fal info-circle" class="pushtop">
+                                    </fa>
+                                </span>
+                            </a-tooltip>
                         </template>
 
                         <DynamicInput
@@ -307,6 +307,7 @@
     import useCredentialTestbyID from '~/composables/bots/useCredentialTestByID'
 
     export default defineComponent({
+        name: 'CredentialForm',
         components: { RadioButton, DynamicInput },
         props: {
             item: {
@@ -386,35 +387,33 @@
                 credentialGuid.value = props.defaultCredential?.guid
             }
 
-            const now = ref(false)
-            const initialBody = {}
+            /**
+             * @desc useConnectionTest - testing for connections
+             */
             const {
                 data,
-                state: stateNetwork,
-                error: errorNetwork,
+                isError: errorNetwork,
                 isLoading: isNetworkTestLoading,
                 isSuccess: isNetworkTestSuccess,
                 isError: isNetworkTestError,
                 alertType: networkAlertType,
                 alertMessage: networkAlertMessage,
                 errorMessage: networkErrorMessage,
-                isValidating,
                 replaceBody: replaceNetworkTestBody,
-            } = useConnectionTest(now, initialBody)
+            } = useConnectionTest({}, { immediate: false })
 
             const handleNetworkTest = () => {
                 replaceNetworkTestBody({
                     host: credential.host,
                     port: credential.port,
                 })
-                if (!now.value) {
-                    now.value = true
-                }
             }
 
-            const credNow = ref(false)
+            /**
+             * @desc useCredentialTest - testing for credentials with body
+             */
             const {
-                state: stateCredential,
+                data: stateCredential,
                 isLoading: isCredTestLoading,
                 isSuccess: isCredTestSuccess,
                 isError: isCredTestError,
@@ -422,9 +421,11 @@
                 alertMessage: credAlertMessage,
                 errorMessage: credErrorMessage,
                 replaceBody: replaceCredentialTestBody,
-            } = useCredentialTest(credNow, credentialGuid.value)
+            } = useCredentialTest(credentialGuid.value, { immediate: false })
 
-            const editNow = ref(false)
+            /**
+             * @desc useCredentialTest - testing for credentials with existing guid
+             */
             const {
                 isLoading: isCredIdTestLoading,
                 isSuccess: isCredIdTestSuccess,
@@ -433,31 +434,23 @@
                 alertMessage: credIdAlertMessage,
                 errorMessage: credIdErrorMessage,
                 replaceId: replaceCredID,
-            } = useCredentialTestbyID(editNow, credentialGuid.value)
+            } = useCredentialTestbyID(credentialGuid.value, {
+                immediate: false,
+            })
 
             const handleCredentialTest = () => {
                 if (props.isEdit) {
                     if (credential.login || credential.password) {
                         replaceCredentialTestBody(credential)
-                        if (!credNow.value) {
-                            credNow.value = true
-                        }
                     } else {
                         replaceCredID(credentialGuid.value)
-                        if (!editNow.value) {
-                            editNow.value = true
-                        }
                     }
                 } else {
                     replaceCredentialTestBody(credential)
-                    if (!credNow.value) {
-                        credNow.value = true
-                    }
                 }
             }
 
             const handleTest = () => {
-                console.log('handle Test')
                 handleNetworkTest()
                 handleCredentialTest()
             }
@@ -467,8 +460,17 @@
                 credential.password = ''
             }
 
+            /**
+             * ??
+             */
             watch(
-                [isNetworkTestLoading, isCredTestLoading, isCredIdTestLoading],
+                [
+                    isNetworkTestLoading,
+                    isCredTestLoading,
+                    isCredIdTestLoading,
+                    isNetworkTestSuccess,
+                    isCredTestSuccess,
+                ],
                 () => {
                     if (
                         props.isEdit &&
@@ -510,19 +512,22 @@
                 }
             )
 
+            /**
+             * @desc test the current credentials,
+             * return credentials if true else null
+             */
             const getCredential = async () => {
                 try {
                     await form.value.validate()
                     handleTest()
-                    return true
+                    return JSON.parse(JSON.stringify(credential))
                 } catch (err) {
-                    console.log('error', err)
+                    return null
                 }
             }
 
             return {
                 data,
-                stateNetwork,
                 errorNetwork,
                 stateCredential,
                 hostLocal,
@@ -532,7 +537,6 @@
                 authAttributesLocal,
                 credential,
                 authTypes,
-                isValidating,
                 credentialGuid,
                 enumAttributes,
                 handleTest,

@@ -1,15 +1,17 @@
 <template>
     <div :class="$style.categories">
+        <p class="mb-1 text-sm text-gray-500">Categories</p>
         <div class="flex flex-wrap items-center" >
 
             <a-popover
-                v-model:visible="showAddClassificationsTree"
+                v-model:visible="showAddCategoriesTree"
                 placement="left"
                 trigger=""
+                @blur="a"
             >
             
                 <div v-if="existingCategories.length < 1">
-                    <div @click.stop="toggleClassificationsTree">
+                    <div @click.stop="toggleCategoriesTree">
                         <div
                             class="flex items-center cursor-pointer  text-primary hover:text-primary hover:underline"
                         >
@@ -24,8 +26,14 @@
                     v-else
                     :data="existingCategories"
                     label-key="guid"
-                    @add="toggleClassificationsTree"
+                    @add="toggleCategoriesTree"
                 >
+                <template #pillPrefix>
+                    <AtlanIcon
+                        icon="Category"
+                        class="text-pink-400 group-hover:text-white"
+                    />
+                </template>
                 </PillGroup>
                 <template #content :class="$style.popover">
                     <div class="flex flex-col overflow-y-auto max-h-56 w-56">
@@ -39,8 +47,8 @@
                             :dropdown-style="{ maxHeight: '350px', overflow: 'auto', maxWidth: '220px' }"
                         />
                         <div class="flex flex-row space-x-4 mt-4">
-                            <a-button class="popover-button" :class="$style.popoverButton">Cancel</a-button>
-                            <a-button class="popover-button" :class="$style.popoverButton" type="primary" >Update</a-button>
+                            <a-button class="popover-button" :class="$style.popoverButton" @click="cancelCategoriesUpdate">Cancel</a-button>
+                            <a-button class="popover-button" :class="$style.popoverButton" @click="handleUpdate" :loading="isUpdateButtonLoading" type="primary" >Update</a-button>
                         </div>
                     </div>
                 </template>
@@ -49,17 +57,19 @@
     </div>
 </template>
 <script lang="ts">
-import { defineComponent, computed, ref, watch, PropType, toRef, onMounted } from 'vue'
+import { defineComponent, computed, ref, watch, PropType, toRef, inject } from 'vue'
 
 //components
 import PillGroup from '~/components/UI/pill/pillGroup.vue'
 
 //composables
 import useGlossaryCategories from '~/components/glossary/composables/useGlossaryCategories'
+import useUpdateGtcEntity from '@/glossary/composables/useUpdateGtcEntity'
 import useGtcSearch from '~/components/glossary/composables/useGtcSearch'
+import { Glossary as GlossaryApi } from '~/api/atlas/glossary'
 
 //types
-import { Category, RelatedEntity } from '~/types/glossary/glossary.interface'
+import { Category, RelatedEntity, Term } from '~/types/glossary/glossary.interface'
 import { TreeSelect } from 'ant-design-vue';
 
 
@@ -85,6 +95,11 @@ export default defineComponent({
             required: true,
             default: ''
         },
+        term: { 
+            type: Object as PropType<Term>,
+            required: true,
+            default: () => {}  
+        },
         categories: {
             type: Object as PropType<RelatedEntity[]>,
             required: true,
@@ -103,27 +118,72 @@ export default defineComponent({
             value: category.guid
         })))
 
-        const showAddClassificationsTree = ref(false);
+        const showAddCategoriesTree = ref(false);
         const parentGlossaryQualifiedName = computed(() => props.glossaryQualifiedName);
         const treeData = ref<TreeDataItem[]>([])
+        const isUpdateButtonLoading = ref(false);
 
-        const toggleClassificationsTree = () => {
-            if(!showAddClassificationsTree.value) {
-                showAddClassificationsTree.value = true
+        const refreshEntity = inject<() => void>('refreshEntity')
+
+        const toggleCategoriesTree = () => {
+            if(!showAddCategoriesTree.value) {
+                showAddCategoriesTree.value = true
             } else {
-                showAddClassificationsTree.value = false
+                showAddCategoriesTree.value = false
             }
         }
-
         const {
             categories,
             isLoading: searchLoading,
             fetchAssets: fetchCategories,
         } = useGtcSearch(parentGlossaryQualifiedName, ref(true), "AtlasGlossaryCategory")
 
-        // onMounted(() => {
-        //     fetchCategories(props.glossaryGuid, 50)
-        // })
+
+        const cancelCategoriesUpdate = () => {
+            selectedCategories.value = existingCategories.value.map((category) => ({
+                value: category.guid
+            }));
+            showAddCategoriesTree.value = false
+        }
+        const handleUpdate = () => {
+            const newCategories = selectedCategories.value.map((category) => ({ categoryGuid: category.value }));
+            if(props.mode === 'edit') {
+                const { data: updateData, updateEntity } = useUpdateGtcEntity()
+                isUpdateButtonLoading.value = true
+
+                const {data, error, isLoading} = GlossaryApi.UpdateGlossaryTerm(
+                    props.termGuid,
+                    {
+                        // ...props.term.attributes,
+                        // ...props.term,
+                        // qualifiedName: props.term.attributes.qualifiedName,
+                        name: props.term.attributes.name,
+                        shortDescription: props.term.attributes.shortDescription,
+                        assetStatus: props.term.attributes.assetStatus,
+                        assetStatusMessage: props.term.attributes.assetStatusMessage,
+                        assetStatusUpdatedBy: props.term.attributes.assetStatusUpdatedBy,
+                        assetStatusUpdatedAt: props.term.attributes.assetStatusUpdatedAt,
+                        ownerUsers: props.term.attributes.ownerUsers,
+                        ownerGroups: props.term.attributes.ownerGroups,
+                        anchor: {
+                            glossaryGuid: props.term.attributes.anchor.guid
+                        },
+                        typeName: props.term.typeName,
+                        categories: newCategories,
+                    }
+                )
+                watch(data, (newData) => {
+                    if(newData?.guid) {
+                        showAddCategoriesTree.value = false;
+                        isUpdateButtonLoading.value = false;
+                        if(refreshEntity) refreshEntity()
+                    }
+                })
+            } else if ( props.mode === 'create') {
+                // emit selected categories
+            }
+        }
+
         const convertCategoriesToTree = (categories: Category[]) => {
             categories.forEach((category) => {
                 // if(!category.attributes.parentCategory) 
@@ -168,12 +228,15 @@ export default defineComponent({
 
         return {
            existingCategories,
-           showAddClassificationsTree,
+           showAddCategoriesTree,
            categories,
            treeData,
-           toggleClassificationsTree,
+           toggleCategoriesTree,
            onLoadData,
            selectedCategories,
+           cancelCategoriesUpdate,
+           handleUpdate,
+           isUpdateButtonLoading,
            TreeSelect
         }
     },

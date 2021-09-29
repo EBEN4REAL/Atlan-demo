@@ -22,6 +22,7 @@ interface GlossaryAttributes extends BaseAttributes {
     name: string,
     shortDescription?: string,
     assetStatus?: "draft" | "verified" | "issue",
+    assetStatusMessage: string,
     assetStatusUpdatedBy?: string,
     assetStatusUpdatedAt?: 0,
     ownerUsers?: string

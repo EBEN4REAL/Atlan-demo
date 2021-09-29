@@ -15,11 +15,11 @@ const TestNetwork = (
     cacheSuffix?: Ref<string>,
     dependantFetchingKey?: Ref<any>
 ) => useAPI<any>(CONNECTION_TEST_NETWORK, "POST", {
-        body,
-        options,
-        cacheSuffix,
-        dependantFetchingKey
-    });
+    body,
+    options,
+    cacheSuffix,
+    dependantFetchingKey
+});
 
 const Setup = (
     body?: Ref<Components.Schemas.ConnectionSetup>,
@@ -27,11 +27,11 @@ const Setup = (
     cacheSuffix?: Ref<string>,
     dependantFetchingKey?: Ref<any>
 ) => useAPI<any>(CONNECTION_SETUP, "POST", {
-        body,
-        options,
-        cacheSuffix,
-        dependantFetchingKey
-    });
+    body,
+    options,
+    cacheSuffix,
+    dependantFetchingKey
+});
 
 const Archive = (id: string, options?: Ref<IConfig & AxiosRequestConfig>, cacheSuffix?: string,
     dependantFetchingKey?: Ref<any>) => useAPI<any>(CONNECTION_ARCHIVE, "POST", {

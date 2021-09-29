@@ -18,7 +18,7 @@
                             getCountString(total)
                         }}</span>
                         <span
-                            v-if="
+                            v-else-if="
                                 assetTypeMap[item.id] &&
                                 assetTypeMap[item.id] > 0
                             "
@@ -137,66 +137,6 @@
                 nextTick(() => (assetType.value = prev))
             })
 
-            // const filteredList = computed(() => {
-            //   let foundConnections: ConnectionType[] = [];
-
-            //   // get one example of connection for each connector
-            //   props.connectors?.forEach((element) => {
-            //     let found = cachedConnectionList.value.find((item) => {
-            //       return item.attributes?.integrationName === element;
-            //     });
-            //     if (found) {
-            //       foundConnections.push(found);
-            //     }
-            //   });
-
-            //   //filter on discoverable and mappings and order asset types
-            //   let filteredTypeList = AssetTypeList.filter((item) => {
-            //     if (item.isDiscoverable) {
-            //       let isAvailable = false;
-            //       foundConnections.forEach((conn) => {
-            //         //TODO - Change to dynamic mapping
-            //         let found = testMapping.find((map) => {
-            //           return map.id === item.id;
-            //         });
-            //         console.log(found);
-            //         if (found) {
-            //           isAvailable = true;
-            //         }
-            //       });
-            //       return isAvailable;
-            //     }
-            //     return false;
-            //   }).sort((x, y) => {
-            //     return y.orderWeight - x.orderWeight;
-            //   });
-
-            //   console.log(props.assetTypeList);
-            //   //Update Count from Aggregations
-            //   filteredTypeList.forEach((f) => {
-            //     if (props.assetTypeList[f.id]) {
-            //       f.count = props.assetTypeList[f.id];
-            //     } else if (props.assetTypeList[f.id.toLowerCase()]) {
-            //       f.count = props.assetTypeList[f.id.toLowerCase()];
-            //     }
-            //   });
-
-            //   return filteredTypeList;
-            // });
-
-            // let foundConnections = [];
-            // props.connectors?.forEach((element) => {
-            //   let found = cachedConnectionList.value.find((item) => {
-            //     return item.attributes?.integrationName === element;
-            //   });
-            //   if (found) {
-            //     foundConnections.push(found);
-            //   }
-            // });
-
-            // if (props.defaultAssetType) {
-            //   assetType.value = props.defaultAssetType;
-            // }
             return {
                 assetType,
                 handleChange,
@@ -222,6 +162,9 @@
             box-shadow: 0px 1px 0px rgba(0, 0, 0, 0.05) !important;
 
             transition: all 0.8s ease-out;
+        }
+        :global(.ant-tabs-tab:first-child) {
+            @apply ml-3 !important;
         }
         :global(.ant-tabs-tab-active) {
             @apply bg-primary-light !important;

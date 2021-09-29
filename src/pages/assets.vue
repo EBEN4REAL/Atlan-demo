@@ -6,13 +6,15 @@
         >
             <div class="flex h-full">
                 <router-view
-                    v-if="isItem"
+                    v-show="isItem"
                     :updateProfile="updateProfile"
+                    :selectedItem="selected"
                     @updateAssetPreview="handlePreview"
                     @preview="handlePreview"
                 ></router-view>
+
                 <AssetDiscovery
-                    v-else
+                    :class="{ hidden: isItem }"
                     :initial-filters="initialFilters"
                     @preview="handlePreview"
                     ref="assetDiscovery"
@@ -40,11 +42,10 @@
     import { useHead } from '@vueuse/head'
     import { computed, defineComponent, ref, Ref, watch } from 'vue'
     import { useRoute, useRouter } from 'vue-router'
-    import { Classification } from '~/api/atlas/classification'
-    import { useClassificationStore } from '~/components/admin/classifications/_store'
     import { assetInterface } from '~/types/assets/asset.interface'
-    import { typedefsInterface } from '~/types/typedefs/typedefs.interface'
     import { getDecodedOptionsFromString } from '~/utils/helper/routerQuery'
+    import { decodeQuery } from '~/utils/helper/routerHelper'
+    import { useClassifications } from '~/components/admin/classifications/composables/useClassifications'
 
     export interface initialFiltersType {
         facetsFilters: any
@@ -66,8 +67,21 @@
             const updateProfile = ref<boolean>(false)
 
             const assetDiscovery: Ref<Element | null> = ref(null)
-            const initialFilters: initialFiltersType =
-                getDecodedOptionsFromString(router)
+            // const initialFilters: initialFiltersType =
+            //     getDecodedOptionsFromString(router)
+
+            const initialFilters: Record<string, any> = {
+                facetsFilters: {},
+                searchText: '',
+                selectedTab: 'Catalog',
+                sortOrder: 'default',
+                state: 'active',
+                ...decodeQuery(
+                    Object.keys(router.currentRoute.value?.query)[0]
+                ),
+            }
+
+            router.currentRoute.value?.query
             const selected: Ref<assetInterface | undefined> = ref(undefined)
             const handlePreview = (selectedItem: assetInterface) => {
                 selected.value = selectedItem
@@ -84,27 +98,13 @@
             /* Making the network request here to fetch the latest changes of classifications. 
             So that everytime user visit the discover page it will be in sync to latest data not with store
             */
-            const classificationsStore = useClassificationStore()
-            classificationsStore.setClassificationsStatus('loading')
-            const { data: classificationData, error: classificationError } =
-                Classification.getClassificationList<typedefsInterface>({
-                    cache: false,
-                })
-
-            watch([classificationData, classificationError], () => {
-                if (classificationData.value) {
-                    const classifications =
-                        classificationData.value.classificationDefs || []
-
-                    classificationsStore.setClassifications(
-                        classifications ?? []
-                    )
-                    classificationsStore.initializeFilterTree()
-                    classificationsStore.setClassificationsStatus('success')
-                } else {
-                    classificationsStore.setClassificationsStatus('error')
-                }
-            })
+            const {
+                isClassificationInitializedInStore,
+                initializeClassificationsInStore,
+            } = useClassifications()
+            if (!isClassificationInitializedInStore()) {
+                initializeClassificationsInStore()
+            }
 
             function propagateToAssetList(updatedAsset: assetInterface) {
                 if (assetDiscovery.value)

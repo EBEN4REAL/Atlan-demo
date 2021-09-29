@@ -132,7 +132,6 @@ export const BasicSearchAttributes = [
     'description',
     'displayDescription',
     'userDescription',
-    'meanings',
     'tenantId',
     'assetStatus',
     'assetStatusUpdatedAt',
@@ -145,7 +144,6 @@ export const BasicSearchAttributes = [
     'sizeBytes',
     'subType',
     'image',
-    'meanings.description',
     'sourceRefreshFrequency',
     'sourceCreatedBy',
     'sourceCreatedAt',
@@ -178,4 +176,6 @@ export const BasicSearchAttributes = [
     'ownerUsers',
     'ownerGroups',
     'databaseQualifiedName',
+    'isPrimary',
+    'isPartition',
 ]

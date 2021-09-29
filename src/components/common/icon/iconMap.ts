@@ -4,6 +4,7 @@ import BookmarkOutlined from '~/assets/images/icons/bookmark-outline.svg'
 import CopyOutlined from '~/assets/images/icons/copy.svg'
 import ChevronDown from '~/assets/images/icons/chevron-down.svg'
 import ChevronUp from '~/assets/images/icons/chevron-up.svg'
+import Reload from '~/assets/images/icons/reload.svg'
 import ForeignKey from '~/assets/images/icons/foreign.svg'
 import PrimaryKey from '~/assets/images/icons/primary.svg'
 import Share from '~/assets/images/icons/share.svg'
@@ -56,6 +57,8 @@ import GroupStatic from '~/assets/images/icons/group-static.svg'
 import External from '~/assets/images/icons/external.svg'
 import TreeCollapseAll from '~/assets/images/icons/tree-collapse-all.svg'
 import FilterFunnel from '~/assets/images/icons/filterFunnel.svg'
+import FolderOpen from '~/assets/images/icons/folder-open.svg'
+import FolderClosed from '~/assets/images/icons/folder-closed.svg'
 
 export default {
     Metadata,
@@ -75,6 +78,7 @@ export default {
     Share,
     Cancel,
     Filter,
+    Reload,
     FilterDot,
     ArrowRight,
     Search,
@@ -116,4 +120,6 @@ export default {
     External,
     TreeCollapseAll,
     FilterFunnel,
+    FolderOpen,
+    FolderClosed,
 }

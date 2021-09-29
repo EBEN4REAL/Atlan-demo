@@ -4,6 +4,7 @@ import { SourceList } from '~/constant/source';
 import { AtlanTableAttributes } from '~/types/asset';
 
 export default defineComponent({
+    name: 'ConnectorMixin',
     methods: {
         attributes(item: any) {
             return item?.attributes;

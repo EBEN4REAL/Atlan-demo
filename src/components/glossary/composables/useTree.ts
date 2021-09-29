@@ -23,6 +23,7 @@ const useTree = (
 ) => {
     const route = useRoute()
     const router = useRouter()
+    const defaultLimit = 5;
 
     // A map of node guids to the guid of their parent. Used for traversing the tree while doing local update
     const nodeToParentKeyMap: Record<string, 'root' | string> = {}
@@ -117,7 +118,7 @@ const useTree = (
      */
     const initTreeData = async (guid: string) => {
         const categoryList = await GlossaryApi.ListCategoryForGlossary(guid, {}) // all categories in a glossary
-        const termsList = await GlossaryApi.ListTermsForGlossary(guid, {}) // root level terms
+        const termsList = await GlossaryApi.ListTermsForGlossary(guid, { limit: defaultLimit }) // root level terms
 
         categoryMap[guid] = categoryList
         treeData.value = []
@@ -133,6 +134,8 @@ const useTree = (
             if (element.guid) nodeToParentKeyMap[element.guid] = 'root'
             treeData.value.push(returnTreeDataItemAttributes(element, 'term', guid))        
         })
+        checkAndAddLoadMoreNode(termsList, defaultLimit, 'root', 'root')
+
         isInitingTree.value = false
         // selectedKeys.value.push(guid)
         // Logic to expand tree
@@ -157,7 +160,6 @@ const useTree = (
                 )
                 const termsList = await GlossaryApi.ListTermsForGlossary(
                     treeNode.dataRef.key,
-                    {},
                 )
                 categoryMap[treeNode.dataRef.key] = response
                 response.forEach((element) => {
@@ -198,7 +200,9 @@ const useTree = (
             try {
                 const termsList = await GlossaryApi.ListTermsForCategory(
                     treeNode.dataRef.key,
-                    {},
+                    {
+                        limit: defaultLimit
+                    },
                 )
                 termsList.forEach((element) => {
                     if (!treeNode.dataRef.children) {
@@ -209,6 +213,8 @@ const useTree = (
                     }
                     treeNode.dataRef.children.push(returnTreeDataItemAttributes(element, 'term', treeNode.dataRef.key, false, treeNode.dataRef.key))
                 })
+
+                checkAndAddLoadMoreNode(termsList, defaultLimit, treeNode.dataRef.key, treeNode.dataRef.key)
                 loadedKeys.value.push(treeNode.dataRef.key)
             } catch (err) {
                 console.log(err)
@@ -264,11 +270,17 @@ const useTree = (
         entity,
         name,
         assetStatus,
+        ownerGroups,
+        ownerUsers,
+        shortDescription
     }: {
         guid: string
         entity?: Glossary | Category | Term
         name?: string
         assetStatus?: string
+        ownerGroups: string
+        ownerUsers?: string
+        shortDescription?: string
     }) => {
         if (nodeToParentKeyMap[guid] === 'root') {
             // if the node is at the root level, just loop through the treeData linearly
@@ -283,6 +295,9 @@ const useTree = (
                         name: entity?.attributes?.name ?? name ?? treeNode.name,
                         title:
                             entity?.attributes?.name ?? name ?? treeNode.title,
+                        ownerUsers: entity?.attributes?.ownerUsers ?? ownerUsers ?? treeNode.ownerUsers,
+                        ownerGroups: entity?.attributes?.ownerGroups ?? ownerGroups ?? treeNode.ownerGroups,
+                        shortDescription: entity?.attributes?.shortDescription ?? shortDescription ?? treeNode.shortDescription
                     }
                 return treeNode
             })
@@ -689,6 +704,174 @@ const useTree = (
     const reInitTree = () => {
         fetchGuid.value = currentGuid.value
         refetch()
+    }
+
+    const loadMore = async (offset: number, parentNodeId: string, parentGuid: string,) => {
+
+
+        if(parentNodeId === 'root'){
+            triggerLoadingState(parentNodeId);
+
+            const termsList = await GlossaryApi.ListTermsForGlossary(parentGuid, { limit: defaultLimit, offset }) // root level terms
+
+            treeData.value = treeData.value.filter((node) => node.title !== 'Load more');
+            termsList?.forEach((term) => {
+                nodeToParentKeyMap[term?.guid ?? ''] = 'root'
+                treeData.value.push(returnTreeDataItemAttributes(term, 'term', parentGuid))       
+            });
+            checkAndAddLoadMoreNode(termsList, offset + defaultLimit, 'root', 'root')
+        } else {
+            triggerLoadingState(parentGuid);
+            const termsList = await GlossaryApi.ListTermsForCategory(parentGuid, { limit: defaultLimit, offset }) // root level terms
+
+            const path = recursivelyFindPath(parentGuid);
+
+            const appendNewNodes = (node: TreeDataItem) => {
+                const currentPath = path.pop();
+
+                if(node.guid === parentGuid && !currentPath){
+                    const newChildren = node.children?.filter((child) => child.title !== 'Load more');
+                    termsList?.forEach((term) => {
+                        newChildren?.push(returnTreeDataItemAttributes(term, 'term', parentGlossary.value?.guid ?? '', false, parentGuid));
+                        nodeToParentKeyMap[term?.guid ?? ''] = parentGuid
+                    })
+
+                    // Load More Node
+                    if(termsList.length === defaultLimit) {
+                        newChildren?.push({
+                            key: parentGuid + '_Load_More',
+                            title: 'Load more',
+                            isLeaf: true,
+                            click: () => loadMore(
+                                offset + defaultLimit,
+                                parentGuid,
+                                parentGuid
+                            ),
+                            typeName: 'LoadMore',
+                            guid: 'LoadMore'
+                        })
+                    }
+
+                    return {
+                        ...node,
+                        children: newChildren
+                    }
+                } 
+                return {
+                    ...node,
+                    children: node.children?.map((child) => {
+                        if(child.guid === currentPath) return appendNewNodes(child);
+                        return child;
+                    })
+                }
+            }
+
+
+            const parent = path.pop();
+            treeData.value = treeData.value.map((node) => {
+                if(node.guid === parent) return appendNewNodes(node);
+                return node;
+            })
+        }
+    }
+
+    const checkAndAddLoadMoreNode = (response: Components.Schemas.AtlasGlossaryTerm[], offset: number, parentGuid: string, key?: string) => {
+        if(response.length === defaultLimit) {
+            if(key === 'root') {
+                treeData.value.push({
+                    key:( key ?? parentGuid) + '_Load_More',
+                    title: 'Load more',
+                    isLeaf: true,
+                    isLoading: false,
+                    click: () =>  {
+                        loadMore(
+                            offset,
+                            'root',
+                            parentGlossary.value?.guid
+                        )
+                    },
+                    typeName: 'LoadMore',
+                    guid: 'LoadMore'
+                })
+            } else {
+                const path = recursivelyFindPath(parentGuid);
+                const addLoadMoreInNestedNode = (node: TreeDataItem) => {
+                    const currentPath = path.pop()
+                    if(node.guid === parentGuid && !currentPath) {
+                        node.children?.push({
+                            key:( key ?? parentGuid) + '_Load_More',
+                            title: 'Load more',
+                            isLeaf: true,
+                            isLoading: false,
+                            click: () => loadMore(
+                                offset,
+                                parentGuid,
+                                parentGuid
+                            ),
+                            typeName: 'LoadMore',
+                            guid: 'LoadMore'
+                        })
+                        return node;
+                    } 
+                    return {
+                        ...node,
+                        children: node.children?.map((child) => {
+                            if(child.guid === currentPath) return addLoadMoreInNestedNode(child)
+                            return child
+                        })
+                    }
+                }
+                const parent = path.pop()
+
+                treeData.value = treeData.value.map((node) => {
+                    if(node.guid === parent) return addLoadMoreInNestedNode(node);
+                    return node;
+                })
+            }
+        }
+    }
+
+    const triggerLoadingState = (parentNodeId: string) => {
+        if(parentNodeId === 'root') {
+            treeData.value = treeData.value.map((node) => {
+                if( node.title === 'Load more') {
+                    return {
+                        ...node,
+                        isLoading: true
+                    }
+                }
+                return node
+            })
+        } else {
+            const path = recursivelyFindPath(parentNodeId);
+            
+            const trigger = (node: TreeDataItem) => {
+                const currentPath = path.pop();
+
+                if(node.guid === parentNodeId && !currentPath) {
+                    return {
+                        ...node,
+                        children: node.children?.map((child) => {
+                            if(child.title === 'Load more') return {...child, isLoading: true}
+                            return child
+                        }),
+                    }
+                }
+                return {
+                    ...node,
+                    children: node.children?.map((child) => {
+                        if(child.guid === currentPath) return trigger(child);
+                        return child;
+                    })
+                }
+            }
+
+            const parent = path.pop();
+            treeData.value = treeData.value.map((node) => {
+                if(node.guid === parent) return trigger(node);
+                return node;
+            })
+        }
     }
 
     watch(fetchGuid, (newGuid) => {

@@ -111,14 +111,14 @@
                             v-if="current === 0"
                             @select="handleConnectorSelect"
                         ></ConnectorList>
-                        <CredentialView
+                        <CredentialForm
                             v-else-if="current === 1"
-                            ref="credentialView"
+                            ref="CredentialForm"
                             :key="selectedConnector.guid"
                             class="px-8 py-4"
                             :item="selectedConnector"
                             @verified="handleVerified"
-                        ></CredentialView>
+                        ></CredentialForm>
                         <Settings
                             v-else-if="current === 2"
                             ref="settingsView"
@@ -150,14 +150,15 @@
 
 <script lang="ts">
     import { defineComponent } from 'vue'
-    import CredentialView from '@/setup/credential/index.vue'
+    import CredentialForm from '@/setup/credential/index.vue'
     import ConnectorList from '@/setup/connectors/list.vue'
     import StatusView from '@/setup/status/index.vue'
     import Settings from '@/setup/settings/index.vue'
     import ConnectorMixin from '~/mixins/connector'
 
     export default defineComponent({
-        components: { ConnectorList, CredentialView, Settings, StatusView },
+        name: 'Setup',
+        components: { ConnectorList, CredentialForm, Settings, StatusView },
         mixins: [ConnectorMixin],
         data() {
             return {
@@ -208,6 +209,7 @@
             },
 
             handleVerified(credential) {
+                console.log('handleVerified', credential)
                 if (credential && this.loadingNext) {
                     this.loadingNext = false
                     this.selectedCredential = credential
@@ -222,9 +224,9 @@
                 try {
                     if (this.current === 1) {
                         this.loadingNext = true
-                        if (this.$refs.credentialView) {
+                        if (this.$refs.CredentialForm) {
                             const res =
-                                await this.$refs.credentialView.getCredential()
+                                await this.$refs.CredentialForm.getCredential()
                             if (!res) {
                                 this.loadingNext = false
                             }

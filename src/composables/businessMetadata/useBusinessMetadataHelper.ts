@@ -3,15 +3,7 @@ import { computed } from 'vue'
 import { useBusinessMetadataStore } from '~/store/businessMetadata'
 import { formatDate } from '../../utils/date'
 
-const numberTypes = [
-    "int",
-    "double",
-    "float",
-    "byte",
-    "short",
-    "long"
-]
-
+const numberTypes = ['int', 'double', 'float', 'byte', 'short', 'long']
 
 export default function useBusinessMetadataHelper() {
     const businessMetadataStore = useBusinessMetadataStore()
@@ -71,10 +63,13 @@ export default function useBusinessMetadataHelper() {
     }
 
     const isLink = (v: any, name: string) => {
-        const urlRegex = /(((https?:\/\/)|(www\.))[^\s]+)/g;
-        if (name.toLowerCase().includes('link') || (v?.toString().match(urlRegex)))
-            return true;
-        return false;
+        const urlRegex = /(((https?:\/\/)|(www\.))[^\s]+)/g
+        if (
+            name.toLowerCase().includes('link') ||
+            v?.toString().match(urlRegex)
+        )
+            return true
+        return false
     }
 
     /**
@@ -104,7 +99,7 @@ export default function useBusinessMetadataHelper() {
     /**
      * @desc consist of BM objects items with isFacet set to true, excluding isFacet false attribtues
      * */
-    const bmDataMap = computed(() => {
+    const bmDataList = computed(() => {
         if (businessMetadataStore.getBusinessMetadataList?.length) {
             const filterableList = businessMetadataStore.getBusinessMetadataList
                 .filter((bm) =>
@@ -112,13 +107,10 @@ export default function useBusinessMetadataHelper() {
                 )
                 .map((bm) => ({
                     [bm.name]: {
-                        applied: {},
-                        list: {
-                            ...bm,
-                            attributeDefs: bm.attributeDefs.filter(
-                                (a) => a.options?.isFacet === 'true'
-                            ),
-                        },
+                        ...bm,
+                        attributeDefs: bm.attributeDefs.filter(
+                            (a) => a.options?.isFacet === 'true'
+                        ),
                     },
                 }))
             return Object.assign({}, ...filterableList)
@@ -170,11 +162,12 @@ export default function useBusinessMetadataHelper() {
         getDatatypeOfAttribute,
         businessMetadataStore,
         bmFiltersList,
-        bmDataMap,
+        bmDataList,
         getApplicableBmGroups,
         getApplicableAttributes,
         isLink,
         isEmptyObject,
-        createDebounce, formatDisplayValue
+        createDebounce,
+        formatDisplayValue,
     }
 }

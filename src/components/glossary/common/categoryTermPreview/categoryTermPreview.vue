@@ -228,6 +228,8 @@
     import assetTypeLabel from '@/glossary/constants/assetTypeLabel'
     import { copyToClipboard } from '~/utils/clipboard'
 
+    import { useClassifications } from '~/components/admin/classifications/composables/useClassifications'
+
     import {
         Category,
         Term,
@@ -316,6 +318,13 @@
                     }/${props?.entity?.guid}`
                     copyToClipboard(text)
                 }
+            }
+            const {
+                isClassificationInitializedInStore,
+                initializeClassificationsInStore,
+            } = useClassifications()
+            if (!isClassificationInitializedInStore()) {
+                initializeClassificationsInStore()
             }
 
             return {

@@ -1,9 +1,9 @@
 import useSWRV from 'swrv'
 import { computed, ref, ComputedRef } from 'vue'
 import LocalStorageCache from 'swrv/dist/cache/adapters/localStorage'
+import { User, URL } from '@services/keycloak/users/users_api'
 import swrvState from '../utils/swrvState'
 import { userInterface } from '~/types/users/user.interface'
-import { User, URL } from '~/api/auth/user'
 
 export default function fetchUserList(immediate: boolean = true) {
     const params = ref(new URLSearchParams())
@@ -19,7 +19,7 @@ export default function fetchUserList(immediate: boolean = true) {
         [URL.UserList, params?.value, {}],
         () => {
             if (immediate) return User.ListV2(params?.value)
-            else immediate = true
+            immediate = true
 
             return {}
         },

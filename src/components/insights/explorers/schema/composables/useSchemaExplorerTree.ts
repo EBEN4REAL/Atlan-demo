@@ -36,9 +36,9 @@ type CustomTreeDataItem =
 
 interface useSchemaExplorerTreeProps {
     emit: any
-    connectionQualifiedName?: Ref<string>
-    databaseQualifiedName?: Ref<string>
-    schemaQualifiedName?: Ref<string>
+    connectionQualifiedName?: ComputedRef<string | undefined>
+    databaseQualifiedName?: ComputedRef<string | undefined>
+    schemaQualifiedName?: ComputedRef<string | undefined>
     cacheKey?: string
     isAccordion?: boolean
 }

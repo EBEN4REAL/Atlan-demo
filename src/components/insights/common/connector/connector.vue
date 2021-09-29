@@ -264,6 +264,8 @@
                     emit('update:data', {
                         connector: undefined,
                         connection: undefined,
+                        databaseQualifiedName: undefined,
+                        schemaQualifiedName: undefined,
                     })
                 } else {
                     emitChangedFilters()

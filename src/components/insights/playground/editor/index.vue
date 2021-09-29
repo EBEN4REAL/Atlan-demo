@@ -122,7 +122,11 @@
             const { queryRun } = useRunQuery()
             const { modifyActiveInlineTabEditor, modifyActiveInlineTab } =
                 useInlineTab()
-            const { getConnectonName } = useConnector()
+            const {
+                getConnectorName,
+                getConnectionQualifiedName,
+                getSchemaQualifiedName,
+            } = useConnector()
             const { username } = whoami()
             const saveModalRef = ref()
 
@@ -133,11 +137,6 @@
                 activeInlineTabInterface[]
             >
             const saveQueryLoading = ref(false)
-            const selectedDefaultSchema = computed(
-                () =>
-                    activeInlineTab.value.explorer.schema.connectors
-                        .selectedDefaultSchema
-            )
             const modalAction: ComputedRef<string> = computed(() =>
                 activeInlineTab.value.isSaved ? 'UPDATE' : 'CREATE'
             )
@@ -154,21 +153,22 @@
                 showSaveQueryModal.value = true
             }
             const saveQuery = async (saveQueryData: any) => {
+                const attributeValue =
+                    activeInlineTab.value.explorer.schema.connectors
+                        .attributeValue
+                const attributeName =
+                    activeInlineTab.value.explorer.schema.connectors
+                        .attributeName
                 const activeInlineTabCopy: activeInlineTabInterface =
                     Object.assign({}, activeInlineTab.value)
                 activeInlineTabCopy.isSaved = true
                 activeInlineTabCopy.label = saveQueryData.title
                 const uuidv4 = generateUUID()
-                const integrationName =
-                    activeInlineTab.value.explorer.schema.connectors
-                        .connector ?? 'snowflake'
+                const integrationName = getConnectorName(attributeValue) ?? ''
                 const connectionQualifiedName =
-                    activeInlineTab.value.explorer.schema.connectors
-                        .connection ?? 'default/snowflake/vqaqufvr-i'
-                const connectionGuid =
-                    activeInlineTab.value.explorer.schema.connectors
-                        .connectionGuid
-                const connectionName = getConnectonName(connectionQualifiedName)
+                    getConnectionQualifiedName(attributeValue)
+                const connectionGuid = ''
+                const connectionName = getConnectorName(attributeValue)
                 const name = saveQueryData.title
                 const description = saveQueryData.description
                 const assetStatus = saveQueryData.assetStatus
@@ -176,8 +176,9 @@
                 const editorInstanceRaw = toRaw(editorInstance.value)
                 const rawQuery = editorInstanceRaw?.getValue()
                 const compiledQuery = editorInstanceRaw?.getValue()
-                const qualifiedName = `${connectionQualifiedName}/query/user/nitya/${uuidv4}`
-                const defaultSchemaQualifiedName = `default/snowflake/vqaqufvr-i/ATLAN_TRIAL/PUBLIC`
+                const qualifiedName = `${connectionQualifiedName}/query/user/${username.value}/${uuidv4}`
+                const defaultSchemaQualifiedName =
+                    `${attributeName}.${attributeValue}` ?? ''
 
                 const body = ref({
                     entity: {
@@ -185,8 +186,8 @@
                         attributes: {
                             integrationName,
                             name,
-                            connectionName,
                             qualifiedName,
+                            connectionName,
                             defaultSchemaQualifiedName,
                             assetStatus,
                             isSnippet: isSQLSnippet,
@@ -211,7 +212,7 @@
                         createdBy: username.value,
                     },
                 })
-                console.log(body.value)
+                console.log(body.value, 'hola')
                 // chaing loading to true
                 saveQueryLoading.value = true
                 const { data, error, isLoading } = Insights.CreateSavedQuery(
@@ -294,7 +295,6 @@
                 saveQueryLoading,
                 showSaveQueryModal,
                 editorInstance,
-                selectedDefaultSchema,
                 activeInlineTab,
                 isQueryRunning,
                 copyURL,

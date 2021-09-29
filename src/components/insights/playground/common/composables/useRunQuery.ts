@@ -4,9 +4,11 @@ import { KeyMaps } from '~/api/keyMap'
 import { message } from 'ant-design-vue'
 import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
 import { useEditor } from '~/components/insights/common/composables/useEditor'
+import { useConnector } from '~/components/insights/common/composables/useConnector'
 
 export default function useProject() {
     const { getParsedQuery } = useEditor()
+    const { getSchemaNamewithDatasourceName } = useConnector()
     const columnList: Ref<
         [
             {
@@ -58,7 +60,7 @@ export default function useProject() {
     ) => {
         const selectedDataSourceName =
             activeInlineTab.explorer.schema.connectors.selectedDataSourceName
-        const selectedDefaultSchema =
+        const defaultSchemaQualifiedName =
             activeInlineTab.explorer.schema.connectors.selectedDefaultSchema
         let queryText = getParsedQuery(
             activeInlineTab.playground.editor.variables,
@@ -74,16 +76,15 @@ export default function useProject() {
         dataList.value = []
         console.log(queryText)
         const query = encodeURIComponent(btoa(queryText))
+        /* -------- NOTE -----------
+        Here defaultSchema -  'ATLAN_TRIAL.PUBLIC' instead of 'default/snowflake/vqaqufvr-i/ATLAN_TRIAL/PUBLIC'
+        */
         const pathVariables = {
             query,
-            defaultSchema: selectedDefaultSchema
-                ? selectedDefaultSchema
-                : 'ATLAN_TRIAL.PUBLIC',
-            dataSourceName: encodeURIComponent(
-                selectedDataSourceName
-                    ? selectedDataSourceName
-                    : 'default/snowflake/vqaqufvr-i'
+            defaultSchema: getSchemaNamewithDatasourceName(
+                defaultSchemaQualifiedName
             ),
+            dataSourceName: encodeURIComponent(selectedDataSourceName),
             length: 10,
         }
 

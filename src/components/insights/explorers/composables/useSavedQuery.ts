@@ -15,8 +15,15 @@ export function useSavedQuery(
     const { syncInlineTabsInLocalStorage } = useLocalStorageSync()
     const { isInlineTabAlreadyOpened, inlineTabAdd } =
         useInlineTab(treeSelectedKeys)
-
     const openSavedQueryInNewTab = (savedQuery: SavedQuery) => {
+        /* --------NOTE- TEMPERORY FIX-------*/
+        const defaultSchemaQualifiedNameValues =
+            savedQuery.attributes.defaultSchemaQualifiedName?.split('.') ?? [
+                'schemaQualifiedName',
+                'default/snowflake/vqaqufvr-i/ATLAN_TRIAL/PUBLIC',
+            ]
+        /* --------NOTE- TEMPERORY FIX-------*/
+
         const newTab: activeInlineTabInterface = {
             label: savedQuery.attributes.name,
             key: savedQuery.attributes.qualifiedName,
@@ -26,11 +33,8 @@ export function useSavedQuery(
             explorer: {
                 schema: {
                     connectors: {
-                        connection:
-                            savedQuery.attributes.connectionQualifiedName,
-                        connector: 'snowflake',
-                        selectedDefaultSchema: 'ATLAN_TRIAL.PUBLIC',
-                        selectedDataSourceName: 'default/snowflake/vqaqufvr-i',
+                        attributeName: defaultSchemaQualifiedNameValues[0],
+                        attributeValue: defaultSchemaQualifiedNameValues[1],
                     },
                 },
                 queries: {
@@ -83,26 +87,6 @@ export function useSavedQuery(
         }
     }
 
-    /* DEPRECATED FXN 
-
-    const transformSavedQueryResponseInfoToInlineTab = (
-        savedQueryInfo: Ref<SavedQuery>
-    ): activeInlineTabInterface => {
-        const uuidv4 = generateUUID()
-        newTab.value.label = savedQueryInfo.value.attributes.name
-        newTab.value.key = uuidv4
-        newTab.value.queryId = savedQueryInfo.value.attributes.qualifiedName
-        newTab.value.explorer.schema.connectors.connection =
-            savedQueryInfo.value.attributes.connectionQualifiedName
-        newTab.value.playground.editor.text =
-            savedQueryInfo.value.attributes.rawQuery
-        newTab.value.playground.resultsPane.result.title =
-            savedQueryInfo.value.attributes.name
-        console.log(savedQueryInfo, 'get from URL')
-        return newTab.value
-    }
-
-    */
     return {
         openSavedQueryInNewTab,
     }

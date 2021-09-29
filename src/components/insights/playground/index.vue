@@ -121,22 +121,19 @@
                     explorer: {
                         schema: {
                             connectors: {
-                                connection:
+                                attributeName:
                                     activeInlineTab.value?.explorer?.schema
-                                        ?.connectors?.connection,
+                                        ?.connectors?.attributeName,
+                                attributeValue:
+                                    activeInlineTab.value?.explorer?.schema
+                                        ?.connectors?.attributeValue,
+                            },
+                        },
+                        queries: {
+                            connectors: {
                                 connector:
-                                    activeInlineTab.value?.explorer?.schema
-                                        ?.connectors?.connector,
-                                selectedDefaultSchema:
-                                    activeInlineTab.value?.explorer?.schema
-                                        ?.connectors?.selectedDefaultSchema,
-                                selectedDataSourceName:
-                                    activeInlineTab.value?.explorer?.schema
-                                        ?.connectors?.selectedDataSourceName,
-                                connectionGuid:
-                                    activeInlineTab.value?.explorer?.schema
-                                        ?.connectors?.connectionGuid ??
-                                    '8492dfcf-8dc4-40e2-bf80-11744a3d70dc',
+                                    activeInlineTab.value?.explorer?.queries
+                                        .connectors.connector,
                             },
                         },
                     },

@@ -16,20 +16,14 @@
                     <span
                         class="mr-4 cursor-pointer hover:text-primary-400"
                         :class="
-                            isSelectedType('personal')
-                                ? 'font-bold text-primary'
-                                : ''
+                            isSelectedType('personal') ? ' text-primary' : ''
                         "
                         @click="() => onSelectQueryType('personal')"
                         >Personal</span
                     >
                     <span
                         class="cursor-pointer hover:text-primary-400"
-                        :class="
-                            isSelectedType('all')
-                                ? 'font-bold text-primary'
-                                : ''
-                        "
+                        :class="isSelectedType('all') ? ' text-primary' : ''"
                         @click="() => onSelectQueryType('all')"
                         >All</span
                     >
@@ -96,11 +90,14 @@
                 'activeInlineTabKey'
             ) as Ref<string>
 
+            const { setConnectorsDataInInlineTab, getConnectorName } =
+                useConnector()
             const connector = ref(
-                activeInlineTab.value.explorer.schema.connectors.connector
+                getConnectorName(
+                    activeInlineTab.value.explorer.schema.connectors
+                        .attributeValue
+                )
             )
-
-            const { setConnectorsDataInInlineTab } = useConnector()
 
             const savedQueries: SavedQueryInterface[] = [
                 {
@@ -147,12 +144,7 @@
                 setConnectorsDataInInlineTab(
                     activeInlineTab,
                     inlineTabs,
-                    {
-                        connector: value,
-                        sourceName: undefined,
-                        connection: undefined,
-                        schema: undefined,
-                    },
+                    connector,
                     'queries'
                 )
             }

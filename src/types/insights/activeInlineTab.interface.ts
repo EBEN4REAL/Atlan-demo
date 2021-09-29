@@ -1,4 +1,5 @@
 import { CustomVaribaleInterface } from './customVariable.interface'
+import { connectorsWidgetInterface } from '~/types/insights/connectorWidget.interface'
 
 export interface activeInlineTabInterface {
     key: string
@@ -7,14 +8,8 @@ export interface activeInlineTabInterface {
     queryId: string | undefined
     explorer: {
         schema: {
-            connectors: {
-                connection: string | undefined
-                connector: string | undefined
-                connectionGuid: string | undefined
-                selectedDefaultSchema: string | undefined
-                selectedDataSourceName: string | undefined
-            }
-        },
+            connectors: connectorsWidgetInterface
+        }
         queries: {
             connectors: {
                 connector: string | undefined

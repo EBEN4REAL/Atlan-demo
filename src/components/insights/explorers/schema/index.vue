@@ -3,7 +3,7 @@
         <div class="w-full p-4 mb-3">
             <Connector
                 class=""
-                :data="connectorsData"
+                v-model:data="connectorsData"
                 :item="{
                     id: 'connector',
                     label: 'Connector',
@@ -41,7 +41,15 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, Ref, inject, ref, watch } from 'vue'
+    import {
+        defineComponent,
+        Ref,
+        inject,
+        ref,
+        watch,
+        computed,
+        ComputedRef,
+    } from 'vue'
     import { useAssetSidebar } from '~/components/insights/assetSidebar/composables/useAssetSidebar'
     import SchemaTree from './schemaTree.vue'
 
@@ -51,7 +59,7 @@
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
     import { tablesData } from './tablesDemoData'
     import { connectorsWidgetInterface } from '~/types/insights/connectorWidget.interface'
-    import Connector from '~/components/insights/common/connector/connector.vue'
+    import Connector from '@common/facets/connector.vue'
     import { useConnector } from '~/components/insights/common/composables/useConnector'
 
     export default defineComponent({
@@ -61,14 +69,14 @@
             const tables: tableInterface[] = tablesData
             const activeInlineTab = inject(
                 'activeInlineTab'
-            ) as Ref<activeInlineTabInterface>
+            ) as ComputedRef<activeInlineTabInterface>
 
             const tabs = inject('inlineTabs') as Ref<activeInlineTabInterface[]>
             const { openAssetSidebar } = useAssetSidebar(tabs, activeInlineTab)
             const {
                 setConnectorsDataInInlineTab,
-                getConnectorsData,
                 getDatabaseQualifiedName,
+                getConnectionQualifiedName,
                 getSchemaQualifiedName,
             } = useConnector()
 
@@ -82,66 +90,32 @@
                 }
                 return false
             }
-            const selectedDataSourceName =
+
+            const connectorsData: Ref<connectorsWidgetInterface> = ref(
                 activeInlineTab.value.explorer.schema.connectors
-                    .selectedDataSourceName
-            const selectedDefaultSchema =
-                activeInlineTab.value.explorer.schema.connectors
-                    .selectedDefaultSchema
-
-            const connectorsData: Ref<connectorsWidgetInterface> = ref({
-                connection:
-                    activeInlineTab.value.explorer.schema.connectors.connection,
-                connector:
-                    activeInlineTab.value.explorer.schema.connectors.connector,
-                connectionGuid:
-                    activeInlineTab.value.explorer.schema.connectors
-                        .connectionGuid ??
-                    '8492dfcf-8dc4-40e2-bf80-11744a3d70dc',
-                databaseQualifiedName: getDatabaseQualifiedName(
-                    selectedDataSourceName,
-                    selectedDefaultSchema
-                ),
-                schemaQualifiedName: getSchemaQualifiedName(
-                    selectedDataSourceName,
-                    selectedDefaultSchema
-                ),
-            })
-            const handleChange = (data) => {
-                const len = data.payload.criterion.length
-                if (
-                    len > 0 &&
-                    data.payload.criterion[len - 1]?.attributeValue
-                ) {
-                    const { schema, sourceName, connector, connection } =
-                        getConnectorsData(
-                            data.payload.criterion[len - 1]?.attributeValue
-                        )
-                    setConnectorsDataInInlineTab(activeInlineTab, tabs, {
-                        schema,
-                        sourceName,
-                        connector,
-                        connection,
-                    })
-                }
-            }
-
-            const setConnector = (payload: {
-                connection: string | undefined
-                connector: string | undefined
-                guid: string | undefined
-            }) => {
-                connectorsData.value.connector = payload.connector
-                connectorsData.value.connection = payload.connection
-                connectorsData.value.connectionGuid = payload.guid
-            }
-
-            const connectionQualifiedName = ref(connectorsData.value.connection)
-            const databaseQualifiedName = ref(
-                connectorsData.value.databaseQualifiedName
             )
-            const schemaQualifiedName = ref(
-                connectorsData.value.schemaQualifiedName
+
+            const handleChange = () => {
+                setConnectorsDataInInlineTab(
+                    activeInlineTab,
+                    tabs,
+                    connectorsData,
+                    'schema'
+                )
+            }
+
+            const setConnector = (payload: any) => {
+                connectorsData.value = payload
+            }
+
+            const connectionQualifiedName = computed(() =>
+                getConnectionQualifiedName(connectorsData.value.attributeValue)
+            )
+            const databaseQualifiedName = computed(() =>
+                getDatabaseQualifiedName(connectorsData.value.attributeValue)
+            )
+            const schemaQualifiedName = computed(() =>
+                getSchemaQualifiedName(connectorsData.value.attributeValue)
             )
 
             const {
@@ -166,50 +140,11 @@
             /* Watchers for updating the connectors when activeinlab change */
             watch(activeInlineTab, () => {
                 if (activeInlineTab.value) {
-                    const selectedDataSourceName =
+                    connectorsData.value =
                         activeInlineTab.value.explorer.schema.connectors
-                            .selectedDataSourceName
-                    const selectedDefaultSchema =
-                        activeInlineTab.value.explorer.schema.connectors
-                            .selectedDefaultSchema
-
-                    connectorsData.value = {
-                        connection:
-                            activeInlineTab.value.explorer.schema.connectors
-                                .connection,
-                        connector:
-                            activeInlineTab.value.explorer.schema.connectors
-                                .connector,
-                        databaseQualifiedName: getDatabaseQualifiedName(
-                            selectedDataSourceName,
-                            selectedDefaultSchema
-                        ),
-                        schemaQualifiedName: getSchemaQualifiedName(
-                            selectedDataSourceName,
-                            selectedDefaultSchema
-                        ),
-                    }
                 }
             })
 
-            watch(connectorsData, (newConnectorsData) => {
-                connectionQualifiedName.value =
-                    !newConnectorsData.connection?.endsWith('undefined')
-                        ? newConnectorsData.connection
-                        : undefined
-                databaseQualifiedName.value =
-                    !newConnectorsData.databaseQualifiedName?.endsWith(
-                        'undefined'
-                    )
-                        ? newConnectorsData.databaseQualifiedName
-                        : undefined
-                schemaQualifiedName.value =
-                    !newConnectorsData.schemaQualifiedName?.endsWith(
-                        'undefined'
-                    )
-                        ? newConnectorsData.schemaQualifiedName
-                        : undefined
-            })
             return {
                 connectorsData,
                 setConnector,
@@ -217,7 +152,6 @@
                 openAssetSidebar,
                 handleChange,
                 tables,
-
                 treeData,
                 loadedKeys,
                 isInitingTree,

@@ -22,6 +22,8 @@ export type Attributes = {
     isSnippet?: boolean
     integrationName?: string
     connectionQualifiedName: string
+    connectionId: string
+    defaultSchemaQualifiedName: string
     owner?: string
     __createdBy: string
     __customAttributes: string

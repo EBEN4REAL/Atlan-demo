@@ -8,11 +8,14 @@ export const inlineTabsDemoData: activeInlineTabInterface[] = [
         explorer: {
             schema: {
                 connectors: {
-                    connection: 'default/snowflake/vqaqufvr-i',
+                    attributeName: 'schemaQualifiedName',
+                    attributeValue:
+                        'default/snowflake/vqaqufvr-i/ATLAN_TRIAL/PUBLIC',
+                },
+            },
+            queries: {
+                connectors: {
                     connector: 'snowflake',
-                    selectedDefaultSchema: 'ATLAN_TRIAL.PUBLIC',
-                    selectedDataSourceName: 'default/snowflake/vqaqufvr-i',
-                    connectionGuid: '8492dfcf-8dc4-40e2-bf80-11744a3d70dc',
                 },
             },
         },
@@ -53,11 +56,14 @@ export const inlineTabsDemoData: activeInlineTabInterface[] = [
         explorer: {
             schema: {
                 connectors: {
-                    connection: 'default/snowflake/vqaqufvr-i',
+                    attributeName: 'schemaQualifiedName',
+                    attributeValue:
+                        'default/snowflake/vqaqufvr-i/ATLAN_TRIAL/PUBLIC',
+                },
+            },
+            queries: {
+                connectors: {
                     connector: 'snowflake',
-                    selectedDefaultSchema: 'ATLAN_TRIAL.PUBLIC',
-                    selectedDataSourceName: 'default/snowflake/vqaqufvr-i',
-                    connectionGuid: '8492dfcf-8dc4-40e2-bf80-11744a3d70dc',
                 },
             },
         },
@@ -98,11 +104,14 @@ export const inlineTabsDemoData: activeInlineTabInterface[] = [
         explorer: {
             schema: {
                 connectors: {
-                    connection: 'default/snowflake/vqaqufvr-i',
+                    attributeName: 'schemaQualifiedName',
+                    attributeValue:
+                        'default/snowflake/vqaqufvr-i/ATLAN_TRIAL/PUBLIC',
+                },
+            },
+            queries: {
+                connectors: {
                     connector: 'snowflake',
-                    selectedDefaultSchema: 'ATLAN_TRIAL.PUBLIC',
-                    selectedDataSourceName: 'default/snowflake/vqaqufvr-i',
-                    connectionGuid: '8492dfcf-8dc4-40e2-bf80-11744a3d70dc',
                 },
             },
         },

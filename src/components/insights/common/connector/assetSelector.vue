@@ -92,6 +92,7 @@
 
             const handleChange = (checkedValues: string) => {
                 emit('update:modelValue', checkedValues)
+                console.log(checkedValues, 'cjhecked')
                 emit('change', checkedValues)
             }
 

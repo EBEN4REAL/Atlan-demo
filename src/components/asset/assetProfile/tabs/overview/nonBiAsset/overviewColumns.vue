@@ -49,12 +49,17 @@
                 </template>
                 <!-- column_name col -->
                 <template #column_name="{ text, record }">
-                    <div class="flex items-center">
-                        <component
-                            :is="images[record.data_type]"
-                            class="w-4 h-4 mr-3"
-                        ></component>
-                        <Tooltip :tooltip-text="text" />
+                    <div class="flex items-center w-full">
+                        <div class="flex items-center flex-grow">
+                            <component
+                                :is="images[record.data_type]"
+                                class="w-4 h-4 mr-3"
+                            ></component>
+                            <Tooltip :tooltip-text="text" />
+                        </div>
+                        <div v-if="record.is_primary" class="">
+                            <AtlanIcon icon="PrimaryKey" />
+                        </div>
                     </div>
                 </template>
                 <!-- description col -->
@@ -350,6 +355,7 @@
                     hash_index: i.attributes.order,
                     column_name: i.attributes.name,
                     data_type: getDataType(i.attributes.dataType),
+                    is_primary: i.attributes.isPrimary,
                     description:
                         i.attributes.userDescription ||
                         i.attributes.description ||
@@ -508,5 +514,12 @@
     }
     :global(.ant-progress-status-success .ant-progress-bg) {
         background-color: #1890ff !important;
+    }
+    .chip {
+        @apply px-1  mr-1;
+        @apply rounded;
+        @apply flex;
+        @apply items-center;
+        @apply text-xs;
     }
 </style>

@@ -25,6 +25,7 @@ export interface assetInterface {
         popularityScore: number
         qualifiedName: string
         userDescription: string
+        isPrimary: boolean
         rowCount: number
         schemaName: string
         sourceUpdatedAt: string

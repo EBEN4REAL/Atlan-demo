@@ -5,7 +5,7 @@
     >
         <a-dropdown
             v-model:visible="isVisible"
-            :trigger="treeMode ? ['hover'] : ['click']"
+            :trigger="treeMode ? ['click'] : ['click']"
             :class="treeMode ? $style.treeMode: ''"
             @click.stop="() => {}"
         >

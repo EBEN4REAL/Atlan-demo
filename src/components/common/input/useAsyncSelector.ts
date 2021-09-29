@@ -4,7 +4,7 @@ import { useAPIPromise } from '~/api/useAPI';
 import { createDebounce } from "~/composables/utils/debounce";
 
 export default function useAsyncSelector(
-    reqConfig: { url?: any; method?: any; params?: any; addRefValues: Array; body: Object },
+    reqConfig: { url?: any; method?: any; params?: any; addFormValues: Array; body: Object },
     resConfig: { rootPath: any; labelPath: any; valuePath: any; },
     valueObject: { [x: string]: string; }) {
     const asyncData = ref()
@@ -49,21 +49,21 @@ export default function useAsyncSelector(
         console.log('keys', keys)
         const { body } = reqConfig
 
-        const addRefValues = { ...body }
+        const addFormValues = { ...body }
         keys.forEach(k => {
-            addRefValues[k] = valueObject[k]
+            addFormValues[k] = valueObject[k]
         })
-        console.log('getParsedBody', addRefValues)
-        return addRefValues
+        console.log('getParsedBody', addFormValues)
+        return addFormValues
     }
 
     const loadDataError = ref(false);
     const loadData = async () => {
-        const { url, method, params, addRefValues } = reqConfig
+        const { url, method, params, addFormValues } = reqConfig
         loadingData.value = true
         loadDataError.value = false
         try {
-            const response = await useAPIPromise(url, method, { params, body: getParsedBody(addRefValues) })
+            const response = await useAPIPromise(url, method, { params, body: getParsedBody(addFormValues) })
             setData(response);
         } catch (e) {
             loadDataError.value = true;
@@ -72,9 +72,9 @@ export default function useAsyncSelector(
     }
 
     const letAsyncSelectDisabled = computed(() => {
-        const { addRefValues } = reqConfig;
-        getParsedBody(addRefValues)
-        const valueMissing = addRefValues.some((e: string) => (valueObject[e] == null) || (valueObject[e] === ""))
+        const { addFormValues } = reqConfig;
+        getParsedBody(addFormValues)
+        const valueMissing = addFormValues.some((e: string) => (valueObject[e] == null) || (valueObject[e] === ""))
         if (valueMissing) return valueMissing
         return false
     })
@@ -86,9 +86,9 @@ export default function useAsyncSelector(
 
     const values = computed(() => {
         if (!reqConfig) return []
-        const { addRefValues } = reqConfig;
+        const { addFormValues } = reqConfig;
         const temp = []
-        addRefValues.forEach(element => {
+        addFormValues.forEach(element => {
             temp.push(valueObject[element])
         });
         console.log('temp', temp)

@@ -1,5 +1,5 @@
 <template>
-    <a-form :model="testModal" ref="formRef" :rules="getRules(formModel)">
+    <a-form :model="valueObject" ref="formRef" :rules="getRules(formModel)">
         <a-button @click="validate">Validate</a-button>
         <!-- <pre>{{ formModel }}</pre> -->
         <span class="grid grid-cols-2 gap-x-8">
@@ -39,7 +39,7 @@
                             </a-popover>
                             <a-form-item :name="c.id">
                                 <DynamicInput
-                                    v-model="testModal[c.id]"
+                                    v-model="valueObject[c.id]"
                                     :data-type="c.type"
                                     :date-time-type="c.dateTimeType"
                                     :placeholder="c.placeholder"
@@ -50,6 +50,11 @@
                                     :multiple="c?.isMultivalued"
                                     :request-config="f?.requestConfig"
                                     :response-config="f?.responseConfig"
+                                    v-bind="
+                                        c.type === 'asyncSelect'
+                                            ? { valueObject }
+                                            : {}
+                                    "
                                 ></DynamicInput>
                             </a-form-item>
                         </div>
@@ -58,7 +63,7 @@
                 <div v-else-if="f.type === 'toggle'" class="mb-5">
                     <div class="my-2">{{ f.label }}</div>
                     <CustomRadioButton
-                        v-model:data="testModal[f.id]"
+                        v-model:data="valueObject[f.id]"
                         class="pb-4 border-b"
                         :list="f.options"
                     ></CustomRadioButton>
@@ -76,7 +81,7 @@
                     </a-popover>
                     <a-form-item :name="f.id">
                         <DynamicInput
-                            v-model="testModal[f.id]"
+                            v-model="valueObject[f.id]"
                             :data-type="f.type"
                             :date-time-type="f.dateTimeType"
                             :placeholder="f.placeholder"
@@ -87,6 +92,9 @@
                             :multiple="f?.isMultivalued"
                             :request-config="f?.requestConfig"
                             :response-config="f?.responseConfig"
+                            v-bind="
+                                f.type === 'asyncSelect' ? { valueObject } : {}
+                            "
                         ></DynamicInput>
                     </a-form-item>
                 </div>
@@ -115,15 +123,14 @@
                 finalConfigObject,
                 getRules,
                 validate,
-                testModal,
-
+                testModal: valueObject,
                 isRequiredField,
             } = useFormGenerator(config, formRef)
 
             // const test = computed(() => finalConfigObject(formModel.value))
 
             return {
-                testModal,
+                valueObject,
                 getRules,
                 formRef,
                 formModel,

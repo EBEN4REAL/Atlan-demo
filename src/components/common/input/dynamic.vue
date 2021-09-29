@@ -60,6 +60,7 @@
             :dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"
             :options="asyncData"
             :loading="loading"
+            :disabled="letAsyncSelectDisabled"
             :placeholder="placeholder"
             v-bind="{ ...(multiple ? { mode: 'multiple' } : {}) }"
             @change="handleChange"
@@ -130,6 +131,11 @@
         props: {
             modelValue: {
                 required: false,
+            },
+            valueObject: {
+                type: Object,
+                required: false,
+                default: () => {},
             },
             multiple: {
                 type: Boolean,
@@ -205,15 +211,20 @@
                 loadData,
                 asyncData,
                 loadingData: loading,
+                letAsyncSelectDisabled,
             } = useAsyncSelector(
                 props.requestConfig,
                 props.responseConfig,
-                props.dataType
+                props.valueObject
             )
 
-            if (props.dataType === 'asyncSelect') loadData()
+            // if (props.dataType === 'asyncSelect') {
+            //     watch(letAsyncSelectDisabled.value, (v) => {
+            //         if (!v) loadData()
+            //     })
+            // }
 
-            return { loadData, asyncData, loading }
+            return { loadData, asyncData, loading, letAsyncSelectDisabled }
         },
         data() {
             return {

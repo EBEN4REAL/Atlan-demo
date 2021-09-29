@@ -51,18 +51,30 @@
         }
     },
     {
+        "id": "typeName",
+        "label": "typeName"
+    },
+    {
+        "id": "excludeDeletedEntities",
+        "label": "excludeDeletedEntities",
+        "type": "boolean",
+        "default": true
+    },
+    {
         "id": "credentialGuid",
         "type": "asyncSelect",
-        "label": "Async Select",
+        "label": "Async Select credential guid",
         "isVisible": true,
         "placeholder": "Async Select",
         "requestConfig": {
             "url": "https://alpha.atlan.com/api/auth/atlas/tenants/default/search/basic",
             "method": "POST",
             "params": {},
+            "addRefValues": [
+                "typeName",
+                "excludeDeletedEntities"
+            ],
             "body": {
-                "typeName": "Connection",
-                "excludeDeletedEntities": true,
                 "includeClassificationAttributes": false,
                 "includeSubClassifications": false,
                 "includeSubTypes": true,

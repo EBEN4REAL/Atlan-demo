@@ -9,7 +9,6 @@
             placeholder="Select a connector"
             dropdownClassName="connectorDropdown"
             :allowClear="true"
-            @select="handleNodeSelect"
             @change="handleSelectChange"
         >
             <template #title="node">
@@ -52,14 +51,12 @@
         Ref,
         toRefs,
         watch,
-        ComputedRef,
     } from 'vue'
     import { Components } from '~/api/atlas/client'
     import { List } from '~/constant/status'
     import { Collapse } from '~/types'
     import { useConnectionsStore } from '~/store/connections'
     import AssetDropdown from '~/components/common/dropdown/assetDropdown.vue'
-    import { getTabsForConnector } from '~/components/discovery/useTabMapped'
 
     export default defineComponent({
         props: {
@@ -102,10 +99,6 @@
             // undefined is necessary here to show the placeholder
             const selectedValue = computed(
                 () => connection.value || connector.value || undefined
-            )
-
-            const tabIds: ComputedRef<string[]> = computed(() =>
-                getTabsForConnector(data.value)
             )
 
             const store = useConnectionsStore()
@@ -178,20 +171,6 @@
 
             const treeData = transformConnectorToTree(filteredList.value)
 
-            const handleNodeSelect = (value, node) => {
-                // // data.value.connector = node.dataRef.connector
-                // // data.value.connection = node.dataRef.connection
-                // const newData = {
-                //     checked: {
-                //         connector: node.dataRef.connector,
-                //         connection: node.dataRef.connection,
-                //     },
-                // }
-                // setVisibleTabIds(newData.checked.connector)
-                // emit('update:data', newData)
-                // // console.log(value, node.dataRef, connectorsPayload, 'selected')
-            }
-
             watch([connector, connection], () => emitChangedFilters())
 
             const emitChangedFilters = () => {
@@ -211,17 +190,7 @@
                     })
                 }
 
-                emit(
-                    'change',
-                    {
-                        id: props.item.id,
-                        payload: {
-                            condition: 'AND',
-                            criterion,
-                        },
-                    },
-                    tabIds.value
-                )
+                emit('change')
             }
 
             const handleSelectChange = (value: string) => {
@@ -248,23 +217,7 @@
             }: Record<string, string>) => {
                 if (attributeName && attributeValue) {
                     emit('update:data', { attributeName, attributeValue })
-                    emit(
-                        'change',
-                        {
-                            id: props.item.id,
-                            payload: {
-                                condition: 'AND',
-                                criterion: [
-                                    {
-                                        attributeName,
-                                        attributeValue,
-                                        operator: 'eq',
-                                    },
-                                ],
-                            } as Components.Schemas.FilterCriteria,
-                        },
-                        tabIds.value
-                    )
+                    emit('change')
                 } else {
                     handleSelectChange(data.value?.attributeValue)
                     emitChangedFilters()
@@ -287,15 +240,12 @@
                 setPlaceholder,
                 filteredConnector,
                 data,
-                handleNodeSelect,
                 getImage,
                 filteredList,
                 list,
                 checkedValues,
                 treeData,
                 capitalizeFirstLetter,
-
-                tabIds,
                 connector,
                 connection,
             }

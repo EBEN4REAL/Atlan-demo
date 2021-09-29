@@ -45,7 +45,7 @@
     import ArchivedRunList from '@common/list/archivedruns/index.vue'
 
     export default defineComponent({
-        name: 'HelloWorld',
+        name: 'AllConnectionsDetails',
         components: {
             RunList,
             ArchivedRunList,

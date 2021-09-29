@@ -41,6 +41,7 @@
     import { useRoute, useRouter } from 'vue-router'
     import { assetInterface } from '~/types/assets/asset.interface'
     import { getDecodedOptionsFromString } from '~/utils/helper/routerQuery'
+    import { decodeQuery } from '~/utils/helper/routerHelper'
     import { useClassifications } from '~/components/admin/classifications/composables/useClassifications'
 
     export interface initialFiltersType {
@@ -63,8 +64,21 @@
             const updateProfile = ref<boolean>(false)
 
             const assetDiscovery: Ref<Element | null> = ref(null)
-            const initialFilters: initialFiltersType =
-                getDecodedOptionsFromString(router)
+            // const initialFilters: initialFiltersType =
+            //     getDecodedOptionsFromString(router)
+
+            const initialFilters: Record<string, any> = {
+                facetsFilters: {},
+                searchText: '',
+                selectedTab: 'Catalog',
+                sortOrder: 'default',
+                state: 'active',
+                ...decodeQuery(
+                    Object.keys(router.currentRoute.value?.query)[0]
+                ),
+            }
+
+            router.currentRoute.value?.query
             const selected: Ref<assetInterface | undefined> = ref(undefined)
             const handlePreview = (selectedItem: assetInterface) => {
                 selected.value = selectedItem

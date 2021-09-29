@@ -89,7 +89,7 @@
                             </div>
 
                             <div
-                                v-if="isFilter(item.id)"
+                                v-if="isFilterApplied(item.id)"
                                 class="text-xs text-gray-500 opacity-0  hover:text-primary group-hover:opacity-100"
                                 @click.stop.prevent="handleClear(item.id)"
                             >
@@ -100,6 +100,15 @@
                 </template>
 
                 <component
+                    v-if="item.component === 'businessMetadata'"
+                    is="businessMetadata"
+                    v-model:data="dataMap[item.id]"
+                    :item="item"
+                    :list="bmDataList[item.id]"
+                    @change="handleChange"
+                ></component>
+                <component
+                    v-else
                     :is="item.component"
                     v-model:data="dataMap[item.id]"
                     :item="item"
@@ -119,13 +128,12 @@
         Ref,
         watch,
     } from 'vue'
-    import { Components } from '~/api/atlas/client'
-    import { useClassificationStore } from '~/components/admin/classifications/_store'
     import useBusinessMetadataHelper from '~/composables/businessMetadata/useBusinessMetadataHelper'
     import { List as StatusList } from '~/constant/status'
     import { List as AssetCategoryList } from '~/constant/assetCategory'
     import { List } from './filters'
-    import { AssetTypeList } from '~/constant/assetType'
+    import useFilterPayload from './useFilterPayload'
+    import useFilterUtils from './useFilterUtils'
 
     export default defineComponent({
         name: 'DiscoveryFacets',
@@ -161,86 +169,11 @@
                 },
             },
         },
-        emits: ['refresh', 'modifyTabs'],
+        emits: ['refresh', 'initialize'],
         setup(props, { emit }) {
-            const classificationsStore = useClassificationStore()
-            const { bmFiltersList, bmDataMap } = useBusinessMetadataHelper()
+            const { bmFiltersList, bmDataList } = useBusinessMetadataHelper()
             // console.log(props.initialFilters.facetsFilters, 'facetFilters')
             const activeKey: Ref<string[]> = ref([])
-            const initialFilterMap = {
-                connector: {
-                    condition: 'AND',
-                    criterion: Object.keys(
-                        props.initialFilters?.facetsFilters?.connector
-                    ).length
-                        ? [props.initialFilters.facetsFilters.connector]
-                        : [],
-                },
-                assetCategory: {
-                    condition:
-                        props.initialFilters.facetsFilters.assetCategory
-                            .condition,
-                    criterion:
-                        props.initialFilters.facetsFilters.assetCategory
-                            .criterion,
-                },
-                status: {
-                    condition:
-                        props.initialFilters.facetsFilters.status.condition,
-                    criterion:
-                        props.initialFilters.facetsFilters.status.criterion,
-                },
-                classifications: {
-                    condition:
-                        props.initialFilters.facetsFilters.classifications
-                            .condition,
-                    criterion:
-                        props.initialFilters.facetsFilters.classifications
-                            .criterion,
-                },
-                owners: {
-                    condition:
-                        props.initialFilters.facetsFilters.owners.condition,
-                    criterion:
-                        props.initialFilters.facetsFilters.owners.criterion,
-                },
-                advanced: {
-                    condition:
-                        props.initialFilters.facetsFilters.advanced.condition,
-                    criterion:
-                        props.initialFilters.facetsFilters.advanced.criterion,
-                },
-            }
-
-            const filterMap: {
-                [key: string]: Components.Schemas.FilterCriteria
-            } = {
-                ...initialFilterMap,
-            }
-
-            // ? add business metadata filters to filter map on load
-            watch(
-                () => bmFiltersList.value,
-                () => {
-                    bmFiltersList.value.forEach((bm) => {
-                        if (props.initialFilters.facetsFilters[bm.id]) {
-                            filterMap[bm.id] = {
-                                condition: 'OR',
-                                criterion:
-                                    props.initialFilters.facetsFilters[bm.id]
-                                        .criterion,
-                            }
-                        }
-                    })
-                },
-                {
-                    deep: true,
-                    immediate: true,
-                }
-            )
-
-            let filters: Components.Schemas.FilterCriteria[] = []
-
             const dirtyTimestamp = ref('dirty_')
 
             /**
@@ -252,70 +185,70 @@
             ])
 
             // Mapping of Data to child components
-            const dataMap: { [key: string]: any } = ref({})
-            dataMap.value.connector =
-                props.initialFilters.facetsFilters.connector
-            dataMap.value.assetCategory = {
-                checked:
-                    props.initialFilters.facetsFilters.assetCategory.checked,
-            }
-            dataMap.value.status = {
-                checked: props.initialFilters.facetsFilters.status.checked,
-            }
-            dataMap.value.classifications = {
-                classifications: computed(
-                    () => classificationsStore.classifications
-                ),
-                noClassificationsAssigned: false,
-                checked:
-                    props.initialFilters.facetsFilters.classifications.checked,
-                operator:
-                    props.initialFilters.facetsFilters.classifications
-                        .condition || 'OR',
-                addedBy:
-                    props.initialFilters.facetsFilters.classifications
-                        .addedBy || 'all',
-            }
-            dataMap.value.owners = {
-                userValue:
-                    props.initialFilters.facetsFilters?.owners?.userValue || [],
-                groupValue:
-                    props.initialFilters.facetsFilters?.owners?.groupValue ||
-                    [],
-                noOwnerAssigned:
-                    props.initialFilters.facetsFilters?.owners?.noOwner,
-            }
-            dataMap.value.advanced = {
-                applied: props.initialFilters.facetsFilters.advanced.applied,
-            }
+            const dataMap: Ref<{ [key: string]: any }> = ref({
+                connector: props.initialFilters?.facetsFilters?.connector || {},
+                assetCategory: props.initialFilters?.facetsFilters
+                    ?.assetCategory || { checked: undefined },
+                status: props.initialFilters?.facetsFilters?.status || {
+                    checked: undefined,
+                },
+                classifications: {
+                    noClassificationsAssigned: false,
+                    checked:
+                        props.initialFilters?.facetsFilters?.classifications
+                            ?.checked,
+                    operator:
+                        props.initialFilters?.facetsFilters?.classifications
+                            ?.condition || 'OR',
+                    addedBy:
+                        props.initialFilters?.facetsFilters?.classifications
+                            ?.addedBy || 'all',
+                },
+                owners: {
+                    userValue:
+                        props.initialFilters?.facetsFilters?.owners
+                            ?.userValue || [],
+                    groupValue:
+                        props.initialFilters?.facetsFilters?.owners
+                            ?.groupValue || [],
+                    noOwnerAssigned:
+                        props.initialFilters?.facetsFilters?.owners
+                            ?.noOwnerAssigned || false,
+                },
+                advanced: {
+                    applied:
+                        props.initialFilters?.facetsFilters?.advanced?.applied,
+                },
+            })
 
-            function setAppliedFiltersCount() {
-                let count = 0
-                const filterMapKeys = Object.keys(filterMap)
-                filterMapKeys.forEach((id) => {
-                    if (filterMap[id]?.criterion?.length > 0) {
-                        return (count += 1)
-                    }
-                })
-                totalAppliedFiltersCount.value = count
-            }
+            const { payload: filterMap } = useFilterPayload(dataMap)
+            const { isFilterApplied, totalAppliedFiltersCount } =
+                useFilterUtils(dataMap)
 
-            // ? watching for bmDataMap to be computed
+            // function setAppliedFiltersCount() {
+            //     let count = 0
+            //     const filterMapKeys = Object.keys(filterMap.value)
+            //     filterMapKeys?.forEach((id) => {
+            //         if (filterMap[id]?.criterion?.length > 0) {
+            //             return (count += 1)
+            //         }
+            //     })
+            //     totalAppliedFiltersCount.value = count
+            // }
+
+            // ? watching for bmDataList to be computed
             watch(
-                () => bmDataMap.value,
+                bmDataList,
                 () => {
-                    dataMap.value = {
-                        ...dataMap.value,
-                        ...bmDataMap.value,
-                    }
                     // ? add initial applied filters to dataMap
-                    Object.keys(bmDataMap.value).forEach((b) => {
-                        if (props.initialFilters.facetsFilters[b]?.applied)
-                            dataMap.value[b].applied = {
-                                ...dataMap.value[b].applied,
-                                ...props.initialFilters.facetsFilters[b]
-                                    .applied,
-                            }
+                    Object.keys(bmDataList.value).forEach((b) => {
+                        dataMap.value[b] = {
+                            applied: {
+                                ...dataMap.value[b]?.applied,
+                                ...props.initialFilters?.facetsFilters?.[b]
+                                    ?.applied,
+                            },
+                        }
                     })
                 },
                 {
@@ -325,51 +258,17 @@
             )
 
             const refresh = () => {
-                filters = []
-                Object.keys(filterMap).forEach((key) => {
-                    filters.push(filterMap[key])
-                })
-                emit('refresh', filters, filterMap)
+                emit('refresh', filterMap.value, dataMap.value)
             }
-            const modifyTabs = (tabsIds) => {
-                emit('modifyTabs', tabsIds)
-            }
-
-            const handleChange = (value: any, tabsIds: string[]) => {
-                filterMap[value.id] = value.payload
-                if (value?.selectedIds)
-                    filterMap[value.id] = {
-                        ...filterMap[value.id],
-                        selectedIds: value?.selectedIds,
-                    }
+            const handleChange = () => {
                 dirtyTimestamp.value = `dirty_${Date.now().toString()}`
                 console.log(dirtyTimestamp.value)
-                setAppliedFiltersCount()
-                modifyTabs(tabsIds)
                 refresh()
                 // updateChangesInStore(value);
             }
 
             const setConnector = (payload: any) => {
                 dataMap.value.connector = payload
-            }
-
-            const isFilter = (id: string) => {
-                if (filterMap[id] && filterMap[id]?.criterion?.length > 0) {
-                    return true
-                }
-                return false
-            }
-
-            const totalAppliedFiltersCount = ref(0)
-
-            const resetTabs = () => {
-                const tabsIds = AssetTypeList.filter(
-                    (item) => item.isDiscoverable == true
-                ).map((item) => {
-                    return item.id
-                })
-                return tabsIds
             }
 
             const handleClear = (filterId: string) => {
@@ -379,20 +278,14 @@
                             attributeName: undefined,
                             attributeValue: undefined,
                         }
-                        filterMap[filterId].criterion = []
-                        emit('modifyTabs', resetTabs())
                         break
                     }
                     case 'assetCategory': {
                         dataMap.value[filterId].checked = []
-                        filterMap[filterId].criterion = []
-                        filterMap[filterId].selectedIds = []
-                        emit('modifyTabs', resetTabs())
                         break
                     }
                     case 'status': {
                         dataMap.value[filterId].checked = []
-                        filterMap[filterId].criterion = []
                         break
                     }
                     case 'classifications': {
@@ -401,34 +294,30 @@
                             false
                         dataMap.value[filterId].operator = 'OR'
                         dataMap.value[filterId].addedBy = 'all'
-                        filterMap[filterId].criterion = []
                         break
                     }
                     case 'owners': {
                         dataMap.value[filterId].userValue = []
                         dataMap.value[filterId].groupValue = []
                         dataMap.value[filterId].noOwnerAssigned = false
-                        filterMap[filterId].criterion = []
                         break
                     }
                     case 'advanced': {
                         dataMap.value[filterId].applied = {}
-                        filterMap[filterId].criterion = []
                         break
                     }
                     default: {
                         dataMap.value[filterId].applied = {}
-                        filterMap[filterId].criterion = []
                     }
                 }
-                setAppliedFiltersCount()
                 refresh()
             }
             function getFiltersAppliedString(filterId: string) {
                 switch (filterId) {
                     case 'assetCategory': {
-                        let facetFiltersData = dataMap.value[filterId].checked
-                        facetFiltersData = facetFiltersData.map(
+                        let facetFiltersData =
+                            dataMap.value[filterId]?.checked || []
+                        facetFiltersData = facetFiltersData?.map(
                             (assetCategoryId: string) =>
                                 AssetCategoryList?.find(
                                     (assetCategory: any) =>
@@ -446,7 +335,8 @@
                         return facetFiltersData.slice(0, 2).join(', ')
                     }
                     case 'status': {
-                        let facetFiltersData = dataMap.value[filterId].checked
+                        let facetFiltersData =
+                            dataMap.value[filterId]?.checked || []
                         facetFiltersData = facetFiltersData.map(
                             (statusId: string) =>
                                 StatusList?.find(
@@ -464,7 +354,8 @@
                         return facetFiltersData.slice(0, 3).join(', ')
                     }
                     case 'classifications': {
-                        const facetFiltersData = dataMap.value[filterId].checked
+                        const facetFiltersData =
+                            dataMap.value[filterId]?.checked || []
                         if (facetFiltersData.length > 3) {
                             return `${facetFiltersData
                                 .slice(0, 3)
@@ -483,10 +374,10 @@
                         )
                     }
                     case 'owners': {
-                        const users = dataMap.value[filterId].userValue
-                        const groups = dataMap.value[filterId].groupValue
+                        const users = dataMap.value[filterId]?.userValue || []
+                        const groups = dataMap.value[filterId]?.groupValue || []
                         const noOwnerAssigned =
-                            dataMap.value[filterId].noOwnerAssigned
+                            dataMap.value[filterId]?.noOwnerAssigned || false
                         let appliedOwnersString = ''
                         if (users && users?.length > 0) {
                             if (users?.length === 1)
@@ -511,7 +402,7 @@
                     case 'advanced': {
                         // ? default fall back to bm filter
                         const totalCount = Object.values(
-                            dataMap.value[filterId]?.applied
+                            dataMap.value[filterId]?.applied || {}
                         ).length
 
                         return totalCount
@@ -521,7 +412,7 @@
                     default: {
                         // ? default fall back to bm filter
                         const totalCount = Object.values(
-                            dataMap.value[filterId]?.applied
+                            dataMap.value[filterId]?.applied || {}
                         ).length
 
                         return totalCount
@@ -551,20 +442,10 @@
                     .forEach((n) => {
                         dataMap.value[n].applied = {}
                     })
-
-                const filterMapKeys = Object.keys(filterMap)
-                filterMapKeys.forEach((id) => {
-                    filterMap[id].criterion = []
-                    if (filterMap[id]?.selectedIds)
-                        filterMap[id].selectedIds = []
-                })
-                // reset tabs
-                emit('modifyTabs', resetTabs())
-                setAppliedFiltersCount()
-
                 refresh()
             }
-            setAppliedFiltersCount()
+
+            emit('initialize', filterMap.value)
 
             console.log(dynamicList, 'list')
             return {
@@ -574,22 +455,14 @@
                 activeKey,
                 dataMap,
                 handleChange,
-                isFilter,
+                isFilterApplied,
                 dirtyTimestamp,
                 filterMap,
                 handleClear,
                 dynamicList,
                 bmFiltersList,
+                bmDataList,
                 setConnector,
-            }
-        },
-        data() {
-            return {
-                searchParam: {
-                    entityFilters: {},
-                } as Components.Schemas.SearchParameters,
-                filterMap: {} as { [key: string]: any },
-                filters: {} as Components.Schemas.FilterCriteria,
             }
         },
     })

@@ -1,6 +1,7 @@
 import { Ref, ref } from 'vue'
 
-import { Database, Schema, Table, Column, BasicSearchResponse } from '~/types/insights/table.interface'
+import { Database, Schema, Table, Column } from '~/types/insights/table.interface'
+import { BasicSearchResponse } from '~/types/common/atlasSearch.interface'
 
 import { useAPIPromise } from '~/api/useAPI'
 import { KeyMaps } from '~/api/keyMap'

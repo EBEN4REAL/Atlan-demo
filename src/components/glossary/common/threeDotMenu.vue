@@ -1,7 +1,7 @@
 <template>
     <div
         class="group-hover:opacity-100"
-        :class="{'opacity-100': isVisible, 'opacity-0 treeMode': treeMode}"
+        :class="{'opacity-100': isVisible, 'opacity-0 treeMode': treeMode, 'opacity-100': visible }"
     >
         <a-dropdown
             v-model:visible="isVisible"
@@ -11,7 +11,7 @@
         >
             <a-button
                 class="px-2 three-dot-menu"
-                :class="{ ' border-0 shadow-none outline-none': !showLinks || treeMode, 'treeMode h-4 w-4 mr-2': treeMode }"
+                :class="{ ' border-0 shadow-none outline-none': !showLinks || treeMode, 'treeMode h-4 w-4 ml-0.5': treeMode }"
                 @click.prevent
             >
                 <!-- <fa icon="fal ellipsis-v" class="h-4" /> -->
@@ -290,8 +290,11 @@
                         </template>
                         <template #expandIcon><div></div> </template>
                         <a-menu-item class="m-0 bg-white">
-                            <Owners :selectedAsset="entity"
-                        /></a-menu-item>
+                            <Owners 
+                                :selectedAsset="entity"
+                                @update:selectedAsset="updateTree"
+                            />
+                        </a-menu-item>
                     </a-sub-menu>
                     <a-menu-divider />
                     <a-menu-item key="archive" class="text-red-700">
@@ -391,6 +394,11 @@
                 type: Boolean,
                 required: false,
                 default: () => false
+            },
+            visible: {
+                type: Boolean,
+                required: false,
+                default: true
             }
         },
         setup(props, context) {

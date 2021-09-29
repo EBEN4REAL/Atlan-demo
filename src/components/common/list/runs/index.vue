@@ -8,9 +8,9 @@
                     style="min-width: 150px"
                 ></WorkflowTypeSelector>
                 <ConnectionSelector
-                    style="min-width: 150px"
                     v-model:value="connectionQf"
-                    :showAll="true"
+                    style="min-width: 150px"
+                    :show-all="true"
                     @change="handleConnectionChange"
                 ></ConnectionSelector>
             </div>
@@ -20,30 +20,30 @@
         </div>
         <div class="w-full overflow-auto min-h-10">
             <div
+                v-if="[STATES.ERROR, STATES.STALE_IF_ERROR].includes(state)"
                 class="flex items-center h-full align-middle bg-white"
                 style="min-height: 200px"
-                v-if="[STATES.ERROR, STATES.STALE_IF_ERROR].includes(state)"
             >
                 <ErrorView></ErrorView>
             </div>
             <div
+                v-else-if="isLoading"
                 class="flex items-center h-full align-middle bg-white"
                 style="min-height: 200px"
-                v-else-if="isLoading"
             >
                 <LoadingView></LoadingView>
             </div>
             <div
+                v-else-if="!data.items"
                 class="flex items-center h-full align-middle bg-white"
                 style="min-height: 200px"
-                v-else-if="!data.items"
             >
                 <EmptyView empty="No running jobs"></EmptyView>
             </div>
 
             <table
-                class="table w-full mx-auto overflow-x-hidden table-report"
                 v-else
+                class="table w-full mx-auto overflow-x-hidden table-report"
             >
                 <tbody class="rounded-md">
                     <template
@@ -61,15 +61,14 @@
 <script lang="ts">
     import { defineComponent, ref } from 'vue'
 
-    import ItemView from './item.vue'
-    import useWorkflowList from '~/composables/bots/useWorkflowList'
-
     import LoadingView from '@common/loaders/section.vue'
     import ErrorView from '@common/error/index.vue'
     import EmptyView from '@common/empty/index.vue'
 
     import WorkflowTypeSelector from '@common/selector/workflowtype/index.vue'
     import ConnectionSelector from '@common/selector/connections/index.vue'
+    import useWorkflowList from '~/composables/bots/useWorkflowList'
+    import ItemView from './item.vue'
     import Runstatus from '../../selector/runstatus/index.vue'
 
     export default defineComponent({
@@ -87,19 +86,13 @@
                 type: Boolean,
             },
         },
-        data() {
-            return {
-                list: [],
-                msgServer: null,
-            }
-        },
         setup(props) {
-            let now = ref(true)
-            let params = ref({}) as { [key: string]: any }
+            const now = ref(true)
+            const params = ref({}) as { [key: string]: any }
 
-            let connectionQf = ref()
-            let botTemplateName = ref()
-            let phase = ref()
+            const connectionQf = ref()
+            const botTemplateName = ref()
+            const phase = ref()
 
             const projection =
                 'metadata,items.metadata.uid,items.metadata.name,items.metadata.namespace,items.metadata.creationTimestamp,items.metadata.labels,items.status.phase,items.status.message,items.status.finishedAt,items.status.startedAt,items.status.estimatedDuration,items.status.progress,items.spec.suspend'
@@ -155,6 +148,12 @@
                 handlePhaseChange,
                 connectionQf,
                 handleConnectionChange,
+            }
+        },
+        data() {
+            return {
+                list: [],
+                msgServer: null,
             }
         },
         mounted() {},

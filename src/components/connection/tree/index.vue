@@ -56,6 +56,7 @@
     import handleTreeExpand from '~/composables/tree/handleTreeExpand'
 
     export default defineComponent({
+        name: 'ConnectionTree',
         components: { EmptyView, ErrorView, LoadingView },
         props: {
             treeData: {

@@ -15,7 +15,7 @@ export function useSavedQuery(
     const { isInlineTabAlreadyOpened, inlineTabAdd } = useInlineTab(treeSelectedKeys)
 
     const openSavedQueryInNewTab = (savedQuery: SavedQuery) => {
-        const newTab = {
+        const newTab: activeInlineTabInterface = {
             label: savedQuery.attributes.name,
             key: savedQuery.attributes.qualifiedName,
             favico: 'https://atlan.com/favicon.ico',
@@ -30,6 +30,11 @@ export function useSavedQuery(
                         selectedDataSourceName: 'default/snowflake/vqaqufvr-i',
                     },
                 },
+                queries: {
+                    connectors: {
+                        connector: savedQuery.attributes.integrationName
+                    }
+                }
             },
             playground: {
                 editor: {

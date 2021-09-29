@@ -19,7 +19,7 @@ export type Attributes =  {
     name: string
     qualifiedName: string
     userDescription?: string
-
+    integrationName?: string;
     connectionQualifiedName: string;
     owner?: string;
     __createdBy: string

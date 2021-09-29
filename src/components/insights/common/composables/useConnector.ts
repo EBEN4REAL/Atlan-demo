@@ -13,20 +13,24 @@ export function useConnector() {
             sourceName: string | undefined
             connector: string | undefined
             connection: string | undefined
-        }
+        },
+        explorerType: 'schema' | 'queries' = 'schema'
     ) => {
         const activeInlineTabCopy: activeInlineTabInterface = Object.assign(
             {},
             activeInlineTab.value
         )
-        activeInlineTabCopy.explorer.schema.connectors.connector =
+        activeInlineTabCopy.explorer[explorerType].connectors.connector =
             connectorsData.connector
-        activeInlineTabCopy.explorer.schema.connectors.connection =
-            connectorsData.connection
-        activeInlineTabCopy.explorer.schema.connectors.selectedDataSourceName =
-            connectorsData.sourceName
-        activeInlineTabCopy.explorer.schema.connectors.selectedDefaultSchema =
-            connectorsData.schema
+        if(explorerType === 'schema')
+        {
+            activeInlineTabCopy.explorer[explorerType].connectors.connection =
+                connectorsData.connection
+            activeInlineTabCopy.explorer[explorerType].connectors.selectedDataSourceName =
+                connectorsData.sourceName
+            activeInlineTabCopy.explorer[explorerType].connectors.selectedDefaultSchema =
+                connectorsData.schema
+        }
         modifyActiveInlineTab(activeInlineTabCopy, tabs)
 
         console.log(connectorsData, 'Connectors Data')

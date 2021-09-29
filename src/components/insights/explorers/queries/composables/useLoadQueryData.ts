@@ -21,6 +21,7 @@ const useLoadQueryData = () => {
         "ownerGroups",
         "classifications",
 
+        "integrationName",
         "connectionQualifiedName",
         "parentFolder",
         "columns", //TODO: queries

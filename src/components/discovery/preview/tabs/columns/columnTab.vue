@@ -1,31 +1,30 @@
 <template>
     <div class="flex flex-col px-5 py-4">
-        <div class="mb-5">
-            <SearchAndFilter
-                v-model:value="queryText"
-                @change="handleSearchChange"
-                :autofocus="true"
-                :placeholder="`Search ${colCount} columns`"
-            >
-                <template #filter>
-                    <div class="flex items-center justify-between mb-2 text-sm">
-                        <span>Data type</span>
-                        <a-spin size="small" v-if="isAggregateLoading" />
-                        <span
-                            v-else
-                            class="text-gray-500 cursor-pointer hover:text-gray"
-                            @click="clearAllFilters"
-                            >Clear</span
-                        >
-                    </div>
-                    <DataTypes
-                        v-model:filters="filters"
-                        @update:filters="handleFilterChange"
-                        :data-type-map="dataTypeMap"
-                    />
-                </template>
-            </SearchAndFilter>
-        </div>
+        <SearchAndFilter
+            class="mb-4"
+            v-model:value="queryText"
+            @change="handleSearchChange"
+            :autofocus="true"
+            :placeholder="`Search ${colCount} columns`"
+        >
+            <template #filter>
+                <div class="flex items-center justify-between mb-2 text-sm">
+                    <span>Data type</span>
+                    <a-spin size="small" v-if="isAggregateLoading" />
+                    <span
+                        v-else
+                        class="text-gray-500 cursor-pointer hover:text-gray"
+                        @click="clearAllFilters"
+                        >Clear</span
+                    >
+                </div>
+                <DataTypes
+                    v-model:filters="filters"
+                    @update:filters="handleFilterChange"
+                    :data-type-map="dataTypeMap"
+                />
+            </template>
+        </SearchAndFilter>
 
         <div
             v-if="isLoading && !isLoadMore"
@@ -35,7 +34,7 @@
             ><span>Getting column info</span>
         </div>
         <div
-            v-else-if="list.length <= 0 && !isLoading"
+            v-else-if="list?.length + pinnedList?.length <= 0 && !isLoading"
             class="flex flex-col items-center"
         >
             <img
@@ -53,6 +52,35 @@
             class="flex flex-col gap-y-2"
             :class="{ 'animate-pulse': isLoading }"
         >
+            <a-collapse
+                v-if="pinnedList.length"
+                expand-icon-position="right"
+                :bordered="false"
+                v-model:activeKey="pinnedExpanded"
+                class="bg-transparent"
+                :class="$style.filter"
+            >
+                <template #expandIcon="{ isActive }">
+                    <div>
+                        <AtlanIcon
+                            icon="ChevronDown"
+                            class="text-gray-500 transition-transform duration-300 transform "
+                            :class="isActive ? '-rotate-180' : 'rotate-0'"
+                        />
+                    </div>
+                </template>
+                <a-collapse-panel key="pin">
+                    <template #header>
+                        <span class="text-sm text-gray-500">Pinned</span>
+                    </template>
+                    <ColumnListItem
+                        v-for="(asset, index) in pinnedList"
+                        :key="index"
+                        :asset="asset"
+                        @asset-mutation="propagateToColumnList"
+                    /> </a-collapse-panel
+            ></a-collapse>
+
             <ColumnListItem
                 v-for="(asset, index) in list"
                 :key="index"
@@ -134,6 +162,7 @@
             const isFilterVisible = ref(false)
             const queryText = ref('')
             const filters: Ref<string[]> = ref([])
+            const pinnedExpanded = ref('pin')
 
             const { dataTypeImage, columnCount } = useAssetInfo()
             const { selectedAsset } = toRefs(props)
@@ -148,7 +177,14 @@
                 useColumnsList(assetQualifiedName, {
                     query: queryText,
                     dataTypes: filters,
+                    pinned: false,
                 })
+
+            const {
+                list: pinnedList,
+                isLoading: isPinnedLoading,
+                reFetch: reFetchPinned,
+            } = useColumnsList(assetQualifiedName, { pinned: true })
 
             const { dataTypeMap, isAggregateLoading, refreshAggregation } =
                 useColumnAggregation(assetQualifiedName)
@@ -201,7 +237,26 @@
                 emptyScreen,
                 clearFiltersAndSearch,
                 colCount,
+                pinnedExpanded,
+                pinnedList,
+                isPinnedLoading,
+                reFetchPinned,
             }
         },
     })
 </script>
+
+<style lang="less" module>
+    .filter {
+        :global(.ant-collapse-header) {
+            @apply pl-0 !important;
+        }
+        :global(.ant-collapse-item:last-child) {
+            @apply border-gray-300;
+        }
+        :global(.ant-collapse-content-box) {
+            padding-right: 0px;
+            padding-left: 0px;
+        }
+    }
+</style>

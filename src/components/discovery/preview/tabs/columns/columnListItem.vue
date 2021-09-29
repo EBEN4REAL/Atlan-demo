@@ -11,7 +11,7 @@
                     pt-0.5
                     mr-2
                     overflow-hidden
-                    text-xs
+                    text-sm
                     font-bold
                     align-middle
                     text-gray

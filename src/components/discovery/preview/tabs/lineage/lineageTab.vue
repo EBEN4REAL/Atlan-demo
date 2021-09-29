@@ -1,7 +1,16 @@
 <template>
     <div
         v-if="loading"
-        class="flex items-center justify-center px-5 py-4 mt-4 text-sm leading-none "
+        class="
+            flex
+            items-center
+            justify-center
+            px-5
+            py-4
+            mt-4
+            text-sm
+            leading-none
+        "
     >
         <!-- <a-spin size="small" class="mr-2 leading-none"></a-spin
         ><span>Getting lineage data</span> -->
@@ -36,7 +45,7 @@
                 <div class="">
                     <fa
                         icon="fas chevron-down"
-                        class="ml-1 transition-transform transform"
+                        class="ml-1 transition-transform transform duration-300"
                         :class="isActive ? '-rotate-180' : 'rotate-0'"
                     />
                 </div>
@@ -48,7 +57,14 @@
             >
                 <template #header>
                     <div
-                        class="flex items-center text-sm font-bold select-none  header"
+                        class="
+                            flex
+                            items-center
+                            text-sm
+                            font-bold
+                            select-none
+                            header
+                        "
                     >
                         {{ stream.name }}
 

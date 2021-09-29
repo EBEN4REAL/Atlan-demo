@@ -35,7 +35,7 @@
                 <div class="">
                     <fa
                         icon="fas chevron-down"
-                        class="ml-1 transition-transform transform"
+                        class="ml-1 transition-transform transform duration-300"
                         :class="isActive ? '-rotate-180' : 'rotate-0'"
                     />
                 </div>

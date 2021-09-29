@@ -37,18 +37,20 @@ const staticColumnAttributes = [
     ...useBusinessMetadataStore().getBusinessMetadataListProjections,
     ...ColumnAttributes,
 ]
-
-interface filterConfig {
-    parentQfName: Ref<string>
+interface ColumnListConfig {
+    query?: Ref<string>
     dataTypes?: Ref<string[]>
-    specialColumns?: boolean
+    /** Set it to `true` to only fetch pinned columns,
+     *  `false` to fetch only normal columns,
+     *  `undefined`(not pass any value) to fetch all columns
+     *  */
+    pinned?: boolean
+}
+interface filterConfig extends ColumnListConfig {
+    parentQfName: Ref<string>
 }
 
-function getEntityFilters({
-    parentQfName,
-    dataTypes,
-    specialColumns,
-}: filterConfig) {
+function getEntityFilters({ parentQfName, dataTypes, pinned }: filterConfig) {
     const baseFilter = {
         condition: 'AND',
         criterion: [
@@ -81,6 +83,24 @@ function getEntityFilters({
                     operator: 'eq',
                 })),
         })
+    if (pinned !== undefined) {
+        baseFilter.criterion.push({
+            // we use AND when pinned = false because we wan't all the pinned related attributes to be false
+            condition: pinned ? 'OR' : 'AND',
+            criterion: [
+                {
+                    attributeName: 'isPrimary',
+                    attributeValue: `${pinned}`,
+                    operator: 'eq',
+                },
+                {
+                    attributeName: 'isPartition',
+                    attributeValue: `${pinned}`,
+                    operator: 'eq',
+                },
+            ],
+        })
+    }
 
     return baseFilter
 }
@@ -90,8 +110,8 @@ export function useColumnsList(
     {
         query = ref(''),
         dataTypes = ref([] as string[]),
-        specialColumns = undefined,
-    },
+        pinned,
+    }: ColumnListConfig,
     immediate = true
 ) {
     const offset = ref(0)
@@ -102,14 +122,14 @@ export function useColumnsList(
         includeClassificationAttributes: false,
         includeSubClassifications: false,
         includeSubTypes: false,
-        limit: listLimit,
+        limit: pinned ? 100 : listLimit,
         query: query.value,
         offset: offset.value,
         attributes: staticColumnAttributes,
         entityFilters: getEntityFilters({
             parentQfName,
             dataTypes,
-            specialColumns,
+            pinned,
         }),
     }))
 
@@ -129,10 +149,8 @@ export function useColumnsList(
 
     const isLoading = computed(() => !isReady.value && !error.value)
 
-    const listCount: ComputedRef<any> = computed(() => list.value?.length)
-    const totalCount: ComputedRef<any> = computed(
-        () => data?.value?.approximateCount
-    )
+    const listCount = computed(() => list.value?.length)
+    const totalCount = computed(() => data?.value?.approximateCount)
 
     const isLoadMore = computed(() => listCount.value < totalCount.value)
 

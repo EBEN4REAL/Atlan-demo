@@ -5,7 +5,7 @@
                 v-model:value="queryText"
                 @change="handleSearchChange"
                 :autofocus="true"
-                placeholder="Search columns"
+                :placeholder="`Search ${colCount} columns`"
             >
                 <template #filter>
                     <div class="flex items-center justify-between mb-2 text-sm">
@@ -48,7 +48,11 @@
                 >Clear all filters</a-button
             >
         </div>
-        <div v-else class="flex flex-col gap-y-2">
+        <div
+            v-else
+            class="flex flex-col gap-y-2"
+            :class="{ 'animate-pulse': isLoading }"
+        >
             <ColumnListItem
                 v-for="(asset, index) in list"
                 :key="index"
@@ -105,18 +109,13 @@
     import ColumnListItem from '~/components/discovery/preview/tabs/columns/columnListItem.vue'
     import useAssetInfo from '~/composables/asset/useAssetInfo'
     import {
-        useColumns2,
+        useColumnsList,
         useColumnAggregation,
     } from '~/composables/asset/useColumns2'
     import emptyScreen from '~/assets/images/empty_search.png'
 
     import { dataTypeList } from '~/constant/datatype'
     import { assetInterface } from '~/types/assets/asset.interface'
-    import {
-        BasicSearchAttributes,
-        ColumnAttributes,
-    } from '~/constant/projection'
-    import { useBusinessMetadataStore } from '~/store/businessMetadata'
 
     export default defineComponent({
         name: 'ColumnTab',
@@ -134,154 +133,59 @@
         setup(props) {
             const isFilterVisible = ref(false)
             const queryText = ref('')
-            const limit = ref(20)
             const offset = ref(0)
             const filters: Ref<string[]> = ref([])
-            const dataTypeFilters = ref([])
 
-            const { dataTypeImage } = useAssetInfo()
+            const { dataTypeImage, columnCount } = useAssetInfo()
             const { selectedAsset } = toRefs(props)
-            /*
-            const assetId = computed(() => selectedAsset.value.guid) */
+
+            const colCount = computed(() => columnCount(selectedAsset.value))
 
             const assetQualifiedName = computed(
                 () => selectedAsset.value.attributes?.qualifiedName
             )
 
-            const { list, isLoading, replaceBody, isLoadMore } = useColumns2({
-                entityParentQualifiedName: assetQualifiedName,
-            })
+            const { list, isLoading, isLoadMore, reFetch, loadMore } =
+                useColumnsList(assetQualifiedName, {
+                    query: queryText,
+                    offset: offset,
+                    dataTypes: filters,
+                })
 
-            const {
-                dataTypeMap,
-                dataTypeSum,
-                isAggregateLoading,
-                refreshAggregation,
-            } = useColumnAggregation({
-                entityParentQualifiedName: assetQualifiedName,
-            })
-
-            const updateBody = (updateAggregation: boolean = false) => {
-                const initialBody = {
-                    typeName: 'Column',
-                    excludeDeletedEntities: true,
-                    includeClassificationAttributes: true,
-                    includeSubClassifications: true,
-                    includeSubTypes: true,
-                    entityFilters: {},
-                    limit: limit.value,
-                    offset: offset.value,
-                    attributes: [
-                        'description',
-                        'userDescription',
-                        'customDescription',
-                        'owner',
-                        'expert',
-                        'files',
-                        'table',
-                        'database',
-                        'atlanSchema',
-                        'profileSchedule',
-                        'isProfileScheduled',
-                        'order',
-                        'extra',
-                        'metadata',
-                        'commits',
-                        'siteName',
-                        'siteQualifiedName',
-                        'topLevelProjectName',
-                        'topLevelProjectQualifiedName',
-                        'isTopLevelProject',
-                        'projectHierarchy',
-                        'projectName',
-                        'workbookName',
-                        'datasourceName',
-                        ...BasicSearchAttributes,
-                        ...useBusinessMetadataStore()
-                            .getBusinessMetadataListProjections,
-                        ...ColumnAttributes,
-                    ],
-                }
-                initialBody.entityFilters = {
-                    condition: 'AND',
-                    criterion: [
-                        {
-                            condition: 'OR',
-                            criterion: [...dataTypeFilters.value],
-                        },
-                        {
-                            condition: 'OR',
-                            criterion: [
-                                {
-                                    attributeName: 'tableQualifiedName',
-                                    attributeValue: assetQualifiedName.value,
-                                    operator: 'eq',
-                                },
-                                {
-                                    attributeName: 'viewQualifiedName',
-                                    attributeValue: assetQualifiedName.value,
-                                    operator: 'eq',
-                                },
-                            ],
-                        },
-                    ],
-                }
-
-                if (queryText.value) {
-                    initialBody.query = queryText.value
-                }
-                replaceBody(initialBody)
-                if (updateAggregation) refreshAggregation(initialBody)
-            }
-
-            const loadMore = () => {
-                if (isLoadMore.value) {
-                    offset.value += limit.value
-                    updateBody()
-                }
-            }
+            const { dataTypeMap, isAggregateLoading, refreshAggregation } =
+                useColumnAggregation(assetQualifiedName)
 
             const handleSearchChange = useDebounceFn(() => {
                 offset.value = 0
-                updateBody()
+                reFetch()
             }, 150)
 
             const propagateToColumnList = () => {}
 
             const clearAllFilters = () => {
                 filters.value = []
-                dataTypeFilters.value = []
                 offset.value = 0
-                updateBody()
+                reFetch()
             }
 
             const clearFiltersAndSearch = () => {
                 filters.value = []
-                dataTypeFilters.value = []
                 queryText.value = ''
                 offset.value = 0
-                updateBody()
+                reFetch()
             }
             const handleFilterChange = () => {
                 offset.value = 0
-                dataTypeFilters.value = dataTypeList
-                    .filter((typeList) => filters.value.includes(typeList.id))
-                    .reduce((acc: string[], dt) => [...acc, ...dt.type], [])
-                    .map((filter) => ({
-                        attributeName: 'dataType',
-                        attributeValue: filter,
-                        operator: 'eq',
-                    }))
-                updateBody()
+                reFetch()
             }
 
             watch(assetQualifiedName, (newParent, oldParent) => {
                 if (newParent !== oldParent) {
                     offset.value = 0
                     filters.value = []
-                    dataTypeFilters.value = []
                     list.value = []
-                    updateBody(true)
+                    reFetch()
+                    refreshAggregation()
                 }
             })
 
@@ -303,19 +207,8 @@
                 handleFilterChange,
                 emptyScreen,
                 clearFiltersAndSearch,
+                colCount,
             }
         },
     })
 </script>
-
-<style scoped>
-    .chip {
-        @apply px-1 py-0.5 mr-1;
-        @apply rounded;
-        @apply flex;
-        @apply items-center;
-        @apply text-xs;
-        @apply border;
-        @apply border-gray-300;
-    }
-</style>

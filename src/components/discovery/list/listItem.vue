@@ -57,12 +57,13 @@
                         :key="item.guid"
                         :show-no-status="false"
                         :status-id="status(item)"
-                        class="flex-none ml-1"
+                        class="flex-none mb-0.5 ml-1"
                     ></StatusBadge>
                 </div>
 
+                <!-- Info bar -->
                 <div class="flex items-center gap-x-2">
-                    <!-- Column data type -->
+                    <!-- Column dataType -->
                     <div
                         v-if="item.typeName.toLowerCase() === 'column'"
                         class="flex items-center space-x-2"
@@ -70,17 +71,15 @@
                         <div class="flex">
                             <component
                                 :is="dataTypeImage(item)"
-                                class="w-auto h-4"
+                                class="w-auto h-4 text-gray-500"
+                                style="margin-top: 1px"
                             ></component>
-                            <span class="ml-1 text-sm text-gray-700">{{
+                            <span class="ml-1 text-sm text-gray-500">{{
                                 dataType(item)
                             }}</span>
                         </div>
                         <div v-if="item.attributes?.isPrimary" class="flex">
                             <AtlanIcon icon="PrimaryKey" />
-                            <span class="ml-1 text-sm text-gray-700">
-                                Primary Key
-                            </span>
                         </div>
                     </div>
 
@@ -100,13 +99,13 @@
                                 )
                             "
                             class="mr-2 text-gray-500"
-                            ><span class="tracking-tighter text-gray-700">{{
+                            ><span class="tracking-tighter text-gray">{{
                                 rowCount(item, false)
                             }}</span>
                             Rows</span
                         >
                         <span class="text-gray-500">
-                            <span class="tracking-tighter text-gray-700">{{
+                            <span class="tracking-tighter text-gray">{{
                                 columnCount(item, false)
                             }}</span>
                             Cols</span
@@ -118,7 +117,6 @@
                         class="flex items-center text-sm text-gray-500 gap-x-1"
                         v-if="getCombinedUsersAndGroups(item).length"
                     >
-                        <span> • </span>
                         <AtlanIcon icon="User" />
                         <span
                             v-html="
@@ -133,15 +131,13 @@
                 <!-- Description -->
                 <div
                     v-if="projection?.includes('description')"
-                    class="max-w-lg mt-1 text-sm text-gray-500  truncate-overflow"
+                    class="max-w-lg text-sm text-gray-500 truncate-overflow"
                 >
                     <span v-if="description(item)?.length">{{
                         description(item)
                     }}</span>
                 </div>
             </div>
-
-            <!-- <img :src="logo(item)" class="flex-none w-auto h-6" /> -->
         </div>
     </div>
 </template>

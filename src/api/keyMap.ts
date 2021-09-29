@@ -196,7 +196,7 @@ export const KeyMaps = {
     },
     connection: {
         TEST_NETWORK: () => getAPIPath('auth', "/connections/test"),
-        Setup: () => getAPIPath('auth', "/connections"),
+        SETUP: () => getAPIPath('auth', "/connections"),
         CONNECTION_SETUP: () => getAPIPath('auth/atlas', `/connections/setup`),
         CONNECTION_TEST_NETWORK: () => getAPIPath('auth', `/connections/test`),
         CONNECTION_ARCHIVE: ({ id }) => getAPIPath('auth', `/connections/${id}/archive`),

@@ -41,7 +41,13 @@
             console.log(props.item.guid)
 
             const id = ref(props.item.guid)
-            const { execute, res, isReady } = deleteConnection(id.value, {
+            const {
+                data: res,
+                mutate: execute,
+                error,
+                isReady,
+                isLoading,
+            } = deleteConnection(id.value, {
                 immediate: false,
             })
 

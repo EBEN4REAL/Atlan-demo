@@ -24,22 +24,29 @@ const TestNetwork = (
 const Setup = (
   body?: Components.Schemas.ConnectionSetup,
   options?: AxiosRequestConfig
-) => getAxiosClient().post(
-  getAPIPath(serviceAlias, `/connections`),
-  body,
-  options
-);
+) => useAPIPromise(KeyMaps.connection.SETUP(), 'POST', { body, options })
 
-const Archive = (id: string, body?: Components.Schemas.ConnectionSetup, options?: AxiosRequestConfig) => getAxiosClient().post(
-  getAPIPath(serviceAlias, `/connections/${id}/archive`),
-  {
-    deleteAssets: true,
-    deleteType: "HARD",
-  },
-  {
-    timeout: 10000
-  }
-)
+// const Archive = (id: string, body?: Components.Schemas.ConnectionSetup, options?: AxiosRequestConfig) => getAxiosClient().post(
+//   getAPIPath(serviceAlias, `/connections/${id}/archive`),
+//   {
+//     deleteAssets: true,
+//     deleteType: "HARD",
+//   },
+//   {
+//     timeout: 10000
+//   }
+// )
+
+
+const Archive = (
+  id: string,
+  body?: Components.Schemas.ConnectionSetup,
+  options?: AxiosRequestConfig,
+  asyncOpts?: AsyncStateOptions | undefined) => useAPIAsyncState<any>(KeyMaps.connection.CONNECTION_ARCHIVE, "POST", {
+    body,
+    pathVariables: { id },
+    options,
+  }, asyncOpts);
 
 export const Connection = {
   TestNetwork,

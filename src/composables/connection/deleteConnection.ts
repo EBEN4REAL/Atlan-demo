@@ -4,8 +4,11 @@ import { Connection } from '~/api/auth/connection';
 
 export default function deleteConnection(id: string, options: AsyncStateOptions) {
     console.log(id);
-    const { state, execute, isReady, error } = useAsyncState(() => Connection.Archive(id), {}, options);
+    const { data, mutate, isReady, error, isLoading } = Connection.Archive(id, {
+        deleteAssets: true,
+        deleteType: "HARD",
+    }, {}, options);
     return {
-        state, execute, isReady, error
+        data, mutate, isReady, error, isLoading
     }
 }

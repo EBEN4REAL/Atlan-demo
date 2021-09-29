@@ -689,7 +689,7 @@ export default defineComponent({
         const home = toRef(props, 'isHome')
         const parentGlossary = toRef(props, 'parentGlossary')
         const currentGlossaryGuid = ref<string>(
-            parentGlossary.value?.guid ?? ''
+            parentGlossary.value?.guid ?? 'all'
         )
         const glossaryContextDropdown = computed(() => {
             const list = props.glossaryList.map((glossary) => ({

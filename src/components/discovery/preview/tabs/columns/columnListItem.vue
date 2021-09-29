@@ -1,35 +1,36 @@
 <template>
-    <div class="flex items-center mb-1">
-        <component
-            :is="dataTypeImage(asset)"
-            class="flex-none w-auto h-4 mr-2 text-gray"
-        ></component>
-        <span
-            class="
-                flex-shrink
-                pt-0.5
-                mr-2
-                overflow-hidden
-                text-xs
-                font-bold
-                align-middle
-                text-gray
-                overflow-ellipsis
-                cursor-pointer
-            "
-            @click="() => (showColumnSidebar = true)"
-        >
-            {{ asset.displayText }}
-        </span>
-        <div v-if="asset.attributes?.isPrimary" class="chip">
-            <AtlanIcon icon="PrimaryKey" />
-        </div>
-        <!--  <div v-if="asset.attributes.isPrimary" class="chip">
+    <div>
+        <div class="flex items-center mb-1">
+            <component
+                :is="dataTypeImage(asset)"
+                class="flex-none w-auto h-4 mr-2 text-gray"
+            ></component>
+            <span
+                class="
+                    flex-shrink
+                    pt-0.5
+                    mr-2
+                    overflow-hidden
+                    text-xs
+                    font-bold
+                    align-middle
+                    text-gray
+                    overflow-ellipsis
+                    cursor-pointer
+                "
+                @click="() => (showColumnSidebar = true)"
+            >
+                {{ asset.displayText }}
+            </span>
+            <div v-if="asset.attributes?.isPrimary" class="chip">
+                <AtlanIcon icon="PrimaryKey" />
+            </div>
+            <!--  <div v-if="asset.attributes.isPrimary" class="chip">
             <AtlanIcon icon="ForeignKey" />
         </div> -->
+        </div>
+        <Description :selected-asset="asset" :using-in-info="false" />
     </div>
-
-    <Description :selected-asset="asset" :using-in-info="false" />
     <teleport to="#overAssetPreviewSidebar">
         <a-drawer
             :key="asset.guid"

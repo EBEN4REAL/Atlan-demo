@@ -87,12 +87,7 @@ export function useColumns2({ entityParentQualifiedName, immediate = true }) {
         () => data?.value?.approximateCount
     )
 
-    const isLoadMore = computed(() => {
-        if (listCount.value < totalCount.value) {
-            return true
-        }
-        return false
-    })
+    const isLoadMore = computed(() => listCount.value < totalCount.value)
 
     return {
         list,

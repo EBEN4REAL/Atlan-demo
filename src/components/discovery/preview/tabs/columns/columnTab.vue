@@ -10,7 +10,9 @@
                 <template #filter>
                     <div class="flex items-center justify-between mb-2 text-sm">
                         <span>Data type</span>
+                        <a-spin size="small" v-if="isAggregateLoading" />
                         <span
+                            v-else
                             class="text-gray-500 cursor-pointer hover:text-gray"
                             @click="clearAllFilters"
                             >Clear</span
@@ -26,11 +28,30 @@
         </div>
 
         <div
-            v-for="(asset, index) in list"
-            :key="index"
-            class="flex flex-col mb-4"
+            v-if="isLoading && !isLoadMore"
+            class="flex items-center justify-center mt-4 text-sm leading-none"
         >
+            <a-spin size="small" class="mr-2 leading-none"></a-spin
+            ><span>Getting column info</span>
+        </div>
+        <div
+            v-else-if="list.length <= 0 && !isLoading"
+            class="flex flex-col items-center"
+        >
+            <img
+                :src="emptyScreen"
+                alt="No columns"
+                class="w-2/5 m-auto mb-4"
+            />
+            <span class="text-gray-500">No columns found</span>
+            <a-button class="mt-3" @click="clearFiltersAndSearch"
+                >Clear all filters</a-button
+            >
+        </div>
+        <div v-else class="flex flex-col gap-y-2">
             <ColumnListItem
+                v-for="(asset, index) in list"
+                :key="index"
                 :asset="asset"
                 @asset-mutation="propagateToColumnList"
             />
@@ -39,32 +60,13 @@
         <div v-if="isLoadMore" class="flex items-center justify-center">
             <button
                 :disabled="isLoading"
-                class="
-                    flex
-                    items-center
-                    justify-between
-                    py-2
-                    transition-all
-                    duration-300
-                    bg-white
-                    rounded-full
-                    text-primary
-                "
+                class="flex items-center justify-between py-2 transition-all duration-300 bg-white rounded-full  text-primary"
                 :class="isLoading ? 'px-2 w-9' : 'px-5 w-32'"
                 @click="loadMore"
             >
                 <template v-if="!isLoading">
                     <p
-                        class="
-                            m-0
-                            mr-1
-                            overflow-hidden
-                            text-sm
-                            transition-all
-                            duration-300
-                            overflow-ellipsis
-                            whitespace-nowrap
-                        "
+                        class="m-0 mr-1 overflow-hidden text-sm transition-all duration-300  overflow-ellipsis whitespace-nowrap"
                     >
                         Load more
                     </p>
@@ -91,27 +93,6 @@
                     ></path>
                 </svg>
             </button>
-        </div>
-        <div
-            v-if="isLoading && !isLoadMore"
-            class="flex items-center justify-center mt-4 text-sm leading-none"
-        >
-            <a-spin size="small" class="mr-2 leading-none"></a-spin
-            ><span>Getting column info</span>
-        </div>
-        <div
-            v-if="list.length <= 0 && !isLoading"
-            class="flex flex-col items-center"
-        >
-            <img
-                :src="emptyScreen"
-                alt="No columns"
-                class="w-2/5 m-auto mb-4"
-            />
-            <span class="text-gray-500">No columns found</span>
-            <a-button class="mt-3" @click="clearFiltersAndSearch"
-                >Clear all filters</a-button
-            >
         </div>
     </div>
 </template>
@@ -171,12 +152,16 @@
                 entityParentQualifiedName: assetQualifiedName,
             })
 
-            const { dataTypeMap, dataTypeSum, isAggregateLoading } =
-                useColumnAggregation({
-                    entityParentQualifiedName: assetQualifiedName,
-                })
+            const {
+                dataTypeMap,
+                dataTypeSum,
+                isAggregateLoading,
+                refreshAggregation,
+            } = useColumnAggregation({
+                entityParentQualifiedName: assetQualifiedName,
+            })
 
-            const updateBody = () => {
+            const updateBody = (updateAggregation: boolean = false) => {
                 const initialBody = {
                     typeName: 'Column',
                     excludeDeletedEntities: true,
@@ -246,6 +231,7 @@
                     initialBody.query = queryText.value
                 }
                 replaceBody(initialBody)
+                if (updateAggregation) refreshAggregation(initialBody)
             }
 
             const loadMore = () => {
@@ -294,7 +280,8 @@
                     offset.value = 0
                     filters.value = []
                     dataTypeFilters.value = []
-                    updateBody()
+                    list.value = []
+                    updateBody(true)
                 }
             })
 
@@ -306,6 +293,7 @@
                 dataTypeImage,
                 clearAllFilters,
                 isLoading,
+                isAggregateLoading,
                 dataTypeList,
                 filters,
                 propagateToColumnList,

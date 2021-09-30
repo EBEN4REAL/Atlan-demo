@@ -40,7 +40,7 @@
                         @label-change="setPlaceholder($event, 'asset')"
                     ></AssetDropdown>
                 </div>
-                <div
+                <!-- <div
                     v-if="showCheckBox"
                     class="flex items-center px-5 py-3 bg-gray-100"
                 >
@@ -55,7 +55,7 @@
                         />
                     </a-button>
                     Link Assets
-                </div>
+                </div> -->
                 <div
                     class="flex items-center justify-between w-full px-3 mt-4 mb-2 "
                 >
@@ -107,8 +107,11 @@
                 </div>
                 <div
                     v-else
-                    class="pt-4 overflow-auto"
-                    style="max-height: calc(100vh - 250px)"
+                    ref="scrollDiv"
+                    class="pt-4"
+                    style="max-height: calc(100vh - 220px)"
+                    :class="{ 'overflow-y-auto ': headerReachedTop }"
+                    @scroll="handleScroll"
                 >
                     <AssetList
                         ref="assetlist"
@@ -312,8 +315,13 @@
                 required: true,
                 default: false,
             },
+            headerReachedTop: {
+                type: Boolean,
+                required: false,
+                default: false,
+            },
         },
-        emits: ['preview'],
+        emits: ['preview', 'firstCardReachedTop'],
         setup(props, { emit }) {
             // initializing the discovery store
             const { initialFilters, termName, termGuid } = toRefs(props)
@@ -325,8 +333,9 @@
             const filterMode = ref('custom')
             const now = ref(true)
             const showCheckBox = ref(false)
+            const scrollDiv = ref(null)
 
-            const showFiltersPane = ref(true)
+            const showFiltersPane = ref(false)
             const assetType = ref('Catalog')
             const queryText = ref(initialFilters.value.searchText)
             const connectorsPayload = ref(
@@ -727,6 +736,11 @@
                 isAggregate.value = true
                 updateBody()
             }
+            const handleScroll = (e) => {
+                if (scrollDiv.value?.scrollTop < 2) {
+                    emit('firstCardReachedTop')
+                }
+            }
 
             // watch(showCheckBox, () => {
             //     updateBody()
@@ -790,6 +804,8 @@
                 uncheckedAssetList,
                 termQualifiedName,
                 showFiltersPane,
+                scrollDiv,
+                handleScroll,
             }
         },
         data() {

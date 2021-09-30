@@ -5,7 +5,14 @@
     >
         <div
             v-if="preview"
-            class="flex flex-row items-center justify-between px-5 py-4 align-middle "
+            class="
+                flex flex-row
+                items-center
+                justify-between
+                px-5
+                py-4
+                align-middle
+            "
         >
             <div class="flex flex-row space-x-2 align-middle">
                 <div class="flex flex-col justify-center">
@@ -60,7 +67,16 @@
         >
             <div class="flex w-3/4 tems-center">
                 <span
-                    class="items-baseline pl-5 mr-2 text-xl font-bold leading-7 truncate  text-primary"
+                    class="
+                        items-baseline
+                        pl-5
+                        mr-2
+                        text-xl
+                        font-bold
+                        leading-7
+                        truncate
+                        text-primary
+                    "
                     >{{ entity.displayText }}</span
                 >
                 <component
@@ -70,7 +86,14 @@
                 />
             </div>
             <a-button
-                class="fixed z-10 px-0 border-r-0 rounded-none rounded-l  -left-5"
+                class="
+                    fixed
+                    z-10
+                    px-0
+                    border-r-0
+                    rounded-none rounded-l
+                    -left-5
+                "
                 @click="handlClosePreviewPanel"
             >
                 <AtlanIcon
@@ -104,7 +127,12 @@
                         <template #expandIcon="{ isActive }">
                             <AtlanIcon
                                 icon="ChevronDown"
-                                class="ml-1 transition-transform transform"
+                                class="
+                                    ml-1
+                                    transition-transform
+                                    transform
+                                    duration-300
+                                "
                                 :class="isActive ? '-rotate-180' : 'rotate-0'"
                             />
                         </template>

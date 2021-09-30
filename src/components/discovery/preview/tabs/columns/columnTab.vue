@@ -1,36 +1,89 @@
 <template>
     <div class="flex flex-col px-5 py-4">
-        <div class="mb-5">
-            <SearchAndFilter
-                v-model:value="queryText"
-                @change="handleSearchChange"
-                :autofocus="true"
-                placeholder="Search columns"
-            >
-                <template #filter>
-                    <div class="flex items-center justify-between mb-2 text-sm">
-                        <span>Data type</span>
-                        <span
-                            class="text-gray-500 cursor-pointer hover:text-gray"
-                            @click="clearAllFilters"
-                            >Clear</span
-                        >
-                    </div>
-                    <DataTypes
-                        v-model:filters="filters"
-                        @update:filters="handleFilterChange"
-                        :data-type-map="dataTypeMap"
-                    />
-                </template>
-            </SearchAndFilter>
-        </div>
+        <SearchAndFilter
+            class="mb-4"
+            v-model:value="queryText"
+            @change="handleSearchChange"
+            :autofocus="true"
+            :placeholder="`Search ${colCount} columns`"
+        >
+            <template #filter>
+                <div class="flex items-center justify-between mb-2 text-sm">
+                    <span>Data type</span>
+                    <a-spin size="small" v-if="isAggregateLoading" />
+                    <span
+                        v-else
+                        class="text-gray-500 cursor-pointer hover:text-gray"
+                        @click="clearAllFilters"
+                        >Clear</span
+                    >
+                </div>
+                <DataTypes
+                    v-model:filters="filters"
+                    @update:filters="handleFilterChange"
+                    :data-type-map="dataTypeMap"
+                />
+            </template>
+        </SearchAndFilter>
 
         <div
-            v-for="(asset, index) in list"
-            :key="index"
-            class="flex flex-col mb-4"
+            v-if="isLoading && !isLoadMore"
+            class="flex items-center justify-center mt-4 text-sm leading-none"
         >
+            <a-spin size="small" class="mr-2 leading-none"></a-spin
+            ><span>Getting column info</span>
+        </div>
+        <div
+            v-else-if="list?.length + pinnedList?.length <= 0 && !isLoading"
+            class="flex flex-col items-center"
+        >
+            <img
+                :src="emptyScreen"
+                alt="No columns"
+                class="w-2/5 m-auto mb-4"
+            />
+            <span class="text-gray-500">No columns found</span>
+            <a-button class="mt-3" @click="clearFiltersAndSearch"
+                >Clear all filters</a-button
+            >
+        </div>
+        <div
+            v-else
+            class="flex flex-col gap-y-2"
+            :class="{ 'animate-pulse': isLoading }"
+        >
+            <a-collapse
+                v-if="pinnedList.length"
+                expand-icon-position="right"
+                :bordered="false"
+                v-model:activeKey="pinnedExpanded"
+                class="bg-transparent"
+                :class="$style.filter"
+            >
+                <template #expandIcon="{ isActive }">
+                    <div>
+                        <AtlanIcon
+                            icon="ChevronDown"
+                            class="text-gray-500 transition-transform duration-300 transform "
+                            :class="isActive ? '-rotate-180' : 'rotate-0'"
+                        />
+                    </div>
+                </template>
+                <a-collapse-panel key="pin">
+                    <template #header>
+                        <span class="text-sm text-gray-500">Pinned</span>
+                    </template>
+                    <ColumnListItem
+                        v-for="(asset, index) in pinnedList"
+                        :key="index"
+                        :asset="asset"
+                        @asset-mutation="propagateToColumnList"
+                    /> </a-collapse-panel
+            ></a-collapse>
+
             <ColumnListItem
+                v-for="(asset, index) in list"
+                :key="index"
                 :asset="asset"
                 @asset-mutation="propagateToColumnList"
             />
@@ -39,32 +92,13 @@
         <div v-if="isLoadMore" class="flex items-center justify-center">
             <button
                 :disabled="isLoading"
-                class="
-                    flex
-                    items-center
-                    justify-between
-                    py-2
-                    transition-all
-                    duration-300
-                    bg-white
-                    rounded-full
-                    text-primary
-                "
+                class="flex items-center justify-between py-2 transition-all duration-300 bg-white rounded-full  text-primary"
                 :class="isLoading ? 'px-2 w-9' : 'px-5 w-32'"
                 @click="loadMore"
             >
                 <template v-if="!isLoading">
                     <p
-                        class="
-                            m-0
-                            mr-1
-                            overflow-hidden
-                            text-sm
-                            transition-all
-                            duration-300
-                            overflow-ellipsis
-                            whitespace-nowrap
-                        "
+                        class="m-0 mr-1 overflow-hidden text-sm transition-all duration-300  overflow-ellipsis whitespace-nowrap"
                     >
                         Load more
                     </p>
@@ -92,27 +126,6 @@
                 </svg>
             </button>
         </div>
-        <div
-            v-if="isLoading && !isLoadMore"
-            class="flex items-center justify-center mt-4 text-sm leading-none"
-        >
-            <a-spin size="small" class="mr-2 leading-none"></a-spin
-            ><span>Getting column info</span>
-        </div>
-        <div
-            v-if="list.length <= 0 && !isLoading"
-            class="flex flex-col items-center"
-        >
-            <img
-                :src="emptyScreen"
-                alt="No columns"
-                class="w-2/5 m-auto mb-4"
-            />
-            <span class="text-gray-500">No columns found</span>
-            <a-button class="mt-3" @click="clearFiltersAndSearch"
-                >Clear all filters</a-button
-            >
-        </div>
     </div>
 </template>
 
@@ -124,18 +137,13 @@
     import ColumnListItem from '~/components/discovery/preview/tabs/columns/columnListItem.vue'
     import useAssetInfo from '~/composables/asset/useAssetInfo'
     import {
-        useColumns2,
+        useColumnsList,
         useColumnAggregation,
     } from '~/composables/asset/useColumns2'
     import emptyScreen from '~/assets/images/empty_search.png'
 
     import { dataTypeList } from '~/constant/datatype'
     import { assetInterface } from '~/types/assets/asset.interface'
-    import {
-        BasicSearchAttributes,
-        ColumnAttributes,
-    } from '~/constant/projection'
-    import { useBusinessMetadataStore } from '~/store/businessMetadata'
 
     export default defineComponent({
         name: 'ColumnTab',
@@ -153,148 +161,60 @@
         setup(props) {
             const isFilterVisible = ref(false)
             const queryText = ref('')
-            const limit = ref(20)
-            const offset = ref(0)
             const filters: Ref<string[]> = ref([])
-            const dataTypeFilters = ref([])
+            const pinnedExpanded = ref('pin')
 
-            const { dataTypeImage } = useAssetInfo()
+            const { dataTypeImage, columnCount } = useAssetInfo()
             const { selectedAsset } = toRefs(props)
-            /*
-            const assetId = computed(() => selectedAsset.value.guid) */
+
+            const colCount = computed(() => columnCount(selectedAsset.value))
 
             const assetQualifiedName = computed(
                 () => selectedAsset.value.attributes?.qualifiedName
             )
 
-            const { list, isLoading, replaceBody, isLoadMore } = useColumns2({
-                entityParentQualifiedName: assetQualifiedName,
-            })
-
-            const { dataTypeMap, dataTypeSum, isAggregateLoading } =
-                useColumnAggregation({
-                    entityParentQualifiedName: assetQualifiedName,
+            const { list, isLoading, isLoadMore, reFetch, loadMore } =
+                useColumnsList(assetQualifiedName, {
+                    query: queryText,
+                    dataTypes: filters,
+                    pinned: false,
                 })
 
-            const updateBody = () => {
-                const initialBody = {
-                    typeName: 'Column',
-                    excludeDeletedEntities: true,
-                    includeClassificationAttributes: true,
-                    includeSubClassifications: true,
-                    includeSubTypes: true,
-                    entityFilters: {},
-                    limit: limit.value,
-                    offset: offset.value,
-                    attributes: [
-                        'description',
-                        'userDescription',
-                        'customDescription',
-                        'owner',
-                        'expert',
-                        'files',
-                        'table',
-                        'database',
-                        'atlanSchema',
-                        'profileSchedule',
-                        'isProfileScheduled',
-                        'order',
-                        'extra',
-                        'metadata',
-                        'commits',
-                        'siteName',
-                        'siteQualifiedName',
-                        'topLevelProjectName',
-                        'topLevelProjectQualifiedName',
-                        'isTopLevelProject',
-                        'projectHierarchy',
-                        'projectName',
-                        'workbookName',
-                        'datasourceName',
-                        ...BasicSearchAttributes,
-                        ...useBusinessMetadataStore()
-                            .getBusinessMetadataListProjections,
-                        ...ColumnAttributes,
-                    ],
-                }
-                initialBody.entityFilters = {
-                    condition: 'AND',
-                    criterion: [
-                        {
-                            condition: 'OR',
-                            criterion: [...dataTypeFilters.value],
-                        },
-                        {
-                            condition: 'OR',
-                            criterion: [
-                                {
-                                    attributeName: 'tableQualifiedName',
-                                    attributeValue: assetQualifiedName.value,
-                                    operator: 'eq',
-                                },
-                                {
-                                    attributeName: 'viewQualifiedName',
-                                    attributeValue: assetQualifiedName.value,
-                                    operator: 'eq',
-                                },
-                            ],
-                        },
-                    ],
-                }
+            const {
+                list: pinnedList,
+                isLoading: isPinnedLoading,
+                reFetch: reFetchPinned,
+            } = useColumnsList(assetQualifiedName, { pinned: true })
 
-                if (queryText.value) {
-                    initialBody.query = queryText.value
-                }
-                replaceBody(initialBody)
-            }
-
-            const loadMore = () => {
-                if (isLoadMore.value) {
-                    offset.value += limit.value
-                    updateBody()
-                }
-            }
+            const { dataTypeMap, isAggregateLoading, refreshAggregation } =
+                useColumnAggregation(assetQualifiedName)
 
             const handleSearchChange = useDebounceFn(() => {
-                offset.value = 0
-                updateBody()
+                reFetch()
             }, 150)
 
             const propagateToColumnList = () => {}
 
             const clearAllFilters = () => {
                 filters.value = []
-                dataTypeFilters.value = []
-                offset.value = 0
-                updateBody()
+                reFetch()
             }
 
             const clearFiltersAndSearch = () => {
                 filters.value = []
-                dataTypeFilters.value = []
                 queryText.value = ''
-                offset.value = 0
-                updateBody()
+                reFetch()
             }
             const handleFilterChange = () => {
-                offset.value = 0
-                dataTypeFilters.value = dataTypeList
-                    .filter((typeList) => filters.value.includes(typeList.id))
-                    .reduce((acc: string[], dt) => [...acc, ...dt.type], [])
-                    .map((filter) => ({
-                        attributeName: 'dataType',
-                        attributeValue: filter,
-                        operator: 'eq',
-                    }))
-                updateBody()
+                reFetch()
             }
 
             watch(assetQualifiedName, (newParent, oldParent) => {
                 if (newParent !== oldParent) {
-                    offset.value = 0
                     filters.value = []
-                    dataTypeFilters.value = []
-                    updateBody()
+                    list.value = []
+                    reFetch()
+                    refreshAggregation()
                 }
             })
 
@@ -306,6 +226,7 @@
                 dataTypeImage,
                 clearAllFilters,
                 isLoading,
+                isAggregateLoading,
                 dataTypeList,
                 filters,
                 propagateToColumnList,
@@ -315,19 +236,27 @@
                 handleFilterChange,
                 emptyScreen,
                 clearFiltersAndSearch,
+                colCount,
+                pinnedExpanded,
+                pinnedList,
+                isPinnedLoading,
+                reFetchPinned,
             }
         },
     })
 </script>
 
-<style scoped>
-    .chip {
-        @apply px-1 py-0.5 mr-1;
-        @apply rounded;
-        @apply flex;
-        @apply items-center;
-        @apply text-xs;
-        @apply border;
-        @apply border-gray-300;
+<style lang="less" module>
+    .filter {
+        :global(.ant-collapse-header) {
+            @apply pl-0 !important;
+        }
+        :global(.ant-collapse-item:last-child) {
+            @apply border-gray-300;
+        }
+        :global(.ant-collapse-content-box) {
+            padding-right: 0px;
+            padding-left: 0px;
+        }
     }
 </style>

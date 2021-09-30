@@ -12,7 +12,7 @@
                 <div class="">
                     <AtlanIcon
                         icon="ChevronDown"
-                        class="ml-1 transition-transform transform"
+                        class="ml-1 transition-transform transform duration-300"
                         :class="isActive ? '-rotate-180' : 'rotate-0'"
                     />
                 </div>

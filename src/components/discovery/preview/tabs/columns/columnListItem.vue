@@ -1,45 +1,48 @@
 <template>
-    <div class="flex items-center mb-1">
-        <component
-            :is="dataTypeImage(asset)"
-            class="flex-none w-auto h-4 mr-2 text-gray"
-        ></component>
-        <span
-            class="
-                flex-shrink
-                pt-0.5
-                mr-2
-                overflow-hidden
-                text-xs
-                font-bold
-                align-middle
-                text-gray
-                overflow-ellipsis
-                cursor-pointer
-            "
-            @click="() => (showColumnSidebar = true)"
-        >
-            {{ asset.displayText }}
-        </span>
-        <div v-if="asset.attributes?.isPrimary" class="chip">
-            <AtlanIcon icon="PrimaryKey" />
-        </div>
-        <!--  <div v-if="asset.attributes.isPrimary" class="chip">
+    <div>
+        <div class="flex items-center mb-1">
+            <component
+                :is="dataTypeImage(asset)"
+                class="flex-none w-auto h-4 mr-2 text-gray-500"
+            ></component>
+            <span
+                class="
+                    flex-shrink
+                    pt-0.5
+                    mr-2
+                    overflow-hidden
+                    text-sm
+                    font-bold
+                    align-middle
+                    text-primary
+                    overflow-ellipsis
+                    cursor-pointer
+                "
+                @click="() => (showColumnSidebar = true)"
+            >
+                {{ asset.displayText }}
+            </span>
+            <div v-if="asset.attributes?.isPrimary" class="chip">
+                <AtlanIcon icon="PrimaryKey" />
+            </div>
+            <!--  <div v-if="asset.attributes.isPrimary" class="chip">
             <AtlanIcon icon="ForeignKey" />
         </div> -->
+        </div>
+        <Description :selected-asset="asset" :using-in-info="false" />
     </div>
-
-    <Description :selected-asset="asset" :using-in-info="false" />
     <teleport to="#overAssetPreviewSidebar">
         <a-drawer
-            :key="asset.guid"
+            v-if="showColumnSidebar"
             v-model:visible="showColumnSidebar"
             placement="right"
             :mask="false"
             :get-container="false"
+            :wrap-style="{ position: 'absolute', width: '100%' }"
             :keyboard="false"
             :destroy-on-close="true"
             :closable="false"
+            width="100%"
         >
             <AssetPreview
                 :selected-asset="asset"
@@ -96,10 +99,6 @@
 </script>
 
 <style scoped>
-    :global(.ant-drawer-content-wrapper) {
-        width: 420px !important;
-        background-color: white !important;
-    }
     .chip {
         @apply px-1 py-0.5 mr-1;
         @apply rounded;

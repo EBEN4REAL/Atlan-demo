@@ -1,11 +1,11 @@
 <template>
     <div :key="statusId">
         <div class="flex items-center align-middle" v-if="!showChipStyleStatus">
-            <span class="svg-icon">
+            <span class="svg-icon -mt-0.5">
                 <component class="w-auto h-4" :is="icon" />
             </span>
 
-            <p v-if="showLabel" class="mb-0 ml-2">
+            <p v-if="showLabel" class="mb-0 ml-1">
                 {{ label }}
             </p>
         </div>

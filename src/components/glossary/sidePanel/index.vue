@@ -23,7 +23,7 @@
                         <template #expandIcon="{ isActive }">
                             <AtlanIcon
                                 icon="ChevronDown"
-                                class="ml-1 transition-transform transform"
+                                class="ml-1 transition-transform duration-300 transform "
                                 :class="isActive ? '-rotate-180' : 'rotate-0'"
                             />
                         </template>

@@ -30,7 +30,7 @@
     import * as monaco from 'monaco-editor'
     import fetchColumnList from '~/composables/columns/fetchColumnList'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
-    import { useEditor } from '~/components/insights/playground/common/composables/useEditor'
+    import { useEditor } from '~/components/insights/common/composables/useEditor'
 
     const turndownService = new TurndownService({})
 

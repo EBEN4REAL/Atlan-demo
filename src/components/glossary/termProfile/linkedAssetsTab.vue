@@ -1,57 +1,13 @@
 <template>
     <div class="w-full pb-6">
-        <!-- <div class="mb-4">
-            <a-input-search
-                v-model:value="searchQuery"
-                :placeholder="`Search ${assets?.length} assets...`"
-                class="w-80"
-                @change="onSearch"
-            ></a-input-search>
-        </div> -->
-        <!-- <a-tabs
-            v-if="assets?.length"
-            default-active-key="1"
-            class="border-0"
-        >
-            <a-tab-pane key="1" :tab="`All (${assets?.length})`">
-                <div class="flex w-full h-full">
-                    <div class="w-full item-stretch">
-                        <div class="h-full">
-                            <div
-                                v-if="
-                                    assets &&
-                                    assets.length <= 0 &&
-                                    !isLoading 
-                                "
-                                class="flex-grow"
-                            >
-                                <EmptyView></EmptyView>
-                            </div>
-                            <AssetList
-                                v-else
-                                :list="assets"
-                                :projection="[
-                                    'heirarchy',
-                                    'description',
-                                    'owners',
-                                ]"
-                                :is-loading="isLoading"
-                                @preview="(asset) => $emit('preview', asset)"
-                            ></AssetList>
-                        </div>
-                    </div>
-                </div>
-            </a-tab-pane>
-        </a-tabs>
-        <div v-else class="mt-24">
-            <EmptyView :showClearFiltersCTA="false" />
-        </div> -->
         <GlossaryAssetDiscovery
             :show-filters="false"
             :initial-filters="initialFilters"
             :is-selected="isSelected"
             :term-name="termQualifiedName"
             :term-guid="termGuid"
+            :header-reached-top="headerReachedTop"
+            @firstCardReachedTop="$emit('firstCardReachedTop')"
             @preview="handlePreview"
         ></GlossaryAssetDiscovery>
         <teleport to="#sidePanel">
@@ -95,6 +51,7 @@
         termGuid: string
         termCount: number
         showPreviewPanel: Boolean
+        headerReachedTop: Boolean
     }
 
     export default defineComponent({
@@ -109,8 +66,9 @@
             'termCount',
             'showPreviewPanel',
             'termGuid',
+            'headerReachedTop',
         ],
-        emits: ['preview'],
+        emits: ['preview', 'firstCardReachedTop'],
         setup(props: PropsType, { emit }) {
             const router = useRouter()
             const initialFilters = getDecodedOptionsFromString(router)
@@ -118,28 +76,9 @@
             const isSelected = ref(false)
             const termName = computed(() => props.termQualifiedName)
 
-            // const { linkedAssets, isLoading, error, fetchLinkedAssets } =
-            //     useTermLinkedAssets()
-
-            // const assets = computed(() => linkedAssets.value?.entities ?? [])
-            // const assetCount = computed(() => assets.value?.length ?? 0)
-            // const numberOfTerms = computed(() => props.termCount ?? 5)
-
             const searchQuery = ref<string>()
 
             const selectedAsset = ref()
-
-            // onMounted(() => {
-            //     if (termName.value) fetchLinkedAssets(termName.value)
-            // })
-
-            // watch(termName, (newTermName) => {
-            //     if (newTermName) fetchLinkedAssets(newTermName)
-            // })
-
-            // const onSearch = useDebounceFn(() => {
-            //     fetchLinkedAssets(termName.value, `*${searchQuery.value}*`)
-            // }, 0)
 
             const handlePreview = (asset) => {
                 selectedAsset.value = asset
@@ -152,6 +91,7 @@
                 isSelected.value = false
                 showPreviewPanel.value = false
             }
+            console.log(props)
             return {
                 termName,
                 initialFilters,

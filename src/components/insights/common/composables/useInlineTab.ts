@@ -20,7 +20,10 @@ export function useInlineTab(treeSelectedKeys?: Ref<string[]>) {
         return inlineTabsDemoData
     }
 
-    const isInlineTabAlreadyOpened = (inlineTab: activeInlineTabInterface) => {
+    const isInlineTabAlreadyOpened = (
+        inlineTab: activeInlineTabInterface,
+        tabsArray: Ref<activeInlineTabInterface[]>
+    ) => {
         let bool = false
         tabsArray.value.forEach((tab) => {
             if (tab.key === inlineTab.key) bool = true
@@ -56,8 +59,10 @@ export function useInlineTab(treeSelectedKeys?: Ref<string[]>) {
         tabsArray.value = tabsArray.value.filter(
             (tab) => tab.key !== inlineTabKey
         )
-        if(treeSelectedKeys)
-            treeSelectedKeys.value = treeSelectedKeys?.value.filter((key) => key !== inlineTabKey)
+        if (treeSelectedKeys)
+            treeSelectedKeys.value = treeSelectedKeys?.value.filter(
+                (key) => key !== inlineTabKey
+            )
         if (
             tabsArray.value.length &&
             activeInlineTabKey.value === inlineTabKey

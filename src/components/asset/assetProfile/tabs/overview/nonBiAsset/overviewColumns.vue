@@ -5,12 +5,13 @@
             <SearchAndFilter
                 v-model:value="queryText"
                 :autofocus="true"
-                placeholder="Search columns..."
+                :placeholder="`Search ${colCount} columns`"
                 @change="handleSearchChange"
             >
                 <template #filter>
                     <div class="flex items-center justify-between mb-2 text-sm">
                         <span>Data type</span>
+                        <a-spin v-if="isAggregateLoading" size="small" />
                         <span
                             class="text-gray-500 cursor-pointer hover:text-gray"
                             @click="clearAllFilters"
@@ -149,8 +150,9 @@
 
     // Composables
     import { images, dataTypeList } from '~/constant/datatype'
+    import useAssetInfo from '~/composables/asset/useAssetInfo'
     import {
-        useColumns2,
+        useColumnsList,
         useColumnAggregation,
     } from '~/composables/asset/useColumns2'
 
@@ -179,10 +181,10 @@
             const selectedRowData = ref({})
             const showColumnPreview = ref<boolean>(false)
             const queryText = ref('')
-            const limit = ref(20)
-            const offset = ref(0)
             const filters: Ref<string[]> = ref([])
             const dataTypeFilters = ref([])
+
+            const { columnCount } = useAssetInfo()
 
             /** INJECTIONS */
             const assetDataInjection = inject('assetData')
@@ -197,124 +199,34 @@
             const assetQualifiedName = computed(
                 () => assetData.value.attributes?.qualifiedName
             )
+            const colCount = computed(() => columnCount(assetData.value))
 
-            const { list, isLoading, replaceBody, isLoadMore } = useColumns2({
-                entityParentQualifiedName: assetQualifiedName,
-            })
-            const { dataTypeMap, dataTypeSum, isAggregateLoading } =
-                useColumnAggregation({
-                    entityParentQualifiedName: assetQualifiedName,
+            const { list, isLoading, isLoadMore, reFetch, loadMore } =
+                useColumnsList(assetQualifiedName, {
+                    query: queryText,
+                    dataTypes: filters,
+                    pinned: false,
                 })
 
-            const updateBody = () => {
-                const initialBody = {
-                    typeName: 'Column',
-                    excludeDeletedEntities: true,
-                    includeClassificationAttributes: true,
-                    includeSubClassifications: true,
-                    includeSubTypes: true,
-                    entityFilters: {},
-                    limit: limit.value,
-                    offset: offset.value,
-                    attributes: [
-                        'description',
-                        'userDescription',
-                        'customDescription',
-                        'owner',
-                        'expert',
-                        'files',
-                        'table',
-                        'database',
-                        'atlanSchema',
-                        'profileSchedule',
-                        'isProfileScheduled',
-                        'order',
-                        'extra',
-                        'metadata',
-                        'commits',
-                        'siteName',
-                        'siteQualifiedName',
-                        'topLevelProjectName',
-                        'topLevelProjectQualifiedName',
-                        'isTopLevelProject',
-                        'projectHierarchy',
-                        'projectName',
-                        'workbookName',
-                        'datasourceName',
-                        ...BasicSearchAttributes,
-                        ...useBusinessMetadataStore()
-                            .getBusinessMetadataListProjections,
-                        ...ColumnAttributes,
-                    ],
-                }
-                initialBody.entityFilters = {
-                    condition: 'AND',
-                    criterion: [
-                        {
-                            condition: 'OR',
-                            criterion: [...dataTypeFilters.value],
-                        },
-                        {
-                            condition: 'OR',
-                            criterion: [
-                                {
-                                    attributeName: 'tableQualifiedName',
-                                    attributeValue: assetQualifiedName.value,
-                                    operator: 'eq',
-                                },
-                                {
-                                    attributeName: 'viewQualifiedName',
-                                    attributeValue: assetQualifiedName.value,
-                                    operator: 'eq',
-                                },
-                            ],
-                        },
-                    ],
-                }
-
-                if (queryText.value) {
-                    initialBody.query = queryText.value
-                }
-                replaceBody(initialBody)
-            }
-
-            const loadMore = () => {
-                if (isLoadMore.value) {
-                    offset.value += limit.value
-                    updateBody()
-                }
-            }
+            const { dataTypeMap, isAggregateLoading, refreshAggregation } =
+                useColumnAggregation(assetQualifiedName)
 
             const handleSearchChange = useDebounceFn(() => {
-                offset.value = 0
-                updateBody()
+                reFetch()
             }, 150)
 
             const clearAllFilters = () => {
                 filters.value = []
-                dataTypeFilters.value = []
-                offset.value = 0
-                updateBody()
+                reFetch()
             }
 
             const clearFiltersAndSearch = () => {
                 filters.value = []
-                dataTypeFilters.value = []
                 queryText.value = ''
-                offset.value = 0
-                updateBody()
+                reFetch()
             }
             const handleFilterChange = () => {
-                offset.value = 0
-                dataTypeFilters.value = dataTypeList
-                    .filter((typeList) => filters.value.includes(typeList.id))
-                    .reduce((acc: string[], dt) => [...acc, ...dt.type], [])
-                    .map((filter) => ({
-                        attributeName: 'dataType',
-                        attributeValue: filter,
-                        operator: 'eq',
-                    }))
-                updateBody()
+                reFetch()
             }
 
             const scrollToElement = (selectedRow) => {
@@ -441,11 +353,13 @@
                 handleFilterChange,
                 handleCloseColumnSidebar,
                 propagateToColumnList,
+                isAggregateLoading,
                 list,
                 selectedRow,
                 columnsData,
                 queryText,
                 images,
+                colCount,
                 showColumnPreview,
                 selectedRowData,
                 columns: [

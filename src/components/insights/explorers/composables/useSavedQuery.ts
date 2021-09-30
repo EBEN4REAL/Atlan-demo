@@ -3,6 +3,8 @@ import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.inter
 import { useLocalStorageSync } from '~/components/insights/common/composables/useLocalStorageSync'
 import { useInlineTab } from '~/components/insights/common/composables/useInlineTab'
 import { SavedQuery } from '~/types/insights/savedQuery.interface'
+import { decodeQuery as decodeBase64Data } from '~/utils/helper/routerHelper'
+import { CustomVaribaleInterface } from '~/types/insights/customVariable.interface'
 import { generateUUID } from '~/utils/helper/generator'
 import { message } from 'ant-design-vue'
 
@@ -15,7 +17,7 @@ export function useSavedQuery(
     const { syncInlineTabsInLocalStorage } = useLocalStorageSync()
     const { isInlineTabAlreadyOpened, inlineTabAdd } =
         useInlineTab(treeSelectedKeys)
-    const openSavedQueryInNewTab = (savedQuery: SavedQuery) => {
+    const openSavedQueryInNewTab = async (savedQuery: SavedQuery) => {
         /* --------NOTE- TEMPERORY FIX-------*/
         const defaultSchemaQualifiedNameValues =
             savedQuery.attributes.defaultSchemaQualifiedName?.split('.') ?? [
@@ -48,7 +50,9 @@ export function useSavedQuery(
                     text: savedQuery.attributes.rawQuery,
                     dataList: [],
                     columnList: [],
-                    variables: [],
+                    variables: decodeBase64Data(
+                        savedQuery.attributes.variablesSchemaBase64
+                    ) as CustomVaribaleInterface[],
                 },
                 resultsPane: {
                     activeTab:

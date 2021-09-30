@@ -109,6 +109,8 @@
     import AtlanBtn from '~/components/UI/button.vue'
     import { copyToClipboard } from '~/utils/clipboard'
     import { message } from 'ant-design-vue'
+    import { useEditor } from '~/components/insights/common/composables/useEditor'
+    import { serializeQuery } from '~/utils/helper/routerHelper'
 
     export default defineComponent({
         components: {
@@ -120,6 +122,7 @@
         props: {},
         setup() {
             const { queryRun } = useRunQuery()
+            const { getParsedQuery } = useEditor()
             const { modifyActiveInlineTabEditor, modifyActiveInlineTab } =
                 useInlineTab()
             const {
@@ -175,10 +178,16 @@
                 const isSQLSnippet = saveQueryData.isSQLSnippet
                 const editorInstanceRaw = toRaw(editorInstance.value)
                 const rawQuery = editorInstanceRaw?.getValue()
-                const compiledQuery = editorInstanceRaw?.getValue()
+                const compiledQuery = getParsedQuery(
+                    activeInlineTab.value.playground.editor.variables,
+                    editorInstanceRaw?.getValue() as string
+                )
                 const qualifiedName = `${connectionQualifiedName}/query/user/${username.value}/${uuidv4}`
                 const defaultSchemaQualifiedName =
                     `${attributeName}.${attributeValue}` ?? ''
+                const variablesSchemaBase64 = serializeQuery(
+                    activeInlineTab.value.playground.editor.variables
+                )
 
                 const body = ref({
                     entity: {
@@ -197,6 +206,7 @@
                             tenantId: 'default',
                             rawQuery,
                             compiledQuery,
+                            variablesSchemaBase64,
                             connectionId: connectionGuid,
                             isPrivate: true,
                         },

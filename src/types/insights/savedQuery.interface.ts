@@ -24,6 +24,7 @@ export type Attributes = {
     connectionQualifiedName: string
     connectionId: string
     defaultSchemaQualifiedName: string
+    variablesSchemaBase64: string // base64 string
     owner?: string
     __createdBy: string
     __customAttributes: string

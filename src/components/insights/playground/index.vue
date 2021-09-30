@@ -23,12 +23,18 @@
                 <a-tab-pane v-for="tab in tabs" :key="tab.key" :closable="true">
                     <template #tab>
                         <div
-                            class="flex items-center justify-between  tab_min_width"
+                            class="flex items-center justify-between inline_tab"
                         >
                             <div class="flex items-center">
-                                <span class="mr-2 text-sm">{{
-                                    tab.label
-                                }}</span>
+                                <span
+                                    class="
+                                        text-sm
+                                        truncate
+                                        ...
+                                        inline_tab_label
+                                    "
+                                    >{{ tab.label }}</span
+                                >
                             </div>
                             <div
                                 v-if="!tab.isSaved"
@@ -285,8 +291,14 @@
     .children_spiltpanes {
         height: calc(100vh - 19rem);
     }
-    .tab_min_width {
-        // min-width: 3rem;
+    // .inline_tab {
+    //     max-width: 4.2rem;
+    //     overflow: hidden;
+    //     // min-width: 3rem;
+    // }
+    .inline_tab_label {
+        max-width: 4.2rem;
+        overflow: hidden;
     }
 </style>
 <style lang="less" module>

@@ -85,8 +85,22 @@ export function useConnector() {
 
         return schemaQualifiedName
     }
+    const getSchemaWithDataSourceName = (attributeValue) => {
+        let attributeValues: string[]
+        // 'ATLAN_TRIAL.PUBLIC' - name
+        let name: string | undefined
+        if (attributeValue) {
+            attributeValues = attributeValue?.split('/')
+            if (attributeValues.length > 3) {
+                name = `${attributeValues[3]}.${attributeValues[4]}`
+            }
+        }
+
+        return name
+    }
 
     return {
+        getSchemaWithDataSourceName,
         getConnectionQualifiedName,
         getConnectorName,
         getSchemaQualifiedName,

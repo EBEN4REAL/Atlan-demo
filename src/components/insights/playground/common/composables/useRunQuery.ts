@@ -8,7 +8,8 @@ import { useConnector } from '~/components/insights/common/composables/useConnec
 
 export default function useProject() {
     const { getParsedQuery } = useEditor()
-    const { getSchemaNamewithDatasourceName } = useConnector()
+    const { getSchemaWithDataSourceName, getConnectionQualifiedName } =
+        useConnector()
     const columnList: Ref<
         [
             {
@@ -58,10 +59,8 @@ export default function useProject() {
         getData: any,
         isQueryRunning: Ref<string>
     ) => {
-        const selectedDataSourceName =
-            activeInlineTab.explorer.schema.connectors.selectedDataSourceName
-        const defaultSchemaQualifiedName =
-            activeInlineTab.explorer.schema.connectors.selectedDefaultSchema
+        const attributeValue =
+            activeInlineTab.explorer.schema.connectors.attributeValue
         let queryText = getParsedQuery(
             activeInlineTab.playground.editor.variables,
             activeInlineTab.playground.editor.text
@@ -78,13 +77,14 @@ export default function useProject() {
         const query = encodeURIComponent(btoa(queryText))
         /* -------- NOTE -----------
         Here defaultSchema -  'ATLAN_TRIAL.PUBLIC' instead of 'default/snowflake/vqaqufvr-i/ATLAN_TRIAL/PUBLIC'
+        dataSourceName -  connectionQualifiedName
         */
         const pathVariables = {
             query,
-            defaultSchema: getSchemaNamewithDatasourceName(
-                defaultSchemaQualifiedName
+            defaultSchema: getSchemaWithDataSourceName(attributeValue),
+            dataSourceName: encodeURIComponent(
+                getConnectionQualifiedName(attributeValue) as string
             ),
-            dataSourceName: encodeURIComponent(selectedDataSourceName),
             length: 10,
         }
 

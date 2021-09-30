@@ -25,7 +25,7 @@
                             </div> -->
                         </div>
 
-                        <span>QueryFolder</span>
+                        <span>Sub folder 1</span>
                     </div>
                     <AtlanIcon icon="ChevronRight" class="h-5 m-0 -mb-0.5" />
                     <div class="flex items-center ml-1">

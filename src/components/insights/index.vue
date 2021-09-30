@@ -1,7 +1,7 @@
 <template>
     <div class="flex h-full">
         <!--Sidebar navigation pane start -->
-        <div class="w-16 py-3 bg-white border-r sidebar">
+        <div class="py-3 bg-white border-r sidebar-nav">
             <template v-for="tab in tabsList" :key="tab.id">
                 <div
                     class="flex flex-col items-center text-xs  my-7 sidebar-nav-icon"
@@ -29,7 +29,7 @@
             class="parent_splitpanes"
         >
             <pane
-                :max-size="20"
+                :max-size="24.5"
                 :size="explorerPaneSize"
                 :min-size="0"
                 class="explorer_splitpane"
@@ -48,7 +48,9 @@
                         ? 100 - (explorerPaneSize + assetSidebarPaneSize)
                         : 100 - explorerPaneSize
                 "
-                :min-size="activeInlineTab?.assetSidebar?.isVisible ? 62 : 82"
+                :min-size="
+                    activeInlineTab?.assetSidebar?.isVisible ? 55.5 : 75.5
+                "
             >
                 <Playground :activeInlineTabKey="activeInlineTabKey" />
             </pane>
@@ -298,13 +300,17 @@
         height: calc(100vh - 3rem);
     }
     .parent_splitpanes {
-        width: calc(100vw - 4rem);
+        width: calc(100vw - 3.75rem);
     }
     .explorer_splitpane {
-        width: 20.56rem;
+        width: 20.75rem;
     }
     .sidebar-nav-icon:first-child {
         @apply mt-0 !important;
+    }
+    .sidebar-nav {
+        /* 60px */
+        width: 3.75rem;
     }
 </style>
 

@@ -1,6 +1,6 @@
 <template>
     <div class="flex flex-col items-center w-full h-full bg-white border-r">
-        <div class="w-full p-4 mb-3">
+        <div class="w-full p-4 pb-1">
             <Connector
                 class=""
                 v-model:data="connectorsData"
@@ -25,7 +25,9 @@
                 @update:data="setConnector"
             ></Connector>
         </div>
-        <div class="w-full p-4 pt-0 overflow-y-auto scrollable-container">
+        <div
+            class="w-full px-4 py-2 pt-1 overflow-x-hidden overflow-y-auto  scrollable-container"
+        >
             <schema-tree
                 :tree-data="treeData"
                 :on-load-data="onLoadData"

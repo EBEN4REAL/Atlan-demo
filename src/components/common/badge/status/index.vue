@@ -1,7 +1,7 @@
 <template>
     <div :key="statusId">
         <div class="flex items-center align-middle" v-if="!showChipStyleStatus">
-            <span class="svg-icon -mt-0.5">
+            <span class="svg-icon">
                 <component class="w-auto h-4" :is="icon" />
             </span>
 

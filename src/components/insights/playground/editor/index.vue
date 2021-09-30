@@ -8,10 +8,12 @@
                         icon="Globe"
                     />
                     <span class="mr-1">{{ activeInlineTab.label }}</span>
-                    <StatusBadge
-                        :status-id="activeInlineTab.status"
-                        show-no-status
-                    ></StatusBadge>
+                    <div class="-mt-0.5">
+                        <StatusBadge
+                            :status-id="activeInlineTab.status"
+                            show-no-status
+                        ></StatusBadge>
+                    </div>
                     <div class="flex items-center">
                         <div
                             class="items-center justify-center px-1 mx-4 rounded cursor-pointer  hover:bg-gray-300"
@@ -72,7 +74,8 @@
                                 px-2
                                 shadow
                             "
-                            @click="updateSavedQuery"
+                            :loading="isUpdating"
+                            @click="updateQuery"
                         >
                             <AtlanIcon class="mr-1" icon="Save" />
                             Update
@@ -86,6 +89,19 @@
                                 >Share</span
                             ></a-button
                         >
+                        <a-button
+                            class="
+                                flex
+                                items-center
+                                ml-2
+                                py-0.5
+                                px-0.5
+                                border-none
+                                text-gray-500
+                            "
+                        >
+                            <AtlanIcon class="mr-1" icon="KebabMenu"
+                        /></a-button>
                     </div>
                 </div>
             </div>
@@ -129,6 +145,7 @@
     import { useConnector } from '~/components/insights/common/composables/useConnector'
     import CustomVariablesNav from '~/components/insights/playground/editor/customVariablesNav/index.vue'
     import { editor } from 'monaco-editor'
+    import { useSavedQuery } from '~/components/insights/explorers/composables/useSavedQuery'
     import { useInlineTab } from '~/components/insights/common/composables/useInlineTab'
     import SaveQueryModal from '~/components/insights/playground/editor/saveQuery/index.vue'
     import { generateUUID } from '~/utils/helper/generator'
@@ -151,8 +168,9 @@
         },
         props: {},
         setup() {
-            const { queryRun } = useRunQuery()
             const router = useRouter()
+
+            const { queryRun } = useRunQuery()
             const { getParsedQuery } = useEditor()
             const { modifyActiveInlineTabEditor, modifyActiveInlineTab } =
                 useInlineTab()
@@ -167,9 +185,17 @@
             const inlineTabs = inject('inlineTabs') as Ref<
                 activeInlineTabInterface[]
             >
+            const activeInlineTabKey = inject(
+                'activeInlineTabKey'
+            ) as Ref<string>
             const saveQueryLoading = ref(false)
             const modalAction: ComputedRef<string> = computed(() =>
                 activeInlineTab.value.isSaved ? 'UPDATE' : 'CREATE'
+            )
+            const { updateSavedQuery } = useSavedQuery(
+                inlineTabs,
+                activeInlineTab,
+                activeInlineTabKey
             )
 
             const editorInstance: Ref<
@@ -180,6 +206,8 @@
             > = ref()
             const isQueryRunning = inject('isQueryRunning') as Ref<string>
             const showSaveQueryModal: Ref<boolean> = ref(false)
+            const isUpdateEnabled: Ref<boolean> = ref(false)
+            const isUpdating: Ref<boolean> = ref(false)
             const openSaveQueryModal = () => {
                 showSaveQueryModal.value = true
             }
@@ -194,6 +222,7 @@
                     Object.assign({}, activeInlineTab.value)
                 activeInlineTabCopy.isSaved = true
                 activeInlineTabCopy.label = saveQueryData.title
+                activeInlineTabCopy.status = saveQueryData.assetStatus
                 const uuidv4 = generateUUID()
                 const integrationName = getConnectorName(attributeValue) ?? ''
                 const connectionQualifiedName =
@@ -240,7 +269,7 @@
                         },
                         relationshipAttributes: {
                             folder: {
-                                guid: '4a5e319c-4ebd-46e1-9dc4-dcb5e7b06aa3',
+                                guid: '4a6ccb76-02f0-4cc3-9550-24c46166a93d',
                                 typeName: 'QueryFolder',
                             },
                         },
@@ -312,7 +341,9 @@
                     monacoInstance.value = monacoInstanceParam
                 console.log(editorInstanceParam, editorInstance, 'fxn')
             }
-            const updateSavedQuery = () => {}
+            const updateQuery = () => {
+                updateSavedQuery(editorInstance, isUpdating)
+            }
 
             const copyURL = () => {
                 const URL = window.location.href
@@ -335,6 +366,7 @@
             useProvide(provideData)
             /*-------------------------------------*/
             return {
+                isUpdating,
                 showcustomToolBar,
                 modalAction,
                 saveModalRef,
@@ -345,7 +377,7 @@
                 isQueryRunning,
                 toggleCustomToolbar,
                 copyURL,
-                updateSavedQuery,
+                updateQuery,
                 openSaveQueryModal,
                 saveQuery,
                 setEditorInstance,

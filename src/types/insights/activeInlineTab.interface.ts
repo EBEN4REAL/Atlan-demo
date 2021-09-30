@@ -7,6 +7,10 @@ export interface activeInlineTabInterface {
     isSaved: boolean
     queryId: string | undefined
     status: string // draft | verified etc.
+    connectionId: string
+    description: string
+    qualifiedName: string
+    isSQLSnippet: boolean
     explorer: {
         schema: {
             connectors: connectorsWidgetInterface

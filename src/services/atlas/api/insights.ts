@@ -38,12 +38,11 @@ const GetSavedQuery = (guid: string) => {
     )
     return { data, error, isLoading }
 }
-const UpdateSavedQuery = (guid: string, body: Record<string, any>) => {
+const UpdateSavedQuery = (body: Record<string, any>) => {
     const { data, error, isLoading } = useAPIAsyncState<SavedQueryResponse>(
         KeyMaps.insights.UPDATE_SAVED_QUERY,
-        'PUT',
+        'POST',
         {
-            pathVariables: { guid },
             body,
         }
     )

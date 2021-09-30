@@ -6,7 +6,6 @@ export const KeyMaps = {
         CREATE_SAVED_QUERY: () => getAPIPath('auth/atlas', '/entity'),
         GET_SAVED_QUERY: ({ guid }: PathParams) =>
             getAPIPath('auth/atlas', `/entity/guid/${guid}`),
-        UPDATE_SAVED_QUERY: ({ guid }: PathParams) =>
-            getAPIPath('auth/atlas', `/entity/guid/${guid}`),
+        UPDATE_SAVED_QUERY: () => getAPIPath('auth/atlas', `/entity`),
     },
 }

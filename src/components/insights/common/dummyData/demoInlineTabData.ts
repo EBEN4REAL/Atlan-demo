@@ -6,6 +6,10 @@ export const inlineTabsDemoData: activeInlineTabInterface[] = [
         isSaved: false,
         queryId: undefined,
         status: 'draft',
+        connectionId: '',
+        description: '',
+        qualifiedName: '',
+        isSQLSnippet: false,
         explorer: {
             schema: {
                 connectors: {
@@ -55,6 +59,10 @@ export const inlineTabsDemoData: activeInlineTabInterface[] = [
         isSaved: false,
         queryId: undefined,
         status: 'draft',
+        connectionId: '',
+        description: '',
+        qualifiedName: '',
+        isSQLSnippet: false,
         explorer: {
             schema: {
                 connectors: {
@@ -104,6 +112,10 @@ export const inlineTabsDemoData: activeInlineTabInterface[] = [
         isSaved: false,
         queryId: undefined,
         status: 'draft',
+        connectionId: '',
+        description: '',
+        qualifiedName: '',
+        isSQLSnippet: false,
         explorer: {
             schema: {
                 connectors: {

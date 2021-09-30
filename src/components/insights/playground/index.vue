@@ -119,12 +119,16 @@
             const handleAdd = () => {
                 const key = String(new Date().getTime())
                 const inlineTabData: activeInlineTabInterface = {
-                    label: 'Untitled',
+                    label: 'untitled',
                     key,
                     favico: 'https://atlan.com/favicon.ico',
                     isSaved: false,
                     queryId: undefined,
                     status: 'draft',
+                    connectionId: '',
+                    description: '',
+                    qualifiedName: '',
+                    isSQLSnippet: false,
                     explorer: {
                         schema: {
                             connectors: {

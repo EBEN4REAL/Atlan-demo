@@ -92,11 +92,11 @@
             >
                 <button
                     v-if="!isLoading"
-                    class="flex items-center justify-between py-2 transition-all duration-300 bg-white rounded-full text-primary"
+                    class="flex items-center justify-between py-2 transition-all duration-300 bg-white rounded-full  text-primary"
                     @click="loadMore"
                 >
                     <p
-                        class="m-0 mr-1 overflow-hidden text-sm transition-all duration-300 overflow-ellipsis whitespace-nowrap"
+                        class="m-0 mr-1 overflow-hidden text-sm transition-all duration-300  overflow-ellipsis whitespace-nowrap"
                     >
                         Load more
                     </p>
@@ -147,7 +147,6 @@
     import DataTypes from '@common/facets/dataType.vue'
     import SearchAndFilter from '@/common/input/searchAndFilter.vue'
 
-    import preferences from './preferences.vue'
     import Tooltip from '@/common/ellipsis/index.vue'
     import AssetPreview from '@/discovery/preview/assetPreview.vue'
 
@@ -164,7 +163,6 @@
 
     export default defineComponent({
         components: {
-            preferences,
             SearchAndFilter,
             Tooltip,
             AssetPreview,

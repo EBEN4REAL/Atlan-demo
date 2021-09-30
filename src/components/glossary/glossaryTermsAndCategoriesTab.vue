@@ -10,7 +10,12 @@
                     :placeholder="`Search terms and categories`"
                     @change="onSearch"
                 ></a-input-search>
-                <a-popover trigger="click">
+                <Projections
+                    :projectionOptions="projectionOptions"
+                    @projectionChange="handleProjectionChange"
+                />
+
+                <!-- <a-popover trigger="click">
                     <template #content>
                         <p class="mb-1 text-gray-500">Show/Hide</p>
                         <div class="w-32">
@@ -24,7 +29,7 @@
                     <a-button class="ml-2 rounded">
                         <AtlanIcon icon="FilterDot" />
                     </a-button>
-                </a-popover>
+                </a-popover> -->
             </div>
             <!-- <div>
                 <GtcFilters @filterUpdated="updateFilters" />
@@ -125,6 +130,7 @@
     import GtcEntityCard from './gtcEntityCard.vue'
     import GtcFilters from './common/gtcFilters.vue'
     import AssetList from '@/glossary/common/assetList.vue'
+    import Projections from '@/glossary/common/projections.vue'
 
     // composables
     import useGtcSearch from '~/components/glossary/composables/useGtcSearch'
@@ -139,6 +145,7 @@
             EmptyView,
             LoadingView,
             GtcFilters,
+            Projections,
             CategoryTermPreview,
         },
         props: {
@@ -207,14 +214,12 @@
                 { value: 'description', label: 'Description' },
                 { value: 'owners', label: 'Owners' },
                 { value: 'status', label: 'Status' },
-                { value: 'heirarchy', label: 'Heirarchy' },
                 { value: 'linkedAssets', label: 'Linked Assets' },
-                // { value: 'heirarchy', label: 'Heirarchy' },
+                { value: 'categories', label: 'Categories' },
                 // { value: 'rows', label: 'Rows' },
                 // { value: 'popularity', label: 'Popularity' },
                 { value: 'classifications', label: 'Classifications' },
             ]
-            console.log()
             // computed
             const terms = computed(() => {
                 if (props.type === 'AtlasGlossary') {
@@ -316,7 +321,10 @@
                     emit('firstCardReachedTop')
                 }
             }
-
+            const handleProjectionChange = (newProjection) => {
+                console.log(newProjection)
+                projection.value = newProjection.value
+            }
             // lifecycle methods and watchers and  providers
             watch(selectedEntity, (newSelectedEntity) => {
                 emit('entityPreview', newSelectedEntity)
@@ -346,6 +354,7 @@
                 handleScroll,
                 topSectionRef,
                 scrollDiv,
+                handleProjectionChange,
             }
         },
     })

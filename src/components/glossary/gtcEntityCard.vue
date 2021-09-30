@@ -134,7 +134,7 @@
                     <div
                         v-if="
                             entity.typeName === 'AtlasGlossaryTerm' &&
-                            projection.includes('heirarchy') &&
+                            projection.includes('categories') &&
                             parentCategories
                         "
                         class="flex items-center max-w-full mt-2 text-sm leading-5 text-gray-700 "

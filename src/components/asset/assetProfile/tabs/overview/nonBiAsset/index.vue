@@ -1,5 +1,10 @@
 <template>
-    <div class="p-6">
+    <div class="p-8">
+        <!-- Table Summary -->
+        <div class="mb-10">
+            <tableSummary />
+        </div>
+
         <a-button-group>
             <a-button
                 :class="
@@ -59,6 +64,7 @@
 
     // Components
     import Readme from '@/common/readme/index.vue'
+    import tableSummary from '~/components/asset/assetProfile/tabs/overview/nonBiAsset/tableSummary.vue'
 
     // Composables
     import useAssetInfo from '~/composables/asset/useAssetInfo'
@@ -66,6 +72,7 @@
     export default defineComponent({
         components: {
             Readme,
+            tableSummary,
             overviewColumns: defineAsyncComponent(
                 () =>
                     import(

@@ -41,19 +41,27 @@
                     </span>
                 </a-button>
                 <template #content :class="$style.popover">
-                    <div class="flex flex-col overflow-y-auto max-h-56 w-56">
+                    <div class="flex flex-col overflow-y-auto w-64" :class="$style.treeSelect">
                         <a-tree-select
                             v-model:value="selectedCategories"
                             tree-data-simple-mode
                             tree-checkable
-                            :tree-data="treeData"
                             placeholder="Search categories"
+                            :tree-data="treeData"
                             :treeCheckStrictly="true"
-                            :dropdown-style="{ maxHeight: '350px', overflow: 'auto', maxWidth: '220px' }"
+                            :maxTagCount="2"
+                            :dropdown-style="{ overflow: 'auto', maxHeight: '256px', maxWidth: '220px', position: 'relative', boxShadow: 'none' }"
+                            :getPopupContainer="getPopupContainer"
+                            size="small"
                         />
-                        <div class="flex flex-row space-x-4 mt-4">
-                            <a-button class="popover-button" :class="$style.popoverButton" @click="cancelCategoriesUpdate">Cancel</a-button>
-                            <a-button class="popover-button" :class="$style.popoverButton" @click="handleUpdate" :loading="isUpdateButtonLoading" type="primary" >Update</a-button>
+                        <div class="">
+                            <div id="renderDropdown" class="mt-4 max-h-64 z-10"></div>
+
+                            <div class="z-30 space-x-4 mt-4 absolute flex justify-around mx-auto">
+                                <a-button class="popover-button" :class="$style.popoverButton" @click="cancelCategoriesUpdate">Cancel</a-button>
+                                <a-button class="popover-button" :class="$style.popoverButton" @click="handleUpdate" :loading="isUpdateButtonLoading" type="primary" >Update</a-button>
+                            </div>
+
                         </div>
                     </div>
                 </template>
@@ -61,19 +69,27 @@
         </div>
     </div>
     <div v-if="mode === 'threeDotMenu'" :class="$style.popover">
-        <div class="flex flex-col overflow-y-auto max-h-56 w-56">
+        <div class="flex flex-col overflow-y-auto w-64" :class="$style.treeSelect">
             <a-tree-select
                 v-model:value="selectedCategories"
                 tree-data-simple-mode
                 tree-checkable
-                :tree-data="treeData"
                 placeholder="Search categories"
+                :tree-data="treeData"
                 :treeCheckStrictly="true"
-                :dropdown-style="{ maxHeight: '350px', overflow: 'auto', maxWidth: '220px' }"
+                :maxTagCount="2"
+                :dropdown-style="{ overflow: 'auto', maxHeight: '256px', maxWidth: '220px', position: 'relative', boxShadow: 'none' }"
+                :getPopupContainer="getPopupContainer"
+                size="small"
             />
-            <div class="flex flex-row space-x-4 mt-4">
-                <a-button class="popover-button" :class="$style.popoverButton" @click="cancelCategoriesUpdate">Cancel</a-button>
-                <a-button class="popover-button" :class="$style.popoverButton" @click="handleUpdate" :loading="isUpdateButtonLoading" type="primary" >Update</a-button>
+            <div class="">
+                <div id="renderDropdown" class="mt-4 max-h-64 z-10"></div>
+
+                <div class="z-30 space-x-4 mt-4 absolute flex justify-around mx-auto">
+                    <a-button class="popover-button" :class="$style.popoverButton" @click="cancelCategoriesUpdate">Cancel</a-button>
+                    <a-button class="popover-button" :class="$style.popoverButton" @click="handleUpdate" :loading="isUpdateButtonLoading" type="primary" >Update</a-button>
+                </div>
+
             </div>
         </div>
     </div>
@@ -133,6 +149,7 @@ export default defineComponent({
             default: 'create'
         }
     },
+    emits: ['updateCategories'],
     setup(props, { emit }) {
 
         const existingCategories = ref(props.categories);
@@ -264,10 +281,15 @@ export default defineComponent({
             convertCategoriesToTree(newCategories as Category[])
         })
         watch(term, (newTerm) => {
-            existingCategories.value = newTerm.attributes.categories ?? [];
+            existingCategories.value = newTerm?.attributes?.categories ?? [];
         })
 
+        const getPopupContainer = (trigger) => {
+            return trigger.parentNode.querySelector("#renderDropdown")
+        }
+
         return {
+            getPopupContainer,
            existingCategories,
            showAddCategoriesTree,
            categories,
@@ -289,7 +311,16 @@ export default defineComponent({
  .popover {
      max-height: 348px;
      padding: 1rem;
- }
+}
+.treeSelect {
+    div {
+        position: relative !important;
+    }
+    :global(.ant-select-tree-dropdown) {
+        top: 0 !important;
+    }
+
+}
  .popoverButton {
     min-width: 104px !important;
  }

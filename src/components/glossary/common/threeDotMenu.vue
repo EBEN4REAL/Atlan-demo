@@ -316,15 +316,14 @@
                             </div>
                         </template>
                         <template #expandIcon><div></div> </template>
-                        <a-menu-item>
-                    <Categories     
-                        :glossaryQualifiedName="entity.attributes?.anchor?.uniqueAttributes?.qualifiedName"
-                        :categories="entity.attributes.categories"
-                        :termGuid="entity.guid"
-                        :term="entity"
-                        mode="threeDotMenu"
-                        @updateCategories="updateSelectedCategories"
-                    />
+                        <a-menu-item class="hover:bg-white" style="height: 416px">
+                            <Categories     
+                                :glossaryQualifiedName="entity.attributes?.anchor?.uniqueAttributes?.qualifiedName"
+                                :categories="entity.attributes.categories"
+                                :termGuid="entity.guid"
+                                :term="entity"
+                                mode="threeDotMenu"
+                            />
                         </a-menu-item>
                     </a-sub-menu>
                     <a-menu-divider />

@@ -59,6 +59,13 @@
                 <div
                     class="flex items-center justify-between w-full px-3 mt-4 mb-2 "
                 >
+                    <a-button
+                        class="flex items-center w-8 h-8 p-2 border-0 shadow-none outline-none "
+                        @click="showFiltersPane = !showFiltersPane"
+                    >
+                        <AtlanIcon icon="FilterFunnel" />
+                    </a-button>
+
                     <SearchAndFilter
                         v-model:value="queryText"
                         class="w-full mx-3 mt-1"
@@ -122,6 +129,50 @@
             </div>
         </div>
     </div>
+    <teleport to="#filterPane">
+        <a-drawer
+            v-if="showFiltersPane"
+            :visible="showFiltersPane"
+            placement="left"
+            :mask="false"
+            :get-container="false"
+            :wrap-style="{
+                position: 'absolute',
+                minWidth: '264px',
+                backgroundColor: 'rgba(250, 250, 250, var(--tw-bg-opacity))',
+            }"
+            :keyboard="false"
+            :destroy-on-close="true"
+            :closable="false"
+            width="100%"
+            :class="$style.drawerClasses"
+        >
+            <div class="relative h-full mt-12 bg-gray-100">
+                <a-button
+                    class="absolute z-10 p-0 ml-5 text-gray-500 bg-transparent border-none rounded-none shadow-none outline-none  right-4"
+                    @click="showFiltersPane = false"
+                >
+                    <AtlanIcon icon="Cancel" class="h-4" />
+                </a-button>
+
+                <AssetFilters
+                    :ref="
+                        (el) => {
+                            assetFilterRef = el
+                        }
+                    "
+                    @refresh="handleFilterChange"
+                ></AssetFilters>
+
+                <!-- <Filters
+                    :initialFilters="initialFilters"
+                    @filterUpdated="updateFilters"
+                    @initialize="handleFilterInitialize"
+                    @closePanel="showFiltersPane = false"
+                /> -->
+            </div>
+        </a-drawer>
+    </teleport>
 </template>
 
 <script lang="ts">
@@ -130,6 +181,7 @@
     import HeirarchySelect from '@common/tree/heirarchy/index.vue'
     import SearchAndFilter from '@/common/input/searchAndFilter.vue'
 
+    import Filters from '@/glossary/common/filters.vue'
     // import { useDebounceFn } from "@vueuse/core";
     // import fetchAssetDiscover from "~/composables/asset/fetchAssetDiscover";
     import { useDebounceFn } from '@vueuse/core'
@@ -148,7 +200,6 @@
     import AssetTabs from '~/components/discovery/list/assetTypeTabs.vue'
     import Preferences from '~/components/discovery/list/preference.vue'
     import AssetList from '@/glossary/termProfile/glossaryAssetList.vue'
-    import AssetFilters from '~/components/discovery/filters/discoveryFilters.vue'
     import AssetDropdown from '~/components/common/dropdown/assetDropdown.vue'
     import ConnectorDropdown from '~/components/common/dropdown/connectorDropdown.vue'
     // import { DISCOVERY_FETCH_LIST } from "~/constant/cache";
@@ -169,6 +220,7 @@
     import { assetInterface } from '~/types/assets/asset.interface'
     import { useBusinessMetadataStore } from '~/store/businessMetadata'
     import { Components } from '~/api/atlas/client'
+    import AssetFilters from '~/components/discovery/filters/discoveryFilters.vue'
 
     import useLinkAssets from '~/components/glossary/composables/useLinkAssets'
 
@@ -232,6 +284,7 @@
             EmptyView,
             AssetDropdown,
             SearchAndFilter,
+            Filters,
         },
         props: {
             initialFilters: {
@@ -273,6 +326,7 @@
             const now = ref(true)
             const showCheckBox = ref(false)
 
+            const showFiltersPane = ref(true)
             const assetType = ref('Catalog')
             const queryText = ref(initialFilters.value.searchText)
             const connectorsPayload = ref(
@@ -564,19 +618,6 @@
                 router.push(`/assets?${pushString}`)
             }
 
-            const handleFilterChange = (
-                payload: any,
-                filterMapData: filterMapType
-            ) => {
-                filterMap.value = filterMapData
-                filters.value = payload
-                offset.value = 0
-                isAggregate.value = true
-                const routerOptions = getRouterOptions()
-                const routerQuery = getEncodedStringFromOptions(routerOptions)
-                updateBody()
-                pushQueryToRouter(routerQuery)
-            }
             const handleChangeConnectors = (payload: any) => {
                 connectorsPayload.value = payload
                 const routerOptions = getRouterOptions()
@@ -675,6 +716,18 @@
                 }
             }
 
+            const handleFilterChange = (
+                payload: any,
+                filterMapData: Record<string, Components.Schemas.FilterCriteria>
+            ) => {
+                console.log(payload)
+                console.log(filterMapData)
+                filters.value = payload
+                offset.value = 0
+                isAggregate.value = true
+                updateBody()
+            }
+
             // watch(showCheckBox, () => {
             //     updateBody()
             // }, {
@@ -736,6 +789,7 @@
                 checkedAssetList,
                 uncheckedAssetList,
                 termQualifiedName,
+                showFiltersPane,
             }
         },
         data() {
@@ -765,6 +819,11 @@
         }
         :global(.ant-tabs-bar) {
             @apply px-1 mb-0 !important;
+        }
+    }
+    .drawerClasses {
+        :global(.ant-drawer-wrapper-body) {
+            @apply bg-gray-100 !important;
         }
     }
 </style>

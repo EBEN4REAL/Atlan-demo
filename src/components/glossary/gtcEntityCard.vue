@@ -32,6 +32,7 @@
                     /> -->
                     <span
                         class="ml-2 text-lg font-bold leading-7  text-primary hover:underline"
+                        @click="redirectToProfile"
                     >
                         {{ entity?.displayText }}
                     </span>
@@ -163,6 +164,7 @@
         <ThreeDotMenu
             :entity="entity"
             :redirectToProfile="redirectToProfile"
+            :visible="false"
             class="opacity-0"
         />
     </div>

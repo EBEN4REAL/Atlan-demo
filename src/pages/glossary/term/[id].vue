@@ -5,6 +5,8 @@
     <div v-else class="flex flex-row h-full" :class="$style.tabClasses">
         <div
             class="h-full overflow-auto"
+            @scroll="handleScroll"
+            ref="scrollDiv"
             :class="
                 currentTab === '1' || currentTab === '2' ? 'w-2/3' : 'w-full'
             "
@@ -154,7 +156,6 @@
             const redirectToProfile = () => {
                 router.push(`/glossary/${term.value?.attributes?.anchor?.guid}`)
             }
-
 
             watch(updatedEntity, () => {
                 refetch()

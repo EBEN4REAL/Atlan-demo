@@ -20,7 +20,7 @@
             <a-tooltip
                 placement="right"
                 :title="
-                    !showTablePreview && 'No sample data dound for this asset'
+                    !showTablePreview && 'No sample data found for this asset'
                 "
             >
                 <a-button

@@ -1,49 +1,46 @@
 <template>
     <div>
         <div class="mb-3 text-base font-bold text-gray-700">Table Summary</div>
-        <div class="flex w-full gap-16">
-            <div class="flex-shrink-0">
-                <div class="flex gap-16 mb-3">
-                    <RowInfoHoverCard
-                        v-if="
-                            assetData.typeName == 'Table' ||
-                            assetData.typeName == 'TablePartition'
-                        "
-                        :row-count="rows"
-                        :size-bytes="size"
-                        :source-updated-at="sourceUpdated"
-                        :source-updated-at-raw="sourceUpdatedRaw"
-                        :source-created-at="sourceCreated"
-                        :source-created-at-raw="sourceCreatedRaw"
-                    >
-                        <div class="flex flex-col text-sm cursor-pointer">
-                            <span class="mb-1 text-sm text-gray-500">Rows</span>
-                            <span class="text-gray-700">{{ rows }}</span>
-                        </div>
-                    </RowInfoHoverCard>
-                    <div class="flex flex-col text-sm">
-                        <span class="mb-1 text-sm text-gray-500">Columns</span>
-                        <span class="text-gray-700">{{ cols }}</span>
-                    </div>
+        <div class="summary-grid gap-y-3 gap-x-16">
+            <RowInfoHoverCard
+                v-if="
+                    assetData.typeName == 'Table' ||
+                    assetData.typeName == 'TablePartition'
+                "
+                :row-count="rows"
+                :size-bytes="size"
+                :source-updated-at="sourceUpdated"
+                :source-updated-at-raw="sourceUpdatedRaw"
+                :source-created-at="sourceCreated"
+                :source-created-at-raw="sourceCreatedRaw"
+            >
+                <div class="flex flex-col text-sm cursor-pointer">
+                    <span class="mb-1 text-sm text-gray-500">Rows</span>
+                    <span class="text-gray-700">{{ rows }}</span>
                 </div>
+            </RowInfoHoverCard>
+            <div class="flex flex-col text-sm">
+                <span class="mb-1 text-sm text-gray-500">Columns</span>
+                <span class="text-gray-700">{{ cols }}</span>
+            </div>
+            <Description
+                v-if="assetData.guid"
+                :selected-asset="assetData"
+                @update:selected-asset="mutateAsset"
+            />
+            <div class="status-grid">
                 <Status
                     v-if="assetData.guid"
                     :selected-asset="assetData"
                     @update:selected-asset="mutateAsset"
                 />
             </div>
-            <div class="w-full">
-                <Description
-                    v-if="assetData.guid"
-                    :selected-asset="assetData"
-                    @update:selected-asset="mutateAsset"
-                />
-                <Owners
-                    v-if="assetData.guid"
-                    :selected-asset="assetData"
-                    @update:selected-asset="mutateAsset"
-                />
-            </div>
+
+            <Owners
+                v-if="assetData.guid"
+                :selected-asset="assetData"
+                @update:selected-asset="mutateAsset"
+            />
         </div>
     </div>
 </template>
@@ -79,7 +76,6 @@
                 sizeBytes,
                 sourceUpdatedAt,
                 sourceCreatedAt,
-                viewDefinition,
             } = useAssetInfo()
 
             const rows = computed(() =>
@@ -124,4 +120,12 @@
     })
 </script>
 
-<style lang="less" scoped></style>
+<style lang="less" scoped>
+    .summary-grid {
+        display: grid;
+        grid-template-columns: auto auto auto;
+    }
+    .status-grid {
+        grid-column: span 2;
+    }
+</style>

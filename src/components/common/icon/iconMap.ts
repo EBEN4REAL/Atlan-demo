@@ -66,6 +66,7 @@ import Schema2 from '~/assets/images/icons/schema2.svg'
 import History from '~/assets/images/icons/history.svg'
 import Queries from '~/assets/images/icons/queries.svg'
 import Play from '~/assets/images/icons/play.svg'
+import Pin from '~/assets/images/icons/pin.svg'
 import Save from '~/assets/images/icons/save.svg'
 import Globe from '~/assets/images/icons/globe.svg'
 import VariableTrigger from '~/assets/images/icons/variable-trigger.svg'
@@ -74,6 +75,7 @@ export default {
     Metadata,
     Relation,
     Overview,
+    Pin,
     Lineage,
     Activity,
     Columns,

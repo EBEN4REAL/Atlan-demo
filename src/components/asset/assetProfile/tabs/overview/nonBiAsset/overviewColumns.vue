@@ -60,8 +60,11 @@
                                 class="w-4 h-4 mr-3"
                             ></component>
                             <Tooltip :tooltip-text="text" />
+                            <div v-if="record.is_primary" class="mb-1 ml-2">
+                                <AtlanIcon icon="Pin" />
+                            </div>
                         </div>
-                        <div v-if="record.is_primary" class="">
+                        <div v-if="record.is_primary">
                             <AtlanIcon icon="PrimaryKey" />
                         </div>
                     </div>
@@ -89,11 +92,11 @@
             >
                 <button
                     v-if="!isLoading"
-                    class="flex items-center justify-between py-2 transition-all duration-300 bg-white rounded-full  text-primary"
+                    class="flex items-center justify-between py-2 transition-all duration-300 bg-white rounded-full text-primary"
                     @click="loadMore"
                 >
                     <p
-                        class="m-0 mr-1 overflow-hidden text-sm transition-all duration-300  overflow-ellipsis whitespace-nowrap"
+                        class="m-0 mr-1 overflow-hidden text-sm transition-all duration-300 overflow-ellipsis whitespace-nowrap"
                     >
                         Load more
                     </p>
@@ -159,12 +162,6 @@
     // Interfaces
     import { assetInterface } from '~/types/assets/asset.interface'
 
-    import {
-        BasicSearchAttributes,
-        ColumnAttributes,
-    } from '~/constant/projection'
-    import { useBusinessMetadataStore } from '~/store/businessMetadata'
-
     export default defineComponent({
         components: {
             preferences,
@@ -176,13 +173,12 @@
         setup() {
             /** DATA */
             const columnsData = ref({})
-            const columnPreviewData = ref({})
             const selectedRow = ref(null)
             const selectedRowData = ref({})
             const showColumnPreview = ref<boolean>(false)
             const queryText = ref('')
             const filters: Ref<string[]> = ref([])
-            const dataTypeFilters = ref([])
+            const columnsList: Ref<assetInterface[]> = ref([])
 
             const { columnCount } = useAssetInfo()
 
@@ -208,7 +204,11 @@
                     pinned: false,
                 })
 
-            const { dataTypeMap, isAggregateLoading, refreshAggregation } =
+            const { list: pinnedList } = useColumnsList(assetQualifiedName, {
+                pinned: true,
+            })
+
+            const { dataTypeMap, isAggregateLoading } =
                 useColumnAggregation(assetQualifiedName)
 
             const handleSearchChange = useDebounceFn(() => {
@@ -265,7 +265,9 @@
 
             // filterColumnsList
             const filterColumnsList = () => {
-                const filteredListData = list.value.map((i) => ({
+                columnsList.value = [...pinnedList.value, ...list.value]
+
+                const filteredListData = columnsList.value.map((i) => ({
                     key: i.attributes.order,
                     hash_index: i.attributes.order,
                     column_name: i.attributes.name,
@@ -277,15 +279,13 @@
                         '---',
                     popularity: i.attributes.popularityScore || 8,
                 }))
-                columnPreviewData.value = { list }
-
                 columnsData.value = {
                     filteredList: filteredListData,
                 }
 
                 // If redirected from asset column discovery
                 if (column.value !== '') {
-                    list.value?.forEach((singleRow: {}) => {
+                    columnsList.value?.forEach((singleRow) => {
                         if (singleRow.guid === column.value) {
                             openColumnSidebar(singleRow.attributes.order)
                         }
@@ -303,7 +303,7 @@
             }
             const openColumnSidebar = (columnOrder) => {
                 selectedRow.value = columnOrder
-                list.value.forEach((singleRow: {}) => {
+                columnsList.value.forEach((singleRow) => {
                     if (singleRow.attributes.order === columnOrder) {
                         selectedRowData.value = singleRow
                     }
@@ -329,13 +329,13 @@
             }
 
             // rowClassName Antd
-            const rowClassName = (record: { key: null }, index: any) =>
+            const rowClassName = (record: { key: null }) =>
                 record.key === selectedRow.value
                     ? 'bg-primary-light'
                     : 'bg-transparent'
 
             /** WATCHERS */
-            watch(list, () => {
+            watch([list, pinnedList], () => {
                 filterColumnsList()
             })
 

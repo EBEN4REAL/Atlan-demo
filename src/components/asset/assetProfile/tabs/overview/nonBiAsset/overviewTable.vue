@@ -9,6 +9,7 @@
                 :scroll="{ x: 'calc(700px + 50%)', y: 240 }"
                 :loading="isLoading"
                 class="absolute left-0 w-full"
+                size="small"
             >
             </a-table>
         </div>

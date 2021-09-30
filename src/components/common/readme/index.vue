@@ -7,7 +7,7 @@
                 showPaddingX ? 'px-7' : '',
             ]"
         >
-            <div class="mb-3 text-xl text-gray">Readme</div>
+            <div class="mb-3 text-base font-bold text-gray-700">Readme</div>
             <div v-if="editable" class="flex align-items-center">
                 <a-button class="mr-2" @click="editable = false">Save</a-button>
 

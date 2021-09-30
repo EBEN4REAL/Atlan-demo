@@ -5,7 +5,8 @@
             <tableSummary />
         </div>
 
-        <a-button-group>
+        <!-- Preview Selector-->
+        <a-button-group class="mb-4 rounded shadow">
             <a-button
                 :class="
                     activePreviewTabKey === 'column-preview'
@@ -28,19 +29,18 @@
             >
         </a-button-group>
 
+        <!-- Column and Table Preview-->
         <div class="w-full mb-10">
-            <div class="px-3 pt-5 pb-4 mt-4 bg-white border rounded-md">
-                <template v-if="activePreviewTabKey === 'column-preview'">
-                    <overviewColumns />
-                </template>
-                <template v-if="activePreviewTabKey === 'table-preview'">
-                    <overviewTable />
-                </template>
-            </div>
+            <template v-if="activePreviewTabKey === 'column-preview'">
+                <overviewColumns />
+            </template>
+            <template v-if="activePreviewTabKey === 'table-preview'">
+                <overviewTable />
+            </template>
         </div>
 
         <!-- Readme widget -->
-        <div class="px-3 py-4 mb-10 bg-white border rounded-md">
+        <div class="mb-10">
             <Readme
                 class="w-full"
                 :show-borders="false"

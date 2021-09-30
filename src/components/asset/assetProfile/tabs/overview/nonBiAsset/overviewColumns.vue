@@ -1,7 +1,7 @@
 <template>
     <div>
         <!-- Search and Filter -->
-        <div class="mb-4">
+        <div class="w-1/2 mb-3">
             <SearchAndFilter
                 v-model:value="queryText"
                 :autofocus="true"
@@ -36,6 +36,7 @@
                 :loading="isLoading"
                 :custom-row="customRow"
                 :row-class-name="rowClassName"
+                size="small"
             >
                 <!-- hash_index col -->
                 <template #hash_index="{ text, record }">
@@ -79,7 +80,7 @@
                 </template>
             </a-table>
             <div
-                v-if="list.length <= 0 && !isLoading"
+                v-if="columnsList.length <= 0 && !isLoading"
                 class="flex items-center justify-center mt-3"
             >
                 <a-button @click="clearFiltersAndSearch"
@@ -352,7 +353,7 @@
                 handleCloseColumnSidebar,
                 propagateToColumnList,
                 isAggregateLoading,
-                list,
+                columnsList,
                 selectedRow,
                 columnsData,
                 queryText,

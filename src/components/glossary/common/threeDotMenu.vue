@@ -316,7 +316,7 @@
                             </div>
                         </template>
                         <template #expandIcon><div></div> </template>
-                        <a-menu-item class="hover:bg-white" style="height: 416px">
+                        <a-menu-item class="hover:bg-white p-0 pb-8" style="max-height: 416px">
                             <Categories     
                                 :glossaryQualifiedName="entity.attributes?.anchor?.uniqueAttributes?.qualifiedName"
                                 :categories="entity.attributes.categories"

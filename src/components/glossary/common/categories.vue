@@ -119,6 +119,7 @@ export default defineComponent({
     setup(props, { emit }) {
 
         const existingCategories = ref(props.categories);
+        const term = toRef(props, 'term')
         const selectedCategories = ref<{value: string; label?: string}[]>(existingCategories.value.map((category) => ({
             value: category.guid,
             label: category.guid
@@ -244,6 +245,9 @@ export default defineComponent({
 
         watch(categories, (newCategories) => {
             convertCategoriesToTree(newCategories as Category[])
+        })
+        watch(term, (newTerm) => {
+            existingCategories.value = newTerm.attributes.categories ?? [];
         })
 
         return {

@@ -267,32 +267,56 @@
             const handleOk = () => {
                 if (props.mode === 'edit') {
                     const { data: updateData, updateEntity } = useUpdateGtcEntity()
-
-                    updateEntity(
-                        props?.entityType,
-                        props.entity?.guid ?? '',
+                    if(!selectedCategories.value.length) {
+                        updateEntity(
+                            props?.entityType,
+                            props.entity?.guid ?? '',
+                            {
+                                name: title.value ?? (props.entityType === 'term' ? 'Untitled Term' : 'Untitled category'),
+                                assetStatus: currentStatus.value ?? 'draft',
+                                shortDescription: description.value ?? '',
+                                ownerUsers: ownerUsers?.value?.join(),
+                                ownerGroups: ownerGroups?.value?.join(),
+                            },
+                            true
+                        )
+                        watch(updateData, () => {
+                            if (refreshEntity) refreshEntity()
+                            if (updateTreeNode) {
+                                updateTreeNode({
+                                    guid: props.entity?.guid,
+                                    name:  title.value ?? ( props.entityType === 'term' ? 'Untitled Term' : 'Untitled category'),
+                                    assetStatus: currentStatus.value ?? 'draft',
+                                    ownerUsers: ownerUsers?.value?.join(),
+                                    ownerGroups: ownerGroups?.value?.join(),
+                                    shortDescription: description.value ?? '',
+                                })
+                            }
+                        })
+                    } else {
+                        const {data, error, isLoading} = GlossaryApi.UpdateGlossaryTerm(
+                        props.entity.guid ?? '',
                         {
                             name: title.value ?? (props.entityType === 'term' ? 'Untitled Term' : 'Untitled category'),
                             assetStatus: currentStatus.value ?? 'draft',
                             shortDescription: description.value ?? '',
                             ownerUsers: ownerUsers?.value?.join(),
                             ownerGroups: ownerGroups?.value?.join(),
-                        },
-                        true
+                            anchor: {
+                                glossaryGuid: props.entity.attributes.anchor.guid
+                            },
+                            typeName: props.entity.typeName,
+                            categories: selectedCategories.value,
+                        }
                     )
-                    watch(updateData, () => {
-                        if (refreshEntity) refreshEntity()
-                        if (updateTreeNode) {
-                            updateTreeNode({
-                                guid: props.entity?.guid,
-                                name:  title.value ?? ( props.entityType === 'term' ? 'Untitled Term' : 'Untitled category'),
-                                assetStatus: currentStatus.value ?? 'draft',
-                                ownerUsers: ownerUsers?.value?.join(),
-                                ownerGroups: ownerGroups?.value?.join(),
-                                shortDescription: description.value ?? '',
-                            })
+                    watch(data, (newData) => {
+                        if(newData?.guid) {
+                            if(refreshEntity) refreshEntity();
+                            selectedCategories.value = []
                         }
                     })
+                    }
+                    
                 } else {
                     if (props.entityType === 'term')
                         createTerm(
@@ -368,6 +392,7 @@
             })
 
             return {
+                selectedCategories,
                 handleOk,
                 handleCancel,
                 description,

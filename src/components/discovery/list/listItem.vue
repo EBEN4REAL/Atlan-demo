@@ -20,7 +20,7 @@
                 @change="(e) => $emit('listItem:check', e, item)"
             />
             <div
-                class="box-border flex flex-col flex-1 overflow-hidden  lg:pr-16 gap-x-1"
+                class="box-border flex flex-col flex-1 overflow-hidden  gap-y-1 lg:pr-16"
             >
                 <!-- Asset type + Hierarchy bar -->
                 <div class="flex items-center text-gray-500 gap-x-2">

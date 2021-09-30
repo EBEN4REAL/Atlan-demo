@@ -30,7 +30,7 @@ export default function useFormGenerator(formConfig, formRef) {
         if (schema.rules.length) {
             schema.rules.map(r => {
                 const rCopy = r;
-                if (!rCopy.hasOwnProperty('enabled')) {
+                if (rCopy.hasOwnProperty('enabled')) {
                     rCopy.enabled = true;
                     rCopy.typeName = getPrivateTypeName(schema.type);
                 }
@@ -222,8 +222,9 @@ export default function useFormGenerator(formConfig, formRef) {
         } else if (raw.type === 'range') {
             r.min = raw.min
             r.max = raw.max
-        } else if (type === 'regexp') {
-            r.pattern = raw.regex
+        } else if (raw.type === 'regexp') {
+            const regex = new RegExp(raw.source, raw.flags)
+            r.pattern = regex
         }
         r.type = raw.typeName
         return r;

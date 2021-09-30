@@ -35,6 +35,22 @@
                 </div>
             </ColumnInfoCard>
             <Description :selected-asset="asset" :using-in-info="false" />
+            <div
+                v-if="asset.classifications"
+                class="flex items-center py-1 overflow-x-auto  flex-nowrap gap-x-2"
+            >
+                <Pill
+                    class="flex-none"
+                    v-for="clsf in asset.classifications"
+                    :label="clsf.typeName"
+                    :has-action="false"
+                    size="sm"
+                >
+                    <template #prefix>
+                        <AtlanIcon icon="Shield" class="h-3 text-pink-400" />
+                    </template>
+                </Pill>
+            </div>
         </div>
         <AtlanBtn
             class="flex-none hidden group-hover:block w-"
@@ -77,6 +93,7 @@
     import Description from '@common/sidebar/description.vue'
     import ColumnInfoCard from './columnInfoCard.vue'
     import AtlanBtn from '@/UI/button.vue'
+    import Pill from '~/components/UI/pill/pill.vue'
 
     export default defineComponent({
         name: 'ColumnListItem',
@@ -85,6 +102,7 @@
             Description,
             ColumnInfoCard,
             AtlanBtn,
+            Pill,
         },
         props: {
             asset: {

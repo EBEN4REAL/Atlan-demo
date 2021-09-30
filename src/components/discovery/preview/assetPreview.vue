@@ -117,7 +117,7 @@
                     <SidePanelTabHeaders
                         :title="tab.tooltip"
                         :icon="tab.icon"
-                        :isAtive="activeKey === index"
+                        :isActive="activeKey === index"
                     />
                 </template>
 

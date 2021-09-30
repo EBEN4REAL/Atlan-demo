@@ -23,11 +23,11 @@
                         <template #expandIcon="{ isActive }">
                             <AtlanIcon
                                 icon="ChevronDown"
-                                class="ml-1 transition-transform transform"
+                                class="ml-1 transition-transform duration-300 transform "
                                 :class="isActive ? '-rotate-180' : 'rotate-0'"
                             />
                         </template>
-                        <a-collapse-panel key="1" header="Details" >
+                        <a-collapse-panel key="1" header="Details">
                             <div class="flex flex-col pb-2 pl-4 pr-2">
                                 <div class="flex mt-2 mb-4 space-x-16">
                                     <div class="flex flex-col">

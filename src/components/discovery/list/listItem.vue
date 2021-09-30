@@ -1,22 +1,16 @@
 <!-- TODO: remove hardcoded prop classes and make component generic -->
 <template>
     <div
-        class="flex mx-3"
+        class="flex mx-3 border"
         :class="
             isSelected
-                ? 'border-primary bg-white border rounded bg-primary-light'
-                : 'bg-white border-b border-gray-200'
+                ? 'border-primary rounded bg-primary-light'
+                : 'bg-white border-transparent'
         "
     >
-        <!-- Selected asset pill 
         <div
-            class="self-stretch w-5"
-            :class="isSelected ? 'w-1 bg-primary mr-4' : 'w-5'"
-        ></div>-->
-        <!-- remove cssClasses prop -->
-        <div
-            class="flex items-start flex-1 px-3 w-96"
-            :class="cssClasses?.paddingY ? cssClasses?.paddingY : 'py-3'"
+            class="flex items-start flex-1 px-3 py-3 border-b border-transparent  w-96"
+            :class="{ ' border-gray-200': !isSelected }"
         >
             <a-checkbox
                 v-if="showCheckBox"
@@ -26,9 +20,10 @@
                 @change="(e) => $emit('listItem:check', e, item)"
             />
             <div
-                class="box-border flex flex-col flex-1 overflow-hidden lg:pr-16"
+                class="box-border flex flex-col flex-1 overflow-hidden  gap-y-1 lg:pr-16"
             >
-                <div class="flex items-center">
+                <!-- Asset type + Hierarchy bar -->
+                <div class="flex items-center text-gray-500 gap-x-2">
                     <AssetLogo
                         v-if="showAssetTypeIcon"
                         :asset="item"
@@ -37,21 +32,12 @@
 
                     <HierarchyBar
                         v-if="projection?.includes('hierarchy')"
-                        class="ml-3"
                         :selected-asset="item"
                     />
                 </div>
 
                 <!-- Title bar -->
                 <div class="flex items-center mb-0 overflow-hidden">
-                    <!-- <component
-                        v-if="showAssetTypeIcon"
-                        :is="item.typeName"
-                        class="flex-none w-auto h-5 mr-2"
-                    ></component> -->
-                    <!-- <AssetLogo :asset="item" /> -->
-
-                    <!-- remove cssClasses prop -->
                     <router-link
                         :class="
                             cssClasses?.textSize
@@ -71,12 +57,13 @@
                         :key="item.guid"
                         :show-no-status="false"
                         :status-id="status(item)"
-                        class="flex-none ml-1"
+                        class="flex-none mb-0.5 ml-1"
                     ></StatusBadge>
                 </div>
 
-                <div class="flex items-center space-x-2">
-                    <!-- Column data type -->
+                <!-- Info bar -->
+                <div class="flex items-center gap-x-3">
+                    <!-- Column dataType -->
                     <div
                         v-if="item.typeName.toLowerCase() === 'column'"
                         class="flex items-center space-x-2"
@@ -84,20 +71,19 @@
                         <div class="flex">
                             <component
                                 :is="dataTypeImage(item)"
-                                class="w-auto h-4"
+                                class="w-auto h-4 text-gray-500"
+                                style="margin-top: 1px"
                             ></component>
-                            <span class="ml-1 text-sm text-gray-700">{{
+                            <span class="ml-1 text-sm text-gray-500">{{
                                 dataType(item)
                             }}</span>
                         </div>
                         <div v-if="item.attributes?.isPrimary" class="flex">
                             <AtlanIcon icon="PrimaryKey" />
-                            <span class="ml-1 text-sm text-gray-700">
-                                Primary Key
-                            </span>
                         </div>
                     </div>
 
+                    <!-- Row/Col bar -->
                     <div
                         v-if="
                             ['table', 'view', 'tablepartition'].includes(
@@ -113,25 +99,26 @@
                                 )
                             "
                             class="mr-2 text-gray-500"
-                            ><span class="tracking-tighter text-gray-700">{{
+                            ><span class="tracking-tighter text-gray">{{
                                 rowCount(item, false)
                             }}</span>
-                            rows</span
+                            Rows</span
                         >
                         <span class="text-gray-500">
-                            <span class="tracking-tighter text-gray-700">{{
+                            <span class="tracking-tighter text-gray">{{
                                 columnCount(item, false)
                             }}</span>
-                            columns</span
+                            Cols</span
                         >
                     </div>
+
+                    <!-- Owner bar -->
                     <div
-                        class="flex items-baseline"
+                        class="flex items-center text-sm text-gray-500 gap-x-1"
                         v-if="getCombinedUsersAndGroups(item).length"
                     >
-                        <span class="text-gray-500">owned by </span>
+                        <AtlanIcon icon="User" />
                         <span
-                            class="ml-1 text-gray-700"
                             v-html="
                                 getTruncatedUsers(
                                     getCombinedUsersAndGroups(item),
@@ -141,62 +128,16 @@
                         />
                     </div>
                 </div>
-                <!-- Row?Col/Owner bar -->
-                <div
-                    v-if="
-                        projection?.includes('owners') ||
-                        projection?.includes('rows') ||
-                        projection?.includes('popularity')
-                    "
-                    class="flex items-center"
-                >
-                    <!-- Owners -->
-
-                    <!-- Row/Col-->
-
-                    <!-- Popularity -->
-                    <!-- <div
-                    class="pt-1 mr-2"
-                    v-if="
-                        projection?.includes('popularity') &&
-                        item?.attributes?.popularityScore > 0
-                    "
-                >
-                    <AtlanIcon :icon="search" class="h-3"/>
-                    <span class="ml-1 text-sm font-bold">
-                        {{
-                            numeralFormat(
-                                item?.attributes?.popularityScore,
-                                '0[.]00'
-                            )
-                        }}
-                    </span>
-                </div> -->
-                    <!-- Search score -->
-                    <!-- <div
-                    v-if="projection?.includes('searchscore')"
-                    class="pt-1 mr-2"
-                >
-                    <AtlanIcon :icon="search" class="h-3"/>
-                    <span class="ml-1 text-sm font-bold">
-                        {{ numeralFormat(score, '0[.]000000') }}
-                    </span>
-                </div> -->
-                </div>
                 <!-- Description -->
                 <div
                     v-if="projection?.includes('description')"
-                    class="max-w-lg mt-1 text-sm text-gray-500  truncate-overflow"
+                    class="max-w-lg text-sm text-gray-500 truncate-overflow"
                 >
                     <span v-if="description(item)?.length">{{
                         description(item)
                     }}</span>
                 </div>
-
-                <!-- Hierarchy bar -->
             </div>
-
-            <!-- <img :src="logo(item)" class="flex-none w-auto h-6" /> -->
         </div>
     </div>
 </template>

@@ -11,10 +11,10 @@
                 </a-button>
             </div>
             <div class="flex flex-col w-full">
-                <div class="flex items-center w-full">
+                <div class="flex items-center w-full gap-x-2">
                     <!-- asset logo -->
                     <AssetLogo :asset="assetData" variant="" />
-                    <HierarchyBar class="ml-3" :selected-asset="assetData" />
+                    <HierarchyBar :selected-asset="assetData" />
                 </div>
                 <div class="flex items-center">
                     <Tooltip

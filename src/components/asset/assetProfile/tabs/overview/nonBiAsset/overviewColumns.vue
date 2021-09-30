@@ -31,7 +31,7 @@
             <a-table
                 :columns="columns"
                 :data-source="columnsData.filteredList"
-                :scroll="{ y: 240 }"
+                :scroll="{ y: 300 }"
                 :pagination="false"
                 :loading="isLoading"
                 :custom-row="customRow"

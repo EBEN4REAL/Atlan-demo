@@ -1,7 +1,15 @@
 <template>
     <div>
         <div class="mb-3 text-base font-bold text-gray-700">Table Summary</div>
-        <div class="summary-grid gap-y-3 gap-x-16">
+        <div
+            class="grid gap-y-3 gap-x-16"
+            :class="
+                assetData.typeName == 'Table' ||
+                assetData.typeName == 'TablePartition'
+                    ? 'summary-grid-3'
+                    : 'summary-grid-2'
+            "
+        >
             <RowInfoHoverCard
                 v-if="
                     assetData.typeName == 'Table' ||
@@ -28,7 +36,14 @@
                 :selected-asset="assetData"
                 @update:selected-asset="mutateAsset"
             />
-            <div class="status-grid">
+            <div
+                :class="
+                    assetData.typeName == 'Table' ||
+                    assetData.typeName == 'TablePartition'
+                        ? 'status-grid'
+                        : ''
+                "
+            >
                 <Status
                     v-if="assetData.guid"
                     :selected-asset="assetData"
@@ -121,9 +136,11 @@
 </script>
 
 <style lang="less" scoped>
-    .summary-grid {
-        display: grid;
-        grid-template-columns: auto auto auto;
+    .summary-grid-2 {
+        grid-template-columns: fit-content(300px) 1fr;
+    }
+    .summary-grid-3 {
+        grid-template-columns: fit-content(300px) fit-content(300px) 1fr;
     }
     .status-grid {
         grid-column: span 2;

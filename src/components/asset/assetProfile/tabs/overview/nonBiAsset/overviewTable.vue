@@ -1,12 +1,12 @@
 <template>
     <div>
         <!-- Table -->
-        <div class="relative h-80">
+        <div class="relative h-96">
             <a-table
                 :columns="tableColumns"
                 :data-source="results"
                 :pagination="false"
-                :scroll="{ x: 'calc(700px + 50%)', y: 240 }"
+                :scroll="{ x: 'calc(700px + 50%)', y: 300 }"
                 :loading="isLoading"
                 class="absolute left-0 w-full"
                 size="small"

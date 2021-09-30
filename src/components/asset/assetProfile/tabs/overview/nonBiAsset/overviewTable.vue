@@ -1,11 +1,11 @@
 <template>
     <div>
         <!-- Table -->
-        <div class="relative h-96">
+        <div class="relative h-80">
             <a-table
                 :columns="tableColumns"
                 :data-source="results"
-                :pagination="{ position: 'bottom' }"
+                :pagination="false"
                 :scroll="{ x: 'calc(700px + 50%)', y: 240 }"
                 :loading="isLoading"
                 class="absolute left-0 w-full"

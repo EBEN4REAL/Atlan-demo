@@ -1,35 +1,39 @@
 <template>
     <div>
         <!-- Search and Filter -->
-        <div class="flex items-center justify-between mb-4">
-            <div class="flex items-center w-1/2">
-                <a-input-search
-                    :value="query"
-                    placeholder="Search columns..."
-                    class="mr-3"
-                    size="default"
-                    :allow-clear="true"
-                    @change="filterByQuery"
-                ></a-input-search>
-
-                <a-popover trigger="click" placement="right">
-                    <template #content>
-                        <preferences />
-                    </template>
-                    <a-button class="px-1.5"
-                        ><atlan-icon icon="FilterDot" class="h-5"
-                    /></a-button>
-                </a-popover>
-            </div>
+        <div class="mb-4">
+            <SearchAndFilter
+                v-model:value="queryText"
+                :autofocus="true"
+                :placeholder="`Search ${colCount} columns`"
+                @change="handleSearchChange"
+            >
+                <template #filter>
+                    <div class="flex items-center justify-between mb-2 text-sm">
+                        <span>Data type</span>
+                        <a-spin v-if="isAggregateLoading" size="small" />
+                        <span
+                            class="text-gray-500 cursor-pointer hover:text-gray"
+                            @click="clearAllFilters"
+                            >Clear</span
+                        >
+                    </div>
+                    <DataTypes
+                        v-model:filters="filters"
+                        :data-type-map="dataTypeMap"
+                        @update:filters="handleFilterChange"
+                    />
+                </template>
+            </SearchAndFilter>
         </div>
         <!-- Table -->
         <div class="relative">
             <a-table
                 :columns="columns"
                 :data-source="columnsData.filteredList"
-                :pagination="{ position: 'bottom' }"
-                :scroll="{ y: 240, scrollToFirstRowOnChange: true }"
-                :loading="!columnsData.filteredList"
+                :scroll="{ y: 240 }"
+                :pagination="false"
+                :loading="isLoading"
                 :custom-row="customRow"
                 :row-class-name="rowClassName"
             >
@@ -46,12 +50,20 @@
                 </template>
                 <!-- column_name col -->
                 <template #column_name="{ text, record }">
-                    <div class="flex items-center">
-                        <component
-                            :is="images[record.data_type]"
-                            class="w-4 h-4 mr-3"
-                        ></component>
-                        <Tooltip :tooltip-text="text" />
+                    <div :class="record.is_primary && 'flex items-center'">
+                        <div
+                            class="flex items-center"
+                            :class="record.is_primary && 'flex-grow'"
+                        >
+                            <component
+                                :is="images[record.data_type]"
+                                class="w-4 h-4 mr-3"
+                            ></component>
+                            <Tooltip :tooltip-text="text" />
+                        </div>
+                        <div v-if="record.is_primary" class="">
+                            <AtlanIcon icon="PrimaryKey" />
+                        </div>
                     </div>
                 </template>
                 <!-- description col -->
@@ -63,17 +75,44 @@
                     <a-progress :percent="text" :show-info="false" />
                 </template>
             </a-table>
+            <div
+                v-if="list.length <= 0 && !isLoading"
+                class="flex items-center justify-center mt-3"
+            >
+                <a-button @click="clearFiltersAndSearch"
+                    >Clear all filters</a-button
+                >
+            </div>
+            <div
+                v-if="isLoadMore"
+                class="flex items-center justify-center mt-3"
+            >
+                <button
+                    v-if="!isLoading"
+                    class="flex items-center justify-between py-2 transition-all duration-300 bg-white rounded-full  text-primary"
+                    @click="loadMore"
+                >
+                    <p
+                        class="m-0 mr-1 overflow-hidden text-sm transition-all duration-300  overflow-ellipsis whitespace-nowrap"
+                    >
+                        Load more
+                    </p>
+                    <AtlanIcon icon="ArrowDown" />
+                </button>
+            </div>
         </div>
         <teleport to="#overAssetPreviewSidebar">
             <a-drawer
+                v-if="showColumnPreview"
                 v-model:visible="showColumnPreview"
                 placement="right"
                 :mask="false"
                 :get-container="false"
-                :wrap-style="{ position: 'absolute' }"
+                :wrap-style="{ position: 'absolute', width: '100%' }"
                 :keyboard="false"
                 :destroy-on-close="true"
                 :closable="false"
+                width="100%"
             >
                 <AssetPreview
                     :selected-asset="selectedRowData"
@@ -95,24 +134,36 @@
         watch,
         computed,
         ref,
-        provide,
+        Ref,
         nextTick,
     } from 'vue'
+    import { useDebounceFn } from '@vueuse/core'
     import { useRoute } from 'vue-router'
 
     // Components
+    import DataTypes from '@common/facets/dataType.vue'
     import SearchAndFilter from '@/common/input/searchAndFilter.vue'
+
     import preferences from './preferences.vue'
     import Tooltip from '@/common/ellipsis/index.vue'
     import AssetPreview from '@/discovery/preview/assetPreview.vue'
 
     // Composables
-    import useColumns from '~/composables/asset/useColumns'
-    import useColumnsFilter from '~/composables/asset/useColumnsFilter'
     import { images, dataTypeList } from '~/constant/datatype'
+    import useAssetInfo from '~/composables/asset/useAssetInfo'
+    import {
+        useColumnsList,
+        useColumnAggregation,
+    } from '~/composables/asset/useColumns2'
 
     // Interfaces
     import { assetInterface } from '~/types/assets/asset.interface'
+
+    import {
+        BasicSearchAttributes,
+        ColumnAttributes,
+    } from '~/constant/projection'
+    import { useBusinessMetadataStore } from '~/store/businessMetadata'
 
     export default defineComponent({
         components: {
@@ -120,17 +171,20 @@
             SearchAndFilter,
             Tooltip,
             AssetPreview,
+            DataTypes,
         },
         setup() {
             /** DATA */
-            const query = ref('')
-            const filters = ref([])
-            const typeFilters = ref([])
             const columnsData = ref({})
             const columnPreviewData = ref({})
             const selectedRow = ref(null)
             const selectedRowData = ref({})
             const showColumnPreview = ref<boolean>(false)
+            const queryText = ref('')
+            const filters: Ref<string[]> = ref([])
+            const dataTypeFilters = ref([])
+
+            const { columnCount } = useAssetInfo()
 
             /** INJECTIONS */
             const assetDataInjection = inject('assetData')
@@ -142,34 +196,37 @@
             const assetData = computed(() => assetDataInjection?.asset)
             const column = computed(() => route?.query?.column || '')
 
-            /** METHODS */
-            // getColumnTypes
-            const getColumnTypes = (filteredList: any[]) => {
-                const filtersIdSet = new Set()
-                dataTypeList.forEach((i) => {
-                    filteredList.forEach(
-                        (j: { attributes: { dataType: string } }) => {
-                            if (i.type.includes(j.attributes.dataType))
-                                filtersIdSet.add(i.id)
-                        }
-                    )
+            const assetQualifiedName = computed(
+                () => assetData.value.attributes?.qualifiedName
+            )
+            const colCount = computed(() => columnCount(assetData.value))
+
+            const { list, isLoading, isLoadMore, reFetch, loadMore } =
+                useColumnsList(assetQualifiedName, {
+                    query: queryText,
+                    dataTypes: filters,
+                    pinned: false,
                 })
-                filters.value = Array.from(filtersIdSet)
-                typeFilters.value = Array.from(filtersIdSet)
+
+            const { dataTypeMap, isAggregateLoading, refreshAggregation } =
+                useColumnAggregation(assetQualifiedName)
+
+            const handleSearchChange = useDebounceFn(() => {
+                reFetch()
+            }, 150)
+
+            const clearAllFilters = () => {
+                filters.value = []
+                reFetch()
             }
 
-            //  filterByQuery
-            const filterByQuery = (e: { target: { value: string } }) => {
-                query.value = e.target.value
-                handleFilter()
+            const clearFiltersAndSearch = () => {
+                filters.value = []
+                queryText.value = ''
+                reFetch()
             }
-
-            // handleFilter
-            const handleFilter = (val) => {
-                if (val) typeFilters.value = val
-
-                const { columnList } = columnsData.value
-                filterColumnsList(columnList)
+            const handleFilterChange = () => {
+                reFetch()
             }
 
             const scrollToElement = (selectedRow) => {
@@ -198,73 +255,46 @@
                 }, 500)
             }
 
+            const getDataType = (type: string) => {
+                let label = ''
+                dataTypeList.forEach((i) => {
+                    if (i.type.includes(type)) label = i.label
+                })
+                return label
+            }
+
             // filterColumnsList
-            const filterColumnsList = (columnList: any) => {
-                const { filteredList } = useColumnsFilter(
-                    columnList,
-                    query,
-                    typeFilters
-                )
-
-                if (filters.value.length === 0)
-                    getColumnTypes(filteredList.value)
-
-                const getDataType = (type: string) => {
-                    let label = ''
-                    dataTypeList.forEach((i) => {
-                        if (i.type.includes(type)) label = i.label
-                    })
-                    return label
-                }
-                const filteredListData = filteredList.value.map(
-                    (i: {
-                        attributes: {
-                            order: any
-                            name: any
-                            dataType: any
-                            userDescription: any
-                            description: any
-                            popularityScore: any
-                        }
-                    }) => ({
-                        key: i.attributes.order,
-                        hash_index: i.attributes.order,
-                        column_name: i.attributes.name,
-                        data_type: getDataType(i.attributes.dataType),
-                        description:
-                            i.attributes.userDescription ||
-                            i.attributes.description ||
-                            '---',
-                        popularity: i.attributes.popularityScore || 8,
-                    })
-                )
-                columnPreviewData.value = { filteredList }
+            const filterColumnsList = () => {
+                const filteredListData = list.value.map((i) => ({
+                    key: i.attributes.order,
+                    hash_index: i.attributes.order,
+                    column_name: i.attributes.name,
+                    data_type: getDataType(i.attributes.dataType),
+                    is_primary: i.attributes.isPrimary,
+                    description:
+                        i.attributes.userDescription ||
+                        i.attributes.description ||
+                        '---',
+                    popularity: i.attributes.popularityScore || 8,
+                }))
+                columnPreviewData.value = { list }
 
                 columnsData.value = {
                     filteredList: filteredListData,
-                    columnList,
                 }
 
                 // If redirected from asset column discovery
                 if (column.value !== '') {
-                    columnPreviewData.value.filteredList?.forEach(
-                        (singleRow: {}) => {
-                            if (singleRow.guid === column.value) {
-                                openColumnSidebar(singleRow.attributes.order)
-                            }
+                    list.value?.forEach((singleRow: {}) => {
+                        if (singleRow.guid === column.value) {
+                            openColumnSidebar(singleRow.attributes.order)
                         }
-                    )
-                    /* setTimeout(() => {
-                        scrollToElement(selectedRow.value)
-                    }, 500) */
+                    })
                     nextTick(() => {
                         scrollToElement(selectedRow.value)
                     })
                 }
             }
-
-            // useColumns
-            const { columnList } = useColumns(assetData.value.guid)
 
             const handleCloseColumnSidebar = () => {
                 showColumnPreview.value = false
@@ -273,13 +303,11 @@
             }
             const openColumnSidebar = (columnOrder) => {
                 selectedRow.value = columnOrder
-                columnPreviewData.value.filteredList.forEach(
-                    (singleRow: {}) => {
-                        if (singleRow.attributes.order === columnOrder) {
-                            selectedRowData.value = singleRow
-                        }
+                list.value.forEach((singleRow: {}) => {
+                    if (singleRow.attributes.order === columnOrder) {
+                        selectedRowData.value = singleRow
                     }
-                )
+                })
 
                 showColumnPreview.value = true
             }
@@ -297,7 +325,7 @@
 
             const propagateToColumnList = (updatedAsset: assetInterface) => {
                 selectedRowData.value = updatedAsset
-                handleFilter()
+                filterColumnsList()
             }
 
             // rowClassName Antd
@@ -306,26 +334,32 @@
                     ? 'bg-primary-light'
                     : 'bg-transparent'
 
-            /** PROVIDERS */
-            provide('handleFilter', handleFilter)
-            provide('typeFilters', typeFilters)
-
             /** WATCHERS */
-            watch(columnList, () => {
-                filterColumnsList(columnList.value)
+            watch(list, () => {
+                filterColumnsList()
             })
 
             return {
-                column,
                 rowClassName,
                 customRow,
-                filterByQuery,
+                handleSearchChange,
+                clearAllFilters,
+                clearFiltersAndSearch,
+                filters,
+                isLoadMore,
+                dataTypeMap,
+                isLoading,
+                loadMore,
+                handleFilterChange,
                 handleCloseColumnSidebar,
                 propagateToColumnList,
+                isAggregateLoading,
+                list,
                 selectedRow,
                 columnsData,
-                query,
+                queryText,
                 images,
+                colCount,
                 showColumnPreview,
                 selectedRowData,
                 columns: [
@@ -380,10 +414,6 @@
 </script>
 
 <style lang="less" scoped>
-    :global(.ant-drawer-content-wrapper) {
-        width: 420px !important;
-        background-color: white !important;
-    }
     :global(.ant-table) {
         @apply border border-gray-light !important;
     }
@@ -401,5 +431,12 @@
     }
     :global(.ant-progress-status-success .ant-progress-bg) {
         background-color: #1890ff !important;
+    }
+    .chip {
+        @apply px-1  mr-1;
+        @apply rounded;
+        @apply flex;
+        @apply items-center;
+        @apply text-xs;
     }
 </style>

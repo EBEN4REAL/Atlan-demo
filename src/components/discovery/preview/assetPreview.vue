@@ -1,26 +1,19 @@
 <template>
     <div>
-        <div v-if="showCrossIcon" class="flex items-center ml-2 bg-white">
+        <div v-if="showCrossIcon">
             <a-button
-                class="px-1 border-0 outline-none"
+                class="fixed z-10 px-0 border-r-0 rounded-none rounded-l  -left-5"
                 @click="$emit('closeSidebar')"
             >
-                <AtlanIcon icon="Cancel" />
+                <AtlanIcon
+                    icon="ChevronDown"
+                    class="h-4 ml-1 transition-transform transform -rotate-90"
+                />
             </a-button>
         </div>
         <div v-if="page !== 'profile'" class="px-5 py-3 border-b">
             <div class="flex items-center justify-between mb-0 text-sm">
-                <div
-                    v-if="page === 'nonBiOverview'"
-                    class="text-gray-500 uppercase"
-                >
-                    {{ getDataType(selectedAsset?.attributes?.dataType) }}
-                </div>
-                <AssetLogo
-                    v-if="page === 'discovery' || page === 'biOverview'"
-                    :asset="selectedAsset"
-                    variant="md"
-                />
+                <AssetLogo :asset="selectedAsset" variant="md" />
 
                 <div class="flex space-x-2">
                     <a-button-group>
@@ -54,13 +47,21 @@
             </div>
 
             <div class="flex items-center w-full">
-                <component
-                    v-if="page === 'nonBiOverview'"
-                    :is="
-                        images[getDataType(selectedAsset?.attributes?.dataType)]
-                    "
-                    class="w-4 h-4 mr-1.5"
-                ></component>
+                <a-tooltip
+                    placement="left"
+                    :mouse-enter-delay="0.5"
+                    :title="getDataType(selectedAsset?.attributes?.dataType)"
+                >
+                    <component
+                        :is="
+                            images[
+                                getDataType(selectedAsset?.attributes?.dataType)
+                            ]
+                        "
+                        v-if="isColumnAsset(selectedAsset)"
+                        class="w-4 h-4 mb-1 mr-1"
+                    ></component
+                ></a-tooltip>
 
                 <Tooltip
                     :tooltip-text="selectedAsset?.attributes?.name"

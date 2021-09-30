@@ -1,34 +1,37 @@
 <template>
     <div>
-        <div class="flex items-center mb-1">
-            <component
-                :is="dataTypeImage(asset)"
-                class="flex-none w-auto h-4 mr-2 text-gray-500"
-            ></component>
-            <span
-                class="
-                    flex-shrink
-                    pt-0.5
-                    mr-2
-                    overflow-hidden
-                    text-sm
-                    font-bold
-                    align-middle
-                    text-primary
-                    overflow-ellipsis
-                    cursor-pointer
-                "
-                @click="() => (showColumnSidebar = true)"
-            >
-                {{ asset.displayText }}
-            </span>
-            <div v-if="asset.attributes?.isPrimary" class="chip">
-                <AtlanIcon icon="PrimaryKey" />
-            </div>
-            <!--  <div v-if="asset.attributes.isPrimary" class="chip">
+        <ColumnInfoCard :column-asset="asset">
+            <div class="flex items-center mb-1">
+                <component
+                    :is="dataTypeImage(asset)"
+                    class="flex-none w-auto h-4 mr-2 text-gray-500"
+                ></component>
+                <span
+                    class="
+                        flex-shrink
+                        pt-0.5
+                        mr-2
+                        overflow-hidden
+                        text-sm
+                        font-bold
+                        align-middle
+                        text-primary
+                        overflow-ellipsis
+                        cursor-pointer
+                    "
+                    @click="() => (showColumnSidebar = true)"
+                >
+                    {{ asset.displayText }}
+                </span>
+                <div v-if="asset.attributes?.isPrimary" class="chip">
+                    <AtlanIcon icon="PrimaryKey" />
+                </div>
+                <!--  <div v-if="asset.attributes.isPrimary" class="chip">
             <AtlanIcon icon="ForeignKey" />
         </div> -->
-        </div>
+            </div>
+        </ColumnInfoCard>
+
         <Description :selected-asset="asset" :using-in-info="false" />
     </div>
     <teleport to="#overAssetPreviewSidebar">
@@ -61,12 +64,14 @@
     import { assetInterface } from '~/types/assets/asset.interface'
     import AssetPreview from '@/discovery/preview/assetPreview.vue'
     import Description from '@common/sidebar/description.vue'
+    import ColumnInfoCard from './columnInfoCard.vue'
 
     export default defineComponent({
         name: 'ColumnListItem',
         components: {
             AssetPreview,
             Description,
+            ColumnInfoCard,
         },
         props: {
             asset: {

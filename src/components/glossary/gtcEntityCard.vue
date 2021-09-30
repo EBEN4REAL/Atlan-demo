@@ -5,9 +5,7 @@
     >
         <!-- projections start here -->
         <div class="flex flex-row w-full">
-            <div
-                class="flex flex-col justify-center w-full max-w-2xl ml-1 text-gray-700 "
-            >
+            <div class="flex flex-col justify-center w-full max-w-2xl ml-1">
                 <span class="flex items-center mb-1 cursor-pointer">
                     <AtlanIcon
                         v-if="entity.typeName === 'AtlasGlossary'"
@@ -27,12 +25,16 @@
                         class="h-5"
                     />
 
-                    <Tooltip
+                    <!-- <Tooltip
                         :tooltip-text="entity.displayText"
-                        class="ml-2 text-lg font-normal leading-7 text-gray-700  hover:underline"
+                        class="ml-2 text-lg leading-7 text-primary hover:underline"
                         @click="redirectToProfile"
-                    />
-
+                    /> -->
+                    <span
+                        class="ml-2 text-lg font-bold leading-7  text-primary hover:underline"
+                    >
+                        {{ entity?.displayText }}
+                    </span>
                     <component
                         :is="statusObject?.icon"
                         v-if="statusObject && projection.includes('status')"
@@ -59,7 +61,7 @@
                             projection?.includes('owners') &&
                             getCombinedUsersAndGroups(entity).length
                         "
-                        class="flex items-center text-sm leading-5 text-gray-700 "
+                        class="flex items-center text-sm leading-5 text-gray-500 "
                     >
                         <AtlanIcon icon="User" class="m-0 mr-1" />
 
@@ -80,7 +82,7 @@
                         entity?.attributes?.shortDescription !== '' &&
                         entity?.attributes?.shortDescription !== undefined
                     "
-                    class="mt-3 text-sm leading-5 text-gray-700"
+                    class="mt-3 text-sm leading-5 text-gray-500"
                 >
                     {{ entity?.attributes?.shortDescription }}
                 </div>
@@ -105,7 +107,8 @@
                     <div
                         v-if="
                             entity.typeName === 'AtlasGlossaryTerm' &&
-                            projection.includes('classifications')
+                            projection.includes('classifications') &&
+                            entity?.classificationNames?.length > 0
                         "
                         class="flex items-center mt-2 text-sm leading-5 text-gray-700  max-w-max"
                     >

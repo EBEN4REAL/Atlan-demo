@@ -1,80 +1,100 @@
 <template>
-    <a-popover trigger="click" placement="leftTop">
-        <template #content>
-            <!-- filters -->
-            <p class="mb-3 text-gray-500">FILTERS</p>
-            <a-collapse
-                v-model:activeKey="activeKey"
-                expand-icon-position="right"
-                :bordered="false"
-                class="relative bg-transparent"
-                :class="$style.filter"
-                :accordion="true"
-            >
-                <template #expandIcon="{ isActive }">
-                    <div class="h-full">
-                        <AtlanIcon
-                            icon="ChevronDown"
-                            class="mb-3 text-gray-500 transition-transform transform "
-                            :class="isActive ? '-rotate-180' : 'rotate-0'"
-                        />
-                    </div>
-                </template>
-                <a-collapse-panel
-                    class="relative group"
-                    v-for="item in filtersList"
-                    :key="item.id"
+    <!-- filters -->
+    <div class="h-full mt-12">
+        <div
+            class="flex items-center justify-between px-4 py-2 mb-2 text-sm bg-gray-100 border-b border-gray-300 "
+        >
+            <div class="font-medium text-gray-500">
+                {{ totalAppliedFiltersCount || 'No' }}
+                {{ totalAppliedFiltersCount > 1 ? 'filters' : 'filter' }}
+                applied
+            </div>
+            <div class="flex items-center">
+                <div
+                    v-if="totalAppliedFiltersCount"
+                    class="text-sm font-medium text-gray-500 rounded cursor-pointer  hover:text-gray-700"
+                    @click="resetAllFilters"
                 >
-                    <template #header>
-                        <div class="mr-10 select-none">
-                            <div
-                                class="flex justify-between align-middle  align-items"
-                            >
-                                <div class="flex flex-col flex-1">
-                                    <div class="tracking-wide">
-                                        <span class="text-gray">
-                                            {{ item.label }}</span
-                                        >
-                                    </div>
-                                    <div
-                                        class="text-gray-500"
-                                        v-if="activeKey !== item.id"
+                    Reset
+                </div>
+                <a-button
+                    class="z-10 p-0 ml-5 text-gray-500 bg-transparent border-none rounded-none shadow-none outline-none "
+                    @click="handleClosePanel"
+                >
+                    <AtlanIcon icon="Cancel" class="h-4" />
+                </a-button>
+
+                <!-- <a-button
+                class="px-3 py-1 text-sm font-medium border-0 rounded bg-primary-light text-primary"
+                >Save</a-button
+            > -->
+            </div>
+        </div>
+        <a-collapse
+            v-model:activeKey="activeKey"
+            expand-icon-position="right"
+            :bordered="false"
+            class="relative bg-transparent"
+            :class="$style.filter"
+            :accordion="true"
+        >
+            <template #expandIcon="{ isActive }">
+                <div class="h-full">
+                    <AtlanIcon
+                        icon="ChevronDown"
+                        class="mb-3 text-gray-500 transition-transform transform "
+                        :class="isActive ? '-rotate-180' : 'rotate-0'"
+                    />
+                </div>
+            </template>
+            <a-collapse-panel
+                class="relative group"
+                v-for="item in filtersList"
+                :key="item.id"
+            >
+                <template #header>
+                    <div class="mr-10 select-none">
+                        <div
+                            class="flex justify-between align-middle  align-items"
+                        >
+                            <div class="flex flex-col flex-1">
+                                <div class="tracking-wide">
+                                    <span class="text-gray">
+                                        {{ item.label }}</span
                                     >
-                                        {{
-                                            getFiltersAppliedString(
-                                                item.id,
-                                                dataMap
-                                            )
-                                        }}
-                                    </div>
                                 </div>
                                 <div
-                                    v-if="
-                                        filterMap[item.id] &&
-                                        filterMap[item.id].criterion?.length > 0
-                                    "
-                                    class="flex items-center text-xs text-gray-500  hover:text-primary"
-                                    @click.stop.prevent="handleClear(item.id)"
+                                    class="text-gray-500"
+                                    v-if="activeKey !== item.id"
                                 >
-                                    Clear
+                                    {{
+                                        getFiltersAppliedString(
+                                            item.id,
+                                            dataMap
+                                        )
+                                    }}
                                 </div>
                             </div>
+                            <div
+                                v-if="isFilterApplied(item.id)"
+                                class="flex items-center text-xs text-gray-500  hover:text-primary"
+                                @click.stop.prevent="handleClear(item.id)"
+                            >
+                                Clear
+                            </div>
                         </div>
-                    </template>
-                    <component
-                        :is="item.component"
-                        v-model:data="dataMap[item.id]"
-                        :item="item"
-                        :showPadding="false"
-                        @change="handleChange"
-                    ></component>
-                </a-collapse-panel>
-            </a-collapse>
-        </template>
-        <a-button class="p-1 ml-2 rounded">
-            <AtlanIcon icon="FilterDot" class="h-6" />
-        </a-button>
-    </a-popover>
+                    </div>
+                </template>
+                <component
+                    :is="item.component"
+                    v-model:data="dataMap[item.id]"
+                    :item="item"
+                    :showPadding="false"
+                    @change="handleChange"
+                ></component>
+            </a-collapse-panel>
+        </a-collapse>
+    </div>
 </template>
 
 <script lang="ts">
@@ -91,6 +111,8 @@
     // static
     import { Category, Term } from '~/types/glossary/glossary.interface'
     import getFiltersAppliedString from '@/glossary/utils/getFiltersAppliedString'
+    import useFilterPayload from '@/discovery/filters/useFilterPayload'
+    import useFilterUtils from '@/discovery/filters/useFilterUtils'
 
     export default defineComponent({
         components: {
@@ -102,22 +124,18 @@
             ),
         },
         props: {
-            projectionOptions: {
+            initialFilters: {
                 type: Object,
-                required: true,
-                default: () => {},
+                required: false,
+                default() {
+                    return {}
+                },
             },
         },
-        emits: [
-            'projectionChange',
-            'filterUpdated',
-            'sortChange',
-            'includeDeletedAssetsChange',
-        ],
-        setup(props, { emit }) {
+        emits: ['filterUpdated', 'initialize', 'closePanel'],
+        setup(props, context) {
             // data
             const activeKey = ref()
-            const filterMap = ref({})
             const defaultDataMap = {
                 owners: {
                     userValue: [],
@@ -130,12 +148,12 @@
             }
             const dataMap = ref({
                 owners: {
-                    userValue: [],
-                    groupValue: [],
+                    userValue: props?.initialFilters.owners?.userValue || [],
+                    groupValue: props?.initialFilters.owners?.groupValue || [],
                     noOwnerAssigned: false,
                 },
                 status: {
-                    checked: [],
+                    checked: props?.initialFilters?.status?.checked || [],
                 },
             })
             const filtersList = [
@@ -182,31 +200,34 @@
             ]
             // methods
             // on a filter applied
+            const { payload: filters } = useFilterPayload(dataMap)
             const handleChange = (value) => {
-                filterMap.value[value.id] = value.payload
-                const filters = [] // build a filter array to apply
-                Object.keys(filterMap.value).forEach((key) => {
-                    filters.push(filterMap.value[key])
-                })
-                emit('filterUpdated', filters)
+                context.emit('filterUpdated', filters.value)
+                context.emit('initialize', dataMap.value)
             }
+            const { isFilterApplied, totalAppliedFiltersCount } =
+                useFilterUtils(dataMap)
 
             // on clear a particular filter
             const handleClear = (item) => {
                 Object.keys(dataMap.value[item]).forEach((key) => {
                     dataMap.value[item][key] = defaultDataMap[item][key] // set back to default or empty state
                 })
-
-                if (filterMap.value[item]) filterMap.value[item].criterion = [] // update filter to empty
-                const filters = []
-                Object.keys(filterMap.value).forEach((key) => {
-                    filters.push(filterMap.value[key])
-                })
-                emit('filterUpdated', filters)
+                context.emit('filterUpdated', filters.value)
+                context.emit('initialize', dataMap.value)
             }
-            watch(includeDeletedAssets, () => {
-                emit('includeDeletedAssetsChange', includeDeletedAssets.value)
-            })
+            const resetAllFilters = () => {
+                dataMap.value.status.checked = []
+                dataMap.value.owners.userValue = []
+                dataMap.value.owners.groupValue = []
+                dataMap.value.owners.noOwnerAssigned = false
+
+                context.emit('filterUpdated', filters.value)
+                context.emit('initialize', dataMap.value)
+            }
+            const handleClosePanel = () => {
+                context.emit('closePanel')
+            }
             return {
                 activeKey,
                 handleChange,
@@ -214,7 +235,11 @@
                 handleClear,
                 filtersList,
                 dataMap,
-                filterMap,
+                filters,
+                isFilterApplied,
+                totalAppliedFiltersCount,
+                resetAllFilters,
+                handleClosePanel,
             }
         },
     })
@@ -227,9 +252,9 @@
         }
 
         :global(.ant-collapse-header) {
-            @apply px-0 !important;
+            @apply px-4 !important;
             @apply pb-3 pt-0 !important;
-            @apply border-none;
+            @apply border-none !important;
         }
 
         :global(.ant-collapse-item:last-child) {

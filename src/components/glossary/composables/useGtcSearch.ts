@@ -19,7 +19,10 @@ type Filters = {
         }
     }[]
 }
-export default function useGtcSearch(qualifiedName: ComputedRef<string>, dependantFetchingKey?: Ref<any>) {
+export default function useGtcSearch(
+    qualifiedName: ComputedRef<string>,
+    dependantFetchingKey?: Ref<any>
+) {
     const requestQuery = ref<string>()
     const offsetLocal = ref(0)
     const defaultLimit = 50
@@ -64,7 +67,7 @@ export default function useGtcSearch(qualifiedName: ComputedRef<string>, dependa
                 'anchor',
                 'ownerUsers',
                 'ownerGroups',
-                "assignedEntities",
+                'assignedEntities',
                 ...relatedTerms,
                 ...BaseAttributes,
                 ...BasicSearchAttributes,
@@ -92,8 +95,8 @@ export default function useGtcSearch(qualifiedName: ComputedRef<string>, dependa
             limit: limitLocal.value,
         }
 
-        if(qualifiedName && qualifiedName.value) {
-            body.value.typeName = 'AtlasGlossaryTerm,AtlasGlossaryCategory';
+        if (qualifiedName && qualifiedName.value) {
+            body.value.typeName = 'AtlasGlossaryTerm,AtlasGlossaryCategory'
             body.value.entityFilters = {
                 condition: 'AND',
                 criterion: [
@@ -111,12 +114,11 @@ export default function useGtcSearch(qualifiedName: ComputedRef<string>, dependa
                 ],
             }
         } else {
-            body.value.typeName = 'AtlasGlossaryTerm,AtlasGlossaryCategory,AtlasGlossary';
+            body.value.typeName =
+                'AtlasGlossaryTerm,AtlasGlossaryCategory,AtlasGlossary'
             body.value.entityFilters = {
                 condition: 'AND',
-                criterion: [
-                    ...(localFilters.value?.criterion ?? []),
-                ],
+                criterion: [...(localFilters.value?.criterion ?? [])],
             }
         }
     }
@@ -124,42 +126,59 @@ export default function useGtcSearch(qualifiedName: ComputedRef<string>, dependa
     refreshBody()
 
     const entities: Ref<(Category | Term)[]> = ref<(Category | Term)[]>([])
-    const terms = computed(() =>entities.value.filter((entity) => entity.typeName === 'AtlasGlossaryTerm'))
-    const categories = computed(() =>entities.value.filter((entity) => entity.typeName === 'AtlasGlossaryCategory'))
-    const glossaries = computed(() =>entities.value.filter((entity) => entity.typeName === 'AtlasGlossary'))
-    const referredEntities = ref<Record<string, Components.Schemas.AtlasEntityHeader>>()
+    const terms = computed(() =>
+        entities.value.filter(
+            (entity) => entity.typeName === 'AtlasGlossaryTerm'
+        )
+    )
+    const categories = computed(() =>
+        entities.value.filter(
+            (entity) => entity.typeName === 'AtlasGlossaryCategory'
+        )
+    )
+    const glossaries = computed(() =>
+        entities.value.filter((entity) => entity.typeName === 'AtlasGlossary')
+    )
+    const referredEntities =
+        ref<Record<string, Components.Schemas.AtlasEntityHeader>>()
 
     const {
         data: assets,
         error,
-      isLoading,
+        isLoading,
         mutate,
     } = useAPI<any>(GTC_SEARCH, 'POST', {
         cache: false,
         body,
         options: {
-            immediate: dependantFetchingKey && dependantFetchingKey.value ? true : qualifiedName.value ? true : false,
+            immediate:
+                dependantFetchingKey && dependantFetchingKey.value
+                    ? true
+                    : qualifiedName.value
+                    ? true
+                    : false,
             revalidateOnFocus: false,
         },
     })
     offsetLocal.value += defaultLimit
     refreshBody()
 
-
     watch(qualifiedName, () => {
-        if((dependantFetchingKey && dependantFetchingKey?.value) || !dependantFetchingKey) {
-
+        if (
+            (dependantFetchingKey && dependantFetchingKey?.value) ||
+            !dependantFetchingKey
+        ) {
             limitLocal.value = defaultLimit
             offsetLocal.value = 0
-    
+
             refreshBody()
-    
+
             entities.value = []
             mutate()
-    
+
             offsetLocal.value += defaultLimit
             refreshBody()
-        } 
+        }
     })
     watch(assets, (newAssets) => {
         entities.value = [
@@ -167,7 +186,6 @@ export default function useGtcSearch(qualifiedName: ComputedRef<string>, dependa
             ...(newAssets.entities ?? ([] as (Category | Term)[])),
         ]
         referredEntities.value = newAssets.referredEntities
-        
     })
 
     const fetchAssets = (query?: string) => {
@@ -206,11 +224,13 @@ export default function useGtcSearch(qualifiedName: ComputedRef<string>, dependa
             offsetLocal.value = offset
         }
 
-        if (filters?.criterion.length) {
+        if (filters) {
             entities.value = []
-            localFilters.value = filters
+            localFilters.value = {
+                condition: 'OR',
+                criterion: filters,
+            }
         }
-
         limitLocal.value = limit ?? defaultLimit
         refreshBody()
 

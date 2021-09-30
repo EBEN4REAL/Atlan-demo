@@ -1,43 +1,29 @@
 <template>
     <div>
+        <!-- top section -->
         <div class="relative p-4 bg-gray-100 shadow">
             <div class="flex">
+                <!-- filters -->
                 <a-button
                     class="flex items-center w-8 h-8 p-2 rounded-l-sm"
                     @click="showFiltersPane = !showFiltersPane"
                 >
                     <AtlanIcon icon="FilterFunnel" />
                 </a-button>
+                <!-- search box -->
                 <a-input-search
                     v-model:value="searchQuery"
                     :placeholder="`Search terms and categories`"
                     @change="onSearch"
                 ></a-input-search>
+                <!-- projections  -->
                 <Projections
                     :projectionOptions="projectionOptions"
                     @projectionChange="handleProjectionChange"
                 />
-
-                <!-- <a-popover trigger="click">
-                    <template #content>
-                        <p class="mb-1 text-gray-500">Show/Hide</p>
-                        <div class="w-32">
-                            <a-checkbox-group
-                                v-model:value="projection"
-                                name="checkboxgroup"
-                                :options="projectionOptions"
-                            />
-                        </div>
-                    </template>
-                    <a-button class="ml-2 rounded">
-                        <AtlanIcon icon="FilterDot" />
-                    </a-button>
-                </a-popover> -->
             </div>
-            <!-- <div>
-                <GtcFilters @filterUpdated="updateFilters" />
-            </div> -->
         </div>
+        <!-- asset list starts here -->
         <div v-if="isLoading && !all.length">
             <LoadingView />
         </div>
@@ -52,6 +38,7 @@
                 :class="{ 'overflow-y-auto ': headerReachedTop }"
             >
                 <div ref="topSectionRef"></div>
+
                 <div>
                     <AssetList
                         :list="all"
@@ -67,6 +54,8 @@
         <div v-else-if="!all.length" class="mt-24">
             <EmptyView :showClearFiltersCTA="false" />
         </div>
+        <!-- list ends here -->
+        <!-- filters pane in left -->
         <teleport to="#filterPane">
             <a-drawer
                 v-if="showFiltersPane"
@@ -83,11 +72,17 @@
                 :closable="false"
                 width="100%"
             >
-                <div>filter contents</div>
-                <Filters @filterUpdated="updateFilters" />
+                <div class="relative h-full">
+                    <Filters
+                        :initialFilters="initialFilters"
+                        @filterUpdated="updateFilters"
+                        @initialize="handleFilterInitialize"
+                        @closePanel="showFiltersPane = false"
+                    />
+                </div>
             </a-drawer>
         </teleport>
-
+        <!-- sidebar drawer for terms and category preview -->
         <teleport to="#sidePanel">
             <a-drawer
                 v-if="selectedEntity?.guid !== undefined && showPreviewPanel"
@@ -129,8 +124,6 @@
     import LoadingView from '@common/loaders/page.vue'
     import EmptyView from '@common/empty/discover.vue'
     import CategoryTermPreview from '@/glossary/common/categoryTermPreview/categoryTermPreview.vue'
-    import GtcEntityCard from './gtcEntityCard.vue'
-    import GtcFilters from './common/gtcFilters.vue'
     import AssetList from '@/glossary/common/assetList.vue'
     import Projections from '@/glossary/common/projections.vue'
     import Filters from '@/glossary/common/filters.vue'
@@ -144,10 +137,8 @@
     export default defineComponent({
         components: {
             AssetList,
-            GtcEntityCard,
             EmptyView,
             LoadingView,
-            GtcFilters,
             Projections,
             CategoryTermPreview,
             Filters,
@@ -197,6 +188,7 @@
             const showFiltersPane = ref(false)
             const topSectionRef = ref(null)
             const scrollDiv = ref(null)
+            const initialFilters = ref()
             const projection = ref([
                 'status',
                 'description',
@@ -329,7 +321,9 @@
                 console.log(filters)
                 fetchAssetsPaginated({ filters, offset: 0 })
             }
-
+            const handleFilterInitialize = (value) => {
+                initialFilters.value = value
+            }
             // lifecycle methods and watchers and  providers
             watch(selectedEntity, (newSelectedEntity) => {
                 emit('entityPreview', newSelectedEntity)
@@ -361,7 +355,8 @@
                 scrollDiv,
                 handleProjectionChange,
                 showFiltersPane,
-                updateFilters,
+                initialFilters,
+                handleFilterInitialize,
             }
         },
     })

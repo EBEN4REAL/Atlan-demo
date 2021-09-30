@@ -52,7 +52,6 @@
                 'description',
                 'owners',
                 'linkedAssets',
-                'classifications',
             ])
             // to check if projection is already selected
             const isProjectionSelected = (property) =>

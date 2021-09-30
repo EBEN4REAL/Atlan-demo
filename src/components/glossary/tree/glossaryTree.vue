@@ -1,9 +1,5 @@
 <template>
-    <div
-        id="filterPane"
-        class="relative glossaryTree"
-        :class="$style.glossaryTree"
-    >
+    <div class="glossaryTree" :class="$style.glossaryTree">
         <div
             class="flex px-4 py-3 text-sm leading-5 text-gray-500 bg-gray-100 cursor-pointer "
         >

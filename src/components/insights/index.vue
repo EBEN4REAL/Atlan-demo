@@ -178,15 +178,15 @@
     })
 </script>
 <style lang="less" module>
-        :global(.splitpanes__splitter) {
-            background-color: #fff;
-            -webkit-box-sizing: border-box;
-            box-sizing: border-box;
-            position: relative;
-            -ms-flex-negative: 0;
+    :global(.splitpanes__splitter) {
+        background-color: #fff;
+        -webkit-box-sizing: border-box;
+        box-sizing: border-box;
+        position: relative;
+        -ms-flex-negative: 0;
 
-            flex-shrink: 0;
-        }
+        flex-shrink: 0;
+    }
 
     :global(.splitpanes--vertical > .splitpanes__splitter) {
         position: relative;
@@ -215,76 +215,77 @@
             @apply border-primary;
             border-width: 2px !important;
         }
-        :global(.splitpanes--vertical > .splitpanes__splitter):before {
-            // content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            background-color: rgba(0, 0, 0, 0.15);
-            -webkit-transition: background-color 0.3s;
-            transition: background-color 0.3s;
+    }
+    :global(.splitpanes--vertical > .splitpanes__splitter):before {
+        // content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        background-color: rgba(0, 0, 0, 0.15);
+        -webkit-transition: background-color 0.3s;
+        transition: background-color 0.3s;
 
-            margin-left: -2px;
+        margin-left: -2px;
 
-            transform: translateY(-50%);
-            width: 1px;
-            height: 30px;
-        }
-        :global(.splitpanes--vertical > .splitpanes__splitter):hover:before {
-            @apply bg-primary !important;
-        }
-        :global(.splitpanes--vertical > .splitpanes__splitter):hover:after {
-            @apply bg-primary !important;
-        }
-        :global(.splitpanes--vertical > .splitpanes__splitter):after {
-            // content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            background-color: rgba(0, 0, 0, 0.15);
-            -webkit-transition: background-color 0.3s;
-            transition: background-color 0.3s;
+        transform: translateY(-50%);
+        width: 1px;
+        height: 30px;
+    }
+    :global(.splitpanes--vertical > .splitpanes__splitter):hover:before {
+        @apply bg-primary !important;
+    }
+    :global(.splitpanes--vertical > .splitpanes__splitter):hover:after {
+        @apply bg-primary !important;
+    }
+    :global(.splitpanes--vertical > .splitpanes__splitter):after {
+        // content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        background-color: rgba(0, 0, 0, 0.15);
+        -webkit-transition: background-color 0.3s;
+        transition: background-color 0.3s;
 
-            transform: translateY(-50%);
-            width: 1px;
-            height: 30px;
+        transform: translateY(-50%);
+        width: 1px;
+        height: 30px;
 
-            margin-left: 1px;
-        }
-        :global(.splitpanes--horizontal > .splitpanes__splitter):before {
-            // content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            background-color: rgba(0, 0, 0, 0.15);
-            -webkit-transition: background-color 0.3s;
-            transition: background-color 0.3s;
-            margin-top: -2px;
-            transform: translateX(-50%);
-            width: 30px;
-            height: 1px;
-        }
-        :global(.splitpanes--horizontal > .splitpanes__splitter):after {
-            // content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            background-color: rgba(0, 0, 0, 0.15);
-            -webkit-transition: background-color 0.3s;
-            transition: background-color 0.3s;
+        margin-left: 1px;
+    }
+    :global(.splitpanes--horizontal > .splitpanes__splitter):before {
+        // content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        background-color: rgba(0, 0, 0, 0.15);
+        -webkit-transition: background-color 0.3s;
+        transition: background-color 0.3s;
+        margin-top: -2px;
+        transform: translateX(-50%);
+        width: 30px;
+        height: 1px;
+    }
+    :global(.splitpanes--horizontal > .splitpanes__splitter):after {
+        // content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        background-color: rgba(0, 0, 0, 0.15);
+        -webkit-transition: background-color 0.3s;
+        transition: background-color 0.3s;
 
-            transform: translateX(-50%);
-            width: 30px;
-            height: 1px;
+        transform: translateX(-50%);
+        width: 30px;
+        height: 1px;
 
-            margin-top: 1px;
-        }
-        :global(.splitpanes--horizontal > .splitpanes__splitter):hover:before {
-            @apply bg-primary !important;
-        }
-        :global(.splitpanes--horizontal > .splitpanes__splitter):hover:after {
-            @apply bg-primary !important;
-        }
+        margin-top: 1px;
+    }
+    :global(.splitpanes--horizontal > .splitpanes__splitter):hover:before {
+        @apply bg-primary !important;
+    }
+    :global(.splitpanes--horizontal > .splitpanes__splitter):hover:after {
+        @apply bg-primary !important;
+    }
 </style>
 <style lang="less" scoped>
     .placeholder {

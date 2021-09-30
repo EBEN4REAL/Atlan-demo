@@ -1,7 +1,6 @@
 <template>
     <a-popover trigger="click" placement="leftTop">
         <template #content>
-            <!-- sorting -->
             <div class="pt-3 w-60">
                 <!-- projections -->
                 <p class="mb-3 text-gray-500">DISPLAY PROPERTIES</p>
@@ -34,18 +33,7 @@
 </template>
 
 <script lang="ts">
-    import {
-        defineComponent,
-        defineAsyncComponent,
-        computed,
-        ref,
-        watch,
-        PropType,
-        provide,
-    } from 'vue'
-
-    // static
-    import { Category, Term } from '~/types/glossary/glossary.interface'
+    import { defineComponent, ref } from 'vue'
 
     export default defineComponent({
         components: {},
@@ -81,7 +69,6 @@
                 emit('projectionChange', projection)
             }
 
-            // on a filter applied
             return {
                 projection,
                 isProjectionSelected,

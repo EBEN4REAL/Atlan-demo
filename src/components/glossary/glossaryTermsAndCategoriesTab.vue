@@ -2,7 +2,10 @@
     <div>
         <div class="relative p-4 bg-gray-100 shadow">
             <div class="flex">
-                <a-button class="flex items-center w-8 h-8 p-2 rounded-l-sm">
+                <a-button
+                    class="flex items-center w-8 h-8 p-2 rounded-l-sm"
+                    @click="showFiltersPane = !showFiltersPane"
+                >
                     <AtlanIcon icon="FilterFunnel" />
                 </a-button>
                 <a-input-search
@@ -66,10 +69,8 @@
         </div>
         <teleport to="#filterPane">
             <a-drawer
-                v-if="selectedEntity?.guid !== undefined && showPreviewPanel"
-                :visible="
-                    selectedEntity?.guid !== undefined && showPreviewPanel
-                "
+                v-if="showFiltersPane"
+                :visible="showFiltersPane"
                 placement="left"
                 :mask="false"
                 :get-container="false"
@@ -83,6 +84,7 @@
                 width="100%"
             >
                 <div>filter contents</div>
+                <Filters @filterUpdated="updateFilters" />
             </a-drawer>
         </teleport>
 
@@ -131,6 +133,7 @@
     import GtcFilters from './common/gtcFilters.vue'
     import AssetList from '@/glossary/common/assetList.vue'
     import Projections from '@/glossary/common/projections.vue'
+    import Filters from '@/glossary/common/filters.vue'
 
     // composables
     import useGtcSearch from '~/components/glossary/composables/useGtcSearch'
@@ -147,6 +150,7 @@
             GtcFilters,
             Projections,
             CategoryTermPreview,
+            Filters,
         },
         props: {
             qualifiedName: {
@@ -190,7 +194,7 @@
             const searchQuery = ref<string>()
             const activeKey = ref(0)
             const selectedEntity = ref<Category | Term>()
-
+            const showFiltersPane = ref(false)
             const topSectionRef = ref(null)
             const scrollDiv = ref(null)
             const projection = ref([
@@ -211,14 +215,14 @@
             } = useGtcSearch(glossaryQualifiedName)
 
             const projectionOptions = [
+                { value: 'categories', label: 'Categories' },
+                { value: 'classifications', label: 'Classifications' },
                 { value: 'description', label: 'Description' },
+                { value: 'linkedAssets', label: 'Linked Assets' },
                 { value: 'owners', label: 'Owners' },
                 { value: 'status', label: 'Status' },
-                { value: 'linkedAssets', label: 'Linked Assets' },
-                { value: 'categories', label: 'Categories' },
                 // { value: 'rows', label: 'Rows' },
                 // { value: 'popularity', label: 'Popularity' },
-                { value: 'classifications', label: 'Classifications' },
             ]
             // computed
             const terms = computed(() => {
@@ -301,10 +305,6 @@
                 fetchAssetsPaginated({})
             }
 
-            const updateFilters = (filters: any) => {
-                fetchAssetsPaginated({ filters, offset: 0 })
-            }
-
             const updateSelectedAsset = (updatedAsset) => {
                 const idx = entities.value?.findIndex(
                     (ast) => ast.guid === updatedAsset.guid
@@ -322,9 +322,14 @@
                 }
             }
             const handleProjectionChange = (newProjection) => {
-                console.log(newProjection)
                 projection.value = newProjection.value
             }
+
+            const updateFilters = (filters: any) => {
+                console.log(filters)
+                fetchAssetsPaginated({ filters, offset: 0 })
+            }
+
             // lifecycle methods and watchers and  providers
             watch(selectedEntity, (newSelectedEntity) => {
                 emit('entityPreview', newSelectedEntity)
@@ -355,6 +360,8 @@
                 topSectionRef,
                 scrollDiv,
                 handleProjectionChange,
+                showFiltersPane,
+                updateFilters,
             }
         },
     })

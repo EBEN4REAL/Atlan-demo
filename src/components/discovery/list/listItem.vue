@@ -62,7 +62,7 @@
                 </div>
 
                 <!-- Info bar -->
-                <div class="flex items-center gap-x-2">
+                <div class="flex items-center gap-x-3">
                     <!-- Column dataType -->
                     <div
                         v-if="item.typeName.toLowerCase() === 'column'"

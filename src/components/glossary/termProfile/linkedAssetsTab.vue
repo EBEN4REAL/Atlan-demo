@@ -12,8 +12,8 @@
         ></GlossaryAssetDiscovery>
         <teleport to="#sidePanel">
             <a-drawer
-                v-if="selectedAsset?.guid !== undefined && showPreviewPanel"
-                :visible="selectedAsset?.guid !== undefined && showPreviewPanel"
+                v-if="selectedAsset?.guid !== undefined && showPanel"
+                :visible="selectedAsset?.guid !== undefined && showPanel"
                 placement="right"
                 :mask="false"
                 :get-container="false"
@@ -27,14 +27,21 @@
                     page="discovery"
                     :selected-asset="selectedAsset"
                     :show-cross-icon="true"
-                    @closePreviewPanel="handleClosePreviewPanel"
+                    @closeSidebar="handleClosePreviewPanel"
                 ></AssetPreview>
             </a-drawer>
         </teleport>
     </div>
 </template>
 <script lang="ts">
-    import { defineComponent, computed, onMounted, watch, ref } from 'vue'
+    import {
+        defineComponent,
+        computed,
+        onMounted,
+        watch,
+        ref,
+        toRefs,
+    } from 'vue'
     import { useDebounceFn } from '@vueuse/core'
     import { useRouter } from 'vue-router'
 
@@ -72,33 +79,38 @@
         setup(props: PropsType, { emit }) {
             const router = useRouter()
             const initialFilters = getDecodedOptionsFromString(router)
-            const showPreviewPanel = ref(false)
             const isSelected = ref(false)
             const termName = computed(() => props.termQualifiedName)
 
+            const showPanel = ref(props.showPreviewPanel)
             const searchQuery = ref<string>()
 
             const selectedAsset = ref()
 
             const handlePreview = (asset) => {
                 selectedAsset.value = asset
-                showPreviewPanel.value = true
+                showPanel.value = true
                 isSelected.value = true
                 emit('preview', asset)
             }
+            // const handleClosePreviewPanel = () => {
+            //     console.log('closing')
+            //     selectedAsset.value = undefined
+            //     isSelected.value = false
+            //     showPreviewPanel.value = false
+            // }
+
             const handleClosePreviewPanel = () => {
-                selectedAsset.value = undefined
-                isSelected.value = false
-                showPreviewPanel.value = false
+                console.log('close')
+                showPanel.value = false
             }
-            console.log(props)
             return {
                 termName,
                 initialFilters,
                 selectedAsset,
                 handlePreview,
                 handleClosePreviewPanel,
-                showPreviewPanel,
+                showPanel,
                 isSelected,
             }
         },

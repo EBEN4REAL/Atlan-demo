@@ -3,10 +3,22 @@
         <!-- top section -->
         <div class="relative p-4 bg-gray-100 shadow">
             <div class="flex">
+                <!-- close filtersPane -->
+                <a-button
+                    v-if="showFiltersPane"
+                    class="absolute z-30 px-0 border-l-0 rounded-none rounded-r shadow-md  -left-1"
+                    @click="showFiltersPane = !showFiltersPane"
+                >
+                    <AtlanIcon
+                        icon="ChevronDown"
+                        class="h-4 ml-1 transition-transform transform rotate-90 "
+                    />
+                </a-button>
                 <!-- filters -->
                 <a-button
-                    class="flex items-center w-8 h-8 p-2 rounded-l-sm"
+                    class="flex items-center w-8 h-8 p-2 border-r-0 rounded-none rounded-l "
                     @click="showFiltersPane = !showFiltersPane"
+                    :class="{ 'ml-4': showFiltersPane }"
                 >
                     <AtlanIcon icon="FilterFunnel" />
                 </a-button>
@@ -15,6 +27,7 @@
                     v-model:value="searchQuery"
                     :placeholder="`Search terms and categories`"
                     @change="onSearch"
+                    class="rounded-none rounded-r"
                 ></a-input-search>
                 <!-- projections  -->
                 <Projections
@@ -71,13 +84,13 @@
                 :destroy-on-close="true"
                 :closable="false"
                 width="100%"
+                :class="$style.drawerClasses"
             >
                 <div class="relative h-full">
                     <Filters
                         :initialFilters="initialFilters"
                         @filterUpdated="updateFilters"
                         @initialize="handleFilterInitialize"
-                        @closePanel="showFiltersPane = false"
                     />
                 </div>
             </a-drawer>
@@ -368,6 +381,11 @@
     .glossaryTermsTab {
         :global(.ant-tabs-tabpane .ant-tabs-tabpane-active) {
             @apply h-1/3 overflow-auto;
+        }
+    }
+    .drawerClasses {
+        :global(.ant-drawer-wrapper-body) {
+            @apply bg-gray-100 !important;
         }
     }
 </style>

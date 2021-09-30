@@ -2,11 +2,7 @@
     <div v-if="isLoading && term?.guid !== id">
         <LoadingView />
     </div>
-    <div
-        v-else
-        class="flex flex-row h-full border-l"
-        :class="$style.tabClasses"
-    >
+    <div v-else class="flex flex-row h-full" :class="$style.tabClasses">
         <div
             ref="scrollDiv"
             class="w-2/3 h-full"
@@ -243,7 +239,7 @@
             @apply text-gray-700 font-bold !important;
         }
         :global(.ant-tabs-bar) {
-            @apply px-5 mb-0;
+            @apply px-4 mb-0;
         }
     }
 </style>

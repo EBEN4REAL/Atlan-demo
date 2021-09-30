@@ -294,7 +294,7 @@
             @apply mb-0 mx-0 p-0 m-0 !important;
         }
         :global(.ant-tabs-tab) {
-            @apply py-2 mb-4 px-4 !important;
+            @apply py-2 mb-4 px-3 !important;
         }
         :global(.ant-tabs) {
             @apply px-0 !important;

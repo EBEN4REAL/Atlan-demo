@@ -17,13 +17,6 @@
                 >
                     Reset
                 </div>
-                <a-button
-                    class="z-10 p-0 ml-5 text-gray-500 bg-transparent border-none rounded-none shadow-none outline-none "
-                    @click="handleClosePanel"
-                >
-                    <AtlanIcon icon="Cancel" class="h-4" />
-                </a-button>
-
                 <!-- <a-button
                 class="px-3 py-1 text-sm font-medium border-0 rounded bg-primary-light text-primary"
                 >Save</a-button
@@ -132,7 +125,7 @@
                 },
             },
         },
-        emits: ['filterUpdated', 'initialize', 'closePanel'],
+        emits: ['filterUpdated', 'initialize'],
         setup(props, context) {
             // data
             const activeKey = ref()
@@ -225,9 +218,6 @@
                 context.emit('filterUpdated', filters.value)
                 context.emit('initialize', dataMap.value)
             }
-            const handleClosePanel = () => {
-                context.emit('closePanel')
-            }
             return {
                 activeKey,
                 handleChange,
@@ -239,7 +229,6 @@
                 isFilterApplied,
                 totalAppliedFiltersCount,
                 resetAllFilters,
-                handleClosePanel,
             }
         },
     })

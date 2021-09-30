@@ -31,7 +31,7 @@
                         @click="redirectToProfile"
                     /> -->
                     <span
-                        class="ml-2 text-lg font-bold leading-7  text-primary hover:underline"
+                        class="items-baseline ml-2 text-lg font-bold leading-7 truncate  text-primary hover:underline overflow-ellipsis"
                         @click="redirectToProfile"
                     >
                         {{ entity?.displayText }}
@@ -129,7 +129,7 @@
                         </div>
                         <div
                             v-if="entity?.classificationNames?.length > 2"
-                            class="flex items-center px-3 py-1 mr-2 truncate bg-white border  rounded-3xl overflow-ellipsis"
+                            class="flex items-center px-3 py-1 mr-2 truncate bg-transparent border-0  overflow-ellipsis"
                         >
                             + {{ entity?.classificationNames?.length - 2 }} more
                         </div>

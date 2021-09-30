@@ -26,8 +26,8 @@
                 <!-- filters -->
             </div>
         </template>
-        <a-button class="p-1 ml-2 rounded">
-            <AtlanIcon icon="FilterDot" class="h-6" />
+        <a-button class="p-2 ml-2 rounded">
+            <AtlanIcon icon="FilterDot" class="h-4" />
         </a-button>
     </a-popover>
 </template>

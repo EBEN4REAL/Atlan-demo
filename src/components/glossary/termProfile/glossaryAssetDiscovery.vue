@@ -1,5 +1,5 @@
 <template>
-    <div class="flex w-full" :class="$style.tabClasses">
+    <div class="relative flex w-full" :class="$style.tabClasses">
         <div class="flex flex-col items-stretch flex-1 mb-1 bg-white w-80">
             <div class="flex flex-col h-full">
                 <div v-if="checkedAssetList.length" class="flex">
@@ -57,15 +57,26 @@
                     Link Assets
                 </div> -->
                 <div
-                    class="flex items-center justify-between w-full px-3 mt-4 mb-2 "
+                    class="flex items-center justify-between w-full px-3 mt-3 mb-2 "
                 >
+                    <!-- close filtersPane -->
                     <a-button
-                        class="flex items-center w-8 h-8 p-2 border-0 shadow-none outline-none "
+                        v-if="showFiltersPane"
+                        class="absolute z-30 px-0 border-l-0 rounded-none rounded-r shadow-md  -left-1"
+                        @click="showFiltersPane = !showFiltersPane"
+                    >
+                        <AtlanIcon
+                            icon="ChevronDown"
+                            class="h-4 ml-1 transition-transform transform rotate-90 "
+                        />
+                    </a-button>
+
+                    <a-button
+                        class="flex items-center w-8 h-8 p-2 mt-1 ml-2"
                         @click="showFiltersPane = !showFiltersPane"
                     >
                         <AtlanIcon icon="FilterFunnel" />
                     </a-button>
-
                     <SearchAndFilter
                         v-model:value="queryText"
                         class="w-full mx-3 mt-1"
@@ -95,7 +106,6 @@
                     :asset-type-map="assetTypeMap"
                     :total="totalSum"
                     @update:model-value="handleTabChange"
-                    class="mt-2"
                 ></AssetTabs>
                 <div
                     v-if="
@@ -151,13 +161,6 @@
             :class="$style.drawerClasses"
         >
             <div class="relative h-full mt-12 bg-gray-100">
-                <a-button
-                    class="absolute z-10 p-0 ml-5 text-gray-500 bg-transparent border-none rounded-none shadow-none outline-none  right-4"
-                    @click="showFiltersPane = false"
-                >
-                    <AtlanIcon icon="Cancel" class="h-4" />
-                </a-button>
-
                 <AssetFilters
                     :ref="
                         (el) => {
@@ -165,14 +168,8 @@
                         }
                     "
                     @refresh="handleFilterChange"
+                    :filtersList="filtersList"
                 ></AssetFilters>
-
-                <!-- <Filters
-                    :initialFilters="initialFilters"
-                    @filterUpdated="updateFilters"
-                    @initialize="handleFilterInitialize"
-                    @closePanel="showFiltersPane = false"
-                /> -->
             </div>
         </a-drawer>
     </teleport>
@@ -184,7 +181,6 @@
     import HeirarchySelect from '@common/tree/heirarchy/index.vue'
     import SearchAndFilter from '@/common/input/searchAndFilter.vue'
 
-    import Filters from '@/glossary/common/filters.vue'
     // import { useDebounceFn } from "@vueuse/core";
     // import fetchAssetDiscover from "~/composables/asset/fetchAssetDiscover";
     import { useDebounceFn } from '@vueuse/core'
@@ -287,7 +283,6 @@
             EmptyView,
             AssetDropdown,
             SearchAndFilter,
-            Filters,
         },
         props: {
             initialFilters: {
@@ -334,6 +329,7 @@
             const now = ref(true)
             const showCheckBox = ref(false)
             const scrollDiv = ref(null)
+            const filtersList = ref(['status', 'owners', 'classifications'])
 
             const showFiltersPane = ref(false)
             const assetType = ref('Catalog')
@@ -806,6 +802,7 @@
                 showFiltersPane,
                 scrollDiv,
                 handleScroll,
+                filtersList,
             }
         },
         data() {

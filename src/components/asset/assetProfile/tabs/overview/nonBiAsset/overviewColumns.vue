@@ -368,11 +368,6 @@
                         dataIndex: 'hash_index',
                         slots: { customRender: 'hash_index' },
                         key: 'hash_index',
-                        defaultSortOrder: 'ascend',
-                        sorter: (
-                            a: { hash_index: number },
-                            b: { hash_index: number }
-                        ) => a.hash_index - b.hash_index,
                     },
                     {
                         width: 200,
@@ -380,10 +375,6 @@
                         dataIndex: 'column_name',
                         slots: { customRender: 'column_name' },
                         key: 'column_name',
-                        sorter: (
-                            a: { column_name: number },
-                            b: { column_name: number }
-                        ) => a.column_name > b.column_name,
                     },
                     {
                         width: 150,
@@ -401,7 +392,6 @@
                     {
                         width: 150,
                         title: 'Popularity',
-                        sorter: true,
                         dataIndex: 'popularity',
                         slots: { customRender: 'popularity' },
                         key: 'popularity',
@@ -431,6 +421,10 @@
     :global(.ant-progress-status-success .ant-progress-bg) {
         background-color: #1890ff !important;
     }
+    :global(.ant-progress-inner) {
+        background-color: rgba(189, 205, 244, 0.53) !important;
+    }
+
     .chip {
         @apply px-1  mr-1;
         @apply rounded;

@@ -17,15 +17,22 @@
             >
                 Column Preview
             </a-button>
-            <a-button
-                :class="
-                    activePreviewTabKey === 'table-preview'
-                        ? 'text-primary font-bold'
-                        : 'text-gray-500'
+            <a-tooltip
+                placement="right"
+                :title="
+                    !showTablePreview && 'No sample data dound for this asset'
                 "
-                :disabled="!showTablePreview"
-                @click="setActiveTab('table-preview')"
-                >Sample Data</a-button
+            >
+                <a-button
+                    :class="
+                        activePreviewTabKey === 'table-preview'
+                            ? 'text-primary font-bold'
+                            : 'text-gray-500'
+                    "
+                    :disabled="!showTablePreview"
+                    @click="setActiveTab('table-preview')"
+                    >Sample Data</a-button
+                ></a-tooltip
             >
         </a-button-group>
 

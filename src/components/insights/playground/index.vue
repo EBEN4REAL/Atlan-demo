@@ -124,6 +124,7 @@
                     favico: 'https://atlan.com/favicon.ico',
                     isSaved: false,
                     queryId: undefined,
+                    status: 'draft',
                     explorer: {
                         schema: {
                             connectors: {

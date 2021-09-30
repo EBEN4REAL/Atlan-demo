@@ -6,6 +6,7 @@ export interface activeInlineTabInterface {
     label: String
     isSaved: boolean
     queryId: string | undefined
+    status: string // draft | verified etc.
     explorer: {
         schema: {
             connectors: connectorsWidgetInterface

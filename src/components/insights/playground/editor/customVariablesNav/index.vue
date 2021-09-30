@@ -1,5 +1,5 @@
 <template>
-    <div class="my-2">
+    <div class="my-2 mb-4">
         <div class="flex overflow-x-auto">
             <div class="add-variable-btn">
                 <a-button

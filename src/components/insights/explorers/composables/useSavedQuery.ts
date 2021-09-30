@@ -32,6 +32,7 @@ export function useSavedQuery(
             favico: 'https://atlan.com/favicon.ico',
             isSaved: true,
             queryId: savedQuery.guid,
+            status: savedQuery.attributes.assetStatus as string,
             explorer: {
                 schema: {
                     connectors: {

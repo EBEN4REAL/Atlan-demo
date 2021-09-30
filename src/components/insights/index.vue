@@ -29,7 +29,7 @@
             class="parent_splitpanes"
         >
             <pane
-                :max-size="18"
+                :max-size="20"
                 :size="explorerPaneSize"
                 :min-size="0"
                 class="explorer_splitpane"

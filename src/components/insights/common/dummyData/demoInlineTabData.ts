@@ -5,6 +5,7 @@ export const inlineTabsDemoData: activeInlineTabInterface[] = [
         label: 'ABCDE',
         isSaved: false,
         queryId: undefined,
+        status: 'draft',
         explorer: {
             schema: {
                 connectors: {
@@ -53,6 +54,7 @@ export const inlineTabsDemoData: activeInlineTabInterface[] = [
         label: 'ADBE',
         isSaved: false,
         queryId: undefined,
+        status: 'draft',
         explorer: {
             schema: {
                 connectors: {
@@ -101,6 +103,7 @@ export const inlineTabsDemoData: activeInlineTabInterface[] = [
         label: 'BCDE',
         isSaved: false,
         queryId: undefined,
+        status: 'draft',
         explorer: {
             schema: {
                 connectors: {

@@ -1,19 +1,16 @@
 import { CustomVaribaleInterface } from './customVariable.interface'
+import { connectorsWidgetInterface } from '~/types/insights/connectorWidget.interface'
 
 export interface activeInlineTabInterface {
     key: string
     label: String
     isSaved: boolean
     queryId: string | undefined
+    status: string // draft | verified etc.
     explorer: {
         schema: {
-            connectors: {
-                connection: string | undefined
-                connector: string | undefined
-                selectedDefaultSchema: string | undefined
-                selectedDataSourceName: string | undefined
-            }
-        },
+            connectors: connectorsWidgetInterface
+        }
         queries: {
             connectors: {
                 connector: string | undefined

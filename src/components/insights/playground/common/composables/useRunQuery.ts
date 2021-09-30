@@ -3,10 +3,13 @@ import { useSSE } from '~/modules/useSSE'
 import { KeyMaps } from '~/api/keyMap'
 import { message } from 'ant-design-vue'
 import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
-import { useEditor } from '~/components/insights/playground/common/composables/useEditor'
+import { useEditor } from '~/components/insights/common/composables/useEditor'
+import { useConnector } from '~/components/insights/common/composables/useConnector'
 
 export default function useProject() {
     const { getParsedQuery } = useEditor()
+    const { getSchemaWithDataSourceName, getConnectionQualifiedName } =
+        useConnector()
     const columnList: Ref<
         [
             {
@@ -56,10 +59,8 @@ export default function useProject() {
         getData: any,
         isQueryRunning: Ref<string>
     ) => {
-        const selectedDataSourceName =
-            activeInlineTab.explorer.schema.connectors.selectedDataSourceName
-        const selectedDefaultSchema =
-            activeInlineTab.explorer.schema.connectors.selectedDefaultSchema
+        const attributeValue =
+            activeInlineTab.explorer.schema.connectors.attributeValue
         let queryText = getParsedQuery(
             activeInlineTab.playground.editor.variables,
             activeInlineTab.playground.editor.text
@@ -74,15 +75,15 @@ export default function useProject() {
         dataList.value = []
         console.log(queryText)
         const query = encodeURIComponent(btoa(queryText))
+        /* -------- NOTE -----------
+        Here defaultSchema -  'ATLAN_TRIAL.PUBLIC' instead of 'default/snowflake/vqaqufvr-i/ATLAN_TRIAL/PUBLIC'
+        dataSourceName -  connectionQualifiedName
+        */
         const pathVariables = {
             query,
-            defaultSchema: selectedDefaultSchema
-                ? selectedDefaultSchema
-                : 'ATLAN_TRIAL.PUBLIC',
+            defaultSchema: getSchemaWithDataSourceName(attributeValue),
             dataSourceName: encodeURIComponent(
-                selectedDataSourceName
-                    ? selectedDataSourceName
-                    : 'default/snowflake/vqaqufvr-i'
+                getConnectionQualifiedName(attributeValue) as string
             ),
             length: 10,
         }

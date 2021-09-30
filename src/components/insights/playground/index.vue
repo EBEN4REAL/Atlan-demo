@@ -6,7 +6,7 @@
                 :class="$style.inline_tabs"
                 hide-add
                 type="editable-card"
-                class="w-full"
+                class="w-full insights-tabs"
                 @change="onTabClick"
                 @edit="onEdit"
             >
@@ -22,19 +22,42 @@
                 </template>
                 <a-tab-pane v-for="tab in tabs" :key="tab.key" :closable="true">
                     <template #tab>
-                        <div class="flex items-center justify-between">
-                            <img
-                                :src="tab.favico"
-                                class="w-4 h-4 mr-2 rounded"
-                                v-if="tab?.favico"
-                            />
-                            <span class="mr-2">{{ tab.label }}</span>
+                        <div
+                            class="flex items-center justify-between inline_tab"
+                        >
+                            <div class="flex items-center">
+                                <span
+                                    class="
+                                        text-sm
+                                        truncate
+                                        ...
+                                        inline_tab_label
+                                    "
+                                    >{{ tab.label }}</span
+                                >
+                            </div>
+                            <div
+                                v-if="!tab.isSaved"
+                                class="flex items-center mr-2 unsaved-dot"
+                            >
+                                <div
+                                    class="
+                                        w-1.5
+                                        h-1.5
+                                        rounded-full
+                                        bg-primary
+                                        -mt-0.5
+                                        absolute
+                                        right-2.5
+                                    "
+                                ></div>
+                            </div>
                         </div>
                     </template>
                 </a-tab-pane>
             </a-tabs>
         </div>
-        <div class="w-full h-full" v-if="activeInlineTabKey">
+        <div v-if="activeInlineTabKey" class="w-full h-full">
             <splitpanes horizontal :push-other-panes="false">
                 <pane
                     :max-size="100"
@@ -61,8 +84,11 @@
     import NoActiveInlineTab from './noActiveInlineTab.vue'
     import useRunQuery from './common/composables/useRunQuery'
     import { useInlineTab } from '~/components/insights/common/composables/useInlineTab'
-    import { useProvide } from '~/components/insights/common/composables/useProvide'
-    import { provideDataInterface } from '~/components/insights/common/composables/useProvide'
+    import {
+        useProvide,
+        provideDataInterface,
+    } from '~/components/insights/common/composables/useProvide'
+    import { useRouter } from 'vue-router'
 
     // import { useHotKeys } from '~/components/insights/common/composables/useHotKeys'
 
@@ -75,9 +101,11 @@
             },
         },
         setup(props, { emit }) {
+            const router = useRouter()
             const { queryRun, isQueryRunning } = useRunQuery()
             const { inlineTabRemove, inlineTabAdd, setActiveTabKey } =
                 useInlineTab()
+
             // const {resultsPaneSizeToggle} = useHotKeys()
             const paneSize = ref(55)
             const tabs = inject('inlineTabs') as Ref<activeInlineTabInterface[]>
@@ -91,26 +119,28 @@
             const handleAdd = () => {
                 const key = String(new Date().getTime())
                 const inlineTabData: activeInlineTabInterface = {
-                    label: 'New Tab',
+                    label: 'Untitled',
                     key,
                     favico: 'https://atlan.com/favicon.ico',
                     isSaved: false,
                     queryId: undefined,
+                    status: 'draft',
                     explorer: {
                         schema: {
                             connectors: {
-                                connection:
+                                attributeName:
                                     activeInlineTab.value?.explorer?.schema
-                                        ?.connectors?.connection,
+                                        ?.connectors?.attributeName,
+                                attributeValue:
+                                    activeInlineTab.value?.explorer?.schema
+                                        ?.connectors?.attributeValue,
+                            },
+                        },
+                        queries: {
+                            connectors: {
                                 connector:
-                                    activeInlineTab.value?.explorer?.schema
-                                        ?.connectors?.connector,
-                                selectedDefaultSchema:
-                                    activeInlineTab.value?.explorer?.schema
-                                        ?.connectors?.selectedDefaultSchema,
-                                selectedDataSourceName:
-                                    activeInlineTab.value?.explorer?.schema
-                                        ?.connectors?.selectedDataSourceName,
+                                    activeInlineTab.value?.explorer?.queries
+                                        .connectors.connector,
                             },
                         },
                     },
@@ -154,8 +184,13 @@
                 }
                 inlineTabAdd(inlineTabData, tabs, activeInlineTabKey)
             }
+            const pushGuidToURL = (guid: string | undefined) => {
+                if (guid) router.push(`/insights?id=${guid}`)
+                else router.push(`/insights`)
+            }
             const onTabClick = (activeKey) => {
                 setActiveTabKey(activeKey, activeInlineTabKey)
+                pushGuidToURL(activeInlineTab.value?.queryId)
             }
             const onEdit = (targetKey: string | MouseEvent, action: string) => {
                 if (action === 'add') {
@@ -171,8 +206,8 @@
 
             /*---------------------------------------------*/
             /*---------- PROVIDERS FOR CHILDRENS -----------------
-            ---Be careful to add a property/function otherwise it will pollute the whole flow for childrens--
-            */
+                ---Be careful to add a property/function otherwise it will pollute the whole flow for childrens--
+                */
             const provideData: provideDataInterface = {
                 isQueryRunning: isQueryRunning,
             }
@@ -194,6 +229,46 @@
         },
     })
 </script>
+<style lang="less">
+    .insights-tabs {
+        .ant-tabs-nav-container {
+            height: 30px !important;
+        }
+        .ant-tabs-extra-content {
+            line-height: 30px !important;
+        }
+        .ant-tabs-tab {
+            height: 100%;
+            border-radius: 0px !important;
+            margin-right: 0px !important;
+            border-left: 0px !important;
+            border-right: 0px !important;
+            border-top: 0px !important;
+            padding: 0 12px !important;
+            height: 30px !important;
+
+            > div {
+                height: 100%;
+            }
+
+            &.ant-tabs-tab-active {
+                border-bottom: 1px solid !important;
+            }
+            .ant-tabs-close-x {
+                visibility: hidden;
+                transition: none !important;
+            }
+            &:hover {
+                .unsaved-dot {
+                    visibility: hidden;
+                }
+                .ant-tabs-close-x {
+                    visibility: visible !important;
+                }
+            }
+        }
+    }
+</style>
 <style lang="less" scoped>
     .btn {
         border: 1px solid #f06;
@@ -216,6 +291,15 @@
     }
     .children_spiltpanes {
         height: calc(100vh - 19rem);
+    }
+    // .inline_tab {
+    //     max-width: 4.2rem;
+    //     overflow: hidden;
+    //     // min-width: 3rem;
+    // }
+    .inline_tab_label {
+        max-width: 4.2rem;
+        overflow: hidden;
     }
 </style>
 <style lang="less" module>

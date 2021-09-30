@@ -1,19 +1,52 @@
 <template>
     <div class="flex flex-col items-center w-full h-full bg-white">
-        <div class="w-full p-4 border-b-1">
+        <div class="w-full p-4 pb-0 rounded">
             <Connector :connector="connector" @update:data="updateConnector" />
-           <div class="flex flex-row space-x-2">
-                <a-input-search class="rounded mt-2" placeholder="Search" />
-                <a-button class="w-8 h-8 flex mt-2 items-center p-2 rounded">
-                    <AtlanIcon
-                        icon="Filter"
-                    />            
+            <div class="flex flex-row space-x-2">
+                <a-input-search class="mt-2 rounded" placeholder="Search" />
+                <a-button class="flex items-center w-8 h-8 p-2 mt-2 rounded">
+                    <AtlanIcon icon="Filter" />
                 </a-button>
-           </div>
-
+            </div>
         </div>
-        <hr class="w-full" />
-        <div class="w-full h-full mt-4 px-4 overflow-y-auto scrollable-container">
+        <div class="w-full my-4 border-b"></div>
+        <div class="w-full p-4 pt-0">
+            <div class="flex justify-between text-gray-500">
+                <div class="px-3 py-1 rounded shadow">
+                    <span
+                        class="mr-4 cursor-pointer hover:text-primary-400"
+                        :class="
+                            isSelectedType('personal') ? ' text-primary' : ''
+                        "
+                        @click="() => onSelectQueryType('personal')"
+                        >Personal</span
+                    >
+                    <span
+                        class="cursor-pointer hover:text-primary-400"
+                        :class="isSelectedType('all') ? ' text-primary' : ''"
+                        @click="() => onSelectQueryType('all')"
+                        >All</span
+                    >
+                </div>
+                <div class="flex items-center">
+                    <div class="">
+                        <AtlanIcon
+                            icon="NewQuery"
+                            class="h-4 m-0 mr-4 -mt-0.5 hover:text-primary"
+                        />
+                    </div>
+                    <div class="">
+                        <AtlanIcon
+                            icon="NewFolder"
+                            class="h-4 m-0 -mt-0.5 hover:text-primary"
+                        />
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div
+            class="w-full h-full p-3 pt-0 overflow-y-auto scrollable-container"
+        >
             <query-tree
                 :tree-data="treeData"
                 :on-load-data="onLoadData"
@@ -29,7 +62,8 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, inject, Ref, ref, watch } from 'vue'
+    import { defineComponent, inject, Ref, ComputedRef, watch, ref } from 'vue'
+    import { useRouter } from 'vue-router'
     import { SavedQueryInterface } from '~/types/insights/savedQuery.interface'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
     import { useSavedQuery } from '~/components/insights/explorers/composables/useSavedQuery'
@@ -41,25 +75,29 @@
     import Connector from '~/components/insights/common/connector/connectorOnly.vue'
 
     export default defineComponent({
-        components: {QueryTree,Connector},
+        components: { QueryTree, Connector },
         props: {},
-        setup(props, { emit}) {
+        setup(props, { emit }) {
+            const router = useRouter()
             const inlineTabs = inject('inlineTabs') as Ref<
                 activeInlineTabInterface[]
             >
             const activeInlineTab = inject(
                 'activeInlineTab'
-            ) as Ref<activeInlineTabInterface>
+            ) as ComputedRef<activeInlineTabInterface>
+            const savedQueryType: Ref<string> = ref('personal')
             const activeInlineTabKey = inject(
                 'activeInlineTabKey'
             ) as Ref<string>
 
-            const connector = ref(activeInlineTab.value.explorer.schema.connectors.connector);
-
-            const {
-                setConnectorsDataInInlineTab,
-            } = useConnector()
-
+            const { setConnectorsDataInInlineTab, getConnectorName } =
+                useConnector()
+            const connector = ref(
+                getConnectorName(
+                    activeInlineTab.value.explorer.schema.connectors
+                        .attributeValue
+                )
+            )
 
             const savedQueries: SavedQueryInterface[] = [
                 {
@@ -82,6 +120,13 @@
                     result: 'Saved Query 3',
                 },
             ]
+            const isSelectedType = (type: string) => {
+                return savedQueryType.value === type
+            }
+            const onSelectQueryType = (type: string) => {
+                savedQueryType.value = type
+            }
+
             const { openSavedQueryInNewTab } = useSavedQuery(
                 inlineTabs,
                 activeInlineTab,
@@ -96,12 +141,15 @@
             }
 
             const updateConnector = (value: string) => {
-                setConnectorsDataInInlineTab(activeInlineTab, inlineTabs, {
-                        connector: value,
-                        sourceName: undefined,
-                        connection: undefined,
-                        schema: undefined,
-                    }, 'queries')
+                setConnectorsDataInInlineTab(
+                    activeInlineTab,
+                    inlineTabs,
+                    connector,
+                    'queries'
+                )
+            }
+            const pushGuidToURL = (guid: string) => {
+                router.push(`/insights?id=${guid}`)
             }
 
             const {
@@ -115,27 +163,30 @@
                 selectNode,
             } = useQueryTree({
                 emit,
-                openSavedQueryInNewTab
-            });
+                openSavedQueryInNewTab,
+                pushGuidToURL,
+            })
 
             watch(activeInlineTabKey, (newActiveInlineTab) => {
                 selectedKeys.value = [newActiveInlineTab]
             })
-            
+
             watch(activeInlineTab, (newActiveInlineTab) => {
                 if (newActiveInlineTab) {
-                    connector.value = newActiveInlineTab?.explorer?.queries?.connectors
-                                ?.connector
+                    connector.value =
+                        newActiveInlineTab?.explorer?.queries?.connectors?.connector
                 }
             })
 
             return {
+                onSelectQueryType,
+                isSelectedType,
                 isSavedQueryOpened,
                 openSavedQueryInNewTab,
-                savedQueries,
                 connector,
                 updateConnector,
-
+                savedQueryType,
+                savedQueries,
                 treeData,
                 loadedKeys,
                 isInitingTree,

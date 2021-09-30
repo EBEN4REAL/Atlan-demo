@@ -1,6 +1,7 @@
 import { Ref, ref, ComputedRef } from 'vue'
 import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
 import { useInlineTab } from '~/components/insights/common/composables/useInlineTab'
+import { connectorsWidgetInterface } from '~/types/insights/connectorWidget.interface'
 
 export function useConnector() {
     const { modifyActiveInlineTab } = useInlineTab()
@@ -8,63 +9,26 @@ export function useConnector() {
     const setConnectorsDataInInlineTab = (
         activeInlineTab: Ref<activeInlineTabInterface>,
         tabs: Ref<activeInlineTabInterface[]>,
-        connectorsData: {
-            schema: string | undefined
-            sourceName: string | undefined
-            connector: string | undefined
-            connection: string | undefined
-        },
+        connectorsData: Ref<connectorsWidgetInterface> | Ref<any>,
         explorerType: 'schema' | 'queries' = 'schema'
     ) => {
         const activeInlineTabCopy: activeInlineTabInterface = Object.assign(
             {},
             activeInlineTab.value
         )
-        activeInlineTabCopy.explorer[explorerType].connectors.connector =
-            connectorsData.connector
-        if(explorerType === 'schema')
-        {
-            activeInlineTabCopy.explorer[explorerType].connectors.connection =
-                connectorsData.connection
-            activeInlineTabCopy.explorer[explorerType].connectors.selectedDataSourceName =
-                connectorsData.sourceName
-            activeInlineTabCopy.explorer[explorerType].connectors.selectedDefaultSchema =
-                connectorsData.schema
+
+        if (explorerType === 'schema') {
+            activeInlineTabCopy.explorer[explorerType].connectors =
+                connectorsData.value
+        } else {
+            activeInlineTabCopy.explorer.queries.connectors.connector =
+                connectorsData.value
         }
         modifyActiveInlineTab(activeInlineTabCopy, tabs)
 
         console.log(connectorsData, 'Connectors Data')
     }
-    const getConnectorsData = (
-        attributeValue: string
-    ): {
-        schema: string | undefined
-        sourceName: string | undefined
-        connector: string | undefined
-        connection: string | undefined
-    } => {
-        let schema: string | undefined = undefined,
-            sourceName: string | undefined = undefined,
-            connector: string | undefined = undefined,
-            connection: string | undefined = undefined
 
-        const values: string[] = attributeValue.split('/')
-        sourceName = `${values[0]}/${values[1]}/${values[2]}`
-        connection = `${values[0]}/${values[1]}/${values[2]}`
-        connector = `${values[1]}`
-        if (values.length > 3) {
-            // it have schema
-
-            schema = `${values[3]}.${values[4]}`
-        }
-
-        return {
-            connector,
-            connection,
-            schema,
-            sourceName,
-        }
-    }
     //selectedDataSourceName: 'default/snowflake/vqaqufvr-i'
     // databaseQualifiedName:
     // 'default/snowflake/vqaqufvr-i/ATLAN_TRIAL',
@@ -72,37 +36,75 @@ export function useConnector() {
     // schemaQualifiedName:
     //     'default/snowflake/vqaqufvr-i/ATLAN_TRIAL/PUBLIC',
 
-    const getDatabaseQualifiedName = (
-        selectedDataSourceName,
-        selectedDefaultSchema
-    ) => {
-        let schemaValues: string[]
+    const getConnectorName = (attributeValue) => {
+        let attributeValues: string[]
+        let connectorName: string | undefined
+        if (attributeValue) {
+            attributeValues = attributeValue?.split('/')
+            if (attributeValues.length > 0) {
+                connectorName = attributeValues[1]
+            }
+        }
+
+        return connectorName
+    }
+    const getConnectionQualifiedName = (attributeValue) => {
+        let attributeValues: string[]
+        let connectionQualifiedName: string | undefined
+        if (attributeValue) {
+            attributeValues = attributeValue?.split('/')
+            if (attributeValues.length > 1) {
+                connectionQualifiedName = `${attributeValues[0]}/${attributeValues[1]}/${attributeValues[2]}`
+            }
+        }
+
+        return connectionQualifiedName
+    }
+
+    const getDatabaseQualifiedName = (attributeValue) => {
+        let attributeValues: string[]
         let databaseQualifiedName: string | undefined
-        if (selectedDefaultSchema) {
-            schemaValues = selectedDefaultSchema?.split('.')
-            databaseQualifiedName = `${selectedDataSourceName}/${schemaValues[0]}`
+        if (attributeValue) {
+            attributeValues = attributeValue?.split('/')
+            if (attributeValues.length > 2) {
+                databaseQualifiedName = `${attributeValues[0]}/${attributeValues[1]}/${attributeValues[2]}/${attributeValues[3]}`
+            }
         }
         return databaseQualifiedName
     }
-    const getSchemaQualifiedName = (
-        selectedDataSourceName,
-        selectedDefaultSchema
-    ) => {
-        let schemaValues: string[]
-        let schemaQualifiedName: string | undefined
 
-        if (selectedDefaultSchema) {
-            schemaValues = selectedDefaultSchema.split('.')
-            schemaQualifiedName = `${selectedDataSourceName}/${schemaValues[0]}/${schemaValues[1]}`
+    const getSchemaQualifiedName = (attributeValue) => {
+        let attributeValues: string[]
+        let schemaQualifiedName: string | undefined
+        if (attributeValue) {
+            attributeValues = attributeValue?.split('/')
+            if (attributeValues.length > 3) {
+                schemaQualifiedName = `${attributeValues[0]}/${attributeValues[1]}/${attributeValues[2]}/${attributeValues[3]}/${attributeValues[4]}`
+            }
         }
 
         return schemaQualifiedName
     }
+    const getSchemaWithDataSourceName = (attributeValue) => {
+        let attributeValues: string[]
+        // 'ATLAN_TRIAL.PUBLIC' - name
+        let name: string | undefined
+        if (attributeValue) {
+            attributeValues = attributeValue?.split('/')
+            if (attributeValues.length > 3) {
+                name = `${attributeValues[3]}.${attributeValues[4]}`
+            }
+        }
+
+        return name
+    }
 
     return {
+        getSchemaWithDataSourceName,
+        getConnectionQualifiedName,
+        getConnectorName,
         getSchemaQualifiedName,
         getDatabaseQualifiedName,
         setConnectorsDataInInlineTab,
-        getConnectorsData,
     }
 }

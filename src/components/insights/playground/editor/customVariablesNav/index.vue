@@ -1,16 +1,16 @@
 <template>
-    <div class="my-2">
-        <div class="flex py-2 mb-2 overflow-x-auto">
+    <div class="my-2 mb-4">
+        <div class="flex overflow-x-auto">
             <div class="add-variable-btn">
                 <a-button
-                    class="flex items-center justify-between mr-2"
+                    class="flex items-center justify-between mr-2 py-0.5 px-2"
                     @click="addVariable"
                 >
                     <span class="flex items-center justify-center">
                         <fa icon="fal plus" class="" />
                     </span>
                     <p
-                        class="m-0 ml-2"
+                        class="m-0 ml-1"
                         v-if="sqlVariables && sqlVariables?.length == 0"
                     >
                         Add Variable
@@ -156,7 +156,7 @@
         computed,
     } from 'vue'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
-    import { useEditor } from '~/components/insights/playground/common/composables/useEditor'
+    import { useEditor } from '~/components/insights/common/composables/useEditor'
     import { editor } from 'monaco-editor'
     import { CustomVaribaleInterface } from '~/types/insights/customVariable.interface'
     import { useInlineTab } from '~/components/insights/common/composables/useInlineTab'

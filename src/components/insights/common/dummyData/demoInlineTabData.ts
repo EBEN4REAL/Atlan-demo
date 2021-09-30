@@ -3,15 +3,20 @@ export const inlineTabsDemoData: activeInlineTabInterface[] = [
     {
         key: '1',
         label: 'ABCDE',
-        isSaved: true,
-        queryId: 'abcd-01-01',
+        isSaved: false,
+        queryId: undefined,
+        status: 'draft',
         explorer: {
             schema: {
                 connectors: {
-                    connection: 'default/snowflake/vqaqufvr-i',
+                    attributeName: 'schemaQualifiedName',
+                    attributeValue:
+                        'default/snowflake/vqaqufvr-i/ATLAN_TRIAL/PUBLIC',
+                },
+            },
+            queries: {
+                connectors: {
                     connector: 'snowflake',
-                    selectedDefaultSchema: 'ATLAN_TRIAL.PUBLIC',
-                    selectedDataSourceName: 'default/snowflake/vqaqufvr-i',
                 },
             },
         },
@@ -49,13 +54,18 @@ export const inlineTabsDemoData: activeInlineTabInterface[] = [
         label: 'ADBE',
         isSaved: false,
         queryId: undefined,
+        status: 'draft',
         explorer: {
             schema: {
                 connectors: {
-                    connection: 'default/snowflake/vqaqufvr-i',
+                    attributeName: 'schemaQualifiedName',
+                    attributeValue:
+                        'default/snowflake/vqaqufvr-i/ATLAN_TRIAL/PUBLIC',
+                },
+            },
+            queries: {
+                connectors: {
                     connector: 'snowflake',
-                    selectedDefaultSchema: 'ATLAN_TRIAL.PUBLIC',
-                    selectedDataSourceName: 'default/snowflake/vqaqufvr-i',
                 },
             },
         },
@@ -93,13 +103,18 @@ export const inlineTabsDemoData: activeInlineTabInterface[] = [
         label: 'BCDE',
         isSaved: false,
         queryId: undefined,
+        status: 'draft',
         explorer: {
             schema: {
                 connectors: {
-                    connection: 'default/snowflake/vqaqufvr-i',
+                    attributeName: 'schemaQualifiedName',
+                    attributeValue:
+                        'default/snowflake/vqaqufvr-i/ATLAN_TRIAL/PUBLIC',
+                },
+            },
+            queries: {
+                connectors: {
                     connector: 'snowflake',
-                    selectedDefaultSchema: 'ATLAN_TRIAL.PUBLIC',
-                    selectedDataSourceName: 'default/snowflake/vqaqufvr-i',
                 },
             },
         },

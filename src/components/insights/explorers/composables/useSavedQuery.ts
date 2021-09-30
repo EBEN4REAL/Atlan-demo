@@ -1,9 +1,12 @@
-import { Ref } from 'vue'
+import { Ref, ComputedRef, ref, toRaw } from 'vue'
 import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
 import { useLocalStorageSync } from '~/components/insights/common/composables/useLocalStorageSync'
-import { SavedQueryInterface } from '~/types/insights/savedQuery.interface'
 import { useInlineTab } from '~/components/insights/common/composables/useInlineTab'
 import { SavedQuery } from '~/types/insights/savedQuery.interface'
+import { decodeQuery as decodeBase64Data } from '~/utils/helper/routerHelper'
+import { CustomVaribaleInterface } from '~/types/insights/customVariable.interface'
+import { generateUUID } from '~/utils/helper/generator'
+import { message } from 'ant-design-vue'
 
 export function useSavedQuery(
     tabsArray: Ref<activeInlineTabInterface[]>,
@@ -12,43 +15,52 @@ export function useSavedQuery(
     treeSelectedKeys?: Ref<string[]>
 ) {
     const { syncInlineTabsInLocalStorage } = useLocalStorageSync()
-    const { isInlineTabAlreadyOpened, inlineTabAdd } = useInlineTab(treeSelectedKeys)
+    const { isInlineTabAlreadyOpened, inlineTabAdd } =
+        useInlineTab(treeSelectedKeys)
+    const openSavedQueryInNewTab = async (savedQuery: SavedQuery) => {
+        /* --------NOTE- TEMPERORY FIX-------*/
+        const defaultSchemaQualifiedNameValues =
+            savedQuery.attributes.defaultSchemaQualifiedName?.split('.') ?? [
+                'schemaQualifiedName',
+                'default/snowflake/vqaqufvr-i/ATLAN_TRIAL/PUBLIC',
+            ]
+        /* --------NOTE- TEMPERORY FIX-------*/
 
-    const openSavedQueryInNewTab = (savedQuery: SavedQuery) => {
         const newTab: activeInlineTabInterface = {
             label: savedQuery.attributes.name,
             key: savedQuery.attributes.qualifiedName,
             favico: 'https://atlan.com/favicon.ico',
             isSaved: true,
-            queryId: savedQuery.attributes.qualifiedName,
+            queryId: savedQuery.guid,
+            status: savedQuery.attributes.assetStatus as string,
             explorer: {
                 schema: {
                     connectors: {
-                        connection: savedQuery.attributes.connectionQualifiedName,
-                        connector: 'snowflake',
-                        selectedDefaultSchema: 'ATLAN_TRIAL.PUBLIC',
-                        selectedDataSourceName: 'default/snowflake/vqaqufvr-i',
+                        attributeName: defaultSchemaQualifiedNameValues[0],
+                        attributeValue: defaultSchemaQualifiedNameValues[1],
                     },
                 },
                 queries: {
                     connectors: {
-                        connector: savedQuery.attributes.integrationName
-                    }
-                }
+                        connector: savedQuery.attributes.integrationName,
+                    },
+                },
             },
             playground: {
                 editor: {
                     text: savedQuery.attributes.rawQuery,
                     dataList: [],
                     columnList: [],
-                    variables: [],
+                    variables: decodeBase64Data(
+                        savedQuery.attributes.variablesSchemaBase64
+                    ) as CustomVaribaleInterface[],
                 },
                 resultsPane: {
                     activeTab:
                         activeInlineTab.value?.playground.resultsPane
                             .activeTab ?? 0,
                     result: {
-                        title: savedQuery.attributes.name ?? '',
+                        title: savedQuery.attributes.name,
                     },
                     metadata: {},
                     queries: {},
@@ -68,15 +80,18 @@ export function useSavedQuery(
                 id: activeInlineTab.value?.assetSidebar.id ?? '',
             },
         }
-        if (!isInlineTabAlreadyOpened(newTab)) {
-            inlineTabAdd(newTab, tabsArray, activeInlineTabKey)
+        if (!isInlineTabAlreadyOpened(newTab, tabsArray)) {
+            console.log('not opened')
             activeInlineTabKey.value = newTab.key
+            inlineTabAdd(newTab, tabsArray, activeInlineTabKey)
             // syncying inline tabarray in localstorage
             syncInlineTabsInLocalStorage(tabsArray.value)
         } else {
             // show user that this tab is already opened
+            activeInlineTabKey.value = newTab.key
         }
     }
+
     return {
         openSavedQueryInNewTab,
     }

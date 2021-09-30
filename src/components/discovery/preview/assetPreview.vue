@@ -260,6 +260,13 @@
                 emit('assetMutation', updatedAsset)
             })
 
+            provide('switchTab', (tabName: string) => {
+                const idx = filteredTabs.value.findIndex(
+                    (tl) => tl.name === tabName
+                )
+                if (idx > -1) activeKey.value = idx
+            })
+
             watch(page, () => {
                 if (activeKey.value > filteredTabs.value.length)
                     activeKey.value = 0

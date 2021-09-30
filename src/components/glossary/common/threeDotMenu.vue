@@ -299,6 +299,34 @@
                             />
                         </a-menu-item>
                     </a-sub-menu>
+                    <a-sub-menu v-if="entity?.typeName === 'AtlasGlossaryTerm'" key="categories">
+                        <template #title>
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center justify-between">
+                                    <AtlanIcon
+                                        icon="Category"
+                                        class="m-0 mr-2"
+                                    />
+                                    <p class="p-0 m-0">Categories</p>
+                                </div>
+                                <AtlanIcon
+                                    class="pt-1 ml-4 transform -rotate-90"
+                                    icon="ChevronDown"
+                                />
+                            </div>
+                        </template>
+                        <template #expandIcon><div></div> </template>
+                        <a-menu-item>
+                    <Categories     
+                        :glossaryQualifiedName="entity.attributes?.anchor?.uniqueAttributes?.qualifiedName"
+                        :categories="entity.attributes.categories"
+                        :termGuid="entity.guid"
+                        :term="entity"
+                        mode="threeDotMenu"
+                        @updateCategories="updateSelectedCategories"
+                    />
+                        </a-menu-item>
+                    </a-sub-menu>
                     <a-menu-divider />
                     <a-menu-item key="archive" class="text-red-700">
                         <a-button
@@ -369,6 +397,8 @@
     import Owners from '@/glossary/common/owners.vue'
     import Status from '@/glossary/common/status.vue'
     import AddGtcModal from '@/glossary/common/addGtcModal.vue'
+    import Categories from '@/glossary/common/categories.vue'
+
     // utils
     import { copyToClipboard } from '~/utils/clipboard'
     import assetTypeLabel from '@/glossary/constants/assetTypeLabel'
@@ -382,7 +412,7 @@
     } from '~/types/glossary/glossary.interface'
 
     export default defineComponent({
-        components: { Status, Owners, StatusBadge, AddGtcModal },
+        components: { Status, Owners, StatusBadge, AddGtcModal, Categories },
         props: {
             entity: {
                 type: Object as PropType<Glossary | Category | Term>,

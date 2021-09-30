@@ -1,5 +1,5 @@
 <template>
-    <div :class="$style.categories">
+    <div  v-if="mode !== 'threeDotMenu'" :class="$style.categories">
         <p v-if="mode === 'edit'" class="mb-1 text-sm text-gray-500">Categories</p>
         <div class="flex flex-wrap items-center" >
 
@@ -58,6 +58,23 @@
                     </div>
                 </template>
             </a-popover>            
+        </div>
+    </div>
+    <div v-if="mode === 'threeDotMenu'" :class="$style.popover">
+        <div class="flex flex-col overflow-y-auto max-h-56 w-56">
+            <a-tree-select
+                v-model:value="selectedCategories"
+                tree-data-simple-mode
+                tree-checkable
+                :tree-data="treeData"
+                placeholder="Search categories"
+                :treeCheckStrictly="true"
+                :dropdown-style="{ maxHeight: '350px', overflow: 'auto', maxWidth: '220px' }"
+            />
+            <div class="flex flex-row space-x-4 mt-4">
+                <a-button class="popover-button" :class="$style.popoverButton" @click="cancelCategoriesUpdate">Cancel</a-button>
+                <a-button class="popover-button" :class="$style.popoverButton" @click="handleUpdate" :loading="isUpdateButtonLoading" type="primary" >Update</a-button>
+            </div>
         </div>
     </div>
 </template>
@@ -155,7 +172,7 @@ export default defineComponent({
         }
         const handleUpdate = () => {
             const newCategories = selectedCategories.value.map((category) => ({ categoryGuid: category.value }));
-            if(props.mode === 'edit' && props.term) {
+            if((props.mode === 'edit' || props.mode === 'threeDotMenu' )&& props.term) {
                 const { data: updateData, updateEntity } = useUpdateGtcEntity()
                 isUpdateButtonLoading.value = true
 

@@ -92,7 +92,7 @@
                         :glossaryQualifiedName="glossaryQualifiedName"
                         :categories="mode === 'create' ? categoryId ? [{guid: categoryId}] : [] : entity.attributes.categories"
                         :termGuid="mode === 'create' ? '' : entity.guid"
-                        :term="mode === 'create' ? {} : entity.guid"
+                        :term="mode === 'create' ? {} : entity"
                         mode="create"
                         @updateCategories="updateSelectedCategories"
                     />

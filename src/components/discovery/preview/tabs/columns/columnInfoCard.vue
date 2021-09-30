@@ -1,5 +1,5 @@
 <template>
-    <a-popover placement="left">
+    <a-popover placement="left" mouseEnterDelay="0.3">
         <template #content>
             <div class="flex flex-col gap-y-1">
                 <div class="flex items-center">

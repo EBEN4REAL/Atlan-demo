@@ -2,6 +2,7 @@
     <div class="w-full px-5">
         <!-- <Terms :selectedAsset="selectedAsset" /> -->
         <Classification :selected-asset="selectedAsset" />
+        <LinkTerms :selected-asset="selectedAsset" />
         <!-- <BusinessMetaData :selectedAsset="selectedAsset" /> -->
     </div>
 </template>
@@ -10,11 +11,12 @@
     import { defineComponent, PropType, toRefs, watch } from 'vue'
     // import Terms from './terms.vue'
     import Classification from '@common/sidebar/classifications.vue'
+    import LinkTerms from '@common/sidebar/linkTerms.vue'
     // import BusinessMetaData from './businessMetadataContainer.vue'
     import { assetInterface } from '~/types/assets/asset.interface'
 
     export default defineComponent({
-        components: { Classification },
+        components: { Classification, LinkTerms },
         props: {
             selectedAsset: {
                 type: Object as PropType<assetInterface>,

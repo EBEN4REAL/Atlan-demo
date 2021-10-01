@@ -129,6 +129,7 @@
         Ref,
         defineAsyncComponent,
         ref,
+        watch,
         ComputedRef,
         reactive,
         computed,
@@ -172,8 +173,11 @@
 
             const { queryRun } = useRunQuery()
             const { getParsedQuery } = useEditor()
-            const { modifyActiveInlineTabEditor, modifyActiveInlineTab } =
-                useInlineTab()
+            const {
+                modifyActiveInlineTabEditor,
+                modifyActiveInlineTab,
+                isTwoInlineTabsEqual,
+            } = useInlineTab()
             const { getConnectorName, getConnectionQualifiedName } =
                 useConnector()
             const { username } = whoami()
@@ -299,6 +303,7 @@
                                 activeInlineTabCopy,
                                 inlineTabs
                             )
+                            isUpdateEnabled.value = false
                             const guid =
                                 data.value.mutatedEntities.CREATE[0].guid
                             console.log(data.value, 'saved')
@@ -365,7 +370,32 @@
             }
             useProvide(provideData)
             /*-------------------------------------*/
+
+            /* Watcher for save->unsave */
+            watch(activeInlineTab, (newActiveInlineTab) => {
+                console.log(
+                    activeInlineTab.value,
+                    newActiveInlineTab,
+                    'compare'
+                )
+                if (activeInlineTab.value.isSaved) {
+                    if (
+                        activeInlineTab.value.queryId ===
+                        newActiveInlineTab.queryId
+                    ) {
+                        if (
+                            !isTwoInlineTabsEqual(
+                                activeInlineTab.value,
+                                newActiveInlineTab
+                            )
+                        ) {
+                            isUpdateEnabled.value = true
+                        }
+                    }
+                }
+            })
             return {
+                isUpdateEnabled,
                 isUpdating,
                 showcustomToolBar,
                 modalAction,

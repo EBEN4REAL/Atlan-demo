@@ -8,16 +8,6 @@
             :placeholder="`Search ${colCount} columns`"
         >
             <template #filter>
-                <div class="flex items-center justify-between mb-2 text-sm">
-                    <span>Data type</span>
-                    <a-spin size="small" v-if="isAggregateLoading" />
-                    <span
-                        v-else
-                        class="text-gray-500 cursor-pointer hover:text-gray"
-                        @click="clearAllFilters"
-                        >Clear</span
-                    >
-                </div>
                 <DataTypes
                     v-model:filters="filters"
                     @update:filters="handleFilterChange"
@@ -64,12 +54,7 @@
                     <div>
                         <AtlanIcon
                             icon="ChevronDown"
-                            class="
-                                text-gray-500
-                                transition-transform
-                                duration-300
-                                transform
-                            "
+                            class="text-gray-500 transition-transform duration-300 transform "
                             :class="isActive ? '-rotate-180' : 'rotate-0'"
                         />
                     </div>
@@ -98,32 +83,13 @@
         <div v-if="isLoadMore" class="flex items-center justify-center">
             <button
                 :disabled="isLoading"
-                class="
-                    flex
-                    items-center
-                    justify-between
-                    py-2
-                    transition-all
-                    duration-300
-                    bg-white
-                    rounded-full
-                    text-primary
-                "
+                class="flex items-center justify-between py-2 transition-all duration-300 bg-white rounded-full  text-primary"
                 :class="isLoading ? 'px-2 w-9' : 'px-5 w-32'"
                 @click="loadMore"
             >
                 <template v-if="!isLoading">
                     <p
-                        class="
-                            m-0
-                            mr-1
-                            overflow-hidden
-                            text-sm
-                            transition-all
-                            duration-300
-                            overflow-ellipsis
-                            whitespace-nowrap
-                        "
+                        class="m-0 mr-1 overflow-hidden text-sm transition-all duration-300  overflow-ellipsis whitespace-nowrap"
                     >
                         Load more
                     </p>
@@ -220,17 +186,13 @@
 
             const propagateToColumnList = () => {}
 
-            const clearAllFilters = () => {
-                filters.value = []
-                reFetch()
-            }
-
             const clearFiltersAndSearch = () => {
                 filters.value = []
                 queryText.value = ''
                 reFetch()
             }
-            const handleFilterChange = () => {
+            const handleFilterChange = (payload: any) => {
+                filters.value = payload
                 reFetch()
             }
 
@@ -250,7 +212,7 @@
                 queryText,
                 dataTypeMap,
                 dataTypeImage,
-                clearAllFilters,
+
                 isLoading,
                 isAggregateLoading,
                 dataTypeList,

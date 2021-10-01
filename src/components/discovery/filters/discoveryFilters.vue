@@ -35,26 +35,16 @@
             class="relative bg-transparent"
             :class="$style.filter"
         >
-            <template #expandIcon="{ isActive }">
-                <div class="">
-                    <AtlanIcon
-                        icon="ChevronDown"
-                        class="ml-1 text-gray-500 transition-transform duration-300 transform "
-                        :class="isActive ? '-rotate-180' : 'rotate-0'"
-                    />
-                </div>
-            </template>
             <a-collapse-panel
                 v-for="item in dynamicList"
                 :key="item.id"
                 class="relative group"
+                :show-arrow="false"
             >
                 <template #header>
-                    <div :key="dirtyTimestamp" class="mr-8 select-none">
-                        <div
-                            class="flex items-center justify-between align-middle "
-                        >
-                            <div class="flex flex-col flex-1">
+                    <div :key="dirtyTimestamp" class="select-none">
+                        <div class="flex flex-col flex-1">
+                            <div class="flex items-center">
                                 <span class="text-xs uppercase text-gray">
                                     <img
                                         v-if="item.image"
@@ -63,20 +53,28 @@
                                     />
                                     {{ item.label }}</span
                                 >
-                                <div
-                                    v-if="!activeKey.includes(item.id)"
-                                    class="text-gray-500"
+                                <AtlanIcon
+                                    icon="ChevronDown"
+                                    class="ml-3 text-gray-500 transition-transform duration-300 transform "
+                                    :class="
+                                        activeKey.includes(item.id)
+                                            ? '-rotate-180'
+                                            : 'rotate-0'
+                                    "
+                                />
+                                <span
+                                    v-if="isFilterApplied(item.id)"
+                                    class="ml-auto text-xs text-gray-500 opacity-0  hover:text-primary group-hover:opacity-100"
+                                    @click.stop.prevent="handleClear(item.id)"
                                 >
-                                    {{ getFiltersAppliedString(item.id) }}
-                                </div>
+                                    Clear
+                                </span>
                             </div>
-
                             <div
-                                v-if="isFilterApplied(item.id)"
-                                class="text-xs text-gray-500 opacity-0  hover:text-primary group-hover:opacity-100"
-                                @click.stop.prevent="handleClear(item.id)"
+                                v-if="!activeKey.includes(item.id)"
+                                class="text-gray-500"
                             >
-                                Clear
+                                {{ getFiltersAppliedString(item.id) }}
                             </div>
                         </div>
                     </div>

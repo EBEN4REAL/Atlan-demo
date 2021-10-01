@@ -71,7 +71,7 @@
         </div>
 
         <div id="sidePanel" class="relative w-1/3 h-full">
-            <SidePanel :entity="category" :top-terms="categoryTerms" />
+            <SidePanel :entity="category" />
         </div>
     </div>
 </template>
@@ -97,7 +97,7 @@
 
     // composables
     import useGTCEntity from '~/components/glossary/composables/useGtcEntity'
-    import useCategoryTerms from '~/components/glossary/composables/useCategoryTerms'
+    // import useCategoryTerms from '~/components/glossary/composables/useCategoryTerms'
     import useUpdateGtcEntity from '~/components/glossary/composables/useUpdateGtcEntity'
 
     // static
@@ -143,12 +143,12 @@
                 refetch,
             } = useGTCEntity<Category>('category', guid, guid.value)
 
-            const {
-                data: categoryTerms,
-                error: termsError,
-                isLoading: termsLoading,
-                fetchCategoryTermsPaginated,
-            } = useCategoryTerms()
+            // const {
+            //     data: categoryTerms,
+            //     error: termsError,
+            //     isLoading: termsLoading,
+            //     fetchCategoryTermsPaginated,
+            // } = useCategoryTerms()
 
             const { data: updatedEntity, updateEntity } = useUpdateGtcEntity()
 
@@ -199,15 +199,15 @@
             }
 
             // lifecycle methods and watchers
-            onMounted(() => {
-                fetchCategoryTermsPaginated({ guid: guid.value, offset: 0 })
-            })
+            // onMounted(() => {
+            //     fetchCategoryTermsPaginated({ guid: guid.value, offset: 0 })
+            // })
 
             watch(guid, (newGuid) => {
-                fetchCategoryTermsPaginated({
-                    guid: newGuid,
-                    refreshSamePage: true,
-                })
+                // fetchCategoryTermsPaginated({
+                //     guid: newGuid,
+                //     refreshSamePage: true,
+                // })
                 newName.value = ''
             })
 
@@ -221,7 +221,7 @@
 
             return {
                 category,
-                categoryTerms,
+                // categoryTerms,
                 currentTab,
                 previewEntity,
                 showPreviewPanel,
@@ -233,7 +233,7 @@
                 qualifiedName,
                 error,
                 isLoading,
-                termsLoading,
+                // termsLoading,
                 guid,
                 statusObject,
                 isNewCategory,

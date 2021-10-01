@@ -22,7 +22,7 @@ const useCreateGlossary = () => {
 
     const { username } = whoami()
 
-    const refetchGlossaryTree = inject<(guid: string | 'root') => void>(
+    const refetchGlossaryTree = inject<(guid: string | 'root', refetchEntityType?: 'category' | 'term') => void>(
         'refetchGlossaryTree'
     )
 
@@ -147,7 +147,8 @@ const useCreateGlossary = () => {
                     refetchGlossaryTree(
                         parentCategoryGuid || parentCategoryGuid !== ''
                             ? parentCategoryGuid
-                            : 'root'
+                            : 'root',
+                            'category'
                     )
                 }
             }
@@ -176,7 +177,8 @@ const useCreateGlossary = () => {
         description?: string,
         status?: string,
         ownerUsers?: string,
-        ownerGroups?: string
+        ownerGroups?: string,
+        categories?: {categoryGuid: string}[]
     ) => {
         body.value = {
             name: title ?? generateUUID(),
@@ -196,6 +198,9 @@ const useCreateGlossary = () => {
                     categoryGuid: parentCategoryGuid,
                 },
             ]
+        }
+        if(categories) {
+            body.value.categories = categories;
         }
 
         const {
@@ -223,7 +228,8 @@ const useCreateGlossary = () => {
                     refetchGlossaryTree(
                         parentCategoryGuid || parentCategoryGuid !== ''
                             ? parentCategoryGuid
-                            : 'root'
+                            : 'root',
+                            'term'
                     )
                 }
             }

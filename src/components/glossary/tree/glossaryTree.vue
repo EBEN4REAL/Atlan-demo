@@ -257,7 +257,7 @@
                 </div>
                 <div
                     v-if="treeData.length"
-                    class="h-full py-2 pb-48 pl-4 pr-2 overflow-y-auto"
+                    class="py-2 pl-4 pr-2 overflow-x-hidden overflow-y-auto  scrollable-container"
                     :class="$style.treeStyles"
                 >
                     <a-tree
@@ -350,7 +350,9 @@
                                                             .glossaryGuid,
                                                         uniqueAttributes: {
                                                             qualifiedName:
-                                                                parentGlossary?.qualifiedName,
+                                                                parentGlossary
+                                                                    ?.attributes
+                                                                    ?.qualifiedName,
                                                         },
                                                     },
                                                     name: entity.name,
@@ -460,19 +462,6 @@
                             </div>
                         </div>
                     </div>
-                </div>
-                <div
-                    v-else-if="
-                        searchQuery?.length &&
-                        !searchResults?.length &&
-                        !searchLoading
-                    "
-                    class="px-4"
-                >
-                    No results
-                </div>
-                <div v-else class="mt-4">
-                    <LoadingView />
                 </div>
             </div>
             <div
@@ -617,7 +606,7 @@
             const home = toRef(props, 'isHome')
             const parentGlossary = toRef(props, 'parentGlossary')
             const currentGlossaryGuid = ref<string>(
-                parentGlossary.value?.guid ?? ''
+                parentGlossary.value?.guid ?? 'all'
             )
             const glossaryContextDropdown = computed(() => {
                 const list = props.glossaryList.map((glossary) => ({
@@ -763,7 +752,10 @@
                 @apply bg-opacity-100 !important;
             }
         }
+
         .treeStyles {
+            max-height: calc(100vh - 11rem) !important;
+
             :global(.ant-tree-switcher) {
                 @apply pt-1;
             }

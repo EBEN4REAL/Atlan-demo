@@ -72,7 +72,7 @@
             &:hover {
                 @apply bg-opacity-90;
             }
-            &:focus {
+            &:focus-visible {
                 @apply ring-2 ring-primary-focus;
             }
             &:active {
@@ -88,7 +88,7 @@
             &:hover {
                 @apply opacity-90;
             }
-            &:focus {
+            &:focus-visible {
                 @apply ring-2 ring-primary-focus;
             }
             &:active {
@@ -104,7 +104,7 @@
             &:hover {
                 @apply opacity-90;
             }
-            &:focus {
+            &:focus-visible {
                 @apply ring-2 ring-primary-focus;
             }
             &:active {

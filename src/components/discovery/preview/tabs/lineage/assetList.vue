@@ -26,10 +26,6 @@
                                     {{ asset.displayText }}
                                 </div>
                             </div>
-                            <img
-                                :src="imgSrc(asset.source)"
-                                class="w-auto h-3"
-                            />
                         </td>
                     </router-link>
                 </tr>
@@ -42,7 +38,6 @@
     // Vue
     import { defineComponent } from 'vue'
     // Constants
-    import { SourceList } from '~/constant/source'
 
     export default defineComponent({
         name: 'LineagePreviewTabAssetList',
@@ -53,18 +48,7 @@
             },
         },
         setup() {
-            /** METHODS */
-            const imgSrc = (source: string) => {
-                const item = SourceList.find(
-                    (src) => src.id === source.toLowerCase()
-                )
-                return item?.image || ''
-            }
-
-            return {
-                imgSrc,
-                SourceList,
-            }
+            return {}
         },
     })
 </script>

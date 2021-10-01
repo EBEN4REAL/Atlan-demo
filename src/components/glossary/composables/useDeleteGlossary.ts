@@ -9,7 +9,7 @@ const useDeleteGlossary = () => {
     const isLoading = ref<boolean | null>();
     const router = useRouter()
     
-    const refetchGlossaryTree = inject<(guid: string | 'root') => void>('refetchGlossaryTree')
+    const refetchGlossaryTree = inject<(guid: string | 'root', refetchEntityType?: 'term' | 'category') => void>('refetchGlossaryTree')
 
     const redirectAfterDelete = (type: 'glossary' | 'category' | 'term', guid: string) => {
         error.value = null;
@@ -38,6 +38,8 @@ const useDeleteGlossary = () => {
             error.value = newError;
             isLoading.value = newLoading;
         });
+
+        return { data, deleteError }
     };
 
 
@@ -49,15 +51,6 @@ const useDeleteGlossary = () => {
             }
         });
 
-        // watch(data, (newData) => {
-        //     if(newData?.guid){
-        //         redirectAfterDelete('category', newData.guid)
-        //     }
-        // });
-        if (refetchGlossaryTree) {
-            // TODO: replace with immediate parent guid instead of parentGlossaryGuid
-            refetchGlossaryTree('root')
-        }
         if(redirect && parentGlossaryGuid) { 
             redirectAfterDelete('category', parentGlossaryGuid)
         }
@@ -65,6 +58,8 @@ const useDeleteGlossary = () => {
             error.value = newError;
             isLoading.value = newLoading
         });
+
+        return { data, deleteError }
     };
 
 
@@ -77,15 +72,6 @@ const useDeleteGlossary = () => {
             }
         });
 
-        // watch(data, (newData) => {
-            // if(newData?.guid){
-            //     redirectAfterDelete('term', newData.guid)
-            // }
-        // });
-        if (refetchGlossaryTree) {
-            // TODO: replace with immediate parent guid instead of parentGlossaryGuid
-            refetchGlossaryTree('root')
-        }
         if(redirect && parentGlossaryGuid) {
             redirectAfterDelete('term', parentGlossaryGuid)
         }
@@ -94,6 +80,8 @@ const useDeleteGlossary = () => {
             error.value = newError;
             isLoading.value = newLoading;
         });
+
+        return { data, deleteError }
     };
 
     return {

@@ -21,7 +21,8 @@ type Filters = {
 }
 export default function useGtcSearch(
     qualifiedName: ComputedRef<string>,
-    dependantFetchingKey?: Ref<any>
+    dependantFetchingKey?: Ref<any>,
+    type?: 'AtlasGlossaryCategory' | 'AtlasGlossaryTerm'
 ) {
     const requestQuery = ref<string>()
     const offsetLocal = ref(0)
@@ -63,6 +64,7 @@ export default function useGtcSearch(
                 'shortDescription',
                 'parentCategory',
                 'categories',
+                'childrenCategories',
                 'pageviewCount',
                 'anchor',
                 'ownerUsers',
@@ -96,7 +98,11 @@ export default function useGtcSearch(
         }
 
         if (qualifiedName && qualifiedName.value) {
-            body.value.typeName = 'AtlasGlossaryTerm,AtlasGlossaryCategory'
+            if (type === 'AtlasGlossaryCategory')
+                body.value.typeName = 'AtlasGlossaryCategory'
+            else if (type === 'AtlasGlossaryTerm')
+                body.value.typeName = 'AtlasGlossaryTerm'
+            else body.value.typeName = 'AtlasGlossaryTerm,AtlasGlossaryCategory'
             body.value.entityFilters = {
                 condition: 'AND',
                 criterion: [
@@ -135,7 +141,7 @@ export default function useGtcSearch(
         entities.value.filter(
             (entity) => entity.typeName === 'AtlasGlossaryCategory'
         )
-    )
+    ) as ComputedRef<Category[]>
     const glossaries = computed(() =>
         entities.value.filter((entity) => entity.typeName === 'AtlasGlossary')
     )

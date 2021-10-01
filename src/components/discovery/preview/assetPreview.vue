@@ -252,7 +252,7 @@
             const isColumnAsset = (asset) => assetType(asset) === 'Column'
 
             const getColumnUrl = (asset) => {
-                const tableGuid = asset.attributes?.table.guid
+                const tableGuid = asset.attributes?.table?.guid
                 return `/assets/${tableGuid}/overview?column=${asset?.guid}`
             }
 

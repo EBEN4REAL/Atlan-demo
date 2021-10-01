@@ -1,7 +1,7 @@
 <template>
     <div>
         <!-- Search and Filter -->
-        <div class="mb-4">
+        <div class="w-1/2 mb-3">
             <SearchAndFilter
                 v-model:value="queryText"
                 :autofocus="true"
@@ -31,11 +31,12 @@
             <a-table
                 :columns="columns"
                 :data-source="columnsData.filteredList"
-                :scroll="{ y: 240 }"
+                :scroll="{ y: 300 }"
                 :pagination="false"
                 :loading="isLoading"
                 :custom-row="customRow"
                 :row-class-name="rowClassName"
+                size="small"
             >
                 <!-- hash_index col -->
                 <template #hash_index="{ text, record }">
@@ -60,8 +61,11 @@
                                 class="w-4 h-4 mr-3"
                             ></component>
                             <Tooltip :tooltip-text="text" />
+                            <div v-if="record.is_primary" class="mb-1 ml-2">
+                                <AtlanIcon icon="Pin" />
+                            </div>
                         </div>
-                        <div v-if="record.is_primary" class="">
+                        <div v-if="record.is_primary">
                             <AtlanIcon icon="PrimaryKey" />
                         </div>
                     </div>
@@ -76,7 +80,7 @@
                 </template>
             </a-table>
             <div
-                v-if="list.length <= 0 && !isLoading"
+                v-if="columnsList.length <= 0 && !isLoading"
                 class="flex items-center justify-center mt-3"
             >
                 <a-button @click="clearFiltersAndSearch"
@@ -144,7 +148,6 @@
     import DataTypes from '@common/facets/dataType.vue'
     import SearchAndFilter from '@/common/input/searchAndFilter.vue'
 
-    import preferences from './preferences.vue'
     import Tooltip from '@/common/ellipsis/index.vue'
     import AssetPreview from '@/discovery/preview/assetPreview.vue'
 
@@ -159,15 +162,8 @@
     // Interfaces
     import { assetInterface } from '~/types/assets/asset.interface'
 
-    import {
-        BasicSearchAttributes,
-        ColumnAttributes,
-    } from '~/constant/projection'
-    import { useBusinessMetadataStore } from '~/store/businessMetadata'
-
     export default defineComponent({
         components: {
-            preferences,
             SearchAndFilter,
             Tooltip,
             AssetPreview,
@@ -176,13 +172,12 @@
         setup() {
             /** DATA */
             const columnsData = ref({})
-            const columnPreviewData = ref({})
             const selectedRow = ref(null)
             const selectedRowData = ref({})
             const showColumnPreview = ref<boolean>(false)
             const queryText = ref('')
             const filters: Ref<string[]> = ref([])
-            const dataTypeFilters = ref([])
+            const columnsList: Ref<assetInterface[]> = ref([])
 
             const { columnCount } = useAssetInfo()
 
@@ -208,7 +203,11 @@
                     pinned: false,
                 })
 
-            const { dataTypeMap, isAggregateLoading, refreshAggregation } =
+            const { list: pinnedList } = useColumnsList(assetQualifiedName, {
+                pinned: true,
+            })
+
+            const { dataTypeMap, isAggregateLoading } =
                 useColumnAggregation(assetQualifiedName)
 
             const handleSearchChange = useDebounceFn(() => {
@@ -265,7 +264,9 @@
 
             // filterColumnsList
             const filterColumnsList = () => {
-                const filteredListData = list.value.map((i) => ({
+                columnsList.value = [...pinnedList.value, ...list.value]
+
+                const filteredListData = columnsList.value.map((i) => ({
                     key: i.attributes.order,
                     hash_index: i.attributes.order,
                     column_name: i.attributes.name,
@@ -277,15 +278,13 @@
                         '---',
                     popularity: i.attributes.popularityScore || 8,
                 }))
-                columnPreviewData.value = { list }
-
                 columnsData.value = {
                     filteredList: filteredListData,
                 }
 
                 // If redirected from asset column discovery
                 if (column.value !== '') {
-                    list.value?.forEach((singleRow: {}) => {
+                    columnsList.value?.forEach((singleRow) => {
                         if (singleRow.guid === column.value) {
                             openColumnSidebar(singleRow.attributes.order)
                         }
@@ -303,7 +302,7 @@
             }
             const openColumnSidebar = (columnOrder) => {
                 selectedRow.value = columnOrder
-                list.value.forEach((singleRow: {}) => {
+                columnsList.value.forEach((singleRow) => {
                     if (singleRow.attributes.order === columnOrder) {
                         selectedRowData.value = singleRow
                     }
@@ -329,13 +328,13 @@
             }
 
             // rowClassName Antd
-            const rowClassName = (record: { key: null }, index: any) =>
+            const rowClassName = (record: { key: null }) =>
                 record.key === selectedRow.value
                     ? 'bg-primary-light'
                     : 'bg-transparent'
 
             /** WATCHERS */
-            watch(list, () => {
+            watch([list, pinnedList], () => {
                 filterColumnsList()
             })
 
@@ -354,7 +353,7 @@
                 handleCloseColumnSidebar,
                 propagateToColumnList,
                 isAggregateLoading,
-                list,
+                columnsList,
                 selectedRow,
                 columnsData,
                 queryText,
@@ -369,11 +368,6 @@
                         dataIndex: 'hash_index',
                         slots: { customRender: 'hash_index' },
                         key: 'hash_index',
-                        defaultSortOrder: 'ascend',
-                        sorter: (
-                            a: { hash_index: number },
-                            b: { hash_index: number }
-                        ) => a.hash_index - b.hash_index,
                     },
                     {
                         width: 200,
@@ -381,10 +375,6 @@
                         dataIndex: 'column_name',
                         slots: { customRender: 'column_name' },
                         key: 'column_name',
-                        sorter: (
-                            a: { column_name: number },
-                            b: { column_name: number }
-                        ) => a.column_name > b.column_name,
                     },
                     {
                         width: 150,
@@ -402,7 +392,6 @@
                     {
                         width: 150,
                         title: 'Popularity',
-                        sorter: true,
                         dataIndex: 'popularity',
                         slots: { customRender: 'popularity' },
                         key: 'popularity',
@@ -432,6 +421,10 @@
     :global(.ant-progress-status-success .ant-progress-bg) {
         background-color: #1890ff !important;
     }
+    :global(.ant-progress-inner) {
+        background-color: rgba(189, 205, 244, 0.53) !important;
+    }
+
     .chip {
         @apply px-1  mr-1;
         @apply rounded;

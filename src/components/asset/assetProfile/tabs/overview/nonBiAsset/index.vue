@@ -1,6 +1,12 @@
 <template>
-    <div class="p-6">
-        <a-button-group>
+    <div class="p-8">
+        <!-- Table Summary -->
+        <div class="mb-10">
+            <tableSummary />
+        </div>
+
+        <!-- Preview Selector-->
+        <a-button-group class="mb-4 rounded shadow">
             <a-button
                 :class="
                     activePreviewTabKey === 'column-preview'
@@ -11,31 +17,37 @@
             >
                 Column Preview
             </a-button>
-            <a-button
-                :class="
-                    activePreviewTabKey === 'table-preview'
-                        ? 'text-primary font-bold'
-                        : 'text-gray-500'
+            <a-tooltip
+                placement="right"
+                :title="
+                    !showTablePreview && 'No sample data found for this asset'
                 "
-                :disabled="!showTablePreview"
-                @click="setActiveTab('table-preview')"
-                >Sample Data</a-button
+            >
+                <a-button
+                    :class="
+                        activePreviewTabKey === 'table-preview'
+                            ? 'text-primary font-bold'
+                            : 'text-gray-500'
+                    "
+                    :disabled="!showTablePreview"
+                    @click="setActiveTab('table-preview')"
+                    >Sample Data</a-button
+                ></a-tooltip
             >
         </a-button-group>
 
+        <!-- Column and Table Preview-->
         <div class="w-full mb-10">
-            <div class="px-3 pt-5 pb-4 mt-4 bg-white border rounded-md">
-                <template v-if="activePreviewTabKey === 'column-preview'">
-                    <overviewColumns />
-                </template>
-                <template v-if="activePreviewTabKey === 'table-preview'">
-                    <overviewTable />
-                </template>
-            </div>
+            <template v-if="activePreviewTabKey === 'column-preview'">
+                <overviewColumns />
+            </template>
+            <template v-if="activePreviewTabKey === 'table-preview'">
+                <overviewTable />
+            </template>
         </div>
 
         <!-- Readme widget -->
-        <div class="px-3 py-4 mb-10 bg-white border rounded-md">
+        <div class="mb-10">
             <Readme
                 class="w-full"
                 :show-borders="false"
@@ -59,6 +71,7 @@
 
     // Components
     import Readme from '@/common/readme/index.vue'
+    import tableSummary from '~/components/asset/assetProfile/tabs/overview/nonBiAsset/tableSummary.vue'
 
     // Composables
     import useAssetInfo from '~/composables/asset/useAssetInfo'
@@ -66,6 +79,7 @@
     export default defineComponent({
         components: {
             Readme,
+            tableSummary,
             overviewColumns: defineAsyncComponent(
                 () =>
                     import(

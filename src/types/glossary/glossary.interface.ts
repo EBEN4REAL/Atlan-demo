@@ -8,7 +8,7 @@ interface BaseAttributes {
     __state: string
     __timestamp: Number
 }
-interface RelatedEntity {
+export interface RelatedEntity {
     guid: string,
     typeName: string,
     uniqueAttributes: {
@@ -22,6 +22,7 @@ interface GlossaryAttributes extends BaseAttributes {
     name: string,
     shortDescription?: string,
     assetStatus?: "draft" | "verified" | "issue",
+    assetStatusMessage: string,
     assetStatusUpdatedBy?: string,
     assetStatusUpdatedAt?: 0,
     ownerUsers?: string

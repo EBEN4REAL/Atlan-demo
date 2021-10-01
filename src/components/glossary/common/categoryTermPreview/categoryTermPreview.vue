@@ -155,6 +155,14 @@
                                     :selected-asset="entity"
                                     @update:selected-asset="updateEntityAndTree"
                                 />
+                                <Categories 
+                                    v-if="entity.guid && entity.typeName === 'AtlasGlossaryTerm'"
+                                    :categories="entity.attributes.categories"
+                                    :glossaryQualifiedName="entity.attributes?.anchor?.uniqueAttributes?.qualifiedName"
+                                    :termGuid="entity.guid"
+                                    :term="entity"
+                                    mode="edit"
+                                />
                             </div>
                         </a-collapse-panel>
 
@@ -243,6 +251,7 @@
     import LinkedAssets from './linkedAssets.vue'
     import SidePanelTabHeaders from '~/components/common/tabs/sidePanelTabHeaders.vue'
     import { Components } from '~/api/atlas/client'
+    import Categories from '@/glossary/common/categories.vue'
 
     //  utils
     import assetTypeLabel from '@/glossary/constants/assetTypeLabel'
@@ -269,6 +278,7 @@
             RelatedTerms,
             LinkedAssets,
             SidePanelTabHeaders,
+            Categories
         },
         props: {
             entity: {

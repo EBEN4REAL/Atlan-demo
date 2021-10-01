@@ -314,7 +314,7 @@
                 </div>
                 <div
                     v-if="treeData.length"
-                    class="py-2 pl-4 pr-2 h-full pb-48 overflow-y-auto"
+                    class="py-2 pl-4 pr-2 scrollable-container overflow-x-hidden overflow-y-auto"
                     :class="$style.treeStyles"
                 >
                     <a-tree
@@ -415,7 +415,7 @@
                                                         .glossaryGuid,
                                                     uniqueAttributes: {
                                                         qualifiedName:
-                                                            parentGlossary?.qualifiedName,
+                                                            parentGlossary?.attributes?.qualifiedName,
                                                     },
                                                 },
                                                 name: entity.name,
@@ -689,7 +689,7 @@ export default defineComponent({
         const home = toRef(props, 'isHome')
         const parentGlossary = toRef(props, 'parentGlossary')
         const currentGlossaryGuid = ref<string>(
-            parentGlossary.value?.guid ?? ''
+            parentGlossary.value?.guid ?? 'all'
         )
         const glossaryContextDropdown = computed(() => {
             const list = props.glossaryList.map((glossary) => ({
@@ -831,7 +831,10 @@ export default defineComponent({
             @apply bg-opacity-100 !important;
         }
     }
+
     .treeStyles {
+        max-height: calc(100vh - 11rem) !important;
+
         :global(.ant-tree-switcher) {
             @apply pt-1;
         }

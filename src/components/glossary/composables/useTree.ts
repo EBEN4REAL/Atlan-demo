@@ -347,45 +347,68 @@ const useTree = (
      *
      * @param guid - guid/key of the node that needs to be refetched
      */
-    const refetchNode = async (guid: string | 'root') => {
+    const refetchNode = async (guid: string | 'root', refetchEntityType?: 'category' | 'term') => {
         // if the root level of the tree needs a refetch
         if (guid === 'root' && parentGlossary.value?.guid) {
-            const categoryList = await GlossaryApi.ListCategoryForGlossary(
-                parentGlossary.value?.guid,
-            )
-            const termsList = await GlossaryApi.ListTermsForGlossary(
-                parentGlossary.value?.guid,
-            )
+            let categoryList: Components.Schemas.AtlasGlossaryCategory[] | null = null;
+            let termsList: Components.Schemas.AtlasGlossaryTerm[] | null = null;
+
+            if(refetchEntityType === 'category' || !refetchEntityType) {
+                categoryList = await GlossaryApi.ListCategoryForGlossary(
+                    parentGlossary.value?.guid,
+                )
+            } 
+            if(refetchEntityType === 'term' || !refetchEntityType) {
+                termsList= await GlossaryApi.ListTermsForGlossary(
+                    parentGlossary.value?.guid,
+                )
+            }
+
             categoryMap[parentGlossary.value?.guid] = categoryList
 
             const updatedTreeData: TreeDataItem[] = []
+            if(categoryList !== null) {
+                categoryList.forEach((category) => {
+                    const existingCategory = treeData.value.find(
+                        (entity) => entity.guid === category.guid
+                    )
+                    // if the category already exists,ignore it so as to maintain the expanded state
+                    if (existingCategory) {
+                        updatedTreeData.push(existingCategory)
+                    } else if (!category.parentCategory?.categoryGuid) {
+                        // if a new category is found at the root level, append it
+    
+                        nodeToParentKeyMap[category.guid] = 'root';
+                        updatedTreeData.push(returnTreeDataItemAttributes(category, 'category', parentGlossary.value?.guid ?? '', true))
+                    }
+                })
+            } else {
+                treeData.value.forEach((item) => {
+                    if(item.type === 'category') updatedTreeData.push(item)
+                })
+            }
+            if(termsList !== null) {
+                termsList.forEach((term) => {
+                    const existingTerm = treeData.value.find(
+                        (entity) => entity.guid === term.guid
+                    )
+                    // if term already exists, append the existing one
+                    if (existingTerm) {
+                        updatedTreeData.push(existingTerm)
+                    } else {
+                        nodeToParentKeyMap[term.guid] = 'root'
+                        updatedTreeData.push(returnTreeDataItemAttributes(term, 'term', parentGlossary.value?.guid ?? ''))
+                    }
+                })
+            } else {
+                treeData.value.forEach((item) => {
+                    if(item.type === 'term') updatedTreeData.push(item)
+                })
+            }
 
-            categoryList.forEach((category) => {
-                const existingCategory = treeData.value.find(
-                    (entity) => entity.guid === category.guid
-                )
-                // if the category already exists,ignore it so as to maintain the expanded state
-                if (existingCategory) {
-                    updatedTreeData.push(existingCategory)
-                } else if (!category.parentCategory?.categoryGuid) {
-                    // if a new category is found at the root level, append it
-
-                    nodeToParentKeyMap[category.guid] = 'root';
-                    updatedTreeData.push(returnTreeDataItemAttributes(category, 'category', parentGlossary.value?.guid ?? '', true))
-                }
-            })
-            termsList.forEach((term) => {
-                const existingTerm = treeData.value.find(
-                    (entity) => entity.guid === term.guid
-                )
-                // if term already exists, append the existing one
-                if (existingTerm) {
-                    updatedTreeData.push(existingTerm)
-                } else {
-                    nodeToParentKeyMap[term.guid] = 'root'
-                    updatedTreeData.push(returnTreeDataItemAttributes(term, 'term', parentGlossary.value?.guid ?? ''))
-                }
-            })
+            treeData.value.forEach((item) => {
+                if(item.title === 'Load more') updatedTreeData.push(item);
+            });
 
             treeData.value = updatedTreeData
         } else {
@@ -396,45 +419,68 @@ const useTree = (
 
                 // if the target node is reached
                 if (node.key === guid || !currentPath) {
-                    const categoryList =
-                        await GlossaryApi.ListCategoryForGlossary(
+                    let categoryList: Components.Schemas.AtlasGlossaryCategory[] | null = null;
+                    let termsList: Components.Schemas.AtlasGlossaryTerm[] | null = null;
+
+                    if(refetchEntityType === 'category' || !refetchEntityType) {
+                        categoryList = await GlossaryApi.ListCategoryForGlossary(
                             parentGlossary.value?.guid ?? '',
                         )
-                    const termsList = await GlossaryApi.ListTermsForCategory(
-                        guid,
-                    )
+                    } 
+                    if(refetchEntityType === 'term' || !refetchEntityType) {
+                        termsList= await GlossaryApi.ListTermsForCategory(
+                            guid,
+                        )
+                    }
                     categoryMap[parentGlossary.value?.guid ?? ''] = categoryList
                     const updatedChildren: TreeDataItem[] = []
 
-                    categoryList.forEach((category) => {
-                        const existingCategory = node.children?.find(
-                            (entity) => entity.guid === category.guid
-                        )
-                        // if current category already exists, append the existing one to maintain expanded state
-                        // else append the new one
-                        if (existingCategory) {
-                            updatedChildren.push(existingCategory)
-                        } else if (
-                            category.parentCategory?.categoryGuid === node.key
-                        ) {
-                            nodeToParentKeyMap[category?.guid ?? ''] =
-                                node.key as string
-                            updatedChildren.push(returnTreeDataItemAttributes(category, 'category', parentGlossary.value?.guid ?? '', true, node.key))
-                        }
-                    })
+                    if(categoryList !== null){
+                        categoryList.forEach((category) => {
+                            const existingCategory = node.children?.find(
+                                (entity) => entity.guid === category.guid
+                            )
+                            // if current category already exists, append the existing one to maintain expanded state
+                            // else append the new one
+                            if (existingCategory) {
+                                updatedChildren.push(existingCategory)
+                            } else if (
+                                category.parentCategory?.categoryGuid === node.key
+                            ) {
+                                nodeToParentKeyMap[category?.guid ?? ''] =
+                                    node.key as string
+                                updatedChildren.push(returnTreeDataItemAttributes(category, 'category', parentGlossary.value?.guid ?? '', true, node.key))
+                            }
+                        })
+                    } else {
+                        node.children?.forEach((item) => {
+                            if(item.type === 'category') updatedChildren.push(item)
+                        })
+                    }
 
-                    termsList.forEach((term) => {
-                        const existingTerm = node.children?.find(
-                            (entity) => entity.guid === term.guid
-                        )
-                        if (existingTerm) {
-                            updatedChildren.push(existingTerm)
-                        } else {
-                            nodeToParentKeyMap[term?.guid ?? ''] =
-                                node.key as string
-                            updatedChildren.push(returnTreeDataItemAttributes(term, 'term', parentGlossary.value?.guid, false, node.key))
-                        }
-                    })
+                    if(termsList !== null) {
+                        termsList.forEach((term) => {
+                            const existingTerm = node.children?.find(
+                                (entity) => entity.guid === term.guid
+                            )
+                            if (existingTerm) {
+                                updatedChildren.push(existingTerm)
+                            } else {
+                                nodeToParentKeyMap[term?.guid ?? ''] =
+                                    node.key as string
+                                updatedChildren.push(returnTreeDataItemAttributes(term, 'term', parentGlossary.value?.guid, false, node.key))
+                            }
+                        })
+                    } else {
+                        node.children?.forEach((item) => {
+                            if(item.type === 'term') updatedChildren.push(item)
+                        })
+                    }
+            
+                    node.children?.forEach((item) => {
+                        if(item.title === 'Load more')  updatedChildren.push(item)
+                    });
+            
 
                     return {
                         ...node,

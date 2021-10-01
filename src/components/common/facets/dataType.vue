@@ -1,33 +1,3 @@
-<!-- <template>
-    <a-checkbox-group
-        :value="filters"
-        class="flex flex-col"
-        @change="handleDataTypeChange"
-    >
-        <a-checkbox
-            v-for="{ count, label, value } in options"
-            :key="label"
-            :value="value"
-            :disabled="!count"
-        >
-            <span class="text-sm">{{ label }}</span>
-            <span
-                v-if="count"
-                class="
-                    p-0.5
-                    pt-1
-                    ml-1
-                    text-sm
-                    rounded
-                    bg-primary-light
-                    text-primary
-                "
-                >{{ count }}</span
-            >
-        </a-checkbox>
-    </a-checkbox-group>
-</template> -->
-
 <template>
     <div class="flex flex-col py-1 rounded gap-y-3 preference-container">
         <div class="flex items-center justify-between text-gray">
@@ -38,10 +8,17 @@
                 style="width: 135px"
                 @change="handeChangeSorting"
             >
-                <a-select-option value="order">Default</a-select-option>
-                <a-select-option value="name">Name</a-select-option>
+                <a-select-option value="default">Default</a-select-option>
+                <a-select-option value="Asset.name.keyword|ascending"
+                    >Name</a-select-option
+                >
 
-                <a-select-option value="popularity">Popularity</a-select-option>
+                <a-select-option value="Catalog.popularityScore|descending"
+                    >Most Popular</a-select-option
+                >
+                <a-select-option value="Catalog.popularityScore|ascending"
+                    >Least popular</a-select-option
+                >
             </a-select>
         </div>
         <div class="pt-4">
@@ -90,31 +67,66 @@
                 </div>
             </div>
         </div>
+        <div class="pt-4">
+            <p class="mb-3 text-sm text-gray">Certification</p>
+            <div class="">
+                <a-checkbox-group
+                    v-model:value="certificationFilters"
+                    class="w-full px-4 py-1 pb-3"
+                    @change="handeChangeCertification"
+                >
+                    <div class="flex flex-col w-full">
+                        <template v-for="item in list" :key="item.id">
+                            <div class="mb-3 status">
+                                <a-checkbox :value="item.id" class="w-full">
+                                    <component
+                                        :is="item.icon"
+                                        class="inline-flex self-center w-auto h-4 mb-1 "
+                                    />
+                                    <span class="mb-0 ml-1 text-gray">
+                                        {{ item.label }}
+                                    </span>
+                                </a-checkbox>
+                            </div>
+                        </template>
+                    </div>
+                </a-checkbox-group>
+            </div>
+        </div>
     </div>
 </template>
 
 <script lang="ts">
     import { defineComponent, PropType, toRefs, computed, Ref, ref } from 'vue'
     import { dataTypeList } from '~/constant/datatype'
+    import Status from '@/common/facets/status.vue'
+    import { List } from '~/constant/status'
 
     export default defineComponent({
         name: 'DataTypeFacet',
+        components: { Status },
         props: {
             dataTypeMap: {
                 type: Object as PropType<Record<string, number>>,
                 required: false,
             },
         },
-        emits: ['dataTypeFilter', 'sort'],
+        emits: ['dataTypeFilter', 'sort', 'certification'],
         setup(props, { emit }) {
             const { dataTypeMap } = toRefs(props)
             const dataTypeFilters: Ref<any[]> = ref([])
-
             const sorting = ref('')
+            const certificationFilters: Ref<any[]> = ref([])
 
-            sorting.value = 'order'
+            sorting.value = 'default'
+
+            const list = computed(() => List)
+
             const handeChangeSorting = () => {
                 emit('sort', sorting.value)
+            }
+            const handeChangeCertification = () => {
+                emit('certification', certificationFilters.value)
             }
             const options = computed(() =>
                 dataTypeList.map((dt) => ({
@@ -155,7 +167,10 @@
                 toggleDataTypeSelect,
                 clearDataTypeFilters,
                 handeChangeSorting,
+                list,
                 sorting,
+                handeChangeCertification,
+                certificationFilters,
             }
         },
     })

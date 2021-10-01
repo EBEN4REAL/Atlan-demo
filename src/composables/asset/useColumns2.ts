@@ -40,6 +40,8 @@ const staticColumnAttributes = [
 interface ColumnListConfig {
     query?: Ref<string>
     dataTypes?: Ref<string[]>
+    sort?: Ref<string>
+    certification?: Ref<string[]>
     /** Set it to `true` to only fetch pinned columns,
      *  `false` to fetch only normal columns,
      *  `undefined`(not pass any value) to fetch all columns
@@ -111,10 +113,25 @@ export function useColumnsList(
         query = ref(''),
         dataTypes = ref([] as string[]),
         pinned,
+        sort = ref('default'),
+        certificationFilters = ref([] as string[]),
     }: ColumnListConfig,
     immediate = true
 ) {
+
+
     const offset = ref(0)
+    const sortBy = ref("")
+    const sortOrder = ref("")
+
+    if (sort.value !== 'default') {
+        const split = sort.value.split('|')
+        if (split.length > 1) {
+            sortBy.value = split[0]
+            sortOrder.value = split[1].toUpperCase()
+        }
+    }
+
 
     const payload = computed(() => ({
         typeName: 'Column',
@@ -125,6 +142,8 @@ export function useColumnsList(
         limit: pinned ? 100 : listLimit,
         query: query.value,
         offset: offset.value,
+        sortBy: sortBy.value,
+        sortOrder: sortOrder.value,
         attributes: staticColumnAttributes,
         entityFilters: getEntityFilters({
             parentQfName,

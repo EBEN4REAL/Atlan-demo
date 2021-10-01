@@ -9,9 +9,10 @@
         >
             <template #filter>
                 <DataTypes
-                    v-model:filters="filters"
-                    @update:filters="handleFilterChange"
                     :data-type-map="dataTypeMap"
+                    @dataTypeFilter="handleFilterChange"
+                    @sort="handleChangeSort"
+                    @certification="handleCertificationFilter"
                 />
             </template>
         </SearchAndFilter>
@@ -153,7 +154,9 @@
             const isFilterVisible = ref(false)
             const queryText = ref('')
             const filters: Ref<string[]> = ref([])
+            const certificationFilters: Ref<string[]> = ref([])
             const pinnedExpanded = ref('pin')
+            const sortOrder = ref('default')
 
             const { dataTypeImage, columnCount } = useAssetInfo()
             const { selectedAsset } = toRefs(props)
@@ -169,6 +172,8 @@
                     query: queryText,
                     dataTypes: filters,
                     pinned: false,
+                    sort: sortOrder,
+                    certification: certificationFilters,
                 })
 
             const {
@@ -189,6 +194,13 @@
             const clearFiltersAndSearch = () => {
                 filters.value = []
                 queryText.value = ''
+                reFetch()
+            }
+            const handleChangeSort = (payload: any) => {
+                sortOrder.value = payload
+                reFetch()
+            }
+            const handleCertificationFilter = (payload: any) => {
                 reFetch()
             }
             const handleFilterChange = (payload: any) => {
@@ -212,7 +224,8 @@
                 queryText,
                 dataTypeMap,
                 dataTypeImage,
-
+                handleChangeSort,
+                handleCertificationFilter,
                 isLoading,
                 isAggregateLoading,
                 dataTypeList,

@@ -68,6 +68,7 @@ import Queries from '~/assets/images/icons/queries.svg'
 import Play from '~/assets/images/icons/play.svg'
 import Save from '~/assets/images/icons/save.svg'
 import Globe from '~/assets/images/icons/globe.svg'
+import Info from '~/assets/images/icons/info.svg'
 import VariableTrigger from '~/assets/images/icons/variable-trigger.svg'
 
 export default {
@@ -141,5 +142,6 @@ export default {
     Play,
     Save,
     Globe,
+    Info,
     VariableTrigger,
 }

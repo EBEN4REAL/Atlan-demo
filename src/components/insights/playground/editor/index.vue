@@ -44,7 +44,7 @@
                             "
                             @click="run"
                         >
-                            <AtlanIcon class="mr-1" icon="Play" />
+                            <AtlanIcon class="mr-1 text-white" icon="Play" />
                             Run</a-button
                         >
                         <a-button

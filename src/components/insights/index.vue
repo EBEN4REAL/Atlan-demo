@@ -55,15 +55,12 @@
                 <Playground :activeInlineTabKey="activeInlineTabKey" />
             </pane>
             <pane
-                :max-size="20"
+                :max-size="25"
                 :min-size="0"
                 :size="
                     activeInlineTab?.assetSidebar?.isVisible
                         ? assetSidebarPaneSize
                         : 0
-                "
-                v-if="
-                    activeInlineTab && activeInlineTab?.assetSidebar?.isVisible
                 "
             >
                 <AssetSidebar />

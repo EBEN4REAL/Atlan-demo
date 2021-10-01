@@ -6,7 +6,7 @@ export function useSpiltPanes() {
     const explorerPaneCollapsed = ref(false)
     const assetSidebarThreshold = 10
     const explorerPaneSize = ref(24.5)
-    const assetSidebarPaneSize = ref(20)
+    const assetSidebarPaneSize = ref(25)
     const paneResize = (event: any) => {
         if (event.length > 0) {
             // explorerPaneSize.value = event[0].size

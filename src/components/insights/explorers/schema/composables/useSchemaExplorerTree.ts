@@ -468,6 +468,7 @@ const useTree = ({
         item: Database | Schema | Table | Column
     ) => {
         return {
+            attributes: item.attributes,
             key: item.attributes.qualifiedName,
             guid: item.guid,
             title: item.attributes.name,

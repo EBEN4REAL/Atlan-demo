@@ -1,11 +1,11 @@
-import { Ref } from 'vue'
+import { Ref, ComputedRef } from 'vue'
 import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
 import { useLocalStorageSync } from '~/components/insights/common/composables/useLocalStorageSync'
 import { tableInterface } from '~/types/insights/table.interface'
 
 export function useAssetSidebar(
     tabsArray: Ref<activeInlineTabInterface[]>,
-    activeInlineTab: Ref<activeInlineTabInterface>
+    activeInlineTab: ComputedRef<activeInlineTabInterface>
 ) {
     const { syncInlineTabsInLocalStorage } = useLocalStorageSync()
 
@@ -38,6 +38,7 @@ export function useAssetSidebar(
             }
         }
     }
+
     return {
         closeAssetSidebar,
         openAssetSidebar,

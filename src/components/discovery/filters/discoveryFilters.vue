@@ -25,23 +25,6 @@
         <Connector
             class="px-4 py-3"
             :data="dataMap.connector"
-            :item="{
-                id: 'connector',
-                label: 'Connector',
-                component: 'connector',
-                overallCondition: 'OR',
-                filters: [
-                    {
-                        attributeName: 'connector',
-                        condition: 'OR',
-                        isMultiple: false,
-                        operator: 'eq',
-                    },
-                ],
-                isDeleted: false,
-                isDisabled: false,
-                exclude: false,
-            }"
             @change="handleChange"
             @update:data="setConnector"
         ></Connector>

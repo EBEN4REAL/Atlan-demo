@@ -2,8 +2,10 @@
     <div class="w-full px-5">
         <!-- <Terms :selectedAsset="selectedAsset" /> -->
         <Classification :selected-asset="selectedAsset" />
-        <LinkTerms :selected-asset="selectedAsset" />
-        <!-- <BusinessMetaData :selectedAsset="selectedAsset" /> -->
+        <div class="mt-2">
+            <LinkTerms :selected-asset="selectedAsset" />
+            <!-- <BusinessMetaData :selectedAsset="selectedAsset" /> -->
+        </div>
     </div>
 </template>
 

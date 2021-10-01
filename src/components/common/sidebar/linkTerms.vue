@@ -1,15 +1,12 @@
 <template>
     <div class="text-sm text-gray-500">
         <p class="mb-1 text-sm">Terms</p>
-        <div
-            v-if="asset.meaningNames?.length > 0"
-            class="flex flex-wrap items-center"
-        >
+        <div v-if="pillTerms.length > 0" class="flex flex-wrap items-center">
             <PillGroup
-                :data="asset.meanings"
+                :data="pillTerms"
                 label-key="displayText"
                 @add="toggleLinkClassificationPopover"
-                @delete="unLinkClassification"
+                @delete="unLinkTerm"
                 @select="handleSelect"
             >
                 <template #pillPrefix>
@@ -49,7 +46,7 @@
             placement="left"
             trigger="click"
         >
-            <div v-if="asset.meaningNames?.length < 1">
+            <div v-if="pillTerms.length < 1">
                 <div @click.stop="toggleLinkClassificationPopover">
                     <div
                         class="flex items-center cursor-pointer  text-primary hover:text-primary hover:underline"
@@ -143,6 +140,7 @@
         toRaw,
         UnwrapRef,
         watch,
+        onMounted,
     } from 'vue'
     import { Classification } from '~/api/atlas/classification'
     import { useClassificationStore } from '~/components/admin/classifications/_store'
@@ -152,6 +150,7 @@
     import PillGroup from '~/components/UI/pill/pillGroup.vue'
     import ClassificationInfoCard from '~/components/discovery/preview/hovercards/classificationInfo.vue'
     import useGtcSearch from '~/components/glossary/composables/useGtcSearch'
+    import useLinkAssets from '~/components/glossary/composables/useLinkAssets'
     export default defineComponent({
         props: {
             selectedAsset: {
@@ -161,7 +160,8 @@
         },
         components: { PillGroup, ClassificationInfoCard },
 
-        setup(props) {
+        emits: ['update:selectedAsset'],
+        setup(props, { emit }) {
             const selectedAsset = computed(() => props.selectedAsset)
             const classificationsStore = useClassificationStore()
             const asset = computed(() => props.selectedAsset ?? {})
@@ -178,7 +178,8 @@
 
             const createClassificationRef = ref(null)
             const showAddClassificationBtn = ref(false)
-
+            const pillTerms = ref([])
+            console.log(pillTerms)
             const isDrawerVisible = ref(false)
             const {
                 terms,
@@ -495,8 +496,45 @@
                 linkClassificationPopover.value = false
             }
             const createTerm = () => {
-                console.log(selectedClassificationForLink.value)
+                const { assignLinkedAssets, unLinkAssets } = useLinkAssets()
+                selectedClassificationForLink.value.map((el) => {
+                    const { response, loading } = assignLinkedAssets(el, [
+                        props.selectedAsset,
+                    ])
+                    watch(response, (data) => {
+                        console.log(response, loading)
+                        const termToBeAdded = terms.value.filter(
+                            (term) => term.guid === el
+                        )
+
+                        pillTerms.value = [...pillTerms.value, ...termToBeAdded]
+                        emit('update:selectedAsset', props.selectedAsset)
+                    })
+                })
             }
+            const unLinkTerm = (term: any) => {
+                console.log(term?.termGuid)
+                console.log(term?.guid)
+                const { unLinkAssets } = useLinkAssets()
+                const { response: unlinkResponse, loading } = unLinkAssets(
+                    term?.termGuid || term?.guid,
+                    [props.selectedAsset]
+                )
+                pillTerms.value = pillTerms.value.filter(
+                    (el) => el?.termGuid !== term?.termGuid
+                )
+                console.log(pillTerms.value)
+
+                watch(unlinkResponse, (data) => {
+                    // pillTerms.value.filter((el) => el?.termGuid !== term?.guid)
+                    emit('update:selectedAsset', props.selectedAsset)
+                })
+            }
+
+            watch(asset, () => {
+                pillTerms.value = [...props.selectedAsset?.meanings]
+            })
+
             return {
                 asset,
                 selectedAsset,
@@ -536,6 +574,8 @@
                 handleCancel,
                 searchLoading,
                 createTerm,
+                pillTerms,
+                unLinkTerm,
             }
         },
     })

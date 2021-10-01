@@ -80,7 +80,6 @@
                         </a-select>
                     </template>
                     <template v-else>
-                        {{ searchLoading }}
                         <p v-if="searchLoading">loading</p>
 
                         <p v-else class="mb-2 text-sm text-gray-700">No data</p>
@@ -178,7 +177,7 @@
 
             const createClassificationRef = ref(null)
             const showAddClassificationBtn = ref(false)
-            const pillTerms = ref([])
+            const pillTerms = ref([...props.selectedAsset?.meanings])
             console.log(pillTerms)
             const isDrawerVisible = ref(false)
             const {
@@ -506,7 +505,7 @@
                         const termToBeAdded = terms.value.filter(
                             (term) => term.guid === el
                         )
-
+                        handleCancel()
                         pillTerms.value = [...pillTerms.value, ...termToBeAdded]
                         emit('update:selectedAsset', props.selectedAsset)
                     })
@@ -520,10 +519,14 @@
                     term?.termGuid || term?.guid,
                     [props.selectedAsset]
                 )
-                pillTerms.value = pillTerms.value.filter(
-                    (el) => el?.termGuid !== term?.termGuid
-                )
-                console.log(pillTerms.value)
+                pillTerms.value = pillTerms.value.filter((el) => {
+                    if (term?.termGuid) {
+                        console.log('termGuid called')
+                        return el?.termGuid !== term?.termGuid
+                    }
+                    if (el?.guid) return el?.guid !== term?.guid
+                    return el?.termGuid !== term?.guid
+                })
 
                 watch(unlinkResponse, (data) => {
                     // pillTerms.value.filter((el) => el?.termGuid !== term?.guid)

@@ -3,14 +3,17 @@
         <!-- <Terms :selectedAsset="selectedAsset" /> -->
         <Classification :selected-asset="selectedAsset" />
         <div class="mt-2">
-            <LinkTerms :selected-asset="selectedAsset" />
+            <LinkTerms
+                :selected-asset="selectedAsset"
+                @update:selected-asset="mutateSelectedAsset"
+            />
             <!-- <BusinessMetaData :selectedAsset="selectedAsset" /> -->
         </div>
     </div>
 </template>
 
 <script lang="ts">
-    import { defineComponent, PropType, toRefs, watch } from 'vue'
+    import { defineComponent, PropType, toRefs, watch, inject } from 'vue'
     // import Terms from './terms.vue'
     import Classification from '@common/sidebar/classifications.vue'
     import LinkTerms from '@common/sidebar/linkTerms.vue'
@@ -27,6 +30,8 @@
         },
         setup(props) {
             const { selectedAsset } = toRefs(props)
+            const mutateSelectedAsset: (updatedAsset: assetInterface) => void =
+                inject('mutateSelectedAsset', () => {})
             watch(
                 selectedAsset,
                 () => {
@@ -36,7 +41,7 @@
                     immediate: true,
                 }
             )
-            return { selectedAsset }
+            return { selectedAsset, mutateSelectedAsset }
         },
     })
 </script>

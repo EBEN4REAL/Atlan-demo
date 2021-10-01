@@ -100,6 +100,7 @@
                     )
                     if (!found) {
                         assetType.value = 'Catalog'
+                        handleChange()
                     }
                 },
                 {

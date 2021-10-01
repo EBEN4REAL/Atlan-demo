@@ -49,7 +49,7 @@
         </div>
         <div
             v-else
-            class="flex flex-col gap-y-2"
+            class="flex flex-col gap-y-4"
             :class="{ 'animate-pulse': isLoading }"
         >
             <a-collapse
@@ -64,7 +64,12 @@
                     <div>
                         <AtlanIcon
                             icon="ChevronDown"
-                            class="text-gray-500 transition-transform duration-300 transform "
+                            class="
+                                text-gray-500
+                                transition-transform
+                                duration-300
+                                transform
+                            "
                             :class="isActive ? '-rotate-180' : 'rotate-0'"
                         />
                     </div>
@@ -78,8 +83,9 @@
                         :key="index"
                         :asset="asset"
                         @asset-mutation="propagateToColumnList"
-                    /> </a-collapse-panel
-            ></a-collapse>
+                    />
+                </a-collapse-panel>
+            </a-collapse>
 
             <ColumnListItem
                 v-for="(asset, index) in list"
@@ -92,13 +98,32 @@
         <div v-if="isLoadMore" class="flex items-center justify-center">
             <button
                 :disabled="isLoading"
-                class="flex items-center justify-between py-2 transition-all duration-300 bg-white rounded-full  text-primary"
+                class="
+                    flex
+                    items-center
+                    justify-between
+                    py-2
+                    transition-all
+                    duration-300
+                    bg-white
+                    rounded-full
+                    text-primary
+                "
                 :class="isLoading ? 'px-2 w-9' : 'px-5 w-32'"
                 @click="loadMore"
             >
                 <template v-if="!isLoading">
                     <p
-                        class="m-0 mr-1 overflow-hidden text-sm transition-all duration-300  overflow-ellipsis whitespace-nowrap"
+                        class="
+                            m-0
+                            mr-1
+                            overflow-hidden
+                            text-sm
+                            transition-all
+                            duration-300
+                            overflow-ellipsis
+                            whitespace-nowrap
+                        "
                     >
                         Load more
                     </p>
@@ -214,6 +239,7 @@
                     filters.value = []
                     list.value = []
                     reFetch()
+                    reFetchPinned()
                     refreshAggregation()
                 }
             })

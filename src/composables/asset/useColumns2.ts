@@ -119,7 +119,7 @@ export function useColumnsList(
     const payload = computed(() => ({
         typeName: 'Column',
         excludeDeletedEntities: true,
-        includeClassificationAttributes: false,
+        includeClassificationAttributes: true,
         includeSubClassifications: false,
         includeSubTypes: false,
         limit: pinned ? 100 : listLimit,

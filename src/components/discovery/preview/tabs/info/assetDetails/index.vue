@@ -33,9 +33,12 @@
                     <span class="text-gray-700">{{ rows }}</span>
                 </div>
             </RowInfoHoverCard>
-            <div class="flex flex-col text-sm">
+            <div
+                class="flex flex-col text-sm cursor-pointer"
+                @click="switchTab('Columns')"
+            >
                 <span class="mb-1 text-sm text-gray-500">Columns</span>
-                <span class="text-gray-700">{{ cols }}</span>
+                <span class="text-primary">{{ cols }}</span>
             </div>
         </div>
         <Description
@@ -95,6 +98,10 @@
             const { selectedAsset } = toRefs(props)
             const mutateSelectedAsset: (updatedAsset: assetInterface) => void =
                 inject('mutateSelectedAsset', () => {})
+            const switchTab: (tabName: string) => void = inject(
+                'switchTab',
+                () => {}
+            )
 
             const {
                 rowCount,
@@ -170,6 +177,7 @@
                 displaySQL,
                 isSelectedAssetHaveRowsAndColumns,
                 mutateSelectedAsset,
+                switchTab,
             }
         },
     })

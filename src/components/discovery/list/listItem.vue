@@ -9,7 +9,7 @@
         "
     >
         <div
-            class="flex items-start flex-1 px-3 py-3 border-b border-transparent  w-96"
+            class="flex items-start flex-1 px-3 py-4 border-b border-transparent  w-96"
             :class="{ ' border-gray-200': !isSelected }"
         >
             <a-checkbox
@@ -137,6 +137,25 @@
                         description(item)
                     }}</span>
                 </div>
+                <!-- Classification and terms -->
+                <div
+                    v-if="projection?.includes('classifications')"
+                    class="flex items-center overflow-x-auto  flex-nowrap gap-x-2"
+                >
+                    <Pill
+                        class="flex-none"
+                        v-for="clsf in item.classifications"
+                        :label="clsf.typeName"
+                        :has-action="false"
+                    >
+                        <template #prefix>
+                            <AtlanIcon
+                                icon="Shield"
+                                class="text-pink-400 group-hover:text-white"
+                            />
+                        </template>
+                    </Pill>
+                </div>
             </div>
         </div>
     </div>
@@ -146,7 +165,9 @@
     import AssetLogo from '@/common/icon/assetIcon.vue'
     import HierarchyBar from '@common/badge/hierarchy.vue'
     import StatusBadge from '@common/badge/status/index.vue'
-    import { defineComponent, PropType, computed } from 'vue'
+    import Pill from '~/components/UI/pill/pill.vue'
+
+    import { defineComponent, PropType } from 'vue'
     import { Components } from '~/api/atlas/client'
     import useAssetInfo from '~/composables/asset/useAssetInfo'
     import { assetInterface } from '~/types/assets/asset.interface'
@@ -157,6 +178,7 @@
             StatusBadge,
             HierarchyBar,
             AssetLogo,
+            Pill,
         },
         props: {
             item: {
@@ -293,17 +315,3 @@
         },
     })
 </script>
-
-<style>
-    .truncate-overflow {
-        position: relative;
-        @apply overflow-y-hidden;
-        @apply bg-clip-text text-transparent;
-        @apply max-h-10;
-        background-image: linear-gradient(
-            to bottom,
-            #3e4359 1.5rem,
-            transparent 2.5rem
-        );
-    }
-</style>
